@@ -1,26 +1,26 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
 .\" change 51
-A bugs has been fixed in the \fIaetar -receive\fP command,
+A bugs has been fixed in the \fIaetar \-receive\fP command,
 where it incorrectly complained about shorty input files.
 .PP
 .if n *
@@ -39,14 +39,14 @@ Several build issues have been resolved.
 .if t \(bu
 .\" change 35
 A bug has been fixed in the \fIaeimport\fP(1) command.  The symptom was
-that the \fIaecp -delta\fP command misbehaved.  The probelm was that
+that the \fIaecp \-delta\fP command misbehaved.  The probelm was that
 the first delta needed a timestamp \fIprior to\fP the first change set
 taken from the import sets.
 .PP
 .if n *
 .if t \(bu
 .\" change 29
-A bug has been fixed in the \fIaepatch -send\fP command, where it
+A bug has been fixed in the \fIaepatch \-send\fP command, where it
 would add \f[CW]Index\fP lines for files with no differences.
 .PP
 .if n *
@@ -57,4 +57,5 @@ true;\fP handling, where it would cause a "multiple user permissions
 setting" error message.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.7 (6-Aug-2002)
+.SS Version 4.7 (6\[hy]Aug\[hy]2002)
+.\" vim: set ts=8 sw=4 et :

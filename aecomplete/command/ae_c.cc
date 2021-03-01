@@ -1,24 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2002-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/project.h>
 #include <libaegis/user.h>
 
@@ -36,7 +36,7 @@ destructor(command_ty *)
 static complete_ty *
 completion_get(command_ty *)
 {
-    project_ty      *pp;
+    project      *pp;
 
     //
     // Work out which project to use.
@@ -52,15 +52,15 @@ completion_get(command_ty *)
     // suggest active changes, which is more likely to be useful.
     //
     return
-	complete_change_number
-	(
-	    pp,
-    	    ~(
-		(1 << cstate_state_awaiting_development)
-	    |
-		(1 << cstate_state_completed)
-	    )
-	);
+        complete_change_number
+        (
+            pp,
+            ~(
+                (1 << cstate_state_awaiting_development)
+            |
+                (1 << cstate_state_completed)
+            )
+        );
 }
 
 
@@ -78,3 +78,6 @@ command_ae_c()
 {
     return command_new(&vtbl);
 }
+
+
+// vim: set ts=8 sw=4 et :

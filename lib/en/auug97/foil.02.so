@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nr PS 72
 .nr VS 73000
@@ -45,7 +44,7 @@ You don't need to have these problems.
 .nr VS 25
 .XP
 \(bu
-I wrote the paper as a result of E-Mail conversations with members of
+I wrote the paper as a result of E\[hy]Mail conversations with members of
 some of the Internet projects teams I contribute to.  This revealed that
 the concept was difficult to express succinctly.
 .XP
@@ -71,3 +70,4 @@ but most have some of them.
 \(bu
 You don't need to have these problems: they have a common cause, and
 there \fIis\fP a solution.
+.\" vim: set ts=8 sw=4 et :

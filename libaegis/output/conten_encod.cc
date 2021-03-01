@@ -1,28 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/arglex.h>
 #include <common/mem.h>
-#include <libaegis/output/base64.h>
+#include <common/sizeof.h>
 #include <libaegis/output/conten_encod.h>
-#include <libaegis/output/quoted_print.h>
-#include <libaegis/output/uuencode.h>
+#include <libaegis/output/filter/base64.h>
+#include <libaegis/output/filter/quoted_print.h>
+#include <libaegis/output/filter/uuencode.h>
 #include <libaegis/sub.h>
 
 
@@ -31,17 +31,17 @@ content_encoding_grok(const char *name)
 {
     struct table_t
     {
-	const char    *name;
-	content_encoding_t value;
+        const char    *name;
+        content_encoding_t value;
     };
 
     static table_t table[] =
     {
-	{ "None", content_encoding_none, },
-	{ "8Bit", content_encoding_none, },
-	{ "Base64", content_encoding_base64, },
-	{ "Quoted_Printable", content_encoding_quoted_printable, },
-	{ "Unix_to_Unix_encode", content_encoding_uuencode, },
+        { "None", content_encoding_none, },
+        { "8Bit", content_encoding_none, },
+        { "Base64", content_encoding_base64, },
+        { "Quoted_Printable", content_encoding_quoted_printable, },
+        { "Unix_to_Unix_encode", content_encoding_uuencode, },
     };
 
     table_t         *tp;
@@ -52,8 +52,8 @@ content_encoding_grok(const char *name)
     //
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (arglex_compare(tp->name, name, 0))
-	    return tp->value;
+        if (arglex_compare(tp->name, name, 0))
+            return tp->value;
     }
 
     //
@@ -74,19 +74,19 @@ content_encoding_header(output::pointer ofp, content_encoding_t name)
     {
     case content_encoding_unset:
     case content_encoding_none:
-	break;
+        break;
 
     case content_encoding_base64:
-	ofp->fputs("Content-Transfer-Encoding: base64\n");
-	break;
+        ofp->fputs("Content-Transfer-Encoding: base64\n");
+        break;
 
     case content_encoding_quoted_printable:
-	ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
-	break;
+        ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
+        break;
 
     case content_encoding_uuencode:
-	ofp->fputs("Content-Transfer-Encoding: uuencode\n");
-	break;
+        ofp->fputs("Content-Transfer-Encoding: uuencode\n");
+        break;
     }
 }
 
@@ -98,16 +98,19 @@ output_content_encoding(output::pointer ofp, content_encoding_t name)
     {
     case content_encoding_unset:
     case content_encoding_none:
-	break;
+        break;
 
     case content_encoding_base64:
-	return output_base64::create(ofp);
+        return output_filter_base64::create(ofp);
 
     case content_encoding_quoted_printable:
-	return output_quoted_printable::create(ofp, false);
+        return output_filter_quoted_printable::create(ofp, false);
 
     case content_encoding_uuencode:
-	return output_uuencode::create(ofp);
+        return output_filter_uuencode::create(ofp);
     }
     return ofp;
 }
+
+
+// vim: set ts=8 sw=4 et :

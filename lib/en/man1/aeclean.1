@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999, 2002-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 1999, 2002-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -CLEan" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-CLEan" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aegis clEan \- clean files from development directory
 .XX "aeclean(1)" "clean files from development directory"
@@ -30,13 +29,13 @@ aegis clEan \- clean files from development directory
 .br
 .B \*(n)
 .B \-CLEan
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
-.I "\*(n) -CLEan"
+.I "\*(n) \-CLEan"
 command is used to remove all files which are not change source files
 from a development directory.  This can be used to obtain a \[lq]clean\[rq]
 development directory before a final build, to ensure that a change is
@@ -49,7 +48,7 @@ to branches.
 .PP
 All symbolic links will be removed from the development directory,
 even if \fIremove_\%symlinks_\%after_\%build = false\fP in the
-project \fIconfig\fP file.  The symbolic links will be re-installed,
+project \fIconfig\fP file.  The symbolic links will be re\[hy]installed,
 if \fIcreate_\%symlinks_\%before_\%build = true\fP.  This is to ensure
 that the symlinks are accurate, and that unnecessary ones are removed.
 .PP
@@ -75,9 +74,10 @@ The
 .I project_file_command
 will be run, if there is one.
 .PP
-You will be warned if any of the files are out-of-date and need to be merged.
+You will be warned if any of the files are out\[hy]of\[hy]date and need
+to be merged.
 You will be warned if any files need to be differenced.
-.so o_symlnk.so
+.so lib/en/man1/o_symlnk.so
 .SS Notification
 The notification commands that would be run by the \fIaecp\fP(1),
 \fIaedb\fP(1), \fIaenf\fP(1), \fIaent\fP(1) and \fIaerm\fP(1) commands
@@ -85,37 +85,38 @@ are run, as appropriate.  The \fIproject_\%file_\%command\fP is also run,
 if set.  See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_nolog.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_nolog.so
 .TP 8n
 .B \-TOuch
 This option may be used to request that each change source file have its
-last-modified time-stamp be updated to the current time.
+last\[hy]modified time\[hy]stamp be updated to the current time.
 This is the default.
-Derived files and other non-source file are left alone.
+Derived files and other non\[hy]source file are left alone.
 .TP 8n
 .B \-No_TOuch
-This option may be used to request that the last-modified time-stamp of
+This option may be used to request that the last\[hy]modified time\[hy]stamp of
 each source file be left unmodified.
 .TP 8n
 .B \-MINIMum
 .RS
 This option may be used to request a minimum set of symbolic links,
 when the \fIcreate_symlinks_to_baseline\fP functions are being used.
-This is useful if you want to simulate something like \fIaeib -minimum\fP
+This is useful if you want to simulate something like \fIaeib \-minimum\fP
 in the development directory.  This option is not meaningful if symbolic
 links are not being used.
 .PP
 This option also says not to remove normal files which occlude project
-source files.  This is a common technique used to temporarily over-ride
-project source files.  The \[lq]\fIaecp -read-only\[rq] command would have
+source files.  This is a common technique used to temporarily over\[hy]ride
+project source files.  The \[lq]\fIaecp \-read\[hy]only\[rq] command would have
 been more appropriate.
 .RE
-.so o_project.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

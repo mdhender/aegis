@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Using fhist"
@@ -27,10 +26,10 @@ with out the "cruft" that SCCS and RCS impose.
 .LP
 Please note that the \f(CW[# edit #]\fP feature needs to be avoided,
 or the
-.I -Forced_Update
-(-fu) flag needs to be used in addition to the
-.I -Conditional_Update
-(-cu) flag,
+.I \-Forced_Update
+(\-fu) flag needs to be used in addition to the
+.I \-Conditional_Update
+(\-cu) flag,
 otherwise updates will complain that
 \[lq]Input file "\fIXXX\fP" contains edit \fIA\fP
 instead of \fIB\fP for module "\fIYYY\fP"\[rq]
@@ -57,8 +56,8 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "fhist ${b $h} -create -cu "
-  "-i $i -p ${d $h} -r";
+  "fhist ${b $h} \-create \-cu "
+  "\-i $i \-p ${d $h} \-r";
 .E)
 Note that the source file is left in the baseline.
 .nh 3 "history_get_command"
@@ -79,17 +78,17 @@ The entry in the
 file looks like this:
 .E(
 history_get_command =
-  "fhist ${b $h} -e '$e' -o $o "
-  "-p ${d $h}";
+  "fhist ${b $h} \-e '$e' \-o $o "
+  "\-p ${d $h}";
 .E)
 .LP
 Note that the destination filename will
 .I never
 look anything like the history source filename,
-so the -p is essential.
+so the \-p is essential.
 .nh 3 "history_put_command"
 .LP
-This command is used to add a new "top-most" entry to the
+This command is used to add a new "top\[hy]most" entry to the
 history file.
 This command is always executed as the project owner.
 .LP
@@ -104,8 +103,8 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "fhist ${b $h} -create -cu "
-  "-i $i -p ${d $h} -r";
+  "fhist ${b $h} \-create \-cu "
+  "\-i $i \-p ${d $h} \-r";
 .E)
 .LP
 Note that the source file is left in the baseline.
@@ -113,7 +112,7 @@ Note that the source file is left in the baseline.
 .nh 3 "history_query_command"
 .LP
 This command is used to query what the history mechanism
-calls the "top-most" edit of a history file.
+calls the "top\[hy]most" edit of a history file.
 The result may be any arbitrary string,
 it need not be anything like a number,
 just so long as it uniquely identifies the edit
@@ -132,8 +131,8 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "fhist ${b $h} -l 0 "
-  "-p ${d $h} -q";
+  "fhist ${b $h} \-l 0 "
+  "\-p ${d $h} \-q";
 .E)
 .nh 3 "Templates"
 .LP
@@ -185,3 +184,4 @@ would transparently encode all such files, if you leave the
 \fIhistory_\%content_\%limitation\fP field set for international text.
 In some cases, Aegis' encoding will be more efficient than fhist's.
 And you have the advantage of being able to change your mind later.
+.\" vim: set ts=8 sw=4 et :

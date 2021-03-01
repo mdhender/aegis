@@ -1,32 +1,33 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999-2001, 2003-2009 Peter Miller
-//      Copyright (C) 2008 Walter Franzini
+//      aegis - project change supervisor
+//      Copyright (C) 1999-2001, 2003-2009, 2012 Peter Miller
+//      Copyright (C) 2008, 2009 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change/history/encode.h>
-#include <common/error.h> // for assert
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
 void
@@ -49,10 +50,10 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     // described in aesub(5) are avaliable.  In addition:
     //
     // ${Input}
-    //	absolute path of the source file to check-in
+    //  absolute path of the source file to check-in
     //
     // ${History}
-    //	absolute path of the history file
+    //  absolute path of the history file
     //
     // ${File_Name}   (Optional)
     //  the base relative file name of the file for this check-in.
@@ -64,8 +65,8 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     //  invariant for the lifetime of the file.
     //  DO NOT use this as the name of the history file.
     //
-    trace(("change_run_history_put_command(cp = %8.8lX, "
-	"filename = \"%s\")\n{\n", (long)cp, src->file_name->str_text));
+    trace(("change_run_history_put_command(cp = %p, "
+        "filename = \"%s\")\n{\n", cp, src->file_name->str_text));
     assert(cp->reference_count >= 1);
 
     //
@@ -110,8 +111,8 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     scp->var_optional("File_Name");
     scp->var_set_string
     (
-	"Universally_Unique_IDentifier",
-	(src->uuid ? src->uuid : src->file_name)
+        "Universally_Unique_IDentifier",
+        (src->uuid ? src->uuid : src->file_name)
     );
     scp->var_optional("Universally_Unique_IDentifier");
 
@@ -122,20 +123,20 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     the_command = pconf_data->history_put_command;
     if (!the_command)
     {
-	sub_context_ty  *scp2;
+        sub_context_ty  *scp2;
 
-	assert(pconf_data->errpos);
-	scp2 = sub_context_new();
-	sub_var_set_string(scp2, "File_Name", pconf_data->errpos);
-	sub_var_set_charstar(scp2, "FieLD_Name", "history_get_command");
-	change_fatal
-	(
-	    cp,
-	    scp2,
-	    i18n("$filename: contains no \"$field_name\" field")
-	);
-	// NOTREACHED
-	sub_context_delete(scp2);
+        assert(pconf_data->errpos);
+        scp2 = sub_context_new();
+        sub_var_set_string(scp2, "File_Name", pconf_data->errpos);
+        sub_var_set_charstar(scp2, "FieLD_Name", "history_get_command");
+        change_fatal
+        (
+            cp,
+            scp2,
+            i18n("$filename: contains no \"$field_name\" field")
+        );
+        // NOTREACHED
+        sub_context_delete(scp2);
     }
 
     //
@@ -154,6 +155,9 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     // Reset the file modification time: many history commands
     // gratuitously touch the file.
     //
+    // We can have a problem (thus, errok) if it is a "build" file that
+    // is a symbolic link to a file we have no permission to modify.
+    //
     os_mtime_set_errok(name_of_encoded_file, mtime);
     str_free(the_command);
 
@@ -162,7 +166,7 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     //
     assert(src->edit);
     if (unlink_encoded_file)
-	os_unlink(name_of_encoded_file);
+        os_unlink(name_of_encoded_file);
     project_become_undo(cp->pp);
     str_free(name_of_encoded_file);
 
@@ -171,5 +175,15 @@ change_run_history_put_command(change::pointer cp, fstate_src_ty *src)
     //
     assert(src->edit);
     src->edit->revision = change_run_history_query_command(cp, src);
+
+    //
+    // Set the edit.uuid field
+    //
+    if (!cp->uuid_get().empty())
+        src->edit->uuid = cp->uuid_get().get_ref_copy();
+
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,26 +1,25 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994, 1995, 1997, 1999, 2001-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
 #include <common/arglex.h>
-#include <common/error.h>
 #include <common/trace.h>
 #include <libaegis/aer/expr/name.h>
 #include <libaegis/aer/func/print.h>
@@ -34,7 +33,7 @@
 #include <libaegis/dir.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/os.h>
-#include <libaegis/rptidx.h>
+#include <libaegis/rptidx.fmtgen.h>
 #include <libaegis/sub.h>
 
 
@@ -87,10 +86,10 @@ find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
     err = os_readable(fn);
     if (err)
     {
-	os_become_undo();
-	str_free(fn);
-	trace(("}\n"));
-	return;
+        os_become_undo();
+        str_free(fn);
+        trace(("}\n"));
+        return;
     }
 
     data = rptidx_read_file(fn);
@@ -98,60 +97,60 @@ find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
     str_free(fn);
     if (data->where)
     {
-	size_t		j, k;
+        size_t          j, k;
 
-	for (j = 0; j < data->where->length; ++j)
-	{
-	    rptidx_where_ty *in;
-	    rptidx_where_ty *out;
-	    rptidx_where_ty **out_p;
-	    meta_type         *type_p;
-	    int             have_it_already;
+        for (j = 0; j < data->where->length; ++j)
+        {
+            rptidx_where_ty *in;
+            rptidx_where_ty *out;
+            rptidx_where_ty **out_p;
+            meta_type         *type_p;
+            int             have_it_already;
 
-	    in = data->where->list[j];
-	    if (!in->name || !in->filename)
-		continue;
-	    trace(("arglex_compare(\"%s\", \"%s\")\n",
-		in->name->str_text, name->str_text));
-	    if (!arglex_compare(in->name->str_text, name->str_text, 0))
-		continue;
+            in = data->where->list[j];
+            if (!in->name || !in->filename)
+                continue;
+            trace(("arglex_compare(\"%s\", \"%s\")\n",
+                in->name->str_text, name->str_text));
+            if (!arglex_compare(in->name->str_text, name->str_text, 0))
+                continue;
 
-	    //
-	    // If we already have this one, ignore it.
-	    // (Duplicate entries in AEGIS_PATH will cause
-	    // in exact duplicates in the result list.)
-	    //
-	    have_it_already = 0;
-	    for (k = 0; k < result->length; ++k)
-	    {
-		out = result->list[k];
-		if (str_equal(in->name, out->name))
-		{
-	    	    have_it_already = 1;
-	    	    break;
-		}
-	    }
-	    if (have_it_already)
-		continue;
+            //
+            // If we already have this one, ignore it.
+            // (Duplicate entries in AEGIS_PATH will cause
+            // in exact duplicates in the result list.)
+            //
+            have_it_already = 0;
+            for (k = 0; k < result->length; ++k)
+            {
+                out = result->list[k];
+                if (str_equal(in->name, out->name))
+                {
+                    have_it_already = 1;
+                    break;
+                }
+            }
+            if (have_it_already)
+                continue;
 
-	    assert(result);
-	    out_p =
-		(rptidx_where_ty **)
+            assert(result);
+            out_p =
+                (rptidx_where_ty **)
                 rptidx_where_list_type.list_parse(result, &type_p);
-	    assert(type_p == &rptidx_where_type);
-	    out = (rptidx_where_ty *)rptidx_where_type.alloc();
-	    *out_p = out;
-	    out->name = str_copy(in->name);
-	    if (in->description)
-		out->description = str_copy(in->description);
-	    else
-		out->description = str_copy(in->name);
-	    if (in->filename->str_text[0] == '/')
-		out->filename = str_copy(in->filename);
-	    else
-		out->filename = os_path_join(dir, in->filename);
-	    trace(("out->filename = \"%s\";\n", out->filename->str_text));
-	}
+            assert(type_p == &rptidx_where_type);
+            out = (rptidx_where_ty *)rptidx_where_type.alloc();
+            *out_p = out;
+            out->name = str_copy(in->name);
+            if (in->description)
+                out->description = str_copy(in->description);
+            else
+                out->description = str_copy(in->name);
+            if (in->filename->str_text[0] == '/')
+                out->filename = str_copy(in->filename);
+            else
+                out->filename = os_path_join(dir, in->filename);
+            trace(("out->filename = \"%s\";\n", out->filename->str_text));
+        }
     }
     rptidx_type.free(data);
     trace(("}\n"));
@@ -174,8 +173,8 @@ find_filename(string_ty *name)
     result = (rptidx_where_list_ty *)rptidx_where_list_type.alloc();
     for (j = 0; j < path.nstrings; ++j)
     {
-	find_filename_process(name, path.string[j], "report.index", result);
-	find_filename_process(name, path.string[j], "report.local", result);
+        find_filename_process(name, path.string[j], "report.index", result);
+        find_filename_process(name, path.string[j], "report.local", result);
     }
 
     //
@@ -184,14 +183,14 @@ find_filename(string_ty *name)
     trace(("test if no answer\n"));
     if (!result->length)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	rptidx_where_list_type.free(result);
-	sub_var_set_string(scp, "Name", name);
-	fatal_intl(scp, i18n("no report $name"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        rptidx_where_list_type.free(result);
+        sub_var_set_string(scp, "Name", name);
+        fatal_intl(scp, i18n("no report $name"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -200,18 +199,18 @@ find_filename(string_ty *name)
     trace(("test if too many answers\n"));
     if (result->length > 1)
     {
-	string_list_ty path2;
-	for (j = 0; j < result->length; ++j)
-	    path2.push_back_unique(result->list[j]->name);
-	rptidx_where_list_type.free(result);
-	tmp = path2.unsplit(", ");
-	sub_context_ty *scp = sub_context_new();
-	sub_var_set_string(scp, "Name", name);
-	sub_var_set_string(scp, "Name_List", tmp);
-	sub_var_optional(scp, "Name_List");
-	fatal_intl(scp, i18n("report $name ambig"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        string_list_ty path2;
+        for (j = 0; j < result->length; ++j)
+            path2.push_back_unique(result->list[j]->name);
+        rptidx_where_list_type.free(result);
+        tmp = path2.unsplit(", ");
+        sub_context_ty *scp = sub_context_new();
+        sub_var_set_string(scp, "Name", name);
+        sub_var_set_string(scp, "Name_List", tmp);
+        sub_var_optional(scp, "Name_List");
+        fatal_intl(scp, i18n("report $name ambig"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -220,7 +219,7 @@ find_filename(string_ty *name)
     //
     trace(("but this bowl was just right\n"));
     trace(("result->list[0]->filename = \"%s\";\n",
-	result->list[0]->filename->str_text));
+        result->list[0]->filename->str_text));
     tmp = str_copy(result->list[0]->filename);
     trace(("rptidx_where_list_type.free(result);\n"));
     rptidx_where_list_type.free(result);
@@ -237,7 +236,7 @@ report_parse__init_arg()
     rpt_value::pointer list(p);
     for (size_t j = 1; j < arg.nstrings; ++j)
     {
-	p->append(rpt_value_string::create(nstring(arg.string[j])));
+        p->append(rpt_value_string::create(nstring(arg.string[j])));
     }
     rpt_value::pointer value = rpt_value_reference::create(list);
 
@@ -255,8 +254,8 @@ report_run()
     assert(arg.nstrings);
     if (!input)
     {
-	trace(("find the report script\n"));
-	input = find_filename(arg.string[0]);
+        trace(("find the report script\n"));
+        input = find_filename(arg.string[0]);
     }
 
     //
@@ -288,7 +287,10 @@ report_run()
     assert(input);
     str_free(input);
     if (output)
-	str_free(output);
+        str_free(output);
     arg.clear();
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

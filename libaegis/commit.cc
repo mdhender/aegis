@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 2002-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1991-1995, 2002-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/mem.h>
@@ -66,13 +66,13 @@ struct action_ty
     int             umask;
 
     action_ty() :
-	what((what_ty)-1),
-	next(0),
-	uid(0),
-	gid(0),
-	umask(0)
+        what((what_ty)-1),
+        next(0),
+        uid(0),
+        gid(0),
+        umask(0)
     {
-	os_become_query(&uid, &gid, &umask);
+        os_become_query(&uid, &gid, &umask);
     }
 };
 
@@ -95,19 +95,19 @@ static action_ty *head2;
 static void
 link1(what_ty what, const nstring &path1, const nstring &path2)
 {
-    trace(("commit::link1(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
-	what, (long)path1, (long)path2));
+    trace(("commit::link1(what = %d, path1 = \"%s\", path2 = \"%s\")\n{\n",
+        what, path1.c_str(), path2.c_str()));
     action_ty *new_thing = new action_ty;
     new_thing->what = what;
     new_thing->path1 = path1;
     new_thing->path2 = path2;
     if (head1)
     {
-	tail1->next = new_thing;
-	tail1 = new_thing;
+        tail1->next = new_thing;
+        tail1 = new_thing;
     }
     else
-	head1 = tail1 = new_thing;
+        head1 = tail1 = new_thing;
     trace(("}\n"));
 }
 
@@ -126,8 +126,8 @@ link1(what_ty what, const nstring &path1, const nstring &path2)
 static void
 link2(what_ty what, const nstring &path1, const nstring &path2)
 {
-    trace(("commit::link2(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
-	what, (long)path1, (long)path2));
+    trace(("commit::link2(what = %d, path1 = \"%s\", path2 = \"%s\")\n{\n",
+        what, path1.c_str(), path2.c_str()));
     action_ty *new_thing = new action_ty;
     new_thing->what = what;
     new_thing->path1 = path1;
@@ -149,7 +149,7 @@ void
 commit_rename(const nstring &from, const nstring &to)
 {
     trace(("commit_rename(from = \"%s\", to = \"%s\")\n{\n", from.c_str(),
-	to.c_str()));
+        to.c_str()));
     link1(what_rename, from, to);
     trace(("}\n"));
 }
@@ -166,7 +166,7 @@ void
 commit_symlink(const nstring &from, const nstring &to)
 {
     trace(("commit_symlink(from = \"%s\", to = \"%s\")\n{\n", from.c_str(),
-	to.c_str()));
+        to.c_str()));
     link1(what_symlink, from, to);
     trace(("}\n"));
 }
@@ -183,7 +183,7 @@ void
 commit_hard_link(const nstring &from, const nstring &to)
 {
     trace(("commit_hard_link(from = \"%s\", to = \"%s\")\n{\n", from.c_str(),
-	to.c_str()));
+        to.c_str()));
     link1(what_hard_link, from, to);
     trace(("}\n"));
 }
@@ -270,71 +270,71 @@ commit(void)
     //
     while (head1 || head2)
     {
-	//
-	// Take the first item off the list.
-	// Note that actions may append more items to the list.
-	//
-	action_ty *action = 0;
-	if (head1)
-	{
-	    action = head1;
-	    head1 = action->next;
-	    if (!head1)
-		tail1 = 0;
-	}
-	else
-	{
-	    action = head2;
-	    head2 = action->next;
-	}
+        //
+        // Take the first item off the list.
+        // Note that actions may append more items to the list.
+        //
+        action_ty *action = 0;
+        if (head1)
+        {
+            action = head1;
+            head1 = action->next;
+            if (!head1)
+                tail1 = 0;
+        }
+        else
+        {
+            action = head2;
+            head2 = action->next;
+        }
 
-	//
-	// Do the action.
-	//
-	os_become(action->uid, action->gid, action->umask);
-	switch (action->what)
-	{
-	case what_rename:
-	    os_rename(action->path1, action->path2);
-	    undo_rename(action->path2, action->path1);
-	    break;
+        //
+        // Do the action.
+        //
+        os_become(action->uid, action->gid, action->umask);
+        switch (action->what)
+        {
+        case what_rename:
+            os_rename(action->path1, action->path2);
+            undo_rename(action->path2, action->path1);
+            break;
 
-	case what_symlink:
-	    os_symlink(action->path1, action->path2);
-	    undo_unlink_errok(action->path2);
-	    break;
+        case what_symlink:
+            os_symlink(action->path1, action->path2);
+            undo_unlink_errok(action->path2);
+            break;
 
-	case what_hard_link:
-	    os_link(action->path1, action->path2);
-	    undo_unlink_errok(action->path2);
-	    break;
+        case what_hard_link:
+            os_link(action->path1, action->path2);
+            undo_unlink_errok(action->path2);
+            break;
 
-	case what_unlink_errok:
-	    os_unlink_errok(action->path1);
-	    break;
+        case what_unlink_errok:
+            os_unlink_errok(action->path1);
+            break;
 
-	case what_rmdir_errok:
-	    os_rmdir_errok(action->path1);
-	    break;
+        case what_rmdir_errok:
+            os_rmdir_errok(action->path1);
+            break;
 
-	case what_rmdir_tree_bg:
-	    os_rmdir_bg(action->path1);
-	    break;
+        case what_rmdir_tree_bg:
+            os_rmdir_bg(action->path1);
+            break;
 
-	case what_rmdir_tree_errok:
-	    if (os_exists(action->path1))
-	    {
-		dir_functor_rm_dir_tree eraser;
-		dir_walk(action->path1, eraser);
-	    }
-	    break;
-	}
-	os_become_undo();
+        case what_rmdir_tree_errok:
+            if (os_exists(action->path1))
+            {
+                dir_functor_rm_dir_tree eraser;
+                dir_walk(action->path1, eraser);
+            }
+            break;
+        }
+        os_become_undo();
 
-	//
-	// Delete the list element.
-	//
-	delete action;
+        //
+        // Delete the list element.
+        //
+        delete action;
     }
 
     //
@@ -348,3 +348,6 @@ commit(void)
     interrupt_enable();
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

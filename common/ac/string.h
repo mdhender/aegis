@@ -1,6 +1,6 @@
 //
-//	aegis - a project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 2002, 2004-2009 Peter Miller
+//      aegis - a project change supervisor
+//      Copyright (C) 1994, 1996, 1997, 2002, 2004-2009, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License as
@@ -145,3 +145,4 @@ const void *memmem_replacement(const void *, size_t, const void *, size_t);
 }
 
 #endif // COMMON_AC_STRING_H
+// vim: set ts=8 sw=4 et :

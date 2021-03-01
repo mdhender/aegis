@@ -1,36 +1,37 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003, 2006, 2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001-2003, 2006, 2008, 2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
+.nf
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
 <title>
-Aegis<br>Localization
-</title></head><body bgcolor="#ffffff"><h1 align=center>
-<img src="aegis.png" align=left>
-<img src="missiku/world_2.png" align=right>
+Aegis Localization
+</title></head><body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="aegis.png" align="left" alt="" />
+<img src="missiku/world_2.png" align="right" alt="" />
 Aegis Localization
 </h1>
 
@@ -39,95 +40,85 @@ you can read error messages in your native language, if a translation has
 been provided.  (Also known as localization.)  The following table lists
 the available translations, and gives credit to the volunteer translators
 who generously donated their time to perform the translation.
+
+<h2> The Translation project </h2>
+
+The <a href="http://translationproject.org/" >Translation Project</a>
+is meant as a service to
+both package maintainers and translators.  The advantage for maintainers
+is that they need to announce a new POT file to just one address and can
+fetch the translated PO files from just one place, instead of having to
+deal with several translators separately.  For translators the advantages
+are similar: they receive the POT file announcements and pre-merged
+PO files from a single place and send in their PO files via a single
+mechanism, instead of having to deal in different ways with several
+maintainers separately.
 <p>
-If <i>you</i> are able to translate the error messages into another
-language, please contact
-.br
-<a href="mailto:millerp%40canb.auug.org.au"> Peter Miller</a>
-and he will tell you how it is done.
+At the <a href="http://translationproject.org/" >Translation
+Project</a> translators are grouped into language teams (rather
+than package teams) because, in general, translation issues are
+more specific to a human language than to a particular package.
+It is good for translators of the same language to get together,
+check each other's work, and discuss any problematic translation
+issues.  This also increases the chances that all packages at the
+<a href="http://translationproject.org/" >Translation Project</a>
+get translated in a similar manner, using the same conventions and a
+consistent vocabulary.  Lone translators tend to find their own ways and
+words, making your package stand out as strange.
 <p>
-<table align=center>
+If <i>you</i> are able to translate the Aegis error messages into another
+language, please join the appropriae language team at the
+<a href="http://translationproject.org/" >Translation Project</a>.
 
-<tr><td>de</td><td>German</td><td>
-.br
-<a href="mailto:Ralf Fassel %3Cralf%40akutech.de%3E">
-Ralf Fassel &lt;ralf&#64;akutech.de&gt;</a>
-</td></tr>
+<h3> English </h3>
 
-<tr><td>en</td><td>English</td><td>
-.br
-<a href="mailto:Peter Miller %3Cmillerp%40canb.auug.org.au%3E">
-Peter Miller &lt;millerp&#64;canb.auug.org.au&gt;</a>
-</td> </tr>
-
-.\" <tr><td>es</td><td>Spanish</td><td>
-.\" .br
-.\" <a href="mailto:John Tsangaris %3Cjohnt%40webevent.com%3E">
-.\" John Tsangaris &lt;johnt&#64;webevent.com&gt;</a>
-.\" </td> </tr>
-
-<tr><td>fr</td><td>French</td><td>
-.br
-<a href="mailto:Jerry Pendergraft %3Cjerry%40endocardial.com%3E">
-Jerry Pendergraft &lt;jerry&#64;endocardial.com&gt;</a>
-</td> </tr>
-
-.\" <tr><td>he</td><td>Hebrew</td><td>
-.\" .br
-.\" <a href="mailto:Mark Veltzer %3Cmark2776%40yahoo.com%3E">
-.\" Mark Veltzer &lt;mark2776&#64;yahoo.com&gt;</a>
-.\" </td> </tr>
-
-<tr><td>nl</td><td>Dutch</td><td>
-.br
-<a href="mailto:Jelle Boomstra %3Caegis.nl.translation%40nietsch.dds.nl%3E">
-Jelle Boomstra &lt;nietsch&#64;dds.nl&gt;</a>
-</td> </tr>
-
-<tr><td>ru</td><td>Russian</td><td>
-.br
-<a href="mailto:Alexey Voinov %3Cvoins%40voins.program.ru%3E">
-Alexey Voinov &lt;voins&#64;voins.program.ru&gt;</a>
-</td> </tr>
-</table>
+Aegis has an <i>English</i> error message translation.  This is because
+the error messages (the <tt>msgid</tt> fields) are rather cryptic
+and usually short.  Think of this is programmer-speak.  The English
+(<i>en</i>) translates the programmer-speak error messages to English.
+<p>
+If you are translating the error messages, please translate the English
+<tt>msgstr</tt> fields.  Please do not start with a blank <tt>.pot</tt>
+file and translate the <tt>msgid</tt> fields, you will quickly discover
+you do not have enough information available to translate the messages
+properly.  The English translation also contains extensive comments for
+each error message, giving context and substitution information.
 
 <h2>Instructions for Translators</h2>
 
-If you would like to translate the error messages, look up the
-<a href="http://www.w3.org/WAI/ER/IG/ert/iso639.htm"> two-letter
+If you would like to translate the Aegis error messages, look up the
+<a href="http://www.w3.org/WAI/ER/IG/ert/iso639.htm" >two-letter
 abbreviation</a> of the language you are going to translate the error
 messages to.  The rest of these instructions will call it <i>xx</i>.
 <p>
 In the source tarball, you will see a directory called
-<tt>lib/en/LC_MESSAGES</tt> which contains some </tt>.po</tt> files.
+<tt>lib/en/LC_MESSAGES</tt> which contains some <tt>.po</tt> files.
 These are the text form of the message catalogues.
 You can view them with a simple text editor.
 <p>
 Create a new directory for your translations, and copy the English
 messages into it.
-.nf
-<blockquote><pre>mkdir lib/<i>xx</i>/LC_MESSAGES
-cp lib/en/LC_MESSAGES/*.po lib/<i>xx</i>/LC_MESSAGES</pre></blockquote>
-.fi
+<p>
+<blockquote>
+<pre>mkdir lib/<i>xx</i>/LC_MESSAGES
+cp lib/en/LC_MESSAGES/aegis.po lib/<i>xx</i>/LC_MESSAGES</pre>
+</blockquote>
+<p>
 Now you need to edit each of the <tt>lib/<i>xx</i>/LC_MESSAGES/*.po</tt>
 files, replacing the <tt>msgstr</tt> strings with suitable translations.
 Leave the <tt>msgid</tt> strings and the comments untranslated.
 These are text files, you can edit them with a simple text editor.
 GNU Emacs has a PO mode to make this easier.
 <p>
-.br
-The <a href="http://www.gnu.org/directory/gettext.html">
-GNU Gettext</a> sources have fairly good
-.br
-<a href="http://www.gnu.org/manual/gettext/index.html">
-documentation</a> about this process.
+The <a href="http://www.gnu.org/directory/gettext.html"
+>GNU Gettext</a> sources have fairly good
+<a href="http://www.gnu.org/manual/gettext/index.html"
+>documentation</a> about this process.
 <p>
-.br
 If you want to test your translations, you need to "compile" the text into
 the binary form used by the <tt>gettext()</tt> system call.  This is done
 using the <i>msgfmt</i>(1) program from the
-.br
-<a href="http://www.gnu.org/directory/gettext.html">GNU Gettext</a>
+<a href="http://www.gnu.org/directory/gettext.html" >GNU Gettext</a>
 package.  To see you new translations in action, you create a
 <tt>${prefix}/lib/aegis/<i>xx</i>/LC_MESSAGES</tt> directory and arrange
 for the <i>msgfmt</i> output to be placed in it.
@@ -137,9 +128,11 @@ There are almost 600 error messages.
 If you average 1 message every 2 minutes, this is approximately 20 hours work.
 The German translation, for example, required around 12 hours.
 <p>
-When you are done translating, email the results to
-<a href="mailto:millerp%40canb.auug.org.au">Peter Miller</a>
-and they will be included in the next release of Aegis (and mentioned
-on this web page).
-.br
+When you are done translating, submit the results to the
+<a href="http://translationproject.org/" >Translation
+Project</a> and they will archived there, as well as sent to <a
+href="mailto:pmiller%40opensource.org.au" >Peter Miller</a> to be included
+in the next release of Aegis.
+.so web/footer.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

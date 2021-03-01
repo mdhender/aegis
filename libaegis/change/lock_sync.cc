@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2004-2008 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2004-2008, 2012 Peter Miller
+//      Copyright (C) 2007, 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -29,7 +29,7 @@ void
 change_lock_sync(change::pointer cp)
 {
     if (cp->lock_magic != lock_magic())
-	change_lock_sync_forced(cp);
+        change_lock_sync_forced(cp);
 }
 
 
@@ -42,23 +42,23 @@ change_lock_sync_forced(change::pointer cp)
 
     if (cp->cstate_data && !cp->cstate_is_a_new_file)
     {
-	cstate_type.free(cp->cstate_data);
-	cp->cstate_data = 0;
+        cstate_type.free(cp->cstate_data);
+        cp->cstate_data = 0;
     }
     if (cp->fstate_data && !cp->fstate_is_a_new_file)
     {
-	fstate_type.free(cp->fstate_data);
-	cp->fstate_data = 0;
+        fstate_type.free(cp->fstate_data);
+        cp->fstate_data = 0;
     }
     if (cp->fstate_stp)
     {
-	symtab_free(cp->fstate_stp);
-	cp->fstate_stp = 0;
+        delete cp->fstate_stp;
+        cp->fstate_stp = 0;
     }
     if (cp->fstate_uuid_stp)
     {
-	symtab_free(cp->fstate_uuid_stp);
-	cp->fstate_uuid_stp = 0;
+        delete cp->fstate_uuid_stp;
+        cp->fstate_uuid_stp = 0;
     }
     if (cp->pfstate_data)
     {
@@ -67,21 +67,24 @@ change_lock_sync_forced(change::pointer cp)
     }
     if (cp->pfstate_stp)
     {
-        symtab_free(cp->pfstate_stp);
+        delete cp->pfstate_stp;
         cp->pfstate_stp = 0;
     }
     if (cp->pfstate_uuid_stp)
     {
-        symtab_free(cp->pfstate_uuid_stp);
+        delete cp->pfstate_uuid_stp;
         cp->pfstate_uuid_stp = 0;
     }
 
     for (j = 0; j < view_path_MAX; ++j)
     {
-	if (cp->file_list[j])
-	{
-	    delete cp->file_list[j];
-	    cp->file_list[j] = 0;
-	}
+        if (cp->file_list[j])
+        {
+            delete cp->file_list[j];
+            cp->file_list[j] = 0;
+        }
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

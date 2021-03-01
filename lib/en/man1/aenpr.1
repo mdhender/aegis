@@ -1,49 +1,48 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1996, 1998, 1999, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.so libdir.so
-.TH "\*(n) -New_PRoject" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.so etc/libdir.so
+.TH "\*(n) \-New_PRoject" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new project \- create a new project
 .XX "aenpr(1)" "create a new project"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_PRoject
-.I project-name
+.B \-New_PRoject
+.I project\[hy]name
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_PRoject
-.B -List
+.B \-New_PRoject
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_PRoject
-.B -Help
+.B \-New_PRoject
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -New_PRoject
+.I \-New_PRoject
 command is used to
 create a new project.
 The project is created as an empty directory structure
@@ -60,7 +59,7 @@ under which the project baseline and history and
 state and change data are kept,
 will be created at this time.
 If the
-.B -DIRectory
+.B \-DIRectory
 option is not given,
 the project directory will be created in the
 directory specified by the default_\%project_\%directory field of
@@ -84,10 +83,10 @@ or
 .I \*(S)
 if no path is set.
 If this is inappropriate, use the
-.B -LIBrary
+.B \-LIBrary
 option to explicitly set the desired location.
 See the
-.B -LIBrary
+.B \-LIBrary
 option for more information.
 .SS Version
 You may specify the project version in two ways:
@@ -97,18 +96,18 @@ The version number may be implicit in the project name,
 in which case the version numbers will be stripped off.
 For example, \[lq]aenpr example.1.2\[rq]
 will create a project called \[lq]example\[rq]
-with branch number 1 created, and sub-branch 2 of branch 1 created.
+with branch number 1 created, and sub\[hy]branch 2 of branch 1 created.
 .TP 3n
 2.
 The version number may be stated explicitly,
 in which case it will be subdivided for branch numbers.
-For example, \[lq]aenpr example -version 1.2\[rq]
+For example, \[lq]aenpr example \-version 1.2\[rq]
 will create a project called \[lq]example\[rq]
-with branch number 1 created, and sub-branch 2 of branch 1 created.
+with branch number 1 created, and sub\[hy]branch 2 of branch 1 created.
 .PP
 In each case,
 these branches may be named wherever a project name may be given,
-such as \[lq]-p example.1\[rq] and \[lq]-p example-1.2\[rq].
+such as \[lq]\-p example.1\[rq] and \[lq]\-p example\[hy]1.2\[rq].
 The actual punctuation character is unimportant.
 .PP
 You may have any depth of version numbers you like.
@@ -122,39 +121,39 @@ If no version number is given,
 either explicitly or implicitly,
 version 1.0 is used.
 .SS Project Directory Location
-.so z_filelocn.so
+.so lib/en/man1/z_filelocn.so
 .SH OPTIONS
 The following options are understood:
-.so o_dir.so
-.so o_edit.so
-.so o_file.so
-.so o_help.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_edit.so
+.so lib/en/man1/o_file.so
+.so lib/en/man1/o_help.so
 .TP 8n
-.B -Keep
-This option may be used to re-attach a project detached using \fIaermpr
+.B \-Keep
+This option may be used to re\[hy]attach a project detached using \fIaermpr
 \&\-keep\fP and possibly moved by the system administrator.
-.so o_lib.so
-.so o_list.so
+.so lib/en/man1/o_lib.so
+.so lib/en/man1/o_list.so
 .\" These options are now obsolete
 .\" .so o_major.so
 .\" .so o_minor.so
-.so o_terse.so
-.so o_verbose.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
 .TP 8n
-\fB-VERSion\fP \fInumber\fP
+\fB\-VERSion\fP \fInumber\fP
 This option may be used to specify the version number
 for the project.
 Version numbers are implemented as branches.
 Use a single dash (\[lq]\f(CW\-\fP\[rq]) as the argument
 if you want no version branches created.
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aenpr '\*(n) -npr \e!* -v'
-sh$	aenpr(){\*(n) -npr "$@" -v}
+csh%    alias aenpr '\*(n) \-npr \e!* \-v'
+sh$     aenpr(){\*(n) \-npr "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -166,9 +165,9 @@ the project directory already exists.
 It is an error if
 the current user does not have sufficient permissions to create
 the directory specified with the
-.B -DIRectory
+.B \-DIRectory
 option.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -197,4 +196,5 @@ remove project
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

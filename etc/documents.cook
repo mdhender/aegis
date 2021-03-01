@@ -1,6 +1,6 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 2002-2004, 2006-2008 Peter Miller
+ * Copyright (C) 2002-2004, 2006-2008, 2011, 2012 Peter Miller
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,67 +36,70 @@ doc.targets: [doc.targets];
 if [find_command ps2pdf] then
 if [find_command psselect] then
 if [find_command ptx] then
-        doc.targets += pdf;
+    doc.targets += pdf;
 
 /*
  * manual entries
  */
 cat =
-        [fromto lib/%3/man%1/%2.%1 lib/%3/cat%1/%2.%1
-                [match_mask lib/%3/man%1/%2.%1 [source_files]]
-        ];
+    [fromto lib/%3/man%1/%2.%1 lib/%3/cat%1/%2.%1
+        [match_mask lib/%3/man%1/%2.%1 [source_files]]
+    ];
 cat: [cat];
 
 lib/%3/cat%1/%2.%1: lib/%3/man%1/%2.%1
 {
-        roffpp
-                [prepost "-I" "/lib/%3/man%1" [search_list]]
-                [prepost -I /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/%3/man%1/%2.%1]
-        | GROFF_NO_SGR\=-c groff -Tascii -P-h -t -man
-        > [target];
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/%3/man%1/%2.%1]
+    | GROFF_NO_SGR\=-c groff -Tascii -P-h -t -man
+    > [target];
 }
 
 lib/%3/man%1/%2.%1.d: lib/%3/man%1/%2.%1
-        set no-cascade
+    set no-cascade
 {
-        c_incl -nc -ns -eia -r -nrec
-                [stringset
-                        [cc_include_flags]
-                        [prepost "-I" "/lib/%3/man%1" [search_list]]
-                        [prepost "-I" /[arch]/etc [search_list]]
-                        [prepost "-I" "/etc" [search_list]]
-                ]
-                -prefix "'cascade lib/%3/man%1/%2.%1 ='"
-                -suffix "';'"
-                [resolve lib/%3/man%1/%2.%1]
-                [addprefix -rlp\= [search_list]]
-                -slp [arch] "'[arch]'"
-                -nsri
-                -o [target];
+    if [quiet] then
+        function print Depends [target];
+    c_incl -nc -ns -eia -r -nrec
+        [stringset
+            [cc_include_flags]
+            [addprefix "-I" [search_list]]
+            [prepost "-I" /[arch] [search_list]]
+        ]
+        -prefix "'cascade lib/%3/man%1/%2.%1 ='"
+        -suffix "';'"
+        [resolve lib/%3/man%1/%2.%1]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        -o [target];
 }
 
 lib/%3/man%1/%2.%1,M:: lib/%3/man%1/%2.%1,Md;
 
 lib/%3/man%1/%2.%1,Md: lib/%3/man%1/%2.%1
 {
-        c_incl -nc -ns -eia -r
-                [stringset
-                        [cc_include_flags]
-                        [prepost "-I" "/lib/%3/man%1" [search_list]]
-                        [prepost "-I" /[arch]/etc [search_list]]
-                        [prepost "-I" "/etc" [search_list]]
-                ]
-                [resolve lib/%3/man%1/%2.%1]
-                [addprefix -rlp\= [search_list]]
-                -slp [arch] "'[arch]'"
-                -nsri
-                -o [target];
+    if [quiet] then
+        function print Build [target];
+    c_incl -nc -ns -eia -r
+        [stringset
+            [cc_include_flags]
+            [addprefix "-I" [search_list]]
+            [prepost "-I" /[arch] [search_list]]
+        ]
+        [resolve lib/%3/man%1/%2.%1]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        -o [target];
 }
 
 man-dep-files =
-        [addsuffix ".d" [match_mask lib/%3/man%1/%2.%1 [source_files]]];
+    [addsuffix ".d" [match_mask lib/%3/man%1/%2.%1 [source_files]]];
 
 #if [count [man-dep-files]]
 #include-cooked-nowarn [man-dep-files]
@@ -108,315 +111,318 @@ man-dep-files =
  */
 
 source_files +=
-        [fromto lib/%/readme/main.man lib/%/readme/new.so
-                [match_mask lib/%/readme/main.man [source_files]]
-        ];
+    [fromto lib/%/readme/main.man lib/%/readme/new.so
+        [match_mask lib/%/readme/main.man [source_files]]
+    ];
 
 lib/%/changes/main.d: lib/%/readme/new.so;
 lib/%/readme/main.d: lib/%/readme/new.so;
 lib/%/refman/main.d: lib/%/readme/new.so;
 
 lib/%/readme/new.so: [match_mask lib/%/readme/new.%%.so [source_files]]
-        etc/so.sh
+    etc/so.sh
 {
-        sh [resolve etc/so.sh]
-                -r
-                /* DO NOT resolve these next arguments... */
-                [entryname [match_mask lib/%/readme/new.%%.so [source_files]]]
-        > [target];
+    if [quiet] then
+        function print Generate [target];
+    sh [resolve etc/so.sh]
+        -r
+        /* DO NOT resolve these next arguments... */
+        [match_mask lib/%/readme/new.%%.so [source_files]]
+    > [target];
 }
 
 pdf =
-        [fromto lib/en/%2/main.ms archive/%2.pdf
-                [match_mask lib/en/%2/main.ms [source_files]]]
-        [fromto lib/en/%2/main.mm archive/%2.pdf
-                [match_mask lib/en/%2/main.mm [source_files]]]
-        [fromto lib/en/%2/main.man archive/%2.pdf
-                [match_mask lib/en/%2/main.man [source_files]]]
+    [fromto lib/en/%2/main.ms archive/%2.pdf
+        [match_mask lib/en/%2/main.ms [source_files]]]
+    [fromto lib/en/%2/main.mm archive/%2.pdf
+        [match_mask lib/en/%2/main.mm [source_files]]]
+    [fromto lib/en/%2/main.man archive/%2.pdf
+        [match_mask lib/en/%2/main.man [source_files]]]
 
-        [fromto lib/%3/%2/main.ms archive/%2-%3.pdf
-            [match_mask lib/%3/%2/main.ms
-                [filter_out lib/en/%2/main.ms
-                    [source_files]
-                ]
+    [fromto lib/%3/%2/main.ms archive/%2-%3.pdf
+        [match_mask lib/%3/%2/main.ms
+            [filter_out lib/en/%2/main.ms
+                [source_files]
             ]
         ]
-        ;
+    ]
+    ;
 pdf: [pdf];
 
 web-html: [fromto %0%.pdf %0%.html [pdf]];
 
-lib/%1/%2/%2.txt: lib/%1/%2/main.roff: etc/ssp.awk
+lib/%1/%2/%2.txt: lib/%1/%2/main.roff
 {
-        roffpp
-                [prepost "-I" "/lib/%1/%2" [search_list]]
-                [prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/%1/%2/main.roff]
-        | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu
-        | [awk] -f [resolve etc/ssp.awk]
-        > [target];
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/%1/%2/main.roff]
+    | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu
+    | cat -s
+    > [target];
 }
 
 archive/%2.pdf: lib/en/%2/main.ms etc/page-list.awk
-        set shallow
+    set shallow
 {
-        roffpp
-                [prepost "-I" "/lib/en/%2" [search_list]]
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/en/%2/main.ms]
-                > archive/%2.groff;
-        groff -p -t [groff_ms_macros] -mpic archive/%2.groff
-                > archive/%2.ps.tmp
-                set meter;
-        rm archive/%2.groff
-                set silent;
-        psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
-                archive/%2.ps.tmp > archive/%2.ps;
-        rm archive/%2.ps.tmp
-                set silent;
-        ps2pdf archive/%2.ps archive/%2.pdf
-                set meter;
-        rm archive/%2.ps
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/en/%2/main.ms]
+        > archive/%2.groff;
+    groff -p -t [groff_ms_macros] -mpic archive/%2.groff
+        > archive/%2.ps.tmp
+        set meter;
+    rm archive/%2.groff
+        set silent;
+    psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+        ['if' [quiet] 'then' -q]
+        archive/%2.ps.tmp > archive/%2.ps;
+    rm archive/%2.ps.tmp
+        set silent;
+    ps2pdf archive/%2.ps archive/%2.pdf
+        set meter;
+    rm archive/%2.ps
+        set silent;
 }
 
 archive/%2-%3.pdf: lib/%3/%2/main.ms etc/page-list.awk
-        set shallow
+    set shallow
 {
-        roffpp
-                [prepost "-I" "/lib/%3/%2" [search_list]]
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/%3/%2/main.ms]
-                > archive/%2-%3.groff;
-        groff -p -t [groff_ms_macros] -mpic archive/%2-%3.groff
-                > archive/%2-%3.ps.tmp
-                set meter;
-        rm archive/%2-%3.groff
-                set silent;
-        psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2-%3.ps.tmp`
-                archive/%2-%3.ps.tmp > archive/%2-%3.ps;
-        rm archive/%2-%3.ps.tmp
-                set silent;
-        ps2pdf archive/%2-%3.ps archive/%2-%3.pdf
-                set meter;
-        rm archive/%2-%3.ps
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/%3/%2/main.ms]
+        > archive/%2-%3.groff;
+    groff -p -t [groff_ms_macros] -mpic archive/%2-%3.groff
+        > archive/%2-%3.ps.tmp
+        set meter;
+    rm archive/%2-%3.groff
+        set silent;
+    psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2-%3.ps.tmp`
+        ['if' [quiet] 'then' -q]
+        archive/%2-%3.ps.tmp > archive/%2-%3.ps;
+    rm archive/%2-%3.ps.tmp
+        set silent;
+    ps2pdf archive/%2-%3.ps archive/%2-%3.pdf
+        set meter;
+    rm archive/%2-%3.ps
+        set silent;
 }
 
 archive/%2.html: lib/en/%2/main.ms
 {
-        roffpp
-                [prepost "-I" "/lib/en/%2" [search_list]]
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/en/%2/main.ms]
-                > archive/%2.groff;
-        groff -Thtml -p -t [groff_ms_macros] -mpic archive/%2.groff
-                > archive/%2.html
-                set meter;
-        rm archive/%2.groff
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/en/%2/main.ms]
+        > archive/%2.groff;
+    groff -Thtml -p -t [groff_ms_macros] -mpic archive/%2.groff
+        > archive/%2.html
+        set meter;
+    rm archive/%2.groff
+        set silent;
 }
 
 archive/%2.pdf: lib/en/%2/main.mm etc/page-list.awk
-        set shallow
+    set shallow
 {
-        roffpp
-                [prepost "-I" "/lib/en/%2" [search_list]]
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/en/%2/main.mm]
-                > archive/%2.groff;
-        groff -p -t [groff_mm_macros] -mpic archive/%2.groff
-                > archive/%2.ps.tmp
-                set meter;
-        rm archive/%2.groff
-                set silent;
-        psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
-                archive/%2.ps.tmp > archive/%2.ps;
-        rm archive/%2.ps.tmp
-                set silent;
-        ps2pdf archive/%2.ps archive/%2.pdf
-                set meter;
-        rm archive/%2.ps
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/en/%2/main.mm]
+        > archive/%2.groff;
+    groff -p -t [groff_mm_macros] -mpic archive/%2.groff
+        > archive/%2.ps.tmp
+        set meter;
+    rm archive/%2.groff
+        set silent;
+    psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+        ['if' [quiet] 'then' -q]
+        archive/%2.ps.tmp > archive/%2.ps;
+    rm archive/%2.ps.tmp
+        set silent;
+    ps2pdf archive/%2.ps archive/%2.pdf
+        set meter;
+    rm archive/%2.ps
+        set silent;
 }
 
 archive/%2.html: lib/en/%2/main.mm
 {
-        roffpp
-                [prepost "-I" "/lib/en/%2" [search_list]]
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/en/%2/main.mm]
-                > archive/%2.groff;
-        groff -Thtml -p -t [groff_mm_macros] -mpic archive/%2.groff
-                > archive/%2.html
-                set meter;
-        rm archive/%2.groff
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/en/%2/main.mm]
+        > archive/%2.groff;
+    groff -Thtml -p -t [groff_mm_macros] -mpic archive/%2.groff
+        > archive/%2.html
+        set meter;
+    rm archive/%2.groff
+        set silent;
 }
 
-lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
+lib/%1/%2/%2.txt: lib/%1/%2/main.man
 {
-        roffpp
-                [prepost "-I" "/lib/%1/%2" [search_list]]
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [prepost "-I" "/lib/%1/readme" [search_list]] /* for changes */
-                [resolve lib/%1/%2/main.man]
-        | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
-        | [awk] -f [resolve etc/ssp.awk]
-        > [target];
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/%1/%2/main.man]
+    | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
+    | cat -s
+    > [target];
 }
 
 archive/%2.pdf: lib/en/%2/main.man
-        set shallow
+    set shallow
 {
-        roffpp
-                [prepost "-I" "/lib/en/%2" [search_list]]
-                [prepost "-I" "/lib/en/man1" [search_list]] /* for refman */
-                [prepost "-I" "/lib/en/man5" [search_list]] /* for refman */
-                [prepost "-I" "/lib/en/readme" [search_list]] /* for refman */
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/en/%2/main.man]
-                > archive/%2.groff;
-        groff -p -t -man -mpic archive/%2.groff > archive/%2.ps.tmp
-                set meter;
-        rm archive/%2.groff
-                set silent;
-        psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
-                archive/%2.ps.tmp > archive/%2.ps;
-        rm archive/%2.ps.tmp
-                set silent;
-        ps2pdf archive/%2.ps archive/%2.pdf
-                set meter;
-        rm archive/%2.ps
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/en/%2/main.man]
+        > archive/%2.groff;
+    groff -p -t -man -mpic archive/%2.groff > archive/%2.ps.tmp
+        set meter;
+    rm archive/%2.groff
+        set silent;
+    psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+        ['if' [quiet] 'then' -q]
+        archive/%2.ps.tmp > archive/%2.ps;
+    rm archive/%2.ps.tmp
+        set silent;
+    ps2pdf archive/%2.ps archive/%2.pdf
+        set meter;
+    rm archive/%2.ps
+        set silent;
 }
 
 archive/%2.html: lib/en/%2/main.man
 {
-        roffpp
-                [prepost "-I" "/lib/en/%2" [search_list]]
-                [prepost "-I" "/lib/en/man1" [search_list]] /* for refman */
-                [prepost "-I" "/lib/en/man5" [search_list]] /* for refman */
-                [prepost "-I" "/lib/en/readme" [search_list]] /* for refman */
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/en/%2/main.man]
-                > archive/%2.groff;
-        groff -Thtml -p -t -man -mpic archive/%2.groff > archive/%2.html
-                set meter;
-        rm archive/%2.groff
-                set silent;
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/en/%2/main.man]
+        > archive/%2.groff;
+    groff -Thtml -p -t -man -mpic archive/%2.groff > archive/%2.html
+        set meter;
+    rm archive/%2.groff
+        set silent;
 }
 
 /* Sigh.  Must be before the next recipe, and before the generic .d's. */
 lib/%/refman/main.d:: lib/%/refman/index.so lib/%/refman/parts.so;
 
 lib/%/refman/index.so: [match_mask lib/%/man%%1/%%2.%%1 [source_files]]
-        etc/ptx1.awk etc/ptx.ignore etc/ptx2.awk
+    etc/ptx1.awk etc/ptx.ignore etc/ptx2.awk
 {
-        [awk] -f [resolve etc/ptx1.awk]
-                [resolve [match_mask lib/%/man%%1/%%2.%%1 [source_files]]]
-        | ptx -O -r -w1000 -i[resolve etc/ptx.ignore]
-        | sort -t'\'"\'' -f -d +5 -6 +3 -4
-        | [awk] -F'\'"\'' -f [resolve etc/ptx2.awk]
-        > [target];
+    if [quiet] then
+        function print Generate [target];
+    [awk] -f [resolve etc/ptx1.awk]
+        [resolve [match_mask lib/%/man%%1/%%2.%%1 [source_files]]]
+    | ptx -O -r -w1000 -i[resolve etc/ptx.ignore]
+    | sort -t'\'"\'' -f -d +5 -6 +3 -4
+    | [awk] -F'\'"\'' -f [resolve etc/ptx2.awk]
+    > [target];
 }
 
 lib/%/refman/parts.so: [match_mask lib/%/man%%1/%%2.%%1 [source_files]]
-        etc/ptx.sh
+    etc/ptx.sh
 {
-        sh -f [resolve etc/ptx.sh]
-                [match_mask lib/%/man%%1/%%2.%%1 [source_files]]
-        > [target];
+    if [quiet] then
+        function print Generate [target];
+    sh -f [resolve etc/ptx.sh]
+        [match_mask lib/%/man%%1/%%2.%%1 [source_files]]
+    > [target];
 }
 
 lib/%1/%2/main.%3.d: lib/%1/%2/main.%3
-        set no-cascade
+    set no-cascade
 {
-        c_incl -nc -ns -eia -r -nrec
-                [prepost "-I" "/lib/%1/%2" [search_list]]
-                [prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                -prefix "'cascade lib/%1/%2/main.%3 ='"
-                -suffix "';'"
-                [resolve lib/%1/%2/main.%3]
-                [addprefix -rlp\= [search_list]]
-                -slp [arch] "'[arch]'"
-                -nsri
-                -o [target];
+    if [quiet] then
+        function print Depends [target];
+    c_incl -nc -ns -eia -r -nrec
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        -prefix "'cascade lib/%1/%2/main.%3 ='"
+        -suffix "';'"
+        [resolve lib/%1/%2/main.%3]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        -o [target];
 }
 
 lib/%1/%2/main.%3,M:: lib/%1/%2/main.%3,Md;
 
 lib/%1/%2/main.%3,Md: lib/%1/%2/main.%3
 {
-        c_incl -nc -ns -eia -r
-                [prepost "-I" "/lib/%1/%2" [search_list]]
-                [prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                [resolve lib/%1/%2/main.%3]
-                [addprefix -rlp\= [search_list]]
-                -slp [arch] "'[arch]'"
-                -nsri
-                -o [target];
+    if [quiet] then
+        function print Generate [target];
+    c_incl -nc -ns -eia -r
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        [resolve lib/%1/%2/main.%3]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        -o [target];
 }
 
 lib/%1/%2/%0%3.so.d: lib/%1/%2/%0%3.so
-        set no-cascade
+    set no-cascade
 {
-        c_incl -nc -ns -eia -r -nrec
-                [prepost "-I" "/lib/%1/%2" [search_list]]
-                [prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
-                [prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
-                [prepost "-I" /[arch]/etc [search_list]]
-                [prepost "-I" "/etc" [search_list]]
-                -prefix "'cascade lib/%1/%2/%0%3.so ='"
-                -suffix "';'"
-                [resolve lib/%1/%2/%0%3.so]
-                [addprefix -rlp\= [search_list]]
-                -slp [arch] "'[arch]'"
-                -nsri
-                -o [target];
+    if [quiet] then
+        function print Depends [target];
+    c_incl -nc -ns -eia -r -nrec
+        [addprefix "-I" [search_list]]
+        [prepost "-I" /[arch] [search_list]]
+        -prefix "'cascade lib/%1/%2/%0%3.so ='"
+        -suffix "';'"
+        [resolve lib/%1/%2/%0%3.so]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        -o [target];
 }
 
 source_files +=
-        [fromto lib/%1/refman/main.%2 lib/%1/refman/parts.so
-                [match_mask lib/%1/refman/main.%2 [source_files] ]
-        ]
-        [fromto lib/%1/refman/main.%2 lib/%1/refman/index.so
-                [match_mask lib/%1/refman/main.%2 [source_files] ]
-        ]
-        [fromto lib/%1/howto/main.%2 lib/%1/howto/developer_nbr.so
-                [match_mask lib/%1/howto/main.%2 [source_files] ]
-        ]
-        ;
+    [fromto lib/%1/refman/main.%2 lib/%1/refman/parts.so
+        [match_mask lib/%1/refman/main.%2 [source_files] ]
+    ]
+    [fromto lib/%1/refman/main.%2 lib/%1/refman/index.so
+        [match_mask lib/%1/refman/main.%2 [source_files] ]
+    ]
+    [fromto lib/%1/howto/main.%2 lib/%1/howto/developer_nbr.so
+        [match_mask lib/%1/howto/main.%2 [source_files] ]
+    ]
+    ;
 
 doc-dep-files =
-        [addsuffix ".d"
-                [match_mask lib/%1/%2/main.ms [source_files]]
-                [match_mask lib/%1/%2/main.mm [source_files]]
-                [match_mask lib/%1/%2/main.roff [source_files]]
-                [match_mask lib/%1/%2/main.man [source_files]]
-                [match_mask lib/%0%.so [source_files]]
-        ];
+    [addsuffix ".d"
+        [match_mask lib/%1/%2/main.ms [source_files]]
+        [match_mask lib/%1/%2/main.mm [source_files]]
+        [match_mask lib/%1/%2/main.roff [source_files]]
+        [match_mask lib/%1/%2/main.man [source_files]]
+        [match_mask lib/%0%.so [source_files]]
+    ];
 
 #if [count [doc-dep-files]]
 #include-cooked-nowarn [doc-dep-files]
@@ -428,24 +434,30 @@ doc-dep-files =
  */
 
 special:
-        README
-        BUILDING
-        ;
+    README
+    BUILDING
+    ;
 
 README: lib/en/readme/readme.txt
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 BUILDING: lib/en/building/building.txt
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 lib/%/faq/toc.so: lib/%/faq/main.roff: etc/faq.toc.awk
-        set no-cascade
+    set no-cascade
 {
-        [awk] -f [resolve etc/faq.toc.awk lib/%/faq/main.roff] > [target];
+    if [quiet] then
+        function print Generate [target];
+    [awk] -f [resolve etc/faq.toc.awk lib/%/faq/main.roff] > [target];
 }
 
 
@@ -453,5 +465,10 @@ cascade lib/en/howto/developer.so = lib/en/howto/developer_nbr.so;
 
 lib/%/howto/developer_nbr.so: etc/howtodevnbr.sh etc/version.so
 {
+    if [quiet] then
+        function print Generate [target];
     sh [resolve etc/howtodevnbr.sh] [version_short] > [target];
 }
+
+
+/* vim: set ts=8 sw=4 et : */

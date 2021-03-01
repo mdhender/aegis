@@ -1,24 +1,23 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2004-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to Start Using Aegis"
 .LP
-For the first-time user, Aegis can appear to be very daunting.
+For the first\[hy]time user, Aegis can appear to be very daunting.
 It has a huge number of configuration alternatives for each project,
 and it is difficult to know where to begin.
 .LP
@@ -41,9 +40,9 @@ always) works correctly the first time \[lq]out of the box\[rq].
 The template projects can be found on the Aegis home page:
 .\" do not warn "cannot adjust line"
 .warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
-\f[CW]http://\%www.canb.auug.org.au/\%~millerp/\%aegis/\fP
+\f[CW]http://aegis.sourceforge.net/\fP
 .IP \(bu 2n
-If you are a long-time GNU Make user, you probably want the Make-RCS
+If you are a long\[hy]time GNU Make user, you probably want the Make\[hy]RCS
 template, at least to start with.
 .IP \(bu 2n
 Follow the instructions found on the web page
@@ -107,3 +106,4 @@ Iterate until things build correctly.
 .IP \(bu 2n
 develop end, review and integrate as normal.
 Your project is now under Aegis.
+.\" vim: set ts=8 sw=4 et :

@@ -1,7 +1,7 @@
 //
 // aegis - project change supervisor
 // Copyright (C) 2007 Walter Franzini
-// Copyright (C) 2008 Peter Miller
+// Copyright (C) 2008, 2011, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ view_path_next_change(change::pointer cp, time_t limit)
     if (limit == TIME_NOT_SET)
         return change_copy(cp->pp->change_get());
 
-    project_ty *pp;
-    if (change_pfstate_get(cp) && !cp->pp->is_a_trunk())
+    project *pp;
+    if (cp->pfstate_get() && !cp->pp->is_a_trunk())
         pp = cp->pp->parent_get();
     else
         pp = cp->pp;
@@ -54,7 +54,7 @@ view_path_next_change(change::pointer cp, time_t limit)
     change::pointer result;
     change::pointer cp_tmp = change_alloc(pp, change_number);
     change_bind_existing(cp_tmp);
-    if (change_pfstate_get(cp_tmp))
+    if (cp_tmp->pfstate_get())
     {
         result = cp_tmp;
     }
@@ -66,3 +66,6 @@ view_path_next_change(change::pointer cp, time_t limit)
 
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

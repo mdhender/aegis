@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
@@ -33,8 +34,8 @@ change::run_develop_end_undo_notify_command()
     //
     // make sure there is one
     //
-    trace(("change::run_develop_end_undo_notify_command(this = %08lX)\n{\n",
-	(long)this));
+    trace(("change::run_develop_end_undo_notify_command(this = %p)\n{\n",
+        this));
     assert(!lock_active());
     assert(reference_count >= 1);
     string_ty *the_command =
@@ -47,7 +48,7 @@ change::run_develop_end_undo_notify_command()
 
     //
     // notify the change is ready for review
-    //	(it could be mail, or an internal bulletin board, etc)
+    //  (it could be mail, or an internal bulletin board, etc)
     // it happens after the data is written and the locks are released,
     // so we don't much care if the command fails!
     //
@@ -67,3 +68,6 @@ change::run_develop_end_undo_notify_command()
     str_free(the_command);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

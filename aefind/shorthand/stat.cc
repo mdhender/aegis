@@ -1,32 +1,33 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1997, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/arglex.h>
+#include <common/sizeof.h>
+#include <common/str.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/string.h>
-#include <common/arglex.h>
+#include <libaegis/sub.h>
+
 #include <aefind/function/stat.h>
 #include <aefind/shorthand/stat.h>
-#include <common/str.h>
-#include <libaegis/sub.h>
-#include <aefind/tree.h>
 #include <aefind/tree/arithmetic.h>
 #include <aefind/tree/constant.h>
+#include <aefind/tree.h>
 #include <aefind/tree/list.h>
 #include <aefind/tree/now.h>
 #include <aefind/tree/relative.h>
@@ -258,31 +259,31 @@ type_name_by_pattern(const nstring &abbrev)
 {
     struct table_ty
     {
-	const char      *pattern;
-	const char      *name;
+        const char      *pattern;
+        const char      *name;
     };
 
     static table_ty table[] =
     {
-	{ "Block",		"block_special",	},
-	{ "Block_Special",	"block_special",	},
-	{ "Character",		"character_special",	},
-	{ "Character_Special",	"character_special",	},
-	{ "Directory",		"directory",		},
-	{ "File",		"file",			},
-	{ "Link",		"symbolic_link",	},
-	{ "Named_Pipe",		"named_pipe",		},
-	{ "First_In_First_Out",	"named_pipe",		},
-	{ "Normal",		"file",			},
-	{ "Pipe",		"named_pipe",		},
-	{ "Plain",		"file",			},
-	{ "Socket",		"socket",		},
-	{ "Symbolic_Link",	"symbolic_link",	},
+        { "Block",              "block_special",        },
+        { "Block_Special",      "block_special",        },
+        { "Character",          "character_special",    },
+        { "Character_Special",  "character_special",    },
+        { "Directory",          "directory",            },
+        { "File",               "file",                 },
+        { "Link",               "symbolic_link",        },
+        { "Named_Pipe",         "named_pipe",           },
+        { "First_In_First_Out", "named_pipe",           },
+        { "Normal",             "file",                 },
+        { "Pipe",               "named_pipe",           },
+        { "Plain",              "file",                 },
+        { "Socket",             "socket",               },
+        { "Symbolic_Link",      "symbolic_link",        },
     };
 
     for (table_ty *tp = table; tp < ENDOF(table); ++tp)
-	if (arglex_compare(tp->pattern, abbrev.c_str(), 0))
-    	    return tp->name;
+        if (arglex_compare(tp->pattern, abbrev.c_str(), 0))
+            return tp->name;
     sub_context_ty sc;
     sc.var_set_string("Name", abbrev);
     sc.fatal_intl(i18n("file type $name unknown"));
@@ -309,3 +310,6 @@ shorthand_type(const nstring &abbrev)
     // type({}) == name
     return tree_eq::create(tp2, tp3);
 }
+
+
+// vim: set ts=8 sw=4 et :

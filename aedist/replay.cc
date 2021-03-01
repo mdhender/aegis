@@ -1,30 +1,30 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2005-2008 Peter Miller,
-//	Copyright (C) 2004, 2005, 2007-2009 Walter Franzini;
+//      aegis - project change supervisor
+//      Copyright (C) 2005-2008, 2011, 2012 Peter Miller,
+//      Copyright (C) 2004, 2005, 2007-2009 Walter Franzini;
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/string.h>
 #include <common/ac/sys/types.h>
 #include <common/ac/regex.h>
 #include <common/ac/stdlib.h>
 
-#include <common/error.h>              // for assert
 #include <common/nstring.h>
 #include <common/nstring/list.h>
 #include <common/quit.h>
@@ -58,73 +58,43 @@
 #include <aedist/replay/line.h>
 
 
-static long
-extract_change_number_from_url(const nstring &uri)
-{
-    //
-    // The URLs look like ...aeget/project.Cnnn/...
-    // Look for strings of the form "[.][cC][1-9][0-9]*"
-    //
-    const char *cp = uri.c_str();
-    for (;;)
-    {
-        if
-        (
-            cp[0] == '.'
-        &&
-            (cp[1] == 'c' || cp[1] == 'C')
-        &&
-            isdigit((unsigned char)cp[2])
-        )
-        {
-            return strtol(cp + 2, 0, 10);
-        }
-        if (!*cp)
-        {
-            return 0;
-        }
-        ++cp;
-    }
-}
-
-
 static nstring
 fix_compatibility_modifier(const nstring &uri, bool use_compat)
 {
     trace(("fix_compatibility_modifier(uri = %s)\n{\n", uri.quote_c().c_str()));
     if
     (
-	0 != memcmp("http:", uri.c_str(), 5)
+        0 != memcmp("http:", uri.c_str(), 5)
     &&
-	0 != memcmp("https:", uri.c_str(), 6)
+        0 != memcmp("https:", uri.c_str(), 6)
     )
     {
-	// Only mess with HTTP URLs
-	trace(("return %s;\n", uri.quote_c().c_str()));
-	trace(("}\n"));
-	return uri;
+        // Only mess with HTTP URLs
+        trace(("return %s;\n", uri.quote_c().c_str()));
+        trace(("}\n"));
+        return uri;
     }
     if (!strstr(uri.c_str(), "/cgi-bin/"))
     {
         // Only add +compat=xxx to CGI scripts
-	trace(("return %s;\n", uri.quote_c().c_str()));
-	trace(("}\n"));
-	return uri;
+        trace(("return %s;\n", uri.quote_c().c_str()));
+        trace(("}\n"));
+        return uri;
     }
     const char *cp = strstr(uri.c_str(), "compat=");
     if (!cp)
     {
         if (!use_compat)
             return uri;
-	nstring result(uri + "+compat=" + version_stamp());
-	trace(("return %s;\n", result.quote_c().c_str()));
-	trace(("}\n"));
-	return result;
+        nstring result(uri + "+compat=" + version_stamp());
+        trace(("return %s;\n", result.quote_c().c_str()));
+        trace(("}\n"));
+        return result;
     }
     cp += 7;
     nstring left(uri.c_str(), cp - uri.c_str());
     while (*cp && *cp != '+')
-	++cp;
+        ++cp;
     nstring result(left + version_stamp() + cp);
     trace(("return %s;\n", result.quote_c().c_str()));
     trace(("}\n"));
@@ -153,10 +123,10 @@ replay_main(void)
             generic_argument(usage);
             continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, usage);
+            continue;
 
         case arglex_token_trojan:
             if (!trojan.empty())
@@ -171,15 +141,15 @@ replay_main(void)
             break;
 
         case arglex_token_file:
-	    if (!ifn.empty())
-		duplicate_option(usage);
-	    if (arglex() != arglex_token_string)
+            if (!ifn.empty())
+                duplicate_option(usage);
+            if (arglex() != arglex_token_string)
             {
-		option_needs_file(arglex_token_file, usage);
-	        // NOTREACHED
+                option_needs_file(arglex_token_file, usage);
+                // NOTREACHED
             }
             ifn = arglex_value.alv_string;
-	    break;
+            break;
 
         case arglex_token_exclude_uuid:
             switch (arglex())
@@ -234,13 +204,13 @@ replay_main(void)
             break;
 
         case arglex_token_persevere:
-	case arglex_token_persevere_not:
-	    user_ty::persevere_argument(usage);
-	    break;
+        case arglex_token_persevere_not:
+            user_ty::persevere_argument(usage);
+            break;
 
-	case arglex_token_maximum:
-	    all_changes = true;
-	    break;
+        case arglex_token_maximum:
+            all_changes = true;
+            break;
 
         case arglex_token_compatibility_not:
             use_compat = false;
@@ -258,9 +228,9 @@ replay_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = n.get_ref_copy();
     }
-    project_ty *pp = project_alloc(project_name);
+    project *pp = project_alloc(project_name);
     pp->bind_existing();
     user_ty::pointer up = user_ty::create();
 
@@ -268,7 +238,7 @@ replay_main(void)
     bool include_branches = true;
     bool ignore_original_uuid = false;
     change_functor_inventory_builder cf(include_branches, all_changes,
-	ignore_original_uuid, pp, &local_inventory);
+        ignore_original_uuid, pp, &local_inventory);
     project_inventory_walk(pp, cf);
 
     //
@@ -278,15 +248,15 @@ replay_main(void)
     //
     url smart_url(ifn);
     if (smart_url.is_a_file())
-	ifn = smart_url.get_path();
+        ifn = smart_url.get_path();
     else
     {
-	smart_url.set_path_if_empty
-	(
-	    nstring::format("cgi-bin/aeget/%s", project_name_get(pp)->str_text)
-	);
-	smart_url.set_query_if_empty("inventory");
-	ifn = smart_url.reassemble();
+        smart_url.set_path_if_empty
+        (
+            nstring::format("cgi-bin/aeget/%s", project_name_get(pp).c_str())
+        );
+        smart_url.set_query_if_empty("inventory");
+        ifn = smart_url.reassemble();
     }
     trace_nstring(ifn);
 
@@ -302,15 +272,15 @@ replay_main(void)
     nstring_list remote_change;
     for (;;)
     {
-	nstring line;
+        nstring line;
         os_become_orig();
         bool ok = ifp->one_line(line);
         os_become_undo();
         if (!ok)
             break;
 
-	replay_line parts;
-	if (!parts.extract(line))
+        replay_line parts;
+        if (!parts.extract(line))
             continue;
 
         change::pointer cp = local_inventory.query(parts.get_uuid());
@@ -326,8 +296,8 @@ replay_main(void)
         //
         if (exclude_uuid_list.member(parts.get_uuid()))
             continue;
-	if (exclude_version_list.gmatch_candidate(parts.get_version()))
-	    continue;
+        if (exclude_version_list.gmatch_candidate(parts.get_version()))
+            continue;
 
         //
         // we exclude from further processing:
@@ -368,7 +338,7 @@ replay_main(void)
     //
     for (size_t c = 0; c < remote_change.size(); ++c)
     {
-        project_ty *pp2 = project_alloc(project_name);
+        project *pp2 = project_alloc(project_name);
         pp2->bind_existing();
 
         //
@@ -376,48 +346,34 @@ replay_main(void)
         // absolute so we must create one.
         //
         nstring url_abs = remote_change[c];
-	if (!url_abs.downcase().starts_with("http://"))
-	{
-	    url relative(url_abs);
-	    relative.set_host_part_from(smart_url);
-	    url_abs = relative.reassemble();
-	}
-
-	//
-	// There could be a compat=n.nn modifier in the
-	// URL, if so replace it, otherwise add one.
-	//
-	url_abs = fix_compatibility_modifier(url_abs, use_compat);
-
-        //
-        // If the URL contains a change number, try to use that.
-        // Otherwise, just use the next available change number.
-        //
-        long change_number = extract_change_number_from_url(url_abs);
-        if
-        (
-            change_number <= 0
-        ||
-            project_change_number_in_use(pp2, change_number)
-        )
+        if (!url_abs.downcase().starts_with("http://"))
         {
-            change_number = project_next_change_number(pp2, 1);
+            url relative(url_abs);
+            relative.set_host_part_from(smart_url);
+            url_abs = relative.reassemble();
         }
 
-	//
-	// Start building the command.
-	//
+        //
+        // There could be a compat=n.nn modifier in the
+        // URL, if so replace it, otherwise add one.
+        //
+        url_abs = fix_compatibility_modifier(url_abs, use_compat);
+
+        //
+        // Start building the command.
+        //
         nstring trace_options(trace_args());
+        nstring change_number_file(os_edit_filename(0));
         nstring aedist_cmd =
             nstring::format
             (
-                "aedist -receive -project=%s -change=%ld -file %s%s%s%s",
+                "aedist -receive -project=%s -output=%s -file %s%s%s%s",
                 nstring(project_name_get(pp2)).quote_shell().c_str(),
-                change_number,
+                change_number_file.c_str(),
                 url_abs.quote_shell().c_str(),
                 trojan.c_str(),
                 trace_options.c_str(),
-		(option_verbose_get() ? " --verbose" : "")
+                (option_verbose_get() ? " --verbose" : "")
             );
         trace_nstring(aedist_cmd);
         os_become_orig();
@@ -439,6 +395,22 @@ replay_main(void)
 
         pp2 = project_alloc(project_name);
         pp2->bind_existing();
+
+        //
+        // Read the change number from the file, there is no more need
+        // to guess the right value in advance since it's now written
+        // by aedist -rec itself.
+        //
+        os_become_orig();
+        input ifp2 = input_file_open(change_number_file, true);
+        nstring s;
+        if (!ifp2->one_line(s) || s.empty())
+            ifp2->fatal_error("short file");
+        ifp2.close();
+        os_become_undo();
+
+        long change_number = s.to_long();
+
         change::pointer cp = change_alloc(pp2, change_number);
         int change_exists = change_bind_existing_errok(cp);
 
@@ -469,7 +441,7 @@ replay_main(void)
 #endif
             if (!up->persevere_preference(false))
                 quit(0);
-	    continue;
+            continue;
         }
 
         assert(cstate_data->state == cstate_state_awaiting_integration);
@@ -513,7 +485,7 @@ replay_main(void)
 #endif
             if (!up->persevere_preference(false))
                 quit(0);
-	    continue;
+            continue;
         }
         assert(cstate_data->state == cstate_state_completed);
         change_free(cp);
@@ -522,3 +494,6 @@ replay_main(void)
         pp2 = 0;
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

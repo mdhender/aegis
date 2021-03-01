@@ -1,26 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 2001, 2002, 2004-2006, 2008 Peter Miller.
+// aegis - project change supervisor
+// Copyright (C) 1991-1993, 2001, 2002, 2004-2006, 2008, 2012 Peter Miller.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef COL_H
-#define COL_H
+#ifndef LIBAEGIS_COL_H
+#define LIBAEGIS_COL_H
 
-#include <common/main.h>
 #include <libaegis/output.h>
 
 struct string_ty; // forward
@@ -61,6 +59,19 @@ public:
     static col::pointer open(struct string_ty *filename);
 
     /**
+      * The open class method is a factory used to open a file for
+      * outputting columnar data.
+      *
+      * The style of formatting is controlled by the -UNFormatted option.
+      *
+      * Use the delete operator when you are done with it.
+      *
+      * @param op
+      *     the file to write the data to
+      */
+    static col::pointer open(output::pointer op);
+
+    /**
       * The create method is used to specify a range of locations for an
       * output column.
       *
@@ -83,7 +94,7 @@ public:
       *      with the column.
       */
     virtual output::pointer create(int left, int right, const char *title)
-	= 0;
+        = 0;
 
     /**
       * The title method is used to set the two lines of page
@@ -94,7 +105,18 @@ public:
       * @param second
       *     second line of heading, NULL means blank
       */
-    virtual void title(const char *first, const char *second) = 0;
+    virtual void title(const char *first, const char *second);
+
+    /**
+      * The title method is used to set the two lines of page
+      * headings.  These are ignored for unformatted output.
+      *
+      * @param first
+      *     first line of heading, NULL means blank
+      * @param second
+      *     second line of heading, NULL means blank
+      */
+    virtual void title(const nstring &first, const nstring &second) = 0;
 
     /**
       * The eoln method is used to signal that an entire line of columns
@@ -152,4 +174,5 @@ private:
     col &operator=(const col &);
 };
 
-#endif // COL_H
+#endif // LIBAEGIS_COL_H
+// vim: set ts=8 sw=4 et :

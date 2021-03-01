@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2008 Peter Miller
+//      Copyright (C) 1999, 2001-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/inappropriat.h>
@@ -26,7 +27,7 @@
 #include <libaegis/change.h>
 #include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/option.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
@@ -135,3 +136,6 @@ list_project_history(change_identifier &cid, string_list_ty *)
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

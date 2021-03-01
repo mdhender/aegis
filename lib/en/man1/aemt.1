@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002-2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Make_Transparent" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Make_Transparent" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aegis make transparent \- make branch file transparent
 .XX "aemt(1)" "make branch file transparent"
@@ -30,19 +29,19 @@ aegis make transparent \- make branch file transparent
 .IR filename \&...
 .br
 .B \*(n)
-.B -List
+.B \-List
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
-.I "\*(n) -Make_Transparent"
+.I "\*(n) \-Make_Transparent"
 command is used to
 add a file to the change which will result in the named file being made
 transparent in the branch when the change is integrated.
@@ -55,7 +54,7 @@ It is an error if there are no relevant files.
 The \fIaecpu\fP(1) command may only be applied to a change.  If you
 wish to perform the same operation on a branch, use the \fIaemt\fP(1)
 command, through the agency of a change.
-.so z_intuit.so
+.so lib/en/man1/z_intuit.so
 .SS Process Side Effects
 This command will cancel any build or test registrations,
 because changing the change file list logically invalidates them.
@@ -70,34 +69,34 @@ and if there has been an integration recently.  See \fIaepconf\fP(5)
 for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_baserel.so
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
 .TP 8n
-.B -UNChanged
+.B \-UNChanged
 .br
 Examine the named files to see if they are unchanged.
 Only remove the unchanged files from the branch,
 and leave the files which have changed.
 If no files are named on the command line
 all branch files are checked.
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aemt '\*(n) -mt \e!* -v'
-sh$	aemt(){\*(n) -mt "$@" -v}
+csh%    alias aemt '\*(n) \-mt \e!* \-v'
+sh$     aemt(){\*(n) \-mt "$@" \-v}
 .fi
 .PP
-This command is dedicated to my wife, Mary-Therese.  When I was trying
-to explain what this command did, she said "I had one of those on my
-bicycle when I was young, but it fell off".
+This command is dedicated to my wife, Mary\[hy]Therese.  When I was trying
+to explain what this command did, she said \[lq]I had one of those on my
+bicycle when I was young, but it fell off\[rq].
 .SH ERRORS
 It is an error if
 the change is not in the
@@ -113,7 +112,7 @@ It is an error if the file is present in the immediate branch, but is
 not also present in a deeper branch.
 .br
 It is an error if the file is only present in the trunk branch.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -123,4 +122,5 @@ uncopy copy files from a change
 .TP 8n
 .IR aemtu (1)
 cease making branch files transparent
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

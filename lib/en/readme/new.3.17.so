@@ -1,30 +1,30 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed which caused \fIaecp -delta\fP to dump core in
+A bug has been fixed which caused \fIaecp \-delta\fP to dump core in
 some cases.
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed which caused the create-symlinks-before-build
+A bug has been fixed which caused the create\[hy]symlinks\[hy]before\[hy]build
 functionality to create symlinks to deleted files.
 .PP
 .if n *
@@ -38,4 +38,5 @@ Similarly for \fIaerfail\fP(1), \fIaeipass\fP(1) and \fIaeifail\fP(1).
 This should make things easier for users to find the man pages.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.17 (22-Jun-1999)
+.SS Version 3.17 (22\[hy]Jun\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

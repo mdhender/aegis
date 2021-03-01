@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 # aegis - The "aegis" program.
-# Copyright (C) 2008 Walter Franzini
+# Copyright (C) 2008, 2010 Walter Franzini
+# Copyright (C) 2012 Peter Miller
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,23 +25,23 @@ TEST_SUBJECT="aediff vs. mismatching UUIDs"
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+    sed -e "s|$work|...|g" \
+        -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+        -e "s/\"$USER\"/\"USER\"/g" \
+        -e 's/19[0-9][0-9]/YYYY/' \
+        -e 's/20[0-9][0-9]/YYYY/' \
+        -e 's/node = ".*"/node = "NODE"/' \
+        -e 's/crypto = ".*"/crypto = "GUNK"/' \
+        < $2 > $work/sed.out
+    if test $? -ne 0; then no_result; fi
+    diff -b $1 $work/sed.out
+    if test $? -ne 0; then fail; fi
 }
 
 #
 # make a new project
 #
-activity="new project 43"
+activity="new project 44"
 aegis -newpro foo -version "" -dir $work/proj -lib $work/lib
 if test $? -ne 0 ; then fail; fi
 
@@ -50,7 +51,7 @@ export AEGIS_PROJECT
 #
 # change project attributes
 #
-activity="project attributes 53"
+activity="project attributes 54"
 cat > atts << 'fubar'
 description = "The \"foo\" program.";
 developer_may_review = true;
@@ -73,7 +74,7 @@ test $? -eq 0 || no_result
 aegis -proatt -f atts -proj foo -lib $work/lib
 test $? -eq 0 || no_result
 
-activity="new developer 76"
+activity="new developer 77"
 aegis -newdev $USER
 test $? -eq 0 || no_result
 aegis -new-reviewer $USER
@@ -84,7 +85,7 @@ test $? -eq 0 || no_result
 #
 # create a new change
 #
-activity="new change 87"
+activity="new change 88"
 cat > cattr << 'end'
 brief_description = "First change.";
 cause = internal_enhancement;
@@ -93,14 +94,14 @@ test $? -eq 0 || no_result
 aegis -new_change 1 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 96"
+activity="develop begin 97"
 aegis -dev-begin 1 -dir $work/dd
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 103"
+activity="new file 104"
 aegis -new-file $work/dd/aegis.conf
 test $? -eq 0 || no_result
 
@@ -129,17 +130,14 @@ test $? -eq 0 || no_result
 #
 # finish development of the change
 #
-activity="finish dev 132"
+activity="finish dev 133"
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
 #
 # integrate the change
 #
-activity="finish int 139"
-aegis -ib 1 > LOG 2>&1
-if test $? -ne 0; then cat LOG; no_result; fi
-
+activity="finis int 140"
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
@@ -157,7 +155,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 160"
+activity="new change 158"
 cat > cattr << 'end'
 brief_description = "First change.";
 cause = internal_enhancement;
@@ -166,15 +164,16 @@ test $? -eq 0 || no_result
 aegis -new_change 1 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 169"
+activity="develop begin 167"
 aegis -dev-begin 1 -dir $work/dd
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 176"
-aegis -new-file $work/dd/barney
+activity="new file 174"
+aegis -new-file $work/dd/barney \
+    -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1
 test $? -eq 0 || no_result
 
 cat > $work/dd/barney <<EOF
@@ -182,63 +181,52 @@ Hi, I'm Barney!
 EOF
 test $? -eq 0 || no_result
 
-#
-# We explicitly set the file's UUID to be sure that fixing aeipass
-# does not make this test useless.  We want the UUIDs to be different!
-#
-activity="set file uuid 189"
-aegis -file-attr -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 \
-        $work/dd/barney > LOG 2>&1
-test $? -eq 0 || no_result
-
-activity="set change uuid 194"
+activity="set change uuid 184"
 aegis -change-attr 1 -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddffff \
     > LOG 2>&1
 test $? -eq 0 || no_result
 
-activity="finish the change 199"
+activity="finish the change 189"
 aefinish 1 > LOG 2>&1
-if test $? -ne 0; then cat LOG; no_result; fi
-
-activity="integrate the change 203"
-aegis -ibegin 1 -v > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
-activity="check fstate 210"
+activity="check fstate 196"
 cat > ok <<EOF
 src =
 [
-	{
-		file_name = "barney";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+    {
+        file_name = "barney";
+        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+        action = create;
+        edit =
+        {
+            revision = "1";
+            encoding = none;
+            uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddffff";
+        };
+        edit_origin =
+        {
+            revision = "1";
+            encoding = none;
+            uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddffff";
+        };
+        usage = source;
+        file_fp =
+        {
+            youngest = TIME;
+            oldest = TIME;
+            crypto = "GUNK";
+        };
+        diff_file_fp =
+        {
+            youngest = TIME;
+            oldest = TIME;
+            crypto = "GUNK";
+        };
+    },
 ];
 EOF
 test $? -eq 0 || no_result
@@ -259,7 +247,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 262"
+activity="new change 250"
 cat > cattr << 'end'
 brief_description = "First change.";
 cause = internal_enhancement;
@@ -268,79 +256,114 @@ test $? -eq 0 || no_result
 aegis -new_change 1 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 271"
+activity="develop begin 259"
 aegis -dev-begin 1 -dir $work/dd
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 278"
+activity="new file 266"
 aegis -new-file $work/dd/barney
 test $? -eq 0 || no_result
+
+activity="check fstate 270"
+cat > ok <<EOF
+src =
+[
+    {
+        file_name = "barney";
+        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+        action = create;
+        usage = source;
+    },
+];
+EOF
+test $? -eq 0 || no_result
+
+check_it ok $work/proj/info/change/0/003.branch/0/001.fs
+
+#
+# We explicitly set the file's UUID to be sure that fixing aeipass
+# does not make this test useless.  We want the UUIDs to be different!
+#
+# We need to do it manually since the new code make it impossible this
+# to happen.  Or at least really difficult to make it happen.
+#
+cat > $work/proj/info/change/0/003.branch/0/001.fs <<EOF
+src =
+[
+    {
+        file_name = "barney";
+        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+        action = create;
+        usage = source;
+        edit =
+        {
+            revision = "1";
+            encoding = none;
+            uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddfffe";
+        };
+        edit_origin =
+        {
+            revision = "1";
+            encoding = none;
+            uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddfffe";
+        };
+    },
+];
+EOF
 
 cat > $work/dd/barney <<EOF
 Hi, I'm not Barney!
 EOF
 test $? -eq 0 || no_result
 
-#
-# We explicitly set the file's UUID to be sure that fixing aeipass
-# does not make this test useless.  We want the UUIDs to be different!
-#
-activity="set file uuid 291"
-aegis -file-attr -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 \
-        $work/dd/barney > LOG 2>&1
+activity="set change uuid 322"
+aegis -change-attr 1 -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddfffe
 test $? -eq 0 || no_result
 
-activity="set change uuid 296"
-aegis -change-attr 1 -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddfffe \
-    > LOG 2>&1
-test $? -eq 0 || no_result
-
-activity="develop and the change 301"
+activity="develop and the change 326"
 aefinish 1 > LOG 2>&1
-if test $? -ne 0; then cat LOG; no_result; fi
-
-activity="integrate the change 305"
-aegis -ibegin 1 -v > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
-activity="check fstate 312"
+activity="check fstate 333"
 cat > ok <<EOF
 src =
 [
-	{
-		file_name = "barney";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+    {
+        file_name = "barney";
+        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+        action = create;
+        edit =
+        {
+            revision = "1";
+            encoding = none;
+            uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddfffe";
+        };
+        edit_origin =
+        {
+            revision = "1";
+            encoding = none;
+            uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddfffe";
+        };
+        usage = source;
+        file_fp =
+        {
+            youngest = TIME;
+            oldest = TIME;
+            crypto = "GUNK";
+        };
+        diff_file_fp =
+        {
+            youngest = TIME;
+            oldest = TIME;
+            crypto = "GUNK";
+        };
+    },
 ];
 EOF
 test $? -eq 0 || no_result
@@ -350,7 +373,7 @@ check_it ok $work/proj/info/change/0/003.fs
 #
 # diff the files
 #
-activity="run aediff 353"
+activity="run aediff 376"
 cat > ok <<EOF
 *** 2.D001/barney
 --- 3.D001/barney
@@ -362,10 +385,10 @@ cat > ok <<EOF
 EOF
 test $? -eq 0 || no_result
 
-aediff -context -c 2.d1 -c 3.d1 barney > diff
+aediff -context -c 2.d1 -c 3.d1 barney > test.out
 if test $? -ne 0; then no_result; fi
 
-diff -c ok diff
+diff -c ok test.out
 if test $? -ne 0; then fail; fi
 
 #
@@ -374,3 +397,4 @@ if test $? -ne 0; then fail; fi
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

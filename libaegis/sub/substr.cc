@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2008 Peter Miller
+//      Copyright (C) 2003-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -52,7 +52,10 @@ sub_substr(sub_context_ty *scp, const wstring_list &arg)
         result = wstring(s.c_str() + n1, s.size() - n1);
     else
         result = wstr_n_from_wc(s.c_str() + n1, (size_t)n2);
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

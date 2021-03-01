@@ -1,28 +1,29 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1997, 1999, 2001-2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1993-1997, 1999, 2001-2004, 2006-2008, 2010, 2012 Peter Miller
+.\" Copyright (C) 2008 Walter Franzini
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aefstate 5 \*(N) "Reference Manual"
 .SH NAME
 aefstate \- aegis file state file
 .XX "aefstate(5)" "file state file format"
 .SH SYNOPSIS
-\fIproject\fP\f(CW/info/change/\fP\fI[0-9]\fP\f(CW/\fP\fI[0-9][0-9][0-9]\fP.fs
+\fIproject\fP\f(CW/info/change/\fP\fI[0\-9]\fP\f(CW/\fP\
+\fI[0\-9][0\-9][0\-9]\fP.fs
 .SH DESCRIPTION
 A file state file is used to store information about
 the files in a transaction.
@@ -115,6 +116,9 @@ file is used to determine which files need encoding.  The size of the
 encoded file is compared to determine which of quoted printable and base
 64 encodings is used; the smaller is chosen.
 .RE
+.TP 8n
+uuid = string;
+This is the UUID of the change responsible for the edit.
 .RE
 .TP 8n
 edit_number = string;
@@ -196,7 +200,7 @@ diff_file_fp = fingerprint;
 .br
 This field records the last time modified of the difference file
 when the last
-.I "\*(n) -DIFFerence"
+.I "\*(n) \-DIFFerence"
 command was run.
 It is only present between the
 .I being_developed
@@ -211,7 +215,7 @@ idiff_file_fp = fingerprint;
 .br
 This field records the last time modified of the integration difference file
 when the last
-.I "\*(n) -DIFFerence"
+.I "\*(n) \-DIFFerence"
 command was run.
 It is only present in the
 .I being_integrated
@@ -241,13 +245,13 @@ field.
 test_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Test"
+.I "\*(n) \-Test"
 command was run for this specific pattern instance.
 .TP 8n
 test_baseline_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Test -BaseLine"
+.I "\*(n) \-Test \-BaseLine"
 command was run for this specific pattern instance.
 .RE
 .TP 8n
@@ -290,7 +294,7 @@ This field is used to remember test correlations for source files.
 This is used by
 .IR aet (1)
 to suggest suitable tests.
-.so aemetrics.so
+.so lib/en/man5/aemetrics.so
 .TP 8n
 executable = boolean;
 .RS
@@ -310,9 +314,9 @@ This is a list of \fI(name,value)\fP pairs, defining user specified attributes.
 name = string;
 .RS
 The name of the attribute.
-By convention, names which start with an upper-case letter will appear
-in listings, and lower-case will not.
-Attribute names are case-insensitive.
+By convention, names which start with an upper\[hy]case letter will appear
+in listings, and lower\[hy]case will not.
+Attribute names are case\[hy]insensitive.
 .RE
 .TP 8n
 value = string;
@@ -338,7 +342,7 @@ cfs = cs.src["somefile"];
 .ft R
 .fi
 .RE
-Notice that the top-level fields of the file state are not available,
+Notice that the top\[hy]level fields of the file state are not available,
 but instead are mapped onto the relevant project file and change file
 \fIsrc\fP arrays.
 .PP
@@ -348,4 +352,5 @@ as members of the \f[CW]pfs\fP or \f[CW]cfs\fP variables.
 .TP 8n
 .IR aegis (5)
 \*(n) file format syntax
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

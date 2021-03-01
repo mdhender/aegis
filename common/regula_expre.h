@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2006, 2008, 2009, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_REGULA_EXPRE_H
@@ -46,13 +46,31 @@ public:
     /**
       * The constructor.
       *
-      * \param arg
+      * @param pattern
       *     The pattern to be matched against.
-      * \note
+      * @param icase
+      *     true for case-insensitive match, the default is case sensitive
+      * @note
       *     The compilation of the pattern will be deferred until it is
       *     actually used by the "match" method.
       */
-    regular_expression(const nstring &arg);
+    regular_expression(const nstring &pattern, bool icase = false);
+
+    /**
+      * The matches method is used to match a string against the pattern
+      * given to the constructor.
+      *
+      * @param text
+      *     The string to be matched against the pattern.
+      * @param so
+      *     The start offset of the match (on success)
+      * @param eo
+      *     The end offset of the match (on success)
+      * @returns
+      *     true if there was a match, or false if there was no match or
+      *     an error occurred.
+      */
+    bool matches(const char *text, size_t &so, size_t &eo);
 
     /**
       * The match method is used to match a string against the pattern
@@ -93,7 +111,7 @@ public:
       *     true of there were no errors, or false if there was an error.
       */
     bool match_and_substitute(const nstring &rhs, const nstring &actual,
-	long how_many_times, nstring &output);
+        long how_many_times, nstring &output);
 
 private:
     /**
@@ -117,6 +135,12 @@ private:
       * left hand side to be matched against.
       */
     nstring lhs;
+
+    /**
+      * The icase instance variable is sud to remeber whether we are doing a
+      * case-sensitive match (false) or a case-IN-sensitive match (true).
+      */
+    bool icase;
 
     /**
       * The compile method is used to compile the left and side of the
@@ -160,3 +184,4 @@ private:
 };
 
 #endif // COMMON_REGULA_EXPRE_H
+// vim: set ts=8 sw=4 et :

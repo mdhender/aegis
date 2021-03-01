@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2001, 2005-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2001, 2005-2008, 2012 Peter Miller
+#       Copyright (C) 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -42,7 +43,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -60,30 +61,30 @@ export PATH
 
 no_result()
 {
-	set +x
-	echo "NO RESULT for test of aepatch -send functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT for test of aepatch -send functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 fail()
 {
-	set +x
-	echo "FAILED test of aepatch -send functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of aepatch -send functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 trap "no_result" 1 2 3 15
 
@@ -94,11 +95,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -113,7 +114,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 103"
+activity="working directory 117"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -132,14 +133,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 122"
+activity="new project 136"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 129"
+activity="project attributes 143"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aepatch -send functionality.";
 developer_may_review = true;
@@ -153,7 +154,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 143"
+activity="new change 157"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -165,7 +166,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 155"
+activity="staff 169"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -182,19 +183,19 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 172"
+activity="new file 186"
 $bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/aegis.conf -nl > log 2>&1
+        $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
 main(argc, argv)
-	int	argc;
-	char	**argv;
+        int     argc;
+        char    **argv;
 {
-	test();
-	exit(0);
-	return 0;
+        test();
+        exit(0);
+        return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -204,10 +205,10 @@ end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/Makefile << 'end'
 .c.o:
-	date > $@
+        date > $@
 
 foo: main.o test.o
-	date > $@
+        date > $@
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
@@ -223,14 +224,14 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 end
 if test $? -ne 0 ; then no_result; fi
 
 #
 # create a new test
 #
-activity="new test 220"
+activity="new test 234"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -242,63 +243,63 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 232"
+activity="build 246"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 239"
+activity="diff 253"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 246"
+activity="test 260"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 253"
+activity="develop end 267"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 260"
+activity="review pass 274"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 267"
+activity="integrate begin 281"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 274"
+activity="build 288"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 281"
+activity="test 295"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 288"
+activity="integrate pass 302"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 #
@@ -306,54 +307,55 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 cat > test.in << 'end'
 + diff -u /tmp/9229/foo.proj/baseline/main.c test.ok
---- main.c.old	Tue Jul 31 19:00:26 2001
-+++ bl/main.c	Tue Jul 31 19:00:29 2001
+--- main.c.old  Tue Jul 31 19:00:26 2001
++++ bl/main.c   Tue Jul 31 19:00:29 2001
 @@ -1,8 +1,15 @@
 +#include <stdio.h>
 +
  int
  main(argc, argv)
- 	int	argc;
- 	char	**argv;
+        int     argc;
+        char    **argv;
  {
-+	if (argc != 1)
-+	{
-+		fprintf(stderr, "usage: %s\n", argv[0]);
-+		exit(1);
-+	}
- 	test();
- 	exit(0);
- 	return 0;
++       if (argc != 1)
++       {
++               fprintf(stderr, "usage: %s\n", argv[0]);
++               exit(1);
++       }
+        test();
+        exit(0);
+        return 0;
 end
 if test $? -ne 0 ; then no_result; fi
 
 #
 # receive the patch
 #
-activity="aepatch receive 320"
-$bin/aepatch -receive -dir $workchan -f test.in -trojan > log 2>&1
+activity="aepatch receive 334"
+$bin/aepatch -receive -dir $workchan -f test.in -output number -trojan \
+    > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # this is what we're looking for
 #
-activity="verify 327"
+activity="verify 342"
 cat > test.ok << 'end'
 #include <stdio.h>
 
 int
 main(argc, argv)
-	int	argc;
-	char	**argv;
+        int     argc;
+        char    **argv;
 {
-	if (argc != 1)
-	{
-		fprintf(stderr, "usage: %s\n", argv[0]);
-		exit(1);
-	}
-	test();
-	exit(0);
-	return 0;
+        if (argc != 1)
+        {
+                fprintf(stderr, "usage: %s\n", argv[0]);
+                exit(1);
+        }
+        test();
+        exit(0);
+        return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -361,7 +363,17 @@ if test $? -ne 0 ; then no_result; fi
 diff -b test.ok $workchan/main.c
 if test $? -ne 0 ; then fail; fi
 
+activity="check the -output 366"
+cat > ok <<EOF
+10
+EOF
+if test $? -ne 0; then no_result; fi
+
+diff ok number
+if test $? -ne 0; then no_result; fi
+
 #
 # the things tested in this test, worked
 #
 pass
+# vim: set ts=8 sw=4 et :

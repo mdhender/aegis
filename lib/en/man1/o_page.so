@@ -1,23 +1,22 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1995, 1996, 2001, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1995, 1996, 2001, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .TP 8n
-.B -PAGer
+.B \-PAGer
 The output of listings and help is piped through the pager command
 given in the \f(CWPAGER\fP environment variable
 (or \fImore\fP if not set).
@@ -27,7 +26,7 @@ This option may be used to override any preference specified in the
 .IR aeuconf (5)
 file.
 .TP 8n
-.B -No_PAGer
+.B \-No_PAGer
 .br
 This option may be used to ensure that the output of listings and help
 is not piped through a pager command.
@@ -37,7 +36,7 @@ This option may be used to override any preference specified in the
 .IR aeuconf (5)
 file.
 .TP 8n
-\fB-Page_Length\fP \fInumber\fP
+\fB\-Page_Length\fP \fInumber\fP
 .br
 This option may be used to set the page length of listings.
 The default,
@@ -46,7 +45,7 @@ is obtained from the system,
 from the \fILINES\fP environment variable,
 or set to 24 lines.
 .TP 8n
-\fB-Page_Width\fP \fInumber\fP
+\fB\-Page_Width\fP \fInumber\fP
 .br
 This option may be used to set the page width of listings
 and error messages.
@@ -55,3 +54,4 @@ in order of preference,
 is obtained from the system,
 from the \fICOLS\fP environment variable,
 or set to 79 characters.
+.\" vim: set ts=8 sw=4 et :

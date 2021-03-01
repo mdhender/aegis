@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998, 1999, 2002, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -57,7 +56,7 @@ between the new and old names,
 but only in the development directory
 (i.e. replacing the "garbage" file aegis created for you).
 Create the link after \fIaemv\fP(1) has succeeded.
-This insulates you from a number of nasty Catch-22 situations
+This insulates you from a number of nasty Catch\[hy]22 situations
 in writing the dependency maintenance tool's rules file.
 .nh 2 "Symbolic Links"
 .LP
@@ -71,7 +70,7 @@ This can make browsing the baseline very simple.
 Assuming that the project and change defaults are appropriate,
 the following command
 .E(
-ln -s `aegis -cd -bl` bl
+ln \-s `aegis \-cd \-bl` bl
 .E)
 is all that is required to create a symbolic link called
 .I bl
@@ -84,7 +83,7 @@ This can be done automatically for every change,
 by placing the line
 .E(
 develop_begin_command =
-	"ln -s $baseline bl";
+        "ln \-s $baseline bl";
 .E)
 into the project
 configuration
@@ -117,14 +116,14 @@ to the
 file in the user's home directory.
 .LP
 These days, many systems also provide an \fI/etc/profile.d\fP directory,
-which has symbolic links to the start-up scripts for various packages.
+which has symbolic links to the start\[hy]up scripts for various packages.
 These are run automatically for all users.
 If your system has such a thing, arrange for symbolic links
 .E(
-ln -s \*(D)/profile \e
-	/etc/profile.d/aegis.sh
-ln -s \*(D)/cshrc \e
-	/etc/profile.d/aegis.csh
+ln \-s \*(D)/profile \e
+        /etc/profile.d/aegis.sh
+ln \-s \*(D)/cshrc \e
+        /etc/profile.d/aegis.csh
 .E)
 and you will not need to edit every user's \fI\&.cshrc\fP or
 \fI\&.profile\fP file.
@@ -194,11 +193,11 @@ the owner is the user creating the project,
 and the group is the user's default group.
 The creating user is installed as the project's first administrator.
 .LP
-A new project administrator should be created - an actual user account.
+A new project administrator should be created \- an actual user account.
 The
 .UX
 password should then be disabled on the project
-account - it will never be necessary to use it again.\**
+account \- it will never be necessary to use it again.\**
 .FS
 Unless bugs in aegis corrupt the database,
 in which case repairs can be accomplished as
@@ -229,9 +228,6 @@ required by many of the newsgroups' moderators:
 .TS
 tab(;);
 l lw(1.5i).
-MANIFEST;T{
-List of files in the distribution.
-T}
 Makefile;T{
 How to build the distribution.
 T}
@@ -253,16 +249,6 @@ Write this section.
 Look in the
 .I aux/CHANGES.sh
 file included in the aegis distribution
-for an example of one way to do this.
-.nh 3 "MANIFEST"
-.LP
-Write this section.
-.LP
-Look in the
-.I aux/MANIFEST.sh
-and
-.I aux/MANIFEST.awk
-files included in the aegis distribution
 for an example of one way to do this.
 .nh 3 "Makefile"
 .LP
@@ -296,5 +282,6 @@ Look in the
 .I aux/patches.sh
 file included in the aegis distribution
 for an example of one way to do this.
-.so c6.1.so
-.so c6.3.so
+.so lib/en/user-guide/c6.1.so
+.so lib/en/user-guide/c6.3.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,41 +1,41 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2002-2008 Peter Miller
+ * aegis - project change supervisor
+ * Copyright (C) 1991-1995, 1997-1999, 2002-2008, 2012 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 3 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see
- *	<http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  *
  * This code is derived from code which is
  * Copyright (C) 1986 Steven M. Bellovin
- *	Steven Bellovin <smb@cs.unc.edu>
+ * Steven Bellovin <smb@cs.unc.edu>
  */
 
-%token	AGO
-%token	COLON
-%token	COMMA
-%token	DAY
-%token	DAYZONE
-%token	ID
-%token	JUNK
-%token	MERIDIAN
-%token	MONTH
-%token	MUNIT
-%token	NUMBER
-%token	SLASH
-%token	SUNIT
-%token	UNIT
-%token	ZONE
+%token  AGO
+%token  COLON
+%token  COMMA
+%token  DAY
+%token  DAYZONE
+%token  ID
+%token  JUNK
+%token  MERIDIAN
+%token  MONTH
+%token  MUNIT
+%token  NUMBER
+%token  SLASH
+%token  SUNIT
+%token  UNIT
+%token  ZONE
 
 %{
 
@@ -46,6 +46,7 @@
 
 #include <common/gettime.h>
 #include <common/now.h>
+#include <common/sizeof.h>
 #include <common/str.h>
 #include <common/trace.h>
 
@@ -67,28 +68,28 @@ static int yylex(void);
 
 #define MAX_ID_LENGTH 20
 
-static	int	timeflag;
-static	int	zoneflag;
-static	int	dateflag;
-static	int	dayflag;
-static	int	relflag;
-static	time_t	relsec;
-static	time_t	relmonth;
-static	int	hh;
-static	int	mm;
-static	int	ss;
-static	int	merid;
-static	int	day_light_flag;
-static	int	dayord;
-static	int	dayreq;
-static	int	month;
-static	int	day;
-static	int	year;
-static	int	ourzone;
-static	const char *lptr;
+static  int     timeflag;
+static  int     zoneflag;
+static  int     dateflag;
+static  int     dayflag;
+static  int     relflag;
+static  time_t  relsec;
+static  time_t  relmonth;
+static  int     hh;
+static  int     mm;
+static  int     ss;
+static  int     merid;
+static  int     day_light_flag;
+static  int     dayord;
+static  int     dayreq;
+static  int     month;
+static  int     day;
+static  int     year;
+static  int     ourzone;
+static  const char *lptr;
 #define YYSTYPE int
-extern	YYSTYPE	yylval;
-extern	int	yydebug;
+extern  YYSTYPE yylval;
+extern  int     yydebug;
 
 
 static int mdays[12] =
@@ -103,23 +104,23 @@ int yyparse(void); /* forward */
 
 /*
  * NAME
- *	timeconv - convert a time
+ *      timeconv - convert a time
  *
  * SYNOPSIS
- *	time_t timeconv(int hh, int mm, int ss, int mer);
+ *      time_t timeconv(int hh, int mm, int ss, int mer);
  *
  * DESCRIPTION
- *	The timeconv function is used to convert a time
- *	specified in hours minutes and seconds, into seconds past midnight.
+ *      The timeconv function is used to convert a time
+ *      specified in hours minutes and seconds, into seconds past midnight.
  *
  * ARGUMENTS
- *	hh	hours, range depends on the meridian
- *	mm	minutes, 0..59
- *	ss	seconds, 0..59
- *	mer	meridian to use: AM, PM or 24
+ *      hh      hours, range depends on the meridian
+ *      mm      minutes, 0..59
+ *      ss      seconds, 0..59
+ *      mer     meridian to use: AM, PM or 24
  *
  * RETURNS
- *	time_t; seconds past midnight; -1 on any error.
+ *      time_t; seconds past midnight; -1 on any error.
  */
 
 static time_t
@@ -131,10 +132,10 @@ timeconv(int ahh, int amm, int ass, int mer)
      * perform sanity checks on input
      */
     trace(("timeconv(ahh = %d, amm = %d, ass = %d, mer = %d)\n{\n",
-	ahh, amm, ass, mer));
+        ahh, amm, ass, mer));
     result = -1;
     if (amm < 0 || amm > 59 || ass < 0 || ass > 59)
-	goto done;
+        goto done;
 
     /*
      * perform range checks depending on the meridian
@@ -142,27 +143,27 @@ timeconv(int ahh, int amm, int ass, int mer)
     switch (mer)
     {
     case AM:
-	if (ahh < 1 || ahh > 12)
-    	    goto done;
-	if (ahh == 12)
-    	    ahh = 0;
-	break;
+        if (ahh < 1 || ahh > 12)
+            goto done;
+        if (ahh == 12)
+            ahh = 0;
+        break;
 
     case PM:
-	if (ahh < 1 || ahh > 12)
-    	    goto done;
-	if (ahh == 12)
-    	    ahh = 0;
-	ahh += 12;
-	break;
+        if (ahh < 1 || ahh > 12)
+            goto done;
+        if (ahh == 12)
+            ahh = 0;
+        ahh += 12;
+        break;
 
     case 24:
-	if (ahh < 0 || ahh > 23)
-    	    goto done;
-	break;
+        if (ahh < 0 || ahh > 23)
+            goto done;
+        break;
 
     default:
-	goto done;
+        goto done;
     }
     result = ((ahh * 60L + amm) * 60L + ass);
 done:
@@ -181,44 +182,44 @@ is_a_leap_year(int yy)
 
 /*
  * NAME
- *	dateconv - convert a date
+ *      dateconv - convert a date
  *
  * SYNOPSIS
- *	time_t dateconv(int mm, int dd, int year, int h, int m, int s,
- *		int mer, int zone, int dayflag);
+ *      time_t dateconv(int mm, int dd, int year, int h, int m, int s,
+ *              int mer, int zone, int dayflag);
  *
  * DESCRIPTION
- *	The dateconv function may be used to convert a date after the
- *	date string has been taken apart by yyparse.
+ *      The dateconv function may be used to convert a date after the
+ *      date string has been taken apart by yyparse.
  *
  * ARGUMENTS
- *	mm	month number, in the range 1..12
- *	year	year number,  in several ranges:
- *		0..37 means 2000..2037
- *		70..99 means 1970..1999
- *		1970..2037 mean themselves.
- *	dd	day of month, in the range 1..max, where max varies for
- *		each month, as per the catchy jingle (except February,
- *		which is a monster).
- *	h	hours since midnight or meridian
- *	m	minutes past hour
- *	s	seconds past minute
- *	mer	meridian, AM or PM.
- *	zone	minutes correction for the time zone.
- *	dayflag	whether to use daylight savings: STANDARD, DAYLIGHT or MAYBE.
+ *      mm      month number, in the range 1..12
+ *      year    year number,  in several ranges:
+ *              0..37 means 2000..2037
+ *              70..99 means 1970..1999
+ *              1970..2037 mean themselves.
+ *      dd      day of month, in the range 1..max, where max varies for
+ *              each month, as per the catchy jingle (except February,
+ *              which is a monster).
+ *      h       hours since midnight or meridian
+ *      m       minutes past hour
+ *      s       seconds past minute
+ *      mer     meridian, AM or PM.
+ *      zone    minutes correction for the time zone.
+ *      dayflag whether to use daylight savings: STANDARD, DAYLIGHT or MAYBE.
  *
  * RETURNS
- *	time_t; the time in seconds past Jan 1 0:00:00 1970 GMT, this will
- *	always be positive or zero; -1 is returned for any error.
+ *      time_t; the time in seconds past Jan 1 0:00:00 1970 GMT, this will
+ *      always be positive or zero; -1 is returned for any error.
  *
  * CAVEAT
- *	The date functions only work between 1970 and 2037,
- *	because 0 is Jan 1 00:00:00 1970 GMT
- *	and (2^31-1) is Jan 19 03:14:07 2038 GMT
- *	hence some if the weir magic number below.
+ *      The date functions only work between 1970 and 2037,
+ *      because 0 is Jan 1 00:00:00 1970 GMT
+ *      and (2^31-1) is Jan 19 03:14:07 2038 GMT
+ *      hence some if the weir magic number below.
  *
- *	Because -1 is used to represent errors, times before noon Jan 1 1970
- *	in places east of GMT can't always be represented.
+ *      Because -1 is used to represent errors, times before noon Jan 1 1970
+ *      in places east of GMT can't always be represented.
  */
 
 static time_t
@@ -226,9 +227,9 @@ dateconv(int amm, int dd, int ayear, int h, int m, int s, int mer, int zone,
     int adayflag)
 {
     time_t          result;
-    time_t	    tod;
-    time_t	    jdate;
-    int	i;
+    time_t          tod;
+    time_t          jdate;
+    int i;
 
     /*
      * make corrections for the year
@@ -236,40 +237,40 @@ dateconv(int amm, int dd, int ayear, int h, int m, int s, int mer, int zone,
      * If it is 0..99, RFC822 says pick closest century.
      */
     trace(("dateconv(amm = %d, dd = %d, ayear = %d, h = %d, m = %d, "
-	"s = %d, mer = %d, zone = %d, adayflag = %d)\n{\n",
-	amm, dd, ayear, h, m, s, mer, zone, adayflag));
+        "s = %d, mer = %d, zone = %d, adayflag = %d)\n{\n",
+        amm, dd, ayear, h, m, s, mer, zone, adayflag));
     result = -1;
     if (ayear < 0)
-	ayear = -ayear;
+        ayear = -ayear;
     if (ayear < 38)
-	ayear += 2000;
+        ayear += 2000;
     else if (ayear < 100)
-	ayear += 1900;
+        ayear += 1900;
 
     /*
      * correct February length once we know the year
      */
     mdays[1] =
-	28 + is_a_leap_year(ayear);
+        28 + is_a_leap_year(ayear);
 
     /*
      * perform some sanity checks on the input
      */
     if
     (
-	ayear < epoch
+        ayear < epoch
     ||
-	ayear >= 2038
+        ayear >= 2038
     ||
-	amm < 1
+        amm < 1
     ||
-	amm > 12
+        amm > 12
     ||
-	dd < 1
+        dd < 1
     ||
-	dd > mdays[--amm]
+        dd > mdays[--amm]
     )
-	goto done;
+        goto done;
 
     /*
      * Determine the julian day number of the dd-mm-yy given.
@@ -277,9 +278,9 @@ dateconv(int amm, int dd, int ayear, int h, int m, int s, int mer, int zone,
      */
     jdate = dd - 1;
     for (i = 0; i < amm; i++)
-	jdate += mdays[i];
+        jdate += mdays[i];
     for (i = epoch; i < ayear; i++)
-	jdate += 365 + is_a_leap_year(i);
+        jdate += 365 + is_a_leap_year(i);
     jdate *= daysec;
     jdate += zone * 60L;
 
@@ -290,7 +291,7 @@ dateconv(int amm, int dd, int ayear, int h, int m, int s, int mer, int zone,
      */
     tod = timeconv(h, m, s, mer);
     if (tod < 0)
-	goto done;
+        goto done;
     jdate += tod;
 
     /*
@@ -299,11 +300,11 @@ dateconv(int amm, int dd, int ayear, int h, int m, int s, int mer, int zone,
      */
     if
     (
-	adayflag == DAYLIGHT
+        adayflag == DAYLIGHT
     ||
-	(adayflag == MAYBE && localtime(&jdate)->tm_isdst)
+        (adayflag == MAYBE && localtime(&jdate)->tm_isdst)
     )
-	jdate += -1 * 60 * 60;
+        jdate += -1 * 60 * 60;
 
     /*
      * there you have it.
@@ -318,26 +319,26 @@ done:
 
 /*
  * NAME
- *	daylcorr
+ *      daylcorr
  *
  * SYNOPSIS
- *	time_t daylcorr(time_t future, time_t relative_to);
+ *      time_t daylcorr(time_t future, time_t relative_to);
  *
  * DESCRIPTION
- *	The daylcorr function is used to determine the difference in seconds
- *	between two times, taking daylight savings into account.
+ *      The daylcorr function is used to determine the difference in seconds
+ *      between two times, taking daylight savings into account.
  *
  * ARGUMENTS
- *	future	- a later time
- *	relative_to - an earlier time
+ *      future  - a later time
+ *      relative_to - an earlier time
  *
  * RETURNS
- *	time_t; the difference in seconds
+ *      time_t; the difference in seconds
  *
  * CAVEAT
- *	Assumes daylight savings is alays an integral number of hours.
- *	This is wrong is Saudi Arabia (time zone changes during the day),
- *	and South Australia (half hour DLS).
+ *      Assumes daylight savings is alays an integral number of hours.
+ *      This is wrong is Saudi Arabia (time zone changes during the day),
+ *      and South Australia (half hour DLS).
  */
 
 static time_t
@@ -348,7 +349,7 @@ daylcorr(time_t future, time_t relative_to)
     time_t          result;
 
     trace(("daylcorr(future = %ld, relative_to = %ld)\n{\n", (long)future,
-	(long)relative_to));
+        (long)relative_to));
     nowdayl = (localtime(&relative_to)->tm_hour + 1) % 24;
     fdayl = (localtime(&future)->tm_hour + 1) % 24;
     result = ((future - relative_to) + 60L * 60L * (nowdayl - fdayl));
@@ -360,22 +361,22 @@ daylcorr(time_t future, time_t relative_to)
 
 /*
  * NAME
- *	dayconv
+ *      dayconv
  *
  * SYNOPSIS
- *	time_t dayconv(int ord, int day, time_t relative_to);
+ *      time_t dayconv(int ord, int day, time_t relative_to);
  *
  * DESCRIPTION
- *	The dayconv function is used to convert a day-of-the-week into
- *	a meaningful time.
+ *      The dayconv function is used to convert a day-of-the-week into
+ *      a meaningful time.
  *
  * ARGUMENTS
- *	ord	- the ord'th day from relative_to
- *	day	- which day of the week
- *	relative_to - relative to this
+ *      ord     - the ord'th day from relative_to
+ *      day     - which day of the week
+ *      relative_to - relative to this
  *
  * RETURNS
- *	time_t; time in seconds from epoch
+ *      time_t; time in seconds from epoch
  */
 
 static time_t
@@ -385,7 +386,7 @@ dayconv(int ord, int aday, time_t relative_to)
     time_t          result;
 
     trace(("dayconv(ord = %d, aday = %d, relative_to = %ld)\n{\n",
-	ord, aday, (long)relative_to));
+        ord, aday, (long)relative_to));
     tod = relative_to;
     tod += daysec * ((aday - localtime(&tod)->tm_wday + 7) % 7);
     tod += 7 * daysec * (ord <= 0 ? ord : ord - 1);
@@ -398,21 +399,21 @@ dayconv(int ord, int aday, time_t relative_to)
 
 /*
  * NAME
- *	monthadd
+ *      monthadd
  *
  * SYNOPSIS
- *	time_t monthadd(time_t sdate, time_t relmonth);
+ *      time_t monthadd(time_t sdate, time_t relmonth);
  *
  * DESCRIPTION
- *	The monthadd function is used to add a given number of
- *	months to a specified time.
+ *      The monthadd function is used to add a given number of
+ *      months to a specified time.
  *
  * ARGUMENTS
- *	sdate	- add the months to this
- *	relmonth - add this many months
+ *      sdate   - add the months to this
+ *      relmonth - add this many months
  *
  * RETURNS
- *	time_t; seconds since the epoch
+ *      time_t; seconds since the epoch
  */
 
 static time_t
@@ -424,30 +425,30 @@ monthadd(time_t sdate, time_t arelmonth)
     time_t          result;
 
     trace(("monthadd(sdate = %ld, arelmonth = %ld)\n{\n",
-	(long)sdate, (long)arelmonth));
+        (long)sdate, (long)arelmonth));
     if (arelmonth == 0)
-	result = 0;
+        result = 0;
     else
     {
-	ltime = localtime(&sdate);
-	amm = 12 * (ltime->tm_year + 1900) + ltime->tm_mon + arelmonth;
-	ayear = amm / 12;
-	amm = amm % 12 + 1;
-	result =
-	    dateconv
-	    (
-	       	amm,
-	       	ltime->tm_mday,
-	       	ayear,
-	       	ltime->tm_hour,
-	       	ltime->tm_min,
-	       	ltime->tm_sec,
-	       	24,
-	       	ourzone,
-	       	MAYBE
-	    );
-	if (result >= 0)
-	    result = daylcorr(result, sdate);
+        ltime = localtime(&sdate);
+        amm = 12 * (ltime->tm_year + 1900) + ltime->tm_mon + arelmonth;
+        ayear = amm / 12;
+        amm = amm % 12 + 1;
+        result =
+            dateconv
+            (
+                amm,
+                ltime->tm_mday,
+                ayear,
+                ltime->tm_hour,
+                ltime->tm_min,
+                ltime->tm_sec,
+                24,
+                ourzone,
+                MAYBE
+            );
+        if (result >= 0)
+            result = daylcorr(result, sdate);
     }
     trace(("return %ld;\n", (long)result));
     trace(("}\n"));
@@ -457,23 +458,23 @@ monthadd(time_t sdate, time_t arelmonth)
 
 /*
  * NAME
- *	date_scan
+ *      date_scan
  *
  * SYNOPSIS
- *	time_t date_scan(char *s);
+ *      time_t date_scan(char *s);
  *
  * DESCRIPTION
- *	The date_scan function is used to scan a string and
- *	return a number of seconds since epoch.
+ *      The date_scan function is used to scan a string and
+ *      return a number of seconds since epoch.
  *
  * ARGUMENTS
- *	s	- string to scan
+ *      s       - string to scan
  *
  * RETURNS
- *	time_t; seconds to epoch, -1 on error.
+ *      time_t; seconds to epoch, -1 on error.
  *
  * CAVEAT
- *	it isn't psychic
+ *      it isn't psychic
  */
 
 time_t
@@ -481,8 +482,8 @@ date_scan(const char *p)
 {
     time_t          when;
     struct tm       *lt;
-    time_t	    result;
-    time_t	    tod;
+    time_t          result;
+    time_t          tod;
 
     /*
      * find time zone info, if not given
@@ -512,13 +513,13 @@ date_scan(const char *p)
 #else
 #ifdef HAVE_GETTIMEOFDAY
     {
-	struct timeval tv;
-	struct timezone tz;
-	if (0 == gettimeofday(&tv, &tz))
-	{
-	    ourzone = tz.tz_minuteswest;
-	    /* the tz_timezone field isn't any use */
-	}
+        struct timeval tv;
+        struct timezone tz;
+        if (0 == gettimeofday(&tv, &tz))
+        {
+            ourzone = tz.tz_minuteswest;
+            /* the tz_timezone field isn't any use */
+        }
     }
 #endif
 #endif
@@ -538,8 +539,8 @@ date_scan(const char *p)
     trace(("}\n"));
     if (result)
     {
-	result = -1;
-	goto done;
+        result = -1;
+        goto done;
     }
 
     /*
@@ -547,53 +548,53 @@ date_scan(const char *p)
      */
     result = -1;
     if (timeflag > 1 || zoneflag > 1 || dateflag > 1 || dayflag > 1)
-	goto done;
+        goto done;
 
     if (dateflag || timeflag || dayflag)
     {
-	result =
-    	    dateconv
-    	    (
-       		month,
-       		day,
-       		year,
-       		hh,
-       		mm,
-       		ss,
-       		merid,
-       		ourzone,
-       		day_light_flag
-    	    );
-	if (result < 0)
-    	    goto done;
+        result =
+            dateconv
+            (
+                month,
+                day,
+                year,
+                hh,
+                mm,
+                ss,
+                merid,
+                ourzone,
+                day_light_flag
+            );
+        if (result < 0)
+            goto done;
     }
     else
     {
-	result = when;
-	if (!relflag)
-	{
-    	    result -=
-       		(
-	  	    (lt->tm_hour * 60L + lt->tm_min * 60)
-       		+
-	  	    lt->tm_sec
-       		);
-	}
+        result = when;
+        if (!relflag)
+        {
+            result -=
+                (
+                    (lt->tm_hour * 60L + lt->tm_min * 60)
+                +
+                    lt->tm_sec
+                );
+        }
     }
 
     result += relsec;
     relsec = monthadd(result, relmonth);
     if (relsec < 0)
     {
-	result = -1;
-	goto done;
+        result = -1;
+        goto done;
     }
     result += relsec;
 
     if (dayflag && !dateflag)
     {
-	tod = dayconv(dayord, dayreq, result);
-	result += tod;
+        tod = dayconv(dayord, dayreq, result);
+        result += tod;
     }
 
     /*
@@ -608,47 +609,47 @@ done:
 
 /*
  * NAME
- *	date_string - build one
+ *      date_string - build one
  *
  * SYNOPSIS
- *	char *date_string(time_t when);
+ *      char *date_string(time_t when);
  *
  * DESCRIPTION
- *	The date_string function may be used to construct a
- *	string from a given time in seconds.
+ *      The date_string function may be used to construct a
+ *      string from a given time in seconds.
  *
- *	The string will conform to the RFC822 standard,
- *	which states a definite preference for GMT dates.
+ *      The string will conform to the RFC822 standard,
+ *      which states a definite preference for GMT dates.
  *
  * ARGUMENTS
- *	when	the time to be rendered.
+ *      when    the time to be rendered.
  *
  * RETURNS
- *	Pointer to string containing rendered time.
- *	The contents of this string will remain undisturbed
- *	only until the next call to date_string.
+ *      Pointer to string containing rendered time.
+ *      The contents of this string will remain undisturbed
+ *      only until the next call to date_string.
  */
 
 const char *
 date_string(time_t when)
 {
-    struct tm	*the_time;
-    static char	buffer[32];
+    struct tm   *the_time;
+    static char buffer[32];
 
     static const char *weekday_name[] =
     {
-	"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
     };
 
     static const char *month_name[] =
     {
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
     };
 
     /*
      * break the given time down into components
-     *	(RFC1036 likes GMT, remember)
+     *  (RFC1036 likes GMT, remember)
      */
     trace(("date_string(when = %ld)\n{\n", (long)when));
     the_time = gmtime(&when);
@@ -658,16 +659,16 @@ date_string(time_t when)
      */
     snprintf
     (
-	buffer,
-	sizeof(buffer),
-	"%s,%3d %s %4.4d %2.2d:%2.2d:%2.2d GMT",
-	weekday_name[the_time->tm_wday],
-	the_time->tm_mday,
-	month_name[the_time->tm_mon],
-	the_time->tm_year + 1900,
-	the_time->tm_hour,
-	the_time->tm_min,
-	the_time->tm_sec
+        buffer,
+        sizeof(buffer),
+        "%s,%3d %s %4.4d %2.2d:%2.2d:%2.2d GMT",
+        weekday_name[the_time->tm_wday],
+        the_time->tm_mday,
+        month_name[the_time->tm_mon],
+        the_time->tm_year + 1900,
+        the_time->tm_hour,
+        the_time->tm_min,
+        the_time->tm_sec
     );
     trace(("return \"%s\";\n", buffer));
     trace(("}\n"));
@@ -677,17 +678,17 @@ date_string(time_t when)
 
 /*
  * NAME
- *	yyerror
+ *      yyerror
  *
  * SYNOPSIS
- *	void yyerror(char *);
+ *      void yyerror(char *);
  *
  * DESCRIPTION
- *	The yyerror function is invoked by yacc to report
- *	errors, but we just throw it away.
+ *      The yyerror function is invoked by yacc to report
+ *      errors, but we just throw it away.
  *
  * ARGUMENTS
- *	s	- error to report
+ *      s       - error to report
  */
 
 static void
@@ -701,22 +702,22 @@ yyerror(const char *s)
 
 /*
  * NAME
- *	yytrace - follow parser actions
+ *      yytrace - follow parser actions
  *
  * SYNOPSIS
- *	void yytrace(char *, ...);
+ *      void yytrace(char *, ...);
  *
  * DESCRIPTION
- *	The yytrace function is used to print the various shifts
- *	and reductions, etc, done by the yacc-generated parser.
- *	lines are accumulated and printed whole,
- *	so as to avoid confusing the trace output.
+ *      The yytrace function is used to print the various shifts
+ *      and reductions, etc, done by the yacc-generated parser.
+ *      lines are accumulated and printed whole,
+ *      so as to avoid confusing the trace output.
  *
  * ARGUMENTS
- *	as for printf
+ *      as for printf
  *
  * CAVEAT
- *	only available when DEBUG is defined
+ *      only available when DEBUG is defined
  */
 
 #ifdef DEBUG
@@ -738,10 +739,10 @@ yytrace(const char *s, ...)
     str_free(buffer);
     if (line_p > line && line_p[-1] == '\n')
     {
-	line_p[-1] = '\0';
-	trace_printf("%s\n", line);
-	line[0] = '\0';
-	line_p = line;
+        line_p[-1] = '\0';
+        trace_printf("%s\n", line);
+        line[0] = '\0';
+        line_p = line;
     }
 }
 
@@ -752,207 +753,207 @@ yytrace(const char *s, ...)
 %%
 
 timedate
-	: /* empty */
-	| timedate item
-	| error
-		{
-			/*
-			 * Mostly, this production is unnecessary,
-			 * however it silences warnings about unused
-			 * labels, etc.
-			 */
-			return -1;
-		}
-	;
+        : /* empty */
+        | timedate item
+        | error
+                {
+                        /*
+                         * Mostly, this production is unnecessary,
+                         * however it silences warnings about unused
+                         * labels, etc.
+                         */
+                        return -1;
+                }
+        ;
 
 item
-	: TimeSpecification
-		{ timeflag++; }
-	| TimeZone
-		{ zoneflag++; }
-	| DateSpecification
-		{ dateflag++; }
-	| DayOfWeekSpecification
-		{ dayflag++; }
-	| RelativeSpecification
-		{ relflag++; }
-	| NumberSpecification
-	;
+        : TimeSpecification
+                { timeflag++; }
+        | TimeZone
+                { zoneflag++; }
+        | DateSpecification
+                { dateflag++; }
+        | DayOfWeekSpecification
+                { dayflag++; }
+        | RelativeSpecification
+                { relflag++; }
+        | NumberSpecification
+        ;
 
 NumberSpecification
-	: NUMBER
-		{
-			if (timeflag && dateflag && !relflag)
-				year = $1;
-			else
-			{
-				timeflag++;
-				hh = $1 / 100;
-				mm = $1 % 100;
-				ss = 0;
-				merid = 24;
-			}
-		}
-	;
+        : NUMBER
+                {
+                        if (timeflag && dateflag && !relflag)
+                                year = $1;
+                        else
+                        {
+                                timeflag++;
+                                hh = $1 / 100;
+                                mm = $1 % 100;
+                                ss = 0;
+                                merid = 24;
+                        }
+                }
+        ;
 
 TimeSpecification
-	: NUMBER MERIDIAN
-		{
-			hh = $1;
-			mm = 0;
-			ss = 0;
-			merid = $2;
-		}
-	| NUMBER COLON NUMBER
-		{
-			hh = $1;
-			mm = $3;
-			merid = 24;
-		}
-	| NUMBER COLON NUMBER MERIDIAN
-		{
-			hh = $1;
-			mm = $3;
-			merid = $4;
-		}
-	| NUMBER COLON NUMBER NUMBER
-		{
-			hh = $1;
-			mm = $3;
-			merid = 24;
-			day_light_flag = STANDARD;
-			$4 = -$4;
-			ourzone = $4 % 100 + 60 * $4 / 100;
-		}
-	| NUMBER COLON NUMBER COLON NUMBER
-		{
-			hh = $1;
-			mm = $3;
-			ss = $5;
-			merid = 24;
-		}
-	| NUMBER COLON NUMBER COLON NUMBER MERIDIAN
-		{
-			hh = $1;
-			mm = $3;
-			ss = $5;
-			merid = $6;
-		}
-	| NUMBER COLON NUMBER COLON NUMBER NUMBER
-		{
-			hh = $1;
-			mm = $3;
-			ss = $5;
-			merid = 24;
-			day_light_flag = STANDARD;
-			$6 = -$6;
-			ourzone = $6 % 100 + 60 * $6 / 100;
-		}
-	;
+        : NUMBER MERIDIAN
+                {
+                        hh = $1;
+                        mm = 0;
+                        ss = 0;
+                        merid = $2;
+                }
+        | NUMBER COLON NUMBER
+                {
+                        hh = $1;
+                        mm = $3;
+                        merid = 24;
+                }
+        | NUMBER COLON NUMBER MERIDIAN
+                {
+                        hh = $1;
+                        mm = $3;
+                        merid = $4;
+                }
+        | NUMBER COLON NUMBER NUMBER
+                {
+                        hh = $1;
+                        mm = $3;
+                        merid = 24;
+                        day_light_flag = STANDARD;
+                        $4 = -$4;
+                        ourzone = $4 % 100 + 60 * $4 / 100;
+                }
+        | NUMBER COLON NUMBER COLON NUMBER
+                {
+                        hh = $1;
+                        mm = $3;
+                        ss = $5;
+                        merid = 24;
+                }
+        | NUMBER COLON NUMBER COLON NUMBER MERIDIAN
+                {
+                        hh = $1;
+                        mm = $3;
+                        ss = $5;
+                        merid = $6;
+                }
+        | NUMBER COLON NUMBER COLON NUMBER NUMBER
+                {
+                        hh = $1;
+                        mm = $3;
+                        ss = $5;
+                        merid = 24;
+                        day_light_flag = STANDARD;
+                        $6 = -$6;
+                        ourzone = $6 % 100 + 60 * $6 / 100;
+                }
+        ;
 
 TimeZone
-	: ZONE
-		{
-			ourzone = $1;
-			day_light_flag = STANDARD;
-		}
-	| DAYZONE
-		{
-			ourzone = $1;
-			day_light_flag = DAYLIGHT;
-		}
-	;
+        : ZONE
+                {
+                        ourzone = $1;
+                        day_light_flag = STANDARD;
+                }
+        | DAYZONE
+                {
+                        ourzone = $1;
+                        day_light_flag = DAYLIGHT;
+                }
+        ;
 
 DayOfWeekSpecification
-	: DAY
-		{
-			dayord = 1;
-			dayreq = $1;
-		}
-	| DAY COMMA
-		{
-			dayord = 1;
-			dayreq = $1;
-		}
-	| NUMBER DAY
-		{
-			dayord = $1;
-			dayreq = $2;
-		}
-	;
+        : DAY
+                {
+                        dayord = 1;
+                        dayreq = $1;
+                }
+        | DAY COMMA
+                {
+                        dayord = 1;
+                        dayreq = $1;
+                }
+        | NUMBER DAY
+                {
+                        dayord = $1;
+                        dayreq = $2;
+                }
+        ;
 
 DateSpecification
-	: NUMBER SLASH NUMBER
-		{
-			if ($1 > 12 && $3 <= 12)
-			{
-				day = $1;
-				month = $3;
-			}
-			else
-			{
-				month = $1;
-				day = $3;
-			}
-		}
-	| NUMBER SLASH NUMBER SLASH NUMBER
-		{
-			if ($1 > 12 && $3 <= 12)
-			{
-				/* european and Australian */
-				day = $1;
-				month = $3;
-			}
-			else
-			{
-				month = $1;
-				day = $3;
-			}
-			year = $5;
-		}
-	| MONTH NUMBER
-		{
-			month = $1;
-			day = $2;
-		}
-	| MONTH NUMBER COMMA NUMBER
-		{
-			month = $1;
-			day = $2;
-			year = $4;
-		}
-	| NUMBER MONTH
-		{
-			month = $2;
-			day = $1;
-		}
-	| NUMBER MONTH NUMBER
-		{
-			month = $2;
-			day = $1;
-			year = $3;
-		}
-	;
+        : NUMBER SLASH NUMBER
+                {
+                        if ($1 > 12 && $3 <= 12)
+                        {
+                                day = $1;
+                                month = $3;
+                        }
+                        else
+                        {
+                                month = $1;
+                                day = $3;
+                        }
+                }
+        | NUMBER SLASH NUMBER SLASH NUMBER
+                {
+                        if ($1 > 12 && $3 <= 12)
+                        {
+                                /* european and Australian */
+                                day = $1;
+                                month = $3;
+                        }
+                        else
+                        {
+                                month = $1;
+                                day = $3;
+                        }
+                        year = $5;
+                }
+        | MONTH NUMBER
+                {
+                        month = $1;
+                        day = $2;
+                }
+        | MONTH NUMBER COMMA NUMBER
+                {
+                        month = $1;
+                        day = $2;
+                        year = $4;
+                }
+        | NUMBER MONTH
+                {
+                        month = $2;
+                        day = $1;
+                }
+        | NUMBER MONTH NUMBER
+                {
+                        month = $2;
+                        day = $1;
+                        year = $3;
+                }
+        ;
 
 RelativeSpecification
-	: NUMBER UNIT
-		{ relsec +=  60L * $1 * $2; }
-	| NUMBER MUNIT
-		{ relmonth += $1 * $2; }
-	| NUMBER SUNIT
-		{ relsec += $1; }
-	| UNIT
-		{ relsec +=  60L * $1; }
-	| MUNIT
-		{ relmonth += $1; }
-	| SUNIT
-		{ relsec++; }
-	| RelativeSpecification AGO
-		{
-			relsec = -relsec;
-			relmonth = -relmonth;
-		}
-	;
+        : NUMBER UNIT
+                { relsec +=  60L * $1 * $2; }
+        | NUMBER MUNIT
+                { relmonth += $1 * $2; }
+        | NUMBER SUNIT
+                { relsec += $1; }
+        | UNIT
+                { relsec +=  60L * $1; }
+        | MUNIT
+                { relmonth += $1; }
+        | SUNIT
+                { relsec++; }
+        | RelativeSpecification AGO
+                {
+                        relsec = -relsec;
+                        relmonth = -relmonth;
+                }
+        ;
 
 %%
 
@@ -961,18 +962,18 @@ RelativeSpecification
 
 /*
  * NAME
- *	table - list of known names
+ *      table - list of known names
  *
  * SYNOPSIS
- *	table_t table[];
+ *      table_t table[];
  *
  * DESCRIPTION
- *	The table is used to hold the list of known names.
- *	This includes time zone names and days of the week, etc.
+ *      The table is used to hold the list of known names.
+ *      This includes time zone names and days of the week, etc.
  *
  * CAVEAT
- *	It is in English.
- *	It is impossible to have a full list of time zones.
+ *      It is in English.
+ *      It is impossible to have a full list of time zones.
  */
 
 struct table_t
@@ -1201,20 +1202,20 @@ static table_t table[] =
 
 /*
  * NAME
- *	lookup - find name
+ *      lookup - find name
  *
  * SYNOPSIS
- *	int lookup(char *id);
+ *      int lookup(char *id);
  *
  * DESCRIPTION
- *	The lookup function is used to find a token corresponding to
- *	a given name.
+ *      The lookup function is used to find a token corresponding to
+ *      a given name.
  *
  * ARGUMENTS
- *	id	- name to search for.  Assumes already downcased.
+ *      id      - name to search for.  Assumes already downcased.
  *
  * RETURNS
- *	int; yacc token, ID if not found.
+ *      int; yacc token, ID if not found.
  */
 
 static int
@@ -1236,19 +1237,19 @@ lookup(char *id)
     max = SIZEOF(table) - 1;
     while (min <= max)
     {
-	mid = (min + max) / 2;
-	tp = table + mid;
-	cmp = strcmp(id, tp->name);
-	if (!cmp)
-	{
-	    yylval = tp->value;
-	    result = tp->type;
-	    break;
-	}
-	if (cmp < 0)
-	    max = mid - 1;
-	else
-	    min = mid + 1;
+        mid = (min + max) / 2;
+        tp = table + mid;
+        cmp = strcmp(id, tp->name);
+        if (!cmp)
+        {
+            yylval = tp->value;
+            result = tp->type;
+            break;
+        }
+        if (cmp < 0)
+            max = mid - 1;
+        else
+            min = mid + 1;
     }
     trace(("return %d;\n", result));
     trace(("}\n"));
@@ -1258,17 +1259,17 @@ lookup(char *id)
 
 /*
  * NAME
- *	yylex - lexical analyser
+ *      yylex - lexical analyser
  *
  * SYNOPSIS
- *	int yylex(void);
+ *      int yylex(void);
  *
  * DESCRIPTION
- *	The yylex function is used to scan the input string
- *	and break it into discrete tokens.
+ *      The yylex function is used to scan the input string
+ *      and break it into discrete tokens.
  *
  * RETURNS
- *	int; the yacc token, 0 means the-end.
+ *      int; the yacc token, 0 means the-end.
  */
 
 static int
@@ -1285,174 +1286,177 @@ yylex(void)
     yylval = 0;
     for (;;)
     {
-	/*
-	 * get the next input character
-	 */
-	c = *lptr++;
+        /*
+         * get the next input character
+         */
+        c = *lptr++;
 
-	/*
-	 * action depends on the character
-	 */
-	switch (c)
-	{
-	case 0:
-	    token = 0;
-	    lptr--;
-	    break;
+        /*
+         * action depends on the character
+         */
+        switch (c)
+        {
+        case 0:
+            token = 0;
+            lptr--;
+            break;
 
-	case ' ':
-	case '\t':
-	    /*
-	     * ignore white space
-	     */
-	    continue;
+        case ' ':
+        case '\t':
+            /*
+             * ignore white space
+             */
+            continue;
 
-	case ':':
-	    token = COLON;
-	    break;
+        case ':':
+            token = COLON;
+            break;
 
-	case ',':
-	    token = COMMA;
-	    break;
+        case ',':
+            token = COMMA;
+            break;
 
-	case '/':
-	    token = SLASH;
-	    break;
+        case '/':
+            token = SLASH;
+            break;
 
-	case '.':
-	    /* ignore lonely dots */
-	    continue;
+        case '.':
+            /* ignore lonely dots */
+            continue;
 
-	case '-':
-	    if (!isdigit((unsigned char)*lptr))
-	    {
-		/*
-		 * ignore lonely '-'s
-		 */
-		continue;
-	    }
-	    sign = -1;
-	    c = *lptr++;
-	    goto number;
+        case '-':
+            if (!isdigit((unsigned char)*lptr))
+            {
+                /*
+                 * ignore lonely '-'s
+                 */
+                continue;
+            }
+            sign = -1;
+            c = *lptr++;
+            goto number;
 
-	case '+':
-	    if (!isdigit((unsigned char)*lptr))
-	    {
-	       	token = c;
-	       	break;
-	    }
-	    sign = 1;
-	    c = *lptr++;
-	    goto number;
+        case '+':
+            if (!isdigit((unsigned char)*lptr))
+            {
+                token = c;
+                break;
+            }
+            sign = 1;
+            c = *lptr++;
+            goto number;
 
-	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9':
-	    /*
-	     * numbers
-	     */
-	    sign = 1;
-	    number:
-	    for (;;)
-	    {
-		yylval = yylval * 10 + c - '0';
-		c = *lptr++;
-		switch (c)
-		{
-		case '0': case '1': case '2': case '3':
-		case '4': case '5': case '6': case '7':
-		case '8': case '9':
-		    continue;
-		}
-		break;
-	    }
-	    yylval *= sign;
-	    lptr--;
-	    token = NUMBER;
-	    break;
+        case '0': case '1': case '2': case '3': case '4':
+        case '5': case '6': case '7': case '8': case '9':
+            /*
+             * numbers
+             */
+            sign = 1;
+            number:
+            for (;;)
+            {
+                yylval = yylval * 10 + c - '0';
+                c = *lptr++;
+                switch (c)
+                {
+                case '0': case '1': case '2': case '3':
+                case '4': case '5': case '6': case '7':
+                case '8': case '9':
+                    continue;
+                }
+                break;
+            }
+            yylval *= sign;
+            lptr--;
+            token = NUMBER;
+            break;
 
-	case 'a': case 'b': case 'c': case 'd': case 'e':
-	case 'f': case 'g': case 'h': case 'i': case 'j':
-	case 'k': case 'l': case 'm': case 'n': case 'o':
-	case 'p': case 'q': case 'r': case 's': case 't':
-	case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
-	case 'A': case 'B': case 'C': case 'D': case 'E':
-	case 'F': case 'G': case 'H': case 'I': case 'J':
-	case 'K': case 'L': case 'M': case 'N': case 'O':
-	case 'P': case 'Q': case 'R': case 'S': case 'T':
-	case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
-	    /*
-	     * name
-	     */
-	    p = idbuf;
-	    for (;;)
-	    {
-		if (isupper((unsigned char)c))
-		    c = tolower(c);
-		if (p < idbuf + sizeof(idbuf) - 1)
-		    *p++ = c;
-		c = *lptr++;
-		switch (c)
-		{
-		case 'a': case 'b': case 'c': case 'd':
-		case 'e': case 'f': case 'g': case 'h':
-		case 'i': case 'j': case 'k': case 'l':
-		case 'm': case 'n': case 'o': case 'p':
-		case 'q': case 'r': case 's': case 't':
-		case 'u': case 'v': case 'w': case 'x':
-		case 'y': case 'z':
-		case 'A': case 'B': case 'C': case 'D':
-		case 'E': case 'F': case 'G': case 'H':
-		case 'I': case 'J': case 'K': case 'L':
-		case 'M': case 'N': case 'O': case 'P':
-		case 'Q': case 'R': case 'S': case 'T':
-		case 'U': case 'V': case 'W': case 'X':
-		case 'Y': case 'Z':
-		case '.':
-		    continue;
-		}
-		break;
-	    }
-	    *p = 0;
-	    lptr--;
-	    token = lookup(idbuf);
-	    break;
+        case 'a': case 'b': case 'c': case 'd': case 'e':
+        case 'f': case 'g': case 'h': case 'i': case 'j':
+        case 'k': case 'l': case 'm': case 'n': case 'o':
+        case 'p': case 'q': case 'r': case 's': case 't':
+        case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
+        case 'A': case 'B': case 'C': case 'D': case 'E':
+        case 'F': case 'G': case 'H': case 'I': case 'J':
+        case 'K': case 'L': case 'M': case 'N': case 'O':
+        case 'P': case 'Q': case 'R': case 'S': case 'T':
+        case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
+            /*
+             * name
+             */
+            p = idbuf;
+            for (;;)
+            {
+                if (isupper((unsigned char)c))
+                    c = tolower(c);
+                if (p < idbuf + sizeof(idbuf) - 1)
+                    *p++ = c;
+                c = *lptr++;
+                switch (c)
+                {
+                case 'a': case 'b': case 'c': case 'd':
+                case 'e': case 'f': case 'g': case 'h':
+                case 'i': case 'j': case 'k': case 'l':
+                case 'm': case 'n': case 'o': case 'p':
+                case 'q': case 'r': case 's': case 't':
+                case 'u': case 'v': case 'w': case 'x':
+                case 'y': case 'z':
+                case 'A': case 'B': case 'C': case 'D':
+                case 'E': case 'F': case 'G': case 'H':
+                case 'I': case 'J': case 'K': case 'L':
+                case 'M': case 'N': case 'O': case 'P':
+                case 'Q': case 'R': case 'S': case 'T':
+                case 'U': case 'V': case 'W': case 'X':
+                case 'Y': case 'Z':
+                case '.':
+                    continue;
+                }
+                break;
+            }
+            *p = 0;
+            lptr--;
+            token = lookup(idbuf);
+            break;
 
-	case '(':
-	    /*
-	     * comment
-	     */
-	    for (pcnt = 1; pcnt > 0; )
-	    {
-		c = *lptr++;
-		switch (c)
-		{
-		case 0:
-		    --lptr;
-		    pcnt = 0;
-		    break;
+        case '(':
+            /*
+             * comment
+             */
+            for (pcnt = 1; pcnt > 0; )
+            {
+                c = *lptr++;
+                switch (c)
+                {
+                case 0:
+                    --lptr;
+                    pcnt = 0;
+                    break;
 
-		case '(':
-		    pcnt++;
-		    break;
+                case '(':
+                    pcnt++;
+                    break;
 
-		case ')':
-		    pcnt--;
-		    break;
-		}
-	    }
-	    continue;
+                case ')':
+                    pcnt--;
+                    break;
+                }
+            }
+            continue;
 
-	default:
-	    /*
-	     * unrecognosed
-	     */
-	    token = JUNK;
-	    break;
-	}
-	break;
+        default:
+            /*
+             * unrecognosed
+             */
+            token = JUNK;
+            break;
+        }
+        break;
     }
     trace(("yylval = %d;\n", yylval));
     trace(("return %d;\n", token));
     trace(("}\n"));
     return token;
 }
+
+
+/* vim: set ts=8 sw=4 et : */

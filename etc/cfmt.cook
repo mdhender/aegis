@@ -1,6 +1,6 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 2002, 2004, 2006-2008 Peter Miller
+ * Copyright (C) 2002, 2004, 2006-2008, 2012 Peter Miller
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ cfmt = [find_command cfmt];
 
 %1/%0%.cfmt: %1/%0%
 {
+    if [quiet] then
+        function print Build [target];
     local extra =
         [stringset [cc_include_flags] [prepost "-I" "/%1" [search_list]]];
     [cfmt] --style\=miller [extra] [resolve %1/%0%] [target];
@@ -36,6 +38,8 @@ cfmt = [find_command cfmt];
 
 etc/.cfmt: [addsuffix ".cfmt" [match_mask %0%.cc [source_files]]]
 {
+    if [quiet] then
+        function print Build [target];
     date > [target];
 }
 
@@ -44,3 +48,6 @@ all += etc/.cfmt;
 #endif
 
 #endif
+
+
+/* vim: set ts=8 sw=4 et : */

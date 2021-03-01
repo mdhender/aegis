@@ -1,26 +1,25 @@
 '\" t
-.\"     aegis - project change supervisor
-.\"     Copyright (C) 1994-1996, 1998-2008 Peter Miller
-.\"     Copyright (C) 2006-2008 Walter Franzini
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994-1996, 1998-2010, 2012 Peter Miller
+.\" Copyright (C) 2006-2008, 2010 Walter Franzini
 .\"
-.\"     This program is free software; you can redistribute it and/or modify
-.\"     it under the terms of the GNU General Public License as published by
-.\"     the Free Software Foundation; either version 3 of the License, or
-.\"     (at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"     This program is distributed in the hope that it will be useful,
-.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"     GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"     You should have received a copy of the GNU General Public License
-.\"     along with this program. If not, see
-.\"     <http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aepconf 5 \*(N) "Reference Manual"
 .SH NAME
-aepconf - aegis project configuration file
+aepconf \- aegis project configuration file
 .XX "aepconf(5)" "project configuration file format"
 .SH SYNOPSIS
 \f[I]project\fP\f(CW/baseline/aegis.conf\fP \f[I](default)\fP
@@ -89,7 +88,7 @@ use the \f[I]aenf \-config\fP option.  For example, the
 .RS
 .nf
 .ft CW
-$ \f[CB]aenf -config project.configuration\fP
+$ \f[CB]aenf \-config project.configuration\fP
 $
 .ft R
 .fi
@@ -123,7 +122,7 @@ no effect.
 .PP
 It is recommended that if you use this field at all, that your top level
 project \f[I]aegis.conf\fP file should only contain this one field.  This is
-to avoid overly-large re-reading of this file when it is joined to all
+to avoid overly\[hy]large re\[hy]reading of this file when it is joined to all
 the others.
 .RE
 .TP 8n
@@ -144,7 +143,7 @@ Executed as: the integrator (for integration builds) or the developer
 Current directory: the integration directory of the change (for
 integration builds) the development directory of the change
 (for development builds).
-Exit status: zero is considered success, non-zero is a failure
+Exit status: zero is considered success, non\[hy]zero is a failure
 and a subsequent successful (exit zero) build will be required.
 .PP
 If this field is set to \f[CW]"exit 0"\fP then no integration build will be
@@ -164,7 +163,7 @@ are available.
 .PP
 Executed as: the developer.
 Current directory: the development directory of the change.
-Exit status: zero is considered success, non-zero is a failure
+Exit status: zero is considered success, non\[hy]zero is a failure
 and a subsequent successful (exit zero) build will be required.
 .PP
 If this field is set to \f[CW]"exit 0"\fP then no development build will be
@@ -237,7 +236,7 @@ start doing anything.  If possible, change your build system to use the
 source_file_whiteout = boolean;
 .RS
 The \f[I]source_file_whiteout\f[P] field mat be used to specify the
-presence (true) or absence (false) of white-out files, used to
+presence (true) or absence (false) of white\[hy]out files, used to
 "cover up" files being removed by a change set.  These files
 contain 1kB of random data, intended to cause a syntax error
 should be build reference them.
@@ -252,7 +251,7 @@ Not meaningful (always false) for integration builds.
 .TP 8n
 derived_file_link = boolean;
 .RS
-This field is true if hard links are to be used for non-source files
+This field is true if hard links are to be used for non\[hy]source files
 which are present in the project baseline(s) but which are not present
 in the work area, so that the work area has a complete set of derived
 files.  This allows work areas to take advantage of "precompiled" object
@@ -277,7 +276,7 @@ symbolic links).
 .TP 8n
 derived_file_symlink = boolean;
 .RS
-This field is true if symbolic links are to be used for non-source files
+This field is true if symbolic links are to be used for non\[hy]source files
 which are present in the project baseline(s) but which are not present
 in the work area, so that the work area has a complete set of derived
 files.  This allows work areas to take advantage of "precompiled" object
@@ -305,7 +304,7 @@ See also the \f[I]integrate_\%begin_\%exceptions\fP and
 .TP 8n
 derived_file_copy = boolean;
 .RS
-This field is true if copies are to be used for non-source files which
+This field is true if copies are to be used for non\[hy]source files which
 are present in the project baseline(s) but which are not present in the
 work area, so that the work area has a complete set of derived files.
 This allows work areas to take advantage of "precompiled" object files
@@ -385,6 +384,9 @@ Ideally, however, you should use the \f[I]$search_path\fP substitution of
 the \f[I]build_command\fP field.  This is because the view path scales
 better than any other method.  On the other hand, you need a DMT with an
 excellent view path implementation (and GNU \f[I]make\fP doesn't).
+.PP
+The development directory style is applied \f[I]after\fP the
+\f[CW]develop_\%begin_\%command\fP hook is run.
 .RE
 .\" ------------------------------------------------------------------------
 .TP 8n
@@ -408,10 +410,10 @@ directory.  This field operates after that operation.
 .TP 8n
 build_time_adjust_notify_command = string;
 .RS
-This command is run when Aegis adjusts the last-time-modified
-time-stamp on files in the integration directory.  If the build tool
+This command is run when Aegis adjusts the last\[hy]time\[hy]modified
+time\[hy]stamp on files in the integration directory.  If the build tool
 uses additional information to supplement file modification times, this
-command gives you the opportunity to re-sync the associated database.
+command gives you the opportunity to re\[hy]sync the associated database.
 .PP
 Executed as: the project owner.
 .PP
@@ -423,7 +425,7 @@ a partial state from which recovery may be difficult. Best to define
 this command with a
 .IR set +e
 so that errors are ignored at the command level.
-.\" Neither of these make much sense - but it is what I observed when
+.\" Neither of these make much sense \- but it is what I observed when
 .\" the command failed in a new branch first integration.
 .RE
 .TP 8n
@@ -431,7 +433,7 @@ build_covers_all_architectures = boolean;
 .RS
 This field is set to true if the build command, when executed on any
 architecture, results in all architectures being built.  This may be
-accomplished, for example, by using cross-compilation techniques, or
+accomplished, for example, by using cross\[hy]compilation techniques, or
 Cook's ability to nominate hosts on which to execute each build rule.
 .RE
 .TP 8n
@@ -454,14 +456,14 @@ naming only the last filename path element will \f[I]not\fP work
 change_file_command = string;
 .RS 8n
 This field contains a command to be executed whenever a
-\'\*(n) -CoPy_file\',
-\'\*(n) -New_File\'
-\'\*(n) -New_Test\'
-\'\*(n) -MoVe_file\'
+\'\*(n) \-CoPy_file\',
+\'\*(n) \-New_File\'
+\'\*(n) \-New_Test\'
+\'\*(n) \-MoVe_file\'
 or
-\'\*(n) -ReMove_file\'
+\'\*(n) \-ReMove_file\'
 command is successful.
-See also command-specific overrides.
+See also command\[hy]specific overrides.
 If this field is absent, nothing is done.
 Used by the
 .IR aecp (1),
@@ -488,15 +490,15 @@ Exit status: ignored.
 change_file_undo_command = string;
 .RS 8n
 This field contains a command to be executed whenever a
-\'\*(n) -CoPy_file_Undo',
-\'\*(n) -MoVe_file_Undo'
-\'\*(n) -New_File_Undo',
-\'\*(n) -New_Test_Undo',
+\'\*(n) \-CoPy_file_Undo',
+\'\*(n) \-MoVe_file_Undo'
+\'\*(n) \-New_File_Undo',
+\'\*(n) \-New_Test_Undo',
 or
-\'\*(n) -ReMove_file_Undo'
+\'\*(n) \-ReMove_file_Undo'
 command is successful.
 Default to \f[I]change_\%file_\%command\fP if absent.
-See also command-specific overrides.
+See also command\[hy]specific overrides.
 If both fields are absent, nothing is done.
 Used by the
 .IR aecpu (1),
@@ -522,7 +524,7 @@ Exit status: ignored.
 .TP 8n
 new_file_command = string;
 .RS
-Executed whenever the aegis -new_file command is run successfully.
+Executed whenever the aegis \-new_file command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -538,7 +540,7 @@ Exit status: ignored.
 .TP 8n
 new_test_command = string;
 .RS
-Executed whenever the aegis -new_test command is run successfully.
+Executed whenever the aegis \-new_test command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -554,7 +556,7 @@ Exit status: ignored.
 .TP 8n
 copy_file_command = string;
 .RS
-Executed whenever the aegis -copy_file command is run successfully.
+Executed whenever the aegis \-copy_file command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -570,7 +572,7 @@ Exit status: ignored.
 .TP 8n
 remove_file_command = string;
 .RS
-Executed whenever the aegis -remove_file command is run successfully.
+Executed whenever the aegis \-remove_file command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -586,7 +588,7 @@ Exit status: ignored.
 .TP 8n
 new_file_undo_command = string;
 .RS
-Executed whenever the aegis -new_file_undo command is run successfully.
+Executed whenever the aegis \-new_file_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -602,7 +604,7 @@ Exit status: ignored.
 .TP 8n
 new_test_undo_command = string;
 .RS
-Executed whenever the aegis -new_test_undo command is run successfully.
+Executed whenever the aegis \-new_test_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -618,7 +620,7 @@ Exit status: ignored
 .TP 8n
 copy_file_undo_command = string;
 .RS
-Executed whenever the aegis -copy_file_undo command is run successfully.
+Executed whenever the aegis \-copy_file_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -635,7 +637,7 @@ Exit status: ignored
 .TP 8n
 remove_file_undo_command = string;
 .RS
-Executed whenever the aegis -remove_file_undo command is run successfully.
+Executed whenever the aegis \-remove_file_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -653,7 +655,7 @@ Exit status: ignored
 make_transparent_command = string;
 .RS
 The make_transparent_command is executed whenever the
-aegis -make_transparent command is run successfully.
+aegis \-make_transparent command is run successfully.
 Defaults to change_file_command if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -671,7 +673,7 @@ Exit status: ignored
 make_transparent_undo_command = string;
 .RS
 The make_transparent_undo_command is executed whenever the
-aegis -make_transparent_undo command is run successfully.
+aegis \-make_transparent_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
 All of the substitutions described in \f[I]aesub\fP(5) are available.
@@ -704,11 +706,35 @@ All of the substitutions described by
 .IR aesub (5)
 are available.
 .RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+develop_begin_early_command = string;
+.RS
+This field contains a command to be executed
+at the beginning of a '\*(n) \-Develop_Begin'
+command, immediately after the development directory has been created.
+If this field is absent, nothing is done.
+Used by the
+.IR aedb (1)
+command.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.PP
+Executed as: the developer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.PP
+\f[B]Note:\fP
+This command is run from inside the lock, so running \f[I]any\fP Aegis command
+that modifies the change state will cause a deadlock.
+.RE
+.\" ------------------------------------------------------------------------
 .TP 8n
 develop_begin_command = string;
 .RS
 This field contains a command to be executed whenever
-a '\*(n) -Develop_Begin'
+a '\*(n) \-Develop_Begin'
 command is successful.
 If this field is absent, nothing is done.
 Used by the
@@ -722,11 +748,12 @@ Executed as: the developer.
 Current directory: the development directory of the change.
 Exit status: ignored.
 .RE
+.\" ------------------------------------------------------------------------
 .TP 8n
 develop_begin_undo_command = string;
 .RS
 This field contains a command to be executed whenever
-a '\*(n) -Develop_Begin_Undo'
+a '\*(n) \-Develop_Begin_Undo'
 command is successful.
 If this field is absent, nothing is done.
 Used by the
@@ -744,7 +771,7 @@ Exit status: ignored.
 integrate_begin_command = string;
 .RS
 This field contains a command to be executed whenever
-a '\*(n) -Integrate_Begin'
+a '\*(n) \-Integrate_Begin'
 command is successful.
 If this field is absent, nothing is done.
 Used by the
@@ -821,7 +848,7 @@ and
 substitutions to yield a string suitable for the history tool in question.
 .TP
 ${File_Name}
-The base relative file name of the file for this check-in.
+The base relative file name of the file for this check\[hy]in.
 Note that the file name can vary over the lifetime of the file as it is
 renamed, but the history file name (above) never varies.
 \f[I]Do not use\fP this as the name of the history file.
@@ -839,8 +866,15 @@ field, below.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the integrate pass will fail).
+.PP
+Note: For projects created \*(N) 4.26 or later, it is possible to
+change the history tool used by the project simply changing the various
+\f[I]history_*_command\fP documented in this man page.  It is also
+possible to change the history tool for projects created with
+\f[I]aeimport\f[P] 4.26 or later, however the original tool must be
+available to access older file's revisions.
 .RE
 .TP 8n
 history_get_command = string;
@@ -877,9 +911,9 @@ ${Output}
 The absolute path of the destination file.
 .PP
 Executed as: the developer (or the executing user, in the case of
-the -independent option).
+the \-independent option).
 Current directory: the base of the history tree
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the \f[I]aecp\fP will fail).
 .RE
 .TP 8n
@@ -915,7 +949,7 @@ and
 substitutions to yield a string suitable for the history tool in question.
 .TP
 ${File_Name}
-The base relative file name of the file for this check-in.
+The base relative file name of the file for this check\[hy]in.
 Note that the file name can vary over the lifetime of the file as it is
 renamed, but the history file name (above) never varies.
 \f[I]Do not use\fP this as the name of the history file.
@@ -933,7 +967,7 @@ field, below.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .\" ------------------------------------------------------------------------
@@ -949,7 +983,7 @@ If you need a transaction ID, use the \f[I]$version\fP substitution.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .\" ------------------------------------------------------------------------
@@ -966,7 +1000,7 @@ If you need a transaction ID, use the \f[I]$version\fP substitution.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .\" ------------------------------------------------------------------------
@@ -1012,7 +1046,7 @@ substitutions to yield a string suitable for the history tool in question.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .TP 8n
@@ -1059,7 +1093,7 @@ it is set to the value passed in from the command line.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (a warning will be issued).
 .PP
 Labeling does not scale, so the use of this command is not encouraged.
@@ -1076,7 +1110,7 @@ Many history tools (e.g. RCS) can modify the contents of the file
 when it is committed.  While there are usually options to turn this
 off, they are seldom used.  The problem is: if the commit changes the
 file, the source in the repository now no longer matches the object
-file in the repository - i.e. the history tool has compromised the
+file in the repository \- i.e. the history tool has compromised the
 referential integrity of the repository.
 .TP 4n
 fatal
@@ -1160,7 +1194,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the aed will fail).
 .PP
 \f[B]Note:\fP
@@ -1217,7 +1251,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -1229,8 +1263,8 @@ The command is always executed by developers.
 Used by the \f[I]aepatch\fP(1) command.
 .PP
 Defaults to \f[CW]"set +e;
-diff -c -L $index -L $index $original $input > $output;
-test $? -le 1"\fP if not set.
+diff \-c \-L $index \-L $index $original $input > $output;
+test $? \-le 1"\fP if not set.
 .PP
 All of the substitutions described by
 .IR aesub (5)
@@ -1254,14 +1288,14 @@ The absolute path of the file in which to write the difference listing.
 .TP 8n
 ${INDex}
 .br
-The project-relative name of the file, for use when the file name is
+The project\[hy]relative name of the file, for use when the file name is
 embedded in the output.  (Optional.)
 .PP
 Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -1275,17 +1309,18 @@ executed by developers.  Used by the \f[I]aeannotate\fP(1) command.
 Extreme care should be taken if you are considering setting this field,
 otherwise the result reported by \f[I]aeannotate\fP(1) may bear little
 relation to reality.
-The most useful option is GNU diff's \f[B]\-\-ignore-all-space\fP option,
+The most useful option is GNU diff's
+\f[B]\-\-ignore\[hy]all\[hy]space\fP option,
 which will have the effect of ignoring the majority of indenting and
-code formatting changes.  The \f[B]\-\-ignore-case\fP option could also
+code formatting changes.  The \f[B]\-\-ignore\[hy]case\fP option could also
 be useful for case insensitive languages such as FORTRAN or PL/1.
 Avoid options which would alter the number of lines, such as \f[B]\-
--ignore-blank-lines\fP or \f[B]\-\-context\fP as these will produce
+\-ignore\[hy]blank\[hy]lines\fP or \f[B]\-\-context\fP as these will produce
 misleading results.
 .PP
 Defaults to \f[CW]"set +e;
 diff $option $original $input > $output;
-test $? -le 1"\fP if not set.
+test $? \-le 1"\fP if not set.
 .PP
 All of the substitutions described by
 .IR aesub (5)
@@ -1309,19 +1344,19 @@ The absolute path of the file in which to write the difference listing.
 .TP 8n
 ${INDex}
 .br
-The project-relative name of the file, for use when the file name is
+The project\[hy]relative name of the file, for use when the file name is
 embedded in the output.  (Optional.)
 .TP 8n
 ${OPTion}
 Extra options to be passed to the diff command, as set by the
-\f[I]aeannotate\fP(1) \f[B]\-diff-option\fP command line option.
+\f[I]aeannotate\fP(1) \f[B]\-diff\[hy]option\fP command line option.
 Use with extreme care.
 .PP
 Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -1335,7 +1370,7 @@ Defaults to "\f[CW]exit 0\fP" if not set.
 .PP
 The exit status is examined.  An zero exit status (success) means that
 the change will proceed to the \f[I]awaiting integration\fP state; a
-non-zero exit status (failure) means that the change requires further
+non\[hy]zero exit status (failure) means that the change requires further
 review state, and the \f[I]develop_\%end_\%action\fP is consulted
 to determine the appropriate state (\f[I]awaiting_\%review\fP or
 \f[I]being_\%reviewed\fP) for the change to move to.
@@ -1347,7 +1382,7 @@ with the change.
 .PP
 Executed as: the current reviewer.
 Current directory: the development directory.
-Exit status: zero indicates success, non-zero indicates failure.
+Exit status: zero indicates success, non\[hy]zero indicates failure.
 .PP
 For example, to have a script which is a project source file to be used
 to gate the code review process, a setting such as the following may be
@@ -1355,9 +1390,9 @@ used:
 .RS
 review_policy_command =
     "$sh ${source script/reviewpolicy.sh} "
-    "-p $project -c $change "
-    "-d ${developer_list} "
-    "-r ${reviewer_list}"
+    "\-p $project \-c $change "
+    "\-d ${developer_list} "
+    "\-r ${reviewer_list}"
     ;
 .RE
 This is only one of many ways to implement a project specific review policy.
@@ -1367,22 +1402,22 @@ develop_end_policy_command = string;
 .RS
 This field is used to set the command to be executed by the
 \f[I]aede\fP(1) command.  This command is useful in cases where the
-enterprise has determined that additional pre-conditions must be met (in
+enterprise has determined that additional pre\[hy]conditions must be met (in
 addition to those already imposed by the \f[I]aede\fP(1) command) before
 a change may leave the \f[I]being developed\fP state.
 Defaults to "\f[CW]exit 0\fP" if not set.
 .PP
 The exit status is examined.  An zero exit status (success) means that
-the change may leave to the \f[I]being developed\fP state; a non-zero exit
+the change may leave to the \f[I]being developed\fP state; a non\[hy]zero exit
 status (failure) means that the change requires further development.
 .PP
 All of the substitutions described by \f[I]aesub\fP(5) are available.
 .PP
 Executed as: the developer.
 Current directory: the development directory.
-Exit status: zero indicates success, non-zero indicates failure.
+Exit status: zero indicates success, non\[hy]zero indicates failure.
 .PP
-There are some common validations available in the \f[I]aede-policy\fP(1)
+There are some common validations available in the \f[I]aede\[hy]policy\fP(1)
 command; you may choose all or only some of them, or you may choose to
 write a policy command specific to your project.
 .RE
@@ -1455,7 +1490,7 @@ ${Search_Path_Executable}
 .br
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
-\f[I]except\fP during an \[lq]aet -bl\[rq] command.
+\f[I]except\fP during an \[lq]aet \-bl\[rq] command.
 .TP 8n
 ${VARiables}
 .br
@@ -1467,11 +1502,11 @@ Note that tests are source files,
 and thus never have the execute bit set.
 .PP
 Executed as: the project owner (for integration tests) or the developer
-(for development tests), or the executing user (for -independent tests).
+(for development tests), or the executing user (for \-independent tests).
 Current directory: the integration directory (for integration tests),
 the development directory (for development tests), the project
-baseline (for -bl tests), or the current directory (for
--independent tests).
+baseline (for \-bl tests), or the current directory (for
+\-independent tests).
 Exit status: zero indicates success, one indicates failure, anything
 else indicates "no result".
 .RE
@@ -1519,7 +1554,7 @@ ${Search_Path_Executable}
 .br
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
-\f[I]except\fP during an \[lq]aet -bl\[rq] command.
+\f[I]except\fP during an \[lq]aet \-bl\[rq] command.
 .TP 8n
 ${VARiables}
 .br
@@ -1532,7 +1567,7 @@ and thus never have the execute bit set.
 .PP
 Executed as: the developer.
 Current directory: the development directory (for development tests),
-the project baseline (for -bl tests).
+the project baseline (for \-bl tests).
 Exit status: zero indicates success, one indicates failure, anything
 else indicates "no result".
 .RE
@@ -1574,7 +1609,7 @@ ${Search_Path_Executable}
 .br
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
-\f[I]except\fP during an \[lq]aet -bl\[rq] command.
+\f[I]except\fP during an \[lq]aet \-bl\[rq] command.
 .TP 8n
 ${Current}
 .br
@@ -1595,15 +1630,15 @@ Note that tests are source files,
 and thus never have the execute bit set.
 .PP
 It is strongly recommended that you design your test scripts so that
-they may be executed by either batch or non-batch methods.  This permits
+they may be executed by either batch or non\[hy]batch methods.  This permits
 simple migration when your environment changes.
 .PP
 Executed as: the project owner (for integration tests) or the developer
-(for development tests), or the executing user (for -independent tests).
+(for development tests), or the executing user (for \-independent tests).
 Current directory: the integration directory (for integration tests),
 the development directory (for development tests), the project
-baseline (for -bl tests), or the current directory (for
--independent tests).
+baseline (for \-bl tests), or the current directory (for
+\-independent tests).
 Exit status: zero indicates success, one indicates failure, anything
 else indicates "no result".
 .RE
@@ -1617,7 +1652,7 @@ All of the substitutions described by \f[I]aesub\fP(5) are available;
 .br
 Executed as: the developer.
 Current directory: the development directory of the change.
-Exit status: zero indicates success, all non-zero exits indicate failure.
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure.
 .RE
 .TP 8n
 architecture = [{ ... }];
@@ -1651,8 +1686,10 @@ system call.
 The
 .IR uname (2)
 return value is assembled into a string of the form
-"\f[I]sysname\f[B]-\f[I]release\f[B]-\f[I]version\f[B]-\f[I]machine\fR", or
-"\f[I]sysname\f[B]-\f[I]release\f[B]-\f[I]version\f[B]-\f[I]machine\f[B]-\
+"\f[I]sysname\f[B]\[hy]\f[I]release\f[B]\[hy]\f[I]version\f[B]\[hy]\
+\f[I]machine\fR", or
+"\f[I]sysname\f[B]\[hy]\f[I]release\f[B]\[hy]\f[I]version\f[B]\[hy]\
+\f[I]machine\f[B]\[hy]\
 \f[I]disc\fR"
 if \f[I]architecture_discriminator_command\fP is used.
 .PP
@@ -1664,10 +1701,10 @@ see
 for more information.
 .PP
 For example, the pattern
-.I SunOS-4.1*-*-sun4*
+.I SunOS\[hy]4.1*\[hy]*\[hy]sun4*
 matches a machine the author commonly uses,
 which returns
-.I "SunOS-4.1.3-8-sun4m"
+.I "SunOS\[hy]4.1.3\[hy]8\[hy]sun4m"
 from the
 .IR uname (2)
 system call.
@@ -1783,7 +1820,7 @@ naming only the last filename path element will \f[I]not\fP work
 body = string;
 What to initialize the body of the file to.
 If not present, no whiteout file will be created;
-if the empty string, a zero-length whiteout file will be created.
+if the empty string, a zero\[hy]length whiteout file will be created.
 .PP
 All of the substitutions described in
 .IR aesub (5)
@@ -1828,7 +1865,7 @@ in file names to only those explicitly allowed by POSIX.
 Defaults to false if not set.
 .PP
 For a filename to be portable across conforming implementations of
-IEEE Std 1003.1-1988,
+IEEE Std 1003.1\[hy]1988,
 it shall consist only of alphanumeric
 characters, dot, hyphen or underscore.
 Hyphen shall not be used
@@ -1836,7 +1873,7 @@ as the first character of a portable filename.
 .PP
 If this field is false,
 all characters are allowed
-except non-printing characters, space characters and leading hyphens.
+except non\[hy]printing characters, space characters and leading hyphens.
 .RE
 .TP
 dos_filename_required = boolean;
@@ -1898,7 +1935,7 @@ will have undefined results.
 .TP
 allow_non_ascii_filenames = boolean;
 .RS
-This field may be used to allow file names with non-ascii-printable
+This field may be used to allow file names with non\[hy]ascii\[hy]printable
 characters in them.  Usually this would mean a UTF8 or international
 charset of some kind.
 .PP
@@ -1919,14 +1956,14 @@ filename_pattern_accept = [ string ];
 .br
 This field is used to specify a list of patterns of acceptable file names.
 The patterns are matched against each filename path element.
-The patterns are constructed from the usual shell filename wild-cards.
+The patterns are constructed from the usual shell filename wild\[hy]cards.
 Defaults to "*" if not set.
 .TP
 filename_pattern_reject = [ string ];
 .br
 This field is used to specify a list of patterns of unacceptable file names.
 The patterns are matched against each filename path element.
-The patterns are constructed from the usual shell filename wild-cards.
+The patterns are constructed from the usual shell filename wild\[hy]cards.
 Defaults to "*,D" if not set.
 The pattern "*,D" is always appended.
 Where the
@@ -1975,7 +2012,7 @@ This must be used,
 as it allows Aegis to try different names should there be a conflict.
 .PP
 If not set, defaults to "\f(CW$ddd/${left $p ${expr ${namemax
-$ddd} - ${length .$magic$c}}}.$magic$c\fP".
+$ddd} \- ${length .$magic$c}}}.$magic$c\fP".
 .PP
 For DOS compatibility (8+3 file names), a useful setting is
 "\f(CW$ddd/${downcase ${left ${id $p} 8}.$magic${right 0$c 2}}\fP".
@@ -1997,7 +2034,7 @@ Defaults to "$filename,S" if not set.
 .RE
 .TP 8n
 trojan_horse_suspect = [ string ];
-This list of filename patterns is consulted by aedist --receive when it
+This list of filename patterns is consulted by aedist \-receive when it
 is checking for files which could be used to host Trojan horse attacks.
 This will be different for different projects, so you will need to
 update this yourself.
@@ -2008,15 +2045,16 @@ naming only the last filename path element will \f[I]not\fP work
 project_specific = [ { ... } ];
 .RS
 This is a list of name and value pairs for use within the
-${project-specific} substitution (see \f[I]aesub\fP(5) for more information).
+${project\[hy]specific} substitution (see \f[I]aesub\fP(5) for more
+information).
 May be assigned more than once.
-The sub-fields are
+The sub\[hy]fields are
 .TP 8n
 name = string;
 The name of the value.
-By convention, names which start with an upper-case letter will appear
-in listings, and lower-case will not.
-Attribute names are case-insensitive.
+By convention, names which start with an upper\[hy]case letter will appear
+in listings, and lower\[hy]case will not.
+Attribute names are case\[hy]insensitive.
 .TP 8n
 value = string;
 The value to be substituted.
@@ -2027,43 +2065,107 @@ of these fields.
 There are several attribute names which are known to and used by Aegis,
 these include:
 .TP 8n
-aede-policy
+aede\[hy]policy
 This attribute is used when no policy names are listed on the
-\f[I]aede-policy\fP(1) command line.
+\f[I]aede\[hy]policy\fP(1) command line.
+.TP 8n
+ae\[hy]repo\[hy]ci:commit\[hy]message
+See \f[I]ae\[hy]repo\[hy]ci\fP(1) for more information.
+.TP 8n
+aede\[hy]policy
+See \f[I]aede\[hy]policy\fP(1) for more information.
+.TP 8n
+aede\[hy]policy:version\[hy]info:library
+See \f[I]aede\[hy]policy\fP(1) for more information.
+.TP 8n
+aeget:inventory:hide
+See \f[I]aeget\fP(1) for more information.
+.TP 8n
+aemakegen:debian:build\[hy]depends
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:copyright
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:depends
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:description:\f[I]name\fP
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:extended\[hy]description:\f[I]name\fP
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:homepage
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:maintainer
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:priority
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:debian:section
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:pkg\[hy]config:cflags
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:pkg\[hy]config:conflicts
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:pkg\[hy]config:libs
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:pkg\[hy]config:libs.private
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:pkg\[hy]config:requires
+See \f[I]aemakegen\fP(1) for more information.
+.TP 8n
+aemakegen:version\[hy]info
+See \f[I]aemakegen\fP(1) for more information.
 .TP 8n
 aetar:exclude
 This attribute is used by he \f[I]aetar\fP(1) receive command to exclude
 files in tarballs from consideration.  This is a space separated list of
 file names.
 .TP 8n
+copyright\[hy]owner
+This string is available via the \f[I]${copyright\[hy]owner}\fP substitution,
+and is the one checked by the \f[I]aede\[hy]policy\fP(1) command.
+Only set this attribute if your project is a work\[hy]for\[hy]hire under
+copyright law.
+It defaults to the value of \f[I]${user name}\fP if not set,
+this is almost always correct for Open Source projects.
+.TP 8n
+html:body\[hy]begin
+This attribute is used by the \f[I]aeget\fP(1) command to customize
+generated web pages.  See \f[I]aeget\fP(1) for more information.
+.TP 8n
 html:meta
 This attribute is used by the \f[I]aeget\fP(1) command to customize
 generated web pages.  See \f[I]aeget\fP(1) for more information.
 .TP 8n
-html:body-begin
+html:body\[hy]end
 This attribute is used by the \f[I]aeget\fP(1) command to customize
 generated web pages.  See \f[I]aeget\fP(1) for more information.
 .TP 8n
-html:body-end
-This attribute is used by the \f[I]aeget\fP(1) command to customize
-generated web pages.  See \f[I]aeget\fP(1) for more information.
+svn:password
+See \f[I]ae\[hy]repo\[hy]ci\fP for more information.
 .TP 8n
-copyright-owner
-This string is available via the \f[I]${copyright-owner}\fP substitution,
-and is the one checked by the \f[I]aede-policy\fP(1) command.
-Only set this attribute if your project is a work-for-hire under copyright law.
-It defaults to the value of \f[I]${user name}\fP if not set,
-this is almost always correct for Open Source projects.
-.so ../man1/z_cmd_env.so
+svn:username
+See \f[I]ae\[hy]repo\[hy]ci\fP for more information.
+.so lib/en/man1/z_cmd_env.so
 .RE
 .TP 8n
 build_time_adjust = (...);
 .RS
 This field controls the adjustment of file modification times at the
-end of integrate-pass.  File times are adjusted so that development
+end of integrate\[hy]pass.  File times are adjusted so that development
 directories are, in the main, out of date with respect to the baseline.
-The idea is that, at the very least, programs need to be re-linked so
-that \f[I]aet -reg\fP does not give false negatives.
+The idea is that, at the very least, programs need to be re\[hy]linked so
+that \f[I]aet \-reg\fP does not give false negatives.
 .LP
 Combining this with the \f[I]project_\%file_\%command\fP (above) can
 alleviate the vast majority of file modification time inconsistencies
@@ -2095,11 +2197,11 @@ See also the \f[I]build_\%time_\%adjust_\%notify_\%command\fP field.
 signed_off_by = boolean;
 .RS
 If this field is set each \f[I]aedb\fP(1), \f[I]aechown\fP(1), \f[I]aede\fP(1)
-and \f[I]aerpass\fP(1) will append a \f[CW]Signed-off-by\fP line to the
+and \f[I]aerpass\fP(1) will append a \f[CW]Signed\[hy]off\[hy]by\fP line to the
 change description.  This field should only be set to true for open
 source projects.
 .PP
-For a description of \f[CW]Signed-off-by\fP see
+For a description of \f[CW]Signed\[hy]off\[hy]by\fP see
 http://www.ussg.iu.edu/hypermail/linux/kernel/0405.2/1301.html and
 http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
 .RE
@@ -2108,12 +2210,12 @@ cache_project_file_list_for_each_delta = boolean;
 .RS
 It is possible to have Aegis cache the list of project files that
 were present at integrate pass for each delta (integrated change
-set).  This is used to optimize all project-history-based
-operations, such as \f[I]aecp -delta\fP or \f[I]aepatch\fP(1).
+set).  This is used to optimize all project\[hy]history\[hy]based
+operations, such as \f[I]aecp \-delta\fP or \f[I]aepatch\fP(1).
 .PP
 This cache will optimize many operations which would otherwise
 require time to reconstruct the project state using the
-roll-forward data available in each change set.  However, it comes
+roll\[hy]forward data available in each change set.  However, it comes
 at the cost of disk space, and not everyone can afford more and more
 disk.
 .PP
@@ -2132,12 +2234,12 @@ cache_project_file_list_for_each_delta = boolean;
 .RS
 It is possible to have Aegis cache the list of project files that
 were present at integrate pass for each delta (integrated change
-set).  This is used to optimize all project-history-based
-operations, such as \fIaecp -delta\fP or \fIaepatch\fP(1).
+set).  This is used to optimize all project\[hy]history\[hy]based
+operations, such as \fIaecp \-delta\fP or \fIaepatch\fP(1).
 .PP
 This cache will optimize many operations which would otherwise
 require time to reconstruct the project state using the
-roll-forward data available in each change set.  However, it comes
+roll\[hy]forward data available in each change set.  However, it comes
 at the cost of disk space, and not everyone can afford more and more
 disk.
 .PP
@@ -2147,7 +2249,7 @@ This field defaults to true if not set.
 .RE
 Aegis has the ability to feed RSS channels when change sets transition
 states.  See the User Guide for full details.  Following is a brief
-description of the project-specific attributes used to control this process.
+description of the project\[hy]specific attributes used to control this process.
 .RE
 .TP 8n
 Create / Add to a channel
@@ -2159,8 +2261,8 @@ attribute:
 project_specific =
 [
   {
-    name = "rss:feedfilename-<filename>";
-    value = "<space-separated list of states>";
+    name = "rss:feedfilename\-<filename>";
+    value = "<space\[hy]separated list of states>";
   }
 .br
 ]
@@ -2175,7 +2277,7 @@ rss:feeddescription project_specific attribute:
 project_specific =
 [
   {
-    name = "rss:feeddescription-<filename>";
+    name = "rss:feeddescription\-<filename>";
     value = "<description>";
   }
 .br
@@ -2191,7 +2293,7 @@ project_specific attribute:
 project_specific =
 [
   {
-    name = "rss:feedtitle-<filename>";
+    name = "rss:feedtitle\-<filename>";
     value = "<title>";
   }
 .br
@@ -2207,7 +2309,7 @@ project_specific attribute:
 project_specific =
 [
   {
-    name = "rss:feedlanguage-<filename>";
+    name = "rss:feedlanguage\-<filename>";
     value = "<language";
   }
 .br
@@ -2252,16 +2354,16 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates success, all non-zero exits indicate failure
+Exit status: zero indicates success, all non\[hy]zero exits indicate failure
 (the aed will fail).
 .PP
 The problem with this field was that the default usage placed the merged
 source in a strange place.  And subsequent \f[I]aed\fP(1) commands would
-over-write it.  This meant that merges would be lost, causing a number
+over\[hy]write it.  This meant that merges would be lost, causing a number
 of nasty problems.  Some sites overcame this by adding \[lq]mv\[rq] commands to
 put the output back where the input came from, but this meant that Aegis'
 commentary was misleading.  Use the \[lq]merge_command\[rq] field instead.
-It is almost identical, but Aegis will move the files around for you -
+It is almost identical, but Aegis will move the files around for you \-
 so you get the good behavior by default (no lost merges) and the error
 message is consistent.
 .RE
@@ -2323,6 +2425,31 @@ important that there are no symlinks in the (new) baseline, because
 they could go stale between integrations.  If you set this field to
 false, \f[I]caveat emptor\fP.
 .RE
+.SH CHANGING HISTORY TOOL
+.PP
+Since version \*(N) 4.26 it is possible to change the history tool, if
+needed.  Note, however, that the old tool is still required to
+retrieve file's revisions saved before the switch to the new tool.  As
+an example it is not advisable to uninstall the \f[I]fhist\f[P]
+package if a project switched to \f[I]aesvt\f[P], since
+\f[I]fhist\f[P] will be required to retrieve file's revisions
+pre\-dating the switch.
+.PP
+The \f[I]aeipass\f[P](1) command stores the
+\f[I]history_get_command\f[P] as the
+\f[I]aegis:history_get_command\f[P] user defined change's attribute,
+that command will be used later to retrieve files altered by the
+change.
+.PP
+In any project created using \*(N) v. 4.26 (or later) it is possible
+to use a different history tool simply editing the appropriate
+\f[I]aepconf\f[P](5) fields.
+.PP
+It is possible to change the history tool of projects created with a
+older \*(N) version, but it's required to properly set the
+\f[I]aegis:history_get_command\f[P] user defined attribute for each
+change integrated before the switch.
+.RE
 .SH SEE ALSO
 .TP 8n
 .IR aeb (1)
@@ -2339,7 +2466,7 @@ find differences between a change and the baseline
 .TP 8n
 .IR aede (1)
 end development of a change
-.IR aede-policy (1)
+.IR aede\[hy]policy (1)
 check things about a change
 .TP 8n
 .IR aerpass (1)
@@ -2377,4 +2504,5 @@ available command substitutions
 .TP 8n
 .IR aetest (5)
 batch test results file
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,29 +1,28 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -DIFFerence" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-DIFFerence" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis difference \- find differences between a change and the baseline
 .XX "aed(1)" "difference a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -DIFFerence
+.B \-DIFFerence
 [
 .IR filename ...
 ]
@@ -32,19 +31,19 @@ aegis difference \- find differences between a change and the baseline
 ]
 .br
 .B \*(n)
-.B -DIFFerence
-.B -List
+.B \-DIFFerence
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -DIFFerence
-.B -Help
+.B \-DIFFerence
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -DIFFerence
+.I \-DIFFerence
 command is used to
 generate difference listings between source files in the
 the development directory and the baseline.
@@ -80,21 +79,21 @@ all files in the change will be differenced.
 .PP
 You may name a directory on the command line,
 and all files in the change in that directory tree will be differenced.
-.so z_intuit.so
+.so lib/en/man1/z_intuit.so
 .SS Notification
 The actions of the command are controlled by the \fIdiff_\%command\fP
 and \fImerge_\%command\fP fields of the project \fIconfig\fP
 file.  See \fIaepconf\fP(5) for more information.
-.so z_bl_lock.so
-.so z_promotion.so
+.so lib/en/man1/z_bl_lock.so
+.so lib/en/man1/z_promotion.so
 .SH CONFLICT RESOLUTION
 If the version of a file in the change is not the same
 as the version of the file in the baseline,
-it is out-of-date;
+it is out\[hy]of\[hy]date;
 some other change has altered the file while this change was
 being developed.
 .PP
-When a difference is requested for an out-of-date file,
+When a difference is requested for an out\[hy]of\[hy]date file,
 a merge is performed
 between the common ancestor,
 the version in the baseline,
@@ -133,17 +132,17 @@ If you don't want the automatic merge results, simply use the
 \fImv\fP(1) command to restore the contents from the "\f[CW],B\fP" file.
 .PP
 If any merges are required no differences will be performed.
-An error message and a non-zero exit status will also result.
+An error message and a non\[hy]zero exit status will also result.
 This is to ensure that developers notice that merges have been done,
 and that they reconcile the sources and the merged \fI,D\fP files
 before the next difference.
 See the
-.B -No_Merge
+.B \-No_Merge
 and
-.B -Only_Merge
+.B \-Only_Merge
 options, below,
 for exact control of when merging is performed.
-.so o_clone_merg.so
+.so lib/en/man1/o_clone_merg.so
 .SH INTEGRATION
 During integration, it is also necessary to difference a change.
 This provides the difference between the branch and its parent, for
@@ -152,30 +151,30 @@ The baseline of a branch is the development directory of the composite
 change it represents.
 .SH OPTIONS
 The following options are understood:
-.so o_anticip.so
-.so o_branch.so
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_nolog.so
-.so o_trunk.so
+.so lib/en/man1/o_anticip.so
+.so lib/en/man1/o_branch.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_nolog.so
+.so lib/en/man1/o_trunk.so
 .TP 8n
-.B -No_Merge
+.B \-No_Merge
 .br
 This option is used to
 cause only file differences to be generated,
-even when file versions are out-of-date.
+even when file versions are out\[hy]of\[hy]date.
 If not set, the default is to use the
 .I diff_preference
 field of the
 .IR aeuconf (5)
 file.
 .TP 8n
-.B -Only_Merge
+.B \-Only_Merge
 .br
 This option is used to
 cause only file merges to be performed
-on files with out-of-date versions.
+on files with out\[hy]of\[hy]date versions.
 Other source files are ignored.
 If not set, the default is to use the
 .I diff_preference
@@ -183,14 +182,14 @@ field of the
 .IR aeuconf (5)
 file.
 .TP 8n
-.B -Automatic_Merge
+.B \-Automatic_Merge
 .br
 This option is used to
 perform
-.I -Only_Merge
-if any source files have out-of-date versions,
+.I \-Only_Merge
+if any source files have out\[hy]of\[hy]date versions,
 otherwise
-.I -No_Merge is performed.
+.I \-No_Merge is performed.
 Only merges or differences will be performed,
 it will never use a mixture.
 If not set, the default is to use the
@@ -198,25 +197,25 @@ If not set, the default is to use the
 field of the
 .IR aeuconf (5)
 file.
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aed '\*(n) -diff \e!* -v'
-sh$	aed(){\*(n) -diff "$@" -v}
+csh%    alias aed '\*(n) \-diff \e!* \-v'
+sh$     aed(){\*(n) \-diff "$@" \-v}
 .fi
 For user's convenience,
 particularly when they have selected the \[lq]no merge\[rq] preference,
 there is also a merge alias:
 .nf
 .ta 8n 16n
-csh%	alias aem '\*(n) -diff -only_merge \e!* -v'
-sh$	aem(){\*(n) -diff -only_merge $* -v}
+csh%    alias aem '\*(n) \-diff \-only_merge \e!* \-v'
+sh$     aem(){\*(n) \-diff \-only_merge $* \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -226,16 +225,16 @@ or
 .I "being integrated"
 states.
 .br
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
 .TP 8n
 .IR aeb (1)
-build also takes a baseline read lock (non-exclusive)
+build also takes a baseline read lock (non\[hy]exclusive)
 .TP 8n
 .IR aecp (1)
-copy file also takes a baseline read lock (non-exclusive)
+copy file also takes a baseline read lock (non\[hy]exclusive)
 .TP 8n
 .IR aedb (1)
 begin development of a change
@@ -248,4 +247,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

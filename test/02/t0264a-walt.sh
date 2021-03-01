@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 # aegis - project change supervisor
-# Copyright (C) 2007 Walter Franzini
-# Copyright (C) 2008 Peter Miller
+# Copyright (C) 2007, 2008 Walter Franzini
+# Copyright (C) 2008, 2012 Peter Miller
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ no_result()
 {
         set +x
         echo "NO RESULT when testing the aeip functionality " \
-	    "($activity)" 1>&2
+            "($activity)" 1>&2
         cd $here
         find $work -type d -user $USER -exec chmod u+w {} \;
         rm -rf $work
@@ -114,18 +114,18 @@ trap \"no_result\" 1 2 3 15
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 activity="create test directory 130"
@@ -172,7 +172,7 @@ export AEGIS_PATH
 #
 activity="new project 172"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
-	-lib $AEGIS_PATH > log 2>&1
+        -lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=test
@@ -210,7 +210,7 @@ export AEGIS_PROJECT
 # delta 1
 #
 # the following files are created:
-#	aegis.conf
+#       aegis.conf
 #
 activity="create the 1st change 214"
 cat > caf <<EOF
@@ -245,7 +245,7 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 link_integration_directory = true;
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -334,35 +334,38 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 cat > $work/ok <<EOF
 src =
 [
-	{
-		file_name = "pippo";
-		uuid = "UUID";
-		action = remove;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "pluto";
-	},
-	{
-		file_name = "pluto";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "pippo";
-	},
+        {
+                file_name = "pippo";
+                uuid = "UUID";
+                action = remove;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "pluto";
+        },
+        {
+                file_name = "pluto";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "pippo";
+        },
 ];
 EOF
 if test $? -ne 0; then no_result; fi
@@ -423,75 +426,81 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 cat > $work/ok <<EOF
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "pippo";
-		uuid = "UUID";
-		action = remove;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "pluto";
-		deleted_by = 11;
-	},
-	{
-		file_name = "pluto";
-		uuid = "UUID";
-		action = remove;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		deleted_by = 12;
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "pippo";
+                uuid = "UUID";
+                action = remove;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "pluto";
+                deleted_by = 11;
+        },
+        {
+                file_name = "pluto";
+                uuid = "UUID";
+                action = remove;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                deleted_by = 12;
+        },
 ];
 EOF
 if test $? -ne 0; then no_result; fi
@@ -504,3 +513,4 @@ check_it $work/ok $work/proj.dir/info/change/0/001.fs
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -23,6 +23,7 @@
 #include <common/mem.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex/change.h>
@@ -91,7 +92,7 @@ review_begin_undo_main(void)
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
     string_ty       *project_name;
-    project_ty      *pp;
+    project      *pp;
     long            change_number;
     change::pointer cp;
     user_ty::pointer up;
@@ -135,25 +136,25 @@ review_begin_undo_main(void)
             user_ty::lock_wait_argument(review_begin_undo_usage);
             break;
 
-	case arglex_token_reason:
-	    if (reason)
-	    duplicate_option(review_begin_undo_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string
-		(
-	    	    arglex_token_reason,
-	    	    review_begin_undo_usage
-		);
-		// NOTREACHED
+        case arglex_token_reason:
+            if (reason)
+            duplicate_option(review_begin_undo_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_string
+                (
+                    arglex_token_reason,
+                    review_begin_undo_usage
+                );
+                // NOTREACHED
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = str_from_c(arglex_value.alv_string);
-		break;
-	    }
-	    break;
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = str_from_c(arglex_value.alv_string);
+                break;
+            }
+            break;
         }
         arglex();
     }
@@ -164,7 +165,7 @@ review_begin_undo_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -208,13 +209,13 @@ review_begin_undo_main(void)
         (
             !project_developer_may_review_get(pp)
         &&
-            nstring(change_developer_name(cp)) == up->name()
+            nstring(cp->developer_name()) == up->name()
         )
             change_fatal(cp, 0, i18n("developer may not review"));
     }
     else
     {
-        if (nstring(change_reviewer_name(cp)) != up->name())
+        if (nstring(cp->reviewer_name()) != up->name())
             change_fatal(cp, 0, i18n("not reviewer"));
 
         //
@@ -225,13 +226,13 @@ review_begin_undo_main(void)
         cstate_data->state = cstate_state_awaiting_review;
         history_data = change_history_new(cp, up);
         history_data->what = cstate_history_what_review_begin_undo;
-	history_data->why = reason;
+        history_data->why = reason;
     }
 
     //
     // write out the data and release the locks
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     commit();
     lock_release();
 
@@ -268,3 +269,6 @@ review_begin_undo(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), review_begin_undo_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

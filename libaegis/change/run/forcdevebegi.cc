@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
@@ -31,8 +32,8 @@
 void
 change::run_forced_develop_begin_notify_command(const user_ty::pointer &up)
 {
-    trace(("change::run_forced_develop_begin_notify_command(this = %8.8lX, "
-	"up = %8.8lX)\n{\n", (long)this, (long)up.get()));
+    trace(("change::run_forced_develop_begin_notify_command(this = %p, "
+        "up = %p)\n{\n", this, up.get()));
 
     //
     // make sure there is one
@@ -49,7 +50,7 @@ change::run_forced_develop_begin_notify_command(const user_ty::pointer &up)
 
     //
     // notify the change is ready for review
-    //	(it could be mail, or an internal bulletin board, etc)
+    //  (it could be mail, or an internal bulletin board, etc)
     // it happens after the data is written and the locks are released,
     // so we don't much care if the command fails!
     //
@@ -67,3 +68,6 @@ change::run_forced_develop_begin_notify_command(const user_ty::pointer &up)
     str_free(the_command);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

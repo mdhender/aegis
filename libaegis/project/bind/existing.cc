@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2004-2008 Peter Miller
+//      Copyright (C) 2004-2009, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,17 +17,18 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/stdlib.h>
 
-#include <libaegis/change/branch.h>
-#include <common/error.h> // for assert
 #include <common/fstrcmp.h>
-#include <libaegis/gonzo.h>
-#include <libaegis/project.h>
 #include <common/str_list.h>
-#include <libaegis/sub.h>
 #include <common/trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
 #include <libaegis/zero.h>
 
 
@@ -51,7 +52,7 @@ name_has_numeric_suffix(string_ty *name, string_ty **left, long *right)
 
 
 void
-project_ty::bind_existing()
+project::bind_existing()
 {
     string_ty       *s;
     string_ty       *parent_name;
@@ -60,7 +61,7 @@ project_ty::bind_existing()
     //
     // make sure project exists
     //
-    trace(("project_ty::bind_existing(this = %08lX)\n{\n", (long)this));
+    trace(("project::bind_existing(this = %p)\n{\n", this));
     assert(!home_path);
     alias_retry_count = 0;
     alias_retry:
@@ -88,7 +89,7 @@ project_ty::bind_existing()
     if (!s && name_has_numeric_suffix(name, &parent_name, &parent_bn))
     {
         trace(("mark\n"));
-        project_ty *ppp = project_alloc(parent_name);
+        project *ppp = project_alloc(parent_name);
         ppp->bind_existing();
         int err = project_is_readable(ppp);
         if (err != 0)
@@ -103,7 +104,7 @@ project_ty::bind_existing()
             ppp = 0;
             pcp = change_alloc(parent, parent_bn);
             change_bind_existing(pcp);
-            if (!change_was_a_branch(pcp))
+            if (!pcp->was_a_branch())
                 change_fatal(pcp, 0, i18n("not a branch"));
 
             //
@@ -115,7 +116,7 @@ project_ty::bind_existing()
                 str_format
                 (
                     "%s.%ld",
-                    project_name_get(parent)->str_text,
+                    project_name_get(parent).c_str(),
                     magic_zero_decode(parent_bn)
                 );
 
@@ -228,7 +229,7 @@ project_ty::bind_existing()
 
 
 bool
-project_ty::bind_existing_errok()
+project::bind_existing_errok()
 {
     string_ty       *s;
     string_ty       *parent_name;
@@ -237,11 +238,22 @@ project_ty::bind_existing_errok()
     //
     // make sure project exists
     //
-    trace(("project_ty::bind_existing_errok(this = %08lX)\n{\n", (long)this));
+    trace(("project::bind_existing_errok(this = %p)\n{\n", this));
     assert(!home_path);
     alias_retry_count = 0;
     alias_retry:
     s = gonzo_project_home_path_from_name(name);
+
+    if (s)
+    {
+        nstring root(s);
+        nstring info_state_path = root + "/info/state";
+        os_become_orig();
+        int err = os_readable(info_state_path);
+        os_become_undo();
+        if (err != 0)
+            return false;
+    }
 
     //
     // If the named project was not found, and it has a numeric suffix,
@@ -267,7 +279,7 @@ project_ty::bind_existing_errok()
             trace(("}\n"));
             return false;
         }
-        if (!change_was_a_branch(pcp))
+        if (!pcp->was_a_branch())
         {
             change_free(pcp);
             project_free(parent);
@@ -285,7 +297,7 @@ project_ty::bind_existing_errok()
             str_format
             (
                 "%s.%ld",
-                project_name_get(parent)->str_text,
+                project_name_get(parent).c_str(),
                 magic_zero_decode(parent_bn)
             );
 
@@ -364,3 +376,6 @@ project_ty::bind_existing_errok()
     trace(("}\n"));
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

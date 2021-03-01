@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2000, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2000, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -46,7 +46,7 @@ has been fixed.
 .if n *
 .if t \(bu
 .\" change 36
-There have been Y2K fixes: the date parsing for the -delta-date option
+There have been Y2K fixes: the date parsing for the \-delta\[hy]date option
 has been fixed, and the web page data has also been fixed.
 .PP
 .if n *
@@ -59,13 +59,13 @@ than one CPU.
 .if n *
 .if t \(bu
 .\" change 33
-The -UNFormatted option no longer truncates column values.
+The \-UNFormatted option no longer truncates column values.
 .PP
 .if n *
 .if t \(bu
 .\" change 31
-The \fIaesub\fP(1) command now accepts the -baseline option,
-so that you can get project-specific substitution in shell scripts.
+The \fIaesub\fP(1) command now accepts the \-baseline option,
+so that you can get project\[hy]specific substitution in shell scripts.
 .PP
 .if n *
 .if t \(bu
@@ -106,4 +106,5 @@ A bug has been fixed which caused Aegis to misbehave when launched by
 some versions of \fIcron\fP(8) or \fIat\fP(1).
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.20 (19-Oct-1999)
+.SS Version 3.20 (19\[hy]Oct\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

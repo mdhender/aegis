@@ -1,6 +1,6 @@
 .\"
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2006-2008 Peter Miller
+.\"     Copyright (C) 2006-2008, 2012 Peter Miller
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
 .\"     it under the terms of the GNU General Public License as published by
@@ -20,18 +20,18 @@
 ..
 .ad l
 .hy 0
-.so version.so
+.so etc/version.so
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
 <title>Aegis Template OSS Project</title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="aegis.png" align=left>
-<img src="missiku/usr_doc_2.png" align=right>
-<center>Aegis \*(v)<br>Template OSS Project</center></h1>
+<body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="aegis.png" align="left" alt="" />
+<img src="missiku/usr_doc_2.png" align="right" alt="" />
+Aegis \*(v)<br/>Template OSS Project</h1>
 
 This worked example shows you how to get an existing OSS project managed
 by Aegis in less than 30 minutes.
@@ -48,9 +48,7 @@ There are a number assumptions made by this example:
     project you want to manage with Aegis.
     In this example, we will be working with <tt><a
     href="vgrabbj.sourceforge.net" >vgrabbj</a>-0.9.6.tar.gz</tt> <a
-.nf
-href="http://sourceforge.net/project/showfiles.php?group_id=25978"
-.fi
+    href="http://sourceforge.net/project/showfiles.php?group_id=25978"
     >downloaded</a> from SourceForge.net.
 <li>
     The project is relatively simple: a single <tt>configure.ac</tt>
@@ -90,12 +88,10 @@ call your usual user account &ldquo;user&rdquo;.
 Now, to create the project, use this command:
 
 <blockquote>
-.nf
 <pre>user$ <b>su - repos</b>
 password:
 repos$ <b>aegis -new-project vgrabbj -version -</b>
 repos$</pre>
-.fi
 </blockquote>
 
 The &ldquo;<tt>&ndash;version &ndash;</tt>&rdquo; tells Aegis you don't
@@ -110,10 +106,8 @@ Next, add you usual user account as a project administrator, using this
 command:
 
 <blockquote>
-.nf
 <pre>repos$ <b>aegis -new-administrator</b> <i>user</i> <b>-p vgrabbj</b>
 repos$</pre>
-.fi
 </blockquote>
 
 Remember to replace <i>user</i> with your actual user name.
@@ -123,10 +117,8 @@ administrator.  All of the remaining steps to create the project may be
 done from your normal account.
 
 <blockquote>
-.nf
 <pre>repos$ <b>exit</b>
 user$</pre>
-.fi
 </blockquote>
 
 The next step is to add yourself to all of the remaining project roles:
@@ -134,23 +126,19 @@ developer, reviewer and integrator.
 You can do this, because you are a project administrator.
 
 <blockquote>
-.nf
 <pre>user$ <b>ae_p vgrabbj</b>
 user$ <b>aend</b> <i>user</i>
 user$ <b>aenrv</b> <i>user</i>
 user$ <b>aeni</b> <i>user</i>
 user$</pre>
-.fi
 </blockquote>
 
 The next task is to set the project attributes.
 This is most easily done by using the <i>tkaepa</i>(1) command.
 
 <blockquote>
-.nf
 <pre>user$ <b>tkaepa</b>
 user$</pre>
-.fi
 </blockquote>
 
 <b>Note:</b> if you aren't using X11, the <i>aepa</i>(1) command will
@@ -181,11 +169,9 @@ The last step is to create the branches.  Assuming vgrabbj is at version
 0.9.6, we will create the 0 and 0.9 branches.
 
 <blockquote>
-.nf
 <pre>user$ <b>aegis -new-branch -p vgrabbj 0</b>
 user$ <b>aegis -new-branch -p vgrabbj.0 9</b>
 user$</pre>
-.fi
 </blockquote>
 
 Things are nearly ready to go.
@@ -200,13 +186,11 @@ The necessary settings and their source file are pre-packaged for you.
 The following command will download the change set and apply it to the project:
 
 <blockquote>
-.nf
 <tt>user$ <b>aedist -rec -f
     <a href="eg_oss_begin.ae">
     http://aegis.sourceforge.net/eg_oss_begin.ae</a>
     -p vgrabbj -c 900 -v</b><br>
 user$</tt>
-.fi
 </blockquote>
 
 The change set is applied to the trunk of the project branch tree (the
@@ -252,10 +236,8 @@ review stage, is most simply accomplished using the <tt>aeintegratq</tt>
 command:
 
 <blockquote>
-.nf
 <pre>user$ <b>aeintegratq vgrabbj</b>
 user$</pre>
-.fi
 </blockquote>
 
 It will take about a minute, and it won't say much if nothing went wrong.
@@ -287,13 +269,11 @@ the GNU Auto Tools change set, which establishes the build system for an
 empty project.
 
 <blockquote>
-.nf
 <tt>user$ <b>aedist -rec -f
     <a href="eg_oss_aemak.ae">
     http://aegis.sourceforge.net/eg_oss_aemak.ae</a>
     -p vgrabbj -c 6 -v</b><br>
 user$</tt>
-.fi
 </blockquote>
 
 This project uses Automake, Autoconf and Libtool to do all the work.
@@ -310,9 +290,7 @@ Now we are ready to actually take some OSS code and commit into our
 shiny new repository.
 <p>
 You need to visit <tt><a
-.nf
 href="http://sourceforge.net/projects/vgrabbj/"
-.fi
 >vgrabbj.sourceforge.net</a></tt> and download the
 latest tarball.  This example is based on 0.9.6, but it will not matter
 very much of the minor version has moved on since this was written.
@@ -321,10 +299,8 @@ We created branches <tt>0</tt> and <tt>0.9</tt> before, and now we are
 going to use them.
 
 <blockquote>
-.nf
 <pre>user$ <b>ae_p vgrabbj.0.9</b>
 user$</pre>
-.fi
 </blockquote>
 
 This command sets the <tt>AEGIS_PROJECT</tt> environment variable, so
@@ -364,11 +340,9 @@ You can enter this development directory and have a look around using the
 following command:
 
 <blockquote>
-.nf
 <pre>user$ <b>aecd 6</b>
 user$ <b>ls -l</b>
 user$</pre>
-.fi
 </blockquote>
 
 That &ldquo;6&rdquo; is the change set number.  It was specified
@@ -380,10 +354,8 @@ There are a number of other Aegis command which now have some
 content.  Try
 
 <blockquote>
-.nf
 <pre>user$ <b>ael cd</b>
 user$</pre>
-.fi
 </blockquote>
 
 The &ldquo;cd&rdquo; is short for <i>change-details</i> and much faster
@@ -393,10 +365,8 @@ You will see that the change description isn't especially informative.
 You can use the following command to edit the change set's attributes:
 
 <blockquote>
-.nf
 <pre>user$ <b>tkaeca</b>
 user$</pre>
-.fi
 </blockquote>
 
 Just change the descriptions for now, and resist the urge to kick the
@@ -409,17 +379,15 @@ format.  For novices, the GUI interface is easier.
 <p>
 To finish this change set, it's much like the previous one.  All of
 the usual Aegis process will be adhered to (if you consult the <a
-hrf="user-guide.pdf">User Guide</a> you will see what that means) but it
+href="user-guide.pdf" >User Guide</a> you will see what that means) but it
 will go by very quickly in this example.
 
 <blockquote>
-.nf
 <pre>user$ <b>aefinish</b>
 <i>...lots of output...</i>
 user$ <b>cd</b>
 user$ <b>aeintegratq vgrabbj-0.9</b>
 user$</pre>
-.fi
 </blockquote>
 
 At this point, the most recent upstream version is in your Aegis
@@ -450,13 +418,11 @@ work area if they are actually being changed, which can get confusing
 for new users who are expecting a fully populated source tree.
 
 <blockquote>
-.nf
 <tt>user$ <b>aedist -rec -f
     <a href="eg_oss_build.ae">http://aegis.sourceforge.net/eg_oss_build.ae</a>
     -p vgrabbj.0.9 -c 901 -v -trojan</b><br>
 </tt><i>...lots of output...</i><tt><br>
 user$</tt>
-.fi
 </blockquote>
 
 This command downloads the change set, creates a private work area for
@@ -469,11 +435,9 @@ are not sure about, but it also gives you a chance to poke about the
 development directory and see what Aegis has actually done.
 
 <blockquote>
-.nf
 <pre>user$ <b>aecd 901</b>
 user$ <b>ls</b>
-user$</tt>
-.fi
+user$</pre>
 </blockquote>
 
 The first thing you will want to know is &ldquo;where have all the
@@ -492,11 +456,9 @@ files we got from the tarball.
 To build, you just need this command:
 
 <blockquote>
-.nf
 <tt>user$ <b>aeb</b><br>
 <i>...lots of output...</i><br>
 user$</tt>
-.fi
 </blockquote>
 
 If you look at the output (scroll the terminal back) you will see
@@ -518,13 +480,11 @@ We will finish this change set the same way as before, using the
 <i>aefinish</i>(1) command, and then integrate it:
 
 <blockquote>
-.nf
 <pre>user$ <b>aefinish</b>
 <i>...lots of output...</i>
 user$ <b>cd</b>
 user$ <b>aeintegratq vgrabbj-0.9</b>
 user$</pre>
-.fi
 </blockquote>
 
 And now the project builds.  This would be a good time to read through
@@ -537,23 +497,19 @@ contents for new files.  There is a pre-built change set you can
 download which will provide GPL headers for all of your new files.
 
 <blockquote>
-.nf
 <tt>user$ <b>aedist -rec -f
     <a href="eg_oss_templ.ae">http://aegis.sourceforge.net/eg_oss_templ.ae</a>
     -p vgrabbj.0.9 -c 902 -v</b><br>
 user$</tt>
-.fi
 </blockquote>
 
 This change set is finished in the usual way.
 
 <blockquote>
-.nf
 <pre>user$ <b>aefinish</b>
 user$ <b>cd</b>
 user$ <b>aeintegratq vgrabbj-0.9</b>
 user$</pre>
-.fi
 </blockquote>
 
 This change set also includes a new file template for new tests.  You
@@ -584,6 +540,7 @@ A couple of tips:
     fill in the gap where something is actually tested.
 </ul>
 
-.so footer.so
+.so web/footer.so
 </body>
 </html>
+.\" vim: set ts=8 sw=4 et :

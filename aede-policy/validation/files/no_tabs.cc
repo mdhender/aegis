@@ -1,30 +1,29 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <libaegis/attribute.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/input/file_text.h>
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
@@ -39,6 +38,13 @@ validation_files_no_tabs::~validation_files_no_tabs()
 
 validation_files_no_tabs::validation_files_no_tabs()
 {
+}
+
+
+validation::pointer
+validation_files_no_tabs::create(void)
+{
+    return pointer(new validation_files_no_tabs());
 }
 
 
@@ -99,7 +105,7 @@ validation_files_no_tabs::check(change::pointer cp, fstate_src_ty *src)
     if (t.basename().downcase().starts_with("makefile"))
         return true;
 
-    string_ty *path = change_file_path(cp, src);
+    string_ty *path = cp->file_path(src);
     assert(path);
     if (!path)
         return true;
@@ -133,3 +139,6 @@ validation_files_no_tabs::check(change::pointer cp, fstate_src_ty *src)
     }
     return ok;
 }
+
+
+// vim: set ts=8 sw=4 et :

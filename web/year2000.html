@@ -1,38 +1,38 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2004, 2006, 2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2001-2004, 2006, 2008, 2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
-.so version.so
+.so etc/version.so
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
 <title>Aegis Y2K</title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="aegis.png" align=left>
-<img src="missiku/world_2.png" align=right>
-<center>Aegis \*(v)<br>Year 2000 Status</center></h1>
-Aegis does not suffer from Year 2000 problems.
+<body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="aegis.png" align="left" alt="" />
+<img src="missiku/world_2.png" align="right" alt="" />
+Aegis \*(v)<br>Year 2000 Status
+</h1>
+Aegis did not suffer from Year 2000 problems.
 <br clear=all>
 <ul>
 <li>
@@ -48,4 +48,6 @@ fixed field widths, nor will it display the year 2000 as &ldquo;100&rdquo;.
 When a user enters dates, they may specify years with an explicit century.
 If a user enters a year with an implicit century, the closest is assumed.
 </ul>
+.so web/footer.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

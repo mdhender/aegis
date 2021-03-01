@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1999, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1991-1993, 1999, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "When (not) to use Aegis"
@@ -40,7 +40,7 @@ Each change set must pass a peer review before it will be accepted.
 (This can be a rubber stamp, if desired.)
 .LP
 The most difficult thing about Aegis program is that it takes
-management buy-in.
+management buy\[hy]in.
 It takes effort to convince many people that the model
 used by aegis has benefits,
 and you need management backing you up when some person
@@ -61,7 +61,7 @@ this purpose.  Thus, this requirement, while usually highly desirable,
 may be avoided if desired.
 .nh 3 "Testing"
 .LP
-There is extra up-front work: writing tests.
+There is extra up\[hy]front work: writing tests.
 The win is that the tests hang around forever,
 catching minor and major slips before they become
 embarrassing "features" in a released product.
@@ -77,3 +77,4 @@ reviews as one of the most important factors in removing defects before
 they reach your code repository.  Aegis requires a code review before
 it will commit code into your product; again, the idea is to remove
 defects \fIbefore\fP they pollute the product.
+.\" vim: set ts=8 sw=4 et :

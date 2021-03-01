@@ -1,27 +1,26 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Analyse"
 Bevor es m\*:oglich ist, sich diesen scheinbar in keinerlei Beziehung
 zueinander stehenden Problemen zuzuwenden, ist es notwendig, zu verstehen,
 was Make bewirkt und wie es arbeitet. Dann erst kann man die Auswirkungen,
 die rekursives Make auf das Verhalten von Make hat, betrachten.
-.nh 2 "Ganzprojekt-Make"
+.nh 2 "Ganzprojekt\[hy]Make"
 Make ist ein Expertensystem. Sie versehen es mit einem
 Satz Regeln, nach denen gebaut werden soll, und einem
 Zielprodukt, das gebaut werden soll. Die Regeln k\*:onnen
@@ -38,7 +37,7 @@ dieses Graphs sind die Dateien des Systems, die Kanten
 stellen die Abh\*:angigkeiten zwischen den Dateien dar. Die
 Kanten des Graphen sind gerichtet, da die Abh\*:angigkeiten
 paarweise geordnet sind, wodurch ein azyklischer Graph
-entsteht - was in einem ungerichteten Graphen wie ein
+entsteht \- was in einem ungerichteten Graphen wie ein
 Zyklus aussieht, wird im gerichteten Graphen durch die
 Richtung der Kanten aufgel\*:ost.
 .LP
@@ -48,7 +47,7 @@ diese Beispiel klein ist, ist es komplex genug, um alle
 oben beschriebenen Probleme mit rekursivem Make zu
 demonstrieren. Zuerst einmal wird das Projekt in einer
 nicht rekursiven Form vorgestellt.
-.so 03.figure2.so
+.so lib/de/auug97/03.figure2.so
 .LP
 Das \f[CW]Makefile\fP in diesem kleinen Projekt sieht so
 aus:
@@ -58,13 +57,13 @@ lw(2.5i)f(CW).
 OBJ = main.o parse.o
 .sp 0.2
 prog: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 main.o: main.c parse.h
-  $(CC) -c main.c
+  $(CC) \-c main.c
 .sp 0.2
 parse.o: parse.c parse.h
-  $(CC) -c parse.c
+  $(CC) \-c parse.c
 .TE
 Ein paar der impliziten Regeln von Make sind hier explizit aufgeschrieben,
 um es f\*:ur Sie einfacher zu machen, das \f[CW]Makefile\fP in den
@@ -72,7 +71,7 @@ zugeh\*:origen DAG umzuformen.
 .LP
 Das oben genannte \f[CW]Makefile\fP kann als DAG in folgender
 Weise dargestellt werden:
-.so 03.figure3.so
+.so lib/de/auug97/03.figure3.so
 .LP
 Aufgrund der Pfeile, die die Ordnung der Beziehungen der
 Dateien zueinander ausdr\*:ucken, handelt es sich um einen
@@ -80,17 +79,17 @@ azyklischen Graphen. Wenn es den Pfeilen zufolge eine
 kreisf\*:ormige Abh\*:angigkeit g\*:abe, l\*:age ein Fehler vor.
 .LP
 Beachten Sie bitte, dass die Objektdateien (\f[CW].o\fP)
-von den Include-Dateien (\f[CW].h\fP) abh\*:angig sind,
+von den Include\[hy]Dateien (\f[CW].h\fP) abh\*:angig sind,
 obwohl es die Quelldateien (\f[CW].c\fP) sind, die das
 Einf\*:ugen vornehmen. Das hat folgenden Grund: Wird eine
-Include-Datei ge\*:andert, sind die Objektdateien nicht
+Include\[hy]Datei ge\*:andert, sind die Objektdateien nicht
 mehr aktuell, nicht die Quelldateien.
 .LP
-Der zweite Schritt des Make-Prozesses ist eine
-Postorder-Traversierung des DAG. Das bedeutet, dass die
+Der zweite Schritt des Make\[hy]Prozesses ist eine
+Postorder\[hy]Traversierung des DAG. Das bedeutet, dass die
 abh\*:angigen Knotenpunkte zuerst besucht werden. Die
 eigentliche Reihenfolge der Traversierung ist nicht
-festgelegt, aber die meisten Make-Anwendungen gehen von
+festgelegt, aber die meisten Make\[hy]Anwendungen gehen von
 oben nach unten und bei Kanten unter demselben
 Knotenpunkt von links nach rechts und die meisten
 Projekte verlassen sich stillschweigend auf dieses
@@ -102,10 +101,10 @@ abh\*:angig ist, j\*:unger ist. Wenn eine Datei als nicht mehr
 akuell klassifiziert wurde, wird die zu der
 entsprechenden Graphkante geh\*:orende Aktion ausgef\*:uhrt
 (in dem oben aufgef\*:uhrten Beispiel w\*:are das ein
-Kompilations- oder ein Bindeprozess).
+Kompilations\[hy] oder ein Bindeprozess).
 .LP
 Die Anwendung von rekursivem Make beeinflusst beide
-Phasen der Make-Operation: Es veranlasst Make, einen
+Phasen der Make\[hy]Operation: Es veranlasst Make, einen
 ungenauen DAG zu erstellen und es zwingt Make, den DAG
 in einer unangebrachten Reihenfolge zu traversieren.
 .nh 2 "Rekursives Make"
@@ -113,7 +112,7 @@ Um die Auswirkungen des rekursiven Makes zu untersuchen,
 teilen wir das obige Beispiel in zwei Module ein. Jedes
 Modul hat sein eigenes \f[CW]Makefile\fP und ein
 \f[CW]Makefile\fP f\*:ur die oberste Ebene, deren Aufgabe
-es ist, jedes der Modul-Makefiles aufzurufen.
+es ist, jedes der Modul\[hy]Makefiles aufzurufen.
 .LP
 Dieses Beispiel ist absichtlich konstruiert und zwar
 durch und durch. Aber jede Modularit\*:at in Projekten ist
@@ -122,10 +121,10 @@ vielen Projekten ebnet der Linker am Ende alles wieder
 ein.
 .LP
 Die Verzeichnisstruktur ist folgenderma\(ssen:
-.so 03.figure4.so
+.so lib/de/auug97/03.figure4.so
 .LP
 Das \f[CW]Makefile\fP der obersten Ebene sieht oft sehr wie eine
-Shell-Befehlsdatei aus:
+Shell\[hy]Befehlsdatei aus:
 .TS
 box,center;
 lw(2.5i)f(CW).
@@ -143,10 +142,10 @@ lw(2.5i)f(CW).
 all: main.o
 .sp 0.2
 main.o: main.c ../bee/parse.h
-  $(CC) -I../bee -c main.c
+  $(CC) \-I../bee \-c main.c
 .TE
 und der entsprechende DAG sieht so aus:
-.so 03.figure5.so
+.so lib/de/auug97/03.figure5.so
 Das \f[CW]bee/Makefile\fP sieht so aus:
 .TS
 box,center;
@@ -155,13 +154,13 @@ OBJ = ../ant/main.o parse.o
 all: prog
 .sp 0.2
 prog: (OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 parse.o: parse.c parse.h
-  $(CC) -c parse.c
+  $(CC) \-c parse.c
 .TE
 und der entsprechende DAG sieht so aus:
-.so 03.figure6.so
+.so lib/de/auug97/03.figure6.so
 .LP
 Schauen Sie sich die DAGs genau an. Sie stellen fest,
 dass keiner von ihnen komplett ist. Beiden DAGs fehlen
@@ -177,12 +176,12 @@ dem \f[CW]bee/Makefile\fP hinzugef\*:ugt:
 box,center;
 lw(2.5i)f(CW).
 parse.c parse.h: parse.y
-  $(YACC) -d parse.y
+  $(YACC) \-d parse.y
   mv y.tab.c parse.c
   mv y.tab.h parse.h
 .TE
 Und die entsprechenden Ver\*:anderungen des DAGs s\*:ahen so aus:
-.so 03.figure7.so
+.so lib/de/auug97/03.figure7.so
 .LP
 Diese Ver\*:anderung hat eine einfache Folge: Wenn
 \f[CW]parse.y\fP editiert wird, wird \f[CW]main.o\fP
@@ -196,8 +195,8 @@ sich die Aktionen, die Make von der obersten Ebene aus
 unternimmt, anzuschauen. Nehmen Sie einmal an, dass das
 Projekt in sich konsistent ist. Jetzt editieren Sie
 \f[CW]parse.y\fP, so dass die generierte
-\f[CW]parse.h\fP nicht-triviale Ver\*:anderungen
-aufweist. Wenn nun das Haupt-Make aufgerufen wird, wird
+\f[CW]parse.h\fP nicht\[hy]triviale Ver\*:anderungen
+aufweist. Wenn nun das Haupt\[hy]Make aufgerufen wird, wird
 erst ant und dann bee besucht. Aber \f[CW]ant/main.o\fP
 ist noch nicht rekompiliert, weil \f[CW]bee/parse.h\fP
 noch nicht regeneriert wurde und deshalb noch nicht
@@ -214,7 +213,7 @@ Es gibt drei herk\*:ommliche Korrekturm\*:oglichkeiten f\*:ur die oben
 beschriebene St\*:orung.
 .nh 3 "Umstrukturierung"
 Die erste ist, die Anordnung der Module in dem
-Haupt-\f[CW]Makefile\fP von Hand zu berichtigen. Die
+Haupt\[hy]\f[CW]Makefile\fP von Hand zu berichtigen. Die
 Frage ist, warum diese Korrektur \*:uberhaupt notwendig
 ist. Schlie\(sslich soll Make eine Expertensystem sein. Hat
 Make irgendeinen Fehler oder ging etwas anderes schief?
@@ -222,19 +221,19 @@ Make irgendeinen Fehler oder ging etwas anderes schief?
 Zur Beantwortung dieser Frage muss man nicht den
 Graphen, sondern die Anordnung der Traversierung des
 Graphen anschauen. Um fehlerlos zu arbeiten, muss Make
-eine Postorder-Traversierung vornehmen, aber dadurch,
+eine Postorder\[hy]Traversierung vornehmen, aber dadurch,
 dass der DAG in zwei Teile geteilt wurde, war es Make
 nicht mehr m\*:oglich den Graphen in der notwendigen
-Reihenfolge zu traversieren - stattdessen wurde von dem
+Reihenfolge zu traversieren \- stattdessen wurde von dem
 Projekt eine Reihenfolge vorgeschrieben. Eine
 Reihenfolge, die, wenn man den Originalgraphen
 betrachtet, schlichtweg falsch ist. Indem man das
-Haupt-\f[CW]Makefile\fP korrigiert, stellt man eine
+Haupt\[hy]\f[CW]Makefile\fP korrigiert, stellt man eine
 Reihenfolge her, die der, die Make h\*:atte benutzen
 k\*:onnen, \*:ahnlich ist. Solange, bis die n\*:achste
 Abh\*:angigkeit hinzugef\*:ugt wird...
 .LP
-Bitte beachten Sie, dass paralleles Build (\f[CW]make -j\fP)
+Bitte beachten Sie, dass paralleles Build (\f[CW]make \-j\fP)
 viele der bei der manuellen Umstrukturierung gemachten
 Annahmen stillschweigend au\(sser Kraft setzt, wodurch
 diese L\*:osung nutzlos wird. Au\(sserdem f\*:uhren alle
@@ -242,7 +241,7 @@ untergeordneten Makes ebenfalls mehrere Aktionen
 gleichzeitig aus.
 .nh 3 "Wiederholung"
 Bei der zweiten herk\*:ommlichen L\*:osung l\*:asst man das
-Haupt-\f[CW]Makefile\fP mehrere Male durchlaufen. Das
+Haupt\[hy]\f[CW]Makefile\fP mehrere Male durchlaufen. Das
 sieht ungef\*:ahr so aus:
 .TS
 box,center;
@@ -289,9 +288,10 @@ gebaut einschlie\(sslich \f[CW]parse.h\fP. Auch
 wenn alles in sich konsistent war.
 .LP
 Beachten Sie bitte, dass bei dieser L\*:osung \f[CW]make
--j\fP (paralleles Build) viele der angenommenen
+\-j\fP (paralleles Build) viele der angenommenen
 Anordnungen stillschweigend au\(sser Kraft setzt, wodurch
 diese L\*:osung nutzlos wird, weil alle der untergeordneten
 Makes ihre Builds gleichzeitig
 durchf\*:uhren(\f[CW]clean\fP und dann \f[CW]all\fP), wobei
 sie sich st\*:andig gegenseitig st\*:oren.
+.\" vim: set ts=8 sw=4 et :

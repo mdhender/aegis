@@ -1,25 +1,24 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 1999, 2001-2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aepattr 5 \*(N) "Reference Manual"
 .SH NAME
-aepattr - aegis project attribute file
+aepattr \- aegis project attribute file
 .XX "aepattr(5)" "project attribute file format"
 .SH DESCRIPTION
 The
@@ -66,7 +65,7 @@ forced_develop_begin_notify_command = string;
 This command is used to notify a developer
 that a change requires developing;
 it is issued when a project administrator uses an
-.I "aedb -User"
+.I "aedb \-User"
 command to force development of a change by a specific user.
 All of the substitutions described in
 .IR aesub (5)
@@ -84,7 +83,7 @@ develop_end_notify_command = string;
 This command is used to
 notify that a change is ready for review.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -104,7 +103,7 @@ This command is used to
 notify that a change had been withdrawn from review
 for further development.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -123,7 +122,7 @@ review_begin_notify_command = string;
 This command is used to
 notify that a review has begun.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -142,7 +141,7 @@ review_begin_undo_notify_command = string;
 This command is used to
 notify that a review is no longer in progress, the reviewer has withdrawn.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -161,7 +160,7 @@ review_pass_notify_command = string;
 This command is used to
 notify that a review has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -180,7 +179,7 @@ review_pass_undo_notify_command = string;
 This command is used to
 notify that a review has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -200,7 +199,7 @@ review_fail_notify_command = string;
 This command is used to
 notify that a review has failed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -219,7 +218,7 @@ integrate_pass_notify_command = string;
 This command is used to
 notify that an integration has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -244,7 +243,7 @@ integrate_fail_notify_command = string;
 This command is used to
 notify that an integration has failed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -289,7 +288,7 @@ minimum_change_number = integer;
 The minimum change number for
 .IR aenc(1),
 if no change number is specified.
-This allows the low-numbered change numbers to be
+This allows the low\[hy]numbered change numbers to be
 used for branches later in the project.
 .TP 8n
 reuse_change_numbers = boolean;
@@ -319,7 +318,7 @@ Unless you have an exceptionally large project, coupled with fast CPUs
 and high network latency, there is probably very little benefit in
 using this feature.  (The database is usually less than 5% of the size
 of the repository.)  On slow networks, however, this can improve the
-performance of file-related commands.
+performance of file\[hy]related commands.
 .RE
 .TP 8n
 develop_end_action = ( ...);
@@ -354,7 +353,7 @@ A contradictory setting will be replaced with \fIgoto_\%being_\%reviewed\fP.
 protect_development_directory = boolean;
 .RS
 This field may be used to protect the development directory after
-the \fIbeing developed\fP state.  It does this by making it read-only at
+the \fIbeing developed\fP state.  It does this by making it read\[hy]only at
 develop end time.  Should the change ever be returned to the \fIbeing
 developed\fP state, it will be made writable again.
 .PP
@@ -382,4 +381,5 @@ are used to remember most project state
 .TP 8n
 .IR aepstate (5)
 project state file format
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

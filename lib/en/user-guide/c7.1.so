@@ -1,20 +1,19 @@
+'\"p
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2001, 2002, 2004-2008 Peter Miller
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "The Model"
 .LP
@@ -56,7 +55,7 @@ so both are supported.
 The history mechanism which must be included in any repository function is not
 provided by the Aegis program.
 It is instead provided by some other
-per-project configurable software,
+per\[hy]project configurable software,
 such as RCS.
 This means that the
 user may select the history tool most suited to any given project.
@@ -65,7 +64,7 @@ It also means that Aegis is that much smaller to test and maintain.
 The structure of the baseline is dictated by the nature of each project.
 The Aegis program attempts to make as few arbitrary rules as possible.
 There is one mandatory file in the your project baseline.  The mandatory
-file is called \fIaegis.conf\fP by default, and contains the per-project
+file is called \fIaegis.conf\fP by default, and contains the per\[hy]project
 configuration information.  The name of this file may be changed if
 you want to call it something different.  It ios also common (though
 not mandatory, and the name may be changed) to have a directory called
@@ -78,9 +77,9 @@ process.
 The baseline in Aegis has one particular attribute:
 it always works.
 It is
-always there to show off to visiting big-wigs,
+always there to show off to visiting big\[hy]wigs,
 it is always there to
-grab a copy of and ship a "pre-release snapshot" to some overly anxious
+grab a copy of and ship a "pre\[hy]release snapshot" to some overly anxious
 customer,
 it is always there to let upper management "touch and feel"
 the progress being made towards the next release.
@@ -132,9 +131,10 @@ move right down
 E1: ellipse "integrator"
 arrow "integrate " rjust "begin " rjust
 B3: box "integration" "directory"
-S1: spline -> from B3.s then down then right 1.25 then up \
-	then to B1.n right 1.25 then to B1.n up right 1.25 \
-	then to B1.n up then to B1.n
+move to B3.s
+S1: spline -> down then right 1.25 then up \
+        then to B1.n right 1.25 then to B1.n up right 1.25 \
+        then to B1.n up then to B1.n
 "integrate " rjust "pass " rjust at S1.c+(1.25,-0.75)
 arrow from B2.s to E1.nw
 arrow from 1/3<B1.sw,B1.se> to B2.n
@@ -175,7 +175,7 @@ object files from the baseline rather than rebuild them
 within the development directory.
 .LP
 The baseline is readable by all staff,
-and usually writable by no-one.
+and usually writable by no\[hy]one.
 When it is necessary to write to the baseline,
 this is done by Aegis,
 as will be shown below.
@@ -246,7 +246,7 @@ or will establish that new functionality works
 Tests are shell scripts,
 and as such are capable of testing anything which has functionality
 accessible from the command line.
-The ability to run background processes allows even client-server
+The ability to run background processes allows even client\[hy]server
 models to be tested.
 Tests are thus text files, and are treated as source files;
 they may be modified by the same process as any other source file.
@@ -298,7 +298,7 @@ it must have tests,
 and it must pass those tests.\**
 .FS
 It is possible for these testing requirements to be waived on either a
-per-project or per-change basis.
+per\[hy]project or per\[hy]change basis.
 How is described in a later section.
 The power to waive this requirement is not automatically granted to developers,
 as experience has shown that it is usually abused.
@@ -307,7 +307,7 @@ as experience has shown that it is usually abused.
 The new tests must also
 .I fail
 against the baseline;
-this is to establish that tests for bug-fixes actually reproduce the bug
+this is to establish that tests for bug\[hy]fixes actually reproduce the bug
 and then demonstrate that it is gone.
 New functionality added by a change
 will naturally fail when tested in the old baseline,
@@ -326,7 +326,7 @@ between
 and
 .I "being integrated" .
 .LP
-If any one of them is out-of-date with respect to the baseline,
+If any one of them is out\[hy]of\[hy]date with respect to the baseline,
 the lock is not taken,
 either.
 Locking the files at this state transition means that popular files may be
@@ -335,12 +335,13 @@ but that only differences to the latest version are ever submitted for
 integration.
 The Aegis program provides a mechanism,
 described later,
-for bringing out-of-date files in changes up-to-date without losing the
+for bringing out\[hy]of\[hy]date files in changes up\[hy]to\[hy]date
+without losing the
 edits made by the developer.
 .nh 4 "Awaiting Review"
 .LP
 The default configuration for an Aegis project does not use this state,
-because for small-ish projects it can be tedious.  For larger projects,
+because for small\[hy]ish projects it can be tedious.  For larger projects,
 however, it assists in coordinating reviewers when you use email
 notification that a review is required to several potential reviewers.
 .LP
@@ -350,7 +351,7 @@ information, or \fItkaepa\fP(1) for a GUI interface.
 .LP
 It is also possible, by a different setting of the same project
 attribute, to skip the code review step altogether.  This can be of
-benefit to one-person projects where independent code review would be
+benefit to one\[hy]person projects where independent code review would be
 impossible.
 .LP
 The rest of this description will assume the \fIawaiting review\fP state
@@ -376,7 +377,7 @@ A number of alternative have been observed:
 You may have a single person who coordinates review panels of,
 say,
 4 peers,
-with this coordinator the only person allowed to sign-off review passes or
+with this coordinator the only person allowed to sign\[hy]off review passes or
 fails.
 .LP
 \(bu
@@ -391,7 +392,7 @@ The Aegis program enforces that a developer may not review their own code.
 This ensures that at least one person other than the developer
 has scrutinized the code,
 and eliminates a rather obvious conflict of interest.
-It is possible to turn this requirement off on a per-project basis,
+It is possible to turn this requirement off on a per\[hy]project basis,
 but this is only desirable for projects with a one person team (or maybe two).
 The Aegis program has no way of knowing that the user
 passing a review has actually looked at,
@@ -405,7 +406,7 @@ it has tests and it passes those tests,
 and the changes are to the current version of the baseline.
 The reviewer may thus concentrate on issues of completeness,
 implementation,
-and standards - to name only a few.
+and standards \- to name only a few.
 .nh 5 "Customizing Code Review Policy"
 .LP
 It is possible to require more than one reviewer for a change.  By
@@ -514,7 +515,7 @@ or be distinct,
 as appropriate for your project.
 .nh 4 "Developer"
 .LP
-This is the coal-face.
+This is the coal\[hy]face.
 This role is where almost everything is done.
 This is
 the only role allowed to edit a source file of a project.
@@ -537,7 +538,7 @@ The role of the reviewer is to check a developer's work.
 This review may
 consist of a peer examining the code,
 or it may be handled by a single
-member of staff setting up and scheduling multi-person review panels.
+member of staff setting up and scheduling multi\[hy]person review panels.
 The Aegis program does not mandate what style of review,
 it only
 requires that a reviewer pass or fail each change.
@@ -635,9 +636,9 @@ requested.
 By default,
 Aegis insists that all changes be
 accompanied by tests.
-The project administrator may grant case-by-case
+The project administrator may grant case\[hy]by\[hy]case
 exemptions,
-or a project-wide exemption.
+or a project\[hy]wide exemption.
 .LP
 \(bu Add or remove staff.
 The four roles described in this section may be
@@ -685,24 +686,32 @@ arrow " integrate" ljust " begin" ljust
 S5: box "being" "integrated"
 arrow " integrate" ljust " pass" ljust
 S6: box "completed"
-spline -> from 1/3<S1.nw,S1.sw> then left 0.75 then up 2/3 "new" "change" "undo"
-T1: spline -> from 1/2<S2.nw,S2.w> then left 0.75 then up 11/12 \
-	then to 1/3<S1.sw,S1.nw>
+move to 1/3<S1.nw,S1.sw>
+spline -> left 0.75 then up 2/3 "new" "change" "undo"
+move to 1/2<S2.nw,S2.w>
+T1: spline -> left 0.75 then up 11/12 \
+        then to 1/3<S1.sw,S1.nw>
 " develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
-T2: spline -> from S3.w then left 0.5 then up 1 \
-	then to 1/2<S2.sw,S2.w>
+move to S3.w
+T2: spline -> left 0.5 then up 1 \
+        then to 1/2<S2.sw,S2.w>
 " develop" ljust " end" ljust " undo" ljust at T2.c - (0.5,0)
-T3: spline -> from 1/3<S4.nw,S4.sw> then left 1 then up 2.25-1/12 \
-	then to S2.w
+move to 1/3<S4.nw,S4.sw>
+T3: spline -> left 1 then up 2.25-1/12 \
+        then to S2.w
 "" "" " develop" ljust " end" ljust " undo" ljust at T3.c - (1,0)
-T4: spline -> from S5.w then left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
+move to S5.w
+T4: spline -> left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
 " integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.75,0)
-T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 then up 1 \
-	then to 1/3<S2.se,S2.ne>
+move to 1/3<S3.ne,S3.se>
+T5: spline -> right 0.5 then up 1 \
+        then to 1/3<S2.se,S2.ne>
 "review " rjust "fail " rjust at T5.c + (0.5,0)
-T6: spline -> from S4.e then right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
+move to S4.e
+T6: spline -> right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
 "review " rjust "pass " rjust "undo " rjust at T6.c + (0.5,0)
-T7: spline -> from S5.e then right 1 then up 3.5-1/12 then to 1/3<S2.ne,S2.se>
+move to S5.e
+T7: spline -> right 1 then up 3.5-1/12 then to 1/3<S2.ne,S2.se>
 "integrate " rjust "fail " rjust "" "" at T7.c + (1,0)
 .PE
 .ce 1
@@ -769,10 +778,10 @@ the
 .UX
 world this usually means things like compiling and linking a
 program,
-but as fancy graphical programs become more wide-spread,
+but as fancy graphical programs become more wide\[hy]spread,
 the
 source files could be the binary output from a graphical
-Entity-Relationship-Diagram editor,
+Entity\[hy]Relationship\[hy]Diagram editor,
 which would then be run through a
 database schema generator.
 .LP
@@ -790,7 +799,7 @@ all or some of the tests already in the
 baseline may also be run.
 Tests consist of
 .UX
-shell scripts -
+shell scripts \-
 anything that can be done in a shell script can be tested.
 .LP
 In preparation for review,
@@ -798,12 +807,12 @@ a change is differenced.
 This usually consists of
 automatically comparing the present contents of the baseline with what
 the change proposes to do to the baseline,
-on a file-by-file basis.
+on a file\[hy]by\[hy]file basis.
 The
 results of the difference,
 such as
 .UX
-.I "diff -c"
+.I "diff \-c"
 output,
 is kept
 in a difference file,
@@ -813,7 +822,7 @@ of this procedure is that reviewers may examine these files to see every
 change the developer made,
 rather than only the obvious ones.
 The
-differencing commands are per-project configurable,
+differencing commands are per\[hy]project configurable,
 and other
 validations,
 such as line length restrictions,
@@ -974,3 +983,4 @@ leaving the original baseline unchanged.
 .LP
 It is not the responsibility of any integrator to fix a defective change,
 or even diagnose what the defect may be.
+.\" vim: set ts=8 sw=4 et :

@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee
-//      Copyright (C) 2008 Peter Miller
+//      Copyright (C) 2008, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -21,17 +21,17 @@
 #ifndef AEGET_GET_RSS_H
 #define AEGET_GET_RSS_H
 
-#include <common/main.h>
 
-struct project_ty;
+struct project;
 struct string_ty;
 struct string_list_ty;
 
 /**
  * Get an RSS feed file.
  */
-void get_rss(struct project_ty *pp,
+void get_rss(struct project *pp,
              struct string_ty *,
              struct string_list_ty *modifier);
 
 #endif // AEGET_GET_RSS_H
+// vim: set ts=8 sw=4 et :

@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aeimport
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -30,10 +29,10 @@ aeimport \- import foreign repository into Aegis
 .IR dirname
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I "\*(n)"
@@ -62,7 +61,7 @@ The project has no other administrators (use \fIaena\fP(1) to add more).
 .PP
 The project will have all user names found in the history files (see blow)
 installed as developers, reviewers and integrators.  This is probably
-too broad, but fairly accurately reproduces the wide-open permissions
+too broad, but fairly accurately reproduces the wide\[hy]open permissions
 found in most repositories, and you will want to use \fIaerd\fP(1),
 \fIaerrv\fP(1) and \fIaeri\fP(1) as appropriate to winnow this list.
 .PP
@@ -95,17 +94,17 @@ You may specify the project version in two ways:
 1.
 The version number may be implicit in the project name, in which
 case the version numbers will be stripped off.  For example, \[lq]\*(n)
--p example.1.2\[rq] will create a project called \[lq]example\[rq] with branch
-number 1 created, and sub-branch 2 of branch 1 created.
+\-p example.1.2\[rq] will create a project called \[lq]example\[rq] with branch
+number 1 created, and sub\[hy]branch 2 of branch 1 created.
 .TP 3n
 2.
 The version number may be stated explicitly, in which case it will be
-subdivided for branch numbers.  For example, \[lq]\*(n) -p example -version
+subdivided for branch numbers.  For example, \[lq]\*(n) \-p example \-version
 1.2\[rq] will create a project called \[lq]example\[rq] with branch number 1
-created, and sub-branch 2 of branch 1 created.
+created, and sub\[hy]branch 2 of branch 1 created.
 .PP
 In each case, these branches may be named wherever a project name may
-be given, such as \[lq]-p example.1\[rq] and \[lq]-p example-1.2\[rq].
+be given, such as \[lq]\-p example.1\[rq] and \[lq]\-p example\[hy]1.2\[rq].
 The actual
 punctuation character is unimportant.
 .PP
@@ -117,25 +116,25 @@ dash as the argument, as in \[lq]\f(CW\-version \-\fP\[rq]
 If no version number is given, either explicitly or implicitly, version
 1.0 is used.
 .SS Project Directory Location
-.so z_filelocn.so
+.so lib/en/man1/z_filelocn.so
 .SH THE PROCESS
 Most file version systems do not operate using change sets.  In order
 to import such repositories into \*(N) it is necessary to \[lq]discover\[rq]
 these change sets.  The following steps are taken:
-.TP 2n
+.TP 3n
 1.
 The directory (\fIdirpath\fP) given on the command line, and all
 directories below it, are scanned for appropriate files (for example,
 RCS and CVS use files with a \[lq]\f[CW],v\fP\[rq] suffix).
 These files are read to obtain the file's history.
 .sp 0.3
-If you have been using a non-standard file suffix, \*(n) won't be able
+If you have been using a non\[hy]standard file suffix, \*(n) won't be able
 to find the files.
 .sp 0.3
 If you have more than one module in your CVS repository, \*(n) doesn't
 (yet) understand the CVSROOT/modules file.  Pointing \*(n) at your whole
 CVSROOT may produce an unexpectedly large result.
-.TP 2n
+.TP 3n
 2.
 The history files discovered in the previous step are copied into the
 location used by \*(N).  Unlike some other tools, \*(N) has a repository
@@ -147,7 +146,7 @@ the project (see \fIaermpr\fP(1) for more information) and start again.
 .sp 0.3
 It is not possible to leave all your history files under, say,
 $CVSROOT and have Aegis point to them.
-.TP 2n
+.TP 3n
 3.
 For each user mentioned in the various file histories, the time stamps
 are examined to find groups of files which were committed at around the
@@ -161,7 +160,7 @@ one of them does the commit.
 In some cases the time window may be too large, and several very small
 changes may be seen as one larger change set.  In practice, this isn't
 very common.
-.TP 2n
+.TP 3n
 4.
 Groups of files are stored into the \*(N) database as completed changes
 (i.e. as if \fIaeipass\fP(1) has already run).  The description of the
@@ -170,11 +169,11 @@ to the relevant file versions.  The time stamp used for the change is
 the latest time stamp of any file in the group.
 .sp 0.3
 There are times when small typographical errors between file comments
-result in longer-than-expected change descriptions.  This can be
+result in longer\[hy]than\[hy]expected change descriptions.  This can be
 corrected with \fIaeca\fP(1) or \fItkaeca\fP(1) if desired.  There are
 also times when the reverse is true: some files have no comments at all,
 and the resulting description is less than useful.
-.TP 2n
+.TP 3n
 5.
 Tags are turned into delta names by transferring delta names from the
 files they are attached to, to the change sets they are attached to.
@@ -198,38 +197,38 @@ change_details\fP commands.
 .SS Limitations
 The \*(n) program is far from perfect.  There are a number of known
 limitations.
-.TP 2n
+.TP 3n
 \(bu
 At this time, there is no support for branching.
 (As soon as I figure out how to discern the root of a branch across
 loosely coupled files, I'll implement it.  Ideas and/or code contributions
 welcome.)
-.TP 2n
+.TP 3n
 \(bu
 Only RCS and SCCS formats are understood at present.  It should be
 straight forward to add support for additional formats in the future.
 Only step 1 of the above process requires attention, the rest is file
 format neutral.
-.TP 2n
+.TP 3n
 \(bu
 There is no support for CVS modules, and there needs to be.
-.TP 2n
+.TP 3n
 \(bu
 You can't specify the time window size used to determine change sets.
 Time will tell whether this is
 necessary, but it begs the question: how will you know what window size
 you need in order to use the option at all.
-.TP 2n
+.TP 3n
 \(bu
 You can't import a CVS repository into an existing project.
 You may only create a new project from a CVS repository.
-.TP 2n
+.TP 3n
 \(bu
 You can't import a remote CVS repository.
 .SH OPTIONS
 The following options are understood:
-.so o_dir.so
-.TP 8n
+.so lib/en/man1/o_dir.so
+.TP 3n
 \fB\-FORmat\fP \fIname\fP
 .RS
 This option may be use to specify which history format is being imported.
@@ -256,17 +255,18 @@ The GNU Compatibly Stupid Source Control (CSSC) is a
 freeware implementation of SCCS, and it may be found at
 \f[CW]ftp://alpha.gnu.org/gnu/CSSC/\fP
 .RE
-.so o_lib.so
-.so o_list.so
-.so o_project.so
-.so o_help.so
+.so lib/en/man1/o_lib.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_help.so
 .TP 8n
-\fB-VERSion\fP \fInumber\fP
+\fB\-VERSion\fP \fInumber\fP
 This option may be used to specify the version number
 for the project.
 Version numbers are implemented as branches.
 Use a single dash (\[lq]\f(CW\-\fP\[rq]) as the argument
 if you want no version branches created.
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

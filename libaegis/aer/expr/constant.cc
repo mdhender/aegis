@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994, 2002-2008 Peter Miller.
+//      Copyright (C) 1994, 2002-2008, 2012 Peter Miller.
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ rpt_expr_constant::~rpt_expr_constant()
 rpt_expr_constant::rpt_expr_constant(const rpt_value::pointer &a_value) :
     value(a_value)
 {
-    trace(("rpt_expr_constant::rpt_expr_constant(this = %08lX, "
-        "a_value = %08lX)\n", (long)this, (long)a_value.get()));
+    trace(("rpt_expr_constant::rpt_expr_constant(this = %p, "
+        "a_value = %p)\n", this, a_value.get()));
 }
 
 
@@ -48,8 +48,8 @@ rpt_value::pointer
 rpt_expr_constant::evaluate()
     const
 {
-    trace(("rpt_expr_constant::evaluate(this = %08lX)\n{\n", (long)this));
-    trace(("return %08lX;\n", (long)value.get()));
+    trace(("rpt_expr_constant::evaluate(this = %p)\n{\n", this));
+    trace(("return %p;\n", value.get()));
     trace(("}\n"));
     return value;
 }
@@ -59,8 +59,11 @@ bool
 rpt_expr_constant::lvalue()
     const
 {
-    trace(("rpt_expr_constant::lvalue(this = %08lX)\n", (long)this));
+    trace(("rpt_expr_constant::lvalue(this = %p)\n", this));
     bool is_ref = !!dynamic_cast<const rpt_value_reference *>(value.get());
     trace(("return %s\n", is_ref ? "true" : "false"));
     return is_ref;
 }
+
+
+// vim: set ts=8 sw=4 et :

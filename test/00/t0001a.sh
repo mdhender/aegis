@@ -1,22 +1,21 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2006-2008 Peter Miller
-#	Copyright (C) 2007 Walter Franzini
+# aegis - project change supervisor
+# Copyright (C) 1991-1998, 2006-2008, 2012 Peter Miller
+# Copyright (C) 2007 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program; if not, see
-#	<http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 TEST_SUBJECT="commands --help options"
@@ -119,10 +118,9 @@ if test $? -ne 0 ; then cat test.out; fail ; fi
 #
 # The following commands does not provide the --help option:
 #
-#	aecomplete
-#	aecvsserver
-#	aemanifest
-#	aemeasure
+#     aecomplete
+#     aecvsserver
+#     aemeasure
 #
 
 
@@ -196,3 +194,4 @@ if test $? -ne 0 ; then cat test.out; fail ; fi
 # the things tested in this test, worked
 #
 pass
+# vim: set ts=8 sw=4 et :

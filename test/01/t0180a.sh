@@ -1,37 +1,38 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2003-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2003-2008, 2012 Peter Miller
+#       Copyright (C) 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 unset AEGIS_PROJECT
@@ -51,11 +52,11 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -72,7 +73,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -83,31 +84,31 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aet -reg functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the aet -reg functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the aet -reg functionality" \
-		"($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT when testing the aet -reg functionality" \
+                "($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
@@ -193,7 +194,7 @@ if test $? -ne 0 ; then no_result; fi
 
 # Create the project
 $bin/aegis -npr $theProject -dir $projectDir -LIB $libDir -file projAttributes \
-	-v > LOG 2>&1
+        -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 AEGIS_PROJECT=$theProject.1.0
@@ -263,7 +264,7 @@ diff_command =
     "diff ${quote $original} ${quote $input} > ${quote $output}; "
     "test $? -le 1";
 merge_command =
-	"fmerge $original $MostRecent $input -o $output -c /dev/null";
+        "fmerge $original $MostRecent $input -o $output -c /dev/null";
 posix_filename_charset = true;
 maximum_filename_length = 255;
 change_file_command = "rm -f etc/cook/change.[0-9]* etc/cook/project.[0-9]*";
@@ -440,7 +441,7 @@ if test $? -ne 0 ; then no_result; fi
 
 # Add the common attributes
 sed 's/regression_test_exempt = true/regression_test_exempt = false/' \
-	commonChangeAttributes >> changeAttributes
+        commonChangeAttributes >> changeAttributes
 if test $? -ne 0 ; then no_result; fi
 
 $bin/aegis -nc 10 -file changeAttributes -p $theProject.1.1 -v > LOG 2>&1
@@ -506,7 +507,7 @@ if test $? -ne 0 ; then no_result; fi
 
 # Add the common attributes
 sed 's/regression_test_exempt = true/regression_test_exempt = false/' \
-	commonChangeAttributes >> changeAttributes
+        commonChangeAttributes >> changeAttributes
 if test $? -ne 0 ; then no_result; fi
 
 $bin/aegis -nc 11 -file changeAttributes -p $theProject.1.1 -v > LOG 2>&1
@@ -545,94 +546,100 @@ action="check project file state"
 cat > ok << 'EOF'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "hosttest/0001/main.cc";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
-	{
-		file_name = "test/00/t0001a.sh";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = test;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "hosttest/0001/main.cc";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
+        {
+                file_name = "test/00/t0001a.sh";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = test;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 EOF
 if test $? -ne 0 ; then no_result; fi
@@ -642,33 +649,35 @@ check_it ok $projectDir/info/change/0/001.fs
 cat > ok << 'EOF'
 src =
 [
-	{
-		file_name = "hosttest/0001/main.cc";
-		uuid = "UUID";
-		action = remove;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		deleted_by = 10;
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
+        {
+                file_name = "hosttest/0001/main.cc";
+                uuid = "UUID";
+                action = remove;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                deleted_by = 10;
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
 ];
 EOF
 check_it ok $projectDir/info/change/0/001.branch/0/001.fs
@@ -682,34 +691,36 @@ action="check project file state"
 cat > ok << 'EOF'
 src =
 [
-	{
-		file_name = "hosttest/0001/main.cc";
-		uuid = "UUID";
-		action = remove;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		locked_by = 11;
-		deleted_by = 10;
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
+        {
+                file_name = "hosttest/0001/main.cc";
+                uuid = "UUID";
+                action = remove;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                locked_by = 11;
+                deleted_by = 10;
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
 ];
 EOF
 if test $? -ne 0 ; then no_result; fi
@@ -733,8 +744,8 @@ if test $? -ne 0 ; then cat LOG; no_result; fi
 
 activity="integrate test reg 726"
 $bin/aegis -test -reg -c 11 -v \
-	--trace aet change file nth find list_get \
-	> LOG 2>&1
+        --trace aet change file nth find list_get \
+        > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
 #
@@ -743,3 +754,6 @@ if test $? -ne 0 ; then cat LOG; fail; fi
 # no other guarantees are made.
 #
 pass
+
+
+# vim: set ts=8 sw=4 et :

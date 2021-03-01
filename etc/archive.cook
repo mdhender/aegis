@@ -1,6 +1,6 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 1997-2008 Peter Miller
+ * Copyright (C) 1997-2008, 2011, 2012 Peter Miller
  * Copyright (C) 2006-2010 Walter Franzini
  *
  * This program is free software; you can redistribute it and/or modify
@@ -95,18 +95,23 @@ if [find_command tardy] then
 #endif
 }
 
-if [find_command png2ico] then
+/* sudo apt-get install imagemagick */
+
 if [find_command convert] then
     integration-build-targets += archive/favicon.ico;
 
 archive/favicon.ico: archive/aegis2.png
 {
+    if [quiet] then
+        function print Build [target];
     convert [resolve archive/aegis2.png] -scale 16 -gamma 2
         temp16.png;
     convert [resolve archive/aegis2.png] -scale 32 -gamma 2
         temp32.png;
-    png2ico [target] temp16.png temp32.png;
-    rm temp16.png temp32.png;
+    convert [resolve archive/aegis2.png] -scale 64 -gamma 2
+        temp64.png;
+    convert temp16.png temp32.png temp64.png -colors 256 [target];
+    rm temp16.png temp32.png temp64.png;
 }
 
 html-targets: [html-targets];
@@ -129,133 +134,151 @@ html-targets =
 /*
  The "convert" command is part of the ImageMagick package.
  */
-if [find_command convert] then
-{
-    html-targets +=
-        [fromto web/missiku/%.png.uue archive/missiku/%_2.png
-            [match_mask web/missiku/%.png.uue [source_files]]
-        ]
-        ;
-}
+html-targets +=
+    [fromto web/missiku/%.png.uue archive/missiku/%_2.png
+        [match_mask web/missiku/%.png.uue [source_files]]
+    ]
+    ;
 
 if [count [html-sources]] then
 cascade [html-sources] = web/version.so;
 
 web/version.so: etc/version.so
 {
+    if [quiet] then
+        function print Build [target];
     cp [resolve [need]] [target];
 }
 
 web/%0%.html.d: web/%0%.html
         set no-cascade
 {
-        c_incl -nc -ns -eia -r -nrec
-                [prepost "-I" /[arch]/web [search_list]]
-                [prepost "-I" "/web" [search_list]]
-                -prefix "'cascade web/%0%.html ='"
-                -suffix "';'"
-                [resolve web/%0%.html]
-                [prepost "-rlp=" "" [search_list]] /* remove leading path */
-                -slp [arch] "'[arch]'" /* substitute leading path */
-                -o [target];
+    if [quiet] then
+        function print Depends [target];
+    c_incl -nc -ns -eia -r -nrec
+        [addprefix "-I" [search_list]]
+        -prefix "'cascade web/%0%.html ='"
+        -suffix "';'"
+        [resolve web/%0%.html]
+        [prepost "-rlp=" "" [search_list]] /* remove leading path */
+        -slp [arch] "'[arch]'" /* substitute leading path */
+        -o [target];
 }
 #include-cooked-nowarn [addsuffix ".d" [match_mask web/%0%.html [source_files]]]
 
-archive/%0%.html: web/%0%.html: etc/ssp.awk
-        set shallow
+archive/%0%.html: web/%0%.html etc/validate.sh
+    set shallow precious
 {
-        roffpp
-                [prepost "-I" /[arch]/web [search_list]]
-                [prepost "-I" "/web" [search_list]]
-                [resolve web/%0%.html]
-        | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
-        | [awk] -f [resolve etc/ssp.awk]
-        > [target];
+    if [quiet] then
+        function print Groff [target];
+    roffpp
+        [addprefix "-I" [search_list]]
+        [resolve web/%0%.html]
+    | GROFF_NO_SGR\=-c groff -Tascii -t -P-bu -man
+    | cat -s
+    > [target];
+
+    if [defined baseline] then
+    {
+        if [quiet] then
+            function print Validate [target];
+        sh [resolve etc/validate.sh] [target];
+    }
 }
 
 archive/%.txt: etc/%.man
 {
+    if [quiet] then
+        function print Groff [target];
     roffpp
-        [prepost "-I" /[arch]/etc [search_list]]
-        [prepost "-I" "/etc" [search_list]]
-        [prepost "-I" "/lib/en/readme" [search_list]]
+        [addprefix "-I" [search_list]]
         [resolve etc/%.man]
     | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
-    | [awk] -f [resolve etc/ssp.awk]
+    | cat -s
     > [target];
 }
 
 archive/[project_minus].ug.ps.gz: lib/en/user-guide/user-guide.ps.gz
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 archive/[project_minus].rm.ps.gz: lib/en/refman/refman.ps.gz
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 archive/[project_minus].faq: lib/en/faq/faq.txt
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 archive/[project_minus].lsm: lib/en/lsm/lsm.txt
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 archive/[project_minus].README: lib/en/readme/readme.txt
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 
 source_file_order =
-        README
-        [project_short].spec /* so RPM can build without separate spec file */
-        [project_short].png
-        [sort
-                [stringset
-                        [source_files]
-                        install-sh
-                        config.guess
-                        config.sub
-                        Makefile.in
-                        BUILDING
-                        LICENSE
-                        README
-                        etc/version.so
-                        common/config.h.in
-                        common/patchlevel.h
-                        configure
-                        /* etc/CHANGES */
-                        [fromto
-                                lib/%1/faq/main.%2 lib/%1/faq/toc.so
-                                [match_mask lib/%1/faq/main.%2 [source_files]]
-                        ]
-                        [fromto
-                                lib/%/refman/main.%2 lib/%/refman/index.so
-                                [match_mask lib/%/refman/main.%2 [source_files]]
-                        ]
-                        [fromto
-                                lib/%/refman/main.%2 lib/%/refman/parts.so
-                                [match_mask lib/%/refman/main.%2 [source_files]]
-                        ]
-                        [fromto
-                                lib/icon/%.uue lib/icon/%
-                                [match_mask lib/icon/%.uue [source_files]]
-                        ]
-                -
-                        README
-                ]
+    README
+    [sort
+        [stringset
+            [source_files]
+            [project_short].spec /* so RPM can build w/o separate spec file */
+            [project_short].png
+            install-sh
+            config.guess
+            config.sub
+            Makefile.in
+            BUILDING
+            LICENSE
+            README
+            etc/version.so
+            common/config.h.in
+            common/patchlevel.h
+            configure
+            /* etc/CHANGES */
+            [fromto
+                lib/%1/faq/main.%2 lib/%1/faq/toc.so
+                [match_mask lib/%1/faq/main.%2 [source_files]]
+            ]
+            [fromto
+                lib/%/refman/main.%2 lib/%/refman/index.so
+                [match_mask lib/%/refman/main.%2 [source_files]]
+            ]
+            [fromto
+                lib/%/refman/main.%2 lib/%/refman/parts.so
+                [match_mask lib/%/refman/main.%2 [source_files]]
+            ]
+            [fromto
+                lib/icon/%.uue lib/icon/%
+                [match_mask lib/icon/%.uue [source_files]]
+            ]
+        -
+            README
         ]
-        ;
+    ]
+    ;
 
 /*
  * For the primary build, when making a release,
@@ -268,6 +291,8 @@ if [matches linux%1 [arch]] then
 
 etc/CHANGES.txt: [arch]/bin/aegis
 {
+    if [quiet] then
+        function print Generate [target];
     [resolve [aegis]] -list project_details -p [project]
         -pw\=80 -pl\=66 -v > [target]
                                                                 set meter;
@@ -320,84 +345,88 @@ if [find_command msgcat] then
         ;
 }
 
+debian-aemakegen-files =
+    debian/changelog
+    debian/aegis-doc.install
+    debian/compat
+    /* debian/copyright */
+    debian/rules
+    debian/aegis.install
+    debian/control
+    debian/source/format
+    ;
+debian-built-files =
+    [debian-aemakegen-files]
+    debian/copyright
+    ;
+
 archive/%.tar.gz: [source_file_order]
-        set shallow
+        [debian-built-files]
+    set shallow
 {
-        if [exists archive/%.tar] then
-                rm archive/%.tar
-                        set clearstat;
-        [tar-cmd] --create --file - --dereference [resolve [source_file_order]]
-                | tardy -unu 0 -gnu 0 -una Peter -gna Miller
-                        -p % -ms 0644 -mc 07022 -now
-                        [prepost "-rp=" "" [search_list]]
-                > archive/%.tar;
-        gzip -9 -v archive/%.tar;
+    if [quiet] then
+        function print Tar [target];
+    if [exists archive/%.tar] then
+        rm archive/%.tar
+            set clearstat;
+    [tar-cmd] cf - -h [resolve [source_file_order]]
+        [debian-built-files]
+    | tardy -unu 0 -gnu 0 -una Peter -gna Miller
+        -p %
+        -ms 0644 -mc 07022 -now
+        [prepost "-rp=" "" [search_list]]
+        - /* stdin */
+        [target]
+        ;
 }
 
-patch_files = [fromto %0% %0%,P [source_files] etc/CHANGES.[version_short]];
-patch_files = [vs_file],P [stringset [patch_files] - [vs_file],P];
-
-archive/[project_minus].patch.gz: [patch_files]
-        set shallow
+[project_short].spec: etc/spec.sh [source_files] [arch]/bin/aemakegen
 {
-        if [exists archive/[project_short].patch] then
-                rm archive/[project_short].patch
-                        set clearstat;
-        sh [resolve etc/patches.sh] [resolve [patch_files]]
-                > archive/[project_short].patch;
-        gzip -9 -v archive/[project_short].patch;
-}
+    if [quiet] then
+        function print Generate [target];
+    version\=[version_short]
+    suidbins\=\"[set-uid-root-commands]\"
+    [resolve [arch]/bin/aemakegen]
+        --project\=[project]
+        --change\=[change]
+        --target\=rpm-spec
+        --flavour\=aegis
+        > [target]
+        ;
+    sh [resolve etc/spec.sh] > [target].old;
 
-[project_short].spec: etc/spec.sh [source_files]
-{
-        version\=[version_short]
-        suidbins\=\"[set-uid-root-commands]\"
-        sh [resolve etc/spec.sh] > [target];
+    diff -u [target].old [target] || true;
 }
 
 archive/[project_minus].spec: [project_short].spec
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
-}
-
-[vs_file],P: [vs_file]
-{
-        echo "Index:" [vs_file] > [target];
-        prev =
-                [collect
-                        [aegis] -list version -p [project] -c [change]
-                        | [awk] -F"'\"'" "'/previous/{print $2}'"
-                ];
-        echo "'Prereq: \""[prev]"\"'" >> [target];
-        echo "'#define PATCHLEVEL \""[prev]"\"'" |
-        diff -c - [vs_file] | sed '1,2d' >> [target];
-}
-
-%0%,P: %0%
-        if [exists [resolve %0%]]
-{
-        [aegis] -cp %0% -delta 1 -output patch.orig -p [project] -c [change]
-                || cp /dev/null patch.orig;
-        sh [resolve etc/patch.fil.sh] patch.orig [resolve %0%] %0% > [target];
-        rm patch.orig;
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 lib/%0%: lib/%0%.uue: [arch]/bin/test_base64
 {
-        [resolve [arch]/bin/test_base64] -uu -i -nh
-            [resolve lib/%0%.uue] [target];
+    if [quiet] then
+        function print Generate [target];
+    [resolve [arch]/bin/test_base64] -uu -i -nh
+        [resolve lib/%0%.uue] [target];
 }
 
 archive/[project_short].png: lib/icon2/64x64.png
-        set shallow
+    set shallow
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 [project_short].png: archive/[project_short].png
 {
-        cp [resolve [need]] [target];
+    if [quiet] then
+        function print Copy [target];
+    cp [resolve [need]] [target];
 }
 
 /*
@@ -408,33 +437,37 @@ archive/[project_short].png: lib/icon2/64x64.png
 RPM: archive/[project_minus]-1.[rpm-arch].rpm;
 
 archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
-                archive/[project_minus].tar.gz
-                etc/rpm-build.sh
-        set shallow
+        archive/[project_minus].tar.gz
+        etc/rpm-build.sh
+    set shallow
 {
-        /*
-         * The book says that the icon files need to be in the SOURCES
-         * directory.  Actually, they need to be in the same directory
-         * as the tarball.
-         *
-         * The icon must be GIF or XPM.
-         */
-        sh [resolve etc/rpm-build.sh]
-                RPM-temporary
-                [resolve archive/[project_minus].tar.gz]
-                ;
-        mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
-                archive/[project_minus]-1.[rpm-arch].rpm
-                ;
-        mv RPM-temporary/SRPMS/[project_minus]-1.src.rpm
-                archive/[project_minus]-1.src.rpm
-                ;
-        rm -r RPM-temporary;
+    if [quiet] then
+        function print Build [target];
+    /*
+     * The book says that the icon files need to be in the SOURCES
+     * directory.  Actually, they need to be in the same directory
+     * as the tarball.
+     *
+     * The icon must be GIF or XPM.
+     */
+    sh [resolve etc/rpm-build.sh]
+        RPM-temporary
+        [resolve archive/[project_minus].tar.gz]
+        ;
+    mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
+        archive/[project_minus]-1.[rpm-arch].rpm
+        ;
+    mv RPM-temporary/SRPMS/[project_minus]-1.src.rpm
+        archive/[project_minus]-1.src.rpm
+        ;
+    rm -r RPM-temporary;
 }
 
 LICENSE: lib/en/cat1/aelic.1
 {
-        cat [resolve [need]] > [target];
+    if [quiet] then
+        function print Copy [target];
+    cat [resolve [need]] > [target];
 }
 
 
@@ -446,6 +479,8 @@ LICENSE: lib/en/cat1/aelic.1
  */
 archive/[branch_project_minus].ae: [source_files] [aedist]
 {
+    if [quiet] then
+        function print Generate [target];
     [aedist] --send --entire-source -ndh
       -compat\=[version]
         --comp-alg\=gzip
@@ -470,6 +505,8 @@ if [example-cook-aesvt-baseline] then
     archive/example-cook-aesvt.html: [example-cook-aesvt-baseline]/README.html
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 
@@ -478,6 +515,8 @@ if [example-cook-aesvt-baseline] then
                         ]/example-cook-aesvt.[example-cook-aesvt-version].ae
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 }
@@ -499,6 +538,8 @@ if [example-cook-fhist-baseline] then
     archive/example-cook-fhist.html: [example-cook-fhist-baseline]/README.html
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 
@@ -507,6 +548,8 @@ if [example-cook-fhist-baseline] then
                         ]/example-cook-fhist.[example-cook-fhist-version].ae
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 }
@@ -515,8 +558,8 @@ if [example-cook-fhist-baseline] then
 
 example-make-rcs-version = 1.0;
 example-make-rcs-baseline =
-        [collect [aegis] -cd -bl -p example-make-rcs.[example-make-rcs-version]
-                '2>/dev/null' || true];
+    [collect [aegis] -cd -bl -p example-make-rcs.[example-make-rcs-version]
+        '2>/dev/null' || true];
 
 if [example-make-rcs-baseline] then
 {
@@ -528,6 +571,8 @@ if [example-make-rcs-baseline] then
     archive/example-make-rcs.html: [example-make-rcs-baseline]/README.html
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 
@@ -536,6 +581,8 @@ if [example-make-rcs-baseline] then
                         ]/example-make-rcs.[example-make-rcs-version].ae
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 }
@@ -557,6 +604,8 @@ if [example-c-plus-plus-baseline] then
     archive/example-c-plus-plus.html: [example-c-plus-plus-baseline]/README.html
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 
@@ -565,11 +614,11 @@ if [example-c-plus-plus-baseline] then
                         ]/example-c-plus-plus.[example-c-plus-plus-version].ae
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 }
-
-/* ---------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------- */
 
@@ -588,6 +637,8 @@ if [example-c-plus-plus-baseline] then
     archive/example-c-plus-plus.html: [example-c-plus-plus-baseline]/README.html
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 
@@ -596,6 +647,8 @@ if [example-c-plus-plus-baseline] then
                         ]/example-c-plus-plus.[example-c-plus-plus-version].ae
         set shallow
     {
+        if [quiet] then
+            function print Copy [target];
         cp [need] [target];
     }
 }
@@ -612,6 +665,8 @@ check-tarball: [project_short]-sf.tgz;
 
 [project_short]-sf.tgz: archive/[project_minus].tar.gz
 {
+    if [quiet] then
+        function print Check Tarball;
     sh [resolve etc/check-tar-gz.sh]
         [pathname [resolve archive/[project_minus].tar.gz]]
         [pathname [target]];
@@ -620,13 +675,21 @@ check-tarball: [project_short]-sf.tgz;
 archive/%0%.png: web/%0%.png.uue: [arch]/bin/test_base64
     set shallow
 {
+    if [quiet] then
+        function print Generate [target];
     [arch]/bin/test_base64 -uu -i -nh [resolve web/%0%.png.uue] [target];
 }
+
+/* sudo apt-get install pngcrush; */
 
 archive/missiku/%_2.png: archive/missiku/%.png
     set shallow
 {
-
+    if [quiet] then
+        function print Generate [target];
+#if 1
+    convert -scale 64 [resolve archive/missiku/%.png] [target];
+#else
     convert -scale 64 [resolve archive/missiku/%.png] %.tmp.png;
     pngcrush -q
         '-text b "Author" "Gregory Delattre <delattre.greg@free.fr>"'
@@ -636,12 +699,15 @@ archive/missiku/%_2.png: archive/missiku/%.png
         %.tmp.png [target];
     rm %.tmp.png
         set silent;
+#endif
 }
 
 archive/missiku/index.html: web/missiku/index.sh
         [match_mask web/missiku/%.png.uue [source_files]]
     set shallow
 {
+    if [quiet] then
+        function print Generate [target];
     sh [resolve web/missiku/index.sh]
         [sort
             [fromto %0%.png.uue %.png
@@ -659,6 +725,8 @@ archive/eg_oss_%.ae: web/eg_oss_%.sh
     lib/config.example/aesvt
     lib/config.example/merge
 {
+    if [quiet] then
+        function print Build [target];
     sh [resolve web/eg_oss_%.sh]
         [arch]
         aegis.conf.d/diff\=[resolve lib/config.example/gnu_diff]
@@ -677,7 +745,124 @@ if [is_stable_branch] then
     archive/[other_branch]/index.html:
         [other_branch_baseline]/archive/index.html
     {
+        if [quiet] then
+            function print Build [target];
         rsync -a [other_branch_baseline]/archive/ archive/[other_branch]/
             set meter;
     }
 }
+
+/* ----------  debian package  ------------------------------------------ */
+
+on_ac_power = [collect "set +e; on_ac_power; expr 1 - $?; exit 0" ];
+if [on_ac_power] then
+{
+    if [matches "%1C%2" [version]] then
+    {
+        /* not every developer build, we would go crazy */
+        /* html-targets += debian-package; */
+    }
+    else
+    {
+        /* Every 5 integrations, or the first five, build Debian package */
+        local delta = [expr [fromto %1D%2 1%2 [version]] - 1000];
+        if [expr ( [delta] % 5 ) '==' 0 || [delta] < 5] then
+        {
+            html-targets += debian-package;
+        }
+    }
+}
+
+
+debian-package: archive/[project_minus].tar.gz
+    [debian-built-files]
+{
+    local vsn = [collect head -1 [resolve debian/changelog]
+                         | sed "'s|.*(\\([^()]*\\).*|\\1|'" ];
+    vsn = [fromto %-1 % [vsn]];
+    function print "vsn = '"[vsn]"'";
+    if [not [in [count [vsn]] 1]] then
+        fail "debian version not right";
+    local tarball = [project_short]_[vsn].orig.tar.gz;
+
+    local user = [collect id -un];
+    local key = ;
+    if [in [user] archives] then
+        key = -k19CEC7D5;
+    else
+        key = -us -uc;
+
+    /*
+     * We fake the .orig.tar.gz file to not have a debian/ directory,
+     * by filtering it out with tardy.  This silences a PITA lintian
+     * warning, for no real benefit.
+     */
+    unset GPG_AGENT_INFO &&
+    rm -rf archive/debian &&
+    mkdir -p archive/debian &&
+    cd archive/debian &&
+    echo Options Indexes > .htaccess &&
+    tardy -exclude "'"[project_minus]"/debian/*'"
+        ../[project_minus].tar.gz [tarball] &&
+    tar xzf ../[project_minus].tar.gz &&
+    cd [project_minus] &&
+#if 0
+    dpkg-buildpackage -sgpg [key] -sa &&
+#else
+    debuild [key] -sa &&
+#endif
+    cd .. &&
+    rm -rf [project_minus] &&
+    lintian -iIv --pedantic *.changes
+    ;
+}
+
+
+[debian-aemakegen-files]: [source_files] [arch]/bin/aemakegen
+    set shallow nosilent
+{
+    if [not [verbose]] then
+        function print generate [target];
+
+    /* This actually makes more files than just debian/control */
+    [resolve [arch]/bin/aemakegen]
+        --project\=[project]
+        --change\=[change]
+        --target\=debian
+        --flavour\=aegis
+        ;
+}
+
+
+debian/copyright: [source_files]
+    set shallow
+{
+    if [quiet] then
+        function print Generate [target];
+    licensecheck "--check='[.]asm$|[.][chy]$'" --copyright [resolve [need]]
+        | sed "'s|^bl\\(bl\\)*/||'"
+        | /usr/lib/cdbs/licensecheck2dep5
+        | awk -f [resolve etc/deb-cop-fix.awk]
+        > [target]
+        ;
+}
+
+
+etc/lsb-release.so: /etc/lsb-release etc/lsb-release.sh
+{
+    if [quiet] then
+        function print Generate [target];
+    sh [resolve etc/lsb-release.sh] > [target];
+}
+
+archive/debian/.htaccess:
+    set shallow
+{
+    echo Options Indexes > [target];
+}
+
+/* catch-22 */
+cascade web/download.html = etc/lsb-release.so archive/debian/.htaccess;
+
+
+/* vim: set ts=8 sw=4 et : */

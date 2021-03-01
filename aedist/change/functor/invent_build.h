@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Walter Franzini
-//	Copyright (C) 2007, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004, 2005 Walter Franzini
+//      Copyright (C) 2007, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDIST_CHANGE_FUNCTOR_INVENT_BUILD_H
@@ -55,27 +55,28 @@ public:
       *     The symbol table to populate.
       */
     change_functor_inventory_builder(bool incbr, bool all_changes, bool inou,
-       	project_ty *pp, symtab<change> *stp);
+        project *pp, symtab<change> *stp);
 
     // See base class for documentation.
-    void operator()(change::pointer );
+    void operator()(change::pointer cp);
 
 private:
     bool inou;                  // ignore original-UUID fields
     symtab<change> *stp;
-    project_ty *pp;
+    project *pp;
 
     /**
       * The copy constructor.
       */
     change_functor_inventory_builder(
-	const change_functor_inventory_builder &);
+        const change_functor_inventory_builder &);
 
     /**
       * The assignment operator.
       */
     change_functor_inventory_builder &operator=(
-	const change_functor_inventory_builder &);
+        const change_functor_inventory_builder &);
 };
 
 #endif // AEDIST_CHANGE_FUNCTOR_INVENT_BUILD_H
+// vim: set ts=8 sw=4 et :

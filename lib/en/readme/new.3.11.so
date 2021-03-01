@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -26,13 +26,13 @@ now find it more often.
 .PP
 .if n *
 .if t \(bu
-The \[lq]\fIaedist -receive\fP\[rq] command has been enhanced to be more robust
+The \[lq]\fIaedist \-receive\fP\[rq] command has been enhanced to be more robust
 about change sets without headers (some browsers \fIgenerously\fP strip
 them all off.
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed in the \[lq]\fIaedist -receive\fP\[rq] command which
+A bug has been fixed in the \[lq]\fIaedist \-receive\fP\[rq] command which
 sometimes caused decompression failures.  An unfortunate interaction with
 the Windows NT support caused CRLF sequences in the compressed data to
 be mangled in some cases.
@@ -45,7 +45,7 @@ This has been fixed, so it should build more easily now.
 .if n *
 .if t \(bu
 The way MANPATH is handled on Linux has been improved in the \fIchsrc\fP
-and \fIprofile\fP commands.  It will not over-ride \fI/etc/man.config\fP
+and \fIprofile\fP commands.  It will not over\[hy]ride \fI/etc/man.config\fP
 now.
 .PP
 .if n *
@@ -64,4 +64,5 @@ There was a problem compiling with gcc 2.8, involving the <stdarg.h> header.
 This has been fixed.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.11 (17-Mar-1999)
+.SS Version 3.11 (17\[hy]Mar\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

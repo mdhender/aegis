@@ -1,62 +1,61 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 1996-2000, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Test" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Test" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis test \- run tests
 .XX "aet(1)" "run tests"
 .SH SYNOPSIS
 .B \*(n)
-.B -Test
+.B \-Test
 [
 .IR option ...
 ][
 \fIname\fP\fB=\fP\fIvalue\fP
 ][
-.IR file-name ...
+.IR file\[hy]name ...
 ]
 .br
 .B \*(n)
-.B -Test
-.B -INDependent
+.B \-Test
+.B \-INDependent
 [
 .IR option ...
 ][
 \fIname\fP\fB=\fP\fIvalue\fP
 ][
-.IR file-name ...
+.IR file\[hy]name ...
 ]
 .br
 .B \*(n)
-.B -Test
-.B -List
+.B \-Test
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Test
-.B -Help
+.B \-Test
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Test
+.I \-Test
 command is used to
 run tests.
 If no files are named, all relevant tests are run.
@@ -74,9 +73,9 @@ Some projects may also have different code for different architectures.
 The status of the last test run is remembered so that tests are not run
 if there is no need.
 (This does not apply to
-.I -REGression
+.I \-REGression
 tests, unfortunately.)
-Tests must be re-run
+Tests must be re\[hy]run
 if the test previously failed,
 if the test file has changed,
 if there has been a build,
@@ -92,7 +91,7 @@ variable being added to the list of variable assignments, and thus
 added to the end of the command.  This is of most use when using the
 \fIbatch_\%test_\%command\fP filed of the project configuration file.
 .PP
-This may initially look like a development process end-run,
+This may initially look like a development process end\[hy]run,
 allowing test scripts to be written so that they
 give all the right answers without actually doing anything.
 You have always been able to do this with environment variables,
@@ -102,8 +101,8 @@ It is possible to get all of the variable assignments to turn into
 environment variables by putting \f[CW]$var\fP at the \fIstart\fP of the
 command, before the name of the shell, rather than at the default
 location at the end of the command.
-.so z_intuit.so
-.so z_test_rtnl.so
+.so lib/en/man1/z_intuit.so
+.so lib/en/man1/z_test_rtnl.so
 .SH "TEST COMMAND CONFIGURATION"
 .PP
 The command used to execute tests is defined by the
@@ -123,7 +122,7 @@ in the current directory.
 If you want to use a more sophisticated test engine, rather than a
 simple shell script, but this test engine does not return result codes
 suitable for use with \*(n), you could wrap it in a shell script which
-re-writes the exit status into the values \*(n) expects.
+re\[hy]writes the exit status into the values \*(n) expects.
 You could also achieve the same results by writing a more complex
 .I test_command
 in the project
@@ -153,10 +152,10 @@ paths to search when looking for test support files.
 .I Search_Path_Executable
 This substitution is replaced by a colon separated list of absolute
 paths to search when looking for executable support files (library files
-and sub-commands).
+and sub\[hy]commands).
 .PP
 Most of the time \fI$Search_Path_Executable\fP are exactly the same.
-However, during \[lq]aegis -t -bl\[rq] they will be different, with
+However, during \[lq]aegis \-t \-bl\[rq] they will be different, with
 \fI$Seach_Path\fP starting at the development directory (the test
 being run) and \fI$Seach_Path_Executable\fP starting at the baseline
 (the executable being run).
@@ -198,25 +197,25 @@ Actually, any exit code other than 0, 1 or 77 will be interpreted as \[lq]no
 result\[rq].  However, always using 0, 1, 2 or 77 means that if a new result
 code is required by a later release of Aegis your existing tests will
 continue to work.
-.so z_test_corr.so
+.so lib/en/man1/z_test_corr.so
 .SH OPTIONS
 The following options are understood:
-.so o_auto.so
-.so o_baselin.so
-.so o_baserel.so
-.so o_change.so
+.so lib/en/man1/o_auto.so
+.so lib/en/man1/o_baselin.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
 .TP 8n
-.B -FOrce
+.B \-FOrce
 This option may be used to specify that all tests should be run,
 even if the status of the last test run indicates that there is no
 need to run a specific test.
-.so o_help.so
-.so o_indep.so
-.so o_list.so
-.so o_manual.so
-.so o_nolog.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_indep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_manual.so
+.so lib/en/man1/o_nolog.so
 .TP 8n
-.B -PErsevere
+.B \-PErsevere
 This option may be used to specify that all tests should be run,
 even if some fail.
 Defaults to the user's
@@ -225,7 +224,7 @@ if not specified, see
 .IR aeuconf (5)
 for more information.
 .TP 8n
-.B -No_PErsevere
+.B \-No_PErsevere
 This option may be used to specify that the test run should
 stop after the first failure.
 Defaults to the user's
@@ -233,9 +232,9 @@ Defaults to the user's
 if not specified, see
 .IR aeuconf (5)
 for more information.
-.so o_project.so
+.so lib/en/man1/o_project.so
 .TP 8n
-.B -PROGress
+.B \-PROGress
 This option may be used to specify that progress messages should be
 issued before each test run or before each batch test run in case
 .I batch_test_command
@@ -245,45 +244,45 @@ file (see
 .IR aeuconf (5)
 for more information).
 .TP 8n
-.B -No_PROGress
+.B \-No_PROGress
 This option may be used to specify that progress messages should be
 suppressed.  This is the default.
-.so o_regress.so
+.so lib/en/man1/o_regress.so
 .TP 8n
-\fB-SUGgest\fP [ \fInumber\fP ]
+\fB\-SUGgest\fP [ \fInumber\fP ]
 .br
-The \[lq]\fI\*(n) -Integrate_Pass\fP\[rq] command collects test
+The \[lq]\fI\*(n) \-Integrate_Pass\fP\[rq] command collects test
 correlation statistics when changes are integrated.
 This option may be used to request that \*(n) suggest
 which tests should be run, using these testing correlations.
 If no number is specified, 10 tests will be suggested.
 This option implies the
-.B -REGression
+.B \-REGression
 option.
 .TP 8n
-\fB-SUGgest_Limit\fP \fIminutes\fP
+\fB\-SUGgest_Limit\fP \fIminutes\fP
 .br
 This option may be used to limit the number of tests to a certain number
 of minutes.  They will be run from most relevant to least relevant.
 .TP 8n
-\fB-SUGgest_Noise\fP \fInumber\fP
+\fB\-SUGgest_Noise\fP \fInumber\fP
 .br
 This option may be used to control the amount of noise injected into the
-test selection performed by the \fB-SUGgest\fP option.
+test selection performed by the \fB\-SUGgest\fP option.
 The number is a percentage of noise to be injected.
 Defaults to 10 if not specified.
 The injection of noise ensures that a variety of tests are run
-on subsequent runs, and also some from left-field as a sanity check.
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+on subsequent runs, and also some from left\[hy]field as a sanity check.
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aet '\*(n) -t \e!* -v'
-sh$	aet(){\*(n) -t "$@" -v}
+csh%    alias aet '\*(n) \-t \e!* \-v'
+sh$     aet(){\*(n) \-t "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -298,7 +297,7 @@ the change is not assigned to the current user.
 .br
 It is an error if
 your have no relevant tests and no relevant exemption.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -326,4 +325,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,52 +1,51 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -MoVe_file_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-MoVe_file_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis move file undo \- undo the rename a file as part of a change
 .XX "aemvu(1)" "undo the rename a file as part of a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -MoVe_file_Undo
+.B \-MoVe_file_Undo
 [
 .IR option ...
 ]
 .IR filename ...
 .br
 .B \*(n)
-.B -MoVe_file_Undo
-.B -List
+.B \-MoVe_file_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -MoVe_file_Undo
-.B -Help
+.B \-MoVe_file_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -MoVe_file_Undo
+.I \-MoVe_file_Undo
 command is used to
 reverse the effects of the
 .I \*(n)
-.I -MoVe_file
+.I \-MoVe_file
 command.
 You only need to name one half of the rename,
 the other half will be determined automatically.
@@ -54,7 +53,7 @@ You may apply this command to whole directories.
 .PP
 The named files will be removed from the development directory,
 and removed from the list of files in the change.
-.so z_intuit.so
+.so lib/en/man1/z_intuit.so
 .SS Process Side Effects
 This command will cancel any build or test registrations,
 because adding another file logically invalidates them.
@@ -64,7 +63,7 @@ The \fInew_\%file_\%undo_\%command\fP and
 run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
 and if there has been an integration recently.  See \fIaepconf\fP(5)
 for more information.
-.so z_whiteout.so
+.so lib/en/man1/z_whiteout.so
 .SS Notification
 On successful completion of this command, the notifications
 usually performed by the \fIaermu\fP(1), \fIaenfu\fP(1) and
@@ -75,23 +74,23 @@ fields of the project \fIconfig\fP file.  See \fIaepconf\fP(5) for
 more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_nolog.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_symlnk_vfy.so
-.so o_wait.so
-.so o_whiteout.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_nolog.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_symlnk_vfy.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o_whiteout.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aemvu '\*(n) -mvu \e!* -v'
-sh$	aemvu(){\*(n) -mvu "$@" -v}
+csh%    alias aemvu '\*(n) \-mvu \e!* \-v'
+sh$     aemvu(){\*(n) \-mvu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -104,7 +103,7 @@ the change is not assigned to the current user.
 .br
 It is an error if
 the file is not being moved by the change.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -132,4 +131,5 @@ remove files to be deleted by a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

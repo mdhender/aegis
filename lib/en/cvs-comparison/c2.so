@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 1 "Aegis Commands for unreconstructed CVS users"
@@ -86,7 +85,7 @@ make
 T}
 _
 T{
-Bring a work area up-to-date with the repository.
+Bring a work area up\[hy]to\[hy]date with the repository.
 T};T{
 aem
 .br
@@ -108,7 +107,7 @@ _
 T{
 Rename a source file
 T};T{
-aemv \fIold-name\fP \fInew-name\fP
+aemv \fIold\[hy]name\fP \fInew\[hy]name\fP
 T};T{
 mv; cvs remove; cvs add
 T}
@@ -139,7 +138,7 @@ How do I browse the sources?
 Please note that Aegis has a copy sitting there already.
 With CVS you have to create one first.
 T};T{
-aecd -bl
+aecd \-bl
 .br
 \fInow look around\fP
 T};T{
@@ -171,7 +170,7 @@ _
 T{
 Make a separate copy of sources in the repository.
 T};T{
-aecp -independent
+aecp \-independent
 T};T{
 cvs export
 T}
@@ -180,7 +179,7 @@ _
 .nh 2 "How do I use a Remote Server?"
 .LP
 There is no direct equivalent, but see the section in this document titled
-"How do I do CVS-style remote development?"  for an explanation of how
+"How do I do CVS\[hy]style remote development?"  for an explanation of how
 to simulate this development model using Aegis distributed development
 tools.  For more information on Aegis' distributed development model and
 tools, see \fIaedist\fP(1) or the "Teamwork" section of the HOWTO, or the
@@ -199,7 +198,7 @@ to synchronize the two source trees.  The answer is to use patch files.
 To import the latest CVS changes, create a copy of the CVS tree.  Assume
 the old CVS tree is called cvs/ and the new copy is called new_cvs/.
 In the new_cvs/ directory, run "cvs update" to get the newest sources.
-Then run "diff -Nur cvs/ new_cvs/ -x Entries.Log > patchfile" to generate
+Then run "diff \-Nur cvs/ new_cvs/ \-x Entries.Log > patchfile" to generate
 a patchfile showing the differences between the old and new CVS trees.
 Use \fIaepatch\fP to import this patchfile into an Aegis change, then follow
 the usual Aegis change procedure (build, test, diff, review, integrate).
@@ -209,5 +208,6 @@ To export your changes into CVS, again use \fIaepatch\fP to export your Aegis
 changes as patchfiles.  Apply this patch to your local CVS tree (you
 might want to make a copy first), then execute "cvs commit" to submit
 your changes.  Or, if you don't have write access to the CVS repository,
-send the patchfile via other means (\fIe.g.\fP e-mail) to the project CVS
+send the patchfile via other means (\fIe.g.\fP e\[hy]mail) to the project CVS
 maintainers.
+.\" vim: set ts=8 sw=4 et :

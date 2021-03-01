@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -41,12 +41,12 @@ The bug meant that only one build per project could happen at a time.
 .\" change 17
 A bug has been fixed in the \fIaedist\fP(1) command.  It failed
 to correctly recognise files produced using the \fIaedist \-send
-\-no-ascii-armour\fP option.
+\-no\[hy]ascii\[hy]armour\fP option.
 .PP
 .if n *
 .if t \(bu
 .\" change 12
-The \fIaecpu -unch\fP command now deals more gracefully with files which
+The \fIaecpu \-unch\fP command now deals more gracefully with files which
 have been removed from the project in the mean time.
 .PP
 .if n *
@@ -57,4 +57,5 @@ history\fP report.  It is much faster, much more informatuve, and less
 selective.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.26 (21-Jun-2001)
+.SS Version 3.26 (21\[hy]Jun\[hy]2001)
+.\" vim: set ts=8 sw=4 et :

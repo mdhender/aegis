@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1998, 2001, 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993-1995, 1998, 2001, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -58,12 +58,13 @@ These are stitched together with hyphens to form an architecture \fIvariant\fR
 to be matched by the pattern.
 .LP
 For example,
-a system the author commonly uses is "SunOS-4.1.3-8-sun4m"
-which matches the "SunOS-4.1*-*-sun4*" pattern.
+a system the author commonly uses is "SunOS\[hy]4.1.3\[hy]8\[hy]sun4m"
+which matches the "SunOS\[hy]4.1*\[hy]*\[hy]sun4*" pattern.
 A solaris system, a very different beast,
-matches the "SunOS-5.*-*-sun4*" pattern.
-Sun's 386 version of Solaris matches the "SunOS-5.*-*-i86pc" pattern.
-A convex system matches the "ConvexOS-*-10.*-convex" pattern.
+matches the "SunOS\[hy]5.*\[hy]*\[hy]sun4*" pattern.
+Sun's 386 version of Solaris matches the "SunOS\[hy]5.*\[hy]*\[hy]i86pc"
+pattern.
+A convex system matches the "ConvexOS\[hy]*\[hy]10.*\[hy]convex" pattern.
 .nh 3 "Project \fIaegis.conf\fP File"
 .LP
 To require a project to build and test on each of these architectures,
@@ -75,21 +76,21 @@ architecture =
 [
   {
     name = "sun4";
-    pattern = "SunOS-4.1*-*-sun4*";
+    pattern = "SunOS\-4.1*\-*\-sun4*";
   },
   {
     name = "sun5";
-    pattern = "SunOS-5.*-*-sun4*";
+    pattern = "SunOS\-5.*\-*\-sun4*";
   },
 .E)
 .E(
   {
     name = "sun5pc";
-    pattern = "SunOS-5.*-*-i86pc";
+    pattern = "SunOS\-5.*\-*\-i86pc";
   },
   {
     name = "convex";
-    pattern = "ConvexOS-*-10.*-*";
+    pattern = "ConvexOS\-*\-10.*\-*";
   }
 ];
 .E)
@@ -101,8 +102,8 @@ This may be used to recognise an environment, but not mandate that it
 be built every time.
 .E(
   {
-    name = "solaris-8-sparc";
-    pattern = "SunOS-5.8*-*-sun4*";
+    name = "solaris\-8\-sparc";
+    pattern = "SunOS\-5.8*\-*\-sun4*";
     mode = optional;
   },
 .E)
@@ -205,9 +206,9 @@ project \fIaegis.conf\fR file is changed
 to include the \fI${ARCHitecture}\fR substitution:
 .E(
 build_command =
-  "cook -b ${s Howto.cook} \e
+  "cook \-b ${s Howto.cook} \e
   project=$p change=$c \e
-  version=$v arch='$arch' -nl";
+  version=$v arch='$arch' \-nl";
 .E)
 .LP
 Second,
@@ -215,7 +216,7 @@ the C recipe must be changed
 to include the architecture in the path of the result:
 .E(
 [arch]/%.o: %.c: [collect c_incl
-  -eia [prepost "-I" ""
+  \-eia [prepost "\-I" ""
   [search_list]] [resolve %.c]]
 {
   if [not [exists [arch]]] then
@@ -224,8 +225,8 @@ to include the architecture in the path of the result:
   if [exists [target]] then
     rm [target]
       set clearstat;
-  [cc] [cc_flags] [prepost "-I"
-    "" [search_list]] -c
+  [cc] [cc_flags] [prepost "\-I"
+    "" [search_list]] \-c
     [resolve %.c];
   mv %.o [target];
 }
@@ -243,8 +244,8 @@ to include the architecture in the name of the result:
   if [exists [target]] then
     rm [target]
       set clearstat;
-  [cc] -o [target] [resolve
-    [object_files]] -ly -ll;
+  [cc] \-o [target] [resolve
+    [object_files]] \-ly \-ll;
 }
 .E)
 .LP
@@ -316,3 +317,4 @@ several variations of a file exist,
 one for each architecture,
 rather than hiding several related but independent source files
 behind the one file name.
+.\" vim: set ts=8 sw=4 et :

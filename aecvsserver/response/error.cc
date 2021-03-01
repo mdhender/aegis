@@ -1,22 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
-//
-//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// //
 // error <error-code> <text>
 //
 // The command completed with an error.  <errno-code> is a symbolic
@@ -34,7 +32,6 @@
 
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <libaegis/output.h>
 #include <aecvsserver/response/error.h>
 
@@ -45,8 +42,8 @@ response_error::~response_error()
     message = 0;
     if (extra_text)
     {
-	str_free(extra_text);
-	extra_text = 0;
+        str_free(extra_text);
+        extra_text = 0;
     }
 }
 
@@ -65,11 +62,11 @@ response_error::write(output::pointer op)
     const char *cp = message->str_text;
     for (;;)
     {
-	const char *ep = strchr(cp, '\n');
-	if (!ep)
-	    break;
-	op->fprintf("E %.*s\n", (int)(ep - cp), cp);
-	cp = ep + 1;
+        const char *ep = strchr(cp, '\n');
+        if (!ep)
+            break;
+        op->fprintf("E %.*s\n", (int)(ep - cp), cp);
+        cp = ep + 1;
     }
     op->fprintf("error %s %s\n", lhs, cp);
 }
@@ -96,3 +93,6 @@ response_error::extra(string_ty *arg)
 {
     extra_text = arg;
 }
+
+
+// vim: set ts=8 sw=4 et :

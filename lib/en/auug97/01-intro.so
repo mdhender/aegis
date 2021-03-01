@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 1999, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Introduction"
 .FS
@@ -29,14 +28,14 @@ what has come to be known as \[lq]recursive \fImake\fP.\[rq]
 This refers to the use of a hierarchy
 of directories containing source files for the modules which make up the
 project, where
-each of the sub-directories contains a
+each of the sub\[hy]directories contains a
 .I Makefile
 which describes the rules and instructions for the
 .I make
 program.
-The complete project build is done by arranging for the top-level
+The complete project build is done by arranging for the top\[hy]level
 \f(CWMakefile\fP
-to change directory into each of the sub-directories and recursively
+to change directory into each of the sub\[hy]directories and recursively
 invoke
 .I make.
 .LP
@@ -47,9 +46,9 @@ solution are explored.
 .LP
 Recursive \fImake\fP results in a directory tree which looks something
 like this:
-.so 01.figure1.so
-This hierarchy of modules can be nested arbitrarily deep.  Real-world
-projects often use two- and three-level structures.
+.so lib/en/auug97/01.figure1.so
+This hierarchy of modules can be nested arbitrarily deep.  Real\[hy]world
+projects often use two\[hy]level and three\[hy]level structures.
 .nh 2 "Assumed Knowledge"
 This paper assumes that the reader is familiar with developing software
 on UNIX, with the
@@ -61,3 +60,4 @@ This paper assumes that you have installed GNU Make on your system
 and are moderately familiar with its features.
 Some features of \fImake\fP described below may not be available
 if you are using the limited version supplied by your vendor.
+.\" vim: set ts=8 sw=4 et :

@@ -1,25 +1,26 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2002-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
 #include <common/error.h>
+
 #include <aetar/output/tar.h>
 #include <aetar/output/tar_child.h>
 
@@ -49,7 +50,7 @@ output_tar::output_tar(const output::pointer &arg1) :
 
 
 nstring
-output_tar::filename()
+output_tar::filename(void)
     const
 {
     return deeper->filename();
@@ -57,7 +58,7 @@ output_tar::filename()
 
 
 long
-output_tar::ftell_inner()
+output_tar::ftell_inner(void)
     const
 {
     return 0;
@@ -72,17 +73,17 @@ output_tar::write_inner(const void *, size_t)
 
 
 void
-output_tar::end_of_line_inner()
+output_tar::end_of_line_inner(void)
 {
     this_is_a_bug();
 }
 
 
-const char *
-output_tar::type_name()
+nstring
+output_tar::type_name(void)
     const
 {
-    return "tar archive";
+    return ("tar archive > " + deeper->type_name());
 }
 
 
@@ -92,3 +93,6 @@ output_tar::child(const nstring &name, long len, bool executable)
     assert(len >= 0);
     return output_tar_child::create(deeper, name, len, executable);
 }
+
+
+// vim: set ts=8 sw=4 et :

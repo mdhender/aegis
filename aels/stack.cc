@@ -1,27 +1,27 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001, 2002, 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
-#include <common/str_list.h>
+#include <common/ac/assert.h>
+
+#include <common/nstring/list.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/os.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project.h>
@@ -30,69 +30,51 @@
 #include <aels/stack.h>
 
 
-static	string_list_ty	*stack;
+static nstring_list stack;
 
 
-string_ty *
-stack_relative(string_ty *fn)
+nstring
+stack_relative(const nstring &fn)
 {
-    string_ty       *s1;
-    string_ty       *s2;
-    size_t	    k;
-
-    assert(stack);
+    assert(!stack.empty());
     os_become_orig();
-    s1 = os_pathname(fn, 1);
+    nstring s1 = os_pathname(fn, true);
     os_become_undo();
 
-    s2 = 0;
-    for (k = 0; k < stack->nstrings; ++k)
+    for (size_t k = 0; k < stack.size(); ++k)
     {
-	s2 = os_below_dir(stack->string[k], s1);
-	if (s2)
-    	    break;
+        nstring s2 = os_below_dir(stack[k], s1);
+        if (!s2.empty())
+            return s2;
     }
-    str_free(s1);
-
-    if (!s2)
-	return 0;
-
-    if (s2->str_length == 0)
-    {
-	str_free(s2);
-	s2 = str_from_c(".");
-    }
-
-    return s2;
+    return "";
 }
 
 
-string_ty *
+nstring
 stack_nth(size_t n)
 {
-    assert(stack);
-    assert(stack->nstrings);
-    if (!stack)
-	return 0;
-    if (n >= stack->nstrings)
-	return 0;
-    return stack->string[n];
+    assert(!stack.empty());
+    if (n >= stack.size())
+        return "";
+    return stack[n];
 }
 
 
 void
-stack_from_project(project_ty *pp)
+stack_from_project(project *pp)
 {
-    stack = new string_list_ty();
-    project_search_path_get(pp, stack, 1);
+    pp->search_path_get(stack, true);
 
     // error if project is a completed branch...
 }
 
 
 void
-stack_from_change(change::pointer cp)
+stack_from_change(const change::pointer &cp)
 {
-    stack = new string_list_ty();
-    change_search_path_get(cp, stack, 1);
+    cp->search_path_get(stack, true);
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2007, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -40,8 +40,8 @@ user_ty::create(const nstring &u_name)
     if (!pw)
     {
         nstring best = getpwnam_fuzzy(u_name);
-	if (!best.empty())
-	{
+        if (!best.empty())
+        {
             if (u_name == best)
             {
                 error_raw
@@ -56,23 +56,26 @@ user_ty::create(const nstring &u_name)
                 );
             }
 
-	    sub_context_ty sc;
-	    sc.var_set_string("Name", u_name);
-	    sc.var_set_string("Guess", best);
-	    sc.fatal_intl(i18n("user $name unknown, closest is $guess"));
-	    // NOTREACHED
-	}
-	else
-	{
-	    sub_context_ty sc;
-	    sc.var_set_string("Name", u_name);
-	    sc.fatal_intl(i18n("user $name unknown"));
-	    // NOTREACHED
-	}
+            sub_context_ty sc;
+            sc.var_set_string("Name", u_name);
+            sc.var_set_string("Guess", best);
+            sc.fatal_intl(i18n("user $name unknown, closest is $guess"));
+            // NOTREACHED
+        }
+        else
+        {
+            sub_context_ty sc;
+            sc.var_set_string("Name", u_name);
+            sc.fatal_intl(i18n("user $name unknown"));
+            // NOTREACHED
+        }
     }
 
     user_ty::pointer result = user_ty::create(pw->pw_uid);
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

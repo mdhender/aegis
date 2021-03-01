@@ -1,6 +1,4 @@
 % \f[CB]aenbr -p aegis 4\fP
 aegis: project "aegis.4": created
-% \f[CB]aenbr -p aegis.4 24\fP
-aegis: project "aegis.4.24": created
-% \f[CB]aenbr -p aegis.4.24 3\fP
-aegis: project "aegis.4.24.3": created
+% \f[CB]aenbr -p aegis.4 25\fP
+aegis: project "aegis.4.25": created

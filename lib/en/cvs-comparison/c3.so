@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2001, 2002, 2004-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .hy 0
@@ -44,7 +43,7 @@ setup required first.
 It is usual to have a separate account which "owns" an Aegis project.
 This means that accidental file writes while browsing sources can't happen,
 among other reasons.  Whether you have a separate account per project,
-or a hold-all source account doesn't bother Aegis (the more security
+or a hold\[hy]all source account doesn't bother Aegis (the more security
 conscious among you,
 however, will want one account per project).
 If you have one account per project, name it after the project (there's
@@ -53,10 +52,10 @@ This example will call the both the account
 and the Aegis project \[lq]\f[CW]example\fP\[rq].
 .IP \(bu 2n
 It is also possible to have a separate Unix group for each project.
-This means that you can have fine-grained control over who has read access
+This means that you can have fine\[hy]grained control over who has read access
 to your repository.  (Or, as above, you may want a simple source group.)
 Note that write access to the repository is controlled via a different
-mechanism in Aegis; the repository itself will be read-only to \fIall\fP
+mechanism in Aegis; the repository itself will be read\[hy]only to \fIall\fP
 staff, including authorized developers and integrators.
 (See the User Guide for how your changes actually reach the repository.)
 If you decide to have a group per project, use the same name as the
@@ -80,7 +79,7 @@ If you have a single project under your $CVSROOT directory tree,
 you use the commands
 .E(
 unset AEGIS_PATH
-aeimport $CVSROOT -project example -dir /projects/example -verbose
+aeimport $CVSROOT \-project example \-dir /projects/example \-verbose
 .E)
 Depending on how big your project is, this may take some time.
 You will be informed of progress, though it will not mean very much if you are
@@ -91,7 +90,7 @@ and the module you wish to import is contained under a single directory,
 use a command such as this:
 .E(
 unset AEGIS_PATH
-aeimport $CVSROOT/example -project example -dir /projects/example -verbose
+aeimport $CVSROOT/example \-project example \-dir /projects/example \-verbose
 .E)
 Again this may take some time.
 .IP \(bu 2n
@@ -117,7 +116,7 @@ ael project_files
 .E)
 to examine the names of the files Aegis has imported.  If they don't match
 your expectations (\fIe.g.\fP if the directory tree is not the shape
-you need) remove the project (\fIaermpr\fP) and re-run \fIaeimport\fP(1)
+you need) remove the project (\fIaermpr\fP) and re\[hy]run \fIaeimport\fP(1)
 with the appropriate arguments.
 .IP \(bu 2n
 The above commands create a project called \[lq]\f[CW]example\fP\[rq], with
@@ -163,9 +162,9 @@ You need to customize the \f[CW]aegis.conf\fP file for your project.
 In order to do this, you will need to create a change set to modify
 the file.  The worked example in the User guide will be useful in
 understanding how this is done.  It is essential that you use a change
-set for this; editing the baseline directly is a \fIbig\fP no-no.
+set for this; editing the baseline directly is a \fIbig\fP no\[hy]no.
 See also the configuration examples directory, \f[CW]\*(D)/config.example\fP,
-for some pre-built configuration settings.
+for some pre\[hy]built configuration settings.
 (It's probably a Bad Idea to mess with the history command settings,
 but the rest are fair game.)
 .sp 0.2
@@ -176,8 +175,8 @@ See the Dependency Maintenance Tool of the User Guide for more information.
 You project should now be ready to use.
 Happy developing!
 .LP
-If you have questions, it is worth subscribing to the \f[CW]aegis-users\fP
-mailing list.  See \f[CW]http://www.canb.auuf.org.au/~millerp/aegis/\fP
+If you have questions, it is worth subscribing to the \f[CW]aegis\[hy]users\fP
+mailing list.  See \f[CW]http://aegis.sourceforge.net/\fP
 for how to do this.
 .nh 2 "Exporting to CVS"
 .LP
@@ -193,14 +192,14 @@ the CVS root tree (the Aegis project in this example is called
 \[lq]\f[CW]example\fP\[rq].
 .E(
 ae_p example.1.0
-aecd -bl ../history
-tar cf - . | ( cd $CVSROOT ; tar xf - )
+aecd \-bl ../history
+tar cf \- . | ( cd $CVSROOT ; tar xf \- )
 .E)
 Note that this assumes that the two directory trees are the same shape.
 It is highly likely that you have a module called something like
 \[lq]\f[CW]example\fP\[rq], which would change the last line above to look like
 .E(
-tar cf - . | ( cd $CVSROOT/example ; tar xf - )
+tar cf \- . | ( cd $CVSROOT/example ; tar xf \- )
 .E)
 More baroque directory structures will require more manual mangling
 during the copy.
@@ -208,3 +207,4 @@ during the copy.
 Note that Aegis' expectations of locking, access lists, keyword expansion,
 \fIetc\fP, are rather different to CVS, so it may be necessary to use
 \fIfind\fP(1) and \fIrcs\fP(1) to set things the way you want.
+.\" vim: set ts=8 sw=4 et :

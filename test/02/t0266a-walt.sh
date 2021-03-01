@@ -2,6 +2,7 @@
 #
 # aegis - The "aegis" program.
 # Copyright (C) 2008 Walter Franzini
+# Copyright (C) 2012 Peter Miller
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,18 +25,18 @@ TEST_SUBJECT="aedist -send vs. aemv"
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then no_result; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 #
@@ -136,7 +137,7 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; $diff $orig $i > $out; test $$? -le 1";
 merge_command = "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $i > $out";
+        echo '1,$$p' ) | ed - $i > $out";
 patch_diff_command = "set +e; $diff -C0 -L $index -L $index $orig $i > $out; \
 test $$? -le 1";
 end
@@ -255,29 +256,31 @@ activity="check 002.fs 254"
 cat > ok <<EOF
 src =
 [
-	{
-		file_name = "bogus1";
-		action = remove;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "bogus2";
-	},
-	{
-		file_name = "bogus2";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "bogus1";
-	},
+        {
+                file_name = "bogus1";
+                action = remove;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "bogus2";
+        },
+        {
+                file_name = "bogus2";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "bogus1";
+        },
 ];
 EOF
 if test $? -ne 0 ; then no_result; fi
@@ -360,3 +363,4 @@ if test $? -ne 0 ; then fail; fi
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

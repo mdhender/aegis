@@ -1,24 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
 
+#include <common/sizeof.h>
 #include <libaegis/compres_algo.h>
 #include <libaegis/sub.h>
 
@@ -46,16 +46,16 @@ compression_algorithm_by_name(const char *s)
     size_t len = strlen(s);
     if (len)
     {
-	for (table_t *tp = table; tp < ENDOF(table); ++tp)
-	{
-	    //
+        for (table_t *tp = table; tp < ENDOF(table); ++tp)
+        {
+            //
             // No need to worry about length of tp->name; if is longer,
             // only compare leading prefix (unique, so far); if it is
             // shorter, the NUL character will ensure inequality.
-	    //
-	    if (0 == strncasecmp(s, tp->name, len))
-		return tp->value;
-	}
+            //
+            if (0 == strncasecmp(s, tp->name, len))
+                return tp->value;
+        }
     }
 
     sub_context_ty sc;
@@ -71,19 +71,19 @@ compression_algorithm_name(compression_algorithm_t x)
     switch (x)
     {
     case compression_algorithm_not_set:
-	return "not set";
+        return "not set";
 
     case compression_algorithm_none:
-	return "none";
+        return "none";
 
     case compression_algorithm_gzip:
-	return "gzip";
+        return "gzip";
 
     case compression_algorithm_bzip2:
-	return "bzip2";
+        return "bzip2";
 
     case compression_algorithm_unspecified:
-	return "set but not specified";
+        return "set but not specified";
     }
     return "unknown";
 }
@@ -97,13 +97,16 @@ compression_algorithm_extension(compression_algorithm_t x)
     case compression_algorithm_not_set:
     case compression_algorithm_none:
     case compression_algorithm_unspecified:
-	return "";
+        return "";
 
     case compression_algorithm_gzip:
-	return ".gz";
+        return ".gz";
 
     case compression_algorithm_bzip2:
-	return ".bz2";
+        return ".bz2";
     }
     return "";
 }
+
+
+// vim: set ts=8 sw=4 et :

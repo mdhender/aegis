@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 1999, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -clone" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-clone" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aegis clone \- make an exact copy of a change
 .XX "aeclone(1)" "make an exact copy of a change"
@@ -27,21 +26,21 @@ aegis clone \- make an exact copy of a change
 [
 .IR option \&...
 ]
-.I change-number
+.I change\[hy]number
 [
-change-number
+change\[hy]number
 ]
 .br
 .B \*(n)
-.B -CLone
-.B -Help
+.B \-CLone
+.B \-Help
 .br
 .B \*(n)
-.B -CLone
-.B -VERSion
+.B \-CLone
+.B \-VERSion
 .SH DESCRIPTION
 The
-.I "\*(n) -CLone"
+.I "\*(n) \-CLone"
 command is used to
 create exact replicas of changes.
 This is of most use when a change need to be applied to several parallel
@@ -67,30 +66,30 @@ those changes
 automagically be tracked.  It is best if changes are cloned at a stable
 time, such as one of the states after develop end, or even after integrate pass.
 .SS Development Directory Location
-.so z_filelocn.so
-.so z_whiteout.so
+.so lib/en/man1/z_filelocn.so
+.so lib/en/man1/z_whiteout.so
 .SS Notification
 The notification commands that would be run by the \fIaecp\fP(1),
 \fIaedb\fP(1), \fIaenf\fP(1), \fIaent\fP(1) and \fIaerm\fP(1) commands
 are run, as appropriate.  The \fIproject_\%file_\%command\fP is also run,
 if set.  See \fIaepconf\fP(5) for more information.
-.so o_clone_merg.so
+.so lib/en/man1/o_clone_merg.so
 .SH OPTIONS
 The following options are understood:
-.so o_branch.so
-.so o_change.so
-.so o_dir.so
-.so o_help.so
-.so o_list.so
-.so o_whiteout.so
+.so lib/en/man1/o_branch.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_whiteout.so
 .TP 8n
 \fB\-Output\fP \fIfilename\fP
 This option may be used to specify a filename which is to be written with
 the automatically determined change number.  Useful for writing scripts.
-.so o_project.so
-.so o_trunk.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_trunk.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH ERRORS
 It is an error if
 the current user is not an administrator of the project.
@@ -99,7 +98,7 @@ changes,
 see
 .IR aepattr (5)
 for more information.)
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -115,4 +114,5 @@ add a new administrator to a project
 .TP 8n
 .IR aepa (1)
 modify the attributes of a project
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

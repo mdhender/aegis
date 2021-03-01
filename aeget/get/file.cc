@@ -1,25 +1,25 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2003-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <libaegis/change.h>
 #include <libaegis/http.h>
@@ -84,7 +84,7 @@ whine(change::pointer cp, string_list_ty *modifier)
     printf("<title>Project ");
     html_encode_string(project_name_get(cp->pp));
     if (!cp->bogus)
-	printf(", Change %ld", magic_zero_decode(cp->number));
+        printf(", Change %ld", magic_zero_decode(cp->number));
     printf(",<br>\nPuzzlement</title></head><body>\n");
     html_header_ps(0, cp);
     printf("<h1 align=center>");
@@ -93,22 +93,22 @@ whine(change::pointer cp, string_list_ty *modifier)
     printf("File information selector ");
     if (modifier->nstrings)
     {
-	printf("&ldquo;<tt>");
-	html_encode_string(modifier->string[0]);
-	printf("</tt>&rdquo; ");
+        printf("&ldquo;<tt>");
+        html_encode_string(modifier->string[0]);
+        printf("</tt>&rdquo; ");
     }
     printf("not recognised.\n");
     printf("Please select one of the following:\n");
     printf("<ul>\n");
     for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
     {
-	if (tp->hide_me)
-	    continue;
-	string_ty *s = str_format("file+%s", tp->name);
-	printf("<li>");
-	emit_change_href(cp, s->str_text);
-	printf("%s</a>\n", tp->name);
-	str_free(s);
+        if (tp->hide_me)
+            continue;
+        string_ty *s = str_format("file+%s", tp->name);
+        printf("<li>");
+        emit_change_href(cp, s->str_text);
+        printf("%s</a>\n", tp->name);
+        str_free(s);
     }
     printf("</ul>\n");
 
@@ -135,20 +135,20 @@ get_file(change::pointer cp, string_ty *filename, string_list_ty *modifier)
     //
     if (modifier->nstrings >= 1)
     {
-	for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
-	{
-	    if (modifier_test_and_clear(modifier, tp->name))
-	    {
-		tp->action(cp, filename, modifier);
-		return;
-	    }
-	}
+        for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
+        {
+            if (modifier_test_and_clear(modifier, tp->name))
+            {
+                tp->action(cp, filename, modifier);
+                return;
+            }
+        }
 
-	//
-	// Whine about bogus requests.
-	//
-	whine(cp, modifier);
-	return;
+        //
+        // Whine about bogus requests.
+        //
+        whine(cp, modifier);
+        return;
     }
 
     //
@@ -156,3 +156,6 @@ get_file(change::pointer cp, string_ty *filename, string_list_ty *modifier)
     //
     get_file_contents(cp, filename, modifier);
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2006, 2008 Peter Miller
+//      Copyright (C) 1999-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <common/mem.h>
 #include <common/page.h>
 #include <common/str.h>
@@ -30,7 +30,7 @@
 
 wide_output::~wide_output()
 {
-    trace(("wide_output::~wide_output(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output::~wide_output(this = %p)\n{\n", this));
 
     //
     // run any delete callbacks specified
@@ -65,7 +65,7 @@ wide_output::wide_output() :
 void
 wide_output::overflow(wchar_t wc)
 {
-    trace(("wide_output::overflow(this = %08lX, wc = %04lX)\n{\n", (long)this,
+    trace(("wide_output::overflow(this = %p, wc = %04lX)\n{\n", this,
         (long)wc));
     assert(buffer);
     assert(buffer_size);
@@ -85,8 +85,8 @@ wide_output::overflow(wchar_t wc)
 void
 wide_output::put_ws(const wchar_t *s)
 {
-    trace(("wide_output::put_ws(fp = %08lX, s = %08lX)\n{\n", (long)this,
-        (long)s));
+    trace(("wide_output::put_ws(fp = %p, s = %p)\n{\n", this,
+        s));
     if (s)
     {
         const wchar_t *wse = s;
@@ -102,7 +102,7 @@ wide_output::put_ws(const wchar_t *s)
 void
 wide_output::write(const wstring &s)
 {
-    trace(("wide_output::write(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output::write(this = %p)\n{\n", this));
     write(s.c_str(), s.size());
     trace(("}\n"));
 }
@@ -111,8 +111,8 @@ wide_output::write(const wstring &s)
 void
 wide_output::write(const wchar_t *data, size_t len)
 {
-    trace(("wide_output::write(this = %08lX, data = %08lX, len = %ld)\n{\n",
-        (long)this, (long)data, (long)len));
+    trace(("wide_output::write(this = %p, data = %p, len = %ld)\n{\n",
+        this, data, (long)len));
     assert(data);
     // assert(len); ideal, but not necessary
     if (buffer_position + len <= buffer_end)
@@ -141,7 +141,7 @@ wide_output::write(const wchar_t *data, size_t len)
 void
 wide_output::flush()
 {
-    trace(("wide_output::flush(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output::flush(this = %p)\n{\n", this));
     if (buffer_position > buffer)
     {
         size_t nwc = buffer_position - buffer;
@@ -160,7 +160,7 @@ wide_output::end_of_line()
     // If possible, just stuff a newline into the buffer and bail.
     // This results in the fewest deeper calls.
     //
-    trace(("wide_output::end_of_line(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output::end_of_line(this = %p)\n{\n", this));
     if
     (
         buffer_position > buffer
@@ -251,3 +251,6 @@ wide_output::page_length()
 {
     return page_length_get(-1);
 }
+
+
+// vim: set ts=8 sw=4 et :

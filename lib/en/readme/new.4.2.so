@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -59,7 +59,7 @@ integration directory or development directory, all of the execute bits
 .if n *
 .if t \(bu
 .\" change 60
-A bug has been fixed in the \[lq]\fIaecp -ind\fP\[rq] command, where it would
+A bug has been fixed in the \[lq]\fIaecp \-ind\fP\[rq] command, where it would
 give a \[lq]there is no development directory\[rq] error when you tried to
 extract a file version from history of a completed branch.
 .PP
@@ -74,7 +74,7 @@ and intuitive interface.  It is also possible to get patches, via the
 .if t \(bu
 .\" change 58
 Interrupts are now ignored during database writes.
-This should alleviate some of the problems induced by Ctrl-C.
+This should alleviate some of the problems induced by Ctrl\[hy]C.
 (It would be nice to find the actual cause.)
 .PP
 .if n *
@@ -101,7 +101,7 @@ File name resolution is now more robust in the face of permission problems.
 .\" .if t \(bu
 .\" .\" change 38, 70, 73
 .\" Some code reformatting has been done.
-.\" The new style uses 4-character indents, not 8.
+.\" The new style uses 4\[hy]character indents, not 8.
 .PP
 .if n *
 .if t \(bu
@@ -129,7 +129,7 @@ It would often fail to make all of the necessary symlinks.
 .if t \(bu
 .\" change 17, 27, 31
 There is a new project attribute, \fIprotect_\%development_\%directory\fP,
-which when true causes the development directory to be read-only in
+which when true causes the development directory to be read\[hy]only in
 states between \fIawaiting_\%review\fP and \fIbeing_\%integrated\fP.
 .PP
 .if n *
@@ -199,4 +199,7 @@ a single project \fIconfig\fP file.  See \fIaepfonf\fP(5) for more
 information.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.2 (26-Feb-2002)
+.SS Version 4.2 (26\[hy]Feb\[hy]2002)
+
+
+// vim: set ts=8 sw=4 et :

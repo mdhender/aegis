@@ -1,0 +1,41 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2012 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+project_specific =
+[
+    {
+        name = "html:body-begin";
+        value =
+            @<a href="http://aegis.sourceforge.net/"> <img
+            src="http://aegis.sourceforge.net/aegis.png" align=left
+            border=0></a><a href="http://aegis.sourceforge.net/"><img
+            src="http://aegis.sourceforge.net/aegis.png" align=right
+            border=0></a>@;
+    },
+    {
+        name = "html:body-end";
+        value =
+            @<hr>Using the <i>aeget</i> interface, you can set HTML
+            headers and footers for this listing separately for each
+            project using the &ldquo;html:body-begin&rdquo; and
+            &ldquo;html:body-end&rdquo; project specific attributes, see
+            <i>aeget</i>(1) for more information.@;
+    },
+];
+
+/* vim: set ts=8 sw=4 et : */

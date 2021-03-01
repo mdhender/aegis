@@ -1,28 +1,28 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1997, 1999, 2001-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1997, 1999, 2001-2008, 2010, 2012 Peter Miller
+.\" Copyright (C) 2008 Walter Franzini
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aecstate 5 \*(N) "Reference Manual"
 .SH NAME
 aecstate \- aegis change state file
 .XX "aecstate(5)" "change state file format"
 .SH SYNOPSIS
-\fIproject\fP\f(CW/info/change/\fP\fI[0-9]\fP\f(CW/\fP\fI[0-9][0-9][0-9]\fP
+\fIproject\fP\f(CW/info/change/\fP\fI[0\-9]\fP\f(CW/\fP\fI[0\-9][0\-9][0\-9]\fP
 .SH DESCRIPTION
 A change state file is used to store information about a change.
 These files are created and maintained by \*(n).
@@ -38,7 +38,7 @@ The files are spread across a directory tree,
 to improve the directory search times,
 and to avoid various systems' directory length limitations.
 .SH CONTENTS
-.so aecattr.so
+.so lib/en/man5/aecattr.so
 .TP 8n
 state = ( ... );
 .br
@@ -113,7 +113,7 @@ minimum_integration = boolean;
 .br
 This field records whether the change was placed into the
 .I being_integrated
-state using the -minimum option (or that option was
+state using the \-minimum option (or that option was
 implicitly set due to a file being removed).  It is
 only present if the change is in the
 .I being_integrated
@@ -128,7 +128,7 @@ needs to be executed at the next build.
 test_time = time;
 .br
 This field records the time the last successful
-.I "\*(n) -Test"
+.I "\*(n) \-Test"
 command was run for all architectures.
 It is only present in the
 .I being_developed
@@ -139,7 +139,7 @@ states.
 test_baseline_time = time;
 .br
 This field records the time the last successful
-.I "\*(n) -Test -BaseLine"
+.I "\*(n) \-Test \-BaseLine"
 command was run for all architectures.
 It is only present in the
 .I being_developed
@@ -150,7 +150,7 @@ states.
 regression_test_time = time;
 .br
 This field records the time the last successful
-.I "\*(n) -Test -REGression"
+.I "\*(n) \-Test \-REGression"
 command was run for all architectures.
 It is only present in the
 .I being_developed
@@ -161,7 +161,7 @@ states.
 build_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Build"
+.I "\*(n) \-Build"
 command was run for all architectures.
 It is only present in the
 .I being_developed
@@ -196,25 +196,25 @@ which last changed this structure.
 test_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Test"
+.I "\*(n) \-Test"
 command was run for this specific pattern instance.
 .TP 8n
 test_baseline_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Test -BaseLine"
+.I "\*(n) \-Test \-BaseLine"
 command was run for this specific pattern instance.
 .TP 8n
 regression_test_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Test -REGression"
+.I "\*(n) \-Test \-REGression"
 command was run for this specific pattern instance.
 .TP 8n
 build_time = time;
 .br
 This field records the last time the last successful
-.I "\*(n) -Build"
+.I "\*(n) \-Build"
 command was run for this specific pattern instance.
 .RE
 .TP 8n
@@ -326,7 +326,7 @@ forced_develop_begin_notify_command = string;
 This command is used to notify a developer
 that a change requires developing;
 it is issued when a project administrator uses an
-.I "aedb -User"
+.I "aedb \-User"
 command to force development of a change by a specific user.
 All of the substitutions described in
 .IR aesub (5)
@@ -344,7 +344,7 @@ develop_end_notify_command = string;
 This command is used to
 notify that a change is ready for review.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -364,7 +364,7 @@ This command is used to
 notify that a change had been withdrawn from review
 for further development.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -383,7 +383,7 @@ review_begin_notify_command = string;
 This command is used to
 notify that a review has begun.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -402,7 +402,7 @@ review_begin_undo_notify_command = string;
 This command is used to
 notify that a review is no longer in progress, the reviewer has withdrawn.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -421,7 +421,7 @@ review_pass_notify_command = string;
 This command is used to
 notify that a review has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -440,7 +440,7 @@ review_pass_undo_notify_command = string;
 This command is used to
 notify that a review has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -460,7 +460,7 @@ review_fail_notify_command = string;
 This command is used to
 notify that a review has failed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -479,7 +479,7 @@ integrate_pass_notify_command = string;
 This command is used to
 notify that an integration has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -504,7 +504,7 @@ integrate_fail_notify_command = string;
 This command is used to
 notify that an integration has failed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -530,7 +530,7 @@ no regression test exemption specified.
 .TP
 history = [{ ... }];
 This field contains a history of integrations for the project.
-Updated by each successful '\*(n) -Integrate_Pass' command.
+Updated by each successful '\*(n) \-Integrate_Pass' command.
 .RS
 .TP 8n
 delta_number = integer;
@@ -541,6 +541,29 @@ The number of the change which was integrated.
 .TP 8n
 name = [ string ];
 The names by which this delta is known.
+.TP 8n
+uuid = string;
+The uuid assigned to the change.
+.TP 8n
+when = time;
+This field record the time of the change integration.
+.TP 8n
+is_a_branch = ( ... )
+This field is used to remember if the completed change was a branch.
+.RS 8n
+.TP 8n
+unknown
+.br
+It is unknown if the change is a branch, this is the default value
+usually associated with change integrated with an older version of \*(n).
+.TP 8n
+no
+.br
+The change is not a branch.
+.TP 8n
+yes
+.br
+The change is a branch.
 .RE
 .TP 8n
 change = [integer];
@@ -578,7 +601,7 @@ minimum_change_number = integer;
 The minimum change number for
 .IR aenc(1),
 if no change number is specified.
-This allows the low-numbered change numbers to be
+This allows the low\[hy]numbered change numbers to be
 used for branches later in the project.
 Defaults to 10 if not set, may not be less than 1.
 .TP 8n
@@ -609,7 +632,7 @@ Unless you have an exceptionally large project, coupled with fast CPUs
 and high network latency, there is probably very little benefit in
 using this feature.  (The database is usually less than 5% of the size
 of the repository.)  On slow networks, however, this can improve the
-performance of file-related commands.
+performance of file\[hy]related commands.
 .RE
 .TP 8n
 develop_end_action = (...);
@@ -672,7 +695,7 @@ edit_number = string;
 .br
 This field records the edit number of the file
 when it was added to the change (or updated using the
-.I "\*(n) -DIFFerence"
+.I "\*(n) \-DIFFerence"
 command).
 This field is not present for new files.
 .TP 8n
@@ -684,7 +707,7 @@ diff_time = time;
 .br
 This field records the last time modified of the change file
 when the last
-.I "\*(n) -DIFFerence"
+.I "\*(n) \-DIFFerence"
 command was run.
 It is only present between the
 .I being_developed
@@ -700,7 +723,7 @@ diff_file_time = time;
 .br
 This field records the last time modified of the difference file
 when the last
-.I "\*(n) -DIFFerence"
+.I "\*(n) \-DIFFerence"
 command was run.
 It is only present between the
 .I being_developed
@@ -755,4 +778,5 @@ change attributes file format
 .TP 8n
 .IR aefstate (5)
 file state file format
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

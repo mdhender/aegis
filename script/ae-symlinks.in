@@ -1,20 +1,19 @@
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2004, 2006-2008 Peter Miller
+# aegis - project change supervisor
+# Copyright (C) 2004, 2006-2008, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 case $# in
 1)
@@ -31,13 +30,13 @@ case $# in
     bindir=$prefix/bin
     case "$prefix" in
     */aegis/*)
-	libdir=$prefix/lib
-	datadir=$prefix/share
-	;;
+        libdir=$prefix/lib
+        datadir=$prefix/share
+        ;;
     *)
-	libdir=$prefix/lib/aegis
-	datadir=$prefix/share/aegis
-	;;
+        libdir=$prefix/lib/aegis
+        datadir=$prefix/share/aegis
+        ;;
     esac
     ;;
 *)
@@ -70,15 +69,15 @@ while read f
 do
     case $f in
     aemakefile | \
-    aefp | aemanifest | ae-symlinks | cklinlen | fmtgen | test_* )
-	# don't install these ones.
-	;;
+    aefp | ae-symlinks | fmtgen | test_* )
+        # don't install these ones.
+        ;;
 
     *)
-	rm -f $f
-	ln -s $baseline/$arch/bin/$f $f
-	test $? -eq 0 || exit 1
-	;;
+        rm -f $f
+        ln -s $baseline/$arch/bin/$f $f
+        test $? -eq 0 || exit 1
+        ;;
     esac
 done
 
@@ -108,13 +107,15 @@ do
     rm -rf $f
     mkdir -p $f
     ln -s `$bindir/aefind -p $AEGIS_PROJECT -bl -baserel lib/$f \
-	-type f ! -name "*,*" ! -name "*.d" -print -resolve` $f/.
+        -type f ! -name "*,*" ! -name "*.d" -print -resolve` $f/.
     test $? -eq 0 || exit 1
 done
 for f in report.index aegis.icon aegis.mask
 do
     rm -f $f
     ln -s `$bindir/aefind -p $AEGIS_PROJECT -bl -baserel lib/$f \
-	-type f ! -name "*,*" ! -name "*.d" -print -resolve` $f
+        -type f ! -name "*,*" ! -name "*.d" -print -resolve` $f
     test $? -eq 0 || exit 1
 done
+
+# vim: set ts=8 sw=4 et :

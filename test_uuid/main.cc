@@ -1,28 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004, 2007 Walter Franzini;
-//	Copyright (C) 2006-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004, 2007 Walter Franzini;
+// Copyright (C) 2006-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/stdio.h>
 
 #include <common/arglex.h>
-#include <common/error.h> // for assert
+#include <common/error.h>
 #include <common/nstring.h>
 #include <common/progname.h>
 #include <common/trace.h>
@@ -54,7 +54,7 @@ static arglex_table_ty argtab[] =
 static void
 usage(void)
 {
-    const char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -92,7 +92,7 @@ check_uuid(const nstring &ifn, const nstring &)
     input ifp = input_file_open(ifn);
     nstring uuid;
     if (!ifp->one_line(uuid))
-	fatal_raw("Unable to read uuid from %s", ifn.c_str());
+        fatal_raw("Unable to read uuid from %s", ifn.c_str());
     os_become_undo();
     return universal_unique_identifier_valid(uuid);
 }
@@ -117,7 +117,7 @@ translate_uuid(const nstring &ifn, const nstring &ofn)
 int
 main(int argc, char **argv)
 {
-    int	(*func)(const nstring &, const nstring &);
+    int (*func)(const nstring &, const nstring &);
 
     arglex_init(argc, argv, argtab);
 
@@ -128,47 +128,50 @@ main(int argc, char **argv)
     os_become_init_mortal();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	case arglex_token_stdio:
-	    if (ifn.empty())
-		ifn = nstring("");
-	    else if (ofn.empty())
-		ofn = nstring("");
+        switch (arglex_token)
+        {
+        case arglex_token_stdio:
+            if (ifn.empty())
+                ifn = nstring("");
+            else if (ofn.empty())
+                ofn = nstring("");
             else
                 usage();
-	    break;
+            break;
 
-	case arglex_token_string:
-	    if (ifn.empty())
-		ifn = nstring(arglex_value.alv_string);
-	    else if (ofn.empty())
-		ofn = nstring(arglex_value.alv_string);
-	    else
-		usage();
-	    break;
+        case arglex_token_string:
+            if (ifn.empty())
+                ifn = nstring(arglex_value.alv_string);
+            else if (ofn.empty())
+                ofn = nstring(arglex_value.alv_string);
+            else
+                usage();
+            break;
 
-	case arglex_token_generate:
-	    func = generate_uuid;
-	    break;
+        case arglex_token_generate:
+            func = generate_uuid;
+            break;
 
-	case arglex_token_check:
-	    func = check_uuid;
-	    break;
+        case arglex_token_check:
+            func = check_uuid;
+            break;
 
         case arglex_token_uuid_translate:
             func = translate_uuid;
             break;
 
-	default:
+        default:
             generic_argument(usage);
             break;
-	}
-	arglex();
+        }
+        arglex();
     }
     if (!func)
-	usage();
+        usage();
 
     int ret = func(ifn, ofn);
     exit(ret ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+
+// vim: set ts=8 sw=4 et :

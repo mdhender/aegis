@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 1999, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Einf\*:uhrung"
 .FS
@@ -27,7 +26,7 @@ German translation
 Copyright
 .if t \(co
 .if n (C)
-2002 CM-Magazin.
+2002 CM\[hy]Magazin.
 .FE
 Die traditionellen Produktionsmethoden f\*:ur gro\(sse UNIX
 Softwareentwicklungsprojekte sind als \fIrekursives Make\fP
@@ -36,9 +35,9 @@ einer Hierarchie von Verzeichnissen, die die
 Quelldateien f\*:ur die Module, aus denen das Projekt
 besteht, beinhalten, wobei jedes der Unterverzeichnisse
 ein \f[CW]Makefile\fP enth\*:alt, das die Regeln und Anweisungen f\*:ur
-das Make-Programm beschreibt. Das vollst\*:andige
-Projekt-Build wird durchgef\*:uhrt, indem man das
-Haupt-\f[CW]Makefile\fP veranlasst, in allen Unterverzeichnissen
+das Make\[hy]Programm beschreibt. Das vollst\*:andige
+Projekt\[hy]Build wird durchgef\*:uhrt, indem man das
+Haupt\[hy]\f[CW]Makefile\fP veranlasst, in allen Unterverzeichnissen
 wiederum Make aufzurufen.
 .LP
 Dieser Artikel untersucht ein paar wesentliche Probleme,
@@ -49,18 +48,19 @@ und einige ihrer Auswirkungen werden untersucht.
 .LP
 Durch Rekursives Make erh\*:alt man einen Verzeichnisbaum,
 der ungef\*:ahr so aussieht:
-.so 01.figure1.so
+.so lib/de/auug97/01.figure1.so
 Diese verschachtelte Modulhierarchie kann beliebig ausgeweitet
 werden. Reale Projekte haben oft zwei oder drei Ebenen.
 .nh 2 "Kenntnisse vorausgesetzt"
 Dieser Artikel setzt voraus, dass Sie mit
-Softwareentwicklung auf Unix, dem Make-Programm, den
-Grunds\*:atzen von C-Programmierung und mit
+Softwareentwicklung auf Unix, dem Make\[hy]Programm, den
+Grunds\*:atzen von C\[hy]Programmierung und mit
 Dateiabh\*:angigkeiten vertraut ist.
 .LP
-Weiterhin geht er davon aus, dass Sie GNU-Make auf ihrem
+Weiterhin geht er davon aus, dass Sie GNU\[hy]Make auf ihrem
 System installiert haben und seine Funktionen mehr oder
 weniger gut kennen. Falls Sie eine eingeschr\*:ankte
 Version verwenden, kann es sein, dass Ihnen einige der
 unten beschriebenen Funktionen nicht zur Verf\*:ugung
 stehen.
+.\" vim: set ts=8 sw=4 et :

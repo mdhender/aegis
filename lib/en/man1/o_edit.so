@@ -1,23 +1,22 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1995, 1997, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1993, 1995, 1997, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .TP 8n
-.B -Edit
+.B \-Edit
 .br
 .RS
 Edit the attributes with a text editor, this is usually more convenient
@@ -29,13 +28,13 @@ See the \fIvisual_\%command\fP and \fIeditor_\%command\fP fields in
 .PP
 Warning: Aegis tries to be well behaved when
 faced with errors, so the temporary file is left in your home directory
-where you can edit it further and re-use it with a \fB\-file\fP option.
+where you can edit it further and re\[hy]use it with a \fB\-file\fP option.
 .PP
 The \fB\-edit\fP option may not be used in the background, or when the
 standard input is not a terminal.
 .RE
 .TP 8n
-.B -Edit_BackGround
+.B \-Edit_BackGround
 .br
 Edit the attributes with a dumb text editor, this is most often desired
 when edit commands are being piped into the editor via the standard input.
@@ -43,3 +42,4 @@ Only the \fPEDITOR\fP environment variable is consulted for the name of
 the editor to use; it is a fatal error if it is not set.
 See the \fIeditor_\%command\fP field in \fIaeuconf\fP(1) for how to
 override this specifically for Aegis.
+.\" vim: set ts=8 sw=4 et :

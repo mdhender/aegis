@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/nstring.h>
@@ -36,10 +36,10 @@ sub_substitute(sub_context_ty *scp, const wstring_list &arg)
     //
     if (arg.size() < 3)
     {
-	scp->error_set(i18n("requires two or more arguments"));
-	trace(("return NULL;\n"));
-	trace(("}\n"));
-	return wstring();
+        scp->error_set(i18n("requires two or more arguments"));
+        trace(("return NULL;\n"));
+        trace(("}\n"));
+        return wstring();
     }
     nstring lhs(arg[1].to_nstring());
     nstring rhs(arg[2].to_nstring());
@@ -56,17 +56,20 @@ sub_substitute(sub_context_ty *scp, const wstring_list &arg)
     nstring narrow_result;
     if (!re.match_and_substitute(rhs, s, 0, narrow_result))
     {
-	scp->error_set(re.strerror());
-	trace(("return NULL;\n"));
-	trace(("}\n"));
-	return wstring();
+        scp->error_set(re.strerror());
+        trace(("return NULL;\n"));
+        trace(("}\n"));
+        return wstring();
     }
 
     //
     // clean up and return
     //
     wstring result(narrow_result);
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

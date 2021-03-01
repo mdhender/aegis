@@ -1,22 +1,22 @@
 /* common/config.h.in.  Generated from etc/configure.ac by autoheader.  */
 
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-2008 Peter Miller
+ *      aegis - project change supervisor
+ *      Copyright (C) 1991-2008, 2010, 2012 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 3 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 3 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see
- *	<http://www.gnu.org/licenses/>.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program. If not, see
+ *      <http://www.gnu.org/licenses/>.
  */
 
 #ifndef COMMON_CONFIG_H
@@ -345,6 +345,9 @@
 /* Define to 1 if you have the `strsignal' function. */
 #undef HAVE_STRSIGNAL
 
+/* Define to 1 if you have the `strtoll' function. */
+#undef HAVE_STRTOLL
+
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
 
@@ -475,6 +478,10 @@
 /* Define this symbol if your system has /proc/sys/kernel/random/uuid */
 #undef LINUX_UUID_SIZE
 
+/* Define this symbol to be the number of bits in a long. This is analogous to
+   the standard CHAR_BIT define. */
+#undef LONG_BIT
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -487,11 +494,23 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -499,16 +518,33 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
+/* Enable extensions on AIX 3, Interix.  */
+#ifndef _ALL_SOURCE
+# undef _ALL_SOURCE
+#endif
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# undef _GNU_SOURCE
+#endif
+/* Enable threading extensions on Solaris.  */
+#ifndef _POSIX_PTHREAD_SEMANTICS
+# undef _POSIX_PTHREAD_SEMANTICS
+#endif
+/* Enable extensions on HP NonStop.  */
+#ifndef _TANDEM_SOURCE
+# undef _TANDEM_SOURCE
+#endif
+/* Enable general extensions on Solaris.  */
+#ifndef __EXTENSIONS__
+# undef __EXTENSIONS__
+#endif
+
+
 /* Define this symbol if your system has a working UUID implementation. */
 #undef UUID_OK
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
-
-/* Enable GNU extensions on systems that have them.  */
-#ifndef _GNU_SOURCE
-# undef _GNU_SOURCE
-#endif
 
 /* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
 #undef _LARGEFILE_SOURCE
@@ -529,6 +565,9 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
+/* Define to `long int' if <sys/types.h> does not define. */
+#undef off_t
+
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
@@ -537,23 +576,23 @@
  * Some bits are not available, because aegis is _meant_ to be paranoid.
  * Owner: always has read, write and search/exec.
  * Group: always has read and search/exec, so that developers can get at the
- *	baseline.  There is never group write, because then developers
- *	could trash the baseline, which is counter-productive.
+ *      baseline.  There is never group write, because then developers
+ *      could trash the baseline, which is counter-productive.
  * Others: There is never others write, for the same reason as group.
- *	Others read and search/execute is configurable.
+ *      Others read and search/execute is configurable.
  *
  * The permissions mask in binary looks like
- *	000 010 X1X
+ *      000 010 X1X
  * where the Xs may be configured.
  *
  * Alternatives for default umask are thus
- *	027	others get nothing
- *	026	others can execute the results if they know where they are going
- *	022	others can see and copy and execute anything
- *	023	don't do this (why is left as an exersize for the reader)
+ *      027     others get nothing
+ *      026     others can execute the results if they know where they are going
+ *      022     others can see and copy and execute anything
+ *      023     don't do this (why is left as an exersize for the reader)
  *
  * Projects have a configurable umask, this is just the default.
- *	See aepattr(1) for more information.
+ *      See aepattr(1) for more information.
  */
 #define DEFAULT_UMASK 026
 

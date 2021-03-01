@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2001, 2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1997, 1999, 2001, 2002, 2006-2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -51,8 +51,8 @@ cw(2i) cw(2i).
 T{
 .ce 2
 \fIPeter Miller\fP
-\f(CWmillerp@canb.auug.org.au\fP
-T}	T{
+\f(CWpmiller@opensource.org.au\fP
+T}      T{
 .ce 4
 Aus dem Amerikanischen
 ins Deutsche \*:ubersetzt von
@@ -120,16 +120,16 @@ schwierig umzusetzen, wie es zun\*:achst erscheint.
 .sp 2
 .if t .2C
 .\" ---------------------------------------------------------------------------
-.so 01-intro.so
-.so 02-problem.so
-.so 03-analysis.so
-.so 04-cure.so
-.so 05-makefile.so
-.so 06-vpath.so
-.so 07-synthesi.so
-.so 08-books.so
-.so 09-summary.so
-.so 10-ref.so
+.so lib/de/auug97/01-intro.so
+.so lib/de/auug97/02-problem.so
+.so lib/de/auug97/03-analysis.so
+.so lib/de/auug97/04-cure.so
+.so lib/de/auug97/05-makefile.so
+.so lib/de/auug97/06-vpath.so
+.so lib/de/auug97/07-synthesi.so
+.so lib/de/auug97/08-books.so
+.so lib/de/auug97/09-summary.so
+.so lib/de/auug97/10-ref.so
 .LP
 .TS
 center,allbox;
@@ -156,4 +156,5 @@ den Einblick, der zu diesem Artikel f\*:uhrte.
 Wenn Sie Interesse am Bezug der freien Software des Autors haben, besuchen
 .\" do not warn "cannot adjust line"
 .warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
-Sie bitte: \f(CWhttp://www\%.canb\%.auug\%.org\%.au\%/~millerp/\fP
+Sie bitte: \f(CWhttp://\%miller\%.emu\%.id\%.au\%/pmiller/\fP
+.\" vim: set ts=8 sw=4 et :

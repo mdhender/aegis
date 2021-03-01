@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # aegis - The "aegis" program.
-# Copyright (C) 2008, 2009 Walter Franzini
+# Copyright (C) 2008 Walter Franzini
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,29 +147,23 @@ if test $? -ne 0; then cat LOG; no_result; fi
 # integrate the change
 #
 activity="finis int 149"
-aegis -ibegin 1
-test $? -eq 0 || no_result
-
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
 AEGIS_PROJECT=foo
 
-activity="develope end the branch 158"
+activity="develope end the branch 155"
 aegis -develop-end 1
 test $? -eq 0 || no_result
 
-activity="integrate the branch 162"
-aegis -ibegin 1
-test $? -eq 0 || no_result
-
+activity="integrate the branch 159"
 aefinish 1 > LOG 2>&1
 test $? -eq 0 || no_result
 
 #
 # create a branch
 #
-activity="new branch 172"
+activity="new branch 166"
 aegis -p foo -nbr 2 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
@@ -179,7 +173,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 182"
+activity="new change 176"
 cat > cattr << 'end'
 brief_description = "First change.";
 cause = internal_enhancement;
@@ -188,14 +182,14 @@ test $? -eq 0 || no_result
 aegis -new_change 10 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 191"
+activity="develop begin 185"
 aegis -dev-begin 10 -dir $work/dd
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 198"
+activity="new file 192"
 aegis -new-file $work/dd/dino
 test $? -eq 0 || no_result
 
@@ -204,21 +198,18 @@ Hi, I'm Dino
 EOF
 test $? -eq 0 || no_result
 
-activity="finish the change 207"
+activity="finish the change 201"
 aefinish 10 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
-activity="integrate the change 211"
-aegis -ibegin 10
-test $? -eq 0 || no_result
-
+activity="integrate the change 205"
 aefinish 10 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
 #
 # create a new change
 #
-activity="new change 221"
+activity="new change 212"
 cat > cattr << 'end'
 brief_description = "First change.";
 cause = internal_enhancement;
@@ -227,14 +218,14 @@ test $? -eq 0 || no_result
 aegis -new_change 1 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 230"
+activity="develop begin 221"
 aegis -dev-begin 1 -dir $work/dd
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 237"
+activity="new file 228"
 aegis -copy-file $work/dd/barney
 test $? -eq 0 || no_result
 
@@ -243,7 +234,7 @@ Hi, I'm Barney and she is my wife Betty.
 EOF
 test $? -eq 0 || no_result
 
-activity="develop_end the change 246"
+activity="develop_end the change 237"
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
@@ -254,7 +245,7 @@ if test $? -ne 0; then cat LOG; no_result; fi
 #
 # The second change
 #
-activity="new change 257"
+activity="new change 248"
 cat > cattr << 'end'
 brief_description = "Second change.";
 cause = internal_enhancement;
@@ -263,14 +254,14 @@ test $? -eq 0 || no_result
 aegis -new_change 2 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 266"
+activity="develop begin 257"
 aegis -dev-begin 2 -dir $work/dd2
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 273"
+activity="new file 264"
 aegis -copy-file $work/dd2/fred
 test $? -eq 0 || no_result
 
@@ -279,28 +270,22 @@ Hi, I'm Barney and she is my wife Wilma.
 EOF
 test $? -eq 0 || no_result
 
-activity="finish the change 282"
+activity="finish the change 273"
 aefinish 2 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
-activity="integrate the 2nd change 286"
-aegis -ibegin 2
-test $? -eq 0 || no_result
-
+activity="integrate the 2nd change 277"
 aefinish 2 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
-activity="integrated the 1st change 293"
-aegis -ibegin 1
-test $? -eq 0 || no_result
-
+activity="integrated the 1st change 281"
 aefinish 1 > LOG 2>&1
 test $? -eq 0 || no_result
 
 #
 # The third change
 #
-activity="new change 303"
+activity="new change 288"
 cat > cattr << 'end'
 brief_description = "Third change.";
 cause = internal_enhancement;
@@ -309,14 +294,14 @@ test $? -eq 0 || no_result
 aegis -new_change 3 -f cattr -project $AEGIS_PROJECT
 test $? -eq 0 || no_result
 
-activity="develop begin 312"
+activity="develop begin 297"
 aegis -dev-begin 3 -dir $work/dd
 test $? -eq 0 || no_result
 
 #
 # add a new files to the change
 #
-activity="new file 319"
+activity="new file 304"
 aegis -new-file $work/dd/bambam
 test $? -eq 0 || no_result
 
@@ -325,21 +310,18 @@ Hi, I'm Bambam
 EOF
 test $? -eq 0 || no_result
 
-activity="finish the change 328"
+activity="finish the change 313"
 aefinish 3 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
-activity="integrate the 3rd change 332"
-aegis -ibegin 3
-test $? -eq 0 || no_result
-
+activity="integrate the 3rd change 317"
 aefinish 3 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
 #
 # Run aediff
 #
-activity="aediff 342"
+activity="aediff 324"
 cat > ok <<'EOF'
 0a1
 > Hi, I'm Barney and she is my wife Betty.

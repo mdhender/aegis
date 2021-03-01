@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994, 2000, 2003-2008 Peter Miller
+//      Copyright (C) 1994, 2000, 2003-2008, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/change.h>
 #include <libaegis/aer/func/project.h>
@@ -78,7 +79,7 @@ rpt_func_change_number::run(const rpt_expr::pointer &, size_t,
     rpt_value::pointer *) const
 {
     assert(cidp);
-    return rpt_value_integer::create(magic_zero_decode(cidp->get_cp()->number));
+    return rpt_value_integer::create(cidp->get_change_number());
 }
 
 
@@ -137,3 +138,6 @@ report_parse_change_set(change_identifier &cid)
 {
     cidp = &cid;
 }
+
+
+// vim: set ts=8 sw=4 et :

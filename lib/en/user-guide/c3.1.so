@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see
+.\" <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Using SCCS"
@@ -25,16 +25,17 @@ so some maneuvering is required.
 The command strings in this section assume that the SCCS command
 \fIsccs\fP
 is in the command search PATH,
-but you may like to hard-wire the path,
+but you may like to hard\[hy]wire the path,
 or set PATH at the start of each command.
 (It is also possible that you need to say \[lq]delta\[rq] instead of
 \[lq]sccs delta\[rq].
 if this is the case, this command needs to be in the path.)
 You should also note that the strings are always handed to
 the Bourne shell to be executed,
-and are set to exit with an error immediately a sub-command fails.
+and are set to exit with an error immediately a sub\[hy]command fails.
 .LP
-One further assumption is that the \fIae-sccs-put\fP(1) command, which is
+One further assumption is that the \fIae\[hy]sccs\[hy]put\fP(1) command,
+which is
 distributed with Aegis, is in the command search path.  This insulates
 some of the weirdness that SCCS carries on with, and makes the commands
 below comprehensible.
@@ -54,7 +55,7 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "ae-sccs-put -y$version -G$input "
+  "ae\-sccs\-put \-y$version \-G$input "
   " ${d $h}/s.${b $h}";
 .E)
 .LP
@@ -80,12 +81,12 @@ The entry in the
 file looks like this:
 .E(
 history_get_command =
-  "get -r'$e' -s -p -k "
+  "get \-r'$e' \-s \-p \-k "
   " ${d $h}/s.${b $h} > $o";
 .E)
 .nh 3 "history_put_command"
 .LP
-This command is used to add a new "top-most" entry to the
+This command is used to add a new "top\[hy]most" entry to the
 history file.
 This command is always executed as the project owner.
 .LP
@@ -100,11 +101,11 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "ae-sccs-put -y$version -G$input "
+  "ae\-sccs\-put \-y$version \-G$input "
   " ${d $h}/s.${b $h}";
 .E)
 .LP
-Note that the SCCS file is left in the \fInot-edit\fP state,
+Note that the SCCS file is left in the \fInot\[hy]edit\fP state,
 and that the source file is left in the baseline.
 .LP
 It is important that
@@ -113,7 +114,7 @@ the \fIhistory_\%put_\%command\fP be the same.
 This is necessary for branching to work correctly.
 .nh 3 "history_query_command"
 .LP
-This command is used to query what the history mechanism calls the top-most
+This command is used to query what the history mechanism calls the top\[hy]most
 edit of a history file.
 The result may be any arbitrary string,
 it need not be anything like a number,
@@ -133,7 +134,7 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "get -t -g ${d $h}/s.${b $h}";
+  "get \-t \-g ${d $h}/s.${b $h}";
 .E)
 .LP
 Note that "get" reports the edit number on stdout.
@@ -153,7 +154,7 @@ the use of the ${quote} substitution around all of the files names in
 the commands.
 .LP
 In addition, it is possible to have a much more useful description for
-the \fB\-y\fP option.  For example: \[lq]\f[CW]-y${quote ($version) ${change
+the \fB\-y\fP option.  For example: \[lq]\f[CW]\-y${quote ($version) ${change
 description}}\fP\[rq] inserts the version number and the brief description
 into the file's log.  This means that using the \fIsccs prs\fP(1) command
 will provide quite useful summaries.
@@ -162,3 +163,4 @@ will provide quite useful summaries.
 SCCS is unable to cope with binary files.  However, Aegis
 will transparently encode all such files, if you leave the
 \fIhistory_\%content_\%limitation\fP field unset.
+.\" vim: set ts=8 sw=4 et :

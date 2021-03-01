@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2008 Peter Miller
+//      Copyright (C) 2003-2008, 2011, 2012 Peter Miller
 //      Copyright (C) 2007 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <libaegis/change.h>
 
 class nstring; // forward
-struct project_ty; // forward
+struct project; // forward
 struct string_ty; // forward
 class nstring; // forward
 struct string_list_ty; // forward
@@ -88,13 +88,13 @@ void http_content_type_header(string_ty *);
   *
   * The "html:meta" attributes are inserted at this point.
   */
-void html_header(project_ty *, change::pointer);
+void html_header(project *, change::pointer);
 
 /**
   * The html_header_os function is used to emit the "html:body-begin"
   * attributes.
   */
-void html_header_ps(project_ty *, change::pointer);
+void html_header_ps(project *, change::pointer);
 
 /**
   * The html_footer function is used to emit the final page footer,
@@ -102,7 +102,7 @@ void html_header_ps(project_ty *, change::pointer);
   *
   * The "html:body-end" attributes are inserted at this point.
   */
-void html_footer(project_ty *, change::pointer);
+void html_footer(project *, change::pointer);
 
 /**
   * The emit_change function is used to emit the project name and change
@@ -133,8 +133,8 @@ const char *http_script_name(void);
   * The emit_project_href function is used to print the leading <a>
   * portion of a project reference.
   */
-void emit_project_href(project_ty *pp);
-void emit_project_href(project_ty *pp, const char *modifier, ...)
+void emit_project_href(project *pp);
+void emit_project_href(project *pp, const char *modifier, ...)
                                                               ATTR_PRINTF(2, 3);
 
 /**
@@ -148,7 +148,7 @@ void emit_change_href(change::pointer cp, const char *modifier);
   * The emit_change_href_n function is used to print the leading <a>
   * portion of a change reference, with an explict change number.
   */
-void emit_change_href_n(project_ty *pp, long change_number,
+void emit_change_href_n(project *pp, long change_number,
     const char *modifier);
 
 /**
@@ -182,14 +182,32 @@ void emit_file_href(change::pointer cp, string_ty *filename,
     const char *modifier);
 
 /**
-  * The emit_rect_image function is used to print an <img> of a rectangle,
-  * use for drawing histograms.
+  * The emit_rect_image function is used to print an &lt;img&gt; of a
+  * rectangle, use for drawing histograms.
+  *
+  * @param width
+  *     The width of the image
+  * @param height
+  *     The height of the image
+  * @param label
+  *     The label to write on the rectangle
+  * @param hspace
+  *     The horizontal space desired around the image.
   */
 void emit_rect_image(int width, int height, const char *label, int hspace = -1);
 
 /**
-  * The emit_rect_image_rgb function is used to print an <img> of a
+  * The emit_rect_image_rgb function is used to print an &lt;img&gt; of a
   * rectangle, use for drawing histograms, of s specific color.
+  *
+  * @param width
+  *     The width of the rectangle image
+  * @param height
+  *     The height of the rectangle image
+  * @param color
+  *     The color of the rectangle image
+  * @param hspace
+  *     The horizontal spacing to add around the rectangle image.
   */
 void emit_rect_image_rgb(int width, int height, const char *color,
     int hspace = -1);
@@ -229,7 +247,7 @@ bool modifier_test_and_clear(string_list_ty *modifiers, const char *name);
   * \param rss_filename
   *      The file name of the RSS feed file.  Not the full path.
   */
-void emit_rss_icon_with_link(project_ty *pp, const nstring &rss_filename);
+void emit_rss_icon_with_link(project *pp, const nstring &rss_filename);
 
 /**
   * Print RSS-related meta data.
@@ -239,9 +257,23 @@ void emit_rss_icon_with_link(project_ty *pp, const nstring &rss_filename);
   * \param rss_filename
   *      The file name of the RSS feed file.  Not the full path.
   */
-void emit_rss_meta_data(project_ty *pp, const nstring &rss_filename);
+void emit_rss_meta_data(project *pp, const nstring &rss_filename);
 
 #define HISTOGRAM_HEIGHT 12
 #define HISTOGRAM_WIDTH 120
 
+/**
+  * The http_sanitize_content_type function is used to turn
+  * "text/whatever" content types into "test/plain" content types,
+  * except "text/html".  Other content types are passed through
+  * unchanged.
+  *
+  * @param content_type
+  *     The content-type to clean up
+  * @returns
+  *     text/plain for most text types, otherwise unchanged
+  */
+nstring http_sanitize_content_type(const nstring &content_type);
+
 #endif // AEGET_HTTP_H
+// vim: set ts=8 sw=4 et :

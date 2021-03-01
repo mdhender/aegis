@@ -1,0 +1,156 @@
+'\" t
+.\" aegis - project change supervisor
+.\" Copyright (C) 2011, 2012 Peter Miller
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program. If not, see <http://www.gnu.org/licenses/>.
+.\"
+.so lib/en/man1/z_name.so
+.ds n) aegrep
+.TH "aegrep" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aegrep \- print lines matching a pattern
+.XX "aegrep(1)" "print lines matching a pattern"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+.I pattern
+.br
+.B \*(n)
+.B \-Help
+.br
+.B \*(n)
+.B \-VERSion
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to
+search the source files
+for lines
+containing a match to the given \f[I]pattern\fP.
+By default, \fI\*(n)\fP prints the matching lines.
+.PP
+There is no need to name files on the command line,
+all the project and change source files are supplied automatically.
+All non\[hy]source files are ignored.
+.PP
+Most of the \f[I]grep\fP(1) options are understood, in their long form.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+\fB\-\-After\-Context=\fP\f[I]number\fP
+Print \f[I]number\fP lines of trailing context after matching lines.
+Places a line containing a group separator (\-\-) between
+contiguous groups of matches.
+.TP 8n
+\fB\-\-Before\-Context=\fP\f[I]number\fP
+Print \f[I]number\fP lines of trailing context before matching lines.
+Places a line containing a group separator (\-\-) between
+contiguous groups of matches.
+.TP 8n
+\fB\-\-Byte\-Offset\fP
+Print the 0\[hy]based byte offset within the input file before each line
+of output.
+.so lib/en/man1/o_change.so
+.TP 8n
+\fB\-\-color\fP
+Surround the matched (non\[hy]empty) strings, matching lines,
+context lines, file names, line numbers, byte offsets, and
+separators (for fields and groups of context lines) with escape
+sequences to display them in color on the terminal.
+.TP 8n
+\fB\-\-Context=\fP\f[I]number\fP
+Print \f[I]number\fP lines of output context.  Places a line containing
+a group separator (\-\-) between contiguous groups of matches.
+.TP 8n
+\fB\-\-Count\fP
+Suppress normal output; instead print a count of matching lines for each
+input file.  With \fB\-\-invert\-match\fP option count non\[hy]matching
+lines.
+.TP 8n
+\fB\-\-extended\-regexp
+Interpret \f[I]pattern\fP as an extended regular expression.
+.TP 8n
+\fB\-\-Files\-With\-Matches\fP
+Suppress normal output; instead print the name of each input
+file from which output would normally have been printed.  The
+scanning will stop on the first match.
+.TP 8n
+\fB\-\-Files\-WithOut\-Matches\fP
+Suppress normal output; instead print the name of each input
+file from which no output would normally have been printed.  The
+scanning will stop on the first match.
+.TP 8n
+\fB\-\-fixed\-strings\fP
+Interpret \f[I]pattern\fP as a list of fixed strings, separated by
+newlines, any of which is to be matched.
+.so lib/en/man1/o_help.so
+.TP 8n
+\fB\-\-Ignore\-Case\fP
+Ignore case distinctions in both the \f[I]pattern\fP and the source
+files.
+.TP 8n
+\fB\-\-Invert\-Match\fP
+Invert the sense of matching, to select non\[hy]matching lines.
+.TP 8n
+\fB\-\-Initial\-Tab\fP
+Make sure that the first character of actual line content lies
+on a tab stop, so that the alignment of tabs looks normal.
+.TP 8n
+\fB\-\-Line\-Buffered
+Use line buffering on output.
+.TP 8n
+\fB\-\-Line\-Number
+Prefix each line of output with the 1\[hy]based line number within
+its input file.
+.TP 8n
+\fB\-\-Line\-Regexp\fP
+.TP 8n
+\fB\-\-Maximum\-Count=\fP\f[I]number\fP
+Stop reading a file after \f[I]number\fP matching lines.
+.TP 8n
+\fB\-\-no\-messages\fP
+Suppress error messages about nonexistent or unreadable files.
+.TP 8n
+\fB\-\-Only\-Matching\fP
+Print only the matched (non\[hy]empty) parts of a matching line,
+with each such part on a separate output line.
+.TP 8n
+\fB\-\-Perl\-Regexp
+Interpret \f[I]pattern\fP as a Perl regular expression.
+.so lib/en/man1/o_project.so
+.TP 8n
+\fB\-\-Unix\-Byte\-Offset
+Report Unix\[hy]style byte offsets.
+.TP 8n
+\fB\-\-Word\-Regexp\fP
+Select only those lines containing matches that form whole
+words.  The test is that the matching substring must either be
+at the beginning of the line, or preceded by a non\[hy]word
+constituent character.  Similarly, it must be either at the end
+of the line or followed by a non\[hy]word constituent character.
+Word\[hy]constituent characters are letters, digits, and the
+underscore.
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.SH SEE ALSO
+.TP 8n
+\f[I]aefind\fP(1)
+search for files in directory hierarchy
+.TP 8n
+\f[I]grep\fP(1)
+print lines matching a pattern
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

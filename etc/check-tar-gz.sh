@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # aegis - project change supervisor
-# Copyright (C) 2005-2008 Peter Miller
+# Copyright (C) 2005-2008, 2012 Peter Miller
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -83,8 +83,7 @@ do
     esac
 done
 
-rm -r com lib etc
-rm -r man || true
+rm -rf com lib etc man || true
 mkdir -p -m755 share-new/en
 mv share/en/html share-new/en/.
 mv share/icon share-new/.
@@ -113,4 +112,6 @@ fubar
 chmod a+rx cgi-bin/aegis.cgi
 
 tar czf $dst_tgz bin cgi-bin share
-ls -lh $dst_tgz
+ls -lhog $dst_tgz
+exit 0
+# vim: set ts=8 sw=4 et :

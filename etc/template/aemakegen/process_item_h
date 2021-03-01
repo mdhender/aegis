@@ -1,0 +1,93 @@
+//
+// aegis - project change supervisor
+// Copyright (C) ${date %Y} ${user name}
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef ${id ${upcase $fn}}
+#define ${id ${upcase $fn}}
+
+#include <${dirname_rel $fn}.h>
+
+/**
+  * The ${id ${trim_dir ${trim_ext $fn}}} class is used to represent
+  * the processing required for "*.${trim_ext ${basename $fn}}" files.
+  */
+class ${id ${trim_dir ${trim_ext $fn}}}:
+    public ${id ${trim_dir ${dirname_rel $fn}}}
+{
+public:
+    typedef aegis_shared_ptr<${id ${trim_dir ${trim_ext $fn}}}> pointer;
+
+    /**
+      * The destructor.
+      */
+    virtual ~${id ${trim_dir ${trim_ext $fn}}}();
+
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * @param filename
+      *     The name of the file of interest.
+      */
+    static pointer create(target &tgt);
+
+protected:
+    // See base class for documentation.
+    bool condition(const nstring &filename);
+
+    // See base class for documentation.
+    void preprocess(const nstring &filename);
+
+private:
+    /**
+      * The constructor.
+      * It is private on purpose, use the #create class method instead.
+      *
+      * @param filename
+      *     The name of the file of interest.
+      */
+    ${id ${trim_dir ${trim_ext $fn}}}(target &tgt);
+
+    /**
+      * The default constructor.
+      * Do not use.
+      */
+    ${id ${trim_dir ${trim_ext $fn}}}();
+
+    /**
+      * The copy constructor.
+      * Do not use.
+      *
+      * @param rhs
+      *     The right hand side of the initialization.
+      */
+    ${id ${trim_dir ${trim_ext $fn}}}(const ${id ${trim_dir ${trim_ext
+        $fn}}} &rhs);
+
+    /**
+      * The assignment operator.
+      * Do not use.
+      *
+      * @param rhs
+      *     The right hand side of the assignment.
+      */
+    ${id ${trim_dir ${trim_ext $fn}}} &operator=(const ${id ${trim_dir
+        ${trim_ext $fn}}} &rhs);
+};
+
+// vim: set ts=8 sw=4 et :
+#endif // ${id ${upcase $fn}}

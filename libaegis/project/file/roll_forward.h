@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
@@ -24,7 +23,7 @@
 
 #include <common/symtab/template.h>
 #include <libaegis/change/list.h>
-#include <libaegis/fstate.h>
+#include <libaegis/fstate.fmtgen.h>
 #include <libaegis/project.h>
 #include <libaegis/file/event/list.h>
 
@@ -48,44 +47,52 @@ public:
 
     /**
       * See the set() method for documentation.
-      */
-    project_file_roll_forward(project_ty *pp, time_t limit, int detailed);
-
-    /**
-      * The set method is used to recapitilate
-      * the project's history, constructing information about the state
-      * of all files as it goes.  The project_file_roll_forward_get
-      * function is used to extract the results.
       *
-      * \param pp
+      * @param pp
       *     The project to apply the listing to.
       *     All parent branches will be visited, too.
-      * \param limit
+      * @param limit
       *     The time limit for changes.  Changes on or before this
       *     time will be included.
-      * \param detailed
+      * @param detailed
+      *     If this is false, only the parent branches and the
+      *     project itself are visited.  If this is true, all branches
+      *     completed within the limt will be visited.
+      */
+    project_file_roll_forward(project *pp, time_t limit, bool detailed);
+
+    /**
+      * The set method is used to recapitilate the project's history,
+      * constructing information about the state of all files as it
+      * goes.  The #get function is used to extract the results.
+      *
+      * @param pp
+      *     The project to apply the listing to.
+      *     All parent branches will be visited, too.
+      * @param limit
+      *     The time limit for changes.  Changes on or before this
+      *     time will be included.
+      * @param detailed
       *     If this is false, only the parent branches and the
       *     project itself are visited.  If this is true, all branches
       *     completed within the limt will be visited.
       *
-      * \note
+      * @note
       *    This function is one really big memory leak.
       */
-    void set(project_ty *pp, time_t limit, int detailed);
+    void set(project *pp, time_t limit, bool detailed);
 
     /**
-      * The project_file_roll_forward_get function is used to obtain the
-      * events for a given file, once project_file_roll_forward has been
-      * called to construct the information.
+      * The get method is used to obtain the events for a given file.
       *
-      * \param src
+      * @param src
       *    The file description of the file to fetch the event
       *    list.  Will use the uuid if available (or, for backwards
       *    compatibility) the file name.
-      * \returns
+      * @returns
       *    Pointer to the event list for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \note
+      * @note
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
@@ -96,49 +103,45 @@ public:
       * once project_file_roll_forward has been called to construct the
       * information.
       *
-      * \param src
+      * @param src
       *    The file description of the file to fetch the event
       *    list.  Will use the uuid if available (or, for backwards
       *    compatibility) the file name.
-      * \returns
+      * @returns
       *    Pointer to the event list for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \note
+      * @note
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
     file_event_list::pointer get(cstate_src_ty *src);
 
     /**
-      * The project_file_roll_forward_get function is used to obtain the
-      * events for a given file, once project_file_roll_forward has been
-      * called to construct the information.
+      * The get method is used to obtain the events for a given file.
       *
-      * \param filename
+      * @param filename
       *    The name of the file to fetch the event list
-      * \returns
+      * @returns
       *    Pointer to the event list for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \note
+      * @note
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
     file_event_list::pointer get(const nstring &filename);
 
     /**
-      * The project_file_roll_forward_get function is used to obtain the
-      * events for a given file, once project_file_roll_forward has been
-      * called to construct the information.
+      * The get function is used to obtain the events for a given file.
       *
-      * \param filename
+      * @param filename
       *    The name of the file to fetch the event list
-      * \returns
+      * @returns
       *    Pointer to the event list for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \note
+      * @note
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
-      * \note
+      * @note
       *    This method will be DEPRECATED one day.
       */
     file_event_list::pointer get(string_ty *filename);
@@ -147,9 +150,9 @@ public:
       * The get_last method is used to get the last file event, used by
       * most functions which deal with deltas.
       *
-      * \param filename
+      * @param filename
       *    The name of the file to fetch the last event
-      * \returns
+      * @returns
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
       */
@@ -159,12 +162,12 @@ public:
       * The get_last method is used to get the last file event, used by
       * most functions which deal with deltas.
       *
-      * \param filename
+      * @param filename
       *    The name of the file to fetch the last event
-      * \returns
+      * @returns
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \note
+      * @note
       *    This method will be DEPRECATED one day.
       */
     file_event *get_last(string_ty *filename);
@@ -173,37 +176,64 @@ public:
       * The get_last method is used to get the last file event,
       * using the file's meta data to identify it.
       *
-      * \param src
+      * @param src
       *    The meta-data describing the file (any revision data, if
       *    present, will be ignored)
-      * \returns
+      * @returns
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
       */
     file_event *get_last(fstate_src_ty *src);
 
     /**
-      * The project_file_roll_forward_get_older function is used to get the
-      * last-but-one file event, used by aecp -rescind to roll back a change.
+      * The get_last_dir method is used to examine possible #get_last
+      * candidates, looking for those that may fall within the given
+      * directory.
       *
-      * \param filename
+      * @param dirname
+      *     The name of a directory to search for files.
+      * @returns
+      *     The empty list of there are no candidates, or a list of one
+      *     or more files, if the directory contained some files.  Also,
+      *     if it was a file and not a directory, a list of one filename
+      *     will be returned.
+      */
+    nstring_list get_last_dir(const nstring &dirname);
+
+    /**
+      * The get_last_fuzzy method is used to find the filename closest
+      * to the given filename.
+      *
+      * @param filename
+      *     the name of the file to look for.
+      * @returns
+      *     the most similar file name, or the empty string if none are
+      *     sufficiently close.
+      */
+    nstring get_last_fuzzy(const nstring &filename);
+
+    /**
+      * The get_older method is used to get the last-but-one file event,
+      * used by e.g. aecp -rescind to roll back a change.
+      *
+      * @param filename
       *    The name of the file to fetch the last event
-      * \returns
+      * @returns
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
       */
     file_event *get_older(const nstring &filename);
 
     /**
-      * The project_file_roll_forward_get_older function is used to get the
-      * last-but-one file event, used by aecp -rescind to roll back a change.
+      * The get_older function is used to get the last-but-one file
+      * event, e.g. used by aecp -rescind to roll back a change.
       *
-      * \param filename
+      * @param filename
       *    The name of the file to fetch the last event
-      * \returns
+      * @returns
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \note
+      * @note
       *    This method will be DEPRECATED one day.
       */
     file_event *get_older(string_ty *filename);
@@ -212,25 +242,25 @@ public:
       * The keys method is used to get a list of filenames for which
       * file event lists are available.
       *
-      * \param file_name_list
+      * @param file_name_list
       *     Where to put the list of file names.
       */
     void keys(nstring_list &file_name_list);
 
     /**
-      * The is_set method is used to determine if the set() method has
+      * The is_set method is used to determine if the #set method has
       * been invoked, directly or indirectly.
       *
-      * \returns
+      * @returns
       *      bool: true if it has been set, false if not.
       */
-    bool is_set() const { return !uuid_to_felp.empty(); }
+    bool is_set(void) const { return !uuid_to_felp.empty(); }
 
     /**
       * The get_last_change method is used to get the pointer to the
       * last change set in the reconstructed history.
       */
-    change::pointer get_last_change() const;
+    change::pointer get_last_change(void) const;
 
 private:
     /**
@@ -274,18 +304,18 @@ private:
       * branch, indexing each file as it goes.  It recurses into parent
       * branches.
       *
-      * \param pp
+      * @param pp
       *     The project to recapitulate.
-      * \param limit
+      * @param limit
       *     The lime linit; any events after this will be ignored.
-      * \param detailed
+      * @param detailed
       *     If true, also recurse into child branches, this gives the
       *     maximum amount of detail available, but usually of interests
       *     to humans (listings) rather than for file content (aecp & co).
-      * \returns
+      * @returns
       *     The latest time found in any event (<= limit).
       */
-    time_t recapitulate(project_ty *pp, time_t limit, int detailed);
+    time_t recapitulate(project *pp, time_t limit, bool detailed);
 
     /**
       * The copy constructor.  Do not use.
@@ -299,3 +329,4 @@ private:
 };
 
 #endif // LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
+// vim: set ts=8 sw=4 et :

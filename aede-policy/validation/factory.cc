@@ -1,32 +1,36 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2005-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2005-2010, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
+#include <common/sizeof.h>
 #include <common/symtab.h>
 #include <libaegis/sub.h>
 
 #include <aede-policy/validation/all.h>
+#include <aede-policy/validation/authors.h>
+#include <aede-policy/validation/debian-copyr.h>
 #include <aede-policy/validation/description.h>
+#include <aede-policy/validation/files/comments.h>
 #include <aede-policy/validation/files/copyright.h>
 #include <aede-policy/validation/files/crlf.h>
+#include <aede-policy/validation/files/escapehyphen.h>
 #include <aede-policy/validation/files/fsf_address.h>
 #include <aede-policy/validation/files/gpl-version.h>
 #include <aede-policy/validation/files/line_length.h>
@@ -35,129 +39,51 @@
 #include <aede-policy/validation/files/no_tabs.h>
 #include <aede-policy/validation/files/no_manifest.h>
 #include <aede-policy/validation/files/printable.h>
+#include <aede-policy/validation/files/reserved.h>
 #include <aede-policy/validation/files/text.h>
+#include <aede-policy/validation/files/vim-mode.h>
 #include <aede-policy/validation/files/white_space.h>
-
-
-static validation *
-new_validation_copyright()
-{
-    return new validation_files_copyright();
-}
-
-
-static validation *
-new_validation_files_crlf()
-{
-    return new validation_files_crlf();
-}
-
-
-static validation *
-new_validation_description()
-{
-    return new validation_description();
-}
-
-
-static validation *
-new_validation_files_fsf_address()
-{
-    return new validation_files_fsf_address();
-}
-
-
-static validation *
-new_validation_files_gpl_version()
-{
-    return new validation_files_gpl_version();
-}
-
-
-static validation *
-new_validation_files_line_length()
-{
-    return new validation_files_line_length();
-}
-
-
-static validation *
-new_validation_files_merge_fhist()
-{
-    return new validation_files_merge_fhist();
-}
-
-
-static validation *
-new_validation_files_merge_rcs()
-{
-    return new validation_files_merge_rcs();
-}
-
-
-static validation *
-new_validation_files_no_manifest()
-{
-    return new validation_files_no_manifest();
-}
-
-
-static validation *
-new_validation_files_no_tabs()
-{
-    return new validation_files_no_tabs();
-}
-
-
-static validation *
-new_validation_files_printable()
-{
-    return new validation_files_printable();
-}
-
-
-static validation *
-new_validation_files_text()
-{
-    return new validation_files_text();
-}
-
-
-static validation *
-new_validation_files_white_space()
-{
-    return new validation_files_white_space();
-}
+#include <aede-policy/validation/man_pages.h>
+#include <aede-policy/validation/version-info.h>
 
 
 struct table_t
 {
     const char *name;
-    validation *(*func)(void);
+    validation::pointer (*func)(void);
     bool all;
 };
 
 static table_t table[] =
 {
-    { "copyright", new_validation_copyright, true },
-    { "crlf", new_validation_files_crlf, true },
-    { "description", new_validation_description, true },
-    { "fsf-address", new_validation_files_fsf_address, true },
-    { "gpl-version", new_validation_files_gpl_version, false },
-    { "line-length", new_validation_files_line_length, false },
-    { "merge-fhist", new_validation_files_merge_fhist, false },
-    { "merge-rcs", new_validation_files_merge_rcs, false },
-    { "no-manifest", new_validation_files_no_manifest, false },
-    { "no-tabs", new_validation_files_no_tabs, false },
-    { "printable", new_validation_files_printable, true },
-    { "text", new_validation_files_text, false },
-    { "white-space", new_validation_files_white_space, false },
+    { "authors", validation_authors::create, false },
+    { "debian/copyright", validation_debian_copyright::create, false },
+    { "comments", validation_files_comments::create, false },
+    { "copyright", validation_files_copyright::create, true },
+    { "crlf", validation_files_crlf::create, true },
+    { "description", validation_description::create, true },
+    { "escape-hyphen", validation_files_escape_hyphen::create, true },
+    { "fsf-address", validation_files_fsf_address::create, true },
+    { "gpl-version", validation_files_gpl_version::create3, false },
+    { "line-length", validation_files_line_length::create80, false },
+    { "man-pages", validation_man_pages::create, false },
+    { "merge-fhist", validation_files_merge_fhist::create, false },
+    { "merge-rcs", validation_files_merge_rcs::create, false },
+    { "no-manifest", validation_files_no_manifest::create, false },
+    { "no-tabs", validation_files_no_tabs::create, false },
+    { "printable", validation_files_printable::create, true },
+    { "reserved", validation_files_reserved::create, false },
+    { "reserved-words", validation_files_reserved::create, false },
+    { "text", validation_files_text::create, false },
+    { "version-info", validation_version_info::create, false },
+    { "vim-mode", validation_files_vim_mode::create, false },
+    { "white-space", validation_files_white_space::create, false },
 };
 
 static symtab_ty *stp;
 
 
-validation *
+validation::pointer
 validation::factory(const char *cname)
 {
     nstring name = nstring(cname).downcase();
@@ -167,11 +93,11 @@ validation::factory(const char *cname)
     // constructor loop.
     //
     if (name == nstring("all"))
-        return new validation_all();
+        return validation_all::create();
     if (name.starts_with("line-length="))
-        return new validation_files_line_length(atoi(name.c_str() + 12));
+        return validation_files_line_length::create(atoi(name.c_str() + 12));
     if (name.starts_with("gpl-version="))
-        return new validation_files_gpl_version(atoi(name.c_str() + 12));
+        return validation_files_gpl_version::create(atoi(name.c_str() + 12));
 
     if (!stp)
     {
@@ -203,7 +129,7 @@ validation::factory(const char *cname)
 
 
 void
-validation::list()
+validation::list(void)
 {
     for (table_t *tp = table; tp < ENDOF(table); ++tp)
         printf("%s\n", tp->name);
@@ -219,3 +145,6 @@ validation::all(validation_list &where)
             where.push_back(tp->func());
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

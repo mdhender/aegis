@@ -1,43 +1,42 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1998, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994, 1998, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -DELta_NAme" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-DELta_NAme" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis delta name \- assign a symbolic name to a project delta
 .XX "aedn(1)" "assign a symbolic name to a project delta"
 .SH SYNOPSIS
 .B \*(n)
-.B -DELta_NAme
+.B \-DELta_NAme
 [
 .IR option \&...
 ]
 .I name
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -DELta_NAme
+.I \-DELta_NAme
 command is used to
 add a symbolic name to a project delta.
 This is so that this name may be used, rather than the number,
@@ -58,33 +57,33 @@ This is the name which will be assigned to the delta.
 If the name has already been used,
 you will be given a fatal error message.
 If you also specify the
-.B -OverWriting
+.B \-OverWriting
 option the name will be removed from its previous delta and assigned
 to the requested delta.
 .SH OPTIONS
 The following options are understood:
-.so o_help.so
+.so lib/en/man1/o_help.so
 .TP 8n
-\fB-DELta\fP \fInumber\fP
+\fB\-DELta\fP \fInumber\fP
 .br
 This option may be used to specify a particular
 delta in the project's history to name.
 .TP 8n
-\fB-DELta_DAte\fP \fIstring\fP
+\fB\-DELta_DAte\fP \fIstring\fP
 .br
 This option may be used to specify a particular date and time in the
 project's history.
 .TP 8n
-\fB-Delta_From_Change\fP \fInumber\fP
+\fB\-Delta_From_Change\fP \fInumber\fP
 .br
 This option may be used to specify a particular delta in the project's
 history, based on when the given change was successfully integrated.
-.so o_list.so
-.so o_overw.so
-.so o_project.so
-.so o_wait.so
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_overw.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -92,7 +91,7 @@ history, based on when the given change was successfully integrated.
 .IR aecp (1)
 copy a file into a change,
 particularly the
-.B -DELta
+.B \-DELta
 option
 .TP 8n
 .IR aeib (1)
@@ -103,4 +102,5 @@ list interesting this,
 particularly the
 .I project_history
 listing
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

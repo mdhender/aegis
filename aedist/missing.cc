@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2007, 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -61,29 +61,29 @@ missing_main(void)
             generic_argument(usage);
             continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, usage);
+            continue;
 
         case arglex_token_file:
-	    if (!ifn.empty())
-		duplicate_option(usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_file(arglex_token_file, usage);
-	        // NOTREACHED
+            if (!ifn.empty())
+                duplicate_option(usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_file(arglex_token_file, usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
+            case arglex_token_string:
                 ifn = arglex_value.alv_string;
-		break;
+                break;
 
-	    case arglex_token_stdio:
-		ifn = "";
-		break;
-	    }
-	    break;
+            case arglex_token_stdio:
+                ifn = "";
+                break;
+            }
+            break;
 
         case arglex_token_exclude_uuid:
             switch (arglex())
@@ -137,9 +137,9 @@ missing_main(void)
             }
             break;
 
-	case arglex_token_maximum:
-	    all_changes = true;
-	    break;
+        case arglex_token_maximum:
+            all_changes = true;
+            break;
         }
         arglex();
     }
@@ -152,16 +152,16 @@ missing_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = n.get_ref_copy();
     }
-    project_ty *pp = project_alloc(project_name);
+    project *pp = project_alloc(project_name);
     pp->bind_existing();
 
     symtab<change> local_inventory;
     bool include_branches = true;
     bool ignore_original_uuid = false;
     change_functor_inventory_builder cf(include_branches, all_changes,
-	ignore_original_uuid, pp, &local_inventory);
+        ignore_original_uuid, pp, &local_inventory);
     project_inventory_walk(pp, cf);
 
     //
@@ -171,15 +171,15 @@ missing_main(void)
     //
     url smart_url(ifn);
     if (smart_url.is_a_file())
-	ifn = smart_url.get_path();
+        ifn = smart_url.get_path();
     else
     {
-	smart_url.set_path_if_empty
-	(
-	    nstring::format("cgi-bin/aeget/%s", project_name_get(pp)->str_text)
-	);
-	smart_url.set_query_if_empty("inventory");
-	ifn = smart_url.reassemble();
+        smart_url.set_path_if_empty
+        (
+            nstring::format("cgi-bin/aeget/%s", project_name_get(pp).c_str())
+        );
+        smart_url.set_query_if_empty("inventory");
+        ifn = smart_url.reassemble();
     }
     trace_nstring(ifn);
 
@@ -197,24 +197,24 @@ missing_main(void)
     //
     col::pointer colp = col::open(0);
     string_ty *line1 =
-	str_format
-	(
-	    "Project \"%s\", Missing Change Set Inventory",
-	    project_name_get(pp)->str_text
-	);
+        str_format
+        (
+            "Project \"%s\", Missing Change Set Inventory",
+            project_name_get(pp).c_str()
+        );
     colp->title(line1->str_text, ifn.c_str());
     str_free(line1);
     line1 = 0;
 
     int left = 0;
     output::pointer vers_col =
-	colp->create(left, left + VERSION_WIDTH, "Change\n-------");
+        colp->create(left, left + VERSION_WIDTH, "Change\n-------");
     left += VERSION_WIDTH + 1;
     output::pointer uuid_col =
-	colp->create(left, left + UUID_WIDTH, "UUID\n------");
+        colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
     output::pointer desc_col =
-	colp->create(left, 0, "Description\n------------");
+        colp->create(left, 0, "Description\n------------");
 
     //
     // Fetch and list the remote change sets.
@@ -225,15 +225,15 @@ missing_main(void)
     {
         nstring line;
         os_become_orig();
-	bool ok = ifp->one_line(line);
+        bool ok = ifp->one_line(line);
         os_become_undo();
         trace_nstring(line);
         if (!ok)
             break;
 
         replay_line parts;
-	if (!parts.extract(line))
-	    continue;
+        if (!parts.extract(line))
+            continue;
 
         r++;
 
@@ -277,11 +277,14 @@ missing_main(void)
         vers_col->fputs(parts.get_version());
         uuid_col->fputs(parts.get_uuid());
         desc_col->fputs(parts.get_description());
-	colp->eoln();
-	++n;
+        colp->eoln();
+        ++n;
     }
     uuid_col->fprintf("Remote change set%s: %d.", r == 1 ? "" : "s", r);
     colp->eoln();
     uuid_col->fprintf("Missing %d change set%s.", n, (n == 1 ? "" : "s"));
     colp->eoln();
 }
+
+
+// vim: set ts=8 sw=4 et :

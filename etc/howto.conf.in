@@ -1,0 +1,82 @@
+/*
+ * aegis - a project change supervisor
+ * Copyright (C) 1994, 2001, 2004, 2006-2008, 2010, 2012 Peter Miller
+ * Copyright (C) 2006 Walter Franzini
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @configure_input@
+ */
+
+/*
+ * the name of the compiler to use
+ */
+c++ = @CXX@;
+
+/*
+ * Some flags could have = symbols in them,
+ * which will confuse Cook's parser.
+ */
+c++_flags = @CPPFLAGS@ @CXXFLAGS@ ;
+
+/*
+ *
+ */
+if [not [defined ld_flags]] then
+    ld_flags = ;
+ld_flags += @LDFLAGS@ ;
+
+/*
+ * prefix for installation path
+ */
+prefix = @prefix@ ;
+/* exec_prefix = @exec_prefix@ ; */
+
+/*
+ * Which yacc to use
+ */
+yacc = @YACC@;
+
+/*
+ * extra libraries required for your system
+ */
+libs = @LIBS@;
+
+/*
+ * Suitable owner for storing aegis' global files, so that aegis may
+ * access them when they are on NFS mounted partitions (when root is
+ * mapped to the [inconsistently numbered] "nobody" user).
+ *
+ * Do not confuse this with the fact that aegis must be set-uid-root.
+ * Aegis MUST be set-uid-root to manipulate file ownerships, etc.
+ * See the Aegis User Guide, Appendix D, for more detail.
+ */
+AEGIS_UID = @AEGIS_UID@;
+AEGIS_GID = @AEGIS_GID@;
+
+/*
+ * Sometimes the macros get a `g' prefix.
+ */
+groff_ms_macros = -m@GROFF_MS_MACROS@;
+groff_mm_macros = -m@GROFF_MM_MACROS@;
+
+msgfmt = @MSGFMT@;
+msgcat = @MSGCAT@;
+
+mandir = @mandir@;
+
+datadir = @datadir@;
+datarootdir = @datarootdir@;
+
+/* vim: set ts=8 sw=4 et : */

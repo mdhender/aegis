@@ -1,42 +1,43 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2000, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
 \fBPlease Note:\fP Some code has been added to Aegis to assist in
 diagnosing problems when restoring projects from backups.  If you see
-a message \[lq]aegis: \fIproject-path\fP: has been tampered with (fatal)\[rq]
+a message \[lq]aegis: \fIproject\[hy]path\fP: has been tampered with
+(fatal)\[rq]
 this means there are problems with the project file ownerships.
 The project owner needs to be >= AEGIS_UID (defaults to 100),
 and the project group needs to be >= AEGIS_GID (defaults to 10).
-Use chown -R and/or chgrp -R to fix these problems.
+Use chown \-R and/or chgrp \-R to fix these problems.
 .PP
 .if n *
 .if t \(bu
 .\" change 32
 The \fIaesub\fP(1) command now accepts the ${arch} substitution in
-combination with the -baseline option.
+combination with the \-baseline option.
 .PP
 .if n *
 .if t \(bu
 .\" change 31
-A bugs has been fixed in the \fIaedist -receive\fP command, when one of
+A bugs has been fixed in the \fIaedist \-receive\fP command, when one of
 the files was also locked for review.
 .PP
 .if n *
@@ -67,7 +68,7 @@ The previous release broke it when the wide output generalization was added.
 .if n *
 .if t \(bu
 .\" change 22
-The \fIaet -nopersever\fP option works again.  The previous release broke
+The \fIaet \-nopersever\fP option works again.  The previous release broke
 it when the batch test support has implemented.
 .PP
 .if n *
@@ -80,7 +81,7 @@ to use with th symbolic link farm (in some cases) has been fixed.
 .if t \(bu
 .\" change 18
 A new report is available from the web interface, showing a
-change-of-state histogram over time for all state transitions (not just
+change\[hy]of\[hy]state histogram over time for all state transitions (not just
 the integrate pass transitions).
 .PP
 .if n *
@@ -106,4 +107,5 @@ The Solaris and IRIX build problems (wputc, \fIet al\fP) has been fixed.
 Numerous documentation patches were received and have been applied.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.21 (12-Mar-2000)
+.SS Version 3.21 (12\[hy]Mar\[hy]2000)
+.\" vim: set ts=8 sw=4 et :

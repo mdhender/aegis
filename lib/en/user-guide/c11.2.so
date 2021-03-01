@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1999-2002, 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993, 1994, 1999-2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Writing Tests"
@@ -36,7 +36,7 @@ to another
 (e.g. company doesn't like Linux, now you must use AT&T's SVR4 offering),
 or the development team use
 .I gcc
-until the company finds out and forces you to use the prototype-less
+until the company finds out and forces you to use the prototype\[hy]less
 compiler supplied with the operating system,
 or even that the software being developed
 must run under both
@@ -84,8 +84,8 @@ systems.
 This means that if you can write it
 in your scripting language of choice,
 you can test it.
-This includes such things as client-server model interfaces,
-and multi-user synchronization testing.
+This includes such things as client\[hy]server model interfaces,
+and multi\[hy]user synchronization testing.
 .nh 4 "No Execute Permission"
 .LP
 Under aegis,
@@ -97,7 +97,7 @@ not executing the test directly:
 sh \fIfilename\fP
 perl \fIfilename\fP
 .E)
-.nh 4 "No Command-Line Arguments"
+.nh 4 "No Command\[hy]Line Arguments"
 .LP
 Tests should not expect command line arguments.
 Tests are not passed the name of the project nor the number of the change.
@@ -197,9 +197,10 @@ irrespective of invocation method (either by aegis or from the command line).
 .nh 4 "Auxiliary Files"
 .LP
 If a test requires extra files as input or output to a command,
-it must construct them itself from in-line data.
+it must construct them itself from in\[hy]line data.
 (See the sections below for more specific information
-about how to use in-line data in various scripting languages to create files.)
+about how to use in\[hy]line data in various scripting languages to
+create files.)
 .LP
 It is almost impossible to determine the location of an auxiliary file,
 if that auxiliary file is part of the project source.
@@ -242,7 +243,7 @@ A Bourne shell test script
 should check the exit status of every single command,
 even those which cannot fail.
 Do not rely on, or use, the
-.I "set -e"
+.I "set \-e"
 shell option (it provides no ability to clean up on error).
 .LP
 Checking the exit status involves testing the contents of the
@@ -265,7 +266,7 @@ At the end of the test, or on interrupt,
 the script should
 .I cd
 out of the temporary subdirectory and then
-.I "rm -rf"
+.I "rm \-rf"
 it.
 .nh 4 "Trap Interrupts"
 .LP
@@ -305,7 +306,7 @@ If you want (or need) to make your tests as portable as possible,
 see the documentation for GNU autoconf.
 .nh 3 "Perl"
 .LP
-Perl is a popular open-source scripting language
+Perl is a popular open\[hy]source scripting language
 available on a number of operating systems.
 Here are some specific guidelines
 for writing aegis tests using Perl scripts.
@@ -316,11 +317,11 @@ a good idea.
 Because Perl is not installed in the same location on all
 .UX
 systems,
-a first-line "magic number" such as:
+a first\[hy]line "magic number" such as:
 .E(
 #! /usr/local/bin/perl
 .E)
-that hard-codes the Perl path name
+that hard\[hy]codes the Perl path name
 will not be portable
 if you publish your tests.
 .LP
@@ -361,12 +362,12 @@ remove it and its hierarchy.
 A portable way to do this within a Perl script:
 .E(
 use File::Find;
-finddepth(sub { if (-d $_) {
-		rmdir($_)
-	} else {
-		unlink($_)
-	} },
-	$dir);
+finddepth(sub { if (\-d $_) {
+                rmdir($_)
+        } else {
+                unlink($_)
+        } },
+        $dir);
 .E)
 .nh 4 "Trap Interrupts"
 .LP
@@ -383,20 +384,20 @@ $SIG{HUP} =
 $SIG{INT} =
 $SIG{QUIT} =
 $SIG{TERM} =
-	sub { &cleanup; exit(2) };
+        sub { &cleanup; exit(2) };
 .E)
 .nh 4 "Auxiliary Files"
 .LP
 If a test requires extra files as input or output to a command,
 it must construct them itself,
-using in-line data such as \fIhere\fP documents
+using in\[hy]line data such as \fIhere\fP documents
 See the Perl documentation for more information.
 .nh 4 "Exit Values"
 .LP
 Aegis expects tests to exit with a status of 0 for success,
 1 for failure, and 2 for no result.
 The following code fragment
-will map all failed (non-zero) exit values
+will map all failed (non\[hy]zero) exit values
 to an exit status of 1,
 regardless of what Perl module
 called exit:
@@ -408,7 +409,7 @@ check conditions and set the exit status to
 2 to indicate NO RESULT.
 .nh 4 "Modules"
 .LP
-Perl supports the ability to re-use modules of common routines,
+Perl supports the ability to re\[hy]use modules of common routines,
 and to search several directories for modules.
 This makes it convenient to write modules
 to share code among the tests in a project.
@@ -429,12 +430,12 @@ To make sure that the test invocation finds the module,
 the \fItest_command\fP field
 in the project \fIaegis.conf\fP file
 should use the Perl
-.B -I
+.B \-I
 option to search first the local directory
 and then the baseline:
 .E(
 test_command =
-    "perl -I. -I${BaseLine} \e
+    "perl \-I. \-I${BaseLine} \e
     ${File_Name}"
 .E)
 or, alternatively, if you had created your Perl test modules
@@ -442,7 +443,7 @@ in a subdirectory named
 .B aux :
 .E(
 test_command =
-    "perl -I./aux -I${BaseLine}/aux \e
+    "perl \-I./aux \-I${BaseLine}/aux \e
     ${File_Name}"
 .E)
 .LP
@@ -462,31 +463,31 @@ that conform to aegis test requirements.
 The Test::Cmd module supports most of the guidelines mentioned above,
 including creating a temporary subdirectory,
 cleaning up the temporary subdirectory on exit or interrupt,
-writing auxiliary files from in-line contents,
+writing auxiliary files from in\[hy]line contents,
 and provides methods for exiting on success, failure, or no result.
 The following example illustrates some of its capabilities:
 .E(
 #! /usr/bin/env perl
 use Test::Cmd;
-$test = Test::Cmd->new(prog
-	=> 'program_under_test',
-		workdir => '');
-$ret = $test->write('aux_file', <<EOF);
+$test = Test::Cmd\->new(prog
+        => 'program_under_test',
+                workdir => '');
+$ret = $test\->write('aux_file', <<EOF);
 contents of file
 EOF
-$test->no_result(! $ret =>
-	sub { print STDERR
-	"Couldn't write file: $!\e\en"});
-$test->run(args => 'aux_file');
-$test->fail($? != 0);
-$test->pass;
+$test\->no_result(! $ret =>
+        sub { print STDERR
+        "Couldn't write file: $!\e\en"});
+$test\->run(args => 'aux_file');
+$test\->fail($? != 0);
+$test\->pass;
 .E)
 .LP
 The various methods supplied by the Test::Cmd module
 have a number of options to control their behavior.
 .LP
 The Test::Cmd module manipulates
-file and path names using the operating-system-independent
+file and path names using the operating\[hy]system\[hy]independent
 File::Spec module,
 so the Test::Cmd module can be used to write
 tests that are portable to any operating system
@@ -506,7 +507,7 @@ like aegis expects.
 The Test::Harness module
 expects that Perl tests
 report the success or failure of
-individual sub-tests on standard output,
+individual sub\[hy]tests on standard output,
 and always exit with a status of 0
 to indicate the script tested everything it was supposed to.
 .LP
@@ -514,8 +515,8 @@ This difference makes it awkward to use
 the Test and Test::Harness modules for aegis tests.
 In some circumstances, though,
 you may be forced to write tests using
-the Test and Test::Harness modules--for example,
-if you use aegis to develop a Perl module for distribution--but
+the Test and Test::Harness modules \- for example,
+if you use aegis to develop a Perl module for distribution \- but
 still wish to have the tests conform to aegis conventions
 during development.
 .LP
@@ -527,7 +528,7 @@ This is easy when using the Test module to write tests,
 as its
 .I onfail
 method provides an appropriate place
-to set the exit status to non-zero
+to set the exit status to non\[hy]zero
 if the appropriate environment variable is set.
 The following code fragment at or near the beginning
 of each Perl test script accomplishes this:
@@ -581,7 +582,7 @@ to have the
 script call the test script:
 .E(
 test_command =
-    "perl -I. -I${BaseLine} mytest.pl \e
+    "perl \-I. \-I${BaseLine} mytest.pl \e
     ${File_Name}"
 .E)
 .LP
@@ -606,16 +607,16 @@ You can do this as easily as setting the test_command variable
 in the project configuration file to something like the following:
 .E(
 test_command =
-	"perl -MTest::Harness -e 'runtests(\e"$fn\e"); \e
-	END {$$? = 1 if $$? }'";
+        "perl \-MTest::Harness \-e 'runtests(\e"$fn\e"); \e
+        END {$$? = 1 if $$? }'";
 .E)
 In reality, you'll likely need to add variable expansions to generate
--I or other Perl options for the full Aegis search path.  The END block
-takes care of mapping any non-zero Test::Harness exit code to the '1'
+\-I or other Perl options for the full Aegis search path.  The END block
+takes care of mapping any non\[hy]zero Test::Harness exit code to the '1'
 that Aegis expects to indicate a failure.
 .LP
 The only thing you really lose here is the Test::Harness aggregation of
-results and timing at the end of a multi-test run.  This is more than
+results and timing at the end of a multi\[hy]test run.  This is more than
 offset by having Aegis track which tests need to be run for a given
 change.
 .LP
@@ -626,7 +627,7 @@ standard opening block for .t tests
 .E(
 use Test;
 BEGIN { $| = 1; plan tests => 19,
-	onfail => sub { $? = 1 if $ENV{AEGIS_TEST} }
+        onfail => sub { $? = 1 if $ENV{AEGIS_TEST} }
 }
 END {print "not ok 1\en" unless $loaded;}
 use Test::Cmd;
@@ -644,8 +645,9 @@ PASSED/FAILED status.
 .nh 3 "Batch Testing"
 .LP
 The usual \[lq]\fItest_command\fP\[rq] field of the project \fIaegis.conf\fP
-file runs a single test at a time.  When you have a multi-CPU machine,
+file runs a single test at a time.  When you have a multi\[hy]CPU machine,
 or are able to distribute the testing load across a range of machines,
 it is often desirable to do so.  The \[lq]\fIbatch_test_command\fP\[rq]
 of the project configuration file is for this purpose.  See \fIaepconf\fP(5)
 for more information.
+.\" vim: set ts=8 sw=4 et :

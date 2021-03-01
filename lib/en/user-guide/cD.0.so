@@ -1,24 +1,24 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1998, 1999, 2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1994, 1998, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
-.nh 1 "Appendix D: Why is Aegis Set-Uid-Root?"
+.nh 1 "Appendix D: Why is Aegis Set\[hy]Uid\[hy]Root?"
 .LP
 The goal for aegis is to have a project that "works".
 There is a fairly long discussion about this earlier in this User Guide.
@@ -30,8 +30,8 @@ project cannot be in any way altered in an unauthorized fashion.
 Note this says "cannot",
 a stronger statement than "should not".
 .LP
-Aegis is more complicated than, say, set-group-id RCS,
-because of the flaw with set-group-id:
+Aegis is more complicated than, say, set\[hy]group\[hy]id RCS,
+because of the flaw with set\[hy]group\[hy]id:
 the baseline is writable by the entire development team,
 so if a developer says "this development process stinks"
 he can always bypass it,
@@ -40,12 +40,12 @@ This is a
 .I very
 common source of project disasters.
 To prevent this,
-you must have the baseline read-only,
-and so the set-group-id trick does not work.
+you must have the baseline read\[hy]only,
+and so the set\[hy]group\[hy]id trick does not work.
 (The idea here is that there is
 .I no
 way to bypass the QA portions of the process.
-Sure, set-group-id will prevent accidental edits on the baseline,
+Sure, set\[hy]group\[hy]id will prevent accidental edits on the baseline,
 if the developers are not members of the group,
 but it does not prevent
 .I deliberate
@@ -54,12 +54,12 @@ Again,
 the emphasis is on "cannot" rather than "should not".)
 .LP
 Also,
-using the set-group-id trick,
+using the set\[hy]group\[hy]id trick,
 you need multiple copies of RCS,
 one for each project.
 Aegis can handle many projects,
 each with a different owner and group,
-with a single set-uid-root executable.
+with a single set\[hy]uid\[hy]root executable.
 .LP
 Aegis has no internal model of security,
 it uses
@@ -158,7 +158,7 @@ security to ensure that
 unauthorized tampering of project files cannot occur.
 Each project has
 an owner and a group:
-members of the development team obtain read-only
+members of the development team obtain read\[hy]only
 access to the project files by membership to the appropriate group,
 to actually alter project files requires that the development procedure
 embodied by aegis is carried out.
@@ -188,7 +188,7 @@ You need to actually become each user,
 because root is not root over NFS,
 and thus \f(CWchown\fP tricks do not work,
 and also because duplicating kernel
-permission checking in aegis is a little non-portable.
+permission checking in aegis is a little non\[hy]portable.
 .LP
 Note, also, that most system calls go via the interface described in the
 .I aegis/glue.h
@@ -219,3 +219,4 @@ and
 .I aegis/glue.c
 files.
 System calls anywhere else are probably a Bad Thing.
+.\" vim: set ts=8 sw=4 et :

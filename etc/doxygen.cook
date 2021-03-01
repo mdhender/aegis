@@ -1,6 +1,7 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 2002, 2006-2008 Peter Miller
+ * Copyright (C) 2002, 2006-2008, 2012 Peter Miller
+ * Copyright (C) 2008 Walter Franzini
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,34 +17,55 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 doxygen = [find_command doxygen];
 if [doxygen] then
-        all += doxygen-targets;
+    all += doxygen-targets;
 
 doxygen-targets:
-        archive/doxygen-html/index.html
-        ;
+    archive/doxygen-html/index.html
+    ;
 
 archive/doxygen-html/-files =
-        [match_mask common/%0%.h [source_files]]
-        [match_mask libaegis/%0%.h [source_files]]
-        /*
-         * Each of these need a slightly different include path,
-         * so I'll leave them out for now.  Maybe later.
-         *
-        [match_mask aegis/%0%.h [source_files]]
-        [match_mask aedist/%0%.h [source_files]]
-        [match_mask aefind/%0%.h [source_files]]
-        [match_mask aepatch/%0%.h [source_files]]
-        [match_mask aesub/%0%.h [source_files]]
-        [match_mask aetar/%0%.h [source_files]]
-        */
-        ;
+    [match_mask common/%0%.h [source_files]]
+    [match_mask libaegis/%0%.h [source_files]]
+    [match_mask aegis/%0%.h [source_files]]
+    [match_mask aedist/%0%.h [source_files]]
+    [match_mask aefind/%0%.h [source_files]]
+    [match_mask aepatch/%0%.h [source_files]]
+    [match_mask aesub/%0%.h [source_files]]
+    [match_mask aetar/%0%.h [source_files]]
+    ;
+
+/*
+ * The function below is used to remove not names not existing in the
+ * filesystem from a list of path.  It is used to clean the
+ * INCLUDE_PATH path variable in doxygen.cfg since doxygen issue a
+ * warning for directory it's unable to find.
+ */
+function remove_not_existing_paths =
+{
+    result = ;
+    paths = arg;
+    loop
+    {
+        tmp_path = [head [paths]];
+        if [not [tmp_path]] then
+            loopstop;
+        if [exists [tmp_path]] then
+            result = [result] [tmp_path];
+        paths = [tail [paths]];
+    }
+
+    return [result];
+}
 
 archive/doxygen-html/index.html: [archive/doxygen-html/-files] etc/doxygen.cfg
 {
-        rm -rf archive/doxygen-html doxygen-tmp;
-        cat [resolve etc/doxygen.cfg] - > Doxyfile;
+    if [quiet] then
+        function print Doxygen [target];
+    rm -rf archive/doxygen-html doxygen-tmp;
+    cat [resolve etc/doxygen.cfg] - > Doxyfile;
 data
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or
 # absolute) base path where the generated documentation will be
@@ -65,21 +87,30 @@ PROJECT_NUMBER = [version]
 # The INCLUDE_PATH tag can be used to specify one or more directories that
 # contain include files that are not input files but should be processed by
 # the preprocessor.
-INCLUDE_PATH = [unsplit " \\\n"
-    [fromto -I%0% %0%
-        [cc_include_flags]
-    ]
-]
+INCLUDE_PATH = [remove_not_existing_paths
+             [unsplit " \\\n" [fromto -I%0% %0% [cc_include_flags] ] ] ]
 dataend
-        [doxygen] Doxyfile -d archive/doxygen-html
-                                                /*
-                                                 * Have Cook tell us how long
-                                                 * it takes to cook.
-                                                 */
-                                                set meter
-                ;
-        rm -rf archive/doxygen-htm;
-        mv doxygen-tmp/html archive/doxygen-html;
-        rm -rf Doxyfile doxygen-tmp
-                set errok ;
+    [doxygen] Doxyfile -d archive/doxygen-html
+        2>&1 | tee doxygen.output.tmp
+            /*
+             * Have Cook tell us how long
+             * it takes to cook.
+             */
+            set meter
+        ;
+
+    /*
+     * Test file exists and has a size greater of zero, otherwise fail
+     * this build step.  This is to cope with the fact that Doxygen
+     * exists with an exit status of zero even if it finds errors.
+     */
+    test ! -s doxygen.output.tmp;
+
+    rm -rf archive/doxygen-htm;
+    mv doxygen-tmp/html archive/doxygen-html;
+    rm -rf Doxyfile doxygen-tmp
+        set errok ;
 }
+
+
+/* vim: set ts=8 sw=4 et : */

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+//      Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/errno.h>
 #include <common/ac/string.h>
 #include <common/ac/math.h>
 
-#include <common/error.h>
 #include <common/trace.h>
 #include <libaegis/aer/expr/power.h>
 #include <libaegis/aer/value/error.h>
@@ -144,3 +144,6 @@ rpt_expr_power::evaluate()
 
     return rpt_value_real::create(n);
 }
+
+
+// vim: set ts=8 sw=4 et :

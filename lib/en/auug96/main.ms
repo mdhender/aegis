@@ -1,20 +1,20 @@
+'\"p
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1996, 1997, 2002, 2005-2009, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1997, 2002, 2005-2008 Peter Miller
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -48,7 +48,7 @@ Isn't It?
 .LP
 .ce 2
 Peter Miller
-millerp@canb.auug.org.au
+pmiller@opensource.org.au
 .LP
 .in +0.5i
 .ll -0.5i
@@ -517,7 +517,7 @@ Aegis User Guide
 .ft R
 .\" do not warn "cannot adjust line"
 .warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
-\f(CWhttp:\%//www.canb.auug.org.au/\%~millerp/\%aegis.html\fP,
+\f(CWhttp://aegis..sourceforge.net/\fP,
 .IP [3]
 Mockapetris, P.,
 .ft I
@@ -536,15 +536,18 @@ RFC 1035,
 USC/Information Sciences Institute,
 November 1987.
 .ft P
-.so foil.01.so
-.so foil.02.so
-.so foil.03.so
-.so foil.04.so
-.so foil.05.so
-.so foil.06.so
-.so foil.07.so
-.so foil.08.so
-.so foil.09.so
-.so foil.10.so
-.so foil.11.so
-.so foil.12.so
+.so lib/en/auug96/foil.01.so
+.so lib/en/auug96/foil.02.so
+.so lib/en/auug96/foil.03.so
+.so lib/en/auug96/foil.04.so
+.so lib/en/auug96/foil.05.so
+.so lib/en/auug96/foil.06.so
+.so lib/en/auug96/foil.07.so
+.so lib/en/auug96/foil.08.so
+.so lib/en/auug96/foil.09.so
+.so lib/en/auug96/foil.10.so
+.so lib/en/auug96/foil.11.so
+.so lib/en/auug96/foil.12.so
+
+
+// vim: set ts=8 sw=4 et :

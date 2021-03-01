@@ -1,25 +1,24 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aeuconf 5 \*(N) "Reference Manual"
 .SH NAME
-aeuconf - user configuration file
+aeuconf \- user configuration file
 .XX "aeuconf(5)" "user configuration file format"
 .SH SYNOPSIS
 \fI$AEGIS_FLAGS\fR
@@ -39,7 +38,7 @@ The sources of user preferences are scanned in the order given above.
 Earlier sources have higher priority.
 .SS AEGIS_FLAGS
 This environment variable has the same format.
-It is read first, and over-rides the
+It is read first, and over\[hy]rides the
 .I \&.\*(n)rc
 file contents.
 This is intended to be used within the tests distributed with aegis,
@@ -48,9 +47,9 @@ It contains session specific preferences.
 .SS \fI$HOME\f(CW/.aegisrc\fR
 This file contains user specific preferences.
 .SS \fI\*(D)/aegisrc\fR
-This file contains architecture-neutral preferences.
+This file contains architecture\[hy]neutral preferences.
 .SS \fI\*(L)/aegisrc\fR
-This file contains architecture-specific preferences.
+This file contains architecture\[hy]specific preferences.
 .SH CONTENTS
 The file contains the following fields:
 .TP 8n
@@ -196,7 +195,7 @@ never
 The \[lq]never\[rq] setting says that no command should ever wait
 for locks.  If the command would wait, it will exit with status 1.
 .PP
-This user preference can be over-ridden by the
+This user preference can be over\[hy]ridden by the
 .B \-wait
 and
 .B \-nowait
@@ -223,10 +222,10 @@ assume
 This setting says to always assume the links are correct,
 unless there has been a recent integration.
 .PP
-This user preference can be over-ridden by the
-.B -Verify_Symbolic_Links
+This user preference can be over\[hy]ridden by the
+.B \-Verify_Symbolic_Links
 and
-.B -Assume_Symbolic_Links
+.B \-Assume_Symbolic_Links
 command line options.
 .RE
 .TP 8n
@@ -245,10 +244,10 @@ base
 This setting says to interpret relative filenames against
 the base of the source tree.
 .PP
-This user preference can be over-ridden by the
-.B -BAse_RElative
+This user preference can be over\[hy]ridden by the
+.B \-BAse_RElative
 and
-.B -CUrrent_RElative
+.B \-CUrrent_RElative
 command line options.
 .RE
 .TP 8n
@@ -295,9 +294,9 @@ This is a list of \fI(name,value)\fP pairs, defining user specified attributes.
 name = string;
 .RS
 The name of the attribute.
-By convention, names which start with an upper-case letter will appear
-in listings, and lower-case will not.
-Attribute names are case-insensitive.
+By convention, names which start with an upper\[hy]case letter will appear
+in listings, and lower\[hy]case will not.
+Attribute names are case\[hy]insensitive.
 .PP
 Arguably, most user attributes which may be altered by the user (and
 some that can't) should be of this form.  Due to an accident of history,
@@ -305,9 +304,9 @@ this is not the case.
 .PP
 The attributes known to Aegis are:
 .TP 8n
-progress-preference
+progress\[hy]preference
 boolean; true if \f[I]aet\fP(1) should emit progress messages, false if
-not.  Can be overridden with the \fB\-progress\fP and \fB-no-progress\fP
+not.  Can be overridden with the \fB\-progress\fP and \fB\-no\[hy]progress\fP
 command line options.
 .PP
 FIXME: there needs to be a \f[I]aesub\fP(5) way to get at these values.
@@ -322,4 +321,5 @@ The value of the attribute.
 .TP 8n
 .IR aed (1)
 difference and merge files
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

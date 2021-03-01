@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//	Copyright (C) 1991-2008 Peter Miller
+//      Copyright (C) 1991-2008, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/errno.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stddef.h>
@@ -52,6 +53,7 @@
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/functor/glue.h>
+#include <libaegis/sub/functor/hostname.h>
 #include <libaegis/sub/functor/variable.h>
 #include <libaegis/sub/addpathsuffi.h>
 #include <libaegis/sub/architecture.h>
@@ -154,7 +156,7 @@ sub_context_ty::error_set(const char *s)
 }
 
 
-project_ty *
+project *
 sub_context_ty::project_get()
 {
     return pp;
@@ -227,13 +229,13 @@ sub_errno(sub_context_ty *scp, const wstring_list &arg)
 
         nstring s = nstring::format("%s [%s, %s]", strerror(err), uidn, gidn);
         wstring result(s);
-        trace(("return %8.8lX;\n", (long)result.get_ref()));
+        trace(("return %p;\n", result.get_ref()));
         trace(("}\n"));
         return result;
     }
 
     wstring result(strerror(err));
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
@@ -368,6 +370,7 @@ init_globals()
     (
         sub_functor_glue::create("History_Path", sub_history_path)
     );
+    globals.push_back(sub_functor_hostname::create("HostName"));
     // Input
     globals.push_back(sub_functor_glue::create("IDentifier", sub_identifier));
     globals.push_back
@@ -539,6 +542,24 @@ sub_context_ty::execute(const wstring_list &arg)
     for (size_t j = 1; j < arg.size(); ++j)
         tmp.push_back(arg[j]);
     wstring s = tp->evaluate(this, tmp);
+
+    //
+    // report errors as they happen
+    //
+    if (suberr)
+    {
+        sub_context_ty inner(__FILE__, __LINE__);
+        inner.var_set_charstar("File_Name", file_name);
+        inner.var_set_long("Line_Number", line_number);
+        inner.var_set_string("Name", tp->name_get());
+        inner.var_set_charstar("MeSsaGe", suberr);
+        inner.fatal_intl
+        (
+            i18n("$filename: $linenumber: substitution $${$name} failed: "
+            "$message")
+        );
+        // NOTREACHED
+    }
 
     //
     // deal with the result
@@ -973,7 +994,7 @@ sub_context_ty::getch(getc_type &tr)
 
 
 void
-sub_context_ty::subst_intl_project(project_ty *a)
+sub_context_ty::subst_intl_project(project *a)
 {
     if (a != pp)
     {
@@ -998,7 +1019,7 @@ sub_context_ty::subst_intl_change(change::pointer a)
 wstring
 sub_context_ty::subst(const wstring &s)
 {
-    trace(("subst(s = %8.8lX)\n{\n", (long)s.get_ref()));
+    trace(("subst(s = %p)\n{\n", s.get_ref()));
     collect buf;
     diversion_stack.push_back(s, true);
     for (;;)
@@ -1103,7 +1124,7 @@ sub_context_ty::subst(const wstring &s)
     //
     clear();
     wstring result = buf.end();
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
@@ -1132,7 +1153,7 @@ sub_context_ty::subst_intl_wide(const char *msg)
 #endif // DEBUG
     wstring s(tmp);
     wstring result = subst(s);
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
@@ -1153,7 +1174,7 @@ sub_context_ty::subst_intl(const char *s)
 string_ty *
 sub_context_ty::substitute(change::pointer acp, string_ty *s)
 {
-    trace(("substitute(acp = %08lX, s = \"%s\")\n{\n", (long)acp, s->str_text));
+    trace(("substitute(acp = %p, s = \"%s\")\n{\n", acp, s->str_text));
     assert(acp);
     subst_intl_change(acp);
     wstring wis(s->str_text);
@@ -1166,9 +1187,9 @@ sub_context_ty::substitute(change::pointer acp, string_ty *s)
 
 
 string_ty *
-sub_context_ty::substitute_p(project_ty *app, string_ty *s)
+sub_context_ty::substitute_p(project *app, string_ty *s)
 {
-    trace(("substitute(pp = %08lX, s = \"%s\")\n{\n", (long)app, s->str_text));
+    trace(("substitute(pp = %p, s = \"%s\")\n{\n", app, s->str_text));
     assert(app);
     subst_intl_project(app);
     wstring wis(s->str_text, s->str_length);
@@ -1634,3 +1655,6 @@ sub_context_ty::errno_sequester_get()
 {
     return errno_sequester;
 }
+
+
+// vim: set ts=8 sw=4 et :

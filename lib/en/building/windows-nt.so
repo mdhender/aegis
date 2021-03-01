@@ -1,31 +1,30 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.SH WINDOWS-NT
+.SH WINDOWS\[hy]NT
 .XX "" "\ \ \ \ Windows NT"
-It is possible to build Aegis for Windows-NT.
+It is possible to build Aegis for Windows\[hy]NT.
 I have only done this using the Cygnus freeware CygWin32 system,
 though it may be possible with other Unix porting layers also.
 .SS Caveat
 This document only describes a \fBsingle user\fP port of Aegis to Windows NT.
 .PP
 Aegis depends on the underlying security provided by the operating system
-(rather than re-invent yet another security mechanism).  However, in
+(rather than re\[hy]invent yet another security mechanism).  However, in
 order to do this, Aegis uses the POSIX \fIseteuid\fP(2) system call,
 which has no direct equivalent on Windows NT.  This makes porting
 difficult.  \fBSingle user\fP ports are possible (\fIe.g.\fP using
@@ -68,9 +67,9 @@ mount C:/temp /tmp
 instead.  (Or some other local drive.)
 .PP
 Just a tip for all of you who, like me, know Unix much better than you
-know Windows-NT: the left-hand mount argument needs to be specified
+know Windows\[hy]NT: the left\[hy]hand mount argument needs to be specified
 with a drive letter (\fIe.g. \f(CWC:\fP) rather than with a double slash
-(\fIe.g.\fP not \f(CW//C\fP) unless its Windows-NT name starts with \e\e.
+(\fIe.g.\fP not \f(CW//C\fP) unless its Windows\[hy]NT name starts with \e\e.
 .PP
 You need to follow the install instructions about \fI/bin/sh\fP, otherwise
 shell scripts that start with \f(CW#!/bin/sh\fP don't work, among other
@@ -101,23 +100,24 @@ GNU at \f[CW]http://www.gnu.org\fP, however you are better off using
 a local mirror, and these are scattered around the globe.  Follow the
 \[lq]mirrors\[rq] link on their front page to find your closest mirror.
 Also, it's often a good idea to configure these packages with
-the \[lq]--with-gnu-gettext\[rq] option to their ./configure commands.
+the \[lq]\-with\[hy]gnu\[hy]gettext\[rq] option to their ./configure commands.
 .TP 8n
 \fBDo not use WinZip\fP to unpack the tarball.  It has a nasty habit of
 turning all of the newlines into CRLFs.  This will confuse \fIlots\fP of
 utilities, especially GNU Groff.
-Use the \[lq]\fItar xzf aegis-\*(v).tar.gz\fP\[rq] command from within Cygwin.
+Use the \[lq]\fItar xzf aegis\[hy]\*(v).tar.gz\fP\[rq] command from
+within Cygwin.
 .TP 8n
 Make sure the Cygwin you are using has GNU Groff 1.15 or later
-(use a \[lq]groff -v\[rq] command).  Grab and install the latest from your
+(use a \[lq]groff \-v\[rq] command).  Grab and install the latest from your
 local GNU mirror, if it isn't.
 .TP 8n
-util-linux
+util\[hy]linux
 You need to get GNU rx, but to make it work you have to find a
 \fItsort\fP command, so that GNU rx's \fI./configure\fP script works.
-Try the latest copy of \f(CWsystem/misc/util-linux-?.?.tar.gz\fP from
+Try the latest copy of \f(CWsystem/misc/util\[hy]linux\[hy]?.?.tar.gz\fP from
 the \f(CWmetalab.unc.edu\fP Linux archive (or a mirror).  Simply build
-and install \fImisc-utils/tsort.c\fP by hand.
+and install \fImisc\[hy]utils/tsort.c\fP by hand.
 .TP 8n
 GNU rx
 Once you have \fItsort\fP installed, you will be able to get GNU rx
@@ -130,12 +130,12 @@ will work for Cygwin.  It will install as a static library.
 GNU diffutils
 You need GNU diffults, because when you come to configure GNU RCS (next)
 it would otherwise complain about a stupid \fIdiff\fP and a missing
-\fIdiff3\fP command.  The \fIinstall-sh\fP script is broken, so you'll
+\fIdiff3\fP command.  The \fIinstall\[hy]sh\fP script is broken, so you'll
 need to do the final step in the install by hand.
 .TP 8n
 GNU RCS
 All of Aegis' tests assume RCS is present.  Also, you are going to need
-\fIsomething\fP for a history tool.  The \fIinstall-sh\fP script is
+\fIsomething\fP for a history tool.  The \fIinstall\[hy]sh\fP script is
 broken, so you'll need to do the final step in the install by hand.
 .SS Configure
 The configure and build step should be the same as for Unix, as described
@@ -171,7 +171,7 @@ any difference...
 .RE
 .SS Test
 The tests are run in the same way as the Unix tests, but you don't need
-to run the set-uid-root variants, because no such thing exists under
+to run the set\[hy]uid\[hy]root variants, because no such thing exists under
 Windows NT.
 .RS
 .nf
@@ -209,7 +209,7 @@ choices right at the start (I told you to read this all the way through
 first).  If you want to use the \[lq]\fI/usr/local\fP\[rq] prefix (or any other
 install prefix) you mount it right at the start.  For anything other
 than the \[lq]\fI/usr/local\fP\[rq] default prefix, you also needed to give
-a \[lq]\f(CB--prefix=\fP\fIblahblah\fI\[rq] argument to the \fIconfigure\fP
+a \[lq]\f(CB\-prefix=\fP\fIblahblah\fI\[rq] argument to the \fIconfigure\fP
 script, right at the start.
 .RS
 .nf
@@ -218,3 +218,6 @@ script, right at the start.
 \f(CBbash$\fP
 .fi
 .RE
+
+
+// vim: set ts=8 sw=4 et :

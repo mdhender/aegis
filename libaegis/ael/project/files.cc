@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2008 Peter Miller
+//      Copyright (C) 1999, 2001-2009, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/str_list.h>
 #include <common/symtab.h>
 #include <common/trace.h>
@@ -54,7 +55,7 @@ list_project_files(change_identifier &cid, string_list_ty *)
             (
                 "Project \"%s\"  Change %ld",
                 cid.get_pp()->name_get()->str_text,
-                magic_zero_decode(cid.get_cp()->number)
+                cid.get_change_number()
             );
         colp->title(line1->str_text, "List of Project's Files");
         str_free(line1);
@@ -80,7 +81,7 @@ list_project_files(change_identifier &cid, string_list_ty *)
         usage_col = colp->create(left, left + USAGE_WIDTH, "Type\n-------");
         left += USAGE_WIDTH + 1;
 
-        attr_col_stp = symtab_alloc(5);
+        attr_col_stp = new symtab_ty(5);
         for (int j = 0; ; ++j)
         {
             fstate_src_ty *src_data =
@@ -91,12 +92,7 @@ list_project_files(change_identifier &cid, string_list_ty *)
                 continue;
             if (src_data->deleted_by && !option_verbose_get())
                 continue;
-            if
-            (
-                cid.set()
-            &&
-                change_file_find(cid.get_cp(), src_data, view_path_first)
-            )
+            if (cid.set() && cid.get_cp()->file_find(src_data, view_path_first))
                 continue;
             for (size_t k = 0; k < src_data->attribute->length; ++k)
             {
@@ -104,19 +100,14 @@ list_project_files(change_identifier &cid, string_list_ty *)
                 if (ael_attribute_listable(ap))
                 {
                     string_ty *lc_name = str_downcase(ap->name);
-                    void *p = symtab_query(attr_col_stp, lc_name);
+                    void *p = attr_col_stp->query(lc_name);
                     if (!p)
                     {
                         string_ty *s = ael_build_header(ap->name);
                         output::pointer op =
                             colp->create(left, left + ATTR_WIDTH, s->str_text);
                         str_free(s);
-                        symtab_assign
-                        (
-                            attr_col_stp,
-                            lc_name,
-                            new output::pointer(op)
-                        );
+                        attr_col_stp->assign(lc_name, new output::pointer(op));
                         left += ATTR_WIDTH + 1;
                     }
                     str_free(lc_name);
@@ -139,15 +130,10 @@ list_project_files(change_identifier &cid, string_list_ty *)
         fstate_src_ty *src_data = cid.get_pp()->file_nth(j, view_path_simple);
         if (!src_data)
             break;
-        trace(("src_data = %08lX\n", long(src_data)));
+        trace(("src_data = %p\n", src_data));
         if (src_data->deleted_by && !option_verbose_get())
             continue;
-        if
-        (
-            cid.set()
-        &&
-            change_file_find(cid.get_cp(), src_data, view_path_first)
-        )
+        if (cid.set() && cid.get_cp()->file_find(src_data, view_path_first))
             continue;
         if (option_terse_get())
         {
@@ -162,15 +148,14 @@ list_project_files(change_identifier &cid, string_list_ty *)
             (
                 !cid.get_pp()->is_a_trunk()
             &&
-                change_is_a_branch(cid.get_pp()->change_get())
+                cid.get_pp()->change_get()->is_a_branch()
             &&
                 !change_file_up_to_date(cid.get_pp()->parent_get(), src_data)
             )
             {
                 fstate_src_ty *psrc_data =
-                    project_file_find
+                    cid.get_pp()->parent_get()->file_find
                     (
-                        cid.get_pp()->parent_get(),
                         src_data->file_name,
                         view_path_extreme
                     );
@@ -257,7 +242,7 @@ list_project_files(change_identifier &cid, string_list_ty *)
                 if (ap->name && ap->value)
                 {
                     string_ty *lc_name = str_downcase(ap->name);
-                    void *vp = symtab_query(attr_col_stp, lc_name);
+                    void *vp = attr_col_stp->query(lc_name);
                     if (vp)
                     {
                         output::pointer op = *(output::pointer *)vp;
@@ -276,6 +261,9 @@ list_project_files(change_identifier &cid, string_list_ty *)
     // clean up and go home
     //
     if (attr_col_stp)
-        symtab_free(attr_col_stp);
+        delete attr_col_stp;
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

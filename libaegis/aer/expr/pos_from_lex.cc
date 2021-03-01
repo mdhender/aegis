@@ -1,6 +1,6 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License as
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/lex.h>
 
@@ -39,3 +40,6 @@ rpt_expr::pos_from(const rpt_expr::pointer &other)
     pos = other->get_pos();
     assert(pos);
 }
+
+
+// vim: set ts=8 sw=4 et :

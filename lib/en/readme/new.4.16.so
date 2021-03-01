@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" ---------- Major New Functionality -------------------------------------
 .PP
@@ -78,11 +78,11 @@ bugzilla tracking number for a change.
 .if n *
 .if t \(bu
 .\" change 23
-The \fIaepatch\fP(1) command now includes change set meta-data as
+The \fIaepatch\fP(1) command now includes change set meta\[hy]data as
 a compressed BASE64 encoded block at the top of the patch, after
-the human-readable text but before the files.  This means that
+the human\[hy]readable text but before the files.  This means that
 \fIaepatch\fP(1) can be as effective as \fIaedist\fP(1) is transmitting
-chaneg sets.  Patches without meta-data still work as before.
+chaneg sets.  Patches without meta\[hy]data still work as before.
 .\" ---------- Minor New Functionality -------------------------------------
 .PP
 .if n *
@@ -100,7 +100,7 @@ and there is a new Project Staff page.
 .if n *
 .if t \(bu
 .\" change 123
-There is a new \fIae-cvs-ci\fP(1) support script which
+There is a new \fIae\[hy]cvs\[hy]ci\fP(1) support script which
 may be used as an \fIintegrate_\%pass_\%notify_\%command\fP to commit
 change sets to CVS in parallel.
 .PP
@@ -108,7 +108,7 @@ change sets to CVS in parallel.
 .if t \(bu
 .\" change 125
 There is more documentation in the User Guide about using
-GNU Diff, particularly using diff -U to provide whole-file
+GNU Diff, particularly using diff \-U to provide whole\[hy]file
 listings with "change bars" on the left hand side.
 .PP
 .if n *
@@ -118,7 +118,7 @@ The files view of the \fIaeget\fP(1) web interface now accepts
 options to control the page contents.  The simplest view
 allows recursive fetch of project sources using wget or
 similar, with no extraneous links to confuse the results.
-Previous behavior is preserved by the aeget-generated
+Previous behavior is preserved by the aeget\[hy]generated
 links.
 .PP
 .if n *
@@ -142,7 +142,7 @@ reviewer while in the \fIbeing reviewed\fP state.
 .if n *
 .if t \(bu
 .\" change 25
-The \fIaedist -send\fP command has a new \fI\-compatibility\fP option,
+The \fIaedist \-send\fP command has a new \fI\-compatibility\fP option,
 use to indicate the version of the \fBreceiving\fP aedist program.
 This, in turn, selects the features which may be added to or omitted
 form the generated \f[CW].ae\fP file.
@@ -185,7 +185,7 @@ Future releases will take advantage of this.
 .if t \(bu
 .\" change 172, 15
 Several bugs have been fixed in the \fIaeget\fP(1) web interface where
-it would display "-42" instead of "0" for changes and branches numbered
+it would display "\-42" instead of "0" for changes and branches numbered
 zero.
 .PP
 .if n *
@@ -204,14 +204,14 @@ It now correctly ignores difference files when given a directory name.
 .if t \(bu
 .\" change 129
 A bug has been fixed in \fIaedist\fP(1) where one of the \fIaegis
-\-new-file\fP commands was missing a \fI\-no-template\fP argument.
+\-new\[hy]file\fP commands was missing a \fI\-no\[hy]template\fP argument.
 Under some circumstances, this resulted in change sets which could not
-be \fIaedist -receive\fPd.
+be \fIaedist \-receive\fPd.
 .PP
 .if n *
 .if t \(bu
 .\" change 121
-A bug has been fixed in the way invalid sequences of multi-byte
+A bug has been fixed in the way invalid sequences of multi\[hy]byte
 characters are handled by the internationalization code.  This
 potentially affected all reports, listings and error messages.  The
 symptom was that aeannotate listings could sometimes have a blank source
@@ -222,9 +222,9 @@ code column.
 .\" change 109
 A bug has been fixed in the \fIaepatch\fP(1) command.  It was creating
 empty patches for some changes in completed project branches.  This
-also affected \fIaedist -send\fP and \fIaecp -delta\fP and \fIaecp
--rescind\fP in some cases.  It was caused by a subtle flaw in the
-non-detailed case for the \fIproject_\%file_\%roll_\%forward\fP
+also affected \fIaedist \-send\fP and \fIaecp \-delta\fP and \fIaecp
+\-rescind\fP in some cases.  It was caused by a subtle flaw in the
+non\[hy]detailed case for the \fIproject_\%file_\%roll_\%forward\fP
 function.
 .PP
 .if n *
@@ -236,15 +236,15 @@ by the \fIprofile\fP and \fIcshrc\fP scripts.
 .if n *
 .if t \(bu
 .\" change 100, 13
-A bug has been fixed in the \fIaedist -receive\fP and \fIaepatch
--receive\fP commands has been fixed.  There were cases where these
+A bug has been fixed in the \fIaedist \-receive\fP and \fIaepatch
+\-receive\fP commands has been fixed.  There were cases where these
 commands could access off the end of an array and SEGFAULT.
 .PP
 .if n *
 .if t \(bu
 .\" change 199
 A bug has been fixed in the \fIaede\fP(1) command when it received
-pre-config-usage change sets.  It used to try to remove the last project
+pre\[hy]config\[hy]usage change sets.  It used to try to remove the last project
 configuration file, which is a fatal error, and made it impossible to
 receive the change set.
 .PP
@@ -275,4 +275,5 @@ A bug has been fixed in the \fIaede\fP command.  It would fail with new
 build files already in the baseline.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.16 (14-Jan-2004)
+.SS Version 4.16 (14\[hy]Jan\[hy]2004)
+.\" vim: set ts=8 sw=4 et :

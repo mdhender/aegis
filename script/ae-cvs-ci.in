@@ -1,14 +1,12 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2004, 2006 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2004, 2006, 2012 Peter Miller
 #
-#	As a specific exception to the GPL, you are allowed to copy
-#	this source file into you own project and modify it, without
-#	releasing your project under the GPL, unless there is some other
-#	file or condition which would require it.
-#
-# MANIFEST: shell script to commit changes to CVS
+#       As a specific exception to the GPL, you are allowed to copy
+#       this source file into you own project and modify it, without
+#       releasing your project under the GPL, unless there is some other
+#       file or condition which would require it.
 #
 case $# in
 2)
@@ -29,3 +27,4 @@ AEGIS_CHANGE=$change
 export AEGIS_CHANGE
 
 exec ae-repo-ci --repository=cvs --project=$project --change=$change
+# vim: set ts=8 sw=4 et :

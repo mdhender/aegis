@@ -1,21 +1,21 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2004-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 1996-1998, 2000, 2004-2008, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -32,13 +32,13 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="default_project_directory = \"$work\"; \
-	lock_wait_preference = always; \
-	default_development_directory = \"$work\"; \
-	delete_file_preference = no_keep; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        default_development_directory = \"$work\"; \
+        delete_file_preference = no_keep; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -50,49 +50,50 @@ bin=$here/${1-.}/bin
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aed directory functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the aed directory functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT for test of the aed directory functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT for test of the aed directory functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 98"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -116,11 +117,11 @@ unset LANGUAGE
 #
 # test the aed directory functionality
 #
-activity="new project 122"
+activity="new project 120"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 126"
+activity="project attributes 124"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -131,7 +132,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 137"
+activity="new change 135"
 cat > caf << 'fubar'
 brief_description = "ten";
 cause = internal_enhancement;
@@ -140,7 +141,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -p $AEGIS_PROJECT -f caf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 146"
+activity="staff 144"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -148,13 +149,13 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 154"
+activity="develop begin 152"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 158"
+activity="new file 156"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/a \
-	$work/test.C010/b/c $work/test.C010/b/d -v > log 2>&1
+        $work/test.C010/b/c $work/test.C010/b/d -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $work/test.C010/aegis.conf << 'fubar'
@@ -168,58 +169,62 @@ history_query_command = "echo 1.1; exit 0; echo $history";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="diff directory 174"
+activity="diff directory 172"
 $bin/aegis -diff $work/test.C010/b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change file state 178"
+activity="check change file state 176"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "a";
-		action = create;
-		usage = source;
-	},
-	{
-		file_name = "aegis.conf";
-		action = create;
-		usage = config;
-	},
-	{
-		file_name = "b/c";
-		action = create;
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "b/d";
-		action = create;
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "a";
+                uuid = "UUID";
+                action = create;
+                usage = source;
+        },
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                usage = config;
+        },
+        {
+                file_name = "b/c";
+                uuid = "UUID";
+                action = create;
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "b/d";
+                uuid = "UUID";
+                action = create;
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -231,3 +236,4 @@ check_it ok $work/test/info/change/0/010.fs
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

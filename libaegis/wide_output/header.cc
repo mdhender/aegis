@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2006, 2008 Peter Miller
+//      Copyright (C) 1999-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h> // for sprintf
 #include <common/ac/wchar.h>
 #include <common/ac/wctype.h>
@@ -41,8 +42,8 @@
 
 wide_output_header::~wide_output_header()
 {
-    trace(("wide_output_header::~wide_output_header(this = %08lX)\n{\n",
-        (long)this));
+    trace(("wide_output_header::~wide_output_header(this = %p)\n{\n",
+        this));
     flush();
     trace(("}\n"));
 }
@@ -88,7 +89,7 @@ wide_output_header::wide_output_header(const wide_output::pointer &a_deeper) :
 wide_output_header::hpointer
 wide_output_header::open(const wide_output::pointer &a_deeper)
 {
-    trace(("wide_output_header::open(deeper = %08lX)\n", (long)a_deeper.get()));
+    trace(("wide_output_header::open(deeper = %p)\n", a_deeper.get()));
     return hpointer(new wide_output_header(a_deeper));
 }
 
@@ -165,7 +166,7 @@ wide_output_header::top_of_page_processing()
     if (already_top_diverted)
         return;
     already_top_diverted = true;
-    trace(("wide_output_header::top_of_page(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_header::top_of_page(this = %p)\n{\n", this));
     ++page_number;
 
     //
@@ -229,8 +230,8 @@ wide_output_header::write_inner(const wchar_t *data, size_t len)
     // By doing it first, by recursion, the rest of the unexceptional
     // processing simply falls out cleanly.
     //
-    trace(("wide_output_header::write_inner(this = %08lX, data = %08lX, "
-        "len = %ld)\n{\n", (long)this, (long)data, (long)len));
+    trace(("wide_output_header::write_inner(this = %p, data = %p, "
+        "len = %ld)\n{\n", this, data, (long)len));
     while (len > 0)
     {
         wchar_t wc = *data++;
@@ -318,7 +319,7 @@ wide_output_header::write_inner(const wchar_t *data, size_t len)
 int
 wide_output_header::page_width()
 {
-    trace(("wide_output_header::page_width(this = %08lX)\n", (long)this));
+    trace(("wide_output_header::page_width(this = %p)\n", this));
     return width;
 }
 
@@ -326,7 +327,7 @@ wide_output_header::page_width()
 void
 wide_output_header::flush_inner()
 {
-    trace(("wide_output_header::flush_inner(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_header::flush_inner(this = %p)\n{\n", this));
     deeper->flush();
     trace(("}\n"));
 }
@@ -335,7 +336,7 @@ wide_output_header::flush_inner()
 int
 wide_output_header::page_length()
 {
-    trace(("wide_output_header::page_length(this = %08lX)\n", (long)this));
+    trace(("wide_output_header::page_length(this = %p)\n", this));
     return length;
 }
 
@@ -343,7 +344,7 @@ wide_output_header::page_length()
 void
 wide_output_header::end_of_line_inner()
 {
-    trace(("wide_output_header::eoln_inner(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_header::eoln_inner(this = %p)\n{\n", this));
     if (column > 0)
         put_wc(L'\n');
     trace(("}\n"));
@@ -351,7 +352,7 @@ wide_output_header::end_of_line_inner()
 
 
 static wstring
-censor(const char *s)
+censor(const nstring &s)
 {
     //
     // convert to a wide string
@@ -385,14 +386,10 @@ censor(const char *s)
 
 
 void
-wide_output_header::title(const char *t1, const char *t2)
+wide_output_header::title(const nstring &t1, const nstring &t2)
 {
-    if (!t1)
-        t1 = "";
-    if (!t2)
-        t2 = "";
-    trace(("wide_output_header::title(this = %08lX, \"%s\", \"%s\")\n{\n",
-        (long)this, t1, t2));
+    trace(("wide_output_header::title(this = %p, %s, %s)\n{\n",
+        this, t1.quote_c().c_str(), t2.quote_c().c_str()));
     title1 = censor(t1);
     title2 = censor(t2);
     trace(("}\n"));
@@ -404,8 +401,8 @@ wide_output_header::need(int nlines)
 {
     if (nlines <= 0)
         return;
-    trace(("wide_output_header::need(this = %08lX, nlines = %d)\n{\n",
-        (long)this, nlines));
+    trace(("wide_output_header::need(this = %p, nlines = %d)\n{\n",
+        this, nlines));
     flush();
     if (line_number > 0 && line_number + nlines > length)
         put_wc(L'\f');
@@ -418,8 +415,8 @@ wide_output_header::need1(int nlines)
 {
     if (nlines <= 0)
         return;
-    trace(("wide_output_header::need1(this = %08lX, nlines = %d)\n{\n",
-        (long)this, nlines));
+    trace(("wide_output_header::need1(this = %p, nlines = %d)\n{\n",
+        this, nlines));
     flush();
     if (line_number > 0)
     {
@@ -435,7 +432,7 @@ wide_output_header::need1(int nlines)
 void
 wide_output_header::eject()
 {
-    trace(("wide_output_header::eject(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_header::eject(this = %p)\n{\n", this));
     if (column > 0)
         put_wc(L'\n');
     if (line_number > 0)
@@ -458,3 +455,6 @@ wide_output_header::type_name()
 {
     return "wide_output_header";
 }
+
+
+// vim: set ts=8 sw=4 et :

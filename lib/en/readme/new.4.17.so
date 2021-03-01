@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -40,14 +40,14 @@ receiving a change that renames many files.
 .if t \(bu
 .\" change 26
 The \f[CW]./configure\fP script has been changed to take note of the
-\f[CW]--sysconfdir\fP option, used to specify the location of the /etc
+\f[CW]\-\-sysconfdir\fP option, used to specify the location of the /etc
 directory.
 .PP
 .if n *
 .if t \(bu
 .\" change 27
 A bug has been fixed in the \fIaepatch\fP(1) command.
-It would SEGFAULT when a non-source file was patched.
+It would SEGFAULT when a non\[hy]source file was patched.
 .PP
 .if n *
 .if t \(bu
@@ -63,15 +63,16 @@ The Russian error message catalogue has been updated.
 .if n *
 .if t \(bu
 .\" change 12
-A subtle bug in the change file out-of-date tests have been fixed.  It
+A subtle bug in the change file out\[hy]of\[hy]date tests have been fixed.  It
 did not adequately address the transition case for projects containing
 files with and without UUIDs.
 .PP
 .if n *
 .if t \(bu
 .\" change 26
-The \f[CW]./configure --sysconfdir\fP option is now honored.
+The \f[CW]./configure \-\-sysconfdir\fP option is now honored.
 It is \fIvery\fP important to set it to \fI/etc\fP when you configure Aegis.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.17 (3-Jun-2004)
+.SS Version 4.17 (3\[hy]Jun\[hy]2004)
+.\" vim: set ts=8 sw=4 et :

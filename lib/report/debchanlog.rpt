@@ -1,27 +1,27 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2004, 2006-2008 Peter Miller
+ *      aegis - project change supervisor
+ *      Copyright (C) 2004, 2006-2009, 2012 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 3 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 3 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see
- *	<http://www.gnu.org/licenses/>.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program. If not, see
+ *      <http://www.gnu.org/licenses/>.
  */
 
 columns
 (
-	{ left = 0; right = 0; }, /* for the change heading */
-	{ left = 2; right = 3; }, /* for the star */
-	{ left = 4; right = 0; }  /* for the change description */
+        { left = 0; right = 0; }, /* for the change heading */
+        { left = 2; right = 3; }, /* for the star */
+        { left = 4; right = 0; }  /* for the change description */
 );
 
 title(sprintf("Project \"%s\"", project_name()), "Debian Change Log");
@@ -54,7 +54,7 @@ for (j in the_list)
      * Mangle the project name and change version into the format that
      * the Debian changelog wants it to be in.
      */
-    tmp = sprintf("%s.D%3.3d", pss.name, cs.delta_number);
+    tmp = sprintf("%s.D%3.3d-1", pss.name, cs.delta_number);
     tmp2 = split(tmp, ".")[0];
     tmp3 = substr(tmp, length(tmp2) + 1, 9999);
     print(sprintf("%s (%s) unstable; urgency=low", tmp2, tmp3));
@@ -68,8 +68,8 @@ for (j in the_list)
     tmp = split(substr(cs.description, 0, 2000), "\n");
     for (tmp2 in tmp)
     {
-	if (tmp2 != "")
-	    print("", "*", tmp2);
+        if (tmp2 != "")
+            print("", "*", tmp2);
     }
     print("");
 
@@ -80,8 +80,8 @@ for (j in the_list)
     dev = "";
     for (h in cs.history)
     {
-	if (h.what == develop_begin)
-	    dev = h.who;
+        if (h.what == develop_begin)
+            dev = h.who;
     }
     when = cs.history[count(cs.history) - 1].when;
 
@@ -92,7 +92,7 @@ for (j in the_list)
      */
     email = user[dev].email_address;
     if (count(split(email, '<')) < 2)
-	email = passwd[dev].pw_comment ## " <" ## email ## ">";
+        email = passwd[dev].pw_comment ## " <" ## email ## ">";
 
     /*
      * Print the developer's email address and the date the change
@@ -100,8 +100,11 @@ for (j in the_list)
      */
     print
     (
-	" --", "",
-	email ## "  " ## strftime("%a, %d %b %Y %H:%M:%S %z", when)
+        " --", "",
+        email ## "  " ## strftime("%a, %d %b %Y %H:%M:%S %z", when)
     );
     print("");
 }
+
+
+/* vim: set ts=8 sw=4 et : */

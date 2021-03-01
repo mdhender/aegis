@@ -169,13 +169,6 @@ T}	T{
 .ad l
 aecstate - aegis change state file
 T}
-ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
-.ad r
-
-T}	T{
-.ad l
-ae-cvs-ci - checkin a change set to CVS
-T}
 aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
 .ad r
 
@@ -192,7 +185,7 @@ aedb
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy - check change set is ready for
+aede[hy]policy - check change set is ready for
 T}	T{
 .ad l
 aede
@@ -202,7 +195,7 @@ aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 
 T}	T{
 .ad l
-aede-policy - check change set is ready for aede
+aede[hy]policy - check change set is ready for aede
 T}
 ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
 .ad r
@@ -330,12 +323,40 @@ T}	T{
 .ad l
 Aegis web interface script
 T}
+aegrep(1)	\*[Page*Of*aegrep(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aegrep - print lines matching a pattern
+T}
 aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 .ad r
 
 T}	T{
 .ad l
 aegstate - aegis global state file
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+ae[hy]cvs[hy]ci - checkin a change set to CVS
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+ae[hy]repo[hy]ci - redundant repository checkin
+T}
+ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+ae[hy]sccs[hy]put - put sccs version
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
@@ -385,6 +406,13 @@ aels(1)	\*[Page*Of*aels(1)]	T{
 T}	T{
 .ad l
 aels - annotated directory listing
+T}
+aelsf(1)	\*[Page*Of*aelsf(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aelsf - list source files
 T}
 aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
 .ad r
@@ -470,13 +498,6 @@ T}	T{
 .ad l
 aerect - draw a rectangle
 T}
-ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
-.ad r
-
-T}	T{
-.ad l
-ae-repo-ci - redundant repository checkin
-T}
 aerevml(1)	\*[Page*Of*aerevml(1)]	T{
 .ad r
 
@@ -490,13 +511,6 @@ aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 T}	T{
 .ad l
 aerptidx - aegis report index file format
-T}
-ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
-.ad r
-
-T}	T{
-.ad l
-ae-sccs-put - put sccs version
 T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
@@ -629,7 +643,7 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new release - create a new project from
 T}	T{
 .ad l
-an old-style project.
+an old[hy]style project.
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
@@ -1144,7 +1158,7 @@ changes as patches
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy - check
+aede[hy]policy - check
 T}	T{
 .ad l
 change set is ready for aede
@@ -1165,7 +1179,7 @@ change sets, using TCL/TK
 T}
 ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
 .ad r
-ae-cvs-ci - checkin a
+ae[hy]cvs[hy]ci - checkin a
 T}	T{
 .ad l
 change set to CVS
@@ -1228,35 +1242,35 @@ change via tar
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy -
+aede[hy]policy -
 T}	T{
 .ad l
 check change set is ready for aede
 T}
 ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
 .ad r
-ae-repo-ci - redundant repository
+ae[hy]repo[hy]ci - redundant repository
 T}	T{
 .ad l
 checkin
 T}
 ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
 .ad r
-ae-cvs-ci -
+ae[hy]cvs[hy]ci -
 T}	T{
 .ad l
 checkin a change set to CVS
 T}
 ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
 .ad r
-ae-cvs-
+ae[hy]cvs[hy]
 T}	T{
 .ad l
 ci - checkin a change set to CVS
 T}
 ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
 .ad r
-ae-repo-
+ae[hy]repo[hy]
 T}	T{
 .ad l
 ci - redundant repository checkin
@@ -1427,7 +1441,7 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new release -
 T}	T{
 .ad l
-create a new project from an old-style project.
+create a new project from an old[hy]style project.
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
@@ -1445,17 +1459,10 @@ c - set change number
 T}
 ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
 .ad r
-ae-cvs-ci - checkin a change set to
+ae[hy]cvs[hy]ci - checkin a change set to
 T}	T{
 .ad l
 CVS
-T}
-ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
-.ad r
-ae-
-T}	T{
-.ad l
-cvs-ci - checkin a change set to CVS
 T}
 aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
 .ad r
@@ -1463,6 +1470,13 @@ aecvsserver - serve
 T}	T{
 .ad l
 CVS client protocol against Aegis projects
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae[hy]
+T}	T{
+.ad l
+cvs[hy]ci - checkin a change set to CVS
 T}
 aexml(1)	\*[Page*Of*aexml(1)]	T{
 .ad r
@@ -1473,7 +1487,7 @@ database to XML
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
-aegis - meta-
+aegis - meta[hy]
 T}	T{
 .ad l
 data file format
@@ -1914,7 +1928,7 @@ file format
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
-aegis - meta-data
+aegis - meta[hy]data
 T}	T{
 .ad l
 file format
@@ -1999,6 +2013,13 @@ T}
 aelpf(1)	\*[Page*Of*aelpf(1)]	T{
 .ad r
 aelpf - list project
+T}	T{
+.ad l
+files
+T}
+aelsf(1)	\*[Page*Of*aelsf(1)]	T{
+.ad r
+aelsf - list source
 T}	T{
 .ad l
 files
@@ -2138,7 +2159,7 @@ for aeca, using TCL/TK
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy - check change set is ready
+aede[hy]policy - check change set is ready
 T}	T{
 .ad l
 for aede
@@ -2194,7 +2215,7 @@ format
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
-aegis - meta-data file
+aegis - meta[hy]data file
 T}	T{
 .ad l
 format
@@ -2253,7 +2274,7 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new release - create a new project
 T}	T{
 .ad l
-from an old-style project.
+from an old[hy]style project.
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
@@ -2415,6 +2436,69 @@ ae diff2
 T}	T{
 .ad l
 htm - wraps the diff2html command
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae[hy]cvs[
+T}	T{
+.ad l
+hy]ci - checkin a change set to CVS
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae[hy]repo[
+T}	T{
+.ad l
+hy]ci - redundant repository checkin
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae[
+T}	T{
+.ad l
+hy]cvs[hy]ci - checkin a change set to CVS
+T}
+aegis(5)	\*[Page*Of*aegis(5)]	T{
+.ad r
+aegis - meta[
+T}	T{
+.ad l
+hy]data file format
+T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede[
+T}	T{
+.ad l
+hy]policy - check change set is ready for aede
+T}
+ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
+.ad r
+ae[hy]sccs[
+T}	T{
+.ad l
+hy]put - put sccs version
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae[
+T}	T{
+.ad l
+hy]repo[hy]ci - redundant repository checkin
+T}
+ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
+.ad r
+ae[
+T}	T{
+.ad l
+hy]sccs[hy]put - put sccs version
+T}
+aenrls(1)	\*[Page*Of*aenrls(1)]	T{
+.ad r
+aegis new release - create a new project from an old[
+T}	T{
+.ad l
+hy]style project.
 T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
@@ -2600,7 +2684,7 @@ into projects
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy - check change set
+aede[hy]policy - check change set
 T}	T{
 .ad l
 is ready for aede
@@ -2611,6 +2695,13 @@ aer - aegis report script
 T}	T{
 .ad l
 language definition
+T}
+aegrep(1)	\*[Page*Of*aegrep(1)]	T{
+.ad r
+aegrep - print
+T}	T{
+.ad l
+lines matching a pattern
 T}
 aelcf(1)	\*[Page*Of*aelcf(1)]	T{
 .ad r
@@ -2653,6 +2744,13 @@ aelpf -
 T}	T{
 .ad l
 list project files
+T}
+aelsf(1)	\*[Page*Of*aelsf(1)]	T{
+.ad r
+aelsf -
+T}	T{
+.ad l
+list source files
 T}
 aelock(5)	\*[Page*Of*aelock(5)]	T{
 .ad r
@@ -2731,12 +2829,19 @@ T}	T{
 .ad l
 manifest
 T}
+aegrep(1)	\*[Page*Of*aegrep(1)]	T{
+.ad r
+aegrep - print lines
+T}	T{
+.ad l
+matching a pattern
+T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
 aegis -
 T}	T{
 .ad l
-meta-data file format
+meta[hy]data file format
 T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r
@@ -2967,14 +3072,14 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new release - create a
 T}	T{
 .ad l
-new project from an old-style project.
+new project from an old[hy]style project.
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
 aegis
 T}	T{
 .ad l
-new release - create a new project from an old-style project.
+new release - create a new project from an old[hy]style project.
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
@@ -3037,7 +3142,7 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new release - create a new project from an
 T}	T{
 .ad l
-old-style project.
+old[hy]style project.
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
@@ -3130,9 +3235,16 @@ T}	T{
 .ad l
 patches
 T}
+aegrep(1)	\*[Page*Of*aegrep(1)]	T{
+.ad r
+aegrep - print lines matching a
+T}	T{
+.ad l
+pattern
+T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-
+aede[hy]
 T}	T{
 .ad l
 policy - check change set is ready for aede
@@ -3143,6 +3255,13 @@ aegis list - list (
 T}	T{
 .ad l
 possibly) interesting things
+T}
+aegrep(1)	\*[Page*Of*aegrep(1)]	T{
+.ad r
+aegrep -
+T}	T{
+.ad l
+print lines matching a pattern
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
@@ -3188,7 +3307,7 @@ project
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis new release - create a new project from an old-style
+aegis new release - create a new project from an old[hy]style
 T}	T{
 .ad l
 project.
@@ -3324,7 +3443,7 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new release - create a new
 T}	T{
 .ad l
-project from an old-style project.
+project from an old[hy]style project.
 T}
 ae_p(1)	\*[Page*Of*ae_p(1)]	T{
 .ad r
@@ -3384,21 +3503,21 @@ p - set project name
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-ae-sccs-
+ae[hy]sccs[hy]
 T}	T{
 .ad l
 put - put sccs version
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-ae-sccs-put -
+ae[hy]sccs[hy]put -
 T}	T{
 .ad l
 put sccs version
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy - check change set is
+aede[hy]policy - check change set is
 T}	T{
 .ad l
 ready for aede
@@ -3433,7 +3552,7 @@ rectangle
 T}
 ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
 .ad r
-ae-repo-ci -
+ae[hy]repo[hy]ci -
 T}	T{
 .ad l
 redundant repository checkin
@@ -3443,7 +3562,7 @@ aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 aegis new
 T}	T{
 .ad l
-release - create a new project from an old-style project.
+release - create a new project from an old[hy]style project.
 T}
 aedist(1)	\*[Page*Of*aedist(1)]	T{
 .ad r
@@ -3608,10 +3727,10 @@ rename one or more files as part of a change
 T}
 ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
 .ad r
-ae-
+ae[hy]
 T}	T{
 .ad l
-repo-ci - redundant repository checkin
+repo[hy]ci - redundant repository checkin
 T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r
@@ -3643,7 +3762,7 @@ report script language definition
 T}
 ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
 .ad r
-ae-repo-ci - redundant
+ae[hy]repo[hy]ci - redundant
 T}	T{
 .ad l
 repository checkin
@@ -3818,14 +3937,14 @@ run tests
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-ae-
+ae[hy]
 T}	T{
 .ad l
-sccs-put - put sccs version
+sccs[hy]put - put sccs version
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-ae-sccs-put - put
+ae[hy]sccs[hy]put - put
 T}	T{
 .ad l
 sccs version
@@ -3888,7 +4007,7 @@ set change owner
 T}
 aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
 .ad r
-aede-policy - check change
+aede[hy]policy - check change
 T}	T{
 .ad l
 set is ready for aede
@@ -3916,7 +4035,7 @@ sets, using TCL/TK
 T}
 ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
 .ad r
-ae-cvs-ci - checkin a change
+ae[hy]cvs[hy]ci - checkin a change
 T}	T{
 .ad l
 set to CVS
@@ -3948,6 +4067,13 @@ aeannotate - annotated
 T}	T{
 .ad l
 source file listing
+T}
+aelsf(1)	\*[Page*Of*aelsf(1)]	T{
+.ad r
+aelsf - list
+T}	T{
+.ad l
+source files
 T}
 aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
 .ad r
@@ -4014,7 +4140,7 @@ structures
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis new release - create a new project from an old-
+aegis new release - create a new project from an old[hy]
 T}	T{
 .ad l
 style project.
@@ -4462,7 +4588,7 @@ values file format
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-ae-sccs-put - put sccs
+ae[hy]sccs[hy]put - put sccs
 T}	T{
 .ad l
 version

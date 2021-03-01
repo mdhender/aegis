@@ -1,29 +1,31 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Walter Franzini
-//	Copyright (C) 2007, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004, 2005 Walter Franzini
+//      Copyright (C) 2007, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h>              // for assert
-#include <aedist/change/functor/invent_build.h>
 #include <common/uuidentifier.h>
 #include <common/trace.h>
+
+#include <aedist/change/functor/invent_build.h>
+
 
 change_functor_inventory_builder::~change_functor_inventory_builder()
 {
@@ -34,7 +36,7 @@ change_functor_inventory_builder::~change_functor_inventory_builder()
 
 
 change_functor_inventory_builder::change_functor_inventory_builder(bool arg1,
-	bool arg2, bool arg3, project_ty *arg4, symtab<change> *arg5) :
+        bool arg2, bool arg3, project *arg4, symtab<change> *arg5) :
     change_functor(arg1, arg2),
     inou(arg3),
     stp(arg5),
@@ -88,11 +90,11 @@ change_functor_inventory_builder::operator()(change::pointer cp)
         if
         (
             ap->name
-	&&
+        &&
             0 == strcasecmp(ap->name->str_text, ORIGINAL_UUID)
-	&&
+        &&
             ap->value
-	&&
+        &&
             // users can edit, we will check
             universal_unique_identifier_valid(ap->value)
         )
@@ -115,3 +117,6 @@ change_functor_inventory_builder::operator()(change::pointer cp)
         }
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

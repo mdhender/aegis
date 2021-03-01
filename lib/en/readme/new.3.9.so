@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -44,7 +44,7 @@ an error.
 .if n *
 .if t \(bu
 There is a new \fIaedist\fP(1) command, which may be used to send and
-receive Aegis change sets via e-mail and the web.
+receive Aegis change sets via e\[hy]mail and the web.
 .PP
 .if n *
 .if t \(bu
@@ -67,7 +67,8 @@ the GNU Zip algorthm).  Unless you have an exceptionally large project,
 coupled with fast CPUs and high network latency, there is probably very
 little benefit in using this feature.  (The database is usually less
 than 5% of the size of the repository.)  On slow networks, however,
-this can sometimes improve the preformance of file-related commands.
+this can sometimes improve the preformance of file\[hy]related commands.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.9 (7-Feb-1999)
+.SS Version 3.9 (7\[hy]Feb\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

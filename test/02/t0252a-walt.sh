@@ -1,22 +1,21 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2007, 2008 Walter Franzini
-#	Copyright (C) 2008 Peter Miller
+# aegis - project change supervisor
+# Copyright (C) 2007, 2008, 2010 Walter Franzini
+# Copyright (C) 2008, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -36,12 +35,12 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never; \
-	default_development_directory = \"$work\";"
+    lock_wait_preference = always; \
+    diff_preference = automatic_merge; \
+    pager_preference = never; \
+    persevere_preference = all; \
+    log_file_preference = never; \
+    default_development_directory = \"$work\";"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -64,7 +63,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${parch}bin:
+        tpath=${tpath}${tpath2}/${parch}bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -85,34 +84,50 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+    set +x
+    echo PASSED 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aem functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+    set +x
+    echo "FAILED test of the aem functionality ($activity)" 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the aem functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+    set +x
+    echo "NO RESULT when testing the aem functionality ($activity)" 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 2
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 114"
+check_it()
+{
+    sed -e "s|$work|...|g" \
+        -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+        -e "s/\"$USER\"/\"USER\"/g" \
+        -e 's/19[0-9][0-9]/YYYY/' \
+        -e 's/20[0-9][0-9]/YYYY/' \
+        -e 's/node = ".*"/node = "NODE"/' \
+        -e 's/crypto = ".*"/crypto = "GUNK"/' \
+        < $2 > $work/sed.out
+    if test $? -ne 0; then no_result; fi
+    diff -b $1 $work/sed.out
+    if test $? -ne 0; then fail; fi
+}
+
+
+activity="create test directory 130"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -136,15 +151,15 @@ unset LANGUAGE
 #
 if test "$CXX" != "c++"
 then
-	cat >> $work/c++ << fubar
+        cat >> $work/c++ << fubar
 #!/bin/sh
 exec ${CXX-g++} \$*
 fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/c++
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
+        if test $? -ne 0 ; then no_result; fi
+        chmod a+rx $work/c++
+        if test $? -ne 0 ; then no_result; fi
+        PATH=${work}:${PATH}
+        export PATH
 fi
 
 #
@@ -159,14 +174,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 177"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 184"
 cat > tmp << 'end'
 description = "A bogus project created to test the "
     "aeipass functionality.";
@@ -183,7 +198,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 185"
+activity="staff 201"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -194,7 +209,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 196"
+activity="new change 212"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -206,16 +221,16 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 208"
+activity="develop begin 224"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 215"
+activity="new file 231"
 $bin/aegis -nf  $workchan/aegis.conf -nl \
-	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd0 > log 2>&1
+        --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd0 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $workchan/aegis.conf << 'end'
@@ -237,50 +252,50 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 239"
+activity="build 255"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 246"
+activity="diff 262"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 253"
+activity="develop end 269"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 260"
+activity="integrate begin 276"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 264"
+activity="diff the change 280"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 271"
+activity="build 287"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 278"
+activity="integrate pass 294"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new branch 282"
+activity="new branch 298"
 $bin/aegis -p example -nbr 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -293,7 +308,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 295"
+activity="new change 311"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -305,16 +320,16 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 307"
+activity="develop begin 323"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 314"
+activity="new file 330"
 $bin/aegis -nf  $workchan/file1 -nl \
-	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
+        --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $workchan/file1 << 'end'
@@ -325,53 +340,53 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 327"
+activity="build 343"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 334"
+activity="diff 350"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 341"
+activity="develop end 357"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 348"
+activity="integrate begin 364"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 352"
+activity="diff the change 368"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 359"
+activity="build 375"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 366"
+activity="integrate pass 382"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # New branch
 #
-activity="new branch 373"
+activity="new branch 389"
 $bin/aegis -nbr -p example 20 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -381,7 +396,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 383"
+activity="new change 399"
 cat > tmp << 'end'
 brief_description = "The third change";
 cause = internal_bug;
@@ -393,7 +408,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 395"
+activity="develop begin 411"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -402,10 +417,40 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # We set a UUID different from the one set in .10.C1 to trigger a bug
 # in the aem code.
 #
-activity="new file 404"
-$bin/aegis -nf  $workchan/file1 -nl \
-	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+activity="new file 420"
+$bin/aegis -nf $workchan/file1 -nl
+if test $? -ne 0 ; then no_result; fi
+
+activity="check cstate 424"
+cat > ok <<EOF
+src =
+[
+        {
+                file_name = "file1";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+                action = create;
+                usage = source;
+        },
+];
+EOF
+test $? -eq 0 || no_result
+
+check_it ok $work/proj/info/change/0/020.branch/0/001.fs
+
+#toberemoved: sovrascrivi i file cstate per impostare lo UUID del
+#toberemoved: file, non ci sono attualmente altri modi di farlo.
+cat > $work/proj/info/change/0/020.branch/0/001.fs <<EOF
+src =
+[
+        {
+                file_name = "file1";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+                action = create;
+                usage = source;
+        },
+];
+EOF
+test $? -eq 0 || no_result
 
 cat > $workchan/file1 << 'end'
 Some random stuff
@@ -416,46 +461,46 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 418"
+activity="build 464"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 425"
+activity="diff 471"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 432"
+activity="develop end 478"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 439"
+activity="integrate begin 485"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 443"
+activity="diff the change 489"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 450"
+activity="build 496"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 457"
+activity="integrate pass 503"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -465,15 +510,15 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=example
 export AEGIS_PROJECT
 
-activity="close the branch 467"
+activity="close the branch 513"
 $bin/aegis -dev_end -c 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate the branch 471"
+activity="integrate the branch 517"
 $bin/aegis -ib -c 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the branch integration 475"
+activity="complete the branch integration 521"
 $bin/aefinish -c 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -486,7 +531,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 488"
+activity="new change 534"
 cat > tmp << 'end'
 brief_description = "The fourth change";
 cause = internal_bug;
@@ -498,7 +543,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 500"
+activity="develop begin 546"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -507,7 +552,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # We set a UUID different from the one set in .1.C1 to trigger a bug
 # in the aem code.
 #
-activity="new file 509"
+activity="new file 555"
 $bin/aegis -cp  $workchan/file1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -517,7 +562,7 @@ More not so random stuff
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="merge the file 519"
+activity="merge the file 565"
 $bin/aegis -diff -only-merge -gp -v > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
@@ -527,3 +572,4 @@ if test $? -ne 0; then cat log; fail; fi
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

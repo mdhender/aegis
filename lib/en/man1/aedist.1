@@ -1,24 +1,23 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001-2008 Peter Miller
-.\"	Copyright (C) 2007 Walter Franzini
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2001-2008, 2010, 2012 Peter Miller
+.\" Copyright (C) 2007, 2008 Walter Franzini
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so version.so
-.so z_name.so
+.so etc/version.so
+.so lib/en/man1/z_name.so
 .ds n) aedist
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -26,84 +25,87 @@ aedist \- remotely distribute a change
 .XX "aedist(1)" "remotely distribute a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -Send
+.B \-Send
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -Receive
+.B \-Receive
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -REPlay
+.B \-REPlay
 [
 .IR option \&...
-] -f \fIURL\fP
+] \-f \fIURL\fP
 .br
 .B \*(n)
-.B -MIssing
+.B \-MIssing
 [
 .IR option \&...
-] -f \fIURL\fP
+] \-f \fIURL\fP
 .br
 .B \*(n)
-.B -PENding
+.B \-PENding
 [
 .IR option \&...
-] -f \fIURL\fP
+] \-f \fIURL\fP
 .br
 .B \*(n)
-.B -Inventory
-[
-.IR option \&...
-]
-.br
-.B \*(n)
-.B -ARChive
+.B \-Inventory
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -List
+.B \-ARChive
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -Help
+.B \-List
+[
+.IR option \&...
+]
 .br
 .B \*(n)
-.B -VERSion
+.B \-Help
+.br
+.B \*(n)
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I "\*(n)"
 command is used to send and receive change sets to facilitate geographically
-distributed development.  The expected transport mechanism is e-mail,
+distributed development.  The expected transport mechanism is e\[hy]mail,
 however other mechanisms are equally possible.
 .PP
 The basic function is to reproduce a change, so a command like
 .RS
-\f(CWaedist -send | aedist -receive\fP
+\f(CWaedist \-send | aedist \-receive\fP
 .RE
 may be used to clone a change, though less efficiently than \fIaeclone\fP(1).
 The file format used is designed to withstand mail servers,
 so activities such as
 .RS
-\f(CWaedist -send | \fIe-mail\f(CW | aedist -receive\fR
+\f(CWaedist \-send | \fIe\[hy]mail\f(CW | aedist \-receive\fR
 .RE
-(where \fIe-mail\fP represents sending, transporting and receiving your e-mail)
+(where \fIe\[hy]mail\fP represents sending, transporting and receiving
+your e\[hy]mail)
 will reproduce the change on a remote system.
 With suitable tools (such as PGP) is it possible to
 .RS
-\f(CWaedist -send | encrypt | \fIe-mail\f(CW | decrypt | aedist -receive\fR
+\f(CWaedist \-send | encrypt | \fIe\[hy]mail\f(CW | decrypt |
+aedist \-receive\fR
 .RE
-The mechanism is also designed to allow web-based distribution such as
+The mechanism is also designed to allow web\[hy]based distribution such as
 .RS
-\f(CWaedist -send | \fIweb-server \(-> web-browser\f(CW | aedist -receive\fR
+\f(CWaedist \-send | \fIweb\[hy]server \(-> web\[hy]browser\f(CW |
+aedist \-receive\fR
 .RE
 by the use of appropriate CGI scripts and mailcap entries.
 .PP
@@ -114,7 +116,7 @@ this, see the Aegis Users Guide.
 The send variant takes a specified change, or baseline, and constructs
 a distribution package containing all of the change attributes and source
 file attributes and source file contents.  The result is compressed,
-and encoded into a text format which can be sent as e-mail without being
+and encoded into a text format which can be sent as e\[hy]mail without being
 corrupted by the mail transfer agents along the way.
 .SS Options
 The following options are understood by the send variant:
@@ -122,12 +124,12 @@ The following options are understood by the send variant:
 \fB\-BaseLine\fP
 This option may be used to specify the source of a project,
 rather than a change.
-Implies the \fI\-Entire_Source\fP option, unless over-ridden.
-.so o_change.so
-.so o_compatibil.so
-.so o_compress.so
-.so o_cte.so
-.so o_delta.so
+Implies the \fI\-Entire_Source\fP option, unless over\[hy]ridden.
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_compatibil.so
+.so lib/en/man1/o_compress.so
+.so lib/en/man1/o_cte.so
+.so lib/en/man1/o_delta.so
 .TP 8n
 \fB\-Description_Header\fP
 This option may be used to add an RFC 822 style header to the change
@@ -149,12 +151,12 @@ outgoing change set.
 This option forces the \fIaedist\fP command to use the outgoing change
 set's UUID information.  This is the default (unless the compatibility
 option will to avoid attributes).
-.so o_mime_heade.so
+.so lib/en/man1/o_mime_heade.so
 .TP 8n
 \fB\-Partial_Source\fP
 This option may be used to send only source files of a change.
 This is the default, except for the \fI\-BaseLine\fP option.
-.so o_output.so
+.so lib/en/man1/o_output.so
 .TP 8n
 \fB\-PATch\fP
 This option is deprecated.
@@ -163,8 +165,8 @@ Please use the \fB\-COMPATibility\fP option instead.
 \fB\-No_PATch\fP
 This option is deprecated.
 Please use the \fB\-COMPATibility=4.6\fP option instead.
-.so o_project.so
-.so o_sob.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_sob.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
 and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
@@ -193,8 +195,8 @@ This option may be used to specify a particular
 delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
-.so o_dir.so
-.so o_file_cs.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_file_cs.so
 .TP 8n
 \fB\-PATch\fP
 This option may be used to apply patches from the input, if available.
@@ -213,13 +215,17 @@ incoming change set.
 This option force the \fIaedist\fP command to use the change set's UUID.
 This is the default.
 .TP 8n
+\fB\-Output\fP \fIfilename\fP
+This option may be used to specify a filename which is to be written with
+the automatically determined change number.  Useful for writing scripts.
+.TP 8n
 \fB\-Project\fP \fIname\fP
 This option may be used to set the project name.
 If not specified, the project name in the input package will be used,
 rather than the usual project name defaulting mechanism.
-.so o_trojan.so
+.so lib/en/man1/o_trojan.so
 .SS Security
-Receiving changes by e-mail, and automatically committing them to the
+Receiving changes by e\[hy]mail, and automatically committing them to the
 baseline without checking them, would be a recipe for disaster.
 A number of safeguards are provided:
 .TP 2n
@@ -247,10 +253,10 @@ here to specify files in addition to the project configuration file which should
 cause the automatic processing to halt.
 .TP 2n
 \(bu
-The use of e-mail authentication and encryption systems, such as PGP and
+The use of e\[hy]mail authentication and encryption systems, such as PGP and
 GPG, are encouraged.  However, it is expected that this processing will
-occur after \&\fIaedist --send\fP has constructed the package and before
-\&\fIaedist --receive\fP examines and acts on the package.
+occur after \&\fIaedist \-send\fP has constructed the package and before
+\&\fIaedist \-receive\fP examines and acts on the package.
 Verification of the sender is the surest defense against trojan horses.
 .TP 2n
 \(bu
@@ -276,7 +282,7 @@ explosion of redundant packages being distributed again and again.
 .PP
 To combat this, changes are checked after the files are unpacked, but
 before and build or difference or test is performed.  The \[lq]\fIaecpu
---unchanged\fP\[rq] command is used to exclude all files that the local
+\-unchanged\fP\[rq] command is used to exclude all files that the local
 repository already has in the desired form.  If no change files remain
 after this, the change is dropped entirely (see \&\fIaedbu\fP(1) and
 \&\fIaencu\fP(1)).
@@ -289,17 +295,17 @@ For example, Aegis developers can track the master project with
 a command of the form:
 .RS
 .ft CW
-aedist -p aegis.\*(v) --replay -f aegis.sourceforge.net
+aedist \-p aegis.\*(v) \-replay \-f aegis.sourceforge.net
 .ft P
 .RE
 This command is internally rewritten as
 .RS
 .ft CW
-aedist --replay -p aegis.\*(v) -f \e
-  http://aegis.sf.net/cgi-bin/aeget/aegis.\*(v)/?inventory
+aedist \-replay \-p aegis.\*(v) \-f \e
+  http://aegis.sf.net/cgi\[hy]bin/aeget/aegis.\*(v)/?inventory
 .ft P
 .RE
-If your \f[CW]cgi-bin\fP directory is somewhere else, you will need to
+If your \f[CW]cgi\[hy]bin\fP directory is somewhere else, you will need to
 use the long form.
 .PP
 The change set inventory page is human readable if you want to see
@@ -314,8 +320,8 @@ Each of the change sets required are downloaded and unpacked by issuing
 a command such as
 .RS
 .ft CW
-aedist -rec -f \e
-  http://aegis.sf.net/cgi-bin/aeget/aegis.4.19.C010/?aedist
+aedist \-rec \-f \e
+  http://aegis.sf.net/cgi\[hy]bin/aeget/aegis.4.19.C010/?aedist
 .ft R
 .RE
 If this completes successfully (and it is possible it won't,
@@ -325,7 +331,7 @@ changes and the incoming remote changes), and your project has its
 the change will be integrated using a command such as:
 .RS
 .ft CW
-aeintegratq -p aegis.\*(v) -c 10
+aeintegratq \-p aegis.\*(v) \-c 10
 .ft R
 .RE
 and then starts over again for the next missing change set.
@@ -355,46 +361,46 @@ This option may be used to explicitly list change sets to be downloaded
 and unpacked, to the exclusion of all others.  The \fIpattern\fP is
 matched against the version as displayed in the inventory.  This
 option may be used more than once.
-.so o_file_cs.so
+.so lib/en/man1/o_file_cs.so
 .TP 8n
 .B \-MAXimum
 This option may be used to download as many changes as possible by
 excluding the maximum number of local changes sets, by excluding both
 local change sets UUIDs (the default) but also excluding UUIDs mentioned
-in change "original-uuid" attributes.
+in change "original\[hy]uuid" attributes.
 .TP 8n
-.B -PErsevere
+.B \-PErsevere
 This option may be used to specify that all relevant change sets
 should be downloaded, even if some fail.  Defaults to the user's
 \fIpersevere_\%preference\fP if not specified, see \fIaeuconf\fP(5) for
 more information.
 .TP 8n
-.B -No_PErsevere
+.B \-No_PErsevere
 This option may be used to specify that the downloading of change
 sets should stop after the first failure.  Defaults to the user's
 \fIpersevere_\%preference\fP if not specified, see \fIaeuconf\fP(5) for
 more information.
-.so o_project.so
+.so lib/en/man1/o_project.so
 .TP 8n
-.B -Trojan
+.B \-Trojan
 This option is passed to any \fIaedist\fP(1) commands spawned by this command.
 .TP 8n
-.B -No_Trojan
+.B \-No_Trojan
 This option is passed to any \fIaedist\fP(1) commands spawned by this command.
 .TP 8n
-.B -Not_Compatibility
-This option must be used when using \f[I]aedist --replay\f[P] against
+.B \-Not_Compatibility
+This option must be used when using \f[I]aedist \-replay\f[P] against
 a file based inventory.
 .SH MISSING
 If you want to see the change sets that \fIaedist \-replay\fP may
 download before it goes ahead and does it, you can use a command such as:
 .RS
 .ft CW
-aedist --missing -f aegis.sf.net
+aedist \-missing \-f aegis.sf.net
 .ft R
 .RE
 In particular, this allows you to select appropriate UUIDs for the
-\fIaedist \-replay \-exclude\fP or \fI\-no-exclude\fP options.
+\fIaedist \-replay \-exclude\fP or \fI\-no\[hy]exclude\fP options.
 .SS Options
 The following options are understood by this variant:
 .TP 8n
@@ -422,13 +428,13 @@ more than once.
 This option may be used to download as many changes as possible by
 excluding the maximum number of local changes sets, by excluding both
 local change sets UUIDs (the default) but also excluding UUIDs mentioned
-in change "original-uuid" attributes.
+in change "original\[hy]uuid" attributes.
 .SH PENDING
 If you want to see the change sets that a remote repository is missing
 with respect to yours, you can use a command such as:
 .RS
 .ft R
-aedist --pending -f aegis.sf.net
+aedist \-pending \-f aegis.sf.net
 .ft R
 .RE
 .SS Options
@@ -460,19 +466,19 @@ machine and then upload its output to the public repository.
 In order to generate the inventory you can use a command such as:
 .RS
 .ft R
-aedist --inventory -proj project > inventory.html
+aedist \-inventory \-proj project > inventory.html
 .ft R
 .RE
 .SS Options
 The following options are understood by this variant:
 .TP 8n
-\f[B]-AEGET\f[P]
+\f[B]\-AEGET\f[P]
 This option is used by aeget to require the original
 \f[I]aeget\f[P](1) behavior.
 .TP 8n
-\f[B]-All\f[P]
+\f[B]\-All\f[P]
 This option is used to require the inclusion of the UUIDs contained in
-the original-UUID attribute of each change.
+the original\[hy]UUID attribute of each change.
 .TP 8n
 \f[B]\-EXclude_Version\f[P] \f[I]pattern\f[P]
 This option may be used to explicitly exclude some change set to
@@ -486,10 +492,10 @@ to the the inventory file, to the exclusion of all others.  The
 \f[I]pattern\f[P] is matched against the version as displayed in the
 inventory.  This option may be used more than once.
 .TP 8n
-\f[B]-path_prefix_add\f[P]
+\f[B]\-path_prefix_add\f[P]
 This option is used to add a path prefix to the URLs generated in the
 inventory.
-.so o_project.so
+.so lib/en/man1/o_project.so
 .SH ARCHIVE
 As an alternative to using the \f[I]aeget\f[P](1) CGI program, the
 \*(n) archive variant is provided.  This variant can be used to
@@ -503,7 +509,7 @@ last run and regenerating the files if a corruption is detected.
 .SS Options
 The following options are understood by the archive variant:
 .TP 8n
-\f[B]-Change-Directory\f[P] \f[I]directory\f[P]
+\f[B]\-Change\[hy]Directory\f[P] \f[I]directory\f[P]
 This option is used to designate the directory to be populated with the
 \f[I]aedist\f[P](1) generated files.
 If this option is not used then the current directory is used as the
@@ -522,22 +528,22 @@ This option may be used to explicitly list change sets to be added
 to the target directory, to the exclusion of all others.  The
 \f[I]pattern\f[P] is matched against the version as displayed in the
 inventory.  This option may be used more than once.
-.so o_project.so
+.so lib/en/man1/o_project.so
 .SH LIST
 The list variant can be used to list the contents of a package without
 actually unpacking it first.
-The output is reminiscent of the \fIaegis -list change-details\fP output.
+The output is reminiscent of the \fIaegis \-list change\[hy]details\fP output.
 .SS Options
 The following options are understood by the list variant:
-.so o_file_cs.so
-.so o_output.so
+.so lib/en/man1/o_file_cs.so
+.so lib/en/man1/o_output.so
 Only useful with the \-List option.
 .SH OPTIONS
 The following options to this command haven't been mentioned yet:
-.so o_help.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
 .SH FILE FORMAT
-The file format re-uses existing formats, rather than introduce anything
+The file format re\[hy]uses existing formats, rather than introduce anything
 new.  This means it is possible to extract the contents of a package
 even when \*(n) is unavailable.
 .TP 2n
@@ -555,32 +561,32 @@ would be, but still smaller than the primary sources.
 .PP
 The \fIcpio\fP archive is used to store
 .TP 8n
-\f(CWetc/project-name\fP
+\f(CWetc/project\[hy]name\fP
 This contains the project name to apply the package to,
-unless over-ridden by the --project command line option.
+unless over\[hy]ridden by the \-project command line option.
 .TP 8n
-\f(CWetc/change-number\fP
+\f(CWetc/change\[hy]number\fP
 This contains the change number of the original change, this may be
-preserved if available on the target repository unless over-ridden by
-the --change command line option.
+preserved if available on the target repository unless over\[hy]ridden by
+the \-change command line option.
 .TP 8n
-\f(CWetc/change-set\fP
+\f(CWetc/change\[hy]set\fP
 This contains the change attributes and the list of source files and
 usages, in \fIaecstate\fP(5) format.
 .TP 8n
 \f(CWpatch/\fP\fIfilename\fP
 Each modified or renamed file in the package (named in
-\fIetc/change-set\fP) appears under the \fIpatch\fP directory.
+\fIetc/change\[hy]set\fP) appears under the \fIpatch\fP directory.
 The file may be empty unless some edits was done on the source
 repository.
 .TP 8n
 \f(CWsrc/\fP\fIfilename\fP
-Each source file in the package (named in \fIetc/change-set\fP)
+Each source file in the package (named in \fIetc/change\[hy]set\fP)
 appears under the \fIsrc/\fP directory.
 .PP
 Extra files, or files out of order, are a fatal error.
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
 .SH CREDITS
 This program evolved through discussion with a number of people.
 If I have forgotten anyone, it wasn't intentional.
@@ -588,7 +594,8 @@ If I have forgotten anyone, it wasn't intentional.
 tab(;);
 l l l.
 Ralf Fassel;<ralf@akutech.de>;Catching trojan horses.
-Walter Franzini;<walter.franzini@sys-net.it>;coding \-replay download
+Walter Franzini;<walter.franzini@sys\[hy]net.it>;coding \-replay download
 Florian Xhumari;<Florian.Xhumari@inria.fr>;On the need for pull interfaces.
 Graham Wheeler;<gram@cdsec.com>;HTTP pull interfacing.
 .TE
+.\" vim: set ts=8 sw=4 et :

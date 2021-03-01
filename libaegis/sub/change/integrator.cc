@@ -1,6 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2003-2008 Peter Miller
+//      Copyright (C) 2001, 2003-2008, 2012 Peter Miller
+//      Copyright (C) 2008, 2009 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -59,7 +60,7 @@ sub_integrator(sub_context_ty *scp, const wstring_list &arg)
     }
     else if (arg.size() == 1)
     {
-        nstring who(change_integrator_name(cp));
+        nstring who(cp->integrator_name());
         if (who.empty())
             goto yuck;
         result = wstring(who);
@@ -74,7 +75,7 @@ sub_integrator(sub_context_ty *scp, const wstring_list &arg)
         }
         else
         {
-            nstring who(change_integrator_name(cp));
+            nstring who(cp->integrator_name());
             user_ty::pointer up = user_ty::create(who);
             s = func(up);
             result = wstring(s);
@@ -84,7 +85,10 @@ sub_integrator(sub_context_ty *scp, const wstring_list &arg)
     {
         scp->error_set(i18n("requires one argument"));
     }
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

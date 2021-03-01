@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1996, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .SH TEST PROCESS
 Each change is required to be accompanied by tests, and those tests are
@@ -27,7 +26,7 @@ Tests are treated as any other source file, and are maintained in the
 baseline and history with all other source files.  The tests which must
 accompany every change accumulate in the project baseline, providing a
 definition of correct function for the baseline.  These accumulated
-tests may be executed using an \[lq]\*(n) -REGression\[rq] command, to verify
+tests may be executed using an \[lq]\*(n) \-REGression\[rq] command, to verify
 that the project will not \[lq]regress\[rq] as a result of a change.
 .SS Baseline Tests
 Bug fixes are required to have their tests
@@ -54,7 +53,7 @@ tests for
 .I completeness
 of coverage of the code in the change, and insensitivity to changes in
 the execution environment (e.g. not date sensitive).  Reviewers should
-also use \[lq]\*(n) -list change_details\[rq] to verify that a change does or
+also use \[lq]\*(n) \-list change_details\[rq] to verify that a change does or
 does not have testing exemptions.
 .SS Exemptions
 Various test exemptions may be granted by project administrators, see
@@ -64,3 +63,4 @@ and
 for more information.
 Copying tests into a change, or adding new tests to a change,
 may cancel those exemptions.
+.\" vim: set ts=8 sw=4 et :

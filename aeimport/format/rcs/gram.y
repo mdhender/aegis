@@ -1,6 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 2001-2006, 2008 Peter Miller
+ *      Copyright (C) 2001-2006, 2008, 2012 Peter Miller
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -19,16 +19,17 @@
 
 %{
 
+#include <common/ac/assert.h>
 #include <common/ac/stdlib.h>
 
-#include <common/error.h>
+#include <common/gettime.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <libaegis/help.h>
+
 #include <aeimport/format/rcs/gram.h>
 #include <aeimport/format/rcs/lex.h>
 #include <aeimport/format/version_list.h>
-#include <common/gettime.h>
-#include <libaegis/help.h>
-#include <common/str_list.h>
-#include <common/symtab.h>
 
 %}
 
@@ -88,7 +89,7 @@ rcs_parse(string_ty *physical, string_ty *logical)
 
     head = 0;
 
-    stp = symtab_alloc(5);
+    stp = new symtab_ty(5);
     pfn = physical;
     lfn = logical;
 
@@ -96,7 +97,7 @@ rcs_parse(string_ty *physical, string_ty *logical)
     yyparse();
     rcs_lex_close();
 
-    symtab_free(stp);
+    delete stp;
     stp = 0;
     return ancestor(head);
 }
@@ -143,11 +144,11 @@ find(string_ty *edit)
     format_version_ty *rp;
 
     assert(stp);
-    rp = (format_version_ty *)symtab_query(stp, edit);
+    rp = (format_version_ty *)stp->query(edit);
     if (!rp)
     {
         rp = new format_version_ty();
-        symtab_assign(stp, edit, rp);
+        stp->assign(edit, rp);
         rp->edit = str_copy(edit);
         rp->filename_physical = str_copy(pfn);
         rp->filename_logical = str_copy(lfn);
@@ -462,3 +463,6 @@ nosemi
     : /* empty */
         { rcs_lex_keyword_expected(); }
     ;
+
+
+/* vim: set ts=8 sw=4 et : */

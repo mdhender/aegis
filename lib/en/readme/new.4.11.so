@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -64,13 +64,13 @@ it could report files which had been removed.
 .if t \(bu
 .\" change 89
 A bug has been fixed in the \fIaecp\fP(1) command
-where it would scramble the \fIaet -reg\fP exemption.
+where it would scramble the \fIaet \-reg\fP exemption.
 .PP
 .if n *
 .if t \(bu
 .\" change 88
 A bug has been fixed in the \fIaede\fP(1) command.
-The problem manifested as an \fIaet -reg\fP command which terminated early.
+The problem manifested as an \fIaet \-reg\fP command which terminated early.
 .PP
 .if n *
 .if t \(bu
@@ -121,10 +121,10 @@ integrated\fP. inclusive.
 .if t \(bu
 .\" change 38, 24, 13
 The \fIael\fP(1) command now accepts arguments for the listings.  The
-\fIdefault-change\fP,
-\fIdefault-project\fP,
-\fIoutstanding-changes\fP and
-\fIuser-changes\fP
+\fIdefault\[hy]change\fP,
+\fIdefault\[hy]project\fP,
+\fIoutstanding\[hy]changes\fP and
+\fIuser\[hy]changes\fP
 lists now accept a user name argument.
 .PP
 .if n *
@@ -171,7 +171,7 @@ See \fIaesub\fP(5) for more information.
 .if t \(bu
 .\" change 19
 The \fIaeclean\fP command now touches the source files as well.
-Use the now \fB\-no-touch option if you don't want this.
+Use the now \fB\-no\[hy]touch option if you don't want this.
 .PP
 .if n *
 .if t \(bu
@@ -191,4 +191,5 @@ now need an ANSI C compiler to build Aegis.
 Some preparation has also been done to get the source ready for a C++ compiler.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.11 (29-Jan-2003)
+.SS Version 4.11 (29\[hy]Jan\[hy]2003)
+.\" vim: set ts=8 sw=4 et :

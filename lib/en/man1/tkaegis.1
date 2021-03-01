@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1999 Graham Wheeler
-.\"	Copyright (C) 2007, 2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1995, 1999 Graham Wheeler
+.\" Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) tkaegis
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -29,7 +28,7 @@ tkaegis \- GUI interface for Aegis, using TCL/TK
 The
 .I "\*(n)"
 command is used to provide a GUI interface to Aegis.  Its use should be
-self-evident to anyone familiar with Aegis.
+self\[hy]evident to anyone familiar with Aegis.
 .PP
 There are some areas where \*(n) is still missing functionality; these
 are primarily related to project and change attributes that are not yet
@@ -75,7 +74,7 @@ will appear.
 .PP
 Selecting a role will put you in a `mode', which will determine what other
 menus appear and what you can do next.  Each mode will now be described in
-turn, by giving a brief description of the role-specific menu hierarchy.
+turn, by giving a brief description of the role\[hy]specific menu hierarchy.
 Following the name of each menu item is the corresponding aegis command,
 where applicable.
 .SH ADMINISTRATOR MODE
@@ -86,7 +85,7 @@ and view all the change requests.
 Admin:
 .RS
 .TP 8n
-Edit Branch Attributes (aepa) -
+Edit Branch Attributes (aepa) \-
 Change the attributes for the branch
 .RE
 .TP 4n
@@ -96,68 +95,68 @@ Staff:
 Administrators:
 .RS
 .TP 8n
-Add (aena) -
+Add (aena) \-
 Add an administrator for the branch
 .TP 8n
-View (ael a) -
+View (ael a) \-
 View the administrators for the branch
 .TP 8n
-Remove (aera) -
+Remove (aera) \-
 Remove an administrator for the branch
 .RE
 .TP 4n
 Developers:
 .RS
 .TP 8n
-Add (aend) -
+Add (aend) \-
 Add a developer for the branch
 .TP 8n
-View (ael d) -
+View (ael d) \-
 View the developers for the branch
 .TP 8n
-Remove (aerd) -
+Remove (aerd) \-
 Remove a developer for the branch
 .RE
 .TP 4n
 Reviewers:
 .RS
 .TP 8n
-Add (aenrv) -
+Add (aenrv) \-
 Add a reviewer for the branch
 .TP 8n
-View (ael r) -
+View (ael r) \-
 View the reviewers for the branch
 .TP 8n
-Remove (aerrv) -
+Remove (aerrv) \-
 Remove a reviewer for the branch
 .RE
 .TP 4n
 Integrators:
 .RS
 .TP 8n
-Add (aeni) -
+Add (aeni) \-
 Add an integrator for the branch
 .TP 8n
-View (ael i) -
+View (ael i) \-
 View the integrators for the branch
 .TP 8n
-Remove (aeri) -
+Remove (aeri) \-
 Remove an integrator for the branch
 .RE
 .TP 4n
 Change:
 .RS
 .TP 8n
-Add New Change (aenc) -
+Add New Change (aenc) \-
 Add a new change request
 .TP 8n
-New Change Undo (aencu) -
+New Change Undo (aencu) \-
 Undo the addition of a change request
 .TP 8n
-Edit Change Attributes (aeca) -
+Edit Change Attributes (aeca) \-
 Modify the attributes of a change request
 .TP 8n
-View Changes (ael c) -
+View Changes (ael c) \-
 View the set of changes
 .RE
 .RE
@@ -165,81 +164,81 @@ View the set of changes
 This mode is used by developers.  When entering this mode, the Develop
 menu will appear, but no others.  A change must be selected after which
 the other menus will appear.  If there is only one change awaiting
-development, this will be auto-selected.
+development, this will be auto\[hy]selected.
 .TP 4n
 Develop:
 .RS
 .TP 8n
-View Changes (ael c) -
+View Changes (ael c) \-
 View all the change requests
 .TP 8n
-Begin Change (aedb) -
+Begin Change (aedb) \-
 Start work on a new change
 .TP 8n
-Continue Change -
+Continue Change \-
 Continue work on a change in development
 .TP 8n
-View Differences (aediff) -
+View Differences (aediff) \-
 Show all the diffs for this change
 .TP 8n
-Abort Change (aedbu) -
+Abort Change (aedbu) \-
 Abort working on the change
 .TP 8n
-End Change (aede) -
+End Change (aede) \-
 (Attempt to) end working on the change
 .TP 8n
-Resume Change (aedeu) -
+Resume Change (aedeu) \-
 Resume work on a change awaiting review
 .RE
 .TP 4n
 File:
 .RS
 .TP 8n
-Edit Files -
+Edit Files \-
 Allow files to be loaded into an editor
 .TP 8n
-Add New File (aenf) -
+Add New File (aenf) \-
 Add a new file to the project
 .TP 8n
-Discard New File (aenfu) -
+Discard New File (aenfu) \-
 Discard a newly added file
 .TP 8n
-Remove Existing File (aerm) -
+Remove Existing File (aerm) \-
 Discard a previously existing file
 .TP 8n
-Restore Existing File (aermu) -
+Restore Existing File (aermu) \-
 Undo discard of a previously existing file
 .TP 8n
-Change Existing File (aecp) -
+Change Existing File (aecp) \-
 Allow an existing file to be edited
 .TP 8n
-Undo Changes to Existing File (aecpu) -
+Undo Changes to Existing File (aecpu) \-
 Lose changes to an existing file
 .RE
 .TP 4n
 Build:
 .RS
 .TP 8n
-Build Project (aeb) -
+Build Project (aeb) \-
 Attempt to build the project
 .RE
 .TP 4n
 Test:
 .RS
 .TP 8n
-Add New Test Script (aent) -
+Add New Test Script (aent) \-
 Add a new test script to the project
 .TP 8n
-Discard New Test Script (aentu) -
+Discard New Test Script (aentu) \-
 Remove a new test script
 .TP 8n
-Run New Tests (aet) -
+Run New Tests (aet) \-
 Run the new tests
 .TP 8n
-Run Regression Tests (aet -reg) -
+Run Regression Tests (aet \-reg) \-
 Run the old tests
 .TP 8n
-Run Baseline Test (aet -bl) -
+Run Baseline Test (aet \-bl) \-
 Run the baseline test
 .RE
 .SH REVIEWER MODE
@@ -248,22 +247,22 @@ In this mode you are able to review changes.
 Review:
 .RS
 .TP 8n
-View Changes (ael c) -
+View Changes (ael c) \-
 View all the changes
 .TP 8n
-Begin Review (aerb) -
+Begin Review (aerb) \-
 Start reviewing a change
 .TP 8n
-Abort Review (aerbu) -
+Abort Review (aerbu) \-
 Abort reviewing a change
 .TP 8n
-Pass (aerpass) -
+Pass (aerpass) \-
 Pass a change review
 .TP 8n
-Fail (aerfail) -
+Fail (aerfail) \-
 Fail a change review
 .TP 8n
-Undo Pass (aerpu) -
+Undo Pass (aerpu) \-
 Undo a previously passed review
 .RE
 .SH INTEGRATOR MODE
@@ -272,37 +271,37 @@ In this mode you can perform integration activities.
 Integrate:
 .RS
 .TP 8n
-View Changes (ael c) -
+View Changes (ael c) \-
 View all the changes
 .TP 8n
-Start Integration (aeib) -
+Start Integration (aeib) \-
 Start integrating a change
 .TP 8n
-Resume Integration -
+Resume Integration \-
 Resume an integration in progress
 .TP 8n
-Cancel Integration (aeibu) -
+Cancel Integration (aeibu) \-
 Cancel an integration
 .TP 8n
-View Differences (aediff) -
+View Differences (aediff) \-
 Show the file differences for the change
 .TP 8n
-Build (aeb) -
+Build (aeb) \-
 Build the project
 .TP 8n
-New Tests (aet) -
+New Tests (aet) \-
 Run the new tests
 .TP 8n
-Baseline Test (aet -bl) -
+Baseline Test (aet \-bl) \-
 Run the baseline test
 .TP 8n
-Regression Test (aet -reg) -
+Regression Test (aet \-reg) \-
 Run the regression tests
 .TP 8n
-Pass (aeipass) -
+Pass (aeipass) \-
 Pass the integration
 .TP 8n
-Fail (aeifail) -
+Fail (aeifail) \-
 Fail the integration
 .RE
 .SH SEE ALSO
@@ -316,7 +315,7 @@ GUI interface for the \fIaenc\fP(1) command.
 .IR tkaepa (1)
 GUI interface for the \fIaepa\fP(1) command.
 .SH COPYRIGHT
-.so version.so
+.so etc/version.so
 \*(n) version \*(v)
 .br
 Copyright \(co 1995, 1999 Graham Wheeler
@@ -324,3 +323,4 @@ Copyright \(co 1995, 1999 Graham Wheeler
 Graham Wheeler <gram@cdsec.com>
 .br
 Citadel Data Security
+.\" vim: set ts=8 sw=4 et :

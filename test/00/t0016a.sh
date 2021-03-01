@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2000, 2001, 2004-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 1993-1998, 2000, 2001, 2004-2008, 2012 Peter Miller
+#       Copyright (C) 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -38,11 +39,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -59,7 +60,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -70,46 +71,46 @@ export PATH
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 no_result()
 {
-	set +x
-	echo "NO RESULT for test of aemv command ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT for test of aemv command ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 fail()
 {
-	set +x
-	echo "FAILED test of aemv command ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of aemv command ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 trap "no_result" 1 2 3 15
 
@@ -137,15 +138,15 @@ unset LANGUAGE
 #
 if test "$CXX" != "c++"
 then
-	cat >> c++ << fubar
+        cat >> c++ << fubar
 #!/bin/sh
 exec ${CXX-g++} \$*
 fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx c++
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
+        if test $? -ne 0 ; then no_result; fi
+        chmod a+rx c++
+        if test $? -ne 0 ; then no_result; fi
+        PATH=${work}:${PATH}
+        export PATH
 fi
 
 #
@@ -159,7 +160,7 @@ tmp=$work/tmp
 
 #
 # make a new project
-#	and check files it should have made
+#       and check files it should have made
 #
 activity="new project 146"
 $bin/aegis -newpro foo -vers "" -dir $workproj -v -lib $worklib > test.out 2>&1
@@ -181,7 +182,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # create a new change
-#	make sure it creates the files it should
+#       make sure it creates the files it should
 #
 activity="first new change 168"
 cat > $tmp << 'end'
@@ -194,7 +195,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # create a second change
-#	make sure it creates the files it should
+#       make sure it creates the files it should
 #
 activity="second new change 181"
 cat > $tmp << 'end'
@@ -214,7 +215,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # begin development of a change
-#	check it made the files it should
+#       check it made the files it should
 #
 activity="develop begin 201"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -v -lib $worklib > test.out 2>&1
@@ -225,13 +226,13 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 #
 activity="new file 208"
 $bin/aegis -new_file $workchan/main.cc $workchan/old1 $workchan/old2 \
-	$workchan/aegis.conf -nl -v -lib $worklib -p foo > test.out 2>&1
+        $workchan/aegis.conf -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 cat > $workchan/main.cc << 'end'
 int
 main(int argc, char **argv)
 {
-	return 0;
+        return 0;
 }
 end
 cat > $workchan/aegis.conf << 'end'
@@ -248,7 +249,7 @@ history_content_limitation = binary_capable;
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 posix_filename_charset = true;
 end
 if test $? -ne 0 ; then no_result; fi
@@ -264,17 +265,17 @@ cat > $workchan/test/00/t0001a.sh << 'end'
 
 no_result()
 {
-	echo WHIMPER 1>&2
-	exit 2
+        echo WHIMPER 1>&2
+        exit 2
 }
 fail()
 {
-	echo SHUZBUTT 1>&2
-	exit 1
+        echo SHUZBUTT 1>&2
+        exit 1
 }
 pass()
 {
-	exit 0
+        exit 0
 }
 trap "no_result" 1 2 3 15
 
@@ -376,7 +377,7 @@ $bin/aegis -mv $workchan/old1 "$workchan/bad:name" \
 if test $? -eq 0; then cat test.out; fail; fi
 
 sed -e '/warning: test mode/d' -e '/waiting for lock/d' \
-	< test.out.raw > test.out
+        < test.out.raw > test.out
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
@@ -384,9 +385,9 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 #
 cat > expected-err <<EOF
 aegis: project "foo": change 2: file name "bad:name" contains illegal
-	characters
+        characters
 EOF
-diff expected-err test.out > test.diff 2>&1
+diff -b expected-err test.out > test.diff 2>&1
 if test $? -ne 0 ; then cat test.diff; no_result; fi
 
 #
@@ -405,65 +406,70 @@ activity="verify change file state 386"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "main.cc";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-	},
-	{
-		file_name = "new1";
-		uuid = "UUID";
-		action = create;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "old1";
-	},
-	{
-		file_name = "new2";
-		uuid = "UUID";
-		action = create;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "old2";
-	},
-	{
-		file_name = "old1";
-		uuid = "UUID";
-		action = remove;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "new1";
-	},
-	{
-		file_name = "old2";
-		uuid = "UUID";
-		action = remove;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "new2";
-	},
+        {
+                file_name = "main.cc";
+                uuid = "UUID";
+                action = modify;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+        },
+        {
+                file_name = "new1";
+                uuid = "UUID";
+                action = create;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "old1";
+        },
+        {
+                file_name = "new2";
+                uuid = "UUID";
+                action = create;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "old2";
+        },
+        {
+                file_name = "old1";
+                uuid = "UUID";
+                action = remove;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "new1";
+        },
+        {
+                file_name = "old2";
+                uuid = "UUID";
+                action = remove;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "new2";
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -504,7 +510,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the integration
-#	make sure it create the files, etc
+#       make sure it create the files, etc
 #
 activity="integrate pass 491"
 $bin/aegis -intpass -nl -lib $worklib -c 2 -p foo > test.out 2>test.log
@@ -514,173 +520,187 @@ activity="verify project file state 495"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "main.cc";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
-	{
-		file_name = "new1";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		move = "old1";
-	},
-	{
-		file_name = "new2";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		move = "old2";
-	},
-	{
-		file_name = "old1";
-		uuid = "UUID";
-		action = remove;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "new1";
-		deleted_by = 2;
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
-	{
-		file_name = "old2";
-		uuid = "UUID";
-		action = remove;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "new2";
-		deleted_by = 2;
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
-	{
-		file_name = "test/00/t0001a.sh";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = test;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		architecture_times =
-		[
-			{
-				variant = "unspecified";
-				test_time = TIME;
-			},
-		];
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "main.cc";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
+        {
+                file_name = "new1";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                move = "old1";
+        },
+        {
+                file_name = "new2";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                move = "old2";
+        },
+        {
+                file_name = "old1";
+                uuid = "UUID";
+                action = remove;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "new1";
+                deleted_by = 2;
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
+        {
+                file_name = "old2";
+                uuid = "UUID";
+                action = remove;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                move = "new2";
+                deleted_by = 2;
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
+        {
+                file_name = "test/00/t0001a.sh";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = test;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                architecture_times =
+                [
+                        {
+                                variant = "unspecified";
+                                test_time = TIME;
+                        },
+                ];
+        },
 ];
 fubar
 check_it ok $workproj/info/trunk.fs
@@ -691,3 +711,4 @@ check_it ok $workproj/info/trunk.fs
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

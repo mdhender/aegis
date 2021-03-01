@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 1999, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "The Administrator"
@@ -29,7 +28,7 @@ These responsibilities include:
 \(bu access control:
 The administrator adds and removes all categories of user,
 including administrators.
-This is on a per-project basis,
+This is on a per\[hy]project basis,
 and has nothing to do with
 .UX
 user administration.
@@ -62,7 +61,7 @@ the staff but be given access permissions,
 the branches created, and
 the change must be created.
 .E(
-alex% \f(CBaenpr example -dir /projects/example -version -\fP
+alex% \f(CBaenpr example \-dir /projects/example \-version \-\fP
 aegis: project "example": project directory "/projects/example"
 aegis: project "example": created
 alex%
@@ -71,7 +70,7 @@ alex%
 Once the project has been created,
 the project attributes are set.
 Alex will set the desired project attributes using the
-.B -Edit
+.B \-Edit
 option of the
 .B aepa
 command.
@@ -86,14 +85,14 @@ reviewer_may_integrate = false;
 .E)
 The project attributes are set as follows:
 .E(
-alex% \f(CBaepa -edit -p example\fP
+alex% \f(CBaepa \-edit \-p example\fP
 \fI\&...edit as above...\fP
 aegis: project "example.1.0": attributes changed
 alex% \f(CBael p\fP
 List of Projects
 
 Project     Directory           Description
--------     -----------         -------------
+\-\-\-\-\-\-\-     \-\-\-\-\-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
 example     /projects/example   Aegis Documentation Example
                                 Project
 alex%
@@ -101,7 +100,7 @@ alex%
 The various staff must be added to the project.
 Developers are the only staff who may actually edit files.
 .E(
-alex% \f(CBaend pat jan sam -p example\fP
+alex% \f(CBaend pat jan sam \-p example\fP
 aegis: project "example": user "pat" is now a developer
 aegis: project "example": user "jan" is now a developer
 aegis: project "example": user "sam" is now a developer
@@ -111,14 +110,14 @@ Reviewers may veto a change.
 There may be overlap between the various categories,
 as show here for Jan:
 .E(
-alex% \f(CBaenrv robyn jan -p example\fP
+alex% \f(CBaenrv robyn jan \-p example\fP
 aegis: project "example": user "robyn" is now a reviewer
 aegis: project "example": user "jan" is now a reviewer
 alex%
 .E)
 The next role we need to fill is an integrator.
 .E(
-alex% \f(CBaeni isa -p example\fP
+alex% \f(CBaeni isa \-p example\fP
 aegis: project "example": user "isa" is now an integrator
 alex%
 .E)
@@ -128,9 +127,9 @@ Branches inherit their attributes and staff lists from their parent
 branches when they are first created, which is why we set all that
 stuff first.
 .E(
-alex% \f(CBaegis -nbr -p example 1\fP
+alex% \f(CBaegis \-nbr \-p example 1\fP
 aegis: project "example.1": created
-alex% \f(CBaegis -nbr -p example.1 0\fP
+alex% \f(CBaegis \-nbr \-p example.1 0\fP
 aegis: project "example.1.0": created
 alex%
 .E)
@@ -143,7 +142,7 @@ alex% \f(CBael p\fP
 List of Projects
 
 Project     Directory           Description
--------     -----------         -------------
+\-\-\-\-\-\-\-     \-\-\-\-\-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
 example     /projects/example   Aegis Documentation Example
                                 Project
 example.1   /projects/example/  Aegis Documentation Example
@@ -155,7 +154,7 @@ alex%
 Once the working branch has been created,
 Alex creates the first change.
 The
-.B -Edit
+.B \-Edit
 option of the
 .B aenc
 command is used,
@@ -172,15 +171,15 @@ cause = internal_enhancement;
 .E)
 The change is created as follows:
 .E(
-alex% \f(CBaenc -edit -p example.1.0\fP
+alex% \f(CBaenc \-edit \-p example.1.0\fP
 \fI\&...edit as above...\fP
 aegis: project "example.1.0": change 10: created
 alex%
 .E)
 Notice that the first change number is \[lq]10\[rq].  This is done so that
-changes 1 to 9 could be used as bug-fix branches at some future time.
+changes 1 to 9 could be used as bug\[hy]fix branches at some future time.
 See the \fIBranching\fP chapter for more information.
-You can over-ride this is you need to.
+You can over\[hy]ride this is you need to.
 .LP
 The above was written almost a decade ago.  There is a newer command,
 \fItkaenc\fP, which uses a GUI and is much easier to use, with a much
@@ -212,7 +211,7 @@ Also,
 having a bug in this example is useful.
 The change is created as follows:
 .E(
-alex% \f(CBaenc -edit -p example.1.0\fP
+alex% \f(CBaenc \-edit \-p example.1.0\fP
 \fI\&...edit as above...\fP
 aegis: project "example.1.0": change 11: created
 alex%
@@ -234,7 +233,7 @@ cause = internal_enhancement;
 .LP
 The change is created as follows:
 .E(
-alex% \f(CBaenc -edit -p example.1.0\fP
+alex% \f(CBaenc \-edit \-p example.1.0\fP
 \fI\&...edit as above...\fP
 aegis: project "example.1.0": change 12: created
 alex%
@@ -255,7 +254,7 @@ cause = internal_enhancement;
 .LP
 The change is created as follows:
 .E(
-alex% \f(CBaenc -edit -p example.1.0\fP
+alex% \f(CBaenc \-edit \-p example.1.0\fP
 \fI\&...edit as above...\fP
 aegis: project "example.1.0": change 13: created
 alex%
@@ -302,3 +301,4 @@ Most Aegis commands also have a
 .I \-List
 option,
 which usually lists interesting context sensitive information.
+.\" vim: set ts=8 sw=4 et :

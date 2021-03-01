@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2002, 2004, 2006-2008 Peter Miller.
+.\" aegis - project change supervisor
+.\" Copyright (C) 1993-2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
+.\"
 .nh 2 "Required Features"
 .LP
 The heart of any DMT is an \fIinference engine\fP.
@@ -65,12 +65,12 @@ plus it may add or remove files)
 for all files you must be able to say to the dependency maintenance
 tool,
 .QP
-"If and only if the file is up-to-date in the baseline,
+"If and only if the file is up\[hy]to\[hy]date in the baseline,
 use the baseline copy of the file,
 otherwise construct the file in the development directory".
 .LP
 The presence of a source file in the change makes the copy
-in the baseline out-of-date.
+in the baseline out\[hy]of\[hy]date.
 .LP
 Most DMTs with this capability implement it by using
 some sort of search path,
@@ -137,11 +137,11 @@ Keeping include dependencies in a file has a number of disadvantages:
 it is either generated before the DMT is invoked,
 in which case it may do more work than is necessary,
 or it may be invoked after the DMT (or after the DMT has scanned its rules),
-in which case it may well be out-of-date when the DMT needs it.
+in which case it may well be out\[hy]of\[hy]date when the DMT needs it.
 .LP
 For example,
 the use of
-.I "gcc -M"
+.I "gcc \-M"
 produces "dot d" files,
 which may be merged to
 construct such an includable dependency file.
@@ -159,7 +159,7 @@ it has some of the advantages and disadvantages of both.
 .LP
 \(bu Many tools which can generate this information,
 such as the
-.I "gcc -M"
+.I "gcc \-M"
 option,
 are triggered by source files,
 and are unable to manage a case where it is an include file which is changing,
@@ -188,4 +188,5 @@ but this is amenable to some caching and the losses of performance
 are not as bad as could be imagined.
 .LP
 This method has the advantage of correctness in all cases,
-where a static file may at times be out-of-date.
+where a static file may at times be out\[hy]of\[hy]date.
+.\" vim: set ts=8 sw=4 et :

@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1991-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 1991-2008, 2012 Peter Miller
+#       Copyright (C) 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -32,11 +33,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -55,7 +56,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -66,46 +67,47 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of -New_ReLeaSe functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of -New_ReLeaSe functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT for test of -New_ReLeaSe functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT for test of -New_ReLeaSe functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap "no_result" 1 2 3 15
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		< $1 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $2 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= 0; /.*|= TIME_NOT_SET;|' \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                < $1 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $2 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 #
@@ -144,20 +146,20 @@ unset LANGUAGE
 #
 if test "$CXX" != "c++"
 then
-	cat >> c++ << fubar
+        cat >> c++ << fubar
 #!/bin/sh
 exec ${CXX-g++} \$*
 fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx c++
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
+        if test $? -ne 0 ; then no_result; fi
+        chmod a+rx c++
+        if test $? -ne 0 ; then no_result; fi
+        PATH=${work}:${PATH}
+        export PATH
 fi
 
 #
 # make a new project
-#	and check files it should have made
+#       and check files it should have made
 #
 activity="create new project 149"
 $bin/aegis -newpro foo -version "" -dir $workproj -lib $worklib
@@ -212,7 +214,7 @@ cat > $workchan/main.cc << 'end'
 int
 main(int argc, char **argv)
 {
-	return 0;
+        return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -230,7 +232,7 @@ history_content_limitation = binary_capable;
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 end
 if test $? -ne 0 ; then no_result; fi
 
@@ -244,17 +246,17 @@ cat > $workchan/test/00/t0001a.sh << 'end'
 #!/bin/sh
 pass()
 {
-	exit 0
+        exit 0
 }
 fail()
 {
-	echo SHUZBUTT 1>&2
-	exit 1
+        echo SHUZBUTT 1>&2
+        exit 1
 }
 no_result()
 {
-	echo WHIMPER 1>&2
-	exit 2
+        echo WHIMPER 1>&2
+        exit 2
 }
 trap "no_result" 1 2 3 15
 
@@ -264,13 +266,13 @@ q=$?
 # check for signals
 if test $q -ge 128
 then
-	no_result
+        no_result
 fi
 
 # should not complain
 if test $q -ne 0
 then
-	fail
+        fail
 fi
 
 # it probably worked
@@ -383,46 +385,46 @@ test_baseline_exempt = true;
 regression_test_exempt = true;
 architecture =
 [
-	"unspecified",
+        "unspecified",
 ];
 copyright_years =
 [
-	YYYY,
+        YYYY,
 ];
 state = completed;
 delta_number = 1;
 history =
 [
-	{
-		when = TIME;
-		what = new_change;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_begin;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_end;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = review_pass;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = integrate_begin;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = integrate_pass;
-		who = "USER";
-	},
+        {
+                when = TIME;
+                what = new_change;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_begin;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_end;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = review_pass;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = integrate_begin;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = integrate_pass;
+                who = "USER";
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -432,39 +434,39 @@ activity="check change 1.1.10 file state 420"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-	},
-	{
-		file_name = "main.cc";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-	},
-	{
-		file_name = "test/00/t0001a.sh";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = test;
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = config;
+        },
+        {
+                file_name = "main.cc";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = source;
+        },
+        {
+                file_name = "test/00/t0001a.sh";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = test;
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -480,70 +482,72 @@ test_baseline_exempt = true;
 regression_test_exempt = true;
 architecture =
 [
-	"unspecified",
+        "unspecified",
 ];
 copyright_years =
 [
-	YYYY,
+        YYYY,
 ];
 state = being_developed;
 development_directory = "branch.1/branch.1";
 history =
 [
-	{
-		when = TIME;
-		what = new_change;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_begin;
-		who = "USER";
-	},
+        {
+                when = TIME;
+                what = new_change;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_begin;
+                who = "USER";
+        },
 ];
 branch =
 {
-	umask = 022;
-	developer_may_review = true;
-	developer_may_integrate = true;
-	reviewer_may_integrate = true;
-	developers_may_create_changes = false;
-	default_test_exemption = false;
-	default_test_regression_exemption = true;
-	skip_unlucky = false;
-	compress_database = false;
-	develop_end_action = goto_being_reviewed;
-	history =
-	[
-		{
-			delta_number = 1;
-			change_number = 10;
-		},
-	];
-	change =
-	[
-		10,
-	];
-	administrator =
-	[
-		"USER",
-	];
-	developer =
-	[
-		"USER",
-	];
-	reviewer =
-	[
-		"USER",
-	];
-	integrator =
-	[
-		"USER",
-	];
-	minimum_change_number = 10;
-	reuse_change_numbers = true;
-	minimum_branch_number = 1;
-	protect_development_directory = false;
+        umask = 022;
+        developer_may_review = true;
+        developer_may_integrate = true;
+        reviewer_may_integrate = true;
+        developers_may_create_changes = false;
+        default_test_exemption = false;
+        default_test_regression_exemption = true;
+        skip_unlucky = false;
+        compress_database = false;
+        develop_end_action = goto_being_reviewed;
+        history =
+        [
+                {
+                        delta_number = 1;
+                        change_number = 10;
+                        when = TIME;
+                        is_a_branch = no;
+                },
+        ];
+        change =
+        [
+                10,
+        ];
+        administrator =
+        [
+                "USER",
+        ];
+        developer =
+        [
+                "USER",
+        ];
+        reviewer =
+        [
+                "USER",
+        ];
+        integrator =
+        [
+                "USER",
+        ];
+        minimum_change_number = 10;
+        reuse_change_numbers = true;
+        minimum_branch_number = 1;
+        protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -553,94 +557,94 @@ activity="check branch 1.1 file state 540"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "main.cc";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
-	},
-	{
-		file_name = "test/00/t0001a.sh";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = test;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "main.cc";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                test =
+                [
+                        "test/00/t0001a.sh",
+                ];
+        },
+        {
+                file_name = "test/00/t0001a.sh";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = test;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -656,63 +660,63 @@ test_baseline_exempt = true;
 regression_test_exempt = true;
 architecture =
 [
-	"unspecified",
+        "unspecified",
 ];
 state = being_developed;
 development_directory = "branch.1";
 history =
 [
-	{
-		when = TIME;
-		what = new_change;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_begin;
-		who = "USER";
-	},
+        {
+                when = TIME;
+                what = new_change;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_begin;
+                who = "USER";
+        },
 ];
 branch =
 {
-	umask = 022;
-	developer_may_review = true;
-	developer_may_integrate = true;
-	reviewer_may_integrate = true;
-	developers_may_create_changes = false;
-	default_test_exemption = false;
-	default_test_regression_exemption = true;
-	skip_unlucky = false;
-	compress_database = false;
-	develop_end_action = goto_being_reviewed;
-	change =
-	[
-		1,
-	];
-	sub_branch =
-	[
-		1,
-	];
-	administrator =
-	[
-		"USER",
-	];
-	developer =
-	[
-		"USER",
-	];
-	reviewer =
-	[
-		"USER",
-	];
-	integrator =
-	[
-		"USER",
-	];
-	minimum_change_number = 10;
-	reuse_change_numbers = true;
-	minimum_branch_number = 1;
-	protect_development_directory = false;
+        umask = 022;
+        developer_may_review = true;
+        developer_may_integrate = true;
+        reviewer_may_integrate = true;
+        developers_may_create_changes = false;
+        default_test_exemption = false;
+        default_test_regression_exemption = true;
+        skip_unlucky = false;
+        compress_database = false;
+        develop_end_action = goto_being_reviewed;
+        change =
+        [
+                1,
+        ];
+        sub_branch =
+        [
+                1,
+        ];
+        administrator =
+        [
+                "USER",
+        ];
+        developer =
+        [
+                "USER",
+        ];
+        reviewer =
+        [
+                "USER",
+        ];
+        integrator =
+        [
+                "USER",
+        ];
+        minimum_change_number = 10;
+        reuse_change_numbers = true;
+        minimum_branch_number = 1;
+        protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -744,64 +748,64 @@ test_baseline_exempt = false;
 regression_test_exempt = true;
 architecture =
 [
-	"unspecified",
+        "unspecified",
 ];
 version_previous = "1.0.D001";
 state = being_developed;
 development_directory = ".";
 history =
 [
-	{
-		when = TIME;
-		what = new_change;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_begin;
-		who = "USER";
-	},
+        {
+                when = TIME;
+                what = new_change;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_begin;
+                who = "USER";
+        },
 ];
 branch =
 {
-	umask = 022;
-	developer_may_review = true;
-	developer_may_integrate = true;
-	reviewer_may_integrate = true;
-	developers_may_create_changes = false;
-	default_test_exemption = false;
-	default_test_regression_exemption = true;
-	skip_unlucky = false;
-	compress_database = false;
-	develop_end_action = goto_being_reviewed;
-	change =
-	[
-		1,
-	];
-	sub_branch =
-	[
-		1,
-	];
-	administrator =
-	[
-		"USER",
-	];
-	developer =
-	[
-		"USER",
-	];
-	reviewer =
-	[
-		"USER",
-	];
-	integrator =
-	[
-		"USER",
-	];
-	minimum_change_number = 10;
-	reuse_change_numbers = true;
-	minimum_branch_number = 1;
-	protect_development_directory = false;
+        umask = 022;
+        developer_may_review = true;
+        developer_may_integrate = true;
+        reviewer_may_integrate = true;
+        developers_may_create_changes = false;
+        default_test_exemption = false;
+        default_test_regression_exemption = true;
+        skip_unlucky = false;
+        compress_database = false;
+        develop_end_action = goto_being_reviewed;
+        change =
+        [
+                1,
+        ];
+        sub_branch =
+        [
+                1,
+        ];
+        administrator =
+        [
+                "USER",
+        ];
+        developer =
+        [
+                "USER",
+        ];
+        reviewer =
+        [
+                "USER",
+        ];
+        integrator =
+        [
+                "USER",
+        ];
+        minimum_change_number = 10;
+        reuse_change_numbers = true;
+        minimum_branch_number = 1;
+        protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -818,7 +822,7 @@ check_it $workproj2/info/trunk.fs ok
 
 #
 # create a second change
-#	make sure it creates the files it should
+#       make sure it creates the files it should
 #
 activity="new change 809"
 cat > $tmp << 'end'
@@ -855,11 +859,11 @@ test_baseline_exempt = false;
 regression_test_exempt = true;
 architecture =
 [
-	"unspecified",
+        "unspecified",
 ];
 copyright_years =
 [
-	YYYY,
+        YYYY,
 ];
 state = being_developed;
 given_regression_test_exemption = true;
@@ -867,16 +871,16 @@ project_file_command_sync = 8410;
 development_directory = ".../foo.chan";
 history =
 [
-	{
-		when = TIME;
-		what = new_change;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_begin;
-		who = "USER";
-	},
+        {
+                when = TIME;
+                what = new_change;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_begin;
+                who = "USER";
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -886,17 +890,17 @@ activity="check file contents 871"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "main.cc";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-	},
+        {
+                file_name = "main.cc";
+                uuid = "UUID";
+                action = modify;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                };
+                usage = source;
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -912,71 +916,73 @@ test_baseline_exempt = true;
 regression_test_exempt = true;
 architecture =
 [
-	"unspecified",
+        "unspecified",
 ];
 copyright_years =
 [
-	YYYY,
+        YYYY,
 ];
 state = being_developed;
 development_directory = "branch.1/branch.1";
 history =
 [
-	{
-		when = TIME;
-		what = new_change;
-		who = "USER";
-	},
-	{
-		when = TIME;
-		what = develop_begin;
-		who = "USER";
-	},
+        {
+                when = TIME;
+                what = new_change;
+                who = "USER";
+        },
+        {
+                when = TIME;
+                what = develop_begin;
+                who = "USER";
+        },
 ];
 branch =
 {
-	umask = 022;
-	developer_may_review = true;
-	developer_may_integrate = true;
-	reviewer_may_integrate = true;
-	developers_may_create_changes = false;
-	default_test_exemption = false;
-	default_test_regression_exemption = true;
-	skip_unlucky = false;
-	compress_database = false;
-	develop_end_action = goto_being_reviewed;
-	history =
-	[
-		{
-			delta_number = 1;
-			change_number = 10;
-		},
-	];
-	change =
-	[
-		2,
-		10,
-	];
-	administrator =
-	[
-		"USER",
-	];
-	developer =
-	[
-		"USER",
-	];
-	reviewer =
-	[
-		"USER",
-	];
-	integrator =
-	[
-		"USER",
-	];
-	minimum_change_number = 10;
-	reuse_change_numbers = true;
-	minimum_branch_number = 1;
-	protect_development_directory = false;
+        umask = 022;
+        developer_may_review = true;
+        developer_may_integrate = true;
+        reviewer_may_integrate = true;
+        developers_may_create_changes = false;
+        default_test_exemption = false;
+        default_test_regression_exemption = true;
+        skip_unlucky = false;
+        compress_database = false;
+        develop_end_action = goto_being_reviewed;
+        history =
+        [
+                {
+                        delta_number = 1;
+                        change_number = 10;
+                        when = TIME;
+                        is_a_branch = no;
+                },
+        ];
+        change =
+        [
+                2,
+                10,
+        ];
+        administrator =
+        [
+                "USER",
+        ];
+        developer =
+        [
+                "USER",
+        ];
+        reviewer =
+        [
+                "USER",
+        ];
+        integrator =
+        [
+                "USER",
+        ];
+        minimum_change_number = 10;
+        reuse_change_numbers = true;
+        minimum_branch_number = 1;
+        protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -986,3 +992,4 @@ check_it $workproj2/info/change/0/001.branch/0/001 ok
 # the things tested in this test, worked
 #
 pass
+# vim: set ts=8 sw=4 et :

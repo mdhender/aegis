@@ -1,47 +1,46 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Review_PASS" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Review_PASS" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis review pass \- pass a change review
 .XX "aerpass(1)" "pass a change review"
 .SH SYNOPSIS
 .B \*(n)
-.B -Review_PASS
+.B \-Review_PASS
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Review_PASS
-.B -List
+.B \-Review_PASS
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Review_PASS
-.B -Help
+.B \-Review_PASS
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Review_PASS
+.I \-Review_PASS
 command is used to
 notify \*(n) that a change has passed review.
 .PP
@@ -72,7 +71,7 @@ state to the
 .I "awaiting integration"
 state.
 .TP 8n
-Non-Zero:
+Non\[hy]Zero:
 .RS
 The setting of the \f[CW]develop_\%end_\%action\fP of the project attributes
 is examined:
@@ -101,13 +100,15 @@ arrow " review" ljust " pass" ljust
 S2: box "awaiting" "integration"
 .\" mark time:
 S3: box "being" "reviewed" with .w at S1.e+(0.5,0)
-T7: spline -> from 2/3<S3.sw,S3.se> then down 1/2 then right 5/6 \
-	then up 1.5 then left 5/6 then to 2/3<S3.nw,S3.ne>
+move to 2/3<S3.sw,S3.se>
+T7: spline down 0.5 then right (5/6) \
+    then up 1.5 then left (5/6) then down 0.5 ->
 "review " rjust "pass " rjust at S3.e+(0.5,0)
 .\" backtrack:
 S4: box "being" "reviewed" with .w at S3.e+(1,0)
 S5: box "awaiting" "review" with .s at S4.n+(0,0.5)
-T8: spline -> from S4.e then right 1/2 then up 1 then to S5.e
+move to S4.e
+T8: spline right 0.5 then up 1 then to S5.e ->
 "review " rjust "pass " rjust at S4.e+(0.5,0.5)
 .PE
 .\" ------------------------------------------------------------------------
@@ -117,7 +118,7 @@ setting the \fIdevelop_\%end_\%action\fP field of the project confituration
 file to \fIgoto_\%awaiting_\%integration\fP.
 .PP
 If the project configuration file has specified the presence of
-\f[CW]Signed-off-by:\fP lines, a suitable line containing the current
+\f[CW]Signed\[hy]off\[hy]by:\fP lines, a suitable line containing the current
 user's email address will be appended to the change description.
 .PP
 If you use one of the \-File, \-Edit or \-Reason options to add comments,
@@ -131,24 +132,24 @@ attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
 for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_edit.so
-.so o_file.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_sob.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_edit.so
+.so lib/en/man1/o_file.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_sob.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aerpass '\*(n) -rpass \e!* -v'
-sh$	aerpass(){\*(n) -rpass "$@" -v}
+csh%    alias aerpass '\*(n) \-rpass \e!* \-v'
+sh$     aerpass(){\*(n) \-rpass "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -162,7 +163,7 @@ the current user is not a reviewer of the project.
 Its is an error if
 the current user developed the change and the project is configured to
 disallow developers to review their own changes (default).
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -193,4 +194,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

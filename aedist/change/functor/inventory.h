@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2007 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGET_CHANGE_FUNCTOR_INVENTORY_H
@@ -24,7 +24,7 @@
 #include <common/nstring/list.h>
 #include <libaegis/change/functor.h>
 
-struct project_ty; // forward
+struct project; // forward
 
 /**
   * The change_functor_inventory class is used to represent the action
@@ -65,12 +65,13 @@ public:
       *     The list of version patterns used to filter out changes
       *     from the inventory.
       */
-    change_functor_inventory(bool incbr, project_ty *pp,
-	bool include_original_uuid, bool uuid_links, const nstring &prefix,
-        const char *suffix, const nstring_list&, const nstring_list&);
+    change_functor_inventory(bool incbr, project *pp,
+        bool include_original_uuid, bool uuid_links, const nstring &prefix,
+        const char *suffix, const nstring_list &include_change,
+        const nstring_list &exclude_change);
 
     // See base class for documentation.
-    void operator()(change::pointer );
+    void operator()(change::pointer cp);
 
 private:
     /**
@@ -85,7 +86,7 @@ private:
     /**
       * The pp instance variabel is used to remember the project being listed.
       */
-    project_ty *pp;
+    project *pp;
 
     nstring_list exclude_change;
 
@@ -127,3 +128,4 @@ private:
 };
 
 #endif // AEGET_CHANGE_FUNCTOR_INVENTORY_H
+// vim: set ts=8 sw=4 et :

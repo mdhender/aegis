@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2000, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -61,27 +61,28 @@ You're going to like this one, folks!
 .if n *
 .if t \(bu
 .\" change 22
-The \fIaedist -receive\fP command now preserves the testing exemptions,
+The \fIaedist \-receive\fP command now preserves the testing exemptions,
 if possible.
 .PP
 .if n *
 .if t \(bu
 .\" change 18
-A problem with very very large test runs and the --no-persevere option
+A problem with very very large test runs and the \-no\[hy]persevere option
 has been fixed.
 .PP
 .if n *
 .if t \(bu
 .\" change 17
-The \fIaenf\fP(1) and \fIaent\fP(1) commands now accept \fB--template\fP
-and \fB--no-template\fP options, to control the use of new file templates.
+The \fIaenf\fP(1) and \fIaent\fP(1) commands now accept \fB\-template\fP
+and \fB\-no\[hy]template\fP options, to control the use of new file templates.
 .PP
 .if n *
 .if t \(bu
 .\" change 17
-A nasty Catch-22 in the \fIaedist\fP(1) command has been fixed, involving
+A nasty Catch\[hy]22 in the \fIaedist\fP(1) command has been fixed, involving
 the (unnecessary) use of new file templates, when the actual template
-files don't yet exist in the --receive development directory.
+files don't yet exist in the \-receive development directory.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.22 (13-May-2000)
+.SS Version 3.22 (13\[hy]May\[hy]2000)
+.\" vim: set ts=8 sw=4 et :

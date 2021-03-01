@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2008 Peter Miller
+//      Copyright (C) 1999-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 void
 wide_output_wrap::wrap()
 {
-    trace(("wide_output_wrap::wrap(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_wrap::wrap(this = %p)\n{\n", this));
     const wchar_t *s = buf.get_data();
     const wchar_t *s_end = s + buf.size();
     while (s < s_end)
@@ -70,7 +70,7 @@ wide_output_wrap::wrap()
         //
         if (s >= s_end)
         {
-            trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
+            trace(("s_start=%p s=%p\n", s_start, s));
             language_C();
             deeper->write(s_start, s - s_start);
             break;
@@ -109,12 +109,12 @@ wide_output_wrap::wrap()
         // Write out the line so far, plus the newline,
         // and then skip any trailing spaces (including any newlines).
         //
-        trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
+        trace(("s_start=%p s=%p\n", s_start, s));
         language_C();
         deeper->write(s_start, s - s_start);
         while (s < s_end && iswspace(*s))
             ++s;
-        trace(("s=%08lX\n", (long)s));
+        trace(("s=%p\n", s));
         if (s >= s_end)
             break;
         deeper->put_wc(L'\n');
@@ -135,7 +135,7 @@ wide_output_wrap::wrap()
 
 wide_output_wrap::~wide_output_wrap()
 {
-    trace(("wide_output_wrap::destructor(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_wrap::destructor(this = %p)\n{\n", this));
     flush();
     if (!buf.empty())
         wrap();
@@ -170,8 +170,8 @@ wide_output_wrap::filename()
 void
 wide_output_wrap::write_inner(const wchar_t *data, size_t len)
 {
-    trace(("wide_output_wrap::write(this = %08lX, data = %08lX, "
-        "len = %ld)\n{\n", (long)this, (long)data, (long)len));
+    trace(("wide_output_wrap::write(this = %p, data = %p, "
+        "len = %ld)\n{\n", this, data, (long)len));
     while (len > 0)
     {
         wchar_t wc = *data++;
@@ -209,7 +209,7 @@ wide_output_wrap::page_length()
 void
 wide_output_wrap::end_of_line_inner()
 {
-    trace(("wide_output_wrap::eoln(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_wrap::eoln(this = %p)\n{\n", this));
     if (!buf.empty())
         put_wc(L'\n');
     trace(("}\n"));
@@ -222,3 +222,6 @@ wide_output_wrap::type_name()
 {
     return "wide_output_wrap";
 }
+
+
+// vim: set ts=8 sw=4 et :

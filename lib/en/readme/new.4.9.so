@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -72,7 +72,7 @@ tests which covered multiple architectures.
 .\" change 32
 The \fIaedist\fP(1) program now includes a change number, which will be
 used on receipt if possible.  Note that this produces .ae files which
-are not backwards compatible; the -nopatch option will suppress inclusion
+are not backwards compatible; the \-nopatch option will suppress inclusion
 of the change number in the archive.
 .PP
 .if n *
@@ -108,4 +108,5 @@ A problem with long command lines has been fixed in the
 A problem with \fIaeimport\fP(1) and binary files has been fixed.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.9 (23-Oct-2002)
+.SS Version 4.9 (23\[hy]Oct\[hy]2002)
+.\" vim: set ts=8 sw=4 et :

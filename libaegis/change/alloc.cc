@@ -1,38 +1,39 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2008 Peter Miller
-//	Copyright (C) 2007, 2008 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 1999, 2000, 2002-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2007, 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/change.h>
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
-#include <libaegis/project.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
 
 
 change::pointer
-change_alloc(project_ty *pp, long number)
+change_alloc(project *pp, long number)
 {
     change::pointer cp;
     size_t          n;
 
-    trace(("change_alloc(pp = %08lX, number = %ld)\n{\n", (long)pp,
-	number));
+    trace(("change_alloc(pp = %p, number = %ld)\n{\n", pp,
+        number));
     assert(number >= 1 || number == MAGIC_ZERO);
     cp = (change::pointer)mem_alloc(sizeof(change));
     cp->reference_count = 1;
@@ -66,7 +67,10 @@ change_alloc(project_ty *pp, long number)
     cp->project_specific_setenv_performed = false;
     for (n = 0; n < SIZEOF(cp->file_list); ++n)
             cp->file_list[n] = 0;
-    trace(("return %08lX;\n", (long)cp));
+    trace(("return %p;\n", cp));
     trace(("}\n"));
     return cp;
 }
+
+
+// vim: set ts=8 sw=4 et :

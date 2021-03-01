@@ -1,34 +1,35 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002-2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
 .\" change 72
 The \fIaepatch\fP(1) and \fIaetar\fP(1) commands now accept
-\-add-path-prefix and \-remove-path-prefix options, for manipulating
+\-add\[hy]path\[hy]prefix and \-remove\[hy]path\[hy]prefix options, for
+manipulating
 the filenames when unpacking an creating a change set.
 The \fIaepatch\fP(1) documentation has been significantly improved.
 .PP
 .if n *
 .if t \(bu
 .\" change 70
-There is a new \fIaecp -rescind\fP option, which may be used to rescind
+There is a new \fIaecp \-rescind\fP option, which may be used to rescind
 (roll back) a completed change.  See \fIaecp\fP(1) for more information.
 .PP
 .if n *
@@ -41,7 +42,7 @@ the \fI${user email}\fP substitution.
 .if t \(bu
 .\" change 65
 There is a new \fIproject_gantt\fP report, which produces
-comma-separated-value (CSV) output, for extracting data to import into
+comma\[hy]separated\[hy]value (CSV) output, for extracting data to import into
 Ms. Project.  Unfortunately, Mr. Project does not yet know how to import
 CSV files.
 .PP
@@ -78,7 +79,7 @@ more information.
 .if n *
 .if t \(bu
 .\" Change 16
-A work-around for the aeimport/delta bug has been added,
+A work\[hy]around for the aeimport/delta bug has been added,
 for projects which were imported with the buggy aeimport.
 .PP
 .if n *
@@ -105,4 +106,5 @@ Some build problems have been fixed.
 Numerous improvements have been made to the web interface.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.8 (19-Aug-2002)
+.SS Version 4.8 (19\[hy]Aug\[hy]2002)
+.\" vim: set ts=8 sw=4 et :

@@ -1,6 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2008 Peter Miller
+//      Copyright (C) 1999, 2001-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2008 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -79,7 +80,7 @@ list_outstanding_changes_all(change_identifier &cid, string_list_ty *)
     //
     for (size_t j = 0; j < name.nstrings; ++j)
     {
-        project_ty *pp = project_alloc(name.string[j]);
+        project *pp = project_alloc(name.string[j]);
         pp->bind_existing();
 
         //
@@ -128,7 +129,7 @@ list_outstanding_changes_all(change_identifier &cid, string_list_ty *)
                 )
                 {
                     state_col->end_of_line();
-                    state_col->fputs(change_developer_name(cp));
+                    state_col->fputs(cp->developer_name());
                 }
                 if
                 (
@@ -138,7 +139,7 @@ list_outstanding_changes_all(change_identifier &cid, string_list_ty *)
                 )
                 {
                     state_col->end_of_line();
-                    state_col->fputs(change_integrator_name(cp));
+                    state_col->fputs(cp->integrator_name());
                 }
             }
             if (description_col && cstate_data->brief_description)
@@ -157,3 +158,6 @@ list_outstanding_changes_all(change_identifier &cid, string_list_ty *)
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

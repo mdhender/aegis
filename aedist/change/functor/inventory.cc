@@ -1,28 +1,27 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 2004-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2007 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <common/uuidentifier.h>
 #include <common/version_stmp.h>
 #include <libaegis/attribute.h>
@@ -36,7 +35,7 @@
 #include <aedist/change/functor/inventory.h>
 
 
-change_functor_inventory::change_functor_inventory(bool arg1, project_ty *arg2,
+change_functor_inventory::change_functor_inventory(bool arg1, project *arg2,
     bool arg3, bool arg4, const nstring &arg5, const char *arg6,
     const nstring_list &arg7, const nstring_list &arg8) :
     change_functor(arg1),
@@ -67,18 +66,19 @@ change_functor_inventory::change_functor_inventory(bool arg1, project_ty *arg2,
 }
 
 
-static int
-max_printable(const char *s)
+static size_t
+max_printable(const nstring &s)
 {
-    int len = 0;
+    size_t len = 0;
+    const char *cp = s.c_str();
     for (;;)
     {
-	unsigned char c = *s++;
-	if (!c || !isprint(c))
-	    break;
-	++len;
-	if (len >= 200)
-	    break;
+        unsigned char c = *cp++;
+        if (!c || !isprint(c))
+            break;
+        ++len;
+        if (len >= 200)
+            break;
     }
     return len;
 }
@@ -94,12 +94,12 @@ change_functor_inventory::print_one_line(change::pointer cp,
     // aedist --missing, et al.
     //
     if (change_attributes_find_boolean(cp, "aeget:inventory:hide"))
-	return;
+        return;
 
     printf("<tr class=\"%s-group\">", (((num++ / 3) & 1) ? "even" : "odd"));
     printf("<td>");
     emit_change_href(cp, "menu");
-    html_encode_string(change_version_get(cp));
+    html_encode_string(cp->version_get());
     printf("</a></td><td><tt>");
     if (generate_uuid_based_links)
     {
@@ -121,10 +121,9 @@ change_functor_inventory::print_one_line(change::pointer cp,
     // ensure that this row only ever takes one line, and contains no
     // html anchor.  This makes it simple to parse in aedist --missing
     //
-    string_ty *s = change_brief_description_get(cp);
-    s = str_n_from_c(s->str_text, max_printable(s->str_text));
+    nstring s = cp->brief_description_get();
+    s = s.substr(0, max_printable(s));
     html_encode_string(s);
-    str_free(s);
     printf("</td></tr>\n");
 }
 
@@ -137,7 +136,7 @@ change_functor_inventory::operator()(change::pointer cp)
 
     nstring uuid(cp->uuid_get());
     if (!uuid.empty())
-	print_one_line(cp, uuid);
+        print_one_line(cp, uuid);
 
     if (!include_original_uuid)
         return;
@@ -145,25 +144,25 @@ change_functor_inventory::operator()(change::pointer cp)
     cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->attribute)
     {
-	for (size_t j = 0; j < cstate_data->attribute->length; ++j)
-	{
-	    attributes_ty *ap = cstate_data->attribute->list[j];
-	    assert(ap);
-	    if
-    	    (
-		ap->name
-	    &&
-		0 == strcasecmp(ORIGINAL_UUID, ap->name->str_text)
-	    &&
-		ap->value
-	    &&
-		// users can edit, make sure is OK
-		universal_unique_identifier_valid(ap->value)
-	    )
-	    {
-		print_one_line(cp, nstring(ap->value));
-	    }
-	}
+        for (size_t j = 0; j < cstate_data->attribute->length; ++j)
+        {
+            attributes_ty *ap = cstate_data->attribute->list[j];
+            assert(ap);
+            if
+            (
+                ap->name
+            &&
+                0 == strcasecmp(ORIGINAL_UUID, ap->name->str_text)
+            &&
+                ap->value
+            &&
+                // users can edit, make sure is OK
+                universal_unique_identifier_valid(ap->value)
+            )
+            {
+                print_one_line(cp, nstring(ap->value));
+            }
+        }
     }
 }
 
@@ -177,13 +176,13 @@ change_functor_inventory::~change_functor_inventory()
     printf("<p>There is also a page containing this list ");
     if (include_original_uuid)
     {
-	emit_project_href(pp, "inventory");
-	printf("without");
+        emit_project_href(pp, "inventory");
+        printf("without");
     }
     else
     {
-	emit_project_href(pp, "inventory+all");
-	printf("with");
+        emit_project_href(pp, "inventory+all");
+        printf("with");
     }
     printf("</a> the original-uuid attributes.</p>");
 
@@ -202,3 +201,6 @@ change_functor_inventory::~change_functor_inventory()
 
     html_footer(pp, 0);
 }
+
+
+// vim: set ts=8 sw=4 et :

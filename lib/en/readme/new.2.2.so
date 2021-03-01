@@ -1,27 +1,27 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2006-2008 Peter Miller.
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993, 1994, 2006-2008, 2010, 2012 Peter Miller.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .SS Version 2.2
 .PP
 This release of Aegis provides 3 of the most commonly requested features:
 support for heterogeneous development,
 support for a greater range of DMTs,
-support for user-defined reports.
+support for user\[hy]defined reports.
 .PP
 .if t \(bu
 .if n *
@@ -126,13 +126,13 @@ for more information.
 .if t \(bu
 .if n *
 The commands which accept the
-.I -Edit
+.I \-Edit
 now preserve the edited text in the event of a failure.
 .PP
 .if t \(bu
 .if n *
 The commands which delete files now accept a
-.I -Interactive
+.I \-Interactive
 option,
 which causes them to prompt the user for confirmation of file deletion.
 This can be made the default by an appropriate setting of the
@@ -154,7 +154,7 @@ allowing whole directory trees to be copied into a change.
 The
 .IR aecpu (1)
 command now has a
-.B -UNChanged
+.B \-UNChanged
 option which allows the unchanged files to be uncopied.
 .PP
 .if t \(bu
@@ -181,3 +181,4 @@ changes to specific developers.
 See
 .IR aedb (1)
 for more information.
+.\" vim: set ts=8 sw=4 et :

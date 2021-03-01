@@ -1,30 +1,29 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH "aeedit" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aeedit \- edit a change's files
 .XX "aeedit(1)" "edit a change's files"
 .SH SYNOPSIS
 .B aeedit
-[ \fB\-p\fP \fIproject-name\fP ]
-[ \fB\-c\fP \fIchange-number\fP ]
+[ \fB\-p\fP \fIproject\[hy]name\fP ]
+[ \fB\-c\fP \fIchange\[hy]number\fP ]
 .SH DESCRIPTION
 The \fIaeedit\fP command is used to edit all of the files in a change.
 For editors with one buffer per file, this can be very useful
@@ -39,16 +38,16 @@ path.
 .SH OPTIONS
 The following options are understood:
 .TP 8n
-\fB\-p\fP \fIproject-name\fP
+\fB\-p\fP \fIproject\[hy]name\fP
 This option may be used to set the project name.
 .TP 8n
-\fB\-c\fP \fIchange-number\fP
+\fB\-c\fP \fIchange\[hy]number\fP
 This option may be used to set the change number.
-.so z_cr.so
+.so lib/en/man1/z_cr.so
 .br
 .ne 2i
 .SH COPYRIGHT
-.so version.so
+.so etc/version.so
 aeedit version \*(V)
 .br
 .if t .ds C) \(co
@@ -56,7 +55,8 @@ aeedit version \*(V)
 Copyright \*(C) \*(Y) Scott Finneran
 .PP
 The \*(n) program comes with ABSOLUTELY NO WARRANTY;
-for details use the '\fI\*(n) -VERSion License\fP' command.
+for details use the '\fI\*(n) \-VERSion License\fP' command.
 This is free software
 and you are welcome to redistribute it under certain conditions;
-for details use the '\fI\*(n) -VERSion License\fP' command.
+for details use the '\fI\*(n) \-VERSion License\fP' command.
+.\" vim: set ts=8 sw=4 et :

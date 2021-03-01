@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1995, 1998, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "How to use this manual"
@@ -72,7 +71,7 @@ describes managing tests and testing with Aegis.
 describes the branching mechanism used in Aegis.
 .IP "Chapter 10"
 is a collection of helpful hints on how to use aegis effectively,
-based on real-world experience.
+based on real\[hy]world experience.
 This is of most use when initially placing projects under the supervision
 of the aegis program.
 .IP "Chapter 11"
@@ -82,7 +81,7 @@ is a quick reference for placing an existing project under aegis.
 .IP "Appendix B"
 is a glossary of terms.
 .IP "Appendix D"
-is a description of why Aegis must be set-uid-root,
+is a description of why Aegis must be set\[hy]uid\[hy]root,
 for system administrators who are concerned about the security issues.
 .IP "Appendix I"
 is a brief look at internationalization and localization if Aegis.
@@ -99,3 +98,4 @@ are automatically subject to the GNU GPL.
 We still encourage software authors to distribute their work under
 terms like those of the GNU GPL,
 but doing so is not required to use Aegis.
+.\" vim: set ts=8 sw=4 et :

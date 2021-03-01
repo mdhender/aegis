@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001, 2003-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/arglex.h>
@@ -23,7 +22,7 @@
 #include <common/wstring/list.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/os.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project.h>
@@ -33,28 +32,28 @@
 
 //
 // NAME
-//	sub_source - the source substitution
+//      sub_source - the source substitution
 //
 // SYNOPSIS
-//	string_ty *sub_source(wstring_list_ty *arg);
+//      string_ty *sub_source(wstring_list_ty *arg);
 //
 // DESCRIPTION
-//	The sub_source function implements the source substitution.
-//	The source substitution is replaced by the path of the source file,
-//	depending on wether it is in the baseline or the change.
-//	If the file named in the argument is in the change,
-//	the name will be left unchanged,
-//	but if the file is in the baseline, an absolute path will resiult.
-//	If the change is being integrated, it will always be left untouched.
+//      The sub_source function implements the source substitution.
+//      The source substitution is replaced by the path of the source file,
+//      depending on wether it is in the baseline or the change.
+//      If the file named in the argument is in the change,
+//      the name will be left unchanged,
+//      but if the file is in the baseline, an absolute path will resiult.
+//      If the change is being integrated, it will always be left untouched.
 //
-//	Requires exactly one argument.
+//      Requires exactly one argument.
 //
 // ARGUMENTS
-//	arg	- list of arguments, including the function name as [0]
+//      arg     - list of arguments, including the function name as [0]
 //
 // RETURNS
-//	a pointer to a string in dynamic memory;
-//	or NULL on error, setting suberr appropriately.
+//      a pointer to a string in dynamic memory;
+//      or NULL on error, setting suberr appropriately.
 //
 
 wstring
@@ -68,17 +67,17 @@ sub_source(sub_context_ty *scp, const wstring_list &arg)
     //
     bool absolute = false;
     change::pointer cp = sub_context_change_get(scp);
-    if (!cp)
+    if (!cp || cp->bogus)
     {
-	project_ty *pp = sub_context_project_get(scp);
-	if (!pp)
-	{
-	    scp->error_set(i18n("not valid in current context"));
+        project *pp = sub_context_project_get(scp);
+        if (!pp)
+        {
+            scp->error_set(i18n("not valid in current context"));
             trace(("return NULL;\n"));
             trace(("}\n"));
             return wstring();
-	}
-	cp = pp->change_get();
+        }
+        cp = pp->change_get();
     }
 
     //
@@ -87,13 +86,13 @@ sub_source(sub_context_ty *scp, const wstring_list &arg)
     switch (arg.size())
     {
     default:
-	scp->error_set(i18n("requires one argument"));
+        scp->error_set(i18n("requires one argument"));
         trace(("return NULL;\n"));
         trace(("}\n"));
         return wstring();
 
     case 2:
-	break;
+        break;
 
     case 3:
         {
@@ -123,7 +122,7 @@ sub_source(sub_context_ty *scp, const wstring_list &arg)
     cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->state == cstate_state_awaiting_development)
     {
-	scp->error_set(i18n("not valid in current context"));
+        scp->error_set(i18n("not valid in current context"));
         trace(("return NULL;\n"));
         trace(("}\n"));
         return wstring();
@@ -136,7 +135,7 @@ sub_source(sub_context_ty *scp, const wstring_list &arg)
     nstring s(change_file_source(cp, fn.get_ref()));
     if (s.empty())
     {
-	scp->error_set(i18n("source file unknown"));
+        scp->error_set(i18n("source file unknown"));
         trace(("return NULL;\n"));
         trace(("}\n"));
         return wstring();
@@ -148,23 +147,26 @@ sub_source(sub_context_ty *scp, const wstring_list &arg)
     //
     if (!absolute)
     {
-	string_list_ty search_path;
-	if (cstate_data->state == cstate_state_completed)
-	    project_search_path_get(cp->pp, &search_path, 0);
-	else
-	    change_search_path_get(cp, &search_path, 0);
-	nstring s2(os_below_dir(nstring(search_path.string[0]), s));
-	if (!s2.empty())
-	{
-	    s = fn;
-	}
+        string_list_ty search_path;
+        if (cp->is_completed())
+            cp->pp->search_path_get(&search_path, false);
+        else
+            cp->search_path_get(&search_path, false);
+        nstring s2(os_below_dir(nstring(search_path.string[0]), s));
+        if (!s2.empty())
+        {
+            s = fn;
+        }
     }
 
     //
     // build the result
     //
     wstring result(s);
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

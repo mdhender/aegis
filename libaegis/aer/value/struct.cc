@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/symtab.h>
 #include <common/trace.h>
@@ -34,13 +35,13 @@
 
 rpt_value_struct::~rpt_value_struct()
 {
-    trace(("rpt_value_struct::~rpt_value_struct(this = %08lX)\n", (long)this));
+    trace(("rpt_value_struct::~rpt_value_struct(this = %p)\n", this));
 }
 
 
 rpt_value_struct::rpt_value_struct()
 {
-    trace(("rpt_value_struct::rpt_value_struct(this = %08lX)\n", (long)this));
+    trace(("rpt_value_struct::rpt_value_struct(this = %p)\n", this));
 }
 
 
@@ -55,33 +56,33 @@ rpt_value::pointer
 rpt_value_struct::lookup(const rpt_value::pointer &rhs, bool lvalue)
     const
 {
-    trace(("value_struct::lookup(this = %08lX, rhs = %08lX, lvalue = %d)\n",
-	(long)this, (long)rhs.get(), lvalue));
+    trace(("value_struct::lookup(this = %p, rhs = %p, lvalue = %d)\n",
+        this, rhs.get(), lvalue));
     rpt_value::pointer rhs2 = rpt_value::stringize(rhs);
     rpt_value_string *rhs2sp = dynamic_cast<rpt_value_string *>(rhs2.get());
     if (!rhs2sp)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name1", name());
-	sc.var_set_charstar("Name2", rhs->name());
-	nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
-	return rpt_value_error::create(s);
+        sub_context_ty sc;
+        sc.var_set_charstar("Name1", name());
+        sc.var_set_charstar("Name2", rhs->name());
+        nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+        return rpt_value_error::create(s);
     }
     nstring key(rhs2sp->query());
     trace(("find the \"%s\" datum\n", key.c_str()));
     rpt_value::pointer data = members.get(key);
-    trace(("data = %08lX;\n", (long)data.get()));
+    trace(("data = %p;\n", data.get()));
     if (!data)
     {
-	rpt_value::pointer result = rpt_value_null::create();
-        trace(("result = %08lX\n", (long)result.get()));
-	if (lvalue)
-	{
-	    trace(("create new element\n"));
+        rpt_value::pointer result = rpt_value_null::create();
+        trace(("result = %p\n", result.get()));
+        if (lvalue)
+        {
+            trace(("create new element\n"));
             result = rpt_value_reference::create(result);
-	    members.assign(key, result);
-	}
-	return result;
+            members.assign(key, result);
+        }
+        return result;
     }
 
     rpt_value_reference *rvrp = dynamic_cast<rpt_value_reference *>(data.get());
@@ -163,11 +164,14 @@ rpt_value_struct::is_a_struct()
 void
 rpt_value_struct::assign(const nstring &key, const rpt_value::pointer &value)
 {
-    trace(("rpt_value_struct::set(this = %08lX, key = \"%s\", "
-	"value = %08lX %s)\n", (long)this, key.c_str(), (long)value.get(),
+    trace(("rpt_value_struct::set(this = %p, key = \"%s\", "
+        "value = %p %s)\n", this, key.c_str(), value.get(),
         value->name()));
     if (dynamic_cast<const rpt_value_reference *>(value.get()))
-	members.assign(key, value);
+        members.assign(key, value);
     else
-	members.assign(key, rpt_value_reference::create(value));
+        members.assign(key, rpt_value_reference::create(value));
 }
+
+
+// vim: set ts=8 sw=4 et :

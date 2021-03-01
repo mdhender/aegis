@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Hierarchy of Projects"
 .LP
@@ -23,7 +23,7 @@ one project as a sort of "super change" to a "super project",
 so that large teams (say 1000 people)
 could work as lots of small teams (say 100 people).
 As a small team gets their chunk ready,
-using the facilities provided to-date by Aegis,
+using the facilities provided to\[hy]date by Aegis,
 the small team's baseline is treated as a change to be made to the
 large team baseline.
 .LP
@@ -31,15 +31,15 @@ This idea can be extended quite naturally to any depth of layering.
 .LP
 After reading
 .I "Transaction Oriented Configuration Management: A Case Study"
-Peter Fieler, Grace Downey, CMU/SEI-90-TR-23,
+Peter Fieler, Grace Downey, CMU/SEI\[hy]90\[hy]TR\[hy]23,
 this is not a new idea.
 It also provides some ideas for how to do branching sensibly,
 and was influential in the design of Aegis' branching.
 .nh 3 "Fundamentals"
 .LP
 Aegis has everything you need to have a super project and a number
-of sub-projects.  All you need to do is create an active branch for
-each sub-project.  Each branch gets a separate baseline, \fIviz\fP
+of sub\[hy]projects.  All you need to do is create an active branch for
+each sub\[hy]project.  Each branch gets a separate baseline, \fIviz\fP
 .E(
 % \f[CB]aenpr gizmo.0.1\fP
 project "gizmo": created
@@ -48,11 +48,11 @@ project "gizmo.0.1": created
 %
 .E)
 .LP
-Now, for each of your desired sub-projects, create another branch
+Now, for each of your desired sub\[hy]projects, create another branch
 .E(
-aenbr -p gizmo.0.1 1 # \fIfor the foo project\fP
-aenbr -p gizmo.0.1 2 # \fIfor the bar project\fP
-aenbr -p gizmo.0.1 3 # \fIfor the baz project\fP
+aenbr \-p gizmo.0.1 1 # \fIfor the foo project\fP
+aenbr \-p gizmo.0.1 2 # \fIfor the bar project\fP
+aenbr \-p gizmo.0.1 3 # \fIfor the baz project\fP
 .E)
 .LP
 Now, the guys on the \fIfoo\fP project set their AEGIS_PROJECT
@@ -64,10 +64,10 @@ though, they are just part of a bigger project.
 It helps if you design and implement the build system first.  You do this
 as a change set on the common parent branch.  Once it is completed each
 branch can inherit it from the common parent.  This makes integration
-easier, when it comes time to integrate the sub-projects together.
+easier, when it comes time to integrate the sub\[hy]projects together.
 .nh 3 "Incremental Integration"
 .LP
-It is very common that not all of the sub-projects will be ready to be
+It is very common that not all of the sub\[hy]projects will be ready to be
 integrated at the same time.
 This is the normal situation with Aegis branching,
 and is handled cleanly and simply.
@@ -91,7 +91,7 @@ as changes.  Just as you \[lq]develop end\[rq] a change (see \fIaede\fP(1)
 for more information) you also \fIaede\fP a branch when development on
 it is completed.
 .LP
-Once a branch has develop-end (stops being an \fIactive\fP branch),
+Once a branch has develop\[hy]end (stops being an \fIactive\fP branch),
 it is reviewed as a normal change, and integrated as a normal change.
 If integration failed, it returns to \[lq]being developed\[rq] and becomes
 an active branch once again, until the next \fIaede\fP.  As you can
@@ -101,11 +101,11 @@ change integration.
 An unsuccessful branch integration leaves the repository unchanged,
 just as an unsuccessful change integration leaves it unchanged.
 .LP
-.nh 3 "Super-Project Branching"
+.nh 3 "Super\[hy]Project Branching"
 .LP
-In many real-world situations it is very important to be able to branch
-at any point in the past history of the super-project to fix (integration
-specific) bugs or to customize more the older states of the super-project.
+In many real\[hy]world situations it is very important to be able to branch
+at any point in the past history of the super\[hy]project to fix (integration
+specific) bugs or to customize more the older states of the super\[hy]project.
 .LP
 You can create a branch at any time, on any active branch or active branch
 ancestor.  You can populate that branch with historical versions (from
@@ -114,7 +114,7 @@ is a little fussy \- you can't \fIaecp\fP into a branch directly, you
 need to do this via a change to that branch.  Files not changed by a
 change on a branch are inherited from the current (\fIi.e.\fP active)
 state of the parent branch.  See the section on \fIInsulation\fP, above.
-.nh 3 "Super-Project Testing"
+.nh 3 "Super\[hy]Project Testing"
 .LP
 Many folks see Aegis' testing features as useful for unit testing
 individual files or change sets.  For large projects, it is common
@@ -122,7 +122,7 @@ that a specific test tool will be written.  However, even large scale
 integration testing is possible using Aegis.
 .LP
 You can change the test command from being a shell script to
-being anything to you want - see the \fItest_command\fP field in
+being anything to you want \- see the \fItest_command\fP field in
 \fIaepconf\fP(5).  Or run the test tool from the shell script.  If the
 integration tests can be automated, it makes sense to preserve them in
 the repository \- they are some of the most valuable regression tests
@@ -130,33 +130,34 @@ for developers, because they describe correct behavior outside the
 \&\[lq]box\[rq] the developer usually works in.
 .nh 3 "The Next Cycle"
 .LP
-Once you have a fully-integrated product, what happens on the next
+Once you have a fully\[hy]integrated product, what happens on the next
 cycle?  Well, first you may want to finish \fIgizmo.0.1\fP and integrate
-it into \fPgizmo.0\fP, and then \fIaenbr -p gizmo.0 2\fP
+it into \fPgizmo.0\fP, and then \fIaenbr \-p gizmo.0 2\fP
 .LP
 Then what?  Same deal as before, but anything not changed in one of
-the sub-project branches gets inherited from the ancestor.
+the sub\[hy]project branches gets inherited from the ancestor.
 .E(
-aenbr -p gizmo.0.2 1 # \fIfor the foo project\fP
-aenbr -p gizmo.0.2 2 # \fIfor the bar project\fP
-aenbr -p gizmo.0.2 3 # \fIfor the baz project\fP
+aenbr \-p gizmo.0.2 1 # \fIfor the foo project\fP
+aenbr \-p gizmo.0.2 2 # \fIfor the bar project\fP
+aenbr \-p gizmo.0.2 3 # \fIfor the baz project\fP
 .E)
 .LP
-Most folks find doing the whole mega-project-build every time
+Most folks find doing the whole mega\[hy]project\[hy]build every time
 tiresome \- so don't.  Temporarily (via a change set) hack the build
 configuration to build only the bit you want \- obviously a different hack
-on each sub-project's branch.  Just remember to un-hack it (via
-another change set) before you integrate the sub-project.
+on each sub\[hy]project's branch.  Just remember to un\[hy]hack it (via
+another change set) before you integrate the sub\[hy]project.
 .nh 3 "Bug Fixing"
 .LP
 The \fIaeclone\fP(1) command lets you clone a change set from one branch
 to another.  So if you have a bug fix that needs to be done on each
 active branch you can clone it (once you have it fixed the first time).
 You still have to build review and integrate \fIn\fP times (branches
-often differ  non-trivially).  Providing it isn't already in use, you
+often differ  non\[hy]trivially).  Providing it isn't already in use, you
 can even ask for the same change number on each branch \- handy for
 syncing with an external bug tracking system.
 .LP
-Alternatively, fix bugs in the common ancestor, and the sub-projects
+Alternatively, fix bugs in the common ancestor, and the sub\[hy]projects
 will inherit the fix the next time they integrate something on
 their branch (assuming they aren't insulated against it).
+.\" vim: set ts=8 sw=4 et :

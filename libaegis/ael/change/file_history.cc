@@ -1,23 +1,23 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2009, 2011, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/file_history.h>
@@ -50,7 +50,7 @@ is_a_rename_with_uuid(change::pointer cp, fstate_src_ty *src)
         return false;
     if (!src->uuid)
         return false;
-    fstate_src_ty *other = change_file_find(cp, src->move, view_path_first);
+    fstate_src_ty *other = cp->file_find(nstring(src->move), view_path_first);
     if (!other)
         return false;
     if (!other->uuid)
@@ -79,7 +79,7 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
     //
     // Reconstruct the project file history.
     //
-    time_t when = change_completion_timestamp(cid.get_cp());
+    time_t when = cid.get_cp()->completion_timestamp();
     project_file_roll_forward historian
     (
         cid.get_pp(),
@@ -95,8 +95,8 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
         str_format
         (
             "Project \"%s\"  Change %ld",
-            project_name_get(cid.get_pp())->str_text,
-            magic_zero_decode(cid.get_cp()->number)
+            project_name_get(cid.get_pp()).c_str(),
+            cid.get_change_number()
         );
     colp->title(line1->str_text, "Change File History");
     str_free(line1);
@@ -149,7 +149,6 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
             for (k = 0; k < felp->size(); ++k)
             {
                 file_event      *fep;
-                string_ty       *s;
 
                 fep = felp->get(k);
                 assert(fep->get_src());
@@ -164,9 +163,8 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
                     file_name_track = fep->get_src()->file_name;
                 }
 
-                s = change_version_get(fep->get_change());
-                delta_col->fputs(s->str_text);
-                str_free(s);
+                nstring s = fep->get_change()->version_get();
+                delta_col->fputs(s.c_str());
                 change_col->fprintf("%4ld", fep->get_change()->number);
 
                 if (usage_track != fep->get_src()->usage)
@@ -198,7 +196,7 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
                 when_col->fputs(ctime(&when3));
                 description_col->fputs
                 (
-                    change_brief_description_get(fep->get_change())->str_text
+                    fep->get_change()->brief_description_get()
                 );
                 colp->eoln();
             }
@@ -219,8 +217,8 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
                 colp->eoln();
             }
 
-            delta_col->fputs(change_version_get(cid.get_cp())->str_text);
-            change_col->fprintf("%4ld", cid.get_cp()->number);
+            delta_col->fputs(cid.get_cp()->version_get());
+            change_col->fprintf("%4ld", cid.get_change_number());
             if (usage_track != src_data->usage)
             {
                 usage_col->fputs(file_usage_ename(src_data->usage));
@@ -237,9 +235,12 @@ list_change_file_history(change_identifier &cid, string_list_ty *)
                     action_col->fputs(file_action_ename(src_data->action));
                 }
             }
-            description_col->fputs(change_brief_description_get(cid.get_cp()));
+            description_col->fputs(cid.get_cp()->brief_description_get());
             colp->eoln();
         }
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

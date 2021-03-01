@@ -1,31 +1,30 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2000-2008 Peter Miller
-.\"	Copyright (C) 2005 Pieter Nagel
+.\" aegis - project change supervisor
+.\" Copyright (C) 2000-2008, 2010, 2012 Peter Miller
+.\" Copyright (C) 2005 Pieter Nagel
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to use Aegis with Python"
 .LP
 This section describes how to use Aegis to supervise the development of
 Python programs.  Some of the remarks in this section may also be helpful
-to people who use Aegis to supervise development in other non-compiled
+to people who use Aegis to supervise development in other non\[hy]compiled
 languages.
 .LP
 This section is contributed courtesy of Tangible Business Software,
-\f[CW]www.tbs.co.za\fP.  Python-specific questions relating to this
+\f[CW]www.tbs.co.za\fP.  Python\[hy]specific questions relating to this
 section may be sent to Pieter Nagel at \f[CW]<pnagel@tbs.co.za>\fP.
 .nh 2 "Handling Aegis search paths"
 .nh 3 "The Aegis model vs. the Python model"
@@ -45,9 +44,9 @@ search through the Aegis search path for parts of themselves; they are
 already complete.
 .LP
 Python programs, however, are never compiled and linked into a single
-executable.  One could say that a Python program is re-linked each time
+executable.  One could say that a Python program is re\[hy]linked each time
 it is run.  This means that the Python program will need to be able
-to find its components at run-time.  More importantly, it will need to
+to find its components at run\[hy]time.  More importantly, it will need to
 avoid importing the old versions of files from the baseline when newer
 versions are present in the development or integration directories.
 .nh 3 "The solution"
@@ -61,9 +60,9 @@ Use Aegis version 3.23 or later, and set the following in the project
 \fIconfig\fP file:
 .E(
 create_symlinks_before_build
-	= true;
+    = true;
 remove_symlinks_after_integration_build
-	= false;
+    = false;
 .E)
 The second directive is not available in earlier versions of Aegis.
 .LP
@@ -125,7 +124,7 @@ can be run, but Aegis requires a build step as part of the development
 cycle.
 .LP
 One perfectly valid option is to explicitly declare the build step to
-be a no-op, by setting
+be a no\[hy]op, by setting
 .E(
 build_command = "true";
 .E)
@@ -149,26 +148,26 @@ Delete unwanted Python object files (\fI.pyc\fP and \fI.pyo\fP files).
 These could arise when you aerm and delete a Python script, but forget
 to delete the accompanying Python object file(s).  Other files will
 then mysteriously succeed in importing the removed scripts, where you
-would expect them to fail.  Your build process could use \fIael -cf\fP
-and \fIael -pf\fP) to get a list of 'allowed' scripts, and remove all
+would expect them to fail.  Your build process could use \fIaelcf\fP(1)
+and \fIaelpf\fP(1) to get a list of 'allowed' scripts, and remove all
 Python object files which do not correspond to any of these.
 .IP \(bu 2n
 Auto generate your packages \fI__init__.py\fP files.  Python wants you
 to declare your intent to have a directory treated as a package by
 creating the \fI__init__.py\fP file (otherwise a stray directory with
 a common name like 'string', 'test', 'common' or 'foo' could shadow
-like-named packages later on in the search path).  But since Aegis is,
+like\[hy]named packages later on in the search path).  But since Aegis is,
 by definition, an authoritative source on what is and what is not part
 of your program it can just as well declare your intent for you.
 .nh 2 "Testing"
 .LP
 Testing under Aegis using Python is no different from any other language,
-only much more fun.  Python's run-time type checking makes it much easier
-to develop software from loosely-coupled components.  Such components
-are much more suited to unit testing than strongly-coupled components are.
+only much more fun.  Python's run\[hy]time type checking makes it much easier
+to develop software from loosely\[hy]coupled components.  Such components
+are much more suited to unit testing than strongly\[hy]coupled components are.
 .LP
 If the testing script which Aegis invokes is part of your project, there
-is one important \fIPYTHONPATH\fP-related caveat: when Aegis runs the
+is one important \fIPYTHONPATH\fP\[hy]related caveat: when Aegis runs the
 tests, it specifies them with an absolute path.  When Python runs any
 scripts with an absolute path, it prepends that path to its search path,
 and the danger is that the baseline directory (with the old, unchanged
@@ -180,7 +179,7 @@ from the Python path:
 .E(
 selfdir = os.path.abspath(sys.argv[0])
 if selfdir in sys.path:
-	sys.path.remove(selfdir)
+    sys.path.remove(selfdir)
 .E)
 .LP
 Instead of copying these lines into each new test file, you may want
@@ -197,7 +196,7 @@ I can strongly recommend \fIPyUnit\fP, the \fIPython
 Unit Testing Framework\fP by Steve Purcell, available from
 \f[CW]http://pyunit.sourceforge.net\fP.  It is based on Kent Beck
 and Erich Gamma's \fIJUnit\fP framework for Java, and is becoming the
-\fIde-facto\fP standard testing framework for Python.
+\fIde\[hy]facto\fP standard testing framework for Python.
 .LP
 One bit of advice when using \fIPyUnit\fP: like Aegis, \fIPyUnit\fP
 also distinguishes between test failures as opposed to test errors,
@@ -226,7 +225,8 @@ point to that script's location, since the shell \fIPATH\fP and the
 .LP
 Just avoid the temptation to set the absolute path of that script into
 your \fIPYTHONPATH\fP, or otherwise your development code and baseline
-code will interfere with each other.  This is not an Aegis-specific
+code will interfere with each other.  This is not an Aegis\[hy]specific
 problem, though, since there would be potential confusion on any system,
 in any language, where two versions of one program are simultaneously
 visible from the same search path.
+.\" vim: set ts=8 sw=4 et :

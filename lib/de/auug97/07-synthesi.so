@@ -1,41 +1,40 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2001, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Das Gesamtbild"
 In diesem Kapitel werden alle auf den vorangegangenen
 Seiten er\*:orterten Aspekte zusammengef\*:ugt und das
 Beispielprojekt mit seinen getrennten Modulen wird
-vorgestellt, aber mit einem Gesamtprojekt-\f[CW]Makefile\fP. Die
+vorgestellt, aber mit einem Gesamtprojekt\[hy]\f[CW]Makefile\fP. Die
 Verzeichnisstruktur unterscheidet sich wenig von der
 rekursiven, au\(sser dass die tieferliegenden \f[CW]Makefiles\fP
-durch modulspezifische Include-Dateien ersetzt werden:
-.so 07.figure1.so
+durch modulspezifische Include\[hy]Dateien ersetzt werden:
+.so lib/de/auug97/07.figure1.so
 .LP
 Das \f[CW]Makefile\fP sieht folgenderma\(ssen aus:
 .TS H
 center,box;
-lw(2.5i)f(CW).
+lf(CW).
 .TH
 MODULES := ant bee
 .sp 0.2
 # look for include files in
 #   each of the modules
-CFLAGS += $(patsubst %,-I%,\e
+CFLAGS += $(patsubst %,\-I%,\e
   $(MODULES))
 .sp 0.2
 # extra libraries if required
@@ -58,7 +57,7 @@ OBJ :=                    \e
 .sp 0.2
 # link the program
 prog: $(OBJ)
-  $(CC) -o $@ $(OBJ) $(LIBS)
+  $(CC) \-o $@ $(OBJ) $(LIBS)
 .sp 0.2
 # include the C include
 #   dependencies
@@ -71,7 +70,7 @@ include $(OBJ:.o=.d)
 .TE
 Das erscheint sehr lang, aber es enth\*:alt alle \*:ublichen
 Elemente an einer Stelle, so dass die
-Make-Include-Dateien in den einzelnen Modulen sehr kurz
+Make\[hy]Include\[hy]Dateien in den einzelnen Modulen sehr kurz
 sein k\*:onnen.
 .LP
 Die ant/module.mk Datei sieht folgenderma\(ssen aus:
@@ -85,17 +84,17 @@ Die bee/module.mk Datei sieht so aus:
 center,box;
 lw(2.5i)f(CW).
 SRC += bee/parse.y
-LIBS += -ly
+LIBS += \-ly
 .sp 0.2
 %.c %.h: %.y
-  $(YACC) -d $*.y
+  $(YACC) \-d $*.y
   mv y.tab.c $*.c
   mv y.tab.h $*.h
 .TE
 .LP
-Beachten Sie bitte, dass die Built-in-Regeln f\*:ur die
-C-Dateien verwendet werden, aber wir ben\*:otigen ein
-spezielles yacc-Verfahren, um die erzeugte \f[CW].h\fP-Datei zu
+Beachten Sie bitte, dass die Built\[hy]in\[hy]Regeln f\*:ur die
+C\[hy]Dateien verwendet werden, aber wir ben\*:otigen ein
+spezielles yacc\[hy]Verfahren, um die erzeugte \f[CW].h\fP\[hy]Datei zu
 bekommen.
 .LP
 Die Einsparungen in diesem Beispiel wirken unerheblich,
@@ -109,25 +108,26 @@ Verwendung eines rekursiven Makes.
 Der entsprechende DAG des \f[CW]Makefiles\fP sieht,
 nachdem man alle Einf\*:ugungen vorgenommen hat,
 folgenderma\(ssen aus:
-.so 07.figure2.so
+.so lib/de/auug97/07.figure2.so
 .LP
 Die Knotenpunkte und Kanten f\*:ur die
-Inklude-Dateiabh\*:angikeitsdateien sind ebenfalls
+Inklude\[hy]Dateiabh\*:angikeitsdateien sind ebenfalls
 vorhanden, da sie wichtig sind, damit Make fehlerlos
 funktionieren kann.
 .nh 2 "Nebeneffekte"
 Es gibt eine Reihe w\*:unschenswerter Nebeneffekte, wenn
 man ein einziges \f[CW]Makefile\fP verwendet.
 .IP \(bu 2n
-Die -j-Option des GNU-Makes f\*:ur parallel laufende Builds
+Die \-j\[hy]Option des GNU\[hy]Makes f\*:ur parallel laufende Builds
 funktioniert besser als vorher. Sie kann sogar mehr
 voneinander unabh\*:angige Vorg\*:ange zugleich ausf\*:uhren und
 leidet nicht mehr an subtilen Fehlern.
-.\" My thanks to Marcus Harnisch <marcus_harnisch@mint-tech.com> for this
+.\" My thanks to Marcus Harnisch <marcus_harnisch@mint\[hy]tech.com> for this
 .\" insight into parallel build problems.
 .IP \(bu 2n
-Die -k-Option des allgemeinen Makes, die daf\*:ur sorgt,
+Die \-k\[hy]Option des allgemeinen Makes, die daf\*:ur sorgt,
 dass Make selbst angesichts von Fehlern so weit wie
 m\*:oglich weiter arbeitet, funktioniert ebenfalls besser
 als vorher. Sie findet sogar mehr Material, mit dem sie
 weiterarbeiten kann.
+.\" vim: set ts=8 sw=4 et :

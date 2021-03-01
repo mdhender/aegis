@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "No Build Required"
 .LP
@@ -37,19 +37,20 @@ even when it may initialy appear to be a good idea.
 .IP "Web sites:"
 You can use the build stage to check the HTML files against the relevant
 standards and DTDs.  You can also check that all of you (internal) links
-are valid, and don't point to non-existant pages or anchors.  Sometimes,
+are valid, and don't point to non\[hy]existant pages or anchors.  Sometimes,
 if you have the space, you can resolve server side includes, to make it
 faster for Apache, by serving static pages.
 .IP "Interpreted Languages:"
 A whole lot of simple errors, such as syntax errors, can be caught by a
 static check of the source files.
-For example, the \f[CW]perl -c\fP option can syntax check your Perl files
+For example, the \f[CW]perl \-c\fP option can syntax check your Perl files
 without executing them.
 See also the GNU \f[CW]awk \-lint\fP option,
-the Python built-in \f[CW]compile()\fP function,
-and the \f[CW]php -l\fP (lower case L) option.
+the Python built\[hy]in \f[CW]compile()\fP function,
+and the \f[CW]php \-l\fP (lower case L) option.
 You can also check that all include files referenced actually exist.
 .IP "Documentation:"
 Many systems allow documentation to be extracted from the source files,
 and turned into HTML or PDF files (\fIe.g.\fP Doxygen).
 This is a sensable thing to do at build time.
+.\" vim: set ts=8 sw=4 et :

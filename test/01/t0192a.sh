@@ -1,21 +1,21 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2003-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2003-2008, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -33,8 +33,8 @@ then
     :
 else
     echo ''
-    echo '	You do not have CVS installed on this machine.'
-    echo '	This test is assumed to pass by default.'
+    echo '      You do not have CVS installed on this machine.'
+    echo '      This test is assumed to pass by default.'
     echo ''
     exit 0
 fi
@@ -44,8 +44,8 @@ awk 'NR==2{split($5,a,"[.]");printf("%02d.%02d.%02d\n",a[1],a[2],a[3]);}'`
 if expr "$CVSversion" "<" "01.11.00" > /dev/null 2>&1
 then
     echo ''
-    echo '	You do not have CVS 1.11 or later installed on this machine.'
-    echo '	This test is assumed to pass by default.'
+    echo '      You do not have CVS 1.11 or later installed on this machine.'
+    echo '      This test is assumed to pass by default.'
     echo ''
     exit 0
 fi
@@ -61,11 +61,11 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -82,7 +82,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -93,47 +93,48 @@ export PATH
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo 'FAILED test of the aecvsserver add functionality' \
-		"($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo 'FAILED test of the aecvsserver add functionality' \
+                "($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo 'NO RESULT when testing the aecvsserver add functionality' \
-		"($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo 'NO RESULT when testing the aecvsserver add functionality' \
+                "($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
@@ -161,14 +162,14 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 154"
+activity="new project 165"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 161"
+activity="project attributes 172"
 cat > tmp << 'end'
 description = "A bogus project created to test the aecvsserver add "
     "functionality.";
@@ -184,7 +185,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 177"
+activity="staff 188"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -197,7 +198,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 190"
+activity="new change 201"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -215,7 +216,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 208"
+activity="new file 219"
 $bin/aegis -nf  $workchan/aegis.conf $workchan/dir/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -237,7 +238,7 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
 test $$? -le 1";
 end
@@ -246,49 +247,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 239"
+activity="build 250"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 246"
+activity="diff 257"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 253"
+activity="develop end 264"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 260"
+activity="review pass 271"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 267"
+activity="integrate begin 278"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 274"
+activity="build 285"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 281"
+activity="integrate pass 292"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -297,7 +298,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 290"
+activity="new change 301"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -309,7 +310,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 302"
+activity="develop begin 313"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -322,7 +323,7 @@ export CVS_SERVER
 #
 # Now use cvs to checkout the project.
 #
-activity="cvs checkout 315"
+activity="cvs checkout 326"
 cvs -d :fork:/aegis co ${AEGIS_PROJECT}.C002 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -330,7 +331,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # Add a file in the cvs workarea and
 # then used cvs add and commit it.
 #
-activity="cvs add 323"
+activity="cvs add 334"
 echo "Change Two" > $AEGIS_PROJECT.C002/dir/baboon
 if test $? -ne 0 ; then no_result; fi
 
@@ -340,7 +341,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 
 cd $work
 
-activity="cvs commit 333"
+activity="cvs commit 344"
 cvs -d :fork:/aegis commit -m "message" $AEGIS_PROJECT.C002 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -353,15 +354,16 @@ if test $? -ne 0 ; then fail; fi
 #
 # make sure the meta-data matches
 #
-activity="check change file state 346"
+activity="check change file state 357"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "dir/baboon";
-		action = create;
-		usage = source;
-	},
+        {
+                file_name = "dir/baboon";
+                uuid = "UUID";
+                action = create;
+                usage = source;
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -374,3 +376,4 @@ check_it ok $workproj/info/change/0/002.fs
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

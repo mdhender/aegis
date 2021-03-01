@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1999, 2002, 2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2002, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "The Integrator"
@@ -42,13 +41,13 @@ The integrator for this example project is Isa.
 Isa knows there is a change ready for integration
 from the notification which arrived by email.
 .E(
-isa% \f(CBaeib -l -p example.1.0\fP
+isa% \f(CBaeib \-l \-p example.1.0\fP
 
 Project "example.1.0"
 List of Changes
 
 Change  State           Description
-------- -------         -------------
+\-\-\-\-\-\-\- \-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
   10    awaiting_       Place under Aegis
         integration
 isa% \f(CBaeib example.1.0 10\fP
@@ -67,17 +66,17 @@ environment which resulted in the success at the development stage.
 isa% \f(CBaeb\fP
 aegis: logging to "/projects/example/delta.001/aegis.log"
 aegis: project "example.1.0": change 10: integration build started
-aegis: cook -b Howto.cook project=example.1.0 change=10
-        version=1.0.D001 -nl
-cook: yacc -d gram.y
+aegis: cook \-b Howto.cook project=example.1.0 change=10
+        version=1.0.D001 \-nl
+cook: yacc \-d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
-cook: cc -I. -O -c gram.c
+cook: cc \-I. \-O \-c gram.c
 cook: lex lex.l
 cook: mv lex.yy.c lex.c
-cook: cc -I. -O -c lex.c
-cook: cc -I. -O -c main.c
-cook: cc -o example gram.o lex.o main.o -ll -ly
+cook: cc \-I. \-O \-c lex.c
+cook: cc \-I. \-O \-c main.c
+cook: cc \-o example gram.o lex.o main.o \-ll \-ly
 aegis: project "example.1.0": change 10: integration build complete
 isa%
 .E)
@@ -88,18 +87,19 @@ while in the
 state;
 the extra baseline include is gone.
 This is because the integration directory will shortly be the new baseline,
-and must be entirely internally consistent and self-sufficient.
+and must be entirely internally consistent and self\[hy]sufficient.
 .LP
 You are probably wondering why this isn't all rolled into the
 one Aegis command.
 It is not because there may be some manual process to be
 performed after the build and before the test.
-This may be making a command set-uid-root (as in the case of Aegis itself)
+This may be making a command set\[hy]uid\[hy]root (as in the case of
+Aegis itself)
 or it may require some tinkering with the local oracle or ingress database.
 Instructions for the integrator may be placed in the
 description field of the change attributes.
 .LP
-The change is now re-tested:
+The change is now re\[hy]tested:
 .E(
 isa% \f(CBaet\fP
 aegis: logging to "/projects/example/delta.001/aegis.log"
@@ -118,16 +118,16 @@ and the integration directory becomes the baseline.
 .E(
 isa% \f(CBaeipass\fP
 aegis: logging to "/projects/example/delta.001/aegis.log"
-aegis: ci -u -m/dev/null -t/dev/null /projects/example/delta.001/
+aegis: ci \-u \-m/dev/null \-t/dev/null /projects/example/delta.001/
         Howto.cook /projects/example/history/Howto.cook,v;
-        rcs -U /projects/example/history/Howto.cook,v
-/projects/example/history/Howto.cook,v  <--
+        rcs \-U /projects/example/history/Howto.cook,v
+/projects/example/history/Howto.cook,v  <\-\-
         /projects/example/delta.001/Howto.cook
 initial revision: 1.1
 done
 RCS file: /projects/example/history/Howto.cook,v
 done
-aegis: rlog -r /projects/example/history/Howto.cook,v | awk
+aegis: rlog \-r /projects/example/history/Howto.cook,v | awk
         '/^revision/ {print $2}' > /tmp/aegis.15309
 \fI\&...lots of similar RCS output...\fP
 aegis: project "example.1.0": change 10: remove development directory
@@ -149,7 +149,7 @@ You should keep "precious" files somewhere else.
 .LP
 There is no difference to integrating any of the later changes.
 The integration process is very simple,
-as it is a cut-down version of what the developer does,
+as it is a cut\[hy]down version of what the developer does,
 without all the complexity.
 .LP
 Your project may elect to have the integrator also monitor
@@ -201,8 +201,8 @@ which usually lists interesting context sensitive information.
 .nh 3 "Minimum Integrations"
 .\" My thanks to Jerry Pendergraft for this section.
 .LP
-The \fBaegis --integrate-begin\fP command
-provides a \fB--minimum\fP option which may be
+The \fBaegis \-integrate\[hy]begin\fP command
+provides a \fB\-minimum\fP option which may be
 used for various reasons.  The term \fBminimum\fP may be a bit counter
 intuitive.  One might think it means to the \fBminimum\fP amount of
 work, however it actually means use a \fBminimum\fP of files from the
@@ -236,3 +236,4 @@ where a file upon which everything depends is changed, everything will
 be built anyway so the copy of the already built files is a waste of
 time.  This means that sometimes a minimum can be as cheap as a normal
 integration.
+.\" vim: set ts=8 sw=4 et :

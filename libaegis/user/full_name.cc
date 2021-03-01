@@ -1,21 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
-//      Copyright (C) 2007 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2012 Peter Miller
+// Copyright (C) 2007, 2009 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -28,7 +27,7 @@
 string_ty *
 user_name2(user_ty::pointer up)
 {
-    trace(("user_name2(up = %08lX)\n{\n", (long)up.get()));
+    trace(("user_name2(up = %p)\n{\n", up.get()));
     static nstring result;
     result = up->full_name();
     trace(("return %s;\n", result.quote_c().c_str()));
@@ -71,7 +70,7 @@ user_ty::full_name(const nstring &u_name)
     //
     const char *comma = strchr(result.c_str(), ',');
     if (comma)
-        result = result.substring(0, comma - result.c_str());
+        result = result.substr(0, comma - result.c_str());
 
     trace(("return %s;\n", result.quote_c().c_str()));
     trace(("}\n"));
@@ -88,3 +87,6 @@ user_full_name(string_ty *u_name)
     trace(("}\n"));
     return result.get_ref();
 }
+
+
+// vim: set ts=8 sw=4 et :

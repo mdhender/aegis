@@ -1,26 +1,25 @@
 '\"p
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002, 2005-2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
 .if n .ftr CW R
 .if n .ftr C  R
-.so version.so
+.so etc/version.so
 .S 10
 .TL
 
@@ -95,8 +94,9 @@ right
 E1: ellipse "initial" "state"
 E2: ellipse "destination" "state" with .w at E1.e+(0.7,0)
 E3: ellipse "\fIoops\fP" with .n at E2.s-(0,0.25)
-spline -> from E1.e then right 0.6 then down 0.5 then left 0.25 \
-	then up 0.25 then to E3.nw
+move to E1.e
+spline -> right 0.6 then down 0.5 then left 0.25 \
+    then up 0.25 then to E3.nw
 .PE
 .P
 Please note that this is a \fIsimplistic\fP definition of a test.
@@ -158,11 +158,12 @@ E3: ellipse with .c at E2.c+(0.4,-0.6)
 E4: ellipse with .c at E3.c+(0.4,0.6)
 E7: ellipse with .c at E2.c+(0.4,0.6) "\fIoops\fP"
 arrow from E1.ne to E2.sw
-spline -> from E2.se then to E3.nw \
-	then to E7.s-(0,0.2) \
-	then left 0.2 down 0.1 \
-	then right 0.2 down 0.1 \
-	then to E7.s
+move to E2.se
+spline -> to E3.nw \
+    then to E7.s-(0,0.2) \
+    then left 0.2 down 0.1 \
+    then right 0.2 down 0.1 \
+    then to E7.s
 .PE
 .P
 For effective testing, then, you need something that is very good at
@@ -386,3 +387,4 @@ Can their transactions be applied automatically?
 Can their destination state be confirmed automatically?
 If any one of these is missing (but usually the last one),
 what gives us any confidence that they were tested at all?
+.\" vim: set ts=8 sw=4 et :

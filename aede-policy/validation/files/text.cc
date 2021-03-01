@@ -1,26 +1,26 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2006-2008, 2010, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/nstring.h>
 #include <libaegis/change/file.h>
-#include <libaegis/fstate.h>
+#include <libaegis/fstate.fmtgen.h>
 #include <libaegis/input/file.h>
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
@@ -38,6 +38,21 @@ validation_files_text::validation_files_text()
 }
 
 
+validation::pointer
+validation_files_text::create(void)
+{
+    return pointer(new validation_files_text());
+}
+
+
+bool
+validation_files_text::check_binaries(void)
+    const
+{
+    return false;
+}
+
+
 bool
 validation_files_text::check(change::pointer cp, fstate_src_ty *src)
 {
@@ -49,32 +64,35 @@ validation_files_text::check(change::pointer cp, fstate_src_ty *src)
     // We aren't trusting libmagic for this one, just in case it only
     // looks at the beginning of the file (many implementations do).
     //
-    nstring path(change_file_path(cp, src));
+    nstring path(cp->file_path(src));
     assert(!path.empty());
     if (path.empty())
-	return true;
+        return true;
 
     os_become_orig();
     bool result = true;
     input ip = input_file_open(path);
     for (;;)
     {
-	int c = ip->getch();
-	if (c < 0)
-	    break;
-	if (c == 0)
-	{
-	    result = false;
-	    break;
-	}
+        int c = ip->getch();
+        if (c < 0)
+            break;
+        if (c == 0)
+        {
+            result = false;
+            break;
+        }
     }
     ip.close();
     os_become_undo();
     if (!result)
     {
-	sub_context_ty sc;
-	sc.var_set_string("File_Name", src->file_name);
-	change_error(cp, &sc, i18n("$filename: is binary"));
+        sub_context_ty sc;
+        sc.var_set_string("File_Name", src->file_name);
+        change_error(cp, &sc, i18n("$filename: is binary"));
     }
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

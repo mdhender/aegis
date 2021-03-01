@@ -1,25 +1,25 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999-2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Why Bother?"
 .LP
 Writing tests is extra work, compared to the way many small (and some
-not-so-small) software shops operate.
+not\[hy]so\[hy]small) software shops operate.
 For this reason, the testing requirement may  be turned off.
 .LP
 The win is that the tests hang around forever,
@@ -28,30 +28,30 @@ embarrassing "features" in a released product.
 Prevention is cheaper than cure in this case,
 the tests save work down the track.
 .LP
-All of the "extra work" of writing tests is a long-term win,
+All of the "extra work" of writing tests is a long\[hy]term win,
 where old problems never again reappear.
 All of the "extra work" of reviewing changes means that another pair of eyes
 sees the code and finds potential problems before they manifest
 themselves in shipped product.
 All of the "extra work" of integration ensures that the baseline always works,
-and is always self-consistent.
+and is always self\[hy]consistent.
 All of the "extra work" of having a baseline and separate
 development directories allows multiple parallel development,
-with no inter-developer interference;
-and the baseline always works, it is never in an "in-between" state.
+with no inter\[hy]developer interference;
+and the baseline always works, it is never in an "in\[hy]between" state.
 In each case,
 not doing this "extra work" is a false economy.
 .LP
 The existence of these tests, though,
 is what determines which projects are most suited to Aegis and which are not.
 It should be noted that suitability is a continuous scale,
-not black-and-white.
+not black\[hy]and\[hy]white.
 With effort and resources,
 almost anything fits.
 .nh 3 "Projects for which Aegis' Testing is Most Suitable"
 .LP
 Projects most suited to supervision by Aegis are straight programs.
-What the non-systems-programmers out there call "tools" and
+What the non\[hy]systems\[hy]programmers out there call "tools" and
 sometimes "applications".
 These are programs which take a pile of input,
 chew on it,
@@ -61,7 +61,7 @@ The tests can then compare actual outputs with expected outputs.
 As an example,
 you could be writing a
 .I sed (1)
-look-alike,
+look\[hy]alike,
 a public domain clone of the
 .UX
 sed utility.
@@ -82,13 +82,13 @@ are tested for.
 .LP
 Other types of software have been developed using Aegis:
 compilers and interpreters,
-client-server model software,
+client\[hy]server model software,
 magnetic tape utilities,
-graphics software such as a ray-tracer.
+graphics software such as a ray\[hy]tracer.
 The range is vast, but it is not all types of software.
 .nh 3 "Projects for which Aegis' Testing is Useful"
 .LP
-For many years there have been full-screen applications on
+For many years there have been full\[hy]screen applications on
 text terminals.
 In more recent times there is increasing use of graphical interfaces.
 .LP
@@ -96,7 +96,7 @@ In developing these types of programs it is still possible to use Aegis,
 but several options need to be explored.
 .nh 4 "Testing Via Emulators"
 .LP
-There are screen emulators for both full-screen text and X11 available.
+There are screen emulators for both full\[hy]screen text and X11 available.
 Using these emulators,
 it is possible to test the user interface,
 and test via the user interface.
@@ -117,7 +117,7 @@ because figuring out what is on the screen,
 and testing it against expectations, is too hard.
 .LP
 If the program has a command line interface,
-in addition to the full-screen or GUI interface,
+in addition to the full\[hy]screen or GUI interface,
 the functionality accessible from the command line may be tested using Aegis.
 .LP
 It is possible that "limited testing" actually means "no testing",
@@ -128,12 +128,12 @@ Another alternative is to provide hooks into your program
 allowing you to substitute a file for user input,
 and to be able to trigger the dump of a "screen image".
 The simulated user input can then be fed to the program,
-and the screen dump (in some terminal-independent form)
+and the screen dump (in some terminal\[hy]independent form)
 can be compared against expectations.
 .LP
-This is easier for full-screen applications,
+This is easier for full\[hy]screen applications,
 than for X11 applications.
-You need to judge the cost-benefit trade-off.
+You need to judge the cost\[hy]benefit trade\[hy]off.
 Cost of development,
 cost of storage space for X11 images,
 cost of
@@ -146,7 +146,7 @@ It was originally intended for programs which required
 some physical action from a user,
 such as "unplug Ethernet cable now" or "mount tape XG356B now".
 It can also be used to have a user confirm that some
-on-screen activity has happened.
+on\[hy]screen activity has happened.
 .LP
 The problem with manual tests is that they simply don't happen.
 It is far more pleasant to say "run the automatic tests" and go for
@@ -159,7 +159,7 @@ if it can be automated, it is more likely to happen.
 Many folks think of testing as taking the final product and testing it.
 It is also possible to build specialized unit tests, which exercise
 specific portions of the code.  These tests can then be administrated
-by Aegis, even if the full-blown GUI cannot be.
+by Aegis, even if the full\[hy]blown GUI cannot be.
 .nh 3 "Projects for which Aegis' Testing is Least Useful"
 .LP
 Another class of software is things like operating system kernels
@@ -193,7 +193,7 @@ there were only serial interfaces available.
 Many operating system vendors tested their products by
 using computers connected to each serial line to simulate "user input".
 The system can be rebooted this way,
-and using dual-ported disks
+and using dual\[hy]ported disks
 allows different versions of a kernel to be tried,
 or other test conditions created.
 .LP
@@ -203,7 +203,7 @@ or some other kernel work,
 this is bad news:
 the Aegis program is probably not for you.
 It is possible,
-but there may be more cost-effective development strategies.
+but there may be more cost\[hy]effective development strategies.
 Of course, you could always use the rest of Aegis,
 and ignore the testing part.
 .LP
@@ -220,11 +220,11 @@ testing of kernels and operating systems.
 .LP
 Firmware is a similar deal:
 you need some way to download the code to be tested into the test system,
-and write-protect it to simulate ROM,
+and write\[hy]protect it to simulate ROM,
 and have the necessary hardware to drive the inputs and watch the outputs.
 .LP
 As you can see,
-this is generally not available to run-of-the-mill software houses,
+this is generally not available to run\[hy]of\[hy]the\[hy]mill software houses,
 but then they rarely write firmware, either.
 Those that do write firmware usually have the download capabilities,
 and some kind of remote operation facility.
@@ -240,7 +240,8 @@ download it.
 By using an object oriented language, such as C++, the polymorphism
 necessary to cope with multiple environments can be elegantly hidden
 behind a pure abstract base class.  Alternatively, by using a consistent
-API, you can accomplish the necessary sleight-of-hand at link time.
+API, you can accomplish the necessary sleight\[hy]of\[hy]hand at link time.
 .LP
 The unit test method mentioned earlier is also very useful for firmware,
 even if the device "as a whole" cannot be tested.
+.\" vim: set ts=8 sw=4 et :

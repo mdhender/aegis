@@ -1,0 +1,106 @@
+'\" t
+.\" aegis - project change supervisor
+.\" Copyright (C) 2009, 2010, 2012 Peter Miller
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
+.\"
+.so lib/en/man1/z_name.so
+.ds n) aelsf
+.TH "aelsf" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aelsf \- list source files
+.XX "aelsf(1)" "list source files"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B \-Help
+.br
+.B \*(n)
+.B \-VERSion
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to list the source files of a change,
+including project source files and change source files.  The file names
+are printed one per line on the standard output.
+.PP
+If there are no files matching your criteria (see below) the output will be
+empty, and no error will be issued.
+.PP
+This is very similar to the \f[I]aelpf\fP(1) and \f[I]aelcf\fP(1) commands,
+almost as if you ran both, but as a single command.
+.PP
+If your filenames have newlines in them, you have a problem.
+You can use any of the
+\fIposix_\%filename_\%charset\fP,
+\fIdos_\%filename_\%required\fP,
+\fIwindows_\%filename_\%required\fP, or
+\fIshell_\%safe_\%filenames\fP
+fields in your project configuration file to prevent this.
+See \fIaenf\fP(1) and \fIaepconf\fP(5) for more information.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+\fB\-ACtion\fP \fIname\fP
+This option may be used to specify which file actions you are interested in.
+Valid values are "create", "modify", "remove", \fIetc\fP,
+as may be observed in the Action column of the \fIaegis \-l pf\fP listing.
+The default is to list files with all actions except removed files.
+You may use this option more than once.
+.TP 8n
+\fB\-Not_ACtion\fP \fIname\fP
+This option may be used to exclude an action from the listing.
+If no actions are explicitly included or excluded,
+the default is to exclude removed files.
+You may use this option more than once.
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_project.so
+.TP 8n
+\fB\-USAge\fP \fIname\fP
+This option may be used to specify which file usages you are interested in.
+Valid values are "source", "test", \fIetc\fP,
+as may be observed in the Usage column of the \fIaegis \-l pf\fP listing.
+The default is to list files with all usages.
+You may use this option more than once.
+.TP 8n
+\fB\-Not_USAge\fP \fIname\fP
+This option may be used to exclude usages from the listing.
+The default is to exclude no usages.
+You may use this option more than once.
+.TP 8n
+\fB\-RESOlve\fP
+This option may be used to request the absolute path of each of the source
+files.  This is helpful when using \f[I]xargs\fP(1) or
+\f[I]grep\fP(1).
+.so lib/en/man1/o_aelsf_quot.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.SH SEE ALSO
+.TP 8n
+\fIaelcf\fP(1)
+list change files
+.TP 8n
+\fIaelpf\fP(1)
+list project files
+.TP 8n
+\fIaenf\fP(1)
+add new files to be created by a change
+.TP 8n
+\fIaepconf\fP(5)
+project configuration file
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

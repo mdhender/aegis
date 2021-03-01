@@ -1,52 +1,51 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 1999, 2001, 2002, 2006-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2001, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -New_Change_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-New_Change_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new change undo \- remove a new change from a project
 .XX "aencu(1)" "remove a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_Change_Undo
+.B \-New_Change_Undo
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_Change_Undo
-.B -List
+.B \-New_Change_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_Change_Undo
-.B -Help
+.B \-New_Change_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -New_Change_Undo
+.I \-New_Change_Undo
 command is used to
 remove a new change from a project.
 .PP
 It wasn't called
-.I "'\*(n) -Remove_Change'"
+.I "'\*(n) \-Remove_Change'"
 in order to emphasize that fact the the change
 must be in the
 .I "awaiting development"
@@ -64,9 +63,11 @@ S0: arrow " new" ljust " change" ljust
 S1: box "awaiting" "development"
 arrow " develop" ljust " begin" ljust
 S2: box "being" "developed"
-spline -> from 1/3<S1.nw,S1.sw> then left 0.75 then up 2/3 "new" "change" "undo"
-T1: spline -> from S2.w then left 0.75 then up 11/12 \
-	then to 1/3<S1.sw,S1.nw>
+move to 1/3<S1.nw,S1.sw>
+spline left 0.75 then up 2/3 "new" "change" "undo" ->
+move to S2.w
+T1: spline -> left 0.75 then up 11/12 \
+    then to 1/3<S1.sw,S1.nw>
 " develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
 .PE
 .\" ------------------------------------------------------------------------
@@ -83,20 +84,20 @@ system which usually receives notifications.  It's probably a bad
 assumption.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aencu '\*(n) -ncu \e!* -v'
-sh$	aencu(){\*(n) -ncu "$@" -v}
+csh%    alias aencu '\*(n) \-ncu \e!* \-v'
+sh$     aencu(){\*(n) \-ncu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -106,7 +107,7 @@ state.
 .br
 It is an error if any use other than a project administrator or the
 creator of the change attempts to run this command.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -116,4 +117,5 @@ add a new change to a project
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

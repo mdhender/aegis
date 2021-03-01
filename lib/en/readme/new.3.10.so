@@ -1,25 +1,25 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
-The \fIaet\fP(1) command now accepts a \f(CW--force\fP option,
+The \fIaet\fP(1) command now accepts a \f(CW\-force\fP option,
 forcing tests to be run, even if Aegis doesn't think they need to.
 .PP
 .if n *
@@ -30,25 +30,25 @@ using the \fIaedist\fP command.
 .PP
 .if n *
 .if t \(bu
-The \fIaedist --send\fP command now accepts a \f(CW--no-ascii-armor\fP
+The \fIaedist \-send\fP command now accepts a \f(CW\-no\[hy]ascii\[hy]armor\fP
 option, which leaves off the MIME base 64 encoding.  Useful for binary
 distributions and web servers.
 .PP
 .if n *
 .if t \(bu
 There is a new \fItrojan_horse_suspect\fP field in the project
-\fIconfig\fP file.  This is used by \fIaedist --receive\fP to check for files
+\fIconfig\fP file.  This is used by \fIaedist \-receive\fP to check for files
 which could be abused to carry Trojan horse attacks.
 .PP
 .if n *
 .if t \(bu
-The \fIaedist --receive\fP command now accepts a \f(CW--trojan\fP
+The \fIaedist \-receive\fP command now accepts a \f(CW\-trojan\fP
 option which treats the incoming change set as suspect, and
-a \f(CW--no-trojan\fP option which treats the incoming change set as benign.
+a \f(CW\-no\[hy]trojan\fP option which treats the incoming change set as benign.
 .PP
 .if n *
 .if t \(bu
-The \fIaedist --receive\fP command now quotes filenames (if necessary)
+The \fIaedist \-receive\fP command now quotes filenames (if necessary)
 when executing commands, thus defending against filenames which contain
 semicolons.
 .PP
@@ -56,7 +56,7 @@ semicolons.
 .if t \(bu
 The \fIaenbru\fP(1) command has been implemented at last.
 At last!
-You no longer need to use the \fIaedbu\fP work-around.
+You no longer need to use the \fIaedbu\fP work\[hy]around.
 .PP
 .if n *
 .if t \(bu
@@ -73,7 +73,7 @@ active changes on any of the branches).
 .if t \(bu
 The \f(CWdos_\%filename_\%required\fP and
 \f(CWwindows_\%filename_\%required\fP fields of the project \fIconfig\fP
-file have been enhanced to reject the brain-dead Windows special filenames
+file have been enhanced to reject the brain\[hy]dead Windows special filenames
 such as \[lq]aux\[rq] \fIet al\fP.
 .PP
 .if n *
@@ -88,4 +88,5 @@ Several portability enhacements, notably the Windows filename
 incompatibility has been fixed, and also the Linux \fIstdlib.h\fP problem.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.10 (6-Mar-1999)
+.SS Version 3.10 (6\[hy]Mar\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

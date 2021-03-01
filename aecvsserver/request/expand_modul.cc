@@ -1,22 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
-//
-//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// //
 // expand-modules
 //
 // Expand the modules which are specified in the arguments.  Returns the
@@ -38,7 +36,7 @@
 //
 // For example, suppose that the server has a module defined by
 //
-//	aliasmodule -a 1dir
+//      aliasmodule -a 1dir
 //
 // That is, one can check out aliasmodule and it will take 1dir in
 // the repository and check it out to 1dir in the working directory.
@@ -53,20 +51,21 @@
 // With expand-modules, the client would first ask for the module to
 // be expanded:
 //
-//	C: Root /home/kingdon/zwork/cvsroot
-//	. . .
-//	C: Argument aliasmodule
-//	C: Directory .
-//	C: /home/kingdon/zwork/cvsroot
-//	C: expand-modules
-//	S: Module-expansion 1dir
-//	S: ok
+//      C: Root /home/kingdon/zwork/cvsroot
+//      . . .
+//      C: Argument aliasmodule
+//      C: Directory .
+//      C: /home/kingdon/zwork/cvsroot
+//      C: expand-modules
+//      S: Module-expansion 1dir
+//      S: ok
 //
 // and then it knows to check the "1dir" directory and send requests
 // such as Entry and Modified for the files in that directory.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <aecvsserver/module.h>
 #include <aecvsserver/response/error.h>
 #include <aecvsserver/response/module_expan.h>
@@ -92,9 +91,9 @@ request_expand_modules::run_inner(server_ty *sp, string_ty *)
 
     assert(sp);
     if (server_root_required(sp, "expand-modules"))
-	return;
+        return;
     if (server_directory_required(sp, "expand-modules"))
-	return;
+        return;
 
     //
     // There should be exactly one argument, and exactly one directory.
@@ -102,39 +101,39 @@ request_expand_modules::run_inner(server_ty *sp, string_ty *)
     //
     if (sp->np->argument_count() < 1)
     {
-	server_error(sp, "expand-modules: at least one Argument required");
-	return;
+        server_error(sp, "expand-modules: at least one Argument required");
+        return;
     }
     for (j = 0; j < sp->np->argument_count(); ++j)
     {
-	string_ty *aname = sp->np->argument_nth(j);
-	module mp = module::find(aname);
-	if (mp->is_bogus())
-	{
-	    response_error *rp =
-		new response_error
-		(
-		    str_format
-		    (
-			"expand-modules: module \"%s\" unknown",
-			aname->str_text
-		    ),
-		    str_from_c("ENOENT")
-		);
-	    server_response_queue(sp, rp);
-	    return;
-	}
+        string_ty *aname = sp->np->argument_nth(j);
+        module mp = module::find(aname);
+        if (mp->is_bogus())
+        {
+            response_error *rp =
+                new response_error
+                (
+                    str_format
+                    (
+                        "expand-modules: module \"%s\" unknown",
+                        aname->str_text
+                    ),
+                    str_from_c("ENOENT")
+                );
+            server_response_queue(sp, rp);
+            return;
+        }
 
-	//
-	// We don't use the name we were given, we ask the module what
-	// its name is and return that.  This will translate Aegis'
-	// project aliases.
-	//
-	server_response_queue
-	(
-	    sp,
-	    new response_module_expansion(mp->name())
-	);
+        //
+        // We don't use the name we were given, we ask the module what
+        // its name is and return that.  This will translate Aegis'
+        // project aliases.
+        //
+        server_response_queue
+        (
+            sp,
+            new response_module_expansion(mp->name())
+        );
     }
     server_ok(sp);
 }
@@ -154,3 +153,6 @@ request_expand_modules::reset()
 {
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

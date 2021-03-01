@@ -1,27 +1,27 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2003-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
 #include <common/str_list.h>
 #include <libaegis/change.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/emit/project.h>
 #include <libaegis/http.h>
 #include <libaegis/os.h>
@@ -32,7 +32,7 @@
 
 
 void
-get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
+get_project_menu(project *pp, string_ty *, string_list_ty *)
 {
     html_header(pp, 0);
 
@@ -49,18 +49,18 @@ get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
 
     if (cstate_data->brief_description)
     {
-	printf("<div class=\"brief-description\">\n");
-	printf("<h2>Brief Description</h2>\n");
-	html_encode_string(cstate_data->brief_description);
-	printf("\n</div>\n");
+        printf("<div class=\"brief-description\">\n");
+        printf("<h2>Brief Description</h2>\n");
+        html_encode_string(cstate_data->brief_description);
+        printf("\n</div>\n");
     }
 
     if (cstate_data->description)
     {
-	printf("<div class=\"description\">\n");
-	printf("<h2>Description</h2>\n");
-	html_encode_string(cstate_data->description);
-	printf("\n</div>\n");
+        printf("<div class=\"description\">\n");
+        printf("<h2>Description</h2>\n");
+        html_encode_string(cstate_data->description);
+        printf("\n</div>\n");
     }
 
     printf("<div class=\"information\">\n");
@@ -72,27 +72,27 @@ get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
     //
     if
     (
-	cstate_data->branch
+        cstate_data->branch
     &&
-	cstate_data->branch->sub_branch
+        cstate_data->branch->sub_branch
     &&
-	cstate_data->branch->sub_branch->length
+        cstate_data->branch->sub_branch->length
     )
     {
-	printf("<dt>Branches<dd>");
-	cstate_branch_sub_branch_list_ty *bp = cstate_data->branch->sub_branch;
-	for (size_t j = 0; j < bp->length; ++j)
-	{
-	    if (j)
-		printf(",\n");
-	    printf("<a href=\"%s/", http_script_name());
-	    html_escape_string(project_name_get(pp));
-	    long n = magic_zero_decode(bp->list[j]);
-	    printf(".%ld/?menu\">", n);
-	    html_encode_string(project_name_get(pp));
-	    printf(".%ld</a>", n);
-	}
-	printf("\n<p>\n");
+        printf("<dt>Branches<dd>");
+        cstate_branch_sub_branch_list_ty *bp = cstate_data->branch->sub_branch;
+        for (size_t j = 0; j < bp->length; ++j)
+        {
+            if (j)
+                printf(",\n");
+            printf("<a href=\"%s/", http_script_name());
+            html_escape_string(project_name_get(pp));
+            long n = magic_zero_decode(bp->list[j]);
+            printf(".%ld/?menu\">", n);
+            html_encode_string(project_name_get(pp));
+            printf(".%ld</a>", n);
+        }
+        printf("\n<p>\n");
     }
 
     printf("<dt>");
@@ -102,8 +102,8 @@ get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
     printf("the project baseline.\n");
     if (!pp->is_a_trunk())
     {
-	printf("The immediate baseline and all ancestor baselines are\n");
-	printf("unioned and presented as a single directory tree.\n");
+        printf("The immediate baseline and all ancestor baselines are\n");
+        printf("unioned and presented as a single directory tree.\n");
     }
     printf("<p>\n");
     printf("If you wish to download the sources using\n");
@@ -121,11 +121,11 @@ get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
     printf("-receive</i> command.\n");
     if (!pp->is_a_trunk())
     {
-	printf("You can also download the branch as a change set, see the ");
-	emit_change_href(pp->change_get(), "menu");
-	printf("corresponding change</a>'s ");
-	emit_change_href(pp->change_get(), "download");
-	printf("download</a> page.\n");
+        printf("You can also download the branch as a change set, see the ");
+        emit_change_href(pp->change_get(), "menu");
+        printf("corresponding change</a>'s ");
+        emit_change_href(pp->change_get(), "download");
+        printf("download</a> page.\n");
     }
     printf("<p>\n");
 
@@ -259,11 +259,11 @@ get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
     printf("individual file information.\n");
     if (!pp->is_a_trunk())
     {
-	printf("To view only those files changed by this branch, see the ");
-	emit_change_href(pp->change_get(), "menu");
-	printf("corresponding change</a>'s ");
-	emit_change_href(pp->change_get(), "files");
-	printf("file list</a>.\n");
+        printf("To view only those files changed by this branch, see the ");
+        emit_change_href(pp->change_get(), "menu");
+        printf("corresponding change</a>'s ");
+        emit_change_href(pp->change_get(), "files");
+        printf("file list</a>.\n");
     }
     printf("<p>\n");
 
@@ -349,3 +349,6 @@ get_project_menu(project_ty *pp, string_ty *, string_list_ty *)
 
     html_footer(pp, 0);
 }
+
+
+// vim: set ts=8 sw=4 et :

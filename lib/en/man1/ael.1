@@ -1,52 +1,51 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1999, 2001, 2003-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1994, 1999, 2001, 2003-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -List" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-List" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis list \- list (possibly) interesting things
 .XX "ael(1)" "list interesting things"
 .SH SYNOPSIS
 .B \*(n)
-.B -List
+.B \-List
 [
 .IR option ...
 ]
-.I list-name
+.I list\[hy]name
 .br
 .B \*(n)
-.B -List
-.B -List
+.B \-List
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -List
-.B -Help
+.B \-List
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -List
+.I \-List
 command is used to
 list information.
 There are a number of possible
-.IR list-name s,
+.IR list\[hy]name s,
 as follows (abbreviations as for command line options):
 .TP 8n
 Administrators
@@ -204,26 +203,26 @@ Most of these lists are available from other \*(n) functions.
 Many \*(n) functions provide more specific lists.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_page.so
-.so o_project.so
-.so o_terse.so
-.so o_unforma.so
-.so o_verbose.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_page.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_unforma.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias ael '\*(n) -l \e!* -v'
-sh$	ael(){\*(n) -l "$@" -v}
+csh%    alias ael '\*(n) \-l \e!* \-v'
+sh$     ael(){\*(n) \-l "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
 the list name given is unknown.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -251,4 +250,5 @@ user configuration file format
 .TP 8n
 .IR aels (1)
 annotated directory listing
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,30 +1,32 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008-2010 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/fcntl.h>
 #include <common/ac/unistd.h>
 
-#include <common/error.h>
+#include <common/nstring/list.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <common/uuidentifier.h>
@@ -32,8 +34,10 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/arglex2.h>
+#include <libaegis/attribute.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/functor/file_find.h>
 #include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
@@ -45,6 +49,8 @@
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
+#include <libaegis/project/invento_walk.h>
+#include <libaegis/search_path/base_get.h>
 #include <libaegis/sub.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
@@ -87,24 +93,24 @@ new_test_list(void)
 static void
 new_test_main(void)
 {
-    cstate_ty	    *cstate_data;
-    string_ty	    *s1;
-    string_ty	    *s2;
+    cstate_ty       *cstate_data;
+    string_ty       *s1;
+    string_ty       *s2;
     fstate_src_ty   *src_data;
-    int		    manual_flag;
-    int		    automatic_flag;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
+    int             manual_flag;
+    int             automatic_flag;
+    string_ty       *project_name;
+    project      *pp;
+    long            change_number;
     change::pointer cp;
     user_ty::pointer up;
-    long	    n;
-    size_t	    j;
-    size_t	    k;
-    int		    nerrs;
+    long            n;
+    size_t          j;
+    size_t          k;
+    int             nerrs;
     log_style_ty    log_style;
     const char      *output_filename;
-    int		    use_template;
+    int             use_template;
     string_ty       *uuid;
 
     trace(("new_test_main()\n{\n"));
@@ -118,91 +124,93 @@ new_test_main(void)
     output_filename = 0;
     use_template = -1;
     uuid = 0;
+    edit_ty edit = edit_not_set;
+    bool use_uuid = true;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_test_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(new_test_usage);
+            continue;
 
-	case arglex_token_manual:
-	    if (manual_flag)
-		duplicate_option(new_test_usage);
-	    manual_flag = 1;
-	    break;
+        case arglex_token_manual:
+            if (manual_flag)
+                duplicate_option(new_test_usage);
+            manual_flag = 1;
+            break;
 
-	case arglex_token_automatic:
-	    if (automatic_flag)
-		duplicate_option(new_test_usage);
-	    automatic_flag = 1;
-	    break;
+        case arglex_token_automatic:
+            if (automatic_flag)
+                duplicate_option(new_test_usage);
+            automatic_flag = 1;
+            break;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, new_test_usage);
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change(&project_name, &change_number, new_test_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, new_test_usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, new_test_usage);
+            continue;
 
-	case arglex_token_file:
-	    if (arglex() != arglex_token_string)
-		new_test_usage();
-	    // fall through...
+        case arglex_token_file:
+            if (arglex() != arglex_token_string)
+                new_test_usage();
+            // fall through...
 
-	case arglex_token_string:
-	    s2 = str_from_c(arglex_value.alv_string);
-	    wl.push_back(s2);
-	    str_free(s2);
-	    break;
+        case arglex_token_string:
+            s2 = str_from_c(arglex_value.alv_string);
+            wl.push_back(s2);
+            str_free(s2);
+            break;
 
-	case arglex_token_nolog:
-	    if (log_style == log_style_none)
-		duplicate_option(new_test_usage);
-	    log_style = log_style_none;
-	    break;
+        case arglex_token_nolog:
+            if (log_style == log_style_none)
+                duplicate_option(new_test_usage);
+            log_style = log_style_none;
+            break;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(new_test_usage);
-	    break;
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(new_test_usage);
+            break;
 
-	case arglex_token_base_relative:
-	case arglex_token_current_relative:
-	    user_ty::relative_filename_preference_argument(new_test_usage);
-	    break;
+        case arglex_token_base_relative:
+        case arglex_token_current_relative:
+            user_ty::relative_filename_preference_argument(new_test_usage);
+            break;
 
-	case arglex_token_output:
-	    if (output_filename)
-		duplicate_option(new_test_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_file(arglex_token_output, new_test_usage);
-		// NOTREACHED
+        case arglex_token_output:
+            if (output_filename)
+                duplicate_option(new_test_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_file(arglex_token_output, new_test_usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
-		output_filename = arglex_value.alv_string;
-		break;
+            case arglex_token_string:
+                output_filename = arglex_value.alv_string;
+                break;
 
-	    case arglex_token_stdio:
-		output_filename = "";
-		break;
-	    }
-	    break;
+            case arglex_token_stdio:
+                output_filename = "";
+                break;
+            }
+            break;
 
-	case arglex_token_template:
-	case arglex_token_template_not:
-	    if (use_template >= 0)
-		duplicate_option(new_test_usage);
-	    use_template = (arglex_token == arglex_token_template);
-	    break;
+        case arglex_token_template:
+        case arglex_token_template_not:
+            if (use_template >= 0)
+                duplicate_option(new_test_usage);
+            use_template = (arglex_token == arglex_token_template);
+            break;
 
         case arglex_token_uuid:
             if (uuid)
@@ -211,34 +219,76 @@ new_test_main(void)
                 option_needs_string(arglex_token_uuid, new_test_usage);
             s2 = str_from_c(arglex_value.alv_string);
             if (!universal_unique_identifier_valid(s2))
-		option_needs_string(arglex_token_uuid, new_test_usage);
-	    uuid = str_downcase(s2);
-	    str_free(s2);
-	    s2 = 0;
+                option_needs_string(arglex_token_uuid, new_test_usage);
+            uuid = str_downcase(s2);
+            str_free(s2);
+            s2 = 0;
             break;
-	}
-	arglex();
+
+        case arglex_token_uuid_not:
+            use_uuid = false;
+            break;
+
+        case arglex_token_edit:
+            if (edit == edit_foreground)
+                duplicate_option(new_test_usage);
+            if (edit != edit_not_set)
+            {
+                too_many_edits:
+                mutually_exclusive_options
+                (
+                    arglex_token_edit,
+                    arglex_token_edit_bg,
+                    new_test_usage
+                );
+            }
+            edit = edit_foreground;
+            break;
+
+        case arglex_token_edit_bg:
+            if (edit == edit_background)
+                duplicate_option(new_test_usage);
+            if (edit != edit_not_set)
+                goto too_many_edits;
+            edit = edit_background;
+            break;
+        }
+        arglex();
     }
     if (change_number && output_filename)
     {
-	mutually_exclusive_options
-	(
-	    arglex_token_change,
-	    arglex_token_output,
-	    new_test_usage
-	);
+        mutually_exclusive_options
+        (
+            arglex_token_change,
+            arglex_token_output,
+            new_test_usage
+        );
     }
     if (automatic_flag && manual_flag)
     {
-	mutually_exclusive_options
-	(
-	    arglex_token_manual,
-	    arglex_token_automatic,
-	    new_test_usage
-	);
+        mutually_exclusive_options
+        (
+            arglex_token_manual,
+            arglex_token_automatic,
+            new_test_usage
+        );
     }
     if (!manual_flag && !automatic_flag)
-	automatic_flag = 1;
+        automatic_flag = 1;
+
+
+    //
+    // no-uuid conflicts whit uuid
+    //
+    if (uuid && !use_uuid)
+    {
+        mutually_exclusive_options
+        (
+            arglex_token_uuid,
+            arglex_token_uuid_not,
+            new_test_usage
+        );
+    }
 
     //
     //  It is an error if the -uuid switch is used and more that one
@@ -246,8 +296,8 @@ new_test_main(void)
     //
     if (uuid && wl.nstrings > 1)
     {
-	error_intl(0, i18n("too many files"));
-	new_test_usage();
+        error_intl(0, i18n("too many files"));
+        new_test_usage();
     }
 
     //
@@ -256,7 +306,7 @@ new_test_main(void)
     if (!project_name)
     {
         nstring pn = user_ty::create()->default_project();
-	project_name = str_copy(pn.get_ref());
+        project_name = str_copy(pn.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -271,16 +321,17 @@ new_test_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = up->default_change(pp);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
     //
-    // lock the change state file
-    // and the project state file for the test number
+    // lock everything to avoid race conditions while searching the
+    // whole project for UUID already assigned to files with the same
+    // name.  This include locking the project state file for test
+    // number.
     //
-    project_pstate_lock_prepare_top(pp);
-    change_cstate_lock_prepare(cp);
+    pp->trunk_get()->lock_prepare_everything();
     lock_take();
     cstate_data = cp->cstate_get();
 
@@ -291,194 +342,172 @@ new_test_main(void)
     // It is an error if the change is not assigned to the current user.
     //
     if (cstate_data->state != cstate_state_being_developed)
-	change_fatal(cp, 0, i18n("bad nt state"));
-    if (change_is_a_branch(cp))
-	change_fatal(cp, 0, i18n("bad nf branch"));
-    if (nstring(change_developer_name(cp)) != up->name())
-	change_fatal(cp, 0, i18n("not developer"));
+        change_fatal(cp, 0, i18n("bad nt state"));
+    if (cp->is_a_branch())
+        change_fatal(cp, 0, i18n("bad nf branch"));
+    if (nstring(cp->developer_name()) != up->name())
+        change_fatal(cp, 0, i18n("not developer"));
 
     //
     // It is an error if the UUID is already is use.
     //
     if (uuid)
     {
-	fstate_src_ty   *src;
+        fstate_src_ty   *src;
 
-	src = change_file_find_uuid(cp, uuid, view_path_simple);
-	if (src)
-	{
-	    sub_context_ty  *scp;
+        src = cp->file_find_uuid(uuid, view_path_simple);
+        if (src)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Other", src->file_name);
-	    sub_var_optional(scp, "Other");
-	    change_fatal(cp, scp, i18n("bad ca, uuid duplicate"));
-	    // NOTREACHED
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "Other", src->file_name);
+            sub_var_optional(scp, "Other");
+            change_fatal(cp, scp, i18n("bad ca, uuid duplicate"));
+            // NOTREACHED
+        }
     }
 
     nerrs = 0;
     if (wl.nstrings)
     {
-	string_list_ty	search_path;
-	int		based;
-	string_ty	*base;
+        nstring_list search_path;
 
-	//
-	// Search path for resolving filenames.
-	//
-	change_search_path_get(cp, &search_path, 1);
+        //
+        // Search path for resolving filenames.
+        //
+        cp->search_path_get(search_path, true);
 
-	//
-	// Find the base for relative filenames.
-	//
-	based =
-	    (
-		search_path.nstrings >= 1
-	    &&
-		(
-		    up->relative_filename_preference
-		    (
-			uconf_relative_filename_preference_current
-		    )
-		==
-		    uconf_relative_filename_preference_base
-		)
-	    );
-	if (based)
-	    base = search_path.string[0];
-	else
-	{
-	    os_become_orig();
-	    base = os_curdir();
-	    os_become_undo();
-	}
+        //
+        // Find the base for relative filenames.
+        //
+        nstring base = search_path_base_get(search_path, up);
 
-	//
-	// make sure each file named is unique
-	//
-	string_list_ty wl2;
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-	    s1 = wl.string[j];
-	    if (s1->str_text[0] == '/')
-		s2 = str_copy(s1);
-	    else
-		s2 = os_path_join(base, s1);
-	    up->become_begin();
-	    s1 = os_pathname(s2, 1);
-	    up->become_end();
-	    str_free(s2);
-	    s2 = 0;
-	    for (k = 0; k < search_path.nstrings; ++k)
-	    {
-		s2 = os_below_dir(search_path.string[k], s1);
-		if (s2)
-		    break;
-	    }
-	    str_free(s1);
-	    if (!s2)
-	    {
-		sub_context_ty	*scp;
+        //
+        // make sure each file named is unique
+        //
+        string_list_ty wl2;
+        for (j = 0; j < wl.nstrings; ++j)
+        {
+            s1 = wl.string[j];
+            if (s1->str_text[0] == '/')
+                s2 = str_copy(s1);
+            else
+                s2 = os_path_join(base.get_ref(), s1);
+            up->become_begin();
+            s1 = os_pathname(s2, 1);
+            up->become_end();
+            str_free(s2);
+            s2 = 0;
+            for (k = 0; k < search_path.size(); ++k)
+            {
+                s2 = os_below_dir(search_path[k].get_ref(), s1);
+                if (s2)
+                    break;
+            }
+            str_free(s1);
+            if (!s2)
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", wl.string[j]);
-		change_fatal(cp, scp, i18n("$filename unrelated"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    if (wl2.member(s2))
-	    {
-		sub_context_ty	*scp;
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", wl.string[j]);
+                change_fatal(cp, scp, i18n("$filename unrelated"));
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+            if (wl2.member(s2))
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_error(cp, scp, i18n("too many $filename"));
-		sub_context_delete(scp);
-		++nerrs;
-	    }
-	    else
-		wl2.push_back(s2);
-	    str_free(s2);
-	}
-	wl = wl2;
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s2);
+                change_error(cp, scp, i18n("too many $filename"));
+                sub_context_delete(scp);
+                ++nerrs;
+            }
+            else
+                wl2.push_back(s2);
+            str_free(s2);
+        }
+        wl = wl2;
 
-	//
-	// ensure that each file
-	// 1. is not already part of the change
-	//        - except removed files
-	// 2. is not already part of the baseline
-	//
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-	    s1 = wl.string[j];
-	    src_data = change_file_find(cp, s1, view_path_first);
-	    if (src_data)
-	    {
-		sub_context_ty	*scp;
+        //
+        // ensure that each file
+        // 1. is not already part of the change
+        //        - except removed files
+        // 2. is not already part of the baseline
+        //
+        for (j = 0; j < wl.nstrings; ++j)
+        {
+            s1 = wl.string[j];
+            src_data = cp->file_find(nstring(s1), view_path_first);
+            if (src_data)
+            {
+                sub_context_ty  *scp;
 
-		switch (src_data->action)
-		{
-		case file_action_remove:
-		    break;
+                switch (src_data->action)
+                {
+                case file_action_remove:
+                    break;
 
-		case file_action_create:
-		case file_action_modify:
-		case file_action_insulate:
-		case file_action_transparent:
+                case file_action_create:
+                case file_action_modify:
+                case file_action_insulate:
+                case file_action_transparent:
 #ifndef DEBUG
-		default:
+                default:
 #endif
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s1);
-		    change_error(cp, scp, i18n("file $filename dup"));
-		    sub_context_delete(scp);
-		    ++nerrs;
-		    break;
-		}
-	    }
-	    else
-	    {
-		src_data = project_file_find(pp, s1, view_path_extreme);
-		if (src_data)
-		{
-		    sub_context_ty  *scp;
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", s1);
+                    change_error(cp, scp, i18n("file $filename dup"));
+                    sub_context_delete(scp);
+                    ++nerrs;
+                    break;
+                }
+            }
+            else
+            {
+                src_data = pp->file_find(s1, view_path_extreme);
+                if (src_data)
+                {
+                    sub_context_ty  *scp;
 
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s1);
-		    project_error(pp, scp, i18n("$filename in baseline"));
-		    sub_context_delete(scp);
-		    ++nerrs;
-		}
-	    }
-	}
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", s1);
+                    project_error(pp, scp, i18n("$filename in baseline"));
+                    sub_context_delete(scp);
+                    ++nerrs;
+                }
+            }
+        }
     }
     else
     {
-	//
-	// Invent a new test file name.
-	//
-	// Try 1000 times, as users could, conceivably, use
-	// files of the same name.
-	//
-	s1 = 0;
-	for (j = 0; j < 1000; ++j)
-	{
-	    n = project_next_test_number_get(pp);
-	    s1 = change_new_test_filename_get(cp, n, !manual_flag);
-	    if
-	    (
-		!change_file_find(cp, s1, view_path_first)
-	    &&
-		!project_file_find(pp, s1, view_path_extreme)
-	    )
-		break;
-	    s1 = 0;
-	}
-	if (!s1)
-	    fatal_intl(0, i18n("all test numbers used"));
-	wl.push_back(s1);
-	str_free(s1);
+        //
+        // Invent a new test file name.
+        //
+        // Try 1000 times, as users could, conceivably, use
+        // files of the same name.
+        //
+        s1 = 0;
+        for (j = 0; j < 1000; ++j)
+        {
+            n = project_next_test_number_get(pp);
+            s1 = change_new_test_filename_get(cp, n, !manual_flag);
+            if
+            (
+                !cp->file_find(nstring(s1), view_path_first)
+            &&
+                !pp->file_find(s1, view_path_extreme)
+            )
+                break;
+            s1 = 0;
+        }
+        if (!s1)
+            fatal_intl(0, i18n("all test numbers used"));
+        wl.push_back(s1);
+        str_free(s1);
     }
 
     //
@@ -486,86 +515,86 @@ new_test_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	string_ty	*e;
-	string_ty	*file_name;
-	string_ty	*other;
+        string_ty       *e;
+        string_ty       *file_name;
+        string_ty       *other;
 
-	file_name = wl.string[j];
-	if (change_file_is_config(cp, file_name))
-	{
-	    sub_context_ty  *scp;
+        file_name = wl.string[j];
+        if (cp->file_is_config(file_name))
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", file_name);
-	    change_error(cp, scp, i18n("may not test $filename"));
-	    sub_context_delete(scp);
-	    ++nerrs;
-	}
-	other = change_file_directory_conflict(cp, file_name);
-	if (other)
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", file_name);
+            change_error(cp, scp, i18n("may not test $filename"));
+            sub_context_delete(scp);
+            ++nerrs;
+        }
+        other = change_file_directory_conflict(cp, file_name);
+        if (other)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", file_name);
-	    sub_var_set_string(scp, "File_Name2", other);
-	    sub_var_optional(scp, "File_Name2");
-	    change_error
-	    (
-		cp,
-		scp,
-		i18n("file $filename directory name conflict")
-	    );
-	    sub_context_delete(scp);
-	    ++nerrs;
-	    continue;
-	}
-	other = project_file_directory_conflict(pp, file_name);
-	if (other)
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", file_name);
+            sub_var_set_string(scp, "File_Name2", other);
+            sub_var_optional(scp, "File_Name2");
+            change_error
+            (
+                cp,
+                scp,
+                i18n("file $filename directory name conflict")
+            );
+            sub_context_delete(scp);
+            ++nerrs;
+            continue;
+        }
+        other = project_file_directory_conflict(pp, file_name);
+        if (other)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", file_name);
-	    sub_var_set_string(scp, "File_Name2", other);
-	    sub_var_optional(scp, "File_Name2");
-	    project_error
-	    (
-		pp,
-		scp,
-		i18n("file $filename directory name conflict")
-	    );
-	    sub_context_delete(scp);
-	    ++nerrs;
-	}
-	e = change_filename_check(cp, file_name);
-	if (e)
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", file_name);
+            sub_var_set_string(scp, "File_Name2", other);
+            sub_var_optional(scp, "File_Name2");
+            project_error
+            (
+                pp,
+                scp,
+                i18n("file $filename directory name conflict")
+            );
+            sub_context_delete(scp);
+            ++nerrs;
+        }
+        e = change_filename_check(cp, file_name);
+        if (e)
+        {
+            sub_context_ty  *scp;
 
-	    //
-	    // no internationalization if the error string
-	    // required, this is done inside the
-	    // change_filename_check function.
-	    //
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "MeSsaGe", e);
-	    change_error(cp, scp, i18n("$message"));
-	    sub_context_delete(scp);
-	    ++nerrs;
-	    str_free(e);
-	}
+            //
+            // no internationalization if the error string
+            // required, this is done inside the
+            // change_filename_check function.
+            //
+            scp = sub_context_new();
+            sub_var_set_string(scp, "MeSsaGe", e);
+            change_error(cp, scp, i18n("$message"));
+            sub_context_delete(scp);
+            ++nerrs;
+            str_free(e);
+        }
     }
     if (nerrs)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", nerrs);
-	sub_var_optional(scp, "Number");
-	change_fatal(cp, scp, i18n("new test failed"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number", nerrs);
+        sub_var_optional(scp, "Number");
+        change_fatal(cp, scp, i18n("new test failed"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -573,47 +602,114 @@ new_test_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	change_file_template(cp, wl.string[j], up, use_template);
+        change_file_template(cp, wl.string[j], up, use_template);
     }
 
     //
     // Add the files to the change.
     //
+    nstring_list files(wl);
+    change_functor_file_find file_to_uuid(files);
+    project_inventory_walk(pp->trunk_get(), file_to_uuid);
     for (j = 0; j < wl.nstrings; ++j)
     {
-	s1 = wl.string[j];
+        s1 = wl.string[j];
 
-	//
-	// If the file is already in the change (we checked for this
-	// earlier) then it must be being removed, and we are replacing
-	// it, so we can change its type.
-	//
-	src_data = change_file_find(cp, s1, view_path_first);
-	if (src_data)
-	{
-	    assert(src_data->action == file_action_remove);
-	    if (src_data->uuid)
-	    {
-		if (uuid)
-		    duplicate_option_by_name(arglex_token_uuid, new_test_usage);
-		uuid = src_data->uuid;
-		src_data->uuid = 0;
-	    }
-	    change_file_remove(cp, s1);
-	}
+        //
+        // If the file is already in the change (we checked for this
+        // earlier) then it must be being removed, and we are replacing
+        // it, so we can change its type.
+        //
+        src_data = cp->file_find(nstring(s1), view_path_first);
+        if (src_data)
+        {
+            assert(src_data->action == file_action_remove);
+            if (src_data->uuid)
+            {
+                //
+                // If the file is removed we reuse the UUID raising an
+                // error if the user has specified the UUID on the
+                // command line.
+                //
+                // We cannot reuse the UUID if the file has been
+                // renamed because this lead to UUIDs duplications.
+                //
+                if (!src_data->move)
+                {
+                    if (uuid)
+                        duplicate_option_by_name
+                        (
+                            arglex_token_uuid,
+                            new_test_usage
+                        );
 
-	src_data = cp->file_new(s1);
-	src_data->action = file_action_create;
-	if (manual_flag)
-	    src_data->usage = file_usage_manual_test;
-	else
-	    src_data->usage = file_usage_test;
-	if (uuid)
-	{
-    	    assert(universal_unique_identifier_valid(uuid));
-    	    src_data->uuid = uuid;
-	    uuid = 0;
-	}
+                    uuid = src_data->uuid;
+                    src_data->uuid = 0;
+                }
+            }
+            change_file_remove(cp, s1);
+        }
+
+        src_data = cp->file_new(s1);
+        src_data->action = file_action_create;
+        if (manual_flag)
+            src_data->usage = file_usage_manual_test;
+        else
+            src_data->usage = file_usage_test;
+
+        if (uuid || use_uuid)
+        {
+            nstring *candidate_uuid = file_to_uuid.query(src_data->file_name);
+
+            if (uuid)
+            {
+                if
+                (
+                    candidate_uuid
+                &&
+                    !str_equal(candidate_uuid->get_ref(), uuid)
+                )
+                {
+                    sub_context_ty  *scp;
+
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "Other", src_data->file_name);
+                    sub_var_optional(scp, "Other");
+                    change_fatal(cp, scp, i18n("bad ca, uuid duplicate"));
+                    // NOTREACHED
+                }
+
+                src_data->uuid = uuid;
+                uuid = 0;
+            }
+            else
+            {
+                if (candidate_uuid)
+                {
+                    trace_nstring(*candidate_uuid);
+                    src_data->uuid = candidate_uuid->get_ref_copy();
+                }
+                else
+                    src_data->uuid = universal_unique_identifier();
+            }
+
+            assert(universal_unique_identifier_valid(src_data->uuid));
+        }
+        else
+        {
+            //
+            // If the user asked to not have the UUID assigned to this
+            // file, make sure it is skipped also at aeipass time.
+            //
+            src_data->attribute = (attributes_list_ty *)
+                attributes_list_type.alloc();
+            attributes_list_append
+            (
+                src_data->attribute,
+                AEIPASS_ASSIGN_FILE_UUID,
+                "false"
+            );
+        }
     }
 
     //
@@ -629,7 +725,7 @@ new_test_main(void)
     //
     cstate_data->test_exempt = false;
     if (project_change_nth(pp, 0L, &n) && n != change_number)
-	cstate_data->test_baseline_exempt = false;
+        cstate_data->test_baseline_exempt = false;
 
     //
     // update the copyright years
@@ -650,19 +746,19 @@ new_test_main(void)
     //
     if (output_filename)
     {
-	string_ty *content = wl.unsplit("\n");
-	if (*output_filename)
-	{
-	    string_ty	    *fn;
+        string_ty *content = wl.unsplit("\n");
+        if (*output_filename)
+        {
+            string_ty       *fn;
 
-	    fn = str_from_c(output_filename);
+            fn = str_from_c(output_filename);
             user_ty::become scoped(up);
-	    file_from_string(fn, content, 0644);
-	    str_free(fn);
-	}
-	else
-	    cat_string_to_stdout(content);
-	str_free(content);
+            file_from_string(fn, content, 0644);
+            str_free(fn);
+        }
+        else
+            cat_string_to_stdout(content);
+        str_free(content);
     }
 
     // remember we are about to
@@ -675,7 +771,7 @@ new_test_main(void)
     // release the locks
     //
     project_pstate_write_top(pp);
-    change_cstate_write(cp);
+    cp->cstate_write();
     commit();
     lock_release();
 
@@ -692,14 +788,25 @@ new_test_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	s1 = wl.string[j];
-	sub_var_set_string(scp, "File_Name", s1);
-	change_verbose(cp, scp, i18n("new test $filename complete"));
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        s1 = wl.string[j];
+        sub_var_set_string(scp, "File_Name", s1);
+        change_verbose(cp, scp, i18n("new test $filename complete"));
+        sub_context_delete(scp);
     }
+
+    //
+    // Edit the files if asked.
+    //
+    if (edit != edit_not_set)
+    {
+        nstring dd(change_development_directory_get(cp, 0));
+        nstring_list nfl(wl);
+        os_edit(nfl, edit, dd);
+    }
+
     project_free(pp);
     change_free(cp);
     trace(("}\n"));
@@ -711,11 +818,14 @@ new_test(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, new_test_help, 0 },
-	{ arglex_token_list, new_test_list, 0 },
+        { arglex_token_help, new_test_help, 0 },
+        { arglex_token_list, new_test_list, 0 },
     };
 
     trace(("new_test()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), new_test_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

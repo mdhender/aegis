@@ -1,22 +1,21 @@
-'\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1997-2009 Peter Miller
+'\" t
+.\" aegis - project change supervisor
+.\" Copyright (C) 1993-1995, 1997-2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aesub 5 \*(N) "Reference Manual"
 .SH NAME
 aesub \- aegis command substitutions
@@ -33,7 +32,7 @@ An example will illustrate this:
 .RS 8n
 .nf
 build_command =
-	"cook project=${project} change=${change}";
+    "cook project=${project} change=${change}";
 .fi
 .RE
 In this command definition,
@@ -51,12 +50,13 @@ and be followed by zero or more alphanumerics.
 .TP 8n
 ${name}
 .br
-The name in this form may contain any non-blank characters,
+The name in this form may contain any non\[hy]blank characters,
 and it may be subject to substitution.
 .TP 8n
 ${name \fIarg\fP...}
 .br
-The name and the arguments in this form may contain any non-blank characters,
+The name and the arguments in this form may contain any non\[hy]blank
+characters,
 and it may be subject to further substitution.
 Within the braces (\fB{\fP and \fB}\fP)
 pairs of single quote characters (\fB'\fP\fIblah blah\fP\fB'\fP)
@@ -90,7 +90,7 @@ In the command
 .RS
 .nf
 history_query_command =
-	"get -t -g ${Dirname $History}/s.${Basename $History}";
+    "get \-t \-g ${Dirname $History}/s.${Basename $History}";
 .fi
 .RE
 the
@@ -110,7 +110,7 @@ The above example could be abbreviated to
 .RS
 .nf
 history_query_command =
-	"get -t -g ${d $h}/s.${b $h}";
+    "get \-t \-g ${d $h}/s.${b $h}";
 .fi
 .RE
 .PP
@@ -145,8 +145,8 @@ This rather like the default behaviour of the \fIaecd\fP(1) command.
 Add_Path_Suffix
 .br
 This substitution may be used to add a suffix to each element of a
-colon-separated path list.  The first argument is the suffix to use, the
-second and subsequent arguments are the colon-separated paths to work on.
+colon\[hy]separated path list.  The first argument is the suffix to use, the
+second and subsequent arguments are the colon\[hy]separated paths to work on.
 The result is a single colon separated path.  Often used in combination
 with the ${search_path} substitution, below.
 .TP 8n
@@ -185,15 +185,15 @@ command.
 .TP 8n
 BAse_RElative
 This substitution takes at least one pathname.  The value of the
-substitution is the base-relative filenames, with any change-specific or
+substitution is the base\[hy]relative filenames, with any change\[hy]specific or
 project baseline specific leading path removed.  The file does not have
 to be a project source file.
 (This is almost the inverse of the \fP$source\fP substitution, below.)
 .TP 8n
 BINary_DIRectory
 .br
-The absolute path of Aegis' architecture-specific binary (executables)
-directory.  This corresponds to the \[lq]\fI./configure -bindir\fP\[rq]
+The absolute path of Aegis' architecture\[hy]specific binary (executables)
+directory.  This corresponds to the \[lq]\fI./configure \-\-bindir\fP\[rq]
 option when Aegis was built.  This is where most of the Aegis executable
 programs are installed.
 .\" -------------------- C --------------------
@@ -224,6 +224,12 @@ This returns the cause of the change.
 date \fIformat\fP
 This returns the completion date of the change.
 See \fIDATE\fP section for additional arguments.
+.TP 8n
+debian\[hy]version
+This returns a Debian\[hy]esque version stamp for the change.
+.TP 8n
+rpm\[hy]version
+This returns an RPM\[hy]esque version stamp for the change.
 .TP 8n
 delta
 This returns the delta number of the change.
@@ -297,7 +303,7 @@ all change files not being removed.
 .TP 8n
 quote
 This does not affect which file are selected, but it causes the file
-names to be quoted if they contain shell meta-characters.
+names to be quoted if they contain shell meta\[hy]characters.
 .PP
 If you specify both actions and types, only files both qualifiers will
 be returned.  For example \fI${change_files modify test}\fP will return
@@ -331,10 +337,11 @@ Inserts a comma separated list of copyright years from the project attributes.
 This list of years is maintained by
 .I aegis
 at integrate begin,
-and so is only guaranteed to be up-to-date
+and so is only guaranteed to be up\[hy]to\[hy]date
 in the'\fIbeing integrated\fP' state.
 Do not use this substitution in new file templates,
-it is not guaranteed to be up-to-date in the '\fIbeing developed\fP' state;
+it is not guaranteed to be up\[hy]to\[hy]date in the '\f[I]being
+developed\fP' state;
 use the ${date %Y} substitution in new file templates.
 .PP
 This list contains spaces, so if you use it to build commands, you will
@@ -344,8 +351,8 @@ probably need to quote, it as well.
 .TP 8n
 DATa_DIRectory
 .br
-The absolute path of Aegis' architecture-neutral library directory.
-This corresponds to the \[lq]\fI./configure -datadir\fP\[rq] option
+The absolute path of Aegis' architecture\[hy]neutral library directory.
+This corresponds to the \[lq]\fI./configure \-\-datadir\fP\[rq] option
 when Aegis was built.
 This is where most of the scripts included with Aegis are installed.
 .TP 8n
@@ -540,14 +547,14 @@ the string to be measured.
 LIBrary
 .br
 The absolute path of Aegis' library directory.
-This corresponds to the \[lq]\fI./configure -datadir\fP\[rq] option
+This corresponds to the \[lq]\fI./configure \-\-datadir\fP\[rq] option
 when Aegis was built.
 This substitution is deprecated \- please use ${datadir} instead.
 .TP 8n
 LIBrary_DIRectory
 .br
-The absolute path of Aegis' architecture-specific library directory.
-This corresponds to the \[lq]\fI./configure -libdir\fP\[rq] option
+The absolute path of Aegis' architecture\[hy]specific library directory.
+This corresponds to the \[lq]\fI./configure \-\-libdir\fP\[rq] option
 when Aegis was built.
 .\" -------------------- M --------------------
 .\" -------------------- N --------------------
@@ -586,19 +593,19 @@ PLural_Forms
 .RS
 The \fIplural_forms\fP substitution is similar to the
 \fI${plural}\fP substitution, except that it reads and understands the
-\f[CW]Plural-Forms:\fP header in the message catalogue.  This means that
+\f[CW]Plural\[hy]Forms:\fP header in the message catalogue.  This means that
 it understands a greater range of pluralization mechanisms than the simple
 \fI${plural}\fP substitution.
-(For a description of the \f[CW]Plural-Forms:\fP header,
+(For a description of the \f[CW]Plural\[hy]Forms:\fP header,
 see the GNU Gettext manual.)
 .PP
 The first argument is the number.  Second is the singular form
-(corresponding to the \f[CW]Plural-Forms:\fP expression evaluating to
+(corresponding to the \f[CW]Plural\[hy]Forms:\fP expression evaluating to
 zero), the third and subsequent arguments are the various plural forms
-(corresponding to the \f[CW]Plural-Forms:\fP expression evaluating to 1,
+(corresponding to the \f[CW]Plural\[hy]Forms:\fP expression evaluating to 1,
 2, 3, \fIetc\fP.
 .PP
-The \f[CW]Plural-Forms:\fP expression is required evaluate to less than
+The \f[CW]Plural\[hy]Forms:\fP expression is required evaluate to less than
 \f[CW]nplurals\fP.  If it does not, the second argument (the singular
 form) is used.  If there are too few arguments to this substitution,
 the second argument (the singular form) is again used.
@@ -726,7 +733,8 @@ Resolve the argument filename into a pathname.
 It is an error if the file is not a source file.
 An optional second argument may be "Absolute" or "Relative",
 and may be abbreviated.
-Relative will attempt to provide a development-directory-relative pathname
+Relative will attempt to provide a
+development\[hy]directory\[hy]relative pathname
 whenever possible,
 absolute will always result in an absolute path.
 The default is "Relative".
@@ -834,7 +842,7 @@ the version will be of the form "\fIa\fB.\fIb\fB.C\fIccc\fR",
 where "ccc" is the change number.
 .TP 8n
 delta_uuid
-This variant gives the change's delta-UUID assigned at integrate pass.
+This variant gives the change's delta\[hy]UUID assigned at integrate pass.
 Only valid for \fIbeing_integrated\fP and \fIcompleted\fP changes.
 .RE
 .\" -------------------- W --------------------
@@ -876,10 +884,10 @@ the day of the month,
 zero padded
 .TP 8n
 %H
-the hour of the 24-hour day
+the hour of the 24\[hy]hour day
 .TP 8n
 %I
-the hour of the 12-hour day
+the hour of the 12\[hy]hour day
 .TP 8n
 %j
 the day number of year,
@@ -934,4 +942,5 @@ depending on the version of UNIX you are on.
 .TP 8n
 \fBaesub\fP(1)
 Substitute and print strings.
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,25 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 
-#include <common/error.h>
 #include <libaegis/project/history/uuid_trans.h>
 #include <common/uuidentifier.h>
 
@@ -44,7 +43,7 @@ safe_tolower(int c)
     //
     uc = c;
     if (isupper(uc))
-	return tolower(uc);
+        return tolower(uc);
     return uc;
 }
 
@@ -57,7 +56,7 @@ project_history_uuid_translate(fstate_src_ty *src)
     assert(src);
     assert(src->file_name);
     if (!src->uuid)
-	return str_copy(src->file_name);
+        return str_copy(src->file_name);
     assert(src->uuid);
     assert(universal_unique_identifier_valid(src->uuid));
 
@@ -134,20 +133,20 @@ project_history_uuid_translate(fstate_src_ty *src)
     //
     if
     (
-	isdigit(buffer[40])
+        isdigit(buffer[40])
     &&
-	isdigit(buffer[41])
+        isdigit(buffer[41])
     &&
-	isdigit(buffer[42])
+        isdigit(buffer[42])
     &&
-	isdigit(buffer[43])
+        isdigit(buffer[43])
     &&
-	isdigit(buffer[44])
+        isdigit(buffer[44])
     &&
-	isdigit(buffer[45])
+        isdigit(buffer[45])
     )
     {
-	buffer[40] += 'z' - '0' - 9;
+        buffer[40] += 'z' - '0' - 9;
     }
 
     //
@@ -155,3 +154,6 @@ project_history_uuid_translate(fstate_src_ty *src)
     //
     return str_n_from_c(buffer, 46);
 }
+
+
+// vim: set ts=8 sw=4 et :

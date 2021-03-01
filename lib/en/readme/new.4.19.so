@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 \fBPlease Note:\fP Users are advised to check the history command
@@ -49,7 +49,7 @@ to leave temporary files behind.
 .if n *
 .if t \(bu
 .\" Change 215
-A bug has been fixed in the \fIaedist \-send \-entire-source\fP command
+A bug has been fixed in the \fIaedist \-send \-entire\[hy]source\fP command
 where it would hang for some cases.  (Actually, it would dump core after
 using up all available swap space on an infinite recursion).
 .PP
@@ -75,14 +75,14 @@ empty" when using the link farm.
 .if n *
 .if t \(bu
 .\" Change 157
-A bug has been fixed in the \fIaetar -send \-entire-source\fP command
+A bug has been fixed in the \fIaetar \-send \-entire\[hy]source\fP command
 where some files were missing when asking for a complete set of
 historical sources.
 .PP
 .if n *
 .if t \(bu
 .\" Change 156
-A bug has been fixed in the \fIaedist \-send \-entire-source\fP where
+A bug has been fixed in the \fIaedist \-send \-entire\[hy]source\fP where
 some files were zero length when asking for a complete set of historical
 sources.
 .PP
@@ -98,7 +98,7 @@ especially if the test suite take a long time to run completely.
 .if t \(bu
 .\" Change 105, 101
 Some bugs have been fixed in \fIaediff\fP(1) which caused it to
-mis-parse the command line in some cases, and it was also barfing on the
+mis\[hy]parse the command line in some cases, and it was also barfing on the
 expected exit status 1 when an actual difference was found.
 .PP
 .if n *
@@ -113,7 +113,7 @@ the \fIdevelopment_\%directory_\%style\fP settings.
 .if t \(bu
 .\" Change 27
 A bug has been fixed in the \fIChange_Files\fP listing;
-it was not showing the locked-by information.
+it was not showing the locked\[hy]by information.
 .PP
 .if n *
 .if t \(bu
@@ -125,7 +125,7 @@ required.
 .if n *
 .if t \(bu
 .\" Change 88
-A bug has been fixed in the \fIaedist \-send \-entrie-source\fP command,
+A bug has been fixed in the \fIaedist \-send \-entrie\[hy]source\fP command,
 where it would segfault in some cases.
 .PP
 .if n *
@@ -189,7 +189,7 @@ running.
 .if n *
 .if t \(bu
 .\" Change 228
-The \fIaet\fP(1) command has a new \-sugest-limit option which runs as
+The \fIaet\fP(1) command has a new \-sugest\[hy]limit option which runs as
 many regression tests as possible (from most relevant to least relevant)
 but stops after the given number of minutes.  This is a way for running
 the most relevant tests in a limited time.  For example, this option
@@ -205,14 +205,14 @@ behaviour around the merge command.
 .if n *
 .if t \(bu
 .\" Change 180
-The \fIaetar -send\fP command now accepts an \-include-build option that
-also add build files, registered with \fIaegis \-new-file \-build\fP, to
-the ouput archive.  A \-not-include-build option is also accepted.
+The \fIaetar \-send\fP command now accepts an \-include\[hy]build option that
+also add build files, registered with \fIaegis \-new\[hy]file \-build\fP, to
+the ouput archive.  A \-not\[hy]include\[hy]build option is also accepted.
 .PP
 .if n *
 .if t \(bu
 .\" Change 176
-The \fIaetar -receive\fP command now avoids copying build files from the
+The \fIaetar \-receive\fP command now avoids copying build files from the
 baseline because this operation is forbidden and the error stops the
 processing.
 .PP
@@ -227,27 +227,27 @@ replaced by the values of the change attributes named.
 .\" Change 155
 The history recapitulation code (project_file_roll_forward) now indexes
 by UUID rather than by file name (with backwards compatibility for
-UUID-less repositories).  The user visable result is that file history
+UUID\[hy]less repositories).  The user visable result is that file history
 reports and listings now accurately track renames.
 .PP
 .if n *
 .if t \(bu
 .\" aegis.4.19.D121
 .\" Change 163
-The \fIaet -nopersevere\fP option now also stops for \fIno result\fP as
+The \fIaet \-nopersevere\fP option now also stops for \fIno result\fP as
 well as \fIfail\fP.
 .PP
 .if n *
 .if t \(bu
 .\" Change 503, 216, 182
-The \fPaedist --receive\fP command now understands file UUIDs.  This
+The \fPaedist \-receive\fP command now understands file UUIDs.  This
 means that it will operate on the correct file even when one or the
 other repository has renamed the file.
 .PP
 .if n *
 .if t \(bu
 .\" Change 150
-The \fIaedist -receive\fP command has been enhanced to perform file
+The \fIaedist \-receive\fP command has been enhanced to perform file
 merges if necessary.
 .PP
 .if n *
@@ -267,7 +267,7 @@ content type, rather than adding it silently.
 .if n *
 .if t \(bu
 .\" Change 276
-There is a new \fIaediff --command\fP option, allowing you to specify
+There is a new \fIaediff \-command\fP option, allowing you to specify
 the command you want to use to display the difference.  For example,
 you could use \fItkdiff\fP(1) or \fImgdiff\fP(1) to display the change
 graphically.
@@ -312,7 +312,7 @@ See \fIaesub\fP(5) for more information.
 .if t \(bu
 .\" Change 32
 The notification scripts have been updated to use the new
-${quoted-email-address} substitution.
+${quoted\[hy]email\[hy]address} substitution.
 .PP
 .if n *
 .if t \(bu
@@ -326,12 +326,12 @@ The remaining \fIaegis.cgi\fP(1) functions have been reproduced in
 .\" Change 51, 39, 38
 When the UUID of a change is cleared it (because some operation on
 the change set invalidates it) is saved in a change attribute named
-\fIoriginal-UUID\fP.
+\fIoriginal\[hy]UUID\fP.
 .PP
 .if n *
 .if t \(bu
 .\" Change 82
-The \fIaedist -receive\fP command is now able to use the original-UUID
+The \fIaedist \-receive\fP command is now able to use the original\[hy]UUID
 attribute of the incoming change set to select the delta to merge with.
 .PP
 .if n *
@@ -344,12 +344,12 @@ more informative.
 .if t \(bu
 .\" Change 52
 All attribute names (project, change and file) are now
-case-insensitive.
+case\[hy]insensitive.
 .PP
 .if n *
 .if t \(bu
 .\" Change 45
-The \fIaedist -receive\fP command has been enhanced to allow you to
+The \fIaedist \-receive\fP command has been enhanced to allow you to
 select the branch of the delta to merge with.
 .PP
 .if n *
@@ -358,4 +358,5 @@ select the branch of the delta to merge with.
 Several classes within the source have been refactored.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.19 (30-Sep-2004)
+.SS Version 4.19 (30\[hy]Sep\[hy]2004)
+.\" vim: set ts=8 sw=4 et :

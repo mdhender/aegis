@@ -1,29 +1,30 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2001-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -34,7 +35,7 @@ change_run_patch_diff_command(change::pointer cp, user_ty::pointer up,
 {
     sub_context_ty  *scp;
     pconf_ty        *pconf_data;
-    string_ty	    *the_command;
+    string_ty       *the_command;
 
     //
     // The difference of 2 files, to send around as a patch.
@@ -66,11 +67,11 @@ change_run_patch_diff_command(change::pointer cp, user_ty::pointer up,
     //     as they could well be temporary files created for the
     //     purpose of generating the patch.)
     //
-    trace(("change_run_patch_diff_command(cp = %8.8lX, up = %8.8lX, "
-	"original = \"%s\", input_file_name = \"%s\", "
-        "output_filename = \"%s\")\n{\n", (long)cp, (long)up.get(),
+    trace(("change_run_patch_diff_command(cp = %p, up = %p, "
+        "original = \"%s\", input_file_name = \"%s\", "
+        "output_filename = \"%s\")\n{\n", cp, up.get(),
         original->str_text, input_file_name->str_text,
-	output_filename->str_text));
+        output_filename->str_text));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
     string_ty *dd = 0;
@@ -80,20 +81,20 @@ change_run_patch_diff_command(change::pointer cp, user_ty::pointer up,
     case cstate_state_awaiting_review:
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_integration:
-	dd = change_development_directory_get(cp, 0);
-	break;
+        dd = change_development_directory_get(cp, 0);
+        break;
 
     case cstate_state_being_integrated:
-	dd = change_integration_directory_get(cp, 0);
-	break;
+        dd = change_integration_directory_get(cp, 0);
+        break;
 
     case cstate_state_awaiting_development:
     case cstate_state_completed:
 #ifndef DEBUG
     default:
 #endif
-	dd = os_tmpdir();
-	break;
+        dd = os_tmpdir();
+        break;
     }
     assert(dd);
     scp = sub_context_new();
@@ -105,25 +106,25 @@ change_run_patch_diff_command(change::pointer cp, user_ty::pointer up,
     the_command = pconf_data->patch_diff_command;
     if (!the_command)
     {
-	//
-	// This one defaults, without user attention.
-	// It's aimed at GNU Patch, not at a human.
-	//
-	the_command =
-	    str_from_c
-	    (
-		"set +e; "
-		"$diff "
+        //
+        // This one defaults, without user attention.
+        // It's aimed at GNU Patch, not at a human.
+        //
+        the_command =
+            str_from_c
+            (
+                "set +e; "
+                "$diff "
 #ifdef HAVE_GNU_DIFF
-		    "-u "
-		    "--text "
-		    "-L ${quote $index} -L ${quote $index} "
+                    "-u "
+                    "--text "
+                    "-L ${quote $index} -L ${quote $index} "
 #else
-		    "-c "
+                    "-c "
 #endif
-		    "${quote $original} ${quote $input} > ${quote $output}; "
-		"test $$? -le 1"
-	    );
+                    "${quote $original} ${quote $input} > ${quote $output}; "
+                "test $$? -le 1"
+            );
     }
     the_command = substitute(scp, cp, the_command);
     sub_context_delete(scp);
@@ -131,8 +132,11 @@ change_run_patch_diff_command(change::pointer cp, user_ty::pointer up,
     change_env_set(cp, 0);
     user_ty::become scoped(up);
     if (os_exists(output_filename))
-	os_unlink(output_filename);
+        os_unlink(output_filename);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dd);
     str_free(the_command);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

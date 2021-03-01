@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1998, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993, 1994, 1998, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -23,7 +23,7 @@
 This chapter describes the difference commands in the
 project configuration file.
 Usually these commands are used by the
-.I "aegis -DIFFerence"
+.I "aegis \-DIFFerence"
 command when differencing files,
 but they may be used to accomplish some other things.
 .LP
@@ -40,7 +40,7 @@ the sections which follow.
 .LP
 Aegis doesn't particularly care whether your files are binary or text.
 However, your difference and merge tools certainly will.
-In general, you need format-specific difference and merge tools for each
+In general, you need format\[hy]specific difference and merge tools for each
 of the file formats used in your project.
 Unfortunately, most vendors of software which make use of proprietary file
 formats do not supply difference and merge tools.
@@ -57,6 +57,7 @@ Similar considerations apply to the \fImerge_\%command\fP field.
 Please note that this support is not present in Aegis itself because
 (a) it would cause code bloat, and (b) it is entirely possible to
 do with a shell script launched by \fIdiff_command\fP.
-.so c8.1.so
-.so c8.2.so
-.so c8.3.so
+.so lib/en/user-guide/c8.1.so
+.so lib/en/user-guide/c8.2.so
+.so lib/en/user-guide/c8.3.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,29 +1,29 @@
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2001, 2002, 2006-2008, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002, 2006-2008 Peter Miller
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
 .\"
 .\" Format this file with
-.\"	roffpp aegis.ms | pic | tbl | troff -t -ms | lpr -t
+.\"     roffpp aegis.ms | pic | tbl | troff -t -ms | lpr -t
 .\" from the directory this file appears in.
 .\" Roffpp is part of "cook" available from the same author,
 .\" or you could use soelim instead.
 .\"
 .\" Note that the GNU groff package uses a command like
-.\"	groff -s -p -t -ms aegis.ms | lpr
+.\"     groff -s -p -t -ms aegis.ms | lpr
 .\" and gives PostScript output and far better error messages.
 .\"
 .lg 0 \" turn off ligatures: groff diagrees with everyone else about widths
@@ -59,22 +59,22 @@
 .fi
 .DE
 ..
-.so c1.0.so
-.so c7.0.so
-.so c2.0.so
-.so c3.0.so
-.so c4.0.so
-.so c8.0.so
-.so c5.0.so
-.so c11.0.so
-.so c9.0.so
-.so c6.0.so
-.so c10.0.so
-.so c12.0.so
-.so cA.0.so
-.so cB.0.so
-.so cD.0.so
-.so cI.0.so
+.so lib/en/user-guide/c1.0.so
+.so lib/en/user-guide/c7.0.so
+.so lib/en/user-guide/c2.0.so
+.so lib/en/user-guide/c3.0.so
+.so lib/en/user-guide/c4.0.so
+.so lib/en/user-guide/c8.0.so
+.so lib/en/user-guide/c5.0.so
+.so lib/en/user-guide/c11.0.so
+.so lib/en/user-guide/c9.0.so
+.so lib/en/user-guide/c6.0.so
+.so lib/en/user-guide/c10.0.so
+.so lib/en/user-guide/c12.0.so
+.so lib/en/user-guide/cA.0.so
+.so lib/en/user-guide/cB.0.so
+.so lib/en/user-guide/cD.0.so
+.so lib/en/user-guide/cI.0.so
 .br
 .if t .1C
 .bp
@@ -89,3 +89,4 @@
 .P1
 .pg@begin 1001 i
 .PX
+.\" vim: set ts=8 sw=4 et :

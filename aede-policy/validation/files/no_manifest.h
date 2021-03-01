@@ -1,6 +1,6 @@
 //
 // aegis - project change supervisor
-// Copyright (C) 2007, 2008 Peter Miller
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,10 +35,18 @@ public:
       */
     virtual ~validation_files_no_manifest();
 
+private:
     /**
       * The default constructor.
       */
     validation_files_no_manifest();
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      */
+    static pointer create(void);
 
 protected:
     // See base class for documentation
@@ -70,3 +78,4 @@ private:
 };
 
 #endif // AEDE_POLICY_VALIDATION_FILES_NO_MANIFEST_H
+// vim: set ts=8 sw=4 et :

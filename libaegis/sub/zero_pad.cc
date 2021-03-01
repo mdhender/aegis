@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1996, 2003-2008 Peter Miller
+//      Copyright (C) 1996, 2003-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -33,29 +33,32 @@ sub_zero_pad(sub_context_ty *scp, const wstring_list &arg)
     trace(("arg.size() => %d\n", int(arg.size())));
     if (arg.size() != 3)
     {
-	scp->error_set(i18n("requires two arguments"));
-	trace(("}\n"));
-	return wstring();
+        scp->error_set(i18n("requires two arguments"));
+        trace(("}\n"));
+        return wstring();
     }
     long n = arg[2].to_nstring().to_long();
     trace(("n = %ld;\n", n));
 
     wstring result;
     if (n <= (long)arg[1].size())
-	result = arg[1];
+        result = arg[1];
     else
     {
-	size_t len = n - arg[1].size();
-	nstring s3 = arg[1].to_nstring();
-	char *buffer = new char [len + 1];
-	memset(buffer, '0', len);
-	buffer[len] = 0;
-	nstring s2 = nstring::format("%s%s", buffer, s3.c_str());
-	delete [] buffer;
-	trace(("s2 = %s;\n", s2.quote_c().c_str()));
-	result = wstring(s2);
+        size_t len = n - arg[1].size();
+        nstring s3 = arg[1].to_nstring();
+        char *buffer = new char [len + 1];
+        memset(buffer, '0', len);
+        buffer[len] = 0;
+        nstring s2 = nstring::format("%s%s", buffer, s3.c_str());
+        delete [] buffer;
+        trace(("s2 = %s;\n", s2.quote_c().c_str()));
+        result = wstring(s2);
     }
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

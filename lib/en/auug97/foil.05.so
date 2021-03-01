@@ -1,20 +1,19 @@
+'\"p
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2002, 2005-2008 Peter Miller
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nr PS 72
 .nr VS 75000
@@ -28,7 +27,7 @@ DAG
 .nr VS 37
 .XP
 \(bu
-These pair-wise ordered dependencies form a \fIdirected acyclic graph:\fP
+These pair\[hy]wise ordered dependencies form a \fIdirected acyclic graph:\fP
 .br
 .ps 16
 .vs 17
@@ -58,20 +57,20 @@ arrow from D1.n to C2.sw
 .PE
 .XP
 \(bu
-Make then performs a \fIpost-order\fP traversal of this graph.
+Make then performs a \fIpost\[hy]order\fP traversal of this graph.
 .bp
 .nr PS 24
 .nr VS 25
 .XP
 \(bu
-The pair-wise ordered dependencies for a \fIdirected acyclic graph\fP.
+The pair\[hy]wise ordered dependencies for a \fIdirected acyclic graph\fP.
 The arrows means that loops aren't loops.
 .XP
 \(bu
 If there is a loop, according to the arrows, then you have an error.
 .XP
 \(bu
-Make then performs a \fIpost-order\fP traversal of this graph.
+Make then performs a \fIpost\[hy]order\fP traversal of this graph.
 .br
 \(dg This is a weak condition, it only means \[lq]after dependencies
 ready\[rq] and
@@ -84,8 +83,9 @@ we all start using \fImake\fP with small programs like this.
 \(dg mind set
 .XP
 \(bu
-We extrapolate that large multi-directory programs
+We extrapolate that large multi\[hy]directory programs
 \.br
-\(dg will be just as un-interseting
+\(dg will be just as un\[hy]interseting
 \.br
-\(dg will have itty-bitty makefiles in each directory
+\(dg will have itty\[hy]bitty makefiles in each directory
+.\" vim: set ts=8 sw=4 et :

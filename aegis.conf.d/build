@@ -1,0 +1,85 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2012 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * how to build the project
+ * mandatory
+ */
+build_command =
+    "PATH=${path_reduce ${Project_Specific ${uname}_path} "
+        "/usr/local/bin ${env PATH}} "
+    "SHELL=${sh} "
+    "cook -b ${source etc/00howto.cook} -nl "
+    "project=$project "
+    "change=$change "
+    "version=$version "
+    "arch=$uname "
+    "search_path=$search_path "
+    "autoconf=${Project_Specific autoconf} "
+    "autoheader=${Project_Specific autoheader} "
+    "configure_args=${Project_Specific configure_args} "
+    "${uname}_c++=${Project_Specific ${uname}_c++} "
+    "c++=${Project_Specific c++} "
+    "${uname}_c++_flags=${Project_Specific ${uname}_c++_flags} "
+    "${uname}_ld_flags=${Project_Specific ${uname}_ld_flags} "
+    "${uname}_libs=${Project_Specific ${uname}_libs} "
+    "primary_arch=${Project_Specific primary_arch} "
+    ;
+
+
+/*
+ * When do -Integrate_Begin, link the baseline to the integration directory,
+ * rather than copying it.  This should be much faster.
+ *
+ * There is a gotcha: all the recipes in Howto.cook must unlink their targets
+ * before re-creating them, otherwise the baseline will be trashed.
+ */
+link_integration_directory = true;
+
+/* don't link/copy the bin dir */
+integrate_begin_exceptions = [ "linux-*/bin/*" ];
+
+/*
+ * At integrate pass time, the modification times of the files are
+ * updated.  This commands gives cook a channce to get the fingerprints
+ * back in sync, which in turn speeds up development builds.
+ * We don't want to execute an empty rm, but xargs -r is not portable,
+ * so use a while read loop.
+ */
+build_time_adjust_notify_command =
+    "set +e; "
+    "find . -name .cook.fp -print | while read f;do rm -f ${$}f;done; "
+    "cook -nl -st --fp-update"
+    ;
+
+develop_begin_command = "ln -s $baseline bl";
+
+/*
+ * Remove these files before we start integrating, to ensure that they
+ * will be rebuild containing the correct version information.
+ */
+integrate_begin_command =
+    "rm -f "
+    "etc/cook/change_files* "
+    "etc/cook/project_files* "
+    "etc/version.so "
+    "common/patchlevel.h "
+    "bl blbl blblbl blblblbl "
+    ;
+
+# vim: set ts=8 sw=4 et :

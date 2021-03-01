@@ -1,6 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 1994-1996, 1999, 2002, 2005-2008 Peter Miller
+ *      Copyright (C) 1994-1996, 1999, 2002, 2005-2008, 2012 Peter Miller
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -19,16 +19,19 @@
 
 %{
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
+#include <common/str.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/assign.h>
 #include <libaegis/aer/expr/bit.h>
 #include <libaegis/aer/expr/comma.h>
 #include <libaegis/aer/expr/constant.h>
 #include <libaegis/aer/expr/func.h>
-#include <libaegis/aer/expr/in.h>
 #include <libaegis/aer/expr/incr.h>
+#include <libaegis/aer/expr/in.h>
 #include <libaegis/aer/expr/list.h>
 #include <libaegis/aer/expr/logical.h>
 #include <libaegis/aer/expr/lookup.h>
@@ -39,8 +42,8 @@
 #include <libaegis/aer/expr/power.h>
 #include <libaegis/aer/expr/rel.h>
 #include <libaegis/aer/expr/shift.h>
-#include <libaegis/aer/expr/struct.h>
 #include <libaegis/aer/expr/struct_asign.h>
+#include <libaegis/aer/expr/struct.h>
 #include <libaegis/aer/lex.h>
 #include <libaegis/aer/report.h>
 #include <libaegis/aer/stmt/compound.h>
@@ -57,10 +60,7 @@
 #include <libaegis/aer/stmt/while.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/null.h>
-#include <common/error.h>
-#include <common/str.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -836,3 +836,6 @@ struct_assign
             $$ = new rpt_expr::pointer(ep);
         }
     ;
+
+
+/* vim: set ts=8 sw=4 et : */

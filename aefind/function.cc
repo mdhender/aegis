@@ -1,30 +1,31 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1997, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <aefind/function.h>
+#include <common/sizeof.h>
+#include <common/symtab.h>
+#include <libaegis/sub.h>
+
 #include <aefind/function/basename.h>
 #include <aefind/function/execute.h>
+#include <aefind/function.h>
 #include <aefind/function/print.h>
 #include <aefind/function/stat.h>
 #include <aefind/lex.h>
-#include <libaegis/sub.h>
-#include <common/symtab.h>
 #include <aefind/tree.h>
 #include <aefind/tree/list.h>
 #include <aefind/tree/this.h>
@@ -76,33 +77,36 @@ function_indirection(string_ty *name, const tree_list &args)
     static symtab_ty *stp;
     if (!stp)
     {
-	stp = symtab_alloc(SIZEOF(table));
-	for (table_ty *tp = table; tp < ENDOF(table); ++tp)
-	{
-	    string_ty *s = str_from_c(tp->name);
-	    symtab_assign(stp, s, tp);
-	    str_free(s);
-	}
+        stp = new symtab_ty(SIZEOF(table));
+        for (table_ty *tp = table; tp < ENDOF(table); ++tp)
+        {
+            string_ty *s = str_from_c(tp->name);
+            stp->assign(s, tp);
+            str_free(s);
+        }
     }
 
-    table_ty *tp = (table_ty *)symtab_query(stp, name);
+    table_ty *tp = (table_ty *)stp->query(name);
     if (!tp)
     {
-	string_ty *guess = symtab_query_fuzzy(stp, name);
-	if (!guess)
-	{
-	    sub_context_ty sc;
-	    sc.var_set_string("Name", name);
-	    cmdline_lex_error(&sc, i18n("the name \"$name\" is undefined"));
-	}
-	else
-	{
-	    sub_context_ty sc;
-	    sc.var_set_string("Name", name);
-	    sc.var_set_string("Guess", guess);
-	    cmdline_lex_error(&sc, i18n("no \"$name\", guessing \"$guess\""));
-	}
-	return tree_this::create();
+        string_ty *guess = stp->query_fuzzy(name);
+        if (!guess)
+        {
+            sub_context_ty sc;
+            sc.var_set_string("Name", name);
+            cmdline_lex_error(&sc, i18n("the name \"$name\" is undefined"));
+        }
+        else
+        {
+            sub_context_ty sc;
+            sc.var_set_string("Name", name);
+            sc.var_set_string("Guess", guess);
+            cmdline_lex_error(&sc, i18n("no \"$name\", guessing \"$guess\""));
+        }
+        return tree_this::create();
     }
     return tp->func(args);
 }
+
+
+// vim: set ts=8 sw=4 et :

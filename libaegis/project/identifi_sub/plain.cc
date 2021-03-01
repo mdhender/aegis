@@ -1,31 +1,32 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
-//	Copyright (C) 2008 Walter Franzini
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/arglex2.h>
+#include <common/ac/assert.h>
+
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
-#include <common/error.h> // for assert
+#include <libaegis/arglex2.h>
 #include <libaegis/help.h>
 #include <libaegis/project.h>
 #include <libaegis/project/identifi_sub/plain.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -35,8 +36,8 @@ project_identifier_subset_plain::~project_identifier_subset_plain()
     pp = 0;
     if (project_name)
     {
-	str_free(project_name);
-	project_name = 0;
+        str_free(project_name);
+        project_name = 0;
     }
     trace(("}\n"));
 }
@@ -50,23 +51,23 @@ project_identifier_subset_plain::project_identifier_subset_plain() :
 }
 
 
-project_ty *
+project *
 project_identifier_subset_plain::get_pp()
 {
     if (!pp)
     {
-	//
-	// locate project data
-	//
-	assert(!pp);
-	if (!project_name)
+        //
+        // locate project data
+        //
+        assert(!pp);
+        if (!project_name)
         {
             nstring n = user_ty::create()->default_project();
             project_name = str_copy(n.get_ref());
         }
-	pp = project_alloc(project_name);
-	pp->bind_existing();
-	assert(pp);
+        pp = project_alloc(project_name);
+        pp->bind_existing();
+        assert(pp);
     }
     return pp;
 }
@@ -77,8 +78,8 @@ project_identifier_subset_plain::get_up()
 {
     if (!up)
     {
-	up = user_ty::create();
-	assert(up);
+        up = user_ty::create();
+        assert(up);
     }
     return up;
 }
@@ -102,29 +103,29 @@ project_identifier_subset_plain::command_line_parse(void (*usage)(void))
     switch (arglex_token)
     {
     default:
-	fatal_raw
-	(
-	    "%s: %d: option %s not handled in switch (bug)",
-	    __FILE__,
-	    __LINE__,
-	    arglex_token_name(arglex_token)
-	);
-	// NOTREACHED
+        fatal_raw
+        (
+            "%s: %d: option %s not handled in switch (bug)",
+            __FILE__,
+            __LINE__,
+            arglex_token_name(arglex_token)
+        );
+        // NOTREACHED
 
     case arglex_token_branch:
     case arglex_token_trunk:
     case arglex_token_grandparent:
-	bad_argument(usage);
-	// NOTREACHED
+        bad_argument(usage);
+        // NOTREACHED
 
     case arglex_token_project:
-	arglex();
-	// fall through...
+        arglex();
+        // fall through...
 
     case arglex_token_string:
-	arglex_parse_project(&project_name, usage);
-	trace(("}\n"));
-	return;
+        arglex_parse_project(&project_name, usage);
+        trace(("}\n"));
+        return;
     }
     arglex();
     trace(("}\n"));
@@ -151,10 +152,10 @@ project_identifier_subset_plain::parse_change_with_branch(long &change_number,
 {
     arglex_parse_change_with_branch
     (
-	&project_name,
-	&change_number,
-	&branch,
-	usage
+        &project_name,
+        &change_number,
+        &branch,
+        usage
     );
 }
 
@@ -165,3 +166,6 @@ project_identifier_subset_plain::set()
 {
     return !!project_name;
 }
+
+
+// vim: set ts=8 sw=4 et :

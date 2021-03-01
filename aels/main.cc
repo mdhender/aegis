@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -23,6 +22,7 @@
 #include <common/env.h>
 #include <common/error.h>
 #include <common/language.h>
+#include <common/nstring/list.h>
 #include <common/progname.h>
 #include <common/quit.h>
 #include <common/rsrc_limits.h>
@@ -30,6 +30,7 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/help.h>
 #include <libaegis/os.h>
 #include <libaegis/project.h>
@@ -108,16 +109,6 @@ list_help(void)
 int
 main(int argc, char **argv)
 {
-    long	    change_number;
-    string_ty	    *project_name;
-    string_ty	    *s;
-    project_ty	    *pp;
-    change::pointer cp;
-    int		    baseline;
-    user_ty::pointer up;
-    int		    based;
-    size_t	    j;
-
     resource_limits_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
@@ -127,199 +118,144 @@ main(int argc, char **argv)
     switch (arglex())
     {
     case arglex_token_help:
-	list_help();
-	quit(0);
+        list_help();
+        quit(0);
 
     case arglex_token_version:
-	version();
-	quit(0);
+        version();
+        quit(0);
     }
 
-    project_name = 0;
-    change_number = 0;
-    baseline = 0;
-    string_list_ty name;
+    change_identifier cid;
+    nstring_list name;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(list_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(list_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, list_usage);
-	    continue;
-
+        case arglex_token_baseline:
+        case arglex_token_branch:
+        case arglex_token_change:
+        case arglex_token_delta:
+        case arglex_token_delta_date:
+        case arglex_token_delta_from_change:
+        case arglex_token_development_directory:
+        case arglex_token_grandparent:
+        case arglex_token_number:
         case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, list_usage);
-	    continue;
+        case arglex_token_trunk:
+            cid.command_line_parse(list_usage);
+            continue;
 
         case arglex_token_string:
-	    s = str_from_c(arglex_value.alv_string);
-	    name.push_back(s);
-	    str_free(s);
-	    break;
+            name.push_back(arglex_value.alv_string);
+            break;
 
         case arglex_token_base_relative:
         case arglex_token_current_relative:
-	    user_ty::relative_filename_preference_argument(list_usage);
-	    break;
-
-        case arglex_token_baseline:
-	    if (baseline)
-		    duplicate_option(list_usage);
-	    baseline = 1;
-	    break;
+            user_ty::relative_filename_preference_argument(list_usage);
+            break;
 
         case arglex_token_recursive:
-	    if (recursive_flag)
-		    duplicate_option(list_usage);
-	    recursive_flag = 1;
-	    break;
+            if (recursive_flag)
+                    duplicate_option(list_usage);
+            recursive_flag = 1;
+            break;
 
         case arglex_token_long:
-	    if (long_flag)
-		    duplicate_option(list_usage);
-	    long_flag = 1;
-	    break;
+            if (long_flag)
+                    duplicate_option(list_usage);
+            long_flag = 1;
+            break;
 
         case arglex_token_dot_files_show:
-	    show_dot_files = 1;
-	    break;
+            show_dot_files = 1;
+            break;
 
         case arglex_token_dot_files_hide:
-	    show_dot_files = 0;
-	    break;
+            show_dot_files = 0;
+            break;
 
         case arglex_token_mode_show:
-	    mode_flag = 1;
-	    break;
+            mode_flag = 1;
+            break;
 
         case arglex_token_mode_hide:
-	    mode_flag = 0;
-	    break;
+            mode_flag = 0;
+            break;
 
         case arglex_token_attr_show:
-	    attr_flag = 1;
-	    break;
+            attr_flag = 1;
+            break;
 
         case arglex_token_attr_hide:
-	    attr_flag = 0;
-	    break;
+            attr_flag = 0;
+            break;
 
         case arglex_token_user_show:
-	    user_flag = 1;
-	    break;
+            user_flag = 1;
+            break;
 
         case arglex_token_user_hide:
-	    user_flag = 0;
-	    break;
+            user_flag = 0;
+            break;
 
         case arglex_token_group_show:
-	    group_flag = 1;
-	    break;
+            group_flag = 1;
+            break;
 
         case arglex_token_group_hide:
-	    group_flag = 0;
-	    break;
+            group_flag = 0;
+            break;
 
         case arglex_token_size_show:
-	    size_flag = 1;
-	    break;
+            size_flag = 1;
+            break;
 
         case arglex_token_size_hide:
-	    size_flag = 0;
-	    break;
+            size_flag = 0;
+            break;
 
         case arglex_token_when_show:
-	    when_flag = 1;
-	    break;
+            when_flag = 1;
+            break;
 
         case arglex_token_when_hide:
-	    when_flag = 0;
-	    break;
-	}
-	arglex();
+            when_flag = 0;
+            break;
+        }
+        arglex();
     }
+    cid.command_line_check(list_usage);
 
     //
-    // locate project data
+    // Figure out where to get the search path from.
     //
-    if (!project_name)
+    if (cid.get_baseline())
     {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    if (baseline)
-    {
-	if (change_number)
-	{
-    	    mutually_exclusive_options
-    	    (
-       		arglex_token_branch,
-       		arglex_token_change,
-       		list_usage
-    	    );
-	}
-
-	stack_from_project(pp);
-
-	up.reset();
-	cp = 0;
+        stack_from_project(cid.get_pp());
     }
     else
     {
-	cstate_ty       *cstate_data;
+        if (cid.get_cp()->is_completed())
+        {
+            stack_from_project(cid.get_pp());
+        }
+        else
+        {
+            //
+            // It is an error if the change is not in the
+            // being_developed state (if it does not have a
+            // directory).
+            //
+            if (cid.get_cp()->is_awaiting_development())
+                change_fatal(cid.get_cp(), 0, i18n("bad aels state"));
 
-	//
-	// locate user data
-	//
-	up = user_ty::create();
-
-	//
-	// locate change data
-	//
-	if (!change_number)
-	    change_number = up->default_change(pp);
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
-	cstate_data = cp->cstate_get();
-
-	if (cstate_data->state == cstate_state_completed)
-	{
-	    //
-	    // Get the search path from the project.
-	    //
-	    stack_from_project(pp);
-
-	    up.reset();
-	    cp = 0;
-	}
-	else
-	{
-	    //
-	    // It is an error if the change is not in the
-	    // being_developed state (if it does not have a
-	    // directory).
-	    //
-	    if (cstate_data->state < cstate_state_being_developed)
-		change_fatal(cp, 0, i18n("bad aels state"));
-
-	    //
-	    // Get the search path from the change.
-	    //
-	    stack_from_change(cp);
-	}
+            stack_from_change(cid.get_cp());
+        }
     }
 
     //
@@ -329,60 +265,46 @@ main(int argc, char **argv)
     // 3. if the file is inside the baseline, ok
     // 4. if neither, error
     //
-    if (!up)
-	up = user_ty::create();
-    based =
-	(
-	    up != 0
-	&&
-	    (
-		up->relative_filename_preference
-		(
-		    uconf_relative_filename_preference_current
-		)
-	    ==
-		uconf_relative_filename_preference_base
-	    )
-	);
-    if (!name.nstrings)
+    bool based =
+        (
+            cid.get_up()->relative_filename_preference
+            (
+                uconf_relative_filename_preference_current
+            )
+        ==
+            uconf_relative_filename_preference_base
+        );
+    if (name.empty())
     {
-	os_become_orig();
-	name.push_back(os_curdir());
-	os_become_undo();
+        os_become_orig();
+        name.push_back(nstring(os_curdir()));
+        os_become_undo();
     }
-    for (j = 0; j < name.nstrings; ++j)
+    nstring_list base_relative_names;
+    for (size_t j = 0; j < name.size(); ++j)
     {
-	string_ty	*s0;
-	string_ty	*s1;
-	string_ty	*s2;
-
-	s0 = name.string[j];
-	if (s0->str_text[0] == '/' || !based)
-	    s1 = str_copy(s0);
-	else
-	    s1 = os_path_join(stack_nth(0), s0);
-	str_free(s0);
-	s2 = stack_relative(s1);
-	if (!s2)
-	{
-	    sub_context_ty	*scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    if (cp)
-	       	change_fatal(cp, scp, i18n("$filename unrelated"));
-	    project_fatal(pp, scp, i18n("$filename unrelated"));
-	    // NOTREACHED
-	}
-	assert(s2);
-	str_free(s1);
-	name.string[j] = s2;
+        nstring s0 = name[j];
+        if (based && s0[0] != '/')
+            s0 = os_path_join(stack_nth(0), s0);
+        nstring s2 = stack_relative(s0);
+        if (s2.empty())
+        {
+            sub_context_ty sc;
+            sc.var_set_string("File_Name", s0);
+            if (cid.set())
+                change_fatal(cid.get_cp(), &sc, i18n("$filename unrelated"));
+            else
+                project_fatal(cid.get_pp(), &sc, i18n("$filename unrelated"));
+            // NOTREACHED
+        }
+        base_relative_names.push_back(s2);
     }
+    base_relative_names.sort();
 
     //
     // emit the listing
     //
-    list(&name, pp, cp);
+    list(base_relative_names, cid.get_pp(), cid.set() ? cid.get_cp() : 0);
 
     //
     // report success
@@ -390,3 +312,6 @@ main(int argc, char **argv)
     quit(0);
     return 0;
 }
+
+
+// vim: set ts=8 sw=4 et :

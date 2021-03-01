@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1997, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -75,7 +74,7 @@ tree_print::evaluate(string_ty *path1, string_ty *path2, string_ty *path3,
 
 
 tree::pointer
-tree_print::optimize()
+tree_print::optimize(void)
     const
 {
     return create(get_arg()->optimize());
@@ -83,7 +82,7 @@ tree_print::optimize()
 
 
 bool
-tree_print::useful()
+tree_print::useful(void)
     const
 {
     return true;
@@ -91,7 +90,7 @@ tree_print::useful()
 
 
 bool
-tree_print::constant()
+tree_print::constant(void)
     const
 {
     return false;
@@ -99,8 +98,11 @@ tree_print::constant()
 
 
 const char *
-tree_print::name()
+tree_print::name(void)
     const
 {
     return "print";
 }
+
+
+// vim: set ts=8 sw=4 et :

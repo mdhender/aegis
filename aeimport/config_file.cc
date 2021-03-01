@@ -1,23 +1,25 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2001-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <common/uuidentifier.h>
 #include <libaegis/change/branch.h>
@@ -25,11 +27,11 @@
 #include <libaegis/change.h>
 #include <libaegis/change/verbose.h>
 #include <libaegis/commit.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/io.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <libaegis/pconf.h>
+#include <libaegis/pconf.fmtgen.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
@@ -44,21 +46,21 @@ void
 config_file(string_ty *project_name, format_ty *format, time_t when,
     string_ty *the_config_file)
 {
-    project_ty      *pp;
-    long	    change_number;
+    project      *pp;
+    long            change_number;
     fstate_src_ty   *c_src_data;
     fstate_src_ty   *p_src_data;
     change::pointer cp;
-    pconf_ty	    *pconf_data;
-    string_ty	    *bl;
-    string_ty	    *pconf_file_name;
+    pconf_ty        *pconf_data;
+    string_ty       *bl;
+    string_ty       *pconf_file_name;
     cstate_history_ty *history_data;
     user_ty::pointer up;
-    cstate_ty	    *cstate_data;
-    cstate_ty	    *p_cstate_data;
-    string_ty	    *path;
-    string_ty	    *path_d;
-    string_ty	    *original;
+    cstate_ty       *cstate_data;
+    cstate_ty       *p_cstate_data;
+    string_ty       *path;
+    string_ty       *path_d;
+    string_ty       *original;
 
     //
     // Take some locks.
@@ -76,14 +78,14 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     pconf_data = (pconf_ty *)pconf_type.alloc();
     pconf_data->development_directory_style =
-	(work_area_style_ty *)work_area_style_type.alloc();
+        (work_area_style_ty *)work_area_style_type.alloc();
     pconf_data->development_directory_style->source_file_link = true;
     pconf_data->development_directory_style->source_file_symlink = true;
     pconf_data->development_directory_style->source_file_copy = true;
     pconf_data->build_command = str_from_c("exit 0");
     pconf_data->history_put_command = format_history_put(format);
     pconf_data->history_create_command =
-	str_copy(pconf_data->history_put_command);
+        str_copy(pconf_data->history_put_command);
     pconf_data->history_get_command = format_history_get(format);
     pconf_data->history_query_command = format_history_query(format);
     pconf_data->diff_command = format_diff(format);
@@ -99,6 +101,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     project_become(pp);
     pconf_write_file(pconf_file_name, pconf_data, 0);
     project_become_undo(pp);
+    str_free(pconf_file_name);
 
     //
     // Now create a change so we can pretend we created the config
@@ -113,9 +116,9 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // Set change attributes.
     //
     cstate_data->description =
-	str_format("Initial project `%s' file.", the_config_file->str_text);
+        str_format("Initial project `%s' file.", the_config_file->str_text);
     cstate_data->brief_description =
-	str_format("%s file", the_config_file->str_text);
+        str_format("%s file", the_config_file->str_text);
     cstate_data->cause = change_cause_internal_enhancement;
     cstate_data->test_exempt = true;
     cstate_data->test_baseline_exempt = true;
@@ -188,7 +191,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // Difference the file.
     //
-    path = change_file_path(cp, the_config_file);
+    path = cp->file_path(the_config_file);
     assert(path);
     trace_string(path->str_text);
     path_d = str_format("%s,D", path->str_text);
@@ -208,6 +211,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // Check the config file into the history.
     //
+    cstate_data->uuid = universal_unique_identifier();
     change_run_history_create_command(cp, c_src_data);
 
     //
@@ -217,6 +221,8 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     project_become(pp);
     change_fingerprint_same(p_src_data->file_fp, path, 0);
     project_become_undo(pp);
+    str_free(path);
+    str_free(path_d);
 
     //
     // Update the head revision number.
@@ -230,7 +236,6 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // add to history for integrate pass
     //
     cstate_data->state = cstate_state_completed;
-    cstate_data->uuid = universal_unique_identifier();
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_integrate_pass;
     history_data->when = when + 5;
@@ -240,7 +245,15 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // add to project history
     //
-    project_history_new(pp, cstate_data->delta_number, change_number);
+    project_history_new
+    (
+        pp,
+        cstate_data->delta_number,
+        change_number,
+        cstate_data->uuid,
+        history_data->when,
+        false
+    );
 
     //
     // Set build times.
@@ -260,7 +273,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // Write stuff back out.
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     pp->pstate_write();
     commit();
     lock_release();
@@ -270,6 +283,10 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     change_verbose_new_change_complete(cp);
     change_free(cp);
+    pconf_type.free(pconf_data);
     project_free(pp);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

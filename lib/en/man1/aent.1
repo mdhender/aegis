@@ -1,29 +1,28 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-2000, 2002-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 1996-2000, 2002-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -New_Test" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-New_Test" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new test \- add a new test to a change
 .XX "aent(1)" "add a new test to a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_Test
+.B \-New_Test
 [
 .IR option ...
 ][
@@ -31,25 +30,25 @@ aegis new test \- add a new test to a change
 ]
 .br
 .B \*(n)
-.B -New_Test
-.B -List
+.B \-New_Test
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_Test
-.B -Help
+.B \-New_Test
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -New_Test
+.I \-New_Test
 command is used to
 add a new test to a change.
 A new file is created in the development directory.
 .PP
 New tests default to \[lq]automatic\[rq] unless otherwise specified.
-.so z_intuit.so
+.so lib/en/man1/z_intuit.so
 .SS Test Filename Generation
 You may choose your own filename for a test,
 by specifying it on the command line.
@@ -82,45 +81,52 @@ with the
 command.
 Tests are treated just like any other source file,
 and are subject to the same process.
-.so z_template.so
+.so lib/en/man1/z_template.so
 .PP
 Be careful to make sure that the test filename template pattern matches
 the \fInew_test_filename\fP field.
-.so z_filesize.so
-.so z_retype.so
+.so lib/en/man1/z_filesize.so
+.so lib/en/man1/z_retype.so
 .SS Notification
 The \fInew_test_command\fP in the project \fIconfig\fP file is run,
 if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
 if there has been an integration recently.  See \fIaepconf\fP(5) for
 more information.
 .\" unlike the above, these next two start new sections
-.so z_test_rtnl.so
-.so z_test_corr.so
+.so lib/en/man1/z_test_rtnl.so
+.so lib/en/man1/z_test_corr.so
 .SH OPTIONS
 The following options are understood;
-.so o_auto.so
-.so o_baserel.so
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_manual.so
-.so o_nolog.so
+.so lib/en/man1/o_auto.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
+.TP 8n
+\fB\-Edit\fP
+Edit the new test files one they have been created.
+(This avoids the copy\[hy]and\[hy]paste step required to edit the new
+test script when
+it has an automatically generated file name.)
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_manual.so
+.so lib/en/man1/o_nolog.so
 .TP 8n
 \fB\-Output\fP \fIfilename\fP
 This option may be used to specify a filename which is to be written with
 the automatically determined test file name.  Useful for writing scripts.
-.so o_project.so
-.so o_template.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_template.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_uuid.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aent '\*(n) -nt \e!* -v'
-sh$	aent(){\*(n) -nt "$@" -v}
+csh%    alias aent '\*(n) \-nt \e!* \-v'
+sh$     aent(){\*(n) \-nt "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -130,7 +136,7 @@ state.
 .br
 It is an error if
 the change is not assigned to the current user.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -152,4 +158,5 @@ run tests
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

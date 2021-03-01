@@ -1,20 +1,20 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2007-2009 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007-2010, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or
-//      modify it under the terms of the GNU General Public License as
-//      published by the Free Software Foundation; either version 3 of
-//      the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 //
 // Derived from a file marked
 //
@@ -24,7 +24,6 @@
 
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
-#include <common/main.h>
 
 
 //
@@ -182,7 +181,7 @@ memmem_replacement(const void *haystack_start, size_t haystack_len,
 
     // Use optimizations in memchr when possible.
     if (needle_len == 1)
-        return memchr(haystack, *needle, haystack_len);
+        return memchr((const void *)haystack, *needle, haystack_len);
 
     // Minimizing the worst-case complexity:
     // Let n = haystack_len, m = needle_len.
@@ -284,3 +283,6 @@ memmem_replacement(const void *haystack_start, size_t haystack_len,
 
     return 0;
 }
+
+
+// vim: set ts=8 sw=4 et :

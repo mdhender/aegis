@@ -1,48 +1,47 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Develop_Begin" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Develop_Begin" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis develop begin \- begin development of a change
 .XX "aedb(1)" "begin development of a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -Develop_Begin
-.I change-number
+.B \-Develop_Begin
+.I change\[hy]number
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_Begin
-.B -List
+.B \-Develop_Begin
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_Begin
-.B -Help
+.B \-Develop_Begin
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Develop_Begin
+.I \-Develop_Begin
 command is used to
 commence development of a change.
 .PP
@@ -75,8 +74,8 @@ down
 S1: box "awaiting" "development"
 arrow " develop" ljust " begin" ljust
 S2: box "being" "developed"
-T1: spline -> from S2.w then left 0.75 then up 11/12 \
-	then to 1/3<S1.sw,S1.nw>
+move to S2.w
+T1: spline -> left 0.75 then up 1 then to S1.w
 " develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
 .PE
 .\" ------------------------------------------------------------------------
@@ -91,10 +90,10 @@ aegis locks are released, so additional aegis commands may be run from
 here, if used with care.  The symbolic links (see below) have \fInot\fP
 yet been created.
 .SS Development Directory Location
-.so z_filelocn.so
+.so lib/en/man1/z_filelocn.so
 .SH ADMINISTRATOR OVERRIDE
 It is possible for project administrators to use the
-.B -User
+.B \-User
 option to force a developer to start developing a change.
 Some sites prefer to work this way.
 Note that developers still have the ability to use the
@@ -113,7 +112,7 @@ project attribute (see
 .IR aepattr (5)
 for more information)
 will be run when an administrator uses the
-.B -User
+.B \-User
 option,
 in an attempt to minimize the surprises for developers.
 A suitable command is
@@ -123,29 +122,29 @@ A suitable command is
     "$datadir/db_forced.sh $p $c $developer";\fP
 .fi
 .RE
-This command will send e-mail to the developer,
+This command will send e\[hy]mail to the developer,
 informing her that the change has been assigned to her.
-.so o_symlnk.so
+.so lib/en/man1/o_symlnk.so
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_dir.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
-.so o_user.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_user.so
 This option may only be used by a project administrator.
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aedb '\*(n) -db \e!* -v'
-sh$	aedb(){\*(n) -db "$@" -v}
+csh%    alias aedb '\*(n) \-db \e!* \-v'
+sh$     aedb(){\*(n) \-db "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -158,7 +157,7 @@ state.
 .br
 It is an error if
 the current user is not a developer of the specified project.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -210,4 +209,5 @@ project attributes file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

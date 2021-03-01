@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006-2008 Peter Miller
-//	Copyright (C) 2005 Walter Franzini;
+//      aegis - project change supervisor
+//      Copyright (C) 2006-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2005 Walter Franzini;
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDIST_CHANGE_FUNCTOR_PENDIN_PRINT_H
@@ -45,16 +45,16 @@ public:
     /**
       *  The constructor.
       */
-    change_functor_pending_printer(bool incbr, project_ty *proj,
-	const nstring &repository, symtab<nstring> *remote,
-	nstring_list *include_uuid_list, nstring_list *include_version_list,
-	nstring_list *exclude_uuid_list, nstring_list *exclude_version_list);
+    change_functor_pending_printer(bool incbr, project *proj,
+        const nstring &repository, symtab<nstring> *remote,
+        nstring_list *include_uuid_list, nstring_list *include_version_list,
+        nstring_list *exclude_uuid_list, nstring_list *exclude_version_list);
 
     // See base class for documentation.
-    virtual void operator()(change::pointer );
+    virtual void operator()(change::pointer cp);
 
 private:
-    project_ty *pp;
+    project *pp;
     symtab<nstring> *remote_inventory;
     nstring_list *in_uuid_list;
     nstring_list *in_version_list;
@@ -79,3 +79,4 @@ private:
 };
 
 #endif // AEDIST_CHANGE_FUNCTOR_PENDIN_PRINT_H
+// vim: set ts=8 sw=4 et :

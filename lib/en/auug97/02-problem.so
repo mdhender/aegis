@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2002, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "The Problem"
 There are numerous problems with recursive \fImake\fP,
@@ -23,14 +22,14 @@ Some of these problems include:
 .IP \(bu 2n
 It is very hard to get the
 .I order
-of the recursion into the sub-directories correct.
+of the recursion into the sub\[hy]directories correct.
 This order is very unstable
 and frequently needs to be manually \[lq]tweaked.\[rq]
 Increasing the number of directories,
 or increasing the depth in the directory tree,
 cause this order to be increasingly unstable.
 .IP \(bu 2n
-It is often necessary to do more than one pass over the sub-directories
+It is often necessary to do more than one pass over the sub\[hy]directories
 to build the whole system.  This, naturally, leads to extended build
 times.
 .IP \(bu 2n
@@ -41,7 +40,8 @@ This usually leads to things not being updated when they need to be,
 requiring frequent \[lq]clean\[rq] builds from scratch,
 to ensure everything has actually been built.
 .IP \(bu 2n
-Because inter-directory dependencies are either omitted or too hard to express,
+Because inter\[hy]directory dependencies are either omitted or too hard
+to express,
 the \f(CWMakefiles\fP are often written to build
 .I "too much"
 to ensure that nothing is left out.
@@ -65,3 +65,4 @@ itself is the problem.  This paper is working from the premise that
 \fImake\fP does \fBnot\fP have a bug, that \fImake\fP does \fBnot\fP have
 a design flaw.  The problem is not in \fImake\fP at all, but rather in
 the input given to \fImake\fP \- the way \fImake\fP is being used.
+.\" vim: set ts=8 sw=4 et :

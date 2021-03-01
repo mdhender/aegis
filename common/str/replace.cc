@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008, 2009 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2006, 2008, 2009, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 
 #include <common/ac/string.h>
 
@@ -31,13 +31,13 @@ str_replace(string_ty *str, string_ty *lhs, string_ty *rhs, int how_many_times)
     // Deal with some trivial cases.
     //
     if (lhs->str_length == 0 || how_many_times == 0)
-	return str_copy(str);
+        return str_copy(str);
 
     //
     // Default the number of times, if necessary.
     //
     if (how_many_times < 0)
-	how_many_times = str->str_length + 1;
+        how_many_times = str->str_length + 1;
 
     //
     // Walk along the string replacing things.
@@ -69,3 +69,6 @@ str_replace(string_ty *str, string_ty *lhs, string_ty *rhs, int how_many_times)
     //
     return sa.mkstr();
 }
+
+
+// vim: set ts=8 sw=4 et :

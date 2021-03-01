@@ -1,47 +1,46 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998, 1999, 2001-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1996, 1998, 1999, 2001-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Integrate_Pass" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Integrate_Pass" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis integrate pass \- pass a change integration
 .XX "aeipass(1)" "pass a change integration"
 .SH SYNOPSIS
 .B \*(n)
-.B -Integrate_Pass
+.B \-Integrate_Pass
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Pass
-.B -List
+.B \-Integrate_Pass
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Pass
-.B -Help
+.B \-Integrate_Pass
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Integrate_Pass
+.I \-Integrate_Pass
 command is used to
 notify \*(n) that a change has passed integration.
 The change is advanced
@@ -65,7 +64,7 @@ This command updates the file histories, so that future
 commands may extract previous file versions from history,
 and so that future
 .IR aed (1)
-commands may merge out-of-date files.
+commands may merge out\[hy]of\[hy]date files.
 The history is updated using the
 .I history_create_command
 and
@@ -96,7 +95,7 @@ the repository now no longer matches the object file in the repository.
 .I I.e.
 the history tool has compromised the referential integrity of the
 repository.  By default, a fatal error is emitted if the file is changed
-by the check-in, however this can be modified to a be warning or even
+by the check\[hy]in, however this can be modified to a be warning or even
 ignored completely; see the
 .I history_\%put_\%trashes_\%file\fP
 field of
@@ -115,7 +114,7 @@ files have changed.
 Note that if there are many new files with all different timestamps in
 the integration directory, and if the number of files with different
 timestamps exceeds the number of seconds since the start of the
-integrate-pass command, Aegis may have to set file modification times
+integrate\[hy]pass command, Aegis may have to set file modification times
 into the future.
 .PP
 The \fIbuild_\%time_\%adjust\fP field of the project \fIconfig\fP file
@@ -133,20 +132,20 @@ adjust_only
 Aegis will issue a warning that the file modification times extend
 into the future, but will not sleep.  This may cause integration
 build problems, particularly if you are using \fIaeintegratq\fP(1).
-Development builds may perform redundant builds, however \fIaet -reg\fP
+Development builds may perform redundant builds, however \fIaet \-reg\fP
 should not produce false negatives.
 .TP 8n
 dont_adjust
 This is highly inadvisable.
 It is provided solely for some very rare circumstances.
 This setting causes Aegis not to adjust the file modification times at all.
-This can have very unhappy side-effects, especially of the integration
+This can have very unhappy side\[hy]effects, especially of the integration
 build was \fIbefore\fP one or more development builds; the commonest
 symptom being that development builds do not always cause a relink of
-the necessary executables, and \fIaet -reg\fP may give false negatives.
+the necessary executables, and \fIaet \-reg\fP may give false negatives.
 It is \fBstrongly\fP recommended that you do not use this setting.
 .PP
-If you use \fIcook\fP(1), see the \fItime-adjust-back\fP flag for how
+If you use \fIcook\fP(1), see the \fItime\[hy]adjust\[hy]back\fP flag for how
 to compress the time range even further.  This usually makes the sleep (or the
 warning period) significantly shorter.
 .SS Notification
@@ -167,7 +166,7 @@ Other commands run by this command include the
 \fIhistory_\%create_\%command\fP, \fIhistory_\%put_\%command\fP and
 \fIhistory_\%query_\%command\fP fields of the project \fIconfig\fP file.
 See \fIaepconf\fP(5) for more information.
-.so z_bl_lock.so
+.so lib/en/man1/z_bl_lock.so
 .SS The History Lock
 Where a project has a number of branches active simultaneously, it is
 possible for independent integrate pass commands for different branches
@@ -177,26 +176,26 @@ The is an exclusive
 taken by integrate pass to ensure that only one branch is
 updating the file history at a time,
 thus preventing history file corruption.
-.so z_test_corr.so
-.so z_metrics.so
+.so lib/en/man1/z_test_corr.so
+.so lib/en/man1/z_metrics.so
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_nolog.so
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_nolog.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aeipass '\*(n) -ipass \e!* -v'
-sh$	aeipass(){\*(n) -ipass "$@" -v}
+csh%    alias aeipass '\*(n) \-ipass \e!* \-v'
+sh$     aeipass(){\*(n) \-ipass "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -209,19 +208,19 @@ state.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -Build'"
+.I "'\*(n) \-Build'"
 command for the integration.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -Test'"
+.I "'\*(n) \-Test'"
 command for the integration.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -Test -BaseLine'"
+.I "'\*(n) \-Test \-BaseLine'"
 command for the integration.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -240,4 +239,5 @@ metrics values file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

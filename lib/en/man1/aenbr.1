@@ -1,29 +1,28 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998, 1999, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1995, 1998, 1999, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -New_BRanch" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-New_BRanch" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new branch \- create a new branch
 .XX "aenbr(1)" "create a new branch"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_BRanch
+.B \-New_BRanch
 [
 .I number
 ][
@@ -31,11 +30,11 @@ aegis new branch \- create a new branch
 ]
 .br
 .B \*(n)
-.B -New_BRanch
-.B -Help
+.B \-New_BRanch
+.B \-Help
 .SH DESCRIPTION
 The
-.I "\*(n) -New_BRanch"
+.I "\*(n) \-New_BRanch"
 command is used to
 create a new branch.
 A branch is very similar to a
@@ -66,24 +65,24 @@ and from then on it becomes a normal change.
 Should it be returned to the
 .I "being developed"
 state for any reason,
-it will once again require sub-changes to alter anything.
+it will once again require sub\[hy]changes to alter anything.
 .SH OPTIONS
 The following options are understood:
-.so o_help.so
+.so lib/en/man1/o_help.so
 .TP 8n
 \fB\-Output\fP \fIfilename\fP
 This option may be used to specify a filename which is to be written with
 the automatically determined branch number.  Useful for writing scripts.
-.so o_reason2.so
-.so o_wait.so
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%    alias aenbr '\*(n) -nbr \e!* -v'
-sh$     aenbr(){\*(n) -nbr "$@" -v}
+csh%    alias aenbr '\*(n) \-nbr \e!* \-v'
+sh$     aenbr(){\*(n) \-nbr "$@" \-v}
 .fi
 .SH SEE ALSO
 .TP 8n
@@ -95,4 +94,5 @@ create a new change
 .TP 8n
 .IR aede (1)
 develop end
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

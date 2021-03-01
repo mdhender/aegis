@@ -1,27 +1,27 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or
-//      modify it under the terms of the GNU General Public License as
-//      published by the Free Software Foundation; either version 3 of
-//      the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <common/nstring.h>
+#include <common/sizeof.h>
 #include <libaegis/change/file.h>
 #include <libaegis/input/file.h>
 #include <libaegis/os.h>
@@ -41,6 +41,20 @@ validation_files_gpl_version::validation_files_gpl_version(int a_version) :
 }
 
 
+validation::pointer
+validation_files_gpl_version::create(int a_version)
+{
+    return pointer(new validation_files_gpl_version(a_version));
+}
+
+
+validation::pointer
+validation_files_gpl_version::create3(void)
+{
+    return pointer(new validation_files_gpl_version(3));
+}
+
+
 //
 // Be mindful of the commas between the pattern strings.
 //
@@ -51,13 +65,26 @@ static const char *notice_patterns[] =
     "published by the Free Software Foundation; either version * of the "
     "License, or (at your option) any later version.",
 
+    "This program is free software; you can redistribute it and/or "
+    "modify it under the terms of the GNU Lesser General Public License "
+    "as published by the Free Software Foundation; either version * of "
+    "the License, or (at your option) any later version.",
+
     "This program is free software: you can redistribute it and/or "
     "modify it under the terms of the GNU General Public License as "
     "published by the Free Software Foundation, version *",
 
     "This program is free software: you can redistribute it and/or "
+    "modify it under the terms of the GNU Lesser General Public License "
+    "as published by the Free Software Foundation, version *",
+
+    "This program is free software: you can redistribute it and/or "
     "modify it under the terms of the GNU General Public License, "
     "version *, as published by the Free Software Foundation.",
+
+    "This program is free software: you can redistribute it and/or "
+    "modify it under the terms of the GNU Lesser General Public "
+    "License, version *, as published by the Free Software Foundation.",
 };
 
 
@@ -236,9 +263,17 @@ validation_files_gpl_version::match(const char *text, long nbytes,
 
 
 bool
+validation_files_gpl_version::check_binaries(void)
+    const
+{
+    return false;
+}
+
+
+bool
 validation_files_gpl_version::check(change::pointer cp, fstate_src_ty *src)
 {
-    nstring path(change_file_path(cp, src));
+    nstring path(cp->file_path(src));
     assert(!path.empty());
     if (path.empty())
         return true;
@@ -283,3 +318,6 @@ validation_files_gpl_version::check(change::pointer cp, fstate_src_ty *src)
 
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

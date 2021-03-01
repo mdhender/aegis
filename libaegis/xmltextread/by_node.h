@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2005, 2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2005, 2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_XMLTEXTREAD_BY_NODE_H
@@ -52,7 +51,7 @@ public:
       *     like UNIX paths, they are slash separated.  E.g. parent/
       *     child/ subchild, etc.  NO wildcards are available.
       * @param handler
-      *     The object which will adela with the named nodes.  Noth that
+      *     The object which will process the named nodes.  Note that
       *     (depending on the DTD) this may be called from more than one
       *     instance, but always with begin/end pairs, so it is possible
       *     to keep track.
@@ -60,7 +59,7 @@ public:
     void register_node_handler(const nstring &name, xml_node &handler);
 
     // See base class for documentation.
-    void process_node();
+    void process_node(void);
 
     // See base class for documentation.
     void process_node_end(bool empty);
@@ -100,7 +99,7 @@ private:
       * The calculate_current_node_handler method is used to set the
       * current_node from the name at the top of the names stack.
       */
-    void calculate_current_node_handler();
+    void calculate_current_node_handler(void);
 
     /**
       * The default constructor.  Do not use.
@@ -119,3 +118,4 @@ private:
 };
 
 #endif // LIBAEGIS_XMLTEXTREAD_BY_NODE_H
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1992-2000, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1992-2000, 2002-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_USER_H
@@ -24,10 +24,10 @@
 
 #include <common/nstring.h>
 #include <libaegis/output.h>
-#include <libaegis/uconf.h>
-#include <libaegis/ustate.h>
+#include <libaegis/uconf.fmtgen.h>
+#include <libaegis/ustate.fmtgen.h>
 
-class project_ty; // forward
+class project; // forward
 class output_ty; // forward
 
 /**
@@ -276,7 +276,7 @@ public:
       * @param chanum
       *     the number of the change
       */
-    void own_add(project_ty *pp, long chanum);
+    void own_add(project *pp, long chanum);
 
     /**
       * The user_own_nth function is used to fetch the n'th
@@ -287,12 +287,12 @@ public:
       *     project of the change
       * @param n
       *     selector
-      * @para change_number
+      * @param chanum
       *     reference to where to put number of the change
       * @returns
       *     true on sucess, false if no such n.
       */
-    bool own_nth(project_ty *pp, long n, long &chanum);
+    bool own_nth(project *pp, long n, long &chanum);
 
     /**
       * The user_own_remove function is used to
@@ -300,11 +300,11 @@ public:
       *
       * @param pp
       *     project of the change
-      * @param change_number
+      * @param chanum
       *     number of the change.
       *     The change is assumed to be unique.
       */
-    void own_remove(project_ty *pp, long chanum);
+    void own_remove(project *pp, long chanum);
 
     /**
       * The default_change method is used to find the default change
@@ -315,7 +315,7 @@ public:
       * @returns
       *     the change number.
       */
-    long default_change(project_ty *pp);
+    long default_change(project *pp);
 
     /**
       * The default_project method is used to determine the default
@@ -335,7 +335,7 @@ public:
       *     The project to consult for its default development
       *     directory, as wel.
       */
-    nstring default_development_directory(project_ty *pp);
+    nstring default_development_directory(project *pp);
 
     /**
       * The default_project_directory method is used to determine the
@@ -596,7 +596,7 @@ public:
       * @param usage
       *     Exit via this function on error.
       */
-    static void whiteout_argument(void(*)(void));
+    static void whiteout_argument(void (*usage)(void));
 
     /**
       * The whiteout mwthod may be used to determine this user's
@@ -714,7 +714,7 @@ private:
       * @param pp
       *     The project of interest
       */
-    ustate_ty *ustate_get(project_ty *pp);
+    ustate_ty *ustate_get(project *pp);
 
     /**
       * The uconf_path instance variable is used to remember the
@@ -862,18 +862,18 @@ string_ty *user_full_name(string_ty *) DEPRECATED;
 void user_ustate_write(user_ty::pointer) DEPRECATED;
 
 // use user_ty::own_add instead
-void user_own_add(user_ty::pointer up, project_ty *pp, long chanum) DEPRECATED;
+void user_own_add(user_ty::pointer up, project *pp, long chanum) DEPRECATED;
 
 // use user_ty::own_nth instead
-int user_own_nth(user_ty::pointer up, project_ty *oo, long n, long *chanum_p)
+int user_own_nth(user_ty::pointer up, project *oo, long n, long *chanum_p)
     DEPRECATED;
 
 // use user_ty::own_remove instead
-void user_own_remove(user_ty::pointer up, project_ty *pp, long chanum)
+void user_own_remove(user_ty::pointer up, project *pp, long chanum)
     DEPRECATED;
 
-// use user_ty::default_change(project_ty *pp) instead
-long user_default_change(user_ty::pointer up, project_ty *pp) DEPRECATED;
+// use user_ty::default_change(project *pp) instead
+long user_default_change(user_ty::pointer up, project *pp) DEPRECATED;
 
 // user user_ty::default_project() instead
 string_ty *user_default_project_by_user(user_ty::pointer) DEPRECATED;
@@ -881,9 +881,9 @@ string_ty *user_default_project_by_user(user_ty::pointer) DEPRECATED;
 // user user_ty::default_project() instead
 string_ty *user_default_project(void) DEPRECATED;
 
-// use user_ty::default_development_directory(project_ty *pp) instead
+// use user_ty::default_development_directory(project *pp) instead
 string_ty *user_default_development_directory(user_ty::pointer up,
-    project_ty *pp) DEPRECATED;
+    project *pp) DEPRECATED;
 
 // user user_ty::default_project_directory() instead
 string_ty *user_default_project_directory(user_ty::pointer) DEPRECATED;
@@ -949,3 +949,4 @@ void user_uconf_write_xml(user_ty::pointer, output::pointer) DEPRECATED;
 uconf_ty *user_uconf_get(user_ty::pointer) DEPRECATED;
 
 #endif // AEGIS_USER_H
+// vim: set ts=8 sw=4 et :

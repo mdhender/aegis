@@ -1,24 +1,27 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001-2006, 2008 Peter Miller
+ *      aegis - project change supervisor
+ *      Copyright (C) 1991-1997, 1999, 2001-2006, 2008, 2012 Peter Miller
+ *      Copyright (C) 2008 Walter Franzini
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 3 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 3 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see
- *	<http://www.gnu.org/licenses/>.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program. If not, see
+ *      <http://www.gnu.org/licenses/>.
  *
+ * @note
  * if you cange this file, don't forget to change
- *	man5/aecstate.5
+ *      man5/aecstate.5
  *
+ * @note
  * If you change this file, remmeber to make top-level enums
  * hide_if_default whenever possible, or you will break older versions of
  * aedist for receive.
@@ -151,45 +154,45 @@ regression_test_time = time;
 architecture_times =
 [
     {
-	/*
-	 * This field is one of the patterns named in
-	 * the outer "architecture" field.
-	 */
-	variant = string;
+        /*
+         * This field is one of the patterns named in
+         * the outer "architecture" field.
+         */
+        variant = string;
 
-	/*
-	 * This field is the computer on which the command was run
-	 * which last changed this structure.
-	 */
-	node = string;
+        /*
+         * This field is the computer on which the command was run
+         * which last changed this structure.
+         */
+        node = string;
 
-	/*
-	 * This field records the last time the last
-	 * successful 'aegis -Build' command
-	 * was run for this specific architecture variant.
-	 */
-	build_time = time;
+        /*
+         * This field records the last time the last
+         * successful 'aegis -Build' command
+         * was run for this specific architecture variant.
+         */
+        build_time = time;
 
-	/*
-	 * This field records the last time the last
-	 * successful 'aegis -Test' command
-	 * was run for this specific architecture variant.
-	 */
-	test_time = time;
+        /*
+         * This field records the last time the last
+         * successful 'aegis -Test' command
+         * was run for this specific architecture variant.
+         */
+        test_time = time;
 
-	/*
-	 * This field records the last time the last
-	 * successful 'aegis -Test -BaseLine' command
-	 * was run for this specific architecture variant.
-	 */
-	test_baseline_time = time;
+        /*
+         * This field records the last time the last
+         * successful 'aegis -Test -BaseLine' command
+         * was run for this specific architecture variant.
+         */
+        test_baseline_time = time;
 
-	/*
-	 * This field records the last time the last
-	 * successful 'aegis -Test -REGression' command
-	 * was run for this specific architecture variant.
-	 */
-	regression_test_time = time;
+        /*
+         * This field records the last time the last
+         * successful 'aegis -Test -REGression' command
+         * was run for this specific architecture variant.
+         */
+        regression_test_time = time;
     }
 ];
 
@@ -217,158 +220,158 @@ integration_directory = string;
 history =
 [
     {
-	/*
-	 * This field records the time the state transition occured.
-	 */
-	when = time;
+        /*
+         * This field records the time the state transition occured.
+         */
+        when = time;
 
-	/*
-	 * This field records what happened.
-	 * Valid value names echo the various aegis functions.
-	 */
-	what =
-	(
-		new_change,
+        /*
+         * This field records what happened.
+         * Valid value names echo the various aegis functions.
+         */
+        what =
+        (
+                new_change,
 
-		/*
+                /*
                  * The change is advanced from awaiting_development to
                  * being_developed.
-		 */
-		develop_begin,
+                 */
+                develop_begin,
 
-		/*
+                /*
                  * The change is un-advanced from being_developed to
                  * awaiting_development.
-		 */
-		develop_begin_undo,
+                 */
+                develop_begin_undo,
 
-		/*
+                /*
                  * The change is advanced from being_developed
                  * to being_reviewed.  The project is in
                  * goto_being_reviewed (the default).  The absence of
                  * the "_2br" suffix is an historical accident.
-		 */
-		develop_end,
+                 */
+                develop_end,
 
-		/*
+                /*
                  * The change is advanced from being_developed
                  * to awaiting_review.  The project is in
                  * goto_awaiting_review.
-		 */
-		develop_end_2ar,
+                 */
+                develop_end_2ar,
 
-		/*
+                /*
                  * The change is advanced from being_developed
                  * to awaiting_integration.  The project is in
                  * goto_awaiting_integration.
-		 */
-		develop_end_2ai,
+                 */
+                develop_end_2ai,
 
-		/*
+                /*
                  * The change is un-advanced from one of
                  * { awating_review, being_reviewed or
                  * awaiting_integration } to being_developed.
-		 */
-		develop_end_undo,
+                 */
+                develop_end_undo,
 
-		/*
+                /*
                  * The change is advanced from awaiting_review
                  * to being_reviewed.  The project was in
                  * goto_awaiting_review.
-		 */
-		review_begin,
+                 */
+                review_begin,
 
-		/*
+                /*
                  * The change is un-advanced from being_reviewed
                  * to awaiting_review.  The project was in
                  * goto_awaiting_review.
-		 */
-		review_begin_undo,
+                 */
+                review_begin_undo,
 
-		/*
+                /*
                  * The change advanced from being_reviewed
                  * to being_integrated.  The project is in
                  * goto_being_reviewed or goto_awaiting_review.
-		 */
-		review_pass,
+                 */
+                review_pass,
 
-		/*
+                /*
                  * The change DID NOT advance from being_reviewed to being_
                  * integrated.  The project is in goto_awaiting_review.
                  *
                  * This will only happen if the review_policy command
                  * returns a non-zero exit status.
-		 */
-		review_pass_2ar,
+                 */
+                review_pass_2ar,
 
-		/*
+                /*
                  * The change DID NOT advance from being_reviewed to being_
                  * integrated.  The project is in goto_being_reviewed.
                  *
                  * This will only happen if the review_policy command
                  * returns a non-zero exit status.
-		 */
-		review_pass_2br,
+                 */
+                review_pass_2br,
 
-		/*
+                /*
                  * The change un-advanced from awaiting_integration
                  * to being_reviewed.  The project is in
                  * goto_being_reviewed.  (The absence of the "_2br"
                  * suffix is an historical accident.)
-		 */
-		review_pass_undo,
+                 */
+                review_pass_undo,
 
-		/*
+                /*
                  * The change un-advanced from awaiting_integration
                  * to awaiting_review.  The project is in
                  * goto_awaiting_review.
-		 */
-		review_pass_undo_2ar,
+                 */
+                review_pass_undo_2ar,
 
-		/*
+                /*
                  * The change is un-advanced from being_reviewed to
                  * being_developed.
-		 */
-		review_fail,
+                 */
+                review_fail,
 
-		/*
+                /*
                  * The change is advanced from awaiting_integration to
                  * being_integrated.
-		 */
-		integrate_begin,
+                 */
+                integrate_begin,
 
-		/*
+                /*
                  * The change is un-advanced from being_integrated to
                  * awaiting_intergation.
-		 */
-		integrate_begin_undo,
+                 */
+                integrate_begin_undo,
 
-		/*
+                /*
                  * The change is advanced from being_integrated to
                  * completed.
-		 */
-		integrate_pass,
+                 */
+                integrate_pass,
 
-		/*
+                /*
                  * The change is un-advanced from being_integrated to
                  * being_developed.
-		 */
-		integrate_fail
-	);
+                 */
+                integrate_fail
+        );
 
-	/*
-	 * This field records the user name of the user who
-	 * caused the state transition.
-	 */
-	who = string; /* the user name */
+        /*
+         * This field records the user name of the user who
+         * caused the state transition.
+         */
+        who = string; /* the user name */
 
-	/*
-	 * This field is optional.
-	 * It is a comment of some sort.
-	 * In the cause of review_file and integrate_fail,
-	 * this field will contain why the change failed.
-	 */
-	why = string;
+        /*
+         * This field is optional.
+         * It is a comment of some sort.
+         * In the cause of review_file and integrate_fail,
+         * this field will contain why the change failed.
+         */
+        why = string;
     }
 ];
 
@@ -431,7 +434,7 @@ branch =
      *
      * Executed as: the new developer.
      * Current directory: the development directory of the change
-     *	for the new developer.
+     *  for the new developer.
      * Exit status: ignored.
      */
     forced_develop_begin_notify_command = string;
@@ -571,7 +574,7 @@ branch =
      * no regression test exemption specified.
      */
     default_test_regression_exemption = boolean
-	show_if_default;
+        show_if_default;
 
     /*
      * This field may be set to true if you want to skip various
@@ -613,7 +616,7 @@ branch =
      * (as this means much te same thing).
      */
     develop_end_action = (goto_being_reviewed, goto_awaiting_review,
-	    goto_awaiting_integration);
+            goto_awaiting_integration);
 
     /*
      * This field contains a history of integrations for the branch.
@@ -621,22 +624,39 @@ branch =
      */
     history =
     [
-	{
-	    /*
-	     * The delta number of the integration.
-	     */
-	    delta_number = integer;
+        {
+            /*
+             * The delta number of the integration.
+             */
+            delta_number = integer;
 
-	    /*
-	     * The number of the change which was integrated.
-	     */
-	    change_number = integer;
+            /*
+             * The number of the change which was integrated.
+             */
+            change_number = integer;
 
-	    /*
-	     * the names by which this delta is known
-	     */
-	    name = [ string ];
-	}
+            /*
+             * the names by which this delta is known
+             */
+            name = [ string ];
+
+            /*
+             * the uuid of the change which was integrated.
+             */
+            uuid = string;
+
+            /*
+             * the time at which the change was integrated.
+             */
+            when = time;
+
+            /*
+             * this field is used to remember if the completed change
+             * was a branch.  By default unknown.
+             */
+            is_a_branch = (unknown, yes, no)
+                hide_if_default;
+        }
     ];
 
     /*
@@ -735,76 +755,79 @@ branch =
 src =
 [
     {
-	/*
-	 * This file names the file.
-	 * The name is relative to the root of the
-	 * baseline directory tree.
-	 */
-	file_name = string;
+        /*
+         * This file names the file.
+         * The name is relative to the root of the
+         * baseline directory tree.
+         */
+        file_name = string;
 
-	/*
+        /*
          * This field uniquely identifies the file for its entire
          * lifetime.  This field remains constant across file renames.
          * The value of this field shall be formatted as a valid UUID,
          * all in lower case.
-	 */
-	uuid = string;
+         */
+        uuid = string;
 
-	/*
-	 * This field describes what is being done with the file.
-	 */
-	action = file_action;
+        /*
+         * This field describes what is being done with the file.
+         */
+        action = file_action;
 
-	/*
-	 * This field records the edit number of the file
-	 * when it was added to the change (or updated using the
-	 * 'aegis -DIFFerence' command).
-	 * This field is not present for new files.
-	 */
-	edit_number = string;
+        /*
+         * This field records the edit number of the file
+         * when it was added to the change (or updated using the
+         * 'aegis -DIFFerence' command).
+         * This field is not present for new files.
+         */
+        edit_number = string;
 
-	/*
-	 * This field describes what function the file serves.
-	 */
-	usage = file_usage;
+        /*
+         * This field describes what function the file serves.
+         */
+        usage = file_usage;
 
-	/*
-	 * These fields are set by a successful
-	 * 'aegis -DIFFerence' command to the last-time-modified
-	 * of the source file and the difference listing.
-	 * It is only present between the 'being_developed' and
-	 * 'being_integrated' states, inclusive.
-	 * This allows checking that the files have not been modified
-	 * at the develop_end, review_pass and integrate_begin
-	 * state transitions.
-	 */
-	diff_time = time;
-	diff_file_time = time;
+        /*
+         * These fields are set by a successful
+         * 'aegis -DIFFerence' command to the last-time-modified
+         * of the source file and the difference listing.
+         * It is only present between the 'being_developed' and
+         * 'being_integrated' states, inclusive.
+         * This allows checking that the files have not been modified
+         * at the develop_end, review_pass and integrate_begin
+         * state transitions.
+         */
+        diff_time = time;
+        diff_file_time = time;
 
-	/*
-	 * To change the name of a file,
-	 * a combination of aerm and aenf are used.
-	 * With deleted files, this field is used to say where it went.
-	 * With new files, this field is used to say where it came from.
-	 */
-	move = string;
+        /*
+         * To change the name of a file,
+         * a combination of aerm and aenf are used.
+         * With deleted files, this field is used to say where it went.
+         * With new files, this field is used to say where it came from.
+         */
+        move = string;
 
-	/*
-	 * This field tracks whether this incarnation of the file
-	 * was executable at `develop end' time.  This mode
-	 * is restored (taking the project umask into account)
-	 * when the file is copied.
-	 *
-	 * This field is only meaningful for changes in the
-	 * "completed" state, because this field is only set
-	 * by aeip.  Until then, the mode if the file itself is
-	 * the authority.
-	 */
-	executable = boolean hide_if_default;
+        /*
+         * This field tracks whether this incarnation of the file
+         * was executable at `develop end' time.  This mode
+         * is restored (taking the project umask into account)
+         * when the file is copied.
+         *
+         * This field is only meaningful for changes in the
+         * "completed" state, because this field is only set
+         * by aeip.  Until then, the mode if the file itself is
+         * the authority.
+         */
+        executable = boolean hide_if_default;
 
-	/*
+        /*
          * This field records the file attributes.
-	 */
-	attribute = attributes;
+         */
+        attribute = attributes;
     }
 ];
+
+
+/* vim: set ts=8 sw=4 et : */

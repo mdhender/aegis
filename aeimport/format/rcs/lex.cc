@@ -1,31 +1,32 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001, 2002, 2004-2008, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <aeimport/format/rcs/lex.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/stracc.h>
 #include <common/str_list.h>
 #include <common/symtab.h>
 #include <common/trace.h>
 #include <libaegis/input/file.h>
 #include <libaegis/sub.h>
-#include <aeimport/format/rcs/gram.gen.h> // must be after <common/str_list.h>
+
+#include <aeimport/format/rcs/gram.yacc.h> // must be after <common/str_list.h>
+#include <aeimport/format/rcs/lex.h>
 
 static input ip;
 static int      keyword_expected;
@@ -67,13 +68,13 @@ rcs_lex_open(string_ty *fn)
     {
         table_ty        *tp;
 
-        stp = symtab_alloc(SIZEOF(table));
+        stp = new symtab_ty(SIZEOF(table));
         for (tp = table; tp < ENDOF(table); ++tp)
         {
             string_ty       *name;
 
             name = str_from_c(tp->name);
-            symtab_assign(stp, name, tp);
+            stp->assign(name, tp);
             str_free(name);
         }
     }
@@ -460,8 +461,8 @@ format_rcs_gram_lex(void)
             if (keyword_expected)
             {
                 table_ty *tp =
-		    (table_ty *)
-		    symtab_query(stp, format_rcs_gram_lval.lv_string);
+                    (table_ty *)
+                    stp->query(format_rcs_gram_lval.lv_string);
                 if (tp)
                 {
                     str_free(format_rcs_gram_lval.lv_string);
@@ -545,3 +546,6 @@ rcs_lex_keyword_expected(void)
 {
     keyword_expected = 1;
 }
+
+
+// vim: set ts=8 sw=4 et :

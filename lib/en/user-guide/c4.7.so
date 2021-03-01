@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "GNU Autoconf"
 .LP
@@ -27,7 +27,7 @@ Once you have create and Aegis project to, your first change set should
 simply contain all of the source files, without removing or adding
 anything.  The only additonal file is the Aegis project configuration
 file, usually called \fIaegis.conf\fP and usually located in the
-top-level directory.
+top\[hy]level directory.
 .LP
 Follow the directions in the section, above, on \fIusing Make\fP for how
 to fill out this file.
@@ -35,7 +35,7 @@ to fill out this file.
 Note that if you are working from a tarball, they usually contain
 several \fIderived\fP file.  That is, files which are not primary sourec
 files, but are instead derived from other files.
-This is a convenience for the end-user but a nuisance at this point.
+This is a convenience for the end\[hy]user but a nuisance at this point.
 Exanple of derived files in source tarballs include
 \f[CW]configure\fP,
 \f[CW]Makefile.in\fP,
@@ -73,25 +73,25 @@ include Makefile
 
 ifndef srcdir
 
-bogus-default-target: Makefile
-	$(MAKE) $(MAKEFLAGS) $(MAKECMDGOALS)
+bogus\-default\-target: Makefile
+        $(MAKE) $(MAKEFLAGS) $(MAKECMDGOALS)
 .E)
 .E(
 Makefile: configure Makefile.in config.h.in
-	rm -f config.cache
-	./configure
+        rm \-f config.cache
+        ./configure
 .E)
 .E(
 configure: configure.ac
-	autoconf
+        autoconf
 .E)
 .E(
 config.h.in: configure.ac
-	autoheader
+        autoheader
 .E)
 .E(
 Makefile.in: Makefile.am
-	automake
+        automake
 
 endif
 .E)
@@ -99,26 +99,26 @@ This works because \fImake\fP(1) looks for \f[CW]makefile\fP before
 \f[CW]Makefile\fP, but also because our bootstrapping \f[CW]makefile\fP
 includes the real \f[CW]Makefile\fP if it exists, and the real file's
 rules will take precedence.  At this point, GNU Make has a very useful
-feature: it will rebuild include files which are out-of-date before it
+feature: it will rebuild include files which are out\[hy]of\[hy]date before it
 does anything else.  In oue new development directory, this will result
 in the necessary files being automagically generated and then acted
 upon.
 .LP
 Things that can go wrong: many projects include files such as
-\fIinstall-sh\fP and \fImissing\fP and \fImkinstalldirs\fP in the
+\fIinstall\[hy]sh\fP and \fImissing\fP and \fImkinstalldirs\fP in the
 directibution.  You will need to include rules for these files in the
 conditonal part of your bootstrapping \f[CW]makefile\fP rules.
 .E(
-AUTOMAKE_DIR=/usr/share/automake-1.7
+AUTOMAKE_DIR=/usr/share/automake\-1.7
 
-install-sh: $(AUTOMAKE_DIR)/install-sh
-	cp $^ $@
+install\-sh: $(AUTOMAKE_DIR)/install\-sh
+        cp $^ $@
 
 missing: $(AUTOMAKE_DIR)/missing
-	cp $^ $@
+        cp $^ $@
 
 mkinstalldirs: $(AUTOMAKE_DIR)/mkinstalldirs
-	cp $^ $@
+        cp $^ $@
 .E)
 You will have to tell the \fIconfigure\fP rule that it depends on these
 files as well.
@@ -137,14 +137,14 @@ There is a template \f[CW]makefile\fP installed in the
 Now you can set the build command field of the project configuration file:
 .E(
 build_command =
-	"make "
-	"project=$project "
-	"change=$change "
-	"version=$version";
+        "make "
+        "project=$project "
+        "change=$change "
+        "version=$version";
 .E)
 Aegis watches the eist status of the build command.  Be aware that many
 build systems which use recursive make report false positives, because
-the exist status of the sub-make is often ignored by the top-level
+the exist status of the sub\[hy]make is often ignored by the top\[hy]level
 Makefile.  This means that Aegis may think your project compiles when,
 in fact, it does not.
 .LP
@@ -153,7 +153,7 @@ which should not be primary source files, simply use the \fIaerm\fP(1)
 command.  The \fIaeclean\fP(1) command may come in handly, too.
 .LP
 Once this second change set builds, integrate it via the usual Aegis process.
-.nh 3 "Tesing"
+.nh 3 "Testing"
 .LP
 If the project you are importing has tests, they are probably executed
 by saying
@@ -169,7 +169,7 @@ See the chapter on \fITesting\fP for some hints.
 .nh 3 "An Optimization"
 .LP
 The first build in a new development directory can be quite time
-consuming.  It is possible to short-ciruit this by using the pre-built
+consuming.  It is possible to short\[hy]ciruit this by using the pre\[hy]built
 object files in the baseline.  To do this, use the following setting in
 the project configuration file:
 .E(
@@ -183,10 +183,10 @@ development_directory_style =
 This causes Aegis to copy all of the derived file into your development
 directory at \fIaedb\fP time.  This is usually much faster than
 compiling and linking all over again.
-.nh 3 "Signed-off-by"
+.nh 3 "Signed\[hy]off\[hy]by"
 .LP
 It is possible to get the Aegis process to automatically append
-\f[CW]Signed-off-by\fP lines to the change description.
+\f[CW]Signed\[hy]off\[hy]by\fP lines to the change description.
 Set the following field in the project configuration file:
 .E(
 signed_off_by = true;
@@ -239,9 +239,9 @@ You need to strip off the leading directory somehow (most polite
 projects use a prefix).
 The author uses the \fItardy\fP(1) command, like this:
 .E(
-$ \f[CB]zcat \fP\fIproject-x.y\fP\f[CB].tar.gz | \e
-  tardy -rp \fP\fIproject-x.y\fP\f[CB] -now | \e
-  tar xf -
+$ \f[CB]zcat \fP\fIproject\-x.y\fP\f[CB].tar.gz | \e
+  tardy \-rp \fP\fIproject\-x.y\fP\f[CB] \-now | \e
+  tar xf \-
 $
 .E)
 It pays to change that the tarball is the shape you expect \fIbefore\fP
@@ -251,8 +251,8 @@ At this point you have to once again remove all of the files which
 are in the tarball, but which are not primary source files, such as
 \fIconfigure\fP and \fIMakefile.in\fP and the like.
 .E(
-$ \f[CB]rm -f configure Makefile.in config.h.in\fP \fIetc\fP
-$ \f[CB]rm -f aegis.log\fP
+$ \f[CB]rm \-f configure Makefile.in config.h.in\fP \fIetc\fP
+$ \f[CB]rm \-f aegis.log\fP
 $
 .E)
 It is useful if you place the \fIrm\fP(1) command in a shell script, and
@@ -275,7 +275,7 @@ At this point you should remove all the files which were present in the tarball
 but which dod not actually change from the change set.
 The follwoing command does this quickly and simply:
 .E(
-$ \f[CB]aecpu -unchanged\fP
+$ \f[CB]aecpu \-unchanged\fP
 $
 .E)
 You change set now contains the minimum set of differences.
@@ -286,10 +286,10 @@ In contrast to tarballs, patches tend to be far easier to cope with.
 In general, all that is necessary is to use the \fIaepatch\fP(1) command,
 something like this:
 .E(
-$ \f[CB]aepatch -receive -file \fP\fIproject-x.y\fP\f[CB].diff\fP
+$ \f[CB]aepatch \-receive \-file \fP\fIproject\-x.y\fP\f[CB].diff\fP
 $
 .E)
-which will create a change set, check-out only those file the patch alters,
+which will create a change set, check\[hy]out only those file the patch alters,
 and copes with creates and removes automagically.
 .LP
 There are two problems with this method.
@@ -305,4 +305,5 @@ files.
 The second problem is much simpler: if a patch only contains new files,
 Aegis can't work out how much of the leading path it should ignore
 on the filenames in the patch.  You will need to use the \fIaepatch
-\-remove-prefix\fP option in this case.
+\-remove\[hy]prefix\fP option in this case.
+.\" vim: set ts=8 sw=4 et :

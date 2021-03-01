@@ -1,25 +1,24 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1997, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1995, 1997, 2006-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .br
 .ne 2i
 .SH COPYRIGHT
-.so version.so
+.so etc/version.so
 \*(n) version \*(V)
 .br
 .if t .ds C) \(co
@@ -27,16 +26,17 @@
 Copyright \*(C) \*(Y) Peter Miller
 .PP
 The \*(n) program comes with ABSOLUTELY NO WARRANTY;
-for details use the '\fI\*(n) -VERSion License\fP' command.
+for details use the '\fI\*(n) \-VERSion License\fP' command.
 This is free software
 and you are welcome to redistribute it under certain conditions;
-for details use the '\fI\*(n) -VERSion License\fP' command.
+for details use the '\fI\*(n) \-VERSion License\fP' command.
 .br
 .ne 1i
 .SH AUTHOR
 .TS
 tab(;);
 l r l.
-Peter Miller;E-Mail:;millerp@canb.auug.org.au
-\f(CW/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
+Peter Miller;E\[hy]Mail:;pmiller@opensource.org.au
+\f(CW/\e/\e*\fR;WWW:;http://miller.emu.id.au/pmiller/
 .TE
+.\" vim: set ts=8 sw=4 et :

@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006-2008 Peter Miller
-//	Copyright (C) 2005 Walter Franzini;
+//      aegis - project change supervisor
+//      Copyright (C) 2006-2009, 2011, 2012 Peter Miller
+//      Copyright (C) 2005, 2008 Walter Franzini;
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/column_width.h>
@@ -40,9 +40,9 @@ change_functor_pending_printer::~change_functor_pending_printer()
 
 
 change_functor_pending_printer::change_functor_pending_printer(bool arg1,
-	project_ty *arg2, const nstring &arg3, symtab<nstring> *arg4,
-	nstring_list *arg5, nstring_list *arg6, nstring_list *arg7,
-	nstring_list *arg8) :
+        project *arg2, const nstring &arg3, symtab<nstring> *arg4,
+        nstring_list *arg5, nstring_list *arg6, nstring_list *arg7,
+        nstring_list *arg8) :
     change_functor(arg1),
     pp(arg2),
     remote_inventory(arg4),
@@ -57,7 +57,7 @@ change_functor_pending_printer::change_functor_pending_printer(bool arg1,
         nstring::format
         (
             "Project \"%s\", Pending Change Set Inventory",
-            project_name_get(pp)->str_text
+            project_name_get(pp).c_str()
         );
     colp->title(line1.c_str(), arg3.c_str());
 
@@ -83,7 +83,7 @@ change_functor_pending_printer::operator()(change::pointer cp)
     {
         if (!remote_inventory->query(cstate_data->uuid))
         {
-            nstring version(change_version_get(cp));
+            nstring version = cp->version_get();
             nstring uuid(cstate_data->uuid);
 
             if (ex_uuid_list->member(uuid))
@@ -114,3 +114,6 @@ change_functor_pending_printer::operator()(change::pointer cp)
         }
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

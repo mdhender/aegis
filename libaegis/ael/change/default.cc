@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1999, 2003-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -39,7 +38,7 @@ list_default_change(change_identifier &cid, string_list_ty *args)
         // we don't want them specifying it on the command line.  We
         // want to obtain the results of the *defaulting* mechanism.
         //
-	list_change_inappropriate();
+        list_change_inappropriate();
     }
 
     if (args && args->nstrings)
@@ -51,6 +50,9 @@ list_default_change(change_identifier &cid, string_list_ty *args)
     //
     // print it out
     //
-    printf("%ld\n", magic_zero_decode(cid.get_cp()->number));
+    printf("%ld\n", cid.get_change_number());
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

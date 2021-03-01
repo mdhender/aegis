@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2001-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1998, 1999, 2001-2006, 2008, 2010, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // This file is included by the generated "common/config.h" file.
 // These actions are performed ehre, to insulate them from the attentions
@@ -51,7 +51,7 @@
 // Make sure Solaris includes POSIX extensions.
 //
 #if (defined(__sun) || defined(__sun__) || defined(sun)) && \
-	(defined(__svr4__) || defined(svr4))
+        (defined(__svr4__) || defined(svr4))
 
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 1
@@ -108,7 +108,7 @@
 // as the security there is stuffed.
 //
 #if defined(SOURCE_FORGE_HACK) ||  defined(__CYGWIN__) || \
-	defined(__CYGWIN32__) || defined(__NUTC__)
+        defined(__CYGWIN32__) || defined(__NUTC__)
 #define SINGLE_USER
 #endif
 
@@ -127,8 +127,6 @@
 #  undef HAVE_MAGIC_FILE
 # endif
 #endif
-
-#define NDEBUG 1
 
 //
 // The configure script will set UUID_OK to zero if it can't find a
@@ -152,4 +150,16 @@
 #undef HAVE_UUID_UUID_H
 #endif
 
+//
+// The OFF_T_FMT is used to print value of the off_t type.  We use the
+// standard %lld format for long long value.
+//
+#if _FILE_OFFSET_BITS == 64 && LONG_BIT < 64
+#define OFF_T_FMT   "%lld"
+#else
+#define OFF_T_FMT   "%ld"
+#endif
+
+
 #endif // COMMON_CONFIG_MESSY_H
+// vim: set ts=8 sw=4 et :

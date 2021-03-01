@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -32,16 +32,17 @@ enterprises who do not wish to compromise their intellectual property.
 The core of the distribution method is the \fIaedist\fP(1) command.
 In its simplest form, the command
 .E(
-aedist -send | aedist -receive
+aedist \-send | aedist \-receive
 .E)
 will clone a change set locally.
 This may appear less than useful (after all, the \fIaeclone\fP(1)
 command already exists) until you consider situations such as
 .E(
-aedist -send | \fIe-mail\fP | aedist -receive
+aedist \-send | \fIe\-mail\fP | aedist \-receive
 .E)
-where \fIe-mail\fP represents the sending, transport and receiving of e-mail.
-In this example, the change set would be reproduced on the e-mail
+where \fIe\[hy]mail\fP represents the sending, transport and receiving
+of e\[hy]mail.
+In this example, the change set would be reproduced on the e\[hy]mail
 recipient's system, rather than locally.
 Similar mechanisms are also possible for web distribution.
 .nh 3 "Risk Reduction"
@@ -87,10 +88,10 @@ While there are many risks involved in receiving change sets,
 there also problems in figuring out what to send.
 .LP
 At the core of Aegis' design is a transaction.  Think of the source files
-as rows in a database table, and each change-set as a transaction against
+as rows in a database table, and each change\[hy]set as a transaction against
 that table.  The build step represents maintaining referential integrity
 of the database, but also represents an input validation step, as does
-the review.  And like databases, the transactions are all-or-nothing
+the review.  And like databases, the transactions are all\[hy]or\[hy]nothing
 affairs, it is not possible to commit \[lq]half\[rq] a transaction.
 .LP
 As you can see, Aegis changes are already elegantly validated, recorded
@@ -102,7 +103,7 @@ In distributed systems such as described in this chapter,
 there are two clear methods of distribution:
 .IP \(bu 2n
 The \[lq]push\[rq] method has the change set producer automatically send the
-change-set to a registered list of interested consumers.
+change\[hy]set to a registered list of interested consumers.
 This is supported by Aegis and \fIaedist\fP.
 .IP \(bu 2n
 The \[lq]pull\[rq] method has the change set producer make the change sets
@@ -110,7 +111,7 @@ available for interested consumers to come and collect.
 This is supported by Aegis and \fIaedist\fP.
 .LP
 These are two ends of a continuum, and it is possible and common for a
-mix-and-match approach to be taken.
+mix\[hy]and\[hy]match approach to be taken.
 .LP
 There are also many ways of arranging how distribution is accomplished,
 and many of the distribution arrangements (commonly called topologies,
@@ -129,8 +130,8 @@ master repository is almost always \[lq]push\[rq] model, and away from the
 master is almost always \[lq]pull\[rq] model.
 .IP \(bu 2n
 The network topology is your basic anarchic autonomous collective,
-with change sets flying about peer-to-peer with no particular structure.
-Often done as a \[lq]push\[rq] model through an e-mail mailing list.
+with change sets flying about peer\[hy]to\[hy]peer with no particular structure.
+Often done as a \[lq]push\[rq] model through an e\[hy]mail mailing list.
 .LP
 All of these topologies, and any mixture you can dream up, are supported
 by Aegis and \fIaedist\fP.  The choice of the right topology depends on
@@ -147,16 +148,17 @@ describe how to perform these actions manually, both send and receive,
 as this demonstrates the method efficiently, and represents a majority
 of the use made of the mechanism.
 .IP \(sq 3n
-The third section will show how to automate e-mail distribution and receipt.
-Automated e-mail distribution is probably the next most common use.
+The third section will show how to automate e\[hy]mail distribution and receipt.
+Automated e\[hy]mail distribution is probably the next most common use.
 .IP \(sq 3n
 The fourth section will show how to configure distribution and receipt
 using World Wide Web servers and browsers.
 .IP \(sq 3n
 The fifth section deals with security issues, such as validating messages
 and coping with duplicate storms.
-.so c10.1.so
-.so c10.2.so
-.so c10.3.so
-.so c10.4.so
-.so c10.5.so
+.so lib/en/user-guide/c10.1.so
+.so lib/en/user-guide/c10.2.so
+.so lib/en/user-guide/c10.3.so
+.so lib/en/user-guide/c10.4.so
+.so lib/en/user-guide/c10.5.so
+.\" vim: set ts=8 sw=4 et :

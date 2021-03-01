@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see
-//	<http://www.gnu.org/licenses/>,
+//      You should have received a copy of the GNU General Public License
+//      along with this program.  If not, see
+//      <http://www.gnu.org/licenses/>,
 //
 
 #include <common/ac/string.h>
@@ -42,7 +42,7 @@ static const char *const month_name[] =
 
 
 void
-get_project_integration_histogram(project_ty *pp, string_ty *,
+get_project_integration_histogram(project *pp, string_ty *,
     string_list_ty *modifier_p)
 {
     string_list_ty &modifier = *modifier_p;
@@ -54,67 +54,67 @@ get_project_integration_histogram(project_ty *pp, string_ty *,
     int month = 0;
     for (size_t j = 0; j < modifier.size(); ++j)
     {
-	string_ty *s = modifier[j];
-	if (s->str_length > 5 && 0 == strncasecmp(s->str_text, "year=", 5))
-	{
-	    year = atoi(s->str_text + 5);
-	    if (year < 1970 || year >= 2100)
-		year = 0;
-	}
-	if (s->str_length > 6 && 0 == strncasecmp(s->str_text, "month=", 6))
-	{
-	    month = atoi(s->str_text + 6);
-	    if (month < 1 || month > 12)
-		month = 0;
-	}
+        string_ty *s = modifier[j];
+        if (s->str_length > 5 && 0 == strncasecmp(s->str_text, "year=", 5))
+        {
+            year = atoi(s->str_text + 5);
+            if (year < 1970 || year >= 2100)
+                year = 0;
+        }
+        if (s->str_length > 6 && 0 == strncasecmp(s->str_text, "month=", 6))
+        {
+            month = atoi(s->str_text + 6);
+            if (month < 1 || month > 12)
+                month = 0;
+        }
     }
     if (!year)
-	month = 0;
+        month = 0;
     bool recursive = modifier_test_and_clear(modifier_p, "recursive");
     const char *plus_recursive = "";
     if (recursive)
-	plus_recursive = "+recursive";
+        plus_recursive = "+recursive";
 
     const char *format = "%Y";
     time_t earliest = 0;
     time_t latest = now();
     if (year)
     {
-	if (month)
-	{
-	    nstring when =
-		nstring::format
-		(
-		    "1-%3.3s-%04d 00:00:00",
-		    month_name[month - 1],
-		    year
-		);
-	    earliest = date_scan(when.c_str());
-	    int y2 = year;
-	    int m2 = month + 1;
-	    if (m2 > 12)
-	    {
-		y2++;
-		m2 = 1;
-	    }
-	    when =
-		nstring::format
-		(
-		    "1-%3.3s-%04d 00:00:00",
-		    month_name[m2 - 1],
-		    y2
-		);
-	    latest = date_scan(when.c_str()) - 1;
-	    format = "%d";
-	}
-	else
-	{
-	    nstring when = nstring::format("1-Jan-%04d 00:00:00", year);
-	    earliest = date_scan(when.c_str());
-	    when = nstring::format("1-Jan-%04d 00:00:00", year + 1);
-	    latest = date_scan(when.c_str()) - 1;
-	    format = "%m";
-	}
+        if (month)
+        {
+            nstring when =
+                nstring::format
+                (
+                    "1-%3.3s-%04d 00:00:00",
+                    month_name[month - 1],
+                    year
+                );
+            earliest = date_scan(when.c_str());
+            int y2 = year;
+            int m2 = month + 1;
+            if (m2 > 12)
+            {
+                y2++;
+                m2 = 1;
+            }
+            when =
+                nstring::format
+                (
+                    "1-%3.3s-%04d 00:00:00",
+                    month_name[m2 - 1],
+                    y2
+                );
+            latest = date_scan(when.c_str()) - 1;
+            format = "%d";
+        }
+        else
+        {
+            nstring when = nstring::format("1-Jan-%04d 00:00:00", year);
+            earliest = date_scan(when.c_str());
+            when = nstring::format("1-Jan-%04d 00:00:00", year + 1);
+            latest = date_scan(when.c_str()) - 1;
+            format = "%m";
+        }
     }
 
     //
@@ -126,12 +126,12 @@ get_project_integration_histogram(project_ty *pp, string_ty *,
     printf(" Integration Histogram");
     if (year)
     {
-	printf(", ");
-	if (month)
-	{
-	    printf("%s ", month_name[month - 1]);
-	}
-	printf("%d", year);
+        printf(", ");
+        if (month)
+        {
+            printf("%s ", month_name[month - 1]);
+        }
+        printf("%d", year);
     }
     printf("</title></head><body>\n");
     html_header_ps(pp, 0);
@@ -144,37 +144,37 @@ get_project_integration_histogram(project_ty *pp, string_ty *,
     printf(",<br>\n");
     if (year)
     {
-	emit_project_href
-       	(
-	    pp,
-	    "project+integration-histogram%s",
-	    plus_recursive
-	);
+        emit_project_href
+        (
+            pp,
+            "project+integration-histogram%s",
+            plus_recursive
+        );
     }
     printf("Integration Histogram");
     if (year)
     {
-	printf("</a>,<br>\n");
-	if (month)
-	{
-	    printf("%s ", month_name[month - 1]);
-	    emit_project_href
-	    (
-		pp,
-		"project+integration-histogram+year=%d%s",
-		year,
-		plus_recursive
-	    );
-	}
-	printf("%d", year);
-	if (month)
-	    printf("</a>");
+        printf("</a>,<br>\n");
+        if (month)
+        {
+            printf("%s ", month_name[month - 1]);
+            emit_project_href
+            (
+                pp,
+                "project+integration-histogram+year=%d%s",
+                year,
+                plus_recursive
+            );
+        }
+        printf("%d", year);
+        if (month)
+            printf("</a>");
     }
     printf("</h1>\n");
     printf("<div class=\"information\">\n");
 
     change_functor_integration_histogram
-	cfih(pp, earliest, latest, recursive, format);
+        cfih(pp, earliest, latest, recursive, format);
     project_change_walk(pp, cfih);
     cfih.print();
 
@@ -182,21 +182,21 @@ get_project_integration_histogram(project_ty *pp, string_ty *,
     nstring ref = "project+integration-histogram";
     if (year)
     {
-	ref += nstring::format("+year=%d", year);
-	if (month)
-	    ref += nstring::format("+month=%d", month);
+        ref += nstring::format("+year=%d", year);
+        if (month)
+            ref += nstring::format("+month=%d", month);
     }
     if (recursive)
     {
-	printf("faster ");
-	emit_project_href(pp, ref.c_str());
-	printf("non-");
+        printf("faster ");
+        emit_project_href(pp, "%s", ref.c_str());
+        printf("non-");
     }
     else
     {
-	printf("slower ");
-	ref += "+recursive";
-	emit_project_href(pp, ref.c_str());
+        printf("slower ");
+        ref += "+recursive";
+        emit_project_href(pp, "%s", ref.c_str());
     }
     printf("recursive</a> listing available.</p>\n");
 
@@ -212,22 +212,25 @@ get_project_integration_histogram(project_ty *pp, string_ty *,
     printf("Project Menu</a>");
     if (year)
     {
-	printf(" |\n");
-	emit_project_href(pp, "project+integration-histogram");
-	printf("Integration Histogram</a>");
-	if (month)
-	{
-	    printf(",\n");
-	    emit_project_href
-	    (
-		pp,
-		"project+integration-histogram+year=%d",
-		year
-	    );
-	    printf("%d</a>", year);
-	}
+        printf(" |\n");
+        emit_project_href(pp, "project+integration-histogram");
+        printf("Integration Histogram</a>");
+        if (month)
+        {
+            printf(",\n");
+            emit_project_href
+            (
+                pp,
+                "project+integration-histogram+year=%d",
+                year
+            );
+            printf("%d</a>", year);
+        }
     }
     printf("\n]</p>\n");
 
     html_footer(pp, 0);
 }
+
+
+// vim: set ts=8 sw=4 et :

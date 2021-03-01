@@ -1,75 +1,74 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1997-1999, 2001, 2002, 2004-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Develop_End" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Develop_End" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis develop end \- complete development of a change
 .XX "aede(1)" "complete development of a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -Develop_End
+.B \-Develop_End
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_End
-.B -List
+.B \-Develop_End
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_End
-.B -Help
+.B \-Develop_End
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Develop_End
+.I \-Develop_End
 command is used to
 notify \*(n) of the completion of the development of a change.
 .PP
 This command checks that you have successfully completed
-an '\*(n) -Build' command since any change source file was edited.
+an '\*(n) \-Build' command since any change source file was edited.
 See
 .IR aeb (1)
 for more information.
 .PP
 This command checks that you have successfully completed
-an '\*(n) -DIFFerence' command since any change source file was edited.
+an '\*(n) \-DIFFerence' command since any change source file was edited.
 See
 .IR aed (1)
 for more information.
 .PP
 This command checks that you have successfully completed
-an '\*(n) -Test' command
+an '\*(n) \-Test' command
 since the last successful build,
 unless the change has a
 .I test_exempt
 attribute, or the build command is \f[CW]"exit 0"\fP.
 This command checks that you have successfully completed
-an '\*(n) -Test -BaseLine' command,
+an '\*(n) \-Test \-BaseLine' command,
 unless the change has a
 .I test_baseline_exempt
 attribute.
 This command checks that you have successfully completed
-an '\*(n) -Test -REGression' command,
+an '\*(n) \-Test \-REGression' command,
 unless the change has a
 .I test_regression_exempt
 attribute.
@@ -114,7 +113,7 @@ arrow " review" ljust " pass" ljust
 S34: box "awaiting" "integration"
 
 S20: box invis "\fIdevelop_end_action:\fP" "\fIgoto_being_reviewed\fP" \
-	with .w at S30.e+(0.5,0)
+    with .w at S30.e+(0.5,0)
 S21: box "being" "developed"
 arrow " develop" ljust " end" ljust down 1.5
 S22: box "being" "reviewed"
@@ -123,7 +122,7 @@ S23: box "awaiting" "integration"
 box invis "\fI(This is the default.)\fP"
 
 S10: box invis "\fIdevelop_end_action:\fP" "\fIgoto_awaiting_integration\fP" \
-	with .w at S20.e+(0.5,0)
+    with .w at S20.e+(0.5,0)
 S11: box "being" "developed"
 arrow " develop" ljust " end" ljust down 2.5
 S12: box "awaiting" "integration"
@@ -131,7 +130,7 @@ S12: box "awaiting" "integration"
 .\" ------------------------------------------------------------------------
 \fBPlease Note:\fP the third alternative, skipping reviews altogether,
 should only be used for single person projects.
-All self-respecting commercial enterprise will avoid this alternative.
+All self\[hy]respecting commercial enterprise will avoid this alternative.
 .PP
 Because branches may extend for many months or even years, it is common
 for the user who initiated the branch to be no longer with the project,
@@ -141,7 +140,7 @@ development of branches.  For normal changes in this situation, use the
 command.
 .PP
 If the project configuration file has specified the presence of
-\f[CW]Signed-off-by:\fP lines, a suitable line containing the current
+\f[CW]Signed\[hy]off\[hy]by:\fP lines, a suitable line containing the current
 user's email address will be appended to the change description.
 .PP
 The change is no longer considered assigned to the developer.
@@ -153,7 +152,7 @@ Aegis User Guide for more information.
 While changes and branches are almost identical in the ways you manipulate
 them within Aegis, actual file changes must always be done in a change.
 Thus, it is necessary to create a new change on the branch and do a
-cross-branch grandparent merge before you will be able to develop-end
+cross\[hy]branch grandparent merge before you will be able to develop\[hy]end
 a branch which is giving you this error.
 .SS Notification
 On successful completion of the command, the
@@ -167,22 +166,22 @@ the \fIreview_\%pass_\%notify_\%command\fP in the project attributes
 file is run instead, if set.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_sob.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_sob.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aede '\*(n) -de \e!* -v'
-sh$	aede(){\*(n) -de "$@" -v}
+csh%    alias aede '\*(n) \-de \e!* \-v'
+sh$     aede(){\*(n) \-de "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -195,30 +194,30 @@ state.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -Build'"
+.I "'\*(n) \-Build'"
 command since a change file was last edited.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -DIFFerence'"
+.I "'\*(n) \-DIFFerence'"
 command since a change file was last edited.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -Test'"
+.I "'\*(n) \-Test'"
 command since a change file was last edited.
 .br
 It is an error if
 there has been no successful
-.I "'\*(n) -Test -BaseLine'"
+.I "'\*(n) \-Test \-BaseLine'"
 command since a change file was last edited.
 .PP
 It is an error if
-an read-only file is still copied into the change.
-Read-only files are to insulate
+an read\[hy]only file is still copied into the change.
+Read\[hy]only files are to insulate
 a change from the baseline during development;
 they must be removed before development may end.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -235,7 +234,7 @@ difference a change
 .IR aedb (1)
 begin development of a change
 .TP 8n
-.IR aede-policy (1)
+.IR aede\[hy]policy (1)
 validate change set is ready to end
 .TP 8n
 .IR aedeu (1)
@@ -255,4 +254,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

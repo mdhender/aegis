@@ -1,81 +1,82 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1997, 1998, 2001-2004, 2006, 2008 Peter Miller
+ * aegis - project change supervisor
+ * Copyright (C) 1991-1993, 1997, 1998, 2001-2004, 2006, 2008, 2012 Peter Miller
+ * Copyright (C) 2008 Walter Franzini
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 3 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see
- *	<http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  *
  * If you change this file, don't forget to change
- *	man5/aecattr.so
- *	man5/aepstate.5
+ *      man5/aecattr.so
+ *      man5/aepstate.5
  */
 
 type change_cause =
 (
-	/*
-	 * The change was created in response to
-         * a bug report
-	 * from outside the development team.
-	 * This repairs existing functionality.
-	 */
-	external_bug,
+    /*
+     * The change was created in response to
+     * a bug report
+     * from outside the development team.
+     * This repairs existing functionality.
+     */
+    external_bug,
 
-	/*
-	 * The change was created in response to
-	 * an enhancement request
-	 * from outside the development team.
-	 * This adds new functionality.
-	 */
-	external_enhancement,
+    /*
+     * The change was created in response to
+     * an enhancement request
+     * from outside the development team.
+     * This adds new functionality.
+     */
+    external_enhancement,
 
-	/*
-	 * The change was created in response to
-	 * an improvement request
-	 * from outside the development team.
-	 * This improves existing functionality.
-	 */
-	external_improvement,
+    /*
+     * The change was created in response to
+     * an improvement request
+     * from outside the development team.
+     * This improves existing functionality.
+     */
+    external_improvement,
 
-	/*
-	 * The change was created in response to
-	 * a bug report
-	 * from inside the development team.
-	 * This repairs existing functionality.
-	 */
-	internal_bug,
+    /*
+     * The change was created in response to
+     * a bug report
+     * from inside the development team.
+     * This repairs existing functionality.
+     */
+    internal_bug,
 
-	/*
-	 * The change was created in response to
-	 * an enhancement request
-	 * from inside the development team.
-	 * This adds new functionality.
-	 */
-	internal_enhancement,
+    /*
+     * The change was created in response to
+     * an enhancement request
+     * from inside the development team.
+     * This adds new functionality.
+     */
+    internal_enhancement,
 
-	/*
-	 * The change was created in response to
-	 * an improvement request
-	 * from inside the development team.
-	 * This improves existing functionality.
-	 */
-	internal_improvement,
+    /*
+     * The change was created in response to
+     * an improvement request
+     * from inside the development team.
+     * This improves existing functionality.
+     */
+    internal_improvement,
 
-	/*
-	 * This cause is where you have a fix to fix a fix;
-	 * tracking these is an interesting quality metric.
-	 */
-	chain
+    /*
+     * This cause is where you have a fix to fix a fix;
+     * tracking these is an interesting quality metric.
+     */
+    chain
 );
 type file_action = (create, modify, remove, insulate, transparent);
 
@@ -88,84 +89,91 @@ type file_action = (create, modify, remove, insulate, transparent);
  */
 type file_usage =
 (
-	/*
-         * Source files are a primary source, the preferred form of
-         * editing and storage of a fundamental project building block.
-	 */
-	source,
+    /*
+     * Source files are a primary source, the preferred form of
+     * editing and storage of a fundamental project building block.
+     */
+    source,
 
-	/*
-	 * Configuration files are in aepconf(5) format, but are in all
-	 * other respects primary source files.
-	 */
-	config,
+    /*
+     * Configuration files are in aepconf(5) format, but are in all
+     * other respects primary source files.
+     */
+    config,
 
-	/*
-	 * Build files are secondary source files, generated during the
-	 * build process (see aeb(1) for example) and tracked by Aegis.
-	 */
-	build,
+    /*
+     * Build files are secondary source files, generated during the
+     * build process (see aeb(1) for example) and tracked by Aegis.
+     */
+    build,
 
-	/*
-         * Authomatic test files are by default shell scripts, but may
-         * in fact be any format desired (see aet(1) and aepconf(5) for
-         * more information).  They are in all other respects primary
-         * source files.
-	 */
-	test,
+    /*
+     * Authomatic test files are by default shell scripts, but may
+     * in fact be any format desired (see aet(1) and aepconf(5) for
+     * more information).  They are in all other respects primary
+     * source files.
+     */
+    test,
 
-	/*
-	 * Manual test files are by default shell scripts, but may in
-	 * fact be any format desired.  They are in all other respects
-	 * primary source files.
-	 */
-	manual_test
+    /*
+     * Manual test files are by default shell scripts, but may in
+     * fact be any format desired.  They are in all other respects
+     * primary source files.
+     */
+    manual_test
 );
 
 type metric =
 [
-	{
-		/*
-		 * The name of the metric.
-		 */
-		name = string;
+    {
+        /*
+         * The name of the metric.
+         */
+        name = string;
 
-		/*
-		 * The value of the metric.
-		 */
-		value = real;
-	}
+        /*
+         * The value of the metric.
+         */
+        value = real;
+    }
 ];
 
 /*
  * The history_version structure is used to remember sufficient
  * information about a file version checked into history that it can
  * be re-created.  The edit number alone is not sufficient, because you
- * need to know how to decode it, as well.
+ * need to know how to decode it, as well.  The uuid field points to
+ * the change the file'sedit belongs to.
  */
 type history_version =
 {
-	/*
-	 * The revision identifier as reported by the history_get_command.
-	 */
-	revision = string;
+    /*
+     * The revision identifier as reported by the history_get_command.
+     */
+    revision = string;
 
-	/*
-	 * The encoding employed by the history_{put,create}_command
-	 *
-	 * none
-	 *	No encoding was employed at all.  The file conforms to
-	 *	history_content_limitation.
-	 *
-	 * quoted_printable
-	 *	The MIME Quoted Printable encoding was used when the
-	 *	file was committed to history.
-	 *
-	 * quoted_printable
-	 *	The MIME base 64 encoding was used when the file was
-	 *	committed to history.
-	 */
-	encoding = (none, quoted_printable, base64);
+    /*
+     * The encoding employed by the history_{put,create}_command
+     *
+     * none
+     *      No encoding was employed at all.  The file conforms to
+     *      history_content_limitation.
+     *
+     * quoted_printable
+     *      The MIME Quoted Printable encoding was used when the
+     *      file was committed to history.
+     *
+     * quoted_printable
+     *      The MIME base 64 encoding was used when the file was
+     *      committed to history.
+     */
+    encoding = (none, quoted_printable, base64);
+
+    /*
+     *  The UUID of the change this revision belongs to.
+     *
+     */
+    uuid = string;
 };
 
 /*
@@ -176,7 +184,10 @@ type history_version =
 type attributes =
 [
     {
-	name = string;
-	value = string;
+        name = string;
+        value = string;
     }
 ];
+
+
+/* vim: set ts=8 sw=4 et : */

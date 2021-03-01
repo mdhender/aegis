@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2001-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -46,9 +46,9 @@ list_projects(change_identifier &cid, string_list_ty *)
 
     trace(("list_projects()\n{\n"));
     if (cid.project_set())
-	list_project_inappropriate();
+        list_project_inappropriate();
     if (cid.set())
-	list_change_inappropriate();
+        list_change_inappropriate();
 
     //
     // list the projects
@@ -69,16 +69,16 @@ list_projects(change_identifier &cid, string_list_ty *)
 
     if (!option_terse_get())
     {
-	dir_col =
-	    colp->create
-	    (
-	       	left,
-	       	left + DIRECTORY_WIDTH,
-	       	"Directory\n-----------"
-	    );
-	left += DIRECTORY_WIDTH + 1;
+        dir_col =
+            colp->create
+            (
+                left,
+                left + DIRECTORY_WIDTH,
+                "Directory\n-----------"
+            );
+        left += DIRECTORY_WIDTH + 1;
 
-	desc_col = colp->create(left, 0, "Description\n-------------");
+        desc_col = colp->create(left, 0, "Description\n-------------");
     }
 
     //
@@ -88,35 +88,38 @@ list_projects(change_identifier &cid, string_list_ty *)
     for (j = 0; j < name.nstrings; ++j)
     {
         trace(("j = %d/%d\n", (int)j, (int)name.nstrings));
-	project_ty *pp = project_alloc(name.string[j]);
-	pp->bind_existing();
+        project *pp = project_alloc(name.string[j]);
+        pp->bind_existing();
 
         trace(("mark\n"));
-	int err = project_is_readable(pp);
+        int err = project_is_readable(pp);
 
-	name_col->fputs(project_name_get(pp));
-	if (desc_col)
-	{
-	    if (err != 0)
-		desc_col->fputs(strerror(err));
-	    else
-	    {
-		//
-		// The development directory of the
-		// project change is the one which
-		// contains the trunk or branch
-		// baseline.
-		//
-		string_ty *top = project_top_path_get(pp, 0);
-		dir_col->fputs(top);
+        name_col->fputs(project_name_get(pp));
+        if (desc_col)
+        {
+            if (err != 0)
+                desc_col->fputs(strerror(err));
+            else
+            {
+                //
+                // The development directory of the
+                // project change is the one which
+                // contains the trunk or branch
+                // baseline.
+                //
+                string_ty *top = project_top_path_get(pp, 0);
+                dir_col->fputs(top);
 
-		desc_col->fputs(project_description_get(pp));
-	    }
-	}
+                desc_col->fputs(project_description_get(pp));
+            }
+        }
     trace(("mark\n"));
-	project_free(pp);
+        project_free(pp);
     trace(("mark\n"));
-	colp->eoln();
+        colp->eoln();
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

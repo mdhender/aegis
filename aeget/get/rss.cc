@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
-//      Copyright (C) 2006-2008 Peter Miller
+//      Copyright (C) 2006-2009, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <common/libdir.h>
 #include <common/nstring.h>
 #include <common/str_list.h>
@@ -48,38 +48,38 @@ postprocess(input &ip)
     nstring line;
     while (ip->one_line(line))
     {
-	//
+        //
         // This line may contain the placeholder.  Replace it with the
         // real script name.  There may be more than one.
-	//
-	const char *pos = line.c_str();
-	for (;;)
-	{
-	    const char *location =
-		strstr(pos, rss_script_name_placeholder.c_str());
-	    if (0 == location)
-	    {
+        //
+        const char *pos = line.c_str();
+        for (;;)
+        {
+            const char *location =
+                strstr(pos, rss_script_name_placeholder.c_str());
+            if (0 == location)
+            {
                 //
                 // The rest of the line does not contain the
                 // placeholder.  Just dump it as-is.
-		//
-		printf("%s\n", pos);
-		break;
-	    }
-	    printf("%.*s", (int)(location - pos), pos);
+                //
+                printf("%s\n", pos);
+                break;
+            }
+            printf("%.*s", (int)(location - pos), pos);
 
-	    // Swap the placeholder for the host/scriptname
-	    printf("%s", http_script_name());
+            // Swap the placeholder for the host/scriptname
+            printf("%s", http_script_name());
 
-	    // Move past the placeholder
-	    pos = location + rss_script_name_placeholder.size();
-	}
+            // Move past the placeholder
+            pos = location + rss_script_name_placeholder.size();
+        }
     }
 }
 
 
 void
-get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
+get_rss(project *pp, string_ty *, string_list_ty *modifier)
 {
     //
     // "Get RSS" requests should have the following modifiers:
@@ -90,7 +90,7 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
     // placeholders with real script names and dumped to stdout.
     //
     change::pointer pcp = pp->change_get();
-    if (change_is_a_branch(pcp) && modifier->nstrings >= 1)
+    if (pcp->is_a_branch() && modifier->nstrings >= 1)
     {
         // Read the filename from the second modifier.
         nstring rss_filename(modifier->string[0]->str_text);
@@ -101,17 +101,17 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
         path += rss_filename;
         user_ty::become scoped(pp->get_user());
         bool file_exists = os_exists(path);
-	if (file_exists)
+        if (file_exists)
         {
             // Read in the file.  Replace the script name placeholders with
             // real script names and write to stdout.
             input ip = input_file_open(path.get_ref());
-	    assert(ip.is_open());
+            assert(ip.is_open());
             if (ip.is_open())
             {
-		postprocess(ip);
-		ip.close();
-		return;
+                postprocess(ip);
+                ip.close();
+                return;
             }
         }
     }
@@ -127,17 +127,20 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
     fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
     fake.channel_elements_from_project();
     if (modifier->nstrings >= 1)
-	fake.title_set(nstring(modifier->string[0]));
+        fake.title_set(nstring(modifier->string[0]));
     else
-	fake.title_set("No Feed Name");
-    if (!change_is_a_branch(pcp))
-	fake.description_set("Not an active branch.");
+        fake.title_set("No Feed Name");
+    if (!pcp->is_a_branch())
+        fake.description_set("Not an active branch.");
     else if (modifier->nstrings >= 1)
-	fake.description_set("No feed of this name.");
+        fake.description_set("No feed of this name.");
     else
-	fake.description_set("No feed name specified.");
+        fake.description_set("No feed name specified.");
     output_memory::mpointer op = output_memory::create();
     fake.print(op);
     input ip = new input_string(op->mkstr());
     postprocess(ip);
 }
+
+
+// vim: set ts=8 sw=4 et :

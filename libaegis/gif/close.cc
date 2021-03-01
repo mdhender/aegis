@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1998, 1999, 2002-2006, 2008 Peter Miller
+//      Copyright (C) 1998, 1999, 2002-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -80,8 +80,8 @@ oof(const output::pointer &fp, int c)
 static void
 code_write(const output::pointer &fp, int code, int code_size)
 {
-    trace(("code_write(fp = %08lX, code = 0x%.*X, code_size = %d)",
-        (long)fp.get(), (code_size + 3) / 4, code, code_size));
+    trace(("code_write(fp = %p, code = 0x%.*X, code_size = %d)",
+        fp.get(), (code_size + 3) / 4, code, code_size));
     pack_buffer |= code << pack_buffer_len;
     pack_buffer_len += code_size;
     trace(("pack_buffer = 0x%.*lX", (pack_buffer_len + 3) / 4, pack_buffer));
@@ -131,8 +131,8 @@ write_image(const output::pointer &fp, unsigned char *data, int width,
     int             y;
     int             new_chain;
 
-    trace(("write_image(fp = %08lX, data = %8.8lX, width = %d, height = %d, "
-        "init_bits = %d)", (long)fp.get(), (long)data, width, height,
+    trace(("write_image(fp = %p, data = %p, width = %d, height = %d, "
+        "init_bits = %d)", fp.get(), data, width, height,
         init_bits));
 
     //
@@ -371,7 +371,7 @@ flush(gif_ty *gp)
     //
     // initialize things
     //
-    trace(("gif_flush(gp = %8.8lX)", (long)gp));
+    trace(("gif_flush(gp = %p)", gp));
     output::pointer fp;
     if (gp->fn)
     {
@@ -456,3 +456,6 @@ gif_close(gif_ty *gp)
     mem_free(gp->image);
     mem_free(gp);
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2002, 2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 1999, 2002, 2003, 2005-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Analysis"
 Before it is possible to address these seemingly unrelated problems,
@@ -31,7 +30,8 @@ behaves.
 is an expert system.
 You give it a set of rules for how to construct things,
 and a target to be constructed.
-The rules can be decomposed into pair-wise ordered dependencies between files.
+The rules can be decomposed into pair\[hy]wise ordered dependencies
+between files.
 .I Make
 takes the rules and determines how to build the given target.
 Once it has determined how to construct the target, it proceeds to do so.
@@ -41,8 +41,8 @@ determines how to build the target by constructing a
 .I "directed acyclic graph,"
 the DAG familiar to many Computer Science students.
 The vertices of this graph are the files in the system,
-the edges of this graph are the inter-file dependencies.
-The edges of the graph are directed because the pair-wise dependencies
+the edges of this graph are the inter\[hy]file dependencies.
+The edges of the graph are directed because the pair\[hy]wise dependencies
 are ordered;
 resulting in an \fIacyclic\fP graph \-
 things which look like loops are resolved by the direction of the edges.
@@ -51,8 +51,8 @@ This paper will use a small example project for its analysis.
 While the number of files
 in this example is small, there is sufficient complexity to demonstrate
 all of the above recursive \fImake\fP problems.  First, however, the
-project is presented in a non-recursive form.
-.so 03.figure2.so
+project is presented in a non\[hy]recursive form.
+.so lib/en/auug97/03.figure2.so
 The \f(CWMakefile\fP in this small project looks like this:
 .TS
 box,center;
@@ -60,19 +60,19 @@ lw(2.5i)f(CW).
 OBJ = main.o parse.o
 .sp 0.2
 prog: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 main.o: main.c parse.h
-  $(CC) -c main.c
+  $(CC) \-c main.c
 .sp 0.2
 parse.o: parse.c parse.h
-  $(CC) -c parse.c
+  $(CC) \-c parse.c
 .TE
 Some of the implicit rules of \fImake\fP are presented here explicitly,
 to assist the reader in converting the \f(CWMakefile\fP into its equivalent DAG.
 .LP
 The above \f(CWMakefile\fP can be drawn as a DAG in the following form:
-.so 03.figure3.so
+.so lib/en/auug97/03.figure3.so
 .LP
 This is an
 .I acyclic
@@ -86,11 +86,11 @@ Note that the object files (\f(CW.o\fP)
 are dependent on the include files (\f(CW.h\fP)
 even though it is the source files (\f(CW.c\fP) which do the including.
 This is because if an include file changes,
-it is the object files which are out-of-date, not the source files.
+it is the object files which are out\[hy]of\[hy]date, not the source files.
 .LP
 The second part of what
 .I make
-does it to perform a
+does is to perform a
 .I "postorder"
 traversal of the DAG.
 That is, the dependencies are visited first.
@@ -99,9 +99,9 @@ The actual order of traversal is undefined, but most
 implementations work down the graph from left to right for
 edges below the same vertex,
 and most projects implicitly rely on this behavior.  The
-last-time-modified of each file is examined, and higher files are
-determined to be out-of-date if any of the lower files on which they
-depend are younger.  Where a file is determined to be out-of-date, the
+last\[hy]time\[hy]modified of each file is examined, and higher files are
+determined to be out\[hy]of\[hy]date if any of the lower files on which they
+depend are younger.  Where a file is determined to be out\[hy]of\[hy]date, the
 action associated with the relevant graph edge is performed (in the
 above example, a compile or a link).
 .LP
@@ -118,7 +118,7 @@ to traverse the DAG in an inappropriate order.
 .nh 2 "Recursive Make"
 To examine the effects of recursive \fImake\fPs, the above example
 will be artificially segmented into two modules, each with its own
-\f(CWMakefile\fP, and a top-level \f(CWMakefile\fP used to invoke each
+\f(CWMakefile\fP, and a top\[hy]level \f(CWMakefile\fP used to invoke each
 of the module \f(CWMakefile\fPs.
 .LP
 This example is intentionally artificial, and thoroughly so.
@@ -127,8 +127,8 @@ Consider: for many projects, the linker flattens it all out again,
 right at the end.
 .LP
 The directory structure is as follows:
-.so 03.figure4.so
-The top-level \f(CWMakefile\fP often looks a lot like a shell script:
+.so lib/en/auug97/03.figure4.so
+The top\[hy]level \f(CWMakefile\fP often looks a lot like a shell script:
 .TS
 box,center;
 lw(2.5i)f(CW).
@@ -146,10 +146,10 @@ lw(2.5i)f(CW).
 all: main.o
 .sp 0.2
 main.o: main.c ../bee/parse.h
-  $(CC) -I../bee -c main.c
+  $(CC) \-I../bee \-c main.c
 .TE
 and the equivalent DAG looks like this:
-.so 03.figure5.so
+.so lib/en/auug97/03.figure5.so
 The \f(CWbee/Makefile\fP looks like this:
 .TS
 box,center;
@@ -158,13 +158,13 @@ OBJ = ../ant/main.o parse.o
 all: prog
 .sp 0.2
 prog: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 parse.o: parse.c parse.h
-  $(CC) -c parse.c
+  $(CC) \-c parse.c
 .TE
 and the equivalent DAG looks like this:
-.so 03.figure6.so
+.so lib/en/auug97/03.figure6.so
 .LP
 Take a close look at the DAGs.
 Notice how neither is complete \- there are vertices and edges (files
@@ -181,12 +181,12 @@ This would add the following lines to the \f(CWbee/Makefile\fP:
 box,center;
 lw(2.5i)f(CW).
 parse.c parse.h: parse.y
-  $(YACC) -d parse.y
+  $(YACC) \-d parse.y
   mv y.tab.c parse.c
   mv y.tab.h parse.h
 .TE
 And the equivalent DAG changes to look like this:
-.so 03.figure7.so
+.so lib/en/auug97/03.figure7.so
 .LP
 This change has a simple effect: if \f(CWparse.y\fP is edited,
 \f(CWmain.o\fP will \fBnot\fP be constructed correctly.  This is because the
@@ -198,29 +198,30 @@ To understand why this happens, it is necessary to look at the actions
 .I make
 will take
 .I "from the top level."
-Assume that the project is in a self-consistent state.
+Assume that the project is in a self\[hy]consistent state.
 Now edit
 \f(CWparse.y\fP in such a way that the generated \f(CWparse.h\fP file
-will have non-trivial differences.  However, when the top-level
+will have non\[hy]trivial differences.  However, when the top\[hy]level
 .I make
 is invoked,
 first \f(CWant\fP and then \f(CWbee\fP is visited.
 But \f(CWant/main.o\fP is
 .I not
 recompiled, because \f(CWbee/parse.h\fP has not yet been regenerated and thus
-does not yet indicate that \f(CWmain.o\fP is out-of-date.  It is not until
+does not yet indicate that \f(CWmain.o\fP is out\[hy]of\[hy]date.
+It is not until
 \f(CWbee\fP is visited by the recursive
 .I make
 that \f(CWparse.c\fP and \f(CWparse.h\fP are reconstructed, followed
 by \f(CWparse.o\fP.
 When the program is linked \f(CWmain.o\fP and \f(CWparse.o\fP are
-non-trivially incompatible.  That is, the program is
+non\[hy]trivially incompatible.  That is, the program is
 .I wrong.
 .nh 2 "Traditional Solutions"
 There are three traditional fixes for the above \[lq]glitch.\[rq]
 .nh 3 "Reshuffle"
 The first is to manually tweak the order
-of the modules in the top-level \f(CWMakefile\fP.
+of the modules in the top\[hy]level \f(CWMakefile\fP.
 But why is this tweak required at all?
 Isn't
 .I make
@@ -245,19 +246,19 @@ to traverse the graph in the necessary order \- instead the project has
 dictated an order of traversal.
 An order which, when you consider the original graph, is plain
 .I wrong.
-Tweaking the top-level \f(CWMakefile\fP corrects the order to one similar to
+Tweaking the top\[hy]level \f(CWMakefile\fP corrects the order to one similar to
 that which
 .I make
 could have used.
 Until the next dependency is added...
 .LP
-Note that \[lq]\f[CW]make -j\fP\[rq] (parallel build) invalidates many of
+Note that \[lq]\f[CW]make \-j\fP\[rq] (parallel build) invalidates many of
 the ordering assumptions implicit in the reshuffle solution, making it
-useless.  And then there are all  of the sub-makes all doing their
+useless.  And then there are all  of the sub\[hy]makes all doing their
 builds in parallel, too.
 .nh 3 "Repetition"
 The second traditional solution is to make more than one pass in the
-top-level \f(CWMakefile\fP, something like this:
+top\[hy]level \f(CWMakefile\fP, something like this:
 .TS
 box,center;
 lw(2.5i)f(CW).
@@ -298,13 +299,14 @@ lw(2.5i)f(CW).
     make all
 .TE
 This means that whenever \f(CWmain.o\fP is made,
-\f(CWparse.h\fP will always be considered to be out-of-date.
+\f(CWparse.h\fP will always be considered to be out\[hy]of\[hy]date.
 All of \f(CWbee\fP will always be rebuilt including \f(CWparse.h\fP,
 and so \f(CWmain.o\fP will always be rebuilt,
 .I "even if everything was self consistent."
 .LP
-Note that \[lq]\f[CW]make -j\fP\[rq] (parallel build) invalidates many of
+Note that \[lq]\f[CW]make \-j\fP\[rq] (parallel build) invalidates many of
 the ordering assumptions implicit in the overkill solution, making
-it useless, because all of the sub-makes are all doing their builds
+it useless, because all of the sub\[hy]makes are all doing their builds
 ("clean" then "all") in parallel, constantly interfering with each other
-in non-deterministic ways.
+in non\[hy]deterministic ways.
+.\" vim: set ts=8 sw=4 et :

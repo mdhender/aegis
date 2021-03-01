@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Building Executable Scripts"
@@ -22,7 +22,7 @@
 Aegis treats source files as, well, source files.
 This means that it forgets any executable bits (and any other mode bits)
 you may set on the file.
-Usually, this isn't a problem - except for scripts.
+Usually, this isn't a problem \- except for scripts.
 .LP
 So, just how \fIdo\fP you get Aegis to give you an executable script?
 Well, you add a build rule.
@@ -37,10 +37,10 @@ bin/%: script/%.sh
     /* make it executable */
     chmod a+rx bin/%;
     /* syntax check */
-    bash -n bin/%;
+    bash \-n bin/%;
 }
 .E)
-There is a small amout of value-added here: we did a syntax check along
+There is a small amout of value\[hy]added here: we did a syntax check along
 the way, which catches all sorts of problems.
 .LP
 .\" Chuck Eaker <ceaker@nycap.rr.com>
@@ -50,7 +50,7 @@ bin/%: script/%.pl
 {
     cp script/%.pl bin/%;
     chmod a+rx bin/%;
-    perl -cw bin/%;
+    perl \-cw bin/%;
 }
 .E)
 .LP
@@ -61,7 +61,7 @@ bin/%: script/%.tcl
 {
     cp script/%.rcl bin/%;
     chmod a+rx bin/%;
-    procheck -nologo bin/%;
+    procheck \-nologo bin/%;
 }
 .E)
 The \fIprocheck\fP(1) command is part of the TclPro package.
@@ -70,3 +70,6 @@ Many tools have a similar options.
 .LP
 You can also combine this with GNU Autoconf to produce
 architecture specific shell scripts from architecture neutral sources.
+
+
+/* vim: set ts=8 sw=4 et : */

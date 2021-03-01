@@ -1,29 +1,28 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2003-2008, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
 #include <common/arglex.h>
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/str.h>
 
@@ -156,11 +155,11 @@ test(shell_ty *sp)
             if (ac >= ac_max)
             {
                 ac_max = ac_max * 2 + 8;
-		char **new_av = new char * [ac_max];
-		for (size_t k = 0; k < ac; ++k)
-		    new_av[k] = av[k];
-		delete [] av;
-		av = new_av;
+                char **new_av = new char * [ac_max];
+                for (size_t k = 0; k < ac; ++k)
+                    new_av[k] = av[k];
+                delete [] av;
+                av = new_av;
             }
             inco_ac = ac;
             av[ac++] = copy_of(cp, 0);
@@ -209,11 +208,11 @@ test(shell_ty *sp)
         if (ac >= ac_max)
         {
             ac_max = ac_max * 2 + 8;
-	    char **new_av = new char * [ac_max];
-	    for (size_t k = 0; k < ac; ++k)
-		new_av[k] = av[k];
-	    delete [] av;
-	    av = new_av;
+            char **new_av = new char * [ac_max];
+            for (size_t k = 0; k < ac; ++k)
+                new_av[k] = av[k];
+            delete [] av;
+            av = new_av;
         }
         if ((unsigned long)(cp - comp_line) < comp_point &&
             comp_point <= (unsigned long)(end - comp_line))
@@ -236,11 +235,11 @@ test(shell_ty *sp)
     if (ac >= ac_max)
     {
         ac_max = ac_max * 2 + 8;
-	char **new_av = new char * [ac_max];
-	for (size_t k = 0; k < ac; ++k)
-	    new_av[k] = av[k];
-	delete [] av;
-	av = new_av;
+        char **new_av = new char * [ac_max];
+        for (size_t k = 0; k < ac; ++k)
+            new_av[k] = av[k];
+        delete [] av;
+        av = new_av;
     }
     av[ac] = 0;
 
@@ -322,3 +321,6 @@ shell_zsh(void)
     this_thing->prefix = 0;
     return sp;
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,0 +1,421 @@
+Change  State           Description
+------- -------         -------------
+1       completed       New release derived from aegis.
+2       completed       generated Makefile with absolute dependencies
+3       being_          the project does not yet make
+        integrated
+
+IDENTIFICATION
+        Project "aegis.1.1", change 1.
+
+SUMMARY
+        New release derived from aegis.
+
+DESCRIPTION
+        New release derived from aegis.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       ALPHA.NOTICE
+        source  create  1       BUILDING
+        source  create  1       CHANGES.sh
+        source  create  1       COPYING
+        source  create  1       Howto.cook
+        source  create  1       Makefile.awk
+        source  create  1       Makefile.sh
+        source  create  1       README
+        source  create  1       aegis/administ.c
+        source  create  1       aegis/administ.h
+        source  create  1       aegis/ansi.c
+        source  create  1       aegis/archaeol.c
+        source  create  1       aegis/archaeol.h
+        source  create  1       aegis/arglex.c
+        source  create  1       aegis/arglex.h
+        source  create  1       aegis/build.c
+        source  create  1       aegis/build.h
+        source  create  1       aegis/cattr.def
+        source  create  1       aegis/cattr_ed.c
+        source  create  1       aegis/cattr_ed.h
+        source  create  1       aegis/change.c
+        source  create  1       aegis/change.h
+        source  create  1       aegis/chdir.c
+        source  create  1       aegis/chdir.h
+        source  create  1       aegis/col.c
+        source  create  1       aegis/col.h
+        source  create  1       aegis/commit.c
+        source  create  1       aegis/commit.h
+        source  create  1       aegis/common.def
+        source  create  1       aegis/copyfile.c
+        source  create  1       aegis/copyfile.h
+        source  create  1       aegis/cstate.def
+        source  create  1       aegis/defaults.c
+        source  create  1       aegis/defaults.h
+        source  create  1       aegis/develop1.c
+        source  create  1       aegis/develop1.h
+        source  create  1       aegis/develop2.c
+        source  create  1       aegis/develop2.h
+        source  create  1       aegis/diff.c
+        source  create  1       aegis/diff.h
+        source  create  1       aegis/dir.c
+        source  create  1       aegis/dir.h
+        source  create  1       aegis/error.c
+        source  create  1       aegis/error.h
+        source  create  1       aegis/file.c
+        source  create  1       aegis/file.h
+        source  create  1       aegis/gate.h
+        source  create  1       aegis/gonzo.c
+        source  create  1       aegis/gonzo.h
+        source  create  1       aegis/gram.y
+        source  create  1       aegis/gstate.def
+        source  create  1       aegis/help.c
+        source  create  1       aegis/help.h
+        source  create  1       aegis/indent.c
+        source  create  1       aegis/indent.h
+        source  create  1       aegis/integra1.c
+        source  create  1       aegis/integra1.h
+        source  create  1       aegis/integra2.c
+        source  create  1       aegis/integra2.h
+        source  create  1       aegis/io.c
+        source  create  1       aegis/io.h
+        source  create  1       aegis/lex.c
+        source  create  1       aegis/lex.h
+        source  create  1       aegis/list.c
+        source  create  1       aegis/list.h
+        source  create  1       aegis/lock.c
+        source  create  1       aegis/lock.h
+        source  create  1       aegis/log.c
+        source  create  1       aegis/log.h
+        source  create  1       aegis/main.c
+        source  create  1       aegis/mem.c
+        source  create  1       aegis/mem.h
+        source  create  1       aegis/new_chan.c
+        source  create  1       aegis/new_chan.h
+        source  create  1       aegis/new_file.c
+        source  create  1       aegis/new_file.h
+        source  create  1       aegis/new_proj.c
+        source  create  1       aegis/new_proj.h
+        source  create  1       aegis/new_rele.c
+        source  create  1       aegis/new_rele.h
+        source  create  1       aegis/new_test.c
+        source  create  1       aegis/new_test.h
+        source  create  1       aegis/option.c
+        source  create  1       aegis/option.h
+        source  create  1       aegis/os.c
+        source  create  1       aegis/os.h
+        source  create  1       aegis/parse.c
+        source  create  1       aegis/parse.h
+        source  create  1       aegis/pattr.def
+        source  create  1       aegis/pattr_ed.c
+        source  create  1       aegis/pattr_ed.h
+        source  create  1       aegis/pconf.def
+        source  create  1       aegis/project.c
+        source  create  1       aegis/project.h
+        source  create  1       aegis/pstate.def
+        source  create  1       aegis/rem_file.c
+        source  create  1       aegis/rem_file.h
+        source  create  1       aegis/review.c
+        source  create  1       aegis/review.h
+        source  create  1       aegis/reviewer.c
+        source  create  1       aegis/reviewer.h
+        source  create  1       aegis/str.c
+        source  create  1       aegis/str.h
+        source  create  1       aegis/sub.c
+        source  create  1       aegis/sub.h
+        source  create  1       aegis/test.c
+        source  create  1       aegis/test.h
+        source  create  1       aegis/trace.c
+        source  create  1       aegis/trace.h
+        source  create  1       aegis/tree.c
+        source  create  1       aegis/tree.h
+        source  create  1       aegis/type.c
+        source  create  1       aegis/type.h
+        source  create  1       aegis/uconf.def
+        source  create  1       aegis/undo.c
+        source  create  1       aegis/undo.h
+        source  create  1       aegis/user.c
+        source  create  1       aegis/user.h
+        source  create  1       aegis/ustate.def
+        source  create  1       aegis/version.c
+        source  create  1       aegis/version.h
+        source  create  1       aegis/word.c
+        source  create  1       aegis/word.h
+        source  create  1       common/main.h
+        source  create  1       config
+        source  create  1       doc/aegis.mm
+        source  create  1       doc/c1.0.so
+        source  create  1       doc/c1.1.so
+        source  create  1       doc/c1.2.so
+        source  create  1       doc/c1.3.so
+        source  create  1       doc/c2.0.so
+        source  create  1       doc/c2.1.so
+        source  create  1       doc/c2.2.so
+        source  create  1       doc/c2.3.so
+        source  create  1       doc/c2.4.so
+        source  create  1       doc/c3.0.so
+        source  create  1       doc/c4.0.so
+        source  create  1       doc/c5.0.so
+        source  create  1       doc/c6.0.so
+        source  create  1       doc/c7.0.so
+        source  create  1       doc/c7.1.so
+        source  create  1       doc/c7.2.so
+        source  create  1       doc/cA.0.so
+        source  create  1       dot.cshrc
+        source  create  1       dot.profile
+        source  create  1       fmtgen/ansi.c
+        source  create  1       fmtgen/arglex.c
+        source  create  1       fmtgen/arglex.h
+        source  create  1       fmtgen/error.c
+        source  create  1       fmtgen/error.h
+        source  create  1       fmtgen/id.c
+        source  create  1       fmtgen/id.h
+        source  create  1       fmtgen/indent.c
+        source  create  1       fmtgen/indent.h
+        source  create  1       fmtgen/lex.c
+        source  create  1       fmtgen/lex.h
+        source  create  1       fmtgen/main.c
+        source  create  1       fmtgen/mem.c
+        source  create  1       fmtgen/mem.h
+        source  create  1       fmtgen/parse.y
+        source  create  1       fmtgen/str.c
+        source  create  1       fmtgen/str.h
+        source  create  1       fmtgen/type.c
+        source  create  1       fmtgen/type.h
+        source  create  1       fmtgen/type_enum.c
+        source  create  1       fmtgen/type_integ.c
+        source  create  1       fmtgen/type_list.c
+        source  create  1       fmtgen/type_ref.c
+        source  create  1       fmtgen/type_strin.c
+        source  create  1       fmtgen/type_struc.c
+        source  create  1       fmtgen/word.c
+        source  create  1       fmtgen/word.h
+        source  create  1       h/stdarg.h
+        source  create  1       h/stddef.h
+        source  create  1       h/stdlib.h
+        source  create  1       man1/aea.1
+        source  create  1       man1/aeb.1
+        source  create  1       man1/aeca.1
+        source  create  1       man1/aecd.1
+        source  create  1       man1/aecp.1
+        source  create  1       man1/aecpu.1
+        source  create  1       man1/aed.1
+        source  create  1       man1/aedb.1
+        source  create  1       man1/aedbu.1
+        source  create  1       man1/aede.1
+        source  create  1       man1/aedeu.1
+        source  create  1       man1/aega.1
+        source  create  1       man1/aegis.1
+        source  create  1       man1/aeib.1
+        source  create  1       man1/aeibu.1
+        source  create  1       man1/aeif.1
+        source  create  1       man1/aeip.1
+        source  create  1       man1/ael.1
+        source  create  1       man1/aena.1
+        source  create  1       man1/aenc.1
+        source  create  1       man1/aencu.1
+        source  create  1       man1/aend.1
+        source  create  1       man1/aenf.1
+        source  create  1       man1/aenfu.1
+        source  create  1       man1/aeni.1
+        source  create  1       man1/aenpr.1
+        source  create  1       man1/aenrls.1
+        source  create  1       man1/aenrv.1
+        source  create  1       man1/aent.1
+        source  create  1       man1/aentu.1
+        source  create  1       man1/aepa.1
+        source  create  1       man1/aera.1
+        source  create  1       man1/aerd.1
+        source  create  1       man1/aerf.1
+        source  create  1       man1/aeri.1
+        source  create  1       man1/aerm.1
+        source  create  1       man1/aermu.1
+        source  create  1       man1/aerp.1
+        source  create  1       man1/aerpr.1
+        source  create  1       man1/aerpu.1
+        source  create  1       man1/aerrv.1
+        source  create  1       man1/aet.1
+        source  create  1       man1/aeua.1
+        source  create  1       man1/aev.1
+        source  create  1       man1/o__rules.so
+        source  create  1       man1/o_anticip.so
+        source  create  1       man1/o_auto.so
+        source  create  1       man1/o_baselin.so
+        source  create  1       man1/o_change.so
+        source  create  1       man1/o_devdir.so
+        source  create  1       man1/o_dir.so
+        source  create  1       man1/o_help.so
+        source  create  1       man1/o_indep.so
+        source  create  1       man1/o_keep.so
+        source  create  1       man1/o_lib.so
+        source  create  1       man1/o_list.so
+        source  create  1       man1/o_major.so
+        source  create  1       man1/o_manual.so
+        source  create  1       man1/o_min.so
+        source  create  1       man1/o_minor.so
+        source  create  1       man1/o_nolog.so
+        source  create  1       man1/o_overw.so
+        source  create  1       man1/o_page.so
+        source  create  1       man1/o_project.so
+        source  create  1       man1/o_terse.so
+        source  create  1       man1/o_verbose.so
+        source  create  1       man1/z_cr.so
+        source  create  1       man1/z_exit.so
+        source  create  1       man1/z_intuit.so
+        source  create  1       man1/z_name.so
+        source  create  1       man5/aecattr.5
+        source  create  1       man5/aecstate.5
+        source  create  1       man5/aedir.5
+        source  create  1       man5/aegis.5
+        source  create  1       man5/aegstate.5
+        source  create  1       man5/aepattr.5
+        source  create  1       man5/aepconf.5
+        source  create  1       man5/aepstate.5
+        source  create  1       man5/aeuconf.5
+        source  create  1       man5/aeustate.5
+        source  create  1       man5/z_cr.so
+        source  create  1       man5/z_name.so
+        source  create  1       notify/de.sh
+        source  create  1       notify/deu.sh
+        source  create  1       notify/if.sh
+        source  create  1       notify/ip.sh
+        source  create  1       notify/rf.sh
+        source  create  1       notify/rp.sh
+        source  create  1       notify/rpu.sh
+        test    create  1       test/00/t0001a.sh
+        test    create  1       test/00/t0002a.sh
+        test    create  1       test/00/t0003a.sh
+        test    create  1       test/00/t0004a.sh
+        test    create  1       test/00/t0005a.sh
+        test    create  1       test/00/t0006a.sh
+        test    create  1       test/00/t0007a.sh
+        test    create  1       test/00/t0008a.sh
+        test    create  1       test/00/t0009a.sh
+        test    create  1       test/00/t0010a.sh
+        test    create  1       test/00/t0011a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Jun 17      pmiller Elapsed time: 0.000 days.
+                        10:01:50 1992
+        develop_begin   Wed Jun 17      pmiller Elapsed time: 0.000 days.
+                        10:01:50 1992
+        develop_end     Wed Jun 17      pmiller Elapsed time: 0.000 days.
+                        10:01:50 1992
+        review_pass     Wed Jun 17      pmiller Elapsed time: 0.000 days.
+                        10:01:50 1992
+        integrate_begin Wed Jun 17      pmiller Elapsed time: 0.015 days.
+                        10:01:50 1992
+        integrate_pass  Wed Jun 17      pmiller
+                        10:08:27 1992
+
+IDENTIFICATION
+        Project "aegis.1.1", build 2, change 2.
+
+SUMMARY
+        generated Makefile with absolute dependencies
+
+DESCRIPTION
+        1. A number of problems were found with the Makefile: it contained
+        absolute path name dependencies, it did not include any tests.
+        2. The build instructions are completely inadequate.
+        3. come kind of config include is required.
+        4. some way to test before making it set-uid-root is needed.
+        5. the tests use fcomp and sc!
+        6. some systems don't have the tcgetpgrp function.
+
+        My thanks to Peter Chubb <peterc@suite.sw.oz.au> for reporting these
+        problems.
+
+CAUSE
+        external_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  remove  1       BUILDING
+        source  modify  2       Howto.cook
+        source  modify  2       Makefile.sh
+        source  remove  1       aegis/ansi.c
+        source  modify  2       aegis/commit.c
+        source  modify  2       aegis/gate.h
+        source  modify  2       aegis/gonzo.c
+        source  modify  2       aegis/log.c
+        source  modify  2       aegis/os.c
+        source  modify  2       aegis/os.h
+        source  create  1       common/ansi.c
+        source  create  1       conf/SunOS-4.1.2
+        source  create  1       conf/SysV-4.0
+        source  create  1       doc/build.man
+        source  remove  1       fmtgen/ansi.c
+        source  modify  2       man1/aegis.1
+        source  create  1       man1/install.sh
+        source  modify  2       man5/aeustate.5
+        source  create  1       man5/install.sh
+        test    modify  2       test/00/t0002a.sh
+        test    modify  2       test/00/t0004a.sh
+        test    modify  2       test/00/t0005a.sh
+        test    modify  2       test/00/t0006a.sh
+        test    modify  2       test/00/t0007a.sh
+        test    modify  2       test/00/t0009a.sh
+        test    modify  2       test/00/t0010a.sh
+        test    modify  2       test/00/t0011a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Jun 17      pmiller Elapsed time: 0.001 days.
+                        13:11:31 1992
+        develop_begin   Wed Jun 17      pmiller Elapsed time: 0.884 days.
+                        13:12:03 1992
+        develop_end     Thu Jun 18      pmiller Elapsed time: 0.002 days.
+                        12:19:56 1992
+        review_pass     Thu Jun 18      pmiller Elapsed time: 0.001 days.
+                        12:20:37 1992
+        integrate_begin Thu Jun 18      pmiller Elapsed time: 0.226 days.
+                        12:21:11 1992
+        integrate_pass  Thu Jun 18      pmiller
+                        14:03:04 1992
+
+IDENTIFICATION
+        Project "aegis.1.1", build 3, change 3.
+
+SUMMARY
+        the project does not yet make
+
+DESCRIPTION
+        1. There are flaws in the generated Makefile which result in the make
+        failing.
+        2. There are flaws on some tests which make them behave differently
+        under make athan aet.
+
+CAUSE
+        internal_bug
+
+STATE
+        being_integrated
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       Makefile.sh
+        source  modify  2       aegis/os.c
+        test    modify  1       test/00/t0001a.sh
+        test    modify  1       test/00/t0003a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Jun 19      pmiller Elapsed time: 0.001 days.
+                        09:11:25 1992
+        develop_begin   Fri Jun 19      pmiller Elapsed time: 0.212 days.
+                        09:11:51 1992
+        develop_end     Fri Jun 19      pmiller Elapsed time: 0.006 days.
+                        10:47:05 1992
+        review_pass     Fri Jun 19      pmiller Elapsed time: 0.001 days.
+                        10:49:50 1992
+        integrate_begin Fri Jun 19      pmiller Elapsed time: 0.244 days.
+                        10:50:24 1992

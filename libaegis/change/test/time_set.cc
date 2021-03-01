@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2003-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/architecture/find_variant.h>
@@ -26,8 +27,7 @@
 void
 change_test_time_set(change::pointer cp, time_t when)
 {
-    trace(("change_test_time_set(cp = %08lX, when = %ld)\n{\n", (long)cp,
-	(long)when));
+    trace(("change_test_time_set(cp = %p, when = %ld)\n{\n", cp, when));
     change_test_time_set(cp, change_architecture_name(cp, 1), when);
     trace(("}\n"));
 }
@@ -37,10 +37,10 @@ change_test_time_set(change::pointer cp, time_t when)
 void
 change_test_time_set(change::pointer cp, string_ty *variant, time_t when)
 {
-    trace(("change_test_time_set(cp = %08lX, variant = \"%s\", when = %ld)\n"
-	"{\n", (long)cp, variant->str_text, (long)when));
+    trace(("change_test_time_set(cp = %p, variant = \"%s\", when = %ld)\n"
+        "{\n", cp, variant->str_text, (long)when));
 
-    trace(("change_test_time_set(cp = %8.8lX)\n{\n", (long)cp));
+    trace(("change_test_time_set(cp = %p)\n{\n", cp));
     assert(cp->reference_count >= 1);
     pconf_ty *pconf_data = change_pconf_get(cp, 1);
     cstate_ty *cstate_data = cp->cstate_get();
@@ -51,15 +51,15 @@ change_test_time_set(change::pointer cp, string_ty *variant, time_t when)
     {
         //
         // set the test_time in all of the architecture variant records
-	//
+        //
         for (size_t j = 0; j < cstate_data->architecture->length; ++j)
         {
             trace(("j = %ld of %ld \"%s\"\n", (long)j,
                 (long)cstate_data->architecture->length,
                 cstate_data->architecture->list[j]->str_text));
 
-	    cstate_architecture_times_ty *tp =
-		cstate_data->architecture_times->list[j];
+            cstate_architecture_times_ty *tp =
+                cstate_data->architecture_times->list[j];
             trace(("j = %ld of %ld \"%s\"\n", (long)j,
                    (long)cstate_data->architecture_times->length,
                    tp->variant->str_text));
@@ -87,7 +87,7 @@ change_test_time_set(change::pointer cp, string_ty *variant, time_t when)
                     (long)cstate_data->architecture->length,
                     cstate_data->architecture->list[j]->str_text));
 
-		size_t k = 0;
+                size_t k = 0;
                 for (k = 0; k < cstate_data->architecture_times->length; ++k)
                 {
                     tp = cstate_data->architecture_times->list[k];
@@ -117,3 +117,6 @@ change_test_time_set(change::pointer cp, string_ty *variant, time_t when)
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2006-2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aemakegen
 .TH "aemakegen" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -26,45 +25,209 @@ aemakegen \- generate a Makefile.in from file manifest
 \f[B]aemakegen\fP [ \f[I]option\fP... ][ \f[I]filename\fP... ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
-The \fI\*(n)\fP command is used to
+The \f[I]\*(n)\fP command is used to
 generate a \f[CW]Makefile.in\fP file from a file manifest.
-The file manifest is the set of file specified on the command line.
-.PP
-If a project or change number is mentioned on the command line, the
-search path and file manifest is derived from Aegis meta-data.  File
+The
+search path and file manifest is derived from Aegis meta\[hy]data.  File
 names on the command line are considered to be additional files, and
 will be added to the manifest.
-.PP
-If no project or change number is mentioned on the command line, it is
-assumed that the files named on the command line are all the files the
-makefile is to be generated from.
 .SS Project Structure
-The \fI\*(n)\fP command assumes a particular project structure.
+The \f[I]\*(n)\fP command assumes a particular project structure.
 This is as follows:
 .TP 8n
 \f[CW]lib/\fP
-The \fIlib\fP directory contains C++ files to be compiled, and
+The \f[I]lib\fP directory contains C++ files to be compiled, and
 placed into the \f[CW]lib/lib.a\fP file, to be linked with the other
 executables.
+(You can override this with the \f[CW]aemakegen:library\[hy]directory\fP
+project specific attribute.)
 .TP 8n
-\fIprog\fP\f[CW]/\fP
-Each executable is contained in its own directory.
+\f[CW]lib\f[I]project\fP/\fP
+.RS
+An alternative name to \f[I]lib\fP, above.
+.PP
+If there is a
+\f[CW]lib\fP\f[I]project\fP\f[CW]/lib\fP\f[I]project\fP\f[CW].h\fP
+file, this is installed as
+\f[CW]$(prefix)/include/lib\fP\f[I]project\fP\f[CW]/\
+lib\fP\f[I]project\fP\f[CW].h\fP
+and any project file it includes in turn are also installed below
+\f[CW]$(prefix)/include/lib\fP\f[I]project\fP\f[CW]/\fP
+.RE
+.TP 8n
+\f[I]prog\fP\f[CW]/\fP
+.RS
+The source for
+each executable is contained in its own directory.
 Which directories contain programs are determined by
-the presence of a \f[CW]main.cc\fP file.
+the presence of a \f[CW]main.c\fP or \f[CW]main.cc\fP file.
+.PP
+As a special case, files named \f[CW]test/\fP\f[I]name\fP\f[CW]/*\fP
+will be linked as an executable \f[CW]bin/test_\fP\f[I]name\fP
+.RE
 .TP 8n
 \f[CW]bin/\fP
 Each program is compiled and linked, with the executable placed in the
-\fIbin\fP directory.
+\f[I]bin\fP directory.
+.TP 8n
+\f[CW]datadir/\fP
+These files will be installed into the
+\f[CW]$(DATADIR)/\fP\f[I]project\[hy]name\fP\f[CW]/\fP directory.
+.TP 8n
+\f[CW]datarootdir/\fP
+These files will be installed into the \f[CW]$(DATAROOTDIR)/\fP directory.  This
+is usually meta\[hy]data to tell other packages about this package's existence.
+.TP 8n
+\f[CW]libdir/\fP
+These files will be installed into $(LIBDIR)/
+.TP 8n
+\f[CW]test_*/\fP
+These commands are expected to be in support of the \f[CW]check\fP target
+and are compiled but not installed.
+(Can use a minus rather than an underscore, if you prefer.)
+.TP 8n
+\f[CW]noinst_*/\fP
+These commands are expected to be in support of the build, or the
+\f[CW]check\fP target, and are compiled but not installed.
+(Can use a minus rather than an underscore, if you prefer.)
+.SS configure.ac
+If the \f[I]configure.ac\fP file contains certain lines, additional
+features will be added to the file.  These include:
+.TP 8n
+AC_CHECK_PROGS(GROFF,
+The project uses the \f[I]groff\fP(1) and the GNU Groff documentation suite.
+.TP 8n
+AC_CHECK_PROGS(LIBTOOL, ...
+This will cause the library to be built as a shared library, and
+installed so as to make it accessible to the programs linked against it.
+Note that you can set the project_specific attribute
+\f[CW]aemakegen:libtool\fP to true for the same effect.
+.TP 8n
+AC_CHECK_PROGS(SOELIM,
+One of the programs in the GNU Groff documentation suite.
+.TP 8n
+AC_EXEEXT
+The makefile defines the $(EXEEXT) macro, for executable file extensions.
+.TP 8n
+AC_LANG([C])
+The source files are all assumed to be in C.
+.TP 8n
+AC_LANG([C++])
+The source files are all assumed to be in C++.
+.TP 8n
+AC_LANG_C
+The source files are all assumed to be in C.
+.TP 8n
+AC_LANG_CPLUSPLUS
+The source files are all assumed to be in C++.
+.TP 8n
+AC_LIBEXT
+The makefile defines the $(LIBEXT) macro, for library file extensions.
+.TP 8n
+AC_OBJEXT
+The makefile defines the $(OBJEXT) macro, for object file extensions.
+.TP 8n
+AC_PROG_LIBTOOL
+Synonym for the longer libtool form, above.
+.TP 8n
+AC_PATH_XTRA
+The project uses the X11 window system.
+.\" ------------------------------------------------------------------------
+.SS Project Attributes
+The following \f[CW]project_specific\fP attributes are known:
+.TP 8n
+aemakegen:debian:brief\[mi]description:\f[I]package\fP
+Used by the debian target to set the first line of the Description field
+of each package.
+.TP 8n
+aemakegen:debian:build\[hy]depends
+Used by the debian target to set the Build\[hy]Depends.
+.TP 8n
+aemakegen:debian:conflicts:\f[I]package\fP
+Used by the debian target to set the Conflicts field of each package.
+.TP 8n
+aemakegen:debian:description:\f[I]package\fP
+Used by the debian target to set the Description field of each package.
+.TP 8n
+aemakegen:debian:dm\[hy]upload\[hy]allowed
+Used by the debian target.
+If true, the DM\[hy]Upload\[hy]Allowed field will be set to yes.
+.TP 8n
+aemakegen:debian:homepage
+Used by the debian target to set the homepage.
+Omitted of not set.
+.TP 8n
+aemakegen:debian:priority
+Used by the debian target to set the priority.
+Defaults to "extra" if not set.
+.TP 8n
+aemakegen:debian:maintainer
+Used by the debian target to set the maintainer.
+.TP 8n
+aemakegen:debian:provides:\f[I]package\fP
+Used by the debian target to set the Provides field of each package.
+.TP 8n
+aemakegen:debian:recommends:\f[I]package\fP
+Used by the debian target to set the Recommends field of each package.
+.TP 8n
+aemakegen:debian:replaces:\f[I]package\fP
+Used by the debian target to set the Replaces field of each package.
+.TP 8n
+aemakegen:debian:section
+Used by the debian target to set the section.
+Defaults to "unknown" if not set.
+.TP 8n
+aemakegen:debian:suggests:\f[I]package\fP
+Used by the debian target to set the Suggests field of each package.
+.TP 8n
+aemakegen:libtool
+Boolean, whether or not to use \f[I]libtool\fP(1) to build the project's
+libraries.  This is of most interest to projects which build shared
+libraries.
+.TP 8n
+aemakegen:rpm\[hy]spec:build\[hy]requires
+Additional packages required to build the project.
+.TP 8n
+aemakegen:rpm\[hy]spec:description
+A description of the project.
+.TP 8n
+aemakegen:version\[hy]info
+String; the shared library's version number (completely different and
+separate to the project version, see \f[I]libtool\fP(1) for discussion).
+Three colon\[hy]separated decimal numbers.  Defaults to 0:0:0 if not set.
+.\" ------------------------------------------------------------------------
+.SS Change Set Attributes
+The following change set attributes are known:
+.TP 8n
+aemakegen:debian:accepted
+Normally, when the \[lq]debian/changelog\[rq] file is written, it
+gathers up all of the Debian \[lq]Changed\[rq] information, and
+places it into the change\[hy]log entry for the first (\f[I]i.e.\fP most
+recent) change in the changelog.  This ensures it will be transferred
+into the \[lq]*.changes\[rq] files.  If a change set is marked
+with \f[CW]aemakegen:debian:accepted=true\fP, it drops all of the
+\[lq]Closed\[rq] information, as this has already been processed by the
+Debian bug tracking system.
+.\" ------------------------------------------------------------------------
+.SS File Attributes
+The following file attributes are known:
+.TP 8n
+aemakegen:noinst
+boolean.  If true, \f[I]aemakegen\fP(1) will not cause the program
+to be installed.  Usually attached to the source file containing the
+\f[I]main\fP function, or to script files.  Defaults to false if not
+defined (\f[I]i.e.\fP do install program).
+.\" ------------------------------------------------------------------------
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_output.so
-.so o_project.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_output.so
+.so lib/en/man1/o_project.so
 .TP 8n
 \fB\-SCRipt\fP \f[I]pattern\fP
 This option may be used to nominate file which are scripts.  The
@@ -74,24 +237,34 @@ to quote it.  You may use this option more than once.  Scripts in the
 Scripts with a basename starting with \f[CW]test_\fP will be build to
 support the \[lq]make check\[rq] target.
 .TP 8n
-\fB\-Search_Path\fP \f[I]directory\fP
-The search path option may be used to specify the search path.
-This option may be given more than once.
-.TP 8n
 \fB\-TArget\fP \f[I]name\fP
 .RS
 The option may be used to select the desired output format by name.
 The known names are:
 .TP 8n
 automake
-Generate \f[I]automake\fP(1) input, suitable for use as a top-level
+Generate \f[I]automake\fP(1) input, suitable for use as a top\[hy]level
 \f[CW]Makefile.am\fP file.
 .TP 8n
 makefile
-Generate \f[I]make\fP(1) input, suitable for as as a top-level
+Generate \f[I]make\fP(1) input, suitable for as as a top\[hy]level
 \f[CW]Makefile.in\fP file.  This is the default.
+.TP 8n
+debian
+Generate the \f[CW]debian/\fP directory contents, which will exactly match the
+Makefile generated by the above two.
+.TP 8n
+pkg\[hy]config
+Generate a \f[I]pkg\[hy]config\fP(1) configuration (\f[CW].pc\fP) file.
+It will exactly match the above targets, provided they expect to see
+this output in a \f[CR].pc\fP file in the manifest,
+or are given on on the command line.
+.TP 8n
+rpm\[hy]spec
+Generate an RPM \.spec file, for use with \f[I]rpm\[hy]build\fP(1).
 .RE
-.so o_help.so
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

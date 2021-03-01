@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2005, 2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2005, 2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_XMLTEXTREAD_H
@@ -68,9 +67,9 @@ public:
 
     /**
       * The parse method is used to parse the given file.  Each element
-      * will cause the process_node() method to be called.
+      * will cause the process_node(void) method to be called.
       */
-    void parse();
+    void parse(void);
 
 protected:
     /**
@@ -78,7 +77,7 @@ protected:
       * read from the input.  Each derived class must supply its own
       * process_node method.
       */
-    virtual void process_node() = 0;
+    virtual void process_node(void) = 0;
 
     /**
       * The process_node_end method is only ever called for ELEMENT
@@ -96,25 +95,25 @@ protected:
       * The depth method is used to obtain the depth of the current node
       * in the tree.
       *
-      * \returns
+      * @returns
       *     the depth or -1 in case of error
       */
-    int depth() { return xmlTextReaderDepth(reader); }
+    int depth(void) { return xmlTextReaderDepth(reader); }
 
     /**
       * The node_type method is used to get the node type of the current
       * node.
       *
-      * \returns
+      * @returns
       *     the xmlNodeType of the current node or -1 in case of error
       *
-      * \sa
+      * @sa
       *     http://dotgnu.org/pnetlib-doc/System/Xml/XmlNodeType.html
       */
     xmlReaderTypes
-    node_type()
+    node_type(void)
     {
-	return (xmlReaderTypes)xmlTextReaderNodeType(reader);
+        return (xmlReaderTypes)xmlTextReaderNodeType(reader);
     }
 
     /**
@@ -127,45 +126,45 @@ protected:
       * The name method is used to determine the qualified name of the
       * current node, equal to Prefix:LocalName.
       *
-      * \returns
+      * @returns
       *     the node name or NULL if not available
       */
-    const xmlChar *name() { return xmlTextReaderName(reader); }
+    const xmlChar *name(void) { return xmlTextReaderName(reader); }
 
     /**
       * The is_empty_element method is used to check if the current node
       * is empty.
       *
-      * \returns
+      * @returns
       *     1 if empty, 0 if not and -1 in case of error
       */
-    int is_empty_element() { return xmlTextReaderIsEmptyElement(reader); }
+    int is_empty_element(void) { return xmlTextReaderIsEmptyElement(reader); }
 
     /**
       * The has_value method is used to determine whether or not the
       * current node has a text value.
       *
-      * \returns
+      * @returns
       *     1 if true, 0 if false, and -1 in case or error
       */
-    int has_value() { return xmlTextReaderHasValue(reader); }
+    int has_value(void) { return xmlTextReaderHasValue(reader); }
 
     /**
       * The value method is used to provide the text value of the
       * current node if present.
       *
-      * \returns
+      * @returns
       *     the string or NULL if not available. The result must be
       *     deallocated with xmlFree()
       */
-    const xmlChar *value() { return xmlTextReaderValue(reader); }
+    const xmlChar *value(void) { return xmlTextReaderValue(reader); }
 
     /**
       * The move_back_to_element method is used after parsing the
       * element attributes to move the reader pointer back to the
       * element node once again so that the name is again available.
       */
-    void move_back_to_element() { xmlTextReaderMoveToElement(reader); }
+    void move_back_to_element(void) { xmlTextReaderMoveToElement(reader); }
 
 private:
     /**
@@ -222,33 +221,33 @@ private:
       * The close method is called by the parser when it gets to the end
       * of the input.
       */
-    void close();
+    void close(void);
 
     /**
       * The error_callback class method is used to handle callbacks by
       * the parser when an error is seen.
       */
     static void error_callback(void *context, const char *msg,
-	xmlParserSeverities severity, xmlTextReaderLocatorPtr locator);
+        xmlParserSeverities severity, xmlTextReaderLocatorPtr locator);
 
     /**
       * the error method is used to report errors and warnings detected
       * during the parse.
       */
     void error(const char *msg, xmlParserSeverities severity,
-	xmlTextReaderLocatorPtr locator);
+        xmlTextReaderLocatorPtr locator);
 
     /**
       * The read method is used to read one node from the input, and
-      * process it via the veirtual process_node method.  If there is
+      * process it via the virtual process_node method.  If there is
       * an error, it is reported in a fatal error message, and this
       * function does not return.
       *
-      * \returns
+      * @returns
       *     If end of file is reached, false is returned.
       *     If there is not error, true is returned.
       */
-    bool read();
+    bool read(void);
 
     /**
       * The default constructor.  Do not use.
@@ -267,3 +266,4 @@ private:
 };
 
 #endif // LIBAEGIS_XMLTEXTREAD_H
+// vim: set ts=8 sw=4 et :

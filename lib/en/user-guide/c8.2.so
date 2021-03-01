@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2002, 2004-2008 Peter Miller.
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993, 1994, 2002, 2004-2008, 2010, 2012 Peter Miller.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Using diff and merge"
@@ -39,15 +39,15 @@ configuration
 file looks like this:
 .E(
 diff_command =
-  "set +e; diff -c $original "
-  "$input > $output; test $? -le 1";
+  "set +e; diff \-c $original "
+  "$input > $output; test $? \-le 1";
 .E)
 .LP
 This needs a little explanation:
 .br
 \(bu
 This command is always executed with the shell's
-.B -e
+.B \-e
 option enabled,
 causing the shell to exit on the first error.
 The "set +e" turns this off.
@@ -61,7 +61,7 @@ Any other status means something horrible happened.
 The "test" command is used to change this to the exit status aegis expects.
 .LP
 The \fB\-c\fP option says to produce a context diff.  You may choose
-to use the \fB\-u\fP option, to produce uni-diffs, if your \fIdiff\fP
+to use the \fB\-u\fP option, to produce uni\[hy]diffs, if your \fIdiff\fP
 command supports it.
 .LP
 You may also wish to consider ignoring white space in comparisons,
@@ -80,13 +80,13 @@ is the \fB\-U\fP option.  This is a more compact form than the \fB\-c\fP
 option, and is able to give the whole file as context.
 .E(
 diff_command =
-  "set +e; diff -U999999 $original "
-  "$input > $output; test $? -le 1";
+  "set +e; diff \-U999999 $original "
+  "$input > $output; test $? \-le 1";
 .E)
 .LP
 The exit status must once again be taylored, however the output will be
-the whole source for context, with changes marked by `+' and `-' in the
-left margin.  This, reviewers need only search for \f[CW]/^[-+]/\fP in
+the whole source for context, with changes marked by `+' and `\-' in the
+left margin.  This, reviewers need only search for \f[CW]/^[\-+]/\fP in
 order to see all edit made to the file.
 .nh 3 "merge_command"
 .LP
@@ -98,9 +98,9 @@ configuration
 file looks like this:
 .E(
 merge_command =
-  "(diff3 -e $MostRecent $original  \e
-   $input | sed -e '/^w$$/d' -e     \e
-   '/^q$$/d'; echo '1,$$p' ) | ed - \e
+  "(diff3 \-e $MostRecent $original  \e
+   $input | sed \-e '/^w$$/d' \-e     \e
+   '/^q$$/d'; echo '1,$$p' ) | ed \- \e
    $MostRecent > $output";
 .E)
 .LP
@@ -127,3 +127,4 @@ command is used to apply the generated edit script to
 the $MostRecent file,
 and print the results on the standard output,
 which are redirected into the $output file.
+.\" vim: set ts=8 sw=4 et :

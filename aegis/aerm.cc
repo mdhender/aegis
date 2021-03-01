@@ -1,28 +1,29 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008, 2009 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/project/files.h>
@@ -40,6 +41,7 @@
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
+#include <libaegis/search_path/base_get.h>
 #include <libaegis/sub.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
@@ -49,14 +51,14 @@
 
 //
 // NAME
-//	remove_file_usage
+//      remove_file_usage
 //
 // SYNOPSIS
-//	void remove_file_usage(void);
+//      void remove_file_usage(void);
 //
 // DESCRIPTION
-//	The remove_file_usage function is used to
-//	tell the user how to use the 'aegis -ReMove_file' command.
+//      The remove_file_usage function is used to
+//      tell the user how to use the 'aegis -ReMove_file' command.
 //
 
 static void
@@ -67,9 +69,9 @@ remove_file_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -ReMove_file <filename>... [ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -ReMove_file <filename>... [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -ReMove_file -List [ <option>... ]\n", progname);
     fprintf(stderr, "       %s -ReMove_file -Help\n", progname);
@@ -79,14 +81,14 @@ remove_file_usage(void)
 
 //
 // NAME
-//	remove_file_help
+//      remove_file_help
 //
 // SYNOPSIS
-//	void remove_file_help(void);
+//      void remove_file_help(void);
 //
 // DESCRIPTION
-//	The remove_file_help function is used to
-//	describe the 'aegis -ReMove_file' command to the user.
+//      The remove_file_help function is used to
+//      describe the 'aegis -ReMove_file' command to the user.
 //
 
 static void
@@ -98,15 +100,15 @@ remove_file_help(void)
 
 //
 // NAME
-//	remove_file_list
+//      remove_file_list
 //
 // SYNOPSIS
-//	void remove_file_list(void);
+//      void remove_file_list(void);
 //
 // DESCRIPTION
-//	The remove_file_list function is used to
-//	list the file the user may wish to add to the change
-//	as a deletion.	All project files are listed.
+//      The remove_file_list function is used to
+//      list the file the user may wish to add to the change
+//      as a deletion.  All project files are listed.
 //
 
 static void
@@ -130,13 +132,13 @@ count_config_files(change::pointer cp)
     result = 0;
     for (j = 0; ; ++j)
     {
-	fstate_src_ty   *src;
+        fstate_src_ty   *src;
 
-	src = change_file_nth(cp, j, view_path_extreme);
-	if (!src)
-	    break;
-	if (src->usage == file_usage_config)
-	    ++result;
+        src = change_file_nth(cp, j, view_path_extreme);
+        if (!src)
+            break;
+        if (src->usage == file_usage_config)
+            ++result;
     }
     return result;
 }
@@ -145,41 +147,39 @@ count_config_files(change::pointer cp)
 
 //
 // NAME
-//	remove_file_main
+//      remove_file_main
 //
 // SYNOPSIS
-//	void remove_file_main(void);
+//      void remove_file_main(void);
 //
 // DESCRIPTION
-//	The remove_file_main function is used to
-//	add a file to a change as a deletion.
-//	The file will be deleted from the baseline on successful
-//	integration of the change.
+//      The remove_file_main function is used to
+//      add a file to a change as a deletion.
+//      The file will be deleted from the baseline on successful
+//      integration of the change.
 //
-//	The names of the relevant files are gleaned from the command line.
+//      The names of the relevant files are gleaned from the command line.
 //
 
 static void
 remove_file_main(void)
 {
-    string_ty	    *s1;
-    string_ty	    *s2;
+    string_ty       *s1;
+    string_ty       *s2;
     fstate_src_ty   *c_src_data;
     fstate_src_ty   *p_src_data;
-    size_t	    j;
-    size_t	    k;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
+    size_t          j;
+    size_t          k;
+    string_ty       *project_name;
+    project      *pp;
+    long            change_number;
     change::pointer cp;
     log_style_ty    log_style;
     user_ty::pointer up;
-    int		    number_of_errors;
+    int             number_of_errors;
     string_list_ty  search_path;
-    int		    config_seen;
+    int             config_seen;
     string_ty       *configuration_filename;
-    int		    based;
-    string_ty	    *base;
 
     trace(("remove_file_main()\n{\n"));
     arglex();
@@ -187,71 +187,76 @@ remove_file_main(void)
     change_number = 0;
     string_list_ty wl;
     log_style = log_style_append_default;
+    bool as_needed = false;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(remove_file_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(remove_file_usage);
+            continue;
 
-	case arglex_token_file:
-	case arglex_token_directory:
-	    if (arglex() != arglex_token_string)
-		remove_file_usage();
-	    // fall through...
+        case arglex_token_file:
+        case arglex_token_directory:
+            if (arglex() != arglex_token_string)
+                remove_file_usage();
+            // fall through...
 
-	case arglex_token_string:
-	    s2 = str_from_c(arglex_value.alv_string);
-	    wl.push_back(s2);
-	    str_free(s2);
-	    break;
+        case arglex_token_string:
+            s2 = str_from_c(arglex_value.alv_string);
+            wl.push_back(s2);
+            str_free(s2);
+            break;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		remove_file_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                remove_file_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, remove_file_usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, remove_file_usage);
+            continue;
 
-	case arglex_token_nolog:
-	    if (log_style == log_style_none)
-		duplicate_option(remove_file_usage);
-	    log_style = log_style_none;
-	    break;
+        case arglex_token_nolog:
+            if (log_style == log_style_none)
+                duplicate_option(remove_file_usage);
+            log_style = log_style_none;
+            break;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(remove_file_usage);
-	    break;
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(remove_file_usage);
+            break;
 
-	case arglex_token_whiteout:
-	case arglex_token_whiteout_not:
-	    user_ty::whiteout_argument(remove_file_usage);
-	    break;
+        case arglex_token_whiteout:
+        case arglex_token_whiteout_not:
+            user_ty::whiteout_argument(remove_file_usage);
+            break;
 
-	case arglex_token_base_relative:
-	case arglex_token_current_relative:
-	    user_ty::relative_filename_preference_argument(remove_file_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_base_relative:
+        case arglex_token_current_relative:
+            user_ty::relative_filename_preference_argument(remove_file_usage);
+            break;
+
+        case arglex_token_as_needed:
+            as_needed = true;
+            break;
+        }
+        arglex();
     }
     if (!wl.nstrings)
     {
-	error_intl(0, i18n("no file names"));
-	remove_file_usage();
+        error_intl(0, i18n("no file names"));
+        remove_file_usage();
     }
 
     //
@@ -260,7 +265,7 @@ remove_file_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -275,7 +280,7 @@ remove_file_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = up->default_change(pp);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -287,21 +292,21 @@ remove_file_main(void)
 
     log_open(change_logfile_get(cp), up, log_style);
 
-    if (change_file_promote(cp))
+    if (cp->file_promote())
     {
-	//
-	// Write out the file state, and then let go of the locks
-	// and take them again.  This ensures the data is consistent
-	// for the next stage of processing.
-	//
-	trace(("Write out what we've done so far.\n"));
-	change_cstate_write(cp);
-	commit();
-	lock_release();
+        //
+        // Write out the file state, and then let go of the locks
+        // and take them again.  This ensures the data is consistent
+        // for the next stage of processing.
+        //
+        trace(("Write out what we've done so far.\n"));
+        cp->cstate_write();
+        commit();
+        lock_release();
 
-	trace(("Take the locks again.\n"));
-	change_cstate_lock_prepare(cp);
-	lock_take();
+        trace(("Take the locks again.\n"));
+        change_cstate_lock_prepare(cp);
+        lock_take();
     }
 
     //
@@ -309,41 +314,21 @@ remove_file_main(void)
     // It is an error if the change is not assigned to the current user.
     //
     if (!cp->is_being_developed())
-	change_fatal(cp, 0, i18n("bad rm state"));
-    if (change_is_a_branch(cp))
-	change_fatal(cp, 0, i18n("bad nf branch"));
-    if (nstring(change_developer_name(cp)) != up->name())
-	change_fatal(cp, 0, i18n("not developer"));
+        change_fatal(cp, 0, i18n("bad rm state"));
+    if (cp->is_a_branch())
+        change_fatal(cp, 0, i18n("bad nf branch"));
+    if (nstring(cp->developer_name()) != up->name())
+        change_fatal(cp, 0, i18n("not developer"));
 
     //
     // Where to search to resolve file names.
     //
-    change_search_path_get(cp, &search_path, 1);
+    cp->search_path_get(&search_path, true);
 
     //
     // Find the base for relative filenames.
     //
-    based =
-	(
-	    search_path.nstrings >= 1
-	&&
-	    (
-		up->relative_filename_preference
-		(
-		    uconf_relative_filename_preference_current
-		)
-	    ==
-		uconf_relative_filename_preference_base
-	    )
-	);
-    if (based)
-	base = search_path.string[0];
-    else
-    {
-	os_become_orig();
-	base = os_curdir();
-	os_become_undo();
-    }
+    nstring base(search_path_base_get(search_path, up));
 
     //
     // resolve the path of each file
@@ -358,117 +343,139 @@ remove_file_main(void)
     configuration_filename = 0;
     for (j = 0; j < wl.nstrings; ++j)
     {
-	s1 = wl.string[j];
-	if (s1->str_text[0] == '/')
-	    s2 = str_copy(s1);
-	else
-	    s2 = os_path_join(base, s1);
-	up->become_begin();
-	s1 = os_pathname(s2, 1);
-	up->become_end();
-	str_free(s2);
-	s2 = 0;
-	for (k = 0; k < search_path.nstrings; ++k)
-	{
-	    s2 = os_below_dir(search_path.string[k], s1);
-	    if (s2)
-		break;
-	}
-	str_free(s1);
-	if (!s2)
-	{
-	    sub_context_ty  *scp;
+        s1 = wl.string[j];
+        if (s1->str_text[0] == '/')
+            s2 = str_copy(s1);
+        else
+            s2 = os_path_join(base.get_ref(), s1);
+        up->become_begin();
+        s1 = os_pathname(s2, 1);
+        up->become_end();
+        str_free(s2);
+        s2 = 0;
+        for (k = 0; k < search_path.nstrings; ++k)
+        {
+            s2 = os_below_dir(search_path.string[k], s1);
+            if (s2)
+                break;
+        }
+        str_free(s1);
+        if (!s2)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", wl.string[j]);
-	    change_error(cp, scp, i18n("$filename unrelated"));
-	    sub_context_delete(scp);
-	    ++number_of_errors;
-	    continue;
-	}
-	string_list_ty wl_in;
-	project_file_directory_query(pp, s2, &wl_in, 0, view_path_simple);
-	if (wl_in.nstrings)
-	{
-	    int		    used;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", wl.string[j]);
+            change_error(cp, scp, i18n("$filename unrelated"));
+            sub_context_delete(scp);
+            ++number_of_errors;
+            continue;
+        }
+        string_list_ty wl_in;
+        pp->file_directory_query(s2, &wl_in, 0, view_path_simple);
+        if (wl_in.nstrings)
+        {
+            int             used;
 
-	    //
-	    // If the user named a directory, add all of the
-	    // source files in that directory, provided they
-	    // are not already in the change.
-	    //
-	    used = 0;
-	    for (k = 0; k < wl_in.nstrings; ++k)
-	    {
-		string_ty	*s3;
+            //
+            // If the user named a directory, add all of the
+            // source files in that directory, provided they
+            // are not already in the change.
+            //
+            used = 0;
+            for (k = 0; k < wl_in.nstrings; ++k)
+            {
+                string_ty       *s3;
 
-		s3 = wl_in.string[k];
-		if (!change_file_find(cp, s3, view_path_first))
-		{
-		    if (wl2.member(s3))
-		    {
-			sub_context_ty	*scp;
+                s3 = wl_in.string[k];
+                if (!cp->file_find(nstring(s3), view_path_first))
+                {
+                    if (wl2.member(s3))
+                    {
+                        sub_context_ty  *scp;
 
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", s3);
-			change_error(cp, scp, i18n("too many $filename"));
-			sub_context_delete(scp);
-			++number_of_errors;
-		    }
-		    else
-			wl2.push_back(s3);
-		    if (change_file_is_config(cp, s3))
-		    {
-			++config_seen;
-			if (!configuration_filename)
-			    configuration_filename = str_copy(s3);
-		    }
-		    ++used;
-		}
-	    }
-	    if (!used)
-	    {
-		sub_context_ty	*scp;
+                        scp = sub_context_new();
+                        sub_var_set_string(scp, "File_Name", s3);
+                        change_error(cp, scp, i18n("too many $filename"));
+                        sub_context_delete(scp);
+                        ++number_of_errors;
+                    }
+                    else
+                        wl2.push_back(s3);
+                    if (cp->file_is_config(s3))
+                    {
+                        ++config_seen;
+                        if (!configuration_filename)
+                            configuration_filename = str_copy(s3);
+                    }
+                    ++used;
+                }
+            }
+            if (!used)
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		if (s2->str_length)
-		    sub_var_set_string(scp, "File_Name", s2);
-		else
-		    sub_var_set_charstar(scp, "File_Name", ".");
-		sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
-		sub_var_optional(scp, "Number");
-		change_error
-		(
-		    cp,
-		    scp,
-		    i18n("directory $filename contains no relevant files")
-		);
-		sub_context_delete(scp);
-		++number_of_errors;
-	    }
-	}
-	else
-	{
-	    if (change_file_is_config(cp, s2))
-	    {
-		++config_seen;
-       		if (!configuration_filename)
-		    configuration_filename = str_copy(s2);
-	    }
-	    if (wl2.member(s2))
-	    {
-		sub_context_ty	*scp;
+                scp = sub_context_new();
+                if (s2->str_length)
+                    sub_var_set_string(scp, "File_Name", s2);
+                else
+                    sub_var_set_charstar(scp, "File_Name", ".");
+                sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
+                sub_var_optional(scp, "Number");
+                change_error
+                (
+                    cp,
+                    scp,
+                    i18n("directory $filename contains no relevant files")
+                );
+                sub_context_delete(scp);
+                ++number_of_errors;
+            }
+        }
+        else
+        {
+            if (cp->file_is_config(s2))
+            {
+                ++config_seen;
+                if (!configuration_filename)
+                    configuration_filename = str_copy(s2);
+            }
+            if (wl2.member(s2))
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_error(cp, scp, i18n("too many $filename"));
-		sub_context_delete(scp);
-		++number_of_errors;
-	    }
-	    else
-		wl2.push_back(s2);
-	}
-	str_free(s2);
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s2);
+                change_error(cp, scp, i18n("too many $filename"));
+                sub_context_delete(scp);
+                ++number_of_errors;
+            }
+            else
+            {
+                //
+                // Ignore redundant requests.
+                //
+                bool nuke_it = true;
+                if (as_needed)
+                {
+                    fstate_src_ty *csrc =
+                        cp->file_find(nstring(s2), view_path_first);
+                    if
+                    (
+                        csrc
+                    &&
+                        csrc->action == file_action_remove
+                    &&
+                        !csrc->move
+                    )
+                        nuke_it = false;
+                }
+
+                if (nuke_it)
+                    wl2.push_back(s2);
+            }
+        }
+        str_free(s2);
     }
     wl = wl2;
 
@@ -480,16 +487,16 @@ remove_file_main(void)
     //
     if (config_seen)
     {
-	if (config_seen >= count_config_files(cp))
-	{
-	    sub_context_ty	*scp;
+        if (config_seen >= count_config_files(cp))
+        {
+            sub_context_ty      *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", configuration_filename);
-	    change_error(cp, scp, i18n("may not remove $filename"));
-	    sub_context_delete(scp);
-	    ++number_of_errors;
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", configuration_filename);
+            change_error(cp, scp, i18n("may not remove $filename"));
+            sub_context_delete(scp);
+            ++number_of_errors;
+        }
     }
 
     //
@@ -500,75 +507,75 @@ remove_file_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	s1 = wl.string[j];
-	if (change_file_find(cp, s1, view_path_first))
-	{
-	    sub_context_ty  *scp;
+        s1 = wl.string[j];
+        if (cp->file_find(nstring(s1), view_path_first))
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    change_error(cp, scp, i18n("file $filename dup"));
-	    sub_context_delete(scp);
-	    ++number_of_errors;
-	    continue;
-	}
-	p_src_data = project_file_find(pp, s1, view_path_extreme);
-	if (!p_src_data)
-	{
-	    p_src_data = pp->file_find_fuzzy(s1, view_path_extreme);
-	    if (p_src_data)
-	    {
-		sub_context_ty	*scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", s1);
+            change_error(cp, scp, i18n("file $filename dup"));
+            sub_context_delete(scp);
+            ++number_of_errors;
+            continue;
+        }
+        p_src_data = pp->file_find(s1, view_path_extreme);
+        if (!p_src_data)
+        {
+            p_src_data = pp->file_find_fuzzy(s1, view_path_extreme);
+            if (p_src_data)
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s1);
-		sub_var_set_string(scp, "Guess", p_src_data->file_name);
-		project_error(pp, scp, i18n("no $filename, closest is $guess"));
-		sub_context_delete(scp);
-	    }
-	    else
-	    {
-		sub_context_ty	*scp;
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s1);
+                sub_var_set_string(scp, "Guess", p_src_data->file_name);
+                project_error(pp, scp, i18n("no $filename, closest is $guess"));
+                sub_context_delete(scp);
+            }
+            else
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s1);
-		project_error(pp, scp, i18n("no $filename"));
-		sub_context_delete(scp);
-	    }
-	    ++number_of_errors;
-	    continue;
-	}
-	c_src_data = cp->file_new(p_src_data);
-	c_src_data->action = file_action_remove;
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s1);
+                project_error(pp, scp, i18n("no $filename"));
+                sub_context_delete(scp);
+            }
+            ++number_of_errors;
+            continue;
+        }
+        c_src_data = cp->file_new(p_src_data);
+        c_src_data->action = file_action_remove;
 
-	//
-	// p_src_data->edit_number
-	//	The head revision of the branch.
-	// p_src_data->edit_number_origin
-	//	The version originally copied.
-	//
-	// c_src_data->edit_number
-	//	Not meaningful until after integrate pass.
-	// c_src_data->edit_number_origin
-	//	The version originally copied.
-	// c_src_data->edit_number_origin_new
-	//	Updates branch edit_number_origin on
-	//	integrate pass.
-	//
-	assert(p_src_data->edit);
-	assert(p_src_data->edit->revision);
-	c_src_data->edit_origin = history_version_copy(p_src_data->edit);
+        //
+        // p_src_data->edit_number
+        //      The head revision of the branch.
+        // p_src_data->edit_number_origin
+        //      The version originally copied.
+        //
+        // c_src_data->edit_number
+        //      Not meaningful until after integrate pass.
+        // c_src_data->edit_number_origin
+        //      The version originally copied.
+        // c_src_data->edit_number_origin_new
+        //      Updates branch edit_number_origin on
+        //      integrate pass.
+        //
+        assert(p_src_data->edit);
+        assert(p_src_data->edit->revision);
+        c_src_data->edit_origin = history_version_copy(p_src_data->edit);
     }
     if (number_of_errors)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", number_of_errors);
-	sub_var_optional(scp, "Number");
-	change_fatal(cp, scp, i18n("remove file fail"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number", number_of_errors);
+        sub_var_optional(scp, "Number");
+        change_fatal(cp, scp, i18n("remove file fail"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -578,16 +585,16 @@ remove_file_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	//
-	// Find the mod-time of the file in the project
-	//
-	s1 = wl.string[j];
+        //
+        // Find the mod-time of the file in the project
+        //
+        s1 = wl.string[j];
 
-	//
-	// Remove any existing file (this cleans up junk, and
-	// breaks the link if we are using symlink trees).
-	//
-	change_file_whiteout_write(cp, s1, up);
+        //
+        // Remove any existing file (this cleans up junk, and
+        // breaks the link if we are using symlink trees).
+        //
+        change_file_whiteout_write(cp, s1, up);
     }
 
     //
@@ -612,7 +619,7 @@ remove_file_main(void)
     //
     // write the data and release the lock
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     commit();
     lock_release();
 
@@ -629,12 +636,12 @@ remove_file_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", wl.string[j]);
-	change_verbose(cp, scp, i18n("remove file $filename complete"));
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", wl.string[j]);
+        change_verbose(cp, scp, i18n("remove file $filename complete"));
+        sub_context_delete(scp);
     }
     change_free(cp);
     project_free(pp);
@@ -644,15 +651,15 @@ remove_file_main(void)
 
 //
 // NAME
-//	remove_file
+//      remove_file
 //
 // SYNOPSIS
-//	void remove_file(void);
+//      void remove_file(void);
 //
 // DESCRIPTION
-//	The remove_file function is used to
-//	dispatch the 'aegis -ReMove_file' command to the relevant
-//	function to do it's work.
+//      The remove_file function is used to
+//      dispatch the 'aegis -ReMove_file' command to the relevant
+//      function to do it's work.
 //
 
 void
@@ -660,11 +667,14 @@ remove_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, remove_file_help, 0 },
-	{ arglex_token_list, remove_file_list, 0 },
+        { arglex_token_help, remove_file_help, 0 },
+        { arglex_token_list, remove_file_list, 0 },
     };
 
     trace(("remove_file()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), remove_file_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

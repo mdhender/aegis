@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1999, 2002-2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_H
@@ -22,7 +21,6 @@
 
 #include <common/ac/stdarg.h>
 #include <common/ac/stddef.h>
-#include <common/main.h> // for gcc attributes
 #include <common/nstring.h>
 #include <common/ac/shared_ptr.h>
 
@@ -63,13 +61,13 @@ public:
     /**
       * The filename method is used to obtain the filename of this output.
       */
-    virtual nstring filename() const = 0;
+    virtual nstring filename(void) const = 0;
 
     /**
       * The ftell method is used to determine the current file position
       * of the output.
       */
-    long ftell() const;
+    long ftell(void) const;
 
     /**
       * The write method is used to write date to the output.
@@ -80,31 +78,31 @@ public:
       * The flush method is used to ensure that any buffered data is
       * written to the output.
       */
-    void flush();
+    void flush(void);
 
     /**
       * The page_width method is used to obtain the width of the page of
       * the output device.
       */
-    virtual int page_width() const;
+    virtual int page_width(void) const;
 
     /**
       * The page_length method is used to obtain the length of the page
       * of the output device.
       */
-    virtual int page_length() const;
+    virtual int page_length(void) const;
 
     /**
       * The end_of_line method is used to ensure that the current output
       * position is at the beginning of a line.
       */
-    void end_of_line();
+    void end_of_line(void);
 
     /**
       * The type_name method is used to determine the name of this
       * output device or file or type.
       */
-    virtual const char *type_name() const = 0;
+    virtual nstring type_name(void) const = 0;
 
     /**
       * The fputc method is used to write a single character to the
@@ -113,10 +111,10 @@ public:
     void
     fputc(char c)
     {
-	if (buffer_position < buffer_end)
-	    *buffer_position++ = c;
-	else
-	    overflow(c);
+        if (buffer_position < buffer_end)
+            *buffer_position++ = c;
+        else
+            overflow(c);
     }
 
     /**
@@ -221,7 +219,7 @@ private:
       * The ftell_inner method is used to determine the current file
       * position, without taking the buffering into account.
       */
-    virtual long ftell_inner() const = 0;
+    virtual long ftell_inner(void) const = 0;
 
     /**
       * The write_inner method is used write data to the output, without
@@ -234,14 +232,14 @@ private:
       * output position is at the beginning of a line, without taking
       * the buffering into account.
       */
-    virtual void end_of_line_inner() = 0;
+    virtual void end_of_line_inner(void) = 0;
 
     /**
       * The flush_inner method is called by the flush method once all
       * the data has been written.  The default implementation does
       * nothing.
       */
-    virtual void flush_inner();
+    virtual void flush_inner(void);
 
     /**
       * The overflow mwthod is used by the fputc method when the buffer
@@ -322,3 +320,4 @@ class input; // forward
 output::pointer &operator<<(output::pointer &os, input &is);
 
 #endif // LIBAEGIS_OUTPUT_H
+// vim: set ts=8 sw=4 et :

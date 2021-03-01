@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2002, 2005, 2006, 2008 Peter Miller
+//      Copyright (C) 1999, 2002, 2005, 2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -60,16 +60,16 @@ public:
 
 protected:
     // See base class for documentation.
-    output::pointer create(int, int, const char *);
+    output::pointer create(int left, int right, const char *title);
 
     // See base class for documentation.
-    void title(const char *, const char *);
+    void title(const nstring &first, const nstring &second);
 
     // See base class for documentation.
     void eoln();
 
     // See base class for documentation.
-    void need(int);
+    void need(int n);
 
     // See base class for documentation.
     void eject();
@@ -156,3 +156,4 @@ private:
 };
 
 #endif // LIBAEGIS_COL_PRETTY_H
+// vim: set ts=8 sw=4 et :

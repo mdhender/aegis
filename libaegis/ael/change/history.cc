@@ -1,23 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1999, 2001, 2003-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/history.h>
@@ -45,8 +43,8 @@ list_change_history(change_identifier &cid, string_list_ty *)
         str_format
         (
             "Project \"%s\"  Change %ld",
-            project_name_get(cid.get_pp())->str_text,
-            magic_zero_decode(cid.get_cp()->number)
+            project_name_get(cid.get_pp()).c_str(),
+            cid.get_change_number()
         );
     colp->title(line1->str_text, "History");
     str_free(line1);
@@ -71,31 +69,34 @@ list_change_history(change_identifier &cid, string_list_ty *)
     //
     for (size_t j = 0; j < cstate_data->history->length; ++j)
     {
-	cstate_history_ty *history_data = cstate_data->history->list[j];
-	what_col->fputs(cstate_history_what_ename(history_data->what));
-	time_t t = history_data->when;
-	when_col->fputs(ctime(&t));
-	who_col->fputs(history_data->who->str_text);
-	if (history_data->why)
-	    why_col->fputs(history_data->why->str_text);
-	if (history_data->what != cstate_history_what_integrate_pass)
-	{
-	    time_t finish = 0;
-	    if (j + 1 < cstate_data->history->length)
-		finish = cstate_data->history->list[j + 1]->when;
-	    else
-		time(&finish);
-	    if (finish - t >= ELAPSED_TIME_THRESHOLD)
-	    {
-		why_col->end_of_line();
-		why_col->fprintf
-		(
-	    	    "Elapsed time: %5.3f days.\n",
-	    	    working_days(t, finish)
-		);
-	    }
-	}
-	colp->eoln();
+        cstate_history_ty *history_data = cstate_data->history->list[j];
+        what_col->fputs(cstate_history_what_ename(history_data->what));
+        time_t t = history_data->when;
+        when_col->fputs(ctime(&t));
+        who_col->fputs(history_data->who->str_text);
+        if (history_data->why)
+            why_col->fputs(history_data->why->str_text);
+        if (history_data->what != cstate_history_what_integrate_pass)
+        {
+            time_t finish = 0;
+            if (j + 1 < cstate_data->history->length)
+                finish = cstate_data->history->list[j + 1]->when;
+            else
+                time(&finish);
+            if (finish - t >= ELAPSED_TIME_THRESHOLD)
+            {
+                why_col->end_of_line();
+                why_col->fprintf
+                (
+                    "Elapsed time: %5.3f days.\n",
+                    working_days(t, finish)
+                );
+            }
+        }
+        colp->eoln();
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

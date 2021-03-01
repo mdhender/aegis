@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -34,7 +34,7 @@ it needs to be offset) has been improved.
 .if t \(bu
 .\" change 37
 The \fIaedist\fP(1) and \fIaepatch\fP(1) commands now accept \-delta
-and \-delta-date options.
+and \-delta\[hy]date options.
 .PP
 .if n *
 .if t \(bu
@@ -46,8 +46,9 @@ See \fIaeintegratq\fP(1) for more information.
 .if n *
 .if t \(bu
 .\" change 29
-A bug has been fixed in the date parsing code (used by the \-delta-date option).
-There was the potential to mis-calculate dates after February 2000.
+A bug has been fixed in the date parsing code (used by the
+\-delta\[hy]date option).
+There was the potential to mis\[hy]calculate dates after February 2000.
 .PP
 .if n *
 .if t \(bu
@@ -59,7 +60,7 @@ uudecoding.
 .if n *
 .if t \(bu
 .\" change 20
-There are more change-specific substitutions available.
+There are more change\[hy]specific substitutions available.
 See \fI${change ...} \fP within \fIaesub\fP(5) for more information.
 .PP
 .if n *
@@ -75,4 +76,5 @@ There is a new \fIaeannotate\fP(1) command, used to produce annotated
 source file listings.  See \fIaeannotate\fP(1) for more information.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.4 (12-May-2002)
+.SS Version 4.4 (12\[hy]May\[hy]2002)
+.\" vim: set ts=8 sw=4 et :

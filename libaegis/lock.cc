@@ -1,22 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1991-1999, 2001-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/errno.h>
 #include <common/ac/fcntl.h>
 #include <common/ac/stdio.h>
@@ -88,7 +89,7 @@ static struct flock flock_zero;
 struct lock_place_ty
 {
     lock_place_ty() : location(flock_zero), release_immediately(0),
-	callback(0), callback_arg(0) { }
+        callback(0), callback_arg(0) { }
 
     struct flock    location;
     int             release_immediately;
@@ -136,7 +137,7 @@ flock_construct(struct flock *p, int type, long start, long length)
     // past the end of the file.
     //
     if (type != F_UNLCK)
-	p->l_type = F_WRLCK;
+        p->l_type = F_WRLCK;
     p->l_start = 0;
     p->l_len = 0;
 #else
@@ -151,13 +152,13 @@ static int
 flock_equal(struct flock *p1, struct flock *p2)
 {
     return
-	(
-	    p1->l_type == p2->l_type
-	&&
-	    p1->l_start == p2->l_start
-	&&
-	    p1->l_len == p2->l_len
-	);
+        (
+            p1->l_type == p2->l_type
+        &&
+            p1->l_start == p2->l_start
+        &&
+            p1->l_len == p2->l_len
+        );
 }
 
 
@@ -172,22 +173,22 @@ lock_prepare(long start, long length, int exclusive, lock_callback_ty callback,
     // construct the lock structure
     //
     trace(("lock_prepare(start = %ld, length = %ld, excl = %d)\n{\n",
-	start, length, exclusive));
+        start, length, exclusive));
 #ifdef WHOLE_FILE_LOCKS_ONLY
     if (exclusive & LOCK_PREP_PRIORITY);
     {
-	trace(("}\n"));
-	return;
+        trace(("}\n"));
+        return;
     }
 #endif
     assert(start > lock_master);
     assert(length > 0);
     flock_construct
     (
-	&p.location,
-	((exclusive & LOCK_PREP_EXCLUSIVE) ? F_WRLCK : F_RDLCK),
-	start,
-	length
+        &p.location,
+        ((exclusive & LOCK_PREP_EXCLUSIVE) ? F_WRLCK : F_RDLCK),
+        start,
+        length
     );
     p.release_immediately = (exclusive & LOCK_PREP_PRIORITY);
     p.callback = callback;
@@ -201,11 +202,11 @@ lock_prepare(long start, long length, int exclusive, lock_callback_ty callback,
     //
     for (j = 0; j < nplaces; ++j)
     {
-	if (flock_equal(&p.location, &place[j].location))
-	{
-	    trace(("}\n"));
-	    return;
-	}
+        if (flock_equal(&p.location, &place[j].location))
+        {
+            trace(("}\n"));
+            return;
+        }
     }
 
     //
@@ -217,12 +218,12 @@ lock_prepare(long start, long length, int exclusive, lock_callback_ty callback,
     //
     if (nplaces >= nplaces_max)
     {
-	nplaces_max = nplaces_max * 2 + 4;
-	lock_place_ty *new_place = new lock_place_ty [nplaces_max];
-	for (size_t k = 0; k < nplaces; ++k)
-	    new_place[k] = place[k];
-	delete [] place;
-	place = new_place;
+        nplaces_max = nplaces_max * 2 + 4;
+        lock_place_ty *new_place = new lock_place_ty [nplaces_max];
+        for (size_t k = 0; k < nplaces; ++k)
+            new_place[k] = place[k];
+        delete [] place;
+        place = new_place;
     }
     place[nplaces++] = p;
     trace(("}\n"));
@@ -243,14 +244,14 @@ lock_prepare_mux(lock_mux_ty lock_mux, long n, int exclusive,
     lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_mux(lock_mux = %d, n = %ld, excl = %d)\n{\n",
-	lock_mux, n, exclusive));
+        lock_mux, n, exclusive));
     lock_prepare
     (
-	((lock_mux + 1L) << BITS) + (n & BITS_MASK),
-	1L,
-	exclusive,
-	callback,
-	arg
+        ((lock_mux + 1L) << BITS) + (n & BITS_MASK),
+        1L,
+        exclusive,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -263,11 +264,11 @@ lock_prepare_mux_all(lock_mux_ty lock_mux, int exclusive,
     trace(("lock_prepare_mux_all(lock_mux = %d)\n{\n", lock_mux));
     lock_prepare
     (
-	((lock_mux + 1L) << BITS),
-	BITS_SIZE,
-	exclusive,
-	callback,
-	arg
+        ((lock_mux + 1L) << BITS),
+        BITS_SIZE,
+        exclusive,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -279,11 +280,11 @@ lock_prepare_pstate(string_ty *s, lock_callback_ty callback, void *arg)
     trace(("lock_prepare_pstate(s = \"%s\")\n{\n", s->str_text));
     lock_prepare_mux
     (
-	lock_mux_pstate,
-	(long)s->str_hash,
-	LOCK_PREP_EXCLUSIVE,
-	callback,
-	arg
+        lock_mux_pstate,
+        (long)s->str_hash,
+        LOCK_PREP_EXCLUSIVE,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -296,20 +297,20 @@ lock_prepare_baseline_read(string_ty *s, lock_callback_ty callback, void *arg)
 #ifdef LOCK_PRIORITY_SCHEME
     lock_prepare_mux
     (
-	lock_mux_baseline_priority,
-	(long)s->str_hash,
-	LOCK_PREP_EXCL_PRIO,
-	callback,
-	arg
+        lock_mux_baseline_priority,
+        (long)s->str_hash,
+        LOCK_PREP_EXCL_PRIO,
+        callback,
+        arg
     );
 #endif
     lock_prepare_mux
     (
-	lock_mux_baseline,
-	(long)s->str_hash,
-	LOCK_PREP_SHARED,
-	callback,
-	arg
+        lock_mux_baseline,
+        (long)s->str_hash,
+        LOCK_PREP_SHARED,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -322,20 +323,20 @@ lock_prepare_baseline_write(string_ty *s, lock_callback_ty callback, void *arg)
 #ifdef LOCK_PRIORITY_SCHEME
     lock_prepare_mux
     (
-	lock_mux_baseline_priority,
-	(long)s->str_hash,
-	LOCK_PREP_EXCLUSIVE,
-	callback,
-	arg
+        lock_mux_baseline_priority,
+        (long)s->str_hash,
+        LOCK_PREP_EXCLUSIVE,
+        callback,
+        arg
     );
 #endif
     lock_prepare_mux
     (
-	lock_mux_baseline,
-	(long)s->str_hash,
-	LOCK_PREP_EXCLUSIVE,
-	callback,
-	arg
+        lock_mux_baseline,
+        (long)s->str_hash,
+        LOCK_PREP_EXCLUSIVE,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -347,11 +348,11 @@ lock_prepare_history(string_ty *s, lock_callback_ty callback, void *arg)
     trace(("lock_prepare_pstate(s = \"%s\")\n{\n", s->str_text));
     lock_prepare_mux
     (
-	lock_mux_history,
-	(long)s->str_hash,
-	LOCK_PREP_EXCLUSIVE,
-	callback,
-	arg
+        lock_mux_history,
+        (long)s->str_hash,
+        LOCK_PREP_EXCLUSIVE,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -363,11 +364,11 @@ lock_prepare_ustate(int uid, lock_callback_ty callback, void *arg)
     trace(("lock_prepare_ustate()\n{\n"));
     lock_prepare_mux
     (
-	lock_mux_ustate,
-	(long)uid,
-	LOCK_PREP_EXCLUSIVE,
-	callback,
-	arg
+        lock_mux_ustate,
+        (long)uid,
+        LOCK_PREP_EXCLUSIVE,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -387,14 +388,14 @@ lock_prepare_cstate(string_ty *project_name, long change_number,
     lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_cstate(project_name = \"%s\", change_number = %ld)\n"
-	"{\n", project_name->str_text, change_number));
+        "{\n", project_name->str_text, change_number));
     lock_prepare_mux
     (
-	lock_mux_cstate,
-	change_number + project_name->str_hash,
-	LOCK_PREP_EXCLUSIVE,
-	callback,
-	arg
+        lock_mux_cstate,
+        change_number + project_name->str_hash,
+        LOCK_PREP_EXCLUSIVE,
+        callback,
+        arg
     );
     trace(("}\n"));
 }
@@ -406,13 +407,13 @@ flock_type_string(int n)
     switch (n)
     {
     case F_RDLCK:
-	return "F_RDLCK";
+        return "F_RDLCK";
 
     case F_WRLCK:
-	return "F_WRLCK";
+        return "F_WRLCK";
 
     case F_UNLCK:
-	return "F_UNLCK";
+        return "F_UNLCK";
     }
     return "unknown";
 }
@@ -424,13 +425,13 @@ flock_whence_string(int n)
     switch (n)
     {
     case SEEK_SET:
-	return "SEEK_SET";
+        return "SEEK_SET";
 
     case SEEK_CUR:
-	return "SEEK_CUR";
+        return "SEEK_CUR";
 
     case SEEK_END:
-	return "SEEK_END";
+        return "SEEK_END";
     }
     return "unknown";
 }
@@ -443,14 +444,14 @@ flock_string(struct flock *p)
 
     snprintf
     (
-	buffer,
-	sizeof(buffer),
-	"&{type = %s, whence = %s, start = %ld, len = %ld, pid = %d}",
-	flock_type_string(p->l_type),
-	flock_whence_string(p->l_whence),
-	(long)p->l_start,
-	(long)p->l_len,
-	p->l_pid
+        buffer,
+        sizeof(buffer),
+        "&{type = %s, whence = %s, start = %ld, len = %ld, pid = %d}",
+        flock_type_string(p->l_type),
+        flock_whence_string(p->l_whence),
+        (long)p->l_start,
+        (long)p->l_len,
+        p->l_pid
     );
     return buffer;
 }
@@ -462,30 +463,30 @@ lock_description(struct flock *p)
     switch (p->l_start)
     {
     case lock_master:
-	return "master";
+        return "master";
 
     case lock_gstate:
-	return "global state";
+        return "global state";
     }
     switch ((p->l_start >> BITS) - 1)
     {
     case lock_mux_baseline_priority:
-	return "baseline priority";
+        return "baseline priority";
 
     case lock_mux_ustate:
-	return "user";
+        return "user";
 
     case lock_mux_cstate:
-	return "change";
+        return "change";
 
     case lock_mux_pstate:
-	return "project";
+        return "project";
 
     case lock_mux_baseline:
-	return "baseline";
+        return "baseline";
 
     case lock_mux_history:
-	return "history";
+        return "history";
     }
     return "unknown";
 }
@@ -496,9 +497,9 @@ lock_quitter()
 {
     if (fd >= 0)
     {
-	while (os_become_active())
-	    os_become_undo();
-	lock_release();
+        while (os_become_active())
+            os_become_undo();
+        lock_release();
     }
 }
 
@@ -522,11 +523,11 @@ lock_take(void)
     assert(nplaces);
     if (!quitregd)
     {
-	quitregd = 1;
-	quit_register(quitter);
+        quitregd = 1;
+        quit_register(quitter);
     }
     if (!path)
-	path = gonzo_lockpath_get();
+        path = gonzo_lockpath_get();
 
     //
     // See if we will wait for locks.
@@ -567,16 +568,16 @@ lock_take(void)
 #endif
     if (fd < 0)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("open $filename: $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        fatal_intl(scp, i18n("open $filename: $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     trace_int(fd);
 
@@ -587,31 +588,31 @@ lock_take(void)
     int flags = 0;
     if (fcntl(fd, F_GETFD, &flags))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETFD): $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETFD): $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     flags |= 1;
     if (fcntl(fd, F_SETFD, flags))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	sub_var_set_long(scp, "Argument", flags);
-	fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETFD, $arg): $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        sub_var_set_long(scp, "Argument", flags);
+        fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETFD, $arg): $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     trace(("mark\n"));
 #endif
@@ -632,290 +633,290 @@ lock_take(void)
     //
     for (;;)
     {
-	//
-	// Cope with interrupts while trying to obtain locks.
-	//
-	os_interrupt_cope();
+        //
+        // Cope with interrupts while trying to obtain locks.
+        //
+        os_interrupt_cope();
 
-	//
-	// get the master lock
-	// (block if necessary,
-	// it should never be held for long)
-	//
-	trace(("mark\n"));
+        //
+        // get the master lock
+        // (block if necessary,
+        // it should never be held for long)
+        //
+        trace(("mark\n"));
 #ifndef WHOLE_FILE_LOCKS_ONLY
-	flock_construct(&p, F_WRLCK, (long)lock_master, 1L);
-	if (glue_fcntl(fd, F_SETLKW, &p))
-	{
-	    sub_context_ty  *scp;
-	    int             errno_old;
+        flock_construct(&p, F_WRLCK, (long)lock_master, 1L);
+        if (glue_fcntl(fd, F_SETLKW, &p))
+        {
+            sub_context_ty  *scp;
+            int             errno_old;
 
-	    errno_old = errno;
-	    if (errno_old == EINTR)
-		os_interrupt_cope();
-	    scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_charstar(scp, "Argument", flock_string(&p));
-	    fatal_intl
-	    (
-		scp,
-		i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-	    );
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+            errno_old = errno;
+            if (errno_old == EINTR)
+                os_interrupt_cope();
+            scp = sub_context_new();
+            sub_errno_setx(scp, errno_old);
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_charstar(scp, "Argument", flock_string(&p));
+            fatal_intl
+            (
+                scp,
+                i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+            );
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
 #endif
 
-	//
-	// get each of the locks we really wanted
-	//
-	for (j = 0; j < nplaces; ++j)
-	{
-	    trace(("mark\n"));
+        //
+        // get each of the locks we really wanted
+        //
+        for (j = 0; j < nplaces; ++j)
+        {
+            trace(("mark\n"));
 #ifdef WHOLE_FILE_LOCKS_ONLY
-	    assert(!place[j].release_immediately);
+            assert(!place[j].release_immediately);
 #endif
-	    p = place[j].location;	// yes, copy it
-	    if (glue_fcntl(fd, F_SETLK, &p))
-	    {
-		if (errno != EACCES && errno != EAGAIN)
-		{
-		    sub_context_ty  *scp;
-		    int             errno_old;
+            p = place[j].location;      // yes, copy it
+            if (glue_fcntl(fd, F_SETLK, &p))
+            {
+                if (errno != EACCES && errno != EAGAIN)
+                {
+                    sub_context_ty  *scp;
+                    int             errno_old;
 
-		    errno_old = errno;
-		    scp = sub_context_new();
-		    sub_errno_setx(scp, errno_old);
-		    sub_var_set_string(scp, "File_Name", path);
-		    sub_var_set_charstar(scp, "Argument", flock_string(&p));
-		    fatal_intl
-		    (
-			scp,
-			i18n("fcntl(\"$filename\", F_SETLK, $arg): $errno")
-		    );
-		    // NOTREACHED
-		    sub_context_delete(scp);
-		}
-		break;
-	    }
-	}
+                    errno_old = errno;
+                    scp = sub_context_new();
+                    sub_errno_setx(scp, errno_old);
+                    sub_var_set_string(scp, "File_Name", path);
+                    sub_var_set_charstar(scp, "Argument", flock_string(&p));
+                    fatal_intl
+                    (
+                        scp,
+                        i18n("fcntl(\"$filename\", F_SETLK, $arg): $errno")
+                    );
+                    // NOTREACHED
+                    sub_context_delete(scp);
+                }
+                break;
+            }
+        }
 
-	//
-	// return if were successful.
-	//
-	if (j >= nplaces)
-	{
-	    trace(("mark\n"));
+        //
+        // return if were successful.
+        //
+        if (j >= nplaces)
+        {
+            trace(("mark\n"));
 #ifndef WHOLE_FILE_LOCKS_ONLY
-	    flock_construct(&p, F_UNLCK, (long)lock_master, 1L);
-	    if (glue_fcntl(fd, F_SETLKW, &p))
-	    {
-		sub_context_ty  *scp;
-		int             errno_old;
+            flock_construct(&p, F_UNLCK, (long)lock_master, 1L);
+            if (glue_fcntl(fd, F_SETLKW, &p))
+            {
+                sub_context_ty  *scp;
+                int             errno_old;
 
-		errno_old = errno;
-		scp = sub_context_new();
-		sub_errno_setx(scp, errno_old);
-		sub_var_set_string(scp, "File_Name", path);
-		sub_var_set_charstar(scp, "Argument", flock_string(&p));
-		fatal_intl
-		(
-		    scp,
-		    i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-		);
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
+                errno_old = errno;
+                scp = sub_context_new();
+                sub_errno_setx(scp, errno_old);
+                sub_var_set_string(scp, "File_Name", path);
+                sub_var_set_charstar(scp, "Argument", flock_string(&p));
+                fatal_intl
+                (
+                    scp,
+                    i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+                );
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
 
-	    //
-	    // Unlock any of the "release immediately" locks.
-	    // (These are used to gain a modicum of fairness.)
-	    //
-	    for (j = 0; j < nplaces; ++j)
-	    {
-		if (!place[j].release_immediately)
-		    continue;
-		trace(("mark\n"));
-		p = place[j].location;	// yes, copy it
-		p.l_type = F_UNLCK;
-		if (glue_fcntl(fd, F_SETLKW, &p))
-		{
-		    sub_context_ty  *scp;
-		    int             errno_old;
+            //
+            // Unlock any of the "release immediately" locks.
+            // (These are used to gain a modicum of fairness.)
+            //
+            for (j = 0; j < nplaces; ++j)
+            {
+                if (!place[j].release_immediately)
+                    continue;
+                trace(("mark\n"));
+                p = place[j].location;  // yes, copy it
+                p.l_type = F_UNLCK;
+                if (glue_fcntl(fd, F_SETLKW, &p))
+                {
+                    sub_context_ty  *scp;
+                    int             errno_old;
 
-		    errno_old = errno;
-		    scp = sub_context_new();
-		    sub_errno_setx(scp, errno_old);
-		    sub_var_set_string(scp, "File_Name", path);
-		    sub_var_set_charstar(scp, "Argument", flock_string(&p));
-		    fatal_intl
-		    (
-			scp,
-			i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-		    );
-		    // NOTREACHED
-		    sub_context_delete(scp);
-		}
-	    }
+                    errno_old = errno;
+                    scp = sub_context_new();
+                    sub_errno_setx(scp, errno_old);
+                    sub_var_set_string(scp, "File_Name", path);
+                    sub_var_set_charstar(scp, "Argument", flock_string(&p));
+                    fatal_intl
+                    (
+                        scp,
+                        i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+                    );
+                    // NOTREACHED
+                    sub_context_delete(scp);
+                }
+            }
 #endif // WHOLE_FILE_LOCKS_ONLY
-	    break;
-	}
+            break;
+        }
 
-	//
-	// give all the locks back
-	// that we got so far
-	//
-	flock_construct(&p, F_UNLCK, 0L, 0L);
-	if (glue_fcntl(fd, F_SETLKW, &p))
-	{
-	    sub_context_ty  *scp;
-	    int             errno_old;
+        //
+        // give all the locks back
+        // that we got so far
+        //
+        flock_construct(&p, F_UNLCK, 0L, 0L);
+        if (glue_fcntl(fd, F_SETLKW, &p))
+        {
+            sub_context_ty  *scp;
+            int             errno_old;
 
-	    errno_old = errno;
-	    scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_charstar(scp, "Argument", flock_string(&p));
-	    fatal_intl
-	    (
-		scp,
-		i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-	    );
-	}
+            errno_old = errno;
+            scp = sub_context_new();
+            sub_errno_setx(scp, errno_old);
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_charstar(scp, "Argument", flock_string(&p));
+            fatal_intl
+            (
+                scp,
+                i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+            );
+        }
 
-	//
-	// Cope with interrupts while trying to obtain locks.
-	//
-	os_interrupt_cope();
-	trace(("mark\n"));
+        //
+        // Cope with interrupts while trying to obtain locks.
+        //
+        os_interrupt_cope();
+        trace(("mark\n"));
 
-	//
-	// verbose message about why we are blocking
-	//
-	if (place[j].callback)
-	{
-	    place[j].callback(place[j].callback_arg);
-	    if (!wait_for_locks)
-	    {
-		sub_context_ty  *scp;
+        //
+        // verbose message about why we are blocking
+        //
+        if (place[j].callback)
+        {
+            place[j].callback(place[j].callback_arg);
+            if (!wait_for_locks)
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
+                scp = sub_context_new();
 
-		// should never be reached
-		sub_var_set_charstar(scp, "Name", lock_description(&p));
-		fatal_intl(scp, i18n("$name lock not available"));
-		sub_context_delete(scp);
-	    }
-	}
-	else
-	{
-	    sub_context_ty  *scp;
+                // should never be reached
+                sub_var_set_charstar(scp, "Name", lock_description(&p));
+                fatal_intl(scp, i18n("$name lock not available"));
+                sub_context_delete(scp);
+            }
+        }
+        else
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    p = place[j].location;	// yes, copy it
-	    sub_var_set_charstar(scp, "Name", lock_description(&p));
-	    if (wait_for_locks)
-		verbose_intl(scp, i18n("waiting for $name lock"));
-	    else
-		fatal_intl(scp, i18n("$name lock not available"));
-	    sub_context_delete(scp);
-	}
+            scp = sub_context_new();
+            p = place[j].location;      // yes, copy it
+            sub_var_set_charstar(scp, "Name", lock_description(&p));
+            if (wait_for_locks)
+                verbose_intl(scp, i18n("waiting for $name lock"));
+            else
+                fatal_intl(scp, i18n("$name lock not available"));
+            sub_context_delete(scp);
+        }
 
-	//
-	// sleep for a random number of seconds.
-	// This is necessary, because it is possible for two
-	// processes to be trying for the same lock
-	// and they alternate in the next wait.
-	//
-	nsecs = r250() % 5;
-	if (nsecs)
-	{
-	    sleep(nsecs);
-	    os_interrupt_cope();
-	}
+        //
+        // sleep for a random number of seconds.
+        // This is necessary, because it is possible for two
+        // processes to be trying for the same lock
+        // and they alternate in the next wait.
+        //
+        nsecs = r250() % 5;
+        if (nsecs)
+        {
+            sleep(nsecs);
+            os_interrupt_cope();
+        }
 
-	//
-	// block on the lock that stopped us before
-	//
-	if (j > 0 && place[j - 1].release_immediately)
-	{
-	    //
-	    // If the lock is preceeded by a priority lock,
-	    // take that too, to stop them getting through.
-	    // We can probably get it without waiting,
-	    // because we already got it once before.
-	    //
-	    trace(("mark\n"));
-	    p = place[j - 1].location;	// yes, copy it
-	    if (glue_fcntl(fd, F_SETLKW, &p))
-	    {
-		sub_context_ty  *scp;
-		int             errno_old;
+        //
+        // block on the lock that stopped us before
+        //
+        if (j > 0 && place[j - 1].release_immediately)
+        {
+            //
+            // If the lock is preceeded by a priority lock,
+            // take that too, to stop them getting through.
+            // We can probably get it without waiting,
+            // because we already got it once before.
+            //
+            trace(("mark\n"));
+            p = place[j - 1].location;  // yes, copy it
+            if (glue_fcntl(fd, F_SETLKW, &p))
+            {
+                sub_context_ty  *scp;
+                int             errno_old;
 
-		errno_old = errno;
-		if (errno_old == EINTR)
-		    os_interrupt_cope();
-		scp = sub_context_new();
-		sub_errno_setx(scp, errno_old);
-		sub_var_set_string(scp, "File_Name", path);
-		sub_var_set_charstar(scp, "Argument", flock_string(&p));
-		fatal_intl
-		(
-		    scp,
-		    i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-		);
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	}
-	trace(("mark\n"));
-	p = place[j].location;	// yes, copy it
-	if (glue_fcntl(fd, F_SETLKW, &p))
-	{
-	    sub_context_ty  *scp;
-	    int             errno_old;
+                errno_old = errno;
+                if (errno_old == EINTR)
+                    os_interrupt_cope();
+                scp = sub_context_new();
+                sub_errno_setx(scp, errno_old);
+                sub_var_set_string(scp, "File_Name", path);
+                sub_var_set_charstar(scp, "Argument", flock_string(&p));
+                fatal_intl
+                (
+                    scp,
+                    i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+                );
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+        }
+        trace(("mark\n"));
+        p = place[j].location;  // yes, copy it
+        if (glue_fcntl(fd, F_SETLKW, &p))
+        {
+            sub_context_ty  *scp;
+            int             errno_old;
 
-	    errno_old = errno;
-	    if (errno_old == EINTR)
-		os_interrupt_cope();
-	    scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_charstar(scp, "Argument", flock_string(&p));
-	    fatal_intl
-	    (
-		scp,
-		i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-	    );
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+            errno_old = errno;
+            if (errno_old == EINTR)
+                os_interrupt_cope();
+            scp = sub_context_new();
+            sub_errno_setx(scp, errno_old);
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_charstar(scp, "Argument", flock_string(&p));
+            fatal_intl
+            (
+                scp,
+                i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+            );
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
 
-	//
-	// and then release it,
-	// before trying all over again.
-	//
-	flock_construct(&p, F_UNLCK, 0L, 0L);
-	if (glue_fcntl(fd, F_SETLKW, &p))
-	{
-	    sub_context_ty  *scp;
-	    int             errno_old;
+        //
+        // and then release it,
+        // before trying all over again.
+        //
+        flock_construct(&p, F_UNLCK, 0L, 0L);
+        if (glue_fcntl(fd, F_SETLKW, &p))
+        {
+            sub_context_ty  *scp;
+            int             errno_old;
 
-	    errno_old = errno;
-	    scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_charstar(scp, "Argument", flock_string(&p));
-	    fatal_intl
-	    (
-		scp,
-		i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
-	    );
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-	trace(("mark\n"));
+            errno_old = errno;
+            scp = sub_context_new();
+            sub_errno_setx(scp, errno_old);
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_charstar(scp, "Argument", flock_string(&p));
+            fatal_intl
+            (
+                scp,
+                i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+            );
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        trace(("mark\n"));
     }
     gonzo_become_undo();
     magic++;
@@ -962,28 +963,28 @@ lock_release(void)
 #ifdef __CYGWIN__
     if (err && errno == EACCES)
     {
-	//
-	// For some reason Cygwin gives an error if you attempt
-	// to release all locks when you have no locks taken.
-	// Unix implementations, on the other hand, simply
-	// return success.
-	//
-	err = 0;
+        //
+        // For some reason Cygwin gives an error if you attempt
+        // to release all locks when you have no locks taken.
+        // Unix implementations, on the other hand, simply
+        // return success.
+        //
+        err = 0;
     }
 #endif
     if (err)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	sub_var_set_charstar(scp, "Argument", flock_string(&p));
-	fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        sub_var_set_charstar(scp, "Argument", flock_string(&p));
+        fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -1021,36 +1022,36 @@ lock_walk_hunt(long min, long max, lock_walk_callback callback)
     gonzo_become();
     if (glue_fcntl(fd, F_GETLK, &file_lock))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	sub_var_set_charstar(scp, "Argument", flock_string(&file_lock));
-	fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETLK, $arg): $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        sub_var_set_charstar(scp, "Argument", flock_string(&file_lock));
+        fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETLK, $arg): $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     gonzo_become_undo();
     if (file_lock.l_type == F_UNLCK)
-	return;
+        return;
 
     //
     // Some operating systems return more than we asked for.
     //
     if (file_lock.l_start < min)
     {
-	file_lock.l_len -= (min - file_lock.l_start);
-	file_lock.l_start = min;
+        file_lock.l_len -= (min - file_lock.l_start);
+        file_lock.l_start = min;
     }
     if (file_lock.l_len <= 0)
-	return;
+        return;
     if (file_lock.l_start + file_lock.l_len > max)
-	file_lock.l_len = max - file_lock.l_start;
+        file_lock.l_len = max - file_lock.l_start;
     if (file_lock.l_len <= 0)
-	return;
+        return;
 
     //
     // aegis only uses byte locks,
@@ -1058,115 +1059,115 @@ lock_walk_hunt(long min, long max, lock_walk_callback callback)
     //
     for (j = 0; j < file_lock.l_len; ++j)
     {
-	//
-	// figure the name and address
-	//
-	found.address = file_lock.l_start + j;
-	found.subset = 0;
-	switch (found.address)
-	{
-	case lock_master:
-	    found.name = lock_walk_name_master;
-	    break;
+        //
+        // figure the name and address
+        //
+        found.address = file_lock.l_start + j;
+        found.subset = 0;
+        switch (found.address)
+        {
+        case lock_master:
+            found.name = lock_walk_name_master;
+            break;
 
-	case lock_gstate:
-	    found.name = lock_walk_name_gstate;
-	    break;
+        case lock_gstate:
+            found.name = lock_walk_name_gstate;
+            break;
 
-	default:
-	    switch ((found.address >> BITS) - 1)
-	    {
-	    case lock_mux_ustate:
-		found.name = lock_walk_name_ustate;
-		found.subset = found.address & BITS_MASK;
-		break;
+        default:
+            switch ((found.address >> BITS) - 1)
+            {
+            case lock_mux_ustate:
+                found.name = lock_walk_name_ustate;
+                found.subset = found.address & BITS_MASK;
+                break;
 
-	    case lock_mux_pstate:
-		found.name = lock_walk_name_pstate;
-		found.subset = found.address & BITS_MASK;
-		break;
+            case lock_mux_pstate:
+                found.name = lock_walk_name_pstate;
+                found.subset = found.address & BITS_MASK;
+                break;
 
-	    case lock_mux_cstate:
-		found.name = lock_walk_name_cstate;
-		found.subset = found.address & BITS_MASK;
-		break;
+            case lock_mux_cstate:
+                found.name = lock_walk_name_cstate;
+                found.subset = found.address & BITS_MASK;
+                break;
 
-	    case lock_mux_baseline_priority:
-		found.name = lock_walk_name_baseline_priority;
-		found.subset = found.address & BITS_MASK;
-		break;
+            case lock_mux_baseline_priority:
+                found.name = lock_walk_name_baseline_priority;
+                found.subset = found.address & BITS_MASK;
+                break;
 
-	    case lock_mux_baseline:
-		found.name = lock_walk_name_baseline;
-		found.subset = found.address & BITS_MASK;
-		break;
+            case lock_mux_baseline:
+                found.name = lock_walk_name_baseline;
+                found.subset = found.address & BITS_MASK;
+                break;
 
-	    case lock_mux_history:
-		found.name = lock_walk_name_history;
-		found.subset = found.address & BITS_MASK;
-		break;
+            case lock_mux_history:
+                found.name = lock_walk_name_history;
+                found.subset = found.address & BITS_MASK;
+                break;
 
-	    default:
-		found.name = lock_walk_name_unknown;
-		break;
-	    }
-	}
+            default:
+                found.name = lock_walk_name_unknown;
+                break;
+            }
+        }
 
-	//
-	// figure the type
-	//
-	switch (file_lock.l_type)
-	{
-	case F_RDLCK:
-	    found.type = lock_walk_type_shared;
-	    break;
+        //
+        // figure the type
+        //
+        switch (file_lock.l_type)
+        {
+        case F_RDLCK:
+            found.type = lock_walk_type_shared;
+            break;
 
-	case F_WRLCK:
-	    found.type = lock_walk_type_exclusive;
-	    break;
+        case F_WRLCK:
+            found.type = lock_walk_type_exclusive;
+            break;
 
-	default:
-	    found.type = lock_walk_type_unknown;
-	    break;
-	}
+        default:
+            found.type = lock_walk_type_unknown;
+            break;
+        }
 
-	//
-	// Process holding the lock.
-	// Workout if it is local or remote.
-	//
-	found.pid = file_lock.l_pid;
-	if (kill(found.pid, 0))
-	{
-	    switch (errno)
-	    {
-	    default:
-		nfatal("kill(%d, 0)", found.pid);
+        //
+        // Process holding the lock.
+        // Workout if it is local or remote.
+        //
+        found.pid = file_lock.l_pid;
+        if (kill(found.pid, 0))
+        {
+            switch (errno)
+            {
+            default:
+                nfatal("kill(%d, 0)", found.pid);
 
-	    case EPERM:
-		found.pid_is_local = 1;
-		break;
+            case EPERM:
+                found.pid_is_local = 1;
+                break;
 
-	    case ESRCH:
-		found.pid_is_local = 0;
-		break;
-	    }
-	}
-	else
-	    found.pid_is_local = 1;
+            case ESRCH:
+                found.pid_is_local = 0;
+                break;
+            }
+        }
+        else
+            found.pid_is_local = 1;
 
-	//
-	// do something with it
-	//
-	callback(&found);
+        //
+        // do something with it
+        //
+        callback(&found);
     }
 
     //
     // look for more locks on either side
     //
     if (min < file_lock.l_start)
-	lock_walk_hunt(min, file_lock.l_start, callback);
+        lock_walk_hunt(min, file_lock.l_start, callback);
     if (file_lock.l_start + file_lock.l_len < max)
-	lock_walk_hunt(file_lock.l_start + file_lock.l_len, max, callback);
+        lock_walk_hunt(file_lock.l_start + file_lock.l_len, max, callback);
 }
 
 
@@ -1178,25 +1179,25 @@ lock_walk(lock_walk_callback callback)
     assert(!nplaces);
     if (!quitregd)
     {
-	quitregd = 1;
-	quit_register(quitter);
+        quitregd = 1;
+        quit_register(quitter);
     }
     if (!path)
-	path = gonzo_lockpath_get();
+        path = gonzo_lockpath_get();
     gonzo_become();
     fd = glue_open(path->str_text, O_RDWR | O_CREAT | O_TRUNC, 0600);
     if (fd < 0)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("open $filename: $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        fatal_intl(scp, i18n("open $filename: $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     trace_int(fd);
 
@@ -1207,31 +1208,31 @@ lock_walk(lock_walk_callback callback)
     int flags = 0;
     if (fcntl(fd, F_GETFD, &flags))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETFD): $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETFD): $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     flags |= 1;
     if (fcntl(fd, F_SETFD, flags))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	sub_var_set_long(scp, "Argument", flags);
-	fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETFD, $arg): $errno"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        sub_var_set_long(scp, "Argument", flags);
+        fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETFD, $arg): $errno"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     trace(("mark\n"));
 #endif
@@ -1265,7 +1266,7 @@ lock_release_child(void)
     // Only do this if and only if we are NOT using a proxy.
     //
     if (fd >= 0)
-	close(fd);
+        close(fd);
     fd = -1;
 #endif
 }
@@ -1276,3 +1277,6 @@ lock_active()
 {
     return (fd >= 0);
 }
+
+
+// vim: set ts=8 sw=4 et :

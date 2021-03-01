@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/libintl.h>
@@ -37,7 +36,7 @@ static int
 header_getc(void)
 {
     if (!header_pos || !*header_pos)
-	return 0;
+        return 0;
     return *header_pos++;
 }
 
@@ -46,9 +45,9 @@ static void
 header_ungetc(int c)
 {
     if (!c)
-	return;
+        return;
     if (header_pos > header_begin && header_pos[-1] == c)
-	--header_pos;
+        --header_pos;
 }
 
 
@@ -59,23 +58,23 @@ header_get_line(void)
     sa.clear();
     for (;;)
     {
-	int c = header_getc();
-	if (!c)
-	{
-	    if (sa.empty())
-		return "";
-	    break;
-	}
-	if (c == '\n')
-	{
-	    c = header_getc();
-	    if (c != ' ' && c != '\t')
-	    {
-		header_ungetc(c);
-		break;
-	    }
-	}
-	sa.push_back(c);
+        int c = header_getc();
+        if (!c)
+        {
+            if (sa.empty())
+                return "";
+            break;
+        }
+        if (c == '\n')
+        {
+            c = header_getc();
+            if (c != ' ' && c != '\t')
+            {
+                header_ungetc(c);
+                break;
+            }
+        }
+        sa.push_back(c);
     }
     return sa.mkstr();
 }
@@ -97,13 +96,13 @@ find_plural_forms(void)
     //
     for (;;)
     {
-	nstring s = header_get_line();
-	if (!s)
-	    break;
-	if (0 == strncasecmp(s.c_str(), "plural-forms:", 13))
-	{
-	    return nstring(s.c_str() + 13, s.size() - 13);
-	}
+        nstring s = header_get_line();
+        if (!s)
+            break;
+        if (0 == strncasecmp(s.c_str(), "plural-forms:", 13))
+        {
+            return nstring(s.c_str() + 13, s.size() - 13);
+        }
     }
 
     //
@@ -127,10 +126,10 @@ sub_plural_forms(sub_context_ty *scp, const wstring_list &arg)
     wstring result;
     if (arg.size() < 2)
     {
-	oh_dear:
-	scp->error_set(i18n("requires two or three arguments"));
-	trace(("}\n"));
-	return result;
+        oh_dear:
+        scp->error_set(i18n("requires two or three arguments"));
+        trace(("}\n"));
+        return result;
     }
 
     //
@@ -141,21 +140,21 @@ sub_plural_forms(sub_context_ty *scp, const wstring_list &arg)
     size_t argpos = 1;
     if (arg[argpos][0] == '@')
     {
-	nstring s = arg[1].to_nstring();
-	plural_forms = s.substring(1, s.size());
-	++argpos;
+        nstring s = arg[1].to_nstring();
+        plural_forms = s.substr(1, s.size());
+        ++argpos;
     }
     else
     {
-	if (!plural_forms)
-	    plural_forms = find_plural_forms();
+        if (!plural_forms)
+            plural_forms = find_plural_forms();
     }
 
     //
     // Get the number of items that the plural form is for.
     //
     if (argpos >= arg.size())
-	goto oh_dear;
+        goto oh_dear;
     nstring s = arg[argpos++].to_nstring();
     unsigned n = s.to_long();
 
@@ -170,12 +169,15 @@ sub_plural_forms(sub_context_ty *scp, const wstring_list &arg)
     // return the singular form.
     //
     if (argpos >= arg.size())
-	goto oh_dear;
+        goto oh_dear;
     if (argpos + n > arg.size())
-	n = 0;
+        n = 0;
     result = arg[argpos + n];
 
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

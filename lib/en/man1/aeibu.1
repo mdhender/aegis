@@ -1,50 +1,49 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2001, 2002, 2005-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Integrate_Begin_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Integrate_Begin_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis integrate begin undo \- reverse the aeib command
 .XX "aeibu(1)" "reverse the aeib command"
 .SH SYNOPSIS
 .B \*(n)
-.B -Integrate_Begin_Undo
+.B \-Integrate_Begin_Undo
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Begin_Undo
-.B -List
+.B \-Integrate_Begin_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Begin_Undo
-.B -Help
+.B \-Integrate_Begin_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Integrate_Begin_Undo
+.I \-Integrate_Begin_Undo
 command is used to
 reverse the actions of the
-.I "'\*(n) -Integrate_Begin'"
+.I "'\*(n) \-Integrate_Begin'"
 command.
 .PP
 Successful execution of this command will move the change
@@ -62,7 +61,8 @@ down
 S4: box "awaiting" "integration"
 arrow " integrate" ljust " begin" ljust
 S5: box "being" "integrated"
-T4: spline -> from S5.w then left 0.5 then up 1 then to S4.w
+move to S5.w
+T4: spline -> left 0.5 then up 1 then to S4.w
 " integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.5,0)
 .PE
 .\" ------------------------------------------------------------------------
@@ -77,22 +77,22 @@ On successful completion of this command, the
 information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_keep.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aeibu '\*(n) -ibu \e!* -v'
-sh$	aeibu(){\*(n) -ibu "$@" -v}
+csh%    alias aeibu '\*(n) \-ibu \e!* \-v'
+sh$     aeibu(){\*(n) \-ibu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -103,7 +103,7 @@ state.
 It is an error if
 the change is not assigned to the current user
 and the current user is not a project administrator.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -113,4 +113,5 @@ begin integration of a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

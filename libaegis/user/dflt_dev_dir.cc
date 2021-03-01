@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2007, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/os.h>
@@ -23,7 +23,7 @@
 
 
 nstring
-user_ty::default_development_directory(project_ty *pp)
+user_ty::default_development_directory(project *pp)
 {
     //
     // To cope with automounters, directories are stored as given,
@@ -36,14 +36,17 @@ user_ty::default_development_directory(project_ty *pp)
     nstring path(ucp->default_development_directory);
     if (path.empty())
     {
-	path = nstring(project_default_development_directory_get(pp));
-	if (path.empty())
-	    path = get_home();
+        path = nstring(project_default_development_directory_get(pp));
+        if (path.empty())
+            path = get_home();
     }
     else
     {
-	if (path[0] != '/')
-	    path = os_path_join(get_home(), path);
+        if (path[0] != '/')
+            path = os_path_join(get_home(), path);
     }
     return path;
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2001, 2003-2006, 2008 Peter Miller
+//      Copyright (C) 1999-2001, 2003-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 wide_output_head::~wide_output_head()
 {
-    trace(("wide_output_head::destructor(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_head::destructor(this = %p)\n{\n", this));
     flush();
     trace(("}\n"));
 }
@@ -57,8 +57,8 @@ wide_output_head::filename()
 void
 wide_output_head::write_inner(const wchar_t *data, size_t len)
 {
-    trace(("wide_output_head::write(this = %08lX, date = %08lX, "
-        "len = %ld)\n{\n", (long)this, (long)data, (long)len));
+    trace(("wide_output_head::write(this = %p, data = %p, "
+        "len = %ld)\n{\n", this, data, (long)len));
     while (how_many_lines > 0 && len > 0)
     {
         wchar_t wc = *data++;
@@ -76,7 +76,7 @@ wide_output_head::write_inner(const wchar_t *data, size_t len)
 void
 wide_output_head::flush_inner()
 {
-    trace(("wide_output_head::flush(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_head::flush(this = %p)\n{\n", this));
     deeper->flush();
     trace(("}\n"));
 }
@@ -99,8 +99,8 @@ wide_output_head::page_length()
 void
 wide_output_head::end_of_line_inner()
 {
-    trace(("wide_output_head::end_of_line_inner(this = %08lX)\n{\n",
-        (long)this));
+    trace(("wide_output_head::end_of_line_inner(this = %p)\n{\n",
+        this));
     if (!prev_was_newline)
         put_wc(L'\n');
     trace(("}\n"));
@@ -113,3 +113,6 @@ wide_output_head::type_name()
 {
     return "wide_output_head";
 }
+
+
+// vim: set ts=8 sw=4 et :

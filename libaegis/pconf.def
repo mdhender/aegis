@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998-2008 Peter Miller
- *	Copyright (C) 2006 Walter Franzini;
+ *      aegis - project change supervisor
+ *      Copyright (C) 1991-1996, 1998-2008, 2012 Peter Miller
+ *      Copyright (C) 2006 Walter Franzini;
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 3 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 3 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see
- *	<http://www.gnu.org/licenses/>.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program. If not, see
+ *      <http://www.gnu.org/licenses/>.
  *
  *
  * this file normally resides at "projdir"/baseline/config
@@ -24,7 +24,7 @@
  * Indeed, it is in the baseline, and subject to history.
  *
  * if you change this file, don't forget to change
- *	man5/aepconf.5
+ *      man5/aepconf.5
  */
 
 #include <libaegis/common.def>
@@ -233,18 +233,18 @@ configuration_directory = string;
 
 /*
  * how to build the project
- *	(actually, how to do an integration build)
+ *      (actually, how to do an integration build)
  * mandatory
  *
  * All of the substitutions described in aesub(5) are available.
  *
  * Executed as: the intgerator (for integration builds) or the developer
- *	(for development builds).
+ *      (for development builds).
  * Current directory: the integration directory of the change (for
- *	integration builds) the development directory of the change
- *	(for development builds).
+ *      integration builds) the development directory of the change
+ *      (for development builds).
  * Exit status: zero is considered succes, non-zero is a failure
- *	and a subsequent successful (exit zero) build will be required.
+ *      and a subsequent successful (exit zero) build will be required.
  */
 build_command = string;
 
@@ -299,7 +299,7 @@ development_directory_style = work_area_style;
  * Executed as: the developer
  * Current directory: the development directory of the change
  * Exit status: zero is considered succes, non-zero is a failure
- *	and a subsequent successful (exit zero) build will be required.
+ *      and a subsequent successful (exit zero) build will be required.
  */
 development_build_command = string;
 
@@ -338,8 +338,8 @@ test_covers_all_architectures = boolean;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -355,8 +355,8 @@ change_file_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -372,8 +372,8 @@ new_file_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -389,8 +389,8 @@ new_test_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -406,8 +406,8 @@ copy_file_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -424,8 +424,8 @@ remove_file_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -441,8 +441,8 @@ change_file_undo_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -458,8 +458,8 @@ new_file_undo_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -475,8 +475,8 @@ new_test_undo_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -492,8 +492,8 @@ copy_file_undo_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -510,8 +510,8 @@ remove_file_undo_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -528,8 +528,8 @@ make_transparent_command = string;
  * In addition:
  *
  * ${File_List}
- *	space separated list of files named
- *	(at times, can be empty)
+ *      space separated list of files named
+ *      (at times, can be empty)
  *
  * Executed as: the developer
  * Current directory: the development directory of the change
@@ -539,9 +539,9 @@ make_transparent_undo_command = string;
 
 /*
  * Executed at development build before 'development_build_command' when
- *	(a)	it is the first build after a develop begin, or
- *	(b)	after some other change has been integrated into the baseline
- *		since the last build.
+ *      (a)     it is the first build after a develop begin, or
+ *      (b)     after some other change has been integrated into the baseline
+ *              since the last build.
  *
  * All of the substitutions described in aesub(5) are available.
  *
@@ -552,7 +552,19 @@ make_transparent_undo_command = string;
 project_file_command = string;
 
 /*
- * Executed at develop begin
+ * Executed at start of develop begin, immediately after the development
+ * directory has been created.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ *
+ * Executed as: the developer
+ * Current directory: the development directory of the change
+ * Exit status: ignored
+ */
+develop_begin_early_command = string;
+
+/*
+ * Executed at develop begin, towards the end of the aedb command.
  *
  * All of the substitutions described in aesub(5) are available.
  *
@@ -694,26 +706,26 @@ symlink_exceptions = [ string ];
  * In addition:
  *
  * ${Input}
- *	absolute path of the source file
+ *      absolute path of the source file
  *
  * ${History}
- *	absolute path of the history file
+ *      absolute path of the history file
  *
  * ${File_Name}   (Optional)
  *      The base relative file name of the file for this check-in.  Note
  *      that the file name can vary over the lifetime of the file as it
  *      is renamed, but the history file name never does.
- *	DO NOT use this as the name of the history file.
+ *      DO NOT use this as the name of the history file.
  *
  * ${UUID}   (Optional)
- *	The universally unique identifier for this file.
- *	This is invariant for the lifetime of the file.
- *	DO NOT use this as the name of the history file.
+ *      The universally unique identifier for this file.
+ *      This is invariant for the lifetime of the file.
+ *      DO NOT use this as the name of the history file.
  *
  * Executed as: the project owner
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the integrate pass will fail).
+ *      (the integrate pass will fail).
  */
 history_create_command = string;
 
@@ -724,19 +736,19 @@ history_create_command = string;
  * In addition:
  *
  * ${History}
- *	absolute path of the history file
+ *      absolute path of the history file
  *
  * ${Edit}
- *	edit number to be extracted (artibrary string)
+ *      edit number to be extracted (artibrary string)
  *
  * ${Output}
- *	Absolute path of output file.
+ *      Absolute path of output file.
  *
  * Executed as: the developer (or the executing user, in the case of
- *	the -independent option).
+ *      the -independent option).
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the aecp will fail).
+ *      (the aecp will fail).
  */
 history_get_command = string;
 
@@ -747,25 +759,25 @@ history_get_command = string;
  * In addition:
  *
  * ${Input}
- *	absolute path of the source file
+ *      absolute path of the source file
  *
  * ${History}
- *	absolute path of the history file
+ *      absolute path of the history file
  *
  * ${File_Name}   (Optional)
- *	the base relative file name of the file for this check-in.
- *	Note that the filename can vary, but the history file never does.
- *	DO NOT use this as the name of the history file.
+ *      the base relative file name of the file for this check-in.
+ *      Note that the filename can vary, but the history file never does.
+ *      DO NOT use this as the name of the history file.
  *
  * ${UUID}   (Optional)
- *	The universally unique identifier for this file.
- *	This is invariant for the lifetime of the file.
- *	DO NOT use this as the name of the history file.
+ *      The universally unique identifier for this file.
+ *      This is invariant for the lifetime of the file.
+ *      DO NOT use this as the name of the history file.
  *
  * Executed as: the project owner
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the integrate pass will fail).
+ *      (the integrate pass will fail).
  */
 history_put_command = string;
 
@@ -777,12 +789,12 @@ history_put_command = string;
  * In addition:
  *
  * ${History}
- *	absolute path of the history file
+ *      absolute path of the history file
  *
  * Executed as: the project owner
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the integrate pass will fail).
+ *      (the integrate pass will fail).
  */
 history_query_command = string;
 
@@ -797,7 +809,7 @@ history_query_command = string;
  * Executed as: the project owner
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the integrate pass will fail).
+ *      (the integrate pass will fail).
  */
 history_transaction_begin_command = string;
 
@@ -813,7 +825,7 @@ history_transaction_begin_command = string;
  * Executed as: the project owner
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the integrate pass will fail).
+ *      (the integrate pass will fail).
  */
 history_transaction_end_command = string;
 
@@ -840,16 +852,16 @@ history_transaction_abort_command = string;
  * referential integrity of the repository.
  *
  * fatal
- *	Emit a fatal error if a source file is modified by a
- *	history_put_command or history_create_command.
- *	This is the default.
+ *      Emit a fatal error if a source file is modified by a
+ *      history_put_command or history_create_command.
+ *      This is the default.
  *
  * warn
- *	Emit a warning if a source file is modified.
+ *      Emit a warning if a source file is modified.
  *
  * ignore
- *	Ignore a source file changing.	You sure better hope it was only
- *	in a comment!
+ *      Ignore a source file changing.  You sure better hope it was only
+ *      in a comment!
  */
 history_put_trashes_file = (fatal, warn, ignore);
 
@@ -858,18 +870,18 @@ history_put_trashes_file = (fatal, warn, ignore);
  * capable of working with.
  *
  * ascii_text
- *	The history tool can only cope with files which contain printable
- *	ASCII characters, plus space, tab and newline.	The file must
- *	end with a newline.  This is the default.
+ *      The history tool can only cope with files which contain printable
+ *      ASCII characters, plus space, tab and newline.  The file must
+ *      end with a newline.  This is the default.
  *
  * international_text
- *	The history tool can only cope with files which do not contain
- *	the NUL character.  The file must end with a newline.  This is
- *	the default.
+ *      The history tool can only cope with files which do not contain
+ *      the NUL character.  The file must end with a newline.  This is
+ *      the default.
  *
  * binary_capable
- *	The history tool can cope with files without any limitation on
- *	the form of the contents.
+ *      The history tool can cope with files without any limitation on
+ *      the form of the contents.
  *
  * When a file is added to the history (by either the history_create_
  * command or the history_put_command) it is examined for conformance
@@ -895,19 +907,19 @@ history_content_limitation = (ascii_text, international_text, binary_capable);
  * In addition:
  *
  * ${History}
- *	absolute path of the history file.
+ *      absolute path of the history file.
  *
  * ${Edit}
- *	edit number to be extracted (artibrary string).
+ *      edit number to be extracted (artibrary string).
  *
  * ${Label}
- *	During aedn(1), this is set to the name given in the command.
+ *      During aedn(1), this is set to the name given in the command.
  *      At integration pass it is the same as ${Version}.
  *
  * Executed as: the project owner
  * Current directory: the base of the history tree
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the integrate pass, but a warning will be issued).
+ *      (the integrate pass, but a warning will be issued).
  */
 history_label_command = string;
 
@@ -917,20 +929,20 @@ history_label_command = string;
  * In addition:
  *
  * ${ORiginal}
- *	absolute path of file in baseline (usually)
+ *      absolute path of file in baseline (usually)
  *
  * ${Input}
- *	absolute path of file in development directory (usually)
+ *      absolute path of file in development directory (usually)
  *
  * ${Output}
- *	Absolute path of output file
+ *      Absolute path of output file
  *
  * Executed as: the project owner (for integration diffs), or the
- *	developer (for development diffs)
+ *      developer (for development diffs)
  * Current directory: the integration directory (for integration diffs),
- *	or the development directory (for development diffs)
+ *      or the development directory (for development diffs)
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the aed will fail).
+ *      (the aed will fail).
  */
 diff_command = string;
 
@@ -940,21 +952,21 @@ diff_command = string;
  * substitutions described in aesub(5) are available.  In addition:
  *
  * ${ORiginal}
- *	Absolute path of common ancestor
+ *      Absolute path of common ancestor
  *
  * ${Most_Recent}
- *	Absolute path of competing edit, usually in the baseline.
+ *      Absolute path of competing edit, usually in the baseline.
  *
  * ${Input}
- *	absolute path of file in development directory (usually)
+ *      absolute path of file in development directory (usually)
  *
  * ${Output}
- *	absolute path of output file
+ *      absolute path of output file
  *
  * Executed as: the developer
  * Current directory: the development directory
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the aed will fail).
+ *      (the aed will fail).
  */
 diff3_command = string;
 
@@ -976,21 +988,21 @@ diff3_command = string;
  * In addition:
  *
  * ${ORiginal}
- *	Absolute path of common ancestor
+ *      Absolute path of common ancestor
  *
  * ${Most_Recent}
- *	Absolute path of competing edit, usually in the baseline.
+ *      Absolute path of competing edit, usually in the baseline.
  *
  * ${Input}
- *	absolute path of file in development directory (usually)
+ *      absolute path of file in development directory (usually)
  *
  * ${Output}
- *	absolute path of output file, in the development directory (usually)
+ *      absolute path of output file, in the development directory (usually)
  *
  * Executed as: the developer
  * Current directory: the development directory
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the aed will fail).
+ *      (the aed will fail).
  */
 merge_command = string;
 
@@ -1005,24 +1017,24 @@ merge_command = string;
  * In addition:
  *
  * ${ORiginal}
- *	absolute path of file in baseline (usually)
+ *      absolute path of file in baseline (usually)
  *
  * ${Input}
- *	absolute path of file in development directory (usually)
+ *      absolute path of file in development directory (usually)
  *
  * ${Output}
- *	Absolute path of output file
+ *      Absolute path of output file
  *
  * ${INDex}
- *	Project relative name of the file, for use in index lines,
- *	such as GNU diff's -L option.  Optional.
+ *      Project relative name of the file, for use in index lines,
+ *      such as GNU diff's -L option.  Optional.
  *
  * Executed as: the executing user.
  * Current directory: the development directory for change in progress,
- *	the integration doirectory for change bein integrated, the
- *	baseline for changes which are completed.
+ *      the integration doirectory for change bein integrated, the
+ *      baseline for changes which are completed.
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the aed will fail).
+ *      (the aed will fail).
  */
 patch_diff_command = string;
 
@@ -1038,28 +1050,28 @@ patch_diff_command = string;
  * In addition:
  *
  * ${ORiginal}
- *	absolute path of file in baseline (usually)
+ *      absolute path of file in baseline (usually)
  *
  * ${Input}
- *	absolute path of file in development directory (usually)
+ *      absolute path of file in development directory (usually)
  *
  * ${Output}
- *	Absolute path of output file
+ *      Absolute path of output file
  *
  * ${INDex}
- *	Project relative name of the file, for use in index lines,
- *	such as GNU diff's -L option.  Optional.
+ *      Project relative name of the file, for use in index lines,
+ *      such as GNU diff's -L option.  Optional.
  *
  * ${OPTion}
- *	Extra options to be passed to the diff command, as set by the
- *	aeannotate -diff-option command line option.  Use with care.
+ *      Extra options to be passed to the diff command, as set by the
+ *      aeannotate -diff-option command line option.  Use with care.
  *
  * Executed as: the executing user.
  * Current directory: the development directory for change in progress,
- *	the integration doirectory for change bein integrated, the
- *	baseline for changes which are completed.
+ *      the integration doirectory for change bein integrated, the
+ *      baseline for changes which are completed.
  * Exit status: zero indicates succes, all non-zero exits indicate failure
- *	(the aed will fail).
+ *      (the aed will fail).
  */
 annotate_diff_command = string;
 
@@ -1071,7 +1083,7 @@ annotate_diff_command = string;
  * In addition:
  *
  * ${File_Name}
- *	the absolute path of the test to be executed.
+ *      the absolute path of the test to be executed.
  * ${VARiables}
  *      the text of name=value variable settings from the command line,
  *      suitably quoted to protect special character from the shell.
@@ -1080,13 +1092,13 @@ annotate_diff_command = string;
  * Note that tests are source files, and thus never have the execute bit set.
  *
  * Executed as: the project owner (for integration tests) or the developer
- *	(for development tests), or the executing user (for -independent tests)
+ *      (for development tests), or the executing user (for -independent tests)
  * Current directory: the integration directory (for integration tests),
- *	the development directory (for development tests), the project
- *	baseline (for -bl tests), or the current directory (for
- *	-indenpendent tests).
+ *      the development directory (for development tests), the project
+ *      baseline (for -bl tests), or the current directory (for
+ *      -indenpendent tests).
  * Exit status: zero indicates succes, one indicates failure, anything
- *	else indicates "no result".
+ *      else indicates "no result".
  */
 test_command = string;
 
@@ -1101,7 +1113,7 @@ test_command = string;
  * In addition:
  *
  * ${File_Name}
- *	the absolute path of the test to be executed.
+ *      the absolute path of the test to be executed.
  * ${VARiables}
  *      the text of name=value variable settings from the command line,
  *      suitably quoted to protect special character from the shell.
@@ -1111,9 +1123,9 @@ test_command = string;
  *
  * Executed as: the developer
  * Current directory: the development directory (for development tests),
- *	the project baseline (for -bl tests)
+ *      the project baseline (for -bl tests)
  * Exit status: zero indicates succes, one indicates failure, anything
- *	else indicates "no result".
+ *      else indicates "no result".
  */
 development_test_command = string;
 
@@ -1125,24 +1137,24 @@ development_test_command = string;
  * In addition:
  *
  * ${File_Names}
- *	The base-relative paths of the tests to be executed.  Note that
- *	tests are source files, and thus never have the execute bit set.
+ *      The base-relative paths of the tests to be executed.  Note that
+ *      tests are source files, and thus never have the execute bit set.
  * ${VARiables}
  *      the text of name=value variable settings from the command line,
  *      suitably quoted to protect special character from the shell.
  *      Will be appended to the end of the command if not used explicitly.
  * ${Ouput}
- *	The absolute path of a file in aetest(5) format, to be created
- *	by the batch test command, to contain the results of the tests.
+ *      The absolute path of a file in aetest(5) format, to be created
+ *      by the batch test command, to contain the results of the tests.
  *
  * Executed as: the project owner (for integration tests) or the developer
- *	(for development tests), or the executing user (for -independent tests)
+ *      (for development tests), or the executing user (for -independent tests)
  * Current directory: the integration directory (for integration tests),
- *	the development directory (for development tests), the project
- *	baseline (for -bl tests), or the current directory (for
- *	-indenpendent tests).
+ *      the development directory (for development tests), the project
+ *      baseline (for -bl tests), or the current directory (for
+ *      -indenpendent tests).
  * Exit status: zero indicates success, one indicates failure.
- *	Individual test tesults are read from $output.
+ *      Individual test tesults are read from $output.
  */
 batch_test_command = string;
 
@@ -1159,49 +1171,49 @@ architecture_discriminator_command = string ;
  */
 architecture =
 [
-	{
-		/*
-		 * The name of an architecture.  Available as the
-		 * ${ARCHitecture} substitution, the AEGIS_ARCH
-		 * environment variable, and listed in the architecture
-		 * field of the cattr/cstate file.
-		 */
-		name = string;
+        {
+                /*
+                 * The name of an architecture.  Available as the
+                 * ${ARCHitecture} substitution, the AEGIS_ARCH
+                 * environment variable, and listed in the architecture
+                 * field of the cattr/cstate file.
+                 */
+                name = string;
 
-		/*
-		 * A pattern in the form "sysname-release-version-machine".
-		 * Normal filename matching wildcards may be used.
-		 */
-		pattern = string;
+                /*
+                 * A pattern in the form "sysname-release-version-machine".
+                 * Normal filename matching wildcards may be used.
+                 */
+                pattern = string;
 
-		/*
-		 * The type of architecture this is.  By default, if
-		 * an architecture is named in the *change* attributes,
-		 * it is required (unless an exception has been granted,
-		 * in which case it isn't in the list).
-		 *
-		 * However, you can have "optional" architectures for
-		 * which you can build and test, but they don't contribute
-		 * to the overall timestamps.
-		 */
-		mode = (required, optional, forbidden);
-	}
+                /*
+                 * The type of architecture this is.  By default, if
+                 * an architecture is named in the *change* attributes,
+                 * it is required (unless an exception has been granted,
+                 * in which case it isn't in the list).
+                 *
+                 * However, you can have "optional" architectures for
+                 * which you can build and test, but they don't contribute
+                 * to the overall timestamps.
+                 */
+                mode = (required, optional, forbidden);
+        }
 ]
-	redefinition_ok;
+        redefinition_ok;
 
 /*
  * new file templates
- *	(Body and body_command are mutually exclusive.)
+ *      (Body and body_command are mutually exclusive.)
  */
 file_template =
 [
-	{
-		pattern = [ string ];
-		body = string;
-		body_command = string;
-	}
+        {
+                pattern = [ string ];
+                body = string;
+                body_command = string;
+        }
 ]
-	redefinition_ok;
+        redefinition_ok;
 
 /*
  * Whiteout templates are used to produce "whiteout" files in the
@@ -1212,12 +1224,12 @@ file_template =
  */
 whiteout_template =
 [
-	{
-		pattern = [ string ];
-		body = string;
-	}
+        {
+                pattern = [ string ];
+                body = string;
+        }
 ]
-	redefinition_ok;
+        redefinition_ok;
 
 /*
  * This field is used to limit the length of filenames.  All new files
@@ -1329,12 +1341,12 @@ filename_pattern_reject = [ string ];
  * All of the substitutions defined in aesub(5) are available.  The
  * following 3 substitutions are also available:
  *
- * Hundred	The test number divided by 100, zero padded to 2 digits
- *			(Optional)
- * Number	The test number, zero padded to 4 digits
- *			(Mandatory)
- * Type		The test type (a = automatic, m = manual)
- *			(Optional)
+ * Hundred      The test number divided by 100, zero padded to 2 digits
+ *                      (Optional)
+ * Number       The test number, zero padded to 4 digits
+ *                      (Mandatory)
+ * Type         The test type (a = automatic, m = manual)
+ *                      (Optional)
  */
 new_test_filename = string;
 
@@ -1344,17 +1356,17 @@ new_test_filename = string;
  * available.  The following substitutions is also available:
  *
  * Default_Development_Directory
- *		The directory within which the development directory is
- *		to be created.
+ *              The directory within which the development directory is
+ *              to be created.
  * Magic
- *		A single letter, starting from "C", which can be
- *		inserted.  This must be used, as it allows Aegis to try
- *		different names should there be a conflict.
+ *              A single letter, starting from "C", which can be
+ *              inserted.  This must be used, as it allows Aegis to try
+ *              different names should there be a conflict.
  *
  * If not set, defaults to
- *	"$ddd/${left $p ${expr ${namemax $ddd} - ${length .$magic$c}}}.$magic$c"
+ *      "$ddd/${left $p ${expr ${namemax $ddd} - ${length .$magic$c}}}.$magic$c"
  * For DOS compatibility (8+3 filenames), a useful setting is
- *	"$ddd/${downcase ${left ${id $p} 7}$magic}.${right 00$change 3}"
+ *      "$ddd/${downcase ${left ${id $p} 7}$magic}.${right 00$change 3}"
  */
 development_directory_template = string;
 
@@ -1364,12 +1376,12 @@ development_directory_template = string;
  * change file metrics field.  The following substitutions are available:
  *
  * File_Name
- *   		The name of the source file the statistics relate to.
+ *              The name of the source file the statistics relate to.
  *
  * If not set, defaults to
- *	"$filename,S"
+ *      "$filename,S"
  * a common DOS-compatible alternative is
- *	"metrics/$filename"
+ *      "metrics/$filename"
  */
 metrics_filename_pattern = string;
 
@@ -1387,7 +1399,7 @@ trojan_horse_suspect = [ string ];
  * for more information.
  */
 project_specific = attributes
-	redefinition_ok;
+        redefinition_ok;
 
 /*
  * This field controls the adjustment of file modification times at the
@@ -1404,21 +1416,21 @@ project_specific = attributes
  * Unless you are a masochist, do not set this field.  Leave it as the default.
  *
  * adjust_and_sleep
- *	Causes the file times to be adjusted, and if the file times
- *	would extend into the future, aeipass will sleep until that time
- *	has passed.  This is the default.
+ *      Causes the file times to be adjusted, and if the file times
+ *      would extend into the future, aeipass will sleep until that time
+ *      has passed.  This is the default.
  *
  * adjust_only
- *	Causes the file times to be adjusted.  If the file time extend
- *	into the future, a warning is issued.
+ *      Causes the file times to be adjusted.  If the file time extend
+ *      into the future, a warning is issued.
  *
  * dont_adjust
- *	File modification times are not adjusted.  This is a really bad
- *	idea.  Really.	Make sure that, at the very minimum,
- *	project_file_command touches all of the change's files,
- * 	otherwise the build problems which ensue are going to take you
- * 	weeks to track down and lose you mucho productivity.
- * 	You have been warned.
+ *      File modification times are not adjusted.  This is a really bad
+ *      idea.  Really.  Make sure that, at the very minimum,
+ *      project_file_command touches all of the change's files,
+ *      otherwise the build problems which ensue are going to take you
+ *      weeks to track down and lose you mucho productivity.
+ *      You have been warned.
  *
  * See also the build_time_adjust_notify_command field.
  */
@@ -1463,7 +1475,7 @@ signed_off_by = boolean;
  * Executed as: the current reviewer.
  * Current directory: the development directory of the change
  * Exit status: zero means the change has been reviewed sufficiently.
- *	non-zero means that further review(s) are necessary.
+ *      non-zero means that further review(s) are necessary.
  */
 review_policy_command = string;
 
@@ -1480,7 +1492,7 @@ review_policy_command = string;
  * Executed as: the current reviewer.
  * Current directory: the development directory of the change
  * Exit status: zero means the change has been reviewed sufficiently.
- *	non-zero means that further review(s) are necessary.
+ *      non-zero means that further review(s) are necessary.
  */
 develop_end_policy_command = string;
 
@@ -1541,3 +1553,6 @@ cache_project_file_list_for_each_delta = boolean;
  * This field default to an empty list if not set.
  */
 clean_exceptions = [ string ];
+
+
+/* vim: set ts=8 sw=4 et : */

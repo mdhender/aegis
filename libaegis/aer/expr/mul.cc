@@ -1,25 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/math.h>
 
-#include <common/error.h>
 #include <common/trace.h>
 #include <libaegis/aer/expr/mul.h>
 #include <libaegis/aer/value/error.h>
@@ -27,7 +26,7 @@
 #include <libaegis/aer/value/real.h>
 #include <libaegis/sub.h>
 
-#define PAIR(a, b)	((a) * rpt_value_type_MAX + (b))
+#define PAIR(a, b)      ((a) * rpt_value_type_MAX + (b))
 
 
 rpt_expr_mul::~rpt_expr_mul()
@@ -61,7 +60,7 @@ rpt_expr_mul::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
 
     //
     // coerce the left hand side to an arithmetic type
@@ -74,7 +73,7 @@ rpt_expr_mul::evaluate()
     //
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
 
     //
     // coerce the right hand side to an arithmetic type
@@ -186,7 +185,7 @@ rpt_expr_div::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
 
     //
     // coerce the left hand side to an arithmetic type
@@ -199,7 +198,7 @@ rpt_expr_div::evaluate()
     //
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
 
     //
     // coerce the right hand side to an arithmetic type
@@ -323,7 +322,7 @@ rpt_expr_mod::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
 
     //
     // coerce the left hand side to an arithmetic type
@@ -336,7 +335,7 @@ rpt_expr_mod::evaluate()
     //
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
 
     //
     // coerce the right hand side to an arithmetic type
@@ -419,3 +418,6 @@ rpt_expr_mod::evaluate()
     nstring s(sc.subst_intl(i18n("illegal modulo ($name1 % $name2)")));
     return rpt_value_error::create(get_pos(), s);
 }
+
+
+// vim: set ts=8 sw=4 et :

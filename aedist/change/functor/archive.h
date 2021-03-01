@@ -1,7 +1,7 @@
 //
 // aegis - project change supervisor
 // Copyright (C) 2007 Walter Franzini
-// Copyright (C) 2008 Peter Miller
+// Copyright (C) 2008, 2011, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,9 +60,9 @@ public:
       *     The list of version patterns used to filter out changes
       *     from the inventory.
       */
-    change_functor_archive(bool incbr, project_ty *pp,
+    change_functor_archive(bool incbr, project *pp,
         const char *suffix, const char *fingerprint_suffix,
-        const nstring_list&, const nstring_list&);
+        const nstring_list &include_change, const nstring_list &exclude_change);
 
     /**
       * The operator() is run for each completed change with an UUID.
@@ -94,7 +94,7 @@ private:
     /**
       * The pp instance variable is used to remember the project being listed.
       */
-    project_ty *pp;
+    project *pp;
 
     /**
       * The suffix instance variable is used to remember the extension
@@ -119,3 +119,4 @@ private:
 };
 
 #endif // AEDIST_CHANGE_FUNCTOR_ARCHIVE_H
+// vim: set ts=8 sw=4 et :

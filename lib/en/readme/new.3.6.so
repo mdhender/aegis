@@ -1,25 +1,25 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1998, 1999, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
-The \fIaeifail\fP(1) and \fIaerfail\fP(1) commands now have a new --reason
+The \fIaeifail\fP(1) and \fIaerfail\fP(1) commands now have a new \-reason
 option, to specify the failure reason on the command line, rather than
 in a file.
 .PP
@@ -31,14 +31,14 @@ Smaller projects may not notice any improvement.
 .PP
 .if n *
 .if t \(bu
-There is a new \fB--delta-date\fP option to the \fIaecp\fP(1) command,
+There is a new \fB\-delta\[hy]date\fP option to the \fIaecp\fP(1) command,
 allowing deltas to be extracted by date.  This change also had the
-side-effect of making extraction by delta number more accurate on
+side\[hy]effect of making extraction by delta number more accurate on
 branches.
 .PP
 .if n *
 .if t \(bu
-There is a new \fB--base-relative\fP option to most of the file manipulation
+There is a new \fB\-base\[hy]relative\fP option to most of the file manipulation
 commands, \fIaecp\fP(1), \fIaenf\fP(1), \fIetc\fP.  This option may be
 used to specify that relative filenames are relative to the base of the
 source tree, rather than the current directory.  There is also a related
@@ -47,7 +47,7 @@ user preference, see \fIaeuconf\fP(5) for more information.
 .if n *
 .if t \(bu
 There is a new \[lq]aeclean\[rq] command.  It can be used to clean your
-development directories of non-source files.
+development directories of non\[hy]source files.
 See \fIaeclean\fP(1) for more information.
 .PP
 .if n *
@@ -64,4 +64,5 @@ This bug would sometimes case Aegis to hang, and eventually run out of stack,
 when the user attempted to interrupt Aegis using ^C.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.6 (5-Jul-1998)
+.SS Version 3.6 (5\[hy]Jul\[hy]1998)
+.\" vim: set ts=8 sw=4 et :

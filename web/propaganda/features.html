@@ -1,38 +1,37 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004-2006, 2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
-.so version.so
+.so etc/version.so
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
 <title>Aegis Features</title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="../aegis.png" align=left>
-<img src="../missiku/world_2.png" align=right>
-<center>Aegis \*(v)<br>Features</center></h1>
-.br
+<body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="../aegis.png" align="left" alt="" />
+<img src="../missiku/world_2.png" align="right" alt="" />
+Aegis \*(v)<br/>Features
+</h1>
 Here is a quick list of the key features of Aegis:
 <br clear=all>
 <ul>
@@ -91,26 +90,22 @@ some new directories.
 <p>
 You can compare this list with
 <a href="http://regexps.srparish.net/www/arch-overview.html">GNU Arch</a>
-       (<a href="http://www.gnuarch.org/#Gnu-arch">Home</a>),
+    (<a href="http://www.gnuarch.org/#Gnu-arch">Home</a>),
 <a href="http://www.bitkeeper.com/sales.bitkeeper.html">Bitkeeper</a>
-	(<a href="http://www.bitkeeper.com/">Home</a>),
+    (<a href="http://www.bitkeeper.com/">Home</a>),
 <a href="http://www.venge.net/monotone/faq.html">Monotone</a>
-	(<a href="http://www.venge.net/monotone/">Monotone</a>),
+    (<a href="http://www.venge.net/monotone/">Monotone</a>),
 <a href="http://www.opencm.org/features.html">OpenCM</a>
-	(<a href="http://www.opencm.org/">Home</a>),
+    (<a href="http://www.opencm.org/">Home</a>),
 <a href="http://subversion.tigris.org/">Subversion</a>
-	(<a href="http://subversion.tigris.org/">Home</a>).
+    (<a href="http://subversion.tigris.org/">Home</a>).
 After more than a decade, the better VC/SCM systems are starting to converge.
-.br
 <h1>Features</h1>
-.br
 Below is a brief list of the features that most distinguish Aegis from
 competing systems.  This list presumes that you are somewhat familiar
 with revision control systems in general.
-.br
 <h2>Whole Project Change sets: Atomic Commits and the handling of
 Create, Modify, Rename and Remove</h2>
-.br
 Transactions in Aegis are performed on the whole project.  For example,
 let's suppose that you modify three files in order to fix a bug.  When
 you integrate this change, you integrate all three files at once.  Aegis
@@ -131,34 +126,24 @@ handle&rdquo; means not only that such changes are recorded as part
 of the change set, but also that you can merge changes back and forth
 between versions that do and do not have those tree-structure changes,
 and the merging process will take that into account.
-.br
 <h2>Meaningful Configuration Names</h2>
-.br
 Aegis assigns revisions meaningful configuration names that are globally
 unique among a community of Aegis users.  Thus, it is always possible
 to refer unambiguously to any given configuration, in any Aegis repository.
-.br
 <h2>Easy Branching</h2>
-.br
 Creating a branch in Aegis can be accomplished with a single, fast command.
-.br
 <h2>Simple On-disk Formats</h2>
-.br
 Aegis uses a collection of simple on-disk formats for file history and
 meta-data.  It does not require or use a relational database, hash-table
 database, or object database.
 <p>
 Consequently, creating a new local archive is utterly trivial: a single
 Aegis command does it, basically by creating some new directories.
-.br
 <h2>Lightweight, Standard Servers</h2>
-.br
 Remote archives do not require an Aegis specific server.
 Your existing HTTP server can be used as a read-only Aegis server.
 Email can be used to distribute change sets.
-.br
 <h2>Distributed Operation</h2>
-.br
 Creating a copy of a repository only requires a few simple commands,
 all that is required is read-only access to the remote version.
 <p>
@@ -168,11 +153,10 @@ publish their work on their own repository version of your mainline
 sources -- without requiring that they have write access to your
 archive.  You can merge in their changes as easily as if they had been
 committed to your own archives.
-.br
 <p>
 It is trivial to set-up and incrementally update read-only mirrors of any Aegis
 archive.  A common pattern of use in public projects is to improve performance
 by creating private local copies of remote archives.
-.br
-.so footer2.so
+.so web/footer2.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

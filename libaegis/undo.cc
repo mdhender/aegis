@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1995, 1999, 2002-2006, 2008 Peter Miller
+//      Copyright (C) 1991-1995, 1999, 2002-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ static jobs_t jobs;
 void
 undo_rename(string_ty *from, string_ty *to)
 {
-    trace(("undo_rename(from = %08lX, to = %08lX)\n{\n", (long)from, (long)to));
+    trace(("undo_rename(from = %p, to = %p)\n{\n", from, to));
     undo_rename(nstring(from), nstring(to));
     trace(("}\n"));
 }
@@ -53,7 +53,7 @@ void
 undo_rename(const nstring &from, const nstring &to)
 {
     trace(("undo_rename(from = \"%s\", to = \"%s\")\n{\n",
-	from.c_str(), to.c_str()));
+        from.c_str(), to.c_str()));
     undo_item *ip = new undo_item_rename(from, to);
     jobs.push_back(ip);
     os_interrupt_cope();
@@ -72,19 +72,19 @@ void
 undo_rename_cancel(const nstring &from, const nstring &to)
 {
     trace(("undo_rename_cancel(\"%s\", \"%s\")\n{\n",
-	from.c_str(), to.c_str()));
+        from.c_str(), to.c_str()));
     undo_item_rename dummy(from, to);
     for (jobs_t::iterator it = jobs.begin(); it != jobs.end(); ++it)
     {
-	undo_item *ip = *it;
-	// downcast and check
-	undo_item_rename *irp = dynamic_cast<undo_item_rename *>(ip);
-	if (irp && *irp == dummy)
-	{
-	    jobs.erase(it);
-	    trace(("}\n"));
-	    return;
-	}
+        undo_item *ip = *it;
+        // downcast and check
+        undo_item_rename *irp = dynamic_cast<undo_item_rename *>(ip);
+        if (irp && *irp == dummy)
+        {
+            jobs.erase(it);
+            trace(("}\n"));
+            return;
+        }
     }
 
     //
@@ -218,27 +218,27 @@ undo()
             os_become_undo();
         while (!jobs.empty())
         {
-	    undo_item *ip = jobs.back();
-	    jobs.pop_back();
-            trace(("ip = %08lX;\n", (long)ip));
-	    ip->act();
-	    delete ip;
+            undo_item *ip = jobs.back();
+            jobs.pop_back();
+            trace(("ip = %p;\n", ip));
+            ip->act();
+            delete ip;
         }
         break;
 
     case 2:
-	{
-	    sub_context_ty *scp = sub_context_new();
-	    error_intl(scp, i18n("fatal error during fatal error recovery"));
-	    sub_context_delete(scp);
-	    while (!jobs.empty())
-	    {
-		undo_item *ip = jobs.back();
-		jobs.pop_back();
-		ip->unfinished();
-		delete ip;
-	    }
-	}
+        {
+            sub_context_ty *scp = sub_context_new();
+            error_intl(scp, i18n("fatal error during fatal error recovery"));
+            sub_context_delete(scp);
+            while (!jobs.empty())
+            {
+                undo_item *ip = jobs.back();
+                jobs.pop_back();
+                ip->unfinished();
+                delete ip;
+            }
+        }
         break;
 
     default:
@@ -256,9 +256,12 @@ undo_cancel()
     trace(("undo_cancel()\n{\n"));
     while (!jobs.empty())
     {
-	undo_item *ip = jobs.back();
-	jobs.pop_back();
-	delete ip;
+        undo_item *ip = jobs.back();
+        jobs.pop_back();
+        delete ip;
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

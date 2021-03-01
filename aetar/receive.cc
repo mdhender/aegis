@@ -1,30 +1,33 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002-2008 Peter Miller
-//	Copyright (C) 2006, 2007 Walter Franzini;
+// aegis - project change supervisor
+// Copyright (C) 2002-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2006-2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <aetar/arglex3.h>
-#include <common/error.h>       // for assert
+#include <common/nstring.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/sizeof.h>
+#include <common/trace.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change.h>
@@ -32,20 +35,18 @@
 #include <libaegis/input/bunzip2.h>
 #include <libaegis/input/file.h>
 #include <libaegis/input/gunzip.h>
-#include <aetar/input/tar.h>
-#include <common/nstring.h>
-#include <common/nstring/list.h>
 #include <libaegis/os.h>
 #include <libaegis/output/file.h>
-#include <common/progname.h>
-#include <libaegis/project.h>
 #include <libaegis/project/file.h>
+#include <libaegis/project.h>
 #include <libaegis/project/history.h>
-#include <aedist/receive.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
+
+#include <aetar/arglex3.h>
+#include <aetar/input/tar.h>
+#include <aetar/receive.h>
 
 
 static void
@@ -66,20 +67,20 @@ is_a_path_prefix(const nstring &haystack, const nstring &needle,
 {
     if
     (
-	haystack.size() > needle.size()
+        haystack.size() > needle.size()
     &&
-	haystack[needle.size()] == '/'
+        haystack[needle.size()] == '/'
     &&
-	0 == memcmp(haystack.c_str(), needle.c_str(), needle.size())
+        0 == memcmp(haystack.c_str(), needle.c_str(), needle.size())
     )
     {
-	result =
-	    nstring
-	    (
-		haystack.c_str() + needle.size() + 1,
-		haystack.size() - needle.size() - 1
-	    );
-	return true;
+        result =
+            nstring
+            (
+                haystack.c_str() + needle.size() + 1,
+                haystack.size() - needle.size() - 1
+            );
+        return true;
     }
     return false;
 }
@@ -133,15 +134,15 @@ mangle(nstring &filename)
     for (size_t k = 0; k < path_prefix_remove.size(); ++k)
     {
         assert(path_prefix_remove_count == -1);
-	nstring s;
-	if (is_a_path_prefix(filename, path_prefix_remove[k], s))
-	{
-	    filename = s;
-	}
+        nstring s;
+        if (is_a_path_prefix(filename, path_prefix_remove[k], s))
+        {
+            filename = s;
+        }
     }
     if (!path_prefix_add.empty())
     {
-	filename = os_path_cat(path_prefix_add, filename);
+        filename = os_path_cat(path_prefix_add, filename);
     }
 }
 
@@ -210,13 +211,13 @@ receive(void)
     string_ty       *project_name;
     nstring         ifn;
     string_ty       *s;
-    project_ty      *pp;
+    project      *pp;
     change::pointer cp;
     string_ty       *attribute_file_name;
     string_ty       *dot;
     const char      *delta;
     string_ty       *devdir;
-    int		    trojan;
+    int             trojan;
 
     project_name = 0;
     long change_number = 0;
@@ -229,99 +230,99 @@ receive(void)
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    arglex_parse_change(&project_name, &change_number, usage);
-	    continue;
+        case arglex_token_change:
+            arglex();
+            arglex_parse_change(&project_name, &change_number, usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, usage);
+            continue;
 
-	case arglex_token_file:
-	    if (!ifn.empty())
-		duplicate_option(usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_file(arglex_token_file, usage);
-		// NOTREACHED
+        case arglex_token_file:
+            if (!ifn.empty())
+                duplicate_option(usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_file(arglex_token_file, usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
-		ifn = arglex_value.alv_string;
-		break;
-
-	    case arglex_token_stdio:
+            case arglex_token_string:
+                ifn = arglex_value.alv_string;
                 break;
-	    }
-	    break;
 
-	case arglex_token_trojan:
-	    if (trojan > 0)
-		duplicate_option(usage);
-	    if (trojan >= 0)
-	    {
-	      too_many_trojans:
-		mutually_exclusive_options
-		    (arglex_token_trojan, arglex_token_trojan_not, usage);
-	    }
-	    trojan = 1;
-	    break;
+            case arglex_token_stdio:
+                break;
+            }
+            break;
 
-	case arglex_token_trojan_not:
-	    if (trojan == 0)
-		duplicate_option(usage);
-	    if (trojan >= 0)
-		goto too_many_trojans;
-	    trojan = 0;
-	    break;
+        case arglex_token_trojan:
+            if (trojan > 0)
+                duplicate_option(usage);
+            if (trojan >= 0)
+            {
+              too_many_trojans:
+                mutually_exclusive_options
+                    (arglex_token_trojan, arglex_token_trojan_not, usage);
+            }
+            trojan = 1;
+            break;
 
-	case arglex_token_delta:
-	    if (delta)
-		duplicate_option(usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_number(arglex_token_delta, usage);
-		// NOTREACHED
+        case arglex_token_trojan_not:
+            if (trojan == 0)
+                duplicate_option(usage);
+            if (trojan >= 0)
+                goto too_many_trojans;
+            trojan = 0;
+            break;
 
-	    case arglex_token_number:
-	    case arglex_token_string:
-		delta = arglex_value.alv_string;
-		break;
-	    }
-	    break;
+        case arglex_token_delta:
+            if (delta)
+                duplicate_option(usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_number(arglex_token_delta, usage);
+                // NOTREACHED
 
-	case arglex_token_directory:
-	    if (devdir)
-	    {
-		duplicate_option(usage);
-		// NOTREACHED
-	    }
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_dir(arglex_token_directory, usage);
-		// NOTREACHED
-	    }
-	    devdir = str_format(" --directory %s", arglex_value.alv_string);
-	    break;
+            case arglex_token_number:
+            case arglex_token_string:
+                delta = arglex_value.alv_string;
+                break;
+            }
+            break;
 
-	case arglex_token_path_prefix_add:
-	    if (path_prefix_add)
-		duplicate_option(usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_file(arglex_token_path_prefix_add, usage);
-	    path_prefix_add = arglex_value.alv_string;
-	    break;
+        case arglex_token_directory:
+            if (devdir)
+            {
+                duplicate_option(usage);
+                // NOTREACHED
+            }
+            if (arglex() != arglex_token_string)
+            {
+                option_needs_dir(arglex_token_directory, usage);
+                // NOTREACHED
+            }
+            devdir = str_format(" --directory %s", arglex_value.alv_string);
+            break;
 
-	case arglex_token_path_prefix_remove:
+        case arglex_token_path_prefix_add:
+            if (path_prefix_add)
+                duplicate_option(usage);
+            if (arglex() != arglex_token_string)
+                option_needs_file(arglex_token_path_prefix_add, usage);
+            path_prefix_add = arglex_value.alv_string;
+            break;
+
+        case arglex_token_path_prefix_remove:
             switch (arglex())
             {
             case arglex_token_string:
@@ -344,37 +345,37 @@ receive(void)
             }
             break;
 
-	case arglex_token_exclude:
-	    if (arglex() != arglex_token_string)
-		option_needs_file(arglex_token_exclude, usage);
-	    exclude_patterns.push_back_unique(arglex_value.alv_string);
-	    break;
+        case arglex_token_exclude:
+            if (arglex() != arglex_token_string)
+                option_needs_file(arglex_token_exclude, usage);
+            exclude_patterns.push_back_unique(arglex_value.alv_string);
+            break;
 
-	case arglex_token_exclude_auto_tools:
-	    if (exclude_auto_tools >= 0)
-		duplicate_option(usage);
-	    exclude_auto_tools = 1;
-	    break;
+        case arglex_token_exclude_auto_tools:
+            if (exclude_auto_tools >= 0)
+                duplicate_option(usage);
+            exclude_auto_tools = 1;
+            break;
 
-	case arglex_token_exclude_auto_tools_not:
-	    if (exclude_auto_tools >= 0)
-		duplicate_option(usage);
-	    exclude_auto_tools = 0;
-	    break;
+        case arglex_token_exclude_auto_tools_not:
+            if (exclude_auto_tools >= 0)
+                duplicate_option(usage);
+            exclude_auto_tools = 0;
+            break;
 
-	case arglex_token_exclude_cvs:
-	    if (exclude_cvs >= 0)
-		duplicate_option(usage);
-	    exclude_cvs = 1;
-	    break;
+        case arglex_token_exclude_cvs:
+            if (exclude_cvs >= 0)
+                duplicate_option(usage);
+            exclude_cvs = 1;
+            break;
 
-	case arglex_token_exclude_cvs_not:
-	    if (exclude_cvs >= 0)
-		duplicate_option(usage);
-	    exclude_cvs = 0;
-	    break;
-	}
-	arglex();
+        case arglex_token_exclude_cvs_not:
+            if (exclude_cvs >= 0)
+                duplicate_option(usage);
+            exclude_cvs = 0;
+            break;
+        }
+        arglex();
     }
 
     //
@@ -393,7 +394,7 @@ receive(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     pp->bind_existing();
@@ -411,7 +412,7 @@ receive(void)
     // default the change number
     //
     if (!change_number)
-	change_number = project_next_change_number(pp, 1);
+        change_number = project_next_change_number(pp, 1);
 
     //
     // create the new change
@@ -433,14 +434,14 @@ receive(void)
     nstring trace_options(trace_args());
     dot = os_curdir();
     s =
-	str_format
-	(
-	    "aegis --new-change %ld --project=%s --file=%s%s --verbose",
-	    magic_zero_decode(change_number),
-	    project_name->str_text,
-	    attribute_file_name->str_text,
+        str_format
+        (
+            "aegis --new-change %ld --project=%s --file=%s%s --verbose",
+            magic_zero_decode(change_number),
+            project_name->str_text,
+            attribute_file_name->str_text,
             trace_options.c_str()
-	);
+        );
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
     str_free(attribute_file_name);
@@ -450,14 +451,14 @@ receive(void)
     // Begin development of the new change.
     //
     s =
-	str_format
-	(
-	    "aegis --develop-begin %ld --project %s --verbose%s%s",
-	    magic_zero_decode(change_number),
-	    project_name->str_text,
-	    (devdir ? devdir->str_text : ""),
+        str_format
+        (
+            "aegis --develop-begin %ld --project %s --verbose%s%s",
+            magic_zero_decode(change_number),
+            project_name->str_text,
+            (devdir ? devdir->str_text : ""),
             trace_options.c_str()
-	);
+        );
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
     os_become_undo();
@@ -471,7 +472,7 @@ receive(void)
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
     nstring dd(change_development_directory_get(cp, 0));
-    int umask = change_umask(cp);
+    int umask = cp->umask_get();
     get_exclude_attribute(cp, exclude_patterns);
     change_free(cp);
     cp = 0;
@@ -489,38 +490,38 @@ receive(void)
     //
     for (;;)
     {
-	//
-	// Find the next file in the archive.
-	//
-	nstring filename;
+        //
+        // Find the next file in the archive.
+        //
+        nstring filename;
         bool executable = false;
-	os_become_orig();
-	input ip = tar_p->child(filename, executable);
-	os_become_undo();
-	if (!ip.is_open())
-	    break;
+        os_become_orig();
+        input ip = tar_p->child(filename, executable);
+        os_become_undo();
+        if (!ip.is_open())
+            break;
 
-	//
-	// Mangle the file name if necessary.
-	//
-	mangle(filename);
+        //
+        // Mangle the file name if necessary.
+        //
+        mangle(filename);
         trace_string(filename.c_str());
-	if (filename.gmatch(exclude_patterns))
-	    continue;
-	file_manifest.push_back(filename);
+        if (filename.gmatch(exclude_patterns))
+            continue;
+        file_manifest.push_back(filename);
 
-	//
-	// Work out if the file exists in the project.
-	// This is how we decide to copy or create.
-	//
-	fstate_src_ty *src_data =
-	    project_file_find(pp, filename.get_ref(), view_path_extreme);
+        //
+        // Work out if the file exists in the project.
+        // This is how we decide to copy or create.
+        //
+        fstate_src_ty *src_data =
+            pp->file_find(filename.get_ref(), view_path_extreme);
 
-	//
-	// Build the command to be run.
-	//
-	if (src_data)
-	{
+        //
+        // Build the command to be run.
+        //
+        if (src_data)
+        {
             //
             // Skip build files, we cannot copy them into the change
             //
@@ -550,27 +551,27 @@ receive(void)
                 files_modified.push_back(filename);
                 break;
             }
-	}
-	else
-	{
+        }
+        else
+        {
             files_created.push_back(filename);
-	}
+        }
 
         //
-	// Now copy the file into the project.
-	//
+        // Now copy the file into the project.
+        //
         os_become_orig();
         os_mkdir_between(dd, filename, 02755 & ~umask);
         {
             output::pointer ofp = output_file::binary_open(filename);
             ofp << ip;
         }
-	ip.close();
+        ip.close();
         int mode = 0666;
         if (executable)
             mode |= 0111;
         os_chmod(filename, mode & ~umask);
-	os_become_undo();
+        os_become_undo();
     }
     delete tar_p;
 
@@ -602,58 +603,58 @@ receive(void)
     //
     if (exclude_auto_tools > 0)
     {
-	if
-       	(
-	    file_manifest.member("configure.ac")
-	||
-	    file_manifest.member("configure.in")
-	)
-	{
-	    const char *table[] =
-	    {
-		"aclocal.m4",
-		// "acinclude.m4",
-		"autom4te.cache",
-		"config.guess",
-		"config.h",
-		"config.h.in",
-		"config.log",
-		"config.status",
-		"config.sub",
-		"configure",
-		"install-sh",
+        if
+        (
+            file_manifest.member("configure.ac")
+        ||
+            file_manifest.member("configure.in")
+        )
+        {
+            const char *table[] =
+            {
+                "aclocal.m4",
+                // "acinclude.m4",
+                "autom4te.cache",
+                "config.guess",
+                "config.h",
+                "config.h.in",
+                "config.log",
+                "config.status",
+                "config.sub",
+                "configure",
+                "install-sh",
                 // "ltmain.h",
-		"stamp-h",
-		"stamp-h.in",
-	    };
+                "stamp-h",
+                "stamp-h.in",
+            };
 
-	    for (const char **tp = table; tp < ENDOF(table); ++tp)
-	    {
-		nstring fn = *tp;
+            for (const char **tp = table; tp < ENDOF(table); ++tp)
+            {
+                nstring fn = *tp;
                 exclude_patterns.push_back(fn);
                 exclude_patterns.push_back("*/" + fn);
-	    }
-	}
-	if (file_manifest.member("Makefile.am"))
-	{
-	    const char *table[] =
-	    {
-		"install-sh",
-		"Makefile",
-		"Makefile.in",
-		"missing",
-		"mkinstalldirs",
-		"stamp-h",
-		"stamp-h.in",
-	    };
+            }
+        }
+        if (file_manifest.member("Makefile.am"))
+        {
+            const char *table[] =
+            {
+                "install-sh",
+                "Makefile",
+                "Makefile.in",
+                "missing",
+                "mkinstalldirs",
+                "stamp-h",
+                "stamp-h.in",
+            };
 
-	    for (const char **tp = table; tp < ENDOF(table); ++tp)
-	    {
-		nstring fn = *tp;
-		exclude_patterns.push_back(fn);
-		exclude_patterns.push_back("*/" + fn);
-	    }
-	}
+            for (const char **tp = table; tp < ENDOF(table); ++tp)
+            {
+                nstring fn = *tp;
+                exclude_patterns.push_back(fn);
+                exclude_patterns.push_back("*/" + fn);
+            }
+        }
     }
 
     //
@@ -677,7 +678,7 @@ receive(void)
         nstring fn(src->file_name);
         if (fn.gmatch(exclude_patterns))
         {
-	    files_removed.push_back(fn);
+            files_removed.push_back(fn);
 
             os_become_orig();
             os_unlink_errok(fn);
@@ -691,7 +692,7 @@ receive(void)
             (
                 "aegis --remove-file --project=%s --change=%ld%s --verbose",
                 project_name->str_text,
-		magic_zero_decode(change_number),
+                magic_zero_decode(change_number),
                 trace_options.c_str()
             );
         os_xargs(cmd, files_removed, dd);
@@ -706,9 +707,9 @@ receive(void)
             nstring::format
             (
                 "aegis --new-file --no-template --project=%s --change=%ld%s "
-		    "--keep --verbose",
+                    "--keep --verbose",
                 project_name->str_text,
-		magic_zero_decode(change_number),
+                magic_zero_decode(change_number),
                 trace_options.c_str()
             );
         os_xargs(cmd, files_created, dd);
@@ -727,9 +728,9 @@ receive(void)
             nstring::format
             (
                 "aegis --copy-file --project=%s --change=%ld%s%s "
-		    "--keep --verbose",
+                    "--keep --verbose",
                 project_name->str_text,
-		magic_zero_decode(change_number),
+                magic_zero_decode(change_number),
                 delta_opt.c_str(),
                 trace_options.c_str()
             );
@@ -739,17 +740,20 @@ receive(void)
             nstring::format
             (
                 "aegis --copy-file-undo --unchanged --project=%s "
-		    "--change=%ld%s --verbose",
+                    "--change=%ld%s --verbose",
                 project_name->str_text,
-		magic_zero_decode(change_number),
+                magic_zero_decode(change_number),
                 trace_options.c_str()
             );
-	os_become_orig();
-	os_execute(cmd, OS_EXEC_FLAG_NO_INPUT, dd);
-	os_become_undo();
+        os_become_orig();
+        os_execute(cmd, OS_EXEC_FLAG_NO_INPUT, dd);
+        os_become_undo();
     }
 
     project_free(pp);
     pp = 0;
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

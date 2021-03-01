@@ -1,22 +1,21 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.nh 1 "Projects \fIversus\fP Sand-boxes"
+.nh 1 "Projects \fIversus\fP Sand\[hy]boxes"
 The above discussion assumes that a project resides under a single
 directory tree, and this is often the ideal.
 However, the realities of working with large software projects often lead
@@ -24,17 +23,17 @@ to weird and wonderful directory structures in order to have developers
 working on different sections of the project without taking complete
 copies and thereby wasting precious disk space.
 .LP
-It is possible to see the whole-project \fImake\fP proposed here as
+It is possible to see the whole\[hy]project \fImake\fP proposed here as
 impractical, because it does not match the evolved methods of your
 development process.
 .LP
-The whole-project \fImake\fP proposed here does have an effect on
+The whole\[hy]project \fImake\fP proposed here does have an effect on
 development methods: it can give you cleaner and simpler build
 environments for your developers.
 By using \fImake\fP's VPATH feature,
 it is possible to copy only those files you need to edit
 into your private work area, often called a
-.I "sand-box."
+.I "sand\[hy]box."
 .LP
 The simplest explanation of what VPATH does is to make an analogy with
 the include file search path specified using \f(CW\-I\fP\fIpath\fP
@@ -42,26 +41,27 @@ options to the C compiler.
 This set of options describes where to look for files,
 just as VPATH tells \fImake\fP where to look for files.
 .LP
-By using VPATH, it is possible to \[lq]stack\[rq] the sand-box \fIon top of\fP
-the project master source, so that files in the sand-box take precedence,
+By using VPATH, it is possible to \[lq]stack\[rq] the sand\[hy]box \f[I]on
+top of\fP
+the project master source, so that files in the sand\[hy]box take precedence,
 but it is
 the union of all the files which \fImake\fP uses to perform the build.
-.so 06.figure1.so
+.so lib/en/auug97/06.figure1.so
 .LP
-In this environment, the sand-box has the same tree structure as the
+In this environment, the sand\[hy]box has the same tree structure as the
 project master source.  This allows developers to safely change
 things across separate
 modules, \fIe.g.\fP if they are changing a module interface.  It also
-allows the sand-box to be physically separate \- perhaps on a different
+allows the sand\[hy]box to be physically separate \- perhaps on a different
 disk, or under their home directory.
-It also allows the project master source to be read-only,
-if you have (or would like) a rigorous check-in procedure.
+It also allows the project master source to be read\[hy]only,
+if you have (or would like) a rigorous check\[hy]in procedure.
 .LP
 Note: in addition to adding a \f(CWVPATH\fP line to your development
 \f(CWMakefile\fP, you will also need to add \f(CW\-I\fP options to the
 \f(CWCFLAGS\fP macro, so that the C compiler uses the same path as
 \fImake\fP does.
-This is simply done with a 3-line Makefile in your work area \- set a
+This is simply done with a 3\[hy]line Makefile in your work area \- set a
 macro, set the VPATH, and then include the Makefile from the project
 master source.
 .nh 2 "VPATH Semantics"
@@ -70,6 +70,7 @@ For versions of GNU Make earlier than 3.76, you will need Paul Smith's
 VPATH+ patch.  This may be obtained from
 \f(CWftp://ftp\%.wellfleet\%.com/\%netman/\%psmith/\%gmake/\fP.
 .LP
-The POSIX semantics of \f(CWVPATH\fP are slightly brain-dead,
+The POSIX semantics of \f(CWVPATH\fP are slightly brain\[hy]dead,
 so many other \fImake\fP implementations are too limited.
 You may want to consider installing GNU Make.
+.\" vim: set ts=8 sw=4 et :

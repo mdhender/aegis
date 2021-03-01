@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -24,8 +24,9 @@ There is a new \fItkaeca\fP command.  It is a GUI interface to the
 .PP
 .if n *
 .if t \(bu
-There are two new reports available: the \fIProject-Branches\fP and
-\fIProject-Active-Branches\fP reports may be used to query about branches
+There are two new reports available: the \fIProject\[hy]Branches\fP and
+\fIProject\[hy]Active\[hy]Branches\fP reports may be used to query about
+branches
 within a project.
 .PP
 .if n *
@@ -40,7 +41,7 @@ tried to build an unbuildable change.
 .PP
 .if n *
 .if t \(bu
-There is a new \fI\-No-WhiteOut\fP option for the \fIaerm\fP(1) and
+There is a new \fI\-No\[hy]WhiteOut\fP option for the \fIaerm\fP(1) and
 \fIaemv\fP(1) commands, letting you suppress the \[lq]whiteout\[rq] files,
 along with some explanation in the man page about why they are there.
 See \fIaerm\fP(1) for more information.
@@ -54,8 +55,9 @@ it explicitly.
 .PP
 .if n *
 .if t \(bu
-The \fIaedist \-receive\fP command now accepts a \fI-directory\fP option,
+The \fIaedist \-receive\fP command now accepts a \fI\-directory\fP option,
 so you can specifiy the location of the development directory.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.15 (2-May-1999)
+.SS Version 3.15 (2\[hy]May\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

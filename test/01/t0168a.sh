@@ -1,21 +1,20 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2002, 2004-2008 Peter Miller
+# aegis - project change supervisor
+# Copyright (C) 2002, 2004-2008, 2011, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -28,11 +27,11 @@ umask 022
 
 if test -z "`diff -v 2>&1 | grep GNU`"
 then
-	echo ''
-	echo '	This test depends on GNU Diff, which you do not seem to'
-	echo '	have installed.  This test is declared to pass by default.'
-	echo ''
-	exit 0
+    echo ''
+    echo '        This test depends on GNU Diff, which you do not seem to'
+    echo '        have installed.  This test is declared to pass by default.'
+    echo ''
+    exit 0
 fi
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -51,7 +50,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -62,30 +61,30 @@ export PATH
 
 no_result()
 {
-	set +x
-	echo "NO RESULT for test of aepatch -send (context) functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+    set +x
+    echo "NO RESULT for test of aepatch -send (context) functionality ($activity)" 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 2
 }
 fail()
 {
-	set +x
-	echo "FAILED test of aepatch -send (context) functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+    set +x
+    echo "FAILED test of aepatch -send (context) functionality ($activity)" 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 1
 }
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+    set +x
+    echo PASSED 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 0
 }
 trap "no_result" 1 2 3 15
 
@@ -96,11 +95,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+    lock_wait_preference = always; \
+    diff_preference = automatic_merge; \
+    pager_preference = never; \
+    persevere_preference = all; \
+    log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -186,27 +185,27 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 activity="new file 190"
 $bin/aegis -nf $workchan/main.c -nl \
-	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
+    -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf $workchan/test.c -nl \
-	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
+    -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf $workchan/Makefile -nl \
-	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
+    -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf $workchan/aegis.conf -nl \
-	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4 > log 2>&1
+    -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
 main(argc, argv)
-	int	argc;
-	char	**argv;
+    int argc;
+    char **argv;
 {
-	test();
-	exit(0);
-	return 0;
-	/* cough */
+    test();
+    exit(0);
+    return 0;
+    /* cough */
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -214,12 +213,13 @@ cat > $workchan/test.c << 'end'
 void test() { }
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/Makefile << 'end'
+TAB=`awk 'BEGIN{printf("%c", 9)}' /dev/null`
+sed "s|{TAB}|$TAB|g" > $workchan/Makefile << 'end'
 .c.o:
-	date > $@
+{TAB}date > $@
 
 foo: main.o test.o
-	date > $@
+{TAB}date > $@
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
@@ -235,11 +235,11 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+    echo '1,$$p' ) | ed - $mr > $out";
 patch_diff_command =
-	"set +e; "
-	"diff -C0 -L $index -L $index $orig $i > $out; "
-	"test $$? -le 1";
+    "set +e; "
+    "diff -C0 -L $index -L $index $orig $i > $out; "
+    "test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi
 
@@ -349,17 +349,17 @@ if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
 main(argc, argv)
-	int	argc;	/* changed */
-	char	**argv;
+    int argc;    /* changed */
+    char **argv;
 {
-	if (argc != 1)
-	{
-		fprintf(stderr, "usage: %s\n", argv[0]);
-		exit(1);
-	}
-	test();
-	exit(0);
-	return 0;
+    if (argc != 1)
+    {
+        fprintf(stderr, "usage: %s\n", argv[0]);
+        exit(1);
+    }
+    test();
+    exit(0);
+    return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -373,7 +373,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # And check the the patch is OK.
 #
-sed 's/X$//' > ok << 'end'
+sed -e "s|{TAB}|$TAB|g" -e 's/X$//' > ok << 'end'
 MIME-Version: 1.0X
 Content-Type: application/aegis-patchX
 Subject: foo - The second changeX
@@ -382,9 +382,13 @@ Content-Disposition: attachment; filename=foo.C002.patchX
 X-Aegis-Project-Name: fooX
 X-Aegis-Change-Number: 2X
 X
-#	X
-#	The second changeX
-#	X
+#{TAB}X
+#{TAB}Summary:
+#{TAB}The second change
+#{TAB}X
+#{TAB}Description:
+#{TAB}The second changeX
+#{TAB}X
 # Aegis-Change-Set-BeginX
 # H4sIAAAAAAAAA42PwUoFMQxF9/2KMmtHEFwIw/sLdyJDJs30Bdp0aNqnIv67Kc5G3HghWeTcX
 # NLdbZdrXQIqVj8ZF/MVPz1fySlgkeLyCRJoW9w8LQlcyyNKoCqR163FxjbSt9E75aMZ2SErnX
@@ -397,20 +401,20 @@ Index: main.cX
 --- main.c
 ***************
 *** 3 ****
-! 	int	argc;
+!     int argc;
 --- 3 ----
-! 	int	argc;	/* changed */
+!     int argc;    /* changed */
 ***************
 *** 5 ****
 --- 6,10 ----
-+ 	if (argc != 1)
-+ 	{
-+ 		fprintf(stderr, "usage: %s\n", argv[0]);
-+ 		exit(1);
-+ 	}
++     if (argc != 1)
++     {
++         fprintf(stderr, "usage: %s\n", argv[0]);
++         exit(1);
++     }
 ***************
 *** 9 ****
-- 	/* cough */
+-     /* cough */
 --- 13 ----
 end
 if test $? -ne 0 ; then no_result; fi
@@ -437,3 +441,6 @@ if test $? -ne 0 ; then fail; fi
 # the things tested in this test, worked
 #
 pass
+
+
+# vim: set ts=8 sw=4 et :

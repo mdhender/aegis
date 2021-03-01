@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1997, 1998, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Reminders"
 .LP
@@ -30,7 +30,7 @@ You will almost certainly want to customize them for your site.
 The
 .I \*(D)/remind/awt_dvlp.sh
 script takes a project name as argument.
-It is placed in the project leader's per-user crontab.
+It is placed in the project leader's per\[hy]user crontab.
 It is suggested that this script be run weekly, at 8AM on Monday.
 This script will send all developers of the named project email if there
 are any changes in the
@@ -42,7 +42,7 @@ No mail is sent if there are no changes outstanding.
 The
 .I \*(D)/remind/bng_dvlpd.sh
 script takes no arguments.
-It is placed in each user's per-user crontab.
+It is placed in each user's per\[hy]user crontab.
 It is suggested that this script be run weekly, at 8AM on Monday.
 This script takes no arguments, and sends email to the user if they
 have any changes in the
@@ -56,7 +56,7 @@ No mail is sent if there are no changes outstanding.
 The
 .I \*(D)/remind/bng_rvwd.sh
 script takes a project name as argument.
-It is placed in the project leader's per-user crontab.
+It is placed in the project leader's per\[hy]user crontab.
 It is suggested that this script be run daily at 8AM.
 This script will send all reviewers of the named project email if there
 are any changes in the
@@ -68,10 +68,11 @@ No mail is sent if there are no changes outstanding.
 The
 .I \*(D)/remind/awt_intgrtn.sh
 script takes a project name as argument.
-It is placed in the project leader's per-user crontab.
+It is placed in the project leader's per\[hy]user crontab.
 It is suggested that this script be run daily at 8AM.
 This script will send all integrators of the named project email if there
 are any changes in the
 .I "awaiting integration"
 state in the named project.
 No mail is sent if there are no changes outstanding.
+.\" vim: set ts=8 sw=4 et :

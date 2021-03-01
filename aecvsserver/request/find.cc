@@ -1,22 +1,22 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/sizeof.h>
 #include <common/symtab.h>
 
 #include <aecvsserver/request/add.h>
@@ -110,20 +110,20 @@ request::find(string_ty *a_name)
     static symtab_ty *stp;
     if (!stp)
     {
-	stp = symtab_alloc(SIZEOF(table));
-	for (const request *const *tpp = table; tpp < ENDOF(table); ++tpp)
-	{
-	    const request *rp = *tpp;
-	    string_ty *key = str_from_c(rp->name());
-	    symtab_assign(stp, key, (void *)rp);
-	    str_free(key);
-	}
+        stp = new symtab_ty(SIZEOF(table));
+        for (const request *const *tpp = table; tpp < ENDOF(table); ++tpp)
+        {
+            const request *rp = *tpp;
+            string_ty *key = str_from_c(rp->name());
+            stp->assign(key, (void *)rp);
+            str_free(key);
+        }
     }
-    const request *rp = (const request *)symtab_query(stp, a_name);
+    const request *rp = (const request *)stp->query(a_name);
     if (!rp)
     {
-	rp = new request_unknown(a_name);
-	symtab_assign(stp, a_name, (void *)rp);
+        rp = new request_unknown(a_name);
+        stp->assign(a_name, (void *)rp);
     }
     return rp;
 }
@@ -134,9 +134,12 @@ request::get_list(string_list_ty &result)
 {
     for (const request *const *tpp = table; tpp < ENDOF(table); ++tpp)
     {
-	const request *rp = *tpp;
-	string_ty *key = str_from_c(rp->name());
-	result.push_back(key);
-	str_free(key);
+        const request *rp = *tpp;
+        string_ty *key = str_from_c(rp->name());
+        result.push_back(key);
+        str_free(key);
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

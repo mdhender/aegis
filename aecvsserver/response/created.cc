@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 //
 // Created <client-side-dir>/
@@ -111,27 +110,27 @@ response_created::write(output::pointer op)
     op->fprintf(ROOT_PATH "/%s\n", server_side->str_text);
     op->fprintf
     (
-	"/%s/%s///\n",
-	short_file_name->str_text,
-	version->str_text
+        "/%s/%s///\n",
+        short_file_name->str_text,
+        version->str_text
     );
     output_mode_string(op, mode);
     os_become_orig();
-    long length = source->length();
+    off_t length = source->length();
     if (length > 0)
     {
-	//
-	// There is the ability to compress the file contents, but the
-	// client has to ask for it.  Slightly difficult: we have to
-	// send the *compressed* file size first, which isn't easy using
-	// a naive usage of output_gzip().  Just say no.
-	//
-	op->fprintf("%ld\n", length);
-	op << source;
+        //
+        // There is the ability to compress the file contents, but the
+        // client has to ask for it.  Slightly difficult: we have to
+        // send the *compressed* file size first, which isn't easy using
+        // a naive usage of output_gzip().  Just say no.
+        //
+        op->fprintf(OFF_T_FMT "\n", length);
+        op << source;
     }
     else
     {
-	op->fputs("0\n");
+        op->fputs("0\n");
     }
     os_become_undo();
     str_free(short_dir_name);
@@ -153,3 +152,6 @@ response_created::flushable()
 {
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

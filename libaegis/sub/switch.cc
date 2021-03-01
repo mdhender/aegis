@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2002-2008 Peter Miller
+//      Copyright (C) 2002-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -31,9 +31,9 @@ sub_switch(sub_context_ty *scp, const wstring_list &arg)
     trace(("arg.size() => %d\n", int(arg.size())));
     if (arg.size() < 2)
     {
-	scp->error_set(i18n("requires two or more arguments"));
-	trace(("}\n"));
-	return wstring();
+        scp->error_set(i18n("requires two or more arguments"));
+        trace(("}\n"));
+        return wstring();
     }
 
     long n = 2 + arg[1].to_nstring().to_long();
@@ -41,13 +41,16 @@ sub_switch(sub_context_ty *scp, const wstring_list &arg)
     wstring result;
     if (n < 2 || (size_t)n >= arg.size())
     {
-	result = arg.back();
+        result = arg.back();
     }
     else
     {
-	result = arg[n];
+        result = arg[n];
     }
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Detecting History File Corruption"
@@ -26,7 +26,8 @@ is a very real possibility that a block of the file could become corrupted
 over the years.\**
 .FS
 See also
-Saltzer, J.H. \fIet al\fP (1981) \fIEnd-to-end arguments in system design\fP,
+Saltzer, J.H. \fIet al\fP (1981) \f[I]End\[hy]to\[hy]end arguments in
+system design\fP,
 http://web.mit.edu/\%Saltzer/\%www/\%publications/\%endtoend/\%endtoend.pdf
 .FE
 Unless you access the file versions contained within that
@@ -67,9 +68,9 @@ you need to check the file fingerprints much more often.  Daily or at
 least weekly is suggested.  You do this with a \fIcron\fP(1) job run
 nightly which compares all of the history files with their \fImd5sum\fP(1)
 checksums.  Email failures to the system administrator and the project
-administrators.  By doing this nightly, you not only avoid backing-up
+administrators.  By doing this nightly, you not only avoid backing\[hy]up
 corrupted files, you will always know on which backup tape the good copy
-resides - yesterday's.
+resides \- yesterday's.
 .nh 3 "Configuration Commands"
 .LP
 In order to implement this,
@@ -108,10 +109,11 @@ I/O bound, and so there may be no perceived slowness by the user..
 .nh 3 "Aegis' Database"
 .LP
 In addition to your history files, Aegis maintains a database of file
-meta-data.  In order to add a checksum to the various file making up
+meta\[hy]data.  In order to add a checksum to the various file making up
 the database, turn on the \fIcompressed_database\fP project attribute.
 In addition to compressing the database (a minor savings) it also adds
 an Adler32 checksum.
 .LP
 You can check this in the \fIcron\fP(1) job by using \fIgzcat\fP(1)
 sent to \fI/dev/null\fP.
+.\" vim: set ts=8 sw=4 et :

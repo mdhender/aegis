@@ -1,22 +1,22 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/errno.h>
 #include <common/ac/stddef.h>
 #include <common/ac/sys/types.h>
@@ -25,10 +25,10 @@
 #include <common/ac/sys/prctl.h>
 
 #include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/glue.h>
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 static int      become_orig_uid;
 static int      become_orig_gid;
@@ -58,27 +58,27 @@ os_setgid(int gid)
 {
     os_become_must_not_be_active();
     if (become_testing < 0)
-	return;
+        return;
     if (setgid(gid))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_long(scp, "Argument", gid);
-	if (become_testing)
-	{
-	    //
-	    // don't use os_testing_mode(),
-	    // it could mess with errno
-	    //
-	    error_intl(scp, i18n("warning: setgid $arg: $errno"));
-	}
-	else
-	    fatal_intl(scp, i18n("setgid $arg: $errno"));
-	sub_context_delete(scp);
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_long(scp, "Argument", gid);
+        if (become_testing)
+        {
+            //
+            // don't use os_testing_mode(),
+            // it could mess with errno
+            //
+            error_intl(scp, i18n("warning: setgid $arg: $errno"));
+        }
+        else
+            fatal_intl(scp, i18n("setgid $arg: $errno"));
+        sub_context_delete(scp);
     }
 #if defined(DEBUG) && defined(__linux__) && defined(HAVE_PRCTL)
     if (!prctl(PR_GET_DUMPABLE, 0, 0, 0, 0))
@@ -106,113 +106,113 @@ os_chown_check(string_ty *path, int mode, int uid, int gid)
 #endif
     if (oret)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
+        sub_context_ty  *scp;
+        int             errno_old;
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("stat $filename: $errno"));
-	// NOTREACHED
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", path);
+        fatal_intl(scp, i18n("stat $filename: $errno"));
+        // NOTREACHED
     }
     if (mode > 0 && ((int)st.st_mode & 07777) != mode)
     {
-	sub_context_ty *scp;
+        sub_context_ty *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", path);
-	sub_var_set_format
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", path);
+        sub_var_set_format
         (
             scp,
             "Number1",
             "%5.5o",
             (unsigned int)(st.st_mode & 07777)
         );
-	sub_var_set_format(scp, "Number2", "%5.5o", mode);
-	error_intl
-	(
-	    scp,
-	    i18n("$filename: mode is $number1, should be $number2")
-	);
-	sub_context_delete(scp);
-	++nerrs;
+        sub_var_set_format(scp, "Number2", "%5.5o", mode);
+        error_intl
+        (
+            scp,
+            i18n("$filename: mode is $number1, should be $number2")
+        );
+        sub_context_delete(scp);
+        ++nerrs;
     }
     if (become_testing > 0)
     {
-	//
-	// This is the test performed by aegis
-	// in testing (not set-uid-root) mode.
-	//
-	if (st.st_uid != geteuid())
-	{
-	    sub_context_ty *scp;
+        //
+        // This is the test performed by aegis
+        // in testing (not set-uid-root) mode.
+        //
+        if (st.st_uid != geteuid())
+        {
+            sub_context_ty *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_long(scp, "Number1", st.st_uid);
-	    sub_var_set_long(scp, "Number2", geteuid());
-	    error_intl
-		(scp, i18n("$filename: owner is $number1, should be $number2"));
-	    sub_context_delete(scp);
-	    ++nerrs;
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_long(scp, "Number1", st.st_uid);
+            sub_var_set_long(scp, "Number2", geteuid());
+            error_intl
+                (scp, i18n("$filename: owner is $number1, should be $number2"));
+            sub_context_delete(scp);
+            ++nerrs;
+        }
     }
     else if (become_testing == 0)
     {
-	//
-	// This is the test performed by aegis
-	// when is set-uid-root mode.
-	//
-	if ((int)st.st_uid != uid)
-	{
-	    sub_context_ty *scp;
+        //
+        // This is the test performed by aegis
+        // when is set-uid-root mode.
+        //
+        if ((int)st.st_uid != uid)
+        {
+            sub_context_ty *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_long(scp, "Number1", st.st_uid);
-	    sub_var_set_long(scp, "Number2", uid);
-	    error_intl
-	    (
-		scp,
-		i18n("$filename: owner is $number1, should be $number2")
-	    );
-	    sub_context_delete(scp);
-	    ++nerrs;
-	}
-	if (gid >= 0 && (int)st.st_gid != gid)
-	{
-	    sub_context_ty *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_long(scp, "Number1", st.st_uid);
+            sub_var_set_long(scp, "Number2", uid);
+            error_intl
+            (
+                scp,
+                i18n("$filename: owner is $number1, should be $number2")
+            );
+            sub_context_delete(scp);
+            ++nerrs;
+        }
+        if (gid >= 0 && (int)st.st_gid != gid)
+        {
+            sub_context_ty *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", path);
-	    sub_var_set_long(scp, "Number1", st.st_gid);
-	    sub_var_set_long(scp, "Number2", gid);
-	    error_intl
-	    (
-		scp,
-		i18n("$filename: group is $number1, should be $number2")
-	    );
-	    sub_context_delete(scp);
-	    ++nerrs;
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", path);
+            sub_var_set_long(scp, "Number1", st.st_gid);
+            sub_var_set_long(scp, "Number2", gid);
+            error_intl
+            (
+                scp,
+                i18n("$filename: group is $number1, should be $number2")
+            );
+            sub_context_delete(scp);
+            ++nerrs;
+        }
     }
     else
     {
-	//
-	// No test is performed by aereport, aefind, etc.
-	// This is because testing mode and non-testing mode
-	// are indistinguishable.
-	//
+        //
+        // No test is performed by aereport, aefind, etc.
+        // This is because testing mode and non-testing mode
+        // are indistinguishable.
+        //
     }
     if (nerrs)
     {
-	sub_context_ty  *scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("$filename: has been tampered with (fatal)"));
-	// NOTREACHED
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", path);
+        fatal_intl(scp, i18n("$filename: has been tampered with (fatal)"));
+        // NOTREACHED
     }
     trace(("}\n"));
 }
@@ -233,9 +233,9 @@ os_become_init(void)
 #else
     if (setuid(0))
     {
-	become_testing = 1;
-	become_active_uid = become_orig_uid;
-	become_active_gid = become_orig_gid;
+        become_testing = 1;
+        become_active_uid = become_orig_uid;
+        become_active_gid = become_orig_gid;
     }
     else {
         setgid(0);
@@ -293,15 +293,15 @@ os_testing_mode(void)
 
     assert(become_inited);
     if (become_testing <= 0)
-	return 0;
+        return 0;
     if (!warned)
     {
-	sub_context_ty *scp;
+        sub_context_ty *scp;
 
-	warned = 1;
-	scp = sub_context_new();
-	verbose_intl(scp, i18n("warning: test mode"));
-	sub_context_delete(scp);
+        warned = 1;
+        scp = sub_context_new();
+        verbose_intl(scp, i18n("warning: test mode"));
+        sub_context_delete(scp);
     }
     return 1;
 }
@@ -312,35 +312,35 @@ os_become(int uid, int gid, int um)
 {
     trace(("os_become(uid = %d, gid = %d, um = %03o)\n{\n", uid, gid, um));
     if (become_active)
-	fatal_raw("multiple user permissions set (bug)");
+        fatal_raw("multiple user permissions set (bug)");
     become_active = 1;
     if (os_testing_mode())
     {
-	become_active_umask = um;
-	umask(um);
+        become_active_umask = um;
+        umask(um);
     }
     else if (become_testing < 0)
     {
-	// do nothing if we are mortal
-	become_active_umask = um;
-	umask(um);
+        // do nothing if we are mortal
+        become_active_umask = um;
+        umask(um);
     }
     else
     {
-	become_active_uid = uid;
-	become_active_gid = gid;
-	become_active_umask = um;
+        become_active_uid = uid;
+        become_active_gid = gid;
+        become_active_umask = um;
 #ifndef CONF_NO_seteuid
-	if (setegid(gid))
-	    nfatal("setegid(%d)", gid);
-	if (seteuid(uid))
-	    nfatal("seteuid(%d)", uid);
+        if (setegid(gid))
+            nfatal("setegid(%d)", gid);
+        if (seteuid(uid))
+            nfatal("seteuid(%d)", uid);
 #if defined (DEBUG) && defined (__linux__)
         if (!prctl (PR_GET_DUMPABLE, 0, 0, 0, 0)) {
             prctl (PR_SET_DUMPABLE, 1, 0, 0, 0);
         }
 #endif
-	umask(um);
+        umask(um);
 #endif
     }
     trace(("}\n"));
@@ -364,24 +364,24 @@ os_become_undo_atexit(void)
     assert(become_inited);
     if (become_active)
     {
-	become_active = 0;
-	if (!become_testing)
-	{
+        become_active = 0;
+        if (!become_testing)
+        {
 #ifndef CONF_NO_seteuid
-	    if (seteuid(0))
-		nfatal("seteuid(0)");
-	    if (setegid(0))
-		nfatal("setegid(0)");
+            if (seteuid(0))
+                nfatal("seteuid(0)");
+            if (setegid(0))
+                nfatal("setegid(0)");
 #if defined(DEBUG) && defined(__linux__)
-	    if (!prctl(PR_GET_DUMPABLE, 0, 0, 0, 0))
-	    {
-		prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
-	    }
+            if (!prctl(PR_GET_DUMPABLE, 0, 0, 0, 0))
+            {
+                prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
+            }
 #endif
 #endif
-	    become_active_uid = 0;
-	    become_active_gid = 0;
-	}
+            become_active_uid = 0;
+            become_active_gid = 0;
+        }
     }
     trace(("}\n"));
 }
@@ -432,9 +432,9 @@ os_become_query(int *uid, int *gid, int *umsk)
     os_become_must_be_active();
     *uid = become_active_uid;
     if (gid)
-	*gid = become_active_gid;
+        *gid = become_active_gid;
     if (umsk)
-	*umsk = become_active_umask;
+        *umsk = become_active_umask;
 }
 
 
@@ -442,11 +442,11 @@ void
 os_become_orig_query(int *uid, int *gid, int *umsk)
 {
     if (uid)
-	*uid = become_orig_uid;
+        *uid = become_orig_uid;
     if (gid)
-	*gid = become_orig_gid;
+        *gid = become_orig_gid;
     if (umsk)
-	*umsk = become_orig_umask;
+        *umsk = become_orig_umask;
 }
 
 
@@ -461,7 +461,7 @@ void
 os_become_must_be_active_gizzards(const char *file, int line)
 {
     if (!os_become_active())
-	fatal_raw("%s: %d: user permissions not set (bug)", file, line);
+        fatal_raw("%s: %d: user permissions not set (bug)", file, line);
 }
 
 
@@ -470,11 +470,14 @@ os_become_must_not_be_active_gizzards(const char *file, int line)
 {
     if (os_become_active())
     {
-	fatal_raw
-	(
-	    "%s: %d: user permissions set when aught not (bug)",
-	    file,
-	    line
-	);
+        fatal_raw
+        (
+            "%s: %d: user permissions set when aught not (bug)",
+            file,
+            line
+        );
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,23 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994, 1996, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/symtab.h>
 #include <common/trace.h>
@@ -36,13 +36,13 @@ symtab_push(rpt_value_struct *stp)
     trace(("%s\n", __PRETTY_FUNCTION__));
     if (ntab >= ntab_max)
     {
-	size_t new_ntab_max = ntab_max * 2 + 4;
-	rpt_value_struct **new_tab = new rpt_value_struct * [new_ntab_max];
-	for (size_t j = 0; j < ntab; ++j)
-	    new_tab[j] = tab[j];
-	delete [] tab;
-	tab = new_tab;
-	ntab_max = new_ntab_max;
+        size_t new_ntab_max = ntab_max * 2 + 4;
+        rpt_value_struct **new_tab = new rpt_value_struct * [new_ntab_max];
+        for (size_t j = 0; j < ntab; ++j)
+            new_tab[j] = tab[j];
+        delete [] tab;
+        tab = new_tab;
+        ntab_max = new_ntab_max;
     }
     tab[ntab++] = stp;
 }
@@ -98,14 +98,17 @@ rpt_expr_struct::evaluate()
         rpt_expr::pointer ep = nth_child(j);
         if (!ep)
             break;
-	rpt_value::pointer vp = ep->evaluate(false, false);
-	if (vp->is_an_error())
-	{
+        rpt_value::pointer vp = ep->evaluate(false, false);
+        if (vp->is_an_error())
+        {
             symtab_pop();
-	    return vp;
-	}
-	assert(dynamic_cast<rpt_value_void *>(vp.get()));
+            return vp;
+        }
+        assert(dynamic_cast<rpt_value_void *>(vp.get()));
     }
     symtab_pop();
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

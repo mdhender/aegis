@@ -1,32 +1,31 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2001, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.ds n) ae-sccs-put
+.so lib/en/man1/z_name.so
+.ds n) ae\[hy]sccs\[hy]put
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
-ae-sccs-put \- put sccs version
+ae\[hy]sccs\[hy]put \- put sccs version
 .XX "ae-sccs-put(1)" "put file version into SCCS"
 .SH SYNOPSIS
 .B \*(n)
 \fB\-y\fP\fIcomment\fP
-\fB\-G\fP\fIinput-file\fP
-\fIhistory-file\fP
+\fB\-G\fP\fIinput\[hy]file\fP
+\fIhistory\[hy]file\fP
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to commit changes to an SCCS file.
 It insulates against a number of SCCS's quirks, and maps to Aegis'
@@ -46,7 +45,7 @@ admin\fP command) if it does not.
 .SH OPTIONS
 The following options are understood:
 .TP 8n
-\fB\-G\fP\fIsource-file\fP
+\fB\-G\fP\fIsource\[hy]file\fP
 This option must be used to
 specify the source file to be checked into the history.
 .TP 8n
@@ -54,5 +53,6 @@ specify the source file to be checked into the history.
 This option must be used to
 specify the comment to be attached to the file history.
 You probably need to use quotes to insulate the white space in the comment.
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

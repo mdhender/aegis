@@ -1,31 +1,32 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/sys/types.h>
 #include <common/ac/sys/stat.h>
 
-#include <common/error.h>
 #include <common/mem.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex/change.h>
@@ -44,7 +45,7 @@
 #include <libaegis/lock.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
-#include <libaegis/pattr.h>
+#include <libaegis/pattr.fmtgen.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
@@ -97,7 +98,7 @@ static void
 check_permissions(change::pointer cp, user_ty::pointer up)
 {
     cstate_ty       *cstate_data;
-    project_ty      *pp;
+    project      *pp;
     cstate_history_ty *hp;
 
     cstate_data = cp->cstate_get();
@@ -127,7 +128,7 @@ check_permissions(change::pointer cp, user_ty::pointer up)
         (
             !project_developer_may_review_get(pp)
         &&
-            nstring(change_developer_name(cp)) == up->name()
+            nstring(cp->developer_name()) == up->name()
         )
         {
             change_fatal(cp, 0, i18n("developer may not review"));
@@ -141,18 +142,12 @@ review_pass_main(void)
 {
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty       *project_name;
-    project_ty      *pp;
-    long            change_number;
-    change::pointer cp;
-    user_ty::pointer up;
     long            j;
     edit_ty         edit;
 
     trace(("review_pass_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
+    change_identifier cid;
     edit = edit_not_set;
     nstring comment;
     nstring reason;
@@ -165,24 +160,10 @@ review_pass_main(void)
             continue;
 
         case arglex_token_change:
-            arglex();
-            // fall through...
-
         case arglex_token_number:
-            arglex_parse_change
-            (
-                &project_name,
-                &change_number,
-                review_pass_usage
-            );
-            continue;
-
         case arglex_token_project:
-            arglex();
-            // fall through...
-
         case arglex_token_string:
-            arglex_parse_project(&project_name, review_pass_usage);
+            cid.command_line_parse(review_pass_usage);
             continue;
 
         case arglex_token_file:
@@ -211,16 +192,16 @@ review_pass_main(void)
         case arglex_token_reason:
             if (reason)
                 duplicate_option(review_pass_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string(arglex_token_reason, review_pass_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_string(arglex_token_reason, review_pass_usage);
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = arglex_value.alv_string;
-		break;
-	    }
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = arglex_value.alv_string;
+                break;
+            }
             break;
 
         case arglex_token_edit:
@@ -259,6 +240,7 @@ review_pass_main(void)
         }
         arglex();
     }
+    cid.command_line_check(review_pass_usage);
 
     if (!comment.empty() && !reason)
     {
@@ -287,30 +269,9 @@ review_pass_main(void)
     if (!reason.empty())
         comment = reason;
 
-    //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    up = user_ty::create();
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-        change_number = up->default_change(pp);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
+    project *pp = cid.get_pp();
+    user_ty::pointer up = cid.get_up();
+    change::pointer cp = cid.get_cp();
 
     //
     // create the comment, if necessary
@@ -431,7 +392,7 @@ review_pass_main(void)
             break;
 
         case file_action_transparent:
-            if (change_was_a_branch(cp))
+            if (cp->was_a_branch())
             {
                 file_required = 0;
                 diff_file_required = false;
@@ -448,13 +409,13 @@ review_pass_main(void)
             (
                 src_data->move
             &&
-                change_file_find(cp, src_data->move, view_path_first)
+                cp->file_find(nstring(src_data->move), view_path_first)
             )
                 diff_file_required = false;
             break;
         }
 
-        path = change_file_path(cp, src_data->file_name);
+        path = cp->file_path(src_data->file_name);
         if (file_required)
         {
             up->become_begin();
@@ -510,7 +471,7 @@ review_pass_main(void)
     //
     // write out the data and release the locks
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     commit();
     lock_release();
 
@@ -528,8 +489,6 @@ review_pass_main(void)
     // verbose success message
     //
     change_verbose(cp, 0, i18n("review pass complete"));
-    change_free(cp);
-    project_free(pp);
     trace(("}\n"));
 }
 
@@ -547,3 +506,6 @@ review_pass(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), review_pass_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

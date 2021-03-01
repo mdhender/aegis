@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1992, 1993, 2002, 2006-2008 Peter Miller.
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1992, 1993, 2002, 2006-2008, 2010, 2012 Peter Miller.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Security"
@@ -59,7 +59,7 @@ There are a huge number of variables in this question.
 The most obvious bottleneck is the integrator.
 An artificial "big project" example:
 Assume that the average integration takes an hour to build and test.
-A full-time integrator could be expected to get 7 or 8 of these done per day
+A full\[hy]time integrator could be expected to get 7 or 8 of these done per day
 (this was the observed average on one project the author was involved in).
 Assume that the average time for a developer to develop a change is two weeks;
 a figure recommended by many text books
@@ -76,3 +76,4 @@ just to find the one or two files which changed.
 This can easily push the integrate build time
 past the one hour mark.
 Developers also become very vocal when build times are this long.
+.\" vim: set ts=8 sw=4 et :

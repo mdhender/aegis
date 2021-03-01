@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004-2008 Peter Miller
+//      Copyright (C) 2001, 2002, 2004-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,13 +17,15 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
+#include <common/mem.h>
 #include <libaegis/dir.h>
-#include <common/error.h>
+#include <libaegis/os.h>
+
 #include <aeimport/format.h>
 #include <aeimport/format/private.h>
 #include <aeimport/format/search_list.h>
-#include <common/mem.h>
-#include <libaegis/os.h>
 
 
 void
@@ -170,3 +172,6 @@ format_sanitize(format_ty *fp, string_ty *filename, int last_part)
     assert(fp->vptr->sanitize);
     return fp->vptr->sanitize(fp, filename, last_part);
 }
+
+
+// vim: set ts=8 sw=4 et :

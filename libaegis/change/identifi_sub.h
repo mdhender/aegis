@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_CHANGE_IDENTIFI_SUB_H
@@ -28,7 +27,7 @@ class change_functor; // forward
 struct fstate_src_ty; // forward
 class nstring_list; // forward
 class project_file_roll_forward; // forward
-struct project_ty; // forward
+struct project; // forward
 struct user_ty; // forward
 
 /**
@@ -56,7 +55,7 @@ public:
       * The set method is used to determine if this chaneg ID has been
       * set yet (via any one of several command line options).
       */
-    bool set() const;
+    bool set(void) const;
 
     /**
       * The command_line_parse method is used to parse command line
@@ -96,33 +95,33 @@ public:
       * The set_baseline method is used to specify that the baseline is
       * the change being identified.
       */
-    void set_baseline() { baseline = true; }
+    void set_baseline(void) { baseline = true; }
 
     /**
       * The get_baseline method is used to determine whether the
       * --baseline option has been specified.
       */
-    bool get_baseline() { return baseline; }
+    bool get_baseline(void) { return baseline; }
 
     /**
       * The get_devdir method is used to determine of the
       * --Development-Directory option has been given, or is implied.
       */
-    bool get_devdir();
+    bool get_devdir(void);
 
     /**
       * The set_project method is used <i>after</i> the
       * command_line_check method has been called.  It is used to bind
       * to the appropriate project for the change identified.
       */
-    void set_project();
+    void set_project(void);
 
     /**
       * The set_change method is used <i>after</i> the set_project
       * method has been called.  It is used to bind to the appropriate
       * change.
       */
-    void set_change();
+    void set_change(void);
 
     /**
       * The get_file_revision is used to determine the path to the given
@@ -136,7 +135,7 @@ public:
       *     this operation.
       */
     file_revision get_file_revision(const nstring &filename,
-	change_functor &bad_state);
+        change_functor &bad_state);
 
     /**
       * The get_file_revision is used to determine the path to
@@ -150,7 +149,7 @@ public:
       *     this operation.
       */
     file_revision get_file_revision(fstate_src_ty *src,
-	change_functor &bad_state);
+        change_functor &bad_state);
 
     /**
       * The get_project_files method is used to obtain a list of the
@@ -185,19 +184,19 @@ public:
       * The get_change_version_string methof is used to get the version
       * string for the change.
       */
-    nstring get_change_version_string();
+    nstring get_change_version_string(void);
 
     /**
       * The get_pp method is used to get the project pointer for the
       * change identified.
       */
-    project_ty *get_pp() { return pid.get_pp(); }
+    project *get_pp(void) { return pid.get_pp(); }
 
     /**
       * The get_up method is used to get the user pointer for the
       * change identified.
       */
-    user_ty::pointer get_up() { return pid.get_up(); }
+    user_ty::pointer get_up(void) { return pid.get_up(); }
 
     /**
       * The set_user_by_name method is used to set the user name by
@@ -213,7 +212,13 @@ public:
       * The get_cp method is used to get the change pointer for the
       * change identified.
       */
-    change::pointer get_cp();
+    change::pointer get_cp(void);
+
+    /**
+      * The get_bogus_cp method is used to get the change pointer for a
+      * bogus change.  It is an error if a real change was specified.
+      */
+    change::pointer get_bogus_cp(void);
 
     /**
       * The get_change_number method is used to obtain the change
@@ -222,25 +227,37 @@ public:
       * \note
       *     There is no need to call magic_zero_decode().
       */
-    long get_change_number();
+    long get_change_number(void);
 
     /**
       * The error_if_no_explicit_change_number is used to emit a
       * fatal_intl error if no change number was specified on the
       * command line.
       */
-    void error_if_no_explicit_change_number();
+    void error_if_no_explicit_change_number(void);
+
+    /**
+      * The error_if_no_explicit_delta is used to emit a fatal_intl
+      * error if no delta number was specified on the command line (in
+      * any of the several forms).
+      */
+    void error_if_no_explicit_delta(void);
 
     /**
       * The get_historian method is used to obtain the location of the
       * historical file reconstructor.
       *
-      * \note
+      * @param detailed
+      *     true if you want a detailed history (recurse into branch
+      *     contents), or false if the simple report is enough.
+      *     The default is <i>not</i> to provide a detailed listing.
+      *
+      * @note
       *     This function is a failure of the API to conceal this.
       *     Eventually it would be nice if all the users of this could
       *     be refactored to hide it again.
       */
-    project_file_roll_forward *get_historian();
+    project_file_roll_forward *get_historian(bool detailed = false);
 
     /**
       * The invalidate_meta_data method is used to discard cached
@@ -248,7 +265,25 @@ public:
       * sub-command is run and that subcommand would update the change
       * meta-data.
       */
-    void invalidate_meta_data();
+    void invalidate_meta_data(void);
+
+    /**
+      * The set_delta_from_baseline method may be used to set the
+      * change from the the change of the branch (the baseline).
+      *
+      * @note
+      *     Only call if the #set method returns false.
+      */
+    void set_delta_from_baseline(void);
+
+    /**
+      * The set_delta_from_branch_head method may be used to set the
+      * change from the current head revision of the branch.
+      *
+      * @note
+      *     Only call if the #set method returns false.
+      */
+    void set_delta_from_branch_head(void);
 
 private:
     /**
@@ -314,7 +349,7 @@ private:
       * whether or not access to project files should be direct (false)
       * or via the historian (false).
       */
-    bool need_historical_perspective() const;
+    bool need_historical_perspective(void) const;
 
     /**
       * The default constructor.  Do not use.
@@ -333,3 +368,4 @@ private:
 };
 
 #endif // LIBAEGIS_CHANGE_IDENTIFI_SUB_H
+// vim: set ts=8 sw=4 et :

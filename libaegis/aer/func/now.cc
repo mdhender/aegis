@@ -1,23 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1997, 1999, 2003-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/now.h>
 #include <common/trace.h>
 #include <libaegis/aer/expr.h>
@@ -91,14 +91,14 @@ working_days(time_t start, time_t finish)
     // Flip it end-for-end if they gave it the wrong way round.
     //
     trace(("working_days(start = %ld, finish = %ld)\n{\n",
-	   (long)start, (long)finish));
+           (long)start, (long)finish));
     trace(("start = %s", ctime(&start)));
     trace(("finish = %s", ctime(&finish)));
     if (start > finish)
     {
-	time_t tmp = start;
-	finish = start;
-	start = tmp;
+        time_t tmp = start;
+        finish = start;
+        start = tmp;
     }
 
     //
@@ -117,9 +117,9 @@ working_days(time_t start, time_t finish)
     //
     if ((long)start + SECONDS_PER_WORKING_DAY <= (long)finish)
     {
-	working_days_whole++;
-	start += SECONDS_PER_DAY;
-	wday = (wday + 1) % 7;
+        working_days_whole++;
+        start += SECONDS_PER_DAY;
+        wday = (wday + 1) % 7;
     }
 
     //
@@ -128,10 +128,10 @@ working_days(time_t start, time_t finish)
     //
     while ((long)start + SECONDS_PER_WORKING_DAY <= (long)finish)
     {
-	if (wday < WORKING_DAYS_PER_WEEK)
-    	    working_days_whole++;
-	start += SECONDS_PER_DAY;
-	wday = (wday + 1) % 7;
+        if (wday < WORKING_DAYS_PER_WEEK)
+            working_days_whole++;
+        start += SECONDS_PER_DAY;
+        wday = (wday + 1) % 7;
     }
 
     //
@@ -140,7 +140,7 @@ working_days(time_t start, time_t finish)
     assert((long)finish - (long)start < SECONDS_PER_WORKING_DAY);
     if (start < finish)
     {
-	working_days_frac = (finish - start) / (double)SECONDS_PER_WORKING_DAY;
+        working_days_frac = (finish - start) / (double)SECONDS_PER_WORKING_DAY;
     }
 
     //
@@ -202,39 +202,42 @@ rpt_func_working_days::run(const rpt_expr::pointer &ep, size_t,
     rpt_value_integer *t1ip = dynamic_cast<rpt_value_integer *>(t1.get());
     if (!t1ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Function", "working_days");
-	sc.var_set_long("Number", 1);
-	sc.var_set_charstar("Name", argv[0]->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "working_days");
+        sc.var_set_long("Number", 1);
+        sc.var_set_charstar("Name", argv[0]->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
+            sc.subst_intl
+            (
                 i18n("$function: argument $number: time value required "
                     "(was given $name)")
-	    )
+            )
         );
-	return rpt_value_error::create(ep->get_pos(), s);
+        return rpt_value_error::create(ep->get_pos(), s);
     }
 
     rpt_value::pointer t2 = rpt_value::integerize(argv[1]);
     rpt_value_integer *t2ip = dynamic_cast<rpt_value_integer *>(t2.get());
     if (!t2ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Function", "working_days");
-	sc.var_set_long("Number", 2);
-	sc.var_set_charstar("Name", argv[1]->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "working_days");
+        sc.var_set_long("Number", 2);
+        sc.var_set_charstar("Name", argv[1]->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
+            sc.subst_intl
+            (
                 i18n("$function: argument $number: time value required "
                     "(was given $name)")
-	    )
+            )
         );
-	return rpt_value_error::create(ep->get_pos(), s);
+        return rpt_value_error::create(ep->get_pos(), s);
     }
 
     return rpt_value_real::create(working_days(t1ip->query(), t2ip->query()));
 }
+
+
+// vim: set ts=8 sw=4 et :

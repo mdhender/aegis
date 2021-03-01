@@ -1,235 +1,594 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001-2004, 2006-2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
-.so version.so
+.so etc/version.so
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
 <title>Aegis Download</title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="aegis.png" align=left>
-<img src="missiku/dgn_dir_2.png" align=right>
-<center>Aegis
-.ie (\*(o)) \*(V)
+<body bgcolor="#ffffff"><h1 align="center">
+<img src="aegis.png" align="left" alt="" />
+<img src="missiku/dgn_dir_2.png" align="right" alt="" />
+Aegis
+<a href="index.html">
+.if (\*(o)) \*(V)
 .el \*(v)
-<br>Files for Download</center></h1>
+</a><br/>
+Files for Download</h1>
 This page contains links to files which may be downloaded.  These files
 include the source code for Aegis, and all of the documentation for
 Aegis.  There are also links to some of the libraries you will need to
 build Aegis.
 <br clear=all>
+
 <p><br>
-<table align=center>
+<table>
+<tr><td valign="top" width="50%">
+.\" ========================================================================
+<table>
+<tr>
+    <td valign="top" align="center" width=64>
+        <img src="missiku/dgn_doc_2.png" alt="*" /></td>
+    <td valign="top">
+        <h2 style="margin-top: 0" >The Source Files</h2>
+        <table>
+        <tr>
+            <th>File Name</th>
+            <th>Description</th>
+        </tr>
 
-<tr><td valign=top align=center><img src="missiku/dgn_doc_2.png"></td>
-<td valign=top>
-    <h2>The Source Files</h2>
-    <table>
-    <tr><th>File Name</th><th>Description</th></tr>
-    <td valign=top>
-    <a href="aegis-\*(v).README"><tt>aegis-\*(v).README</tt></a>
-    </td>
-    <td valign=top>
-    The <tt>README</tt> file from the tar distribution.
-    </td>
-    </tr>
-    <tr>
-    <tr>
-    <td valign=top>
-    <a href="change_log.txt"><tt>change_log.txt</tt></a>
-    </td>
-    <td valign=top>
-    The release notes, detailing what has happened in this release.
-    </td>
-    </tr>
-    <tr>
-    <td valign=top>
-    <a href="aegis-\*(v).lsm"><tt>aegis-\*(v).lsm</tt></a>
-    </td>
-    <td valign=top>
-    Brief description in
-    .nf
-    <a href="ftp://metalab.unc.edu/pub/Linux/LSM-TEMPLATE">LSM</a>
-    .fi
-    format.
-    </td>
-    </tr>
-    <tr>
-    <td valign=top>
-    <a href="aegis-\*(v).spec"><tt>aegis-\*(v).spec</tt></a>
-    </td>
-    <td valign=top>
-    RedHat package manager
-    (<a href="http://www.rpm.org/">RPM</a>)
-    specification file, from the tar distribution.
-    </td></tr>
-.br
-    <tr>
-    <td valign=top>
-    <a
-.ie (\*(o)) href="aegis-\*(V).tar.gz"
+        <tr>
+            <td valign="top" >
+                <a href="aegis-\*(v).README"><tt>aegis-\*(v).README</tt></a>
+            </td>
+            <td valign="top">
+                The <tt>README</tt> file from the tar distribution.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="change_log.txt"><tt>change_log.txt</tt></a>
+            </td>
+            <td valign="top">
+                The release notes, detailing what has happened in this release.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="aegis-\*(v).lsm"><tt>aegis-\*(v).lsm</tt></a>
+            </td>
+            <td valign="top">
+                Brief description in
+                <a href="ftp://metalab.unc.edu/pub/Linux/LSM-TEMPLATE">LSM</a>
+                format.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="aegis-\*(v).spec"><tt>aegis-\*(v).spec</tt></a>
+            </td>
+            <td valign="top">
+                RedHat package manager
+                (<a href="http://www.rpm.org/">RPM</a>)
+                specification file, from the tar distribution.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top" nowrap>
+                <a
+.if (\*(o)) href="aegis-\*(V).tar.gz"
 .el href="aegis-\*(v).tar.gz"
-    ><tt>
-.ie (\*(o)) aegis-\*(V).tar.gz
+                ><tt>
+.if (\*(o)) aegis-\*(V).tar.gz
 .el aegis-\*(v).tar.gz
-    </tt></a>
-    </td>
-    <td valign=top>
-    The complete source.
-    </td>
-    </tr>
-    <tr>
-    <td valign=top>
-    <a
-.ie (\*(o)) href="aegis-\*(V).ae"
+                </tt></a>
+            </td>
+
+            <td valign="top">
+                The complete source.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top" nowrap>
+                <a
+.if (\*(o)) href="aegis-\*(V).ae"
 .el href="aegis-\*(v).ae"
-    ><tt>
-.ie (\*(o)) aegis-\*(V).ae
+                ><tt>
+.if (\*(o)) aegis-\*(V).ae
 .el aegis-\*(v).ae
-    </tt></a>
-    </td>
-    <td valign=top>
-    The complete source, in <i>aedist</i> format.
-    This is used by Aegis developers and maintainers.
-    (First timers should read the <i>How to become an Aegis Developer</i>
-    section of the <a href="howto.pdf">howto</a> for instructions.)
-    </td>
-    </tr>
-    <tr>
-    <td valign=top>
-    <a href="aegis-\*(v).faq"><tt>aegis-\*(v).faq</tt></a>
-    </td>
-    <td valign=top>
-    Frequently asked questions, with answers.
-    </td>
-    </tr>
+                </tt></a>
+            </td>
+
+            <td valign="top">
+                The complete source, in <i>aedist</i> format.  This is
+                used by Aegis developers and maintainers.  (First timers
+                should read the <i>How to become an Aegis Developer</i>
+                section of the <a href="howto.pdf">How To</a> for
+                instructions.)
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <tt><a href="debian/" >debian</a>/</tt>
+            </td>
+            <td valign="top">
+            prebuilt
+.so etc/lsb-release.so
+            binary packages
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="aegis-\*(v).faq"><tt>aegis-\*(v).faq</tt></a>
+            </td>
+            <td valign="top">
+                Frequently asked questions, with answers.
+            </td>
+        </tr>
     </table>
-    <br><p><br>
-</tr></td>
+    </td>
+</tr>
 
-.br
-<tr><td valign=top align=center><img src="missiku/dgn_doc_2.png"></td>
-<td valign=top>
-    <h2>Second Sources</h2>
-    <ul><li>
-	Consider using one of the <a
-.nf
-href="https://sourceforge.net/project/showfiles.php?group_id=224"
-.fi
-	>SourceForge Download</a> mirrors, it will be quicker.
-    <li>
-	Aegis is also available from
-	<a href="ftp://metalab.unc.edu/pub/Linux/">the Linux archives</a>
-	in the
-	<a href="ftp://metalab.unc.edu/pub/Linux/devel/vc/">
-	<tt>devel/vc</tt></a>
-	directory.
-    <li>
-	Aegis is available as <a
-.nf
-href="http://www.debian.org/Packages/stable/devel/aegis.html"
-.fi
-        >Debian packages</a> from the <a
-        href="http://www.debian.org">Debian</a> distribution.
-    <li>
-	Aegis is also available as
-	<a href="http://www.baldmt.com/RPMS/">
-	RPM packages</a>.
-    <li>
-	There is the beginnings of an
-.nf
-<a href="http://acsys.anu.edu.au/~tpot/aegis-mode/">aegis-mode</a>
-.fi
-	for Emacs available, written by
-	<a href="mailto:Tim.Potter%40anu.edu.au">Tim Potter</a>.
-	Feedback to Tim, please.
-    </ul>
-    <br><p><br>
-</td></tr>
+.\" ------------------------------------------------------------------------
+<tr>
+    <td valign="top" align="center" width=64>
+        <img src="http://libexplain.sourceforge.net/sf.png" alt="[*]" /></td>
+    <td valign="top">
+        <h2 style="margin-top: 0" >SourceForge</h2>
+        <ul><li>
+            Consider using one of the <a
+            href="http://sourceforge.net/projects/aegis/files/\*(v)/"
+            >SourceForge Download</a> mirrors, it will be quicker.
+        <li>
+            <a href="http://sourceforge.net/projects/aegis/stats/traffic"
+            >SourceForge Traffic Statistics</a>
+        <li>
+            <a href="http://sourceforge.net/projects/aegis/files/stats/timeline"
+            >SourceForge Download Statistics</a>
+        </ul>
+    </td>
+</tr>
 
-.br
-<tr><td valign=top align=center><img src="missiku/dgn_doc_2.png"></td>
-<td valign=top>
-    <h2>Additional Packages</h2>
-    There are some other packages you should get if and install you haven't
-    already...
-    <p>
-    <table>
-.br
-    <tr><td valign=top>
-    <a href="ftp://ftp.gnu.org/gnu/gettext/">gettext</a>
-    </td><td valign=top>
-    GNU Gettext internationalization library.
-    (If you have GNU Libc 2.0 or later, you don't need this.)
-    </td></tr>
-.br
-    <tr><td valign=top>
-    <a href="ftp://ftp.gnu.org/gnu/rx/">rx</a>
-    </td><td valign=top>
-    GNU Regular eXpression library, if your system does not already have
-    the <tt>regcomp</tt> and <tt>regexec</tt> library calls.
-    </td></tr>
-.br
-    <tr><td valign=top>
-    <a href="http://www.gzip.org/zlib/">zlib</a>
-    </td><td valign=top>
-    The zlib compression library (implements the GNU Zip compression
-    algorithm).  Used to compress change sets for distribution.
-.br
-    <tr><td valign=top>
-    <a href="http://http://www.bzip.org/">bzip2 library</a>
-    </td><td valign=top>
-    The bzip2 compression library (implements the bzip2 compression
-    algorithm).  Used to compress change sets for distribution, and to
-    optionally compress Aegis' database.
-    </td></tr>
-    </table>
-    <br><p><br>
-</td></tr>
+.\" ------------------------------------------------------------------------
+<tr>
+    <td valign="top" align="center" width=64>
+        <img src="missiku/dgn_doc_2.png" alt="*" /></td>
+    <td valign="top">
+        <h2 style="margin-top: 0" >Build Depends</h2>
+        If you use a package-based install, the package system takes
+        care of all of this for you, so don't be alarmed.
+        <p>
+        If you are building with the aid of apt-get, use this command to
+        install all of the devel packages need for an Aegis build:
+        <p>
+<blockquote>
+<pre>sudo apt-get build-dep aegis</pre>
+</blockquote>
+        <p>
+        In order to build Aegis from scratch, including its build
+        dependencies from scratch, there are some other packages you
+        will need to download and build and install, if you haven't
+        already...
+        <p>
+        <table>
 
-.br
-<tr><td valign=top align=center><img src="missiku/dgn_doc_2.png"></td>
-<td valign=top>
-    <h2>The Bleeding Edge</h2>
-    Aegis developers
-    (the generous people who work on the Aegis source itself)
-    may access the latest development changes
-    through the <a href="webiface.html">Web Interface</a> pages.
-    Not recommended for novices.
-    <p>
-    There is also an <a
-.nf
-href="http://aegis.sourceforge.net/cgi-bin/aeget/aegis.\*(v)/?rss+completed.xml"
-    ><img
-src="http://aegis.sourceforge.net/cgi-bin/aeget/icon/rss.gif"
-.fi
-    alt="RSS" border=0>
-    feed</a> for Aegis, so developers can easily track what is happening,
-    and when they need to resync.
-</td></tr>
+        <tr>
+            <td valign="top">
+                bison
+            </td>
+            <td valign="top">
+                bison, for building tarballs
+            </td>
+        </tr>
 
-.br
+        <tr>
+            <td valign="top">
+                <a href="http://http://www.bzip.org/">bzip2</a>,
+                libbz2-dev
+            </td>
+            <td valign="top">
+                The bzip2 compression library (implements the bzip2
+                compression algorithm).  Used to compress change sets
+                for distribution, and to optionally compress Aegis'
+                database.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                cdbs
+            </td>
+            <td valign="top">
+                cdbs, for building Debian packages,
+                if you are an Aegis developer
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="http://miller.emu.id.au/pmiller/software/cook/"
+                >Cook</a>
+            </td>
+            <td valign="top">
+                Cook, for building Aegis itself,
+                in an Aegis repository,
+                if you are an Aegis developer.
+                <br/>
+                Optional for testing aegis tarballs.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                cssc
+            </td>
+            <td valign="top">
+                cssc, for testing tarballs
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                cvs
+            </td>
+            <td valign="top">
+                cvs, for testing tarballs
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                debhelper
+            </td>
+            <td valign="top">
+                debhelper, for building Debian packages.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                ed
+            </td>
+            <td valign="top">
+                coreutils, for testing.
+                Usually automatically present.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="http://fhist.sourceforge.net/" >fhist</a>
+            </td>
+            <td valign="top">
+                fhist, for Aegis developers, and for testing tarballs.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                flex
+            </td>
+            <td valign="top">
+                flex, for testing tarballs
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                gawk
+            </td>
+            <td valign="top">
+                gawk, for building and testing
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="ftp://ftp.gnu.org/gnu/gettext/">gettext</a>
+            </td>
+            <td valign="top">
+                GNU Gettext internationalization library.
+                (If you have GNU Libc 2.0 or later, you don't need this.)
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                groff
+            </td>
+            <td valign="top">
+                groff, for building documentation, including the tarball
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                libcurl4-gnutls-dev
+            </td>
+            <td valign="top">
+                libcurl4-gnutls-dev, used to transmit and receive data
+                over SSL (Secure Sockets Layer)
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                libmagic-dev
+            </td>
+            <td valign="top">
+                libmagic-dev, for determining the Mime-Type of files
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                libxml2-dev
+            </td>
+            <td valign="top">
+                libxml2-dev, for building and testing, and also when
+                installed, to be able to read and write XML files.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                linux-libc-dev
+            </td>
+            <td valign="top">
+                linux-libc-dev, for building
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                locales
+            </td>
+            <td valign="top">
+                used to validate language translation locales,
+                not just building and testing
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                patchutils
+            </td>
+            <td valign="top">
+                patchutils, for building and testing
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                perl
+            </td>
+            <td valign="top">
+                needed by various scripts, not just for building and testing
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                po-debconf
+            </td>
+            <td valign="top">
+                po-debconf, for building Debian packages
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                rcs
+            </td>
+            <td valign="top">
+                rcs, for testing tarballs
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="ftp://ftp.gnu.org/gnu/rx/">rx</a>
+            </td>
+            <td valign="top">
+                GNU Regular eXpression library, if your system does not
+                already have the <tt>regcomp</tt> and <tt>regexec</tt>
+                library calls.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                subversion
+            </td>
+            <td valign="top">
+                subversion, for testing tarballs
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                uuid-dev
+            </td>
+            <td valign="top">
+                uuid-dev, for creating UUIDs
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                wdg-html-validator
+            </td>
+            <td valign="top">
+                wdg-html-validator, for Aegis developers, for building
+                and validating web pages for upload
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <a href="http://www.gzip.org/zlib/">zlib</a>,
+                zlib1g-dev
+            </td>
+            <td valign="top" >
+                The zlib compression library (implements the GNU Zip
+                compression algorithm).  Used to compress change sets
+                for distribution.
+            </td>
+        </tr>
+
+        </table>
+    </td>
+</tr>
+
 </table>
+</td>
+.\" ========================================================================
+<td valign="top" width="50%" >
+<table>
+
+<tr><td valign="top" width=64>
+    <img src="http://miller.emu.id.au/pmiller/software/launchpad-logo.png"
+        alt="" />
+    </td><td valign="top">
+    <h2 style="margin-top: 0" >Ubuntu Packages</h2>
+    If you use Ubuntu Linux, there are pre-built packages available for
+    installation using the normal <tt>sudo apt-get install</tt> method,
+    from <a href="https://launchpad.net/~pmiller-opensource/+archive/aegis"
+    >this package archive</a> (<a
+    href="https://help.launchpad.net/Packaging/PPA" >PPA</a>).
+    <p>
+    Instructions are available there for how to manually add the PPA to
+    your <tt>/etc/apt/sources.list</tt> file, but the following commands
+    are sufficient on recent versions of Ubuntu:
+    <p>
+<blockquote>
+<pre>
+sudo add-apt-repository ppa:pmiller-opensource/ppa
+sudo add-apt-repository ppa:pmiller-opensource/aegis
+sudo apt-get update
+sudo apt-get install aegis</pre>
+</blockquote>
+    <p>
+    If you already have the PPA installed but not the <i>aegis</i>
+    package, this link <a href="apt:aegis" >apt:aegis</a> should do the
+    install.
+    <p>
+    (The first PPA is necessary to obtain advance versions of
+    the run-time dependencies, such as
+    <a href="http://miller.emu.id.au/pmiller/software/cook/" >Cook</a> and
+    <a href="http://fhist.sourceforge.net/" >FHist</a>.)
+    The second PPA is the Aegis development branch PPA.
+    <td></tr>
+
+<tr>
+    <td valign="top" width=64>
+        <img src="http://srecord.sourceforge.net/debian.png" alt="[*]" />
+    </td>
+        <td valign="top">
+        <h2 style="margin-top: 0" >Debian Packages</h2>
+        <ul><li>
+            The Aegis Debian packages are maintained by
+            <a href="mailto:walter.franzini@gmail.com" >Walter Franzini</a>.
+        <li>
+            The Debian packages are available at
+            <a href="http://packages.qa.debian.org/a/aegis.html"
+            >http://packages.qa.debian.org/a/aegis.html</a>
+        <li>
+            prebuilt
+.so etc/lsb-release.so
+            binaries are available <a href="debian/" >from this web site</a>
+        </ul>
+    </td>
+</tr>
+
+<tr>
+    <td valign="top" align="center" width=64>
+        <img src="aegis.png" alt="[*]" /></td>
+    <td valign="top">
+        <h2 style="margin-top: 0" >Aegis' Aegis Repository</h2>
+        <table>
+        <tr>
+            <td valign="top" >
+                <a href="webiface.html">Web Interface</a>
+            </td>
+            <td valign="top" >
+                Aegis developers, the generous people who work on the Aegis
+                source itself, may access the latest development changes
+                through the <a href="webiface.html">Web Interface</a> pages.
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" >
+                <a
+href="http://aegis.sourceforge.net/cgi-bin/aeget/aegis.\*(v)/?rss+completed.xml"
+                ><img
+src="http://aegis.sourceforge.net/cgi-bin/aeget/icon/rss.gif"
+                alt="RSS" border=0 /> feed</a>
+            </td>
+            <td valign="top" >
+                There is also an <a
+href="http://aegis.sourceforge.net/cgi-bin/aeget/aegis.\*(v)/?rss+completed.xml"
+                ><img
+src="http://aegis.sourceforge.net/cgi-bin/aeget/icon/rss.gif"
+                alt="RSS" border=0 /> feed</a> for Aegis, so developers
+                can easily track what is happening, and when they need to
+                resync.
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top" nowrap>
+                <a
+.if (\*(o)) href="aegis-\*(V).ae"
+.el href="aegis-\*(v).ae"
+                ><tt>
+.if (\*(o)) aegis-\*(V).ae
+.el aegis-\*(v).ae
+                </tt></a>
+            </td>
+
+            <td valign="top">
+                The complete source, in <i>aedist</i> format.  This is
+                used by Aegis developers and maintainers.  (First timers
+                should read the <i>How to become an Aegis Developer</i>
+                section of the <a href="howto.pdf">How To</a> for
+                instructions.)
+            </td>
+        </tr>
+        </table>
+    </td>
+</tr>
+.\" ========================================================================
+</table>
+</td></tr>
+</table>
+.so web/footer.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

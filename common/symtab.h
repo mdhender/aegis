@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 2002-2008 Peter Miller.
+//      aegis - project change supervisor
+//      Copyright (C) 1994, 2002-2008, 2012 Peter Miller.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_SYMTAB_H
@@ -26,9 +26,9 @@
 class string_list_ty; // forward
 class nstring_list; // forward
 
-/** \addtogroup Symtab
-  * \brief Symbols table interface
-  * \ingroup Common
+/** @addtogroup Symtab
+  * @brief Symbols table interface
+  * @ingroup Common
   * @{
   */
 
@@ -42,14 +42,14 @@ class symtab_ty
 public:
     /**
       * The destructor.
-      * \note it isn't virtual, thou shalt not derive from this class.
+      * @note it isn't virtual, thou shalt not derive from this class.
       */
     ~symtab_ty();
 
     /**
       * The constructor.
       *
-      * \param suggested_size
+      * @param suggested_size
       *     You are able to suggest how many rows will be in the table.
       *     It is better to under estimate than overestimate and waste
       *     memory.  Optimal resizing happens automagically.
@@ -72,51 +72,51 @@ public:
       * The clear method may be used to discard all rows of the symbol
       * table.  It is not an error if the symbol table is already empty.
       *
-      * \note
+      * @note
       *     This method has O(n) execution time.
       */
     void clear(void);
 
     /**
-      *	The query method may be used to search for a variable.
+      * The query method may be used to search for a variable.
       *
-      * \param key
+      * @param key
       *     The row name to search for.
       *
-      * \returns
+      * @returns
       *     If the variable has been defined, this method returns the
       *     pointer value assigned.  If the variable has not been
       *     defined, it returns the NULL pointer.
       *
-      * \note
+      * @note
       *     This method has O(1) execution time.
       *     This method will eventually be DEPRECATED
       */
     void *query(string_ty *key) const;
 
     /**
-      *	The query method may be used to search for a variable.
+      * The query method may be used to search for a variable.
       *
-      * \param key
+      * @param key
       *     The row name to search for.
       *
-      * \returns
+      * @returns
       *     If the variable has been defined, this method returns the
       *     pointer value assigned.  If the variable has not been
       *     defined, it returns the NULL pointer.
       *
-      * \note
+      * @note
       *     This method has O(1) execution time.
       */
     void *query(const nstring &key) const;
 
     /**
-      *	The query method may be used to search for a variable.
+      * The query method may be used to search for a variable.
       *
-      * \param keys
+      * @param keys
       *     The row names to search for.  The first found will be returned.
       *
-      * \returns
+      * @returns
       *     If the variable has been defined, this method returns the
       *     pointer value assigned.  If the variable has not been
       *     defined, it returns the NULL pointer.
@@ -124,34 +124,33 @@ public:
     void *query(const nstring_list &keys) const;
 
     /**
-      *	The query_fuzzy method may be used to search for a variable.
+      * The query_fuzzy method may be used to search for a variable.
       *
-      * \param key
+      * @param key
       *     The row name to search for.
       *
-      * \returns
+      * @returns
       *     The NULL pointer if there is no row of that name and no row
       *     with a similar name, otherwise returns a pointer to the most
       *     similar name.
       *
-      * \note
+      * @note
       *     This method has O(n) execution time.
       *     This method will eventually be DEPRECATED
       */
     string_ty *query_fuzzy(string_ty *key) const;
 
     /**
-      *	The query_fuzzy method may be used to search for a variable.
+      * The query_fuzzy method may be used to search for a variable.
       *
-      * \param key
+      * @param key
       *     The row name to search for.
       *
-      * \returns
-      *     The NULL pointer if there is no row of that name and no row
-      *     with a similar name, otherwise returns a pointer to the most
-      *     similar name.
+      * @returns
+      *     The empty string if there is no row of that name and no row with
+      *     a similar name, otherwise returns the most similar name.
       *
-      * \note
+      * @note
       *     This method has O(n) execution time.
       */
     nstring query_fuzzy(const nstring &key) const;
@@ -159,17 +158,17 @@ public:
     /**
       * The assign method is used to assign a value to a given variable.
       *
-      * \param key
+      * @param key
       *     They key (usually a variable name or simialar).
-      * \param value
+      * @param value
       *     The value to be assigned to that name.
       *
-      * \note
+      * @note
       *     The key is copied, the value pointed to is not.
-      * \note
+      * @note
       *     If there is already a key of that name, the old data will be
       *     discarded, via the reap function, if one has been supplied.
-      * \note
+      * @note
       *     This method has O(1) execution time.
       *     This method will eventually be DEPRECATED
       */
@@ -178,17 +177,17 @@ public:
     /**
       * The assign method is used to assign a value to a given variable.
       *
-      * \param key
+      * @param key
       *     They key (usually a variable name or simialar).
-      * \param value
+      * @param value
       *     The value to be assigned to that name.
       *
-      * \note
+      * @note
       *     The key is copied, the value pointed to is not.
-      * \note
+      * @note
       *     If there is already a key of that name, the old data will be
       *     discarded, via the reap function, if one has been supplied.
-      * \note
+      * @note
       *     This method has O(1) execution time.
       */
     void assign(const nstring &key, void *value);
@@ -198,14 +197,14 @@ public:
       * variable.  Any previous value will be obscured until this one is
       * removed with the remove method.
       *
-      * \param key
+      * @param key
       *     They key (usually a variable name or simialar).
-      * \param value
+      * @param value
       *     The value to be assigned to that name.
       *
-      * \note
+      * @note
       *     The key is copied, the value pointed to is not.
-      * \note
+      * @note
       *     This method has O(1) execution time.
       *     This method will eventually be DEPRECATED
       */
@@ -216,43 +215,43 @@ public:
       * variable.  Any previous value will be obscured until this one is
       * removed with the remove method.
       *
-      * \param key
+      * @param key
       *     They key (usually a variable name or simialar).
-      * \param value
+      * @param value
       *     The value to be assigned to that name.
       *
-      * \note
+      * @note
       *     The key is copied, the value pointed to is not.
-      * \note
+      * @note
       *     This method has O(1) execution time.
       */
     void assign_push(const nstring &key, void *value);
 
     /**
-      *	The remove method is used to remove a variable from the symbol table.
+      * The remove method is used to remove a variable from the symbol table.
       *
-      * \param key
+      * @param key
       *     The name of the row to be removed.
       *
-      * \note
+      * @note
       *    The name is freed, the data is reaped.
       *    (By default, reap does nothing.)
-      * \note
+      * @note
       *     This method has O(1) execution time.
       *     This method will eventually be DEPRECATED
       */
     void remove(string_ty *key);
 
     /**
-      *	The remove method is used to remove a variable from the symbol table.
+      * The remove method is used to remove a variable from the symbol table.
       *
-      * \param key
+      * @param key
       *     The name of the row to be removed.
       *
-      * \note
+      * @note
       *    The name is freed, the data is reaped.
       *    (By default, reap does nothing.)
-      * \note
+      * @note
       *     This method has O(1) execution time.
       */
     void remove(const nstring &key);
@@ -261,13 +260,13 @@ public:
       * The dump method is used to dump the contents of the symbol
       * table.
       *
-      * \param caption
+      * @param caption
       *     The caption will be used to indicate why the symbol
       *     table was dumped.
       *
-      * \note
+      * @note
       *    This function is only available when symbol DEBUG is defined.
-      * \note
+      * @note
       *     This method has O(n) execution time.
       */
     void dump(const char *caption) const;
@@ -276,14 +275,14 @@ public:
       * The keys method may be used to extract the list of row names
       * from the symbol table.
       *
-      * \param result
+      * @param result
       *     Where to put the row names.  It is cleared before any row
       *     names are placed in it.  It is not sorted.
       *
-      * \note
+      * @note
       *     If you have used assign_push method, it is possible to have
       *     duplicates in they list of keys.
-      * \note
+      * @note
       *     This method has O(n) execution time.
       *     This method will eventually be DEPRECATED
       */
@@ -293,14 +292,14 @@ public:
       * The keys method may be used to extract the list of row names
       * from the symbol table.
       *
-      * \param result
+      * @param result
       *     Where to put the row names.  It is cleared before any row
       *     names are placed in it.  It is not sorted.
       *
-      * \note
+      * @note
       *     If you have used assign_push method, it is possible to have
       *     duplicates in they list of keys.
-      * \note
+      * @note
       *     This method has O(n) execution time.
       */
     void keys(nstring_list &result) const;
@@ -312,12 +311,12 @@ public:
       * The walk method is used to invoke a func tion for every row of
       * the symbol table.
       *
-      * \param func
+      * @param func
       *     A pointer to the function to be called.
-      * \param arg
+      * @param arg
       *     An extra argument passed to the function.
       *
-      * \note
+      * @note
       *     This method has O(n) execution time.
       */
     void walk(callback_t func, void *arg) const;
@@ -343,11 +342,11 @@ private:
       * symbol table, which results in halving the load.  The symbols
       * are then redistributed into the new buckets.
       *
-      * \note
+      * @note
       *    It is only sensable to do this when the symbol table load
       *    exceeds some reasonable threshold.  A threshold of 80% is
       *    used.
-      * \note
+      * @note
       *     The probablity of another split thus halves every time this
       *     method is called, resulting in overall O(1) behaviour
       *     because (sigma(2 ** -n) == 1).
@@ -362,9 +361,9 @@ private:
     struct row_t
     {
         row_t() : data(0), overflow(0) { }
-	nstring key;
-	void *data;
-	row_t *overflow;
+        nstring key;
+        void *data;
+        row_t *overflow;
     };
 
     /**
@@ -407,72 +406,20 @@ private:
     friend class symtab_iterator;
 };
 
-inline symtab_ty *
-symtab_alloc(int n)
-{
-    // 37 files still use this function
-    return new symtab_ty(n);
-}
+symtab_ty *symtab_alloc(int n) DEPRECATED;
+void symtab_free(symtab_ty *stp) DEPRECATED;
 
-inline void
-symtab_free(symtab_ty *stp)
-{
-    // 21 files still use this function
-    delete stp;
-}
-
-inline void *
-symtab_query(const symtab_ty *stp, string_ty *key)
-{
-    // 36 files still use this function
-    return stp->query(key);
-}
-
-inline string_ty *
-symtab_query_fuzzy(const symtab_ty *stp, string_ty *key)
-{
-    // 7 files still use this function
-    return stp->query_fuzzy(key);
-}
-
-inline void
-symtab_assign(symtab_ty *stp, string_ty *key, void *value)
-{
-    // 39 files still use this function
-    stp->assign(key, value);
-}
-
-inline DEPRECATED void
-symtab_assign_push(symtab_ty *stp, string_ty *key, void *value)
-{
-    stp->assign_push(key, value);
-}
-
-inline void
-symtab_delete(symtab_ty *stp, string_ty *key)
-{
-    // 2 files still use this function
-    stp->remove(key);
-}
-
-inline DEPRECATED void
-symtab_dump(const symtab_ty *stp, const char *caption)
-{
-    stp->dump(caption);
-}
-
-inline DEPRECATED void
-symtab_walk(const symtab_ty *stp, symtab_ty::callback_t func, void *arg)
-{
-    stp->walk(func, arg);
-}
-
-inline DEPRECATED void
-symtab_keys(const symtab_ty *stp, string_list_ty *result)
-{
-    stp->keys(result);
-}
+void *symtab_query(const symtab_ty *stp, string_ty *key) DEPRECATED;
+string_ty *symtab_query_fuzzy(const symtab_ty *stp, string_ty *key) DEPRECATED;
+void symtab_assign(symtab_ty *stp, string_ty *key, void *value) DEPRECATED;
+void symtab_assign_push(symtab_ty *stp, string_ty *key, void *value) DEPRECATED;
+void symtab_delete(symtab_ty *stp, string_ty *key) DEPRECATED;
+void symtab_dump(const symtab_ty *stp, const char *caption) DEPRECATED;
+void symtab_walk(const symtab_ty *stp, symtab_ty::callback_t func, void *arg)
+    DEPRECATED;
+void symtab_keys(const symtab_ty *stp, string_list_ty *result) DEPRECATED;
 
 /** @} */
 
 #endif // COMMON_SYMTAB_H
+// vim: set ts=8 sw=4 et :

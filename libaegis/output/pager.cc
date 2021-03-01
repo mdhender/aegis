@@ -1,22 +1,22 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1992-1995, 1997, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1992-1995, 1997, 1999, 2002-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/errno.h>
 #include <common/ac/stddef.h>
 #include <common/ac/stdio.h>
@@ -53,17 +53,17 @@ void
 option_pager_set(int n, void (*usage)(void))
 {
     if (option_pager_flag == 0 && n == 0)
-	duplicate_option_by_name(arglex_token_pager_not, usage);
+        duplicate_option_by_name(arglex_token_pager_not, usage);
     if (option_pager_flag >= 1 && n != 0)
-	duplicate_option_by_name(arglex_token_pager, usage);
+        duplicate_option_by_name(arglex_token_pager, usage);
     if (option_pager_flag >= 0)
     {
-	mutually_exclusive_options
-	(
-	    arglex_token_pager,
-	    arglex_token_pager_not,
-	    usage
-	);
+        mutually_exclusive_options
+        (
+            arglex_token_pager,
+            arglex_token_pager_not,
+            usage
+        );
     }
     option_pager_flag = (n != 0);
 }
@@ -74,76 +74,76 @@ option_pager_get(void)
 {
     if (option_pager_flag < 0)
     {
-	user_ty::pointer up = user_ty::create();
-	option_pager_flag = up->pager_preference();
+        user_ty::pointer up = user_ty::create();
+        option_pager_flag = up->pager_preference();
     }
     return option_pager_flag;
 }
 
 
 void
-output_pager::pipe_open()
+output_pager::pipe_open(void)
 {
     sub_context_ty  *scp;
-    int		    uid;
-    int		    gid;
-    int		    um;
-    FILE	    *fp;
-    int		    fd[2];
+    int             uid;
+    int             gid;
+    int             um;
+    FILE            *fp;
+    int             fd[2];
     const char      *cmd[4];
-    int		    pid_;
+    int             pid_;
     int             errno_old;
 
     env_set_page();
     fp = 0;
     os_become_orig_query(&uid, &gid, &um);
     if (pipe(fd))
-	nfatal("pipe()");
+        nfatal("pipe()");
     switch (pid_ = fork())
     {
     case 0:
-	undo_cancel();
-	while (os_become_active())
-	    os_become_undo();
-	cmd[0] = "sh";
-	cmd[1] = "-c";
-	cmd[2] = pager.c_str();
-	cmd[3] = 0;
-	close(fd[1]);
-	close(0);
-	if (dup(fd[0]) != 0)
-	    fatal_raw("dup was wrong");
-	close(fd[0]);
-	os_setgid(gid);
-	os_setuid(uid);
-	umask(um);
-	execvp(cmd[0], (char **)cmd);
+        undo_cancel();
+        while (os_become_active())
+            os_become_undo();
+        cmd[0] = "sh";
+        cmd[1] = "-c";
+        cmd[2] = pager.c_str();
+        cmd[3] = 0;
+        close(fd[1]);
+        close(0);
+        if (dup(fd[0]) != 0)
+            fatal_raw("dup was wrong");
+        close(fd[0]);
+        os_setgid(gid);
+        os_setuid(uid);
+        umask(um);
+        execvp(cmd[0], (char **)cmd);
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", pager);
-	fatal_intl(scp, i18n("exec \"$filename\": $errno"));
-	// NOTREACHED
+        errno_old = errno;
+        scp = sub_context_new();
+        sub_errno_setx(scp, errno_old);
+        sub_var_set_string(scp, "File_Name", pager);
+        fatal_intl(scp, i18n("exec \"$filename\": $errno"));
+        // NOTREACHED
 
     case -1:
-	nfatal("fork()");
-	break;
+        nfatal("fork()");
+        break;
 
     default:
-	pid = pid_;
-	close(fd[0]);
-	fp = fdopen(fd[1], "w");
-	if (!fp)
-	    nfatal("fdopen");
-	vdeeper = (void *)fp;
-	break;
+        pid = pid_;
+        close(fd[0]);
+        fp = fdopen(fd[1], "w");
+        if (!fp)
+            nfatal("fdopen");
+        vdeeper = (void *)fp;
+        break;
     }
 }
 
 
 void
-output_pager::cleanup()
+output_pager::cleanup(void)
 {
     trace(("output_pager_cleanup()\n{\n"));
     output::pointer temp;
@@ -153,7 +153,7 @@ output_pager::cleanup()
 
 
 void
-output_pager::pager_error()
+output_pager::pager_error(void)
 {
     int errno_old = errno;
     sub_context_ty sc;
@@ -166,7 +166,7 @@ output_pager::pager_error()
 
 output_pager::~output_pager()
 {
-    trace(("output_pager::destructor(this = %08lX)\n{\n", (long)this));
+    trace(("output_pager::destructor(this = %p)\n{\n", this));
     assert(vdeeper);
 
     //
@@ -179,7 +179,7 @@ output_pager::~output_pager()
     // write the last of the output
     //
     if (fflush((FILE *)vdeeper))
-	pager_error();
+        pager_error();
 
     //
     // close the paginator
@@ -207,7 +207,7 @@ output_pager::output_pager() :
 
 
 nstring
-output_pager::filename()
+output_pager::filename(void)
     const
 {
     return pager;
@@ -215,7 +215,7 @@ output_pager::filename()
 
 
 long
-output_pager::ftell_inner()
+output_pager::ftell_inner(void)
     const
 {
     return -1;
@@ -226,30 +226,30 @@ void
 output_pager::write_inner(const void *data, size_t len)
 {
     if (fwrite(data, 1, len, (FILE *)vdeeper) == 0)
-	pager_error();
+        pager_error();
     if (len > 0)
-	bol = (((const char *)data)[len - 1] == '\n');
+        bol = (((const char *)data)[len - 1] == '\n');
 }
 
 
 void
-output_pager::flush_inner()
+output_pager::flush_inner(void)
 {
     if (fflush((FILE *)vdeeper))
-	pager_error();
+        pager_error();
 }
 
 
 void
-output_pager::end_of_line_inner()
+output_pager::end_of_line_inner(void)
 {
     if (!bol)
-	fputc('\n');
+        fputc('\n');
 }
 
 
-const char *
-output_pager::type_name()
+nstring
+output_pager::type_name(void)
     const
 {
     return "pager";
@@ -257,7 +257,7 @@ output_pager::type_name()
 
 
 output::pointer
-output_pager::open()
+output_pager::open(void)
 {
     trace(("output_pager_open()\n{\n"));
     if (singleton)
@@ -273,21 +273,21 @@ output_pager::open()
     //
     if
     (
-	!option_pager_get()
+        !option_pager_get()
     ||
-	option_unformatted_get()
+        option_unformatted_get()
     ||
-	os_background()
+        os_background()
     ||
-	!isatty(0)
+        !isatty(0)
     ||
-	!isatty(1)
+        !isatty(1)
     )
     {
-	output::pointer result = output_stdout::create();
+        output::pointer result = output_stdout::create();
         singleton = result;
-	trace(("return %08lX;\n}\n", (long)result.get()));
-	return result;
+        trace(("return %p;\n}\n", result.get()));
+        return result;
     }
 
     //
@@ -305,6 +305,9 @@ output_pager::open()
     // so we can clean up after them if necessary.
     //
     singleton = result;
-    trace(("return %08lX;\n}\n", (long)result.get()));
+    trace(("return %p;\n}\n", result.get()));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

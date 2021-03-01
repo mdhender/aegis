@@ -1,22 +1,21 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2003-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
-
 .PP
 .if n *
 .if t \(bu
@@ -53,7 +52,8 @@ end of an \fIaeannotate\fP(1) listing.
 .\" change 55
 A bug has been fixed in \fIaede\fP(1) for branches, where Aegis would
 complain about build source files (created by the \fIaenf \-build\fP
-command) being out-of-date.  This, of course, was difficult or impossible
+command) being out\[hy]of\[hy]date.  This, of course, was difficult or
+impossible
 to fix, and unnecessary because the next build would fix them.
 .PP
 .if n *
@@ -97,7 +97,7 @@ The problem with test 134 failing has been fixed.
 .if t \(bu
 .\" change 27
 A bug has been fixed in \fIaeipass\fP(1) which prevented changing a
-file's usage from being as straight-forward as it should have been.
+file's usage from being as straight\[hy]forward as it should have been.
 .PP
 .if n *
 .if t \(bu
@@ -110,11 +110,11 @@ The source RPM (and the \fIspec\fP file) now has Build Prequisites specified.
 The \fB\-Change\fP option now accepts more than just a change number.
 It now accepts many forms similar to those used by the \fI${version}\fP
 substitution, allowing its output to be used directly as command line
-input; forms such as \f[CW]-c 1.2.C34\fP and \f[CW]--c=5.6.D78\fP
+input; forms such as \f[CW]\-c 1.2.C34\fP and \f[CW]\-c=5.6.D78\fP
 are now understood to imply a \fB\-branch\fP option as well as either
-\fB\-change\fP or \fB\-change-from-delta\fP, respectively.  In addition,
+\fB\-change\fP or \fB\-change\[hy]from\[hy]delta\fP, respectively.  In addition,
 you may prepend a project name, to imply the \fB\-project\fP option as
-well; form such as \f[CW]-c aegis.4.15.C28\fP are understood.
+well; form such as \f[CW]\-c aegis.4.15.C28\fP are understood.
 .PP
 .if n *
 .if t \(bu
@@ -134,4 +134,5 @@ A bug has been fixed in the test of \fIaedist\fP(1) for moved files.
 There was nothing wrong with \fIaedist\fP(1), the test itself was broken.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.15 (17-Nov-2003)
+.SS Version 4.15 (17\[hy]Nov\[hy]2003)
+.\" vim: set ts=8 sw=4 et :

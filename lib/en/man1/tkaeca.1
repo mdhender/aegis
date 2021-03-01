@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) tkaeca
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -28,20 +27,20 @@ tkaeca \- GUI interface for aeca, using TCL/TK
 The
 .I "\*(n)"
 command is used to provide a GUI interface to \fIaeca\fP(1).  Its use
-should be self-evident to anyone familiar with Aegis.
+should be self\[hy]evident to anyone familiar with Aegis.
 .PP
 The top line of the screen contains button for selecting the project
 and the change.  They will be defaulted whenever possible, using the usual Aegis
 defaulting rules.  Click on the buttons to obtain a pick list if you
-want to change; then double-click an item to select it.  (I would have
+want to change; then double\[hy]click an item to select it.  (I would have
 used tk_optionMenu, but it doesn't have a scroll bar, even when all the
 items don't fit on the screen.)
 .PP
 The middle section contains text entry areas, for editing the
 \fIbrief_description\fP and \fIdescription\fP fields of the change
 attributes.  The text wraps in a natural way, both here and in (say)
-the \[lq]\fI\*(n) -list chand details\fP\[rq] listing, so only use newlines
-to indicate end-of-paragraph.
+the \[lq]\fI\*(n) \-list chand details\fP\[rq] listing, so only use newlines
+to indicate end\[hy]of\[hy]paragraph.
 .PP
 The lower section contains two boxes.  The first is the testing required
 for the change \- select as many or as few as is appropriate.  The second
@@ -55,7 +54,7 @@ at the bottom of the window.
 .SH OPTIONS
 There are no command line options.
 It is best to run this command in the background.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 .IR aeca (1)
@@ -63,4 +62,5 @@ View and edit change attributes, from the command line.
 .TP 8n
 .IR tkaegis (1)
 GUI interface for Aegis, using TCL/TK
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "World Wide Web"
 .LP
@@ -26,28 +26,29 @@ You can also automatically track a remote site, efficiently downloading
 and applying new change sets as they appear.
 .nh 3 "Server"
 .LP
-Aegis has a read-only web interface to its database,
+Aegis has a read\[hy]only web interface to its database,
 it is a web server CGI interface.
 If you are running Apache, or similar,
 all you have to do is copy (or symlink, if you have symlinks enabled)
-the \fI\*(B)/aeget\fP file into the web server's \fIcgi-bin\fP directory.
+the \fI\*(B)/aeget\fP file into the web server's \fIcgi\[hy]bin\fP directory.
 For example, the default Apache install would need the following command:
 .E(
-ln -s \*(B)/aeget /var/www/cgi-bin/aeget
+ln \-s \*(B)/aeget /var/www/cgi\-bin/aeget
 .E)
 .LP
 .nh 3 "Browser"
 .LP
 You need to set the appropriate mailcap entry, so that
-\f(CWapplication/aegis-change-set\fP is handled by \fIaedist --receive\fP.
+\f(CWapplication/aegis\[hy]change\[hy]set\fP is handled by \fIaedist
+\-receive\fP.
 .LP
 Edit the \fI/etc/mailcap\fP file, and add the lines
 .E(
 # Aegis
-application/aegis-change-set;\*(B)/aedist -receive -f %s
+application/aegis\-change\-set;\*(B)/aedist \-receive \-f %s
 .E)
 You may need to restart your web browser for this to take effect.
-.nh 3 "Hands-Free Tracking"
+.nh 3 "Hands\[hy]Free Tracking"
 .LP
 Clients of sites using a web server,
 such as the various developers in an open sourec project,
@@ -56,13 +57,13 @@ which have not yet been incorporated at your site.
 .LP
 The command
 .E(
-aedist --replay -f \fIname-of-web-server\fP
+aedist \-replay \-f \f[I]name\[hy]of\[hy]web\[hy]server\fP
 .E)
 will automatically download any remote change sets not present in the
 local repository.  It downloads them by using the \fIaedist\fP(1)
 command.  It uses commands of the form
 .E(
-aedist --receive -f \fIurl-of-change-set\fP
+aedist \-receive \-f \f[I]url\[hy]of\[hy]change\[hy]set\fP
 .E)
 to download the change sets, which have to go through all of
 the usual Aegis process before vecoming part of your local
@@ -73,3 +74,4 @@ repository.  This includes code review, unless you have configured the
 If you add this command to a \fIcrontab\fI(1) entry,
 you can check to see if there are change sets to synchronize with
 once a day, or however often you set the line to run.
+.\" vim: set ts=8 sw=4 et :

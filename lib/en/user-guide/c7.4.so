@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1994, 1998, 1999, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1992-1999, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Further Work"
@@ -39,7 +38,7 @@ based on GNU C,
 the interfacing and semantics still need more thought.
 .LP
 \fBNote:\fP A fairly good approximation is already available using the
-\fI--suggest\fP option of the \fIaet\fP(1) command.  It works on the
+\fI\-suggest\fP option of the \fIaet\fP(1) command.  It works on the
 correlation of sources file versus tests in the various change sets.
 See \fIaet\fP(1) for more information.
 .nh 3 "Virtual File System"
@@ -50,9 +49,9 @@ baseline\**.
 .FS
 Reminiscent of Sun's TFS,
 but not the same.
-Similar to AT&T's 3D-FS.
+Similar to AT&T's 3D\[hy]FS.
 Similar to TeamNet.
-Similar to ClearCase, but I wasn't thinking of the time-travel
+Similar to ClearCase, but I wasn't thinking of the time\[hy]travel
 aspects which they implement.
 .FE
 This could be implemented similarly to automounters,
@@ -104,8 +103,9 @@ field to the project
 configuration
 file has greatly reduced the need for this functionality.
 However, it does not provide
-copy-on-write semantics,
+copy\[hy]on\[hy]write semantics,
 nor automatic
 .I aecp
 functionality;
 which a virtual file system could do.
+.\" vim: set ts=8 sw=4 et :

@@ -1,37 +1,38 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2004, 2006, 2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001-2004, 2006, 2008, 2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
-.so version.so
+.so etc/version.so
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
 <title>Aegis on Windows</title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="aegis.png" align=left>
-<img src="missiku/window_2.png" align=right>
-<center>Aegis \*(v)<br>Windows NT</center></h1>
+<body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="aegis.png" align="left" alt="" />
+<img src="missiku/window_2.png" align="right" alt="" />
+Aegis \*(v)<br>Windows NT
+</h1>
 Aegis depends on the underlying security provided by the operating
 system (rather than re-invent yet another security mechanism).
 However, in order to do this, Aegis uses the POSIX <i>seteuid</i> system
@@ -54,22 +55,18 @@ Most sites using Aegis and Windows NT together do so by running
 Aegis on the Unix systems, but building and testing on the NT
 systems.  The work areas and repository are accessed via Samba or
 NFS.
-.br
 <hr>
 <h2> Native Port Considerations </h2>
 <i>Caveat:</i> I am not an NT security expert and I have never written NT
 programs, except via Cygwin.  If I'm talking rubbish,
-<a href="mailto:millerp%40canb.auug.org.au">please let me know</a>.
+<a href="mailto:pmiller%40opensource.org.au">please let me know</a>.
 <p>
 If you have expertise in this area, and can offer a solution
-<a href="mailto:millerp%40canb.auug.org.au">please let me know</a>.
+<a href="mailto:pmiller%40opensource.org.au">please let me know</a>.
 This is an open source project, code is always welcome.
-.br
 <h3> Cygwin possibilities </h3>
 One of the more tempting approaches is to use the seteuid support described in
-.br
 <a href="http://www.cygwin.com/cygwin-ug-net/ntsec.html">
-.br
 http://www.cygwin.com/cygwin-ug-net/ntsec.html</a>
 <p>
 This approach as two problems:
@@ -84,7 +81,6 @@ how you grant these permissions specifically to an application without
 granting them to a user.
 (This is precisely what the UNIX set-uid bit does.)
 As far as I know, this is impossible on Windows NT.
-.br
 <h3> Server possibilities </h3>
 The best idea I've seen so far is that when the system starts, it starts
 Aegis as a server with the appropriate permissions (I'm told this is
@@ -92,12 +88,10 @@ possible, I don't know how, myself) and then the "aegis" command simply
 contacts the server process and passes on the command line and executing
 user's security token.
 The server process can then impersonate any user required.
-.br
 <p>
 If <i>you</i> have the necessary expertise to make this work <a
-href="mailto:millerp@canb.auug.org.au">I would like to header from
+href="mailto:pmiller@opensource.org.au">I would like to header from
 you</a>.
-.br
 <h3> File share issue </h3>
 There is a big problem with file shares, since the user password often has
 to be sent to the file server.  Using the Cygwin possibility, the user
@@ -105,4 +99,6 @@ doesn't know the password of any other.  Using the server possibility,
 the server doesn't know the password of any user.
 <p>
 You may <i>have</i> to integrate changes on the file server itself.
-<body></html>
+.so web/footer.so
+</body></html>
+.\" vim: set ts=8 sw=4 et :

@@ -1,29 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <common/main.h>
 #include <common/nstring.h>
 #include <common/nstring/accumulator.h>
+#include <common/sizeof.h>
 
 
 struct table_t
@@ -177,94 +176,97 @@ nstring::html_unquote()
     const char *sp = c_str();
     for (;;)
     {
-	unsigned char c = *sp++;
-	if (!c)
-	    break;
-	if (c != '&')
-	{
-	    output.push_back(c);
-	    continue;
-	}
-	c = *sp++;
-	if (!c)
-	{
-	    output.push_back('&');
-	    break;
-	}
-	name.clear();
-	if (c == '#')
-	{
-	    name.push_back(c);
-	    int n = 0;
-	    for (;;)
-	    {
-		c = *sp++;
-		if (!isdigit(c))
-		    break;
-		name.push_back(c);
-		n = n * 10 + c - '0';
-	    }
-	    if (c != ';' || name.size() < 2)
-	    {
-		--sp;
-		output.push_back('&');
-		output.push_back(name);
-	    }
-	    else
-	    {
-		if (n > 0 && n < 256)
-		{
-		    output.push_back((char)n);
-		}
-		else
-		{
-		    output.push_back('&');
-		    output.push_back(name);
-		    output.push_back(';');
-		}
-	    }
-	}
-	else
-	{
-	    for (;;)
-	    {
-		if (!isalnum(c))
-		    break;
-		name.push_back(c);
-		c = *sp++;
-	    }
-	    if (c != ';' || name.empty())
-	    {
-		--sp;
-		output.push_back('&');
-		output.push_back(name);
-	    }
-	    else
-	    {
-		name.push_back('\0'); // terminating NUL character
-		table_t *tp =
-		    (table_t *)
-		    bsearch
-		    (
-			name.get_data(),
-			table,
-			SIZEOF(table),
-			sizeof(table[0]),
-			compare
-		    );
-		if (tp)
-		{
-		    output.push_back(tp->value);
-		}
-		else
-		{
-		    name.pop_back(); // get rid of the NUL character
-		    output.push_back('&');
-		    output.push_back(name);
-		    output.push_back(';');
-		}
-	    }
-	}
+        unsigned char c = *sp++;
+        if (!c)
+            break;
+        if (c != '&')
+        {
+            output.push_back(c);
+            continue;
+        }
+        c = *sp++;
+        if (!c)
+        {
+            output.push_back('&');
+            break;
+        }
+        name.clear();
+        if (c == '#')
+        {
+            name.push_back(c);
+            int n = 0;
+            for (;;)
+            {
+                c = *sp++;
+                if (!isdigit(c))
+                    break;
+                name.push_back(c);
+                n = n * 10 + c - '0';
+            }
+            if (c != ';' || name.size() < 2)
+            {
+                --sp;
+                output.push_back('&');
+                output.push_back(name);
+            }
+            else
+            {
+                if (n > 0 && n < 256)
+                {
+                    output.push_back((char)n);
+                }
+                else
+                {
+                    output.push_back('&');
+                    output.push_back(name);
+                    output.push_back(';');
+                }
+            }
+        }
+        else
+        {
+            for (;;)
+            {
+                if (!isalnum(c))
+                    break;
+                name.push_back(c);
+                c = *sp++;
+            }
+            if (c != ';' || name.empty())
+            {
+                --sp;
+                output.push_back('&');
+                output.push_back(name);
+            }
+            else
+            {
+                name.push_back('\0'); // terminating NUL character
+                table_t *tp =
+                    (table_t *)
+                    bsearch
+                    (
+                        name.get_data(),
+                        table,
+                        SIZEOF(table),
+                        sizeof(table[0]),
+                        compare
+                    );
+                if (tp)
+                {
+                    output.push_back(tp->value);
+                }
+                else
+                {
+                    name.pop_back(); // get rid of the NUL character
+                    output.push_back('&');
+                    output.push_back(name);
+                    output.push_back(';');
+                }
+            }
+        }
     }
     return output.mkstr();
 }
+
+
+// vim: set ts=8 sw=4 et :

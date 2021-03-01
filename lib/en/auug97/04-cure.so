@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Prevention"
 The above analysis is based on one simple
@@ -53,8 +52,8 @@ the build will take too long.
 It's just not practical.\fP\[rq]
 .LP
 These are valid concerns, and they frequently lead \fImake\fP users to
-the conclusion that re-working their build process does not have any
-short- or long-term benefits.  This conclusion is based on ancient,
+the conclusion that re\[hy]working their build process does not have any
+short\[hy]term or long\[hy]term benefits.  This conclusion is based on ancient,
 enduring, false assumptions.
 .LP
 The following sections will address each of these concerns in turn.
@@ -71,7 +70,7 @@ the total size of the \f(CWMakefile\fP and its include files
 need be no larger than the total size of the \f(CWMakefile\fPs
 in the recursive case.
 .nh 2 "A Single \f(CWMakefile\fP Is Unmaintainable"
-The complexity of using a single top-level \f(CWMakefile\fP
+The complexity of using a single top\[hy]level \f(CWMakefile\fP
 which includes a fragment from each module
 is no more complex than in the recursive case.
 Because the DAG is not segmented,
@@ -87,26 +86,26 @@ the need for the \[lq]common\[rq] include files disappears \- the single
 .nh 2 "It's Too Hard To Write The Rules"
 The only change required is to include the directory part in filenames
 in a number of places.
-This is because the \fImake\fP is performed from the top-level directory;
+This is because the \fImake\fP is performed from the top\[hy]level directory;
 the current directory is not the one in which the file appears.
 Where the output file is explicitly stated in a rule,
 this is not a problem.
 .LP
-GCC allows a \f(CW-o\fP option in conjunction with the \f(CW-c\fP
+GCC allows a \f(CW\-o\fP option in conjunction with the \f(CW\-c\fP
 option, and GNU Make knows this.  This results in the implicit
 compilation rule placing the output in the correct place.  Older and
-dumber C compilers, however, may not allow the \f(CW-o\fP option with
-the \f(CW-c\fP option, and will leave the object file in the
-top-level directory (\fIi.e.\fP the wrong directory).
+dumber C compilers, however, may not allow the \f(CW\-o\fP option with
+the \f(CW\-c\fP option, and will leave the object file in the
+top\[hy]level directory (\fIi.e.\fP the wrong directory).
 There are three ways for you to fix this:
 get GNU Make and GCC,
-override the built-in rule with one which does the right thing,
+override the built\[hy]in rule with one which does the right thing,
 or complain to your vendor.
 .LP
-Also, K&R C compilers will start the double-quote include path
+Also, K&R C compilers will start the double\[hy]quote include path
 (\f(CW#include "\fP\fIfilename.h\fP\f(CW"\fP) from the current
 directory.  This will not do what you want.  ANSI C compliant C compilers,
-however, start the double-quote include path from the directory in which
+however, start the double\[hy]quote include path from the directory in which
 the source file appears; thus, no source changes are required.  If you
 don't have an ANSI C compliant C compiler, you should consider
 installing GCC on your system as soon as possible.
@@ -135,18 +134,18 @@ than in the recursive case.
 .LP
 The developer is rarely a seasoned old salt who knows every one
 of the million lines of code in the product.  More likely the developer
-is a short-term contractor or a junior.  You don't want implications
+is a short\[hy]term contractor or a junior.  You don't want implications
 like these to blow up after the changes are integrated with the master
 source, you want them to blow up on the developer in some nice safe
-sand-box far away from the master source.
+sand\[hy]box far away from the master source.
 .LP
 If you want to make \[lq]just your little\[rq] bit because you are concerned
 that performing a full project build will corrupt the project master
 source, due to the directory structure used in your project, see the
-\[lq]Projects \fIversus\fP Sand-Boxes\[rq] section below.
+\[lq]Projects \fIversus\fP Sand\[hy]Boxes\[rq] section below.
 .nh 2 "The Build Will Take Too Long"
 This statement can be made from one of two perspectives.  First, that a
-whole project \fImake\fP, even when everything is up-to-date, inevitably
+whole project \fImake\fP, even when everything is up\[hy]to\[hy]date, inevitably
 takes a long time to perform.  Secondly, that these inevitable delays are
 unacceptable when a developer wants to quickly compile and link the one
 file that they have changed.
@@ -179,7 +178,7 @@ Breaking the set of files up into 100 modules, and running it as a recursive
 The repeated process creation for the subordinate
 \fImake\fP invocations take quite a long time.
 .LP
-Hang on a minute!  On real-world projects with less than 1000 files, it
+Hang on a minute!  On real\[hy]world projects with less than 1000 files, it
 takes an awful lot longer than 25 seconds for \fImake\fP to work out
 that it has nothing to do.  For some projects, doing it in only 25
 minutes would be an improvement!  The above result tells us that it is
@@ -191,7 +190,7 @@ So just what \fIis\fP taking so long?
 The traditional solutions to the problems introduced by recursive
 \fImake\fP often increase the number of subordinate \fImake\fP
 invocations beyond the minimum described here; \fIe.g.\fP to perform
-multiple repetitions (3.3.2), or to overkill cross-module dependencies
+multiple repetitions (3.3.2), or to overkill cross\[hy]module dependencies
 (3.3.3).  These can take a long time, particularly when combined, but do
 not account for some of the more spectacular build times; what else is
 taking so long?
@@ -201,16 +200,16 @@ This is covered, below, in the \fIEfficient Makefiles\fP section.
 .nh 3 "Development Builds"
 If, as in the 1000 file example, it only takes 10 seconds to figure out
 which one of the files needs to be recompiled, there is no serious threat to
-the productivity of developers if they do a whole-project \fImake\fP as
-opposed to a module-specific \fImake\fP.  The advantage for the project
-is that the module-centric developer is reminded at
+the productivity of developers if they do a whole\[hy]project \fImake\fP as
+opposed to a module\[hy]specific \fImake\fP.  The advantage for the project
+is that the module\[hy]centric developer is reminded at
 relevant times (and only relevant times) that their work has wider
 ramifications.
 .LP
 By consistently using C include files which contain accurate interface
 definitions (including function prototypes), this will produce
 compilation errors in many of the cases which would result in a
-defective product.  By doing whole-project builds, developers discover
+defective product.  By doing whole\[hy]project builds, developers discover
 such errors very early in the development process, and can fix the
 problems when they are least expensive.
 .nh 2 "You'll Run Out Of Memory"
@@ -222,7 +221,7 @@ first wrote \fImake\fP it was 1978 and he was using a PDP11.
 Unix processes were limited to 64KB of data.
 .LP
 On such a computer, the above project with its 3000 files
-detailed in the whole-project \f(CWMakefile\fP, would probably
+detailed in the whole\[hy]project \f(CWMakefile\fP, would probably
 .I not
 allow the DAG and rule actions to fit in memory.
 .LP
@@ -262,6 +261,7 @@ projects.
 .LP
 By making sure that each \f(CWMakefile\fP is complete, you arrive at the
 point where the \f(CWMakefile\fP for at least one module contains the
-equivalent of a whole-project \f(CWMakefile\fP (recall that these
-modules form a single project and are thus inter-connected), and there
+equivalent of a whole\[hy]project \f(CWMakefile\fP (recall that these
+modules form a single project and are thus inter\[hy]connected), and there
 is no need for the recursion any more.
+.\" vim: set ts=8 sw=4 et :

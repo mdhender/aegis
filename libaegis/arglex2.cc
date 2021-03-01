@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1997-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1997-2006, 2008, 2009, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/arglex2.h>
@@ -24,6 +24,7 @@ static arglex_table_ty argtab[] =
 {
     { "-ANticipate", arglex_token_anticipate, },
     { "-ASk", arglex_token_interactive, },
+    { "-AS_Needed", arglex_token_as_needed, },
     { "-AUTOmatic", arglex_token_automatic, },
     { "-Automatic_Merge", arglex_token_merge_automatic, },
     { "-BaseLine", arglex_token_baseline, },
@@ -118,6 +119,7 @@ static arglex_table_ty argtab[] =
     { "-Assume_Symbolic_Links", arglex_token_symbolic_links_not, },
     { "-Only_Merge", arglex_token_merge_only, },
     { "-Output", arglex_token_output, },
+    { "-Output_Directory", arglex_token_output_directory },
     { "-OverWriting", arglex_token_overwriting, },
     { "-PAGer", arglex_token_pager, },
     { "-Page_Headers", arglex_token_page_headers, },
@@ -165,6 +167,7 @@ static arglex_table_ty argtab[] =
     { "-UNFormatted", arglex_token_unformatted, },
     { "-User", arglex_token_user, },
     { "-Universal_Unique_IDentifier", arglex_token_uuid, },
+    { "-Not_Universal_Unique_IDentifier", arglex_token_uuid_not, },
     { "-Verbose", arglex_token_verbose, },
     { "-Wait", arglex_token_wait, },
     { "-Not_Wait", arglex_token_wait_not, },
@@ -185,9 +188,9 @@ void
 arglex2_init3(int argc, char **argv, arglex_table_ty *tp)
 {
     if (!tp)
-	arglex2_init(argc, argv);
+        arglex2_init(argc, argv);
     else
-	arglex_init(argc, argv, arglex_table_catenate(argtab, tp));
+        arglex_init(argc, argv, arglex_table_catenate(argtab, tp));
 }
 
 
@@ -195,7 +198,10 @@ void
 arglex2_retable(arglex_table_ty *tp)
 {
     if (!tp)
-	arglex_retable(argtab);
+        arglex_retable(argtab);
     else
-	arglex_retable(arglex_table_catenate(argtab, tp));
+        arglex_retable(arglex_table_catenate(argtab, tp));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Projekte im Vergleich zu Sandk\*:asten"
 Das oben Besprochene setzt voraus, das ein Projekt sich
@@ -27,65 +26,66 @@ verschiedenen Bereichen des Projekts arbeiten k\*:onnen,
 ohne vollst\*:andige Kopien des Projekts zu ben\*:otigen und
 damit wertvollen Speicherplatz zu verschwenden.
 .LP
-Sie k\*:onnen das hier vorgeschlagene Ganzprojekt-Make
+Sie k\*:onnen das hier vorgeschlagene Ganzprojekt\[hy]Make
 unpraktisch finden, weil es nicht zu den entwickelten
 Methoden Ihres Entwicklungsprozesses passt.
 .LP
-Das hier vorgestellte Ganzprojekt-Make hat eine
+Das hier vorgestellte Ganzprojekt\[hy]Make hat eine
 Auswirkung auf die Entwicklungsmethoden: Es schafft eine
 sauberere und einfachere Produktionsumgebung f\*:ur Ihre
-Entwickler. Indem man die VPATH-Funktion von Make
+Entwickler. Indem man die VPATH\[hy]Funktion von Make
 anwendet, ist es m\*:oglich, dass Sie nur jene Dateien, die
 Sie bearbeiten m\*:ussen, in Ihren privaten Arbeitsbereich,
 oft auch Sandkasten genannt, kopieren.
 .LP
 Die einfachste Weise, zu erkl\*:aren, was VPATH tut, ist,
-eine Analogie zu dem Suchpfad f\*:ur Include-Dateien
-herzustellen, indem man -I-Pfadoptionen f\*:ur den
-C-Compiler benutzt. Diese Optionen beschreiben, wo man
-nach Dateien suchen muss, genauso wie VPATH-Make
+eine Analogie zu dem Suchpfad f\*:ur Include\[hy]Dateien
+herzustellen, indem man \-I\[hy]Pfadoptionen f\*:ur den
+C\[hy]Compiler benutzt. Diese Optionen beschreiben, wo man
+nach Dateien suchen muss, genauso wie VPATH\[hy]Make
 anweist, wo es nach Dateien suchen muss.
 .LP
 Durch die Verwendung von VPATH wird es m\*:oglich, die sich
 im Sandkasten befindenden Dateien oben auf der
-Master-Source des Projekts \fIaufzustapeln\fP. Auf
+Master\[hy]Source des Projekts \fIaufzustapeln\fP. Auf
 diese Weise bekommen die Dateien, die sich im Sandkasten
 befinden, Vorrang. Make verwendet jedoch den gesamten
 Dateienverband, um ein Build durchzuf\*:uhren.
-.so 06.figure1.so
+.so lib/de/auug97/06.figure1.so
 .\" these next two paragraphs are only one in the original.  why?
 .LP
 In dieser Umgebung hat der Sandkasten dieselbe
-Baumstruktur wie die Master-Source (Stammdatenquelle)
+Baumstruktur wie die Master\[hy]Source (Stammdatenquelle)
 des Projekts. Das erm\*:oglicht den Entwicklern, gefahrlos
 modul\*:ubergreifenden Kode zu ver\*:andern z. B. bei der
 \*:Anderung einer Modulschnittstelle.
 .LP
 Es erm\*:oglicht au\(sserdem, den Sandkasten physicalisch von
-der Master-Source zu trennen, ihn z. B auf einem anderen
+der Master\[hy]Source zu trennen, ihn z. B auf einem anderen
 Laufwerk oder in Ihrem privaten Arbeitsbereich anzulegen
-und der Master-Source des Projekts einen
+und der Master\[hy]Source des Projekts einen
 schreibgesch\*:utzten Status zu verleihen, sofern Sie ein
-strenges Check-in-Verfahren haben (oder sich zulegen
+strenges Check\[hy]in\[hy]Verfahren haben (oder sich zulegen
 wollen).
 .LP
 Bitte beachten Sie: Sie m\*:ussen nicht nur ihrem
-Entwicklungs-\f[CW]Makefilec\fP eine VPATH-Reihe
-hinzuf\*:ugen, sondern auch die -I-Optionen dem
-CFLAGS-Makro, damit der C-Compiler denselben Pfad wie
+Entwicklungs\[hy]\f[CW]Makefilec\fP eine VPATH\[hy]Reihe
+hinzuf\*:ugen, sondern auch die \-I\[hy]Optionen dem
+CFLAGS\[hy]Makro, damit der C\[hy]Compiler denselben Pfad wie
 Make benutzt. Das kann man einfach mit einem
-3-Zeilen-\f[CW]Makefile\fP in Ihrem Arbeitsbereich
-durchf\*:uhren - Sie definieren erst ein Makro, dann VPATH
+3\[hy]Zeilen\[hy]\f[CW]Makefile\fP in Ihrem Arbeitsbereich
+durchf\*:uhren \- Sie definieren erst ein Makro, dann VPATH
 und f\*:ugen schlie\(sslich das \f[CW]Makefile\fP der
-Master-Source des Projekts ein.
-.nh 2 "VPATH-Semantik"
-Um das eben Erl\*:auterte anzuwenden, m\*:ussen Sie GNU-Make
+Master\[hy]Source des Projekts ein.
+.nh 2 "VPATH\[hy]Semantik"
+Um das eben Erl\*:auterte anzuwenden, m\*:ussen Sie GNU\[hy]Make
 3.76 oder eine neuere Version verwenden. F\*:ur fr\*:uhere
-GNU-Make-Versionen ben\*:otigen Sie Paul Smith's VPATH+
+GNU\[hy]Make\[hy]Versionen ben\*:otigen Sie Paul Smith's VPATH+
 Patch. Den k\*:onnen Sie bei
 \f[CW]ftp://ftp\%.wellfleet\%.com/\%netman/\%psmith/\%gmake/\fP
 beziehen.
 .LP
-Die POSIX-Semantiken von VPATH sind unzul\*:anglich genauso
-wie viele existierende Make-Ausf\*:uhrungen. Vielleicht
-\*:uberlegen Sie sich, GNU-Make zu installieren.
+Die POSIX\[hy]Semantiken von VPATH sind unzul\*:anglich genauso
+wie viele existierende Make\[hy]Ausf\*:uhrungen. Vielleicht
+\*:uberlegen Sie sich, GNU\[hy]Make zu installieren.
+.\" vim: set ts=8 sw=4 et :

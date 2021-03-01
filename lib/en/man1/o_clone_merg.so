@@ -1,27 +1,27 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .SH Cloning and Merging
 When you use \fIaeclone\fP(1) to clone a change set, and then integrate
 one of the two change sets, you will observe that Aegis says that the
-files of the un-integrated change are now out-of-date.
+files of the un\[hy]integrated change are now out\[hy]of\[hy]date.
 .PP
-If you run \fIaem\fP(1) to bring the out-of-date files back up-to-date,
+If you run \fIaem\fP(1) to bring the out\[hy]of\[hy]date files back
+up\[hy]to\[hy]date,
 \fIfmerge\fP(1) and some (but not) all other merging tools, it signals
 just about everything as a conflict, even though both alternatives are
 identical.
@@ -41,7 +41,7 @@ RCS's \fImerge\fP(1) command.
 The easiest way to deal with this common situation it to run an
 .RS
 .ft CW
-aecpu -unchanged
+aecpu \-unchanged
 .ft P
 .RE
 command \fIbefore\fP you run the \fIaem\fP(1) merge command, and you
@@ -54,3 +54,4 @@ mv \fIfubar\fP,B \fIfubar\fP
 .ft R
 .RE
 if you know that all of the conflicts are logical conflicts.
+.\" vim: set ts=8 sw=4 et :

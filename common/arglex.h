@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1999, 2001-2006, 2008, 2009 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1995, 1999, 2001-2006, 2008, 2009, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef ARGLEX_H
@@ -25,7 +24,6 @@
   * \ingroup Common
   * @{
   */
-#include <common/main.h>
 
 #define ARGLEX_END_MARKER { (const char *)0, 0, }
 
@@ -123,8 +121,25 @@ struct arglex_dispatch_ty
     int             priority;
 };
 
-void arglex_dispatch(arglex_dispatch_ty *table, int table_len,
-    void (*usage)(void));
+
+/**
+  * The arglex_dispatch function is used to dispatch into a function
+  * table, based on the presence of one of a given list of command line
+  * arguments being poresent on the command line.
+  *
+  * If none of them are present, the `the_default' argument (if
+  * non-zero) is a default function to be called.
+  *
+  * @param table
+  *     A table of tokens and corresponding functions.
+  * @param table_size
+  *     The number of items in the table.
+  * @param otherwise
+  *     This function is to be called if nothing in the table matches.
+  *     If NULL, silently does nothing.
+  */
+void arglex_dispatch(const arglex_dispatch_ty *table, unsigned table_size,
+    void (*otherwise)(void));
 
 void arglex_synthetic(int, char **, int);
 void arglex_retable(arglex_table_ty *);
@@ -132,3 +147,4 @@ int arglex_get_string(void);
 
 /** @} */
 #endif // ARGLEX_H
+// vim: set ts=8 sw=4 et :

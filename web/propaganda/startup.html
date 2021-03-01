@@ -1,40 +1,38 @@
-<!--
-	aegis - project change supervisor
-	Copyright (C) 2004, 2006-2008 Peter Miller
-.br
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 3 of the License, or
-	(at your option) any later version.
-.br
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-.br
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see
-	<http://www.gnu.org/licenses/>.
--->
+.\"
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004, 2006-2008, 2012 Peter Miller
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
+.\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="../favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-.br
 <title>
 How to manage software development for startups
 with Aegis
-</title></head><body bgcolor="#ffffff"><h1 align=center>
-<img src="../aegis.png" align=left>
-<img src="../missiku/world_2.png" align=right>
+</title></head><body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="../aegis.png" align="left" alt="" />
+<img src="../missiku/world_2.png" align="right" alt="" />
 How to manage embedded software development for startups &mdash; with Aegis
 </h1>
-.br
 <p>
 This page was inspired by the following article:
 <blockquote>
@@ -45,7 +43,6 @@ How to manage software development for startups</a></i>,
 15-Nov-2004.
 <p align=center>
 </blockquote>
-.br
 <h2>Introduction</h2>
 Even if you're not involved in a startup, these best practices for
 running a small organization on a tight budget may help you critique
@@ -73,7 +70,6 @@ startup.  These include:
 <p>
 While some of these steps may seem obvious, each step described is
 vital to achieving the stated goal.
-.br
 <h2>Minimal tools required</h2>
 Starting with the assumption that startups are notoriously cheap
 organizations, here is a list of open source tools that startups would
@@ -97,13 +93,11 @@ Your software configuration management (SCM) tools, and bug-tracking
 database, should preferably have a web based query and reporting
 interface.  It is not necessary to export this interface to the world,
 having it available on the company's intranet is sufficient.
-.br
 <h2>Configuration management policies</h2>
 Before starting to develop the product, the engineering organization
 needs a foundation on which to reliably build and release software.
 This foundation should include, at a minimum, support for
 documentation, source code, and release tracking.
-.br
 <h3>Document in SCM and on the web</h3>
 You should make sure that all documentation is source code controlled
 and also available via the company's intranet.  This step makes it easy
@@ -127,7 +121,6 @@ of engineering managers is to protect their engineers from external
 information and feature requests.  By having all pertinent information
 available online, a manager will reduce some of these requests; others
 can usually be handled by the manager himself.
-.br
 <h3>Plan the release and the merge</h3>
 A major release should be represented as a branch off of the current
 Aegis trunk.  Minor and patch releases should be branches off of
@@ -140,7 +133,6 @@ branch and its parent.
 <p>
 For example, you may use the Linux model, and have odd numbered branches
 be development branches, and even numbered branches be release branches.
-.br
 <h3>Include a reference to a bug ID in change set descriptions</h3>
 Every change set has a text description, to convey information concerning
 the change set's purpose.  You should add a line to this description
@@ -172,7 +164,6 @@ Aegis also provides after-the-fact differences via the command line, or
 via the web interface (see the Aegis web site for an example of the <a
 href="http://aegis.sourceforge.net/cgi-bin/aeget/aegis.4.19.C172?menu">
 information available</a> about each change set).
-.br
 <h2>Build policies</h2>
 With the source controlled, it's time to tame the build.  How often
 will you build?  What about identifying each software configuration?
@@ -188,7 +179,6 @@ is required to report success before your change can be put up for code
 review and eventual integration.  This tends to dramatically reduce the
 number of commits which result in the entire development team being
 unable to build the product.
-.br
 <h3>Configuration Identifiers</h3>
 Every single integration is given a unique identifier by Aegis.  By
 burying this identifier (a short text string) in the software at
@@ -200,7 +190,6 @@ Because every integration builds the code, there is no need for the
 nightly automated build, because it has already been done.  The results
 are available for all to see (and use, recalling that it <i>works</i>)
 in the branch's baseline.
-.br
 <h3>Mandate email notification of integrations</h3>
 For any integration completed, an email notification should be sent to
 the entire software group.  It is simple to configure Aegis to do this
@@ -212,7 +201,6 @@ integrated into the branch.  In this way, engineers know what parts
 of the system have changed or what bugs were potentially fixed.  To
 increase the report's usefulness to QA especially, the generating script
 should include the configuration identifier.
-.br
 <h3>Automated Testing</h3>
 You may think that automated testing for embedded projects takes far too
 many resources, and far too much engineering effort, to be worthwhile
@@ -253,7 +241,6 @@ integration.  Projects rapidly accumulate such tests, and it can
 become time consuming to run them all, so a subset can be designated as
 a &ldquo;smoke test&rdquo; and a shell script (source controlled, of
 course) made available to developers to run them.
-.br
 <h3>QA and RC branches</h3>
 Because the development branch &ldquo;works&rdquo; to the extent that
 you have configured Aegis to look for, many QA activities can be validly
@@ -275,7 +262,6 @@ Release and support branches are most easily handled by ending the
 development branch (a branch is just a super change set in Aegis) and
 creating two sister branches, and even numbered branch for release and
 support, and an odd numbered branch for ongoing development and QA.
-.br
 <h2>Engineering and QA policies</h2>
 Developers are buzzing away on features and fixes, you've got the
 automated build and tests happening, so now it's time to engage the
@@ -284,7 +270,6 @@ the cycle; others wait for a preordained code freeze milestone before
 commencing testing.  Your mileage may vary, and you might be short
 changed if QA is working on other releases concurrently.  Once you do
 decide to engage QA, here are some tips on what to expect.
-.br
 <h3>QA and later-cycle RC builds</h3>
 Engineers use the integration builds when testing embedded systems on
 their target processor and the build host.  The code is first tested on
@@ -328,7 +313,6 @@ so they can be reproduced by name, not just by the ID buried in the
 executable.  Having delta names also helps generate the various reports
 so that engineering team and QA can see what fixes made it into each
 baseline.
-.br
 <h3>Turning knobs &mdash; time vs. resources</h3>
 Which knob are you going to turn?  Do you have the luxury of time in your
 schedule to take your project to zero defects, or will you be forced to
@@ -339,12 +323,10 @@ release or resource-constrained release.  While there are no short
 answers to problems such as these, once you know where you are and
 where you should be, you can gauge what knobs to turn.  The key is
 understanding your current position.
-.br
 <h3>Hold regular meetings</h3>
 Hold regular meetings to consider the state of the release.  You should
 require two types of meetings: the daily bug meeting and the weekly
 product review meeting.
-.br
 <h4>Daily bug meeting</h4>
 The first of meeting goes under different names at different companies
 but for our purposes I'll call it a daily bug meeting.  Whatever you
@@ -381,7 +363,6 @@ than let them accumulate to just before a release when you have no
 resources to spare to fix them.  If you have to have a daily meeting,
 consider doing it in a room without chairs, it is amazing how short
 meetings can be when held this way.
-.br
 <h4>Weekly product review meeting</h4>
 The second required meeting is a product review meeting, during which
 all of the stake holders are required to meet and review the progress
@@ -397,7 +378,6 @@ In small startups, this meeting can be very small and frequently has
 only the team leader or project manager representing the developers (and
 he's up-to-date because he reads the integration email notifications)
 and QA and marketing.
-.br
 <h2>Toward the end game</h2>
 So you have these wonderful policies implemented and your process is
 humming, new source developed, and at some point the QA builds start.
@@ -410,7 +390,6 @@ engineers are advised to check-in only the bugs at a threshold
 priority.  QA must turn around and verify bug fixes with a high degree
 of reliability for both the fixes themselves and for the time that it
 takes to test them.
-.br
 <h3>Open vs. fixed graph</h3>
 A graph that displays open vs. fixed issues can provide insight on
 stability of the release (number of open issues) and QA loading (number
@@ -428,7 +407,6 @@ Another source of data, and probably more issue focused, is the bug
 state information from your bug tracking tools, such as Bugzilla.
 Statistics like these can also be graphed automatically on a web page
 through some CGI scripting.
-.br
 <h3>Beta</h3>
 To get to this stage and have a product ready for customer trial, only
 minor issues should be outstanding (or at least one or two major issues
@@ -439,7 +417,6 @@ coordination issues with the documentation group on how to characterize
 any lingering issues.  Most of the engineering group should have already
 started on the next release with some possibly working on a follow-up
 maintenance or patch release and others on the next major release.
-.br
 <h3>First customer ship</h3>
 Ah, you are done.  Or are you?  Congratulate yourself and your team and
 then get ready to start pushing the rock uphill once more.  Often the
@@ -453,7 +430,6 @@ or support engineer (quite a valuable and underutilized resource for
 internal status checks) on how the release is being accepted?  Has
 anyone considered a customer survey to see if the release produced as it
 promised or if it missed the mark?
-.br
 <h2>Too Much Process</h2>
 It is possible that the process describe here is much to heavy.  Maybe
 your startup has only a couple of developers and a one-man CEO slash
@@ -466,5 +442,6 @@ accommodate your growth.  Aegis does most of the work, releasing
 developers from paper-work hell.  The automation of builds and the
 validations provided by tests and code reviews give you needed stability
 so that your team can focus on actually making your product.
-.so footer2.so
+.so web/footer2.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

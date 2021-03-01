@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1999, 2002, 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1991-1994, 1999, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "The Developer"
 .LP
@@ -22,9 +22,9 @@ The developer role is the coal face\**.
 .FS
 I thought this expression was fairly common English usage, until I had
 a query.  "The Coal Face" is an expression meaning "where the \fIreal\fP
-work is done" in reference to old-style coal mining which was hard,
+work is done" in reference to old\[hy]style coal mining which was hard,
 tiring, hot, very dangerous, and bad for your health even if you were lucky
-enough not to be killed.  It was a 14-hour per day job, and you walked
+enough not to be killed.  It was a 14\[hy]hour per day job, and you walked
 to and from work in the dark, even in summer.  Unlike the mine owners,
 who rode expensive horses and saw sunlight most days of the week.
 .FE
@@ -32,7 +32,7 @@ This is where new software is written,
 and bugs are fixed.
 This example shows only the addition of new functionality,
 but usually a change will include modifications of existing code,
-similar to bug-fixing activity.
+similar to bug\[hy]fixing activity.
 .nh 3 "Before You Start"
 .LP
 Have you configured your account to use Aegis?  See the \fIUser Setup\fP
@@ -40,7 +40,7 @@ section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
 .LP
 While the units of change, unoriginally, are called "changes",
-this also applies to the start of a project - a change to nothing, if you like.
+this also applies to the start of a project \- a change to nothing, if you like.
 The developer of this first change will be Pat.
 .LP
 First, Pat has been told by the project administrator
@@ -49,13 +49,13 @@ How Alex created this change will be detailed in the "Administrator" section,
 later in this chapter.
 Pat then acquires the change and starts work.
 .E(
-pat% \f(CBaedb -l -p example.1.0\fP
+pat% \f(CBaedb \-l \-p example.1.0\fP
 Project "example.1.0"
 List of Changes
 .E)
 .E(
 Change  State           Description
-------- -------         -------------
+\-\-\-\-\-\-\- \-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
   10    awaiting_       Create initial skeleton.
         development
 pat% \f(CBaedb example.1.0 10\fP
@@ -157,7 +157,7 @@ and Pat edits it to look like this:
 %type <lv_int> NAME
 .E)
 .E(
-%left '+' '-'
+%left '+' '\-'
 %left '*' '/'
 %right UNARY
 .E)
@@ -171,24 +171,24 @@ example
                 { yyerrflag = 0; fflush(stderr); fflush(stdout); }
 command
         : expr
-		{ printf("%g\en", $1); }
+                { printf("%g\en", $1); }
         | error
 expr
         : DOUBLE
                 { $$ = $1; }
         | '(' expr ')'
                 { $$ = $2; }
-        | '-' expr
+        | '\-' expr
                 %prec UNARY
-                { $$ = -$2; }
+                { $$ = \-$2; }
         | expr '*' expr
                 { $$ = $1 * $3; }
         | expr '/' expr
                 { $$ = $1 / $3; }
         | expr '+' expr
                 { $$ = $1 + $3; }
-        | expr '-' expr
-                { $$ = $1 - $3; }
+        | expr '\-' expr
+                { $$ = $1 \- $3; }
 .E)
 .LP
 The file
@@ -206,12 +206,12 @@ Pat edits the file to look like this:
 %}
 %%
 [ \et]+      ;
-[0-9]+(\e.[0-9]*)?([eE][+-]?[0-9]+)?    {
+[0\-9]+(\e.[0\-9]*)?([eE][+\-]?[0\-9]+)?    {
                 yylval.lv_double = atof(yytext);
                 return DOUBLE;
         }
-[a-z]   {
-                yylval.lv_int = yytext[0] - 'a';
+[a\-z]   {
+                yylval.lv_int = yytext[0] \- 'a';
                 return NAME;
         }
 \en      |
@@ -255,17 +255,17 @@ processing, compiling and linking.
 .E(
 pat% \f(CBaeb\fP
 aegis: project "example.1.0": change 10: development build started
-aegis: cook -b Howto.cook project=example.1.0 change=10
-        version=1.0.C010 -nl
-cook: yacc -d gram.y
+aegis: cook \-b Howto.cook project=example.1.0 change=10
+        version=1.0.C010 \-nl
+cook: yacc \-d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
-cook: cc -I. -I/projects/example/branch.1./branch0/baseline -O -c gram.c
+cook: cc \-I. \-I/projects/example/branch.1./branch0/baseline \-O \-c gram.c
 cook: lex lex.l
 cook: mv lex.yy.c lex.c
-cook: cc -I. -I/projects/example/branch.1/branch.0/baseline -O -c lex.c
-cook: cc -I. -I/projects/example/baseline -O -c main.c
-cook: cc -o example gram.o lex.o main.o -ll -ly
+cook: cc \-I. \-I/projects/example/branch.1/branch.0/baseline \-O \-c lex.c
+cook: cc \-I. \-I/projects/example/baseline \-O \-c main.c
+cook: cc \-o example gram.o lex.o main.o \-ll \-ly
 aegis: project "example.1.0": change 10: development build complete
 pat%
 .E)
@@ -285,7 +285,7 @@ The command to tell Aegis this is the
 command:
 .E(
 pat% \f(CBaede\fP
-aegis: project "example.1.0": change 10: no current 'aegis -DIFFerence'
+aegis: project "example.1.0": change 10: no current 'aegis \-DIFFerence'
         registration
 pat%
 .E)
@@ -300,16 +300,16 @@ and not have to try to track them down and inevitably miss obscure
 but important edits to large or complex files.
 .E(
 pat% \f(CBaed\fP
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/Howto.cook >
-        /u/pat/example.1.0.C010/Howto.cook,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/aegis.conf >
-        /u/pat/example.1.0.C010/aegis.conf,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/gram.y >
-        /u/pat/example.1.0.C010/gram.y,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/lex.l >
-        /u/pat/example.1.0.C010/lex.l,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/main.c >
-        /u/pat/example.1.0.C010/main.c,D; test $? -eq 0 -o $? -eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C010/Howto.cook >
+        /u/pat/example.1.0.C010/Howto.cook,D; test $? \-eq 0 \-o $? \-eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C010/aegis.conf >
+        /u/pat/example.1.0.C010/aegis.conf,D; test $? \-eq 0 \-o $? \-eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C010/gram.y >
+        /u/pat/example.1.0.C010/gram.y,D; test $? \-eq 0 \-o $? \-eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C010/lex.l >
+        /u/pat/example.1.0.C010/lex.l,D; test $? \-eq 0 \-o $? \-eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C010/main.c >
+        /u/pat/example.1.0.C010/main.c,D; test $? \-eq 0 \-o $? \-eq 1
 aegis: project "example.1.0": change 10: difference complete
 pat%
 .E)
@@ -332,7 +332,7 @@ and conscientious developers,
 may locate and view all of these difference files,
 the command
 .E(
-pat% \f(CBmore `find . -name "*,D" -print | sort`\fP
+pat% \f(CBmore `find . \-name "*,D" \-print | sort`\fP
 \fI\&.\&.\&.examines each file.\&.\&.\fP
 pat%
 .E)
@@ -350,7 +350,7 @@ command.
 So now Pat is done, let's try to sign off again:
 .E(
 pat% \f(CBaede\fP
-aegis: project "example.1.0": change 10: no current 'aegis -Test'
+aegis: project "example.1.0": change 10: no current 'aegis \-Test'
         registration
 pat%
 .E)
@@ -394,14 +394,14 @@ Whatever the name, Pat edits the test file to look like this:
 #
 tmp=/tmp/$$
 here=`pwd`
-if [ $? -ne 0 ]; then exit 1; fi
+if [ $? \-ne 0 ]; then exit 1; fi
 .E)
 .E(
 fail()
 {
         echo FAILED 1>&2
         cd $here
-        rm -rf $tmp
+        rm \-rf $tmp
         exit 1
 }
 .E)
@@ -409,16 +409,16 @@ fail()
 pass()
 {
         cd $here
-        rm -rf $tmp
+        rm \-rf $tmp
         exit 0
 }
 trap "fail" 1 2 3 15
 .E)
 .E(
 mkdir $tmp
-if [ $? -ne 0 ]; then exit 1; fi
+if [ $? \-ne 0 ]; then exit 1; fi
 cd $tmp
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -426,14 +426,14 @@ if [ $? -ne 0 ]; then fail; fi
 #
 cat > test.in << 'foobar'
 1
-(24 - 22)
--(4 - 7)
+(24 \- 22)
+\-(4 \- 7)
 2 * 2
 10 / 2
 4 + 2
-10 - 3
+10 \- 3
 foobar
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -448,7 +448,7 @@ cat > test.ok << 'foobar'
 6
 7
 foobar
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -456,9 +456,9 @@ if [ $? -ne 0 ]; then fail; fi
 # and see if the results match
 #
 $here/example < test.in > test.out
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 diff test.ok test.out
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -500,7 +500,7 @@ rather than track down individual temporary files.
 It mostly protects against rogue programs scrambling files
 in the current directory, too.
 .XP
-\(bu Every test is self-contained.
+\(bu Every test is self\[hy]contained.
 The test uses auxiliary files,
 but they are not separate source files
 (figuring where they are when some are in a change and some are in the baseline
@@ -537,7 +537,7 @@ is that most development contains many iterations of
 the "build, test, \fIthink\fP, edit, build, test.\&.\&." cycle.
 After a couple of iterations,
 the manual testing,
-the constant re-typing,
+the constant re\[hy]typing,
 becomes obviously unergonomic.
 Using a shell script is more efficient,
 doesn't forget to test things later,
@@ -557,7 +557,7 @@ pat%
 .E)
 .LP
 It is possible to talk to the shell extremely rarely,
-and then only to re-issue the same command,
+and then only to re\[hy]issue the same command,
 using a work pattern such as this.
 .LP
 As you have already guessed,
@@ -578,7 +578,7 @@ and tested it.
 It is now ready for sign off.
 .E(
 pat% \f(CBaede\fP
-aegis: project "example.1.0": change 10: no current 'aegis -Build'
+aegis: project "example.1.0": change 10: no current 'aegis \-Build'
         registration
 pat%
 .E)
@@ -599,17 +599,17 @@ The addition of one more file may push the size of this archive beyond
 a size limit;
 the build would thus fail because of the addition of a test.
 .FE
-All that is required is to re-build,
-re-test,
-re-difference (yes, the test gets differenced, too)
+All that is required is to re\[hy]build,
+re\[hy]test,
+re\[hy]difference (yes, the test gets differenced, too)
 and sign off.
 .E(
 pat% \f(CBaeb\fP
 aegis: logging to "/u/pat/example.1.0.C010/aegis.log"
 aegis: project "example.1.0": change 10: development build started
-aegis: cook -b Howto.cook project=example.1.0 change=10
-        version=1.0.C001 -nl
-cook: "all" is up-to-date
+aegis: cook \-b Howto.cook project=example.1.0 change=10
+        version=1.0.C001 \-nl
+cook: "all" is up\-to\-date
 aegis: project "example.1.0": change 10: development build complete
 pat% \f(CBaet\fP
 aegis: logging to "/u/pat/example.1.0.C010/aegis.log"
@@ -619,9 +619,9 @@ aegis: project "example.1.0": change 10: test "test/00/t0001a.sh"
 aegis: project "example.1.0": change 10: passed 1 test
 pat% \f(CBaed\fP
 aegis: logging to "/u/pat/example.1.0.C010/aegis.log"
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/test/00/
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C010/test/00/
         t0001a.sh > /u/pat/example.1.0.C010/test/00/t0001a.sh,D; test
-        $? -eq 0 -o $? -eq 1
+        $? \-eq 0 \-o $? \-eq 1
 aegis: project "example.1.0": change 10: difference complete
 pat% \f(CBaede\fP
 aegis: sh \*(L)/de.sh example.1.0 10 pat
@@ -646,13 +646,13 @@ When Jan arrived for work,
 and lists the changes awaiting development,
 the following list appeared:
 .E(
-jan% \f(CBaedb -l -p example.1.0\fP
+jan% \f(CBaedb \-l \-p example.1.0\fP
 Project "example.1.0"
 List of Changes
 .E)
 .E(
 Change  State           Description
-------  ------          ------------
+\-\-\-\-\-\-  \-\-\-\-\-\-          \-\-\-\-\-\-\-\-\-\-\-\-
   11    awaiting_       Add input and output file names to the
         development     command line.
   12    awaiting_       add variables
@@ -664,7 +664,7 @@ jan%
 .LP
 The first on the list is chosen.
 .E(
-jan% \f(CBaedb -c 11 -p example.1.0\fP
+jan% \f(CBaedb \-c 11 \-p example.1.0\fP
 aegis: project "example.1.0": change 11: development directory "/u/
         jan/example.1.0.C011"
 aegis: project "example.1.0": change 11: user "jan" has begun
@@ -709,7 +709,7 @@ FILES
 .E(
 HISTORY
         What            When            Who     Comment
-        ------          ------          -----   ---------
+        \-\-\-\-\-\-          \-\-\-\-\-\-          \-\-\-\-\-   \-\-\-\-\-\-\-
         new_change      Fri Dec 11      alex
                         14:55:06 1992
         develop_begin   Mon Dec 14      jan
@@ -754,7 +754,7 @@ main(argc, argv)
         for (j = 1; j < argc; ++j)
         {
                 char *arg = argv[j];
-                if (arg[0] == '-')
+                if (arg[0] == '\-')
                         usage();
                 if (!in)
                         in = arg;
@@ -797,14 +797,14 @@ which is edited to look like this:
 #
 tmp=/tmp/$$
 here=`pwd`
-if [ $? -ne 0 ]; then exit 1; fi
+if [ $? \-ne 0 ]; then exit 1; fi
 .E)
 .E(
 fail()
 {
         echo FAILED 1>&2
         cd $here
-        rm -rf $tmp
+        rm \-rf $tmp
         exit 1
 }
 .E)
@@ -812,16 +812,16 @@ fail()
 pass()
 {
         cd $here
-        rm -rf $tmp
+        rm \-rf $tmp
         exit 0
 }
 trap "fail" 1 2 3 15
 .E)
 .E(
 mkdir $tmp
-if [ $? -ne 0 ]; then exit 1; fi
+if [ $? \-ne 0 ]; then exit 1; fi
 cd $tmp
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -829,14 +829,14 @@ if [ $? -ne 0 ]; then fail; fi
 #
 cat > test.in << 'foobar'
 1
-(24 - 22)
--(4 - 7)
+(24 \- 22)
+\-(4 \- 7)
 2 * 2
 10 / 2
 4 + 2
-10 - 3
+10 \- 3
 foobar
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -851,7 +851,7 @@ cat > test.ok << 'foobar'
 6
 7
 foobar
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
@@ -862,21 +862,21 @@ if [ $? -ne 0 ]; then fail; fi
 # don't want the test to hang!)
 #
 $here/example test.in test.out < /dev/null
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 diff test.ok test.out
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 $here/example test.in < /dev/null > test.out.2
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 diff test.ok test.out.2
-if [ $? -ne 0 ]; then fail; fi
+if [ $? \-ne 0 ]; then fail; fi
 .E)
 .E(
 #
 # make sure complains about rubbish
 # on the command line
 #
-$here/example -trash < test.in > test.out
-if [ $? -ne 1 ]; then fail; fi
+$here/example \-trash < test.in > test.out
+if [ $? \-ne 1 ]; then fail; fi
 .E)
 .E(
 #
@@ -893,11 +893,11 @@ and here is how it goes:
 jan% \f(CBaeb\fP
 aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
 aegis: project "example.1.0": change 11: development build started
-aegis: cook -b /projects/example/baseline/Howto.cook
-        project=example.1.0 change=11 version=1.0.C011 -nl
-cook: cc -I. -I/projects/example/baseline -O -c main.c
-cook: cc -o example main.o /projects/example/baseline/gram.o
-        /projects/example/baseline/lex.o -ll -ly
+aegis: cook \-b /projects/example/baseline/Howto.cook
+        project=example.1.0 change=11 version=1.0.C011 \-nl
+cook: cc \-I. \-I/projects/example/baseline \-O \-c main.c
+cook: cc \-o example main.o /projects/example/baseline/gram.o
+        /projects/example/baseline/lex.o \-ll \-ly
 aegis: project "example.1.0": change 11: development build complete
 jan% \f(CBaet\fP
 aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
@@ -912,20 +912,20 @@ All that remains if to difference the change and sign off.
 .E(
 jan% \f(CBaed\fP
 aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
-aegis: set +e; diff -c /projects/example/main.c /u/jan/
+aegis: set +e; diff \-c /projects/example/main.c /u/jan/
         example.1.0.C011/main.c > /u/jan/example.1.0.C011/main.c,D; test $?
-        -eq 0 -o $? -eq 1
+        \-eq 0 \-o $? \-eq 1
 aegis: project "example.1.0": change 11: difference complete
 jan% \f(CBaedmore\fP
 \fI\&.\&.\&.examines the file.\&.\&.\fP
 jan%
 .E)
 Note how the context difference shows exactly what has changed.
-And now the sign-off:
+And now the sign\[hy]off:
 .E(
 jan% \f(CBaede\fP
-aegis: project "example.1.0": change 11: no current 'aegis -Test
-        -BaseLine' registration
+aegis: project "example.1.0": change 11: no current 'aegis \-Test
+        \-BaseLine' registration
 jan%
 .E)
 .LP
@@ -946,7 +946,7 @@ Jan needs to use a variant of the
 .I aet
 command.
 .E(
-jan% \f(CBaet -bl\fP
+jan% \f(CBaet \-bl\fP
 aegis: sh /u/jan/example.1.0.C011/test/00/t0002a.sh
 usage: example
 FAILED
@@ -957,7 +957,7 @@ jan%
 .E)
 Running the regression tests is also a good idea
 .E(
-jan% \f(CBaet -reg\fP
+jan% \f(CBaet \-reg\fP
 aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
 aegis: sh /projects/example/baseline/test/00/t0001a.sh
 aegis: project "example.1.0": change 11: test "test/00/t0001a.sh"
@@ -986,12 +986,12 @@ The twist is that they have a file in common.
 First Sam looks for a change to work on and starts,
 like this:
 .E(
-sam% \f(CBaedb -l\fP
+sam% \f(CBaedb \-l\fP
 Project "example.1.0"
 List of Changes
 
 Change  State           Description
-------- -------         -------------
+\-\-\-\-\-\-\- \-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
   12    awaiting_       add powers
         development
   13    awaiting_       add variables
@@ -1029,7 +1029,7 @@ The grammar file is changed to look like this:
 .E(
 %type <lv_double> DOUBLE expr
 %type <lv_int> NAME
-%left '+' '-'
+%left '+' '\-'
 %left '*' '/'
 %right '^'
 %right UNARY
@@ -1054,9 +1054,9 @@ expr
         : DOUBLE
         | '(' expr ')'
                 { $$ = $2; }
-        | '-' expr
+        | '\-' expr
                 %prec UNARY
-                { $$ = -$2; }
+                { $$ = \-$2; }
         | expr '^' expr
                 { $$ = pow($1, $3); }
         | expr '*' expr
@@ -1065,8 +1065,8 @@ expr
                 { $$ = $1 / $3; }
         | expr '+' expr
                 { $$ = $1 + $3; }
-        | expr '-' expr
-                { $$ = $1 - $3; }
+        | expr '\-' expr
+                { $$ = $1 \- $3; }
         ;
 .E)
 .LP
@@ -1075,9 +1075,9 @@ Sam checks to make sure using the difference command:
 .E(
 sam% \f(CBaed\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
-aegis: set +e; diff -c /projects/example/baseline/gram.y /u/sam/
+aegis: set +e; diff \-c /projects/example/baseline/gram.y /u/sam/
         example.1.0.C012/gram.y > /u/sam/example.1.0.C012/gram.y,D; test $?
-        -eq 0 -o $? -eq 1
+        \-eq 0 \-o $? \-eq 1
 aegis: project "example.1.0": change 12: difference complete
 sam% \f(CBaedmore\fP
 \fI\&.\&.\&.examines the file.\&.\&.\fP
@@ -1086,10 +1086,10 @@ sam%
 The difference file looks like this
 .E(
 *** /projects/example/baseline/gram.y
---- /u/sam/example.1.0.C012/gram.y
+\-\-\- /u/sam/example.1.0.C012/gram.y
 ***************
 *** 1,5 ****
---- 1,6 ----
+\-\-\- 1,6 \-\-\-\-
   %{
   #include <stdio.h>
 + #include <math.h>
@@ -1100,9 +1100,9 @@ The difference file looks like this
 .E(
 ***************
 *** 13,18 ****
---- 14,20 ----
+\-\-\- 14,20 \-\-\-\-
   %type <lv_int> NAME
-  %left '+' '-'
+  %left '+' '\-'
   %left '*' '/'
 + %right '^'
   %right UNARY
@@ -1112,10 +1112,10 @@ The difference file looks like this
 .E(
 ***************
 *** 32,37 ****
---- 34,41 ----
-        | '-' expr
+\-\-\- 34,41 \-\-\-\-
+        | '\-' expr
                 %prec UNARY
-                { $$ = -$2; }
+                { $$ = \-$2; }
 +       | expr '^' expr
 +               { $$ = pow($1, $3); }
         | expr '*' expr
@@ -1140,20 +1140,20 @@ and Sam edit it to look like this:
 .E(
 :
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? \-ne 0 ; then exit 1; fi
 tmp=/tmp/$$
 mkdir $tmp
-if test $? -ne 0 ; then exit 1; fi
+if test $? \-ne 0 ; then exit 1; fi
 cd $tmp
-if test $? -ne 0 ; then exit 1; fi
+if test $? \-ne 0 ; then exit 1; fi
 .E)
 .E(
 fail()
 {
         echo FAILED 1>&2
         cd $here
-        chmod u+w `find $tmp -type d -print`
-        rm -rf $tmp
+        chmod u+w `find $tmp \-type d \-print`
+        rm \-rf $tmp
         exit 1
 }
 .E)
@@ -1161,8 +1161,8 @@ fail()
 pass()
 {
         cd $here
-        chmod u+w `find $tmp -type d -print`
-        rm -rf $tmp
+        chmod u+w `find $tmp \-type d \-print`
+        rm \-rf $tmp
         exit 0
 }
 trap "fail" 1 2 3 15
@@ -1173,7 +1173,7 @@ cat > test.in << 'end'
 4 ^ 0.5
 27 ^ (1/3)
 end
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 cat > test.ok << 'end'
@@ -1181,23 +1181,23 @@ cat > test.ok << 'end'
 2
 3
 end
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 $here/example test.in < /dev/null > test.out 2>&1
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 diff test.ok test.out
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 $here/example test.in test.out.2 < /dev/null
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 diff test.ok test.out.2
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 # it probably worked
@@ -1211,16 +1211,16 @@ just like the earlier changes.
 sam% \f(CBaeb\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: project "example1.0": change 12: development build started
-aegis: cook -b /projects/example/baseline/Howto.cook
-        project=example.1.0 change=12 version=1.0.C012 -nl
-cook: yacc -d gram.y
+aegis: cook \-b /projects/example/baseline/Howto.cook
+        project=example.1.0 change=12 version=1.0.C012 \-nl
+cook: yacc \-d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
-cook: cc -I. -I/projects/example/baseline -O -c gram.c
-cook: cc -I. -I/projects/example/baseline -O -c /projects/
+cook: cc \-I. \-I/projects/example/baseline \-O \-c gram.c
+cook: cc \-I. \-I/projects/example/baseline \-O \-c /projects/
         example/baseline/lex.c
-cook: cc -o example gram.o lex.o /projects/example/baseline/
-        main.o -ll -ly -lm
+cook: cc \-o example gram.o lex.o /projects/example/baseline/
+        main.o \-ll \-ly \-lm
 aegis: project "example": change 3: development build complete
 sam%
 .E)
@@ -1259,14 +1259,14 @@ sam%
 The change must also be tested against the baseline, and fail.
 Sam knows this, and does it here.
 .E(
-sam% \f(CBaet -bl\fP
+sam% \f(CBaet \-bl\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: sh /u/sam/example.1.0.C012/test/00/t0003a.sh
 1,3c1,6
 < 1
 < 2
 < 3
----
+\-\-\-
 > syntax error
 > 5.3
 > syntax error
@@ -1283,7 +1283,7 @@ sam%
 Running the regression tests
 is also a good idea.
 .E(
-sam% \f(CBaet -reg\fP
+sam% \f(CBaet \-reg\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: sh /projects/example/baseline/test/00/t0001a.sh
 aegis: project "example.1.0": change 12: test "test/00/t0001a.sh"
@@ -1302,12 +1302,12 @@ Earlier the same day,
 Pat arrived for work a little after Sam,
 and also looked for a change to work on.
 .E(
-pat% \f(CBaedb -l\fP
+pat% \f(CBaedb \-l\fP
 Project "example.1.0"
 List of Changes
 
 Change  State           Description
-------- -------         -------------
+\-\-\-\-\-\-\- \-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
   13    awaiting_       add variables
         development
 pat%
@@ -1361,7 +1361,7 @@ FILES
 .E(
 HISTORY
         What            When            Who     Comment
-        ------          ------          -----   ---------
+        \-\-\-\-\-\-          \-\-\-\-\-\-          \-\-\-\-\-   \-\-\-\-\-\-\-
         new_change      Mon Dec 14      alex
                         13:08:52 1992
         develop_begin   Tue Dec 15      pat
@@ -1392,9 +1392,9 @@ pat% \f(CBvi gram.y\fP
 \fI\&.\&.\&.edit the file.\&.\&.\fP
 pat% \f(CBaed\fP
 aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
-aegis: set +e; diff -c /projects/example/baseline/gram.y /u/pat/
+aegis: set +e; diff \-c /projects/example/baseline/gram.y /u/pat/
         example.1.0.C013/gram.y > /u/pat/example.1.0.C013/gram.y,D; test $?
-        -eq 0 -o $? -eq 1
+        \-eq 0 \-o $? \-eq 1
 aegis: project "example.1.0": change 13: difference complete
 pat%
 .E)
@@ -1433,17 +1433,17 @@ Little remains except to build the change.
 .E(
 pat% \f(CBaeb\fP
 aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
-aegis: cook -b /example.proj/baseline/Howto.cook
-        project=example.1.0 change=13 version=1.0.C013 -nl
-cook: yacc -d gram.y
+aegis: cook \-b /example.proj/baseline/Howto.cook
+        project=example.1.0 change=13 version=1.0.C013 \-nl
+cook: yacc \-d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
-cook: cc -I. -I/projects/example/baseline -O -c gram.c
-cook: cc -I. -I/projects/example/baseline -O -c /projects/
+cook: cc \-I. \-I/projects/example/baseline \-O \-c gram.c
+cook: cc \-I. \-I/projects/example/baseline \-O \-c /projects/
         example/baseline/lex.c
-cook: cc -I. -I/projects/example/baseline -O -c var.c
-cook: cc -o example gram.o lex.o /projects/example/baseline/
-        main.o var.o -ll -ly -lm
+cook: cc \-I. \-I/projects/example/baseline \-O \-c var.c
+cook: cc \-o example gram.o lex.o /projects/example/baseline/
+        main.o var.o \-ll \-ly \-lm
 aegis: project "example.1.0": change 13: development build complete
 pat%
 .E)
@@ -1453,27 +1453,27 @@ Pat creates one like this.
 .E(
 :
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? \-ne 0 ; then exit 1; fi
 tmp=/tmp/$$
 mkdir $tmp
-if test $? -ne 0 ; then exit 1; fi
+if test $? \-ne 0 ; then exit 1; fi
 cd $tmp
-if test $? -ne 0 ; then exit 1; fi
+if test $? \-ne 0 ; then exit 1; fi
 .E)
 .E(
 fail()
 {
         echo FAILED 1>&2
         cd $here
-        chmod u+w `find $tmp -type d -print`
-        rm -rf $tmp
+        chmod u+w `find $tmp \-type d \-print`
+        rm \-rf $tmp
         exit 1
 }
 pass()
 {
         cd $here
-        chmod u+w `find $tmp -type d -print`
-        rm -rf $tmp
+        chmod u+w `find $tmp \-type d \-print`
+        rm \-rf $tmp
         exit 0
 }
 trap "fail" 1 2 3 15
@@ -1485,30 +1485,30 @@ a + 1
 c = a * 40 + 5
 c / (a + 4)
 end
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 cat > test.ok << 'end'
 2
 9
 end
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 $here/example test.in < /dev/null > test.out 2>&1
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 diff test.ok test.out
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 $here/example test.in test.out.2 < /dev/null
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 diff test.ok test.out.2
-if test $? -ne 0 ; then fail; fi
+if test $? \-ne 0 ; then fail; fi
 .E)
 .E(
 # it probably worked
@@ -1519,14 +1519,14 @@ The new files are then differenced:
 .E(
 pat% \f(CBaed\fP
 aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
-aegis: set +e; diff -c /projects/example/baseline/gram.y /u/pat/
+aegis: set +e; diff \-c /projects/example/baseline/gram.y /u/pat/
         example.1.0.C013/gram.y > /u/pat/example.1.0.C013/gram.y,D; test $?
-        -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C013/test/00/
+        \-eq 0 \-o $? \-eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C013/test/00/
         t0004a.sh > /u/pat/example.1.0.C013/test/00/t0004a.sh,D; test
-        $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C013/var.c > /u/
-        pat/example.1.0.C013/var.c,D; test $? -eq 0 -o $? -eq 1
+        $? \-eq 0 \-o $? \-eq 1
+aegis: set +e; diff \-c /dev/null /u/pat/example.1.0.C013/var.c > /u/
+        pat/example.1.0.C013/var.c,D; test $? \-eq 0 \-o $? \-eq 1
 aegis: project "example.1.0": change 13: difference complete
 pat%
 .E)
@@ -1549,13 +1549,13 @@ pat%
 .LP
 The change is tested against the baseline.
 .E(
-pat% \f(CBaet -bl\fP
+pat% \f(CBaet \-bl\fP
 aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
 aegis: sh /u/pat/example.1.0.C013/test/00/t0001a.sh
 1,2c1,4
 < 2
 < 9
----
+\-\-\-
 > syntax error
 > syntax error
 > syntax error
@@ -1568,7 +1568,7 @@ pat%
 .LP
 And the regression tests
 .E(
-pat% \f(CBaet -reg\fP
+pat% \f(CBaet \-reg\fP
 aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
 aegis: sh /projects/example/baseline/test/00/t0001a.sh
 aegis: project "example.1.0": change 13: test "test/00/t0001a.sh"
@@ -1604,29 +1604,29 @@ to do develop end, or is it?
 .E(
 sam% \f(CBaede\fP
 aegis: project "example.1.0": change 12: file "gram.y" in baseline
-        has changed since last 'aegis -DIFFerence' command
+        has changed since last 'aegis \-DIFFerence' command
 sam%
 .E)
 .LP
 A little sleuthing on Sam's part with the Aegis list command
 will reveal how this came about.
 The way to resolve this problem is with the difference command,
-but the merge variant - this will merge the new baseline version, and
+but the merge variant \- this will merge the new baseline version, and
 Sam's edit together.
 .E(
 sam% \f(CBaem\fP
 aegis: logging to "/u/pat/example.1.0.C012/aegis.log"
-aegis: co -u'1.1' -p /projects/example/history/gram.y,v > /tmp/
+aegis: co \-u'1.1' \-p /projects/example/history/gram.y,v > /tmp/
         aegis.14594
-/projects/example/history/gram.y,v  -->  stdout revision 1.1 (unlocked)
-aegis: (diff3 -e /projects/example/baseline/gram.y /tmp/
-        aegis.14594 /u/sam/example.003/gram.y | sed -e '/^w$/d'
-        -e '/^q$/d'; \techo '1,$p' ) | ed - /projects/example/
+/projects/example/history/gram.y,v  \-\->  stdout revision 1.1 (unlocked)
+aegis: (diff3 \-e /projects/example/baseline/gram.y /tmp/
+        aegis.14594 /u/sam/example.003/gram.y | sed \-e '/^w$/d'
+        \-e '/^q$/d'; \techo '1,$p' ) | ed \- /projects/example/
         baseline/gram.y,B > /u/sam/example.003/gram.y
 aegis: project "example.1.0": change 12: merge complete
 aegis: project "example.1.0": change 12: file "gram.y" was out of
         date and has been merged, see "gram.y,B" for original source
-aegis: new 'aegis -Build' required
+aegis: new 'aegis \-Build' required
 sam%
 .E)
 .LP
@@ -1658,7 +1658,7 @@ The merged source file looks like this:
 .E(
 %type <lv_double> DOUBLE expr
 %type <lv_int> NAME
-%left '+' '-'
+%left '+' '\-'
 %left '*' '/'
 %right '^'
 %right UNARY
@@ -1687,9 +1687,9 @@ expr
                 { extern double recall(); $$ = recall($1); }
         | '(' expr ')'
                 { $$ = $2; }
-        | '-' expr
+        | '\-' expr
                 %prec UNARY
-                { $$ = -$2; }
+                { $$ = \-$2; }
         | expr '^' expr
                 { $$ = pow($1, $3); }
         | expr '*' expr
@@ -1698,8 +1698,8 @@ expr
                 { $$ = $1 / $3; }
         | expr '+' expr
                 { $$ = $1 + $3; }
-        | expr '-' expr
-                { $$ = $1 - $3; }
+        | expr '\-' expr
+                { $$ = $1 \- $3; }
         ;
 .E)
 The automatic merge worked
@@ -1715,21 +1715,21 @@ Sam now rebuilds:
 sam% \f(CBaeb\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: project "example.1.0": change 12: development build started
-aegis: cook -b /projects/example/baseline/Howto.cook
-        project=example.1.0 change=12 version=1.0.C012 -nl
+aegis: cook \-b /projects/example/baseline/Howto.cook
+        project=example.1.0 change=12 version=1.0.C012 \-nl
 cook: rm gram.c
 cook: rm gram.h
-cook: yacc -d gram.y
+cook: yacc \-d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
 cook: rm gram.o
-cook: cc -I. -I/projects/example/baseline -O -c gram.c
+cook: cc \-I. \-I/projects/example/baseline \-O \-c gram.c
 cook: rm lex.o
-cook: cc -I. -I/projects/example/baseline -O -c /projects/
+cook: cc \-I. \-I/projects/example/baseline \-O \-c /projects/
         example/baseline/lex.c
 cook: rm example
-cook: cc -o example gram.o lex.o /projects/example/baseline/
-        main.o /projects/example/baseline/var.o -ll -ly -lm
+cook: cc \-o example gram.o lex.o /projects/example/baseline/
+        main.o /projects/example/baseline/var.o \-ll \-ly \-lm
 aegis: project "example.1.0": change 12: development build complete
 sam%
 .E)
@@ -1749,13 +1749,13 @@ sam%
 .E)
 And test against the baseline,
 .E(
-sam% \f(CBaet -bl\fP
+sam% \f(CBaet \-bl\fP
 aegis: /bin/sh /u/sam/example.1.0.C012/test/00/t0003a.sh
 1,3c1,6
 < 1
 < 2
 < 3
----
+\-\-\-
 > syntax error
 > 5.3
 > syntax error
@@ -1775,7 +1775,7 @@ to make sure you didn't break the functionality
 of the code
 you merged with.
 .E(
-sam% \f(CBaet -reg\fP
+sam% \f(CBaet \-reg\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: /bin/sh /projects/example/baseline/test/00/
         t0001a.sh
@@ -1795,7 +1795,7 @@ sam%
 All done, or are we?
 .E(
 sam% \f(CBaede\fP
-aegis: project "example.1.0": change 12: no current 'aegis -Diff'
+aegis: project "example.1.0": change 12: no current 'aegis \-Diff'
         registration
 sam%
 .E)
@@ -1808,7 +1808,7 @@ sam% \f(CBaed\fP
 aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: set +e; diff /projects/example/baseline/gram.y /u/pat/
         example.1.0.C012/gram.y > /u/pat/example.1.0.C012/gram.y,D;
-	test $? -le 1
+        test $? \-le 1
 aegis: project "example.1.0": change 12: difference complete
 sam%
 .E)
@@ -1873,3 +1873,6 @@ Most Aegis commands also have a
 .I \-List
 option,
 which usually lists interesting context sensitive information.
+
+
+/* vim: set ts=8 sw=4 et : */

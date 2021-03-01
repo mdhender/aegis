@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
+// ----
 // This was originally a shell script, but as the number of files grew,
 // its execution time became unreasonably slow.
 //
@@ -67,26 +67,26 @@ slurp(const char *filename, nstring_list &nsl)
 {
     FILE *fp = filename ? fopen(filename, "r") : stdin;
     if (!fp)
-	nfatal("open %s", filename);
+        nfatal("open %s", filename);
     for (;;)
     {
-	char buffer[2000];
-	char *bp = buffer;
-	int c;
-	for (;;)
-	{
-	    c = getc(fp);
-	    if (c == EOF || c == '\n')
-		break;
-	    if (bp < buffer + sizeof(buffer))
-		*bp++ = c;
-	}
-	if (bp == buffer && c == EOF)
-	    break;
-	nsl.push_back(nstring(buffer, bp - buffer));
+        char buffer[2000];
+        char *bp = buffer;
+        int c;
+        for (;;)
+        {
+            c = getc(fp);
+            if (c == EOF || c == '\n')
+                break;
+            if (bp < buffer + sizeof(buffer))
+                *bp++ = c;
+        }
+        if (bp == buffer && c == EOF)
+            break;
+        nsl.push_back(nstring(buffer, bp - buffer));
     }
     if (fp != stdin)
-	fclose(fp);
+        fclose(fp);
 }
 
 
@@ -99,56 +99,59 @@ main(int argc, char **argv)
     resource_limits_init();
 
     if (arglex() == arglex_token_help)
-	usage();
+        usage();
     printer_wrap print(new printer_stdout);
     nstring_list filenames;
     process *proc = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    usage();
+        switch (arglex_token)
+        {
+        default:
+            usage();
 
-	case arglex_token_string:
-	    filenames.push_back(arglex_value.alv_string);
-	    break;
+        case arglex_token_string:
+            filenames.push_back(arglex_value.alv_string);
+            break;
 
-	case arglex_token_body:
-	    if (proc)
-		usage();
-	    proc = new process_body(print);
-	    break;
+        case arglex_token_body:
+            if (proc)
+                usage();
+            proc = new process_body(print);
+            break;
 
-	case arglex_token_directory:
-	    if (arglex() != arglex_token_string)
-		usage();
-	    process_body::directory(arglex_value.alv_string);
-	    break;
+        case arglex_token_directory:
+            if (arglex() != arglex_token_string)
+                usage();
+            process_body::directory(arglex_value.alv_string);
+            break;
 
-	case arglex_token_files_from:
-	    switch (arglex())
-	    {
-	    default:
-		usage();
+        case arglex_token_files_from:
+            switch (arglex())
+            {
+            default:
+                usage();
 
-	    case arglex_token_string:
-		slurp(arglex_value.alv_string, filenames);
-		break;
+            case arglex_token_string:
+                slurp(arglex_value.alv_string, filenames);
+                break;
 
-	    case arglex_token_stdio:
-		slurp(0, filenames);
-		break;
-	    }
-	    break;
-	}
-	arglex();
+            case arglex_token_stdio:
+                slurp(0, filenames);
+                break;
+            }
+            break;
+        }
+        arglex();
     }
 
     if (!proc)
-	proc = new process_tail(print);
+        proc = new process_tail(print);
     proc->run(filenames);
     delete proc;
 
     return 0;
 }
+
+
+// vim: set ts=8 sw=4 et :

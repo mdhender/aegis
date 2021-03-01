@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2004, 2006-2008 Peter Miller
-.\"	Copyright (C) 2006 Walter Franzini;
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002-2004, 2006-2008, 2010, 2012 Peter Miller
+.\" Copyright (C) 2006 Walter Franzini;
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aetar
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -25,28 +24,28 @@ aetar \- remotely distribute a change via tar
 .XX "aetar(1)" "remotely distribute a change via tar"
 .SH SYNOPSIS
 .B \*(n)
-.B -Send
+.B \-Send
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -Receive
+.B \-Receive
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -List
+.B \-List
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I "\*(n)"
@@ -55,7 +54,7 @@ facilitate geographically distributed development.
 .PP
 The basic function is to reproduce a change, so a command like
 .RS
-\f(CWaetar -send | aetar -receive\fP
+\f(CWaetar \-send | aetar \-receive\fP
 .RE
 may be used to clone a change, though less efficiently than \fIaeclone\fP(1).
 The file format used is an ordinary \fIgzip\fP(1) compressed \fItar\fP(1)
@@ -63,7 +62,7 @@ archive.
 .SH SEND
 The send variant takes a specified change, or baseline, and constructs
 a distribution package containing all of the source file contents.
-No change meta-data is included.
+No change meta\[hy]data is included.
 .PP
 It is not necessary for the recipient to have the \fIaetar\fP(1) command.
 It is possible to use the regular \fItar xzf\fP command to extract the
@@ -79,10 +78,10 @@ rather than a change.
 This option may be used to specify a path prefix to be added to every
 filename in the archive.  This means that when the archive is unpacked,
 it will all be placed in the one directory.
-.so o_change.so
-.so o_compatibil.so
-.so o_compress.so
-.so o_delta.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_compatibil.so
+.so lib/en/man1/o_compress.so
+.so lib/en/man1/o_delta.so
 .TP 8n
 \fB\-Entire_Source\fP
 This option may be used to send the entire source of the project,
@@ -99,8 +98,8 @@ This option may be used to send also build files.
 This option may be used to send only source (source, test, config but not build)
 files.
 This is the default.
-.so o_output.so
-.so o_project.so
+.so lib/en/man1/o_output.so
+.so lib/en/man1/o_project.so
 .SH RECEIVE
 The receive variant takes a tarball and creates an Aegis change (see
 \fIaenc\fP(1)) to implement the change within.  Files are added to the
@@ -125,11 +124,11 @@ file name found in the patch file.  A sequence of one or more adjacent
 slashes is counted as a single slash.
 .PP
 If you have a complex project directory structure,
-from time to time people may send you tarballs relative to a sub-directory,
+from time to time people may send you tarballs relative to a sub\[hy]directory,
 rather than relative to the project root.
 .TP 8n
 \fB\-Add_Path_Prefix\fP \fIstring\fP
-This option may be used to specify the path of a project sub-directory
+This option may be used to specify the path of a project sub\[hy]directory
 in which to apply the tarball.
 .SS Notification
 The \fI\*(n)\fP command invokes various other Aegis commands.
@@ -147,7 +146,7 @@ This option may be used to specify a particular
 delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
-.so o_dir.so
+.so lib/en/man1/o_dir.so
 .TP 8n
 \fB\-EXCLude\fP
 .RS
@@ -169,7 +168,7 @@ triggered by the presence of \fIconfigure.ac\fP, \fIconfigure.in\fP or
 complex projects will need to use the project exclude attributes.
 .PP
 You can set this automatically using the boolean
-\f[CW]aetar:exclude-auto-tools\fP attribute in the
+\f[CW]aetar:exclude\[hy]auto\[hy]tools\fP attribute in the
 \fIproject_\%specific\fP field of the project configuration file.
 .RE
 .TP 8n
@@ -181,12 +180,12 @@ code.  It will also look inside \f[CW].cvsignore\fP files for additional
 files to ignore.
 .PP
 You can set this automatically using the boolean
-\f[CW]aetar:exclude-cvs\fP attribute in the \fIproject_\%specific\fP
+\f[CW]aetar:exclude\[hy]cvs\fP attribute in the \fIproject_\%specific\fP
 field of the project configuration file.
 .RE
-.so o_file_cs.so
-.so o_project.so
-.so o_trojan.so
+.so lib/en/man1/o_file_cs.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_trojan.so
 .SS Security
 Downloading a tarball and automatically committing it to the
 baseline without checking it would be a recipe for disaster.
@@ -204,8 +203,8 @@ committed, preventing accidental or malicious damage.
 \(bu
 The use of authentication and encryption systems, such as PGP and
 GPG, are encouraged.  However, it is expected that this processing will
-occur after \&\fIaetar --send\fP has constructed the package and before
-\&\fIaetar --receive\fP examines and acts on the package.
+occur after \&\fIaetar \-send\fP has constructed the package and before
+\&\fIaetar \-receive\fP examines and acts on the package.
 Verification of the sender is the surest defense against trojan horses.
 .TP 2n
 \(bu
@@ -224,15 +223,15 @@ The list variant can be used to list the contents of a tarball without
 actually unpacking it first.
 .SS Options
 The following options are understood by the list variant:
-.so o_file_cs.so
-.so o_output.so
+.so lib/en/man1/o_file_cs.so
+.so lib/en/man1/o_output.so
 Only useful with the \-List option.
 .SH OPTIONS
 The following options to this command haven't been mentioned yet:
-.so o_help.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
 .SH FILE FORMAT
-The file format re-uses existing formats, rather than introduce anything
+The file format re\[hy]uses existing formats, rather than introduce anything
 new.  This means it is possible to extract the contents of a package
 even when \*(n) is unavailable.
 .TP 2n
@@ -247,5 +246,6 @@ compression.  (This is optional.)
 .br
 On receiving, if the tarball is compressed it will be automagically
 uncompressed, detection is automatic, you do not need to do this yourself.
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

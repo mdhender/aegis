@@ -1,21 +1,20 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2004-2006, 2008 Peter Miller
-//      Copyright (C) 2007, 2008 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 2004-2006, 2008, 2012 Peter Miller
+// Copyright (C) 2007, 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program; if not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -124,11 +123,11 @@ process_tail::per_file(const nstring &filename)
 
     else if (file.starts_with("script/"))
     {
-	if (file.ends_with(".in"))
-	{
-	    nstring name = nstring(file.c_str(), file.size() - 3);
-	    clean_files.push_back_unique(name);
-	}
+        if (file.ends_with(".in"))
+        {
+            nstring name = nstring(file.c_str(), file.size() - 3);
+            clean_files.push_back_unique(name);
+        }
         nstring name = file.trim_extension().basename();
         if (name != "aegis.synpic" && name != "ae-symlinks")
         {
@@ -153,10 +152,6 @@ process_tail::per_file(const nstring &filename)
             name != "aefp"
         &&
             name != "fmtgen"
-        &&
-            name != "cklinlen"
-        &&
-            name != "aemanifest"
         &&
             name != "aemakefile"
         &&
@@ -209,10 +204,10 @@ process_tail::per_file(const nstring &filename)
             dir_st.assign(dir, dir_p);
         }
         nstring stem(file.c_str(), file.size() - 2);
-        nstring obj(stem + ".gen.$(OBJEXT)");
+        nstring obj(stem + ".yacc.$(OBJEXT)");
         dir_p->push_back(obj);
-        clean_files.push_back(stem + ".gen.cc");
-        clean_files.push_back(stem + ".gen.h");
+        clean_files.push_back(stem + ".yacc.cc");
+        clean_files.push_back(stem + ".yacc.h");
         clean_files.push_back(obj);
     }
     else if (file.starts_with("lib/") && file.ends_with("/libaegis.po"))
@@ -224,7 +219,7 @@ process_tail::per_file(const nstring &filename)
         nstring stem = nstring(file.c_str() + 4, file.size() - 7);
         nstring src("lib/" + stem + ".mo");
         po_files.push_back(src);
-	clean_files.push_back(src);
+        clean_files.push_back(src);
         nstring dst("$(DESTDIR)$(NLSDIR)/" + stem + ".mo");
         install_po_files.push_back(dst);
         recursive_mkdir(dirname(src), dirname(dst), "libdir");
@@ -240,23 +235,23 @@ process_tail::per_file(const nstring &filename)
     else if (file.gmatch("lib/icon2/*.uue"))
     {
         nstring stem(file.c_str() + 10, file.size() - 14);
-	nstring tmp = "lib/icon/" + stem;
+        nstring tmp = "lib/icon/" + stem;
         nstring dst = "$(DESTDIR)$(datadir)/icon/" + stem;
-	datadir_files.push_back(dst);
-	recursive_mkdir(dirname(tmp), dirname(dst), "datadir");
-	clean_files.push_back(tmp);
+        datadir_files.push_back(dst);
+        recursive_mkdir(dirname(tmp), dirname(dst), "datadir");
+        clean_files.push_back(tmp);
     }
     else if (file.gmatch("lib/icon/*.uue"))
     {
         nstring stem(file.c_str() + 9, file.size() - 13);
         nstring dst = "$(DESTDIR)$(datadir)/icon/" + stem;
-	datadir_files.push_back(dst);
-	recursive_mkdir(dirname(file), dirname(dst), "datadir");
-	clean_files.push_back("lib/icon/" + stem);
+        datadir_files.push_back(dst);
+        recursive_mkdir(dirname(file), dirname(dst), "datadir");
+        clean_files.push_back("lib/icon/" + stem);
     }
     else if (file.gmatch("lib/*.uue"))
     {
-	// do nothing
+        // do nothing
     }
     else if (file.gmatch("lib/*/man[1-9]/*.[1-9]"))
     {
@@ -359,7 +354,7 @@ process_tail::postlude()
     }
 
     print << "\nCommonFiles = " << *common_files << "\n";
-    print << "\nLibAegisFiles = " << *libaegis_files << " " << *common_files
+    print << "\nlibaegis_obj = " << *libaegis_files << " " << *common_files
         << "\n";
     print << "\nLibFiles = " << libdir_files << "\n";
     print << "\nDataFiles = " << datadir_files << "\n";
@@ -447,7 +442,7 @@ process_tail::postlude()
         "\n"
         "distclean: clean\n"
         "\trm -f config.status config.log config.cache\n"
-        "\trm -f Makefile common/config.h etc/Howto.conf\n"
+        "\trm -f Makefile common/config.h etc/howto.conf\n"
         "\trm -f lib/cshrc lib/profile etc/libdir.so\n"
         "\n"
         ".bin:\n"
@@ -459,9 +454,9 @@ process_tail::postlude()
         "\t$(AR) qc $@ $(CommonFiles)\n"
         "\t$(RANLIB) $@\n"
         "\n"
-        "libaegis/libaegis.$(LIBEXT): $(LibAegisFiles)\n"
+        "libaegis/libaegis.$(LIBEXT): $(libaegis_obj)\n"
         "\trm -f $@\n"
-        "\t$(AR) qc $@ $(LibAegisFiles)\n"
+        "\t$(AR) qc $@ $(libaegis_obj)\n"
         "\t$(RANLIB) $@\n"
         "\n"
         "sure: $(TestFiles) etc/test.sh\n"
@@ -494,3 +489,6 @@ process_tail::postlude()
         "uninstall: uninstall-bin uninstall-lib uninstall-po uninstall-man "
             "uninstall-doc\n";
 }
+
+
+// vim: set ts=8 sw=4 et :

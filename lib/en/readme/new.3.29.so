@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001-2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .B Note:
@@ -58,10 +58,10 @@ This is in order to be more consistent withthe \fIaecp\fP(1) command.
 .if t \(bu
 .\" change 50
 The "time safe" property described by Damon Poole mostly applies to Aegis'
-operation.  One last area related to future times and the --delta options.
-There is now a warning in the instance where non-time-safe behavior
+operation.  One last area related to future times and the \-delta options.
+There is now a warning in the instance where non\[hy]time\[hy]safe behavior
 may occur.
-.\" 39: aepatch -rec -delta
+.\" 39: aepatch \-rec \-delta
 .PP
 .if n *
 .if t \(bu
@@ -70,7 +70,7 @@ The \fIhistory_\%put_\%command\fP and \fIhistory_\%create_\%command\fP
 field of the project \fIconfig\fP file are strongly recommended to be
 identical.  It is now possible to only specify the first one, and the
 second will default to it.
-.\" 37: to-do list updated
+.\" 37: to\[hy]do list updated
 .PP
 .if n *
 .if t \(bu
@@ -135,4 +135,5 @@ A problem with the CGI interface, which reported a bug to the user,
 has been fixed.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.29 (31-Oct-2001)
+.SS Version 3.29 (31\[hy]Oct\[hy]2001)
+.\" vim: set ts=8 sw=4 et :

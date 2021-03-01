@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2002, 2004-2008 Peter Miller
+//      Copyright (C) 2002, 2004-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/capitalize.h>
@@ -99,3 +100,6 @@ rpt_func_capitalize::run(const rpt_expr::pointer &ep, size_t,
     //
     return rpt_value_string::create(subject.capitalize());
 }
+
+
+// vim: set ts=8 sw=4 et :

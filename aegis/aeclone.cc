@@ -1,28 +1,28 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1998-2008 Peter Miller
-//      Copyright (C) 2006-2008 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 1998-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2006-2009 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program.  If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <common/uuidentifier.h>
@@ -30,6 +30,7 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/arglex2.h>
+#include <libaegis/attribute.h>
 #include <libaegis/change.h>
 #include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
@@ -91,8 +92,8 @@ clone_main(void)
     string_ty       *project_name;
     long            change_number;
     long            change_number2;
-    project_ty      *pp;
-    project_ty      *pp2;
+    project      *pp;
+    project      *pp2;
     user_ty::pointer up;
     change::pointer cp;
     change::pointer cp2;
@@ -278,7 +279,7 @@ clone_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-        project_name = str_copy(n.get_ref());
+        project_name = n.get_ref_copy();
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -287,7 +288,7 @@ clone_main(void)
     //
     // make sure this branch of the project is still active
     //
-    if (!change_is_a_branch(pp->change_get()))
+    if (!pp->change_get()->is_a_branch())
         project_fatal(pp, 0, i18n("branch completed"));
 
     //
@@ -358,7 +359,7 @@ clone_main(void)
         (
             "%s (clone of %s)",
             s->str_text,
-            change_version_get(cp2)->str_text
+            cp2->version_get().c_str()
         );
     str_free(s);
     cstate_data->cause = cstate_data2->cause;
@@ -375,11 +376,13 @@ clone_main(void)
     change_copyright_years_merge(cp, cp2);
 
     //
-    // Copy also the user defined attributes in the new change.
+    // Copy also the user defined attributes in the new change,
+    // removing attributes that may be wrong on the other side.
     //
     if (cstate_data2->attribute)
         cstate_data->attribute =
             attributes_list_clone(cstate_data2->attribute);
+    attributes_list_remove(cstate_data->attribute, HISTORY_GET_COMMAND);
 
     //
     // Copy the UUID into a user defined attribute.
@@ -407,7 +410,7 @@ clone_main(void)
             magic_zero_decode(change_number2)
         );
 
-    the_umask = change_umask(cp);
+    the_umask = cp->umask_get();
 
     if (cstate_data2->state >= cstate_state_being_developed)
     {
@@ -462,6 +465,11 @@ clone_main(void)
         up->become_end();
 
         //
+        // run the develop begin early command
+        //
+        cp->run_develop_begin_early_command(up);
+
+        //
         // add all of the files to the new change
         // copy the files into the development directory
         //
@@ -488,7 +496,7 @@ clone_main(void)
                 continue;
 
             case file_action_transparent:
-                if (change_was_a_branch(cp2))
+                if (cp2->was_a_branch())
                     continue;
                 break;
 
@@ -514,7 +522,7 @@ clone_main(void)
             //
             // find the file in the project
             //
-            p_src_data = project_file_find(pp, src_data2, view_path_extreme);
+            p_src_data = pp->file_find(src_data2, view_path_extreme);
             if (!p_src_data)
             {
                 switch (src_data2->action)
@@ -702,7 +710,7 @@ clone_main(void)
                 //
                 // construct the paths to the files
                 //
-                from = change_file_path(cp2, src_data2->file_name);
+                from = cp2->file_path(src_data2->file_name);
                 to = os_path_join(devdir, src_data2->file_name);
 
                 //
@@ -739,7 +747,7 @@ clone_main(void)
     // as it does not exist yet;
     // the project state file, with the number in it, is locked.
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
 
     //
     // Add the change to the list of existing changes.
@@ -788,7 +796,7 @@ clone_main(void)
         //
         // run the develop begin command
         //
-        change_run_develop_begin_command(cp, up);
+        cp->run_develop_begin_command(up);
 
         //
         // run the change file command
@@ -870,7 +878,7 @@ clone_main(void)
     // verbose success message
     //
     scp = sub_context_new();
-    sub_var_set_string(scp, "ORiginal", change_version_get(cp2));
+    sub_var_set_string(scp, "ORiginal", cp2->version_get());
     sub_var_optional(scp, "ORiginal");
     change_verbose(cp, scp, i18n("clone complete"));
     sub_context_delete(scp);
@@ -897,3 +905,6 @@ aeclone(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), clone_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

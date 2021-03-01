@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -26,7 +26,7 @@ See \fIaeuconf\fP(5) for more information.
 .if n *
 .if t \(bu
 .\" change 30
-The \fIaepatch\fP(1) command now understands the quoted-printable content
+The \fIaepatch\fP(1) command now understands the quoted\[hy]printable content
 transfer encoding.
 .PP
 .if n *
@@ -46,7 +46,7 @@ The Dutch error message translations have been updated.
 There was a problem with the way the install directory for
 \fIaegis.cgi\fP was being determined.  The \fIaegis.cgi\fP script is now
 installed into \f[CW]$bindir\fP by default.  There is a \fIaegis.cgi.i\fP
-helper script to find your web server's \fIcgi-bin\fP directory and copy
+helper script to find your web server's \fIcgi\[hy]bin\fP directory and copy
 \fIaegis.cgi\fP there, but this is not done automatically.
 See \fIaegis.cgi\fP(1) for more information.
 .PP
@@ -63,7 +63,7 @@ A French error message translation has been contributed.
 .if n *
 .if t \(bu
 .\" change 20
-A problem with \fIaedist -receive\fP has been fixed, where the new
+A problem with \fIaedist \-receive\fP has been fixed, where the new
 \fIconfiguration_\%directory\fP could interact with the order of file
 creation.
 .PP
@@ -78,8 +78,8 @@ which could occasionally miss the "begin" line.
 .\" change 17
 A bug has been fiexed in the context diff parsing, where it would get the
 last hunk wrong if it was a hunk which deleted lines, due to incorrect
-end-of-file handling.  This affected both \fIaepatch -receive\fP and
-\fIaedist -receive\fP, because \fIaedist\fP(1) now includes patches for
+end\[hy]of\[hy]file handling.  This affected both \fIaepatch \-receive\fP and
+\fIaedist \-receive\fP, because \fIaedist\fP(1) now includes patches for
 better merge behaviour.
 .PP
 .if n *
@@ -107,4 +107,5 @@ issued by \fIaeipass\fP(1) has been added to the man page.
 Some improvements have been made to the web pages.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.3 (16-Apr-2002)
+.SS Version 4.3 (16\[hy]Apr\[hy]2002)
+.\" vim: set ts=8 sw=4 et :

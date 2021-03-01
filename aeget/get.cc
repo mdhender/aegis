@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2008 Peter Miller
+//      Copyright (C) 2003-2008, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -153,25 +153,25 @@ get(void)
     //
     if
     (
-	modifier_test_and_clear(&modifier, "noerror")
+        modifier_test_and_clear(&modifier, "noerror")
     ||
-	modifier_test_and_clear(&modifier, "debug")
+        modifier_test_and_clear(&modifier, "debug")
     )
     {
-	http_fatal_noerror = true;
+        http_fatal_noerror = true;
     }
 
     if (path->str_length == 0)
     {
         if
-	(
-	    modifier.nstrings >= 1
+        (
+            modifier.nstrings >= 1
         &&
-	    0 == strcasecmp(modifier.string[0]->str_text, "rect")
-	)
-	{
-	    get_rect(&modifier);
-	    return;
+            0 == strcasecmp(modifier.string[0]->str_text, "rect")
+        )
+        {
+            get_rect(&modifier);
+            return;
         }
 
         //
@@ -193,17 +193,17 @@ get(void)
     //
     if
     (
-	0 == memcmp(path->str_text, "icon/", 5)
+        0 == memcmp(path->str_text, "icon/", 5)
     &&
-	0 == memmem(path->str_text, path->str_length, "/../", 4)
+        0 == memmem(path->str_text, path->str_length, "/../", 4)
     )
     {
-	//
+        //
         // Leave the "icon/" in the path, that way we can re-use it for
         // other directories in the future, if needed.
-	//
-	get_icon(path, &modifier);
-	return;
+        //
+        get_icon(path, &modifier);
+        return;
     }
 
     //
@@ -234,7 +234,7 @@ get(void)
     long change_number = 0;
     if (extract_change_number(&project_name, &change_number))
     {
-        project_ty *pp = project_alloc(project_name);
+        project *pp = project_alloc(project_name);
         pp->bind_existing();
 
         change::pointer cp = change_alloc(pp, change_number);
@@ -252,7 +252,7 @@ get(void)
         long delta_number = 0;
         if (extract_delta_number(&project_name, &delta_number))
         {
-            project_ty *pp = project_alloc(project_name);
+            project *pp = project_alloc(project_name);
             pp->bind_existing();
 
             change_number =
@@ -270,7 +270,7 @@ get(void)
         }
         else
         {
-            project_ty *pp = project_alloc(project_name);
+            project *pp = project_alloc(project_name);
             pp->bind_existing();
 
             //
@@ -283,3 +283,6 @@ get(void)
     str_free(project_name);
     str_free(path);
 }
+
+
+// vim: set ts=8 sw=4 et :

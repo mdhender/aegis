@@ -1,41 +1,41 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.ds n) ae-cvs-ci
-.TH "ae-cvs-ci" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.ds n) ae\\[hy]cvs\\[hy]ci
+.TH "ae\[hy]cvs\[hy]ci" 1 \*(N) "Reference Manual" ""
 .SH NAME
-ae-cvs-ci \- checkin a change set to CVS
+ae\[hy]cvs\[hy]ci \- checkin a change set to CVS
 .XX "ae-cvs-ci(1)" "checkin a change set to CVS"
 .SH SYNOPSIS
 .B \*(n)
-.I project-name
-.I change-number
+.I project\[hy]name
+.I change\[hy]number
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to check an Aegis change set into CVS.
 .PP
-This script is a short wrapper around the \fIae-repo-ci\fP(1) command.
+This script is a short wrapper around the \fIae\[hy]repo\[hy]ci\fP(1) command.
 .PP
 This is usually used in the \fIintegrate pass notify command\fP project
 attribute, as in
 .RS
 integrate_pass_notify_command =
-    "$bin/ae-cvs-ci $project $change";
+    "$bin/ae\[hy]cvs\[hy]ci $project $change";
 .RE
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

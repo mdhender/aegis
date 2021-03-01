@@ -1,29 +1,28 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Build" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Build" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis build \- build a change
 .XX "aeb(1)" "build a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -Build
+.B \-Build
 [
 .IR option ...
 ][
@@ -31,19 +30,19 @@ aegis build \- build a change
 ]
 .br
 .B \*(n)
-.B -Build
-.B -List
+.B \-Build
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Build
-.B -Help
+.B \-Build
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Build
+.I \-Build
 command is used to
 build a project.
 The project configuration file is consulted for the
@@ -61,7 +60,7 @@ file at the root of the development directory tree.
 The build command will be executed with its current directory being
 the root of the development directory,
 irrespective of there the
-.I "\*(n) -Build"
+.I "\*(n) \-Build"
 command was executed.
 .PP
 If the change is in the
@@ -93,7 +92,7 @@ any diff registration will also be canceled.
 The actions of the command are controlled by the \fIbuild_\% command\fP
 and \fIintegration_\%build_\%command\fP fields of the project \fIconfig\fP
 file.  See \fIaepconf\fP(5) for more information.
-.so z_promotion.so
+.so lib/en/man1/z_promotion.so
 .SH PARTIAL BUILD
 If files are named on the command line,
 these files are appended to the build command.
@@ -112,10 +111,10 @@ to a full build.
 Warning:
 no change state lock is taken for a partial build,
 only a baseline read lock.
-.so z_intuit.so
-.so o_symlnk.so
-.so z_bl_lock.so
-.so z_metrics.so
+.so lib/en/man1/z_intuit.so
+.so lib/en/man1/o_symlnk.so
+.so lib/en/man1/z_bl_lock.so
+.so lib/en/man1/z_metrics.so
 .SH OPTIONS
 The following options are understood:
 .TP 8n
@@ -123,13 +122,13 @@ The following options are understood:
 Command line arguments of this form are assumed to be variable assignments
 for the build tool.  They are passed through unchanged.  They imply a
 partial build.
-.so o_baserel.so
-.so o_change.so
-.so o_help.so
-.so o_list.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
 .TP 8n
 \fB\-MINImum\fP
-This option may be used to request a source-only
+This option may be used to request a source\[hy]only
 \fIdevelopment_\%directory_\%style\fP.  This is useful if you
 want to simulate something like \fIaeib \-minimum\fP in the
 development directory.  This option is only meaningful if
@@ -137,19 +136,19 @@ development directory.  This option is only meaningful if
 is in the \fIbeing integrated\fP state, and the developer specified
 \fB\-MINImum\fP when issuing the \fI\*(n) \-Integrate_Begin\fP command,
 then this option is set by default.
-.so o_nolog.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_symlnk_vfy.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_nolog.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_symlnk_vfy.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aeb '\*(n) -b \e!* -v'
-sh$	aeb(){\*(n) -b "$@" -v}
+csh%    alias aeb '\*(n) \-b \e!* \-v'
+sh$     aeb(){\*(n) \-b "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -166,7 +165,7 @@ It is an error if
 a partial build is requested and the change is in the
 .I "being integrated"
 state.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -175,7 +174,7 @@ state.
 begin development of a change
 .TP 8n
 .IR aecp (1)
-file copy also takes a baseline read lock (non-exclusive)
+file copy also takes a baseline read lock (non\[hy]exclusive)
 .TP 8n
 .IR aeib (1)
 begin integration of a change
@@ -194,4 +193,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1990-1995, 1997-1999, 2001, 2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1990-1995, 1997-1999, 2001, 2002, 2006-2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -24,7 +24,7 @@
 .if n .hy 0
 .if n .ad l
 .if n .nr IN 8n
-.so version.so
+.so etc/version.so
 .SH NAME
 aegis \- project change supervisor
 .XX "" "The README File"
@@ -115,7 +115,7 @@ and a team of developers creating changes to be made to this baseline.
 When a change is complete,
 it is integrated with the baseline,
 to become the new baseline.
-Each change must be atomic and self-contained,
+Each change must be atomic and self\[hy]contained,
 no change is allowed to cause the baseline to cease to work.
 "Working" is defined as passing it's own tests.
 The tests are considered part of the baseline.
@@ -132,7 +132,7 @@ and that all such tests be known to complete successfully.
 These steadily accumulated tests form an ever increasing
 regression test suite for all later changes.
 There is also a mandatory review stage for each change to the baseline.
-While these requirements may be relaxed per-change or even per-project,
+While these requirements may be relaxed per\[hy]change or even per\[hy]project,
 doing so potentially compromises the "working" definition of the baseline.
 .PP
 The win in using
@@ -142,17 +142,17 @@ is that there are
 interactions between
 developers and the baseline.
 Contrast this with a master source which is
-being edited directly by the developers - there are
+being edited directly by the developers \- there are
 .I O(n!)
 interactions between
-developers - this makes adding "just one more" developer a potential disaster.
+developers \- this makes adding "just one more" developer a potential disaster.
 .PP
 Another win is that the project baseline always works.
 Always having a working baseline means that a version is always available for
 demonstrations,
-or those "pre-release snapshots" we are always forced to provide.
+or those "pre\[hy]release snapshots" we are always forced to provide.
 .PP
-The above advantages are all very well - for management types.
+The above advantages are all very well \- for management types.
 Why should Joe Average Programmer use
 .IR Aegis ?
 Recall that RCS provides file locking,
@@ -184,7 +184,7 @@ is available by HTTP from:
 tab(;);
 l l s
 l l l.
-URL:;http://www.canb.auug.org.au/~millerp/
+URL:;http://miller.emu.id.au/pmiller/
 File:;aegis.html;# the Aegis page
 File:;aegis.\*(v).README;# Description, from tar file
 File:;aegis.\*(v).lsm;# Description, in LSM format
@@ -200,7 +200,7 @@ Some are referred to in the
 documentation.
 Please have a look if you are interested.
 .SS Mirrors
-See http://www.canb.auug.org.au/~millerp/
+See http://miller.emu.id.au/pmiller/
 for a list of mirror sites.
 .br
 .ne 2i
@@ -237,7 +237,7 @@ The list is not moderated.
 The address of the mailing list is
 .RS
 .ft CW
-aegis-users@auug.org.au
+aegis\[hy]users@auug.org.au
 .ft R
 .RE
 Please
@@ -247,19 +247,19 @@ attempt to subscribe by sending email to this address.
 It is for content only.
 .SS How To Subscribe
 To subscribe to this mailing list, visit the
-Aegis-users mailing list page
-(\f[CW]http://\%www.auug.org.au/\%mailman/\%listinfo/\%aegis-users\fP)
+Aegis\[hy]users mailing list page
+(\f[CW]http://\%www.auug.org.au/\%mailman/\%listinfo/\%aegis\[hy]users\fP)
 and go through the \fBsubscribe\fP dialogue.
 .SS Archive
 The mailing list is archived at eGroups.
-The URL is \f(CWhttp://www.egroups.com/list/aegis-users/info.html\fP
+The URL is \f(CWhttp://www.egroups.com/list/aegis\-users/info.html\fP
 .SS No Files By EMail
 The software which handles this mailing list
 .if n CANNOT
 .if t .B cannot
 send you a copy of
 .IR Aegis .
-Please use FTP or ftp-by-email, instead.
+Please use FTP or ftp\[hy]by\[hy]email, instead.
 .br
 .ne 1i
 .SH BUILDING
@@ -273,11 +273,11 @@ file included in this distribution.
 .SH SOME HISTORY
 The idea for
 .I Aegis
-did not come full-blown into my head in the shower,
+did not come full\[hy]blown into my head in the shower,
 as some of my programs do,
 but rather from working in a software shop
 which used a simplistic form of something similar.
-That system was held together by chewing-gum and string,
+That system was held together by chewing\[hy]gum and string,
 it was written in a disgusting variant of Basic,
 and by golly the damn thing worked (mostly).
 .I Aegis
@@ -287,7 +287,7 @@ and is far more versatile.
 It turns out that the system used is nothing new,
 and is described in many SCM textbooks;
 it is the result of systematically resolving development issues
-for large-ish teams.
+for large\[hy]ish teams.
 .PP
 Since that company decided to close down our section
 (the company was under attack by a hostile takeover bid)
@@ -332,19 +332,19 @@ but they never come back,
 because the regression test suite always grows.
 .SS Branching
 In 1997 the full branching support was released (it took nearly 18 months
-to retro-fit.  The underlying data structures for projects and change
+to retro\[hy]fit.  The underlying data structures for projects and change
 sets need to be merged.  While I noticed back in 1990 that they were
 very similar, it wasn't until branch support design was well underways
 that they should have been the same  data structure from the beginning.
 .SS Geographically Distributed Development
-In 1999 a conversation on the \f(CWaegis-users\fP mailing list resulted
+In 1999 a conversation on the \f(CWaegis\[hy]users\fP mailing list resulted
 in the creation of \fIaedist\fP, a program which packages and unpackages
-Aegis changes so they can be sent by e-mail, or WWW or whatever.
+Aegis changes so they can be sent by e\[hy]mail, or WWW or whatever.
 With 20:20 hindsight, this could have been done way back in 1991,
 because the basic idea builds on Aegis change process model.
 .br
 .ne 1i
-.so windows.so
+.so lib/en/readme/windows.so
 .br
 .ne 1i
 .SH LICENSE
@@ -354,7 +354,10 @@ you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation;
 either version 3 of the License,
-or (at your option) any later version.
+or (at your option) any later version.  In addition, as a special
+exception, the copyright holders give
+permission to link the code of this program with the OpenSSL library,
+and distribute linked combinations including the two.
 .PP
 .I Aegis
 is distributed in the hope that it will be useful,
@@ -369,14 +372,17 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 It should be in the
 .I LICENSE
 file included in this distribution.
+The full test of the OpenSSL exception should be in the
+.I LICENSE.openssl
+file included in this distribution.
 .br
 .ne 1i
 .SH AUTHOR
 .TS
 tab(;);
 l r l.
-Peter MillerE-Mail:;millerp@canb.auug.org.au
-\f(CW/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
+Peter Miller;E\[hy]Mail:;pmiller@opensource.org.au
+\f(CW/\e/\e*\fR;WWW:;http://miller.emu.id.au/pmiller/
 .TE
 .bp
 .SH RELEASE NOTES
@@ -393,4 +399,5 @@ files included in this distribution.
 In general, all the machines on your network need to be running the same
 release of Aegis.  While the database format is backwards compatible,
 it is rarely forwards compatible in the face of new capabilities.
-.so new.so
+.so lib/en/readme/new.so
+.\" vim: set ts=8 sw=4 et :

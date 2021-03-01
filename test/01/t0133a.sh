@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2001, 2002, 2004-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2001, 2002, 2004-2008, 2012 Peter Miller
+#       Copyright (C) 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 # Note: this test assumes we are talking to GNU Diff, because we use
 # the -a option to tell it to treat all files as ASCII, even if they
@@ -30,11 +31,11 @@ umask 022
 
 if test -z "`diff -v 2>&1 | grep GNU`"
 then
-	echo ''
-	echo '	This test depends on GNU Diff, which you do not seem to'
-	echo '	have installed.  This test is declared to pass by default.'
-	echo ''
-	exit 0
+        echo ''
+        echo '  This test depends on GNU Diff, which you do not seem to'
+        echo '  have installed.  This test is declared to pass by default.'
+        echo ''
+        exit 0
 fi
 
 LINES=24
@@ -48,11 +49,11 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -69,7 +70,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -80,48 +81,48 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the history encoding functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the history encoding functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the history encoding functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT when testing the history encoding functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/delta[0-9][0-9]*/delta/' \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		< $1 > $work/sed.out
-	if test $? -ne 0; then fail; fi
-	diff -a $2 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/delta[0-9][0-9]*/delta/' \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                < $1 > $work/sed.out
+        if test $? -ne 0; then fail; fi
+        diff -b -a $2 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 #
@@ -131,11 +132,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -212,7 +213,7 @@ if test $? -ne 0 ; then no_result; fi
 
 cat > $chandir/aegis.conf << 'end'
 build_command =
-	"exit 0";
+        "exit 0";
 
 history_get_command = "aesvt -check-out -edit ${quote $edit} "
     "-history ${quote $history} -f ${quote $output}";
@@ -221,10 +222,10 @@ history_put_command = "aesvt -check-in -history ${quote $history} "
 history_query_command = "aesvt -query -history ${quote $history}";
 
 diff_command =
-	"set +e; diff -a $orig $i > $out; test $$? -le 1";
+        "set +e; diff -a $orig $i > $out; test $$? -le 1";
 diff3_command =
-	"(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
+        echo '1,$$p' ) | ed - $mr > $out";
 end
 if test $? -ne 0 ; then no_result; fi
 
@@ -306,72 +307,78 @@ activity="check trunk state 295"
 cat > ok << 'end'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "b64";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = base64;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = base64;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "qp";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = quoted_printable;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = quoted_printable;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "b64";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = base64;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = base64;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "qp";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = quoted_printable;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = quoted_printable;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 end
 if test $? -ne 0 ; then no_result; fi
@@ -382,39 +389,42 @@ activity="check change state 371"
 cat > ok << 'end'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-	},
-	{
-		file_name = "b64";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = base64;
-		};
-		usage = source;
-	},
-	{
-		file_name = "qp";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = quoted_printable;
-		};
-		usage = source;
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+        },
+        {
+                file_name = "b64";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = base64;
+                        uuid = "UUID";
+                };
+                usage = source;
+        },
+        {
+                file_name = "qp";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = quoted_printable;
+                        uuid = "UUID";
+                };
+                usage = source;
+        },
 ];
 end
 if test $? -ne 0 ; then no_result; fi
@@ -483,72 +493,78 @@ activity="check trunk state 472"
 cat > ok << 'end'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "b64";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "qp";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "b64";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "qp";
+                uuid = "UUID";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 end
 if test $? -ne 0 ; then no_result; fi
@@ -581,28 +597,30 @@ activity="check change state 570"
 cat > ok << 'end'
 src =
 [
-	{
-		file_name = "b64";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = base64;
-		};
-		usage = source;
-	},
-	{
-		file_name = "qp";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = quoted_printable;
-		};
-		usage = source;
-	},
+        {
+                file_name = "b64";
+                uuid = "UUID";
+                action = modify;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = base64;
+                        uuid = "UUID";
+                };
+                usage = source;
+        },
+        {
+                file_name = "qp";
+                uuid = "UUID";
+                action = modify;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = quoted_printable;
+                        uuid = "UUID";
+                };
+                usage = source;
+        },
 ];
 end
 if test $? -ne 0 ; then no_result; fi
@@ -622,3 +640,4 @@ if test $? -ne 0 ; then fail; fi
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

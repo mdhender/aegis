@@ -1,64 +1,63 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Integrate_Fail" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Integrate_Fail" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis integrate fail \- fail a change integration
 .XX "aeifail(1)" "fail a change integration"
 .SH SYNOPSIS
 .B \*(n)
-.B -Integrate_Fail
-.B -File
-.I reason-file
+.B \-Integrate_Fail
+.B \-File
+.I reason\[hy]file
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Fail
-.B -REASon
-.I "'reason-text'"
+.B \-Integrate_Fail
+.B \-REASon
+.I "'reason\[hy]text'"
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Fail
-.B -Edit
+.B \-Integrate_Fail
+.B \-Edit
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Fail
-.B -List
+.B \-Integrate_Fail
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Integrate_Fail
-.B -Help
+.B \-Integrate_Fail
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Integrate_Fail
+.I \-Integrate_Fail
 command is used to
 inform \*(n) that a change has failed integration.
 .PP
@@ -85,7 +84,8 @@ box "awaiting" "integration"
 arrow " integrate" ljust " begin" ljust
 S5: box "being" "integrated"
 
-T7: spline -> from S5.e then right 0.5 then up 4 then to S2.e
+move to S5.e
+T7: spline -> right 0.5 then up 4 then to S2.e
 "integrate " rjust "fail " rjust at T7.c + (0.5,0)
 .PE
 .\" ------------------------------------------------------------------------
@@ -96,7 +96,7 @@ See the integrate_fail_notify_command in
 for more information.
 .PP
 The
-.I reason-file
+.I reason\[hy]file
 will contain a description of why the change was failed.
 The file is in plain text.
 It is recommended that you only use newline to terminate paragraphs,
@@ -109,24 +109,24 @@ attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
 for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_edit.so
-.so o_file.so
-.so o_help.so
-.so o_keep.so
-.so o_list.so
-.so o_project.so
-.so o_reason.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_edit.so
+.so lib/en/man1/o_file.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aeifail '\*(n) -ifail \e!* -v'
-sh$	aeifail(){\*(n) -ifail "$@" -v}
+csh%    alias aeifail '\*(n) \-ifail \e!* \-v'
+sh$     aeifail(){\*(n) \-ifail "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -136,7 +136,7 @@ state.
 .br
 It is an error if
 the change is not assigned to the current user.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -149,4 +149,5 @@ pass integration of a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

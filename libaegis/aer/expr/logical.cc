@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <libaegis/aer/expr/logical.h>
 #include <libaegis/aer/value/boolean.h>
@@ -56,49 +57,49 @@ rpt_expr_and_logical::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
     rpt_value::pointer v1b = rpt_value::booleanize(v1);
     rpt_value_boolean *v1p = dynamic_cast<rpt_value_boolean *>(v1b.get());
     if (!v1p)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v1->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v1->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("boolean value required for logical and (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("boolean value required for logical and (was given $name)")
+            )
         );
-	return rpt_value_error::create(nth_child(0)->get_pos(), s);
+        return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
 
     //
     // short circuit the evaluation if the LHS is false
     //
     if (!v1p->query())
-	return v1b;
+        return v1b;
 
     //
     // evaluate the right hand side
     //
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
     rpt_value::pointer v2b = rpt_value::booleanize(v2);
     rpt_value_boolean *v2p = dynamic_cast<rpt_value_boolean *>(v2b.get());
     if (!v2p)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("boolean value required for logical and (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("boolean value required for logical and (was given $name)")
+            )
         );
-	return rpt_value_error::create(nth_child(1)->get_pos(), s);
+        return rpt_value_error::create(nth_child(1)->get_pos(), s);
     }
     return v2b;
 }
@@ -135,49 +136,49 @@ rpt_expr_or_logical::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
     rpt_value::pointer v1b = rpt_value::booleanize(v1);
     rpt_value_boolean *v1p = dynamic_cast<rpt_value_boolean *>(v1b.get());
     if (!v1p)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v1->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v1->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("boolean value required for logical or (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("boolean value required for logical or (was given $name)")
+            )
         );
-	return rpt_value_error::create(nth_child(0)->get_pos(), s);
+        return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
 
     //
     // short circuit the evaluation if LHS is true
     //
     if (v1p->query())
-	return v1b;
+        return v1b;
 
     //
     // evaluate the right hand side
     //
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
     rpt_value::pointer v2b = rpt_value::booleanize(v2);
     rpt_value_boolean *v2p = dynamic_cast<rpt_value_boolean *>(v2b.get());
     if (!v2p)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("boolean value required for logical or (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("boolean value required for logical or (was given $name)")
+            )
         );
-	return rpt_value_error::create(nth_child(1)->get_pos(), s);
+        return rpt_value_error::create(nth_child(1)->get_pos(), s);
     }
     return v2b;
 }
@@ -213,13 +214,13 @@ rpt_expr_not_logical::evaluate()
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
     // coerce the argument to boolean type
-    //	(will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
     rpt_value::pointer v2 = rpt_value::booleanize(v1);
 
@@ -230,17 +231,17 @@ rpt_expr_not_logical::evaluate()
     rpt_value_boolean *v2p = dynamic_cast<rpt_value_boolean *>(v2.get());
     if (!v2p)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s(sc.subst_intl(i18n("illegal logical not ($name)")));
-	rpt_value::pointer result =
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s(sc.subst_intl(i18n("illegal logical not ($name)")));
+        rpt_value::pointer result =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
         trace(("}\n"));
         return result;
     }
 
     rpt_value::pointer result = rpt_value_boolean::create(!v2p->query());
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -283,8 +284,8 @@ rpt_expr_if::evaluate()
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
@@ -297,27 +298,30 @@ rpt_expr_if::evaluate()
     if (!v1p)
     {
         trace(("mark\n"));
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v1b->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v1b->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
+            sc.subst_intl
+            (
                 i18n("boolean value required for arithmetic if (was "
                     "given $name)")
-	    )
+            )
         );
-	rpt_value::pointer result =
+        rpt_value::pointer result =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
-	trace(("}\n"));
-	return result;
+        trace(("}\n"));
+        return result;
     }
 
     trace(("mark\n"));
     bool cond = v1p->query();
     rpt_value::pointer result = nth_child(cond ? 1 : 2)->evaluate(true, true);
 
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

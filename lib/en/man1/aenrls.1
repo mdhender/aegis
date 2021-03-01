@@ -1,60 +1,59 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-1998, 2000, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2000, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.so libdir.so
-.TH "\*(n) -New_ReLeaSe" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.so etc/libdir.so
+.TH "\*(n) \-New_ReLeaSe" 1 \*(N) "Reference Manual"
 .SH NAME
-aegis new release \- create a new project from an old-style project.
-.XX "aenrls(1)" "create a new project from an old-style project"
+aegis new release \- create a new project from an old\[hy]style project.
+.XX "aenrls(1)" "create a new project from an old\[hy]style project"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_ReLeaSe
-project-name
+.B \-New_ReLeaSe
+project\[hy]name
 [
-.I new-project-name
+.I new\[hy]project\[hy]name
 ][
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_ReLeaSe
-.B -List
+.B \-New_ReLeaSe
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_ReLeaSe
-.B -Help
+.B \-New_ReLeaSe
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -New_ReLeaSe
+.I \-New_ReLeaSe
 command is used to
 create a new project from an existing project.
-.I "It creates a new post-3.0 project from an old pre-3.0 project."
+.I "It creates a new post\[hy]3.0 project from an old pre\[hy]3.0 project."
 .PP
-\fBPlease Note:\fP If your old-style project does not have a version
+\fBPlease Note:\fP If your old\[hy]style project does not have a version
 number in the project name, you \fImust\fP supply a new project name,
-otherwise you will get an error.  (If you want to re-use the old project
+otherwise you will get an error.  (If you want to re\[hy]use the old project
 name, you need to rename the old project, and then use \fIaenrls\fP to
-create a new new-style project with the old name.  See the HOWTO for
+create a new new\[hy]style project with the old name.  See the HOWTO for
 how to change a project's name.)
 .PP
 This command was essential before the introduction of branches into the
@@ -62,14 +61,14 @@ Aegis model.  It is more useful to create a new release of a project by
 ending development on the branch of the previous release and starting
 development of a new branch numbered for the desired release.
 .PP
-Once you have a new-style project, use the
+Once you have a new\[hy]style project, use the
 .IR aenbr (1)
 command to create new branches on this project.
 This provides more efficient release management,
 and allows historical versions to be reproduced more simply.
 .PP
 If no
-.I new-project-name
+.I new\[hy]project\[hy]name
 is specified,
 it will be derived from the project given as follows:
 any minor version dot suffix will be removed from the name,
@@ -104,10 +103,10 @@ or
 .I \*(S)
 if none is set.
 If this is inappropriate, use the
-.B -LIBrary
+.B \-LIBrary
 option to explicitly set the desired location.
 See the
-.B -LIBrary
+.B \-LIBrary
 option for more information.
 .PP
 The project directory,
@@ -115,7 +114,7 @@ under which the project baseline and history and
 state and change data are kept,
 will be created at this time.
 If the
-.B -DIRectory
+.B \-DIRectory
 option is not given,
 the project directory will be created in the
 directory specified by the default_\%project_\%directory field of
@@ -128,36 +127,36 @@ in either case with the same name as the project.
 All staff will be copied from the old project to the new project
 without change,
 as will all of the project attributes.
-.so z_bl_lock.so
+.so lib/en/man1/z_bl_lock.so
 .SS Project Directory Location
-.so z_filelocn.so
+.so lib/en/man1/z_filelocn.so
 .SH OPTIONS
 The following options are understood:
-.so o_dir.so
-.so o_help.so
-.so o_lib.so
-.so o_list.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_lib.so
+.so lib/en/man1/o_list.so
 .\" These two are obsolete...
 .\" .so o_major.so
 .\" .so o_minor.so
-.so o_nolog.so
-.so o_terse.so
-.so o_verbose.so
+.so lib/en/man1/o_nolog.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
 .TP 8n
-\fB-VERSion\fP \fInumber\fP
+\fB\-VERSion\fP \fInumber\fP
 This option may be used to specify the version number
 for the project.
 Version number are implemented as branches.
 Use the empty string as the argument
 if you want no version branches created.
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aenrls '\*(n) -nrls \e!* -v'
-sh$	aenrls(){\*(n) -nrls "$@" -v}
+csh%    alias aenrls '\*(n) \-nrls \e!* \-v'
+sh$     aenrls(){\*(n) \-nrls "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -173,7 +172,7 @@ state.
 .PP
 It is an error if
 the current user is not an administrator of the old project.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -186,9 +185,10 @@ remove project
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
 .TP 8n
 .I "Aegis User Guide"
 The chapter on
 .I "Branching"
 has useful information about releases and branching.
+.\" vim: set ts=8 sw=4 et :

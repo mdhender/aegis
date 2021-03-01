@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so libdir.so
-.so z_name.so
+.so etc/libdir.so
+.so lib/en/man1/z_name.so
 .TH "aegis.cgi" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aegis.cgi \- Aegis web interface script
@@ -31,18 +30,18 @@ command is used to
 interface between a web server and Aegis.
 .SS Deprecated
 This scripts is DEPRECATED since a long time and has been removed from
-the \*(n) distribution as of aegis-4.24.1.  The preferred way to
+the \*(n) distribution as of aegis\-4.24.1.  The preferred way to
 publish an \*(n) aegis repository on the Web is using \f[I]aeget\f[P](1).
 .SS Installation
 If you have a Web server, you may like to install the Aegis web interface.
 You do this by copying the \fIaegis.cgi\fP script from
-\fI\*(B)/aegis.cgi\fP into your web server's \fIcgi-bin\fP directory.
+\fI\*(B)/aegis.cgi\fP into your web server's \fIcgi\[hy]bin\fP directory.
 There is an \fIaegis.cgi.i\fP helper script,
-if you don't know where your web server's \fIcgi-bin\fP directory is.
+if you don't know where your web server's \fIcgi\[hy]bin\fP directory is.
 .PP
 You may prefer to use a symbolic link, as this will be more stable
 across Aegis upgrades.  However, this requires a corresponding
-\fIfollow-symlinks\fP setting in your web server's configuration file.
+\fIfollow\[hy]symlinks\fP setting in your web server's configuration file.
 (Use the \fIaegis.cgi.i \-s\fP option.)
 .PP
 Within the \f(CWaegis.cgi\fP script, you may set the \fIAEGIS_PATH\fP
@@ -55,7 +54,7 @@ a fragment of Bourne shell script, not just the name.
 Once installed, it should be possible to see the project list
 by following this URL:
 .RS
-http://localhost/cgi-bin/aegis.cgi?
+http://localhost/cgi\-bin/aegis.cgi?
 .RE
 You may need to replace \fIlocalhost\fP with the machine's exact name.
 .SS Cascading Style Sheets
@@ -73,4 +72,5 @@ This particular stylesheet is not designed to be aesthetically pleasing,
 but to exercise all of the elements.
 Using this stylesheet unmodified will give psychedelic results.
 Use it as a template.
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

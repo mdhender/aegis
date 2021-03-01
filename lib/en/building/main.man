@@ -1,20 +1,19 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1992-1995, 1997-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -24,7 +23,7 @@
 .if n .hy 0
 .if n .ad l
 .if n .nr IN 8n
-.so version.so
+.so etc/version.so
 .SH NAME
 aegis \- project change supervisor
 .XX "" "How to Build the Sources"
@@ -62,7 +61,7 @@ shell script included in this distribution.
 The
 .I configure
 shell script attempts to guess correct values for
-various system-dependent variables used during compilation,
+various system\[hy]dependent variables used during compilation,
 and creates the
 .I Makefile
 and
@@ -78,61 +77,62 @@ This works best if the version you are upgrading is 4.11 or later.
 .PP
 To disable looking for an existing installation (maybe because
 you want to change the prefix),
-use the \f[CW]./configure --with-no-aegis-configured\fP option.
+use the \f[CW]./configure \-\-with\[hy]no\[hy]aegis\[hy]configured\fP option.
 .PP
 To change the \f[CW]AEGIS_UID\fP and \f[CW]AEGIS_GID\fP values
 (these control the ownership of Aegis' system files) you need to
 set environment variables of these names \f[B]before\fP running the
-\fI./configure\fP script.  You almost never need to do this, so if you
+\f[I]./configure\fP script.  You almost never need to do this, so if you
 have no idea what this is about, don't try to change them.
 .SS Before You Start
 Before you start configuring,
-it is worth reading the \fIOTHER USEFUL SOFTWARE\fP section,
+it is worth reading the \f[I]OTHER USEFUL SOFTWARE\fP section,
 below.
 .PP
-The \fIconfigure\fP script checks for the internationalization library
+The \f[I]configure\fP script checks for the internationalization library
 and functions.
 If your system does not have them,
-it is worth fetching and installing \fBGNU Gettext\fP before you run the
-\fIconfigure\fP script.
-Make sure that the \fImsgfmt\fP command from GNU Gettext appears earlier
+it is worth fetching and installing \f[B]GNU Gettext\fP before you run the
+\f[I]configure\fP script.
+Make sure that the \f[I]msgfmt\fP command from GNU Gettext appears earlier
 in your command search PATH than the existing system ones,
 if any (this is very important for SunOS and Solaris).
-You must do the GNU gettext install \fIbefore\fP running the
-\fIconfigure\fP script, or the error messages,
+You must do the GNU gettext install \f[I]before\fP running the
+\f[I]configure\fP script, or the error messages,
 even for English speakers, will be terse and uninformative.
-Remember to use the GNU gettext configure \fI--with-gnu-gettext\fP option
+Remember to use the GNU gettext configure
+\f[I]\-\-with\[hy]gnu\[hy]gettext\fP option
 if your system has native gettext tools.
 .PP
-The \fIconfigure\fP script checks for compression libraries
+The \f[I]configure\fP script checks for compression libraries
 and functions.  If your system does not have them, you must
-download and install the \fBGNU zlib\fP compression library (see
-\f[CW]http://www.gzip.org/zlib/\fP for download) and the \fBbzip2\fP
+download and install the \f[B]GNU zlib\fP compression library (see
+\f[CW]http://www.gzip.org/zlib/\fP for download) and the \f[B]bzip2\fP
 compression library (see \f[CW]http://www.bzip.org/\fP for download)
-before you run the \fIconfigure\fP script.
+before you run the \f[I]configure\fP script.
 These libraries are essential, Aegis will not build without them.
-(\fBNote:\fP
+(\f[B]Note:\fP
 \f[CW]zlib\fP is not the same thing as \f[CW]zlib\fP\f[CB]c\fP
 which does something completely different.)
 .PP
-The \fIconfigure\fP script checks for the regular expression library
+The \f[I]configure\fP script checks for the regular expression library
 and functions.  If your system does not have them, it is worth fetching
-and installing \fBGNU rx\fP compression library before you run the
-\fIconfigure\fP script.
+and installing \f[B]GNU rx\fP compression library before you run the
+\f[I]configure\fP script.
 (Note: test 81 will fail if the POSIX regular expression functions are
 not available.)
 .PP
 The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to
 parse XML, you will need version 1.8.17 or later.  You do not have to
 install the rest of GNOME as this library is able to be used by itself.
-This package is \fBnot\fP optional, you need it to successfully build
+This package is \f[B]not\fP optional, you need it to successfully build
 Aegis.
 .PP
 The libcurl library (\f[CW]http://curl.haxx.se/\fP) is used to fetch
 remote files.  This library is optional, but some functionality,
-particularly \fIaedist \-replay, will not work without it.  If you are
-using a package based install, you will need the \fIlibcurl-dev\fP or
-\fIlibcurl-devel\fP package as well.
+particularly \f[I]aedist \-replay, will not work without it.  If you are
+using a package based install, you will need the \f[I]libcurl\[hy]dev\fP or
+\f[I]libcurl\[hy]devel\fP package as well.
 .SS Running Configure
 Normally,
 you just
@@ -143,8 +143,8 @@ source code and type
 .RS
 .ft CW
 .nf
-% \f[CB]./configure --sysconfdir=/etc\fP
-\fI\&...lots of output...\fP
+% \f[CB]./configure \-\-sysconfdir=/etc\fP
+\f[I]\&...lots of output...\fP
 %
 .fi
 .ft R
@@ -156,8 +156,8 @@ you might need to type
 .RS
 .ft CW
 .nf
-% \f[CB]sh configure --sysconfdir=/etc\fP
-\fI\&...lots of output...\fP
+% \f[CB]sh configure \-\-sysconfdir=/etc\fP
+\f[I]\&...lots of output...\fP
 %
 .fi
 .ft R
@@ -182,19 +182,19 @@ for example,
 .RS
 .FT CW
 .nf
-% \f[CB]./configure  --sysconfdir=/etc --quiet\fP
+% \f[CB]./configure \-\-sysconfdir=/etc \-\-quiet\fP
 %
 .fi
 .ft R
 .RE
 .PP
 There is a known problem with GCC 2.8.3 and HP/UX.
-You will need to set \f[CW]CFLAGS = -O\fP in the generated Makefile.
-(The configure script sets it to \f[CW]CFLAGS = -O2\fP.)
+You will need to set \f[CW]CFLAGS = \-O\fP in the generated Makefile.
+(The configure script sets it to \f[CW]CFLAGS = \-O2\fP.)
 This is because the code optimization breaks the fingerprints.
 If test 32 fails (see below) this is probably the reason.
 .PP
-.\" Jerry Pendergraft <jerry@endocardial.com> 26-Feb-2002
+.\" Jerry Pendergraft <jerry@endocardial.com> 26\[hy]Feb\[hy]2002
 There is a known problem with IRIX builds.
 You need to use the following configuration
 .RS
@@ -203,21 +203,21 @@ You need to use the following configuration
 to increase the length of command lines.
 .\" And be thankful it isn't Windows.
 .PP
-.\" Jerry Pendergraft <jerry@endocardial.com> 22-Jan-2005
+.\" Jerry Pendergraft <jerry@endocardial.com> 22\[hy]Jan\[hy]2005
 For mips IRIX and IRIX64 using the MipsPro compiler up to at least
 version 7.3 you must specify the flag to allow
--I for
+\-I for
 loop initializations. You may give either of:
 .RS
 .ft CW
 .nf
-CXXFLAGS='LANG:ansi-for-init-scope=ON'
+CXXFLAGS='LANG:ansi\[hy]for\[hy]init\[hy]scope=ON'
 CXXFLAGS='LANG:std'
 .fi
 .ft R
 .RE
 Also required is
-.I -lCio
+.I \-lCio
 but configure will test for that. Even using that library there remains
 a link failure due to:
 .RS
@@ -247,58 +247,58 @@ and
 There are a number of options which allow you to control the placement
 of these files.
 .TP 8n
-\f[CW]--prefix=\fP\fIPATH\fP
+\f[CW]\-\-prefix=\fP\f[I]PATH\fP
 This specifies the path prefix to be used in the installation.
-Defaults to \fI/usr/local\fP unless otherwise specified.
+Defaults to \f[I]/usr/local\fP unless otherwise specified.
 The rest of these building instructions assume you are using
-the default \fI/usr/local\fP as the install prefix.
+the default \f[I]/usr/local\fP as the install prefix.
 .TP 8n
-\f[CW]--exec-prefix=\fP\fIPATH\fP
+\f[CW]\-\-exec\-prefix=\fP\f[I]PATH\fP
 You can specify separate installation prefixes for
-architecture-specific files and architecture-independent files.
-Defaults to \fI${prefix}\fP unless otherwise specified.
+architecture\[hy]specific files and architecture\[hy]independent files.
+Defaults to \f[I]${prefix}\fP unless otherwise specified.
 .TP 8n
-\f[CW]--bindir=\fP\fIPATH\fP
+\f[CW]\-\-bindir=\fP\f[I]PATH\fP
 This directory contains executable programs.  On a network, this
 directory may be shared between machines with identical hardware and
-operating systems; it may be mounted read-only.  Defaults to
-\fI${exec_prefix}/bin\fP unless otherwise specified.
+operating systems; it may be mounted read\[hy]only.  Defaults to
+\f[I]${exec_prefix}/bin\fP unless otherwise specified.
 .TP 8n
-\f[CW]--datadir=\fP\fIPATH\fP
+\f[CW]\-\-datadir=\fP\f[I]PATH\fP
 This directory contains installed data, such as the documentation,
 reports and shell scripts distributed with Aegis.  On a network, this
 directory may be shared between all machines; it may be mounted
-read-only.  Defaults to \fI${prefix}/share/aegis\fP unless otherwise
+read\[hy]only.  Defaults to \f[I]${prefix}/share/aegis\fP unless otherwise
 specified.  An \[lq]aegis\[rq] directory will be appended if there is none in
 the specified path.
 .TP 8n
-\f[CW]--libdir=\fP\fIPATH\fP
+\f[CW]\-\-libdir=\fP\f[I]PATH\fP
 This directory contains installed data, such as the error message
 catalogues.  On a network, this directory may be shared between machines
 with identical hardware and operating systems; it may be mounted
-read-only.  Defaults to \fI${exec_prefix}/lib/aegis\fP unless otherwise
+read\[hy]only.  Defaults to \f[I]${exec_prefix}/lib/aegis\fP unless otherwise
 specified.  An \[lq]aegis\[rq] directory will be appended if there is none in
 the specified path.
 .TP 8n
-\f[CW]--mandir=\fP\fIPATH\fP
-This directory contains the on-line manual entries.
+\f[CW]\-\-mandir=\fP\f[I]PATH\fP
+This directory contains the on\[hy]line manual entries.
 On a network, this directory may be shared between all machines;
-it may be mounted read-only.
-Defaults to \fI${prefix}/man\fP unless otherwise specified.
+it may be mounted read\[hy]only.
+Defaults to \f[I]${prefix}/man\fP unless otherwise specified.
 .TP 8n
-\f[CW]--sharedstatedir=\fP\fIPATH\fP
+\f[CW]\-\-sharedstatedir=\fP\f[I]PATH\fP
 This directory contains share state information, such as the Aegis lock
 file, and information on the location of the various Aegis projects.  On
 a network, this directory may be shared between all machines;
-.if t it \fBmust\fP be mounted \fBread-write\fP.
-.if n it MUST be mounted READ-WRITE.
-Defaults to \fI${prefix}/com/aegis\fP unless otherwise specified.
+.if t it \f[B]must\fP be mounted \f[B]read\[hy]write\fP.
+.if n it MUST be mounted READ\[hy]WRITE.
+Defaults to \f[I]${prefix}/com/aegis\fP unless otherwise specified.
 An \[lq]aegis\[rq] directory will be appended if there is none in the
 specified path.
 .TP 8n
-\f[CW]--sysconfdir=\fP\fIPATH\fP
+\f[CW]\-\-sysconfdir=\fP\f[I]PATH\fP
 Location of system configuration files.
-You should almost always use the \fI/etc\fP directory.
+You should almost always use the \f[I]/etc\fP directory.
 .PP
 .I configure
 ignores any other arguments that you give it.
@@ -312,14 +312,14 @@ script does not know about,
 you can give
 .I configure
 initial values for variables by setting them in the environment.
-In Bourne-compatible shells,
+In Bourne\[hy]compatible shells,
 you can do that on the command line like this:
 .RS
 .ft CW
 .nf
-$ \f[CB]CC='gcc -traditional' LIBS=-lposix\fP \e
-  \f[CB]./configure --sysconfdir=/etc\fP
-\fI\&...lots of output...\fP
+$ \f[CB]CC='gcc \-traditional' LIBS=\-lposix\fP \e
+  \f[CB]./configure \-\-sysconfdir=/etc\fP
+\f[I]\&...lots of output...\fP
 $
 .fi
 .ft R
@@ -345,7 +345,7 @@ otherwise.
 .TP 8n
 Variable: LIBS
 Libraries to link with,
-in the form \f[CW]-l\fP\fIfoo\fP \f[CW]-l\fP\fIbar\fP.
+in the form \f[CW]\-l\fP\f[I]foo\fP \f[CW]\-l\fP\f[I]bar\fP.
 The
 .I configure
 script will append to this,
@@ -358,28 +358,28 @@ could check whether to do them,
 and mail diffs or instructions to the author
 so that they can be included in the next release.
 .SS Common Problem
-It is very common that other packages, such as \fIgettext\fP, \fIrx\fP
-and \fIzlib\fP are installed using \fI/usr/local\fP as the prefix.
+It is very common that other packages, such as \f[I]gettext\fP, \f[I]rx\fP
+and \f[I]zlib\fP are installed using \f[I]/usr/local\fP as the prefix.
 However, the configure script can't work this out, even when it, too,
-is using \fI/usr/local\fP as the prefix.
+is using \f[I]/usr/local\fP as the prefix.
 .PP
 To cope with this, you need to say
 .RS
 .ft CW
 .nf
-$ \f[CB]CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib\fP \e
-  \f[CB]./configure --sysconfdir=/etc\fP
-\fI\&...lots of output...\fP
+$ \f[CB]CPPFLAGS=\-I/usr/local/include LDFLAGS=\-L/usr/local/lib\fP \e
+  \f[CB]./configure \-\-sysconfdir=/etc\fP
+\f[I]\&...lots of output...\fP
 $
 .fi
 .ft R
 .RE
 when running configure.  Substitute the appropriate prefix if you are
-using something other than the default \fI/usr/local\fP prefix.
+using something other than the default \f[I]/usr/local\fP prefix.
 Watch the output... it should now find your installed packages correctly.
 .SS GCC Version 3.*
 On some operating systems, notabley MacOsX Jaguar and Panther, g++
-versions 3.* will produce link-time errors complaining of missing
+versions 3.* will produce link\[hy]time errors complaining of missing
 typeinfo symbols.  The only known fix for this problem is to use GCC
 version 2.95, 2.96 or 4.*.  This means MacOsX Tiger does not have the
 problem.
@@ -433,7 +433,7 @@ used to own projects (i.e. it must be less than AEGIS_MIN_UID).
 If possible, the
 .I configure
 script tries to work out what value was used previously,
-but you must specify the --prefix option correctly for this to work.
+but you must specify the \-\-prefix option correctly for this to work.
 Because of operating system inconsistencies,
 this is specified numerically so that
 .I aegis
@@ -451,7 +451,7 @@ used as the group for projects (i.e. it must be less than AEGIS_MIN_GID).
 If possible, the
 .I configure
 script tries to work out what value was used previously,
-but you must specify the --prefix option correctly for this to work.
+but you must specify the \-\-prefix option correctly for this to work.
 Because of operating system inconsistencies,
 this is specified numerically so that
 .I aegis
@@ -480,13 +480,13 @@ file for an explanation of the alternatives.
 .PP
 It is required that
 .I aegis
-run set-uid-root for all of its functionality to be available.
+run set\[hy]uid\[hy]root for all of its functionality to be available.
 It is
 .if n NOT
 .if t .B not
 possible to create an "aegis" account and make
 .I aegis
-run set-uid-aegis.
+run set\[hy]uid\[hy]aegis.
 This is because
 .I aegis
 does things as various different user IDs,
@@ -500,12 +500,12 @@ and also allows
 to work across NFS.
 To be able to do these things,
 .I aegis
-must be set-uid-root.
+must be set\[hy]uid\[hy]root.
 Appendix D of the
 .I "Aegis User Guide"
 explains why
 .I aegis
-must run set-uid-root;
+must run set\[hy]uid\[hy]root;
 please read it if you have concerns.
 .br
 .ne 1i
@@ -518,7 +518,7 @@ All you should need to do is use the
 .ft CW
 .nf
 % \f[CB]make\fP
-\fI\&...lots of output...\fP
+\f[I]\&...lots of output...\fP
 %
 .fi
 .ft R
@@ -570,7 +570,7 @@ source directory by using the
 .ft CW
 .nf
 % \f[CB]make clean\fP
-\fI\&...lots of output...\fP
+\f[I]\&...lots of output...\fP
 %
 .fi
 .ft R
@@ -587,7 +587,7 @@ files, use the
 .ft CW
 .nf
 % \f[CB]make distclean\fP
-\fI\&...lots of output...\fP
+\f[I]\&...lots of output...\fP
 %
 .fi
 .ft R
@@ -622,12 +622,12 @@ and because it is generally useful in others.
 GNOME libxml2
 The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to parse XML.
 Version 1.8.17 or later.  You do not have to install the rest of GNOME
-as this library is able to be used by itself.  This package is \fBnot\fP
+as this library is able to be used by itself.  This package is \f[B]not\fP
 optional, you need it to successfully build Aegis.
 .TP 8n
 .B cook
 This is a dependency maintenance tool (DMT).
-An example of a well-known DMT is
+An example of a well\[hy]known DMT is
 .IR make (1),
 however this old faithful is
 mostly
@@ -658,50 +658,57 @@ GNU diff
 If the
 .IR diff (1)
 utility supplied by your flavor of Unix does not have the
-.B -c
+.B \-c
 option,
-you will need GNU diff for \fIaepatch\fP(1) to work (and the
-\fIaepatch\fP(1) tests to pass).
+you will need GNU diff for \f[I]aepatch\fP(1) to work (and the
+\f[I]aepatch\fP(1) tests to pass).
 Context differences are also helpful for reviewing changes.
 GNU diff is essential for Solaris, because the Solaris diff has bugs
 that Aegis' tests uncover.
 .TP 8n
 GNU patch
-For best results with the \fIaepatch\fP(1) and \fIaedist\gP(1) when
+For best results with the \f[I]aepatch\fP(1) and \f[I]aedist\gP(1) when
 receiving change sets, you need the GNU patch utility.
+.TP 8n
+iso\[hy]codes
+This package provides the ISO 639 and ISO 639\[hy]3 language code lists,
+the ISO 3166 territory code list, list as XML files.
+.br
+Homepage: http://pkg\[hy]isocodes.alioth.debian.org/
 .TP 8n
 RCS
 This is a source control package,
 and is available from any of the GNU archives.
-(It is best to compile and install RCS \fIafter\fP GNU diff.  This is
-because the RCS configuration hard-codes the pathnames of the GNU diff
+(It is best to compile and install RCS \f[I]after\fP GNU diff.  This is
+because the RCS configuration hard\[hy]codes the pathnames of the GNU diff
 utilities it needs into the RCS executables.)
-This package isn't essential as Aegis comes with its own \fIaesvt\fP(1)
-history tool - although you are free to use any history tool you like.
+This package isn't essential as Aegis comes with its own \f[I]aesvt\fP(1)
+history tool \- although you are free to use any history tool you like.
 .TP 8n
 GNU Gettext
 .RS
-Many systems do not yet supply the \fIgettext\fP(3) function.
+Many systems do not yet supply the \f[I]gettext\fP(3) function.
 Aegis uses this function to internationalize its error messages.
 If your system does not have this function,
-you should fetch and install GNU Gettext \fIbefore\fP running
-the \fIconfigure\fP script.
+you should fetch and install GNU Gettext \f[I]before\fP running
+the \f[I]configure\fP script.
 If you do not, Aegis will still work, but the error messages will
 be rather terse, even for English speakers.
 (You will be able to tell if your system has the internationalization
-library and functions, because the \fIconfigure\fP script will report
-finding \f[CW]-lintl\fP and \fI(CWlibintl.h\fP and \f[CW]msgfmt\fP in
+library and functions, because the \f[I]configure\fP script will report
+finding \f[CW]\-lintl\fP and \f[I](CWlibintl.h\fP and \f[CW]msgfmt\fP in
 its running commentary.)
 Please note that the GNU Gettext implementation is likely to be superior
 to the one supplied with your system, if any.
-Remember to use the GNU gettext configure \fI--with-gnu-gettext\fP option
+Remember to use the GNU gettext configure
+\f[I]\-\-with\[hy]gnu\[hy]gettext\fP option
 if your system has native gettext tools.
 .PP
-Please note: if you install GNU gettext package into \fI/usr/local\fP
-(for example) you must ensure that the Aegis \fI./configure\fP script is
-told to also look in \fI/usr/local/include\fP for include files (CFLAGS),
-and \fI/usr/local/lib\fP for library files (LDFLAGS).  Otherwise the
-\fI./configure\fP script will incorrectly conclude that GNU Gettext has
+Please note: if you install GNU gettext package into \f[I]/usr/local\fP
+(for example) you must ensure that the Aegis \f[I]./configure\fP script is
+told to also look in \f[I]/usr/local/include\fP for include files (CFLAGS),
+and \f[I]/usr/local/lib\fP for library files (LDFLAGS).  Otherwise the
+\f[I]./configure\fP script will incorrectly conclude that GNU Gettext has
 not been installed.
 .PP
 GNU Gettext version 0.11.1 or later is recommended.
@@ -757,25 +764,25 @@ Linux specific.
 .TP 8n
 tkdiff
 This program shows the difference between two text files, nicely
-highlighted in color.  This is used by the \fItkaer\fP and \fIaecomp\fP
+highlighted in color.  This is used by the \f[I]tkaer\fP and \f[I]aecomp\fP
 scripts (and probably others as they are contributed).
 By John M. Klassa, http://www.ede.com/free/tkdiff
 .TP 8n
 libmagic
-If \fIlibmagic\fP(3) is present, the \fIaeget\fP(1) CGI handler will use
-it to determine the MIME type of files.  This is installed by \fBfile\fP
+If \f[I]libmagic\fP(3) is present, the \f[I]aeget\fP(1) CGI handler will use
+it to determine the MIME type of files.  This is installed by \f[B]file\fP
 version 4.0 and later (\f[CW]ftp://ftp.astron.com/pub/file/\fP), and uses
-the same database as the \fIfile\fP(1) command.  If this library is not
+the same database as the \f[I]file\fP(1) command.  If this library is not
 present when Aegis is built, a much less accurate method will be used.
 .PP
 The tests also depend on the presence of a number of common UNIX programs,
 including but not limited to:
-\fIcc\fP,
-\fIcmp\fP,
-\fIdiff\fP,
-\fIed\fP,
-\fIfind\fP,
-\fImake\fP,
+\f[I]cc\fP,
+\f[I]cmp\fP,
+\f[I]diff\fP,
+\f[I]ed\fP,
+\f[I]find\fP,
+\f[I]make\fP,
 etc.
 Depending on your version of UNIX,
 some or all of these programs may be in optional packages.
@@ -793,7 +800,7 @@ To run this test suite, use the command
 .ft CW
 .nf
 % \f[CB]make sure\fP
-\fI\&...lots of output...\fP
+\f[I]\&...lots of output...\fP
 Passed All Tests
 %
 .fi
@@ -821,8 +828,8 @@ If the
 command is not available,
 this test gives a pass result without testing anything.
 .PP
-If you are using HPUX and GCC, test 32 fails if you use -O2.
-You need to edit the Makefile to only optimize at -O,
+If you are using HPUX and GCC, test 32 fails if you use \-O2.
+You need to edit the Makefile to only optimize at \-O,
 delete the objects and rebuild.
 .PP
 If you are using Solaris' diff, test 133 will report \[lq]no result\[rq].
@@ -877,31 +884,31 @@ the tests must be run as a mortal each time.
 .PP
 If the POSIX regular expression functions are not available, test
 81 will fail.  The GNU rx library provides these.  Installing it and
-re-configuring and re-building Aegis will solve the problem.
+re\[hy]configuring and re\[hy]building Aegis will solve the problem.
 .br
 .ne 1i
-.SH TESTING SET-UID-ROOT
+.SH TESTING SET\[hy]UID\[hy]ROOT
 If the
 .I Aegis
-program is not set-uid-root then it runs in "test" mode
+program is not set\[hy]uid\[hy]root then it runs in "test" mode
 which gives you some confidence that
 .I Aegis
 is working before
-being tested again when it is set-uid-root.
+being tested again when it is set\[hy]uid\[hy]root.
 Two pass testing like this means that you need not trust your system
-to a set-uid-root program which is not known to work.
+to a set\[hy]uid\[hy]root program which is not known to work.
 .PP
 You will need to do a little of the install,
 to create the directory which will contain
 .IR Aegis "'"
 lock file.
 (Note that these building instructions assume you are using the default
-\fI/usr/local\fP as the install prefix.  You will need to substitute as
+\f[I]/usr/local\fP as the install prefix.  You will need to substitute as
 appropriate if you are using some other prefix.)
 .RS
 .ft CW
 .nf
-# \f[CB]make install-libdir\fP
+# \f[CB]make install\-libdir\fP
 mkdir /usr/local/lib/aegis
 chown 3 /usr/local/lib/aegis
 chgrp 3 /usr/local/lib/aegis
@@ -919,7 +926,7 @@ chmod 4755 bin/aegis
 As you can see,
 the previous command also changed
 .I Aegis
-to be set-uid-root.
+to be set\[hy]uid\[hy]root.
 Once this has been done,
 .I Aegis
 should be tested again,
@@ -928,7 +935,7 @@ in the same manner as before.
 .nf
 .ft CW
 % \f[CB]make sure\fP
-\fI\&...lots of output...\fP
+\f[I]\&...lots of output...\fP
 Passed All Tests
 %
 .fi
@@ -939,17 +946,17 @@ You should test
 .I Aegis
 as a mortal in both passes,
 rather than as root,
-to be sure the set-uid-root functionality is working correctly.
+to be sure the set\[hy]uid\[hy]root functionality is working correctly.
 .PP
 It is required that
 .I Aegis
-run set-uid-root for all of its functionality to be available.
+run set\[hy]uid\[hy]root for all of its functionality to be available.
 It is
 .if n NOT
 .if t .B not
 possible to create an "aegis" account and make
 .I Aegis
-run set-uid-aegis.
+run set\[hy]uid\[hy]aegis.
 This is because
 .I Aegis
 does things as various different user IDs,
@@ -963,12 +970,12 @@ and also allows
 to work across NFS.
 To be able to do these things,
 .I Aegis
-must be set-uid-root.
+must be set\[hy]uid\[hy]root.
 Appendix D of the
 .I "Aegis User Guide"
 explains why
 .I Aegis
-must run set-uid-root;
+must run set\[hy]uid\[hy]root;
 please read it if you have concerns.
 .br
 .ne 1i
@@ -981,7 +988,7 @@ the
 package is installed under the
 .I /usr/local
 tree by default.
-Use the \f[CW]--prefix=\fP\fIPATH\fP option to
+Use the \f[CW]\-\-prefix=\fP\f[I]PATH\fP option to
 .I configure
 if you want some other path.
 .PP
@@ -992,7 +999,7 @@ package is to use the
 .ft CW
 .nf
 % \f[CB]make install\fP
-\fI\&...lots of output...\fP
+\f[I]\&...lots of output...\fP
 %
 .fi
 .ft R
@@ -1053,7 +1060,7 @@ to the end of their
 .I .cshrc
 file for the recommended aliases.
 (Note that these building instructions assume you are using the default
-\fI/usr/local\fP as the install prefix.  You will need to substitute as
+\f[I]/usr/local\fP as the install prefix.  You will need to substitute as
 appropriate if you are using some other prefix.)
 .PP
 There is also a
@@ -1099,29 +1106,30 @@ They are not kept under the
 directory,
 this directory only contains pointers.
 (Note that these building instructions assume you are using the default
-\fI/usr/local\fP as the install prefix.  You will need to substitute as
+\f[I]/usr/local\fP as the install prefix.  You will need to substitute as
 appropriate if you are using some other prefix.)
 .SS Web Interface
 If you have a Web server, you may like to install the Aegis web interface.
-You do this by copying the \fIaeget\fP script from
-\fI/usr/local/bin/aeget\fP into your web server's \fIcgi-bin\fP directory.
-There is a \fIaeget.instal\fP helper script,
-if you don't know where your web server's \fIcgi-bin\fP directory is.
+You do this by copying the \f[I]aeget\fP script from
+\f[I]/usr/local/bin/aeget\fP into your web server's \f[I]cgi\[hy]bin\fP
+directory.
+There is a \f[I]aeget.instal\fP helper script,
+if you don't know where your web server's \f[I]cgi\[hy]bin\fP directory is.
 .PP
 You may prefer to use a symbolic link, as this will be more stable
 across Aegis upgrades.  However, this requires a corresponding
-\fIfollow-symlinks\fP setting in your web server's configuration file.
-(Use the \fIaeget.instal \-s\fP option.)
+\f[I]follow\[hy]symlinks\fP setting in your web server's configuration file.
+(Use the \f[I]aeget.instal \-s\fP option.)
 .PP
-You may need to wrap \fIaeget\fP with a script which sets
-the \fIAEGIS_PATH\fP
+You may need to wrap \f[I]aeget\fP with a script which sets
+the \f[I]AEGIS_PATH\fP
 environment variable, if you want it to be able to see more
 projects than just the global projects.
-You may also need to set the \fIPATH\fP environment variable,
+You may also need to set the \f[I]PATH\fP environment variable,
 if you don't have the Aegis install path in the default path.
 .PP
 (Note that these building instructions assume you are using the default
-\fI/usr/local\fP as the install prefix.  You will need to substitute as
+\f[I]/usr/local\fP as the install prefix.  You will need to substitute as
 appropriate if you are using some other prefix.)
 .br
 .ne 1i
@@ -1150,7 +1158,7 @@ have happened and when.
 If you are using
 .I Aegis
 in a networked environment,
-typically a server and data-less workstations,
+typically a server and data\[hy]less workstations,
 you need to make absolutely sure that all of the machines agree about the time.
 .PP
 If possible,
@@ -1166,7 +1174,7 @@ If you need assistance with
 .IR Aegis ,
 please do not hesitate to contact the author at
 .RS
-Peter Miller <millerp@canb.auug.org.au>
+Peter Miller <pmiller@opensource.org.au>
 .RE
 Any and all feedback is welcome.
 .PP
@@ -1176,9 +1184,9 @@ given by the
 .RS
 .ft CW
 .nf
-% \f[CB]aegis -version\fP
-aegis version \fI\*(V)\fP
-\fI\&...\fP
+% \f[CB]aegis \-version\fP
+aegis version \f[I]\*(V)\fP
+\f[I]\&...\fP
 %
 .fi
 .ft R
@@ -1195,13 +1203,13 @@ in comments.
 If the comments are removed,
 extensive debugging is turned on.
 This causes some performance loss,
-but performs much run-time checking
+but performs much run\[hy]time checking
 and adds the
-.B -TRAce
+.B \-TRAce
 command line option.
 .PP
 When the
-.B -TRAce
+.B \-TRAce
 command line option is followed by one or more file names,
 it turns on execution traces in those source files.
 It is usually best to place this on the end of the command line
@@ -1215,7 +1223,7 @@ please include the following information:
 .br
 The author will need to know the brand and version of UNIX you are using,
 or if it is not UNIX but something else.
-The output of "uname -sr" is usually sufficient (but not all systems have it).
+The output of "uname \-sr" is usually sufficient (but not all systems have it).
 .TP
 2. The Version Number
 .br
@@ -1224,7 +1232,7 @@ please include the version number
 reported in the
 .I common/patchlevel.h
 file,
-or \f[CW]`aegis -vers`\fP if you can get it to compile.
+or \f[CW]`aegis \-vers`\fP if you can get it to compile.
 .TP
 3. The Archive Site
 .br
@@ -1249,7 +1257,7 @@ it could have been the configure script,
 it could have been the Makefile,
 or anything else.
 .TP
-6. Testing, Non-Set-Uid
+6. Testing, Non\[hy]Set\[hy]Uid
 .br
 Did you have problems with the tests?
 You could have had problems running them,
@@ -1260,14 +1268,14 @@ please let me know
 ones failed,
 and include the fact that
 .I Aegis
-was \fBnot\fP set-uid-root at the time.
-The -k option to \fImake\fP can be useful if some tests fail but not others.
+was \f[B]not\fP set\[hy]uid\[hy]root at the time.
+The \-k option to \f[I]make\fP can be useful if some tests fail but not others.
 .TP
-7. Testing, Set-Uid-Root
+7. Testing, Set\[hy]Uid\[hy]Root
 .br
 Did you have problems with the tests when
 .I Aegis
-was set-uid-root?
+was set\[hy]uid\[hy]root?
 You could have had problems running them,
 or some of them could have failed.
 If some tests fail but not others,
@@ -1276,7 +1284,7 @@ please let me know
 ones failed,
 and include the fact that
 .I Aegis
-was set-uid-root at the time.
+was set\[hy]uid\[hy]root at the time.
 .TP
 8. Installation
 .br
@@ -1358,8 +1366,9 @@ file included in this distribution.
 .TS
 tab(;);
 l r l.
-Peter MillerE-Mail:;millerp@canb.auug.org.au
-\f[CW]/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
+Peter Miller;E\[hy]Mail:;pmiller@opensource.org.au
+\f[CW]/\e/\e*\fR;WWW:;http://miller.emu.id.au/pmiller/
 .TE
 .bp
-.so ../building/windows-nt.so
+.so lib/en/building/windows-nt.so
+.\" vim: set ts=8 sw=4 et :

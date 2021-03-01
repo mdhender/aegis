@@ -1,28 +1,27 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 
-#include <common/error.h> // for assert
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/emit/brief_descri.h>
 #include <libaegis/emit/project.h>
 #include <libaegis/http.h>
@@ -32,7 +31,7 @@
 
 
 void
-get_project_history(project_ty *pp, string_ty *, string_list_ty *)
+get_project_history(project *pp, string_ty *, string_list_ty *)
 {
     //
     // Emit the title portion.
@@ -66,42 +65,46 @@ get_project_history(project_ty *pp, string_ty *, string_list_ty *)
     assert(proj_cstate_data->branch);
     if (!proj_cstate_data->branch->history)
     {
-	proj_cstate_data->branch->history =
-	    (cstate_branch_history_list_ty *)
+        proj_cstate_data->branch->history =
+            (cstate_branch_history_list_ty *)
             cstate_branch_history_list_type.alloc();
     }
     long rownum = 0;
     for (size_t j = 0; j < proj_cstate_data->branch->history->length; ++j)
     {
-	cstate_branch_history_ty *hp =
-	    proj_cstate_data->branch->history->list[j];
-	change::pointer cp = change_alloc(pp, hp->change_number);
-	change_bind_existing(cp);
-	assert(cp->is_completed());
+        cstate_branch_history_ty *hp =
+            proj_cstate_data->branch->history->list[j];
+        change::pointer cp = change_alloc(pp, hp->change_number);
+        change_bind_existing(cp);
+        assert(cp->is_completed());
 
-	const char *html_class = (((rownum++ / 3) & 1) ?  "even" : "odd");
-	printf("<tr class=\"%s-group\">", html_class);
-	printf("<td valign=top align=right>");
-	emit_change_href(cp, "menu");
-	printf("%ld</a></td>\n", hp->delta_number);
+        const char *html_class = (((rownum++ / 3) & 1) ?  "even" : "odd");
+        printf("<tr class=\"%s-group\">", html_class);
+        printf("<td valign=top align=right>");
+        emit_change_href(cp, "menu");
+        printf("%ld</a></td>\n", hp->delta_number);
 
-	time_t when = change_completion_timestamp(cp);
-	struct tm *tmp = localtime(&when);
-	char buffer[100];
-	strftime(buffer, sizeof(buffer), "%a %b %e\n%H:%M:%S %Y", tmp);
-	printf("<td valign=top>%s</td>\n", buffer);
+        time_t when = cp->completion_timestamp();
+        struct tm *tmp = localtime(&when);
+        char buffer[100];
+        strftime(buffer, sizeof(buffer), "%a %b %e\n%H:%M:%S %Y", tmp);
+        printf("<td valign=top>%s</td>\n", buffer);
 
-	printf("<td valign=top align=right>");
-	emit_change_href(cp, "menu");
-	printf("%ld</a></td>\n", hp->change_number);
+        printf("<td valign=top align=right>");
+        emit_change_href(cp, "menu");
+        printf("%ld</a></td>\n", hp->change_number);
 
-	printf("</td><td valign=top>");
-	emit_change_brief_description(cp);
-	printf("</td>\n");
+        printf("</td><td valign=top>");
+        emit_change_brief_description(cp);
+        printf("</td>\n");
 
-	printf("<td valign=top>");
-	emit_change_href(cp, "download");
-	printf("Download</a></td></tr>\n");
+        printf("<td valign=top>");
+        if (cp->download_files_accessable())
+        {
+            emit_change_href(cp, "download");
+            printf("Download</a>\n");
+        }
+        printf("</td></tr>\n");
     }
 
     //
@@ -136,3 +139,6 @@ get_project_history(project_ty *pp, string_ty *, string_list_ty *)
 
     html_footer(pp, 0);
 }
+
+
+// vim: set ts=8 sw=4 et :

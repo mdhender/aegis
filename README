@@ -3,8 +3,8 @@ Read Me(Aegis)							Read Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008, 2009, 2010 Peter
-	Miller
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008, 2009, 2010,
+	2011, 2012 Peter Miller
 
 	Aegis is distributed under the terms of	the GNU	General	Public
 	License.  See the LICENSE section, below, for more details.
@@ -96,30 +96,30 @@ BENEFITS
 ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 
-		URL:	http://www.canb.auug.org.au/~millerp/
-		File:	aegis.html	      #	the Aegis page
-		File:	aegis.4.24.3.README   #	Description, from tar file
-		File:	aegis.4.24.3.lsm      #	Description, in	LSM format
-		File:	aegis.4.24.3.ae	      #	the complete source, aedist format
-		File:	aegis.4.24.3.spec     #	RedHat package specification
-		File:	aegis.4.24.3.tar.gz   #	the complete source
+		URL:	http://miller.emu.id.au/pmiller/
+		File:	aegis.html	    # the Aegis	page
+		File:	aegis.4.25.README   # Description, from	tar file
+		File:	aegis.4.25.lsm	    # Description, in LSM format
+		File:	aegis.4.25.ae	    # the complete source, aedist format
+		File:	aegis.4.25.spec	    # RedHat package specification
+		File:	aegis.4.25.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
 	look if	you are	interested.
 
    Mirrors
-	See http://www.canb.auug.org.au/~millerp/ for a	list of	mirror sites.
+	See http://miller.emu.id.au/pmiller/ for a list	of mirror sites.
 
 	Aegis is also carried by metalab.unc.edu in its	Linux archives.	 You
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.24.3.README   #	Description, from tar file
-		File:	aegis.4.24.3.lsm      #	Description, in	LSM format
-		File:	aegis.4.24.3.spec     #	RedHat package specification
-		File:	aegis.4.24.3.ae	      #	the complete source, aedist format
-		File:	aegis.4.24.3.tar.gz   #	the complete source
+		File:	aegis.4.25.README   # Description, from	tar file
+		File:	aegis.4.25.lsm	    # Description, in LSM format
+		File:	aegis.4.25.spec	    # RedHat package specification
+		File:	aegis.4.25.ae	    # the complete source, aedist format
+		File:	aegis.4.25.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -224,7 +224,10 @@ LICENSE
 	Aegis is free software;	you can	redistribute it	and/or modify it under
 	the terms of the GNU General Public License as published by the	Free
 	Software Foundation; either version 3 of the License, or (at your
-	option)	any later version.
+	option)	any later version.  In addition, as a special exception, the
+	copyright holders give permission to link the code of this program
+	with the OpenSSL library, and distribute linked	combinations including
+	the two.
 
 	Aegis is distributed in	the hope that it will be useful, but WITHOUT
 	ANY WARRANTY; without even the implied warranty	of MERCHANTABILITY or
@@ -234,11 +237,13 @@ LICENSE
 	You should have	received a copy	of the GNU General Public License
 	along with this	program. If not, see <http://www.gnu.org/licenses/>.
 
-	It should be in	the LICENSE file included in this distribution.
+	It should be in	the LICENSE file included in this distribution.	 The
+	full test of the OpenSSL exception should be in	the LICENSE.openssl
+	file included in this distribution.
 
 AUTHOR
-	Peter MillerE-Mail:   millerp@canb.auug.org.au
-	/\/\*					  WWW:	 http://www.canb.auug.org.au/~millerp/
+	Peter Miller   E-Mail:	 pmiller@opensource.org.au
+	/\/\*		  WWW:	 http://miller.emu.id.au/pmiller/
 
 RELEASE	NOTES
 	For excruciating detail, and also acknowledgments of those who
@@ -251,121 +256,10 @@ RELEASE	NOTES
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
 
-   Version 4.24.3 (08-Mar-2010)
-	* This release fixes definitly CVE-2008-4938 since the fix included in
-	4.24.1 was incomplete.
+   Version 4.26	(N-MMM-NNNN)
+	* Added	OpenSSL	license	exception (LICENSE.openssl).
 
-	* The aecp(1) command has been corrected to not	issue a	multiple user
-	permission set bug when	invoked	as: aecp -ind -o.
-
-	* The aeib(1) command has been modified	to no copy into	the baseline
-	derived	files tracked by Aegis.
-
-	* A bug	has been fixed that made it possible to	delete the difference
-	files for removed files, making	it impossible to develop_end the
-	change.
-
-	* It is	now possible to	build Aegis on Debian under pbuilder.
-
-	* Various portability related improvement.
-
-   Version 4.24.2 (25-Jun-2009)
-	* The branch fstate can	contain	fake transparent entries when a	change
-	not yet	integrated modifies for	the first time in the branch a file.
-
-	It is possible that such entries cause troubles	if the project is
-	configured to write the	pfstate	file.  To avoid	such troubles the fake
-	transparent entries are	stripped on the	fly when reading the pfstate
-	file.
-
-	The way	the the	pfstate	file is	written	is not modified.
-
-	* The Italian translation of error messages is now available.
-
-	* The Vietnamese and Dutch error messages has been updated.
-
-	* The aerevml(1) command was incorrectly printing twice	user defined
-	attributes. This behavior has been fixed.
-
-	* The aeclean(1) command was incorrectly checking the patterns against
-	the absolute name of the files.	 This behavior has been	fixed.
-
-	* The aelock(1)	man page was incorrectly reporting the attribute name
-	aelock use.  This has been fixed.
-
-	* The aesub(5) man page	now reference aeuconf(5) in the	email address
-	section.
-
-	* The aedist(1)	command	is now more robust when	handling renamed
-	files.
-
-	* The t0228a-matt.sh test script has been made more robust with
-	respect	to different behavior of libmagic.
-
-	* The t0127a.sh	test script (aeimport vs. sccs)	has been fixed.
-
-	* A number of memory related bugs has been fixed.
-
-	* Some typo has	been corrected in the ae-repo-ci(1) man	page.
-
-	* The build process has	been improved to give more informative
-	messages when a	new aegis developer populate his repository for	the
-	first time.
-
-   Version 4.24.1 (24-Sep-2008)
-	Security: [ #2079025 ] This update fix two security problems
-	discovered by the Debian crew (Debian #496400 and #496402,
-	CVE-2008-4938) You are encouraged to upgrade.
-
-	Removed	functionalities: In response to	one of the two above security
-	problem, the aegis.cgi program has been	removed.
-
-	* Test 222 has been improved to	cope with some different ways SVN
-	stores revision	information, remaining backwards compatible.
-
-	* A bug	in the distributed development machinery has been fixed: it no
-	longer add the file UUID to created files without an UUID in the
-	remote repository.  This prevents the existence	of the same file with
-	different UUIDs	in different repositories.
-
-	* [ #1942614 ] Some build problem discovered by	the Debian crew	has
-	been fixed.  Specifically: improve 'make clean'	(Debian	bug 442482),
-	add a minor man-page (Debian patch), make test in ae_diff2htm portable
-	(Debian	bug 464484), fix whoami	test in	etc/test.sh (Debian bug
-	393624), add shell magic to ae-cvs-ci (Debian patch).
-
-	* The aediff command now behave	as expected when invoked for a file
-	that, due to a bug in aeipass, is present with two different UUIDs in
-	the repository.	 Previously it used to generate	a diff between the
-	empty file and the second revision of the file.
-
-	* A bug	has been fixed in aefind, it no	longer segfaults when given
-	the -baseline option.
-
-	* A bug	has been fixed in aefinish: it no longer segfault if a branch
-	was to be finished and it contained a transparent file.
-
-	* A bug	has been fixed in the aecp -ind	-output	- option, it no	longer
-	tries to set the permission mode of stdout.
-
-	* A bug	has been fixed in aeib,	it no longer complains that
-	transparent files have been tampered with.
-
-	* A couple of memory leaks introduced with the time safe work has been
-	plugged.
-
-	* The makefile has been	changed	to use DESTDIR (advocated by GNU).
-
-	* A test script	has been improved to work with older bzip2.
-
-	* Small	improvement to test_funcs, reintroduce the chown invocation
-	for the	directory under	$work/.
-
-	* This change set modify the aefinish command to jump the project home
-	path instead of	the user home directory	(since it may be inaccessible)
-
-	* This aegis.spec file (used for RPM builds) has been improved.
-
+   Version 4.25	(8-Mar-2008)
    Version 4.24	(09-Mar-2008)
 	* Numerous portability improvements.
 
@@ -492,37 +386,34 @@ RELEASE	NOTES
 	* The symlink farm now handle derived files registered within Aegis
 	more like normal derived files.
 
-	* The change_pconf_get function	no longer looks	for historical
-	versions of files, if it can help it.  This makes many things go
-	faster and solved the problem of configuration fields redefinition.
-	While this change does not make	Aegis more time	safe, it cures one of
-	the symptoms.
+	* [ 1697199 ] The change_pconf_get function no longer looks for
+	historical versions of files, if it can	help it.  This makes many
+	things go faster and solved the	problem	of configuration fields
+	redefinition.  While this change does not make Aegis more time safe,
+	it cures one of	the symptoms.
 
 	* Fixed	test 222 to work with recent releases of subversion.
 
-	* The aepconf(5) has been improved.
+	* The aepconf(5) man page has been improved.
 
 	* [ Debian 435422 ] The	reference manual was wrongly referring to
 	-Page-Headings instead of -Page-Header.	 The documentation has been
 	updated	to match the source code.
 
-	* The test/02/t0257a-walt.sh script has	been back-ported from the
-	development branch (4.23) to prevent bug #...... to appear in the
-	stable branch.
-
 	* [ 1704108 ] The aecp(1) -delta command now follows the whiteout
 	preference when	copying	a "removed"file.
 
-	* [ 1685304 ] A	bug has	been fixed that	caused aecp(1) -delta X	to
+	* [ 1704100 ] A	bug has	been fixed that	caused aecp(1) -delta X	to
 	copy in	a change also a	file with the old name of a file aemv(1)ed
 	before delta X.
 
 	* The generated	Makefile now installs aelock(1)	with the correct
 	permissions.
 
-	* A bug	has been fixed in the aetar(1) command,	it no longer creates
-	tarballs that cause BSD	tar to complain	like this: tar:	End of archive
-	volume 1 reached tar: Unexpected EOF on	archive	file
+	* [ 1701701 ] A	bug has	been fixed in the aetar(1) command, it no
+	longer creates tarballs	that cause BSD and other tar to	complain like
+	this: tar: End of archive volume 1 reached tar:	Unexpected EOF on
+	archive	file
 
 	* The configure	script now handle correctly the	datadir	substitution.
 
@@ -808,7 +699,7 @@ RELEASE	NOTES
 	Configuring a build_command of "exit 0"	will tell Aegis	your project
 	does not need to be built.
 
-	* The aedist --replay command now adds a compatibility modifier	to all
+	* The aedist -replay command now adds a	compatibility modifier to all
 	of the downloads URLs, so that the change set received will be
 	compatible with	the version of aedist at the receiving end.
 
@@ -1205,7 +1096,7 @@ RELEASE	NOTES
 	* The aet -nopersevere option now also stops for no result as well as
 	fail.
 
-	* The aedist --receive command now understands file UUIDs.  This means
+	* The aedist -receive command now understands file UUIDs.  This	means
 	that it	will operate on	the correct file even when one or the other
 	repository has renamed the file.
 
@@ -1219,7 +1110,7 @@ RELEASE	NOTES
 	* The aefa(1) command, with the	-edit option, now shows	you the
 	content	type, rather than adding it silently.
 
-	* There	is a new aediff	--command option, allowing you to specify the
+	* There	is a new aediff	-command option, allowing you to specify the
 	command	you want to use	to display the difference.  For	example, you
 	could use tkdiff(1) or mgdiff(1) to display the	change graphically.
 
@@ -1644,7 +1535,7 @@ RELEASE	NOTES
 	* The -Change option now accepts more than just	a change number.  It
 	now accepts many forms similar to those	used by	the ${version}
 	substitution, allowing its output to be	used directly as command line
-	input; forms such as -c	1.2.C34	and --c=5.6.D78	are now	understood to
+	input; forms such as -c	1.2.C34	and -c=5.6.D78 are now understood to
 	imply a	-branch	option as well as either -change or -change-from-
 	delta, respectively.  In addition, you may prepend a project name, to
 	imply the -project option as well; form	such as	-c aegis.4.15.C28 are
@@ -2035,6 +1926,8 @@ RELEASE	NOTES
 	content	transfer encoding synonyms.
 
    Version 4.6 (11-Jul-2002)
+	/* vim:	set ts=8 sw=4 et : */
+
 	* The aeipass(1) command now sleeps, rather than issue the rather
 	alarming "warning: file	modification times extend into the future"
 	message.  There	is a new project config	file field, build_time_adjust,
@@ -2217,7 +2110,9 @@ RELEASE	NOTES
 	single project config file.  See aepfonf(5) for	more information.
 
    Version 4.2 (26-Feb-2002)
-	* There	is a new "--No-Page-Headers" option which may be used to
+	// vim:	set ts=8 sw=4 et :
+
+	* There	is a new "-No-Page-Headers" option which may be	used to
 	suppress page and column headers in listings and reports.
 
 	* There	is a new "aecp -delta-from-change" option, allowing the
@@ -2314,7 +2209,7 @@ RELEASE	NOTES
 
 	* The "time safe" property described by	Damon Poole mostly applies to
 	Aegis' operation.  One last area related to future times and the
-	--delta	options.  There	is now a warning in the	instance where non-
+	-delta options.	 There is now a	warning	in the instance	where non-
 	time-safe behavior may occur.
 
 	* The history_put_command and history_create_command field of the
@@ -2520,11 +2415,11 @@ RELEASE	NOTES
 	* It is	now possible to	remove users who's accounts have been removed
 	(the affects the aera(1), aerd(1), aeri(1) and aerrv(1)	commands).
 
-	* There	is a new --description-only option to the aeca(1) command.
+	* There	is a new -description-only option to the aeca(1) command.
 	This is	useful for editing only	the descrioption, and also for use
 	within scripts.
 
-	* The --file option has	now been generalized to	accept "-" to mean the
+	* The -file option has now been	generalized to accept "-" to mean the
 	standard input.	 This is useful	in scripts.
 
 	* There	is a new aebuffy(1) command, which may be used to see what
@@ -2548,7 +2443,7 @@ RELEASE	NOTES
 	the previous method.
 
 	* A big	has been fixed in the aemv(1) command.	It failed to accept
-	the --base-relative option, even though	it was documented to do	so.
+	the -base-relative option, even	though it was documented to do so.
 
 	* A bug	has been fixed in the quote_tcl() report function.  Is fixes
 	the problem with getting the dollars sign into descriptions when using
@@ -2647,15 +2542,15 @@ RELEASE	NOTES
 	* The aedist -receive command now preserves the	testing	exemptions, if
 	possible.
 
-	* A problem with very very large test runs and the --no-persevere
+	* A problem with very very large test runs and the -no-persevere
 	option has been	fixed.
 
-	* The aenf(1) and aent(1) commands now accept --template and --no-
+	* The aenf(1) and aent(1) commands now accept -template	and -no-
 	template options, to control the use of	new file templates.
 
 	* A nasty Catch-22 in the aedist(1) command has	been fixed, involving
 	the (unnecessary) use of new file templates, when the actual template
-	files don't yet	exist in the --receive development directory.
+	files don't yet	exist in the -receive development directory.
 
    Version 3.22	(13-May-2000)
 	* Please Note: Some code has been added	to Aegis to assist in
@@ -2760,8 +2655,8 @@ RELEASE	NOTES
 
 	* A bug	has been fixed in the ${administrator_list} substitution.
 
-	* A bug	has been fixed in the aedist --delta option, which caused it
-	to dump	core.
+	* A bug	has been fixed in the aedist -delta option, which caused it to
+	dump core.
 
 	* There	is now a section in the	History	Tool chapter of	the User Guide
 	describing how to add checksums	to your	history	files, in order	to
@@ -2959,28 +2854,28 @@ RELEASE	NOTES
 	header.	 This has been fixed.
 
    Version 3.11	(17-Mar-1999)
-	* The aet(1) command now accepts a --force option, forcing tests to be
+	* The aet(1) command now accepts a -force option, forcing tests	to be
 	run, even if Aegis doesn't think they need to.
 
 	* The Aegis CGI	interface has been enhanced so that you	can download
 	changes	from the generated web pages listing the changes, using	the
 	aedist command.
 
-	* The aedist --send command now	accepts	a --no-ascii-armor option,
-	which leaves off the MIME base 64 encoding.  Useful for	binary
-	distributions and web servers.
+	* The aedist -send command now accepts a -no-ascii-armor option, which
+	leaves off the MIME base 64 encoding.  Useful for binary distributions
+	and web	servers.
 
 	* There	is a new trojan_horse_suspect field in the project config
-	file.  This is used by aedist --receive	to check for files which could
+	file.  This is used by aedist -receive to check	for files which	could
 	be abused to carry Trojan horse	attacks.
 
-	* The aedist --receive command now accepts a --trojan option which
-	treats the incoming change set as suspect, and a --no-trojan option
+	* The aedist -receive command now accepts a -trojan option which
+	treats the incoming change set as suspect, and a -no-trojan option
 	which treats the incoming change set as	benign.
 
-	* The aedist --receive command now quotes filenames (if	necessary)
-	when executing commands, thus defending	against	filenames which
-	contain	semicolons.
+	* The aedist -receive command now quotes filenames (if necessary) when
+	executing commands, thus defending against filenames which contain
+	semicolons.
 
 	* The aenbru(1)	command	has been implemented at	last.  At last!	 You
 	no longer need to use the aedbu	work-around.
@@ -3109,7 +3004,7 @@ RELEASE	NOTES
 	NFS mount is performed,	with /home appearing to	be a symlink).
 
    Version 3.7 (22-Sep-1998)
-	* The aeifail(1) and aerfail(1)	commands now have a new	--reason
+	* The aeifail(1) and aerfail(1)	commands now have a new	-reason
 	option,	to specify the failure reason on the command line, rather than
 	in a file.
 
@@ -3117,11 +3012,11 @@ RELEASE	NOTES
 	operations which mention many files, and to projects with large
 	numbers	of files.  Smaller projects may	not notice any improvement.
 
-	* There	is a new --delta-date option to	the aecp(1) command, allowing
+	* There	is a new -delta-date option to the aecp(1) command, allowing
 	deltas to be extracted by date.	 This change also had the side-effect
 	of making extraction by	delta number more accurate on branches.
 
-	* There	is a new --base-relative option	to most	of the file
+	* There	is a new -base-relative	option to most of the file
 	manipulation commands, aecp(1),	aenf(1), etc.  This option may be used
 	to specify that	relative filenames are relative	to the base of the
 	source tree, rather than the current directory.	 There is also a

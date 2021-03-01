@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1999, 2000, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2000, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "The Reviewer"
@@ -53,20 +52,20 @@ section of the \fITips and Traps\fP chapter for how to do this.
 Robyn finds out what changes are available for review
 by asking Aegis:
 .E(
-robyn% \f(CBaerpass -l -p example.1.0\fP
+robyn% \f(CBaerpass \-l \-p example.1.0\fP
 
 Project "example.1.0"
 List of Changes
 
 Change  State           Description
-------- -------         -------------
+\-\-\-\-\-\-\- \-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
   10    being_reviewed  Place under Aegis
 robyn%
 .E)
 Any of the above changes could be reviewed,
 Robyn chooses the first.
 .E(
-robyn% \f(CBaecd -p example.1.0 -c 10\fP
+robyn% \f(CBaecd \-p example.1.0 \-c 10\fP
 aegis: project "example": change 1: /u/pat/example.1.0.C010
 robyn% \f(CBaedmore\fP
 \fI\&.\&.\&.examines each file.\&.\&.\fP
@@ -86,7 +85,7 @@ command.
 Once the change has been reviewed and found acceptable,
 it is passed:
 .E(
-robyn% \f(CBaerpass -p example.1.0 10\fP
+robyn% \f(CBaerpass \-p example.1.0 10\fP
 aegis: sh \*(L)/rp.sh example.1.0 10 pat robyn
 aegis: project "example.1.0": change 10: passed review
 robyn%
@@ -97,13 +96,13 @@ notification and commence integration of the change.
 .LP
 Most reviews have the same pattern as the first.
 .E(
-robyn% \f(CBaerpass -l -p example.1.0\fP
+robyn% \f(CBaerpass \-l \-p example.1.0\fP
 
 Project "example.1.0"
 List of Changes
 
 Change  State           Description
-------- -------         -------------
+\-\-\-\-\-\-\- \-\-\-\-\-\-\-         \-\-\-\-\-\-\-\-\-\-\-\-\-
   11    being_reviewed  file names on command line
 robyn%
 .E)
@@ -111,7 +110,7 @@ robyn%
 Always change directory to the change's development directory,
 otherwise you will not be able to review the files.
 .E(
-robyn% \f(CBaecd -p example.1.0 -c 11\fP
+robyn% \f(CBaecd \-p example.1.0 \-c 11\fP
 aegis: project "example.1.0": change 11: /u/jan/example.1.0.C011
 robyn%
 .E)
@@ -119,7 +118,7 @@ robyn%
 Another useful way of finding out about a change
 is the "list change details" command, viz:
 .E(
-robyn% \f(CBael cd -p example.1.0 -c 11\fP
+robyn% \f(CBael cd \-p example.1.0 \-c 11\fP
 
 Project "example.1.0", Change 11
 Change Details
@@ -148,14 +147,14 @@ STATE
 .E(
 FILES
         Type    Action  Edit    File Name
-        ------- ------- ------- -----------
+        \-\-\-\-\-\-\- \-\-\-\-\-\-\- \-\-\-\-\-\-\- \-\-\-\-\-\-\-\-\-\-\-
         source  modify  1.1     main.c
         test    create          test/00/t0002a.sh
 .E)
 .E(
 HISTORY
         What            When            Who     Comment
-        ------          ------          -----   ---------
+        \-\-\-\-\-\-          \-\-\-\-\-\-          \-\-\-\-\-   \-\-\-\-\-\-\-
         new_change      Fri Dec 11      alex
                         14:55:06 1992
         develop_begin   Mon Dec 14      jan
@@ -176,7 +175,7 @@ robyn%
 Once the change is found to be acceptable,
 it is passed:
 .E(
-robyn% \f(CBaerpass -p example.1.0 11\fP
+robyn% \f(CBaerpass \-p example.1.0 11\fP
 aegis: sh \*(L)/rp.sh example.1.0 11 jan robyn
 aegis: project "example.1.0": change 11: passed review
 robyn%
@@ -223,3 +222,4 @@ Most Aegis commands also have a
 .I \-List
 option,
 which usually lists interesting context sensitive information.
+.\" vim: set ts=8 sw=4 et :

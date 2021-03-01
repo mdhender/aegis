@@ -1,0 +1,2702 @@
+Change  State           Description
+------- -------         -------------
+1       completed       Place aegis under its own control.
+2       completed       The 'aegis -version' command does not report the
+                        version stamp provided by aegis.
+3       completed       Report working days elapsed in change history listings.
+4       completed       Add the -Change_Attributes function.
+5       completed       Add the manual entries.
+6       completed       Conform to comp.sources.unix posting standards.
+7       completed       Make aegis compiler under SunOS 4.0
+8       completed       Link the integration directory to the baseline.
+9       completed       Take advantage of change 8.
+10      completed       Add robustness in the face of errors.
+11      completed       Fix os_below_dir when the directories do not match at
+                        all.
+12      completed       fix error message in option.c
+13      completed       Improve construction of shar files on integration.
+14      completed       Add section 5 manual entries.
+15      completed       Add page width argument.
+16      completed       Add additional support for build script generation.
+17      completed       Improve tracing, make it faster.
+18      completed       Collect generic argument processing.
+19      completed       Make references to argument names consistent.
+20      completed       Add documentation skeleton.
+21      awaiting_       Add the text preprocessor (tpp).
+        development
+22      completed       Improve construction method.
+23      completed       Fix bugs found porting to SunOS 4.1
+24      completed       Make 'list project_files' sensitive to changes.
+25      completed       When removing files, 'aegis -diff' attempts to diff
+                        the file in the change.
+26      completed       The 'aegis -DIFFerence' command generated erroneous
+                        history_get command.
+27      completed       Rearrange the source directory structure.
+28      completed       Fix copyright dates.
+29      completed       fix edit number in change file list when in
+                        'completed' state
+30      completed       modified tests don't have to fail baseline
+31      completed       when following directory trees, use lstat
+32      completed       File name was being echoed on every file copy
+                        operation.
+33      completed       aeib -min., don't copy files which have bben deleted
+34      completed       add '%(name)' substitution
+35      completed       teach forground/background difference on suns
+36      completed       Do not run tests which a change is modifying whe using
+                        the -regression option.
+37      completed       add major and minor version number to project status
+38      completed       add -New_ReLeaSe command
+39      completed       implement the -Review_Pass_Undo command
+40      completed       fix pattred to copy the notify commands
+41      completed       make notify commands ignore exit status
+42      completed       make sub.c do the right thing for notify commands
+43      being_          make -lib add to search path
+        integrated
+
+IDENTIFICATION
+        Project "aegis", build 1, change 1.
+
+SUMMARY
+        Place aegis under its own control.
+
+DESCRIPTION
+        Now that aegis has reached the necessary critical mass, it is capable
+        enough, and reliable enough, to be placed under its own control.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create          Howto.cook
+        source  create          administ.c
+        source  create          administ.h
+        source  create          ansi.c
+        source  create          archaeol.c
+        source  create          archaeol.h
+        source  create          arglex.c
+        source  create          arglex.h
+        source  create          build.c
+        source  create          build.h
+        source  create          cattr.def
+        source  create          chdir.c
+        source  create          chdir.h
+        source  create          col.c
+        source  create          col.h
+        source  create          common.def
+        source  create          config
+        source  create          copyfile.c
+        source  create          copyfile.h
+        source  create          cstate.def
+        source  create          cstate_c.c
+        source  create          cstate_c.h
+        source  create          cstate_u.c
+        source  create          cstate_u.h
+        source  create          defaults.c
+        source  create          defaults.h
+        source  create          develop1.c
+        source  create          develop1.h
+        source  create          develop2.c
+        source  create          develop2.h
+        source  create          diff.c
+        source  create          diff.h
+        source  create          dir.c
+        source  create          dir.h
+        source  create          error.c
+        source  create          error.h
+        source  create          file.c
+        source  create          file.h
+        source  create          fmtgen/ansi.c
+        source  create          fmtgen/arglex.c
+        source  create          fmtgen/arglex.h
+        source  create          fmtgen/error.c
+        source  create          fmtgen/error.h
+        source  create          fmtgen/id.c
+        source  create          fmtgen/id.h
+        source  create          fmtgen/indent.c
+        source  create          fmtgen/indent.h
+        source  create          fmtgen/lex.c
+        source  create          fmtgen/lex.h
+        source  create          fmtgen/main.c
+        source  create          fmtgen/main.h
+        source  create          fmtgen/mem.c
+        source  create          fmtgen/mem.h
+        source  create          fmtgen/parse.y
+        source  create          fmtgen/str.c
+        source  create          fmtgen/str.h
+        source  create          fmtgen/type.c
+        source  create          fmtgen/type.h
+        source  create          fmtgen/type_enum.c
+        source  create          fmtgen/type_integ.c
+        source  create          fmtgen/type_list.c
+        source  create          fmtgen/type_ref.c
+        source  create          fmtgen/type_strin.c
+        source  create          fmtgen/type_struc.c
+        source  create          fmtgen/word.c
+        source  create          fmtgen/word.h
+        source  create          gram.y
+        source  create          gstate.def
+        source  create          gstate_c.c
+        source  create          gstate_c.h
+        source  create          indent.c
+        source  create          indent.h
+        source  create          integra1.c
+        source  create          integra1.h
+        source  create          integra2.c
+        source  create          integra2.h
+        source  create          io.c
+        source  create          io.h
+        source  create          lex.c
+        source  create          lex.h
+        source  create          list.c
+        source  create          list.h
+        source  create          lock.c
+        source  create          lock.h
+        source  create          log.c
+        source  create          log.h
+        source  create          main.c
+        source  create          main.h
+        source  create          mem.c
+        source  create          mem.h
+        source  create          new_chan.c
+        source  create          new_chan.h
+        source  create          new_file.c
+        source  create          new_file.h
+        source  create          new_proj.c
+        source  create          new_proj.h
+        source  create          new_rele.c
+        source  create          new_rele.h
+        source  create          new_test.c
+        source  create          new_test.h
+        source  create          option.c
+        source  create          option.h
+        source  create          os.c
+        source  create          os.h
+        source  create          parse.c
+        source  create          parse.h
+        source  create          pattr.def
+        source  create          pattr_ed.c
+        source  create          pattr_ed.h
+        source  create          pconf.def
+        source  create          pconf_c.c
+        source  create          pconf_c.h
+        source  create          pstate.def
+        source  create          pstate_c.c
+        source  create          pstate_c.h
+        source  create          pstate_u.c
+        source  create          pstate_u.h
+        source  create          rem_file.c
+        source  create          rem_file.h
+        source  create          review.c
+        source  create          review.h
+        source  create          reviewer.c
+        source  create          reviewer.h
+        source  create          str.c
+        source  create          str.h
+        source  create          sub.c
+        source  create          sub.h
+        source  create          test.c
+        source  create          test.h
+        test    create          test/00/t0001a.sh
+        test    create          test/00/t0002a.sh
+        source  create          trace.c
+        source  create          trace.h
+        source  create          tree.c
+        source  create          tree.h
+        source  create          type.c
+        source  create          type.h
+        source  create          uconf.def
+        source  create          uconf_c.c
+        source  create          uconf_c.h
+        source  create          ustate.def
+        source  create          ustate_c.c
+        source  create          ustate_c.h
+        source  create          ustate_u.c
+        source  create          ustate_u.h
+        source  create          version.c
+        source  create          version.h
+        source  create          word.c
+        source  create          word.h
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Sep 14      peter   Elapsed time: 0.009 days.
+                        15:19:21 1990
+        develop_begin   Fri Sep 14      peter   Elapsed time: 0.944 days.
+                        15:23:21 1990
+        develop_end     Mon Sep 17      peter   Elapsed time: 0.007 days.
+                        14:58:19 1990
+        review_pass     Mon Sep 17      peter   Elapsed time: 0.006 days.
+                        15:01:38 1990
+        integrate_begin Mon Sep 17      peter   Elapsed time: 0.096 days.
+                        15:04:18 1990
+        integrate_pass  Mon Sep 17      peter
+                        15:47:23 1990
+
+IDENTIFICATION
+        Project "aegis", build 2, change 2.
+
+SUMMARY
+        The 'aegis -version' command does not report the version stamp
+        provided by aegis.
+
+DESCRIPTION
+        Make 'aegis -version' report the version stamp.
+        Fix -Integrate_Begin so that it doesn't try to copy set-uid-root files
+        (this was discovered when aegis couldn't integrate this change on the
+        first try).
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  1       Howto.cook
+        source  modify  1       config
+        source  modify  1       file.c
+        source  create          patchlevel.h
+        test    create          test/00/t0003a.sh
+        source  modify  1       tree.c
+        source  modify  1       version.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Sep 17      peter   Elapsed time: 0.001 days.
+                        16:03:18 1990
+        develop_begin   Mon Sep 17      peter   Elapsed time: 1.138 days.
+                        16:03:33 1990
+        develop_end     Tue Sep 18      peter   Elapsed time: 0.005 days.
+                        17:05:49 1990
+        review_pass     Tue Sep 18      peter   Elapsed time: 0.018 days.
+                        17:08:02 1990
+        develop_end_    Tue Sep 18      peter   Elapsed time: 0.096 days.
+        undo            17:16:00 1990
+        develop_end     Tue Sep 18      peter   Elapsed time: 0.002 days.
+                        17:59:05 1990
+        review_pass     Tue Sep 18      peter   Elapsed time: 0.039 days.
+                        17:59:55 1990
+        develop_end_    Tue Sep 18      peter   Elapsed time: 0.031 days.
+        undo            18:17:16 1990
+        develop_end     Tue Sep 18      peter   Elapsed time: 0.001 days.
+                        18:31:02 1990
+        review_pass     Tue Sep 18      peter   Elapsed time: 0.009 days.
+                        18:31:21 1990
+        integrate_begin Tue Sep 18      peter   Elapsed time: 0.333 days.
+                        18:35:19 1990
+        integrate_pass  Wed Sep 19      peter
+                        13:35:11 1990
+
+IDENTIFICATION
+        Project "aegis", build 3, change 3.
+
+SUMMARY
+        Report working days elapsed in change history listings.
+
+DESCRIPTION
+        Report working days elapsed in change history listings.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       Howto.cook
+        source  modify  1       list.c
+        source  modify  1       new_proj.c
+        test    modify  1       test/00/t0002a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Sep 19      peter   Elapsed time: 0.003 days.
+                        14:18:47 1990
+        develop_begin   Wed Sep 19      peter   Elapsed time: 0.342 days.
+                        14:20:07 1990
+        develop_end     Thu Sep 20      peter   Elapsed time: 0.002 days.
+                        09:23:54 1990
+        review_pass     Thu Sep 20      peter   Elapsed time: 0.007 days.
+                        09:24:55 1990
+        integrate_begin Thu Sep 20      peter   Elapsed time: 0.051 days.
+                        09:28:05 1990
+        integrate_pass  Thu Sep 20      peter
+                        09:50:52 1990
+
+IDENTIFICATION
+        Project "aegis", build 4, change 4.
+
+SUMMARY
+        Add the -Change_Attributes function.
+
+DESCRIPTION
+        Add the -Change_Attributes function.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  3       Howto.cook
+        source  modify  1       arglex.c
+        source  modify  1       arglex.h
+        source  create          cattr_ed.c
+        source  create          cattr_ed.h
+        source  modify  1       main.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Thu Sep 20      peter   Elapsed time: 0.008 days.
+                        13:44:47 1990
+        develop_begin   Thu Sep 20      peter   Elapsed time: 0.462 days.
+                        13:48:30 1990
+        develop_end     Thu Sep 20      peter   Elapsed time: 0.009 days.
+                        17:16:28 1990
+        review_pass     Thu Sep 20      peter   Elapsed time: 1.063 days.
+                        17:20:26 1990
+        integrate_begin Fri Sep 21      peter   Elapsed time: 0.230 days.
+                        17:48:47 1990
+        integrate_pass  Mon Sep 24      peter
+                        12:02:27 1990
+
+IDENTIFICATION
+        Project "aegis", build 5, change 5.
+
+SUMMARY
+        Add the manual entries.
+
+DESCRIPTION
+        Add the manual entries.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  4       Howto.cook
+        source  modify  1       cattr_ed.c
+        source  create          man1/aea.1
+        source  create          man1/aeb.1
+        source  create          man1/aeca.1
+        source  create          man1/aecd.1
+        source  create          man1/aecp.1
+        source  create          man1/aecpu.1
+        source  create          man1/aed.1
+        source  create          man1/aedb.1
+        source  create          man1/aedbu.1
+        source  create          man1/aede.1
+        source  create          man1/aedeu.1
+        source  create          man1/aega.1
+        source  create          man1/aegis.1
+        source  create          man1/aeib.1
+        source  create          man1/aeibu.1
+        source  create          man1/aeif.1
+        source  create          man1/aeip.1
+        source  create          man1/ael.1
+        source  create          man1/aena.1
+        source  create          man1/aenc.1
+        source  create          man1/aencu.1
+        source  create          man1/aend.1
+        source  create          man1/aenf.1
+        source  create          man1/aenfu.1
+        source  create          man1/aeni.1
+        source  create          man1/aenpr.1
+        source  create          man1/aenrls.1
+        source  create          man1/aenrv.1
+        source  create          man1/aent.1
+        source  create          man1/aentu.1
+        source  create          man1/aepa.1
+        source  create          man1/aera.1
+        source  create          man1/aerd.1
+        source  create          man1/aerf.1
+        source  create          man1/aeri.1
+        source  create          man1/aerm.1
+        source  create          man1/aermu.1
+        source  create          man1/aerp.1
+        source  create          man1/aerpr.1
+        source  create          man1/aerrv.1
+        source  create          man1/aet.1
+        source  create          man1/aeua.1
+        source  create          man1/aev.1
+        source  create          man1/o__rules.so
+        source  create          man1/o_anticip.so
+        source  create          man1/o_auto.so
+        source  create          man1/o_baselin.so
+        source  create          man1/o_change.so
+        source  create          man1/o_devdir.so
+        source  create          man1/o_dir.so
+        source  create          man1/o_help.so
+        source  create          man1/o_indep.so
+        source  create          man1/o_keep.so
+        source  create          man1/o_list.so
+        source  create          man1/o_manual.so
+        source  create          man1/o_min.so
+        source  create          man1/o_overw.so
+        source  create          man1/o_project.so
+        source  create          man1/o_terse.so
+        source  create          man1/o_verbose.so
+        source  create          man1/z_cr.so
+        source  create          man1/z_exit.so
+        source  create          man1/z_intuit.so
+        source  create          man1/z_name.so
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Thu Sep 20      peter   Elapsed time: 0.006 days.
+                        17:33:18 1990
+        develop_begin   Thu Sep 20      peter   Elapsed time: 1.825 days.
+                        17:36:00 1990
+        develop_end     Mon Sep 24      peter   Elapsed time: 0.029 days.
+                        16:17:10 1990
+        review_pass     Mon Sep 24      peter   Elapsed time: 0.844 days.
+                        16:30:22 1990
+        integrate_begin Tue Sep 25      peter   Elapsed time: 0.037 days.
+                        15:20:23 1990
+        integrate_pass  Tue Sep 25      peter
+                        15:37:15 1990
+
+IDENTIFICATION
+        Project "aegis", build 9, change 6.
+
+SUMMARY
+        Conform to comp.sources.unix posting standards.
+
+DESCRIPTION
+        Conform to comp.sources.unix posting standards.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create          COPYING
+        source  modify  5       Howto.cook
+        source  create          MANIFEST.sh
+        source  create          Makefile.sh
+        source  create          README
+        source  modify  1       archaeol.c
+        source  modify  2       cattr_ed.c
+        source  modify  1       develop2.c
+        source  modify  1       diff.c
+        source  modify  1       fmtgen/lex.c
+        source  modify  1       fmtgen/main.c
+        source  modify  1       fmtgen/str.c
+        source  modify  1       fmtgen/str.h
+        source  modify  1       fmtgen/type.h
+        source  modify  1       fmtgen/type_struc.c
+        source  modify  1       gstate_c.c
+        source  modify  1       integra1.c
+        source  modify  1       integra2.c
+        source  modify  2       list.c
+        source  modify  1       lock.c
+        source  modify  1       new_chan.c
+        source  modify  1       new_file.c
+        source  modify  2       new_proj.c
+        source  modify  1       new_test.c
+        source  modify  1       option.c
+        source  modify  1       option.h
+        source  modify  1       os.c
+        source  modify  1       os.h
+        source  modify  1       pattr_ed.c
+        source  modify  1       pconf_c.c
+        source  modify  1       pstate_c.c
+        source  modify  1       rem_file.c
+        source  modify  1       review.c
+        source  modify  1       reviewer.c
+        source  modify  1       str.h
+        source  modify  1       test.c
+        source  modify  1       uconf_c.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Sep 26      peter   Elapsed time: 0.003 days.
+                        10:07:07 1990
+        develop_begin   Wed Sep 26      peter   Elapsed time: 0.233 days.
+                        10:08:24 1990
+        develop_end     Wed Sep 26      peter   Elapsed time: 0.007 days.
+                        11:53:26 1990
+        review_pass     Wed Sep 26      peter   Elapsed time: 0.015 days.
+                        11:56:25 1990
+        integrate_begin Wed Sep 26      peter   Elapsed time: 0.021 days.
+                        12:03:07 1990
+        integrate_fail  Wed Sep 26      peter   The Makefile does not work.
+                        12:12:22 1990           Elapsed time: 0.034 days.
+        develop_end     Wed Sep 26      peter   Elapsed time: 0.001 days.
+                        12:27:34 1990
+        review_pass     Wed Sep 26      peter   Elapsed time: 0.211 days.
+                        12:28:10 1990
+        integrate_begin Wed Sep 26      peter   Elapsed time: 0.094 days.
+                        14:03:09 1990
+        integrate_fail  Wed Sep 26      peter   The MANIFEST.sh file forgets
+                        14:45:33 1990           to mention the directories,
+                                                and thus the shar files will
+                                                not unpack properly.
+                                                The arglex_option_trace was
+                                                referred to outside DEBUG
+                                                conditionals.
+                                                The PATH_MAX define was
+                                                referenced.
+                                                Elapsed time: 8.396 days.
+        develop_end     Sun Oct  7      peter   Elapsed time: 0.014 days.
+                        17:43:45 1990
+        develop_end_    Sun Oct  7      peter   Elapsed time: 0.190 days.
+        undo            17:50:06 1990
+        develop_end     Mon Oct  8      peter   Elapsed time: 0.003 days.
+                        11:45:33 1990
+        review_pass     Mon Oct  8      peter   Elapsed time: 0.011 days.
+                        11:47:06 1990
+        integrate_begin Mon Oct  8      peter   Elapsed time: 0.137 days.
+                        11:51:51 1990
+        integrate_fail  Mon Oct  8      peter   The Makefile does not use the
+                        12:53:43 1990           $(CFLAGS) for compiles.
+                                                The Makefile LIB= line is too
+                                                close to the all: line.
+                                                Howto.cook needs to up the
+                                                limit of shar files for
+                                                makekit, use the -k option.
+                                                Some files still refer to PATH_
+                                                MAX define.
+                                                Some files still refer to NAME_
+                                                MAX define.
+                                                Elapsed time: 0.247 days.
+        develop_end     Mon Oct  8      peter   Elapsed time: 0.010 days.
+                        14:44:59 1990
+        review_pass     Mon Oct  8      peter   Elapsed time: 0.027 days.
+                        14:49:16 1990
+        integrate_begin Mon Oct  8      peter   Elapsed time: 0.210 days.
+                        15:01:20 1990
+        integrate_pass  Mon Oct  8      peter
+                        16:35:51 1990
+
+IDENTIFICATION
+        Project "aegis", build 10, change 7.
+
+SUMMARY
+        Make aegis compiler under SunOS 4.0
+
+DESCRIPTION
+        Make aegis compiler under SunOS 4.0.  This requires the addition of
+        optional include files, for those systems without ansi-conforming
+        include files, and coping with the vagaries of the SunOS C compiler.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create          BUILDING
+        source  modify  6       Howto.cook
+        source  modify  1       ansi.c
+        source  modify  1       cstate_c.c
+        source  modify  2       diff.c
+        source  modify  1       fmtgen/ansi.c
+        source  modify  1       fmtgen/type_enum.c
+        source  modify  2       gstate_c.c
+        source  create          h/stdarg.h
+        source  create          h/stddef.h
+        source  create          h/stdlib.h
+        source  modify  1       indent.c
+        source  modify  2       new_chan.c
+        source  modify  2       new_test.c
+        source  modify  2       os.c
+        source  modify  1       ustate_c.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Tue Oct  9      peter   Elapsed time: 0.002 days.
+                        10:38:34 1990
+        develop_begin   Tue Oct  9      peter   Elapsed time: 0.990 days.
+                        10:39:22 1990
+        develop_end     Wed Oct 10      peter   Elapsed time: 0.088 days.
+                        10:35:05 1990
+        review_pass     Wed Oct 10      peter   Elapsed time: 0.131 days.
+                        11:14:35 1990
+        integrate_begin Wed Oct 10      peter   Elapsed time: 0.176 days.
+                        12:13:24 1990
+        integrate_pass  Wed Oct 10      peter
+                        13:32:41 1990
+
+IDENTIFICATION
+        Project "aegis", build 11, change 8.
+
+SUMMARY
+        Link the integration directory to the baseline.
+
+DESCRIPTION
+        Allow the option of linking the integration directory to the baseline,
+        rather than copying all of the files across.  This will be a
+        substantial saving in both disk space and time for large projects.  It
+        must be optional because the build script must take this into account
+        and unlink files before re-building them, otherwise the baseline can
+        be trashed.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  7       Howto.cook
+        source  modify  2       ansi.c
+        source  modify  1       chdir.c
+        source  modify  2       develop2.c
+        source  modify  1       error.c
+        source  modify  1       error.h
+        source  modify  2       fmtgen/ansi.c
+        source  modify  2       fmtgen/type_struc.c
+        source  create          help.c
+        source  create          help.h
+        source  modify  2       integra2.c
+        source  modify  1       man1/aede.1
+        source  modify  2       option.c
+        source  modify  3       os.c
+        source  modify  2       os.h
+        source  modify  1       pconf.def
+        source  modify  2       review.c
+        test    modify  1       test/00/t0001a.sh
+        test    modify  2       test/00/t0002a.sh
+        source  modify  2       tree.c
+        source  modify  1       tree.h
+        source  modify  2       version.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Oct 12      peter   Elapsed time: 0.001 days.
+                        14:24:51 1990
+        develop_begin   Fri Oct 12      peter   Elapsed time: 5.412 days.
+                        14:25:08 1990
+        develop_end     Mon Oct 22      peter   Elapsed time: 0.036 days.
+                        10:00:30 1990
+        review_pass     Mon Oct 22      peter   Elapsed time: 0.012 days.
+                        10:16:54 1990
+        integrate_begin Mon Oct 22      peter   Elapsed time: 0.147 days.
+                        10:22:06 1990
+        integrate_pass  Mon Oct 22      peter
+                        11:28:02 1990
+
+IDENTIFICATION
+        Project "aegis", build 13, change 9.
+
+SUMMARY
+        Take advantage of change 8.
+
+DESCRIPTION
+        Change the way aegis is built to take advantage of change 8, which
+        allows the baseline to be linked to the integration directory rather
+        than copied.  This will (hopefully) result in a saving in both disk
+        space and time for integrations.  It is essential that files are
+        unlinked before re-building them, otherwise the baseline can be
+        trashed.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  8       Howto.cook
+        source  modify  2       config
+        source  modify  2       file.c
+        source  modify  3       integra2.c
+        source  modify  1       log.c
+        source  modify  4       os.c
+        test    modify  3       test/00/t0002a.sh
+        source  modify  3       tree.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Oct 22      peter   Elapsed time: 0.003 days.
+                        11:37:08 1990
+        develop_begin   Mon Oct 22      peter   Elapsed time: 0.688 days.
+                        11:38:32 1990
+        develop_end     Mon Oct 22      peter   Elapsed time: 0.005 days.
+                        16:48:01 1990
+        review_pass     Mon Oct 22      peter   Elapsed time: 0.003 days.
+                        16:50:25 1990
+        integrate_begin Mon Oct 22      peter   Elapsed time: 0.005 days.
+                        16:51:57 1990
+        integrate_      Mon Oct 22      peter   Elapsed time: 0.002 days.
+        begin_undo      16:54:23 1990
+        develop_end_    Mon Oct 22      peter   Elapsed time: 0.931 days.
+        undo            16:55:21 1990
+        develop_end     Tue Oct 23      peter   Elapsed time: 0.008 days.
+                        16:24:09 1990
+        review_pass     Tue Oct 23      peter   Elapsed time: 0.007 days.
+                        16:27:33 1990
+        integrate_begin Tue Oct 23      peter   Elapsed time: 0.111 days.
+                        16:30:32 1990
+        integrate_pass  Tue Oct 23      peter
+                        17:20:35 1990
+
+IDENTIFICATION
+        Project "aegis", build 14, change 10.
+
+SUMMARY
+        Add robustness in the face of errors.
+
+DESCRIPTION
+        Add the code which allows the changes to ba 'backed out' if an error
+        occurs.  This involves writing changed files to a new file and doing a
+        name shuffle.  Functions are added to 'commit' and 'undo' chnages to
+        the data files.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  1       administ.c
+        source  modify  2       archaeol.c
+        source  modify  1       build.c
+        source  modify  3       cattr_ed.c
+        source  modify  2       chdir.c
+        source  create          commit.c
+        source  create          commit.h
+        source  modify  1       copyfile.c
+        source  modify  2       cstate_c.c
+        source  modify  1       cstate_u.c
+        source  modify  1       develop1.c
+        source  modify  3       develop2.c
+        source  modify  3       diff.c
+        source  modify  1       dir.h
+        source  modify  2       error.c
+        source  modify  2       error.h
+        source  create          gate.h
+        source  modify  3       gstate_c.c
+        source  modify  1       help.c
+        source  modify  1       help.h
+        source  modify  2       indent.c
+        source  modify  2       integra1.c
+        source  modify  4       integra2.c
+        source  modify  1       lex.c
+        source  modify  3       list.c
+        source  modify  2       lock.c
+        source  modify  2       log.c
+        source  modify  1       log.h
+        source  modify  2       main.c
+        source  modify  1       man1/aea.1
+        source  modify  1       man1/aeb.1
+        source  modify  1       man1/aecd.1
+        source  modify  1       man1/aecp.1
+        source  modify  1       man1/aecpu.1
+        source  modify  1       man1/aed.1
+        source  modify  1       man1/aedb.1
+        source  modify  2       man1/aede.1
+        source  modify  1       man1/aedeu.1
+        source  modify  1       man1/aegis.1
+        source  modify  1       man1/aeib.1
+        source  modify  1       man1/aeibu.1
+        source  modify  1       man1/aeif.1
+        source  modify  1       man1/aeip.1
+        source  modify  1       man1/ael.1
+        source  modify  1       man1/aenc.1
+        source  modify  1       man1/aencu.1
+        source  modify  1       man1/aenf.1
+        source  modify  1       man1/aenfu.1
+        source  modify  1       man1/aenpr.1
+        source  modify  1       man1/aenrls.1
+        source  modify  1       man1/aent.1
+        source  modify  1       man1/aera.1
+        source  modify  1       man1/aerf.1
+        source  modify  1       man1/aerm.1
+        source  modify  1       man1/aermu.1
+        source  modify  1       man1/aerp.1
+        source  modify  1       man1/aerrv.1
+        source  modify  1       man1/aet.1
+        source  modify  1       man1/aeua.1
+        source  modify  1       man1/aev.1
+        source  modify  1       man1/o__rules.so
+        source  modify  1       man1/z_intuit.so
+        source  modify  3       new_chan.c
+        source  modify  2       new_file.c
+        source  modify  3       new_proj.c
+        source  modify  3       new_test.c
+        source  modify  5       os.c
+        source  modify  3       os.h
+        source  modify  2       pattr_ed.c
+        source  modify  2       pstate_c.c
+        source  modify  2       rem_file.c
+        source  modify  3       review.c
+        source  modify  2       reviewer.c
+        source  modify  2       test.c
+        test    modify  4       test/00/t0002a.sh
+        source  modify  4       tree.c
+        source  modify  2       uconf_c.c
+        source  create          undo.c
+        source  create          undo.h
+        source  modify  2       ustate_c.c
+        source  modify  1       ustate_u.c
+        source  modify  3       version.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Oct 24      peter   Elapsed time: 0.001 days.
+                        10:39:45 1990
+        develop_begin   Wed Oct 24      peter   Elapsed time: 6.267 days.
+                        10:40:14 1990
+        develop_end     Thu Nov  1      peter   Elapsed time: 0.151 days.
+                        13:40:28 1990
+        review_pass     Thu Nov  1      peter   Elapsed time: 0.007 days.
+                        14:48:28 1990
+        integrate_begin Thu Nov  1      peter   Elapsed time: 0.312 days.
+                        14:51:41 1990
+        integrate_pass  Thu Nov  1      peter
+                        17:11:52 1990
+
+IDENTIFICATION
+        Project "aegis", build 16, change 11.
+
+SUMMARY
+        Fix os_below_dir when the directories do not match at all.
+
+DESCRIPTION
+        Fix os_below_dir when the directories do not match at all.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  6       os.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Thu Nov  1      peter   Elapsed time: 0.001 days.
+                        17:29:08 1990
+        develop_begin   Thu Nov  1      peter   Elapsed time: 0.912 days.
+                        17:29:35 1990
+        develop_end     Fri Nov  2      peter   Elapsed time: 0.900 days.
+                        16:49:50 1990
+        review_pass     Mon Nov  5      peter   Elapsed time: 1.656 days.
+                        16:04:39 1990
+        integrate_begin Tue Nov  6      peter   Elapsed time: 0.058 days.
+                        20:59:42 1990
+        integrate_pass  Tue Nov  6      peter
+                        21:25:47 1990
+
+IDENTIFICATION
+        Project "aegis", build 15, change 12.
+
+SUMMARY
+        fix error message in option.c
+
+DESCRIPTION
+        fix error message in option.c
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  3       option.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Sun Nov  4      peter   Elapsed time: 0.003 days.
+                        16:12:01 1990
+        develop_begin   Sun Nov  4      peter   Elapsed time: 0.025 days.
+                        16:13:18 1990
+        develop_end     Sun Nov  4      peter   Elapsed time: 0.004 days.
+                        16:24:44 1990
+        review_pass     Sun Nov  4      peter   Elapsed time: 0.004 days.
+                        16:26:36 1990
+        integrate_begin Sun Nov  4      peter   Elapsed time: 0.024 days.
+                        16:28:33 1990
+        integrate_pass  Sun Nov  4      peter
+                        16:39:20 1990
+
+IDENTIFICATION
+        Project "aegis", build 17, change 13.
+
+SUMMARY
+        Improve construction of shar files on integration.
+
+DESCRIPTION
+        Improve construction of shar files on integration.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  9       Howto.cook
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Nov  7      peter   Elapsed time: 0.002 days.
+                        09:53:20 1990
+        develop_begin   Wed Nov  7      peter   Elapsed time: 0.118 days.
+                        09:54:07 1990
+        develop_end     Wed Nov  7      peter   Elapsed time: 0.002 days.
+                        10:47:04 1990
+        review_pass     Wed Nov  7      peter   Elapsed time: 0.004 days.
+                        10:48:03 1990
+        integrate_begin Wed Nov  7      peter   Elapsed time: 0.097 days.
+                        10:50:03 1990
+        integrate_pass  Wed Nov  7      peter
+                        11:33:33 1990
+
+IDENTIFICATION
+        Project "aegis", build 18, change 14.
+
+SUMMARY
+        Add section 5 manual entries.
+
+DESCRIPTION
+        Add section 5 manual entries.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  1       cattr.def
+        source  modify  1       common.def
+        source  modify  1       cstate.def
+        source  modify  1       gstate.def
+        source  create          man5/aecattr.5
+        source  create          man5/aecstate.5
+        source  create          man5/aedir.5
+        source  create          man5/aegis.5
+        source  create          man5/aegstate.5
+        source  create          man5/aepattr.5
+        source  create          man5/aepconf.5
+        source  create          man5/aepstate.5
+        source  create          man5/aeuconf.5
+        source  create          man5/aeustate.5
+        source  create          man5/z_cr.so
+        source  create          man5/z_name.so
+        source  modify  1       pattr.def
+        source  modify  2       pconf.def
+        source  modify  1       pstate.def
+        source  modify  1       uconf.def
+        source  modify  1       ustate.def
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Nov 12      peter   Elapsed time: 0.001 days.
+                        09:46:35 1990
+        develop_begin   Mon Nov 12      peter   Elapsed time: 0.735 days.
+                        09:47:10 1990
+        develop_end     Mon Nov 12      peter   Elapsed time: 0.069 days.
+                        15:17:50 1990
+        review_pass     Mon Nov 12      peter   Elapsed time: 0.037 days.
+                        15:48:54 1990
+        integrate_begin Mon Nov 12      peter   Elapsed time: 0.458 days.
+                        16:05:36 1990
+        integrate_pass  Tue Nov 13      peter
+                        12:01:29 1990
+
+IDENTIFICATION
+        Project "aegis", build 19, change 15.
+
+SUMMARY
+        Add page width argument.
+
+DESCRIPTION
+        Add page width argument.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       arglex.c
+        source  modify  2       arglex.h
+        source  modify  1       col.c
+        source  modify  1       col.h
+        source  modify  3       error.c
+        source  modify  4       list.c
+        source  modify  2       man1/ael.1
+        source  create          man1/o_page.so
+        source  modify  4       option.c
+        source  modify  2       option.h
+        source  modify  1       trace.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Tue Nov 13      peter   Elapsed time: 0.001 days.
+                        14:24:00 1990
+        develop_begin   Tue Nov 13      peter   Elapsed time: 2.050 days.
+                        14:24:25 1990
+        develop_end     Thu Nov 15      peter   Elapsed time: 0.005 days.
+                        14:46:43 1990
+        review_pass     Thu Nov 15      peter   Elapsed time: 0.005 days.
+                        14:49:11 1990
+        integrate_begin Thu Nov 15      peter   Elapsed time: 0.184 days.
+                        14:51:24 1990
+        integrate_pass  Thu Nov 15      peter
+                        16:14:25 1990
+
+IDENTIFICATION
+        Project "aegis", build 20, change 16.
+
+SUMMARY
+        Add additional support for build script generation.
+
+DESCRIPTION
+        Extra commands are added to 'pconf.def' so that commands can be run
+        when work commences or the files in a change, change.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       build.c
+        source  modify  2       copyfile.c
+        source  modify  2       cstate.def
+        source  modify  5       integra2.c
+        source  modify  3       log.c
+        source  modify  2       log.h
+        source  modify  1       man5/aecstate.5
+        source  modify  1       man5/aepconf.5
+        source  modify  3       new_file.c
+        source  modify  5       option.c
+        source  modify  7       os.c
+        source  modify  3       pconf.def
+        source  modify  2       pconf_c.c
+        source  modify  3       rem_file.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Nov 16      peter   Elapsed time: 0.001 days.
+                        11:06:49 1990
+        develop_begin   Fri Nov 16      peter   Elapsed time: 4.887 days.
+                        11:07:20 1990
+        develop_end     Thu Nov 22      peter   Elapsed time: 3.492 days.
+                        17:46:16 1990
+        develop_end_    Wed Nov 28      peter   Elapsed time: 0.235 days.
+        undo            13:57:51 1990
+        develop_end     Wed Nov 28      peter   Elapsed time: 0.003 days.
+                        15:43:30 1990
+        review_pass     Wed Nov 28      peter   Elapsed time: 0.004 days.
+                        15:44:39 1990
+        integrate_begin Wed Nov 28      peter   Elapsed time: 0.367 days.
+                        15:46:22 1990
+        integrate_pass  Thu Nov 29      peter
+                        11:01:25 1990
+
+IDENTIFICATION
+        Project "aegis", build 21, change 17.
+
+SUMMARY
+        Improve tracing, make it faster.
+
+DESCRIPTION
+        Improve tracing, make it faster.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       trace.c
+        source  modify  1       trace.h
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Dec 12      peter   Elapsed time: 0.001 days.
+                        10:08:11 1990
+        develop_begin   Wed Dec 12      peter   Elapsed time: 1.490 days.
+                        10:08:38 1990
+        develop_end     Thu Dec 13      peter   Elapsed time: 0.004 days.
+                        13:49:01 1990
+        review_pass     Thu Dec 13      peter   Elapsed time: 0.004 days.
+                        13:50:59 1990
+        integrate_begin Thu Dec 13      peter   Elapsed time: 0.254 days.
+                        13:52:52 1990
+        integrate_pass  Thu Dec 13      peter
+                        15:47:15 1990
+
+IDENTIFICATION
+        Project "aegis", build 23, change 18.
+
+SUMMARY
+        Collect generic argument processing.
+
+DESCRIPTION
+        Collect generic argument processing.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       administ.c
+        source  modify  3       archaeol.c
+        source  modify  3       build.c
+        source  modify  4       cattr_ed.c
+        source  modify  3       chdir.c
+        source  modify  3       copyfile.c
+        source  modify  2       develop1.c
+        source  modify  4       develop2.c
+        source  modify  4       diff.c
+        source  modify  2       help.c
+        source  modify  2       help.h
+        source  modify  3       integra1.c
+        source  modify  6       integra2.c
+        source  modify  5       list.c
+        source  modify  3       main.c
+        source  modify  2       man1/aermu.1
+        source  modify  1       man1/z_cr.so
+        source  modify  4       new_chan.c
+        source  modify  4       new_file.c
+        source  modify  4       new_proj.c
+        source  modify  4       new_test.c
+        source  modify  3       pattr_ed.c
+        source  modify  4       rem_file.c
+        source  modify  4       review.c
+        source  modify  3       reviewer.c
+        source  modify  3       test.c
+        source  modify  4       version.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Thu Dec 13      peter   Elapsed time: 0.001 days.
+                        15:49:47 1990
+        develop_begin   Thu Dec 13      peter   Elapsed time: 1.182 days.
+                        15:50:07 1990
+        develop_end     Fri Dec 14      peter   Elapsed time: 0.005 days.
+                        17:11:49 1990
+        review_pass     Fri Dec 14      peter   Elapsed time: 0.003 days.
+                        17:13:52 1990
+        integrate_begin Fri Dec 14      peter   Elapsed time: 0.046 days.
+                        17:15:25 1990
+        integrate_fail  Fri Dec 14      peter   Unknown '\!' escape sequences.
+                        17:36:06 1990           Elapsed time: 0.554 days.
+        develop_end     Mon Dec 17      peter   Elapsed time: 0.006 days.
+                        14:15:21 1990
+        review_pass     Mon Dec 17      peter   Elapsed time: 0.004 days.
+                        14:17:58 1990
+        integrate_begin Mon Dec 17      peter   Elapsed time: 0.116 days.
+                        14:19:39 1990
+        integrate_pass  Mon Dec 17      peter
+                        15:11:38 1990
+
+IDENTIFICATION
+        Project "aegis", build 24, change 19.
+
+SUMMARY
+        Make references to argument names consistent.
+
+DESCRIPTION
+        Make references to argument names consistent.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  10      Howto.cook
+        source  modify  4       copyfile.c
+        source  modify  2       fmtgen/main.c
+        source  modify  5       new_file.c
+        source  modify  5       new_test.c
+        source  modify  6       option.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Dec 17      peter   Elapsed time: 0.004 days.
+                        16:13:04 1990
+        develop_begin   Mon Dec 17      peter   Elapsed time: 0.689 days.
+                        16:14:48 1990
+        develop_end     Mon Dec 17      peter   Elapsed time: 0.001 days.
+                        21:25:00 1990
+        review_pass     Mon Dec 17      peter   Elapsed time: 0.009 days.
+                        21:25:38 1990
+        integrate_begin Mon Dec 17      peter   Elapsed time: 0.171 days.
+                        21:29:52 1990
+        integrate_pass  Mon Dec 17      peter
+                        22:46:42 1990
+
+IDENTIFICATION
+        Project "aegis", build 25, change 20.
+
+SUMMARY
+        Add documentation skeleton.
+
+DESCRIPTION
+        Add documentation skeleton.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create          doc/aegis.mm
+        source  create          doc/c1.0.so
+        source  create          doc/c1.1.so
+        source  create          doc/c1.2.so
+        source  create          doc/c1.3.so
+        source  create          doc/c2.0.so
+        source  create          doc/c3.0.so
+        source  create          doc/c4.0.so
+        source  create          doc/c5.0.so
+        source  create          doc/c6.0.so
+        source  create          doc/c7.0.so
+        source  create          doc/c7.1.so
+        source  create          doc/c7.2.so
+        source  create          doc/cA.0.so
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Dec 17      peter   Elapsed time: 0.165 days.
+                        21:49:05 1990
+        develop_begin   Mon Dec 17      peter   Elapsed time: 0.000 days.
+                        23:03:21 1990
+        develop_end     Tue Dec 18      peter   Elapsed time: 0.002 days.
+                        14:47:32 1990
+        review_pass     Tue Dec 18      peter   Elapsed time: 0.003 days.
+                        14:48:29 1990
+        integrate_begin Tue Dec 18      peter   Elapsed time: 0.135 days.
+                        14:49:54 1990
+        integrate_pass  Tue Dec 18      peter
+                        15:50:48 1990
+
+IDENTIFICATION
+        Project "aegis", change 21.
+
+SUMMARY
+        Add the text preprocessor (tpp).
+
+DESCRIPTION
+        Add the text preprocessor (tpp).
+
+CAUSE
+        internal_enhancement
+
+STATE
+        awaiting_development
+
+FILES
+        This change has no files.
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Dec 17      peter   Elapsed time: 389.305 days.
+                        21:53:25 1990
+
+IDENTIFICATION
+        Project "aegis", build 30, change 22.
+
+SUMMARY
+        Improve construction method.
+
+DESCRIPTION
+        Improve change_files and project_files listings.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  7       list.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Tue Dec 18      pmiller Elapsed time: 0.215 days.
+                        14:31:26 1990
+        develop_begin   Tue Dec 18      pmiller Elapsed time: 68.638 days.
+                        16:08:10 1990
+        develop_end     Mon Mar 25      pmiller Elapsed time: 0.002 days.
+                        12:25:10 1991
+        develop_end_    Mon Mar 25      pmiller Elapsed time: 0.021 days.
+        undo            12:26:02 1991
+        develop_end     Mon Mar 25      pmiller Elapsed time: 0.005 days.
+                        12:35:41 1991
+        review_pass     Mon Mar 25      pmiller Elapsed time: 0.002 days.
+                        12:38:02 1991
+        integrate_begin Mon Mar 25      pmiller Elapsed time: 0.082 days.
+                        12:38:43 1991
+        integrate_pass  Mon Mar 25      pmiller
+                        13:15:25 1991
+
+IDENTIFICATION
+        Project "aegis", build 26, change 23.
+
+SUMMARY
+        Fix bugs found porting to SunOS 4.1
+
+DESCRIPTION
+        Fix bugs found porting to SunOS 4.1
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  1       gate.h
+        source  modify  2       ustate_u.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Mar 15      pmiller Elapsed time: 0.002 days.
+                        10:49:27 1991
+        develop_begin   Fri Mar 15      pmiller Elapsed time: 0.181 days.
+                        10:50:13 1991
+        develop_end     Fri Mar 15      pmiller Elapsed time: 0.002 days.
+                        12:11:34 1991
+        review_pass     Fri Mar 15      pmiller Elapsed time: 0.002 days.
+                        12:12:15 1991
+        integrate_begin Fri Mar 15      pmiller Elapsed time: 0.026 days.
+                        12:13:03 1991
+        integrate_pass  Fri Mar 15      pmiller
+                        12:24:52 1991
+
+IDENTIFICATION
+        Project "aegis", build 27, change 24.
+
+SUMMARY
+        Make 'list project_files' sensitive to changes.
+
+DESCRIPTION
+        Make 'list project_files' sensitive to changes.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  6       list.c
+        source  modify  7       option.c
+        source  modify  3       option.h
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Tue Mar 19      pmiller Elapsed time: 0.000 days.
+                        15:17:39 1991
+        develop_begin   Tue Mar 19      pmiller Elapsed time: 0.050 days.
+                        15:17:50 1991
+        develop_end     Tue Mar 19      pmiller Elapsed time: 0.001 days.
+                        15:40:17 1991
+        review_pass     Tue Mar 19      pmiller Elapsed time: 0.002 days.
+                        15:40:48 1991
+        integrate_begin Tue Mar 19      pmiller Elapsed time: 0.052 days.
+                        15:41:37 1991
+        integrate_pass  Tue Mar 19      pmiller
+                        16:04:48 1991
+
+IDENTIFICATION
+        Project "aegis", build 28, change 25.
+
+SUMMARY
+        When removing files, 'aegis -diff' attempts to diff the file in the
+        change.
+
+DESCRIPTION
+        When removing files, 'aegis -diff' attempts to diff the file in the
+        change.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  3       administ.c
+        source  modify  3       develop1.c
+        source  modify  5       develop2.c
+        source  modify  5       diff.c
+        source  modify  7       integra2.c
+        source  modify  5       rem_file.c
+        test    create          test/00/t0004a.sh
+        test    create          test/00/t0005a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Thu Mar 21      pmiller Elapsed time: 0.000 days.
+                        08:48:46 1991
+        develop_begin   Thu Mar 21      pmiller Elapsed time: 0.666 days.
+                        08:48:56 1991
+        develop_end     Thu Mar 21      pmiller Elapsed time: 0.008 days.
+                        13:48:26 1991
+        review_pass     Thu Mar 21      pmiller Elapsed time: 0.002 days.
+                        13:51:53 1991
+        integrate_begin Thu Mar 21      pmiller Elapsed time: 1.020 days.
+                        13:52:48 1991
+        integrate_pass  Fri Mar 22      pmiller
+                        14:01:57 1991
+
+IDENTIFICATION
+        Project "aegis", build 29, change 26.
+
+SUMMARY
+        The 'aegis -DIFFerence' command generated erroneous history_get
+        command.
+
+DESCRIPTION
+        The construction of the history_get command passed the wrong type of
+        argument to the 'substitute' function.  Propotype did not pack this
+        up, because it is a varargs function.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  6       diff.c
+        source  modify  8       option.c
+        test    create          test/00/t0006a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Mar 22      pmiller Elapsed time: 0.001 days.
+                        14:14:37 1991
+        develop_begin   Fri Mar 22      pmiller Elapsed time: 0.668 days.
+                        14:14:57 1991
+        develop_end     Mon Mar 25      pmiller Elapsed time: 0.005 days.
+                        11:45:45 1991
+        review_pass     Mon Mar 25      pmiller Elapsed time: 0.001 days.
+                        11:48:09 1991
+        integrate_begin Mon Mar 25      pmiller Elapsed time: 0.019 days.
+                        11:48:45 1991
+        integrate_pass  Mon Mar 25      pmiller
+                        11:57:08 1991
+
+IDENTIFICATION
+        Project "aegis", build 31, change 27.
+
+SUMMARY
+        Rearrange the source directory structure.
+
+DESCRIPTION
+        Rearrange the source directory structure to improve the way aegis is
+        built.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  11      Howto.cook
+        source  modify  1       Makefile.sh
+        source  remove  4       administ.c
+        source  remove  1       administ.h
+        source  create          aegis/administ.c
+        source  create          aegis/administ.h
+        source  create          aegis/ansi.c
+        source  create          aegis/archaeol.c
+        source  create          aegis/archaeol.h
+        source  create          aegis/arglex.c
+        source  create          aegis/arglex.h
+        source  create          aegis/build.c
+        source  create          aegis/build.h
+        source  create          aegis/cattr.def
+        source  create          aegis/cattr_ed.c
+        source  create          aegis/cattr_ed.h
+        source  create          aegis/chdir.c
+        source  create          aegis/chdir.h
+        source  create          aegis/col.c
+        source  create          aegis/col.h
+        source  create          aegis/commit.c
+        source  create          aegis/commit.h
+        source  create          aegis/common.def
+        source  create          aegis/copyfile.c
+        source  create          aegis/copyfile.h
+        source  create          aegis/cstate.def
+        source  create          aegis/cstate_c.c
+        source  create          aegis/cstate_c.h
+        source  create          aegis/cstate_u.c
+        source  create          aegis/cstate_u.h
+        source  create          aegis/defaults.c
+        source  create          aegis/defaults.h
+        source  create          aegis/develop1.c
+        source  create          aegis/develop1.h
+        source  create          aegis/develop2.c
+        source  create          aegis/develop2.h
+        source  create          aegis/diff.c
+        source  create          aegis/diff.h
+        source  create          aegis/dir.c
+        source  create          aegis/dir.h
+        source  create          aegis/error.c
+        source  create          aegis/error.h
+        source  create          aegis/file.c
+        source  create          aegis/file.h
+        source  create          aegis/gate.h
+        source  create          aegis/gram.y
+        source  create          aegis/gstate.def
+        source  create          aegis/gstate_c.c
+        source  create          aegis/gstate_c.h
+        source  create          aegis/help.c
+        source  create          aegis/help.h
+        source  create          aegis/indent.c
+        source  create          aegis/indent.h
+        source  create          aegis/integra1.c
+        source  create          aegis/integra1.h
+        source  create          aegis/integra2.c
+        source  create          aegis/integra2.h
+        source  create          aegis/io.c
+        source  create          aegis/io.h
+        source  create          aegis/lex.c
+        source  create          aegis/lex.h
+        source  create          aegis/list.c
+        source  create          aegis/list.h
+        source  create          aegis/lock.c
+        source  create          aegis/lock.h
+        source  create          aegis/log.c
+        source  create          aegis/log.h
+        source  create          aegis/main.c
+        source  create          aegis/main.h
+        source  create          aegis/mem.c
+        source  create          aegis/mem.h
+        source  create          aegis/new_chan.c
+        source  create          aegis/new_chan.h
+        source  create          aegis/new_file.c
+        source  create          aegis/new_file.h
+        source  create          aegis/new_proj.c
+        source  create          aegis/new_proj.h
+        source  create          aegis/new_rele.c
+        source  create          aegis/new_rele.h
+        source  create          aegis/new_test.c
+        source  create          aegis/new_test.h
+        source  create          aegis/option.c
+        source  create          aegis/option.h
+        source  create          aegis/os.c
+        source  create          aegis/os.h
+        source  create          aegis/parse.c
+        source  create          aegis/parse.h
+        source  create          aegis/pattr.def
+        source  create          aegis/pattr_ed.c
+        source  create          aegis/pattr_ed.h
+        source  create          aegis/pconf.def
+        source  create          aegis/pconf_c.c
+        source  create          aegis/pconf_c.h
+        source  create          aegis/pstate.def
+        source  create          aegis/pstate_c.c
+        source  create          aegis/pstate_c.h
+        source  create          aegis/pstate_u.c
+        source  create          aegis/pstate_u.h
+        source  create          aegis/rem_file.c
+        source  create          aegis/rem_file.h
+        source  create          aegis/review.c
+        source  create          aegis/review.h
+        source  create          aegis/reviewer.c
+        source  create          aegis/reviewer.h
+        source  create          aegis/str.c
+        source  create          aegis/str.h
+        source  create          aegis/sub.c
+        source  create          aegis/sub.h
+        source  create          aegis/test.c
+        source  create          aegis/test.h
+        source  create          aegis/trace.c
+        source  create          aegis/trace.h
+        source  create          aegis/tree.c
+        source  create          aegis/tree.h
+        source  create          aegis/type.c
+        source  create          aegis/type.h
+        source  create          aegis/uconf.def
+        source  create          aegis/uconf_c.c
+        source  create          aegis/uconf_c.h
+        source  create          aegis/undo.c
+        source  create          aegis/undo.h
+        source  create          aegis/ustate.def
+        source  create          aegis/ustate_c.c
+        source  create          aegis/ustate_c.h
+        source  create          aegis/ustate_u.c
+        source  create          aegis/ustate_u.h
+        source  create          aegis/version.c
+        source  create          aegis/version.h
+        source  create          aegis/word.c
+        source  create          aegis/word.h
+        source  remove  3       ansi.c
+        source  remove  4       archaeol.c
+        source  remove  1       archaeol.h
+        source  remove  3       arglex.c
+        source  remove  3       arglex.h
+        source  remove  4       build.c
+        source  remove  1       build.h
+        source  remove  2       cattr.def
+        source  remove  5       cattr_ed.c
+        source  remove  1       cattr_ed.h
+        source  remove  4       chdir.c
+        source  remove  1       chdir.h
+        source  remove  2       col.c
+        source  remove  2       col.h
+        source  remove  1       commit.c
+        source  remove  1       commit.h
+        source  remove  2       common.def
+        source  create          common/patchlevel.h
+        source  remove  5       copyfile.c
+        source  remove  1       copyfile.h
+        source  remove  3       cstate.def
+        source  remove  3       cstate_c.c
+        source  remove  1       cstate_c.h
+        source  remove  2       cstate_u.c
+        source  remove  1       cstate_u.h
+        source  remove  1       defaults.c
+        source  remove  1       defaults.h
+        source  remove  4       develop1.c
+        source  remove  1       develop1.h
+        source  remove  6       develop2.c
+        source  remove  1       develop2.h
+        source  remove  7       diff.c
+        source  remove  1       diff.h
+        source  remove  1       dir.c
+        source  remove  2       dir.h
+        source  remove  4       error.c
+        source  remove  3       error.h
+        source  remove  3       file.c
+        source  remove  1       file.h
+        source  modify  1       fmtgen/parse.y
+        source  remove  2       gate.h
+        source  remove  1       gram.y
+        source  remove  2       gstate.def
+        source  remove  4       gstate_c.c
+        source  remove  1       gstate_c.h
+        source  remove  3       help.c
+        source  remove  3       help.h
+        source  remove  3       indent.c
+        source  remove  1       indent.h
+        source  remove  4       integra1.c
+        source  remove  1       integra1.h
+        source  remove  8       integra2.c
+        source  remove  1       integra2.h
+        source  remove  1       io.c
+        source  remove  1       io.h
+        source  remove  2       lex.c
+        source  remove  1       lex.h
+        source  remove  8       list.c
+        source  remove  1       list.h
+        source  remove  3       lock.c
+        source  remove  1       lock.h
+        source  remove  4       log.c
+        source  remove  3       log.h
+        source  remove  4       main.c
+        source  remove  1       main.h
+        source  remove  1       mem.c
+        source  remove  1       mem.h
+        source  remove  5       new_chan.c
+        source  remove  1       new_chan.h
+        source  remove  6       new_file.c
+        source  remove  1       new_file.h
+        source  remove  5       new_proj.c
+        source  remove  1       new_proj.h
+        source  remove  1       new_rele.c
+        source  remove  1       new_rele.h
+        source  remove  6       new_test.c
+        source  remove  1       new_test.h
+        source  remove  9       option.c
+        source  remove  4       option.h
+        source  remove  8       os.c
+        source  remove  4       os.h
+        source  remove  1       parse.c
+        source  remove  1       parse.h
+        source  remove  1       patchlevel.h
+        source  remove  2       pattr.def
+        source  remove  4       pattr_ed.c
+        source  remove  1       pattr_ed.h
+        source  remove  4       pconf.def
+        source  remove  3       pconf_c.c
+        source  remove  1       pconf_c.h
+        source  remove  2       pstate.def
+        source  remove  3       pstate_c.c
+        source  remove  1       pstate_c.h
+        source  remove  1       pstate_u.c
+        source  remove  1       pstate_u.h
+        source  remove  6       rem_file.c
+        source  remove  1       rem_file.h
+        source  remove  5       review.c
+        source  remove  1       review.h
+        source  remove  4       reviewer.c
+        source  remove  1       reviewer.h
+        source  remove  1       str.c
+        source  remove  2       str.h
+        source  remove  1       sub.c
+        source  remove  1       sub.h
+        source  remove  4       test.c
+        source  remove  1       test.h
+        test    modify  2       test/00/t0001a.sh
+        test    modify  5       test/00/t0002a.sh
+        test    modify  1       test/00/t0003a.sh
+        test    modify  1       test/00/t0004a.sh
+        test    modify  1       test/00/t0005a.sh
+        test    modify  1       test/00/t0006a.sh
+        source  remove  3       trace.c
+        source  remove  2       trace.h
+        source  remove  5       tree.c
+        source  remove  2       tree.h
+        source  remove  1       type.c
+        source  remove  1       type.h
+        source  remove  2       uconf.def
+        source  remove  3       uconf_c.c
+        source  remove  1       uconf_c.h
+        source  remove  1       undo.c
+        source  remove  1       undo.h
+        source  remove  2       ustate.def
+        source  remove  3       ustate_c.c
+        source  remove  1       ustate_c.h
+        source  remove  3       ustate_u.c
+        source  remove  1       ustate_u.h
+        source  remove  5       version.c
+        source  remove  1       version.h
+        source  remove  1       word.c
+        source  remove  1       word.h
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Tue Mar 26      pmiller Elapsed time: 0.000 days.
+                        09:36:19 1991
+        develop_begin   Tue Mar 26      pmiller Elapsed time: 1.318 days.
+                        09:36:31 1991
+        develop_end     Wed Mar 27      pmiller Elapsed time: 0.090 days.
+                        11:59:43 1991
+        review_pass     Wed Mar 27      pmiller Elapsed time: 0.007 days.
+                        12:40:15 1991
+        integrate_begin Wed Mar 27      pmiller Elapsed time: 0.334 days.
+                        12:43:27 1991
+        integrate_pass  Wed Mar 27      pmiller
+                        15:13:42 1991
+
+IDENTIFICATION
+        Project "aegis", build 32, change 28.
+
+SUMMARY
+        Fix copyright dates.
+
+DESCRIPTION
+        Fix copyright dates.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  12      Howto.cook
+        source  modify  1       MANIFEST.sh
+        source  create          Makefile.awk
+        source  modify  2       Makefile.sh
+        source  modify  1       README
+        source  modify  3       config
+        source  modify  3       fmtgen/ansi.c
+        source  modify  1       fmtgen/arglex.c
+        source  modify  1       fmtgen/arglex.h
+        source  modify  1       fmtgen/error.c
+        source  modify  1       fmtgen/error.h
+        source  modify  1       fmtgen/id.c
+        source  modify  1       fmtgen/id.h
+        source  modify  1       fmtgen/indent.c
+        source  modify  1       fmtgen/indent.h
+        source  modify  2       fmtgen/lex.c
+        source  modify  1       fmtgen/lex.h
+        source  modify  3       fmtgen/main.c
+        source  modify  1       fmtgen/main.h
+        source  modify  1       fmtgen/mem.c
+        source  modify  1       fmtgen/mem.h
+        source  modify  2       fmtgen/str.c
+        source  modify  2       fmtgen/str.h
+        source  modify  1       fmtgen/type.c
+        source  modify  2       fmtgen/type.h
+        source  modify  2       fmtgen/type_enum.c
+        source  modify  1       fmtgen/type_integ.c
+        source  modify  1       fmtgen/type_list.c
+        source  modify  1       fmtgen/type_ref.c
+        source  modify  1       fmtgen/type_strin.c
+        source  modify  3       fmtgen/type_struc.c
+        source  modify  1       fmtgen/word.c
+        source  modify  1       fmtgen/word.h
+        source  modify  2       man1/aea.1
+        source  modify  2       man1/aeb.1
+        source  modify  1       man1/aeca.1
+        source  modify  2       man1/aecd.1
+        source  modify  2       man1/aecp.1
+        source  modify  2       man1/aecpu.1
+        source  modify  2       man1/aed.1
+        source  modify  2       man1/aedb.1
+        source  modify  1       man1/aedbu.1
+        source  modify  3       man1/aede.1
+        source  modify  2       man1/aedeu.1
+        source  modify  1       man1/aega.1
+        source  modify  2       man1/aegis.1
+        source  modify  2       man1/aeib.1
+        source  modify  2       man1/aeibu.1
+        source  modify  2       man1/aeif.1
+        source  modify  2       man1/aeip.1
+        source  modify  3       man1/ael.1
+        source  modify  1       man1/aena.1
+        source  modify  2       man1/aenc.1
+        source  modify  2       man1/aencu.1
+        source  modify  1       man1/aend.1
+        source  modify  2       man1/aenf.1
+        source  modify  2       man1/aenfu.1
+        source  modify  1       man1/aeni.1
+        source  modify  2       man1/aenpr.1
+        source  modify  2       man1/aenrls.1
+        source  modify  1       man1/aenrv.1
+        source  modify  2       man1/aent.1
+        source  modify  1       man1/aentu.1
+        source  modify  1       man1/aepa.1
+        source  modify  2       man1/aera.1
+        source  modify  1       man1/aerd.1
+        source  modify  2       man1/aerf.1
+        source  modify  1       man1/aeri.1
+        source  modify  2       man1/aerm.1
+        source  modify  3       man1/aermu.1
+        source  modify  2       man1/aerp.1
+        source  modify  1       man1/aerpr.1
+        source  modify  2       man1/aerrv.1
+        source  modify  2       man1/aet.1
+        source  modify  2       man1/aeua.1
+        source  modify  2       man1/aev.1
+        source  modify  2       man1/o__rules.so
+        source  modify  1       man1/o_auto.so
+        source  modify  1       man1/o_baselin.so
+        source  modify  1       man1/o_change.so
+        source  modify  1       man1/o_devdir.so
+        source  modify  1       man1/o_dir.so
+        source  modify  1       man1/o_help.so
+        source  modify  1       man1/o_indep.so
+        source  modify  1       man1/o_keep.so
+        source  modify  1       man1/o_list.so
+        source  modify  1       man1/o_manual.so
+        source  modify  1       man1/o_min.so
+        source  modify  1       man1/o_overw.so
+        source  modify  1       man1/o_page.so
+        source  modify  1       man1/o_project.so
+        source  modify  1       man1/o_terse.so
+        source  modify  1       man1/o_verbose.so
+        source  modify  2       man1/z_cr.so
+        source  modify  1       man1/z_exit.so
+        source  modify  1       man1/z_name.so
+        source  modify  1       man5/aecattr.5
+        source  modify  2       man5/aecstate.5
+        source  modify  1       man5/aedir.5
+        source  modify  1       man5/aegis.5
+        source  modify  1       man5/aegstate.5
+        source  modify  1       man5/aepattr.5
+        source  modify  2       man5/aepconf.5
+        source  modify  1       man5/aepstate.5
+        source  modify  1       man5/aeuconf.5
+        source  modify  1       man5/aeustate.5
+        source  modify  1       man5/z_cr.so
+        source  modify  1       man5/z_name.so
+        test    modify  3       test/00/t0001a.sh
+        test    modify  6       test/00/t0002a.sh
+        test    modify  2       test/00/t0003a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Mar 27      pmiller Elapsed time: 0.000 days.
+                        15:18:25 1991
+        develop_begin   Wed Mar 27      pmiller Elapsed time: 0.091 days.
+                        15:18:37 1991
+        develop_end     Wed Mar 27      pmiller Elapsed time: 0.001 days.
+                        15:59:34 1991
+        review_pass     Wed Mar 27      pmiller Elapsed time: 0.002 days.
+                        16:00:10 1991
+        integrate_begin Wed Mar 27      pmiller Elapsed time: 0.026 days.
+                        16:01:03 1991
+        integrate_pass  Wed Mar 27      pmiller
+                        16:12:56 1991
+
+IDENTIFICATION
+        Project "aegis", build 33, change 29.
+
+SUMMARY
+        fix edit number in change file list when in 'completed' state
+
+DESCRIPTION
+        fix edit number in change file list when in 'completed' state
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  1       aegis/integra2.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Sat Apr 13      pmiller Elapsed time: 0.000 days.
+                        14:53:26 1991
+        develop_begin   Sat Apr 13      pmiller Elapsed time: 0.046 days.
+                        14:53:38 1991
+        develop_end     Sat Apr 13      pmiller Elapsed time: 0.002 days.
+                        15:14:21 1991
+        review_pass     Sat Apr 13      pmiller Elapsed time: 0.002 days.
+                        15:15:02 1991
+        integrate_begin Sat Apr 13      pmiller Elapsed time: 0.017 days.
+                        15:15:49 1991
+        integrate_pass  Sat Apr 13      pmiller
+                        15:23:16 1991
+
+IDENTIFICATION
+        Project "aegis", build 34, change 30.
+
+SUMMARY
+        modified tests don't have to fail baseline
+
+DESCRIPTION
+        modified tests don't have to fail baseline
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       aegis/test.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Mon Apr 22      pmiller Elapsed time: 0.001 days.
+                        09:16:04 1991
+        develop_begin   Mon Apr 22      pmiller Elapsed time: 0.073 days.
+                        09:16:18 1991
+        develop_end     Mon Apr 22      pmiller Elapsed time: 0.000 days.
+                        09:49:09 1991
+        review_pass     Mon Apr 22      pmiller Elapsed time: 0.002 days.
+                        09:49:14 1991
+        integrate_begin Mon Apr 22      pmiller Elapsed time: 0.011 days.
+                        09:49:59 1991
+        integrate_pass  Mon Apr 22      pmiller
+                        09:55:01 1991
+
+IDENTIFICATION
+        Project "aegis", build 35, change 31.
+
+SUMMARY
+        when following directory trees, use lstat
+
+DESCRIPTION
+        when following directory trees, use lstat
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       aegis/commit.c
+        source  modify  2       aegis/dir.c
+        source  modify  2       aegis/dir.h
+        source  modify  2       aegis/gate.h
+        source  modify  2       aegis/os.c
+        source  modify  2       aegis/tree.c
+        test    create  1       test/00/t0007a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Jun 12      pmiller Elapsed time: 0.001 days.
+                        09:51:49 1991
+        develop_begin   Wed Jun 12      pmiller Elapsed time: 0.348 days.
+                        09:52:24 1991
+        develop_end     Wed Jun 12      pmiller Elapsed time: 0.004 days.
+                        12:28:57 1991
+        review_pass     Wed Jun 12      pmiller Elapsed time: 0.002 days.
+                        12:30:58 1991
+        integrate_begin Wed Jun 12      pmiller Elapsed time: 0.039 days.
+                        12:31:43 1991
+        integrate_pass  Wed Jun 12      pmiller
+                        12:49:29 1991
+
+IDENTIFICATION
+        Project "aegis", build 37, change 32.
+
+SUMMARY
+        File name was being echoed on every file copy operation.
+
+DESCRIPTION
+        don't echo file on copy
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       aegis/file.c
+        source  modify  3       aegis/integra2.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Jun 12      pmiller Elapsed time: 0.000 days.
+                        12:58:38 1991
+        develop_begin   Wed Jun 12      pmiller Elapsed time: 0.093 days.
+                        12:58:49 1991
+        develop_end     Wed Jun 12      pmiller Elapsed time: 0.000 days.
+                        13:40:46 1991
+        review_pass     Wed Jun 12      pmiller Elapsed time: 0.002 days.
+                        13:40:56 1991
+        integrate_begin Wed Jun 12      pmiller Elapsed time: 0.032 days.
+                        13:41:38 1991
+        integrate_      Wed Jun 12      pmiller Elapsed time: 0.002 days.
+        begin_undo      13:56:05 1991
+        integrate_begin Wed Jun 12      pmiller Elapsed time: 0.197 days.
+                        13:57:08 1991
+        integrate_pass  Wed Jun 12      pmiller
+                        15:25:51 1991
+
+IDENTIFICATION
+        Project "aegis", build 38, change 33.
+
+SUMMARY
+        aeib -min., don't copy files which have bben deleted
+
+DESCRIPTION
+        aeib -min., don't copy files which have bben deleted
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  3       aegis/tree.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Jun 12      pmiller Elapsed time: 0.000 days.
+                        15:27:48 1991
+        develop_begin   Wed Jun 12      pmiller Elapsed time: 0.126 days.
+                        15:27:58 1991
+        develop_end     Wed Jun 12      pmiller Elapsed time: 0.001 days.
+                        16:24:50 1991
+        review_pass     Wed Jun 12      pmiller Elapsed time: 0.009 days.
+                        16:25:06 1991
+        integrate_begin Wed Jun 12      pmiller Elapsed time: 0.020 days.
+                        16:28:56 1991
+        integrate_pass  Wed Jun 12      pmiller
+                        16:38:06 1991
+
+IDENTIFICATION
+        Project "aegis", build 39, change 34.
+
+SUMMARY
+        add '%(name)' substitution
+
+DESCRIPTION
+        add '%(name)' substitution
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  14      Howto.cook
+        source  modify  2       aegis/sub.c
+        test    create  1       test/00/t0008a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Aug 28      pmiller Elapsed time: 0.000 days.
+                        10:46:42 1991
+        develop_begin   Wed Aug 28      pmiller Elapsed time: 0.364 days.
+                        10:46:51 1991
+        develop_end     Wed Aug 28      pmiller Elapsed time: 0.001 days.
+                        13:30:33 1991
+        review_pass     Wed Aug 28      pmiller Elapsed time: 0.002 days.
+                        13:30:53 1991
+        integrate_begin Wed Aug 28      pmiller Elapsed time: 0.070 days.
+                        13:31:35 1991
+        integrate_pass  Wed Aug 28      pmiller
+                        14:02:58 1991
+
+IDENTIFICATION
+        Project "aegis", build 40, change 35.
+
+SUMMARY
+        teach forground/background difference on suns
+
+DESCRIPTION
+        teach forground/background difference on suns
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       aegis/log.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Aug 28      pmiller Elapsed time: 0.001 days.
+                        16:13:49 1991
+        develop_begin   Wed Aug 28      pmiller Elapsed time: 0.023 days.
+                        16:14:07 1991
+        develop_end     Wed Aug 28      pmiller Elapsed time: 0.001 days.
+                        16:24:17 1991
+        review_pass     Wed Aug 28      pmiller Elapsed time: 0.002 days.
+                        16:24:42 1991
+        integrate_begin Wed Aug 28      pmiller Elapsed time: 0.012 days.
+                        16:25:27 1991
+        integrate_pass  Wed Aug 28      pmiller
+                        16:30:42 1991
+
+IDENTIFICATION
+        Project "aegis", build 41, change 36.
+
+SUMMARY
+        Do not run tests which a change is modifying whe using the -regression
+        option.
+
+DESCRIPTION
+        Do not run tests which a change is modifying whe using the -regression
+        option.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  3       aegis/test.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Oct 18      pmiller Elapsed time: 0.003 days.
+                        11:32:35 1991
+        develop_begin   Fri Oct 18      pmiller Elapsed time: 0.040 days.
+                        11:33:51 1991
+        develop_end     Fri Oct 18      pmiller Elapsed time: 0.000 days.
+                        11:51:50 1991
+        review_pass     Fri Oct 18      pmiller Elapsed time: 0.002 days.
+                        11:52:02 1991
+        integrate_begin Fri Oct 18      pmiller Elapsed time: 0.054 days.
+                        11:53:07 1991
+        integrate_pass  Fri Oct 18      pmiller
+                        12:17:32 1991
+
+IDENTIFICATION
+        Project "aegis", build 42, change 37.
+
+SUMMARY
+        add major and minor version number to project status
+
+DESCRIPTION
+        add major and minor version number to project status
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  15      Howto.cook
+        source  modify  2       aegis/build.c
+        source  modify  2       aegis/copyfile.c
+        source  modify  3       aegis/gate.h
+        source  modify  4       aegis/integra2.c
+        source  modify  2       aegis/list.c
+        source  modify  2       aegis/list.h
+        source  remove  1       aegis/main.h
+        source  modify  2       aegis/new_file.c
+        source  modify  2       aegis/new_proj.c
+        source  modify  2       aegis/pstate.def
+        source  modify  2       aegis/pstate_c.c
+        source  modify  2       aegis/pstate_u.c
+        source  modify  2       aegis/rem_file.c
+        source  modify  2       aegis/str.c
+        source  modify  2       aegis/trace.h
+        source  create  1       common/main.h
+        source  modify  5       config
+        source  remove  2       fmtgen/main.h
+        source  modify  4       man5/aepconf.5
+        source  modify  3       man5/aepstate.5
+        test    modify  8       test/00/t0002a.sh
+        test    modify  3       test/00/t0004a.sh
+        test    modify  3       test/00/t0005a.sh
+        test    modify  3       test/00/t0006a.sh
+        test    modify  2       test/00/t0007a.sh
+        test    modify  2       test/00/t0008a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Sun May  3      pmiller Elapsed time: 0.001 days.
+                        22:12:19 1992
+        develop_begin   Sun May  3      pmiller Elapsed time: 1.118 days.
+                        22:12:45 1992
+        develop_end     Tue May  5      pmiller Elapsed time: 0.001 days.
+                        15:36:00 1992
+        review_pass     Tue May  5      pmiller Elapsed time: 0.002 days.
+                        15:36:27 1992
+        integrate_begin Tue May  5      pmiller Elapsed time: 0.066 days.
+                        15:37:12 1992
+        integrate_pass  Tue May  5      pmiller
+                        16:07:03 1992
+
+IDENTIFICATION
+        Project "aegis", build 43, change 38.
+
+SUMMARY
+        add -New_ReLeaSe command
+
+DESCRIPTION
+        add -New_ReLeaSe command, improve logging when in background, notice
+        PAGER env var when giving -Help.
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  18      Howto.cook
+        source  modify  4       aegis/administ.c
+        source  modify  4       aegis/archaeol.c
+        source  modify  4       aegis/arglex.c
+        source  modify  4       aegis/arglex.h
+        source  modify  5       aegis/build.c
+        source  modify  4       aegis/cattr_ed.c
+        source  create  1       aegis/change.c
+        source  create  1       aegis/change.h
+        source  modify  3       aegis/chdir.c
+        source  modify  4       aegis/commit.c
+        source  modify  4       aegis/copyfile.c
+        source  remove  1       aegis/cstate_c.c
+        source  remove  1       aegis/cstate_c.h
+        source  remove  1       aegis/cstate_u.c
+        source  remove  1       aegis/cstate_u.h
+        source  modify  3       aegis/develop1.c
+        source  modify  3       aegis/develop2.c
+        source  modify  3       aegis/diff.c
+        source  modify  4       aegis/dir.c
+        source  modify  4       aegis/dir.h
+        source  modify  3       aegis/error.c
+        source  modify  3       aegis/error.h
+        source  modify  3       aegis/help.c
+        source  modify  3       aegis/integra1.c
+        source  modify  6       aegis/integra2.c
+        source  modify  4       aegis/list.c
+        source  modify  4       aegis/list.h
+        source  modify  3       aegis/lock.c
+        source  modify  3       aegis/lock.h
+        source  modify  4       aegis/log.c
+        source  modify  3       aegis/log.h
+        source  modify  3       aegis/main.c
+        source  modify  3       aegis/new_chan.c
+        source  modify  4       aegis/new_file.c
+        source  modify  4       aegis/new_proj.c
+        source  modify  3       aegis/new_rele.c
+        source  modify  3       aegis/new_test.c
+        source  modify  3       aegis/option.c
+        source  modify  3       aegis/option.h
+        source  modify  4       aegis/os.c
+        source  modify  3       aegis/os.h
+        source  modify  3       aegis/pattr_ed.c
+        source  remove  1       aegis/pconf_c.c
+        source  remove  1       aegis/pconf_c.h
+        source  create  1       aegis/project.c
+        source  create  1       aegis/project.h
+        source  modify  4       aegis/pstate.def
+        source  remove  2       aegis/pstate_c.c
+        source  remove  1       aegis/pstate_c.h
+        source  remove  2       aegis/pstate_u.c
+        source  remove  1       aegis/pstate_u.h
+        source  modify  4       aegis/rem_file.c
+        source  modify  3       aegis/review.c
+        source  modify  3       aegis/reviewer.c
+        source  modify  4       aegis/str.c
+        source  modify  3       aegis/str.h
+        source  modify  4       aegis/sub.c
+        source  modify  3       aegis/sub.h
+        source  modify  5       aegis/test.c
+        source  modify  5       aegis/tree.c
+        source  modify  3       aegis/tree.h
+        source  modify  3       aegis/ustate_u.c
+        source  modify  3       aegis/ustate_u.h
+        source  modify  3       aegis/version.c
+        source  remove  1       common/patchlevel.h
+        source  modify  5       man1/aeb.1
+        source  modify  5       man1/aecp.1
+        source  modify  5       man1/aed.1
+        source  modify  5       man1/aeip.1
+        source  modify  5       man1/aenf.1
+        source  modify  5       man1/aenrls.1
+        source  modify  5       man1/aerm.1
+        source  create  1       man1/o_major.so
+        source  modify  4       man1/o_min.so
+        source  create  1       man1/o_minor.so
+        source  create  1       man1/o_nolog.so
+        source  modify  5       man1/z_cr.so
+        source  modify  4       man1/z_intuit.so
+        source  modify  5       man5/aepstate.5
+        test    modify  10      test/00/t0002a.sh
+        test    modify  5       test/00/t0004a.sh
+        test    modify  5       test/00/t0005a.sh
+        test    modify  5       test/00/t0006a.sh
+        test    modify  4       test/00/t0007a.sh
+        test    modify  4       test/00/t0008a.sh
+        test    create  1       test/00/t0009a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Tue May  5      pmiller Elapsed time: 0.000 days.
+                        16:41:49 1992
+        develop_begin   Tue May  5      pmiller Elapsed time: 19.787 days.
+                        16:42:01 1992
+        develop_end     Sat May 30      pmiller Elapsed time: 0.001 days.
+                        22:36:07 1992
+        review_pass     Sat May 30      pmiller Elapsed time: 0.002 days.
+                        22:36:42 1992
+        integrate_begin Sat May 30      pmiller Elapsed time: 0.132 days.
+                        22:37:45 1992
+        integrate_pass  Sat May 30      pmiller
+                        23:37:20 1992
+
+IDENTIFICATION
+        Project "aegis", build 44, change 39.
+
+SUMMARY
+        implement the -Review_Pass_Undo command
+
+DESCRIPTION
+        implement the -Review_Pass_Undo command
+
+CAUSE
+        internal_enhancement
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       CHANGES.sh
+        source  modify  19      Howto.cook
+        source  modify  3       README
+        source  modify  5       aegis/arglex.c
+        source  modify  5       aegis/arglex.h
+        source  modify  6       aegis/build.c
+        source  modify  2       aegis/change.c
+        source  modify  2       aegis/col.c
+        source  modify  4       aegis/develop2.c
+        source  modify  4       aegis/diff.c
+        source  modify  7       aegis/integra2.c
+        source  modify  5       aegis/list.c
+        source  modify  5       aegis/list.h
+        source  modify  4       aegis/main.c
+        source  modify  4       aegis/new_rele.c
+        source  modify  5       aegis/os.c
+        source  modify  4       aegis/os.h
+        source  modify  2       aegis/pattr.def
+        source  modify  4       aegis/review.c
+        source  modify  6       aegis/test.c
+        source  modify  4       man1/aegis.1
+        source  create  1       man1/aerpu.1
+        source  modify  3       man1/o_help.so
+        source  modify  3       man1/o_list.so
+        source  modify  3       man1/o_terse.so
+        source  modify  3       man5/aepattr.5
+        source  modify  6       man5/aepstate.5
+        source  create  1       notify/de.sh
+        source  create  1       notify/deu.sh
+        source  create  1       notify/if.sh
+        source  create  1       notify/ip.sh
+        source  create  1       notify/rf.sh
+        source  create  1       notify/rp.sh
+        source  create  1       notify/rpu.sh
+        test    create  1       test/00/t0010a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Sat May 30      pmiller Elapsed time: 0.003 days.
+                        23:48:29 1992
+        develop_begin   Sat May 30      pmiller Elapsed time: 1.950 days.
+                        23:49:53 1992
+        develop_end     Tue Jun  2      pmiller Elapsed time: 0.003 days.
+                        23:27:33 1992
+        review_pass     Tue Jun  2      pmiller Elapsed time: 0.005 days.
+                        23:28:44 1992
+        integrate_begin Tue Jun  2      pmiller Elapsed time: 0.843 days.
+                        23:30:51 1992
+        integrate_pass  Wed Jun  3      pmiller
+                        22:20:12 1992
+
+IDENTIFICATION
+        Project "aegis", build 45, change 40.
+
+SUMMARY
+        fix pattred to copy the notify commands
+
+DESCRIPTION
+        The aegis -Project_Attributes command failed to list all of the
+        attributes, and failed to modify some attributes when named in the
+        attributes input file.  One of the notify commands was absent
+        completely.
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       CHANGES.sh
+        source  modify  20      Howto.cook
+        source  modify  5       aegis/develop2.c
+        source  modify  3       aegis/pattr.def
+        source  modify  4       aegis/pattr_ed.c
+        source  modify  4       man5/aepattr.5
+        source  modify  7       man5/aepstate.5
+        test    modify  6       test/00/t0006a.sh
+        test    modify  2       test/00/t0009a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Wed Jun  3      pmiller Elapsed time: 0.001 days.
+                        22:23:39 1992
+        develop_begin   Wed Jun  3      pmiller Elapsed time: 0.239 days.
+                        22:23:58 1992
+        develop_end     Thu Jun  4      pmiller Elapsed time: 0.710 days.
+                        16:41:29 1992
+        review_pass     Thu Jun  4      pmiller Elapsed time: 0.005 days.
+                        22:00:55 1992
+        integrate_begin Thu Jun  4      pmiller Elapsed time: 0.089 days.
+                        22:03:00 1992
+        integrate_pass  Thu Jun  4      pmiller
+                        22:43:08 1992
+
+IDENTIFICATION
+        Project "aegis", build 46, change 41.
+
+SUMMARY
+        make notify commands ignore exit status
+
+DESCRIPTION
+        make notify commands ignore exit status
+
+CAUSE
+        internal_bug
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  21      Howto.cook
+        source  remove  2       MANIFEST.sh
+        source  modify  7       aegis/build.c
+        source  modify  3       aegis/change.c
+        source  modify  6       aegis/develop2.c
+        source  modify  5       aegis/diff.c
+        source  modify  8       aegis/integra2.c
+        source  modify  5       aegis/new_rele.c
+        source  modify  6       aegis/os.c
+        source  modify  5       aegis/os.h
+        source  modify  5       aegis/review.c
+        source  modify  7       aegis/test.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Thu Jun  4      pmiller Elapsed time: 0.000 days.
+                        22:45:43 1992
+        develop_begin   Thu Jun  4      pmiller Elapsed time: 0.180 days.
+                        22:45:56 1992
+        develop_end     Fri Jun  5      pmiller Elapsed time: 0.002 days.
+                        16:37:05 1992
+        review_pass     Fri Jun  5      pmiller Elapsed time: 0.007 days.
+                        16:37:58 1992
+        integrate_begin Fri Jun  5      pmiller Elapsed time: 0.666 days.
+                        16:41:18 1992
+        integrate_pass  Fri Jun  5      pmiller
+                        21:41:06 1992
+
+IDENTIFICATION
+        Project "aegis", build 47, change 42.
+
+SUMMARY
+        make sub.c do the right thing for notify commands
+
+DESCRIPTION
+        The aegis/sub.c substitute() function was failing to include the
+        baseline path for changes in states between being_developed and being_
+        integrated, thus causing the notification command to fail.
+
+CAUSE
+        chain
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       ALPHA.NOTICE
+        source  modify  4       README
+        source  modify  7       aegis/develop2.c
+        source  modify  6       aegis/review.c
+        source  modify  5       aegis/sub.c
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Jun  5      pmiller Elapsed time: 0.000 days.
+                        21:43:25 1992
+        develop_begin   Fri Jun  5      pmiller Elapsed time: 0.182 days.
+                        21:43:35 1992
+        develop_end     Fri Jun  5      pmiller Elapsed time: 0.001 days.
+                        23:05:17 1992
+        review_pass     Fri Jun  5      pmiller Elapsed time: 0.002 days.
+                        23:05:46 1992
+        integrate_begin Fri Jun  5      pmiller Elapsed time: 0.063 days.
+                        23:06:49 1992
+        integrate_pass  Fri Jun  5      pmiller
+                        23:34:58 1992
+
+IDENTIFICATION
+        Project "aegis", build 48, change 43.
+
+SUMMARY
+        make -lib add to search path
+
+DESCRIPTION
+        A search path of project pointers and user indexes was added, via the -
+        LIBrary option, to allow users to have their own projects, and also to
+        have a system area.
+        This resulted in a large amount of internal re-arrangement to handle
+        the search list and the user state files.
+        An error in the locking mechanism is fixed.
+        Manual entries now include the -LIBrary option.
+        More user guide has been written.
+
+CAUSE
+        internal_enhancement
+
+STATE
+        being_integrated
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  21      Howto.cook
+        source  modify  3       Makefile.sh
+        source  modify  4       aegis/administ.c
+        source  modify  4       aegis/archaeol.c
+        source  modify  7       aegis/build.c
+        source  modify  4       aegis/cattr_ed.c
+        source  modify  3       aegis/change.c
+        source  modify  1       aegis/change.h
+        source  modify  3       aegis/chdir.c
+        source  modify  4       aegis/copyfile.c
+        source  modify  3       aegis/develop1.c
+        source  modify  7       aegis/develop2.c
+        source  modify  5       aegis/diff.c
+        source  create          aegis/gonzo.c
+        source  create          aegis/gonzo.h
+        source  remove  1       aegis/gstate_c.c
+        source  remove  1       aegis/gstate_c.h
+        source  modify  3       aegis/help.c
+        source  modify  3       aegis/integra1.c
+        source  modify  8       aegis/integra2.c
+        source  modify  5       aegis/list.c
+        source  modify  3       aegis/lock.c
+        source  modify  3       aegis/lock.h
+        source  modify  4       aegis/log.c
+        source  modify  3       aegis/new_chan.c
+        source  modify  4       aegis/new_file.c
+        source  modify  4       aegis/new_proj.c
+        source  modify  5       aegis/new_rele.c
+        source  modify  3       aegis/new_test.c
+        source  modify  3       aegis/option.c
+        source  modify  3       aegis/option.h
+        source  modify  6       aegis/os.c
+        source  modify  5       aegis/os.h
+        source  modify  4       aegis/pattr_ed.c
+        source  modify  1       aegis/project.c
+        source  modify  1       aegis/project.h
+        source  modify  4       aegis/rem_file.c
+        source  modify  6       aegis/review.c
+        source  modify  1       aegis/review.h
+        source  modify  3       aegis/reviewer.c
+        source  modify  7       aegis/test.c
+        source  remove  1       aegis/uconf_c.c
+        source  remove  1       aegis/uconf_c.h
+        source  create          aegis/user.c
+        source  create          aegis/user.h
+        source  remove  1       aegis/ustate_c.c
+        source  remove  1       aegis/ustate_c.h
+        source  remove  3       aegis/ustate_u.c
+        source  remove  3       aegis/ustate_u.h
+        source  modify  1       aegis/word.c
+        source  modify  1       aegis/word.h
+        source  modify  1       doc/c2.0.so
+        source  create          doc/c2.1.so
+        source  create          doc/c2.2.so
+        source  create          doc/c2.3.so
+        source  create          doc/c2.4.so
+        source  create          dot.cshrc
+        source  create          dot.profile
+        source  modify  4       man1/aegis.1
+        source  modify  3       man1/aenpr.1
+        source  modify  5       man1/aenrls.1
+        source  create          man1/o_lib.so
+        test    modify  10      test/00/t0002a.sh
+        test    modify  5       test/00/t0004a.sh
+        test    modify  5       test/00/t0005a.sh
+        test    modify  6       test/00/t0006a.sh
+        test    modify  4       test/00/t0007a.sh
+        test    modify  4       test/00/t0008a.sh
+        test    modify  2       test/00/t0009a.sh
+        test    modify  1       test/00/t0010a.sh
+        test    create          test/00/t0011a.sh
+
+HISTORY
+        What            When            Who     Comment
+        ------          ------          -----   ---------
+        new_change      Fri Jun  5      pmiller Elapsed time: 0.001 days.
+                        23:38:41 1992
+        develop_begin   Fri Jun  5      pmiller Elapsed time: 4.903 days.
+                        23:38:57 1992
+        develop_end     Sat Jun 13      pmiller Elapsed time: 0.003 days.
+                        15:25:22 1992
+        review_pass     Sat Jun 13      pmiller Elapsed time: 0.002 days.
+                        15:26:50 1992
+        integrate_begin Sat Jun 13      pmiller Elapsed time: 0.030 days.
+                        15:27:46 1992

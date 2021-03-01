@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2003, 2006-2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aemeasure
 .TH "aemeasure" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -62,7 +61,7 @@ T};T{
 GNU Groff input
 T}
 .TE
-.so z_metrics.so
+.so lib/en/man1/z_metrics.so
 .SH OPTIONS
 The following option is understood
 .TP
@@ -77,8 +76,8 @@ The name must be one of the following:
 \f[CW]generic\fP.
 Any other name will result in an error.
 .RE
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 .IR aeipass (1)
@@ -86,4 +85,5 @@ pass a change integration
 .TP 8n
 .IR aemetrics (5)
 metrics values file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

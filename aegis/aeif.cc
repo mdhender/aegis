@@ -1,31 +1,32 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1991-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 #include <common/ac/sys/types.h>
 #include <common/ac/sys/stat.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex/change.h>
@@ -131,7 +132,7 @@ check_permissions(change::pointer cp, user_ty::pointer up)
     //
     if (cstate_data->state != cstate_state_being_integrated)
         change_fatal(cp, 0, i18n("bad if state"));
-    if (nstring(change_integrator_name(cp)) != up->name())
+    if (nstring(cp->integrator_name()) != up->name())
         change_fatal(cp, 0, i18n("not integrator"));
 }
 
@@ -146,7 +147,7 @@ integrate_fail_main(void)
     string_ty       *dir;
     int             j;
     string_ty       *project_name;
-    project_ty      *pp;
+    project      *pp;
     long            change_number;
     change::pointer cp;
     user_ty::pointer up;
@@ -312,7 +313,7 @@ integrate_fail_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -401,7 +402,7 @@ integrate_fail_main(void)
     // add it back into the developer's change list.
     //
     up->own_remove(pp, change_number);
-    devup = user_ty::create(nstring(change_developer_name(cp)));
+    devup = user_ty::create(nstring(cp->developer_name()));
     devup->own_add(pp, change_number);
 
     //
@@ -416,8 +417,7 @@ integrate_fail_main(void)
         c_src_data = change_file_nth(cp, j, view_path_first);
         if (!c_src_data)
             break;
-        p_src_data =
-            project_file_find(pp, c_src_data->file_name, view_path_none);
+        p_src_data = pp->file_find(c_src_data->file_name, view_path_none);
         if (!p_src_data)
         {
             // This is actualy a bug.
@@ -493,7 +493,7 @@ integrate_fail_main(void)
     //
     // write out the data and release the locks
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     up->ustate_write();
     devup->ustate_write();
     pp->pstate_write();
@@ -534,3 +534,6 @@ integrate_fail(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), integrate_fail_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

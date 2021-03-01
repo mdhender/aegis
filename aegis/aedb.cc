@@ -1,22 +1,23 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
@@ -24,9 +25,9 @@
 #include <common/ac/sys/types.h>
 #include <common/ac/sys/stat.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex2.h>
@@ -36,7 +37,7 @@
 #include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <libaegis/common.h>
+#include <libaegis/common.fmtgen.h>
 #include <libaegis/dir.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
@@ -97,25 +98,12 @@ develop_begin_list(void)
 static void
 develop_begin_main(void)
 {
-    cstate_history_ty *history_data;
-    string_ty       *devdir;
-    string_ty       *project_name;
-    project_ty      *pp;
-    long            change_number;
-    change::pointer cp;
-    user_ty::pointer up;
-    pconf_ty        *pconf_data;
-    string_ty       *usr;
-    user_ty::pointer up2;
-    log_style_ty    log_style;
-
     trace(("develop_begin_main()\n{\n"));
+    change_identifier cid;
     arglex();
-    project_name = 0;
-    change_number = 0;
-    devdir = 0;
-    usr = 0;
-    log_style = log_style_create_default;
+    string_ty *devdir = 0;
+    nstring usr;
+    log_style_ty log_style = log_style_create_default;
     string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -125,17 +113,16 @@ develop_begin_main(void)
             generic_argument(develop_begin_usage);
             continue;
 
+        case arglex_token_branch:
         case arglex_token_change:
-            arglex();
-            // fall through...
-
+        case arglex_token_delta_date:
+        case arglex_token_delta_from_change:
+        case arglex_token_grandparent:
         case arglex_token_number:
-            arglex_parse_change
-            (
-                &project_name,
-                &change_number,
-                develop_begin_usage
-            );
+        case arglex_token_project:
+        case arglex_token_string:
+        case arglex_token_trunk:
+            cid.command_line_parse(develop_begin_usage);
             continue;
 
         case arglex_token_directory:
@@ -160,20 +147,12 @@ develop_begin_main(void)
             devdir = str_from_c(arglex_value.alv_string);
             break;
 
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, develop_begin_usage);
-            continue;
-
         case arglex_token_user:
-            if (usr)
+            if (!usr.empty())
                 duplicate_option(develop_begin_usage);
             if (arglex() != arglex_token_string)
                 option_needs_name(arglex_token_user, develop_begin_usage);
-            usr = str_from_c(arglex_value.alv_string);
+            usr = arglex_value.alv_string;
             break;
 
         case arglex_token_nolog:
@@ -187,56 +166,44 @@ develop_begin_main(void)
             user_ty::lock_wait_argument(develop_begin_usage);
             break;
 
-	case arglex_token_reason:
-	    if (reason)
-	    duplicate_option(develop_begin_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string(arglex_token_reason, develop_begin_usage);
-		// NOTREACHED
+        case arglex_token_reason:
+            if (reason)
+                duplicate_option(develop_begin_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_string(arglex_token_reason, develop_begin_usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = str_from_c(arglex_value.alv_string);
-		break;
-	    }
-	    break;
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = str_from_c(arglex_value.alv_string);
+                break;
+            }
+            break;
         }
         arglex();
     }
-
-    //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
+    cid.command_line_check(develop_begin_usage);
 
     //
     // locate user data
     //
     //      up = user to own the change
-    //      up2 = administrator forcing
+    //      admin_user = administrator forcing (NULL if not forced)
     //
-    if (usr)
+    user_ty::pointer up = cid.get_up();
+    user_ty::pointer admin_user;
+    if (!usr.empty())
     {
-        up = user_ty::create(nstring(usr));
-        up2 = user_ty::create();
-        if (up == up2)
-            up2.reset();
-        else if (!project_administrator_query(pp, up2->name()))
-            project_fatal(pp, 0, i18n("not an administrator"));
-    }
-    else
-    {
-        up = user_ty::create();
-        up2.reset();
+        user_ty::pointer usr_up = user_ty::create(usr);
+        if (up != usr_up)
+        {
+            if (!project_administrator_query(cid.get_pp(), up->name()))
+                project_fatal(cid.get_pp(), 0, i18n("not an administrator"));
+            admin_user = up;
+            up = usr_up;
+        }
     }
 
     //
@@ -245,17 +212,13 @@ develop_begin_main(void)
     os_throttle();
 
     //
-    // locate change data
-    //
     // The change number must be given on the command line,
     // even if there is only one appropriate change.
     // The is the "least surprizes" principle at work,
     // even though we could sometimes work this out for ourself.
     //
-    if (!change_number)
+    if (!cid.set())
         fatal_intl(0, i18n("no change number"));
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
 
     //
     // Take an advisory write lock on the appropriate row of the change
@@ -264,7 +227,7 @@ develop_begin_main(void)
     // Block while can't get both simultaneously.
     //
     up->ustate_lock_prepare();
-    change_cstate_lock_prepare(cp);
+    change_cstate_lock_prepare(cid.get_cp());
     lock_take();
 
     //
@@ -272,20 +235,20 @@ develop_begin_main(void)
     // It is an error if the change is not in the
     // awaiting_development state.
     //
-    if (!cp->is_awaiting_development())
-        change_fatal(cp, 0, i18n("bad db state"));
-    if (!project_developer_query(pp, up->name()))
+    if (!cid.get_cp()->is_awaiting_development())
+        change_fatal(cid.get_cp(), 0, i18n("bad db state"));
+    if (!project_developer_query(cid.get_pp(), up->name()))
     {
         sub_context_ty  *scp;
 
         scp = sub_context_new();
-        if (up2)
+        if (admin_user)
         {
             sub_var_set_string(scp, "User", up->name());
             sub_var_optional(scp, "User");
             sub_var_override(scp, "User");
         }
-        project_fatal(pp, scp, i18n("not a developer"));
+        project_fatal(cid.get_pp(), scp, i18n("not a developer"));
         // NOTREACHED
         sub_context_delete(scp);
     }
@@ -302,12 +265,17 @@ develop_begin_main(void)
         sub_context_ty  *scp;
 
         scp = sub_context_new();
-        devdir = change_development_directory_template(cp, up);
+        devdir = change_development_directory_template(cid.get_cp(), up);
         sub_var_set_string(scp, "File_Name", devdir);
-        change_verbose(cp, scp, i18n("development directory \"$filename\""));
+        change_verbose
+        (
+            cid.get_cp(),
+            scp,
+            i18n("development directory \"$filename\"")
+        );
         sub_context_delete(scp);
     }
-    change_development_directory_set(cp, os_canonify_dirname(devdir));
+    change_development_directory_set(cid.get_cp(), os_canonify_dirname(devdir));
 
     //
     // Make sure the development directory is reachangle by the project
@@ -316,37 +284,37 @@ develop_begin_main(void)
     // traverse all of the directories in order to reach the development
     // directory.
     //
-    project_become(pp);
+    project_become(cid.get_pp());
     os_check_path_traversable(devdir);
-    project_become_undo(pp);
+    project_become_undo(cid.get_pp());
 
     //
     // Set the change data to reflect the current user
     // as developer and move it to the being_developed state.
     // Append another entry to the change history.
     //
-    cstate_ty *cstate_data = cp->cstate_get();
+    cstate_ty *cstate_data = cid.get_cp()->cstate_get();
     cstate_data->state = cstate_state_being_developed;
-    history_data = change_history_new(cp, up);
+    cstate_history_ty *history_data = change_history_new(cid.get_cp(), up);
     history_data->what = cstate_history_what_develop_begin;
-    if (up2)
+    if (admin_user)
     {
         string_ty *r2 =
             str_format
             (
                 "Forced by administrator %s.",
-                up2->name().quote_c().c_str()
+                admin_user->name().quote_c().c_str()
             );
-	if (reason)
-	{
-	    string_ty *r1 = reason;
-	    reason = str_format("%s\n%s", r1->str_text, r2->str_text);
-	    str_free(r1);
-	    str_free(r2);
-	}
-	else
-	    reason = r2;
-	history_data->why = reason;
+        if (reason)
+        {
+            string_ty *r1 = reason;
+            reason = str_format("%s\n%s", r1->str_text, r2->str_text);
+            str_free(r1);
+            str_free(r2);
+        }
+        else
+            reason = r2;
+        history_data->why = reason;
     }
 
     //
@@ -358,15 +326,22 @@ develop_begin_main(void)
     up->become_end();
 
     //
+    // run the develop begin command
+    //
+    trace(("mark\n"));
+    log_open(change_logfile_get(cid.get_cp()), up, log_style);
+    cid.get_cp()->run_develop_begin_early_command(up);
+
+    //
     // Update user change table to include this change in the list of
     // changes being developed by this user.
     //
-    up->own_add(pp, change_number);
+    up->own_add(cid.get_pp(), cid.get_cp()->number);
 
     //
     // Clear the time fields.
     //
-    change_build_times_clear(cp);
+    change_build_times_clear(cid.get_cp());
 
     //
     // Update change table row (and change history table).
@@ -374,7 +349,7 @@ develop_begin_main(void)
     // Release advisory write locks.
     //
     trace(("mark\n"));
-    change_cstate_write(cp);
+    cid.get_cp()->cstate_write();
     up->ustate_write();
     commit();
     lock_release();
@@ -383,21 +358,20 @@ develop_begin_main(void)
     // run the develop begin command
     //
     trace(("mark\n"));
-    log_open(change_logfile_get(cp), up, log_style);
-    change_run_develop_begin_command(cp, up);
+    cid.get_cp()->run_develop_begin_command(up);
 
     //
     // run the forced develop begin notify command
     //
     trace(("mark\n"));
-    if (up2)
-        cp->run_forced_develop_begin_notify_command(up2);
+    if (admin_user)
+        cid.get_cp()->run_forced_develop_begin_notify_command(admin_user);
 
     //
     // Update the RSS feed file if necessary.
     //
     trace(("mark\n"));
-    rss_add_item_by_change(pp, cp);
+    rss_add_item_by_change(cid.get_pp(), cid.get_cp());
 
     //
     // if symlinks are being used to pander to dumb DMT,
@@ -406,21 +380,19 @@ develop_begin_main(void)
     // This will present a more uniform interface to the developer.
     //
     trace(("mark\n"));
-    pconf_data = change_pconf_get(cp, 0);
+    pconf_ty *pconf_data = change_pconf_get(cid.get_cp(), 0);
     assert(pconf_data->development_directory_style);
     if (!pconf_data->development_directory_style->during_build_only)
     {
         work_area_style_ty style = *pconf_data->development_directory_style;
-        change_create_symlinks_to_baseline(cp, up, style);
+        change_create_symlinks_to_baseline(cid.get_cp(), up, style);
     }
 
     //
     // verbose success message
     //
     trace(("mark\n"));
-    change_verbose(cp, 0, i18n("develop begin complete"));
-    change_free(cp);
-    project_free(pp);
+    change_verbose(cid.get_cp(), 0, i18n("develop begin complete"));
     trace(("}\n"));
 }
 
@@ -438,3 +410,6 @@ develop_begin(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), develop_begin_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2006-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/trace.h>
@@ -25,7 +25,7 @@
 
 
 void
-project_ty::get_the_owner()
+project::get_the_owner()
 {
     trace(("%s\n", __PRETTY_FUNCTION__));
 
@@ -34,7 +34,7 @@ project_ty::get_the_owner()
     // don't do anything here.
     //
     if (uid >= 0 && gid >= 0)
-	return;
+        return;
 
     int err = project_is_readable(this);
     trace(("err = %d\n", err));
@@ -65,34 +65,37 @@ project_ty::get_the_owner()
     //
     if (uid < AEGIS_MIN_UID)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", home_path_get());
-	sub_var_set_long(scp, "Number1", uid);
-	sub_var_set_long(scp, "Number2", AEGIS_MIN_UID);
-	fatal_intl
-	(
-	    scp,
-	    i18n("$filename: uid $number1 invalid, must be >= $number2")
-	);
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", home_path_get());
+        sub_var_set_long(scp, "Number1", uid);
+        sub_var_set_long(scp, "Number2", AEGIS_MIN_UID);
+        fatal_intl
+        (
+            scp,
+            i18n("$filename: uid $number1 invalid, must be >= $number2")
+        );
+        // NOTREACHED
+        sub_context_delete(scp);
     }
     if (gid < AEGIS_MIN_GID)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", home_path_get());
-	sub_var_set_long(scp, "Number1", gid);
-	sub_var_set_long(scp, "Number2", AEGIS_MIN_GID);
-	fatal_intl
-	(
-	    scp,
-	    i18n("$filename: gid $number1 invalid, must be >= $number2")
-	);
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", home_path_get());
+        sub_var_set_long(scp, "Number1", gid);
+        sub_var_set_long(scp, "Number2", AEGIS_MIN_GID);
+        fatal_intl
+        (
+            scp,
+            i18n("$filename: gid $number1 invalid, must be >= $number2")
+        );
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 }
+
+
+// vim: set ts=8 sw=4 et :

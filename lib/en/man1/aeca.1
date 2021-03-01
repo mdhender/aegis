@@ -1,73 +1,72 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Change_Attributes" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Change_Attributes" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis change attributes \- modify the attributes of a change
 .XX "aeca(1)" "modify the attributes of a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -Change_Attributes
-.B -File
-.I attr-file
+.B \-Change_Attributes
+.B \-File
+.I attr\[hy]file
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Change_Attributes
-.B -Edit
+.B \-Change_Attributes
+.B \-Edit
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Change_Attributes
-.B -Fix_ARchitecture
+.B \-Change_Attributes
+.B \-Fix_ARchitecture
 .br
 .B \*(n)
-.B -Change_Attributes
+.B \-Change_Attributes
 \f[I]name\fP\fB=\fP\f[I]value\fP
 .br
 .B \*(n)
-.B -Change_Attributes
-.B -List
+.B \-Change_Attributes
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Change_Attributes
-.B -Help
+.B \-Change_Attributes
+.B \-Help
 .br
 .B \*(n)
-.B -Change_Attributes
+.B \-Change_Attributes
 \fB\-UUID\fP \f[I]string\fP
 [ \f[I]option\fP... ]
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Change_Attributes
+.I \-Change_Attributes
 command is used to set, edit or list the attributes of a change.
 .PP
 The output of the
-.B -List
+.B \-List
 variant is suitable for use as input at a later time.
 .PP
 See
@@ -98,16 +97,16 @@ attribute =
         value = "666";
     },
     {
-        name = "customer-priority";
+        name = "customer\[hy]priority";
         value = "high";
     },
     {
-        name = "marketing-priority";
-        value = "urgent-panic-headless-chicken";
+        name = "marketing\[hy]priority";
+        value = "urgent\[hy]panic\[hy]headless\[hy]chicken";
     },
     {
-        name = "engineering-priority";
-        value = "after-heat-death-of-universe";
+        name = "engineering\[hy]priority";
+        value = "after\[hy]heat\[hy]death\[hy]of\[hy]universe";
     }
 ];
 .ft R
@@ -124,19 +123,40 @@ have done so to maximize forwards compatibility across Aegis upgrades).
 .TP 8n
 aeget:inventory:hide
 boolean.  If true, this change set does not appear in \f[I]aeget\fP(1)'s
-change set inventory pages, used by \f[I]aedist -replay\fP to decide what
+change set inventory pages, used by \f[I]aedist \-replay\fP to decide what
 to download and apply.  Think of it as a "local only" flag.
 .TP 8n
-foreign-copyright
-boolean.  If true, none of the files in this change set will not be
-checked by the \f[I]aede-policy\fP(1) \f[CW]copyright\fP validation.
+aeget\[hy]inventory\[hy]hide
+Do not show this change set in the file inventory.
+See \f[I]aeget\fP(1) for more information.
 .TP 8n
-original-uuid
-This is set by \f[I]aedist -receive\fP when an incoming change set
+aegis:history_get_command
+Used when reconstructing file history, and the history tool has been
+changed at some point in the past.
+.TP 8n
+aemakegen:debian:accepted
+Set to true when a debian package upload has succeeded,
+and the BTS tells you the bug fixes have been accepted.
+.TP 8n
+foreign\[hy]copyright
+boolean.  If true, none of the files in this change set will not be
+checked by the \f[I]aede\[hy]policy\fP(1) \f[CW]copyright\fP validation.
+.TP 8n
+integrate\[hy]begin\[hy]hint
+Suggest options when integrating.
+See \f[I]aeib\fP(1) for more information.
+.TP 8n
+original\[hy]uuid
+This is set by \f[I]aedist \-receive\fP when an incoming change set
 is changed before it can end development.
 There may be more than one.
 The \f[I]aeget\fP(1) inventory "all" page will show these
 additional UUIDs, used by the \f[I]aedist \-pending\fP command..
+.TP 8n
+aegis:history_get_command
+This is set by \f[I]aeipass\f[P] when integrating a change.  See the
+\f[I]CHANGING HISTORY TOOL\f[P] section of \f[I]aepconf\f[P](5) for
+more information.
 .SS Universal Unique Identifier
 Each change set is assigned a unique universal identifier (UUID) at
 \f[I]integrate pass\fP time.  This serves to identify the change across
@@ -159,7 +179,7 @@ You can then have the report generator print the necessary data.
 Many change attributes can be accessed via the \f[I]aesub\fP(5) command
 substitutions, and printed using the \f[I]aesub\fP(1) command.
 .TP 8n
-aeca -l
+aeca \-l
 The list option of the \f[I]aeca\fP(1) command may be used to print the
 values of all editable change attributes.  It can be groped using
 \f[I]grep\fP(1) or \f[I]awk\fP(1), or similar.
@@ -172,41 +192,41 @@ packages.
 Use the method best suited to your particular needs.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
+.so lib/en/man1/o_change.so
 .TP 8n
 \fB\-Description_Only\fP
 This option may be used to specify that only the change description is
 the subject of this command.  It will be presented as plain text, without
 any of the quotes or escapes present when this command is not used.
-.so o_edit.so
-.so o_file.so
+.so lib/en/man1/o_edit.so
+.so lib/en/man1/o_file.so
 .TP 8n
 \-Fix_ARchitecture
 This option may be used to replace change change's architecture list with
 all of the mandatory architectures from the project configuration file,
 plus any of the optional architectures that match the current machine.
 May not be used with \-file or \-edit options.
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
 .TP 8n
 \fB\-Universal_Unique_IDentifier\fP \f[I]string\fP
 This option may be used to set the UUID of change change.
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aeca '\*(n) -ca \e!* -v'
-sh$	aeca(){\*(n) -ca "$@" -v}
+csh%    alias aeca '\*(n) \-ca \e!* \-v'
+sh$     aeca(){\*(n) \-ca "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
 the current user is not an administrator of the specified project.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -228,4 +248,5 @@ available command substitutions
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

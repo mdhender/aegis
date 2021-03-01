@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002, 2005, 2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2002, 2005, 2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AETAR_OUTPUT_TAR_CHILD_H
@@ -38,17 +37,17 @@ public:
 
 private:
     /**
-      * The constructor.  It is private on purpose, use the #open
+      * The constructor.  It is private on purpose, use the #create
       * class method instead.
       *
-      * \param deeper
+      * @param deeper
       *     The underlying output to which the tar archive is to be
       *     written.
-      * \param name
+      * @param name
       *     the name of the tar archive entry.
-      * \param length
+      * @param length
       *     the length of the content
-      * \param executable
+      * @param executable
       *     whether or not the file should be marked as executable
       */
     output_tar_child(const output::pointer &deeper, const nstring &name,
@@ -59,14 +58,14 @@ public:
       * The open class method is used to create new dynamically
       * allocated instances of this class.
       *
-      * \param deeper
+      * @param deeper
       *     The underlying output to which the tar archive is to be
       *     written.
-      * \param name
+      * @param name
       *     the name of the tar archive entry.
-      * \param length
+      * @param length
       *     the length of the content
-      * \param executable
+      * @param executable
       *     whether or not the file should be marked as executable
       */
     static pointer create(const output::pointer &deeper, const nstring &name,
@@ -74,19 +73,19 @@ public:
 
 protected:
     // See base class for documentation.
-    nstring filename() const;
+    nstring filename(void) const;
 
     // See base class for documentation.
-    const char *type_name() const;
+    nstring type_name(void) const;
 
     // See base class for documentation.
-    long ftell_inner() const;
+    long ftell_inner(void) const;
 
     // See base class for documentation.
     void write_inner(const void *data, size_t length);
 
     // See base class for documentation.
-    void end_of_line_inner();
+    void end_of_line_inner(void);
 
 private:
     /**
@@ -131,19 +130,19 @@ private:
       * amount of data written does not aggree with the length given to
       * the constructor.
       */
-    void changed_size();
+    void changed_size(void);
 
     /**
       * The header method is used to write a tar file header for this
       * archive menber.
       */
-    void header();
+    void header(void);
 
     /**
       * The padding method is used to write NULs to the output until the
       * output position is a multiple of 512 bytes.
       */
-    void padding();
+    void padding(void);
 
     /**
       * The default constructor.  Do not use.
@@ -162,3 +161,4 @@ private:
 };
 
 #endif // AETAR_OUTPUT_TAR_CHILD_H
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Das Problem"
 Es gibt eine Vielzahl von Problemen mit rekursivem Make; in der Praxis
@@ -29,7 +28,7 @@ desto unstabiler wird diese Reihenfolge.
 .IP \(bu 2n
 Es ist oft notwendig, die Unterverzeichnisse mehr als einmal zu
 durchlaufen, um das ganze System herzustellen.  Das f\*:uhrt nat\*:urlich zu
-l\*:angeren Build-Zeiten.
+l\*:angeren Build\[hy]Zeiten.
 .IP \(bu 2n
 Da die Produktionszeiten sonst unvertretbar lang w\*:aren, was mit
 einer Unproduktivit\*:at der Entwickler gleichbedeutend w\*:are, l\*:asst man
@@ -46,7 +45,7 @@ wirklich nichts ausgelassen wurde.
 .IP \(bu 2n
 Die Ungenauigkeit der Abh\*:angigkeiten oder einfach deren Fehlen kann
 zur Folge haben, dass ein Produkt sich nicht fehlerfrei bauen l\*:asst.
-Dadurch wird eine sorgf\*:altige Kontrolle des Build-Prozesses durch einen
+Dadurch wird eine sorgf\*:altige Kontrolle des Build\[hy]Prozesses durch einen
 Entwickler erforderlich.
 .IP \(bu 2n
 Eine andere Folge des oben Beschriebenen ist, dass manche Projekte von den
@@ -66,3 +65,4 @@ itself is the problem.  This paper is working from the premise that
 \fImake\fP does \fBnot\fP have a bug, that \fImake\fP does \fBnot\fP have
 a design flaw.  The problem is not in \fImake\fP at all, but rather in
 the input given to \fImake\fP \- the way \fImake\fP is being used.
+.\" vim: set ts=8 sw=4 et :

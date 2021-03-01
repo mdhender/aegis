@@ -1,23 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2000, 2002, 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1997, 1999, 2000, 2002, 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/symtab/template.h>
 #include <common/trace.h>
@@ -34,17 +34,17 @@
 #include <libaegis/aer/value/passwd.h>
 #include <libaegis/aer/value/ref.h>
 #include <libaegis/aer/value/uconf.h>
-#include <libaegis/cattr.h>
-#include <libaegis/common.h>
-#include <libaegis/cstate.h>
-#include <libaegis/fstate.h>
+#include <libaegis/cattr.fmtgen.h>
+#include <libaegis/common.fmtgen.h>
+#include <libaegis/cstate.fmtgen.h>
+#include <libaegis/fstate.fmtgen.h>
 #include <libaegis/gonzo.h>
-#include <libaegis/pattr.h>
-#include <libaegis/pconf.h>
-#include <libaegis/pstate.h>
+#include <libaegis/pattr.fmtgen.h>
+#include <libaegis/pconf.fmtgen.h>
+#include <libaegis/pstate.fmtgen.h>
 #include <libaegis/sub.h>
-#include <libaegis/uconf.h>
-#include <libaegis/ustate.h>
+#include <libaegis/uconf.fmtgen.h>
+#include <libaegis/ustate.fmtgen.h>
 
 
 static symtab<rpt_value::pointer> symbol_table;
@@ -54,7 +54,7 @@ static void
 init(void)
 {
     if (!symbol_table.empty())
-	return;
+        return;
     trace(("%s\n", __PRETTY_FUNCTION__));
 
     //
@@ -111,29 +111,29 @@ rpt_expr::pointer
 rpt_expr_name(const nstring &name)
 {
     if (symbol_table.empty())
-	init();
+        init();
 
     trace(("%s\n", __PRETTY_FUNCTION__));
     rpt_value::pointer data = symbol_table.get(name);
     if (!data)
     {
         nstring name2 = symbol_table.query_fuzzy(name);
-	if (name2.empty())
-	{
-	    sub_context_ty sc;
-	    sc.var_set_string("Name", name);
-	    aer_lex_error(sc, i18n("the name \"$name\" is undefined"));
-	    data = rpt_value_null::create();
-	}
-	else
-	{
-	    sub_context_ty sc;
-	    sc.var_set_string("Name", name);
-	    sc.var_set_string("Guess", name2);
-	    aer_lex_error(sc, i18n("no \"$name\", guessing \"$guess\""));
-	    data = symbol_table.get(name2);
-	    assert(data);
-	}
+        if (name2.empty())
+        {
+            sub_context_ty sc;
+            sc.var_set_string("Name", name);
+            aer_lex_error(sc, i18n("the name \"$name\" is undefined"));
+            data = rpt_value_null::create();
+        }
+        else
+        {
+            sub_context_ty sc;
+            sc.var_set_string("Name", name);
+            sc.var_set_string("Guess", name2);
+            aer_lex_error(sc, i18n("no \"$name\", guessing \"$guess\""));
+            data = symbol_table.get(name2);
+            assert(data);
+        }
     }
 
     return rpt_expr_constant::create(data);
@@ -149,18 +149,18 @@ rpt_expr_name__declare(const nstring &name)
     // make sure the name is unique
     //
     if (symbol_table.empty())
-	init();
+        init();
     if (symbol_table.query(name))
     {
-	sub_context_ty sc;
-	sc.var_set_string("Name", name);
-	aer_lex_error(sc, i18n("the name \"$name\" has already been used"));
-	return;
+        sub_context_ty sc;
+        sc.var_set_string("Name", name);
+        aer_lex_error(sc, i18n("the name \"$name\" has already been used"));
+        return;
     }
 
     //
     // create the value to be a reference to nul
-    //	(it is a variable, it must be a reference to something)
+    //  (it is a variable, it must be a reference to something)
     //
     trace(("name is new\n"));
     rpt_value::pointer v1 = rpt_value_null::create();
@@ -168,3 +168,6 @@ rpt_expr_name__declare(const nstring &name)
     symbol_table.assign(name, v2);
     trace(("assigned nul\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

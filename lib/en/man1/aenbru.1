@@ -1,40 +1,39 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1995, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -New_BRanch_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-New_BRanch_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new branch undo \- remove a branch
 .XX "aenbru(1)" "remove a branch"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_BRanch_Undo
+.B \-New_BRanch_Undo
 .I number
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -New_BRanch_Undo
-.B -Help
+.B \-New_BRanch_Undo
+.B \-Help
 .SH DESCRIPTION
 The
-.I "\*(n) -New_BRanch_Undo"
+.I "\*(n) \-New_BRanch_Undo"
 command is used to
 remove a branch created with the
 .IR aenbr (1)
@@ -43,7 +42,7 @@ command.
 .B Note:
 This command will completely remove all trace of the branch from Aegis'
 database.  This includes all changes performed on the branch and all
-of its sub-branches.  (This history remains in the history files, but
+of its sub\[hy]branches.  (This history remains in the history files, but
 is inaccessible.)
 .PP
 If you wish to finish development of a branch, and commit all of its
@@ -53,13 +52,13 @@ If you wish to stop anyone from developing more changes on the branch,
 use the \fIaerd\fP(1) command to remove all the developers.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_keep.so
-.so o_project.so
-.so o_wait.so
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 .IR aenbr (1)
@@ -67,4 +66,5 @@ create a new branch
 .TP 8n
 .IR aencu (1)
 new change undo
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

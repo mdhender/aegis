@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -23,17 +23,18 @@
 
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
-#include <libaegis/cattr.h>
+#include <libaegis/cattr.fmtgen.h>
 #include <libaegis/change.h>
 #include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <libaegis/common.h>
+#include <libaegis/common.fmtgen.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
@@ -55,9 +56,9 @@ new_change_undo_usage(void)
     fprintf(stderr, "usage: %s -New_Change_Undo [ <option>... ]\n", progname);
     fprintf
     (
-	stderr,
-	"       %s -New_Change_Undo -List [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -New_Change_Undo -List [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -New_Change_Undo -Help\n", progname);
     quit(1);
@@ -86,12 +87,12 @@ new_change_undo_list(void)
 static void
 new_change_undo_main(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-    project_ty	    *pp;
+    string_ty       *project_name;
+    long            change_number;
+    project         *pp;
     user_ty::pointer up;
     change::pointer cp;
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
 
     trace(("new_change_undo_main()\n{\n"));
     arglex();
@@ -99,39 +100,39 @@ new_change_undo_main(void)
     change_number = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_change_undo_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(new_change_undo_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		new_change_undo_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                new_change_undo_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_change_undo_usage);
-	    continue;
+        case arglex_token_string:
+            arglex_parse_project(&project_name, new_change_undo_usage);
+            continue;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(new_change_undo_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(new_change_undo_usage);
+            break;
+        }
+        arglex();
     }
 
     //
@@ -140,7 +141,7 @@ new_change_undo_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -160,7 +161,7 @@ new_change_undo_main(void)
     // even though we could sometimes work this out for ourself.
     //
     if (!change_number)
-	change_number = up->default_change(pp);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -179,14 +180,14 @@ new_change_undo_main(void)
     // awaiting_development state.
     //
     if (cstate_data->state != cstate_state_awaiting_development)
-	change_fatal(cp, 0, i18n("bad ncu state"));
+        change_fatal(cp, 0, i18n("bad ncu state"));
     if
     (
-	!project_administrator_query(pp, up->name())
+        !project_administrator_query(pp, up->name())
     &&
-	nstring(change_creator_name(cp)) != up->name()
+        nstring(cp->creator_name()) != up->name()
     )
-	project_fatal(pp, 0, i18n("not an administrator"));
+        project_fatal(pp, 0, i18n("not an administrator"));
 
     //
     // tell the project to forget this change
@@ -197,7 +198,7 @@ new_change_undo_main(void)
     // delete the change state file
     //
     project_become(pp);
-    commit_unlink_errok(change_cstate_filename_get(cp));
+    commit_unlink_errok(cp->cstate_filename_get());
     commit_unlink_errok(change_fstate_filename_get(cp));
     project_become_undo(pp);
 
@@ -225,11 +226,14 @@ new_change_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, new_change_undo_help, 0 },
-	{ arglex_token_list, new_change_undo_list, 0 },
+        { arglex_token_help, new_change_undo_help, 0 },
+        { arglex_token_list, new_change_undo_list, 0 },
     };
 
     trace(("new_change_undo()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), new_change_undo_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

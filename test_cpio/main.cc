@@ -1,28 +1,27 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006, 2008 Peter Miller
-//	Copyright (C) 2005, 2007 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 2006, 2008, 2012 Peter Miller
+// Copyright (C) 2005, 2007 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
 #include <common/arglex.h>
-#include <common/error.h> // for assert
+#include <common/error.h>
 #include <common/nstring.h>
 #include <common/nstring/list.h>
 #include <common/progname.h>
@@ -71,8 +70,8 @@ input_cpio_mime(input &ifp)
     nstring s = hdr.get("mime-version");
     if (!s.empty())
     {
-	s = hdr.get("content-type");
-	if (s != "application/aegis-change-set")
+        s = hdr.get("content-type");
+        if (s != "application/aegis-change-set")
             ifp->fatal_error("wrong content type");
     }
 
@@ -181,13 +180,13 @@ cpio_list(const nstring &, const nstring &archive, const nstring_list &)
     input_cpio *cpio_p = input_cpio_mime(ifp);
     for (;;)
     {
-	nstring ofn;
-	input ifp2 = cpio_p->child(ofn);
-	if (!ifp2.is_open())
-	    break;
+        nstring ofn;
+        input ifp2 = cpio_p->child(ofn);
+        if (!ifp2.is_open())
+            break;
         printf("%s\n", ofn.c_str());
-	output::pointer nowhere = output_bit_bucket::create();
-	nowhere << ifp2;
+        output::pointer nowhere = output_bit_bucket::create();
+        nowhere << ifp2;
     }
     delete cpio_p;
     os_become_undo();
@@ -203,10 +202,10 @@ cpio_extract(const nstring& root, const nstring& archive, const nstring_list&)
     input_cpio *cpio_p = input_cpio_mime(ifp);
     for (;;)
     {
-	nstring ofn;
-	input ifp2 = cpio_p->child(ofn);
-	if (!ifp2.is_open())
-	    break;
+        nstring ofn;
+        input ifp2 = cpio_p->child(ofn);
+        if (!ifp2.is_open())
+            break;
         nstring abs_path = os_path_join(root, ofn);
         os_mkdir_between(root, ofn, 0755);
         output::pointer ofp = output_file::open(abs_path);
@@ -312,3 +311,6 @@ main(int argc, char **argv)
 
     exit(ret ? EXIT_FAILURE : EXIT_SUCCESS);
 }
+
+
+// vim: set ts=8 sw=4 et :

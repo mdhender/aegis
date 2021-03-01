@@ -1,26 +1,26 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2000, 2002-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/math.h>
 
-#include <common/error.h> // for assert
 #include <common/nstring.h>
 #include <common/str_list.h>
 #include <common/trace.h>
@@ -30,7 +30,7 @@
 #include <libaegis/change/test/batch_fake.h>
 #include <libaegis/change/test/batch.h>
 #include <libaegis/change/test/run_list.h>
-#include <libaegis/pconf.h>
+#include <libaegis/pconf.fmtgen.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
@@ -38,7 +38,7 @@
 
 
 batch_result_list_ty *
-project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty::pointer up,
+project_test_run_list(project *pp, string_list_ty *wlp, user_ty::pointer up,
     bool progress_flag, time_t time_limit,
     const nstring_list &variable_assignments)
 {
@@ -50,9 +50,9 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty::pointer up,
     // so can set environment variables
     // for the test
     //
-    trace(("project_run_test_list(pp = %08lX, wlp = %08lX, up = %08lX, "
-	"progress_flag = %d, time_limit = %ld)\n{\n",(long)pp, (long)wlp,
-	(long)up.get(), progress_flag, (long)time_limit));
+    trace(("project_run_test_list(pp = %p, wlp = %p, up = %p, "
+        "progress_flag = %d, time_limit = %ld)\n{\n", pp, wlp,
+        up.get(), progress_flag, (long)time_limit));
     cp = change_alloc(pp, project_next_change_number(pp, 1));
     change_bind_new(cp);
     change_architecture_from_pconf(cp);
@@ -62,18 +62,18 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty::pointer up,
     // do each of the tests
     //
     result =
-	change_test_run_list
-	(
-	    cp,
-	    wlp,
-	    up,
-	    false, // not baseline, positive!
-	    progress_flag,
-	    time_limit,
-	    variable_assignments
-	);
+        change_test_run_list
+        (
+            cp,
+            wlp,
+            up,
+            false, // not baseline, positive!
+            progress_flag,
+            time_limit,
+            variable_assignments
+        );
     change_free(cp);
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %p;\n", result));
     trace(("}\n"));
     return result;
 }
@@ -85,48 +85,48 @@ change_test_run_list_inner(change::pointer cp, string_list_ty *wlp,
     time_t time_limit, const nstring_list &variable_assignments,
     const long *countdown)
 {
-    trace(("change_test_run_list_inner(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld, "
-        "countdown = %08lX)\n{\n", (long)cp, (long)wlp, (long)up.get(),
-        baseline_flag, current, total, (long)time_limit, (long)countdown));
+    trace(("change_test_run_list_inner(cp = %p, wlp = %p, up = %p, "
+        "baseline_flag = %d, current = %d, total = %d, time_limit = %ld, "
+        "countdown = %p)\n{\n", cp, wlp, up.get(),
+        baseline_flag, current, total, (long)time_limit, countdown));
     pconf_ty *pconf_data = change_pconf_get(cp, 1);
     batch_result_list_ty *result = 0;
     if (wlp->nstrings == 0)
     {
-	result = batch_result_list_new();
+        result = batch_result_list_new();
     }
     else if (pconf_data->batch_test_command)
     {
-	result =
-	    change_test_batch
-	    (
-		cp,
-		wlp,
-		up,
-		baseline_flag,
-		current,
-		total,
-		variable_assignments,
+        result =
+            change_test_batch
+            (
+                cp,
+                wlp,
+                up,
+                baseline_flag,
+                current,
+                total,
+                variable_assignments,
                 countdown
-	    );
+            );
     }
     else
     {
-	result =
-	    change_test_batch_fake
-	    (
-		cp,
-		wlp,
-		up,
-		baseline_flag,
-		current,
-		total,
-		time_limit,
-		variable_assignments,
+        result =
+            change_test_batch_fake
+            (
+                cp,
+                wlp,
+                up,
+                baseline_flag,
+                current,
+                total,
+                time_limit,
+                variable_assignments,
                 countdown
-	    );
+            );
     }
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %p;\n", result));
     trace(("}\n"));
     return result;
 }
@@ -182,7 +182,7 @@ calculate_eta(change::pointer cp, string_list_ty *wlp, long *countdown)
     {
         size_t n = wlp->nstrings - 1 - nn;
         string_ty *fn = wlp->string[n];
-        fstate_src_ty *src = change_file_find(cp, fn, view_path_simple);
+        fstate_src_ty *src = cp->file_find(nstring(fn), view_path_simple);
         double secs = -1;
         assert(src);
         if (src)
@@ -234,83 +234,86 @@ change_test_run_list(change::pointer cp, string_list_ty *wlp,
     size_t multiple = 100;
     if (time_limit)
     {
-	//
+        //
         // The batch_test_command is expected to run tests in parallel.
         // Even if it doesn't, we don't have the ability to tell it to
         // stop.  So, when we have a time limit, reduce the number of
         // tests run between checks to see if we have run out of time.
-	//
-	multiple = 12;
+        //
+        multiple = 12;
     }
 
     if (wlp->nstrings <= multiple)
     {
         batch_result_list_ty *result =
-	    change_test_run_list_inner
-	    (
-		cp,
-		wlp,
-		up,
-		baseline_flag,
-		0, // start
-		(progress_flag ? wlp->nstrings : 0),
-		time_limit,
-		variable_assignments,
+            change_test_run_list_inner
+            (
+                cp,
+                wlp,
+                up,
+                baseline_flag,
+                0, // start
+                (progress_flag ? wlp->nstrings : 0),
+                time_limit,
+                variable_assignments,
                 countdown
-	    );
+            );
         delete [] countdown;
         return result;
     }
-    trace(("change_test_run_list(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"baseline_flag = %d, progress_flag = %d, time_limit = %ld)\n{\n",
-	(long)cp, (long)wlp, (long)up.get(), baseline_flag, progress_flag,
-	(long)time_limit));
+    trace(("change_test_run_list(cp = %p, wlp = %p, up = %p, "
+        "baseline_flag = %d, progress_flag = %d, time_limit = %ld)\n{\n",
+        cp, wlp, up.get(), baseline_flag, progress_flag,
+        (long)time_limit));
     batch_result_list_ty *result = batch_result_list_new();
     int persevere = up->persevere_preference(true);
     for (size_t j = 0; j < wlp->nstrings; j += multiple)
     {
-	size_t end = j + multiple;
-	if (end > wlp->nstrings)
-	    end = wlp->nstrings;
-	string_list_ty wl2;
-	for (size_t k = j; k < end; ++k)
-	    wl2.push_back(wlp->string[k]);
-	batch_result_list_ty *result2 =
-	    change_test_run_list_inner
-	    (
-		cp,
-		&wl2,
-		up,
-		baseline_flag,
-		j,
-		(progress_flag ? wlp->nstrings : 0),
-		time_limit,
-		variable_assignments,
+        size_t end = j + multiple;
+        if (end > wlp->nstrings)
+            end = wlp->nstrings;
+        string_list_ty wl2;
+        for (size_t k = j; k < end; ++k)
+            wl2.push_back(wlp->string[k]);
+        batch_result_list_ty *result2 =
+            change_test_run_list_inner
+            (
+                cp,
+                &wl2,
+                up,
+                baseline_flag,
+                j,
+                (progress_flag ? wlp->nstrings : 0),
+                time_limit,
+                variable_assignments,
                 countdown + j
-	    );
-	batch_result_list_append_list(result, result2);
-	batch_result_list_delete(result2);
+            );
+        batch_result_list_append_list(result, result2);
+        batch_result_list_delete(result2);
 
-	//
-	// Don't keep going if the user asked us not to.
-	//
-	if (!persevere && (result->fail_count || result->no_result_count))
-	    break;
+        //
+        // Don't keep going if the user asked us not to.
+        //
+        if (!persevere && (result->fail_count || result->no_result_count))
+            break;
 
-	//
-	// If we have been given a time limit, and that time has passed,
-	// do not continue testing.
-	//
-	if (time_limit)
-	{
-	    time_t now;
-	    time(&now);
-	    if (now >= time_limit)
-		break;
-	}
+        //
+        // If we have been given a time limit, and that time has passed,
+        // do not continue testing.
+        //
+        if (time_limit)
+        {
+            time_t now;
+            time(&now);
+            if (now >= time_limit)
+                break;
+        }
     }
     delete [] countdown;
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %p;\n", result));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

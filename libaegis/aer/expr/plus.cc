@@ -1,33 +1,33 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
+#include <common/trace.h>
 #include <libaegis/aer/expr/plus.h>
 #include <libaegis/aer/value/error.h>
-#include <libaegis/aer/value/list.h>
 #include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
-#define PAIR(a, b)	((a) * rpt_value_type_MAX + (b))
+#define PAIR(a, b)      ((a) * rpt_value_type_MAX + (b))
 
 
 rpt_expr_plus::~rpt_expr_plus()
@@ -63,8 +63,8 @@ rpt_expr_plus::evaluate()
     rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
     if (lv1->is_an_error())
     {
-	trace(("}\n"));
-	return lv1;
+        trace(("}\n"));
+        return lv1;
     }
 
     //
@@ -79,8 +79,8 @@ rpt_expr_plus::evaluate()
     rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
     if (rv1->is_an_error())
     {
-	trace(("}\n"));
-	return rv1;
+        trace(("}\n"));
+        return rv1;
     }
 
     //
@@ -200,7 +200,7 @@ rpt_expr_minus::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
     if (lv1->is_an_error())
-	return lv1;
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
@@ -213,7 +213,7 @@ rpt_expr_minus::evaluate()
     //
     rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
     if (rv1->is_an_error())
-	return rv1;
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
@@ -321,14 +321,14 @@ rpt_expr_join::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
 
     //
     // evaluate the right hand side
     //
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
 
     //
     // you can join almost anything to a list
@@ -336,41 +336,41 @@ rpt_expr_join::evaluate()
     rpt_value_list *v1lp = dynamic_cast<rpt_value_list *>(v1.get());
     if (v1lp)
     {
-	rpt_value_list *rlp = new rpt_value_list();
+        rpt_value_list *rlp = new rpt_value_list();
         rpt_value::pointer result(rlp);
 
-	size_t n = v1lp->size();
-	for (size_t j = 0; j < n; ++j)
-	{
-	    rlp->append(v1lp->nth(j));
-	}
+        size_t n = v1lp->size();
+        for (size_t j = 0; j < n; ++j)
+        {
+            rlp->append(v1lp->nth(j));
+        }
 
         rpt_value_list *v2lp = dynamic_cast<rpt_value_list *>(v2.get());
-	if (v2lp)
-	{
-	    n = v2lp->size();
-	    for (size_t j = 0; j < n; ++j)
-	    {
-		rlp->append(v2lp->nth(j));
-	    }
-	}
-	else
-	    rlp->append(v2);
+        if (v2lp)
+        {
+            n = v2lp->size();
+            for (size_t j = 0; j < n; ++j)
+            {
+                rlp->append(v2lp->nth(j));
+            }
+        }
+        else
+            rlp->append(v2);
         return result;
     }
 
     rpt_value_list *v2lp = dynamic_cast<rpt_value_list *>(v2.get());
     if (v2lp)
     {
-	rpt_value_list *rlp = new rpt_value_list();
+        rpt_value_list *rlp = new rpt_value_list();
         rpt_value::pointer result(rlp);
 
-	rlp->append(v1);
-	size_t n = v2lp->size();
-	for (size_t j = 0; j < n; ++j)
-	{
-	    rlp->append(v2lp->nth(j));
-	}
+        rlp->append(v1);
+        size_t n = v2lp->size();
+        for (size_t j = 0; j < n; ++j)
+        {
+            rlp->append(v2lp->nth(j));
+        }
         return result;
     }
 
@@ -397,3 +397,6 @@ rpt_expr_join::evaluate()
     nstring s(sc.subst_intl(i18n("illegal join ($name1 ## $name2)")));
     return rpt_value_error::create(get_pos(), s);
 }
+
+
+// vim: set ts=8 sw=4 et :

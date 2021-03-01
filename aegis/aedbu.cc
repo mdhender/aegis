@@ -1,20 +1,20 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2009, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -26,6 +26,7 @@
 
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex2.h>
@@ -37,7 +38,7 @@
 #include <libaegis/change.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <libaegis/common.h>
+#include <libaegis/common.fmtgen.h>
 #include <libaegis/dir.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
@@ -136,25 +137,25 @@ develop_begin_undo_main(void)
             user_ty::lock_wait_argument(develop_begin_undo_usage);
             break;
 
-	case arglex_token_reason:
-	    if (reason)
+        case arglex_token_reason:
+            if (reason)
                 duplicate_option(develop_begin_undo_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string
-		(
-	    	    arglex_token_reason,
-	    	    develop_begin_undo_usage
-		);
-		// NOTREACHED
+            switch (arglex())
+            {
+            default:
+                option_needs_string
+                (
+                    arglex_token_reason,
+                    develop_begin_undo_usage
+                );
+                // NOTREACHED
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = str_from_c(arglex_value.alv_string);
-		break;
-	    }
-	    break;
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = str_from_c(arglex_value.alv_string);
+                break;
+            }
+            break;
 
         case arglex_token_new_change_undo:
             if (new_change_undo)
@@ -169,7 +170,7 @@ develop_begin_undo_main(void)
     //
     // Make sure it is a change we are manipulating, not a branch.
     //
-    if (change_is_a_branch(cid.get_cp()))
+    if (cid.get_cp()->is_a_branch())
         change_fatal(cid.get_cp(), 0, i18n("use aenbru instead"));
 
     //
@@ -186,9 +187,9 @@ develop_begin_undo_main(void)
     bool is_admin =
         project_administrator_query(cid.get_pp(), cid.get_up()->name());
     bool is_developer =
-        nstring(change_developer_name(cid.get_cp())) == cid.get_up()->name();
+        nstring(cid.get_cp()->developer_name()) == cid.get_up()->name();
     bool is_creator =
-        nstring(change_creator_name(cid.get_cp())) == cid.get_up()->name();
+        nstring(cid.get_cp()->creator_name()) == cid.get_up()->name();
 
     //
     // It is an error if the change is not in the being developed state.
@@ -239,7 +240,7 @@ develop_begin_undo_main(void)
         // delete the change state file
         //
         project_become(cid.get_pp());
-        commit_unlink_errok(change_cstate_filename_get(cid.get_cp()));
+        commit_unlink_errok(cid.get_cp()->cstate_filename_get());
         commit_unlink_errok(change_fstate_filename_get(cid.get_cp()));
         project_become_undo(cid.get_pp());
     }
@@ -294,7 +295,7 @@ develop_begin_undo_main(void)
         //
         // Write the change table row.
         //
-        change_cstate_write(cid.get_cp());
+        cid.get_cp()->cstate_write();
     }
 
     //
@@ -351,3 +352,6 @@ develop_begin_undo(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), develop_begin_undo_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

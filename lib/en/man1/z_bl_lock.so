@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1998, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1996, 1998, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .SH THE BASELINE LOCK
 The baseline lock is used to ensure that the baseline remains in a
@@ -31,7 +30,7 @@ commands)
 take a baseline
 .I read
 lock.
-This is a non-exclusive lock,
+This is a non\[hy]exclusive lock,
 so the concurrent development of changes is not hindered.
 .PP
 The command which modifies the baseline,
@@ -46,8 +45,8 @@ to block until there are no active baseline read locks.
 .PP
 It is possible that
 one of the above development commands
-will block until an in-progress
-.I "\*(n) -Integrate_PASS"
+will block until an in\[hy]progress
+.I "\*(n) \-Integrate_PASS"
 completes.
 This is usually of short duration while the project history is updated.
 The delay is essential so that these commands receive a consistent view
@@ -56,8 +55,9 @@ No other integration command will cause the above development commands
 to block.
 .PP
 When \*(n)' branch functionality is in use,
-a read (non-exclusive) lock is taken on the branch baseline and also
+a read (non\[hy]exclusive) lock is taken on the branch baseline and also
 each of the "parent" baselines.
 However,
 a baseline write (exclusive) lock is only taken on the branch baseline;
-the "parent" baselines are only read (non-exclusive) locked.
+the "parent" baselines are only read (non\[hy]exclusive) locked.
+.\" vim: set ts=8 sw=4 et :

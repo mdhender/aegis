@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/wchar.h>
@@ -29,7 +29,7 @@
 
 wide_output_expand::~wide_output_expand()
 {
-    trace(("wide_output_expand::destructor(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_expand::destructor(this = %p)\n{\n", this));
     flush();
     trace(("}\n"));
 }
@@ -39,8 +39,8 @@ wide_output_expand::wide_output_expand(const wide_output::pointer &a_deeper) :
     deeper(a_deeper),
     column(0)
 {
-    trace(("wide_output_expand::wide_output_expand(this = %08lX, "
-        "deeper = %08lX)\n{\n", (long)this, (long)deeper.get()));
+    trace(("wide_output_expand::wide_output_expand(this = %p, "
+        "deeper = %p)\n{\n", this, deeper.get()));
     trace(("}\n"));
 }
 
@@ -69,8 +69,8 @@ wide_output_expand::put_hex(int n)
 void
 wide_output_expand::write_inner(const wchar_t *data, size_t len)
 {
-    trace(("wide_output_expand::write_inner(this = %08lX, data = %08lX, "
-        "len = %ld)\n{\n", (long)this, (long)data, (long)len));
+    trace(("wide_output_expand::write_inner(this = %p, data = %p, "
+        "len = %ld)\n{\n", this, data, (long)len));
     while (len > 0)
     {
         wchar_t wc = *data++;
@@ -130,7 +130,7 @@ wide_output_expand::write_inner(const wchar_t *data, size_t len)
 void
 wide_output_expand::flush_inner()
 {
-    trace(("wide_output_expand::flush(this = %08lX)\n{\n", (long)this));
+    trace(("wide_output_expand::flush(this = %p)\n{\n", this));
     deeper->flush();
     trace(("}\n"));
 }
@@ -153,8 +153,8 @@ wide_output_expand::page_length()
 void
 wide_output_expand::end_of_line_inner()
 {
-    trace(("wide_output_expand::end_of_line_inner(this = %08lX)\n{\n",
-        (long)this));
+    trace(("wide_output_expand::end_of_line_inner(this = %p)\n{\n",
+        this));
     if (column > 0)
         put_wc(L'\n');
     trace(("}\n"));
@@ -167,3 +167,6 @@ wide_output_expand::type_name()
 {
     return "wide_output_expand";
 }
+
+
+// vim: set ts=8 sw=4 et :

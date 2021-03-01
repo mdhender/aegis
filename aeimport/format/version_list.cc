@@ -1,23 +1,24 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001, 2002, 2004-2006, 2008, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
+
+#include <common/debug.h>
 
 #include <aeimport/format/version_list.h>
 
@@ -73,11 +74,11 @@ format_version_list_append(format_version_list_ty *fvlp, format_version_ty *fvp)
     if (fvlp->length >= fvlp->maximum)
     {
         fvlp->maximum = fvlp->maximum * 2 + 8;
-	format_version_ty **new_item = new format_version_ty * [fvlp->maximum];
-	for (size_t j = 0; j < fvlp->length; ++j)
-	    new_item[j] = fvlp->item[j];
-	delete [] fvlp->item;
-	fvlp->item = new_item;
+        format_version_ty **new_item = new format_version_ty * [fvlp->maximum];
+        for (size_t j = 0; j < fvlp->length; ++j)
+            new_item[j] = fvlp->item[j];
+        delete [] fvlp->item;
+        fvlp->item = new_item;
     }
     fvlp->item[fvlp->length++] = fvp;
 }
@@ -104,3 +105,6 @@ format_version_list_sort_by_date(format_version_list_ty *fvlp)
 {
     qsort(fvlp->item, fvlp->length, sizeof(fvlp->item[0]), cmp);
 }
+
+
+// vim: set ts=8 sw=4 et :

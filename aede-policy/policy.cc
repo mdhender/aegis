@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2005-2008 Peter Miller
+//      Copyright (C) 2005-2009, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/nstring/list.h>
 #include <common/quit.h>
 #include <common/trace.h>
@@ -93,7 +94,7 @@ policy()
         if (!s.empty())
         {
             nstring_list names;
-            names.split(s, " ");
+            names.split(s.trim(), " ");
             for (size_t j = 0; j < names.size(); ++j)
             {
                 nstring name = names[j];
@@ -113,6 +114,13 @@ policy()
     // Make sure the change is in the "being developed" state.
     // The aede-policy command makes no sense in any other state.
     //
+    // If invoked in the "being integrated" state (common if aede-policy
+    // is invoked by the build command) then we do nothing.  The logic
+    // is that if it got past aede then the policy has changed in the
+    // mean time.
+    //
+    if (chg.get_cp()->is_being_integrated())
+        return;
     if (!chg.get_cp()->is_being_developed())
         change_fatal(chg.get_cp(), 0, i18n("bad de state"));
 
@@ -125,3 +133,6 @@ policy()
         quit(1);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,28 +1,27 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aefattr 5 \*(N) "Reference Manual"
 .SH NAME
 aefattr \- aegis file attribute file format
 .XX "aefattr(5)" "file attribute file format"
 .SH SYNOPSIS
-\fBaefa -edit\fP \fI filename\fP
+\fBaefa \-edit\fP \fI filename\fP
 .SH DESCRIPTION
 This file format is used to set or edit file attributes.
 .SH CONTENTS
@@ -34,8 +33,8 @@ This is a list of \fI(name,value)\fP pairs, defining user specified attributes.
 name = string;
 .RS
 The name of the attribute.
-By convention, names which start with an upper-case letter will appear
-in listings, and lower-case will not.
+By convention, names which start with an upper\[hy]case letter will appear
+in listings, and lower\[hy]case will not.
 .RE
 .TP 8n
 value = string;
@@ -45,4 +44,5 @@ The value of the attribute.
 .TP 8n
 .IR aegis (5)
 \*(n) file format syntax
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,28 +1,30 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/arglex2.h>
+#include <common/ac/assert.h>
+
 #include <common/error.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/help.h>
 #include <libaegis/project.h>
 #include <libaegis/project/identifi_sub/branch.h>
-#include <common/trace.h>
 
 
 project_identifier_subset_branch::~project_identifier_subset_branch()
@@ -32,7 +34,7 @@ project_identifier_subset_branch::~project_identifier_subset_branch()
 
 
 project_identifier_subset_branch::project_identifier_subset_branch(
-	project_identifier_subset &arg) :
+        project_identifier_subset &arg) :
     deeper(arg),
     pp_with_branch(0),
     branch(0),
@@ -53,38 +55,38 @@ project_identifier_subset_branch::command_line_check(usage_t usage)
     //
     if (grandparent)
     {
-	if (branch)
-	{
-	    mutually_exclusive_options
-	    (
-		arglex_token_branch,
-		arglex_token_grandparent,
-		usage
-	    );
-	}
-	if (trunk)
-	{
-	    mutually_exclusive_options
-	    (
-		arglex_token_trunk,
-		arglex_token_grandparent,
-		usage
-	    );
-	}
-	branch = "..";
+        if (branch)
+        {
+            mutually_exclusive_options
+            (
+                arglex_token_branch,
+                arglex_token_grandparent,
+                usage
+            );
+        }
+        if (trunk)
+        {
+            mutually_exclusive_options
+            (
+                arglex_token_trunk,
+                arglex_token_grandparent,
+                usage
+            );
+        }
+        branch = "..";
     }
     if (trunk)
     {
-	if (branch)
-	{
-	    mutually_exclusive_options
-	    (
-		arglex_token_branch,
-		arglex_token_trunk,
-		usage
-	    );
-	}
-	branch = "";
+        if (branch)
+        {
+            mutually_exclusive_options
+            (
+                arglex_token_branch,
+                arglex_token_trunk,
+                usage
+            );
+        }
+        branch = "";
     }
 }
 
@@ -96,47 +98,47 @@ project_identifier_subset_branch::command_line_parse(usage_t usage)
     switch (arglex_token)
     {
     default:
-	fatal_raw
-	(
-	    "%s: %d: option %s not handled in switch (bug)",
-	    __FILE__,
-	    __LINE__,
-	    arglex_token_name(arglex_token)
-	);
-	// NOTREACHED
+        fatal_raw
+        (
+            "%s: %d: option %s not handled in switch (bug)",
+            __FILE__,
+            __LINE__,
+            arglex_token_name(arglex_token)
+        );
+        // NOTREACHED
 
     case arglex_token_branch:
-	if (branch)
-	    duplicate_option(usage);
-	switch (arglex())
-	{
-	default:
-	    option_needs_number(arglex_token_branch, usage);
+        if (branch)
+            duplicate_option(usage);
+        switch (arglex())
+        {
+        default:
+            option_needs_number(arglex_token_branch, usage);
 
-	case arglex_token_number:
-	case arglex_token_string:
-	    branch = arglex_value.alv_string;
-	    break;
-	}
-	break;
+        case arglex_token_number:
+        case arglex_token_string:
+            branch = arglex_value.alv_string;
+            break;
+        }
+        break;
 
     case arglex_token_trunk:
-	if (trunk)
-	    duplicate_option(usage);
-	trunk = true;
-	break;
+        if (trunk)
+            duplicate_option(usage);
+        trunk = true;
+        break;
 
     case arglex_token_grandparent:
-	if (grandparent)
-	    duplicate_option(usage);
-	grandparent = true;
-	break;
+        if (grandparent)
+            duplicate_option(usage);
+        grandparent = true;
+        break;
 
     case arglex_token_project:
     case arglex_token_string:
-	deeper.command_line_parse(usage);
-	trace(("}\n"));
-	return;
+        deeper.command_line_parse(usage);
+        trace(("}\n"));
+        return;
     }
     arglex();
     trace(("}\n"));
@@ -157,9 +159,9 @@ project_identifier_subset_branch::parse_change_with_branch(long &change_number,
 {
     deeper.parse_change_with_branch
     (
-	change_number,
-	branch_arg,
-	usage
+        change_number,
+        branch_arg,
+        usage
     );
 }
 
@@ -177,18 +179,18 @@ project_identifier_subset_branch::set_user_by_name(nstring &login)
 }
 
 
-project_ty *
+project *
 project_identifier_subset_branch::get_pp()
 {
     if (!pp_with_branch)
     {
-	pp_with_branch = deeper.get_pp();
-	assert(pp_with_branch);
-	if (branch)
-	{
-	    pp_with_branch = pp_with_branch->find_branch(branch);
-	    assert(pp_with_branch);
-	}
+        pp_with_branch = deeper.get_pp();
+        assert(pp_with_branch);
+        if (branch)
+        {
+            pp_with_branch = pp_with_branch->find_branch(branch);
+            assert(pp_with_branch);
+        }
     }
     return pp_with_branch;
 }
@@ -200,3 +202,6 @@ project_identifier_subset_branch::set()
 {
     return deeper.set();
 }
+
+
+// vim: set ts=8 sw=4 et :

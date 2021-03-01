@@ -1,48 +1,47 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Develop_End_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Develop_End_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis develop end undo \- recall a change for further development
 .XX "aedeu(1)" "recall a change for further development"
 .SH SYNOPSIS
 .B \*(n)
-.B -Develop_End_Undo
-.I change-number
+.B \-Develop_End_Undo
+.I change\[hy]number
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_End_Undo
-.B -List
+.B \-Develop_End_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_End_Undo
-.B -Help
+.B \-Develop_End_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Develop_End_Undo
+.I \-Develop_End_Undo
 command is used to
 recall a change for further development.
 .PP
@@ -61,18 +60,18 @@ arrow " review" ljust " begin" ljust
 S4: box "being" "reviewed"
 arrow " review" ljust " pass" ljust
 S5: box "awaiting" "integration"
-T3: spline -> from S3.w then left 0.50 then up 1 \
-	then to S2.w
-T4: spline -> from S4.w then left 0.75 then up 2 \
-	then to S2.w
-T5: spline -> from S5.w then left 1.00 then up 3 \
-	then to S2.w
+move to S3.w
+T3: spline -> left 0.50 then up 1 then to S2.w
+move to S4.w
+T4: spline -> left 0.75 then up 2 then to S2.w
+move to S5.w
+T5: spline -> left 1.00 then up 3 then to S2.w
 "develop end " rjust "undo " rjust at S2.w
 .PE
 .\" ------------------------------------------------------------------------
 .PP
 The files are changed back to being owned by the current user,
-and cease to be read-only.
+and cease to be read\[hy]only.
 .SS Notification
 On successful completion of the command, the
 \fIdevelop_\%end_\%undo_\%notify_\%command\fP field of the project
@@ -80,21 +79,21 @@ attributes file is run, if set.  See \fIaepa\fP(1) and \fIaepattr\fP(5)
 for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aedeu '\*(n) -deu \e!* -v'
-sh$	aedeu(){\*(n) -deu "$@" -v}
+csh%    alias aedeu '\*(n) \-deu \e!* \-v'
+sh$     aedeu(){\*(n) \-deu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -118,7 +117,7 @@ This is because the change currently belongs to the reviewer.
 .LP
 It is an error if
 the change was not developed by the current user.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -134,4 +133,5 @@ fail review of a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

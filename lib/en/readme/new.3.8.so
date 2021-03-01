@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1998, 1999, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -31,7 +31,7 @@ Please report \fItkaegis\fP bugs and suggestions to Graham.
 .if n *
 .if t \(bu
 The integrate pass command has been enhanced to cope with RCS and SCCS
-expanding keywords in source files (modifying the repository) on check-in.
+expanding keywords in source files (modifying the repository) on check\[hy]in.
 This can be ignored, or a warning can be issued, or it can be a fatal
 error (this is the default).  See \fIaeipass\fP(1) for more information.
 .PP
@@ -46,7 +46,7 @@ Numerous spelling errors have been corrected.
 The developer section of the worked example chapter now also includes
 discussion of some common questions raised by folks evaluating Aegis.
 It covers insulating development directories from the baseline,
-partial check-in and collaboration.
+partial check\[hy]in and collaboration.
 .PP
 .if n *
 .if t \(bu
@@ -57,9 +57,9 @@ quote it.
 .if n *
 .if t \(bu
 The man pages which mention filename limitations, now also note that where
-underlying file-system has stricter filename length limitations than the
+underlying file\[hy]system has stricter filename length limitations than the
 \fIfilename_\%maximum_\%length\fP field in the project \fIconfig\fP file,
-the file-system wins.  Mention of this is now also present in
+the file\[hy]system wins.  Mention of this is now also present in
 \fIaedb\fP(1), \fIetc\fP; Linux UMSDOS is highlighted as problematic.
 .PP
 .if n *
@@ -94,4 +94,5 @@ for a variety of portability targets.
 The RPM spec file has been corrected to use appropriate file attributes.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.8 (1-Oct-1998)
+.SS Version 3.8 (1\[hy]Oct\[hy]1998)
+.\" vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1998, 2002, 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993-1995, 1998, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Using Cook"
@@ -71,7 +71,7 @@ file is used to invoke the relevant build command.
 In this case, it is set as follows
 .E(
 build_command =
-  "cook -b ${s Howto.cook} -nl\e
+  "cook \-b ${s Howto.cook} \-nl\e
    project=$p change=$c version=$v";
 .E)
 .LP
@@ -93,7 +93,7 @@ link_integration_directory = true;
 .E)
 .LP
 The links must be removed first, otherwise the baseline would
-cease to be self-consistent.
+cease to be self\[hy]consistent.
 .nh 3 "The Recipe File"
 .LP
 The file containing the recipes is called
@@ -106,10 +106,10 @@ so that Cook can determine what needs to be compiled and linked.
 .E(
 project_files =
   [collect_lines aelpf
-    -p [project] -c [change]];
+    \-p [project] \-c [change]];
 change_files =
   [collect_lines aelcf
-    -p [project] -c [change]];
+    \-p [project] \-c [change]];
 source_files =
   [stringset [project_files]
     [change_files]];
@@ -138,8 +138,8 @@ because it will be \fImajor.minor.\fRC\fIchange\fR for development builds and
 .E(
 if [match_mask %1C%2 [version]] then
 {
-  baseline = [collect aegis -cd -bl
-    -p [project]];
+  baseline = [collect aegis \-cd \-bl
+    \-p [project]];
   search_list = . [baseline];
 }
 .E)
@@ -157,9 +157,9 @@ so that recipe bodies may reference the appropriate file:
 .E(
 example: [object_files]
 {
-  [cc] -o example
+  [cc] \-o example
     [resolve [object_files]]
-    -ly -ll;
+    \-ly \-ll;
 }
 .E)
 .LP
@@ -177,7 +177,7 @@ On the surface, this is a simple recipe:
 %.o: %.c
 {
   rm %.o;
-  [cc] [cc_flags] -c %.c;
+  [cc] [cc_flags] \-c %.c;
 }
 .E)
 .LP
@@ -187,10 +187,10 @@ The Cook package includes a program called
 which is used to find them.
 The recipe now becomes
 .E(
-%.o: %.c: [collect c_incl -eia %.c]
+%.o: %.c: [collect c_incl \-eia %.c]
 {
   rm %.o;
-  [cc] [cc_flags] -c %.c;
+  [cc] [cc_flags] \-c %.c;
 }
 .E)
 .LP
@@ -198,12 +198,12 @@ The file may not always be present to be removed (causing a fatal error),
 and it is irritating to execute a redundant command,
 so the remove is mangled to look like this:
 .E(
-%.o: %.c: [collect c_incl -eia %.c]
+%.o: %.c: [collect c_incl \-eia %.c]
 {
   if [exists %.o] then
     rm %.o
       set clearstat;
-  [cc] [cc_flags] -c %.c;
+  [cc] [cc_flags] \-c %.c;
 }
 .E)
 .LP
@@ -217,15 +217,15 @@ Another thing this recipe needs is to use the baseline
 for include files not in a change,
 and so the recipe is altered again:
 .E(
-%.o: %.c: [collect c_incl -eia
-  [prepost "-I" "" [search_list]]
+%.o: %.c: [collect c_incl \-eia
+  [prepost "\-I" "" [search_list]]
     %.c]
 {
  if [exists %.o] then
     rm %.o
       set clearstat;
-  [cc] [cc_flags] [prepost "-I" ""
-    [search_list]] -c %.c;
+  [cc] [cc_flags] [prepost "\-I" ""
+    [search_list]] \-c %.c;
 }
 .E)
 .LP
@@ -240,15 +240,15 @@ There is one last change that must be made to this recipe,
 it must use the resolve function to reference the appropriate file
 once Cook has found it on the search list:
 .E(
-%.o: %.c: [collect c_incl -eia
-  [prepost "-I" "" [search_list]]
+%.o: %.c: [collect c_incl \-eia
+  [prepost "\-I" "" [search_list]]
     [resolve %.c]]
 {
   if [exists %.o] then
     rm %.o
       set clearstat;
-  [cc] [cc_flags] [prepost "-I" ""
-    [search_list]] -c [resolve %.c];
+  [cc] [cc_flags] [prepost "\-I" ""
+    [search_list]] \-c [resolve %.c];
 }
 .E)
 .LP
@@ -313,7 +313,7 @@ the recipe for yacc will be given without delay:
   if [exists %.h] then
     rm %.h
       set clearstat;
-  [yacc] [yacc_flags] -d
+  [yacc] [yacc_flags] \-d
     [resolve %.y];
   mv y.tab.c %.c;
   mv y.tab.h %.h;
@@ -336,7 +336,7 @@ The recipe for lex is vary similar to the recipe for yacc.
   if [exists %.c] then
     rm %.c
       set clearstat;
-  [lex] [lex_flags] -d [resolve %.l];
+  [lex] [lex_flags] \-d [resolve %.l];
   mv lex.yy.c %.c;
 }
 .E)
@@ -350,16 +350,16 @@ such as user guides and manual entries with Aegis and Cook,
 and the recipes are similar
 to the ones above.
 .E(
-%.ps: %.ms: [collect c_incl -r -eia
-  [prepost "-I" "" [search_list]]
+%.ps: %.ms: [collect c_incl \-r \-eia
+  [prepost "\-I" "" [search_list]]
   [resolve %.ms]]
 {
   if [exists %.ps] then
     rm %.ps
       set clearstat;
-  roffpp [prepost "-I" ""
+  roffpp [prepost "\-I" ""
     [search_list]] [resolve %.ms]
-    | groff -p -t -ms
+    | groff \-p \-t \-ms
     > [target];
 }
 .E)
@@ -383,16 +383,16 @@ but it accepts include search path options on the command line.
 .LP
 Manual entries may be handled in a similar way
 .E(
-%.cat: %.man: [collect c_incl -r -eia
-  [prepost "-I" "" [search_list]]
+%.cat: %.man: [collect c_incl \-r \-eia
+  [prepost "\-I" "" [search_list]]
   [resolve %.man]]
 {
   if [exists %.cat] then
     rm %.cat
       set clearstat;
-  roffpp [prepost "-I" ""
+  roffpp [prepost "\-I" ""
     [search_list]] [resolve %.man]
-    | groff -Tascii -t -man
+    | groff \-Tascii \-t \-man
     > [target];
 }
 .E)
@@ -405,3 +405,4 @@ contains all of the above commands,
 so that you may readily insert them into your project
 configuration
 file.
+.\" vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_CHANGE_FUNCTOR_INVENTO_LIST_H
@@ -23,7 +23,7 @@
 #include <libaegis/change/functor.h>
 #include <libaegis/col.h>
 
-struct project_ty; // forward
+struct project; // forward
 
 /**
   * The change_functor_inventory_list class is used to represent the
@@ -42,7 +42,7 @@ public:
     /**
       * The constructor.
       */
-    change_functor_inventory_list(bool incbr, project_ty *pp);
+    change_functor_inventory_list(bool incbr, project *pp);
 
     // See base class for documentation.
     void operator()(change::pointer cp);
@@ -97,7 +97,8 @@ private:
       * The assignment operator.   Do not use.
       */
     change_functor_inventory_list &operator=(
-	const change_functor_inventory_list &);
+        const change_functor_inventory_list &);
 };
 
 #endif // LIBAEGIS_CHANGE_FUNCTOR_INVENTO_LIST_H
+// vim: set ts=8 sw=4 et :

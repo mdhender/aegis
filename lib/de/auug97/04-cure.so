@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2001, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Vorsorge"
 Die obige Analyse basiert auf einer einfachen Aktion:
@@ -24,7 +23,7 @@ man von rekursiv verwendetem Make kennt, zur Folge.
 .LP
 Hat Make es nicht richtig verstanden? Nein, das ist
 nicht der Grund. Hier liegt ein Fall des uralten
-GIGO-Prinzips (Garbage in, Garbage out) vor: Wo man M\*:ull
+GIGO\[hy]Prinzips (Garbage in, Garbage out) vor: Wo man M\*:ull
 hereintut, kommt M\*:ull heraus. Unvollst\*:andige
 \f[CW]Makefiles\fP sind fehlerhafte \f[CW]Makefiles\fP.
 .LP
@@ -49,9 +48,9 @@ wird viel zu lange dauern. Es ist schlichtweg nicht
 praktikabel.\fP"
 .LP
 Das sind stichhaltige Einw\*:ande und oft ziehen
-Make-Benutzer aus ihnen den Schluss, dass es keinerlei
-kurz- oder l\*:angerfristigen Nutzen f\*:ur sie bringen w\*:urde,
-ihren Build-Prozess einmal zu \*:uberarbeiten. Diese
+Make\[hy]Benutzer aus ihnen den Schluss, dass es keinerlei
+kurz\[hy] oder l\*:angerfristigen Nutzen f\*:ur sie bringen w\*:urde,
+ihren Build\[hy]Prozess einmal zu \*:uberarbeiten. Diese
 Schlussfolgerung ist auf \*:uberholten, falschen Annahmen
 gegr\*:undet, die sich jedoch hartn\*:ackig halten.
 .LP
@@ -61,14 +60,14 @@ jeden dieser Einw\*:ande eingegangen.
 W\*:are die vollst\*:andige Produktionsbeschreibung f\*:ur das
 ganze Projekt in einem einzigen \f[CW]Makefile\fP
 untergebracht, w\*:urde dieser Satz sicherlich
-zutreffen. Aber moderne Make-Implementierungen kennen
-Include-Anweisungen. Dadurch, dass ein entscheidendes
+zutreffen. Aber moderne Make\[hy]Implementierungen kennen
+Include\[hy]Anweisungen. Dadurch, dass ein entscheidendes
 Fragment jedes Moduls einschlossen wird, ist die
 Gesamtgr\*:o\(sse des \f[CW]Makefiles\fP und seiner Includes
 nicht unbedingt gr\*:o\(sser als die des beim rekursiven
 Vorgehen verwendeten \f[CW]Makefiles\fP.
 .nh 2 "Ein einziges Makefile kann man nicht warten"
-Ein Haupt-\f[CW]Makefile\fP, das eine Referenz auf ein
+Ein Haupt\[hy]\f[CW]Makefile\fP, das eine Referenz auf ein
 Fragment jedes Moduls enth\*:alt, ist nicht komplexer als
 das beim rekursiven Make verwendete. Da der DAG nicht
 zerst\*:uckelt ist, ist diese Art \f[CW]Makefile\fP sogar
@@ -78,10 +77,10 @@ Funktionst\*:uchtigkeit zu erhalten.
 .LP
 Rekursive \f[CW]Makefiles\fP beinhalten eine Menge
 Wiederholungen. Bei vielen Projekten wird dieses Problem
-durch die Verwendung von Include-Dateien gel\*:ost. Wenn
+durch die Verwendung von Include\[hy]Dateien gel\*:ost. Wenn
 man ein einziges \f[CW]Makefile\fP f\*:ur das Projekt
 benutzt, f\*:allt der Bedarf an diesen "allgemeinen"
-Include-Dateien weg - das eine \f[CW]Makefile\fP ist der
+Include\[hy]Dateien weg \- das eine \f[CW]Makefile\fP ist der
 allgemeine Teil.
 .nh 2 "Es ist zu schwierig, die Regeln zu formulieren"
 Man muss lediglich den Verzeichnisteil an einer Reihe
@@ -92,28 +91,28 @@ die Datei nicht. Man muss sich nicht darum k\*:ummern, wo
 die Ausgabedatei ausdr\*:ucklich in einer Regel genannt
 wird.
 .LP
-GCC erlaubt im Zusammenhang mit der -c-Option eine
--o-Option und GNU-Make wei\(ss das. Daraus folgt eine
+GCC erlaubt im Zusammenhang mit der \-c\[hy]Option eine
+\-o\[hy]Option und GNU\[hy]Make wei\(ss das. Daraus folgt eine
 implizite Kompilationsregel, die die Ausgabedatei an die
 richtige Stelle setzt. \*:Altere und weniger intelligente
-Compiler lassen die -o-Option mit der -c-Option jedoch
+Compiler lassen die \-o\[hy]Option mit der \-c\[hy]Option jedoch
 vielleicht nicht zu und lassen die Objektdatei im
 Verzeichnis der obersten Ebene zur\*:uck (d. h. im falschen
 Verzeichnis). Es gibt drei M\*:oglichkeiten, wie Sie diesen
 Fehler korrigieren k\*:onnen: Entweder Sie beschaffen sich
-GNU-Make und GCC, sie \*:uberschreiben die Build-Regel
+GNU\[hy]Make und GCC, sie \*:uberschreiben die Build\[hy]Regel
 durch eine korrekt funktionierende oder Sie beschweren
 sich bei ihrem H\*:andler.
 .LP
-Auch K&R; C-Compiler beginnen den in Anf\*:uhrungszeichen
+Auch K&R; C\[hy]Compiler beginnen den in Anf\*:uhrungszeichen
 notierten Includepfad (\f[CW]#include "filename.h"\fP) vom
 aktuellen Verzeichnis aus. Das bedeutet, dass sie nicht
-das ausf\*:uhren, was Sie wollen. ANSI C-konforme
-C-Compiler aber beginnen den in Anf\*:uhrungszeichen
+das ausf\*:uhren, was Sie wollen. ANSI C\[hy]konforme
+C\[hy]Compiler aber beginnen den in Anf\*:uhrungszeichen
 notierten Includepfad von dem Verzeichnis aus, in dem
 die Quelldatei erscheint; hier sind keine Ver\*:anderungen
-der Quelle notwendig. Falls Sie keinen ANSI C-konformen
-C-Compiler besitzen, sollten Sie in Betracht ziehen, so
+der Quelle notwendig. Falls Sie keinen ANSI C\[hy]konformen
+C\[hy]Compiler besitzen, sollten Sie in Betracht ziehen, so
 bald wie m\*:oglich einen GCC auf Ihrem System zu
 installieren.
 .nh 2 "Ich will doch nur mein kleines Teilprodukt bauen"
@@ -130,7 +129,7 @@ Zielprodukt f\*:ur Make zu definieren. Das gilt immer, wir
 verlassen uns lediglich gew\*:ohnlich auf das im \f[CW]Makefile\fP
 des aktuellen Verzeichnisses vorgegebene Zielprodukt, um
 unsere Befehlszeile zu verk\*:urzen. Man kann also auch mit
-einem Ganzprojekt-\f[CW]Makefile\fP sein kleines Teilprodukt
+einem Ganzprojekt\[hy]\f[CW]Makefile\fP sein kleines Teilprodukt
 bauen, indem man einfach ein bestimmtes Zielprodukt
 definiert und, falls die Befehlszeile zu lang wird, ein
 Pseudonym verwendet.
@@ -172,7 +171,7 @@ und linken will.
 .nh 3 "Builds von Projekten"
 Stellen Sie sich ein hypothetisches Projekt vor mit 1000 Quelldateien
 (.c), von denen jede ihre Aufrufschnittstelle hat, welche in
-der zugeh\*:origen Include-Datei (\f[CW].h\fP) mit Definitionen,
+der zugeh\*:origen Include\[hy]Datei (\f[CW].h\fP) mit Definitionen,
 Typvereinbarungen und Funktionsdeklarationen definiert ist. Diese 1000
 Quelldateien beinhalten ihre eigenen Interfacedefinitionen und zus\*:atzlich
 die Interfacedefinitionen aller Module, die sie aufrufen k\*:onnen. Diese
@@ -180,7 +179,7 @@ die Interfacedefinitionen aller Module, die sie aufrufen k\*:onnen. Diese
 zu einem ausf\*:uhrbaren Programm gebunden werden. In diesem System gibt
 es etwa 3000 Dateien, \*:uber die Make informiert werden muss. Au\(sserdem
 muss Make \*:uber die Includeabh\*:angigkeiten informiert werden und man muss
-untersuchen, ob implizite Regeln (z. B. .y - .c) anwendbar sind.
+untersuchen, ob implizite Regeln (z. B. .y \- .c) anwendbar sind.
 .LP
 Um den DAG zu erstellen, muss Make f\*:ur 3000 Dateien
 deren \*:Anderungsdatum ermitteln und au\(sserdem noch f\*:ur
@@ -196,13 +195,13 @@ ausgef\*:uhrt wird.
 .LP
 Das ist eine erstaunliche Statistik. Stellen Sie sich
 einmal vor, dass Sie ihn der Lage sind, eine einzige von
-1000 Quelldateien in nur 10 Sekunden - zuz\*:uglich der
-Zeit f\*:ur das Kompilieren selbst - zu kompilieren.
+1000 Quelldateien in nur 10 Sekunden \- zuz\*:uglich der
+Zeit f\*:ur das Kompilieren selbst \- zu kompilieren.
 .LP
 Die Dateien auf 100 Module zu verteilen und den Prozess
 als ein rekursives Make durchzuf\*:uhren, dauert immerhin
 25 Sekunden. Die wiederholte Prozesserzeugung f\*:ur die
-untergeordneten Make-Aufrufe nehmen eine relativ lange
+untergeordneten Make\[hy]Aufrufe nehmen eine relativ lange
 Zeit in Anspruch.
 .LP
 Aber warten Sie einen Moment! Bei realen Projekten mit
@@ -213,13 +212,13 @@ wenn es nur 25 Minuten dauerte. Dieses Beispiel zeigt
 uns, dass es nicht die Anzahl der Dateien ist, die
 bremst (das dauert nur 10 Sekunden), und es ist auch
 nicht die wiederholte Prozesserzeugung f\*:ur die
-untergeordneten Make-Aufrufe (die dauert nur 15
+untergeordneten Make\[hy]Aufrufe (die dauert nur 15
 Sekunden).  Was aber nimmt dann so viel Zeit in
 Anspruch?
 .LP
 Bei traditionellen L\*:osungen des durch rekursives Make
 enstandenen Problems werden die untergeordneten
-Make-Aufrufe oft \*:uber das hier beschriebene Minimum
+Make\[hy]Aufrufe oft \*:uber das hier beschriebene Minimum
 erh\*:oht: z. B. um vielf\*:altige Wiederholungen (3.3.2.)
 durchzuf\*:uhren oder um Modulgrenzen \*:uberschreitende
 Abh\*:angigkeiten (3.3.3.) \*:uberm\*:a\(ssig abzudecken. Das kann
@@ -232,19 +231,19 @@ Die Komplexit\*:at des \f[CW]Makefiles\fP ist so
 zeitaufwendig. Mehr dar\*:uber im Kapitel \fIEffiziente
 Makefiles\fP.
 .nh 3 "Builds w\*:ahrend der Entwicklung"
-Wenn es - wie bei dem Beispiel mit den 100 Dateien - nur
+Wenn es \- wie bei dem Beispiel mit den 100 Dateien \- nur
 10 Sekunden dauert, herauszufinden welche Datei neu
 \*:ubersetzt werden muss, wird die Produktivit\*:at der
 Entwickler nicht bedeutend eingeschr\*:ankt, wenn sie ein
-Ganzprojekt-Make durchf\*:uhren anstatt eines
+Ganzprojekt\[hy]Make durchf\*:uhren anstatt eines
 modulspezifischen Makes. Der Vorteil f\*:ur das Projekt
 ist, dass der modulzentrierte Entwickler in
 entscheidenden Momenten (und nur in den entscheidenden)
 daran erinnert wird, dass seine Arbeit auch
 weitgehendere Auswirkungen hat.
 .LP
-Die st\*:andige Verwendung von C-Include-Dateien, die
-genaue Interface-Definitionen (einschlie\(sslich
+Die st\*:andige Verwendung von C\[hy]Include\[hy]Dateien, die
+genaue Interface\[hy]Definitionen (einschlie\(sslich
 Funktionsprototypen) enthalten, w\*:urde in vielen F\*:allen
 zu \*:Ubersetzungsfehlern f\*:uhren, was wiederum ein
 fehlerhaftes Produkt zur Folge h\*:atte. Werden Builds f\*:ur
@@ -257,11 +256,11 @@ Das ist der interessanteste Einwand. Irgenwann einmal
 vor langer Zeit auf einem Mikroprozessor weit, weit weg
 ist das vielleicht sogar vorgekommen. Als Feldman das
 erste Make entwickelte, schrieb man das Jahr 1978 und er
-benutzte eine PDP11. Unix-Prozesse waren auf 64B Daten
+benutzte eine PDP11. Unix\[hy]Prozesse waren auf 64B Daten
 beschr\*:ankt.
 .LP
 Solch ein Rechner w\*:urde bei dem oben genannte Beispiel
-mit seinen 3000 in dem Ganzprojekt-\f[CW]Makefile\fP
+mit seinen 3000 in dem Ganzprojekt\[hy]\f[CW]Makefile\fP
 genau beschriebenen Dateien warscheinlich nicht
 zulassen, einen DAG und die Regeln im Hauptspeicher zu
 halten.
@@ -304,7 +303,7 @@ Die Includeabh\*:angigkeiten werden unn\*:otigerweise neu
 berechnet oder werden nicht korrekt interpretiert. Das
 passiert, weil Make auf Zeichenketten basiert, wodurch
 \f[CW].\fP und \f[CW]../ant\fP zwei verschiedene Stellen
-sind, selbst wenn Sie im \f[CW]ant\fP-Verzeichnis
+sind, selbst wenn Sie im \f[CW]ant\fP\[hy]Verzeichnis
 stehen. Das ist von Bedeutung, wenn
 Includeabh\*:angigkeiten automatisch berechnet werden, wie
 es bei allen gro\(ssen Projekten der Fall ist.
@@ -312,7 +311,8 @@ es bei allen gro\(ssen Projekten der Fall ist.
 Indem man sicherstellt, dass jedes \f[CW]Makefile\fP vollst\*:andig
 ist, kommt man an den Punkt, dass das \f[CW]Makefile\fP
 wenigstens eines Moduls bereits die Informationen des
-Ganzprojekt-\f[CW]Makefiles\fP umfasst (Sie d\*:urfen nicht
+Ganzprojekt\[hy]\f[CW]Makefiles\fP umfasst (Sie d\*:urfen nicht
 vergessen, dass diese Module ein einziges Projekt formen
 und daher miteinander verbunden sind), wodurch das
 rekursive Make \*:uberfl\*:ussig wird.
+.\" vim: set ts=8 sw=4 et :

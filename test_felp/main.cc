@@ -1,6 +1,7 @@
 //
 // aegis - project change supervisor
 // Copyright (C) 2007, 2008 Walter Franzini
+// Copyright (C) 2009, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,7 +86,7 @@ main(int argc, char **argv)
 
     change::pointer cp = change_id.get_cp();
     project_file_roll_forward historian;
-    historian.set(change_id.get_pp(), change_completion_timestamp(cp), true);
+    historian.set(change_id.get_pp(), cp->completion_timestamp(), true);
 
     file_event_list::pointer felp = historian.get(filename);
     if (!felp)
@@ -96,7 +97,7 @@ main(int argc, char **argv)
         file_event *fep = felp->get(j);
         fstate_src_ty *fstate_src = fep->get_src();
         change::pointer cp2 = fep->get_change();
-        nstring version(change_version_get(cp2));
+        nstring version = cp2->version_get();
 
         printf("%s|", version.c_str());
         printf("%s|", file_action_ename(fstate_src->action));
@@ -119,3 +120,6 @@ main(int argc, char **argv)
     }
     return 0;
 }
+
+
+// vim: set ts=8 sw=4 et :

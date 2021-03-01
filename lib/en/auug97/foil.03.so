@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nr PS 72
 .nr VS 75000
@@ -37,16 +36,16 @@ from the information you give it.
 .ft CW
 .sp 0.5
 prog: a.o b.o
-    cc a.o b.o -o prog
+    cc a.o b.o \-o prog
 .sp 0.5
 a.o: a.c a.h
-    cc -c a.c
+    cc \-c a.c
 .sp 0.5
 b.o: b.c a.h
-    cc -c b.c
+    cc \-c b.c
 .sp 0.5
 a.c a.h: a.y
-    yacc -d a.y
+    yacc \-d a.y
     mv y.tab.c a.c
     mv y.tab.h a.h
 .ft P
@@ -94,36 +93,36 @@ It's not a fancy shell interpreter.
 .sp 0.5
 #!/bin/sh
 # \fIin particular, it doesn't say this\fP
-if test ! -e a.c -o a.y -nt a.c \e
-    -o ! -e a.h -o a.y -nt a.h
+if test ! \-e a.c \-o a.y \-nt a.c \e
+    \-o ! \-e a.h \-o a.y \-nt a.h
 then
-    echo "yacc -d a.y"
-    ( yacc -d a.y ) || exit 1
+    echo "yacc \-d a.y"
+    ( yacc \-d a.y ) || exit 1
     echo "mv y.tab.c a.c"
     ( mv y.tab.c a.c ) || exit 1
     echo "mv y.tab.h a.h"
     ( mv y.tab.h a.h ) || exit 1
 fi
-if test ! -e a.o \e
-    -o a.c -nt a.o \e
-    -o a.h -nt a.o
+if test ! \-e a.o \e
+    \-o a.c \-nt a.o \e
+    \-o a.h \-nt a.o
 then
-    echo "cc -c a.c"
-    ( cc -c a.c ) || exit 1
+    echo "cc \-c a.c"
+    ( cc \-c a.c ) || exit 1
 fi
-if test ! -e b.o \e
-    -o b.c -nt b.o \e
-    -o a.h -nt b.o
+if test ! \-e b.o \e
+    \-o b.c \-nt b.o \e
+    \-o a.h \-nt b.o
 then
-    echo "cc -c b.c"
-    ( cc -c b.c ) || exit 1
+    echo "cc \-c b.c"
+    ( cc \-c b.c ) || exit 1
 fi
-if test ! -e prog \e
-    -o a.o -nt prog \e
-    -o b.o -nt prog
+if test ! \-e prog \e
+    \-o a.o \-nt prog \e
+    \-o b.o \-nt prog
 then
-    echo "cc -o prog a.o b.o"
-    ( cc -o prog a.o b.o ) || exit 1
+    echo "cc \-o prog a.o b.o"
+    ( cc \-o prog a.o b.o ) || exit 1
 fi
 exit 0
 .ft R
@@ -140,3 +139,4 @@ It's not a fancy shell interpreter.
 \(dg You can parallelize things
 .br
 \(dg Plus nine billion other options
+.\" vim: set ts=8 sw=4 et :

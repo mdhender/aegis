@@ -1,45 +1,44 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1998, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994, 1998, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Change_Owner" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Change_Owner" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis change owner \- set change owner
 .XX "aechown(1)" "set change owner"
 .SH SYNOPSIS
 .B \*(n)
-.B -Change_Owner
-.I change-number
-.I user-name
+.B \-Change_Owner
+.I change\[hy]number
+.I user\[hy]name
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -Change_Owner
-.B -Help
+.B \-Change_Owner
+.B \-Help
 .br
 .B \*(n)
-.B -Change_Owner
-.B -VERSion
+.B \-Change_Owner
+.B \-VERSion
 .SH DESCRIPTION
 The
-.I "\*(n) -Change_Owner"
+.I "\*(n) \-Change_Owner"
 command is used to
 reassign a change from one developer to another.
 .PP
@@ -64,30 +63,30 @@ and \fIaedb\fP(1) command.  In particular, it invokes the
 of the project \fIconfig\fP file.  See \fIaepconf\fP(5) for more
 information.
 .SS Development Directory Location
-.so z_filelocn.so
+.so lib/en/man1/z_filelocn.so
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_dir.so
-.so o_help.so
-.so o_interact.so
-.so o_keep.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
-.so o_user.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_interact.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_user.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .br
 .ne 1i
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aechown '\*(n) -chown \e!* -v'
-sh$	aechown(){\*(n) -chown "$@" -v}
+csh%    alias aechown '\*(n) \-chown \e!* \-v'
+sh$     aechown(){\*(n) \-chown "$@" \-v}
 .fi
 .br
 .ne 1i
@@ -102,5 +101,6 @@ state.
 .br
 It is an error if
 the user given is not a developer.
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

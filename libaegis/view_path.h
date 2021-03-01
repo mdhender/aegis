@@ -1,29 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2003-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_VIEW_PATH_H
 #define LIBAEGIS_VIEW_PATH_H
 
-#include <common/main.h>
 
 /**
-  * If you add to this enum, make sure you extend project_ty::file_list
+  * If you add to this enum, make sure you extend project::file_list
   * and change::file_list
   */
 enum view_path_ty
@@ -38,7 +37,7 @@ enum view_path_ty
       * Walk down the search list looking for files, unioning all of
       * the file lists together.  Transparent and removed file will be
       * reported.  The "none" is somewhat of a misnomer - it means no
-      * transparency processing is done, rather then no view path.
+      * transparency processing is done, rather than no view path.
       */
     view_path_none,
 
@@ -68,3 +67,4 @@ enum view_path_ty
 const char *view_path_ename(view_path_ty);
 
 #endif // LIBAEGIS_VIEW_PATH_H
+// vim: set ts=8 sw=4 et :

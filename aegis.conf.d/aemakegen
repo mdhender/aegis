@@ -1,0 +1,114 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2012 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+project_specific =
+[
+    {
+        name = "aemakegen:libtool";
+        value = "false";
+    },
+    {
+        name = "aemakegen:debian:build-depends";
+        value =
+            "bison, "
+            "bzip2, "
+            "cdbs (>= 0.4.23-1.1), "
+            // "cook, "                  # for testing
+            "cssc, "                     # for testing
+            "cvs, "                      # for testing
+            "debhelper (>= 7), "
+            "ed, "                       # for testing
+            "fhist, "                    # for testing
+            "flex, "                     # for testing
+            "gawk, "                     # for testing
+            "gettext, "
+            "groff, "                    # for documentation
+            "iso-codes, "                # for language codes and country codes
+            "libbz2-dev, "
+            "libcurl4-gnutls-dev, "
+            "libmagic-dev, "
+            "libxml2-dev, "
+            "linux-libc-dev, "
+            "locales, "                  # for aemakgen, checking locales
+            "patchutils (>= 0.2.25), "
+            "perl, "
+            "po-debconf, "
+            "rcs, "                      # for testing
+            "subversion [!sh4 !avr32], " # for testing
+            "uuid-dev, "
+            "zlib1g-dev, "
+            ;
+    },
+    {
+        name = "aemakegen:debian:depends";
+        value =
+            "iso-codes, "                # for language codes and country codes
+            "locales, "                  # for aemakgen, checking locales
+            ;
+    },
+    {
+        name = "aemakegen:debian:description:aegis";
+        value = "transaction-based software configuration management (DVCS)";
+    },
+    {
+        name = "aemakegen:debian:extended-description:aegis";
+        value =
+@Aegis provides a framework within which a team of developers may work
+on many changes to a program independently, and Aegis coordinates
+integrating these changes back into the master source of the program,
+with as little disruption as possible.
+
+Aegis simplifies the problems associated with multiple developers and
+development trees by using a transaction-based approach to version
+control, along with a web-browsable repository and an integrated testing
+mechanism.
+
+Several methods are provided for distrubuted version control using
+Aegis, including tarballs and patches.  Signed-Off-By is also supported.@;
+    },
+    {
+        name = "aemakegen:debian:homepage";
+        value = "http://aegis.sourceforge.net";
+    },
+    {
+        name = "aemakegen:debian:maintainer";
+        value = "Peter Miller <pmiller@opensource.org.au>";
+    },
+    {
+        name = "aemakegen:debian:priority";
+        value = "optional";
+    },
+    {
+        name = "aemakegen:debian:section";
+        value = "vcs";
+    },
+    {
+        name = "aemakegen:debian:recommends:aegis";
+        value = "fhist | rcs | cssc, cook | make";
+    },
+    {
+        name = "aemakegen:debian:replaces:aegis";
+        value = "aegis3";
+    },
+    {
+        name = "aemakegen:debian:conflicts:aegis";
+        value = "aegis3";
+    },
+];
+
+/* vim: set ts=8 sw=4 et : */

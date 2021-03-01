@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -23,7 +22,7 @@
 #include <common/str_list.h>
 #include <libaegis/change.h>
 #include <libaegis/change/signedoffby.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/option.h>
 #include <libaegis/user.h>
 
@@ -33,7 +32,7 @@ trim_right(string_ty *s)
 {
     size_t len = s->str_length;
     while (len > 0 && s->str_text[len - 1] == '\n')
-	--len;
+        --len;
     return str_n_from_c(s->str_text, len);
 }
 
@@ -52,15 +51,15 @@ change_signed_off_by(change::pointer cp, user_ty::pointer up)
     bool last_was_sob = false;
     for (size_t j = 0; j < wl.nstrings; ++j)
     {
-	string_ty *s = wl.string[j];
-	last_was_sob = (0 == strncasecmp(s->str_text, "signed-off-by:", 14));
-	if (!last_was_sob)
-	    continue;
-	const char *sp = s->str_text + 14;
-	while (*sp && isspace((unsigned char)*sp))
-	    ++sp;
-	if (0 == strcasecmp(sp, email_address.c_str()))
-	    return;
+        string_ty *s = wl.string[j];
+        last_was_sob = (0 == strncasecmp(s->str_text, "signed-off-by:", 14));
+        if (!last_was_sob)
+            continue;
+        const char *sp = s->str_text + 14;
+        while (*sp && isspace((unsigned char)*sp))
+            ++sp;
+        if (0 == strcasecmp(sp, email_address.c_str()))
+            return;
     }
 
     //
@@ -68,13 +67,13 @@ change_signed_off_by(change::pointer cp, user_ty::pointer up)
     //
     str_free(cstate_data->description);
     cstate_data->description =
-	str_format
-	(
-	    "%s\n%sSigned-off-by: %s",
-	    desc->str_text,
-	    (last_was_sob ? "" : "\n"),
-	    email_address.c_str()
-	);
+        str_format
+        (
+            "%s\n%sSigned-off-by: %s",
+            desc->str_text,
+            (last_was_sob ? "" : "\n"),
+            email_address.c_str()
+        );
     str_free(desc);
 }
 
@@ -85,3 +84,6 @@ change_signed_off_by_get(change::pointer cp)
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
     return (option_signed_off_by_get(pconf_data->signed_off_by));
 }
+
+
+// vim: set ts=8 sw=4 et :

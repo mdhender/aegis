@@ -1,23 +1,23 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" you can create the initial cut of this file using the
-.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 18 -unf
+.\"     aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 18 -unf
 .\" command, and then editing it to be more appropriate.
 .\"
 .\" ------------------------------------------------------------------------
@@ -34,8 +34,8 @@ of the source distribution.
 .if t \(bu
 .\" Change 162, 98, 73, 71, 70, 65, 63, 62, 61, 59, 56, 55, 52, 51, 48, 33, 11
 There is a new \fIdevelopment_\%directory_\%style\fP field of the
-project configuration file.  This allows CVS-style and Arch-style
-work areas, in addition to the BCS-style and viewpath work areas
+project configuration file.  This allows CVS\[hy]style and Arch\[hy]style
+work areas, in addition to the BCS\[hy]style and viewpath work areas
 already supported.
 These new work area styles permit many existing projects to use Aegis with no
 change to their build systems.
@@ -62,15 +62,17 @@ described in Kent Beck's book \fITest Driven Development\fP.
 .if t \(bu
 .\" Change 163, 113, 60
 There is a new \fIsigned_off_by\fP field of the project configuration
-file.  Set it to true if you want "\f[CW]Signed-off-by\fP" lines appended
+file.  Set it to true if you want "\f[CW]Signed\[hy]off\[hy]by\fP" lines
+appended
 to change set descriptions as the changes pass through the Aegis
 process.
 The \fIaede\fP(1) and \fIaerpass\fP(1) commands now understand two new
-\fB\-signed-off-by\fP and \fB\-no-signed-off-by\fP options, to override the
+\fB\-signed\[hy]off\[hy]by\fP and \fB\-no\[hy]signed\[hy]off\[hy]by\fP
+options, to override the
 project setting.
-The \fIaedist -send\fP and \fIaepatch -send\fP commands also
-understand the new \fB\-signed-off-by\fP option, to add the
-"\f[CW]Signed-off-by\fP" line to the outgoing change set description.
+The \fIaedist \-send\fP and \fIaepatch \-send\fP commands also
+understand the new \fB\-signed\[hy]off\[hy]by\fP option, to add the
+"\f[CW]Signed\[hy]off\[hy]by\fP" line to the outgoing change set description.
 Conforming to:
 http://www.ussg.iu.edu/\%hypermail/\%linux/\%kernel/\%0405.2/1301.html
 and
@@ -91,7 +93,7 @@ a file or standard input.
 .if n *
 .if t \(bu
 .\" Change 135, 111
-It is now possible to use the project-specific attributes to specify
+It is now possible to use the project\[hy]specific attributes to specify
 environment variables to be set for commands executed by Aegis.
 This can be used to set a predictable PATH, for example.
 .PP
@@ -135,9 +137,9 @@ set, and honors test exemptions.
 .if t \(bu
 .\" Change 78
 The \fIaedist\fP(1) command now sleeps for a second to ensure that the
-last-time-modified of derived files will be strictly later than source
+last\[hy]time\[hy]modified of derived files will be strictly later than source
 files, and that the \fIaeb\fP(1) timestamp will also be strictly later
-then the last-time-modified for the source files.
+then the last\[hy]time\[hy]modified for the source files.
 .PP
 .if n *
 .if t \(bu
@@ -163,7 +165,7 @@ missing.
 .if n *
 .if t \(bu
 .\" Change 58
-The \fIaetar -send\fP command now has an \fB\-add-path-prefix\fP
+The \fIaetar \-send\fP command now has an \fB\-add\[hy]path\[hy]prefix\fP
 option, so that you can add a path prefix to all of the
 files in a tarball.
 The \fIaeget\fP(1) CGI interface now adds a path prefix to generated
@@ -172,14 +174,14 @@ tarballs by default.
 .if n *
 .if t \(bu
 .\" Change 57
-Whenever you edit file attributes, there is a \f[CW]Content-Type\fP
+Whenever you edit file attributes, there is a \f[CW]Content\[hy]Type\fP
 attribute added automagically if none was there already.
 The idea is that this could be used by scripts to differentiate file types.
 .PP
 .if n *
 .if t \(bu
 .\" Change 32
-The \fIaepatch\fP(1) command now uses \fIdiff -u\fP by default.
+The \fIaepatch\fP(1) command now uses \fIdiff \-u\fP by default.
 .\" ---------- Bug Fixes: --------------------------------------------------
 .PP
 .if n *
@@ -208,7 +210,7 @@ with the new UUID code.
 .if n *
 .if t \(bu
 .\" Change 151
-A bug has been fixed in aecp -delta, where it would fetch the
+A bug has been fixed in aecp \-delta, where it would fetch the
 wrong version of a file in some cases.
 .PP
 .if n *
@@ -262,7 +264,7 @@ command.
 .if n *
 .if t \(bu
 .\" Change 31
-A bug has been fixed in the \fIaegis -review-begin\fP command;
+A bug has been fixed in the \fIaegis \-review\[hy]begin\fP command;
 it was not operating correctly when the change was in
 \fIawaiting_review\fP but the project was in \fIgoto_being_reviewed\fP.
 .PP
@@ -275,9 +277,10 @@ functions exactly like \fIbasename\fP(1) command.
 .if n *
 .if t \(bu
 .\" Change 17
-A bug has been fixed in the \fIaet -bl\fP command; it erroneously
+A bug has been fixed in the \fIaet \-bl\fP command; it erroneously
 stated that the \f[CW]$Search_Path_Executable\fP substitution was
 mandatory, when it actually optional.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.18 (10-Jun-2004)
+.SS Version 4.18 (10\[hy]Jun\[hy]2004)
+.\" vim: set ts=8 sw=4 et :

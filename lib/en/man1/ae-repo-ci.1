@@ -1,26 +1,25 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2006-2009 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2006-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.ds n) ae-repo-ci
-.TH "ae-repo-ci" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.ds n) ae\\[hy]repo\\[hy]ci
+.TH "ae\[hy]repo\[hy]ci" 1 \*(N) "Reference Manual" ""
 .SH NAME
-ae-repo-ci \- redundant repository checkin
+ae\[hy]repo\[hy]ci \- redundant repository checkin
 .XX "ae-repo-ci(1)" "redundant repository checkin"
 .SH SYNOPSIS
 .B \*(n)
@@ -32,10 +31,10 @@ ae-repo-ci \- redundant repository checkin
 ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to redundantly commit an Aegis change
 set into a parallel repository.
@@ -51,16 +50,16 @@ something like this:
 .nf
 .ft CW
 integrate_pass_notify_command =
-    "$bin/ae-repo-ci -repo cvs "
-    " -p $project -c $change";
-.FT R
+    "$bin/ae\-repo\-ci \-repo cvs "
+    " \-p $project \-c $change";
+.ft R
 .fi
 .RE
 You may also need to specify the module, if the module name is not the
 same as the project name.
 .SS Commit Messages
 You are able to control the commit message, by using
-the \f[CW]ae-repo-ci:commit-message\fP attribute in the
+the \f[CW]ae\[hy]repo\[hy]ci:commit\[hy]message\fP attribute in the
 \fIproject_specific\fP field of the project configuration file.
 .PP
 The default is as if the following entry were present:
@@ -68,17 +67,17 @@ The default is as if the following entry were present:
 project_specific =
 [
     {
-        name = "ae-repo-ci:commit-message";
-        value = "$version - ${change brief_description}";
+        name = "ae\[hy]repo\[hy]ci:commit\[hy]message";
+        value = "$version \- ${change brief_description}";
     }
 ];
 .RE
 All of the \fIaesub\fP(5) substitutions are available.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_dir.so
-.so o_help.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_help.so
 .TP 8n
 \fB\-List\fP
 This option may be used to obtain a list of supported repository types.
@@ -87,7 +86,7 @@ This option may be used to obtain a list of supported repository types.
 This option may be used to specify which module is to be checked out.
 If not set, it defaults to the trunk project name (\fIi.e.\fP the
 project name without any branch or version numbers).
-.so o_project.so
+.so lib/en/man1/o_project.so
 .TP 8n
 \fB\-REPOsitory\fP \fItype\fP
 .RS
@@ -109,11 +108,11 @@ project configuration file (see \fIaepconf\fP(5) for more information)
 are relevant:
 .TP 8n
 svn:username
-If present, the \f[CW]--username\fP command line option will be added to
+If present, the \f[CW]\-username\fP command line option will be added to
 \fIsvn\fP(1) command lines, with this value.
 .TP
 svn:password 8n
-If present, the \f[CW]--username\fP command line option will be added to
+If present, the \f[CW]\-username\fP command line option will be added to
 \fIsvn\fP(1) command lines, with this value.
 .PP
 These options can help when you can't convince Subversion to use the
@@ -121,13 +120,14 @@ correct authorization any other way.
 .RE
 .PP
 This option must be specified, there is no default.
-The \fB\-list\fP option may be used to obtain an up-to-date list of
+The \fB\-list\fP option may be used to obtain an up\[hy]to\[hy]date list of
 supported repository types.
 .RE
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 \fIaeca\fP(1)
 how to change project attributes
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

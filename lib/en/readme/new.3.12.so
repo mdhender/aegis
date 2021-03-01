@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -24,13 +24,14 @@ allowing a received change set to be applied to an historical version.
 .PP
 .if n *
 .if t \(bu
-There is now some information about managing super-projects and
-sub-projects in the \fIBranching\fP chapter of the User Guide.
+There is now some information about managing super\[hy]projects and
+sub\[hy]projects in the \fIBranching\fP chapter of the User Guide.
 .PP
 .if n *
 .if t \(bu
 The \fIaenpr\fP(1) command now accepts a \fI\-keep\fP option, so that
-you can re-attach projects moved after using the \fIaermpr \-keep\fP command.
+you can re\[hy]attach projects moved after using the \fIaermpr \-keep\fP
+command.
 See \fIaenpr\fP(1) for more information.
 .PP
 .if n *
@@ -71,4 +72,5 @@ but it helps the porting efforts.  Don't forget to run the mkpasswd and
 mkgroup utilities included in the Cygwin system.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.12 (26-Mar-1999)
+.SS Version 3.12 (26\[hy]Mar\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

@@ -1,22 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2003-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/curl/curl.h>
 #include <common/ac/errno.h>
@@ -41,7 +42,7 @@
 #ifdef HAVE_LIBCURL
 
 #define FATAL(function, reason) \
-	fatal_raw("%s: %d: " function ": %s", __FILE__, __LINE__, reason);
+        fatal_raw("%s: %d: " function ": %s", __FILE__, __LINE__, reason);
 
 
 //
@@ -65,7 +66,7 @@ input_curl::~input_curl()
 
     if (progress_cleanup)
     {
-	write(2, "\n", 1);
+        write(2, "\n", 1);
         progress_cleanup = 0;
     }
 
@@ -112,11 +113,11 @@ input_curl::input_curl(const nstring &arg) :
 {
     handle = curl_easy_init();
     if (!handle)
-	nfatal("curl_easy_init");
+        nfatal("curl_easy_init");
 
     CURLcode err = curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errbuf);
     if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        FATAL("curl_easy_setopt", curl_easy_strerror(err));
 
 #if (LIBCURL_VERSION_NUM < 0x070b01)
     //
@@ -169,19 +170,19 @@ input_curl::input_curl(const nstring &arg) :
 #endif
     err = curl_easy_setopt(handle, CURLOPT_URL, fn.c_str());
     if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        FATAL("curl_easy_setopt", curl_easy_strerror(err));
     err = curl_easy_setopt(handle, CURLOPT_FILE, this);
     if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        FATAL("curl_easy_setopt", curl_easy_strerror(err));
     err = curl_easy_setopt(handle, CURLOPT_VERBOSE, 0);
     if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        FATAL("curl_easy_setopt", curl_easy_strerror(err));
     err = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, ::write_callback);
     if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        FATAL("curl_easy_setopt", curl_easy_strerror(err));
     err = curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
     if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        FATAL("curl_easy_setopt", curl_easy_strerror(err));
 
     progress_start = 0;
     progress_buflen = 0;
@@ -189,46 +190,46 @@ input_curl::input_curl(const nstring &arg) :
     progress_cleanup = 0;
     if (option_verbose_get())
     {
-	err = curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0);
-	if (err)
-	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
-	err =
-	    curl_easy_setopt
-	    (
-		handle,
-		CURLOPT_PROGRESSFUNCTION,
-		::progress_callback
-	    );
-	if (err)
-	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
-	err = curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, this);
-	if (err)
-	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
-	time(&progress_start);
-	progress_buflen = page_width_get(80);
-	if (progress_buflen < 40)
-	    progress_buflen = 40;
-	progress_buffer = new char [progress_buflen];
+        err = curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0);
+        if (err)
+            FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        err =
+            curl_easy_setopt
+            (
+                handle,
+                CURLOPT_PROGRESSFUNCTION,
+                ::progress_callback
+            );
+        if (err)
+            FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        err = curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, this);
+        if (err)
+            FATAL("curl_easy_setopt", curl_easy_strerror(err));
+        time(&progress_start);
+        progress_buflen = page_width_get(80);
+        if (progress_buflen < 40)
+            progress_buflen = 40;
+        progress_buffer = new char [progress_buflen];
     }
 
     if (!multi_handle)
     {
-	multi_handle = curl_multi_init();
-	if (!multi_handle)
-	    nfatal("curl_multi_init");
+        multi_handle = curl_multi_init();
+        if (!multi_handle)
+            nfatal("curl_multi_init");
     }
     CURLMcode merr = curl_multi_add_handle(multi_handle, handle);
     switch (merr)
     {
     case CURLM_CALL_MULTI_PERFORM:
-	call_multi_immediate = true;
-	break;
+        call_multi_immediate = true;
+        break;
 
     case CURLM_OK:
-	break;
+        break;
 
     default:
-	FATAL("curl_multi_add_handle", curl_multi_strerror(merr));
+        FATAL("curl_multi_add_handle", curl_multi_strerror(merr));
     }
 
     //
@@ -240,7 +241,7 @@ input_curl::input_curl(const nstring &arg) :
     // Build an associate table from libcurl handles to our file pointers.
     //
     if (!stp)
-	stp = itab_alloc();
+        stp = itab_alloc();
     itab_assign(stp, (itab_key_ty)handle, (void *)this);
 }
 
@@ -250,33 +251,33 @@ print_byte_count(char *buf, size_t len, double number)
 {
     if (number < 0)
     {
-	snprintf(buf, len, "-----");
-	return;
+        snprintf(buf, len, "-----");
+        return;
     }
     // K is Kelvin, k is kilo
     const char *units = " kMGTPEZY";
     for (;;)
     {
-	if (*units != ' ')
-	{
-	    if (number < 10)
-	    {
-		snprintf(buf, len, "%4.2f%cB", number, *units);
-		return;
-	    }
-	    if (number < 100)
-	    {
-		snprintf(buf, len, "%4.1f%cB", number, *units);
-		return;
-	    }
-	}
-	if (number < (1<<10))
-	{
-	    snprintf(buf, len, "%4d%cB", (int)number, *units);
-	    return;
-	}
-	number /= 1024.;
-	++units;
+        if (*units != ' ')
+        {
+            if (number < 10)
+            {
+                snprintf(buf, len, "%4.2f%cB", number, *units);
+                return;
+            }
+            if (number < 100)
+            {
+                snprintf(buf, len, "%4.1f%cB", number, *units);
+                return;
+            }
+        }
+        if (number < (1<<10))
+        {
+            snprintf(buf, len, "%4d%cB", (int)number, *units);
+            return;
+        }
+        number /= 1024.;
+        ++units;
     }
 }
 
@@ -285,7 +286,7 @@ void
 input_curl::progress_callback(double down_total, double down_current)
 {
     if (down_current <= 0 || down_total <= 0)
-	return;
+        return;
     if (down_current >= down_total && !progress_cleanup)
         return;
     time_t curtim;
@@ -310,7 +311,7 @@ input_curl::progress_callback(double down_total, double down_current)
     int lhs = 23;
     int rhs = (int)(lhs + (progress_buflen - 37) * frac);
     while (lhs < rhs)
-	progress_buffer[lhs++] = '=';
+        progress_buffer[lhs++] = '=';
     progress_buffer[lhs] = '>';
 
     memcpy(progress_buffer + progress_buflen - 11, "ETA", 3);
@@ -340,16 +341,16 @@ input_curl::write_callback(char *data, size_t nbytes)
     //
     if (curl_buffer_length + nbytes > curl_buffer_maximum)
     {
-	for (;;)
-	{
-	    curl_buffer_maximum = curl_buffer_maximum * 2 + 32;
-	    if (curl_buffer_length + nbytes <= curl_buffer_maximum)
-		break;
-	}
-	char *new_curl_buffer = new char [curl_buffer_maximum];
-	memcpy(new_curl_buffer, curl_buffer, curl_buffer_length);
-	delete [] curl_buffer;
-	curl_buffer = new_curl_buffer;
+        for (;;)
+        {
+            curl_buffer_maximum = curl_buffer_maximum * 2 + 32;
+            if (curl_buffer_length + nbytes <= curl_buffer_maximum)
+                break;
+        }
+        char *new_curl_buffer = new char [curl_buffer_maximum];
+        memcpy(new_curl_buffer, curl_buffer, curl_buffer_length);
+        delete [] curl_buffer;
+        curl_buffer = new_curl_buffer;
     }
 
     //
@@ -372,14 +373,14 @@ handle_to_fp(CURL *handle)
     input_curl *result = (input_curl *)itab_query(stp, (itab_key_ty)handle);
     if (!result || !result->verify_handle(handle))
     {
-	fatal_raw
-	(
-	    "%s: %d: handle %p gave file %p",
-	    __FILE__,
-	    __LINE__,
-	    (void *)handle,
-	    (void *)result
-	);
+        fatal_raw
+        (
+            "%s: %d: handle %p gave file %p",
+            __FILE__,
+            __LINE__,
+            (void *)handle,
+            (void *)result
+        );
     }
     return result;
 }
@@ -403,24 +404,24 @@ perform(void)
     //
     for (;;)
     {
-	int msgs = 0;
-	CURLMsg *msg = curl_multi_info_read(multi_handle, &msgs);
-	if (!msg)
-	    break;
-	if (msg->msg == CURLMSG_NONE)
-	    break;
-	if (msg->msg != CURLMSG_DONE)
-	    fatal_raw("curl_multi_info_read -> %d (bug)", msg->msg);
-	input_curl *fp = handle_to_fp(msg->easy_handle);
-	if (msg->data.result == 0)
-	{
-	    // transfer over, no error
-	    fp->eof_notify();
-	}
-	else
-	{
-	    fp->read_error();
-	}
+        int msgs = 0;
+        CURLMsg *msg = curl_multi_info_read(multi_handle, &msgs);
+        if (!msg)
+            break;
+        if (msg->msg == CURLMSG_NONE)
+            break;
+        if (msg->msg != CURLMSG_DONE)
+            fatal_raw("curl_multi_info_read -> %d (bug)", msg->msg);
+        input_curl *fp = handle_to_fp(msg->easy_handle);
+        if (msg->data.result == 0)
+        {
+            // transfer over, no error
+            fp->eof_notify();
+        }
+        else
+        {
+            fp->read_error();
+        }
     }
 
     //
@@ -428,77 +429,77 @@ perform(void)
     //
     if (call_multi_immediate)
     {
-	call_multi_immediate = false;
-	for (;;)
-	{
-	    int num_xfer = 0;
-	    CURLMcode ret = curl_multi_perform(multi_handle, &num_xfer);
-	    switch (ret)
-	    {
-	    case CURLM_CALL_MULTI_PERFORM:
-		call_multi_immediate = true;
-		return;
+        call_multi_immediate = false;
+        for (;;)
+        {
+            int num_xfer = 0;
+            CURLMcode ret = curl_multi_perform(multi_handle, &num_xfer);
+            switch (ret)
+            {
+            case CURLM_CALL_MULTI_PERFORM:
+                call_multi_immediate = true;
+                return;
 
-	    case CURLM_OK:
-		return;
+            case CURLM_OK:
+                return;
 
-	    default:
-		error_raw
-		(
-		    "%s: %d: curl_multi_perform: %s",
-		    __FILE__,
-		    __LINE__,
-		    curl_multi_strerror(ret)
-		);
-	    }
-	}
+            default:
+                error_raw
+                (
+                    "%s: %d: curl_multi_perform: %s",
+                    __FILE__,
+                    __LINE__,
+                    curl_multi_strerror(ret)
+                );
+            }
+        }
     }
     else
     {
-	fd_set fdread;
-	FD_ZERO(&fdread);
-	fd_set fdwrite;
-	FD_ZERO(&fdwrite);
-	fd_set fdexcep;
-	FD_ZERO(&fdexcep);
+        fd_set fdread;
+        FD_ZERO(&fdread);
+        fd_set fdwrite;
+        FD_ZERO(&fdwrite);
+        fd_set fdexcep;
+        FD_ZERO(&fdexcep);
 
-	// get file descriptors from the transfers
-	int maxfd = 0;
-	CURLcode err =
-	    (CURLcode)
-	    curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
-	if (err)
-	    FATAL("curl_multi_fdset", curl_easy_strerror(err));
+        // get file descriptors from the transfers
+        int maxfd = 0;
+        CURLcode err =
+            (CURLcode)
+            curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+        if (err)
+            FATAL("curl_multi_fdset", curl_easy_strerror(err));
 
-	if (maxfd >= 0)
-	{
-	    // set a suitable timeout to fail on
-	    struct timeval timeout;
-	    timeout.tv_sec = 60; // 1 minute
-	    timeout.tv_usec = 0;
+        if (maxfd >= 0)
+        {
+            // set a suitable timeout to fail on
+            struct timeval timeout;
+            timeout.tv_sec = 60; // 1 minute
+            timeout.tv_usec = 0;
 
-	    int rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
-	    if (rc < 0)
-	    {
-		if (errno != EINTR)
-		{
-		    nfatal
-		    (
-			"%s: %d: select: %s",
-			__FILE__,
-			__LINE__,
-			strerror(errno)
-		    );
-		    // NOTREACHED
-		}
-	    }
-	    if (rc > 0)
-	    {
-		//
-		// Some sockets are ready.
-		//
-		call_multi_immediate = true;
-	    }
+            int rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
+            if (rc < 0)
+            {
+                if (errno != EINTR)
+                {
+                    nfatal
+                    (
+                        "%s: %d: select: %s",
+                        __FILE__,
+                        __LINE__,
+                        strerror(errno)
+                    );
+                    // NOTREACHED
+                }
+            }
+            if (rc > 0)
+            {
+                //
+                // Some sockets are ready.
+                //
+                call_multi_immediate = true;
+            }
         }
     }
 }
@@ -528,14 +529,14 @@ input_curl::read_data(void *data, size_t nbytes)
     // attempt to fill buffer
     //
     while (!eof && curl_buffer_position + nbytes > curl_buffer_length)
-	perform();
+        perform();
 
     //
     // Extract as much data as possible from the buffer.
     //
     size_t size_of_buffer = curl_buffer_length - curl_buffer_position;
     if (nbytes > size_of_buffer)
-	nbytes = size_of_buffer;
+        nbytes = size_of_buffer;
     memcpy(data, curl_buffer + curl_buffer_position, nbytes);
     curl_buffer_position += nbytes;
 
@@ -545,20 +546,20 @@ input_curl::read_data(void *data, size_t nbytes)
     size_of_buffer = curl_buffer_length - curl_buffer_position;
     if (size_of_buffer == 0)
     {
-	curl_buffer_position = 0;
-	curl_buffer_length = 0;
+        curl_buffer_position = 0;
+        curl_buffer_length = 0;
     }
     else if (size_of_buffer <= curl_buffer_position)
     {
-	// can shuffle the data down easily
-	memcpy(curl_buffer, curl_buffer + curl_buffer_position, size_of_buffer);
-	curl_buffer_position = 0;
-	curl_buffer_length = size_of_buffer;
+        // can shuffle the data down easily
+        memcpy(curl_buffer, curl_buffer + curl_buffer_position, size_of_buffer);
+        curl_buffer_position = 0;
+        curl_buffer_length = size_of_buffer;
     }
 
     if (nbytes == 0 && progress_cleanup)
     {
-	write(2, "\n", 1);
+        write(2, "\n", 1);
         progress_cleanup = 0;
     }
 
@@ -569,7 +570,7 @@ input_curl::read_data(void *data, size_t nbytes)
 }
 
 
-long
+ssize_t
 input_curl::read_inner(void *data, size_t len)
 {
     os_become_must_be_active();
@@ -582,7 +583,7 @@ input_curl::read_inner(void *data, size_t len)
 }
 
 
-long
+off_t
 input_curl::ftell_inner()
 {
     return pos;
@@ -596,7 +597,7 @@ input_curl::name()
 }
 
 
-long
+off_t
 input_curl::length()
 {
     // Maybe there was a Content-Length header?
@@ -621,7 +622,7 @@ input_curl::input_curl(const nstring &arg) :
 }
 
 
-long
+ssize_t
 input_curl::read_inner(void *, size_t)
 {
     return 0;
@@ -656,12 +657,12 @@ input_curl::looks_likely(const nstring &file_name)
 {
     const char *cp = file_name.c_str();
     if (!isalpha((unsigned char)*cp))
-	return 0;
+        return 0;
     for (;;)
     {
-	++cp;
-	if (!isalpha((unsigned char)*cp))
-	    break;
+        ++cp;
+        if (!isalpha((unsigned char)*cp))
+            break;
     }
     return (cp[0] == ':' && cp[1] != '\0');
 }
@@ -673,3 +674,6 @@ input_curl::is_remote()
 {
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

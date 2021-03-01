@@ -1,26 +1,26 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1993-1999, 2001-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/project/projects.h>
 #include <libaegis/arglex/project.h>
@@ -50,9 +50,9 @@ remove_project_usage(void)
     fprintf(stderr, "usage: %s -ReMove_PRoject [ <option>... ]\n", progname);
     fprintf
     (
-	stderr,
-	"       %s -ReMove_PRoject -List [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -ReMove_PRoject -List [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -ReMove_PRoject -Help\n", progname);
     quit(1);
@@ -79,43 +79,43 @@ remove_project_list(void)
 static void
 remove_project_main(void)
 {
-    long	    nerr;
-    string_ty	    *project_name;
-    project_ty	    *pp;
+    long            nerr;
+    string_ty       *project_name;
+    project         *pp;
     user_ty::pointer up;
-    int		    still_exists;
+    int             still_exists;
 
     trace(("remove_project_main()\n{\n"));
     arglex();
     project_name = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(remove_project_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(remove_project_usage);
+            continue;
 
-	case arglex_token_keep:
-	case arglex_token_interactive:
-	case arglex_token_keep_not:
-	    user_ty::delete_file_argument(remove_project_usage);
-	    break;
+        case arglex_token_keep:
+        case arglex_token_interactive:
+        case arglex_token_keep_not:
+            user_ty::delete_file_argument(remove_project_usage);
+            break;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, remove_project_usage);
-	    continue;
+        case arglex_token_string:
+            arglex_parse_project(&project_name, remove_project_usage);
+            continue;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(remove_project_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(remove_project_usage);
+            break;
+        }
+        arglex();
     }
 
     //
@@ -123,8 +123,8 @@ remove_project_main(void)
     //
     if (!project_name)
     {
-	error_intl(0, i18n("no project name"));
-	remove_project_usage();
+        error_intl(0, i18n("no project name"));
+        remove_project_usage();
     }
     pp = project_alloc(project_name);
     pp->bind_existing();
@@ -134,13 +134,13 @@ remove_project_main(void)
     // not merely a branch.
     //
     if (!pp->is_a_trunk())
-	project_fatal(pp, 0, i18n("use aenbru instead"));
+        project_fatal(pp, 0, i18n("use aenbru instead"));
 
     //
     // make sure it's not an alias
     //
     if (gonzo_alias_to_actual(project_name))
-	fatal_project_alias_exists(project_name);
+        fatal_project_alias_exists(project_name);
     str_free(project_name);
 
     //
@@ -167,7 +167,7 @@ remove_project_main(void)
     // if it is already gone
     //
     if (!still_exists)
-	goto nuke;
+        goto nuke;
 
     //
     // it is an error if any of the changes are active
@@ -182,11 +182,11 @@ remove_project_main(void)
     nerr = 0;
     if (!project_administrator_query(pp, up->name()))
     {
-	project_error(pp, 0, i18n("not an administrator"));
-	nerr++;
+        project_error(pp, 0, i18n("not an administrator"));
+        nerr++;
     }
     if (nerr)
-	quit(1);
+        quit(1);
 
     //
     // remove the project directory
@@ -232,11 +232,14 @@ remove_project(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, remove_project_help, 0 },
-	{ arglex_token_list, remove_project_list, 0 },
+        { arglex_token_help, remove_project_help, 0 },
+        { arglex_token_list, remove_project_list, 0 },
     };
 
     trace(("remove_project()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), remove_project_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

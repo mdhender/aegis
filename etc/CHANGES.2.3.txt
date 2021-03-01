@@ -1,0 +1,3073 @@
+
+
+
+Project "aegis.2.3"                                              Page 1
+List of Changes                                Tue Mar 14 06:49:47 1995
+
+Change  State           Description
+------- -------         -------------
+   1    completed       New release derived from aegis.2.2.
+   2    completed       enum comma
+   3    completed       Pathconf can return ENOSYS at times
+   4    completed       maximum_filename_length documentation error
+   5    completed       aecp on directories can fail
+   6    completed       screen size not always correct
+   7    completed       SCO is ugly
+   8    completed       note about AEGIS_UID in building file
+   9    completed       tolerate the development directory being gone
+                        on integrate pass
+  10    completed       aemv does not create directory
+  11    completed       use fuzzy file name match in aecp error
+                        messages.
+  12    completed       autoconf Howto cook as well
+  13    completed       add symbolic names to deltas
+  14    completed       improve RCS documentation
+  15    completed       add config file fields to avoid specified file
+                        names
+  16    completed       have aegis maintain a list of copyright years
+  17    completed       use automatic copyright years
+  18    completed       verify as much as possible before invoking -
+                        edit editor
+  19    completed       filename given to testcommand must be
+                        unresolved
+  20    completed       locking "deadlock" possible
+  21    completed       throttle aegis during tests
+  23    completed       fix aenrls version numbers
+  24    completed       change_pconf_get now generates a fatal error
+                        if there is not config file
+  25    completed       make the merge and difference behaviour of aed
+                        more explicit
+  26    completed       add AUUG'93 paper
+  27    completed       add wrap and split functions
+  28    completed       improve use of gecos information
+  29    completed       rename s-v-arg.h
+  30    completed       add LSM and FAQ
+  31    completed       improve FAQ
+  32    completed       fix generate Makefile
+  33    being_          fix generated Makefile again
+        integrated
+
+
+
+Project "aegis.2.3", Change 1                                    Page 1
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+NAME
+        Project "aegis.2.3", Delta 1, Change 1.
+
+SUMMARY
+        New release derived from aegis.2.2.
+
+DESCRIPTION
+        New release derived from aegis.2.2.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURE
+        This change must build and test in the "unspecified"
+        architecture.
+
+CAUSE
+        This change was caused by internal_enhancement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   create  1       BUILDING
+        source  create  1       LICENSE
+        build   create  1       MANIFEST
+        build   create  1       Makefile.in
+        build   create  1       README
+        source  create  1       aegis/aeb.c
+        source  create  1       aegis/aeb.h
+        source  create  1       aegis/aeca.c
+        source  create  1       aegis/aeca.h
+        source  create  1       aegis/aecd.c
+        source  create  1       aegis/aecd.h
+        source  create  1       aegis/aechown.c
+        source  create  1       aegis/aechown.h
+        source  create  1       aegis/aecp.c
+        source  create  1       aegis/aecp.h
+        source  create  1       aegis/aecpu.c
+        source  create  1       aegis/aecpu.h
+        source  create  1       aegis/aed.c
+        source  create  1       aegis/aed.h
+        source  create  1       aegis/aedb.c
+        source  create  1       aegis/aedb.h
+        source  create  1       aegis/aedbu.c
+        source  create  1       aegis/aedbu.h
+        source  create  1       aegis/aede.c
+        source  create  1       aegis/aede.h
+        source  create  1       aegis/aedeu.c
+        source  create  1       aegis/aedeu.h
+        source  create  1       aegis/aeib.c
+        source  create  1       aegis/aeib.h
+        source  create  1       aegis/aeibu.c
+        source  create  1       aegis/aeibu.h
+        source  create  1       aegis/aeif.c
+        source  create  1       aegis/aeif.h
+        source  create  1       aegis/aeip.c
+
+
+
+Project "aegis.2.3", Change 1                                    Page 2
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       aegis/aeip.h
+        source  create  1       aegis/ael.c
+        source  create  1       aegis/ael.h
+        source  create  1       aegis/aemv.c
+        source  create  1       aegis/aemv.h
+        source  create  1       aegis/aena.c
+        source  create  1       aegis/aena.h
+        source  create  1       aegis/aenc.c
+        source  create  1       aegis/aenc.h
+        source  create  1       aegis/aencu.c
+        source  create  1       aegis/aencu.h
+        source  create  1       aegis/aend.c
+        source  create  1       aegis/aend.h
+        source  create  1       aegis/aenf.c
+        source  create  1       aegis/aenf.h
+        source  create  1       aegis/aenfu.c
+        source  create  1       aegis/aenfu.h
+        source  create  1       aegis/aeni.c
+        source  create  1       aegis/aeni.h
+        source  create  1       aegis/aenpr.c
+        source  create  1       aegis/aenpr.h
+        source  create  1       aegis/aenrls.c
+        source  create  1       aegis/aenrls.h
+        source  create  1       aegis/aenrv.c
+        source  create  1       aegis/aenrv.h
+        source  create  1       aegis/aent.c
+        source  create  1       aegis/aent.h
+        source  create  1       aegis/aentu.c
+        source  create  1       aegis/aentu.h
+        source  create  1       aegis/aepa.c
+        source  create  1       aegis/aepa.h
+        source  create  1       aegis/aer.c
+        source  create  1       aegis/aer.h
+        source  create  1       aegis/aer/expr.c
+        source  create  1       aegis/aer/expr.h
+        source  create  1       aegis/aer/expr/assign.c
+        source  create  1       aegis/aer/expr/assign.h
+        source  create  1       aegis/aer/expr/bit.c
+        source  create  1       aegis/aer/expr/bit.h
+        source  create  1       aegis/aer/expr/constant.c
+        source  create  1       aegis/aer/expr/constant.h
+        source  create  1       aegis/aer/expr/func.c
+        source  create  1       aegis/aer/expr/func.h
+        source  create  1       aegis/aer/expr/in.c
+        source  create  1       aegis/aer/expr/in.h
+        source  create  1       aegis/aer/expr/incr.c
+        source  create  1       aegis/aer/expr/incr.h
+        source  create  1       aegis/aer/expr/list.c
+        source  create  1       aegis/aer/expr/list.h
+        source  create  1       aegis/aer/expr/logical.c
+        source  create  1       aegis/aer/expr/logical.h
+        source  create  1       aegis/aer/expr/lookup.c
+        source  create  1       aegis/aer/expr/lookup.h
+        source  create  1       aegis/aer/expr/mul.c
+        source  create  1       aegis/aer/expr/mul.h
+
+
+
+Project "aegis.2.3", Change 1                                    Page 3
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       aegis/aer/expr/name.c
+        source  create  1       aegis/aer/expr/name.h
+        source  create  1       aegis/aer/expr/neg.c
+        source  create  1       aegis/aer/expr/neg.h
+        source  create  1       aegis/aer/expr/plus.c
+        source  create  1       aegis/aer/expr/plus.h
+        source  create  1       aegis/aer/expr/power.c
+        source  create  1       aegis/aer/expr/power.h
+        source  create  1       aegis/aer/expr/rel.c
+        source  create  1       aegis/aer/expr/rel.h
+        source  create  1       aegis/aer/expr/shift.c
+        source  create  1       aegis/aer/expr/shift.h
+        source  create  1       aegis/aer/expr/struct.c
+        source  create  1       aegis/aer/expr/struct.h
+        source  create  1       aegis/aer/expr/struct_asign.c
+        source  create  1       aegis/aer/expr/struct_asign.h
+        source  create  1       aegis/aer/func.c
+        source  create  1       aegis/aer/func.h
+        source  create  1       aegis/aer/func/change.c
+        source  create  1       aegis/aer/func/change.h
+        source  create  1       aegis/aer/func/columns.c
+        source  create  1       aegis/aer/func/columns.h
+        source  create  1       aegis/aer/func/count.c
+        source  create  1       aegis/aer/func/count.h
+        source  create  1       aegis/aer/func/eject.c
+        source  create  1       aegis/aer/func/eject.h
+        source  create  1       aegis/aer/func/keys.c
+        source  create  1       aegis/aer/func/keys.h
+        source  create  1       aegis/aer/func/need.c
+        source  create  1       aegis/aer/func/need.h
+        source  create  1       aegis/aer/func/now.c
+        source  create  1       aegis/aer/func/now.h
+        source  create  1       aegis/aer/func/page_width.c
+        source  create  1       aegis/aer/func/page_width.h
+        source  create  1       aegis/aer/func/print.c
+        source  create  1       aegis/aer/func/print.h
+        source  create  1       aegis/aer/func/project.c
+        source  create  1       aegis/aer/func/project.h
+        source  create  1       aegis/aer/func/sort.c
+        source  create  1       aegis/aer/func/sort.h
+        source  create  1       aegis/aer/func/sprintf.c
+        source  create  1       aegis/aer/func/sprintf.h
+        source  create  1       aegis/aer/func/terse.c
+        source  create  1       aegis/aer/func/terse.h
+        source  create  1       aegis/aer/func/title.c
+        source  create  1       aegis/aer/func/title.h
+        source  create  1       aegis/aer/func/typeof.c
+        source  create  1       aegis/aer/func/typeof.h
+        source  create  1       aegis/aer/lex.c
+        source  create  1       aegis/aer/lex.h
+        source  create  1       aegis/aer/list.c
+        source  create  1       aegis/aer/list.h
+        source  create  1       aegis/aer/parse.c
+        source  create  1       aegis/aer/parse.h
+        source  create  1       aegis/aer/report.h
+
+
+
+Project "aegis.2.3", Change 1                                    Page 4
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       aegis/aer/report.y
+        source  create  1       aegis/aer/stmt.c
+        source  create  1       aegis/aer/stmt.h
+        source  create  1       aegis/aer/stmt/compound.c
+        source  create  1       aegis/aer/stmt/compound.h
+        source  create  1       aegis/aer/stmt/expr.c
+        source  create  1       aegis/aer/stmt/expr.h
+        source  create  1       aegis/aer/stmt/for.c
+        source  create  1       aegis/aer/stmt/for.h
+        source  create  1       aegis/aer/stmt/if.c
+        source  create  1       aegis/aer/stmt/if.h
+        source  create  1       aegis/aer/stmt/null.c
+        source  create  1       aegis/aer/stmt/null.h
+        source  create  1       aegis/aer/stmt/while.c
+        source  create  1       aegis/aer/stmt/while.h
+        source  create  1       aegis/aer/value.c
+        source  create  1       aegis/aer/value.h
+        source  create  1       aegis/aer/value/boolean.c
+        source  create  1       aegis/aer/value/boolean.h
+        source  create  1       aegis/aer/value/cstate.c
+        source  create  1       aegis/aer/value/cstate.h
+        source  create  1       aegis/aer/value/enum.c
+        source  create  1       aegis/aer/value/enum.h
+        source  create  1       aegis/aer/value/error.c
+        source  create  1       aegis/aer/value/error.h
+        source  create  1       aegis/aer/value/func.c
+        source  create  1       aegis/aer/value/func.h
+        source  create  1       aegis/aer/value/group.c
+        source  create  1       aegis/aer/value/group.h
+        source  create  1       aegis/aer/value/gstate.c
+        source  create  1       aegis/aer/value/gstate.h
+        source  create  1       aegis/aer/value/integer.c
+        source  create  1       aegis/aer/value/integer.h
+        source  create  1       aegis/aer/value/list.c
+        source  create  1       aegis/aer/value/list.h
+        source  create  1       aegis/aer/value/nul.c
+        source  create  1       aegis/aer/value/nul.h
+        source  create  1       aegis/aer/value/passwd.c
+        source  create  1       aegis/aer/value/passwd.h
+        source  create  1       aegis/aer/value/pstate.c
+        source  create  1       aegis/aer/value/pstate.h
+        source  create  1       aegis/aer/value/real.c
+        source  create  1       aegis/aer/value/real.h
+        source  create  1       aegis/aer/value/ref.c
+        source  create  1       aegis/aer/value/ref.h
+        source  create  1       aegis/aer/value/string.c
+        source  create  1       aegis/aer/value/string.h
+        source  create  1       aegis/aer/value/struct.c
+        source  create  1       aegis/aer/value/struct.h
+        source  create  1       aegis/aer/value/time.c
+        source  create  1       aegis/aer/value/time.h
+        source  create  1       aegis/aer/value/void.c
+        source  create  1       aegis/aer/value/void.h
+        source  create  1       aegis/aera.c
+        source  create  1       aegis/aera.h
+
+
+
+Project "aegis.2.3", Change 1                                    Page 5
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       aegis/aerd.c
+        source  create  1       aegis/aerd.h
+        source  create  1       aegis/aerf.c
+        source  create  1       aegis/aerf.h
+        source  create  1       aegis/aeri.c
+        source  create  1       aegis/aeri.h
+        source  create  1       aegis/aerm.c
+        source  create  1       aegis/aerm.h
+        source  create  1       aegis/aermpr.c
+        source  create  1       aegis/aermpr.h
+        source  create  1       aegis/aermu.c
+        source  create  1       aegis/aermu.h
+        source  create  1       aegis/aerp.c
+        source  create  1       aegis/aerp.h
+        source  create  1       aegis/aerpu.c
+        source  create  1       aegis/aerpu.h
+        source  create  1       aegis/aerrv.c
+        source  create  1       aegis/aerrv.h
+        source  create  1       aegis/aet.c
+        source  create  1       aegis/aet.h
+        source  create  1       aegis/aev.c
+        source  create  1       aegis/aev.h
+        source  create  1       aegis/arglex2.h
+        source  create  1       aegis/cattr.def
+        source  create  1       aegis/change.c
+        source  create  1       aegis/change.h
+        source  create  1       aegis/col.c
+        source  create  1       aegis/col.h
+        source  create  1       aegis/commit.c
+        source  create  1       aegis/commit.h
+        source  create  1       aegis/common.def
+        source  create  1       aegis/cstate.def
+        source  create  1       aegis/dir.c
+        source  create  1       aegis/dir.h
+        source  create  1       aegis/env.c
+        source  create  1       aegis/env.h
+        source  create  1       aegis/file.c
+        source  create  1       aegis/file.h
+        source  create  1       aegis/glue.c
+        source  create  1       aegis/glue.h
+        source  create  1       aegis/gonzo.c
+        source  create  1       aegis/gonzo.h
+        source  create  1       aegis/gram.h
+        source  create  1       aegis/gram.y
+        source  create  1       aegis/gstate.def
+        source  create  1       aegis/help.c
+        source  create  1       aegis/help.h
+        source  create  1       aegis/indent.c
+        source  create  1       aegis/indent.h
+        source  create  1       aegis/io.c
+        source  create  1       aegis/io.h
+        source  create  1       aegis/lex.c
+        source  create  1       aegis/lex.h
+        source  create  1       aegis/lex/env.c
+        source  create  1       aegis/lex/env.h
+
+
+
+Project "aegis.2.3", Change 1                                    Page 6
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       aegis/lex/file.c
+        source  create  1       aegis/lex/file.h
+        source  create  1       aegis/lock.c
+        source  create  1       aegis/lock.h
+        source  create  1       aegis/log.c
+        source  create  1       aegis/log.h
+        source  create  1       aegis/main.c
+        source  create  1       aegis/os.c
+        source  create  1       aegis/os.h
+        source  create  1       aegis/pager.c
+        source  create  1       aegis/pager.h
+        source  create  1       aegis/parse.c
+        source  create  1       aegis/parse.h
+        source  create  1       aegis/pattr.def
+        source  create  1       aegis/pconf.def
+        source  create  1       aegis/project.c
+        source  create  1       aegis/project.h
+        source  create  1       aegis/pstate.def
+        source  create  1       aegis/rptidx.def
+        source  create  1       aegis/sub.c
+        source  create  1       aegis/sub.h
+        source  create  1       aegis/type.c
+        source  create  1       aegis/type.h
+        source  create  1       aegis/uconf.def
+        source  create  1       aegis/uname.c
+        source  create  1       aegis/uname.h
+        source  create  1       aegis/undo.c
+        source  create  1       aegis/undo.h
+        source  create  1       aegis/user.c
+        source  create  1       aegis/user.h
+        source  create  1       aegis/ustate.def
+        source  create  1       aux/BUILDING.man
+        source  create  1       aux/CHANGES.1.0
+        source  create  1       aux/CHANGES.1.1
+        source  create  1       aux/CHANGES.1.2
+        source  create  1       aux/CHANGES.1.3
+        source  create  1       aux/CHANGES.1.4
+        source  create  1       aux/CHANGES.2.0
+        source  create  1       aux/CHANGES.2.1
+        source  create  1       aux/CHANGES.sh
+        source  create  1       aux/Howto.cook
+        source  create  1       aux/MANIFEST.sh
+        source  create  1       aux/Makefi.file.sh
+        source  create  1       aux/Makefile.awk
+        source  create  1       aux/Makefile.head
+        source  create  1       aux/Makefile.sh
+        source  create  1       aux/README.man
+        source  create  1       aux/config.h.in
+        source  create  1       aux/config.h.in2
+        source  create  1       aux/configure.in
+        source  create  1       aux/new.1.4.so
+        source  create  1       aux/new.2.0.so
+        source  create  1       aux/new.2.1.so
+        source  create  1       aux/new.2.2.so
+        build   create  1       aux/new.so
+
+
+
+Project "aegis.2.3", Change 1                                    Page 7
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       aux/patch.fil.sh
+        source  create  1       aux/patches.sh
+        source  create  1       aux/template/c
+        source  create  1       aux/template/generic
+        source  create  1       aux/template/h
+        source  create  1       aux/template/man
+        source  create  1       aux/template/ms
+        source  create  1       aux/template/report
+        source  create  1       aux/template/sh
+        source  create  1       aux/template/test
+        source  create  1       common/ac/dirent.h
+        source  create  1       common/ac/limits.h
+        source  create  1       common/ac/stddef.h
+        source  create  1       common/ac/stdlib.h
+        source  create  1       common/ac/string.h
+        source  create  1       common/ac/time.h
+        source  create  1       common/ac/unistd.h
+        source  create  1       common/ansi.c
+        source  create  1       common/arglex.c
+        source  create  1       common/arglex.h
+        build   create  1       common/config.h.in
+        source  create  1       common/error.c
+        source  create  1       common/error.h
+        source  create  1       common/fstrcmp.c
+        source  create  1       common/fstrcmp.h
+        source  create  1       common/main.h
+        source  create  1       common/mem.c
+        source  create  1       common/mem.h
+        source  create  1       common/mprintf.c
+        source  create  1       common/mprintf.h
+        source  create  1       common/option.c
+        source  create  1       common/option.h
+        build   create  1       common/patchlevel.h
+        source  create  1       common/s-v-arg.h
+        source  create  1       common/str.c
+        source  create  1       common/str.h
+        source  create  1       common/symtab.c
+        source  create  1       common/symtab.h
+        source  create  1       common/trace.c
+        source  create  1       common/trace.h
+        source  create  1       common/word.c
+        source  create  1       common/word.h
+        source  create  1       config
+        build   create  1       configure
+        source  create  1       doc/aegis.ms
+        source  create  1       doc/c1.0.so
+        source  create  1       doc/c1.1.so
+        source  create  1       doc/c1.2.so
+        source  create  1       doc/c1.3.so
+        source  create  1       doc/c1.4.so
+        source  create  1       doc/c2.0.so
+        source  create  1       doc/c2.1.so
+        source  create  1       doc/c2.2.so
+        source  create  1       doc/c2.3.so
+        source  create  1       doc/c2.4.so
+
+
+
+Project "aegis.2.3", Change 1                                    Page 8
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       doc/c2.5.so
+        source  create  1       doc/c3.0.so
+        source  create  1       doc/c3.1.so
+        source  create  1       doc/c3.2.so
+        source  create  1       doc/c3.3.so
+        source  create  1       doc/c4.0.so
+        source  create  1       doc/c4.1.so
+        source  create  1       doc/c4.2.so
+        source  create  1       doc/c4.3.so
+        source  create  1       doc/c4.4.so
+        source  create  1       doc/c5.0.so
+        source  create  1       doc/c6.0.so
+        source  create  1       doc/c6.1.so
+        source  create  1       doc/c6.2.so
+        source  create  1       doc/c7.0.so
+        source  create  1       doc/c7.1.so
+        source  create  1       doc/c7.2.so
+        source  create  1       doc/c7.4.so
+        source  create  1       doc/c7.5.so
+        source  create  1       doc/c8.0.so
+        source  create  1       doc/c8.1.so
+        source  create  1       doc/c8.2.so
+        source  create  1       doc/c8.3.so
+        source  create  1       doc/cA.0.so
+        source  create  1       doc/cB.0.so
+        source  create  1       doc/cD.0.so
+        build   create  1       doc/version.so
+        source  create  1       fmtgen/indent.c
+        source  create  1       fmtgen/indent.h
+        source  create  1       fmtgen/lex.c
+        source  create  1       fmtgen/lex.h
+        source  create  1       fmtgen/main.c
+        source  create  1       fmtgen/parse.h
+        source  create  1       fmtgen/parse.y
+        source  create  1       fmtgen/type.c
+        source  create  1       fmtgen/type.h
+        source  create  1       fmtgen/type/enumeration.c
+        source  create  1       fmtgen/type/enumeration.h
+        source  create  1       fmtgen/type/integer.c
+        source  create  1       fmtgen/type/integer.h
+        source  create  1       fmtgen/type/list.c
+        source  create  1       fmtgen/type/list.h
+        source  create  1       fmtgen/type/string.c
+        source  create  1       fmtgen/type/string.h
+        source  create  1       fmtgen/type/structure.c
+        source  create  1       fmtgen/type/structure.h
+        source  create  1       fmtgen/type/time.c
+        source  create  1       fmtgen/type/time.h
+        source  create  1       lib/aegis.icon
+        source  create  1       lib/aegis.mask
+        source  create  1       lib/aegis.pgm
+        source  create  1       lib/cshrc
+        source  create  1       lib/db_forced.sh
+        source  create  1       lib/de.inews.sh
+        source  create  1       lib/de.sh
+
+
+
+Project "aegis.2.3", Change 1                                    Page 9
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       lib/deu.inews.sh
+        source  create  1       lib/deu.sh
+        source  create  1       lib/if.inews.sh
+        source  create  1       lib/if.sh
+        source  create  1       lib/ip.inews.sh
+        source  create  1       lib/ip.sh
+        source  create  1       lib/profile
+        source  create  1       lib/report.index
+        source  create  1       lib/report/chan_files.rpt
+        source  create  1       lib/report/chan_lists.rpt
+        source  create  1       lib/report/file_activ.rpt
+        source  create  1       lib/report/file_hstry.rpt
+        source  create  1       lib/report/proj_admin.rpt
+        source  create  1       lib/report/proj_devel.rpt
+        source  create  1       lib/report/proj_files.rpt
+        source  create  1       lib/report/proj_integ.rpt
+        source  create  1       lib/report/proj_lists.rpt
+        source  create  1       lib/report/proj_rvwrs.rpt
+        source  create  1       lib/report/proj_staff.rpt
+        source  create  1       lib/report/proj_stats.rpt
+        source  create  1       lib/rf.inews.sh
+        source  create  1       lib/rf.sh
+        source  create  1       lib/rp.inews.sh
+        source  create  1       lib/rp.sh
+        source  create  1       lib/rpu.inews.sh
+        source  create  1       lib/rpu.sh
+        source  create  1       man1/aeb.1
+        source  create  1       man1/aeca.1
+        source  create  1       man1/aecd.1
+        source  create  1       man1/aechown.1
+        source  create  1       man1/aecp.1
+        source  create  1       man1/aecpu.1
+        source  create  1       man1/aed.1
+        source  create  1       man1/aedb.1
+        source  create  1       man1/aedbu.1
+        source  create  1       man1/aede.1
+        source  create  1       man1/aedeu.1
+        source  create  1       man1/aegis.1
+        source  create  1       man1/aeib.1
+        source  create  1       man1/aeibu.1
+        source  create  1       man1/aeif.1
+        source  create  1       man1/aeip.1
+        source  create  1       man1/ael.1
+        source  create  1       man1/aemv.1
+        source  create  1       man1/aena.1
+        source  create  1       man1/aenc.1
+        source  create  1       man1/aencu.1
+        source  create  1       man1/aend.1
+        source  create  1       man1/aenf.1
+        source  create  1       man1/aenfu.1
+        source  create  1       man1/aeni.1
+        source  create  1       man1/aenpr.1
+        source  create  1       man1/aenrls.1
+        source  create  1       man1/aenrv.1
+        source  create  1       man1/aent.1
+
+
+
+Project "aegis.2.3", Change 1                                   Page 10
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       man1/aentu.1
+        source  create  1       man1/aepa.1
+        source  create  1       man1/aer.1
+        source  create  1       man1/aera.1
+        source  create  1       man1/aerd.1
+        source  create  1       man1/aerf.1
+        source  create  1       man1/aeri.1
+        source  create  1       man1/aerm.1
+        source  create  1       man1/aermpr.1
+        source  create  1       man1/aermu.1
+        source  create  1       man1/aerp.1
+        source  create  1       man1/aerpu.1
+        source  create  1       man1/aerrv.1
+        source  create  1       man1/aet.1
+        source  create  1       man1/aev.1
+        source  create  1       man1/o__rules.so
+        source  create  1       man1/o_anticip.so
+        source  create  1       man1/o_auto.so
+        source  create  1       man1/o_baselin.so
+        source  create  1       man1/o_bld_lk.so
+        source  create  1       man1/o_change.so
+        source  create  1       man1/o_devdir.so
+        source  create  1       man1/o_dir.so
+        source  create  1       man1/o_edit.so
+        source  create  1       man1/o_help.so
+        source  create  1       man1/o_indep.so
+        source  create  1       man1/o_interact.so
+        source  create  1       man1/o_keep.so
+        source  create  1       man1/o_lib.so
+        source  create  1       man1/o_list.so
+        source  create  1       man1/o_major.so
+        source  create  1       man1/o_manual.so
+        source  create  1       man1/o_min.so
+        source  create  1       man1/o_minor.so
+        source  create  1       man1/o_nolog.so
+        source  create  1       man1/o_overw.so
+        source  create  1       man1/o_page.so
+        source  create  1       man1/o_project.so
+        source  create  1       man1/o_regress.so
+        source  create  1       man1/o_symlnk.so
+        source  create  1       man1/o_terse.so
+        source  create  1       man1/o_unforma.so
+        source  create  1       man1/o_user.so
+        source  create  1       man1/o_verbose.so
+        source  create  1       man1/z_cr.so
+        source  create  1       man1/z_exit.so
+        source  create  1       man1/z_intuit.so
+        source  create  1       man1/z_name.so
+        source  create  1       man5/aecattr.5
+        source  create  1       man5/aecattr.so
+        source  create  1       man5/aecstate.5
+        source  create  1       man5/aedir.5
+        source  create  1       man5/aegis.5
+        source  create  1       man5/aegstate.5
+        source  create  1       man5/aepattr.5
+
+
+
+Project "aegis.2.3", Change 1                                   Page 11
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  create  1       man5/aepattr.so
+        source  create  1       man5/aepconf.5
+        source  create  1       man5/aepstate.5
+        source  create  1       man5/aer.5
+        source  create  1       man5/aerptidx.5
+        source  create  1       man5/aesub.5
+        source  create  1       man5/aeuconf.5
+        source  create  1       man5/aeustate.5
+        source  create  1       man5/z_cr.so
+        source  create  1       man5/z_name.so
+        source  create  1       script/aegis.synpic
+        source  create  1       script/xaegis.tcl
+        test    create  1       test/00/t0001a.sh
+        test    create  1       test/00/t0002a.sh
+        test    create  1       test/00/t0003a.sh
+        test    create  1       test/00/t0004a.sh
+        test    create  1       test/00/t0005a.sh
+        test    create  1       test/00/t0006a.sh
+        test    create  1       test/00/t0007a.sh
+        test    create  1       test/00/t0008a.sh
+        test    create  1       test/00/t0009a.sh
+        test    create  1       test/00/t0010a.sh
+        test    create  1       test/00/t0011a.sh
+        test    create  1       test/00/t0012a.sh
+        test    create  1       test/00/t0013a.sh
+        test    create  1       test/00/t0014a.sh
+        test    create  1       test/00/t0015a.sh
+        test    create  1       test/00/t0016a.sh
+        test    create  1       test/00/t0017a.sh
+        test    create  1       test/00/t0018a.sh
+        test    create  1       test/00/t0019a.sh
+        test    create  1       test/00/t0020a.sh
+        test    create  1       test/00/t0021a.sh
+        test    create  1       test/00/t0022a.sh
+        test    create  1       test/00/t0023a.sh
+        test    create  1       test/00/t0024a.sh
+        test    create  1       test/00/t0025a.sh
+        source  create  1       txt2c/main.c
+        source  create  1       txt2c/txt2c.c
+        source  create  1       txt2c/txt2c.h
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Fri Aug 26      pmiller
+                        06:01:09 1994
+        develop_begin   Fri Aug 26      pmiller
+                        06:01:09 1994
+        develop_end     Fri Aug 26      pmiller
+                        06:01:09 1994
+        review_pass     Fri Aug 26      pmiller
+                        06:01:09 1994
+        integrate_begin Fri Aug 26      pmiller  Elapsed time: 0.116
+                        06:01:09 1994            days.
+        integrate_pass  Fri Aug 26      pmiller
+
+
+
+Project "aegis.2.3", Change 1                                   Page 12
+Change Details                                 Tue Mar 14 06:49:59 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+                        06:53:08 1994
+
+
+
+Project "aegis.2.3", Change 2                                    Page 1
+Change Details                                 Tue Mar 14 06:50:02 1995
+
+NAME
+        Project "aegis.2.3", Delta 2, Change 2.
+
+SUMMARY
+        enum comma
+
+DESCRIPTION
+        Some overly pedantic ANSI C compilers complain about trailing
+        commas in enums.  This change fixes and example of this.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "aix", "alpha",
+        "sun4" and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  2       BUILDING
+        build   modify  2       MANIFEST
+        build   modify  1       Makefile.in
+        build   modify  2       README
+        source  modify  2       aegis/aer/stmt.h
+        source  create  1       aux/CHANGES.2.2
+        source  modify  2       aux/configure.in
+        source  create  1       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  1       common/config.h.in
+        build   modify  2       common/patchlevel.h
+        build   modify  2       configure
+        build   modify  2       doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Fri Aug 26      pmiller
+                        06:59:54 1994
+        develop_begin   Fri Aug 26      pmiller  Elapsed time: 11.842
+                        07:00:22 1994            days.
+        develop_end     Mon Sep 12      pmiller  Elapsed time: 0.147
+                        13:19:07 1994            days.
+        review_pass     Mon Sep 12      pmiller
+                        14:25:13 1994
+        integrate_begin Mon Sep 12      pmiller  Elapsed time: 1.333
+                        14:27:37 1994            days.
+        integrate_pass  Tue Sep 13      pmiller
+                        16:57:39 1994
+
+
+
+Project "aegis.2.3", Change 3                                    Page 1
+Change Details                                 Tue Mar 14 06:50:05 1995
+
+NAME
+        Project "aegis.2.3", Delta 3, Change 3.
+
+SUMMARY
+        Pathconf can return ENOSYS at times
+
+DESCRIPTION
+        The pathconf function can return ENOSYS (Function not
+        implemented) in addition to EINVAL.  Treat ENOSYS the same as
+        EINVAL.
+
+        My thanks to Brian Decker <bdecker@melpar.esys.com> for
+        reporting this problem.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  2       MANIFEST
+        build   modify  1       Makefile.in
+        build   modify  2       README
+        source  modify  2       aegis/os.c
+        source  modify  2       aux/BUILDING.man
+        build   modify  2       aux/new.so
+        build   modify  1       common/config.h.in
+        build   modify  3       common/patchlevel.h
+        source  modify  2       config
+        build   modify  2       configure
+        build   modify  3       doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Fri Aug 26      pmiller  Elapsed time: 0.070
+                        07:00:11 1994            days.
+        develop_begin   Fri Aug 26      pmiller  Elapsed time: 21.930
+                        07:31:33 1994            days.
+        develop_end     Tue Sep 27      pmiller
+                        06:59:58 1994
+        review_pass     Tue Sep 27      pmiller
+                        07:00:23 1994
+        integrate_begin Tue Sep 27      pmiller  Elapsed time: 0.000
+                        07:07:50 1994            days.
+        integrate_pass  Tue Sep 27      pmiller
+                        19:43:39 1994
+
+
+
+Project "aegis.2.3", Change 4                                    Page 1
+Change Details                                 Tue Mar 14 06:50:07 1995
+
+NAME
+        Project "aegis.2.3", Delta 5, Change 4.
+
+SUMMARY
+        maximum_filename_length documentation error
+
+DESCRIPTION
+        The manpage aepconf(5) states that the maximum_filename_length
+        field only applies to newly created files.  However, when
+        doing an aede on an existing project (with directory names
+        longer than 14 chars), Aegis complains that a path element is
+        too long.
+
+        Looking at the source code, you recheck filename lengths when
+        the config file changes, which seems fair enough.  I guess
+        this is basically a documentation error.
+
+        My thanks to Simon Pickup <simon@adacel.com.au> for reporting
+        this problem.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  2       MANIFEST
+        build   modify  1       Makefile.in
+        build   modify  2       README
+        build   modify  2       aux/new.so
+        build   modify  1       common/config.h.in
+        build   modify  5       common/patchlevel.h
+        build   modify  2       configure
+        build   modify  5       doc/version.so
+        source  modify  2       man1/aede.1
+        source  modify  2       man5/aepconf.5
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Sep  6      pmiller  Elapsed time: 23.447
+                        13:51:25 1994            days.
+        develop_begin   Sun Oct  9      pmiller  Elapsed time: 1.555
+                        09:42:40 1994            days.
+        develop_end     Tue Oct 11      pmiller
+                        06:22:20 1994
+        review_pass     Tue Oct 11      pmiller
+                        06:24:29 1994
+
+
+
+Project "aegis.2.3", Change 4                                    Page 2
+Change Details                                 Tue Mar 14 06:50:07 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        integrate_begin Tue Oct 11      pmiller  Elapsed time: 0.068
+                        06:31:40 1994            days.
+        integrate_pass  Tue Oct 11      pmiller
+                        07:02:04 1994
+
+
+
+Project "aegis.2.3", Change 5                                    Page 1
+Change Details                                 Tue Mar 14 06:50:09 1995
+
+NAME
+        Project "aegis.2.3", Delta 4, Change 5.
+
+SUMMARY
+        aecp on directories can fail
+
+DESCRIPTION
+        The aecp command fails if you copy a directory and the
+        directory (or its subdirectories) contains any files that have
+        been deleted from the project with aerm (or are about to be
+        created, or a usage build).
+
+        This is  no longer an error, but such files are skipped in the
+        copy.
+
+        My thanks to: Simon Pickup <simon@adacel.com.au> for reporting
+        this problem.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  2       MANIFEST
+        build   modify  1       Makefile.in
+        build   modify  2       README
+        source  modify  2       aegis/aecp.c
+        source  modify  2       aegis/project.c
+        build   modify  2       aux/new.so
+        build   modify  1       common/config.h.in
+        build   modify  4       common/patchlevel.h
+        build   modify  2       configure
+        build   modify  4       doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Mon Sep 12      pmiller  Elapsed time: 11.403
+                        16:52:16 1994            days.
+        develop_begin   Tue Sep 27      pmiller  Elapsed time: 0.000
+                        19:53:43 1994            days.
+        develop_end     Wed Sep 28      pmiller  Elapsed time: 0.034
+                        10:43:15 1994            days.
+        review_pass     Wed Sep 28      pmiller
+                        10:58:46 1994
+        integrate_begin Wed Sep 28      pmiller  Elapsed time: 7.655
+                        11:06:39 1994            days.
+
+
+
+Project "aegis.2.3", Change 5                                    Page 2
+Change Details                                 Tue Mar 14 06:50:09 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        integrate_pass  Sun Oct  9      pmiller
+                        08:31:30 1994
+
+
+
+Project "aegis.2.3", Change 6                                    Page 1
+Change Details                                 Tue Mar 14 06:50:10 1995
+
+NAME
+        Project "aegis.2.3", Delta 6, Change 6.
+
+SUMMARY
+        screen size not always correct
+
+DESCRIPTION
+        When running Aegis 2.2.D058, compiled for Solaris 2.3, the
+        paging facility does not seem to work properly within xterms.
+        If $LINES is set, it works fine, but using the TIOGWINSZ ioctl
+        doesn't seem to work.
+
+        Using Aegis 2.1, the pages were still paged to 24 lines, but
+        $PAGER (more) was still using the correct number of lines.  In
+        Aegis 2.2, $LINES is set by Aegis before it calls $PAGER, thus
+        the pager is forced to use that screen size.
+
+        Fundamentally, it seems that the ioctl() code to get the
+        window size in option.c is not being compiled in.  If I
+        #include <termios.h> it seems to fix the problem.
+
+        My thanks to Simon Pickup <simon@adacel.com.au> for reporting
+        this problem.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  3       MANIFEST
+        build   modify  2       Makefile.in
+        build   modify  2       README
+        source  modify  2       aux/Makefile.sh
+        source  modify  2       aux/config.h.in
+        source  modify  3       aux/configure.in
+        build   modify  2       aux/new.so
+        source  create  1       common/ac/termios.h
+        build   modify  2       common/config.h.in
+        source  modify  2       common/option.c
+        build   modify  6       common/patchlevel.h
+        build   modify  3       configure
+        build   modify  6       doc/version.so
+
+
+
+Project "aegis.2.3", Change 6                                    Page 2
+Change Details                                 Tue Mar 14 06:50:10 1995
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Sep 13      pmiller  Elapsed time: 18.761
+                        16:30:31 1994            days.
+        develop_begin   Tue Oct 11      pmiller  Elapsed time: 0.960
+                        07:12:55 1994            days.
+        develop_end     Wed Oct 12      pmiller
+                        06:54:52 1994
+        review_pass     Wed Oct 12      pmiller
+                        06:56:46 1994
+        integrate_begin Wed Oct 12      pmiller  Elapsed time: 0.753
+                        07:03:32 1994            days.
+        integrate_pass  Wed Oct 12      pmiller
+                        12:42:30 1994
+
+
+
+Project "aegis.2.3", Change 7                                    Page 1
+Change Details                                 Tue Mar 14 06:50:12 1995
+
+NAME
+        Project "aegis.2.3", Delta 9, Change 7.
+
+SUMMARY
+        SCO is ugly
+
+DESCRIPTION
+        Tonight I upgraded both Aegis (to 2.2) and Cook (to 1.6) on
+        our SCO ODT 3.0 box. Cook built without any problems. The only
+        non-standard action was to include LIBS=-lsocket to the
+        configure commandline. (I also added this library to Aegis'
+        configure.)
+
+        While building Aegis, the only problem I had was SCO choking
+        on the final compilation... cc couldn't pass all commandline-
+        parameters (the .o files) to the linker. I fixed this problem
+        by building intermediate libraries.
+
+        My thanks to Kees Hendrikse <kees@echelon.nl> for reporting
+        this problem.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  5       MANIFEST
+        build   modify  4       Makefile.in
+        build   modify  3       README
+        source  modify  2       aegis/help.c
+        source  modify  4       aux/Howto.cook
+        source  modify  3       aux/Makefile.sh
+        source  modify  5       aux/configure.in
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  9       common/patchlevel.h
+        source  create  1       common/version_stmp.c
+        source  create  1       common/version_stmp.h
+        build   modify  5       configure
+        build   modify  9       doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Sep 13      pmiller  Elapsed time: 28.764
+                        16:56:35 1994            days.
+        develop_begin   Fri Oct 21      pmiller  Elapsed time: 14.119
+
+
+
+Project "aegis.2.3", Change 7                                    Page 2
+Change Details                                 Tue Mar 14 06:50:12 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+                        22:40:11 1994            days.
+        develop_end     Mon Nov 14      pmiller  Elapsed time: 0.038
+                        09:33:31 1994            days.
+        review_pass     Mon Nov 14      pmiller  Elapsed time: 0.025
+                        09:50:44 1994            days.
+        integrate_begin Mon Nov 14      pmiller  Elapsed time: 1.841
+                        10:01:46 1994            days.
+        integrate_pass  Tue Nov 15      pmiller
+                        16:20:06 1994
+
+
+
+Project "aegis.2.3", Change 8                                    Page 1
+Change Details                                 Tue Mar 14 06:50:14 1995
+
+NAME
+        Project "aegis.2.3", Delta 13, Change 8.
+
+SUMMARY
+        note about AEGIS_UID in building file
+
+DESCRIPTION
+        The BUILDING file needs to stress that the AEGIS_UID must not
+        be used to own projects.
+
+        My thanks to Kees Hendrikse <kees@echelon.nl> for reporting
+        this problem.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  5       BUILDING
+        build   modify  5       MANIFEST
+        build   modify  5       Makefile.in
+        build   modify  5       README
+        source  modify  3       aegis/gonzo.c
+        source  modify  4       aux/BUILDING.man
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  13      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  13      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Sep 20      pmiller  Elapsed time: 45.501
+                        12:01:24 1994            days.
+        develop_begin   Tue Nov 22      pmiller  Elapsed time: 0.511
+                        16:46:41 1994            days.
+        develop_end     Tue Nov 22      pmiller
+                        20:36:47 1994
+        review_pass     Tue Nov 22      pmiller
+                        20:37:05 1994
+        integrate_begin Tue Nov 22      pmiller  Elapsed time: 0.214
+                        20:45:32 1994            days.
+        integrate_pass  Tue Nov 22      pmiller
+                        22:21:47 1994
+
+
+
+Project "aegis.2.3", Change 9                                    Page 1
+Change Details                                 Tue Mar 14 06:50:16 1995
+
+NAME
+        Project "aegis.2.3", Delta 14, Change 9.
+
+SUMMARY
+        tolerate the development directory being gone on integrate pass
+
+DESCRIPTION
+        If the development directory is gone when integrate pass
+        happens (it should still be there, but some users get carried
+        away) there was a bug where aegis would abort with a fatal
+        error. This change fixes that problem, a few others similar.
+
+        My thanks (I think) to David Bell <dbell@canb.auug.org.au> for
+        demonstrating what happens.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_enhancement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  5       BUILDING
+        build   modify  5       MANIFEST
+        build   modify  5       Makefile.in
+        build   modify  6       README
+        source  modify  2       aegis/commit.c
+        source  modify  5       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  14      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  14      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Sep 27      pmiller  Elapsed time: 40.549
+                        17:20:12 1994            days.
+        develop_begin   Tue Nov 22      pmiller  Elapsed time: 0.000
+                        22:27:12 1994            days.
+        develop_end     Wed Nov 23      pmiller
+                        06:53:17 1994
+        review_pass     Wed Nov 23      pmiller
+                        06:53:34 1994
+        integrate_begin Wed Nov 23      pmiller  Elapsed time: 0.173
+                        07:02:44 1994            days.
+        integrate_pass  Wed Nov 23      pmiller
+                        08:20:46 1994
+
+
+
+Project "aegis.2.3", Change 10                                   Page 1
+Change Details                                 Tue Mar 14 06:50:18 1995
+
+NAME
+        Project "aegis.2.3", Delta 11, Change 10.
+
+SUMMARY
+        aemv does not create directory
+
+DESCRIPTION
+        The "from" directory is not created by the aemv command,
+        causing fatal errors when it tries to create the garbage file.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  5       MANIFEST
+        build   modify  5       Makefile.in
+        build   modify  4       README
+        source  modify  3       aegis/aemv.c
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  11      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  11      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Sep 29      pmiller  Elapsed time: 36.182
+                        11:38:33 1994            days.
+        develop_begin   Mon Nov 21      pmiller  Elapsed time: 0.000
+                        06:30:40 1994            days.
+        develop_end     Mon Nov 21      pmiller
+                        22:05:43 1994
+        review_pass     Mon Nov 21      pmiller  Elapsed time: 0.026
+                        22:06:28 1994            days.
+        integrate_begin Mon Nov 21      pmiller  Elapsed time: 0.000
+                        22:18:12 1994            days.
+        integrate_pass  Tue Nov 22      pmiller
+                        06:50:44 1994
+
+
+
+Project "aegis.2.3", Change 11                                   Page 1
+Change Details                                 Tue Mar 14 06:50:20 1995
+
+NAME
+        Project "aegis.2.3", Delta 8, Change 11.
+
+SUMMARY
+        use fuzzy file name match in aecp error messages.
+
+DESCRIPTION
+        Use fuzzy string compare on file names and user names to
+        improve error messages.         It is hoped this will make
+        error messages from aecp, etc, much more useful.
+
+        This change must pass a full regression test.  This change is
+        exempt from testing against the development directory.  This
+        change is exempt from testing against the baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_improvement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  4       MANIFEST
+        build   modify  3       Makefile.in
+        build   modify  3       README
+        source  modify  3       aegis/aecp.c
+        source  modify  2       aegis/aecpu.c
+        source  modify  2       aegis/ael.c
+        source  modify  2       aegis/aemv.c
+        source  modify  2       aegis/aenc.c
+        source  modify  2       aegis/aenfu.c
+        source  modify  2       aegis/aenrls.c
+        source  modify  2       aegis/aentu.c
+        source  modify  2       aegis/aerm.c
+        source  modify  2       aegis/aermu.c
+        source  modify  2       aegis/aet.c
+        source  modify  2       aegis/change.c
+        source  modify  2       aegis/change.h
+        source  modify  2       aegis/gonzo.c
+        source  modify  3       aegis/os.c
+        source  modify  2       aegis/os.h
+        source  modify  3       aegis/project.c
+        source  modify  2       aegis/project.h
+        source  modify  2       aegis/sub.c
+        source  modify  2       aegis/user.c
+        source  modify  3       aux/Howto.cook
+        source  modify  2       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  3       common/config.h.in
+        build   modify  8       common/patchlevel.h
+        build   modify  4       configure
+        build   modify  8       doc/version.so
+
+
+
+Project "aegis.2.3", Change 11                                   Page 2
+Change Details                                 Tue Mar 14 06:50:20 1995
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Sep 29      pmiller  Elapsed time: 7.981
+                        22:03:16 1994            days.
+        develop_begin   Thu Oct 13      pmiller  Elapsed time: 3.859
+                        06:54:51 1994            days.
+        develop_end     Wed Oct 19      pmiller
+                        05:51:21 1994
+        review_pass     Wed Oct 19      pmiller
+                        05:51:31 1994
+        integrate_begin Wed Oct 19      pmiller  Elapsed time: 2.006
+                        05:58:33 1994            days.
+        integrate_pass  Fri Oct 21      pmiller
+                        22:31:23 1994
+
+
+
+Project "aegis.2.3", Change 12                                   Page 1
+Change Details                                 Tue Mar 14 06:50:21 1995
+
+NAME
+        Project "aegis.2.3", Delta 7, Change 12.
+
+SUMMARY
+        autoconf Howto cook as well
+
+DESCRIPTION
+        This change adds an include file for Howto.cook which contains
+        results from autoconf. This makes it easier to add new
+        architectures to the mandatory list.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_improvement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  4       MANIFEST
+        build   modify  2       Makefile.in
+        build   modify  2       README
+        source  create  1       aux/Howto.conf.in
+        source  modify  2       aux/Howto.cook
+        source  create  1       aux/config.h.in1
+        source  modify  4       aux/configure.in
+        build   modify  2       aux/new.so
+        build   modify  3       common/config.h.in
+        build   modify  7       common/patchlevel.h
+        build   modify  4       configure
+        build   modify  7       doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Wed Oct 12      pmiller
+                        09:04:07 1994
+        develop_begin   Wed Oct 12      pmiller  Elapsed time: 0.000
+                        09:04:25 1994            days.
+        develop_end     Thu Oct 13      pmiller
+                        16:44:18 1994
+        review_pass     Thu Oct 13      pmiller
+                        16:48:35 1994
+        integrate_begin Thu Oct 13      pmiller  Elapsed time: 0.761
+                        16:56:38 1994            days.
+        integrate_pass  Sat Oct 15      pmiller
+                        07:39:10 1994
+
+
+
+Project "aegis.2.3", Change 13                                   Page 1
+Change Details                                 Tue Mar 14 06:50:23 1995
+
+NAME
+        Project "aegis.2.3", Delta 15, Change 13.
+
+SUMMARY
+        add symbolic names to deltas
+
+DESCRIPTION
+        allow -delta arguments to be given as these names, and add the
+        names to relevant listings
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_enhancement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  5       BUILDING
+        build   modify  6       MANIFEST
+        build   modify  6       Makefile.in
+        build   modify  7       README
+        source  modify  4       aegis/aecp.c
+        source  create  1       aegis/aedn.c
+        source  create  1       aegis/aedn.h
+        source  modify  4       aegis/ael.c
+        source  modify  2       aegis/main.c
+        source  modify  4       aegis/project.c
+        source  modify  3       aegis/project.h
+        source  modify  2       aegis/pstate.def
+        source  modify  6       aux/Howto.cook
+        source  modify  6       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        source  modify  2       aux/template/c
+        source  modify  2       aux/template/generic
+        source  modify  2       aux/template/h
+        source  modify  2       aux/template/man
+        source  modify  2       aux/template/ms
+        source  modify  2       aux/template/report
+        source  modify  2       aux/template/sh
+        source  modify  2       aux/template/test
+        source  modify  2       common/arglex.c
+        build   modify  4       common/config.h.in
+        build   modify  15      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  15      doc/version.so
+        source  modify  2       lib/cshrc
+        source  modify  2       lib/profile
+        source  modify  2       man1/aecp.1
+        source  create  1       man1/aedn.1
+        source  modify  2       man1/aegis.1
+        source  modify  2       man5/aepstate.5
+        test    create  1       test/00/t0026a.sh
+
+
+
+Project "aegis.2.3", Change 13                                   Page 2
+Change Details                                 Tue Mar 14 06:50:23 1995
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Fri Oct 14      pmiller  Elapsed time: 28.140
+                        06:23:32 1994            days.
+        develop_begin   Wed Nov 23      pmiller  Elapsed time: 1.671
+                        08:26:20 1994            days.
+        develop_end     Fri Nov 25      pmiller
+                        22:28:27 1994
+        review_pass     Fri Nov 25      pmiller
+                        22:28:53 1994
+        integrate_begin Fri Nov 25      pmiller  Elapsed time: 0.000
+                        22:37:51 1994            days.
+        integrate_pass  Sat Nov 26      pmiller
+                        07:21:33 1994
+
+
+
+Project "aegis.2.3", Change 14                                   Page 1
+Change Details                                 Tue Mar 14 06:50:25 1995
+
+NAME
+        Project "aegis.2.3", Delta 16, Change 14.
+
+SUMMARY
+        improve RCS documentation
+
+DESCRIPTION
+        Improve the User Guide section on using RCS to include flags
+        to better preserve the modify-time of the files in the
+        baseline.  The use of RCS merge for diff3_command has also
+        been documented.
+
+        My thanks to Simon Pickup <simon@adacel.com.au> for these
+        suggestions.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  5       BUILDING
+        build   modify  6       MANIFEST
+        build   modify  6       Makefile.in
+        build   modify  7       README
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  16      common/patchlevel.h
+        build   modify  5       configure
+        source  modify  2       doc/c3.2.so
+        build   modify  16      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Oct 20      pmiller  Elapsed time: 26.592
+                        09:42:53 1994            days.
+        develop_begin   Sat Nov 26      pmiller  Elapsed time: 2.799
+                        07:39:21 1994            days.
+        develop_end     Wed Nov 30      pmiller
+                        06:08:54 1994
+        review_pass     Wed Nov 30      pmiller
+                        06:09:06 1994
+        integrate_begin Wed Nov 30      pmiller  Elapsed time: 0.135
+                        06:17:00 1994            days.
+        integrate_pass  Wed Nov 30      pmiller
+                        07:17:51 1994
+
+
+
+Project "aegis.2.3", Change 15                                   Page 1
+Change Details                                 Tue Mar 14 06:50:26 1995
+
+NAME
+        Project "aegis.2.3", Delta 17, Change 15.
+
+SUMMARY
+        add config file fields to avoid specified file names
+
+DESCRIPTION
+        The change adds pconf fields to allow a set of file name
+        patterns to be specified.  These patterns specify acceptable
+        and unacceptable file names.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_enhancement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  5       BUILDING
+        build   modify  7       MANIFEST
+        build   modify  6       Makefile.in
+        build   modify  8       README
+        source  modify  3       aegis/change.c
+        source  modify  3       aegis/change.h
+        source  modify  2       aegis/pconf.def
+        source  modify  7       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  17      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  17      doc/version.so
+        source  modify  3       man5/aepconf.5
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Nov 10      pmiller  Elapsed time: 10.658
+                        16:30:45 1994            days.
+        develop_begin   Mon Nov 28      pmiller  Elapsed time: 40.314
+                        06:26:47 1994            days.
+        develop_end     Sun Jan 22      pmiller
+                        08:48:08 1995
+        review_pass     Sun Jan 22      pmiller
+                        08:48:57 1995
+        integrate_begin Sun Jan 22      pmiller  Elapsed time: 1.770
+                        08:57:58 1995            days.
+        integrate_pass  Tue Jan 24      pmiller
+                        07:14:16 1995
+
+
+
+Project "aegis.2.3", Change 16                                   Page 1
+Change Details                                 Tue Mar 14 06:50:28 1995
+
+NAME
+        Project "aegis.2.3", Delta 10, Change 16.
+
+SUMMARY
+        have aegis maintain a list of copyright years
+
+DESCRIPTION
+        1. This change adds the ability for aegis to maintain a list
+        of copyright years as part of the project attributes.  It can
+        be edited, but aegis also makes sure that the current year is
+        in the list at each integrate begin.
+
+        2. There is a new ${Copyright_Years} substitution to access
+        this data, and it also appears in the version listing,
+        providing several ways to access this information at build
+        time.
+
+        3. The addition of the field pushed the project state file to
+        a staggering 33 fields, requiring the reworking of the way
+        field masks are handled.  Presence information implicit in non-
+        NULL pointers is now explaited, requiring flags only for
+        arithmetic fields.  This third item is not a user-visable
+        change.
+
+        This change must pass a full regression test.  This change is
+        exempt from testing against the development directory.  This
+        change is exempt from testing against the baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_enhancement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  3       BUILDING
+        build   modify  5       MANIFEST
+        build   modify  5       Makefile.in
+        build   modify  4       README
+        source  modify  2       aegis/aeib.c
+        source  modify  3       aegis/ael.c
+        source  modify  3       aegis/aenrls.c
+        source  modify  2       aegis/aepa.c
+        source  modify  2       aegis/parse.c
+        source  modify  2       aegis/pattr.def
+        source  modify  3       aegis/sub.c
+        source  modify  2       aegis/type.c
+        source  modify  2       aegis/type.h
+        source  modify  5       aux/Howto.cook
+        source  modify  3       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  10      common/patchlevel.h
+        build   modify  5       configure
+
+
+
+Project "aegis.2.3", Change 16                                   Page 2
+Change Details                                 Tue Mar 14 06:50:28 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  10      doc/version.so
+        source  modify  2       fmtgen/type.h
+        source  modify  2       fmtgen/type/enumeration.c
+        source  modify  2       fmtgen/type/integer.c
+        source  modify  2       fmtgen/type/list.c
+        source  modify  2       fmtgen/type/string.c
+        source  modify  2       fmtgen/type/structure.c
+        source  modify  2       fmtgen/type/time.c
+        source  modify  2       man1/ael.1
+        source  modify  2       man5/aepattr.so
+        source  modify  2       man5/aesub.5
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Sun Nov 13      pmiller  Elapsed time: 0.841
+                        08:03:22 1994            days.
+        develop_begin   Mon Nov 14      pmiller  Elapsed time: 5.086
+                        06:51:51 1994            days.
+        develop_end     Mon Nov 21      pmiller
+                        07:30:39 1994
+        review_pass     Mon Nov 21      pmiller
+                        07:34:39 1994
+        integrate_begin Mon Nov 21      pmiller  Elapsed time: 0.000
+                        07:41:54 1994            days.
+        integrate_pass  Mon Nov 21      pmiller
+                        21:09:21 1994
+
+
+
+Project "aegis.2.3", Change 17                                   Page 1
+Change Details                                 Tue Mar 14 06:50:30 1995
+
+NAME
+        Project "aegis.2.3", Delta 12, Change 17.
+
+SUMMARY
+        use automatic copyright years
+
+DESCRIPTION
+        The previous change added automatic copyright year
+        maintenance. This change uses the information maintained by
+        aegis to insert the copyright years into messages and
+        documentation.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_enhancement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  4       BUILDING
+        build   modify  5       MANIFEST
+        build   modify  5       Makefile.in
+        build   modify  5       README
+        source  modify  3       aegis/help.c
+        source  modify  3       aux/BUILDING.man
+        source  modify  2       aux/README.man
+        source  modify  4       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  12      common/patchlevel.h
+        source  modify  2       common/version_stmp.c
+        source  modify  2       common/version_stmp.h
+        build   modify  5       configure
+        source  modify  2       doc/c1.0.so
+        build   modify  12      doc/version.so
+        source  modify  2       man1/z_cr.so
+        source  modify  2       man5/z_cr.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Mon Nov 21      pmiller
+                        21:21:19 1994
+        develop_begin   Mon Nov 21      pmiller  Elapsed time: 0.000
+                        21:21:25 1994            days.
+        develop_end     Tue Nov 22      pmiller
+                        07:48:44 1994
+        review_pass     Tue Nov 22      pmiller
+                        07:48:55 1994
+        integrate_begin Tue Nov 22      pmiller  Elapsed time: 0.078
+
+
+
+Project "aegis.2.3", Change 17                                   Page 2
+Change Details                                 Tue Mar 14 06:50:30 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+                        07:56:31 1994            days.
+        integrate_pass  Tue Nov 22      pmiller
+                        08:31:27 1994
+
+
+
+Project "aegis.2.3", Change 18                                   Page 1
+Change Details                                 Tue Mar 14 06:50:32 1995
+
+NAME
+        Project "aegis.2.3", Delta 20, Change 18.
+
+SUMMARY
+        verify as much as possible before invoking -edit editor
+
+DESCRIPTION
+        This change increases the amount of checking done before the
+        editfor is invoked for -Edit options, to reduce the number of
+        wasted edits.
+        This chage also adds the use of the -File option to attribute
+        files on commands with -Edit options, as a step towards making
+        -Edit the default.
+
+        My thanks to Christian F. Goetze <c-goetze@akebono.u-
+        aizu.ac.jp> for reporting this problem.
+
+        This change is exempt from testing against the baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  9       MANIFEST
+        build   modify  7       Makefile.in
+        build   modify  9       README
+        source  modify  2       aegis/aeca.c
+        source  modify  2       aegis/aeif.c
+        source  modify  3       aegis/aenc.c
+        source  modify  3       aegis/aepa.c
+        source  modify  2       aegis/aerf.c
+        source  modify  2       aegis/arglex2.h
+        source  modify  2       aegis/col.c
+        source  modify  4       aegis/help.c
+        source  modify  3       aegis/main.c
+        source  modify  5       aux/BUILDING.man
+        source  modify  8       aux/Howto.cook
+        source  modify  3       aux/README.man
+        source  modify  8       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        source  modify  3       common/option.c
+        source  modify  2       common/option.h
+        build   modify  19      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  19      doc/version.so
+        source  modify  2       fmtgen/main.c
+        source  modify  2       man1/aeca.1
+        source  modify  2       man1/aeif.1
+        source  modify  2       man1/aenc.1
+
+
+
+Project "aegis.2.3", Change 18                                   Page 2
+Change Details                                 Tue Mar 14 06:50:32 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  2       man1/aepa.1
+        source  modify  2       man1/aerf.1
+        source  modify  2       man1/o_edit.so
+        source  create  1       man1/o_file.so
+        source  modify  3       man1/z_cr.so
+        source  modify  2       man5/aecattr.5
+        source  modify  2       man5/aecstate.5
+        source  modify  2       man5/aedir.5
+        source  modify  2       man5/aegis.5
+        source  modify  2       man5/aegstate.5
+        source  modify  2       man5/aepattr.5
+        source  modify  4       man5/aepconf.5
+        source  modify  3       man5/aepstate.5
+        source  modify  2       man5/aer.5
+        source  modify  2       man5/aerptidx.5
+        source  modify  3       man5/aesub.5
+        source  modify  2       man5/aeuconf.5
+        source  modify  2       man5/aeustate.5
+        source  remove  2       man5/z_cr.so
+        test    modify  2       test/00/t0002a.sh
+        test    modify  2       test/00/t0004a.sh
+        test    modify  2       test/00/t0005a.sh
+        test    modify  2       test/00/t0006a.sh
+        test    modify  2       test/00/t0007a.sh
+        test    modify  2       test/00/t0008a.sh
+        test    modify  2       test/00/t0009a.sh
+        test    modify  2       test/00/t0010a.sh
+        test    modify  2       test/00/t0011a.sh
+        test    modify  2       test/00/t0013a.sh
+        test    modify  2       test/00/t0014a.sh
+        test    modify  2       test/00/t0015a.sh
+        test    modify  2       test/00/t0016a.sh
+        test    modify  2       test/00/t0017a.sh
+        test    modify  2       test/00/t0018a.sh
+        test    modify  2       test/00/t0019a.sh
+        test    modify  2       test/00/t0020a.sh
+        test    modify  2       test/00/t0024a.sh
+        test    modify  2       test/00/t0025a.sh
+        test    modify  2       test/00/t0026a.sh
+        source  modify  2       txt2c/main.c
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Nov 22      pmiller  Elapsed time: 45.012
+                        07:18:00 1994            days.
+        develop_begin   Tue Jan 24      pmiller  Elapsed time: 5.023
+                        07:23:16 1995            days.
+        develop_end     Tue Jan 31      pmiller
+                        07:33:39 1995
+        review_pass     Tue Jan 31      pmiller
+                        07:33:54 1995
+        integrate_begin Tue Jan 31      pmiller  Elapsed time: 4.272
+                        07:36:55 1995            days.
+        integrate_fail  Sat Feb  4      pmiller  test 26 failes due to
+
+
+
+Project "aegis.2.3", Change 18                                   Page 3
+Change Details                                 Tue Mar 14 06:50:32 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+                        09:39:08 1995            small month days
+                                                 Elapsed time: 3.709
+                                                 days.
+        develop_end     Thu Feb  9      pmiller
+                        07:28:05 1995
+        review_pass     Thu Feb  9      pmiller
+                        07:29:49 1995
+        integrate_begin Thu Feb  9      pmiller  Elapsed time: 0.851
+                        07:32:42 1995            days.
+        integrate_pass  Fri Feb 10      pmiller
+                        06:25:38 1995
+
+
+
+Project "aegis.2.3", Change 19                                   Page 1
+Change Details                                 Tue Mar 14 06:50:33 1995
+
+NAME
+        Project "aegis.2.3", Delta 24, Change 19.
+
+SUMMARY
+        filename given to testcommand must be unresolved
+
+DESCRIPTION
+        The filename substitution in the test command must be
+        unresolved, so that long testing runs do not run afoul of
+        automounters.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  10      MANIFEST
+        build   modify  8       Makefile.in
+        build   modify  12      README
+        source  modify  4       aegis/aet.c
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  23      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  23      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Tue Dec 13      pmiller  Elapsed time: 48.969
+                        22:16:04 1994            days.
+        develop_begin   Wed Feb 22      pmiller  Elapsed time: 1.229
+                        07:02:11 1995            days.
+        develop_end     Thu Feb 23      pmiller  Elapsed time: 0.777
+                        08:45:20 1995            days.
+        review_pass     Fri Feb 24      pmiller
+                        07:05:12 1995
+        integrate_begin Fri Feb 24      pmiller  Elapsed time: 0.000
+                        07:12:52 1995            days.
+        integrate_pass  Fri Feb 24      pmiller
+                        14:59:45 1995
+
+
+
+Project "aegis.2.3", Change 20                                   Page 1
+Change Details                                 Tue Mar 14 06:50:36 1995
+
+NAME
+        Project "aegis.2.3", Delta 26, Change 20.
+
+SUMMARY
+        locking "deadlock" possible
+
+DESCRIPTION
+         Christian F. Goetze <c-goetze@u-aizu.ac.jp> writes: "I
+        recently had an interesting situation. I was automatically
+        integrating a change in one window, and I tried to pass a
+        review in another window. Both operations happened to be on
+        the same change (because I forgot the -p option in the
+        "aerpass" command). I watched how the message "waiting for
+        change lock" got sent back and forth between the two
+        windows... "
+
+        I designed the locking to (theoretically) avoid problems like
+        this. The dining philosophers problem (project lock, change
+        lock, user lock, build lock, multiple processes wanting
+        combinations of 2 or more) is solved by using a single
+        "permission to lock" lock.  But while typing this I realize
+        there *is* a race, which needs to be solved by a random
+        backoff, rather than the minimum delay currently implemented.
+
+        The race is: once the master lock is obtained, the process
+        then attempts to grab all the locks it wants.  If it can get
+        them, it releases the master lock.  If it can't get them all,
+        it gives all but one back (the change lock, in your example)
+        *and* releases the master lock and waits on the change lock
+        (rather than waking up once a second and trying again).  Once
+        the change lock becomes available, it is *released* and the
+        cycle starts again.  Random backoff (a small number of
+        seconds) would fix it, I think, i.e. combine the current
+        strategic waiting and polling.
+
+        This change also places project attribute suggestions in the
+        notification shell scripts, and fixes a bug which provented
+        the review-fail email script from working.
+
+        This change also modifies the heuristic for detecting symbolic
+        link loops - the old one kept getting false hits.
+
+        This change is exempt from testing against the baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  11      MANIFEST
+        build   modify  9       Makefile.in
+
+
+
+Project "aegis.2.3", Change 20                                   Page 2
+Change Details                                 Tue Mar 14 06:50:36 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  12      README
+        source  modify  4       aegis/change.c
+        source  modify  2       aegis/glue.c
+        source  modify  2       aegis/lock.c
+        source  modify  5       aegis/main.c
+        source  modify  5       aegis/os.c
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  25      common/patchlevel.h
+        source  create  1       common/r250.c
+        source  create  1       common/r250.h
+        build   modify  5       configure
+        build   modify  25      doc/version.so
+        source  modify  2       lib/db_forced.sh
+        source  modify  2       lib/de.inews.sh
+        source  modify  2       lib/de.sh
+        source  modify  2       lib/deu.inews.sh
+        source  modify  2       lib/deu.sh
+        source  modify  2       lib/if.inews.sh
+        source  modify  2       lib/if.sh
+        source  modify  2       lib/ip.inews.sh
+        source  modify  2       lib/ip.sh
+        source  modify  2       lib/rf.inews.sh
+        source  modify  2       lib/rf.sh
+        source  modify  2       lib/rp.inews.sh
+        source  modify  2       lib/rp.sh
+        source  modify  2       lib/rpu.inews.sh
+        source  modify  2       lib/rpu.sh
+        test    modify  4       test/00/t0023a.sh
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Dec 15      pmiller  Elapsed time: 49.826
+                        16:24:00 1994            days.
+        develop_begin   Fri Feb 24      pmiller  Elapsed time: 0.982
+                        07:35:31 1995            days.
+        develop_end     Mon Feb 27      pmiller
+                        07:27:17 1995
+        review_pass     Mon Feb 27      pmiller
+                        07:27:50 1995
+        integrate_begin Mon Feb 27      pmiller  Elapsed time: 1.172
+                        07:36:41 1995            days.
+        integrate_pass  Tue Feb 28      pmiller
+                        08:54:02 1995
+
+
+
+Project "aegis.2.3", Change 21                                   Page 1
+Change Details                                 Tue Mar 14 06:50:37 1995
+
+NAME
+        Project "aegis.2.3", Delta 22, Change 21.
+
+SUMMARY
+        throttle aegis during tests
+
+DESCRIPTION
+        add code to slow aegis down during the tests.  Many sites with
+        very fast computers are observing test failures due to the
+        file timestamps.  This change adds an AEGIS_THROTTLE
+        environment variable, specifying the number of seconds to
+        throttle by.  Calls to os_throttle will be strategically
+        placed in the code, and the tests will all set the AEGIS_
+        THROTTLE environment variable.
+
+        This change is exempt from testing against the baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  10      MANIFEST
+        build   modify  8       Makefile.in
+        build   modify  11      README
+        source  modify  2       aegis/aeb.c
+        source  modify  2       aegis/aed.c
+        source  modify  3       aegis/aet.c
+        source  modify  4       aegis/os.c
+        source  modify  3       aegis/os.h
+        source  modify  10      aux/new.2.3.so
+        build   modify  2       aux/new.so
+        source  modify  3       aux/template/test
+        build   modify  4       common/config.h.in
+        build   modify  21      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  21      doc/version.so
+        source  modify  2       man1/z_exit.so
+        test    modify  2       test/00/t0001a.sh
+        test    modify  3       test/00/t0002a.sh
+        test    modify  2       test/00/t0003a.sh
+        test    modify  3       test/00/t0004a.sh
+        test    modify  3       test/00/t0005a.sh
+        test    modify  3       test/00/t0006a.sh
+        test    modify  3       test/00/t0007a.sh
+        test    modify  3       test/00/t0008a.sh
+        test    modify  3       test/00/t0009a.sh
+        test    modify  3       test/00/t0010a.sh
+        test    modify  3       test/00/t0011a.sh
+        test    modify  2       test/00/t0012a.sh
+        test    modify  3       test/00/t0013a.sh
+
+
+
+Project "aegis.2.3", Change 21                                   Page 2
+Change Details                                 Tue Mar 14 06:50:37 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        test    modify  3       test/00/t0014a.sh
+        test    modify  3       test/00/t0015a.sh
+        test    modify  3       test/00/t0016a.sh
+        test    modify  3       test/00/t0017a.sh
+        test    modify  3       test/00/t0018a.sh
+        test    modify  3       test/00/t0019a.sh
+        test    modify  3       test/00/t0020a.sh
+        test    modify  2       test/00/t0021a.sh
+        test    modify  2       test/00/t0022a.sh
+        test    modify  2       test/00/t0023a.sh
+        test    modify  3       test/00/t0024a.sh
+        test    modify  3       test/00/t0025a.sh
+        test    modify  3       test/00/t0026a.sh
+        test    modify  2       test/00/t0027a.sh
+        test    modify  2       test/00/t0028a.sh
+        test    modify  2       test/00/t0029a.sh
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Jan 26      pmiller
+                        17:10:17 1995
+        develop_begin   Thu Jan 26      pmiller  Elapsed time: 10.610
+                        17:19:56 1995            days.
+        develop_end     Sun Feb 12      pmiller
+                        06:54:33 1995
+        review_pass     Sun Feb 12      pmiller
+                        06:54:44 1995
+        integrate_begin Sun Feb 12      pmiller  Elapsed time: 0.521
+                        07:02:33 1995            days.
+        integrate_pass  Sun Feb 12      pmiller
+                        10:57:05 1995
+
+
+
+Project "aegis.2.3", Change 23                                   Page 1
+Change Details                                 Tue Mar 14 06:50:39 1995
+
+NAME
+        Project "aegis.2.3", Delta 25, Change 23.
+
+SUMMARY
+        fix aenrls version numbers
+
+DESCRIPTION
+        When use aenrls, the separator characters qround the version
+        numbers are lost.  This change ensures that the previous
+        characters are preserved.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  10      MANIFEST
+        build   modify  8       Makefile.in
+        build   modify  12      README
+        source  modify  4       aegis/aenrls.c
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  24      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  24      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Fri Jan 27      pmiller  Elapsed time: 20.643
+                        11:33:50 1995            days.
+        develop_begin   Sat Feb 25      pmiller  Elapsed time: 0.885
+                        08:53:01 1995            days.
+        develop_end     Sun Feb 26      pmiller
+                        08:01:03 1995
+        review_pass     Sun Feb 26      pmiller
+                        08:01:14 1995
+        integrate_begin Sun Feb 26      pmiller  Elapsed time: 0.304
+                        08:07:26 1995            days.
+        integrate_pass  Sun Feb 26      pmiller
+                        10:24:01 1995
+
+
+
+Project "aegis.2.3", Change 24                                   Page 1
+Change Details                                 Tue Mar 14 06:50:40 1995
+
+NAME
+        Project "aegis.2.3", Delta 27, Change 24.
+
+SUMMARY
+        change_pconf_get now generates a fatal error if there is not
+        config file
+
+DESCRIPTION
+        John Kingsley <john@swi.com> writes: I think I found a bug.
+        Aegis core dumped on me when I tried to run 'aed' without
+        having a config file.  I know this is a stupid thing to do but
+        core dumping is a bit extreme.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  11      MANIFEST
+        build   modify  9       Makefile.in
+        build   modify  12      README
+        source  modify  3       aegis/aeb.c
+        source  modify  3       aegis/aeca.c
+        source  modify  2       aegis/aechown.c
+        source  modify  5       aegis/aecp.c
+        source  modify  3       aegis/aecpu.c
+        source  modify  4       aegis/aed.c
+        source  modify  2       aegis/aedb.c
+        source  modify  3       aegis/aeib.c
+        source  modify  2       aegis/aeip.c
+        source  modify  4       aegis/aemv.c
+        source  modify  4       aegis/aenc.c
+        source  modify  2       aegis/aenf.c
+        source  modify  3       aegis/aenfu.c
+        source  modify  5       aegis/aenrls.c
+        source  modify  2       aegis/aent.c
+        source  modify  3       aegis/aerm.c
+        source  modify  3       aegis/aermu.c
+        source  modify  5       aegis/change.c
+        source  modify  4       aegis/change.h
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  26      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  26      doc/version.so
+
+
+
+Project "aegis.2.3", Change 24                                   Page 2
+Change Details                                 Tue Mar 14 06:50:40 1995
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Sun Jan 29      pmiller  Elapsed time: 21.787
+                        10:38:17 1995            days.
+        develop_begin   Tue Feb 28      pmiller  Elapsed time: 1.795
+                        09:02:35 1995            days.
+        develop_end     Thu Mar  2      pmiller
+                        07:30:31 1995
+        review_pass     Thu Mar  2      pmiller
+                        07:30:47 1995
+        integrate_begin Thu Mar  2      pmiller  Elapsed time: 0.577
+                        07:38:46 1995            days.
+        integrate_pass  Thu Mar  2      pmiller
+                        11:58:34 1995
+
+
+
+Project "aegis.2.3", Change 25                                   Page 1
+Change Details                                 Tue Mar 14 06:50:41 1995
+
+NAME
+        Project "aegis.2.3", Delta 23, Change 25.
+
+SUMMARY
+        make the merge and difference behaviour of aed more explicit
+
+DESCRIPTION
+        This change adds command line arguments to aed so that the
+        merging behaviour and difference behaviour are specifically
+        selectable.  A user preference has been added to select the
+        default behaviour.
+
+        The aede command has also been improved to give more
+        information in its error messages.
+
+        This change is exempt from testing against the baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by external_improvement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  10      MANIFEST
+        build   modify  8       Makefile.in
+        build   modify  12      README
+        source  modify  3       aegis/aed.c
+        source  modify  2       aegis/aede.c
+        source  modify  5       aegis/ael.c
+        source  modify  3       aegis/arglex2.h
+        source  modify  4       aegis/main.c
+        source  modify  2       aegis/uconf.def
+        source  modify  3       aegis/user.c
+        source  modify  2       aegis/user.h
+        source  modify  11      aux/new.2.3.so
+        build   modify  2       aux/new.so
+        source  modify  4       aux/template/test
+        build   modify  4       common/config.h.in
+        build   modify  22      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  22      doc/version.so
+        source  modify  3       lib/cshrc
+        source  modify  3       lib/profile
+        source  modify  2       man1/aed.1
+        source  modify  3       man5/aeuconf.5
+        test    modify  3       test/00/t0001a.sh
+        test    modify  4       test/00/t0002a.sh
+        test    modify  3       test/00/t0003a.sh
+        test    modify  4       test/00/t0004a.sh
+        test    modify  4       test/00/t0005a.sh
+        test    modify  4       test/00/t0006a.sh
+        test    modify  4       test/00/t0007a.sh
+
+
+
+Project "aegis.2.3", Change 25                                   Page 2
+Change Details                                 Tue Mar 14 06:50:41 1995
+
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        test    modify  4       test/00/t0008a.sh
+        test    modify  4       test/00/t0009a.sh
+        test    modify  4       test/00/t0010a.sh
+        test    modify  4       test/00/t0011a.sh
+        test    modify  3       test/00/t0012a.sh
+        test    modify  4       test/00/t0013a.sh
+        test    modify  4       test/00/t0014a.sh
+        test    modify  4       test/00/t0015a.sh
+        test    modify  4       test/00/t0016a.sh
+        test    modify  4       test/00/t0017a.sh
+        test    modify  4       test/00/t0018a.sh
+        test    modify  4       test/00/t0019a.sh
+        test    modify  4       test/00/t0020a.sh
+        test    modify  3       test/00/t0021a.sh
+        test    modify  3       test/00/t0022a.sh
+        test    modify  3       test/00/t0023a.sh
+        test    modify  4       test/00/t0024a.sh
+        test    modify  4       test/00/t0025a.sh
+        test    modify  4       test/00/t0026a.sh
+        test    modify  3       test/00/t0027a.sh
+        test    modify  3       test/00/t0028a.sh
+        test    modify  3       test/00/t0029a.sh
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Wed Feb  1      pmiller
+                        06:53:00 1995
+        develop_begin   Wed Feb  1      pmiller  Elapsed time: 13.266
+                        06:53:08 1995            days.
+        develop_end     Sun Feb 19      pmiller
+                        08:53:01 1995
+        review_pass     Sun Feb 19      pmiller
+                        08:53:13 1995
+        integrate_begin Sun Feb 19      pmiller  Elapsed time: 1.909
+                        09:00:06 1995            days.
+        integrate_pass  Tue Feb 21      pmiller
+                        08:18:59 1995
+
+
+
+Project "aegis.2.3", Change 26                                   Page 1
+Change Details                                 Tue Mar 14 06:50:43 1995
+
+NAME
+        Project "aegis.2.3", Delta 19, Change 26.
+
+SUMMARY
+        add AUUG'93 paper
+
+DESCRIPTION
+        add AUUG'93 paper
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_improvement.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  5       BUILDING
+        build   modify  8       MANIFEST
+        build   modify  6       Makefile.in
+        build   modify  8       README
+        source  modify  7       aux/Howto.cook
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  18      common/patchlevel.h
+        build   modify  5       configure
+        source  create  1       doc/auug93.mm
+        build   modify  18      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Feb  2      pmiller
+                        16:26:35 1995
+        develop_begin   Thu Feb  2      pmiller  Elapsed time: 0.948
+                        16:26:45 1995            days.
+        develop_end     Sun Feb  5      pmiller
+                        08:33:21 1995
+        review_pass     Sun Feb  5      pmiller  Elapsed time: 0.023
+                        08:33:35 1995            days.
+        integrate_begin Sun Feb  5      pmiller  Elapsed time: 0.075
+                        08:44:01 1995            days.
+        integrate_pass  Sun Feb  5      pmiller
+                        09:17:55 1995
+
+
+
+Project "aegis.2.3", Change 27                                   Page 1
+Change Details                                 Tue Mar 14 06:50:44 1995
+
+NAME
+        Project "aegis.2.3", Delta 21, Change 27.
+
+SUMMARY
+        add wrap and split functions
+
+DESCRIPTION
+        This change adds the wrap() and split() functions to the
+        report generator.  This is to facilitate the generation of
+        HTML.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  10      MANIFEST
+        build   modify  8       Makefile.in
+        build   modify  10      README
+        source  modify  2       aegis/aer/func.c
+        source  create  1       aegis/aer/func/length.c
+        source  create  1       aegis/aer/func/length.h
+        source  create  1       aegis/aer/func/split.c
+        source  create  1       aegis/aer/func/split.h
+        source  create  1       aegis/aer/func/substr.c
+        source  create  1       aegis/aer/func/substr.h
+        source  create  1       aegis/aer/func/wrap.c
+        source  create  1       aegis/aer/func/wrap.h
+        source  modify  9       aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  20      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  20      doc/version.so
+        source  modify  3       man5/aer.5
+        test    create  1       test/00/t0027a.sh
+        test    create  1       test/00/t0028a.sh
+        test    create  1       test/00/t0029a.sh
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Wed Feb  8      pmiller
+                        16:24:12 1995
+        develop_begin   Wed Feb  8      pmiller  Elapsed time: 1.169
+                        16:24:37 1995            days.
+        develop_end     Fri Feb 10      pmiller
+                        10:10:31 1995
+        review_pass     Fri Feb 10      pmiller
+                        10:10:47 1995
+        integrate_begin Fri Feb 10      pmiller  Elapsed time: 0.176
+
+
+
+Project "aegis.2.3", Change 27                                   Page 2
+Change Details                                 Tue Mar 14 06:50:44 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+                        10:17:20 1995            days.
+        integrate_pass  Fri Feb 10      pmiller
+                        11:36:32 1995
+
+
+
+Project "aegis.2.3", Change 28                                   Page 1
+Change Details                                 Tue Mar 14 06:50:46 1995
+
+NAME
+        Project "aegis.2.3", Delta 28, Change 28.
+
+SUMMARY
+        improve use of gecos information
+
+DESCRIPTION
+        Many sites add phone numbers, etc, to the gcos/comment field
+        of the password file.  This change causes Aegis to only use up
+        to the first comma to extract the users' names.
+
+        Note that the pw_gecos field of passwd values in reports has
+        also neen affected.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  11      MANIFEST
+        build   modify  9       Makefile.in
+        build   modify  12      README
+        source  modify  2       aegis/aer/value/passwd.c
+        source  modify  4       aegis/user.c
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  27      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  27      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Sat Feb 25      pmiller  Elapsed time: 4.490
+                        08:37:30 1995            days.
+        develop_begin   Thu Mar  2      pmiller  Elapsed time: 0.874
+                        12:17:53 1995            days.
+        develop_end     Fri Mar  3      pmiller
+                        11:21:07 1995
+        review_pass     Fri Mar  3      pmiller
+                        11:21:46 1995
+        integrate_begin Fri Mar  3      pmiller  Elapsed time: 0.729
+                        11:31:14 1995            days.
+        integrate_pass  Sat Mar  4      pmiller
+                        09:29:22 1995
+
+
+
+Project "aegis.2.3", Change 29                                   Page 1
+Change Details                                 Tue Mar 14 06:50:47 1995
+
+NAME
+        Project "aegis.2.3", Delta 29, Change 29.
+
+SUMMARY
+        rename s-v-arg.h
+
+DESCRIPTION
+        This change renames common/s-v-arg.h to be common/ac/stdarg.h,
+        to be more consistent with other configused files.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  12      MANIFEST
+        build   modify  10      Makefile.in
+        build   modify  12      README
+        source  modify  2       aegis/aer/expr.c
+        source  modify  2       aegis/aer/lex.c
+        source  modify  6       aegis/change.c
+        source  modify  3       aegis/col.c
+        source  modify  2       aegis/indent.c
+        source  modify  2       aegis/lex.c
+        source  modify  5       aegis/project.c
+        build   modify  2       aux/new.so
+        source  create  1       common/ac/stdarg.h
+                                Moved from common/s-v-arg.h
+        build   modify  4       common/config.h.in
+        source  modify  2       common/error.c
+        source  modify  2       common/mprintf.h
+        build   modify  28      common/patchlevel.h
+        source  remove  1       common/s-v-arg.h
+                                Moved to common/ac/stdarg.h
+        source  modify  2       common/str.c
+        source  modify  2       common/str.h
+        source  modify  2       common/trace.c
+        build   modify  5       configure
+        build   modify  28      doc/version.so
+        source  modify  2       fmtgen/indent.c
+        source  modify  2       fmtgen/lex.c
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Fri Mar  3      pmiller  Elapsed time: 1.237
+                        07:28:12 1995            days.
+
+
+
+Project "aegis.2.3", Change 29                                   Page 2
+Change Details                                 Tue Mar 14 06:50:47 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        develop_begin   Sat Mar  4      pmiller  Elapsed time: 1.899
+                        09:14:55 1995            days.
+        develop_end     Mon Mar  6      pmiller
+                        14:59:38 1995
+        review_pass     Mon Mar  6      pmiller
+                        15:01:55 1995
+        integrate_begin Mon Mar  6      pmiller  Elapsed time: 0.000
+                        15:04:14 1995            days.
+        integrate_pass  Tue Mar  7      pmiller
+                        07:24:06 1995
+
+
+
+Project "aegis.2.3", Change 30                                   Page 1
+Change Details                                 Tue Mar 14 06:50:48 1995
+
+NAME
+        Project "aegis.2.3", Delta 30, Change 30.
+
+SUMMARY
+        add LSM and FAQ
+
+DESCRIPTION
+        This change adds a Linux LSM and the first try at a FAQ.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  13      MANIFEST
+        build   modify  11      Makefile.in
+        build   modify  12      README
+        source  modify  9       aux/Howto.cook
+        source  create  1       aux/faq.roff
+        source  create  1       aux/faq.toc.awk
+        source  create  1       aux/lsm.roff
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  29      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  29      doc/version.so
+        source  create  1       lib/integrate_q.sh
+        source  create  1       ssp/main.c
+        source  create  1       ssp/ssp.c
+        source  create  1       ssp/ssp.h
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Sun Mar  5      pmiller
+                        08:33:04 1995
+        develop_begin   Sun Mar  5      pmiller  Elapsed time: 2.238
+                        08:33:16 1995            days.
+        develop_end     Tue Mar  7      pmiller
+                        10:20:20 1995
+        review_pass     Tue Mar  7      pmiller
+                        10:20:37 1995
+        integrate_begin Tue Mar  7      pmiller  Elapsed time: 0.266
+                        10:27:48 1995            days.
+        integrate_pass  Tue Mar  7      pmiller
+                        12:27:23 1995
+
+
+
+Project "aegis.2.3", Change 31                                   Page 1
+Change Details                                 Tue Mar 14 06:50:50 1995
+
+NAME
+        Project "aegis.2.3", Delta 31, Change 31.
+
+SUMMARY
+        improve FAQ
+
+DESCRIPTION
+        This change incorporates a number of suggestions from the
+        aegis mailing list for addition to the FAQ.
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  14      MANIFEST
+        build   modify  12      Makefile.in
+        build   modify  13      README
+        source  modify  10      aux/Howto.cook
+        source  modify  4       aux/README.man
+        source  modify  2       aux/faq.roff
+        source  modify  12      aux/new.2.3.so
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  30      common/patchlevel.h
+        build   modify  5       configure
+        source  modify  2       doc/c3.1.so
+        source  modify  3       doc/c3.2.so
+        source  modify  2       doc/c3.3.so
+        source  modify  2       doc/c4.2.so
+        source  modify  2       doc/c4.4.so
+        source  modify  2       doc/c6.1.so
+        build   modify  30      doc/version.so
+        source  create  1       lib/config.example/architecture
+        source  create  1       lib/config.example/cake
+        source  create  1       lib/config.example/cook
+        source  create  1       lib/config.example/fhist
+        source  create  1       lib/config.example/make
+        source  create  1       lib/config.example/rcs
+        source  create  1       lib/config.example/sccs
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Thu Mar  9      pmiller
+                        06:53:16 1995
+        develop_begin   Thu Mar  9      pmiller  Elapsed time: 1.083
+
+
+
+Project "aegis.2.3", Change 31                                   Page 2
+Change Details                                 Tue Mar 14 06:50:50 1995
+
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+                        06:53:23 1995            days.
+        develop_end     Fri Mar 10      pmiller
+                        07:30:38 1995
+        review_pass     Fri Mar 10      pmiller  Elapsed time: 0.027
+                        07:31:05 1995            days.
+        integrate_begin Fri Mar 10      pmiller  Elapsed time: 0.870
+                        07:43:23 1995            days.
+        integrate_pass  Sat Mar 11      pmiller
+                        06:45:00 1995
+
+
+
+Project "aegis.2.3", Change 32                                   Page 1
+Change Details                                 Tue Mar 14 06:50:52 1995
+
+NAME
+        Project "aegis.2.3", Delta 32, Change 32.
+
+SUMMARY
+        fix generate Makefile
+
+DESCRIPTION
+        fix generate Makefile
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+CAUSE
+        This change was caused by internal_bug.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        build   modify  6       BUILDING
+        build   modify  14      MANIFEST
+        build   modify  13      Makefile.in
+        build   modify  13      README
+        source  modify  2       aegis/aerrv.c
+        source  modify  11      aux/Howto.cook
+        source  modify  4       aux/Makefile.sh
+        build   modify  2       aux/new.so
+        build   modify  4       common/config.h.in
+        build   modify  31      common/patchlevel.h
+        build   modify  5       configure
+        build   modify  31      doc/version.so
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Sat Mar 11      pmiller
+                        07:42:57 1995
+        develop_begin   Sat Mar 11      pmiller  Elapsed time: 0.310
+                        07:43:05 1995            days.
+        develop_end     Sat Mar 11      pmiller
+                        10:02:37 1995
+        review_pass     Sat Mar 11      pmiller
+                        10:02:52 1995
+        integrate_begin Sat Mar 11      pmiller  Elapsed time: 0.788
+                        10:10:36 1995            days.
+        integrate_pass  Sun Mar 12      pmiller
+                        08:35:08 1995
+
+
+
+Project "aegis.2.3", Change 33                                   Page 1
+Change Details                                 Tue Mar 14 06:50:53 1995
+
+NAME
+        Project "aegis.2.3", Delta 33, Change 33.
+
+SUMMARY
+        fix generated Makefile again
+
+DESCRIPTION
+        fix generated Makefile again
+
+        This change is exempt from testing against the development
+        directory.  This change is exempt from testing against the
+        baseline.
+
+ARCHITECTURES
+        This change must build and test in each of the "alpha", "sun4"
+        and "sun5" architectures.
+
+        arch.    host     aeb       aet       aet -bl   aet -reg
+        -------- -------- --------- --------- --------- ---------
+        alpha             required  exempt    exempt    exempt
+        sun4              required  exempt    exempt    exempt
+        sun5              required  exempt    exempt    exempt
+                          --------- --------- --------- ---------
+                          required  exempt    exempt    exempt
+
+CAUSE
+        This change was caused by internal_bug.
+
+STATE
+        This change is in the 'being_integrated' state.
+
+FILES
+        Type    Action  Edit    File Name
+        ------- ------- ------- -----------
+        source  modify  4       aegis/aed.c
+        source  modify  1       man1/aenrls.1
+        source  modify  1       man1/aenrv.1
+        source  modify  1       man1/aent.1
+
+HISTORY
+        What            When            Who      Comment
+        ------          ------          -----    ---------
+        new_change      Mon Mar 13      pmiller
+                        09:50:29 1995
+        develop_begin   Mon Mar 13      pmiller  Elapsed time: 0.561
+                        09:51:03 1995            days.
+        develop_end     Tue Mar 14      pmiller
+                        06:33:33 1995
+        review_pass     Tue Mar 14      pmiller
+                        06:33:49 1995
+        integrate_begin Tue Mar 14      pmiller
+                        06:41:36 1995

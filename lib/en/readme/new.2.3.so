@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 2004-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1994, 1995, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .SS Version 2.3
 .PP
@@ -42,7 +42,7 @@ This means that you may now recreate earlier project baselines by name.
 .if t \(bu
 .if n *
 All commands which accept a
-.B -Edit
+.B \-Edit
 option now check for most errors before commencing the edit.
 This avoids wasted edits in many error cases.
 .PP
@@ -55,7 +55,7 @@ messages from aecp, aerm, etc.
 .if n *
 Version number separators in project names are preserved across
 new releases.
-Particularly, you can use a minus ('-') between the name and the
+Particularly, you can use a minus ('\-') between the name and the
 major version number.
 .PP
 .if t \(bu
@@ -65,7 +65,7 @@ This is a list of years maintained at integrate begin time,
 to automate the insertion of list of copyright years into
 copyright messages and documentation.
 There is a new ${Copyright_Years} substitution
-and the copyright years are also listed in the \[lq]aegis -list
+and the copyright years are also listed in the \[lq]aegis \-list
 version\[rq] listing.
 See
 .IR aesub (5)
@@ -111,3 +111,4 @@ now contains files with example portions of the project \fIconfig\fP file.
 May thanks to David R Shue <shue@ll.mit.edu> for this suggestion.
 .PP
 Changes made in the previous release included:
+.\" vim: set ts=8 sw=4 et :

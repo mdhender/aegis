@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2005-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 \&.
 .sp 2i
@@ -35,7 +34,7 @@ HOWTO
 Peter Miller
 .ft I
 .ce 1
-millerp@canb.auug.org.au
+pmiller@opensource.org.au
 .ft P
 .OH 'Aegis''Howto'
 .EH 'Howto''Aegis'
@@ -52,8 +51,8 @@ millerp@canb.auug.org.au
 .\" .ce 4
 .\" This user guide is dedicated to
 .sp 1i
-.so version.so
-.so libdir.so
+.so etc/version.so
+.so etc/libdir.so
 This document describes Aegis version \*(v)
 .br
 and was prepared \*(DY.
@@ -113,11 +112,12 @@ be at all relevant to you, simply ignore it.
 .nh 2 "Howto Contribute"
 .LP
 If you would like to see other \[lq]How To\[rq] subjects, please drop me
-an e-mail.
-Better yet, write one and e-mail it to me.
+an e\[hy]mail.
+Better yet, write one and e\[hy]mail it to me.
 .\"
 .\" ,---------------------------------------------------------------------.
 .\" |                                                                     |
 .\" | NOTE: This introduction is meant to be an ODD number of pages long. |
 .\" |                                           ~~~                       |
 .\" `---------------------------------------------------------------------'
+.\" vim: set ts=8 sw=4 et :

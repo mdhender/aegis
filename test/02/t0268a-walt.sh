@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 # aegis - The "aegis" program.
-# Copyright (C) 2008 Walter Franzini
+# Copyright (C) 2008, 2010 Walter Franzini
+# Copyright (C) 2008 Peter Miller
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,6 +33,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's|; charset=us-ascii||' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -49,14 +51,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 52"
+activity="new project 54"
 aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 59"
+activity="project attributes 61"
 cat > tmp << 'end'
 description = "A bogus project created to test the aeipass functionality.";
 developer_may_review = true;
@@ -72,7 +74,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 75"
+activity="staff 77"
 aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 aegis -nrv $USER > log 2>&1
@@ -83,7 +85,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 86"
+activity="new change 88"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -101,8 +103,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new files 104"
-aegis -nf  $workchan/bogus1 -nl > log 2>&1
+activity="new files 106"
+aegis -nf  -no-uuid $workchan/bogus1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 aegis -nf  $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -114,11 +116,7 @@ bogus1, line 2
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="file-attribute bogus 117"
-aegis -file-attribute aeipass-option:assign-file-uuid=false $workchan/bogus1 \
-    -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
+activity="check file-attributes 119"
 cat > ok <<EOF
 attribute =
 [
@@ -132,17 +130,16 @@ attribute =
 	},
 	{
 		name = "content-type";
-		value = "text/plain; charset=us-ascii";
+		value = "text/plain";
 	},
 ];
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="check file-attributes 141"
 aegis -file-attribute -list $workchan/bogus1 > bogus1.fileattr
 if test $? -ne 0 ; then no_result; fi
 
-diff ok bogus1.fileattr
+check_it ok bogus1.fileattr
 if test $? -ne 0 ; then fail; fi
 
 
@@ -168,21 +165,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="finish the change 171"
+activity="finish the change 168"
 aefinish -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 178"
+activity="integrate begin 175"
 aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish integration
 #
-activity="integrate the change 185"
+activity="integrate the change 182"
 aefinish -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -197,6 +194,7 @@ src =
 		{
 			revision = "1";
 			encoding = none;
+			uuid = "UUID";
 		};
 		usage = config;
 	},
@@ -207,11 +205,9 @@ src =
 		{
 			revision = "1";
 			encoding = none;
+			uuid = "UUID";
 		};
 		usage = source;
-		attribute =
-		[
-		];
 	},
 ];
 EOF

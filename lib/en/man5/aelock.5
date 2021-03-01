@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH "\*(n) locking" 5 \*(N) "Reference Manual" ""
 .SH NAME
 aegis locks \- how locking works, and which commands use them
@@ -39,7 +38,7 @@ computer science problems, known as the Dining Philosophers problem.
 The master lock is used to solve the Dining Philosophers problem,
 and is meant to be very transient.  It is only held while the other
 locks which are required (frequently two or more, hence the problem)
-are requested - non-blocking.  Once they are all obtained (or not, and
+are requested \- non\[hy]blocking.  Once they are all obtained (or not, and
 any partials given back) the master lock is released.  It is usually held
 for \fImuch\fP less than a second.  If you notice the master lock being
 held, it is almost always a symptom of the NFS lock daemon misbehaving.
@@ -55,10 +54,10 @@ code complexity is required.)
 .SS Listing Locks
 There is a command available to list the current Aegis locks.
 .RS
-aegis -list locks
+aegis \-list locks
 .RE
 Note that the project names are change numbers are \fIguesses\fP as the
-locks are hashed over a 16-bit range, and range overlaps are possible.
+locks are hashed over a 16\[hy]bit range, and range overlaps are possible.
 Collisions are also possible, but fortunately rarer.
 .SS Known Problems
 There is a known problem with the HP/UX NFS clients.  If you see
@@ -145,4 +144,5 @@ aet;\&.;\&.;,;,;exclusive;\&.
 .SH SEE ALSO
 You may wish to see the manual pages of all of the above commands.
 Many have descriptions of the locking interactions.
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

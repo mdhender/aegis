@@ -1,22 +1,21 @@
 # ITALIAN TRANSLATION OF AEGIS
 # This file is distributed under the same license as the aegis package.
 #
-#       aegis - project change supervisor
-#       Copyright (C) 1995-2008 Peter Miller
+#   aegis - project change supervisor
+#   Copyright (C) 1995-2010, 2012 Peter Miller
 #
-#       This program is free software; you can redistribute it and/or
-#       modify it under the terms of the GNU General Public License as
-#       published by the Free Software Foundation; either version 3 of
-#       the License, or (at your option) any later version.
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 3 of the License, or
+#   (at your option) any later version.
 #
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
 #
-#       You should have received a copy of the GNU General Public License
-#       along with this program. If not, see
-#       <http://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU General Public License
+#   along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Just A Few Notes...
 #
@@ -49,7 +48,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: aegis 4.24\n"
         "POT-Creation-Date: Wed Mar 12 23:38:50 EST 2008\n"
-        "PO-Revision-Date: 2008-10-17 17:18+0200\n"
+        "PO-Revision-Date: 2012-08-13\n"
         "Last-Translator: Vincenzo Campanella <vinz65@gmail.com>\n"
         "Language-Team: Italian <tp@lists.linux.it>\n"
         "MIME-Version: 1.0\n"
@@ -411,6 +410,28 @@ msgstr  "L'UUID specificato per il file «$filename» è già utilizzato dal "
         "file «$other»"
 
 #
+# This error message is issued when a aede-policy's comment
+# policy finds a C comment in a C++ file.
+#
+#       $File_Name      The name of the offending file.
+#       $Line_Number    The line number of the message
+#
+#, fuzzy
+msgid   "$filename: $linenumber: C comment in a C++ file"
+msgstr  "$filename: $linenumber: commento C in un file C++"
+
+#
+# This error message is issued when a aede-policy's comment
+# policy finds a C++ comment in a C file.
+#
+#       $File_Name      The name of the offending file.
+#       $Line_Number    The line number of the message
+#
+#, fuzzy
+msgid   "$filename: $linenumber: C++ comment in a C file"
+msgstr  "$filename: $linenumber: commento C++ in un file C"
+
+#
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
@@ -570,6 +591,18 @@ msgstr  "$filename: contiere caratteri di tabulazione; per preservare la "
 #
 msgid   "$filename: corrupted \"$field_name\" field"
 msgstr  "$filename: contenuto del campo «$field_name» inutilizzabile"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects a file that does
+# not contain a vim mode line, when the vim-mode policy is being enforced.
+#
+#       $File_Name      The offending file.
+#
+#,fuzzy
+msgid   "$filename: does not contain a vim mode line"
+msgstr  "the \"$filename\" file does not contain a vim mode line of the "
+        "form \"vim: set ... :\""
 
 #
 # This error message is issued when aede-policy detects a file isung DOS
@@ -757,6 +790,15 @@ msgstr  "$filename: l'ID dell'utente di questo file ($number1) è troppo "
         "«chown -R <user> $filename» per risolvere il problema, per un "
         "nome <user> appropriato."
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a file is being checked by
+# aede-policy for the escape-hyphen policy, and it finds an unescaped
+# hyphen (minus) character.
+#
+msgid   "$filename: unescaped minus character"
+msgstr  "$filename: unescaped minus character"
+
 #
 # This fatal error message is issued by the aesvt -checkin command if
 # the history file already contains a particular version.
@@ -786,6 +828,19 @@ msgstr  "$filename: il numero di versione «$number» non è appropriato"
 #
 msgid   "$filename: version $number not found"
 msgstr  "$filename: versione «$number» non trovata"
+
+#
+# This error message is issued when aede-policy soname discovers a
+# shared library file with an incorrect version (SONAME) header.
+#
+#       $File_Name      The name of the offending shared library file
+#       $Number1        The calculated correct value.
+#       $Number2        The present incorrect value.
+#
+#, fuzzy
+msgid   "$filename: version should be $number1, not $number2"
+msgstr  "$filename: il numero di versione dovrebbe essere $number1, "
+        "non $number2"
 
 #
 # This error message is issued when an aede-policy's white space
@@ -1225,6 +1280,16 @@ msgstr  "Assestamento dei tempi di modifica del file in corso"
 msgid   "aedbu, has files"
 msgstr  "A questa modifica sono associati dei file, è possibile "
         "utilizzare questo comando solo su modifiche senza file associati."
+
+# TRANSLATION REQUIRED
+#
+# This fatal error is issued when the aedn command is used to attach a
+# delta name (label) to a change that is not in the "completed" state.
+#
+#, fuzzy
+msgid   "aedn bad state"
+msgstr  "this change is in the \"$state\" state; it must be in the "
+        "\"completed\" state to be used with the aedn command"
 
 #
 # This error message is issued when the aegis -new-project command is
@@ -4377,7 +4442,6 @@ msgid   "no files copied"
 msgstr  "${plural $number Trovati Trovato} $number ${plural $number "
         "'errori fatali' 'errore fatale'}, nessun file copiato"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when an aediff command fails.  Errors are
 # printed out as they are found, but frequently errors happen together,
@@ -4389,7 +4453,8 @@ msgstr  "${plural $number Trovati Trovato} $number ${plural $number "
 #
 #, fuzzy
 msgid   "no files diffed"
-msgstr  "found $number fatal error${plural $number s}, no files diffed"
+msgstr  "${plural $number Trovati Trovato} $number ${plural $number "
+        "'errori fatali' 'errore fatale'}, nessuna differenza generata"
 
 #
 # This error message is issued when an aecpu command fails.  Errors are
@@ -4789,6 +4854,17 @@ msgstr  "pathconf(«$filename», {NAME_MAX}): $errno"
 msgid   "pathconf(\"$filename\", {PATH_MAX}): $errno"
 msgstr  "pathconf(«$filename», {PATH_MAX}): $errno"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued by aede-policy when it finds a program
+# that does not appear to have a manual page (e.g. man/man1/example.1)
+#
+#       $File_Name      The name of the offending file.
+#
+#, fuzzy
+msgid   "prog $filename has no man page"
+msgstr  "program \"$filename\" does not have a manual page"
+
 #
 # This information message is issued when aenpr automatically allocates
 # the project home directory.
@@ -4797,6 +4873,16 @@ msgstr  "pathconf(«$filename», {PATH_MAX}): $errno"
 #
 msgid   "proj dir $filename"
 msgstr  "Directory di progetto «$filename»"
+
+#
+# This error message is issued when aede-policy is checking the
+# "authors" policy, but the project has no "AUTHORS" file.
+#
+#       $File_Name      The name of the absent file.
+#
+#, fuzzy
+msgid	"proj has no $filename file"
+msgstr	"questo progetto necessita del file «$filename»"
 
 #
 # This error message is issued when a request is made to run regression

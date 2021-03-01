@@ -1,50 +1,49 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998, 2001, 2002, 2005-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Develop_Begin_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Develop_Begin_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis  develop begin undo \- undo the effects of aedb
 .XX "aedbu(1)" "undo the effects of aedb"
 .SH SYNOPSIS
 .B \*(n)
-.B -Develop_Begin_Undo
-.I change-number
+.B \-Develop_Begin_Undo
+.I change\[hy]number
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_Begin_Undo
-.B -List
+.B \-Develop_Begin_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Develop_Begin_Undo
-.B -Help
+.B \-Develop_Begin_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Develop_Begin_Undo
+.I \-Develop_Begin_Undo
 command is used to
-reverse the effects of the '\*(n) -Develop_Begin' command.
+reverse the effects of the '\*(n) \-Develop_Begin' command.
 The development directory is discarded,
 even if the change has files associated with it,
 and even if the development directory is not empty;
@@ -59,8 +58,8 @@ down
 S1: box "awaiting" "development"
 arrow " develop" ljust " begin" ljust
 S2: box "being" "developed"
-T1: spline -> from S2.w then left 0.75 then up 11/12 \
-	then to 1/3<S1.sw,S1.nw>
+move to S2.w
+T1: spline -> left 0.75 then up 1 then to S1.w
 " develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
 .PE
 .\" ------------------------------------------------------------------------
@@ -69,35 +68,35 @@ The \fIdevelop_begin_undo_command\fP field of the project \fIconfig\fP
 file is run, if set.  See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_interact.so
-.so o_keep.so
-.so o_list.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_interact.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
 .TP 8n
-\fB\-New-Change-Undo\fP
+\fB\-New\[hy]Change\[hy]Undo\fP
 By using this option it is possible to end developemnt of the change,
 and remove the change, all in the one command.  The executing user must
 have both created the change and be the devloper of the change, or must
 be a project administrator.
 (Order is important here, this option mast appear on the command line
-\f[I]after\fP the \fB\-Develop-Begin-Undo\fP option.
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
+\f[I]after\fP the \fB\-Develop\[hy]Begin\[hy]Undo\fP option.
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
 .TP 8n
-\fB-User\fP \fIname\fP
+\fB\-User\fP \fIname\fP
 .br
 Ignored for backwards compatibility.
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aedbu '\*(n) -dbu \e!* -v'
-sh$	aedbu(){\*(n) -dbu "$@" -v}
+csh%    alias aedbu '\*(n) \-dbu \e!* \-v'
+sh$     aedbu(){\*(n) \-dbu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -107,7 +106,7 @@ It is an error if
 the change is not in the
 .I "being developed"
 state.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -117,4 +116,5 @@ begin development of a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

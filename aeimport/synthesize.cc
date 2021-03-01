@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <common/uuidentifier.h>
 #include <libaegis/change/branch.h>
@@ -25,8 +26,8 @@
 #include <libaegis/change.h>
 #include <libaegis/change/verbose.h>
 #include <libaegis/commit.h>
-#include <libaegis/cstate.h>
-#include <libaegis/fstate.h>
+#include <libaegis/cstate.fmtgen.h>
+#include <libaegis/fstate.fmtgen.h>
 #include <libaegis/lock.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project.h>
@@ -41,8 +42,8 @@
 static string_ty *
 first_line(string_ty *s)
 {
-    string_ty	    *s1;
-    string_ty	    *s2;
+    string_ty       *s1;
+    string_ty       *s2;
 
     trace(("s = \"%s\"\n", s->str_text));
     s1 = str_field(s, '\n', 0);
@@ -65,7 +66,7 @@ extract_year(time_t t)
 static cstate_history_ty *
 change_history_fake(change::pointer cp, string_ty *who, time_t when)
 {
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
     cstate_history_ty **history_data_p;
     meta_type *type_p = 0;
@@ -75,8 +76,8 @@ change_history_fake(change::pointer cp, string_ty *who, time_t when)
     cstate_data = cp->cstate_get();
     assert(cstate_data->history);
     history_data_p =
-	(cstate_history_ty **)
-	cstate_history_list_type.list_parse(cstate_data->history, &type_p);
+        (cstate_history_ty **)
+        cstate_history_list_type.list_parse(cstate_data->history, &type_p);
     assert(type_p==&cstate_history_type);
     history_data = (cstate_history_ty *)cstate_history_type.alloc();
     *history_data_p = history_data;
@@ -91,13 +92,13 @@ change_history_fake(change::pointer cp, string_ty *who, time_t when)
 void
 synthesize(string_ty *project_name, change_set_ty *csp)
 {
-    project_ty	    *pp;
-    long	    change_number;
+    project      *pp;
+    long            change_number;
     change::pointer cp;
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
     fstate_src_ty   *c_src_data;
     fstate_src_ty   *p_src_data;
-    size_t	    j;
+    size_t          j;
     cstate_history_ty *history_data;
 
     //
@@ -152,51 +153,53 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     //
     // Add the files to the change.
     //
+    nstring uuid(universal_unique_identifier());
     for (j = 0; j < csp->file.size(); ++j)
     {
-	change_set_file_ty *csfp = csp->file[j];
-	trace(("%s\n", csfp->filename->str_text));
-	c_src_data = cp->file_new(csfp->filename);
+        change_set_file_ty *csfp = csp->file[j];
+        trace(("%s\n", csfp->filename->str_text));
+        c_src_data = cp->file_new(csfp->filename);
 
-	c_src_data->action = file_action_modify;
-	switch (csfp->action)
-	{
-	case change_set_file_action_create:
-	    c_src_data->action = file_action_create;
-	    break;
+        c_src_data->action = file_action_modify;
+        switch (csfp->action)
+        {
+        case change_set_file_action_create:
+            c_src_data->action = file_action_create;
+            break;
 
-	case change_set_file_action_modify:
-	    break;
+        case change_set_file_action_modify:
+            break;
 
-	case change_set_file_action_remove:
-	    c_src_data->action = file_action_remove;
-	    break;
-	}
+        case change_set_file_action_remove:
+            c_src_data->action = file_action_remove;
+            break;
+        }
 
-	c_src_data->usage = file_usage_source;
-	c_src_data->edit = (history_version_ty *)history_version_type.alloc();
-	c_src_data->edit->revision = str_copy(csfp->edit);
-	p_src_data = project_file_find(pp, csfp->filename, view_path_extreme);
-	if (!p_src_data)
-	    p_src_data = pp->file_new(csfp->filename);
-	p_src_data->action = file_action_create;
-	switch (csfp->action)
-	{
-	case change_set_file_action_create:
-	case change_set_file_action_modify:
-	    break;
+        c_src_data->usage = file_usage_source;
+        c_src_data->edit = (history_version_ty *)history_version_type.alloc();
+        c_src_data->edit->revision = str_copy(csfp->edit);
+        c_src_data->edit->uuid = uuid.get_ref_copy();
+        p_src_data = pp->file_find(csfp->filename, view_path_extreme);
+        if (!p_src_data)
+            p_src_data = pp->file_new(csfp->filename);
+        p_src_data->action = file_action_create;
+        switch (csfp->action)
+        {
+        case change_set_file_action_create:
+        case change_set_file_action_modify:
+            break;
 
-	case change_set_file_action_remove:
-	    p_src_data->action = file_action_remove;
-	    p_src_data->deleted_by = change_number;
-	    break;
-	}
-	p_src_data->usage = c_src_data->usage;
-	if (p_src_data->edit)
-	    history_version_type.free(p_src_data->edit);
-	else
-	    p_src_data->edit_origin = history_version_copy(c_src_data->edit);
-	p_src_data->edit = history_version_copy(c_src_data->edit);
+        case change_set_file_action_remove:
+            p_src_data->action = file_action_remove;
+            p_src_data->deleted_by = change_number;
+            break;
+        }
+        p_src_data->usage = c_src_data->usage;
+        if (p_src_data->edit)
+            history_version_type.free(p_src_data->edit);
+        else
+            p_src_data->edit_origin = history_version_copy(c_src_data->edit);
+        p_src_data->edit = history_version_copy(c_src_data->edit);
     }
 
     //
@@ -227,22 +230,30 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     // add to history for integrate pass
     //
     cstate_data->state = cstate_state_completed;
-    cstate_data->uuid = universal_unique_identifier();
+    cstate_data->uuid = uuid.get_ref_copy();
     history_data = change_history_fake(cp, csp->who, csp->when);
     history_data->what = cstate_history_what_integrate_pass;
 
     //
     // add to project history
     //
-    project_history_new(pp, cstate_data->delta_number, change_number);
+    project_history_new
+    (
+        pp,
+        cstate_data->delta_number,
+        change_number,
+        cstate_data->uuid,
+        history_data->when,
+        false
+    );
     for (j = 0; j < csp->tag.nstrings; ++j)
     {
-	project_history_delta_name_add
-	(
-	    pp,
-	    cstate_data->delta_number,
-	    csp->tag.string[j]
-	);
+        project_history_delta_name_add
+        (
+            pp,
+            cstate_data->delta_number,
+            csp->tag.string[j]
+        );
     }
 
     //
@@ -253,7 +264,7 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     //
     // Write stuff back out.
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     pp->pstate_write();
     commit();
     lock_release();
@@ -266,3 +277,6 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     project_free(pp);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

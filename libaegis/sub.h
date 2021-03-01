@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1995, 1997, 1999, 2002-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef SUB_H
@@ -27,7 +26,7 @@
 #include <libaegis/sub/diversion/stack.h>
 #include <libaegis/sub/functor/list.h>
 
-struct project_ty; // forward
+struct project; // forward
 struct sub_context_ty; // forward
 class nstring; // forward
 class wstring; // forward
@@ -65,35 +64,35 @@ public:
       * names "variable" and "function", they are always referred to as
       * "substitutions".
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param fmt
+      * @param fmt
       *     The format string for the value (see printf(3) fdor more
       *     information) and the format parameters follow in the succeeding
       arguments.
       */
     void var_set_format(const char *name, const char *fmt, ...)
-							      ATTR_PRINTF(3, 4);
+                                                              ATTR_PRINTF(3, 4);
     /**
       * The var_set_vformat method is used to set a substitution variable
       * with a formatted value.
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param fmt
+      * @param fmt
       *     The format string for the value (see vprintf(3) for more
       *     information).
-      * \param args
+      * @param args
       *     The format parameters.
       */
     void var_set_vformat(const char *name, const char *fmt, va_list args)
-							        ATTR_VPRINTF(3);
+                                                                ATTR_VPRINTF(3);
     /**
       * The var_set_string method is used to set a substitution variable.
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param value
+      * @param value
       *     The value of the variable to be set.
       */
     void var_set_string(const char *name, string_ty *value);
@@ -101,9 +100,9 @@ public:
     /**
       * The var_set_string method is used to set a substitution variable.
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param value
+      * @param value
       *     The value of the variable to be set.
       */
     void var_set_string(const char *name, const nstring &value);
@@ -111,9 +110,9 @@ public:
     /**
       * The var_set_charstar method is used to set a substitution variable.
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param value
+      * @param value
       *     The value of the variable to be set.
       */
     void var_set_charstar(const char *name, const char *value);
@@ -121,9 +120,9 @@ public:
     /**
       * The var_set_long method is used to set a substitution variable.
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param value
+      * @param value
       *     The value of the variable to be set.
       */
     void var_set_long(const char *name, long value);
@@ -131,9 +130,9 @@ public:
     /**
       * The var_set_time method is used to set a substitution variable.
       *
-      * \param name
+      * @param name
       *     The name of the variable to be set.
-      * \param value
+      * @param value
       *     The value of the variable to be set.
       */
     void var_set_time(const char *name, time_t value);
@@ -142,7 +141,7 @@ public:
       * The var_optional method is used to mark a substitution variable
       * as optional, meaning that is doesn't have to be used.
       *
-      * \param name
+      * @param name
       *     The name of the optional variable.
       */
     void var_optional(const char *name);
@@ -152,7 +151,7 @@ public:
       * variable as one which is appended if it is not used anywhere in
       * the substituition.
       *
-      * \param name
+      * @param name
       *     The name of the substitution variable.
       */
     void var_append_if_unused(const char *name);
@@ -161,9 +160,9 @@ public:
       * The var_override method is used to mark a substitution
       * variable as one which is to override a built-in substitution.
       *
-      * \param name
+      * @param name
       *     The name of the substitution variable.
-      * \note
+      * @note
       *     Use sparingly.
       */
     void var_override(const char *name);
@@ -174,9 +173,9 @@ public:
       * re-interpreted for more substitutions.  The default is not to do
       * this.
       *
-      * \param name
+      * @param name
       *     The name of the substitution variable.
-      * \note
+      * @note
       *     Use sparingly.
       */
     void var_resubstitute(const char *name);
@@ -185,7 +184,7 @@ public:
       * The errno_setx method is used to set the $ERRNO value in the
       * given substitition context.
       *
-      * \note
+      * @note
       *     There is no method to directly read errno and set it, because
       *     there is at least one malloc() library call and possibly several
       *     others before you get arround to calling this function.
@@ -202,9 +201,9 @@ public:
       * The format of substitutions, and the commonly available
       * substitutions, are described in aesub(5).
       *
-      * \param cp
+      * @param cp
       *     The change to provide context for the substitution.
-      * \param the_command
+      * @param the_command
       *     The string to be sustituted into.
       */
     string_ty *substitute(change::pointer cp, string_ty *the_command);
@@ -212,18 +211,18 @@ public:
     /**
       * The substitute_p method is used to substitute into the given string.
       *
-      * \param pp
+      * @param pp
       *     The project to provide context for the substitution.
-      * \param the_command
+      * @param the_command
       *     The string to be sustituted into.
       *     See aesub(5) for valid substitutions.
       */
-    string_ty *substitute_p(project_ty *pp, string_ty *the_command);
+    string_ty *substitute_p(project *pp, string_ty *the_command);
 
     /**
       * The sub_intl method is used to substitute into the given string.
       *
-      * \param substme
+      * @param substme
       *     The string to be sustituted into.
       *     See aesub(5) for valid substitutions.
       */
@@ -233,16 +232,16 @@ public:
       * The subst_intl_project method is used to set the project for the
       * substitution context.
       *
-      * \param pp
+      * @param pp
       *     The project for context.
       */
-    void subst_intl_project(struct project_ty *pp);
+    void subst_intl_project(struct project *pp);
 
     /**
       * The subst_intl_change method is used to set the change for the
       * substitution context.
       *
-      * \param cp
+      * @param cp
       *     The change for context.
       */
     void subst_intl_change(change::pointer cp);
@@ -252,7 +251,7 @@ public:
       * message (vis the gettext function) then substitute it, and then
       * print it.
       *
-      * \param message
+      * @param message
       *     The error message to be processed.
       */
     void error_intl(const char *message);
@@ -262,9 +261,9 @@ public:
       * message (vis the gettext function) then substitute it, then
       * print it, and then exit with exist status 1.
       *
-      * \param message
+      * @param message
       *     The error message to be processed.
-      * \note
+      * @note
       *     This method does not return.
       */
     void fatal_intl(const char *message) NORETURN;
@@ -275,7 +274,7 @@ public:
       * print it.  If the verbose option is not in effect, nothing will
       * be printed.
       *
-      * \param message
+      * @param message
       *     The error message to be processed.
       */
     void verbose_intl(const char *message);
@@ -285,10 +284,10 @@ public:
       * erroneous.  This occurs when there is something wrong with the
       *  message being substituted.
       *
-      * \param message
+      * @param message
       *     The error message describing what is wrong with the
       *     substitution message currently being processed.
-      * \note
+      * @note
       *     This method is only to be used by the built-in functions as
       *     feedback when something goes wrong.
       */
@@ -298,23 +297,23 @@ public:
       * The project_get method is used to obtain a pointer to the
       * project for this context.
       *
-      * \returns
+      * @returns
       *     Pointer to the project, or NULL if no project is relevant at
       *     this point.
-      * \note
+      * @note
       *     This method is only to be used by the built-in functions to
       *     obtain their context.
       */
-    project_ty *project_get();
+    project *project_get();
 
     /**
       * The change_get method is used to obtain a pointer to the
       * change for this context.
       *
-      * \returns
+      * @returns
       *     Pointer to the change, or NULL if no change is relevant at
       *     this point.
-      * \note
+      * @note
       *     This method is only to be used by the built-in functions to
       *     obtain their context.
       */
@@ -329,9 +328,9 @@ public:
     /**
       * The subst method is used to substitute the given string.
       *
-      * \param msg
+      * @param msg
       *     The string to be substituted into.
-      * \returns
+      * @returns
       *     The string result of the substitution.
       */
     wstring subst(const wstring &msg);
@@ -341,9 +340,9 @@ public:
       * string.  The message will be passed through gettext before being
       * substituted.
       *
-      * \param msg
+      * @param msg
       *     The string to be substituted into.
-      * \returns
+      * @returns
       *     The string result of the substitution.
       */
     wstring subst_intl_wide(const char *msg);
@@ -352,7 +351,7 @@ private:
     sub_diversion_stack diversion_stack;
     sub_functor_list var_list;
     change::pointer cp;
-    project_ty *pp;
+    project *pp;
 
     const char *suberr;
     int errno_sequester;
@@ -367,8 +366,8 @@ private:
 
     enum getc_type
     {
-	getc_type_control,
-	getc_type_data
+        getc_type_control,
+        getc_type_data
     };
 
     /**
@@ -376,8 +375,8 @@ private:
       * input string.  When the current string is exhaused, the previous
       * string is resumed.
       *
-      * \returns
-      *	     the chacater, or NUL to indicate end of input
+      * @returns
+      *      the chacater, or NUL to indicate end of input
       */
     wchar_t getc_meta(getc_type &c);
 
@@ -385,9 +384,9 @@ private:
       * The getc_meta_undo function is used to give back a character
       * output by getc_meta.
       *
-      * \param c
-      *	    character being given back
-      * \note
+      * @param c
+      *     character being given back
+      * @note
       *    Only push back what was read.
       */
     void getc_meta_undo(wchar_t c);
@@ -407,8 +406,9 @@ private:
       * The substitution is usually achieved as a side-effect, by using
       * the diversion_stack.
       *
-      * \returns
-      *     wchar_t a character to deliver as output, or L'\0' if none.
+      * @returns
+      *     wchar_t a character to deliver as output, or a wide NUL
+      *     charcater if none.
       */
     wchar_t dollar();
 
@@ -467,11 +467,11 @@ sub_var_set_format(sub_context_ty *scp, const char *name, const char *fmt, ...)
   * The sub_var_set_string function is used to set the value of a
   * substitution variable.
   *
-  * \param scp
+  * @param scp
   *     The substitution context to set the variable within.
-  * \param name
+  * @param name
   *     The name of the variable to be set.
-  * \param value
+  * @param value
   *     The value of the variable to be set.
   */
 inline void
@@ -484,11 +484,11 @@ sub_var_set_string(sub_context_ty *scp, const char *name, string_ty *value)
   * The sub_var_set_string function is used to set the value of a
   * substitution variable.
   *
-  * \param scp
+  * @param scp
   *     The substitution context to set the variable within.
-  * \param name
+  * @param name
   *     The name of the variable to be set.
-  * \param value
+  * @param value
   *     The value of the variable to be set.
   */
 inline void
@@ -542,7 +542,7 @@ sub_var_resubstitute(sub_context_ty *scp, const char *name)
 /**
   * Set the $ERRNO value in the given substitition context.
   *
-  * \note
+  * @note
   *     There is no method to directly read errno and set it, because
   *     there is at least one malloc() library call and possibly several
   *     others before you get around to calling this function.
@@ -561,19 +561,19 @@ substitute(sub_context_ty *scp, change::pointer cp, string_ty *the_command)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	return inner.substitute(cp, the_command);
+        sub_context_ty inner;
+        return inner.substitute(cp, the_command);
     }
     return scp->substitute(cp, the_command);
 }
 
 inline string_ty *
-substitute_p(sub_context_ty *scp, struct project_ty *pp, string_ty *the_command)
+substitute_p(sub_context_ty *scp, struct project *pp, string_ty *the_command)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	return inner.substitute_p(pp, the_command);
+        sub_context_ty inner;
+        return inner.substitute_p(pp, the_command);
     }
     return scp->substitute_p(pp, the_command);
 }
@@ -583,22 +583,22 @@ subst_intl(sub_context_ty *scp, const char *substme)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	return inner.subst_intl(substme);
+        sub_context_ty inner;
+        return inner.subst_intl(substme);
     }
     return scp->subst_intl(substme);
 }
 
 inline void
-subst_intl_project(sub_context_ty *scp, struct project_ty *pp)
+subst_intl_project(sub_context_ty *scp, struct project *pp)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	inner.subst_intl_project(pp);
+        sub_context_ty inner;
+        inner.subst_intl_project(pp);
     }
     else
-	scp->subst_intl_project(pp);
+        scp->subst_intl_project(pp);
 }
 
 inline void
@@ -606,11 +606,11 @@ subst_intl_change(sub_context_ty *scp, change::pointer cp)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	inner.subst_intl_change(cp);
+        sub_context_ty inner;
+        inner.subst_intl_change(cp);
     }
     else
-	scp->subst_intl_change(cp);
+        scp->subst_intl_change(cp);
 }
 
 inline void
@@ -618,11 +618,11 @@ error_intl(sub_context_ty *scp, const char *message)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	inner.error_intl(message);
+        sub_context_ty inner;
+        inner.error_intl(message);
     }
     else
-	scp->error_intl(message);
+        scp->error_intl(message);
 }
 
 inline void
@@ -633,11 +633,11 @@ fatal_intl(sub_context_ty *scp, const char *message)
 {
     if (!scp)
     {
-	sub_context_ty inner;
-	inner.fatal_intl(message);
+        sub_context_ty inner;
+        inner.fatal_intl(message);
     }
     else
-	scp->fatal_intl(message);
+        scp->fatal_intl(message);
 }
 
 inline void
@@ -645,11 +645,11 @@ verbose_intl(sub_context_ty *scp, const char *message)
 {
     if (!scp)
     {
-	sub_context_ty temp;
-	temp.verbose_intl(message);
+        sub_context_ty temp;
+        temp.verbose_intl(message);
     }
     else
-	scp->verbose_intl(message);
+        scp->verbose_intl(message);
 }
 
 //
@@ -669,7 +669,7 @@ sub_context_error_set(sub_context_ty *scp, const char *message)
     scp->error_set(message);
 }
 
-inline project_ty *
+inline project *
 sub_context_project_get(sub_context_ty *scp)
 {
     return scp->project_get();
@@ -682,3 +682,4 @@ sub_context_change_get(sub_context_ty *scp)
 }
 
 #endif // SUB_H
+// vim: set ts=8 sw=4 et :

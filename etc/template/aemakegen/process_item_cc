@@ -1,0 +1,64 @@
+//
+// aegis - project change supervisor
+// Copyright (C) ${date %Y} ${user name}
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include <common/ac/assert.h>
+
+#include <aemakegen/process_data.h>
+#include <${trim_ext $fn}.h>
+#include <aemakegen/target.h>
+#include <aemakegen/util.h>
+
+
+${id ${trim_dir ${trim_ext $fn}}}::~${id ${trim_dir ${trim_ext $fn}}}()
+{
+}
+
+
+${id ${trim_dir ${trim_ext $fn}}}::${id ${trim_dir ${trim_ext
+$fn}}}(target &a_tgt) :
+    ${id ${trim_dir ${dirname_rel $fn}}}(a_tgt, &target::${id ${trim_dir
+    ${trim_ext $fn}}})
+{
+}
+
+
+${id ${trim_dir ${trim_ext $fn}}}::pointer
+${id ${trim_dir ${trim_ext $fn}}}::create(target &a_tgt)
+{
+    return pointer(new ${id ${trim_dir ${trim_ext $fn}}}(a_tgt));
+}
+
+
+bool
+${id ${trim_dir ${trim_ext $fn}}}::condition(const nstring &fn)
+{
+    test_me(__FILE__, __LINE__);
+    ...
+}
+
+
+void
+${id ${trim_dir ${trim_ext $fn}}}::preprocess(const nstring &fn)
+{
+    test_me(__FILE__, __LINE__);
+    assert(condition(fn));
+    ...
+}
+
+
+// vim: set ts=8 sw=4 et :

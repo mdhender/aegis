@@ -1,30 +1,29 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1999, 2001-2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <common/mprintf.h>
 #include <common/nstring.h>
-#include <libaegis/output.h>
 #include <common/page.h>
 #include <common/trace.h>
+#include <libaegis/output.h>
 
 
 output::~output()
@@ -33,7 +32,7 @@ output::~output()
     // Note: calling the flush() method here is pointless, because
     // the derived class has already been destroyed.
     //
-    trace(("~output(this = %08lX)\n{\n", (long)this));
+    trace(("~output(this = %p)\n{\n", this));
     callback();
 
     assert(buffer);
@@ -49,6 +48,7 @@ output::output() :
     buffer_position(0),
     buffer_end(0)
 {
+    trace(("output(this = %p)\n", this));
     buffer_size = (size_t)1 << 13;
     buffer = new unsigned char [buffer_size];
     buffer_position = buffer;
@@ -60,7 +60,8 @@ long
 output::ftell()
     const
 {
-    trace(("output::ftell(this = %08lX)\n{\n", (long)this));
+    trace(("output::ftell(this = %p)\n{\n", this));
+    trace(("typeid(*this).name() = \"%s\"\n", typeid(*this).name()));
     long result = ftell_inner() + (buffer_position - buffer);
     trace(("return %ld;\n", result));
     trace(("}\n"));
@@ -71,16 +72,17 @@ output::ftell()
 void
 output::overflow(char c)
 {
-    trace(("output::overflow(this = %08lX, c = %d)\n{\n", (long)this, c));
+    trace(("output::overflow(this = %p, c = %d)\n{\n", this, c));
+    trace(("typeid(*this).name() = \"%s\"\n", typeid(*this).name()));
     assert(buffer);
     assert(buffer_position >= buffer);
     assert(buffer_end == buffer + buffer_size);
     assert(buffer_position <= buffer_end);
     if (buffer_position >= buffer_end)
     {
-	size_t nbytes = buffer_position - buffer;
-	write_inner(buffer, nbytes);
-	buffer_position = buffer;
+        size_t nbytes = buffer_position - buffer;
+        write_inner(buffer, nbytes);
+        buffer_position = buffer;
     }
     *buffer_position++ = c;
     trace(("}\n"));
@@ -90,10 +92,10 @@ output::overflow(char c)
 void
 output::fputs(const char *s)
 {
-    trace(("output::fputs(this = %08lX, s = \"%s\")\n{\n", (long)this, s));
+    trace(("output::fputs(this = %p, s = \"%s\")\n{\n", this, s));
     size_t nbytes = strlen(s);
     if (nbytes)
-	write(s, nbytes);
+        write(s, nbytes);
     trace(("}\n"));
 }
 
@@ -102,7 +104,7 @@ void
 output::fputs(string_ty *s)
 {
     if (!s || !s->str_length)
-	return;
+        return;
     write(s->str_text, s->str_length);
 }
 
@@ -111,38 +113,39 @@ void
 output::fputs(const nstring &s)
 {
     if (!s.empty())
-	write(s.c_str(), s.length());
+        write(s.c_str(), s.length());
 }
 
 
 void
 output::write(const void *data, size_t len)
 {
-    trace(("output::write(this = %08lX, data = %08lX, len = %ld)\n{\n",
-	(long)this, (long)data, (long)len));
+    trace(("output::write(this = %p, data = %p, len = %ld)\n{\n",
+        this, data, (long)len));
+    trace(("typeid(*this).name() = \"%s\"\n", typeid(*this).name()));
     if (len)
     {
-	if (buffer_position + len <= buffer_end)
-	{
-	    memcpy(buffer_position, data, len);
-	    buffer_position += len;
-	}
-	else
-	{
-	    size_t nbytes = buffer_position - buffer;
-	    if (nbytes)
-	    {
-		write_inner(buffer, nbytes);
-		buffer_position = buffer;
-	    }
-	    if (len < buffer_size)
-	    {
-		memcpy(buffer, data, len);
-		buffer_position += len;
-	    }
-	    else
-		write_inner(data, len);
-	}
+        if (buffer_position + len <= buffer_end)
+        {
+            memcpy(buffer_position, data, len);
+            buffer_position += len;
+        }
+        else
+        {
+            size_t nbytes = buffer_position - buffer;
+            if (nbytes)
+            {
+                write_inner(buffer, nbytes);
+                buffer_position = buffer;
+            }
+            if (len < buffer_size)
+            {
+                memcpy(buffer, data, len);
+                buffer_position += len;
+            }
+            else
+                write_inner(data, len);
+        }
     }
     trace(("}\n"));
 }
@@ -151,12 +154,13 @@ output::write(const void *data, size_t len)
 void
 output::flush()
 {
-    trace(("output::flush(this = %08lX)\n{\n", (long)this));
+    trace(("output::flush(this = %p)\n{\n", this));
+    trace(("typeid(*this).name() = \"%s\"\n", typeid(*this).name()));
     if (buffer_position > buffer)
     {
-	size_t nbytes = buffer_position - buffer;
-	write_inner(buffer, nbytes);
-	buffer_position = buffer;
+        size_t nbytes = buffer_position - buffer;
+        write_inner(buffer, nbytes);
+        buffer_position = buffer;
     }
     flush_inner();
     trace(("}\n"));
@@ -170,19 +174,20 @@ output::end_of_line()
     // If possible, just stuff a newline into the buffer and bail.
     // This results in the fewest deeper calls.
     //
-    trace(("output::end_of_line(this = %08lX)\n{\n", (long)this));
+    trace(("output::end_of_line(this = %p)\n{\n", this));
+    trace(("typeid(*this).name() = \"%s\"\n", typeid(*this).name()));
     if
     (
-	buffer_position > buffer
+        buffer_position > buffer
     &&
-	buffer_position[-1] != '\n'
+        buffer_position[-1] != '\n'
     &&
-	buffer_position < buffer_end
+        buffer_position < buffer_end
     )
     {
-	*buffer_position++ = '\n';
-	trace(("}\n"));
-	return;
+        *buffer_position++ = '\n';
+        trace(("}\n"));
+        return;
     }
 
     //
@@ -191,9 +196,9 @@ output::end_of_line()
     //
     if (buffer_position > buffer)
     {
-	size_t nbytes = buffer_position - buffer;
-	write_inner(buffer, nbytes);
-	buffer_position = buffer;
+        size_t nbytes = buffer_position - buffer;
+        write_inner(buffer, nbytes);
+        buffer_position = buffer;
     }
 
     //
@@ -274,3 +279,6 @@ output::flush_inner()
 {
     // Do nothing.
 }
+
+
+// vim: set ts=8 sw=4 et :

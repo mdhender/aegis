@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to Recreate Old Versions"
 .LP
@@ -46,13 +45,13 @@ change is on, use this option.  The branch number is to the left of the
 \&"D" in version strings.
 'in -0.25i
 .LP
-\fB\-DELta-From-Change\fP \fInumber\fP
+\fB\-DELta\[hy]From\[hy]Change\fP \fInumber\fP
 .in +0.25i
 This option tells \fIaecp\fP(1) to extract an historical version of the
 files, rather than the head revision (the one visable in the baseline).
 You only need the change number to use this option.
 .LP
-\fB\-DELta-Date "\fIstring\fP"
+\fB\-DELta\[hy]Date "\fIstring\fP"
 .in +0.25i
 This option tells \fIaecp\fP(1) to extract an historical version of the
 files, rather than the head revision (the one visable in the baseline).
@@ -66,12 +65,12 @@ vs. American numeric formats, use month names instead).
 You can find delta numbers in a number of ways:
 .LP
 \(bu
-The \[lq]\fIael change-details\fP\[rq] command will list change details.
+The \[lq]\fIael change\[hy]details\fP\[rq] command will list change details.
 If changes are completed, their delta number will appear at the top of
 the listing.
 .LP
 \(bu
-The \[lq]\fIael project-history\fP\[rq] command lists all integration for a
+The \[lq]\fIael project\[hy]history\fP\[rq] command lists all integration for a
 project, including their change numbers and delta numbers.
 .LP
 \(bu
@@ -94,7 +93,7 @@ version string into your executables.  You could, for example, have this
 string printed when yoiur program is given the \fB\-version\fP command
 line option.  For example:
 .E(
-% \f[CB]aegis --version\fP
+% \f[CB]aegis \-version\fP
 aegis version 4.15.D012
 %
 .E)
@@ -102,7 +101,7 @@ aegis version 4.15.D012
 Armed with this version string, you can recreate the sources for the
 version being executed.  The command
 .E(
-% \f[CB]aecp --change=4.15.D012 .\fP
+% \f[CB]aecp \-change=4.15.D012 .\fP
 %
 .E)
 would be issued from inside a suitable change.  This form of the
@@ -117,7 +116,7 @@ presumably fixed the bug you were hunting, there are a couple more steps.
 The first is to remove unchanged sources.
 Do this with the
 .E(
-% \f[CB]aecpu -unchanged\fP
+% \f[CB]aecpu \-unchanged\fP
 %
 .E)
 command.  This removes from your change all files which were not changed
@@ -127,7 +126,7 @@ much easier.
 \(bu
 The next step is to merge the files.
 Because you are working with historical versions of the files,
-Aegis will think they are out-of-date and want you to merge them.
+Aegis will think they are out\[hy]of\[hy]date and want you to merge them.
 Do this is the usual way (using the \fIaem\fP(1) command).
 Remember that Aegis will stash a backup copy with a \[lq],B\[rq] suffix
 before merging.
@@ -137,8 +136,9 @@ You may find the following command
 % \f[CB]ael cf | grep '('\fP
 %
 .E)
-useful for finding out-of-date files.
+useful for finding out\[hy]of\[hy]date files.
 .LP
 \(bu
-Once Aegis thinks all the files are up-to-date
+Once Aegis thinks all the files are up\[hy]to\[hy]date
 you then need to rebuild and retest before completing development.
+.\" vim: set ts=8 sw=4 et :

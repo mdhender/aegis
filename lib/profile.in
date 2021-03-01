@@ -1,20 +1,22 @@
+#!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001-2004, 2006-2008 Peter Miller
+# aegis - project change supervisor
+# Copyright (C) 1991-1996, 1999, 2001-2004, 2006-2009, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
 #
 # @configure_input@
 #
@@ -22,13 +24,13 @@
 # of Aegis.  If you make local modifications, you will need to remember
 # to make them again after the next upgrade.
 #
-# On Linux, or any system using bash (I think), a symlink to this file
-# from /etc/profile.d/aegis.sh can be very useful.
+# On Linux, a symlink to this file from /etc/profile.d/aegis.sh can be
+# very useful.
 #
 if test -z "$AEGIS_PATH" -a -d $HOME/lib/aegis/.
 then
-	AEGIS_PATH=$HOME/lib/aegis
-	export AEGIS_PATH
+    AEGIS_PATH=$HOME/lib/aegis
+    export AEGIS_PATH
 fi
 
 #
@@ -51,9 +53,9 @@ export MANPATH
 # file systems.  Use with extreme caution as this distorts Aegis' idea
 # of the shape of the filesystem.
 #
-#	/tmp_mnt is typical of Sun automounters
-#	/a is the default for amd, an OpenSource automounter
-#	/.automount is typical of amd on Linux
+#       /tmp_mnt is typical of Sun automounters
+#       /a is the default for amd, an OpenSource automounter
+#       /.automount is typical of amd on Linux
 #
 # The automounters need to be configured so that the path below the
 # automount point is *identical* to the path without it - because all
@@ -71,411 +73,339 @@ export AEGIS_AUTOMOUNT_POINTS
 # because the size of the common code portion usually greatly exceeds
 # the size of the unique portions.)
 #
-# Note: while Bash uses the "function" keyword to define functions, the
-# original Bourne shell does not.  Bash understands the form with out he
-# "funtion" keyword, so it is omitted.
-#
 aeb()
 {
-	aegis -b "$@" -v
+    aegis -b "$@" -v
 }
 aeca()
 {
-	aegis -ca "$@" -v
+    aegis -ca "$@" -v
 }
 aecd()
 {
-	ae_response="`aegis -cd "$@" -v`"
-	if test -d "$ae_response"
-	then
-		cd "$ae_response"
-	else
-		echo "$ae_response"
-	fi
-	unset ae_response
+    ae_response="`aegis -cd "$@" -v`"
+    if test -d "$ae_response"
+    then
+        cd "$ae_response"
+    else
+        echo "$ae_response"
+    fi
+    unset ae_response
 }
 aechown()
 {
-	aegis -chown "$@" -v
+    aegis -chown "$@" -v
 }
 aeclean()
 {
-	aegis -clean "$@" -v
+    aegis -clean "$@" -v
 }
 aeclone()
 {
-	aegis -clone "$@" -v
+    aegis -clone "$@" -v
 }
 aecp()
 {
-	aegis -cp "$@" -v
+    aegis -cp "$@" -v
 }
 aecpu()
 {
-	aegis -cpu "$@" -v
+    aegis -cpu "$@" -v
 }
 aed()
 {
-	aegis -diff "$@" -v
+    aegis -diff "$@" -v
 }
 aedb()
 {
-	aegis -db "$@" -v
+    aegis -db "$@" -v
 }
 aedbu()
 {
-	aegis -dbu "$@" -v
+    aegis -dbu "$@" -v
 }
 aede()
 {
-	aegis -de "$@" -v
+    aegis -de "$@" -v
 }
 aedeu()
 {
-	aegis -deu "$@" -v
+    aegis -deu "$@" -v
 }
 aedless()
 {
-	less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
+    less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
 aedmore()
 {
-	more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
+    more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
 aedn()
 {
-	aegis -dn "$@" -v
+    aegis -dn "$@" -v
 }
 aefa()
 {
-	aegis -fat "$@" -v
+    aegis -fat "$@" -v
 }
 aeib()
 {
-	aegis -ib "$@" -v
+    aegis -ib "$@" -v
 }
 aeibu()
 {
-	aegis -ibu "$@" -v
+    aegis -ibu "$@" -v
 }
 aeifail()
 {
-	aegis -ifail "$@" -v
+    aegis -ifail "$@" -v
 }
 aeipass()
 {
-	aegis -ipass "$@" -v
+    aegis -ipass "$@" -v
 }
 ael()
 {
-	aegis -l "$@" -v
+    aegis -l "$@" -v
 }
 aem()
 {
-	aegis -diff -only_merge "$@" -v
+    aegis -diff -only_merge "$@" -v
 }
 aemt()
 {
-        aegis -mt "$@" -v
+    aegis -mt "$@" -v
 }
 aemtu()
 {
-        aegis -mtu "$@" -v
+    aegis -mtu "$@" -v
 }
 aemv()
 {
-	aegis -mv "$@" -v
+    aegis -mv "$@" -v
 }
 aemvu()
 {
-	aegis -mvu "$@" -v
+    aegis -mvu "$@" -v
 }
 aena()
 {
-	aegis -na "$@" -v
+    aegis -na "$@" -v
 }
 aenbr()
 {
-	aegis -nbr "$@" -v
+    aegis -nbr "$@" -v
 }
 aenbru()
 {
-	aegis -nbru "$@" -v
+    aegis -nbru "$@" -v
 }
 aenc()
 {
-	aegis -nc "$@" -v
+    aegis -nc "$@" -v
 }
 aencu()
 {
-	aegis -ncu "$@" -v
+    aegis -ncu "$@" -v
 }
 aend()
 {
-	aegis -nd "$@" -v
+    aegis -nd "$@" -v
 }
 aenf()
 {
-	aegis -nf "$@" -v
+    aegis -nf "$@" -v
 }
 aenfu()
 {
-	aegis -nfu "$@" -v
+    aegis -nfu "$@" -v
 }
 aeni()
 {
-	aegis -ni "$@" -v
+    aegis -ni "$@" -v
 }
 aenpa()
 {
-	aegis -new-project-alias "$@" -v
+    aegis -new-project-alias "$@" -v
 }
 aenpr()
 {
-	aegis -npr "$@" -v
+    aegis -npr "$@" -v
 }
 aenrls()
 {
-	aegis -nrls "$@" -v
+    aegis -nrls "$@" -v
 }
 aenrv()
 {
-	aegis -nrv "$@" -v
+    aegis -nrv "$@" -v
 }
 aent()
 {
-	aegis -nt "$@" -v
+    aegis -nt "$@" -v
 }
 aentu()
 {
-	aegis -ntu "$@" -v
+    aegis -ntu "$@" -v
 }
 aepa()
 {
-	aegis -pa "$@" -v
+    aegis -pa "$@" -v
 }
 aepwd()
 {
-	aegis -Change_Directory "$@" -terse
+    aegis -Change_Directory "$@" -terse
 }
 aeq()
 {
-	aegis -q "$@" -v
+    aegis -q "$@" -v
 }
 aer()
 {
-	aereport "$@" -v
+    aereport "$@" -v
 }
 aera()
 {
-	aegis -ra "$@" -v
+    aegis -ra "$@" -v
 }
 aerb()
 {
-	aegis -rb "$@" -v
+    aegis -rb "$@" -v
 }
 aerbu()
 {
-	aegis -rbu "$@" -v
+    aegis -rbu "$@" -v
 }
 aerd()
 {
-	aegis -rd "$@" -v
+    aegis -rd "$@" -v
 }
 aerfail()
 {
-	aegis -rfail "$@" -v
+    aegis -rfail "$@" -v
 }
 aeri()
 {
-	aegis -ri "$@" -v
+    aegis -ri "$@" -v
 }
 aerm()
 {
-	aegis -rm "$@" -v
+    aegis -rm "$@" -v
 }
 aermu()
 {
-	aegis -rmu "$@" -v
+    aegis -rmu "$@" -v
 }
 aerpass()
 {
-	aegis -rpass "$@" -v
+    aegis -rpass "$@" -v
 }
 aerpa()
 {
-	aegis -remove-project-alias "$@" -v
+    aegis -remove-project-alias "$@" -v
 }
 aerpu()
 {
-	aegis -rpu "$@" -v
+    aegis -rpu "$@" -v
 }
 aermpr()
 {
-	aegis -rmpr "$@" -v
+    aegis -rmpr "$@" -v
 }
 aerrv()
 {
-	aegis -rrv "$@" -v
+    aegis -rrv "$@" -v
 }
 aet()
 {
-	aegis -t "$@" -v
+    aegis -t "$@" -v
 }
 aev()
 {
-	aegis -VERSion "$@" -v
+    aegis -VERSion "$@" -v
 }
 
 ae_c()
 {
-	AEGIS_CHANGE="$1"
-	export AEGIS_CHANGE
+    AEGIS_CHANGE="$1"
+    export AEGIS_CHANGE
 }
 ae_p()
 {
-	AEGIS_PROJECT="$1"
-	export AEGIS_PROJECT
+    AEGIS_PROJECT="$1"
+    export AEGIS_PROJECT
 }
 
 aeunset()
 {
-	unset -f aeb
-	unset -f ae_c
-	unset -f aeca
-	unset -f aecd
-	unset -f aechown
-	unset -f aeclean
-	unset -f aeclone
-	unset -f aecp
-	unset -f aecpu
-	unset -f aed
-	unset -f aedb
-	unset -f aedbu
-	unset -f aede
-	unset -f aedeu
-	unset -f aedless
-	unset -f aedmore
-	unset -f aedn
-	unset -f aeunset
-	unset -f aeib
-	unset -f aeibu
-	unset -f aeifail
-	unset -f aeipass
-	unset -f ael
-	unset -f aem
-        unset -f aemt
-        unset -f aemtu
-        unset -f aemv
-	unset -f aemvu
-	unset -f aena
-	unset -f aenbr
-	unset -f aenbru
-	unset -f aenc
-	unset -f aencu
-	unset -f aend
-	unset -f aenf
-	unset -f aenfu
-	unset -f aeni
-	unset -f aenpa
-	unset -f aenpr
-	unset -f aenrls
-	unset -f aenrv
-	unset -f aent
-	unset -f aentu
-	unset -f ae_p
-	unset -f aepa
-        unset -f aepwd
-	unset -f aeq
-	unset -f aer
-	unset -f aera
-        unset -f aerb
-        unset -f aerbu
-	unset -f aerd
-	unset -f aerfail
-	unset -f aeri
-	unset -f aerm
-	unset -f aermpr
-	unset -f aermu
-	unset -f aerpa
-	unset -f aerpass
-	unset -f aerpu
-	unset -f aerrv
-	unset -f aet
-        unset -f aev
-	unset AEGIS
-	unset AEGIS_PROJECT
-	unset AEGIS_CHANGE
-	unset AEGIS_PATH
-	unset AEGIS_AUTOMOUNT_POINTS
+    unset -f aeb
+    unset -f ae_c
+    unset -f aeca
+    unset -f aecd
+    unset -f aechown
+    unset -f aeclean
+    unset -f aeclone
+    unset -f aecp
+    unset -f aecpu
+    unset -f aed
+    unset -f aedb
+    unset -f aedbu
+    unset -f aede
+    unset -f aedeu
+    unset -f aedless
+    unset -f aedmore
+    unset -f aedn
+    unset -f aeunset
+    unset -f aeib
+    unset -f aeibu
+    unset -f aeifail
+    unset -f aeipass
+    unset -f ael
+    unset -f aem
+    unset -f aemt
+    unset -f aemtu
+    unset -f aemv
+    unset -f aemvu
+    unset -f aena
+    unset -f aenbr
+    unset -f aenbru
+    unset -f aenc
+    unset -f aencu
+    unset -f aend
+    unset -f aenf
+    unset -f aenfu
+    unset -f aeni
+    unset -f aenpa
+    unset -f aenpr
+    unset -f aenrls
+    unset -f aenrv
+    unset -f aent
+    unset -f aentu
+    unset -f ae_p
+    unset -f aepa
+    unset -f aepwd
+    unset -f aeq
+    unset -f aer
+    unset -f aera
+    unset -f aerb
+    unset -f aerbu
+    unset -f aerd
+    unset -f aerfail
+    unset -f aeri
+    unset -f aerm
+    unset -f aermpr
+    unset -f aermu
+    unset -f aerpa
+    unset -f aerpass
+    unset -f aerpu
+    unset -f aerrv
+    unset -f aet
+    unset -f aev
+    unset AEGIS
+    unset AEGIS_PROJECT
+    unset AEGIS_CHANGE
+    unset AEGIS_PATH
+    unset AEGIS_AUTOMOUNT_POINTS
 }
 
-#
-# Command completion is gradually being implemented for a wide range of
-# arguments for many Aegis commands.
-#
-if [ -n "$PS1" ]
-then
-    case "$BASH_VERSION" in
-
-    2.0[4-9]* | 2.[1-9]* | [3-9].* | [1-9][0-9].*)
-	complete -C aecomplete \
-	    aeb \
-	    ae_c \
-	    aeca \
-	    aecd \
-	    aechown \
-	    aeclean \
-	    aecp \
-	    aecpu \
-	    aed \
-	    aedb \
-	    aedbu \
-	    aede \
-	    aedeu \
-	    aedn \
-	    aefa \
-	    aegis \
-	    aeib \
-	    aeibu \
-	    aeifail \
-	    aeipass \
-	    aemt \
-	    aemtu \
-	    aena \
-	    aencu \
-	    aend \
-	    aenf \
-	    aenfu \
-	    aeni \
-	    aenrv \
-	    aentu \
-	    ae_p \
-	    aepa \
-	    aera \
-	    aerb \
-	    aerbu \
-	    aerd \
-	    aerfail \
-	    aeri \
-	    aerm \
-	    aermu \
-	    aerpass \
-	    aerpu \
-	    aerrv \
-	    aet
-	;;
-    esac
-
-    case "$ZSH_VERSION" in
-
-    4.[2-9]* | [5-9].* | [1-9][0-9].* )
-	_aegis_complete () {
-	    local output
-	    output=( ${(f)"$(aecomplete $words[1]  2>/dev/null)"} )
-	    test $? = 0 && compadd -a output
-	}
-	compdef _aegis_complete -P "ae*"
-	;;
-    esac
-fi
+# vim: set ts=8 sw=4 et :

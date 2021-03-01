@@ -1,22 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1995, 1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1995, 1999, 2001-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
@@ -24,9 +25,9 @@
 #include <common/ac/sys/types.h>
 #include <common/ac/sys/stat.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex/change.h>
@@ -61,15 +62,15 @@ new_branch_undo_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -New_Branch_Undo <change_number> [ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -New_Branch_Undo <change_number> [ <option>... ]\n",
+        progname
     );
     fprintf
     (
-	stderr,
-	"       %s -New_Branch_Undo -List [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -New_Branch_Undo -List [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -New_Branch_Undo -Help\n", progname);
     quit(1);
@@ -98,10 +99,10 @@ new_branch_undo_list(void)
 static string_ty *
 branch_changes_path_get(change::pointer cp)
 {
-    project_ty	    *pp;
-    string_ty	    *result;
+    project         *pp;
+    string_ty       *result;
 
-    assert(change_is_a_branch(cp));
+    assert(cp->is_a_branch());
     pp = cp->pp->bind_branch(change_copy(cp));
     result = str_copy(pp->changes_path_get());
     project_free(pp);
@@ -112,12 +113,12 @@ branch_changes_path_get(change::pointer cp)
 static void
 new_branch_undo_main(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-    project_ty	    *pp;
+    string_ty       *project_name;
+    long            change_number;
+    project         *pp;
     user_ty::pointer up;
     change::pointer cp;
-    string_ty	    *s;
+    string_ty       *s;
 
     trace(("new_branch_undo_main()\n{\n"));
     arglex();
@@ -125,46 +126,46 @@ new_branch_undo_main(void)
     change_number = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_branch_undo_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(new_branch_undo_usage);
+            continue;
 
-	case arglex_token_keep:
-	case arglex_token_interactive:
-	case arglex_token_keep_not:
-	    user_ty::delete_file_argument(new_branch_undo_usage);
-	    break;
+        case arglex_token_keep:
+        case arglex_token_interactive:
+        case arglex_token_keep_not:
+            user_ty::delete_file_argument(new_branch_undo_usage);
+            break;
 
-	case arglex_token_change:
-	case arglex_token_branch:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+        case arglex_token_branch:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_branch
-	    (
-		&project_name,
-		&change_number,
-		new_branch_undo_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_branch
+            (
+                &project_name,
+                &change_number,
+                new_branch_undo_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_branch_undo_usage);
-	    continue;
+        case arglex_token_string:
+            arglex_parse_project(&project_name, new_branch_undo_usage);
+            continue;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(new_branch_undo_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(new_branch_undo_usage);
+            break;
+        }
+        arglex();
     }
 
     //
@@ -173,7 +174,7 @@ new_branch_undo_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = n.get_ref_copy();
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -184,25 +185,25 @@ new_branch_undo_main(void)
     //
     up = user_ty::create();
     if (!project_administrator_query(pp, up->name()))
-	project_fatal(pp, 0, i18n("not an administrator"));
+        project_fatal(pp, 0, i18n("not an administrator"));
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = up->default_change(pp);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
     //
     // Make sure we are talking about a branch.
     //
-    if (!change_is_a_branch(cp))
-	change_fatal(cp, 0, i18n("use aedbu instead"));
+    if (!cp->is_a_branch())
+        change_fatal(cp, 0, i18n("use aedbu instead"));
 
     //
     // Make sure the branch is not active.
-    //	    (project_active reports the error itself)
+    //      (project_active reports the error itself)
     //
     project_active_check_branch(cp, 0);
 
@@ -222,14 +223,14 @@ new_branch_undo_main(void)
     // administrator now that we have the project lock.
     //
     if (!project_administrator_query(pp, up->name()))
-	project_fatal(pp, 0, i18n("not an administrator"));
+        project_fatal(pp, 0, i18n("not an administrator"));
 
     //
     // It is an error if the change is not in the being developed state.
     // It is an error if the change is not assigned to the current user.
     //
     if (!cp->is_being_developed())
-	change_fatal(cp, 0, i18n("bad dbu state"));
+        change_fatal(cp, 0, i18n("bad dbu state"));
 
     //
     // Remove the change from the list of assigned changes in the user
@@ -243,9 +244,9 @@ new_branch_undo_main(void)
     nstring dd(change_top_path_get(cp, 1));
     if (up->delete_file_query(dd, true, true))
     {
-	change_verbose(cp, 0, i18n("remove development directory"));
+        change_verbose(cp, 0, i18n("remove development directory"));
         user_ty::become scoped(pp->get_user());
-	commit_rmdir_tree_errok(dd);
+        commit_rmdir_tree_errok(dd);
     }
 
     //
@@ -258,16 +259,16 @@ new_branch_undo_main(void)
     // and the state files of all subordinate changes
     //
     project_become(pp);
-    commit_unlink_errok(change_cstate_filename_get(cp));
+    commit_unlink_errok(cp->cstate_filename_get());
     commit_unlink_errok(change_fstate_filename_get(cp));
     commit_rmdir_tree_errok(branch_changes_path_get(cp));
     project_become_undo(pp);
 
     //
     // Remove aliases of this branch.
-    //	    (Punctuation?)
+    //      (Punctuation?)
     //
-    s = str_format("%s.%ld", project_name_get(pp)->str_text, change_number);
+    s = str_format("%s.%ld", project_name_get(pp).c_str(), change_number);
     gonzo_alias_delete(s);
     str_free(s);
 
@@ -296,11 +297,14 @@ new_branch_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, new_branch_undo_help, 0 },
-	{ arglex_token_list, new_branch_undo_list, 0 },
+        { arglex_token_help, new_branch_undo_help, 0 },
+        { arglex_token_list, new_branch_undo_list, 0 },
     };
 
     trace(("new_branch_undo()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), new_branch_undo_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

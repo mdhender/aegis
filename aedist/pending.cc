@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2005-2007 Walter Franzini
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2005-2008 Walter Franzini
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see
-//	<http://www.gnu.org/licenses/>,
+//      You should have received a copy of the GNU General Public License
+//      along with this program.  If not, see
+//      <http://www.gnu.org/licenses/>,
 //
 
 #include <common/error.h>
@@ -61,29 +61,29 @@ pending_main(void)
             generic_argument(usage);
             continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, usage);
+            continue;
 
         case arglex_token_file:
-	    if (!ifn.empty())
-		duplicate_option(usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_file(arglex_token_file, usage);
-	        // NOTREACHED
+            if (!ifn.empty())
+                duplicate_option(usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_file(arglex_token_file, usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
+            case arglex_token_string:
                 ifn = arglex_value.alv_string;
-		break;
+                break;
 
-	    case arglex_token_stdio:
-		ifn = "";
-		break;
-	    }
-	    break;
+            case arglex_token_stdio:
+                ifn = "";
+                break;
+            }
+            break;
 
         case arglex_token_exclude_uuid:
             switch (arglex())
@@ -147,9 +147,9 @@ pending_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = n.get_ref_copy();
     }
-    project_ty *pp = project_alloc(project_name);
+    project *pp = project_alloc(project_name);
     pp->bind_existing();
 
     //
@@ -159,15 +159,15 @@ pending_main(void)
     //
     url smart_url(ifn);
     if (smart_url.is_a_file())
-	ifn = smart_url.get_path();
+        ifn = smart_url.get_path();
     else
     {
-	smart_url.set_path_if_empty
-	(
-	    nstring::format("/cgi-bin/aeget/%s", project_name_get(pp)->str_text)
-	);
-	smart_url.set_query_if_empty("inventory+all");
-	ifn = smart_url.reassemble();
+        smart_url.set_path_if_empty
+        (
+            nstring::format("/cgi-bin/aeget/%s", project_name_get(pp).c_str())
+        );
+        smart_url.set_query_if_empty("inventory+all");
+        ifn = smart_url.reassemble();
     }
     trace_nstring(ifn);
 
@@ -186,7 +186,7 @@ pending_main(void)
     symtab<nstring> remote_inventory;
     for (;;)
     {
-	nstring line;
+        nstring line;
         os_become_orig();
         bool ok = ifp->one_line(line);
         os_become_undo();
@@ -195,8 +195,8 @@ pending_main(void)
         trace_nstring(line);
 
         replay_line parts;
-	if (!parts.extract(line))
-	    continue;
+        if (!parts.extract(line))
+            continue;
 
         remote_inventory.assign(parts.get_uuid(), parts.get_version());
     }
@@ -207,7 +207,7 @@ pending_main(void)
     change_functor_pending_printer
         cf
         (
-	    false,
+            false,
             pp,
             ifn,
             &remote_inventory,
@@ -218,3 +218,6 @@ pending_main(void)
         );
     project_inventory_walk(pp, cf);
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998, 1999, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1991-1994, 1998, 1999, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -44,7 +44,7 @@ the reviewers are Robyn and Jan;
 the integrator is Isa; and
 the administrator is Alex\**.
 .FS
-The names are deliberately gender-neutral.
+The names are deliberately gender\[hy]neutral.
 Finding such a name starting with "I" is not easy!
 .FE
 There need not have been this many people involved,
@@ -53,15 +53,16 @@ but it keeps things slightly cleaner for this example.
 The project is called "example".
 It implements a very simple calculator.
 Many features important to a quality product are missing,
-checking for divide-by-zero for example.
+checking for divide\[hy]by\[hy]zero for example.
 These have been omitted for brevity.
 .bp
 .if t .1C
-.so c2.1.so
-.so c2.2.so
-.so c2.3.so
-.so c2.4.so
+.so lib/en/user-guide/c2.1.so
+.so lib/en/user-guide/c2.2.so
+.so lib/en/user-guide/c2.3.so
+.so lib/en/user-guide/c2.4.so
 .bp
 .if t .2C
-.so c2.5.so
-.so c2.6.so
+.so lib/en/user-guide/c2.5.so
+.so lib/en/user-guide/c2.6.so
+.\" vim: set ts=8 sw=4 et :

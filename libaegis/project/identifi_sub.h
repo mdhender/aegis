@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_PROJECT_IDENTIFI_SUB_H
@@ -22,7 +22,7 @@
 
 #include <libaegis/user.h>
 
-struct project_ty; // forward
+struct project; // forward
 struct string_ty; // forward
 
 /**
@@ -66,7 +66,7 @@ public:
       * The get_pp method is used to get the project pointer for the
       * change identified.
       */
-    virtual project_ty *get_pp() = 0;
+    virtual project *get_pp() = 0;
 
     /**
       * The get_up method is used to get the user pointer for the
@@ -92,7 +92,7 @@ public:
       * change_identifier_subset::command_line_parse method.
       */
     virtual void parse_change_with_branch(long &change_number,
-	usage_t usage) = 0;
+        usage_t usage) = 0;
 
     /**
       * The parse_change_with_branch method is used to parse the
@@ -103,7 +103,7 @@ public:
       * change_identifier_subset::command_line_parse method.
       */
     virtual void parse_change_with_branch(long &change_number,
-	const char *&branch_arg, usage_t usage) = 0;
+        const char *&branch_arg, usage_t usage) = 0;
 
     /**
       * The set method may be used to determine whether or not the
@@ -126,3 +126,4 @@ private:
 };
 
 #endif // LIBAEGIS_PROJECT_IDENTIFI_SUB_H
+// vim: set ts=8 sw=4 et :

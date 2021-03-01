@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2003, 2004, 2006-2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aexml
 .TH "aexml" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -69,21 +68,34 @@ Project_Files
 Internal project file state.
 See \fIaefstate\fP(5) for structure.
 .TP 8n
+Project_Files_By_Delta
+Historical project file state as it appeared immediately after the
+integrate pass of the specified change or delta.
+See \fIaefstate\fP(5) for structure.
+.TP 8n
 Project_State
 Internal project state.
 See \fIaepstate\fP(5) for structure.
+.TP 8n
+User_Config_File
+User configuration file.
+See \f[I]aeuconf\f[P](5) for structure.
 .PP
 The abbreviations foe the list names follows the same rules as for
 command line options.
 .SH OPTIONS
 The following options are understood:
 .TP 8n
-.so o_help.so
-.so o_list.so
-.so o_output.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_output.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
 If the file name ends with ".gz" it will be compressed with the
 \fIgzip\fP(1) algorithm, if it ends with ".bz" or ".bz2" it will be
 compressed with the \fIbzip2\fP(1) algorithm.
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

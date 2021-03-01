@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002, 2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -54,7 +54,8 @@ The \fIaedist\fP(1) command now preserves the executable bit on files.
 .if n *
 .if t \(bu
 .\" change 63
-There is a new \fI\-descend-project-tree\fP option for the \fIaena\fP(1),
+There is a new \fI\-descend\[hy]project\[hy]tree\fP option for the
+\fIaena\fP(1),
 \fIaera\fP(1), \fIaend\fP(1), \fIaerd\fP(1), \fIaeni\fP(1), \fIaeri\fP(1),
 \fIaenrv\fP(1), \fIaerrv\fP(1) and \fIaepa\fP(1) commands, to apply the
 action to all descendant branches of the project.
@@ -143,4 +144,5 @@ The \fIaeannotate\fP(1) command now olny prints caption columns if their
 value changes.  This highlights the differences, and is less distracting.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.10 (24-Dec-2002)
+.SS Version 4.10 (24\[hy]Dec\[hy]2002)
+.\" vim: set ts=8 sw=4 et :

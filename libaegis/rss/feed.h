@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2006-2009 Peter Miller
+//      Copyright (C) 2006-2009, 2011, 2012 Peter Miller
 //      Copyright (C) 2005 Matthew Lee;
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 // Forward declarations
 class rss_item;
-struct project_ty;
+struct project;
 
 /**
   * The rss_feed class is used to represent an RSS feed.
@@ -51,8 +51,8 @@ public:
       * @param the_file
       *   A pointer to the filename associated with this feed.
       */
-    rss_feed(project_ty *the_project, change::pointer the_change,
-	const nstring &the_file);
+    rss_feed(project *the_project, change::pointer the_change,
+        const nstring &the_file);
 
     /**
       * Add an item to the RSS feed.
@@ -125,7 +125,7 @@ private:
     /**
       * The project with which this RSS feed is associated.
       */
-    project_ty *project;
+    project *pp;
 
     /**
       * The change with which this RSS feed is associated.
@@ -215,3 +215,4 @@ private:
 };
 
 #endif // LIBAEGIS_RSS_FEED_H
+// vim: set ts=8 sw=4 et :

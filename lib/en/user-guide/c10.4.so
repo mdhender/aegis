@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Security"
 .LP
@@ -26,11 +26,11 @@ refers to the system being available for use by authorised users.
 Denial of service and crashes are examples of bad things in this area.
 .IP Integrity: 8n
 refers to the system being in a known good state.  Corrupted change sets
-and un-buildable repositories are examples of bad things in this area.
+and un\[hy]buildable repositories are examples of bad things in this area.
 .IP Confidentiality: 8n
 refers to the system being available \fIonly\fP to authorised users.
 For many Open Source projects, this isn't a large concern, but for
-corporate users of Aegis, non-disclosure of change-sets as they cross
+corporate users of Aegis, non\[hy]disclosure of change\[hy]sets as they cross
 the Internet is a serious requirement.
 .LP
 As you can see, a strategy of \[lq]keep the bad guys out\[rq] is necessary,
@@ -47,7 +47,7 @@ that the program user did not intend\**.\[rq]
 .FS
 Summers, Rita C.,
 \fISecure Computing Threats and Safeguards\fP,
-McGraw-Hill, 1997.
+McGraw\[hy]Hill, 1997.
 .FE
 .LP
 In order to forestall this threat, \fIaedist\fP will cease development
@@ -65,7 +65,7 @@ build tool's configuration file (\fIe.g.\fP the Makefile or the cookbook),
 and any scripts or code generators which would be run by the build.
 .LP
 This isn't exhaustive protection, and it depends on keeping the \fItrojan
-horse suspect\fP list up-to-date.  (It accepts patterns, so it's not
+horse suspect\fP list up\[hy]to\[hy]date.  (It accepts patterns, so it's not
 too onerous.)  For better protection, you need to validate the sender
 and the message.
 .nh 3 "PGP"
@@ -97,7 +97,7 @@ exponentially every time it goes around the loop.
 .LP
 To prevent this, \fIaedist\fP does several things...
 .IP \(bu 2n
-Before the change is built, an \fIaecpu --unchanged\fP is run.  If there
+Before the change is built, an \fIaecpu \-unchanged\fP is run.  If there
 is nothing left, the change is abandoned, because you already have it.
 (This doesn't always work, because propagation delays may try to
 \fIreverse\fP a subsequent local change.)
@@ -118,3 +118,4 @@ sets together.)
 Set the description to indicate it was received by aedist?
 Use this to influence the decision to send it off again at integrate pass?
 How?
+.\" vim: set ts=8 sw=4 et :

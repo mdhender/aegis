@@ -1,33 +1,34 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008, 2009 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <common/error.h>
 #include <common/mem.h>
 #include <common/now.h>
 #include <common/nstring/list.h>
 #include <common/progname.h>
 #include <common/quit.h>
 #include <common/r250.h>
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <common/symtab.h>
 #include <common/symtab/template.h>
@@ -50,6 +51,7 @@
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
+#include <libaegis/search_path/base_get.h>
 #include <libaegis/sub.h>
 #include <libaegis/user.h>
 
@@ -64,9 +66,9 @@ test_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -Test [ <filename>... ][ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -Test [ <filename>... ][ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -Test -List [ <option>... ]\n", progname);
     fprintf(stderr, "       %s -Test -Help\n", progname);
@@ -95,8 +97,8 @@ test_list(void)
 
 struct limit_suggestions_ty
 {
-    string_ty	    *filename;
-    double	    count;
+    string_ty       *filename;
+    double          count;
 };
 
 
@@ -114,9 +116,9 @@ limit_suggestions_cmp(const void *va, const void *vb)
     // we want to sort largest to smallest.
     //
     if (a->count < b->count)
-	return 1;
+        return 1;
     if (a->count > b->count)
-	return -1;
+        return -1;
     return 0;
 }
 
@@ -125,34 +127,35 @@ static void
 limit_suggestions(change::pointer cp, string_list_ty *flp, int want,
     int noise_percent, bool sort_by_name)
 {
-    project_ty	    *pp;
+    project      *pp;
     limit_suggestions_ty *item;
-    size_t	    nitems;
+    size_t          nitems;
     limit_suggestions_ty *lp;
-    symtab_ty	    *stp;
-    size_t	    j;
-    double	    frac;
-    double	    count_max;
+    symtab_ty       *stp;
+    size_t          j;
+    double          frac;
+    double          count_max;
 
     //
     // do nothing if at all possible
     //
     if (sort_by_name && want > 0 && flp->nstrings < (size_t)want)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number1", (long)flp->nstrings);
-	sub_var_optional(scp, "Number1");
-	sub_var_set_long(scp, "Number2", (long)want);
-	sub_var_optional(scp, "Number2");
-	change_verbose(cp, scp, i18n("few candidate tests"));
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number1", (long)flp->nstrings);
+        sub_var_optional(scp, "Number1");
+        sub_var_set_long(scp, "Number2", (long)want);
+        sub_var_optional(scp, "Number2");
+        change_verbose(cp, scp, i18n("few candidate tests"));
+        sub_context_delete(scp);
     }
+    assert(want != 0);
     if (want < 0)
-	want = 10;
+        want = 10;
     if (sort_by_name && flp->nstrings <= (size_t)want)
-	return;
+        return;
 
     //
     // Build the list of candidate files, and initialize their
@@ -161,13 +164,13 @@ limit_suggestions(change::pointer cp, string_list_ty *flp, int want,
     pp = cp->pp;
     nitems = flp->nstrings;
     item = (limit_suggestions_ty *)mem_alloc(nitems * sizeof(item[0]));
-    stp = symtab_alloc(nitems);
+    stp = new symtab_ty(nitems);
     for (j = 0; j < nitems; ++j)
     {
-	lp = item + j;
-	lp->filename = str_copy(flp->string[j]);
-	lp->count = 0;
-	symtab_assign(stp, lp->filename, lp);
+        lp = item + j;
+        lp->filename = str_copy(flp->string[j]);
+        lp->count = 0;
+        stp->assign(lp->filename, lp);
     }
     flp->clear();
     count_max = 0;
@@ -184,54 +187,51 @@ limit_suggestions(change::pointer cp, string_list_ty *flp, int want,
     //
     for (j = 0;; ++j)
     {
-	fstate_src_ty   *c_src_data;
-	fstate_src_ty   *p_src_data;
-	size_t		k;
+        fstate_src_ty   *c_src_data;
+        fstate_src_ty   *p_src_data;
+        size_t          k;
 
-	c_src_data = change_file_nth(cp, j, view_path_first);
-	if (!c_src_data)
-	    break;
-	switch (c_src_data->usage)
-	{
-	case file_usage_source:
-	case file_usage_config:
-	    break;
+        c_src_data = change_file_nth(cp, j, view_path_first);
+        if (!c_src_data)
+            break;
+        switch (c_src_data->usage)
+        {
+        case file_usage_source:
+        case file_usage_config:
+            break;
 
-	case file_usage_test:
-	case file_usage_manual_test:
-	    //
-	    // Correlations with other tests, while interesting,
-	    // aren't useful.
-	    //
-	    continue;
+        case file_usage_test:
+        case file_usage_manual_test:
+            //
+            // Correlations with other tests, while interesting,
+            // aren't useful.
+            //
+            continue;
 
-	case file_usage_build:
+        case file_usage_build:
 #ifndef DEBUG
-	default:
+        default:
 #endif
-	    continue;
-	}
-	p_src_data =
-	    project_file_find(pp, c_src_data->file_name, view_path_extreme);
-	if (!p_src_data)
-	    continue;
-	if (!p_src_data->test || !p_src_data->test->length)
-	    continue;
-	frac = 1. / p_src_data->test->length;
-	for (k = 0; k < p_src_data->test->length; ++k)
-	{
-	    lp =
-		(limit_suggestions_ty *)
-                symtab_query(stp, p_src_data->test->list[k]);
-	    if (lp)
-	    {
-		lp->count += frac;
-		if (lp->count > count_max)
-		    count_max = lp->count;
-	    }
-	}
+            continue;
+        }
+        p_src_data = pp->file_find(c_src_data->file_name, view_path_extreme);
+        if (!p_src_data)
+            continue;
+        if (!p_src_data->test || !p_src_data->test->length)
+            continue;
+        frac = 1. / p_src_data->test->length;
+        for (k = 0; k < p_src_data->test->length; ++k)
+        {
+            lp = (limit_suggestions_ty *)stp->query(p_src_data->test->list[k]);
+            if (lp)
+            {
+                lp->count += frac;
+                if (lp->count > count_max)
+                    count_max = lp->count;
+            }
+        }
     }
-    symtab_free(stp);
+    delete stp;
 
     //
     // Add noise to the counts so that unlikely things are tested
@@ -245,11 +245,11 @@ limit_suggestions(change::pointer cp, string_list_ty *flp, int want,
     //
     if (noise_percent > 0)
     {
-	if (count_max == 0)
-	    count_max = 1;
-	frac = count_max * (noise_percent / 100.) / 30000.;
-	for (j = 0; j < nitems; ++j)
-	    item[j].count += frac * (r250() % 30001);
+        if (count_max == 0)
+            count_max = 1;
+        frac = count_max * (noise_percent / 100.) / 30000.;
+        for (j = 0; j < nitems; ++j)
+            item[j].count += frac * (r250() % 30001);
     }
 
     //
@@ -262,61 +262,61 @@ limit_suggestions(change::pointer cp, string_list_ty *flp, int want,
     //
     for (j = 0; j < nitems; ++j)
     {
-	lp = item + j;
-	if (j < (size_t)want)
-	{
-	    flp->push_back(lp->filename);
-	    if (sort_by_name)
-	    {
-		//
-		// Verbose information message, so the user will
-		// know why the tests were chosen.
-		//
-		sub_context_ty sc;
-		sc.var_set_string("File_Name", lp->filename);
-		sc.var_set_format
-		(
-		    "Number",
-		    "scp, %6.2f",
-		    100. * lp->count / item[0].count
-		);
-		change_verbose(cp, &sc, i18n("test $filename scored $number"));
-	    }
-	}
-	str_free(lp->filename);
+        lp = item + j;
+        if (j < (size_t)want)
+        {
+            flp->push_back(lp->filename);
+            if (sort_by_name)
+            {
+                //
+                // Verbose information message, so the user will
+                // know why the tests were chosen.
+                //
+                sub_context_ty sc;
+                sc.var_set_string("File_Name", lp->filename);
+                sc.var_set_format
+                (
+                    "Number",
+                    "scp, %6.2f",
+                    100. * lp->count / item[0].count
+                );
+                change_verbose(cp, &sc, i18n("test $filename scored $number"));
+            }
+        }
+        str_free(lp->filename);
     }
     mem_free(item);
 
     if (sort_by_name)
     {
-	//
+        //
         // Sort the filenames, so that the tests will be executed in the
         // same order as by aet -reg.
-	//
-	flp->sort();
+        //
+        flp->sort();
     }
 }
 
 
 static void
-verbose_message(project_ty *pp, change::pointer cp, batch_result_list_ty *brlp)
+verbose_message(project *pp, change::pointer cp, batch_result_list_ty *brlp)
 {
     sub_context_ty  *scp;
 
     if (brlp->pass_count)
     {
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", brlp->pass_count);
-	if (cp)
-	    change_verbose(cp, scp, i18n("passed $number tests"));
-	else
-	    project_verbose(pp, scp, i18n("passed $number tests"));
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number", brlp->pass_count);
+        if (cp)
+            change_verbose(cp, scp, i18n("passed $number tests"));
+        else
+            project_verbose(pp, scp, i18n("passed $number tests"));
+        sub_context_delete(scp);
     }
     if (brlp->skip_count)
     {
-	sub_context_ty sc;
-	sc.var_set_long("Number", brlp->skip_count);
+        sub_context_ty sc;
+        sc.var_set_long("Number", brlp->skip_count);
         if (cp)
             change_error(cp, &sc, i18n("skipped $number tests"));
         else
@@ -324,34 +324,34 @@ verbose_message(project_ty *pp, change::pointer cp, batch_result_list_ty *brlp)
     }
     if (brlp->no_result_count)
     {
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", brlp->no_result_count);
-	if (brlp->fail_count)
-	{
-	    if (cp)
-		change_error(cp, scp, i18n("no result $number tests"));
-	    else
-		project_error(pp, scp, i18n("no result $number tests"));
-	}
-	else
-	{
-	    if (cp)
-		change_fatal(cp, scp, i18n("no result $number tests"));
-	    else
-		project_fatal(pp, scp, i18n("no result $number tests"));
-	}
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number", brlp->no_result_count);
+        if (brlp->fail_count)
+        {
+            if (cp)
+                change_error(cp, scp, i18n("no result $number tests"));
+            else
+                project_error(pp, scp, i18n("no result $number tests"));
+        }
+        else
+        {
+            if (cp)
+                change_fatal(cp, scp, i18n("no result $number tests"));
+            else
+                project_fatal(pp, scp, i18n("no result $number tests"));
+        }
+        sub_context_delete(scp);
     }
     if (brlp->fail_count)
     {
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", brlp->fail_count);
-	if (cp)
-	    change_fatal(cp, scp, i18n("failed $number tests"));
-	else
-	    project_fatal(pp, scp, i18n("failed $number tests"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number", brlp->fail_count);
+        if (cp)
+            change_fatal(cp, scp, i18n("failed $number tests"));
+        else
+            project_fatal(pp, scp, i18n("failed $number tests"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 }
 
@@ -407,289 +407,279 @@ attr_elapsed(fstate_src_ty *src, string_ty *arch, double elapsed)
 static void
 test_main(void)
 {
+    change_identifier cid;
     sub_context_ty  *scp;
-    int		    baseline_flag;
-    int		    regression_flag;
-    int		    manual_flag;
-    int		    automatic_flag;
-    string_ty	    *s1;
-    string_ty	    *s2;
+    int             regression_flag;
+    int             manual_flag;
+    int             automatic_flag;
+    string_ty       *s1;
+    string_ty       *s2;
     fstate_src_ty   *p_src_data;
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
     fstate_src_ty   *c_src_data =    0;
-    string_ty	    *dir; // unresolved
-    size_t	    j;
-    size_t	    k;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
-    change::pointer cp;
+    size_t          j;
+    size_t          k;
     log_style_ty    log_style;
-    user_ty::pointer up;
     string_list_ty  search_path;
-    time_t	    when;
-    int		    integrating;
+    time_t          when;
+    int             integrating;
     int             reviewing;
-    int		    suggest;
-    int		    suggest_noise;
-    int		    based;
-    string_ty	    *base;
-    int		    exempt;
-    int		    force;
+    int             suggest;
+    int             suggest_noise;
+    int             exempt;
+    int             force;
     batch_result_list_ty *brlp;
 
     trace(("test_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    baseline_flag = 0;
+    bool baseline_flag = false;
     regression_flag = 0;
     manual_flag = 0;
     automatic_flag = 0;
     force = 0;
     log_style = log_style_snuggle_default;
     string_list_ty wl;
-    dir = 0;
     suggest = 0;
     suggest_noise = -1;
     int suggest_limit = 0;
     nstring_list variable_assignments;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(test_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(test_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_branch:
+        case arglex_token_change:
+        case arglex_token_delta:
+        case arglex_token_delta_date:
+        case arglex_token_delta_from_change:
+        case arglex_token_development_directory:
+        case arglex_token_grandparent:
+        case arglex_token_number:
+        case arglex_token_project:
+        case arglex_token_trunk:
+            cid.command_line_parse(test_usage);
+            continue;
 
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, test_usage);
-	    continue;
+        case arglex_token_regression:
+            if (regression_flag)
+                duplicate_option(test_usage);
+            regression_flag = 1;
+            break;
 
-	case arglex_token_regression:
-	    if (regression_flag)
-		duplicate_option(test_usage);
-	    regression_flag = 1;
-	    break;
+        case arglex_token_manual:
+            if (manual_flag)
+                duplicate_option(test_usage);
+            manual_flag = 1;
+            break;
 
-	case arglex_token_manual:
-	    if (manual_flag)
-		duplicate_option(test_usage);
-	    manual_flag = 1;
-	    break;
+        case arglex_token_automatic:
+            if (automatic_flag)
+                duplicate_option(test_usage);
+            automatic_flag = 1;
+            break;
 
-	case arglex_token_automatic:
-	    if (automatic_flag)
-		duplicate_option(test_usage);
-	    automatic_flag = 1;
-	    break;
+        case arglex_token_force:
+            if (force)
+                duplicate_option(test_usage);
+            force = 1;
+            variable_assignments.push_back("force=1");
+            break;
 
-	case arglex_token_force:
-	    if (force)
-		duplicate_option(test_usage);
-	    force = 1;
-	    variable_assignments.push_back("force=1");
-	    break;
-
-	case arglex_token_progress:
+        case arglex_token_progress:
             user_ty::progress_option_set(test_usage);
-	    break;
+            break;
 
-	case arglex_token_progress_not:
+        case arglex_token_progress_not:
             user_ty::progress_option_clear(test_usage);
-	    break;
+            break;
 
-	case arglex_token_file:
-	    if (arglex() != arglex_token_string)
-		option_needs_dir(arglex_token_directory, test_usage);
-	    goto get_file_names;
+        case arglex_token_file:
+            if (arglex() != arglex_token_string)
+                option_needs_dir(arglex_token_directory, test_usage);
+            goto get_file_names;
 
-	case arglex_token_directory:
-	    if (arglex() != arglex_token_string)
-		option_needs_files(arglex_token_file, test_usage);
-	    goto get_file_names;
+        case arglex_token_directory:
+            if (arglex() != arglex_token_string)
+                option_needs_files(arglex_token_file, test_usage);
+            goto get_file_names;
 
-	case arglex_token_string:
-	    if (strchr(arglex_value.alv_string, '='))
-	    {
-		variable_assignments.push_back(arglex_value.alv_string);
-		break;
-	    }
-    	    get_file_names:
-	    s2 = str_from_c(arglex_value.alv_string);
-	    wl.push_back(s2);
-	    str_free(s2);
-	    break;
+        case arglex_token_string:
+            if (strchr(arglex_value.alv_string, '='))
+            {
+                variable_assignments.push_back(arglex_value.alv_string);
+                break;
+            }
+            get_file_names:
+            s2 = str_from_c(arglex_value.alv_string);
+            wl.push_back(s2);
+            str_free(s2);
+            break;
 
-	case arglex_token_baseline:
-	    if (baseline_flag)
-		duplicate_option(test_usage);
-	    baseline_flag = 1;
-	    break;
+        case arglex_token_baseline:
+            if (baseline_flag)
+                duplicate_option(test_usage);
+            baseline_flag = true;
+            break;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, test_usage);
-	    continue;
+        case arglex_token_nolog:
+            if (log_style == log_style_none)
+                duplicate_option(test_usage);
+            log_style = log_style_none;
+            break;
 
-	case arglex_token_nolog:
-	    if (log_style == log_style_none)
-		duplicate_option(test_usage);
-	    log_style = log_style_none;
-	    break;
+        case arglex_token_persevere:
+        case arglex_token_persevere_not:
+            user_ty::persevere_argument(test_usage);
+            break;
 
-	case arglex_token_persevere:
-	case arglex_token_persevere_not:
-	    user_ty::persevere_argument(test_usage);
-	    break;
+        case arglex_token_suggest:
+            if (suggest)
+                duplicate_option(test_usage);
+            if (arglex() != arglex_token_number)
+            {
+                suggest = -1;
+                continue;
+            }
+            suggest = arglex_value.alv_number;
+            if (suggest <= 0)
+            {
+                scp = sub_context_new();
+                sub_var_set_charstar
+                (
+                    scp,
+                    "Name",
+                    arglex_token_name(arglex_token_suggest)
+                );
+                sub_var_set_long(scp, "Number", arglex_value.alv_number);
+                error_intl(scp, i18n("$name $number must be pos"));
+                sub_context_delete(scp);
+                test_usage();
+            }
+            break;
 
-	case arglex_token_suggest:
-	    if (suggest)
-		duplicate_option(test_usage);
-	    if (arglex() != arglex_token_number)
-	    {
-		suggest = -1;
-		continue;
-	    }
-	    suggest = arglex_value.alv_number;
-	    if (suggest <= 0)
-	    {
-		scp = sub_context_new();
-		sub_var_set_charstar
-		(
-		    scp,
-		    "Name",
-		    arglex_token_name(arglex_token_suggest)
-		);
-		sub_var_set_long(scp, "Number", arglex_value.alv_number);
-		error_intl(scp, i18n("$name $number must be pos"));
-		sub_context_delete(scp);
-		test_usage();
-	    }
-	    break;
+        case arglex_token_suggest_noise:
+            if (suggest_noise >= 0)
+                duplicate_option(test_usage);
+            if (arglex() != arglex_token_number)
+                option_needs_number(arglex_token_suggest_noise, test_usage);
+            suggest_noise = arglex_value.alv_number;
+            if (suggest_noise < 0 || suggest_noise > 100)
+            {
+                scp = sub_context_new();
+                sub_var_set_charstar
+                (
+                    scp,
+                    "Name",
+                    arglex_token_name(arglex_token_suggest_noise)
+                );
+                sub_var_set_long(scp, "Number", arglex_value.alv_number);
+                error_intl(scp, i18n("$name $number must not be neg"));
+                sub_context_delete(scp);
+                test_usage();
+            }
+            break;
 
-	case arglex_token_suggest_noise:
-	    if (suggest_noise >= 0)
-		duplicate_option(test_usage);
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_suggest_noise, test_usage);
-	    suggest_noise = arglex_value.alv_number;
-	    if (suggest_noise < 0 || suggest_noise > 100)
-	    {
-		scp = sub_context_new();
-		sub_var_set_charstar
-		(
-		    scp,
-		    "Name",
-		    arglex_token_name(arglex_token_suggest_noise)
-		);
-		sub_var_set_long(scp, "Number", arglex_value.alv_number);
-		error_intl(scp, i18n("$name $number must not be neg"));
-		sub_context_delete(scp);
-		test_usage();
-	    }
-	    break;
+        case arglex_token_base_relative:
+        case arglex_token_current_relative:
+            user_ty::relative_filename_preference_argument(test_usage);
+            break;
 
-	case arglex_token_base_relative:
-	case arglex_token_current_relative:
-	    user_ty::relative_filename_preference_argument(test_usage);
-	    break;
-
-	case arglex_token_suggest_limit:
-	    if (suggest_limit > 0)
-		duplicate_option(test_usage);
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_suggest_limit, test_usage);
-	    suggest_limit = arglex_value.alv_number;
-	    if (suggest_limit <= 0)
-	    {
-		sub_context_ty sc;
-		sc.var_set_charstar
-		(
-		    "Name",
-		    arglex_token_name(arglex_token_suggest_limit)
-		);
-		sc.var_set_long("Number", arglex_value.alv_number);
-		sc.error_intl(i18n("$name $number must be pos"));
-		test_usage();
-	    }
-	    break;
-	}
-	arglex();
+        case arglex_token_suggest_limit:
+            if (suggest_limit > 0)
+                duplicate_option(test_usage);
+            if (arglex() != arglex_token_number)
+                option_needs_number(arglex_token_suggest_limit, test_usage);
+            suggest_limit = arglex_value.alv_number;
+            if (suggest_limit <= 0)
+            {
+                sub_context_ty sc;
+                sc.var_set_charstar
+                (
+                    "Name",
+                    arglex_token_name(arglex_token_suggest_limit)
+                );
+                sc.var_set_long("Number", arglex_value.alv_number);
+                sc.error_intl(i18n("$name $number must be pos"));
+                test_usage();
+            }
+            break;
+        }
+        arglex();
     }
+    cid.command_line_check(test_usage);
     if (suggest_noise >= 0 && !suggest)
-	suggest = -1;
+        suggest = -1;
     if (suggest_limit > 0)
     {
-	if (!suggest)
-	    suggest = 32767;
-	suggest_limit = now() + 60 * suggest_limit;
+        if (!suggest)
+            suggest = 32767;
+        suggest_limit = now() + 60 * suggest_limit;
     }
     if (suggest)
-	regression_flag = 1;
+        regression_flag = 1;
     if (suggest_noise < 0)
-	suggest_noise = 10;
+        suggest_noise = 10;
     if (wl.nstrings)
     {
-	if (automatic_flag)
-	{
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Name",
-		arglex_token_name(arglex_token_automatic)
-	    );
-	    fatal_intl(scp, i18n("no file with $name"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-	if (manual_flag)
-	{
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Name",
-		arglex_token_name(arglex_token_manual)
-	    );
-	    fatal_intl(scp, i18n("no file with $name"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-	if (regression_flag)
-	{
-	    scp = sub_context_new();
-	    if (suggest)
-		sub_var_set_charstar
-		(
-		    scp,
-		    "Name",
-		    arglex_token_name(arglex_token_suggest)
-		);
-	    else
-		sub_var_set_charstar
-		(
-		    scp,
-		    "Name",
-		    arglex_token_name(arglex_token_regression)
-		);
-	    fatal_intl(scp, i18n("no file with $name"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+        if (automatic_flag)
+        {
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Name",
+                arglex_token_name(arglex_token_automatic)
+            );
+            fatal_intl(scp, i18n("no file with $name"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        if (manual_flag)
+        {
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Name",
+                arglex_token_name(arglex_token_manual)
+            );
+            fatal_intl(scp, i18n("no file with $name"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        if (regression_flag)
+        {
+            scp = sub_context_new();
+            if (suggest)
+                sub_var_set_charstar
+                (
+                    scp,
+                    "Name",
+                    arglex_token_name(arglex_token_suggest)
+                );
+            else
+                sub_var_set_charstar
+                (
+                    scp,
+                    "Name",
+                    arglex_token_name(arglex_token_regression)
+                );
+            fatal_intl(scp, i18n("no file with $name"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
     }
     else
     {
-	if (!manual_flag && !automatic_flag)
-	{
-	    manual_flag = 1;
-	    automatic_flag = 1;
-	}
+        if (!manual_flag && !automatic_flag)
+        {
+            manual_flag = 1;
+            automatic_flag = 1;
+        }
     }
     trace_int(manual_flag);
     trace_int(automatic_flag);
@@ -698,37 +688,12 @@ test_main(void)
     when = now();
 
     //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    up = user_ty::create();
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-	change_number = up->default_change(pp);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
-
-    //
     // take a lock on the change
     //
-    change_cstate_lock_prepare(cp);
-    project_baseline_read_lock_prepare(pp);
+    change_cstate_lock_prepare(cid.get_cp());
+    project_baseline_read_lock_prepare(cid.get_pp());
     lock_take();
-    cstate_data = cp->cstate_get();
+    cstate_data = cid.get_cp()->cstate_get();
 
     //
     // see if it is an appropriate thing to be doing
@@ -738,50 +703,39 @@ test_main(void)
     switch (cstate_data->state)
     {
     case cstate_state_being_developed:
-	if (change_is_a_branch(cp))
-	{
-	    change_fatal(cp, 0, i18n("bad branch test"));
-	}
-	if (nstring(change_developer_name(cp)) != up->name())
-	    change_fatal(cp, 0, i18n("not developer"));
-	if (baseline_flag)
-	    dir = pp->baseline_path_get();
-	else
-	{
-	    dir = change_development_directory_get(cp, 0);
-	    trace_string(dir->str_text);
-	}
-	break;
+        if (cid.get_cp()->is_a_branch())
+        {
+            change_fatal(cid.get_cp(), 0, i18n("bad branch test"));
+        }
+        if (nstring(cid.get_cp()->developer_name()) != cid.get_up()->name())
+            change_fatal(cid.get_cp(), 0, i18n("not developer"));
+        break;
 
     case cstate_state_being_reviewed:
-	if
-	(
-	    project_develop_end_action_get(pp)
-	==
-	    pattr_develop_end_action_goto_awaiting_review
-	)
-	{
-	    if (nstring(change_reviewer_name(cp)) != up->name())
-		change_fatal(cp, 0, i18n("not reviewer"));
-	}
-	else
-	{
-	    if (!project_reviewer_query(pp, up->name()))
-		project_fatal(pp, 0, i18n("not a reviewer"));
-	}
-	reviewing = 1;
-	break;
+        if
+        (
+            project_develop_end_action_get(cid.get_pp())
+        ==
+            pattr_develop_end_action_goto_awaiting_review
+        )
+        {
+            if (nstring(cid.get_cp()->reviewer_name()) != cid.get_up()->name())
+                change_fatal(cid.get_cp(), 0, i18n("not reviewer"));
+        }
+        else
+        {
+            if (!project_reviewer_query(cid.get_pp(), cid.get_up()->name()))
+                project_fatal(cid.get_pp(), 0, i18n("not a reviewer"));
+        }
+        reviewing = 1;
+        break;
 
     case cstate_state_being_integrated:
-	if (nstring(change_integrator_name(cp)) != up->name())
-	    change_fatal(cp, 0, i18n("not integrator"));
-	if (baseline_flag)
-	    dir = pp->baseline_path_get();
-	else
-	    dir = change_integration_directory_get(cp, 0);
-	integrating = 1;
-	force = 1;
-	break;
+        if (nstring(cid.get_cp()->integrator_name()) != cid.get_up()->name())
+            change_fatal(cid.get_cp(), 0, i18n("not integrator"));
+        integrating = 1;
+        force = 1;
+        break;
 
     case cstate_state_awaiting_development:
     case cstate_state_awaiting_integration:
@@ -790,10 +744,9 @@ test_main(void)
 #ifndef DEBUG
     default:
 #endif
-	change_fatal(cp, 0, i18n("bad test state"));
-	break;
+        change_fatal(cid.get_cp(), 0, i18n("bad test state"));
+        break;
     }
-    assert(dir);
 
     //
     // When integrating, you must run all of the tests to satisfy the
@@ -804,8 +757,8 @@ test_main(void)
     //
     if (integrating && (wl.nstrings || suggest))
     {
-	reviewing = 1;
-	change_warning(cp, 0, i18n("int must test all"));
+        reviewing = 1;
+        change_warning(cid.get_cp(), 0, i18n("int must test all"));
     }
 
     //
@@ -813,37 +766,18 @@ test_main(void)
     // If it is, we can update the relevant test time field.
     //
     if (regression_flag && !suggest)
-	change_regression_test_time_set(cp, when);
+        change_regression_test_time_set(cid.get_cp(), when);
 
     //
     // Search path for resolving filenames.
     //
-    change_search_path_get(cp, &search_path, 1);
+    cid.get_cp()->search_path_get(&search_path, true);
 
     //
     // Find the base for relative filenames.
     //
-    based =
-	(
-	    search_path.nstrings >= 1
-	&&
-	    (
-		up->relative_filename_preference
-		(
-		    uconf_relative_filename_preference_base
-		)
-	    ==
-		uconf_relative_filename_preference_base
-	    )
-	);
-    if (based)
-	base = str_copy(search_path.string[0]);
-    else
-    {
-	os_become_orig();
-	base = os_curdir();
-	os_become_undo();
-    }
+    nstring base =
+        search_path_base_get(nstring_list(search_path), cid.get_up());
 
     //
     // check that the named files make sense
@@ -851,351 +785,365 @@ test_main(void)
     string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
-	s1 = wl.string[j];
-	if (s1->str_text[0] == '/')
-	    s2 = str_copy(s1);
-	else
-	    s2 = os_path_join(base, s1);
-	up->become_begin();
-	s1 = os_pathname(s2, 1);
-	up->become_end();
-	str_free(s2);
-	s2 = 0;
-	for (k = 0; k < search_path.nstrings; ++k)
-	{
-	    s2 = os_below_dir(search_path.string[k], s1);
-	    if (s2)
-		break;
-	}
-	str_free(s1);
-	if (!s2)
-	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", wl.string[j]);
-	    change_fatal(cp, scp, i18n("$filename unrelated"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+        s1 = wl.string[j];
+        if (s1->str_text[0] == '/')
+            s2 = str_copy(s1);
+        else
+            s2 = os_path_join(base.get_ref(), s1);
+        cid.get_up()->become_begin();
+        s1 = os_pathname(s2, 1);
+        cid.get_up()->become_end();
+        str_free(s2);
+        s2 = 0;
+        for (k = 0; k < search_path.nstrings; ++k)
+        {
+            s2 = os_below_dir(search_path.string[k], s1);
+            if (s2)
+                break;
+        }
+        str_free(s1);
+        if (!s2)
+        {
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", wl.string[j]);
+            change_fatal(cid.get_cp(), scp, i18n("$filename unrelated"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
 
-	//
-	// see if they named a directory
-	//
-	string_list_ty wl_in;
-	change_file_directory_query(cp, s2, &wl_in, 0);
-	if (wl_in.nstrings)
-	{
-	    int		    used;
-	    string_ty	    *s3;
+        //
+        // see if they named a directory
+        //
+        string_list_ty wl_in;
+        change_file_directory_query(cid.get_cp(), s2, &wl_in, 0);
+        if (wl_in.nstrings)
+        {
+            int             used;
+            string_ty       *s3;
 
-	    used = 0;
-	    for (k = 0; k < wl_in.nstrings; ++k)
-	    {
-		s3 = wl_in.string[k];
-		c_src_data = change_file_find(cp, s3, view_path_first);
-		assert(c_src_data);
-		if (!c_src_data)
-		    continue;
-		switch (c_src_data->usage)
-		{
-		case file_usage_test:
-		case file_usage_manual_test:
-		    if (wl2.member(s3))
-		    {
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", s3);
-			change_fatal(cp, scp, i18n("too many $filename"));
-			// NOTREACHED
-			sub_context_delete(scp);
-		    }
-		    else
-			wl2.push_back(s3);
-		    used = 1;
-		    break;
+            used = 0;
+            for (k = 0; k < wl_in.nstrings; ++k)
+            {
+                s3 = wl_in.string[k];
+                c_src_data =
+                    cid.get_cp()->file_find(nstring(s3), view_path_first);
+                assert(c_src_data);
+                if (!c_src_data)
+                    continue;
+                switch (c_src_data->usage)
+                {
+                case file_usage_test:
+                case file_usage_manual_test:
+                    if (wl2.member(s3))
+                    {
+                        sub_context_ty sc;
+                        sc.var_set_string("File_Name", s3);
+                        change_fatal
+                        (
+                            cid.get_cp(),
+                            &sc,
+                            i18n("too many $filename")
+                        );
+                    }
+                    else
+                        wl2.push_back(s3);
+                    used = 1;
+                    break;
 
-		case file_usage_source:
-		case file_usage_config:
-		case file_usage_build:
-		    break;
-		}
-	    }
-	    if (!used)
-	    {
-		scp = sub_context_new();
-		if (s2->str_length)
-		    sub_var_set_string(scp, "File_Name", s2);
-		else
-		    sub_var_set_charstar(scp, "File_Name", ".");
-		sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
-		sub_var_optional(scp, "Number");
-		project_fatal
-		(
-		    pp,
-		    scp,
-		    i18n("directory $filename contains no relevant files")
-		);
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    str_free(s2);
-	    continue;
-	}
+                case file_usage_source:
+                case file_usage_config:
+                case file_usage_build:
+                    break;
+                }
+            }
+            if (!used)
+            {
+                scp = sub_context_new();
+                if (s2->str_length)
+                    sub_var_set_string(scp, "File_Name", s2);
+                else
+                    sub_var_set_charstar(scp, "File_Name", ".");
+                sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
+                sub_var_optional(scp, "Number");
+                project_fatal
+                (
+                    cid.get_pp(),
+                    scp,
+                    i18n("directory $filename contains no relevant files")
+                );
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+            str_free(s2);
+            continue;
+        }
 
-	//
-	// make sure the explicitly named file is appropriate
-	//
-	c_src_data = change_file_find(cp, s2, view_path_first);
-	if (c_src_data)
-	{
-	    switch (c_src_data->usage)
-	    {
-	    case file_usage_test:
-		break;
+        //
+        // make sure the explicitly named file is appropriate
+        //
+        c_src_data = cid.get_cp()->file_find(nstring(s2), view_path_first);
+        if (c_src_data)
+        {
+            switch (c_src_data->usage)
+            {
+            case file_usage_test:
+                break;
 
-	    case file_usage_manual_test:
-		log_style = log_style_none;
-		break;
+            case file_usage_manual_test:
+                log_style = log_style_none;
+                break;
 
-	    case file_usage_source:
-	    case file_usage_config:
-	    case file_usage_build:
+            case file_usage_source:
+            case file_usage_config:
+            case file_usage_build:
 #ifndef DEBUG
-	    default:
+            default:
 #endif
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_fatal(cp, scp, i18n("$filename not test"));
-		// NOTREACHED
-		sub_context_delete(scp);
-		break;
-	    }
-	    switch (c_src_data->action)
-	    {
-	    case file_action_remove:
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_fatal(cp, scp, i18n("$filename being removed"));
-		// NOTREACHED
-		sub_context_delete(scp);
-		break;
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s2);
+                change_fatal(cid.get_cp(), scp, i18n("$filename not test"));
+                // NOTREACHED
+                sub_context_delete(scp);
+                break;
+            }
+            switch (c_src_data->action)
+            {
+            case file_action_remove:
+                {
+                    sub_context_ty sc;
+                    sc.var_set_string("File_Name", s2);
+                    change_fatal
+                    (
+                        cid.get_cp(),
+                        &sc,
+                        i18n("$filename being removed")
+                    );
+                }
+                break;
 
-	    case file_action_create:
-	    case file_action_modify:
-	    case file_action_insulate:
-	    case file_action_transparent:
-		break;
-	    }
-	    if (wl2.member(s2))
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_fatal(cp, scp, i18n("too many $filename"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    else
-		wl2.push_back(s2);
-	}
-	else
-	{
-	    p_src_data = project_file_find(pp, s2, view_path_extreme);
-	    if (!p_src_data)
-	    {
-		p_src_data = pp->file_find_fuzzy(s2, view_path_extreme);
-		if (p_src_data)
-		{
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s2);
-		    sub_var_set_string(scp, "Guess", p_src_data->file_name);
-		    project_fatal
-		    (
-			pp,
-			scp,
-			i18n("no $filename, closest is $guess")
-		    );
-		    // NOTREACHED
-		    sub_context_delete(scp);
-		}
-		else
-		{
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s2);
-		    change_fatal(cp, scp, i18n("no $filename"));
-		    // NOTREACHED
-		    sub_context_delete(scp);
-		}
-	    }
-	    switch (p_src_data->usage)
-	    {
-	    case file_usage_test:
-		break;
+            case file_action_create:
+            case file_action_modify:
+            case file_action_insulate:
+            case file_action_transparent:
+                break;
+            }
+            if (wl2.member(s2))
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s2);
+                change_fatal(cid.get_cp(), scp, i18n("too many $filename"));
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+            else
+                wl2.push_back(s2);
+        }
+        else
+        {
+            p_src_data = cid.get_pp()->file_find(s2, view_path_extreme);
+            if (!p_src_data)
+            {
+                p_src_data =
+                    cid.get_pp()->file_find_fuzzy(s2, view_path_extreme);
+                if (p_src_data)
+                {
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", s2);
+                    sub_var_set_string(scp, "Guess", p_src_data->file_name);
+                    project_fatal
+                    (
+                        cid.get_pp(),
+                        scp,
+                        i18n("no $filename, closest is $guess")
+                    );
+                    // NOTREACHED
+                    sub_context_delete(scp);
+                }
+                else
+                {
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", s2);
+                    change_fatal(cid.get_cp(), scp, i18n("no $filename"));
+                    // NOTREACHED
+                    sub_context_delete(scp);
+                }
+            }
+            switch (p_src_data->usage)
+            {
+            case file_usage_test:
+                break;
 
-	    case file_usage_manual_test:
-		log_style = log_style_none;
-		break;
+            case file_usage_manual_test:
+                log_style = log_style_none;
+                break;
 
-	    case file_usage_source:
-	    case file_usage_config:
-	    case file_usage_build:
+            case file_usage_source:
+            case file_usage_config:
+            case file_usage_build:
 #ifndef DEBUG
-	    default:
+            default:
 #endif
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		project_fatal(pp, scp, i18n("$filename not test"));
-		// NOTREACHED
-		sub_context_delete(scp);
-		break;
-	    }
-	    if (wl2.member(s2))
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_fatal(cp, scp, i18n("too many $filename"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    else
-		wl2.push_back(s2);
-	}
-	str_free(s2);
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s2);
+                project_fatal(cid.get_pp(), scp, i18n("$filename not test"));
+                // NOTREACHED
+                sub_context_delete(scp);
+                break;
+            }
+            if (wl2.member(s2))
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", s2);
+                change_fatal(cid.get_cp(), scp, i18n("too many $filename"));
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+            else
+                wl2.push_back(s2);
+        }
+        str_free(s2);
     }
     wl = wl2;
 
     if (automatic_flag || manual_flag)
     {
-	assert(!wl.nstrings);
-	if (regression_flag)
-	{
-	    //
-	    // run through the project test files
-	    //
-	    for (j = 0;; ++j)
-	    {
-		p_src_data = pp->file_nth(j, view_path_extreme);
-		if (!p_src_data)
-		    break;
+        assert(!wl.nstrings);
+        if (regression_flag)
+        {
+            //
+            // run through the project test files
+            //
+            for (j = 0;; ++j)
+            {
+                p_src_data = cid.get_pp()->file_nth(j, view_path_extreme);
+                if (!p_src_data)
+                    break;
 
-		//
-		// don't run the test if it is being
-		// modified by the change
-		//
-		if
-		(
-		    change_file_find(cp, p_src_data->file_name, view_path_first)
-		)
-		    continue;
+                //
+                // don't run the test if it is being
+                // modified by the change
+                //
+                if
+                (
+                    cid.get_cp()->file_find
+                    (
+                        nstring(p_src_data->file_name),
+                        view_path_first
+                    )
+                )
+                    continue;
 
-		//
-		// run the test if it satisfies the request
-		//
-		switch (p_src_data->usage)
-		{
-		case file_usage_test:
-		    if (automatic_flag)
-			wl.push_back(p_src_data->file_name);
-		    break;
+                //
+                // run the test if it satisfies the request
+                //
+                switch (p_src_data->usage)
+                {
+                case file_usage_test:
+                    if (automatic_flag)
+                        wl.push_back(p_src_data->file_name);
+                    break;
 
-		case file_usage_manual_test:
-		    if (manual_flag)
-			wl.push_back(p_src_data->file_name);
-		    break;
+                case file_usage_manual_test:
+                    if (manual_flag)
+                        wl.push_back(p_src_data->file_name);
+                    break;
 
-		case file_usage_source:
-		case file_usage_config:
-		case file_usage_build:
-		    break;
-		}
-	    }
-	}
-	else
-	{
-	    for (j = 0;; ++j)
-	    {
-		c_src_data = change_file_nth(cp, j, view_path_first);
-		if (!c_src_data)
-		    break;
-		switch (c_src_data->action)
-		{
-		case file_action_remove:
-		    continue;
+                case file_usage_source:
+                case file_usage_config:
+                case file_usage_build:
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (j = 0;; ++j)
+            {
+                c_src_data = change_file_nth(cid.get_cp(), j, view_path_first);
+                if (!c_src_data)
+                    break;
+                switch (c_src_data->action)
+                {
+                case file_action_remove:
+                    continue;
 
-		case file_action_create:
-		case file_action_modify:
-		case file_action_insulate:
-		case file_action_transparent:
-		    break;
-		}
-		switch (c_src_data->usage)
-		{
-		case file_usage_test:
-		    if (automatic_flag)
-			wl.push_back(c_src_data->file_name);
-		    break;
+                case file_action_create:
+                case file_action_modify:
+                case file_action_insulate:
+                case file_action_transparent:
+                    break;
+                }
+                switch (c_src_data->usage)
+                {
+                case file_usage_test:
+                    if (automatic_flag)
+                        wl.push_back(c_src_data->file_name);
+                    break;
 
-		case file_usage_manual_test:
-		    if (manual_flag)
-		    {
-			wl.push_back(c_src_data->file_name);
-			log_style = log_style_none;
-		    }
-		    break;
+                case file_usage_manual_test:
+                    if (manual_flag)
+                    {
+                        wl.push_back(c_src_data->file_name);
+                        log_style = log_style_none;
+                    }
+                    break;
 
-		case file_usage_source:
-		case file_usage_config:
-		case file_usage_build:
-		    break;
-		}
-	    }
-	}
+                case file_usage_source:
+                case file_usage_config:
+                case file_usage_build:
+                    break;
+                }
+            }
+        }
     }
 
     //
     // make sure we are actually doing something
     //
     if (suggest)
-	exempt = 0;
+        exempt = 0;
     else if (wl.nstrings)
-	exempt = 0;
+        exempt = 0;
     else if (regression_flag)
     {
-	exempt = cstate_data->regression_test_exempt;
+        exempt = cstate_data->regression_test_exempt;
     }
     else
     {
-	if (baseline_flag)
-	    exempt = cstate_data->test_baseline_exempt;
-	else
-	    exempt = cstate_data->test_exempt;
+        if (baseline_flag)
+            exempt = cstate_data->test_baseline_exempt;
+        else
+            exempt = cstate_data->test_exempt;
     }
     if (!wl.nstrings)
     {
-	if (exempt)
-	    quit(0);
-	if (regression_flag)
-	    project_fatal(pp, 0, i18n("proj has no tests"));
-	change_fatal(cp, 0, i18n("has no tests"));
+        if (exempt)
+            quit(0);
+        if (regression_flag)
+            project_fatal(cid.get_pp(), 0, i18n("proj has no tests"));
+        change_fatal(cid.get_cp(), 0, i18n("has no tests"));
     }
 
     //
     // It is an error if the change attributes include architectures
     // not in the project.
     //
-    change_check_architectures(cp);
+    change_check_architectures(cid.get_cp());
 
     //
     // open the log file as the appropriate user
     //
     if (reviewing)
     {
-	// do nothing
+        // do nothing
     }
     else if (integrating)
     {
-	user_ty::pointer pup = project_user(pp);
-	log_open(change_logfile_get(cp), pup, log_style);
+        user_ty::pointer pup = project_user(cid.get_pp());
+        log_open(change_logfile_get(cid.get_cp()), pup, log_style);
     }
     else
-	log_open(change_logfile_get(cp), up, log_style);
+        log_open(change_logfile_get(cid.get_cp()), cid.get_up(), log_style);
 
     //
     // Limit the suggestions.
@@ -1208,72 +1156,89 @@ test_main(void)
     //
     if (suggest)
     {
-	limit_suggestions(cp, &wl, suggest, suggest_noise, suggest_limit == 0);
+        limit_suggestions
+        (
+            cid.get_cp(),
+            &wl,
+            suggest,
+            suggest_noise,
+            false
+        );
     }
     else if (!force)
     {
-	string_list_ty wl3;
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-	    string_ty	    *fn;
-	    time_t	    last_time;
-	    fstate_src_ty   *src_data;
+        string_list_ty wl3;
+        for (j = 0; j < wl.nstrings; ++j)
+        {
+            string_ty       *fn;
+            time_t          last_time;
+            fstate_src_ty   *src_data;
 
-	    //
-	    // this only applies to change tests,
-	    // not project tests
-	    //
-	    fn = wl.string[j];
-	    src_data = change_file_find(cp, fn, view_path_first);
-	    if (!src_data)
-	    {
-		wl3.push_back(fn);
-		continue;
-	    }
+            //
+            // this only applies to change tests,
+            // not project tests
+            //
+            fn = wl.string[j];
+            src_data = cid.get_cp()->file_find(nstring(fn), view_path_first);
+            if (!src_data)
+            {
+                wl3.push_back(fn);
+                continue;
+            }
 
-	    //
-	    // verify that out idea of the file's mtime
-	    // is up-to-date
-	    //
-	    if (!integrating)
-	    {
-		change_file_fingerprint_check(cp, src_data);
-		assert(src_data->file_fp);
-		assert(src_data->file_fp->oldest>=0);
-		assert(src_data->file_fp->youngest>=0);
-	    }
+            //
+            // verify that out idea of the file's mtime
+            // is up-to-date
+            //
+            if (!integrating)
+            {
+                change_file_fingerprint_check(cid.get_cp(), src_data);
+                assert(src_data->file_fp);
+                assert(src_data->file_fp->oldest>=0);
+                assert(src_data->file_fp->youngest>=0);
+            }
 
-	    //
-	    // Check to see if we need to run the test at all.
-	    //
-	    if (baseline_flag)
-		last_time = change_file_test_baseline_time_get(cp, src_data, 0);
-	    else
-		last_time = change_file_test_time_get(cp, src_data, 0);
-	    assert(src_data->file_fp);
-	    assert(src_data->file_fp->youngest>=0);
-	    assert(src_data->file_fp->oldest>=0);
-	    if (!last_time || src_data->file_fp->oldest >= last_time)
-		wl3.push_back(fn);
-	}
-	wl = wl3;
+            //
+            // Check to see if we need to run the test at all.
+            //
+            if (baseline_flag)
+            {
+                last_time =
+                    change_file_test_baseline_time_get
+                    (
+                        cid.get_cp(),
+                        src_data,
+                        0
+                    );
+            }
+            else
+            {
+                last_time =
+                    change_file_test_time_get(cid.get_cp(), src_data, 0);
+            }
+            assert(src_data->file_fp);
+            assert(src_data->file_fp->youngest>=0);
+            assert(src_data->file_fp->oldest>=0);
+            if (!last_time || src_data->file_fp->oldest >= last_time)
+                wl3.push_back(fn);
+        }
+        wl = wl3;
     }
 
     //
     // Do each of the tests.
     //
-    trace_string(dir->str_text);
     brlp =
-	change_test_run_list
-	(
-	    cp,
-	    &wl,
-	    up,
-	    baseline_flag,
-	    up->progress_get(),
-	    suggest_limit,
-	    variable_assignments
-	);
+        change_test_run_list
+        (
+            cid.get_cp(),
+            &wl,
+            cid.get_up(),
+            baseline_flag,
+            cid.get_up()->progress_get(),
+            suggest_limit,
+            variable_assignments
+        );
 
     //
     // transcribe the results
@@ -1281,149 +1246,159 @@ test_main(void)
     trace(("brlp->length = %d\n", (int)brlp->length));
     if (regression_flag)
     {
-	symtab<long> pass_by_arch;
-	pass_by_arch.set_reaper();
-	symtab<long> total_by_arch;
-	total_by_arch.set_reaper();
-	nstring_list keys;
+        symtab<long> pass_by_arch;
+        pass_by_arch.set_reaper();
+        symtab<long> total_by_arch;
+        total_by_arch.set_reaper();
+        nstring_list keys;
 
-	//
-	// See the counts by architecture name.
-	// (This was we can whine about unknown architectures.)
-	//
-	pconf_ty *pconf_data = change_pconf_get(cp, 0);
-	for (j = 0; j < pconf_data->architecture->length; ++j)
-	{
-	    pconf_architecture_ty *pca = pconf_data->architecture->list[j];
-	    if (!pca)
-		continue;
-	    if (!pca->name)
-		continue;
-	    nstring key(pca->name);
-	    total_by_arch.assign(key, 0L);
-	    pass_by_arch.assign(key, 0L);
-	    keys.push_back(key);
-	}
+        //
+        // See the counts by architecture name.
+        // (This was we can whine about unknown architectures.)
+        //
+        pconf_ty *pconf_data = change_pconf_get(cid.get_cp(), 0);
+        for (j = 0; j < pconf_data->architecture->length; ++j)
+        {
+            pconf_architecture_ty *pca = pconf_data->architecture->list[j];
+            if (!pca)
+                continue;
+            if (!pca->name)
+                continue;
+            nstring key(pca->name);
+            total_by_arch.assign(key, 0L);
+            pass_by_arch.assign(key, 0L);
+            keys.push_back(key);
+        }
 
-	//
-	// If we didn't find any architectures, set the list to the
-	// "unspecified" architecture, which is the Aegis default.
-	//
-	if (keys.empty())
-	{
-	    nstring key = "unspecified";
-	    total_by_arch.assign(key, 0L);
-	    pass_by_arch.assign(key, 0L);
-	    keys.push_back(key);
-	}
+        //
+        // If we didn't find any architectures, set the list to the
+        // "unspecified" architecture, which is the Aegis default.
+        //
+        if (keys.empty())
+        {
+            nstring key = "unspecified";
+            total_by_arch.assign(key, 0L);
+            pass_by_arch.assign(key, 0L);
+            keys.push_back(key);
+        }
 
-	//
+        //
         // We have to track each file for each architecture, to make
         // sure that we set or reset the time for each architecture
         // accurately.
-	//
-	for (j = 0; j < brlp->length; ++j)
-	{
-	    batch_result_ty *rp = &brlp->item[j];
-	    if (!rp->architecture)
-		rp->architecture = str_copy(change_architecture_name(cp, 1));
-	    trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
-	    trace(("rp->exit_status = %d\n", rp->exit_status));
-	    trace(("rp->architecture = \"%s\"\n", rp->architecture->str_text));
-	    if (!wl.member(rp->file_name))
-	    {
-		sub_context_ty sc;
-		sc.var_set_string("File_Name", rp->file_name);
-		change_error(cp, &sc, "ignoring file $filename");
-		continue;
-	    }
+        //
+        for (j = 0; j < brlp->length; ++j)
+        {
+            batch_result_ty *rp = &brlp->item[j];
+            if (!rp->architecture)
+                rp->architecture =
+                    str_copy(change_architecture_name(cid.get_cp(), 1));
+            trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
+            trace(("rp->exit_status = %d\n", rp->exit_status));
+            trace(("rp->architecture = \"%s\"\n", rp->architecture->str_text));
+            if (!wl.member(rp->file_name))
+            {
+                sub_context_ty sc;
+                sc.var_set_string("File_Name", rp->file_name);
+                change_error(cid.get_cp(), &sc, "ignoring file $filename");
+                continue;
+            }
 
-	    nstring key(rp->architecture);
-	    long *p = total_by_arch.query(key);
-	    if (!p)
-	    {
-		sub_context_ty sc;
-		sc.var_set_string("Name", key);
-		change_error(cp, &sc, "ignoring architecture $name");
-		continue;
-	    }
-	    ++*p;
+            nstring key(rp->architecture);
+            long *p = total_by_arch.query(key);
+            if (!p)
+            {
+                sub_context_ty sc;
+                sc.var_set_string("Name", key);
+                change_error(cid.get_cp(), &sc, "ignoring architecture $name");
+                continue;
+            }
+            ++*p;
 
-	    if (rp->exit_status == 0)
-	    {
-		p = pass_by_arch.query(key);
-		assert(p);
-		if (p)
-		    ++*p;
-	    }
-	}
+            if (rp->exit_status == 0)
+            {
+                p = pass_by_arch.query(key);
+                assert(p);
+                if (p)
+                    ++*p;
+            }
+        }
 
-	//
-	// for each architecture that has a non-zero total
-	// { if they all passed, we set the reg test time,
-	// otherwise we clear the reg test time }
-	//
-	for (j = 0; j < keys.size(); ++j)
-	{
-	    nstring key = keys[j];
-	    long *p = total_by_arch.query(key);
-	    assert(p);
-	    if (p && *p)
-	    {
-		// non-zero total, now wee if they all passed
-		p = pass_by_arch.query(key);
-		assert(p);
-		time_t stamp = 0;
-		if (p && (size_t)*p == wl.size())
-		    stamp = now();
-		change_regression_test_time_set(cp, stamp, key.get_ref());
-	    }
-	}
+        //
+        // for each architecture that has a non-zero total
+        // { if they all passed, we set the reg test time,
+        // otherwise we clear the reg test time }
+        //
+        for (j = 0; j < keys.size(); ++j)
+        {
+            nstring key = keys[j];
+            long *p = total_by_arch.query(key);
+            assert(p);
+            if (p && *p)
+            {
+                // non-zero total, now wee if they all passed
+                p = pass_by_arch.query(key);
+                assert(p);
+                time_t stamp = 0;
+                if (p && (size_t)*p == wl.size())
+                    stamp = now();
+                change_regression_test_time_set
+                (
+                    cid.get_cp(),
+                    stamp,
+                    key.get_ref()
+                );
+            }
+        }
     }
     else
     {
-	for (j = 0; j < brlp->length; ++j)
-	{
-	    batch_result_ty *rp;
-	    fstate_src_ty   *src_data;
+        for (j = 0; j < brlp->length; ++j)
+        {
+            batch_result_ty *rp;
+            fstate_src_ty   *src_data;
 
-	    rp = &brlp->item[j];
-	    trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
-	    trace(("rp->exit_status = %d\n", rp->exit_status));
-	    if (rp->architecture)
-	    {
-		trace(("rp->architecture = \"%s\"\n",
-		    rp->architecture->str_text));
-	    }
-	    src_data = change_file_find(cp, rp->file_name, view_path_first);
-	    if (src_data)
-	    {
-		switch (rp->exit_status)
-		{
-		case 0:
-		    if (baseline_flag)
-		    {
-			change_file_test_baseline_time_clear
-			(
-			    cp,
-			    src_data,
-			    rp->architecture
-			);
-		    }
-		    else
-		    {
+            rp = &brlp->item[j];
+            trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
+            trace(("rp->exit_status = %d\n", rp->exit_status));
+            if (rp->architecture)
+            {
+                trace(("rp->architecture = \"%s\"\n",
+                    rp->architecture->str_text));
+            }
+            src_data =
+               cid.get_cp()->file_find(nstring(rp->file_name), view_path_first);
+            if (src_data)
+            {
+                switch (rp->exit_status)
+                {
+                case 0:
+                    if (baseline_flag)
+                    {
+                        change_file_test_baseline_time_clear
+                        (
+                            cid.get_cp(),
+                            src_data,
+                            rp->architecture
+                        );
+                    }
+                    else
+                    {
                         if (!rp->architecture)
                         {
                             rp->architecture =
-                                str_copy(change_architecture_name(cp, 1));
+                                str_copy
+                                (
+                                    change_architecture_name(cid.get_cp(), 1)
+                                );
                         }
-			change_file_test_time_set
-			(
-			    cp,
-			    src_data,
-			    when,
-			    rp->architecture
-			);
+                        change_file_test_time_set
+                        (
+                            cid.get_cp(),
+                            src_data,
+                            when,
+                            rp->architecture
+                        );
                         if (!os_unthrottle())
                         {
                             attr_elapsed
@@ -1433,60 +1408,60 @@ test_main(void)
                                 rp->elapsed
                             );
                         }
-		    }
-		    break;
+                    }
+                    break;
 
-		case 1:
-		    if (baseline_flag)
-		    {
-			change_file_test_baseline_time_set
-			(
-			    cp,
-			    src_data,
-			    when,
-			    rp->architecture
-			);
-		    }
-		    else
-		    {
-			change_file_test_time_clear
-		       	(
-			    cp,
-			    src_data,
-			    rp->architecture
-			);
-		    }
-		    break;
+                case 1:
+                    if (baseline_flag)
+                    {
+                        change_file_test_baseline_time_set
+                        (
+                            cid.get_cp(),
+                            src_data,
+                            when,
+                            rp->architecture
+                        );
+                    }
+                    else
+                    {
+                        change_file_test_time_clear
+                        (
+                            cid.get_cp(),
+                            src_data,
+                            rp->architecture
+                        );
+                    }
+                    break;
 
-		default:
-		    if (baseline_flag)
-		    {
-			change_file_test_baseline_time_clear
-			(
-			    cp,
-			    src_data,
-			    rp->architecture
-			);
-		    }
-		    else
-		    {
-			change_file_test_time_clear
-			(
-			    cp,
-			    src_data,
-			    rp->architecture
-			);
-		    }
-		    break;
-		}
-	    }
-	    else
-	    {
-		sub_context_ty sc;
-		sc.var_set_string("File_Name", rp->file_name);
-		change_error(cp, &sc, "ignoring $filename");
-	    }
-	}
+                default:
+                    if (baseline_flag)
+                    {
+                        change_file_test_baseline_time_clear
+                        (
+                            cid.get_cp(),
+                            src_data,
+                            rp->architecture
+                        );
+                    }
+                    else
+                    {
+                        change_file_test_time_clear
+                        (
+                            cid.get_cp(),
+                            src_data,
+                            rp->architecture
+                        );
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                sub_context_ty sc;
+                sc.var_set_string("File_Name", rp->file_name);
+                change_error(cid.get_cp(), &sc, "ignoring $filename");
+            }
+        }
     }
 
     //
@@ -1494,24 +1469,22 @@ test_main(void)
     //
     if (!reviewing)
     {
-	change_cstate_write(cp);
-	commit();
+        cid.get_cp()->cstate_write();
+        commit();
     }
     lock_release();
 
     //
     // verbose result message
     //
-    verbose_message(pp, cp, brlp);
+    verbose_message(cid.get_pp(), cid.get_cp(), brlp);
     if (brlp->no_result_count || brlp->fail_count)
-	quit(1);
+        quit(1);
 
     //
     // clean up and go home
     //
     batch_result_list_delete(brlp);
-    change_free(cp);
-    project_free(pp);
     trace(("}\n"));
 }
 
@@ -1519,23 +1492,18 @@ test_main(void)
 static void
 test_independent(void)
 {
-    int		    automatic_flag;
-    int		    manual_flag;
-    string_ty	    *s1;
-    string_ty	    *s2;
-    string_ty	    *s3;
+    change_identifier cid;
+    int             automatic_flag;
+    int             manual_flag;
+    string_ty       *s1;
+    string_ty       *s2;
+    string_ty       *s3;
     fstate_src_ty   *src_data;
-    size_t	    j;
-    size_t	    k;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    user_ty::pointer up;
-    int		    based;
-    string_ty	    *base;
+    size_t          j;
+    size_t          k;
     batch_result_list_ty *brlp;
 
     trace(("test_independent()\n{\n"));
-    project_name = 0;
     automatic_flag = 0;
     manual_flag = 0;
     string_list_ty wl;
@@ -1543,171 +1511,138 @@ test_independent(void)
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(test_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(test_usage);
+            continue;
 
-	case arglex_token_manual:
-	    if (manual_flag)
-		duplicate_option(test_usage);
-	    manual_flag = 1;
-	    break;
+        case arglex_token_manual:
+            if (manual_flag)
+                duplicate_option(test_usage);
+            manual_flag = 1;
+            break;
 
-	case arglex_token_automatic:
-	    if (automatic_flag)
-		duplicate_option(test_usage);
-	    automatic_flag = 1;
-	    break;
+        case arglex_token_automatic:
+            if (automatic_flag)
+                duplicate_option(test_usage);
+            automatic_flag = 1;
+            break;
 
-	case arglex_token_progress:
+        case arglex_token_progress:
             user_ty::progress_option_set(test_usage);
-	    break;
+            break;
 
-	case arglex_token_progress_not:
+        case arglex_token_progress_not:
             user_ty::progress_option_clear(test_usage);
-	    break;
+            break;
 
-	case arglex_token_directory:
-	    if (arglex() != arglex_token_string)
-		option_needs_dir(arglex_token_directory, test_usage);
-	    goto get_file_names;
+        case arglex_token_directory:
+            if (arglex() != arglex_token_string)
+                option_needs_dir(arglex_token_directory, test_usage);
+            goto get_file_names;
 
-	case arglex_token_file:
-	    if (arglex() != arglex_token_string)
-		option_needs_files(arglex_token_file, test_usage);
-	    goto get_file_names;
+        case arglex_token_file:
+            if (arglex() != arglex_token_string)
+                option_needs_files(arglex_token_file, test_usage);
+            goto get_file_names;
 
-	case arglex_token_string:
-	    if (strchr(arglex_value.alv_string, '='))
-	    {
-		variable_assignments.push_back(arglex_value.alv_string);
-		break;
-	    }
-	    get_file_names:
-	    s2 = str_from_c(arglex_value.alv_string);
-	    wl.push_back(s2);
-	    str_free(s2);
-	    break;
+        case arglex_token_string:
+            if (strchr(arglex_value.alv_string, '='))
+            {
+                variable_assignments.push_back(arglex_value.alv_string);
+                break;
+            }
+            get_file_names:
+            s2 = str_from_c(arglex_value.alv_string);
+            wl.push_back(s2);
+            str_free(s2);
+            break;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, test_usage);
-	    continue;
+        case arglex_token_baseline:
+        case arglex_token_grandparent:
+        case arglex_token_project:
+        case arglex_token_trunk:
+        case arglex_token_branch:
+            cid.command_line_parse(test_usage);
+            continue;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(test_usage);
-	    break;
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(test_usage);
+            break;
 
-	case arglex_token_base_relative:
-	case arglex_token_current_relative:
-	    user_ty::relative_filename_preference_argument(test_usage);
-	    break;
+        case arglex_token_base_relative:
+        case arglex_token_current_relative:
+            user_ty::relative_filename_preference_argument(test_usage);
+            break;
 
-	case arglex_token_persevere:
-	case arglex_token_persevere_not:
-	    user_ty::persevere_argument(test_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_persevere:
+        case arglex_token_persevere_not:
+            user_ty::persevere_argument(test_usage);
+            break;
+        }
+        arglex();
     }
+    cid.command_line_check(test_usage);
     if (wl.nstrings)
     {
-	if (automatic_flag)
-	{
-	    sub_context_ty  *scp;
+        if (automatic_flag)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Name",
-		arglex_token_name(arglex_token_automatic)
-	    );
-	    error_intl(scp, i18n("no file with $name"));
-	    sub_context_delete(scp);
-	    test_usage();
-	}
-	if (manual_flag)
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Name",
+                arglex_token_name(arglex_token_automatic)
+            );
+            error_intl(scp, i18n("no file with $name"));
+            sub_context_delete(scp);
+            test_usage();
+        }
+        if (manual_flag)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Name",
-		arglex_token_name(arglex_token_manual)
-	    );
-	    error_intl(scp, i18n("no file with $name"));
-	    sub_context_delete(scp);
-	    test_usage();
-	}
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Name",
+                arglex_token_name(arglex_token_manual)
+            );
+            error_intl(scp, i18n("no file with $name"));
+            sub_context_delete(scp);
+            test_usage();
+        }
     }
     else
     {
-	if (!automatic_flag && !manual_flag)
-	{
-	    automatic_flag = 1;
-	    manual_flag = 1;
-	}
+        if (!automatic_flag && !manual_flag)
+        {
+            automatic_flag = 1;
+            manual_flag = 1;
+        }
     }
-
-    //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    up = user_ty::create();
 
     //
     // Take a baseline read lock.
     //
-    project_baseline_read_lock_prepare(pp);
+    project_baseline_read_lock_prepare(cid.get_pp());
     lock_take();
 
     //
     // Search path for resolving filenames.
     //
     string_list_ty search_path;
-    project_search_path_get(pp, &search_path, 1);
+    cid.get_pp()->search_path_get(&search_path, true);
 
     //
     // Find the base for relative filenames.
     //
-    based =
-	(
-	    search_path.nstrings >= 1
-	&&
-	    (
-		up->relative_filename_preference
-		(
-		    uconf_relative_filename_preference_base
-		)
-	    ==
-		uconf_relative_filename_preference_base
-	    )
-	);
-    if (based)
-	base = str_copy(search_path.string[0]);
-    else
-    {
-	os_become_orig();
-	base = os_curdir();
-	os_become_undo();
-    }
+    nstring base(search_path_base_get(search_path, cid.get_up()));
 
     //
     // make sure the paths make sense
@@ -1715,146 +1650,147 @@ test_independent(void)
     string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
-	s1 = wl.string[j];
-	if (s1->str_text[0] == '/')
-	    s2 = str_copy(s1);
-	else
-	    s2 = os_path_join(base, s1);
-	up->become_begin();
-	s1 = os_pathname(s2, 1);
-	up->become_end();
-	str_free(s2);
-	s2 = 0;
-	for (k = 0; k < search_path.nstrings; ++k)
-	{
-	    s2 = os_below_dir(search_path.string[k], s1);
-	    if (s2)
-		break;
-	}
-	str_free(s1);
-	if (!s2)
-	{
-	    sub_context_ty  *scp;
+        s1 = wl.string[j];
+        if (s1->str_text[0] == '/')
+            s2 = str_copy(s1);
+        else
+            s2 = os_path_join(base.get_ref(), s1);
+        cid.get_up()->become_begin();
+        s1 = os_pathname(s2, 1);
+        cid.get_up()->become_end();
+        str_free(s2);
+        s2 = 0;
+        for (k = 0; k < search_path.nstrings; ++k)
+        {
+            s2 = os_below_dir(search_path.string[k], s1);
+            if (s2)
+                break;
+        }
+        str_free(s1);
+        if (!s2)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", wl.string[j]);
-	    project_fatal(pp, scp, i18n("$filename unrelated"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", wl.string[j]);
+            project_fatal(cid.get_pp(), scp, i18n("$filename unrelated"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
 
-	//
-	// check to see if a directory was named
-	//
-	string_list_ty wl_in;
-	project_file_directory_query(pp, s2, &wl_in, 0, view_path_extreme);
-	if (wl_in.nstrings)
-	{
-	    int		    used;
+        //
+        // check to see if a directory was named
+        //
+        string_list_ty wl_in;
+        cid.get_pp()->file_directory_query(s2, &wl_in, 0, view_path_extreme);
+        if (wl_in.nstrings)
+        {
+            int             used;
 
-	    used = 0;
-	    for (k = 0; k < wl_in.nstrings; ++k)
-	    {
-		s3 = wl_in.string[k];
-		src_data = project_file_find(pp, s3, view_path_extreme);
-		if (!src_data)
-		    continue;
-		switch (src_data->usage)
-		{
-		case file_usage_test:
-		case file_usage_manual_test:
-		    if (wl2.member(s3))
-		    {
-			sub_context_ty	*scp;
+            used = 0;
+            for (k = 0; k < wl_in.nstrings; ++k)
+            {
+                s3 = wl_in.string[k];
+                src_data = cid.get_pp()->file_find(s3, view_path_extreme);
+                if (!src_data)
+                    continue;
+                switch (src_data->usage)
+                {
+                case file_usage_test:
+                case file_usage_manual_test:
+                    if (wl2.member(s3))
+                    {
+                        sub_context_ty sc;
+                        sc.var_set_string("File_Name", s3);
+                        project_fatal
+                        (
+                            cid.get_pp(),
+                            &sc,
+                            i18n("too many $filename")
+                        );
+                    }
+                    else
+                        wl2.push_back(s3);
+                    used = 1;
+                    break;
 
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", s3);
-			project_fatal(pp, scp, i18n("too many $filename"));
-			// NOTREACHED
-			sub_context_delete(scp);
-		    }
-		    else
-			wl2.push_back(s3);
-		    used = 1;
-		    break;
+                case file_usage_source:
+                case file_usage_config:
+                case file_usage_build:
+                    break;
+                }
+            }
+            if (!used)
+            {
+                sub_context_ty  *scp;
 
-		case file_usage_source:
-		case file_usage_config:
-		case file_usage_build:
-		    break;
-		}
-	    }
-	    if (!used)
-	    {
-		sub_context_ty	*scp;
+                scp = sub_context_new();
+                if (s2->str_length)
+                    sub_var_set_string(scp, "File_Name", s2);
+                else
+                    sub_var_set_charstar(scp, "File_Name", ".");
+                sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
+                sub_var_optional(scp, "Number");
+                project_fatal
+                (
+                    cid.get_pp(),
+                    scp,
+                    i18n("directory $filename contains no relevant files")
+                );
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+            str_free(s2);
+            continue;
+        }
 
-		scp = sub_context_new();
-		if (s2->str_length)
-		    sub_var_set_string(scp, "File_Name", s2);
-		else
-		    sub_var_set_charstar(scp, "File_Name", ".");
-		sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
-		sub_var_optional(scp, "Number");
-		project_fatal
-		(
-		    pp,
-		    scp,
-		    i18n("directory $filename contains no relevant files")
-		);
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    str_free(s2);
-	    continue;
-	}
+        //
+        // make sure the explicitly named file is relevant
+        //
+        src_data = cid.get_pp()->file_find(s2, view_path_extreme);
+        if (!src_data)
+        {
+            sub_context_ty  *scp;
 
-	//
-	// make sure the explicitly named file is relevant
-	//
-	src_data = project_file_find(pp, s2, view_path_extreme);
-	if (!src_data)
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", s2);
+            project_fatal(cid.get_pp(), scp, i18n("no $filename"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        switch (src_data->usage)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s2);
-	    project_fatal(pp, scp, i18n("no $filename"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-	switch (src_data->usage)
-	{
-	    sub_context_ty  *scp;
+        case file_usage_test:
+        case file_usage_manual_test:
+            break;
 
-	case file_usage_test:
-	case file_usage_manual_test:
-	    break;
-
-	case file_usage_source:
-	case file_usage_config:
-	case file_usage_build:
+        case file_usage_source:
+        case file_usage_config:
+        case file_usage_build:
 #ifndef DEBUG
-	default:
+        default:
 #endif
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s2);
-	    project_fatal(pp, scp, i18n("$filename not test"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	    break;
-	}
-	if (wl2.member(s2))
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", s2);
+            project_fatal(cid.get_pp(), scp, i18n("$filename not test"));
+            // NOTREACHED
+            sub_context_delete(scp);
+            break;
+        }
+        if (wl2.member(s2))
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s2);
-	    project_fatal(pp, scp, i18n("too many $filename"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-	else
-	    wl2.push_back(s2);
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", s2);
+            project_fatal(cid.get_pp(), scp, i18n("too many $filename"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        else
+            wl2.push_back(s2);
     }
     wl = wl2;
 
@@ -1863,31 +1799,31 @@ test_independent(void)
     //
     if (automatic_flag || manual_flag)
     {
-	for (j = 0;; ++j)
-	{
-	    src_data = pp->file_nth(j, view_path_extreme);
-	    if (!src_data)
-		break;
-	    switch (src_data->usage)
-	    {
-	    case file_usage_test:
-		if (automatic_flag)
-		    wl.push_back(src_data->file_name);
-		break;
+        for (j = 0;; ++j)
+        {
+            src_data = cid.get_pp()->file_nth(j, view_path_extreme);
+            if (!src_data)
+                break;
+            switch (src_data->usage)
+            {
+            case file_usage_test:
+                if (automatic_flag)
+                    wl.push_back(src_data->file_name);
+                break;
 
-	    case file_usage_manual_test:
-		if (manual_flag)
-		    wl.push_back(src_data->file_name);
-		break;
+            case file_usage_manual_test:
+                if (manual_flag)
+                    wl.push_back(src_data->file_name);
+                break;
 
-	    case file_usage_source:
-	    case file_usage_config:
-	    case file_usage_build:
-		break;
-	    }
-	}
-	if (!wl.nstrings)
-	    project_fatal(pp, 0, i18n("has no tests"));
+            case file_usage_source:
+            case file_usage_config:
+            case file_usage_build:
+                break;
+            }
+        }
+        if (!wl.nstrings)
+            project_fatal(cid.get_pp(), 0, i18n("has no tests"));
     }
 
     //
@@ -1897,15 +1833,15 @@ test_independent(void)
     //
     time_t time_limit = 0;
     brlp =
-	project_test_run_list
-	(
-	    pp,
-	    &wl,
-	    up,
-	    up->progress_get(),
-	    time_limit,
-	    variable_assignments
-	);
+        project_test_run_list
+        (
+            cid.get_pp(),
+            &wl,
+            cid.get_up(),
+            cid.get_up()->progress_get(),
+            time_limit,
+            variable_assignments
+        );
 
     //
     // Release the baseline read lock.
@@ -1915,13 +1851,12 @@ test_independent(void)
     //
     // verbose result message
     //
-    verbose_message(pp, (change::pointer )0, brlp);
+    verbose_message(cid.get_pp(), (change::pointer )0, brlp);
 
     //
     // clean up and go home
     //
     batch_result_list_delete(brlp);
-    project_free(pp);
     trace(("}\n"));
 }
 
@@ -1931,12 +1866,15 @@ test(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_independent, test_independent, 0, },
-	{ arglex_token_help, test_help, 0 },
-	{ arglex_token_list, test_list, 0 },
+        { arglex_token_independent, test_independent, 0, },
+        { arglex_token_help, test_help, 0 },
+        { arglex_token_list, test_list, 0 },
     };
 
     trace(("test()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), test_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

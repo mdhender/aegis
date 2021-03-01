@@ -1,47 +1,46 @@
-'\" tp
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 1999, 2001, 2002, 2005-2008 Peter Miller
+'\"tp
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1999, 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Review_Pass_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Review_Pass_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis review pass undo \- rescind a change review pass
 .XX "aerpu(1)" "rescind a change review pass"
 .SH SYNOPSIS
 .B \*(n)
-.B -Review_Pass_Undo
+.B \-Review_Pass_Undo
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Review_Pass_Undo
-.B -List
+.B \-Review_Pass_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Review_Pass_Undo
-.B -Help
+.B \-Review_Pass_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Review_Pass_Undo
+.I \-Review_Pass_Undo
 command is used to
 notify \*(n) that a change review pass has been rescinded.
 .PP
@@ -57,7 +56,8 @@ down
 S3: box "being" "reviewed"
 arrow " review" ljust " pass" ljust
 S4: box "awaiting" "integration"
-T6: spline -> from S4.e then right 0.5 then up 1 then to S3.e
+move to S4.e
+T6: spline right 0.5 then up 1 then to S3.e ->
 "review " rjust "pass " rjust "undo " rjust at T6.c + (0.5,0)
 .PE
 .\" ------------------------------------------------------------------------
@@ -68,21 +68,21 @@ attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
 for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_reason2.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_reason2.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aerpu '\*(n) -rp \e!* -v'
-sh$	aerpu(){\*(n) -rp "$@" -v}
+csh%    alias aerpu '\*(n) \-rp \e!* \-v'
+sh$     aerpu(){\*(n) \-rp "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -92,7 +92,7 @@ state.
 .br
 It is an error if
 the current user is not the reviewer of the change.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -102,4 +102,5 @@ pass review of a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

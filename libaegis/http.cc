@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2008 Peter Miller
-//      Copyright (C) 2007 Walter Franzini
+//      Copyright (C) 2003-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2007, 2008 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/errno.h>
 #include <common/ac/stdarg.h>
@@ -26,7 +27,6 @@
 #include <common/ac/string.h>
 #include <common/ac/time.h>
 
-#include <common/error.h>
 #include <common/now.h>
 #include <common/nstring.h>
 #include <common/progname.h>
@@ -52,7 +52,7 @@ http_fatal(http_error_t oops, const char *fmt, ...)
 
     va_start(ap, fmt);
     if (oops != http_error_ok && !http_fatal_noerror)
-	printf("Status: %d Error\n", oops);
+        printf("Status: %d Error\n", oops);
     printf("Content-Type: text/html\n\n");
     printf("<html><head><title>Error</title></head><body><h1>Error</h1>\n");
     printf("The request failed because:\n<em>");
@@ -71,12 +71,12 @@ http_getenv(const char *name)
     result = getenv(name);
     if (!result)
     {
-	http_fatal
-       	(
-	    http_error_internal_server,
-	    "Environment variable $%s not set.",
-	    name
-	);
+        http_fatal
+        (
+            http_error_internal_server,
+            "Environment variable $%s not set.",
+            name
+        );
     }
     return result;
 }
@@ -134,19 +134,61 @@ html_encode_string(const nstring &s)
 }
 
 
+nstring
+http_sanitize_content_type(const nstring &content_type)
+{
+    const char *s = content_type.c_str();
+    const char *semicolon = s;
+    while (*semicolon && *semicolon != ';' && *semicolon != ' ')
+        ++semicolon;
+    nstring left(s, semicolon - s);
+    if (left == "text/html")
+        return content_type;
+    while (*semicolon == ';' || *semicolon == ' ')
+        ++semicolon;
+    nstring right;
+    if (*semicolon)
+    {
+        const char *end = s + content_type.size();
+        right = "; " + nstring(semicolon, end - semicolon);
+    }
+    if
+    (
+        left.starts_with("text/")
+    ||
+        left == "application/x-awk"
+    ||
+        left == "application/x-gawk"
+    ||
+        left == "application/x-nawk"
+    ||
+        left == "application/x-perl"
+    ||
+        (left.starts_with("application/x-") && left.ends_with("script"))
+    )
+    {
+        if (right.empty())
+            right = "; charset=us-ascii";
+        return "text/plain" + right;
+    }
+    return content_type;
+}
+
+
 void
 http_content_type_header(string_ty *filename)
 {
     os_become_orig();
     nstring content_type = os_magic_file(filename);
     os_become_undo();
+    content_type = http_sanitize_content_type(content_type);
     assert(!content_type.empty());
     printf("Content-Type: %s\n", content_type.c_str());
 }
 
 
 static void
-emit_project_attribute(project_ty *pp, change::pointer cp, const char *cname)
+emit_project_attribute(project *pp, change::pointer cp, const char *cname)
 {
     if (!pp && cp)
         pp = cp->pp;
@@ -178,14 +220,14 @@ emit_project_attribute(project_ty *pp, change::pointer cp, const char *cname)
 
 
 void
-html_header_ps(project_ty *pp, change::pointer cp)
+html_header_ps(project *pp, change::pointer cp)
 {
     emit_project_attribute(pp, cp, "html:body-begin");
 }
 
 
 void
-html_footer(project_ty *pp, change::pointer cp)
+html_footer(project *pp, change::pointer cp)
 {
     time_t tmp = now();
     printf("<hr>\n");
@@ -194,16 +236,16 @@ html_footer(project_ty *pp, change::pointer cp)
     char buffer[BUFSIZ];
     // gcc 3.3 doesn't like %c
     if (strftime(buffer, BUFSIZ, "%a %d %b %Y %H:%M:%S %Z", localtime(&tmp)))
-	printf("on %s.\n", buffer);
+        printf("on %s.\n", buffer);
     else
-	printf("on %.24s.\n", ctime(&tmp));
+        printf("on %.24s.\n", ctime(&tmp));
     emit_project_attribute(pp, cp, "html:body-end");
     printf("</body></html>\n");
 }
 
 
 static void
-emit_project_stylesheet(project_ty *pp)
+emit_project_stylesheet(project *pp)
 {
     //
     // Netscape 4.x has numerous CSS bugs, two of which need mentioning.
@@ -232,7 +274,7 @@ emit_project_stylesheet(project_ty *pp)
 
 
 void
-html_header(project_ty *pp, change::pointer cp)
+html_header(project *pp, change::pointer cp)
 {
     if (cp && !pp)
         pp = cp->pp;
@@ -306,12 +348,12 @@ http_script_name(void)
         int port = atoi(server_port.c_str());
         if (port <= 0 || port >= 0x10000)
         {
-	    http_fatal
-    	    (
-		http_error_internal_server,
-		"SERVER_PORT of \"%s\" not known",
-		server_port.c_str()
-	    );
+            http_fatal
+            (
+                http_error_internal_server,
+                "SERVER_PORT of \"%s\" not known",
+                server_port.c_str()
+            );
         }
 
         //
@@ -323,7 +365,7 @@ http_script_name(void)
         {
             http_fatal
             (
-		http_error_internal_server,
+                http_error_internal_server,
                 "SERVER_PROTOCOL of \"%s\" not known",
                 server_protocol.c_str()
             );
@@ -361,7 +403,7 @@ http_script_name(void)
 
 
 void
-emit_project_href(project_ty *pp)
+emit_project_href(project *pp)
 {
     printf("<a href=\"%s/", http_script_name());
     html_escape_string(project_name_get(pp));
@@ -370,7 +412,7 @@ emit_project_href(project_ty *pp)
 
 
 void
-emit_project_href(project_ty *pp, const char *modifier, ...)
+emit_project_href(project *pp, const char *modifier, ...)
 {
     assert(modifier);
     va_list ap;
@@ -389,7 +431,7 @@ emit_project_href(project_ty *pp, const char *modifier, ...)
 
 
 void
-emit_change_href_n(project_ty *pp, long n, const char *modifier)
+emit_change_href_n(project *pp, long n, const char *modifier)
 {
     printf("<a href=\"%s/", http_script_name());
     html_escape_string(project_name_get(pp));
@@ -404,7 +446,7 @@ void
 emit_change_href(change::pointer cp, const char *modifier)
 {
     if (cp->bogus)
-        emit_project_href(cp->pp, modifier);
+        emit_project_href(cp->pp, "%s", modifier);
     else
         emit_change_href_n(cp->pp, magic_zero_decode(cp->number), modifier);
 }
@@ -415,7 +457,7 @@ emit_change_uuid_href(change::pointer cp, const nstring &uuid,
     const nstring &prefix, const nstring &suffix)
 {
     if (cp->bogus)
-        emit_project_href(cp->pp, "menu");
+        emit_project_href(cp->pp, "%s", "menu");
     else
     {
         assert(universal_unique_identifier_valid(cp->uuid_get()));
@@ -543,29 +585,32 @@ modifier_test_and_clear(string_list_ty *modifiers, const char *name)
 
 
 void
-emit_rss_icon_with_link(project_ty *pp, const nstring &rss_filename)
+emit_rss_icon_with_link(project *pp, const nstring &rss_filename)
 {
     printf
     (
-	"<a href=\"%s/%s/?rss+%s\"><img src=\"%s/icon/rss.gif\" border=0 "
-	    "alt=\"RSS\"></a>\n",
-	http_script_name(),
-	project_name_get(pp)->str_text,
-	rss_filename.c_str(),
-	http_script_name()
+        "<a href=\"%s/%s/?rss+%s\"><img src=\"%s/icon/rss.gif\" border=0 "
+            "alt=\"RSS\"></a>\n",
+        http_script_name(),
+        project_name_get(pp).c_str(),
+        rss_filename.c_str(),
+        http_script_name()
     );
 }
 
 
 void
-emit_rss_meta_data(project_ty *pp, const nstring &rss_filename)
+emit_rss_meta_data(project *pp, const nstring &rss_filename)
 {
     printf
     (
-	"<link rel=\"alternate\" type=\"application/rss+xml\" "
-	    "href=\"%s/%s/?rss+%s\"/>\n",
-	http_script_name(),
-	pp->name_get()->str_text,
-	rss_filename.c_str()
+        "<link rel=\"alternate\" type=\"application/rss+xml\" "
+            "href=\"%s/%s/?rss+%s\"/>\n",
+        http_script_name(),
+        pp->name_get()->str_text,
+        rss_filename.c_str()
     );
 }
+
+
+// vim: set ts=8 sw=4 et :

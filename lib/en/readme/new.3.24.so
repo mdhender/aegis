@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -27,14 +27,14 @@ commands).
 .if n *
 .if t \(bu
 .\" change 28
-There is a new \fI--description-only\fP option to the \fIaeca\fP(1)
+There is a new \fI\-description\[hy]only\fP option to the \fIaeca\fP(1)
 command.  This is useful for editing only the descrioption, and also
 for use within scripts.
 .PP
 .if n *
 .if t \(bu
 .\" change 27
-The \fI--file\fP option has now been generalized to accept \[lq]-\[rq] to mean
+The \fI\-file\fP option has now been generalized to accept \[lq]\-\[rq] to mean
 the standard input.  This is useful in scripts.
 .PP
 .if n *
@@ -76,7 +76,7 @@ This should prove less confusing than the previous method.
 .if t \(bu
 .\" change 18
 A big has been fixed in the \fIaemv\fP(1) command.
-It failed to accept the --base-relative option, even though it was
+It failed to accept the \-base\[hy]relative option, even though it was
 documented to do so.
 .PP
 .if n *
@@ -109,4 +109,5 @@ If the comments in GNU CSSC are accurate, this also means you can import
 BitKeeper repositories, however I am unable to confirm this.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.24 (10-Mar-2001)
+.SS Version 3.24 (10\[hy]Mar\[hy]2001)
+.\" vim: set ts=8 sw=4 et :

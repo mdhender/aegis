@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999-2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -53,36 +53,36 @@
 .\" Return-Path: bud@sistema.it
 .\" Return-Path: <bud@sistema.it>
 .\" Received: from cartman.jna.com.au (cartman.jna.com.au [203.4.240.162])
-.\" 	by rose.jna.com.au (8.8.7/8.8.7) with ESMTP id EAA16447
-.\" 	for <peterm@rose.jna.com.au>; Tue, 7 Sep 1999 04:01:40 +1000 (EST)
+.\"     by rose.jna.com.au (8.8.7/8.8.7) with ESMTP id EAA16447
+.\"     for <peterm@rose.jna.com.au>; Tue, 7 Sep 1999 04:01:40 +1000 (EST)
 .\" Received: from kali.jna.com.au (kali.jna.com.au [203.4.240.221]) by
-.\"	cartman.jna.com.au with ESMTP id EAA22641
-.\"	(8.8.5/IDA-1.6 for <peterm@jna.com.au>);
-.\"	Tue, 7 Sep 1999 04:01:39 +1000 (EST)
+.\"     cartman.jna.com.au with ESMTP id EAA22641
+.\"     (8.8.5/IDA-1.6 for <peterm@jna.com.au>);
+.\"     Tue, 7 Sep 1999 04:01:39 +1000 (EST)
 .\" Received: (from smtp@localhost) by kali.jna.com.au id EAA24263
-.\"	(8.8.5/IDA-1.6 for <peterm@jna.com.au>);
-.\"	Tue, 7 Sep 1999 04:01:09 +1000 (EST)
+.\"     (8.8.5/IDA-1.6 for <peterm@jna.com.au>);
+.\"     Tue, 7 Sep 1999 04:01:09 +1000 (EST)
 .\" Received: from supreme.pcug.org.au(203.10.76.34),
-.\"	claiming to be "pcug.org.au"
+.\"     claiming to be "pcug.org.au"
 .\"   via SMTP by kookoo.jna.com.au, id smtpdAAAa005v5; Tue Sep  7 04:00:58 1999
 .\" Received: (from smtpd@localhost) by pcug.org.au
-.\"	(8.8.7/8.8.7/TIP-1.13) id EAA28324; Tue, 7 Sep 1999 04:00:57 +1000 (EST)
+.\"     (8.8.7/8.8.7/TIP-1.13) id EAA28324; Tue, 7 Sep 1999 04:00:57 +1000 (EST)
 .\" Received: from cleopatra.telnetwork.it(194.20.107.100)
 .\"  via SMTP by supreme, id smtpdAAAa006u0; Tue Sep  7 04:00:47 1999
 .\" Received: from com1.sistema.it
-.\"	(postfix@sistema.telnetwork.it [194.20.107.53])
-.\" 	by cleopatra.telnetwork.it (8.9.3/8.8.7) with ESMTP id UAA22044
-.\" 	for <millerp@canb.auug.org.au>; Mon, 6 Sep 1999 20:03:32 +0200
+.\"     (postfix@sistema.telnetwork.it [194.20.107.53])
+.\"     by cleopatra.telnetwork.it (8.9.3/8.8.7) with ESMTP id UAA22044
+.\"     for <pmiller@opensource.org.au>; Mon, 6 Sep 1999 20:03:32 +0200
 .\" Received: from NEWBUD (newbud.sistema.it [10.1.1.9])
-.\" 	by com1.sistema.it (Postfix) with SMTP id F2DF32003A
-.\" 	for <millerp@canb.auug.org.au>; Mon,  6 Sep 1999 19:24:36 +0200 (CEST)
+.\"     by com1.sistema.it (Postfix) with SMTP id F2DF32003A
+.\"     for <pmiller@opensource.org.au>; Mon,  6 Sep 1999 19:24:36 +0200 (CEST)
 .\" Message-Id: <1.5.4.32.19990906172434.006f9e18@mail.sistema.it>
 .\" X-Sender: bud@mail.sistema.it (Unverified)
 .\" X-Mailer: Windows Eudora Light Version 1.5.4 (32)
 .\" Mime-Version: 1.0
 .\" Content-Type: text/plain; charset="us-ascii"
 .\" Date: Mon, 06 Sep 1999 19:24:34 +0200
-.\" To: millerp@canb.auug.org.au
+.\" To: pmiller@opensource.org.au
 .\" From: "Bud P. Bruegger" <bud@sistema.it>
 .\" Subject: Aegis vs CVS
 .\"
@@ -223,10 +223,10 @@
 .\"
 .\" Bud
 .\" ----------------------------------
-.\" Ing. Bud P. Bruegger, Ph.D.  	(bud@sistema.it)
+.\" Ing. Bud P. Bruegger, Ph.D.         (bud@sistema.it)
 .\" Sistema
-.\" Information Systems	(voice general) +39-0564-418667
-.\" Via U. Bassi, 54	(voice direct)  +39-0564-411682 + 41 after 3-tone prompt
+.\" Information Systems (voice general) +39-0564-418667
+.\" Via U. Bassi, 54    (voice direct)  +39-0564-411682 + 41 after 3-tone prompt
 .\" 58100 Grosseto          (fax)           +39-0564-426104
 .\" Italy
 .\" ============================================================================
@@ -342,25 +342,25 @@
 .bp
 .\}
 ..
-.so introductio.so
+.so lib/en/howto/introductio.so
 .BP
-.so cheat.so
+.so lib/en/howto/cheat.so
 .BP
-.so first_time.so
+.so lib/en/howto/first_time.so
 .bp
-.so recreate.so
+.so lib/en/howto/recreate.so
 .bp
-.so new_project.so
+.so lib/en/howto/new_project.so
 .BP
-.so move_projec.so
+.so lib/en/howto/move_projec.so
 .BP
-.so team_work.so
+.so lib/en/howto/team_work.so
 .BP
-.so python.so
+.so lib/en/howto/python.so
 .BP
-.so branch.so
+.so lib/en/howto/branch.so
 .BP
-.so developer.so
+.so lib/en/howto/developer.so
 .\" -----------------------------------------------------------------------
 .bp
 .if e \{\
@@ -384,3 +384,4 @@
 .pg@begin 1001 i
 .PX
 .if o .bp
+.\" vim: set ts=8 sw=4 et :

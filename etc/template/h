@@ -28,27 +28,40 @@ class ${id ${trim_dir ${trim_ext $fn}}}:
     public ${id ${trim_dir ${dirname_rel $fn}}}
 {
 public:
+    typedef aegis_shared_ptr<${id ${trim_dir ${trim_ext $fn}}}> pointer;
+
     /**
       * The destructor.
       */
     virtual ~${id ${trim_dir ${trim_ext $fn}}}();
 
+private:
     /**
       * The default constructor.
+      * It is private on purpose, use the #create class method instead.
       */
     ${id ${trim_dir ${trim_ext $fn}}}();
 
+public:
     /**
-      * The copy constructor.
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      */
+    static pointer create();
+
+private:
+    /**
+      * The copy constructor.  Do not use.
       */
     ${id ${trim_dir ${trim_ext $fn}}}(const ${id ${trim_dir ${trim_ext
         $fn}}} &);
 
     /**
-      * The assignment operator.
+      * The assignment operator.  Do not use.
       */
     ${id ${trim_dir ${trim_ext $fn}}} &operator=(const ${id ${trim_dir
         ${trim_ext $fn}}} &);
 };
 
+// vim: set ts=8 sw=4 et :
 #endif // ${id ${upcase $fn}}

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to Create a New Project"
 .LP
@@ -22,7 +21,7 @@ Before you can do anything else with Aegis, you need a project to do
 it to.  The advantage of this is that each project is administered and
 configured independently.
 .LP
-If this is your first time using Aegis, you probably want a single-user
+If this is your first time using Aegis, you probably want a single\[hy]user
 project.  You can change the number of users later, if you ever want to
 add more staff to the project.
 .LP
@@ -42,14 +41,14 @@ Read through all of the steps first.
 .IP \(bu 2n
 You may want to read the \fIaenpr\fP(1) man page for more information.
 .IP \(bu 2n
-The command \[lq]\fIaenpr \fPname\fP -version -\fP\[rq] will create the
+The command \[lq]\fIaenpr \fPname\fP \-version \-\fP\[rq] will create the
 project with no branches.  This will automatically make you (that is,
 the executing user) the project administrator and the project owner.
 The \fIumask\fP is remembered, too.
 .IP \(bu 2n
 The root of the project directory will be in your home directory,
 named after the project name.
-If you want something else, use the \fIaenpr --directory\fP option.
+If you want something else, use the \fIaenpr \-directory\fP option.
 .IP \(bu 2n
 The default group at the time of execution determines the file group
 of the project.  Make sure the account created for the project has
@@ -69,7 +68,7 @@ initial project creation commands; once completed \fBno one\fP will ever
 login to this account again.
 .IP \(bu 2n
 Add the staff to the project: the \[lq]\fIaena
-\fP\f[CW]your-normal-login\fP\[rq]
+\fP\f[CW]your\[hy]normal\[hy]login\fP\[rq]
 command adds your normal account as a project administrator.  You need
 this if you are using a special project account, so that your normal
 self can administer the project.
@@ -78,12 +77,14 @@ At this point, log out of the special project account.
 Ask the system administrator to permanently disable it.
 .IP \(bu 2n
 Add the rest of the staff:
-the \[lq]\fIaend \fP\f[CW]your-login\fP\[rq] command makes you a developer,
-the \[lq]\fIaenrv \fP\f[CW]your-login\fP\[rq] command makes you a reviewer and
-the \[lq]\fIaeni \fP\f[CW]your-login\fP\[rq] command makes you an integrator.
+the \[lq]\fIaend \fP\f[CW]your\[hy]login\fP\[rq] command makes you a developer,
+the \[lq]\fIaenrv \fP\f[CW]your\[hy]login\fP\[rq] command makes you a
+reviewer and
+the \[lq]\fIaeni \fP\f[CW]your\[hy]login\fP\[rq] command makes you an
+integrator.
 .IP \(bu 2n
 You need to edit the project attributes next.
-The \[lq]\fIaepa -edit\fP\[rq] command does this.
+The \[lq]\fIaepa \-edit\fP\[rq] command does this.
 You will be placed into a text editor,
 and will see something similar to this:
 .E(
@@ -104,7 +105,7 @@ developers_may_create_changes = true;
 .E)
 Be extra careful to preserve the semicolons!
 You may also want to change the description at this time, too.
-Don't forget the closing double-quote \fIand\fP semicolon.
+Don't forget the closing double\[hy]quote \fIand\fP semicolon.
 .IP \(bu 2n
 Create the first branch now.
 They inherit all staff and attributes at creation time,
@@ -151,7 +152,7 @@ reviewer and integrator roles.  Staff need to always be permitted all
 roles: it is common for junior staff, for example, \fInot\fP to be authorized
 as reviewers.
 .LP
-Converting a single user project to a multi-person project is simply editing
+Converting a single user project to a multi\[hy]person project is simply editing
 the project attributes to look like this later.  \fIRemember:\fP each
 branch inherited its attributes when it was created \- you need to edit
 the ancestor branches' project attributes too.
@@ -191,19 +192,19 @@ if you have set AEGIS_PATH to include private projects.
 .LP
 There are two ways to make sure that you are creating a global
 project.  Either \[lq]\fIunset AEGIS_PATH\fP\[rq] immediately before
-using the \[lq]\fIaenpr\fP\[rq] command, or use the \[lq]\f[CW]--library\fP
+using the \[lq]\fIaenpr\fP\[rq] command, or use the \[lq]\f[CW]\-library\fP
 \fI/usr/local/com/aegis\fP\[rq] option of the \fIaenpr\fP command.
 .nh 3 "Web Visibility"
 .LP
 If you have a Web server, you may like to install the Aegis web interface.
 You do this by copying the \fIaeget\fP program from
-\fI\*(B)/aeget\fP into your web server's \fIcgi-bin\fP directory.
+\fI\*(B)/aeget\fP into your web server's \fIcgi\[hy]bin\fP directory.
 There is a \fIaeget.instal\fP helper script,
-if you don't know where your web server's \fIcgi-bin\fP directory is.
+if you don't know where your web server's \fIcgi\[hy]bin\fP directory is.
 .LP
 You may prefer to use a symbolic link, as this will be more stable
 across Aegis upgrades.  However, this requires a corresponding
-\fIfollow-symlinks\fP setting in your web server's configuration file.
+\fIfollow\[hy]symlinks\fP setting in your web server's configuration file.
 (Use the \fIaeget.instal \-s\fP option.)
 .LP
 If you have a Web server, and \f(CWaeget\fP was installed, you can use a
@@ -226,18 +227,19 @@ Development chapter of the User Guide).
 .IP 3. 3n
 The owner of the project is taken from the owner of the project directory
 tree, so this is what needs to be changed.  Go to the root of the project
-tree - the directory which appears in the \[lq]\fIael projects\fP\[rq] listing.
+tree \- the directory which appears in the \[lq]\fIael projects\fP\[rq] listing.
 This isn't the trunk baseline, but the directory above it (you will see
-\fIinfo\fP, \fIhistory\fP and \fIbaseline\fP sub-directories).
+\fIinfo\fP, \fIhistory\fP and \fIbaseline\fP sub\[hy]directories).
 .IP 4. 3n
 Use the command
 .E(
-chown -R \fIusername\fP .
+chown \-R \fIusername\fP .
 .E)
 to change the ownership of this directory, and all files and
-sub-directories below it.  Insert the username of the account you created
+sub\[hy]directories below it.  Insert the username of the account you created
 in step 2.  (You need the \fBdot\fP on the end of the command, its not
 mere punctuation.)
 .PP
 There is no need to change the owner of any active changes,
 or any other change attributes.
+.\" vim: set ts=8 sw=4 et :

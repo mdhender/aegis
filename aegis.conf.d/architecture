@@ -1,7 +1,6 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 2008 Peter Miller
- * Copyright (C) 2009 Walter Franzini
+ * Copyright (C) 2008, 2009, 2012 Peter Miller
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,54 +21,57 @@
  */
 architecture =
 [
-	{
-		name = "linux-i486";
-		pattern = "Linux-*-*-i?86";
-		mode = optional;
-	},
-	{
-		name = "linux-x86_64";
-		pattern = "Linux-*-*-x86_64";
-	},
-	{
-		name = "sunos-4.1-sparc";
-		pattern = "SunOS-4.1*-*-sun4*";
-		mode = optional;
-	},
-	{
-		name = "solaris-2.6-sparc";
-		pattern = "SunOS-5.6*-*-sun4*";
-		mode = optional;
-	},
-	{
-		name = "solaris-2.6-i386";
-		pattern = "SunOS-5.6*-*-i86pc";
-		mode = optional;
-	},
-	{
-		name = "solaris-7-sparc";
-		pattern = "SunOS-5.7*-*-sun4*";
-		mode = optional;
-	},
-	{
-		name = "solaris-7-i386";
-		pattern = "SunOS-5.7*-*-i86pc";
-		mode = optional;
-	},
-	{
-		name = "ppc-Darwin-7.x";
-		pattern = "Darwin-7.*-Darwin*";
-		mode = optional;
-	},
-	{
-		/*
-		 * If you are only ever going to build on the same
-		 * architecture every time, you may as well delete the
-		 * architecture field completely.  This will default the
-		 * architecture to "unspecified".
-		 */
-		name = "you-need-to-set-architecture-in-aegis.conf";
-		pattern = "*";
-		mode = optional;
-	},
+        {
+                name = "linux-i486";
+                pattern = "Linux-*-*-i?86";
+                mode = optional;
+        },
+        {
+                name = "linux-x86_64";
+                pattern = "Linux-*-*-x86_64";
+        },
+        {
+                name = "sunos-4.1-sparc";
+                pattern = "SunOS-4.1*-*-sun4*";
+                mode = optional;
+        },
+        {
+                name = "solaris-2.6-sparc";
+                pattern = "SunOS-5.6*-*-sun4*";
+                mode = optional;
+        },
+        {
+                name = "solaris-2.6-i386";
+                pattern = "SunOS-5.6*-*-i86pc";
+                mode = optional;
+        },
+        {
+                name = "solaris-7-sparc";
+                pattern = "SunOS-5.7*-*-sun4*";
+                mode = optional;
+        },
+        {
+                name = "solaris-7-i386";
+                pattern = "SunOS-5.7*-*-i86pc";
+                mode = optional;
+        },
+        {
+                name = "ppc-Darwin-7.x";
+                pattern = "Darwin-7.*-Darwin*";
+                mode = optional;
+        },
+        {
+                /*
+                 * If you are only ever going to build on the same
+                 * architecture every time, you may as well delete the
+                 * architecture field completely.  This will default the
+                 * architecture to "unspecified".
+                 */
+                name = "you-need-to-set-architecture-in-aegis.conf";
+                pattern = "*";
+                mode = optional;
+        },
 ];
+
+
+/* vim: set ts=8 sw=4 et : */

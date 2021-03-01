@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994-1996, 1999, 2003-2008 Peter Miller
+//      Copyright (C) 1994-1996, 1999, 2003-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/stmt/if.h>
@@ -95,3 +96,6 @@ rpt_stmt_if::run(rpt_stmt_result_ty *rp)
     nth_child(flag)->run(rp);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

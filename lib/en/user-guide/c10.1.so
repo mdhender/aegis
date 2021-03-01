@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Manual Operation"
 .LP
@@ -29,7 +29,7 @@ which will survive the various mail transport agents it must pass through,
 and then given to the local mail transport agent.
 This is done by a single command
 .E(
-\f(CB%\fP aedist -send -c \fInumber\fP | \e
+\f(CB%\fP aedist \-send \-c \fInumber\fP | \e
   mail joe.blow@example.com
 \f(CB%\fP
 .E)
@@ -46,14 +46,14 @@ the version of the file which was committed is sent.  If necessary, the
 history files will be consulted to reconstruct this information.  See the
 \&\[lq]\fIAutomatic Send\fP\[rq] section, below, for more discussion of this.
 .LP
-There are many options for customizing the e-mail message sent to
+There are many options for customizing the e\[hy]mail message sent to
 \&\f(CWjoe.blow@example.com\fP, see \fIaedist\fP(1) for more information.
 .nh 3 "Sending Baselines"
 .LP
 In order to send the entire contents of the
 repository to someone, you use a very similar command:
 .E(
-\f(CB%\fP aedist -send -baseline | \e
+\f(CB%\fP aedist \-send \-baseline | \e
   mail joe.blow@example.com
 \f(CB%\fP
 .E)
@@ -62,12 +62,12 @@ This can be a very large change set, because it is all files of the project.
 .nh 3 "Sending Branches"
 .LP
 There are times when remote developers are not interested in a
-blow-by-blow update of your repository.  Instead they want to have
+blow\[hy]by\[hy]blow update of your repository.  Instead they want to have
 updates from time to time.  In order to send them the current state of
 your active development branch, in this example \[lq]\fIexample.4.2\fP\[rq],
 you would use a command of the form
 .E(
-\f(CB%\fP aedist -send -p example.4 -c 2 | \e
+\f(CB%\fP aedist \-send \-p example.4 \-c 2 | \e
   mail joe.blow@example.com
 \f(CB%\fP
 .E)
@@ -81,17 +81,18 @@ state of every file in the project.
 .nh 3 "Manual Receive"
 .LP
 The simplest form of receiving a change set is to save it from your
-e-mail program into a file, and then
+e\[hy]mail program into a file, and then
 .E(
-\f(CB%\fP aedist -receive -file \fIfilename\fP
+\f(CB%\fP aedist \-receive \-file \fIfilename\fP
 \&\fI...lots of information...\fP
 \f(CB%\fP
 .E)
-where \fIfilename\fP is where you saved the e-mail message.
-If your e-mail program is able to write to a pipe, you can use a simpler form.
+where \fIfilename\fP is where you saved the e\[hy]mail message.
+If your e\[hy]mail program is able to write to a pipe, you can use a
+simpler form.
 This example uses the Rand Mail Handler's \fIshow\fP(1) command:
 .E(
-\f(CB%\fP show | aedist -receive
+\f(CB%\fP show | aedist \-receive
 \&\fI...lots of information...\fP
 \f(CB%\fP
 .E)
@@ -143,7 +144,7 @@ you a \[lq]baseline\[rq] change, as described above.  Once you have received
 this, and it is integrated successfully, you are ready to receive and
 apply change sets.  This is an inherently \[lq]pull\[rq] activity, as the
 source may never have heard of you before.  The initial baseline may
-arrive by e-mail, or floppy disk, or you may retrieve it from the web,
+arrive by e\[hy]mail, or floppy disk, or you may retrieve it from the web,
 it all depends how the project is being managed.
 .LP
 You will be warned about "potential trojan horse" files in the baseline
@@ -159,20 +160,20 @@ of it, is to write it onto transportable media and carry it.
 To write a change set onto a floppy, you would use commands such as
 .E(
 \f(CB%\fP mount /mnt/floppy
-\f(CB%\fP aedist -send -no-base64 \e
-  -o /mnt/floppy/\fIchange.set\fP
+\f(CB%\fP aedist \-send \-no\[hy]base64 \e
+  \-o /mnt/floppy/\fIchange.set\fP
 \f(CB%\fP umount /mnt/floppy
 \f(CB%\fP
 .E)
-The above command assumes the floppy is pre-formatted, and that there
-is a user-permitting line in the \fI/etc/fstab\fP file, as is common for
+The above command assumes the floppy is pre\[hy]formatted, and that there
+is a user\[hy]permitting line in the \fI/etc/fstab\fP file, as is common for
 many Linux distributions.  The \fIchange.set\fP can be any filename you
-like, but is usually project-name and change-number related.
+like, but is usually project\[hy]name and change\[hy]number related.
 .LP
 It takes a very sizable change set to fail to fit on a 1.44MB floppy,
 because they are compressed (and change sets exceeding 8MB of source
-are rare, even for huge projects).  The \f(CW-no-base64\fP option is
-used to avoid the MIME base 64 encoding, which is necessary for e-mail,
+are rare, even for huge projects).  The \f(CW\-no\[hy]base64\fP option is
+used to avoid the MIME base 64 encoding, which is necessary for e\[hy]mail,
 not not necessary in this case.  The receive side will automatically
 figure out there is no MIME base 64 encoding.
 .LP
@@ -180,10 +181,11 @@ Reading the change set is just as simple, as it closely follows the
 other commands for receiving commands sets.
 .E(
 \f(CB%\fP mount /mnt/floppy
-\f(CB%\fP aedist -rec -f /mnt/floppy/\fIchange.set\fP
+\f(CB%\fP aedist \-rec \-f /mnt/floppy/\fIchange.set\fP
 \&\fI...lots of output...\fP
 \f(CB%\fP umount /mnt/floppy
 \f(CB%\fP
 .E)
 This technique will work for any of the disks available these days
 including floppies, Zip, Jaz, \fIetc\fP.
+.\" vim: set ts=8 sw=4 et :

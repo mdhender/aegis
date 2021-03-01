@@ -1,43 +1,42 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997-2009, 2011, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
-.so version.so
+.so etc/version.so
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
-<link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
+<link rel="icon" href="favicon.ico" type="image/x-icon" >
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" >
 <title>Aegis
-.ie (\*(o)) \*(V)
+.if (\*(o)) \*(V)
 .el \*(v)
 </title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="aegis.png" align=left>
-<img src="aegis.png" align=right>
-<center>Aegis
-.ie (\*(o)) \*(V)
+<body bgcolor="#ffffff" >
+<h1 align="center" >
+<img src="aegis.png" align="left" alt="" />
+<img src="aegis.png" align="right" alt="" />
+Aegis
+.if (\*(o)) \*(V)
 .el \*(v)
-</center></h1>
+</h1>
 Aegis is a transaction-based software configuration management system.
 It provides a framework within which
 a team of developers may work on many changes to a
@@ -47,93 +46,80 @@ with as little disruption as possible.
 <br><p><br clear=all>
 
 <table align=center><tr>
-<td bgcolor="#eeeeee" align=center valign=top width="15%">
-<a href="http://sourceforge.net"><img
+<td bgcolor="#eeeeee" align=center valign="top" width="15%" >
+<a href="http://sourceforge.net" ><img
 src="http://sourceforge.net/sflogo.php?group_id=224&amp;type=1"
-width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
+width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
 <br>
 This page is hosted by <a
-href="http://sourceforge.net">SourceForge</a>:
+href="http://sourceforge.net" >SourceForge</a>:
 see also the
-.br
-<a href="http://sourceforge.net/projects/aegis/">
-Project</a> and
-.br
-<a href="http://sourceforge.net/project/stats/?group_id=224&ugn=aegis">
-Statistics</a> pages.
-(<a href="disk_quota.html">Disk Usage</a>)
-</td><td align=center valign=top bgcolor="#eeffee" width="35%">
-.br
+<a href="http://sourceforge.net/projects/aegis/"
+>Project</a> and
+<a href="http://sourceforge.net/project/stats/?group_id=224&amp;ugn=aegis"
+>Statistics</a> pages.
+(<a href="disk_quota.html" >Disk Usage</a>)
+<br/>
+<a href="http://freshmeat.net/" >Fresh Meat</a>
+<a href="http://freshmeat.net/projects/aegis/" >project link</a>.
+</td><td align=center valign="top" bgcolor="#eeffee" width="35%" >
 [
-<a href="download.html">Download</a>&nbsp;|
-.br
-<a href="documents.html">Documentation</a>&nbsp;|
-.br
-<a href="propaganda/index.html">Propaganda</a>&nbsp;|
-.br
-<a href="tmpl-proj.html">Template&nbsp;Projects</a>&nbsp;|
-.br
-<a href="mail-list.html">Mailing&nbsp;List</a>&nbsp;|
-.br
-<a href="year2000.html">Year&nbsp;2000</a>&nbsp;|
-.br
-<a href="windowsnt.html">Windows&nbsp;NT</a>&nbsp;|
-.br
-<a href="translate.html">Localization</a>&nbsp;|
-.br
-<a href="propaganda/sites.html">Reference&nbsp;Sites</a>&nbsp;|
-.br
-<a href="webiface.html">Web&nbsp;Interface</a>&nbsp;|
-.br
-<a href="propaganda/diversity.html">Alternatives</a>&nbsp;]
+<a href="download.html" >Download</a>&nbsp;|
+<a href="documents.html" >Documentation</a>&nbsp;|
+<a href="propaganda/index.html" >Propaganda</a>&nbsp;|
+<a href="tmpl-proj.html" >Template&nbsp;Projects</a>&nbsp;|
+<a href="mail-list.html" >Mailing&nbsp;List</a>&nbsp;|
+<a href="windowsnt.html" >Windows&nbsp;NT</a>&nbsp;|
+<a href="translate.html" >Localization</a>&nbsp;|
+<a href="propaganda/sites.html" >Reference&nbsp;Sites</a>&nbsp;|
+<a href="webiface.html" >Web&nbsp;Interface</a>&nbsp;|
+<a href="propaganda/diversity.html" >Alternatives</a>&nbsp;]
 <p>
 Got here via a search engine?  Have you found
-<a href="homonym.html">the right &ldquo;Aegis&rdquo; project</a>?
-</td><td align=center valign=top bgcolor="#ffeeee" width="35%">
+<a href="homonym.html" >the right &ldquo;Aegis&rdquo; project</a>?
+</td><td align=center valign="top" bgcolor="#ffeeee" width="35%" >
 From 4.22 onwards, even numbered branches are production branches, and
 odd numbered branches are development branches.
 <p>
 .ie (\*(o)) \{
 This is the <b>development branch</b> web site.
-Did you want the <a href="../">\*(p)</a> production branch?
-.br
+Did you want the <a href="../" >\*(p)</a> production branch?
 <p>
 Development change sets: <a
-.br
 href="/cgi-bin/aeget/aegis.\*(v)/?changes+completed"
-.br
 >completed</a>,
 <a
-.br
 href="/cgi-bin/aeget/aegis.\*(v)/?changes+being_developed"
 >in progress</a>
 .\}
 .el \{
 This is the production branch web site.
-There is also a <a href="\*(p)/">\*(p) development branch</a> for
+There is also a <a href="\*(p)/" >\*(p) development branch</a> for
 users who want the latest features and enhancements.
 .\}
-</td><td bgcolor="#eeeeee" valign=top align=center width="15%">
-<a href="https://sourceforge.net/donate/index.php?group_id=224"><img
+</td><td bgcolor="#eeeeee" valign="top" align=center width="15%" >
+<a href="https://sourceforge.net/donate/index.php?group_id=224" ><img
 src="https://sourceforge.net/images/project-support.jpg"
-border=0 width=88 height=32></a>
+border=0 width=88 height=32 alt="" /></a>
 <br>
 You could <a
-href="https://sourceforge.net/donate/index.php?group_id=224">support
+href="https://sourceforge.net/donate/index.php?group_id=224" >support
 this project</a> with a donation.
 </td></tr></table>
-.br
-<p align=center>
+<p align="center" >
 <b>aegis</b>, <i>n.</i> a protection or defense
 [L, from Gk <i>aeg&iacute;s</i> the shield of Zeus]
 </p>
 <p><br>
-.br
 .\" ------------------------------------------------------------------------
 .if (\*(o)) \{
-    <table align=right width="40%" bgcolor="#ccffdd">
-    <tr><td valign=top><img src="missiku/network_2.png"></td><td valign=top>
-	<h2>The Two Branch Model</h2>
+    <table align=right width="40%" >
+
+    <tr bgcolor="#ffeeee" >
+    <td valign="top" >
+        <img src="missiku/network_2.png" alt="*" /></td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >The Two Branch Model</h2>
         The parallel production and development branch model has come
         about from requests by several organisational Aegis users.
         They would like a production branch which only ever had <a
@@ -141,37 +127,40 @@ this project</a> with a donation.
         bug fixes, but they don't want (are wary of) things like
         refactoring, deep feature enhancements, <i>etc</i>, until
         &ldquo;someone else&rdquo; has tried them out.
-	<ul><li>
+        <ul><li>
         <a href="bug_report.html" >Bug fixes</a> will be done in the
         development branch, and then &ldquo;back ported&rdquo; to the
         production branch if there is a request for it, preferably after
         early adopters (that is, development branch users) have been
         using it for a while.  This may be non-trivial in the face of
         some refactorings.
-	<li>
+        <li>
         Build problems will fixed on the production branch, and then
         automatically &ldquo;back ported&rdquo; to the production
         branch, if the production branch also suffers from them.
-	</ul>
+        </ul>
         The idea is that users and sites who want predictability can
         have it, and still apply <a href="bug_report.html" >bug fix</a>
         patches with a high degree of confidence, and have no obligation
         to add &ldquo;unverified&rdquo; new functionality to get them.
-	<br><p><br>
+        <br><p><br>
     </td></tr>
 
-    <tr><td valign=top><img src="missiku/network_2.png"></td><td valign=top>
-	<h2>Development Branch Activities</h2>
-	<ul><li>
+    <tr bgcolor="#eeffee" >
+    <td valign="top" >
+        <img src="missiku/network_2.png" alt="*" /></td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Development Branch Activities</h2>
+        <ul><li>
             The development branch will be used for the first cut of all
             <a href="bug_report.html" >bug fixes</a>.
-	<li>
+        <li>
             The development branch will be used for all refactoring,
-            <i>e.g.</i> turning <tt>project_ty</tt> from a struct to a
-            true C++ class, ditto <tt>change_ty</tt>, <i>etc</i>, and
+            <i>e.g.</i> turning <tt>project</tt> from a struct to a
+            true C++ class, ditto <tt>change</tt>, <i>etc</i>, and
             turning all the &ldquo;OO done manually in C&rdquo; stuff
             into true C++ class hierarchies.
-	<li>
+        <li>
             New functionality will first be added to the development
             branch.  This would not be back ported to the production
             branch without requests from production branch users, and
@@ -180,7 +169,7 @@ this project</a> with a donation.
             finish development branch, release, start new production
             branch, start new development branch) rather than a back
             port.
-	<li>
+        <li>
             Any significant &ldquo;surgery to the innermost
             functionality of Aegis&rdquo; will be performed on the
             development branch.  This would include stuff like fixing
@@ -188,298 +177,290 @@ this project</a> with a donation.
             of the deeper refactorings of significant data structures,
             change as <tt>change_ty</tt> which is at the heart of
             everything.
-	</ul>
-	<p>
+        </ul>
+        <p>
         By having the bleeding edge tarball available on the development
         web site, folks not using <tt>aedist --replay</tt> will still be
         able to participate.  <i>Caveat emptor</i>, of course.
     </td></tr>
-    <tr bgcolor="#ffeeee"><td valign=top align=center>
-        <img src="missiku/email_2.png"><p><br></td>
-    </td><td valign=top>
-        <h2> Reporting Bugs</h2>
-        If you have found a bug in Aegis, please <a href="bug_report.html"
-        > use the SourceForge trackers</a> to submit your bug report.
-    </td></tr>
+
+    <tr bgcolor="#ffeeee" >
+        <td valign="top" align=center>
+            <img src="missiku/email_2.png" alt="*" /><p><br>
+        </td>
+        <td valign="top" >
+            <h2 style="margin-top: 0" > Reporting Bugs</h2>
+            If you have found a bug in Aegis, please <a href="bug_report.html"
+            >use the SourceForge trackers</a> to submit your bug report.
+        </td>
+    </tr>
     </table>
 .\}
 <table align=center>
 
-<tr><td valign=top align=center><a href="documents.html"><img
-src="missiku/pdf_dir_2.png" border=0></a><p><br></td>
-<td valign=top>
-    <h2>Documentation</h2>
-    There is extensive <a href="documents.html">documentation</a>
-    available for Aegis, including
-    <ul><li>
-	a <a href="user-guide.pdf">User Guide</a>,
-    <li>
-	a <a href="refman.pdf">Reference Manual</a>,
-    <li>
-	a <a href="howto.pdf">How To</a>, and much more.
-    <li>
-        The <a href="documents.html">Documentation page</a> also has
-        links to HTML versions of these documents.
-    <li>
-	The <a href="propaganda/index.html">Propaganda</a> page also carries
-	comparisons and some other documentation.
-    </ul>
-    <br><p>
-</td></tr>
+<tr>
+    <td valign="top" align="center" >
+        <a href="documents.html" ><img src="missiku/pdf_dir_2.png" border=0
+        alt="*" /></a>
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Documentation</h2>
+        There is extensive <a href="documents.html" >documentation</a>
+        available for Aegis, including
+        <ul><li>
+            a <a href="user-guide.pdf" >User Guide</a>,
+        <li>
+            a <a href="refman.pdf" >Reference Manual</a>,
+        <li>
+            a <a href="howto.pdf" >How To</a>, and much more.
+        <li>
+            The <a href="documents.html" >Documentation page</a> also has
+            links to HTML versions of these documents.
+        <li>
+            The <a href="propaganda/index.html" >Propaganda</a> page
+            also carries comparisons and some other documentation.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
-<tr><td valign=top align=center><img src="missiku/usr_dir_2.png"><p><br></td>
-<td valign=top>
-    <h2>Getting Started</h2>
-    There are a number of resources available for you:
-    <ul><li>
-	There is a <a
-.nf
+<tr>
+    <td valign="top" align="center" >
+        <img src="missiku/usr_dir_2.png" alt="*" />
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Getting Started</h2>
+        There are a number of resources available for you:
+        <ul><li>
+            There is a <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/user-guide-html/\
 ug-c2_0-the_change_development_cycle.html"
-.fi
-	>worked example</a> of the first few change sets of a new
-	project in the <a href="user-guide.pdf">User Guide</a>.
-    <li>
-	There are some <a href="tmpl-proj.html">Template Projects</a>
-	which can be downloaded and unpacked using one of Aegis'
-	distributed development mechanisms, resulting in immediately
-	working projects managed by Aegis.
-    <li>
-        OSS developers will be intersted in the <a
-.nf
-href="eg_oss.html">
-.fi
-        simple GNU auto tools example</a>.  If your project uses
-        a simple GNU Auto Tools configuration, this example has
-        instructions to quickly get your project working under Aegis.
-    </ul>
-    <br><p>
-</td></tr>
+            >worked example</a> of the first few change sets of a new
+            project in the <a href="user-guide.pdf" >User Guide</a>.
+        <li>
+            There are some <a href="tmpl-proj.html" >Template Projects</a>
+            which can be downloaded and unpacked using one of Aegis'
+            distributed development mechanisms, resulting in immediately
+            working projects managed by Aegis.
+        <li>
+            OSS developers will be intersted in the <a href="eg_oss.html"
+            >simple GNU auto tools example</a>.  If your project uses
+            a simple GNU Auto Tools configuration, this example has
+            instructions to quickly get your project working under Aegis.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
-<tr><td valign=top align=center><img src="missiku/network_2.png"><p><br></td>
-<td valign=top>
-    <h2>Distributed Development</h2>
-    <ul><li>
-        The <i><a
-.nf
+<tr>
+    <td valign="top" align="center">
+        <img src="missiku/network_2.png" alt="*"/>
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Distributed Development</h2>
+        <ul><li>
+            The <i><a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/user-guide-html/\
 ug-c10_0-geographically_distributed_development.html"
-.fi
-	>Geographically Distributed Development</a></i> chapter of the <a
-	href="user-guide.pdf">User Guide</a> describes how to use the <a
-.nf
+            >Geographically Distributed Development</a></i> chapter of the <a
+            href="user-guide.pdf" >User Guide</a> describes how to use the <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re26.html"
-.fi
-	><i>aedist</i>(1)</a> command to send and receive change sets.
-    <li>
-        Both of the <a
-.nf
+            ><i>aedist</i>(1)</a> command to send and receive change sets.
+        <li>
+            Both of the <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re64.html"
-.fi
-	><i>aepatch</i>(1)</a> and <i><a
-.nf
+            ><i>aepatch</i>(1)</a> and <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re84.html"
-.fi
-	>aetar</i>(1)</a> commands may also be used to send and receive
-	change sets.  See the <a href="refman.pdf">Reference Manual</a>
-	for their <i>man</i>(1) pages.
-    <li>
-        The <i><a
-.nf
+            ><i>aetar</i>(1)</a> commands may also be used to send and receive
+            change sets.  See the <a href="refman.pdf" >Reference Manual</a>
+            for their <i>man</i>(1) pages.
+        <li>
+            The <i><a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/howto-html/\
 working_in_teams.html"
-.fi
-	>Working in Teams</a></i> section of the <a
-        href="howto.pdf">How To</a> describes a number of ways to
-        distribute projects.
-    <li>
-	The <a href="tmpl-proj.html">Template Projects</a>
-	provide a simple way to get a project started quickly and easily.
-	They are implemented using one of Aegis' distributed development
-	methods.
-    <li>
-	The <a
-.nf
+            >Working in Teams</a></i> section of the <a
+            href="howto.pdf" >How To</a> describes a number of ways to
+            distribute projects.
+        <li>
+            The <a href="tmpl-proj.html" >Template Projects</a>
+            provide a simple way to get a project started quickly and easily.
+            They are implemented using one of Aegis' distributed development
+            methods.
+        <li>
+            The <a
 href="http://aegis.sourceforge.net/cgi-bin/aeget/aegis.\*(v)/?rss+completed.xml"
-><img
-src="http://aegis.sourceforge.net/cgi-bin/aeget/icon/rss.gif"
-.fi
-        alt="RSS" border=0> feed</a> demonstrates how developers can
-        know when remote change sets are available.  This particular
-        link is for Aegis itself, but this mechanism is available for
-        your Aegis projects, too, if you choose to turn it on.
-    </ul>
-    <br><p>
-</td></tr>
+            ><img src="http://aegis.sourceforge.net/cgi-bin/aeget/icon/rss.gif"
+            alt="RSS" border=0 /> feed</a> demonstrates how developers can
+            know when remote change sets are available.  This particular
+            link is for Aegis itself, but this mechanism is available
+            for your Aegis projects, too, if you choose to turn it on.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
-<tr><td valign=top align=center><a href="download.html"><img
-src="missiku/dgn_dir_2.png" border=0></a><p><br></td>
-<td valign=top>
-    <h2>Download</h2>
-    <ul><li>
-	The <a href="download.html">Download</a> page has links to the
-	download files.
-    <li>
-        The <a href="building.pdf">BUILDING</a> file in the <a
-.ie (\*(o)) href="aegis-\*(V).tar.gz"
+<tr>
+    <td valign="top" align="center" >
+        <a href="download.html" ><img src="missiku/dgn_dir_2.png" border=0
+        alt="*" /></a>
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Download</h2>
+        <ul><li>
+            The <a href="download.html" >Download</a> page has links to the
+            download files.
+        <li>
+            The <a href="building.pdf" >BUILDING</a> file in the <a
+.if (\*(o)) href="aegis-\*(V).tar.gz"
 .el href="aegis-\*(v).tar.gz"
-        >tarball</a> contains instructions
-        for building Aegis, or you could use the nicely formatted
-        <i>Building</i> section of the <a href="refman.pdf">Reference
-        Manual</a>.
-    <li>
-        A number of distributions include Aegis, so it may be possible
-        to download a pre-built binary.
-    <li>
-        There are problems using Aegis on <a href="windowsnt.html">
-        Windows NT</a> due to a dissonance in security models between
-        Unix and Windows NT.  However, it is possible to build a single
-        user version using Cygwin, see the <a href="windowsnt.html">
-        Windows NT</a> page for more information.
-    </ul>
-    <br><p>
-</td></tr>
+            >tarball</a> contains instructions for building Aegis, or
+            you could use the nicely formatted <i>Building</i> section
+            of the <a href="refman.pdf" >Reference Manual</a>.
+        <li>
+            A number of distributions include Aegis, so it may be possible
+            to download a pre-built binary.
+        <li>
+            There are problems using Aegis on <a href="windowsnt.html"
+            >Windows NT</a> due to a dissonance in security models between
+            Unix and Windows NT.  However, it is possible to build a single
+            user version using Cygwin, see the <a href="windowsnt.html"
+            >Windows NT</a> page for more information.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
-<tr><td valign=top align=center><a href="mail-list.html"><img
-src="missiku/email_2.png" border=0></a><p><br></td>
-<td valign=top>
-    <h2>Getting Help</h2>
-    <ul><li>
-	There is an <tt>aegis-users</tt> mailing list, see the
-	<a href="mail-list.html">Mailing List</a> page for details.
-    <li>
-	The <a href="howto.pdf">How To</a> may also be of assistance.
-    <li>
-        The <a href="user-guide.pdf">User Guide</a> explains the
-        model of software development implemented by Aegis.
-    <li>
-        If you have found a bug, please <a href="bug_report.html" >
-        use the SourceForge trackers</a> to submit your bug report.
-    </ul>
-    <br><p>
-</td></tr>
+<tr>
+    <td valign="top" align="center" >
+        <a href="mail-list.html" ><img src="missiku/email_2.png" border=0
+        alt="*" /></a>
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Getting Help</h2>
+        <ul><li>
+            There is an <tt>aegis-users</tt> mailing list, see the
+            <a href="mail-list.html" >Mailing List</a> page for details.
+        <li>
+            The <a href="howto.pdf" >How To</a> may also be of assistance.
+        <li>
+            The <a href="user-guide.pdf" >User Guide</a> explains the
+            model of software development implemented by Aegis.
+        <li>
+            If you have found a bug, please <a href="bug_report.html"
+            >use the SourceForge trackers</a> to submit your bug report.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
-<tr><td valign=top align=center><img src="missiku/world_2.png"><p><br></td>
-<td valign=top>
-    <h2>Reference Sites</h2>
-    <ul><li>
-	There is a page of
-	<a href="propaganda/sites.html">Reference Sites</a>
-	for you to browse, including contact information.
-    <li>
-	You may also like to see the
-.nf
-<a href="http://aegis.sourceforge.net/cgi-bin/aeget">
-.fi
-	list of SourceForge projects using Aegis</a>, which incidentally
-	showcases the Aegis web interface.
-    </ul>
-    <br><p>
-</td></tr>
+<tr>
+    <td valign="top" align="center" >
+        <img src="missiku/world_2.png" alt="*" />
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >Reference Sites</h2>
+        <ul><li>
+            There is a page of
+            <a href="propaganda/sites.html" >Reference Sites</a>
+            for you to browse, including contact information.
+        <li>
+            You may also like to see the <a
+            href="http://aegis.sourceforge.net/cgi-bin/aeget"
+            >list of SourceForge projects using Aegis</a>, which incidentally
+            showcases the Aegis web interface.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
-<tr><td valign=top align=center><img src="missiku/window_2.png"><p><br></td>
-<td valign=top>
-    <h2>GUI Interfaces</h2>
-    There are several projects which are aimed at providing this.
-    <ul><li>
-        <a href="http://sourceforge.net/projects/ages"> Ages</a> is a
-        GNOME-based front end to Aegis.  It provides a comfortable way to
-        access the most common used functions available from Aegis.
-    <li>
-	<a href="http://sourceforge.net/projects/advantaegis/">AdvantAegis</a>
-	(download it <a
-.nf
+<tr>
+    <td valign="top" align="center" >
+        <img src="missiku/window_2.png" alt="*" />
+        <p><br>
+    </td>
+    <td valign="top" >
+        <h2 style="margin-top: 0" >GUI Interfaces</h2>
+        There are several projects which are aimed at providing this.
+        <ul><li>
+            <a href="http://sourceforge.net/projects/ages" >Ages</a> is a
+            GNOME-based front end to Aegis.  It provides a comfortable way to
+            access the most common used functions available from Aegis.
+        <li>
+            <a href="http://sourceforge.net/projects/advantaegis/"
+            >AdvantAegis</a>
+            (download it <a
 href="http://sourceforge.net/project/\
-showfiles.php?group_id=13621&package_id=65678"
-.fi
-	>here</a>)
-        is a Graphical User Interface (GUI) to Aegis.
-        AdvantAegis is written in wxPython (python with bindings).
-    <li>
-	There are some Tcl/Tk scripts in the Aegis source distribution.
-	They cover common activities such as creating and managing
-	change sets.  See <a
-.nf
+showfiles.php?group_id=13621&amp;package_id=65678"
+            >here</a>)
+            is a Graphical User Interface (GUI) to Aegis.
+            AdvantAegis is written in wxPython (python with bindings).
+        <li>
+            There are some Tcl/Tk scripts in the Aegis source distribution.
+            They cover common activities such as creating and managing
+            change sets.  See <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re90.html"
-.fi
-	><i>tkaenc</i>(1)</a> and <a
-.nf
+            ><i>tkaenc</i>(1)</a> and <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re88.html"
-.fi
-	><i>tkaeca</i>(1)</a> in the <a
-	href="refman.pdf">Reference Manual</a> for more information.
-    <li>
-        The <a
-.nf
+            ><i>tkaeca</i>(1)</a> in the <a
+            href="refman.pdf" >Reference Manual</a> for more information.
+        <li>
+            The <a
 href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re87.html"
-.fi
-	><i>aexver</i>(1)</a> command provides a GUI interface for
-	selecting two versions of a file to be differenced.
-    <li>
-	There is also the Aegis <a href="webiface.html">Web Interface</a>
-	for many tasks which mine Aegis' extensive meta-data.
-    </ul>
-    <br><p>
-</td></tr>
+            ><i>aexver</i>(1)</a> command provides a GUI interface for
+            selecting two versions of a file to be differenced.
+        <li>
+            There is also the Aegis <a href="webiface.html" >Web Interface</a>
+            for many tasks which mine Aegis' extensive meta-data.
+        </ul>
+        <br><p>
+    </td>
+</tr>
 
 </table>
-.br
 .\" ------------------------------------------------------------------------
 <hr>
-<table border=0><tr><td valign=top width=129>
-<a href="http://www.fsf.org/">
-<img
-.br
+<table border=0><tr><td valign="top" width=129>
+<a href="http://www.fsf.org/" ><img
 src="http://www.fsf.org/graphics/gnu-head-sm.jpg"
-border=0 width=129 height=122></a>
-.br
-</td><td valign=top width="50%">
-.br
+border=0 width=129 height=122 alt="" /></a>
+</td><td valign="top" width="50%" >
 Aegis is written and owned by
-<a href="mailto:millerp@canb.auug.org.au">
-Peter Miller &lt;millerp@canb.auug.org.au&gt;
+<a href="mailto:pmiller@opensource.org.au"
+>Peter Miller &lt;pmiller@opensource.org.au&gt;
 </a>
 and is freely distributable under the terms and conditions of the
-<a href="http://www.gnu.org/licenses/gpl.txt">GNU GPL</a>.
-.br
-</td><td valign=top width=110>
-.br
-<a href="http://www.opensource.org/docs/definition.php">
-<img
-.nf
+<a href="http://www.gnu.org/licenses/gpl.txt" >GNU GPL</a>.
+</td><td valign="top" width=110>
+<a href="http://www.opensource.org/docs/definition.php" ><img
 src="http://www.opensource.org/trademarks/opensource/web/opensource-110x95.png"
-border="0" width="110" height="95"></a>
-.fi
-</td><td valign=top width="50%">
-.br
-<p align="right">
+border="0" width="110" height="95" alt="" /></a>
+</td><td valign="top" width="50%" >
+<p align="right" >
 There is more <a href="http://miller.emu.id.au/pmiller/" >Software by
 Peter Miller</a> at his home page.
 </p>
-<p align="center">
+<p align="center" >
 <small><i>
 The beautiful graphics on this web site are by
-<a href="missiku/index.html">Gr&eacute;gory Delattre</a>.
+<a href="missiku/index.html" >Gr&eacute;gory Delattre</a>.
 </i></small>
-.br
-</td><td valign=top width="50%">
-.br
-<a href="http://miller.emu.id.au/pmiller/" >
-<img
-.nf
+</td><td valign="top" width="50%" >
+<a href="http://miller.emu.id.au/pmiller/" ><img
 src="http://miller.emu.id.au/pmiller/pmiller_2003_colour.128.png"
-.fi
-border=0>
+border=0 alt="" />
 </a>
 </td></tr></table>
-.br
 <hr>
 This page has been accessed approximately
 <img
-.nf
 src="http://miller.emu.id.au/cgi-bin/web_hit_counter?pmiller_aegis_\*(v)"
-.fi
-> times since
+alt="???" /> times since
 .ds MO1 Jan
 .ds MO2 Feb
 .ds MO3 Mar
@@ -495,3 +476,4 @@ src="http://miller.emu.id.au/cgi-bin/web_hit_counter?pmiller_aegis_\*(v)"
 .nr y4 \n[yr]+1900
 \n[dy]-\*[MO\n[mo]]-\n[y4].
 </body></html>
+.\" vim: set ts=8 sw=4 et :

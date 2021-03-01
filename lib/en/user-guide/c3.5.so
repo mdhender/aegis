@@ -1,27 +1,27 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Using aesvt"
 .LP
 The \fIaesvt\fP(1) command is distributed with Aegis.
 It supports binary files, has versy small history files,
-and has good end-to-end behaviour.
+and has good end\[hy]to\[hy]end behaviour.
 The entries for the commands are listed below.
 .nh 3 "history_create_command"
 .LP
@@ -39,9 +39,9 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "aesvt -checkin "
-  "-history $history "
-  "-f $input"
+  "aesvt \-checkin "
+  "\-history $history "
+  "\-f $input"
   ;
 .E)
 .nh 3 "history_put_command"
@@ -68,15 +68,15 @@ The entry in the
 file looks like this:
 .E(
 history_get_command =
-  "aesvt -checkout "
-  "-history $history "
-  "-edit $edit "
-  "-o $output"
+  "aesvt \-checkout "
+  "\-history $history "
+  "\-edit $edit "
+  "\-o $output"
   ;
 .E)
 .nh 3 "history_query_command"
 .LP
-This command is used to query what the history mechanism calls the top-most
+This command is used to query what the history mechanism calls the top\[hy]most
 edit of a history file.
 The result may be any arbitrary string,
 it need not be anything like a number,
@@ -96,8 +96,8 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "aesvt -query "
-  "-history $history"
+  "aesvt \-query "
+  "\-history $history"
   ;
 .E)
 .nh 3 "Templates"
@@ -117,10 +117,10 @@ names which contain characters which are special to the shell requires
 the use of the ${quote} substitution around all of the files names in
 the commands.
 .LP
-In addition, it is possible to store meta-date with each version.
+In addition, it is possible to store meta\[hy]data with each version.
 For example: \[lq]\f[CW]Description=${quote ($version) ${change
 description}}\fP\[rq] inserts the version number and the brief description
-into the file's log.  This means that using the \fIaesvt -list\fP option
+into the file's log.  This means that using the \fIaesvt \-list\fP option
 will provide quite useful summaries.
 .nh 3 "Binary Files"
 .LP
@@ -131,3 +131,4 @@ history_content_limitation =
     binary_capable;
 .E)
 so that Aegis knows that no encoding is required.
+.\" vim: set ts=8 sw=4 et :

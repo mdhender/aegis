@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2008 Peter Miller
+//      Copyright (C) 1999, 2001-2008, 2011, 2012 Peter Miller
 //      Copyright (C) 2006 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,8 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/str_list.h>
 #include <common/symtab.h>
@@ -68,7 +69,7 @@ list_change_files(change_identifier &cid, string_list_ty *)
             (
                 "Project \"%s\"  Change %ld",
                 cid.get_pp()->name_get()->str_text,
-                cid.get_cp()->number
+                cid.get_change_number()
             )
         );
     colp->title(line1->str_text, "List of Change's Files");
@@ -184,8 +185,7 @@ list_change_files(change_identifier &cid, string_list_ty *)
             // files which exist simply to host the locked_by field.
             // But if the file has been removed, toss it.
             //
-            psrc_data =
-                project_file_find(cid.get_pp(), src_data, view_path_none);
+            psrc_data = cid.get_pp()->file_find(src_data, view_path_none);
             if (psrc_data && psrc_data->action == file_action_remove)
                 psrc_data = 0;
 
@@ -335,3 +335,6 @@ list_change_files(change_identifier &cid, string_list_ty *)
         delete attr_col_stp;
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

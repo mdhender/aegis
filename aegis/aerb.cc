@@ -1,20 +1,20 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2008, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -25,6 +25,7 @@
 #include <common/mem.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex2.h>
@@ -39,7 +40,7 @@
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <libaegis/pattr.h>
+#include <libaegis/pattr.fmtgen.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
@@ -120,17 +121,11 @@ review_begin_main(void)
 {
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty       *project_name;
-    project_ty      *pp;
-    long            change_number;
-    change::pointer cp;
-    user_ty::pointer up;
     long            j;
 
     trace(("review_begin_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
+    change_identifier cid;
     string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -141,24 +136,10 @@ review_begin_main(void)
             continue;
 
         case arglex_token_change:
-            arglex();
-            // fall through...
-
         case arglex_token_number:
-            arglex_parse_change
-            (
-                &project_name,
-                &change_number,
-                review_begin_usage
-            );
-            continue;
-
         case arglex_token_project:
-            arglex();
-            // fall through...
-
         case arglex_token_string:
-            arglex_parse_project(&project_name, review_begin_usage);
+            cid.command_line_parse(review_begin_usage);
             continue;
 
         case arglex_token_wait:
@@ -166,49 +147,29 @@ review_begin_main(void)
             user_ty::lock_wait_argument(review_begin_usage);
             break;
 
-	case arglex_token_reason:
-	    if (reason)
-		duplicate_option(review_begin_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string(arglex_token_reason, review_begin_usage);
-		// NOTREACHED
+        case arglex_token_reason:
+            if (reason)
+                duplicate_option(review_begin_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_string(arglex_token_reason, review_begin_usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = str_from_c(arglex_value.alv_string);
-		break;
-	    }
-	    break;
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = str_from_c(arglex_value.alv_string);
+                break;
+            }
+            break;
         }
         arglex();
     }
+    cid.command_line_check(review_begin_usage);
 
-    //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    up = user_ty::create();
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-        change_number = up->default_change(pp);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
+    project *pp = cid.get_pp();
+    user_ty::pointer up = cid.get_up();
+    change::pointer cp = cid.get_cp();
 
     //
     // lock the change for writing
@@ -242,7 +203,7 @@ review_begin_main(void)
     (
         !project_developer_may_review_get(pp)
     &&
-        nstring(change_developer_name(cp)) == up->name()
+        nstring(cp->developer_name()) == up->name()
     )
         change_fatal(cp, 0, i18n("developer may not review"));
 
@@ -258,7 +219,7 @@ review_begin_main(void)
         cstate_data->state = cstate_state_being_reviewed;
         history_data = change_history_new(cp, up);
         history_data->what = cstate_history_what_review_begin;
-	history_data->why = reason;
+        history_data->why = reason;
     }
 
     //
@@ -304,7 +265,7 @@ review_begin_main(void)
             (
                 src_data->move
             &&
-                change_file_find(cp, src_data->move, view_path_first)
+                cp->file_find(nstring(src_data->move), view_path_first)
             )
                 diff_file_required = false;
             break;
@@ -316,7 +277,7 @@ review_begin_main(void)
             break;
         }
 
-        path = change_file_path(cp, src_data->file_name);
+        path = cp->file_path(src_data->file_name);
         if (file_required)
         {
             up->become_begin();
@@ -335,7 +296,7 @@ review_begin_main(void)
         }
 
         path_d = str_format("%s,D", path->str_text);
-	trace_bool(diff_file_required);
+        trace_bool(diff_file_required);
         if (diff_file_required)
         {
             up->become_begin();
@@ -365,7 +326,7 @@ review_begin_main(void)
     //
     // write out the data and release the locks
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     commit();
     lock_release();
 
@@ -402,3 +363,6 @@ review_begin(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), review_begin_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

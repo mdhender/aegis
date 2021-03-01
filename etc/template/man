@@ -15,7 +15,7 @@
 .\" You should have received a copy of the GNU General Public License along
 .\" with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH "\*(n) -Glup" 1 \*(N) "Reference Manual" ""
 .SH NAME
 \*(n) -Glup \- glup a change
@@ -42,7 +42,8 @@ The following options are understood:
 .TP 8n
 .B \-Glup
 This option may be used to
-.so o_help.so
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

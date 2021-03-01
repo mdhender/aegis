@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -26,8 +26,8 @@ the previous behaviour, use the \-NoResolve\fP option.
 .if n *
 .if t \(bu
 .\" change 50
-In the \fIaeca -e\fP and \fIaepa -e\fP commands, it is now possible to
-quote strings with at-signs (@) instead of double quotes.  This type of
+In the \fIaeca \-e\fP and \fIaepa \-e\fP commands, it is now possible to
+quote strings with at\[hy]signs (@) instead of double quotes.  This type of
 string allows newlines within the string.  See \fIaegis\fP(5) for more
 information.
 .PP
@@ -37,7 +37,7 @@ information.
 For the benefit of Aegis developers, there is now HTML documentation
 genaretd by Doxygen (if you have Doxygen installed).  When developing
 an Aegis change, in your development directory, point your browser at
-\f[CW]doxygen-html/\%index.html\fP.  The \f[CW]common/\%str.h\fP file
+\f[CW]doxygen\[hy]html/\%index.html\fP.  The \f[CW]common/\%str.h\fP file
 is an example of the style desired, should you wish to contribute to
 the effort to get all of the header files suitably annotated.
 .\" Change 11
@@ -62,14 +62,14 @@ you if your system did not have a native version of this function.
 .if n *
 .if t \(bu
 .\" change 35
-The \fIaeca\fP(1) command now accepts a \-fix-architecture option.
+The \fIaeca\fP(1) command now accepts a \-fix\[hy]architecture option.
 This option may be used to correct the architecture list
 of a change automatically.
 .PP
 .if n *
 .if t \(bu
 .\" change 33
-The \fIaedist -receive\fP command now runs the \fIaeca -fixarch\fP command
+The \fIaedist \-receive\fP command now runs the \fIaeca \-fixarch\fP command
 when a change set arrives which modified the project \fIconfig\fP file.
 This should fix many of the "architecture not in project configuration file"
 problems when seeding new projects.
@@ -122,4 +122,7 @@ range of input vagueries, including some weird things done by MTAs and
 more content transfer encoding synonyms.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.6 (11-Jul-2002)
+.SS Version 4.6 (11\[hy]Jul\[hy]2002)
+
+
+/* vim: set ts=8 sw=4 et : */

@@ -1,46 +1,45 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 2002, 2006-2008 Peter Miller.
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 2002, 2006-2008, 2010, 2012 Peter Miller.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -VERSion" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-VERSion" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis version \- give version information
 .XX "aev(1)" "version information"
 .SH SYNOPSIS
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 [
-.IR info-name
+.IR info\[hy]name
 ]
 .br
 .B \*(n)
-.B -VERSion
-.B -Help
+.B \-VERSion
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -VERSion
+.I \-VERSion
 command is used to
 give version information
 and conditions of use.
 .PP
 There are a number of possible
-.IR info-name s,
+.IR info\[hy]name s,
 as follow (abbreviations as for command line options):
 .TP 8n
 Copyright
@@ -55,19 +54,20 @@ Warranty
 Print the limited warranty.
 .SH OPTIONS
 The following options are understood:
-.so o_help.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aev '\*(n) -vers \e!*'
-sh$	aev(){\*(n) -vers "$@"}
+csh%    alias aev '\*(n) \-vers \e!*'
+sh$     aev(){\*(n) \-vers "$@"}
 .fi
 .SH ERRORS
 It is an error if
 the
-.I info-name
+.I info\[hy]name
 given is unknown.
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

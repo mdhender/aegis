@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" ------------------------------------------------------------------------
 .\" BUG FIXES:
@@ -73,7 +73,7 @@ handles multiple architectures being reported for batch test results.
 .if n *
 .if t \(bu
 .\" Change 407
-A bug has been fixed in the \fIaet -regression\fP command, the
+A bug has been fixed in the \fIaet \-regression\fP command, the
 \fIbatch_\%test_\%command\fP now correctly handles multiple
 architectures in the results.
 .PP
@@ -88,7 +88,7 @@ correctly substitute recipients' email addresses.
 .\" Change 113
 A bug has been fixed in the \fIaediff\fP(1) command, the \fI\-change\fP
 option is now ablew to cope with degenerate forms of the delta name in
-cases like \fIaediff -change D001\fP and similar.
+cases like \fIaediff \-change D001\fP and similar.
 .PP
 .if n *
 .if t \(bu
@@ -158,7 +158,7 @@ segfaults when compiled with DEBUG defined.
 .if n *
 .if t \(bu
 .\" Change 99
-A bug has been fixed in the \fIaedist -replay\fP command,
+A bug has been fixed in the \fIaedist \-replay\fP command,
 it no longer downloads change sets more than once.
 .PP
 .if n *
@@ -190,7 +190,7 @@ it no longer segfaults on IRIX.
 .if t \(bu
 .\" Change 560
 A bug was fixed which caused the development_directory of a branch to
-be recorded as an absolute path in the Aegis meta-data, rather than
+be recorded as an absolute path in the Aegis meta\[hy]data, rather than
 relative to the home of the project.  This problem make it difficult to
 move a project to a different location in the filesystem.
 .\" ------------------------------------------------------------------------
@@ -220,7 +220,7 @@ has been updated to cover the \-output opion.
 .if n *
 .if t \(bu
 .\" Change 227
-The \fIaerevml -send\fP command is now able to produce bzip2 compressed output.
+The \fIaerevml \-send\fP command is now able to produce bzip2 compressed output.
 .PP
 .if n *
 .if t \(bu
@@ -239,7 +239,7 @@ information.
 .if n *
 .if t \(bu
 .\" Change 185
-The \fIaetar -send\fP command is now able to produce bzip2 compressed output.
+The \fIaetar \-send\fP command is now able to produce bzip2 compressed output.
 .PP
 .if n *
 .if t \(bu
@@ -253,23 +253,23 @@ source projects).
 .if n *
 .if t \(bu
 .\" Change 215
-There is a new \fIaetar \-exclude-auto-tools\fP option, which can be
+There is a new \fIaetar \-exclude\[hy]auto\[hy]tools\fP option, which can be
 used to exclude derived files commonly found in open source projects
 using the GNU Autoconf and GNU Automake tools.
 .PP
 .if n *
 .if t \(bu
 .\" Change 19, 35, 90, 102, 111, 150, 152, 159, 163, 166, 198, 202, 206, 211
-There is a new \fIaede-policy\fP(1) command which may be invoked by
+There is a new \fIaede\[hy]policy\fP(1) command which may be invoked by
 \fIdevelop_\%end_\%policy_\%command\fP to enforce additional local
-policies.  See \fIaede-policy\fP(1) for more information.
+policies.  See \fIaede\[hy]policy\fP(1) for more information.
 .PP
 .if n *
 .if t \(bu
 .\" Change 205
 When symlinking files (source or derived) into the development
-directory, the last-modified time of the link is set to the
-last-modified time of the file being linked to, when the underlying
+directory, the last\[hy]modified time of the link is set to the
+last\[hy]modified time of the file being linked to, when the underlying
 filesystem supports it.
 .PP
 .if n *
@@ -288,25 +288,25 @@ command.  The \-force option implies a \f[CW]force=1\fP variable setting.
 .if n *
 .if t \(bu
 .\" Change 188
-The \fIaepatch -send\fP command is now able to produce bzip2 compressed output.
+The \fIaepatch \-send\fP command is now able to produce bzip2 compressed output.
 .PP
 .if n *
 .if t \(bu
 .\" Change 186
 The \fIaesvt\fP(1) command now uses the \fIbzip2\fP(1) algorithm by
-default.  There is a \fPaesvt -compression-algorithm=gzip\fP option for
+default.  There is a \fPaesvt \-compression\[hy]algorithm=gzip\fP option for
 forwards
 compatibility.
 .PP
 .if n *
 .if t \(bu
 .\" Change 162, 171
-There is a new \fIae-repo-ci\fP(1) command which may be used in an
-\fIintegrate_\%pass_\%notify_\%command\fP to do a parallel check-in
+There is a new \fIae\[hy]repo\[hy]ci\fP(1) command which may be used in an
+\fIintegrate_\%pass_\%notify_\%command\fP to do a parallel check\[hy]in
 of a change set into a second parallel repository.  It understands
 CVS and SVN at the moment; it is easy to extend to understand more
-repository types.  The old \fIae-cvs-ci\fP(1) script now invokes the
-\fIae-repo-ci\fP(1) command.
+repository types.  The old \fIae\[hy]cvs\[hy]ci\fP(1) script now invokes the
+\fIae\[hy]repo\[hy]ci\fP(1) command.
 .PP
 .if n *
 .if t \(bu
@@ -318,32 +318,32 @@ does not need to be built.
 .if n *
 .if t \(bu
 .\" Change 210
-The \fIaedist --replay\fP command now adds a compatibility modifier to
+The \fIaedist \-replay\fP command now adds a compatibility modifier to
 all of the downloads URLs, so that the change set received will
 be compatible with the version of aedist at the receiving end.
 .PP
 .if n *
 .if t \(bu
 .\" Change 203
-The \fIaedist \-send\fP command now accepts a \fI\-no-mime-header\fP
+The \fIaedist \-send\fP command now accepts a \fI\-no\[hy]mime\[hy]header\fP
 option, to make it easier to validate the \fIaedist\fP(1) output against
 the real \fIcpio\fP(1) command.
 .PP
 .if n *
 .if t \(bu
 .\" Change 187
-The \fIaedist -send\fP command is now able to produce bzip2 compressed output.
+The \fIaedist \-send\fP command is now able to produce bzip2 compressed output.
 .PP
 .if n *
 .if t \(bu
 .\" Change 177
-There is a new \fIentire-source-hide\fP file attribute which may be used
-to omit site-specific files from \fIaedist \-send\fP change sets.
+There is a new \fIentire\[hy]source\[hy]hide\fP file attribute which may be used
+to omit site\[hy]specific files from \fIaedist \-send\fP change sets.
 .PP
 .if n *
 .if t \(bu
 .\" Change 572
-The \fIaetar \-remove-path-prefix\fP option now also accepts a numeric
+The \fIaetar \-remove\[hy]path\[hy]prefix\fP option now also accepts a numeric
 argument.
 .PP
 .if n *
@@ -362,14 +362,14 @@ by the integrator and the reviewers.
 .if n *
 .if t \(bu
 .\" Change 128
-The \fIaecpu\fP(1) comand now understands the \fI\-read-only\fP option
+The \fIaecpu\fP(1) comand now understands the \fI\-read\[hy]only\fP option
 to mean uncopy all of the insulation files.
 .PP
 .if n *
 .if t \(bu
 .\" Change 121
 There is a new \fIaelock\fP(1) command, which may be used to take
-read-only locks.  This can be useful for backups, and other
+read\[hy]only locks.  This can be useful for backups, and other
 activities outside Aegis' scope which require a constant project
 state to operate correctly.
 .PP
@@ -504,7 +504,8 @@ A build problem on MacOS X has been fixed.
 .\" Change 16
 A build problem has been fixed where libraries required by the
 \f[CW]./configure\fP script are located under \f[CW]/usr/local/lib\fP or some
-other non-standard place.
+other non\[hy]standard place.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.21 (10-Nov-2005)
+.SS Version 4.21 (10\[hy]Nov\[hy]2005)
+.\" vim: set ts=8 sw=4 et :

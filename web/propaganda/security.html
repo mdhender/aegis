@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004-2006, 2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
+.\"
 .\"
 .\" Derived from text
 .\" Copyright (C) 2004 David Wheeler
@@ -23,975 +23,974 @@
 ..
 .ad l
 .hy 0
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="../favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-.br
 <meta name="description" content="A discussion on security requirements
 for software configuration management systems">
-.br
 <meta name="keywords" content="Aegis, David A. Wheeler, David Wheeler,
 Peter A. Miller, Peter Miller, SCM, SCM security, security, software
 configuration management">
-.br
 <title>
 Software Configuration Management (SCM) Security
 </title></head>
-<body bgcolor="#ffffff"><h1 align=center>
-<img src="../aegis.png" align=left>
-<img src="../missiku/world_2.png" align=right>
-<h1>Software Configuration Management (SCM) Security</h1>
+<body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="../aegis.png" align="left" alt="" />
+<img src="../missiku/world_2.png" align="right" alt="" />
+Software Configuration Management (SCM) Security
 </h1>
 <br clear=all>
 <table width="100%">
 <tr><td width="50%" align=center>
-	<big><b><a href="http://www.dwheeler.com/essays/scm-security.html">
-	Software Configuration Management (SCM) Security
-	</a></b></big>
-	<br>
-	By <i><a href="http://www.dwheeler.com/">David A. Wheeler</a></i>
+    <big><b><a href="http://www.dwheeler.com/essays/scm-security.html"
+    >Software Configuration Management (SCM) Security</a></b></big>
+    <br>
+    By <i><a href="http://www.dwheeler.com/">David A. Wheeler</a></i>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<big><b>
-	Security and Aegis
-	</b></big>
-	<br>
-	By <i>Peter Miller</i>
+    <big><b>
+    Security and Aegis
+    </b></big>
+    <br>
+    By <i>Peter Miller</i>
 </td></tr>
 
 <tr><td width="50%" align=center>
-	<b>Introduction</b>
+    <b>Introduction</b>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<b>Introduction</b>
+    <b>Introduction</b>
 </td></tr>
 
 <tr><td width="50%" align=center>
-        Software development is often supported by specialized programs
-        called "Software Configuration Management" (SCM) tools.  SCM
-        tools often control who can read and modify the source code of a
-        program, keep history information (so that people can find
-        out what changed between versions, and who changed them), and
-        generally help developers work together to improve a program
-        under development.
+    Software development is often supported by specialized programs
+    called "Software Configuration Management" (SCM) tools.  SCM
+    tools often control who can read and modify the source code of a
+    program, keep history information (so that people can find
+    out what changed between versions, and who changed them), and
+    generally help developers work together to improve a program
+    under development.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        The left column is David Wheeler's essay about software
-        configuration management and security.  This column contains a
-        running commentary on how Aegis achieves many of the desirable
-        security goals David outlines.
+    The left column is David Wheeler's essay about software
+    configuration management and security.  This column contains a
+    running commentary on how Aegis achieves many of the desirable
+    security goals David outlines.
 </td></tr>
 <tr><td width="50%" valign=top>
-        Problem is, the people who develop SCM tools often don't
-        think about what kind of security requirements they need to
-        support.  This mini-paper describes briefly the kinds of
-        security requirements an SCM tool should support.  Not every
-        project may need everything, but it's easy to not notice some
-        important requirements if you don't think about them.  There are
-        two basic types of SCM tools, "centralized" and "distributed";
-        the basic security needs are the same, but how these needs
-        can be handled are different between the two different types.
-        I'm primarily concentrating on basic SCM tools (like CVS,
-        Subversion, GNU Arch, Bitkeeper, Perforce, and so on).  Clearly
-        related tools include build tools, automated (regression) test
-        tools, bug tracking tools, static analysis tools, process
-        automation tools, software development tools (such as editors,
-        compilers, and IDEs), and so on.
+    Problem is, the people who develop SCM tools often don't
+    think about what kind of security requirements they need to
+    support.  This mini-paper describes briefly the kinds of
+    security requirements an SCM tool should support.  Not every
+    project may need everything, but it's easy to not notice some
+    important requirements if you don't think about them.  There are
+    two basic types of SCM tools, "centralized" and "distributed";
+    the basic security needs are the same, but how these needs
+    can be handled are different between the two different types.
+    I'm primarily concentrating on basic SCM tools (like CVS,
+    Subversion, GNU Arch, Bitkeeper, Perforce, and so on).  Clearly
+    related tools include build tools, automated (regression) test
+    tools, bug tracking tools, static analysis tools, process
+    automation tools, software development tools (such as editors,
+    compilers, and IDEs), and so on.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis was designed from the very beginning with security in
-        mind.  Indeed, for some time it provided rather more security
-        than open source developers needed or wanted.
-	<p>
-        Recent developments have provided additional configuration
-        options to allow a more relaxed security profile than is
-        provided by default.
+    Aegis was designed from the very beginning with security in
+    mind.  Indeed, for some time it provided rather more security
+    than open source developers needed or wanted.
+    <p>
+    Recent developments have provided additional configuration
+    options to allow a more relaxed security profile than is
+    provided by default.
 </td></tr>
 <tr><td width="50%" align=center>
-	<b>The Security Basics</b>
+    <b>The Security Basics</b>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<b>The Security Basics</b>
+    <b>The Security Basics</b>
 </td></tr>
 <tr><td width="50%" valign=top>
-	Fundamentally, there are some basic (potential) security requirements
-	that any system needs to consider.
-	These are:
+    Fundamentally, there are some basic (potential) security requirements
+    that any system needs to consider.
+    These are:
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	Here are the security features that Aegis is able to provide:
+    Here are the security features that Aegis is able to provide:
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	confidentiality:
-	are only those who should be able to read information able to do so?
-	</ul>
+    <ul><li>
+    confidentiality:
+    are only those who should be able to read information able to do so?
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Confidentiality:
-        projects may be configured so that only authorized staff are
-        able to read their source files or access their history.  It is
-        even possible to conceal a project's existence from other users
-        on the same computer.
-	</ul>
+    <ul><li>
+    Confidentiality:
+    projects may be configured so that only authorized staff are
+    able to read their source files or access their history.  It is
+    even possible to conceal a project's existence from other users
+    on the same computer.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	integrity:
-        are only those who should be able to write/change information
-        able to do so?  This includes not only limiting access rights
-        for writing, but also protecting against repository corruption.
+    <ul><li>
+    integrity:
+    are only those who should be able to write/change information
+    able to do so?  This includes not only limiting access rights
+    for writing, but also protecting against repository corruption.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Integrity:
-        Aegis has separate ACLs for developers, reviewers and
-        integrators.  Various operations during the lifetime of a change
-        set are limited to one or other of these roles.
-	<li>
-	Integrity:
-        It is possible (and recommended) that the project repositories
-        (history and baselines) be read-only to all project staff.  The
-        rest of this discussion will assume this facility is being used.
-        All operations which modify the repository are mediated by
-        Aegis.
-	<li>
-	Integrity:
-	The meta-data files cannot be edited by project staff.
-	<li>
-	Integrity:
-	The history files cannot be edited by project staff.
-	</ul>
+    <ul><li>
+    Integrity:
+    Aegis has separate ACLs for developers, reviewers and
+    integrators.  Various operations during the lifetime of a change
+    set are limited to one or other of these roles.
+    <li>
+    Integrity:
+    It is possible (and recommended) that the project repositories
+    (history and baselines) be read-only to all project staff.  The
+    rest of this discussion will assume this facility is being used.
+    All operations which modify the repository are mediated by
+    Aegis.
+    <li>
+    Integrity:
+    The meta-data files cannot be edited by project staff.
+    <li>
+    Integrity:
+    The history files cannot be edited by project staff.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	availability:
-	is the system available to those who need it?
-	(I.E., is it resistant to denial-of-service attacks?)
-	</ul>
+    <ul><li>
+    availability:
+    is the system available to those who need it?
+    (I.E., is it resistant to denial-of-service attacks?)
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Availability:
-	Aegis relies on the host computer's facilities for this,
-	including backup of its meta-data and repository.
-	</ul>
+    <ul><li>
+    Availability:
+    Aegis relies on the host computer's facilities for this,
+    including backup of its meta-data and repository.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	identification/authentication:
-        does the system safely authenticate its users?  If it uses
-        tokens (like passwords), are they protected when stored and
-        while being sent over a network, or are they exposed as
-        clear text?
-	</ul>
+    <ul><li>
+    identification/authentication:
+    does the system safely authenticate its users?  If it uses
+    tokens (like passwords), are they protected when stored and
+    while being sent over a network, or are they exposed as
+    clear text?
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Authentication:
-	Aegis relies on the host operating system for this.
-	Once the operating system has authenticated a user, Aegis
-	trusts the operating system.
-	<li>
-	Authorization:
-	Aegis has separate ACLs for each project for each role
-	(developer, reviewer, integrator).  Only authorized users
-	may advance a change set through the process.
-	</ul>
+    <ul><li>
+    Authentication:
+    Aegis relies on the host operating system for this.
+    Once the operating system has authenticated a user, Aegis
+    trusts the operating system.
+    <li>
+    Authorization:
+    Aegis has separate ACLs for each project for each role
+    (developer, reviewer, integrator).  Only authorized users
+    may advance a change set through the process.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	audit:
-	Are actions recorded?
-	</ul>
+    <ul><li>
+    audit:
+    Are actions recorded?
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Audit:
-        Aegis records all actions by all users who advance a change set
-        through the process, including the user's identity, what they
-        did and a time stamp.
-	</ul>
+    <ul><li>
+    Audit:
+    Aegis records all actions by all users who advance a change set
+    through the process, including the user's identity, what they
+    did and a time stamp.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	non-repudiation:
-        Can the system "prove" that a certain user/key did an action later?
-	</ul>
+    <ul><li>
+    non-repudiation:
+    Can the system "prove" that a certain user/key did an action later?
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Non-repudiation:
-        Because Aegis relies on the host operating system to
-        authenticate users, the non-reputation features of the operating
-        system carry over to Aegis.
-	</ul>
+    <ul><li>
+    Non-repudiation:
+    Because Aegis relies on the host operating system to
+    authenticate users, the non-reputation features of the operating
+    system carry over to Aegis.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	self-protection:
-        Does the system protect itself, and can its own data (like
-        time stamps) be trusted?
-	</ul>
+    <ul><li>
+    self-protection:
+    Does the system protect itself, and can its own data (like
+    time stamps) be trusted?
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Self-protection:
-	The recommended mode of operation, where the projects
-	repository (history and baselines) are read-only to
-	the entire project team, means that all changes to the
-	repository are mediated by Aegis.
-        Thus, Aegis can trust that its meta-data is untainted (it can't
-        defend against root privilege).
-	</ul>
+    <ul><li>
+    Self-protection:
+    The recommended mode of operation, where the projects
+    repository (history and baselines) are read-only to
+    the entire project team, means that all changes to the
+    repository are mediated by Aegis.
+    Thus, Aegis can trust that its meta-data is untainted (it can't
+    defend against root privilege).
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	trusted paths:
-	Can the system make sure that its communication with
-	users is protected?
-	</ul>
+    <ul><li>
+    trusted paths:
+    Can the system make sure that its communication with
+    users is protected?
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Trusted paths:
-	Aegis has a number of features which facilitate
-	geographically distributed development.  By using tools
-	such as OpenPGP or GnuPG when change sets are in transit, as
-	much or as little protection as desired can be achieved.
-	</ul>
+    <ul><li>
+    Trusted paths:
+    Aegis has a number of features which facilitate
+    geographically distributed development.  By using tools
+    such as OpenPGP or GnuPG when change sets are in transit, as
+    much or as little protection as desired can be achieved.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-        An SCM has several assets to protect.  It needs to protect
-        "current" versions of software, but it must do much more.  It
-        needs to make sure that it can recall any previous version of
-        software, correctly, as well as the audit trail of exactly who
-        made which change and when.  In particular, an SCM has to keep
-        the history <i>immutable</i> - once a change is made, it needs
-        to stay recorded.  You can undo the change, but the undoing
-        needs to be recorded separately.  Very old history may need
-        to be removed and archived, but that's different than simply
-        allowing history to be deleted.
+    An SCM has several assets to protect.  It needs to protect
+    "current" versions of software, but it must do much more.  It
+    needs to make sure that it can recall any previous version of
+    software, correctly, as well as the audit trail of exactly who
+    made which change and when.  In particular, an SCM has to keep
+    the history <i>immutable</i> - once a change is made, it needs
+    to stay recorded.  You can undo the change, but the undoing
+    needs to be recorded separately.  Very old history may need
+    to be removed and archived, but that's different than simply
+    allowing history to be deleted.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis has complete control of the history of a project and the
-        associated meta-data.  All change sets are preserved forever.
-	<p>
-        Most aspects of Aegis' meta-data are immutable.  Only project
-        administrators may change the description of a change once
-        it has been committed to the repository (developers are
-        notoriously bad at accurately describing their changes); project
-        administrators cannot alter any information about the file
-        histories or the various users and time stamps the change set has
-        accrued.
+    Aegis has complete control of the history of a project and the
+    associated meta-data.  All change sets are preserved forever.
+    <p>
+    Most aspects of Aegis' meta-data are immutable.  Only project
+    administrators may change the description of a change once
+    it has been committed to the repository (developers are
+    notoriously bad at accurately describing their changes); project
+    administrators cannot alter any information about the file
+    histories or the various users and time stamps the change set has
+    accrued.
 </td></tr>
 <tr><td width="50%" align=center>
-	<b>The Threats</b>
+    <b>The Threats</b>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<b>The Threats</b>
+    <b>The Threats</b>
 </td></tr>
 <tr><td width="50%" valign=top>
-	Okay, so what are the potential threats?
-	These vary, and not all projects will worry about all threats.
-	Nevertheless, it's easier to provide a list of threats and the
-	counter-measures an SCM should support.
+    Okay, so what are the potential threats?
+    These vary, and not all projects will worry about all threats.
+    Nevertheless, it's easier to provide a list of threats and the
+    counter-measures an SCM should support.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	Aegis was designed from the ground up to cope with a number of threats.
+    Aegis was designed from the ground up to cope with a number of threats.
 </td></tr>
 <tr><td width="50%" valign=top>
-        Individual projects may choose to not employ a given
-        counter-measure, since they may decide that's not a threat for
-        them.  For example, open source software (OSS) projects may
-        decide that there's no "threat" of unauthorized reading of
-        software, since the code is open to reading by all.  However,
-        that may not always be true - many OSS projects hide changes
-        that reveal security vulnerabilities until the new version is
-        ready for deployment.  Thus, it's difficult to make simple
-        statements like "projects of type X never need to worry about
-        threat Y".  Instead, it's simpler to list some potential
-        threats, and then projects can decide which ones apply to them
-        (and configure their SCM system to counter them).
+    Individual projects may choose to not employ a given
+    counter-measure, since they may decide that's not a threat for
+    them.  For example, open source software (OSS) projects may
+    decide that there's no "threat" of unauthorized reading of
+    software, since the code is open to reading by all.  However,
+    that may not always be true - many OSS projects hide changes
+    that reveal security vulnerabilities until the new version is
+    ready for deployment.  Thus, it's difficult to make simple
+    statements like "projects of type X never need to worry about
+    threat Y".  Instead, it's simpler to list some potential
+    threats, and then projects can decide which ones apply to them
+    (and configure their SCM system to counter them).
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis provides the ability to customize many aspects of the
-        process which change sets travel through to be included in the
-        project repository.
-	<p>
-        The default configuration is medium paranoid.  It is possible
-        to increase that to extremely paranoid (or extremely officious,
-        depending on your perspective), or weaken it to merely be
-        helpful.
+    Aegis provides the ability to customize many aspects of the
+    process which change sets travel through to be included in the
+    project repository.
+    <p>
+    The default configuration is medium paranoid.  It is possible
+    to increase that to extremely paranoid (or extremely officious,
+    depending on your perspective), or weaken it to merely be
+    helpful.
 </td></tr>
 <tr><td width="50%" align=center>
-	<i>Outsiders without privileges</i>
+    <i>Outsiders without privileges</i>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<i>Outsiders without privileges</i>
+    <i>Outsiders without privileges</i>
 </td></tr>
 <tr><td width="50%" valign=top>
-        An outsider (not a developer or administrator) may try to read
-        or modify assets (software source code or history information)
-        when they're not authorized to do so.  SCM systems should
-        support authorization (like login systems), and support a
-        definition of what unauthorized users can do.  An SCM system
-        should support configurations that allow anonymous reading of
-        a project and/or its history, since there are many cases where
-        that's useful.  However, SCMs should also support forbidding
-        anonymous read access.  That's even true for OSS projects, since
-        as I noted above, sometimes OSS projects want to hide security
-        fixes until they're ready for deployment.
+    An outsider (not a developer or administrator) may try to read
+    or modify assets (software source code or history information)
+    when they're not authorized to do so.  SCM systems should
+    support authorization (like login systems), and support a
+    definition of what unauthorized users can do.  An SCM system
+    should support configurations that allow anonymous reading of
+    a project and/or its history, since there are many cases where
+    that's useful.  However, SCMs should also support forbidding
+    anonymous read access.  That's even true for OSS projects, since
+    as I noted above, sometimes OSS projects want to hide security
+    fixes until they're ready for deployment.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        By using the UNIX groups facility (see <i>group</i>(5) for
-        more information) it is possible to limit the read access to a
-        project to members of a single group.
-	<p>
-        However, this leaks the existence of the project.  By using the
-        AEGIS_PATH environment variable, telling Aegis where to look
-        for projects, it is also possible to conceal the existence of a
-        project.
-	<p>
-        Aegis has separate ACLs to developers, reviewers and
-        integrators, limiting the number of users who can modify the
-        project - but even then, they must follow the process.
+    By using the UNIX groups facility (see <i>group</i>(5) for
+    more information) it is possible to limit the read access to a
+    project to members of a single group.
+    <p>
+    However, this leaks the existence of the project.  By using the
+    AEGIS_PATH environment variable, telling Aegis where to look
+    for projects, it is also possible to conceal the existence of a
+    project.
+    <p>
+    Aegis has separate ACLs to developers, reviewers and
+    integrators, limiting the number of users who can modify the
+    project - but even then, they must follow the process.
 </td></tr>
 <tr><td width="50%" valign=top>
-        Normally unauthorized users shouldn't be allowed to modify
-        a source repository, so an SCM should support that (and
-        should make that the default).  In rare cases, it's possible
-        to imagine that even this constraint isn't true, especially
-        if the SCM tool is designed to be used for resources
-        other than source code.  Most Wiki systems such as <a
-        href="http://www.wikipedia.org">Wikipedia</a> allow anonymous
-        changes; they work instead by protecting the <i>history</i>
-        of changes so that everyone will know exactly what's changed,
-        instead of preventing writing of the primary data.  Such
-        approaches are rare for software code; for example, the
-        Wikipedia software itself (as stored in its trusted repository)
-        can only be changed by a few privileged developers.  However,
-        it is conceivable that software documentation and code would be
-        maintained by the same SCM software, and perhaps a few projects
-        would allow anyone to update the documentation as long as all
-        changes were tracked and could be easily reversed.
+    Normally unauthorized users shouldn't be allowed to modify
+    a source repository, so an SCM should support that (and
+    should make that the default).  In rare cases, it's possible
+    to imagine that even this constraint isn't true, especially
+    if the SCM tool is designed to be used for resources
+    other than source code.  Most Wiki systems such as <a
+    href="http://www.wikipedia.org">Wikipedia</a> allow anonymous
+    changes; they work instead by protecting the <i>history</i>
+    of changes so that everyone will know exactly what's changed,
+    instead of preventing writing of the primary data.  Such
+    approaches are rare for software code; for example, the
+    Wikipedia software itself (as stored in its trusted repository)
+    can only be changed by a few privileged developers.  However,
+    it is conceivable that software documentation and code would be
+    maintained by the same SCM software, and perhaps a few projects
+    would allow anyone to update the documentation as long as all
+    changes were tracked and could be easily reversed.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis is very strict about which users are authorized to create
-        and modify change sets.  If you are not in the appropriate ACL,
-        you may not perform the action.
-	<p>
-        It would be possible (although this isn't the case at present)
-        to add code to Aegis to allow "anybody" to be a change set
-        developer.  It is probably most undesirable to allow "anybody"
-        to be a code reviewer or integrator.
-	<p>
-        Aegis breaks the traditional "commit" step into several pieces.
-        Large project are able to be configured to require a user other
-        than the developer to perform the code review step (this is
-        the default).  Thus, it is safe for naive developers to modify
-        any source file they like, but they have to get it past a
-        code reviewer before it will appear in the repository.  There
-        are facilities in Aegis to require specific code reviewers for
-        specific portions of the code.
+    Aegis is very strict about which users are authorized to create
+    and modify change sets.  If you are not in the appropriate ACL,
+    you may not perform the action.
+    <p>
+    It would be possible (although this isn't the case at present)
+    to add code to Aegis to allow "anybody" to be a change set
+    developer.  It is probably most undesirable to allow "anybody"
+    to be a code reviewer or integrator.
+    <p>
+    Aegis breaks the traditional "commit" step into several pieces.
+    Large project are able to be configured to require a user other
+    than the developer to perform the code review step (this is
+    the default).  Thus, it is safe for naive developers to modify
+    any source file they like, but they have to get it past a
+    code reviewer before it will appear in the repository.  There
+    are facilities in Aegis to require specific code reviewers for
+    specific portions of the code.
 </td></tr>
 <tr><td width="50%" valign=top>
-        The underlying identification and authentication system (the
-        login system) can use intrusion detection systems to detect
-        likely attempts to forge privileges (e.g., by detecting password
-        guessing attacks, or detecting improbable locations of a login).
-        The underlying login system could also support enabling limits
-        (e.g., delays after X login attempts, or only permitting logins
-        from certain Internet Protocol address ranges for certain
-        developers).  However, these mechanisms need to not create a
-        denial-of-service attack; otherwise, an attacker might try to
-        forge logins not to actually log in, but to prevent legitimate
-        users from doing so.
+    The underlying identification and authentication system (the
+    login system) can use intrusion detection systems to detect
+    likely attempts to forge privileges (e.g., by detecting password
+    guessing attacks, or detecting improbable locations of a login).
+    The underlying login system could also support enabling limits
+    (e.g., delays after X login attempts, or only permitting logins
+    from certain Internet Protocol address ranges for certain
+    developers).  However, these mechanisms need to not create a
+    denial-of-service attack; otherwise, an attacker might try to
+    forge logins not to actually log in, but to prevent legitimate
+    users from doing so.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis relies on the host operating system for authentication
-        services.  The extent to which the host operating system can
-        detect attacks is the extent to which project managed by Aegis
-        are safe or at risk.
+    Aegis relies on the host operating system for authentication
+    services.  The extent to which the host operating system can
+    detect attacks is the extent to which project managed by Aegis
+    are safe or at risk.
 </td></tr>
 <tr><td width="50%" align=center>
-	<i>Non-malicious developers with privileges</i>
+    <i>Non-malicious developers with privileges</i>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<i>Non-malicious developers with privileges</i>
+    <i>Non-malicious developers with privileges</i>
 </td></tr>
 <tr><td width="50%" valign=top>
-        An SCM system should support protected logins (e.g., if it
-        uses passwords, it should protect passwords during transit and
-        while they're stored).  Once users are authenticated, an SCM
-        system should be able to limit what users can do based on the
-        authorization that's implied.
+    An SCM system should support protected logins (e.g., if it
+    uses passwords, it should protect passwords during transit and
+    while they're stored).  Once users are authenticated, an SCM
+    system should be able to limit what users can do based on the
+    authorization that's implied.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis relies on the host operating system for authentication
-        services.  Once authenticated, individual users may be
-        authorized to perform different actions, based on simple ACLs.
-	Each project has separate ACLs for the various roles.
+    Aegis relies on the host operating system for authentication
+    services.  Once authenticated, individual users may be
+    authorized to perform different actions, based on simple ACLs.
+    Each project has separate ACLs for the various roles.
 </td></tr>
 <tr><td width="50%" valign=top>
-        SCM systems could usefully limit reading to particular projects,
-        say.  Limiting reading of specific files inside a project
-        can be useful, but it often isn't as useful inside a branch
-        developers must access because developers often need the entire
-        set of files to develop (e.g., to recompile something).  But
-        limiting who can read changes in certain branches could be vital
-        for some projects.  For example, it is common for security
-        vulnerabilities to be reported to a smaller group of people than
-        the entire development staff, and for the patch to be developed
-        by specially trusted developers without full knowledge of all
-        developers.  This is particularly true for open source software
-        projects, but it's also sometimes true for other projects.  This
-        kind of functionality can also be important for projects such as
-        military projects with varying degrees of confidentiality; most
-        of the program may be "unclassified", but with a poor or stubbed
-        algorithm; there may be a better classified algorithm, but it
-        will need to be maintained separately.  Ideally, the SCM should
-        be trustworthy enough to protect that data, though in practice
-        such trust is rarely granted; an SCM should instead gracefully
-        handle importing the "unclassified" version and automatically
-        merging the "classified" data on equipment trusted to do so.
+    SCM systems could usefully limit reading to particular projects,
+    say.  Limiting reading of specific files inside a project
+    can be useful, but it often isn't as useful inside a branch
+    developers must access because developers often need the entire
+    set of files to develop (e.g., to recompile something).  But
+    limiting who can read changes in certain branches could be vital
+    for some projects.  For example, it is common for security
+    vulnerabilities to be reported to a smaller group of people than
+    the entire development staff, and for the patch to be developed
+    by specially trusted developers without full knowledge of all
+    developers.  This is particularly true for open source software
+    projects, but it's also sometimes true for other projects.  This
+    kind of functionality can also be important for projects such as
+    military projects with varying degrees of confidentiality; most
+    of the program may be "unclassified", but with a poor or stubbed
+    algorithm; there may be a better classified algorithm, but it
+    will need to be maintained separately.  Ideally, the SCM should
+    be trustworthy enough to protect that data, though in practice
+    such trust is rarely granted; an SCM should instead gracefully
+    handle importing the "unclassified" version and automatically
+    merging the "classified" data on equipment trusted to do so.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis does not provide this facility on a per-file or
-        per-directory bases.  It is possible to vary staff roles per
-        branch, but this does not include read access.
+    Aegis does not provide this facility on a per-file or
+    per-directory bases.  It is possible to vary staff roles per
+    branch, but this does not include read access.
 </td></tr>
 <tr><td width="50%" valign=top>
-	Limiting writing of specific files inside a project can be much more
-	useful, since in some projects some users "own" certain files.
-	In many situations it doesn't make sense either, but an SCM
-	system should still support limiting which developers
-	can make which changes.
+    Limiting writing of specific files inside a project can be much more
+    useful, since in some projects some users "own" certain files.
+    In many situations it doesn't make sense either, but an SCM
+    system should still support limiting which developers
+    can make which changes.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis breaks the traditional "commit" step into several pieces.
-        Large project are able to be configured to require a user other
-        than the developer to perform the code review step (this is
-        the default).  Thus, it is safe for naive developers to modify
-        any source file they like, but they have to get it past a
-        code reviewer before it will appear in the repository.  There
-        are facilities in Aegis to require specific code reviewers for
-        specific portions of the code.
+    Aegis breaks the traditional "commit" step into several pieces.
+    Large project are able to be configured to require a user other
+    than the developer to perform the code review step (this is
+    the default).  Thus, it is safe for naive developers to modify
+    any source file they like, but they have to get it past a
+    code reviewer before it will appear in the repository.  There
+    are facilities in Aegis to require specific code reviewers for
+    specific portions of the code.
 </td></tr>
 <tr><td width="50%" align=center>
-        <i>Malicious developers with privileges (and attackers with
-           their credentials)</i>
+    <i>Malicious developers with privileges (and attackers with
+       their credentials)</i>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-        <i>Malicious developers with privileges (and attackers with
-           their credentials)</i>
+    <i>Malicious developers with privileges (and attackers with
+       their credentials)</i>
 </td></tr>
 <tr><td width="50%" valign=top>
-        An area often forgotten by SCM systems is handling
-        <i>malicious</i> developers.  You know, the ones who
-        intentionally insert Trojan horses into programs.  Denying they
-        exist doesn't help; they <i>do</i> exist.  And even if they
-        didn't, there's no easy way for an SCM to tell the difference
-        between an authorized malicious developer and an attacker who's
-        acquired an authorized developer's credentials.
+    An area often forgotten by SCM systems is handling
+    <i>malicious</i> developers.  You know, the ones who
+    intentionally insert Trojan horses into programs.  Denying they
+    exist doesn't help; they <i>do</i> exist.  And even if they
+    didn't, there's no easy way for an SCM to tell the difference
+    between an authorized malicious developer and an attacker who's
+    acquired an authorized developer's credentials.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Never ascribe to malice what you can ascribe to stupidity.
-        Developers (particularly, tired and overworked developers)
-        frequently do stupid things.  If you can think of a malicious
-        way to subvert a system, some user will do it by accident
-        <i>and not know he did it</i>.
+    Never ascribe to malice what you can ascribe to stupidity.
+    Developers (particularly, tired and overworked developers)
+    frequently do stupid things.  If you can think of a malicious
+    way to subvert a system, some user will do it by accident
+    <i>and not know he did it</i>.
 </td></tr>
 <tr><td width="50%" valign=top>
-        A malicious developer might even try to make it appear that some
-        <i>other</i> developer has done a malicious deed (or at least
-        make it untraceable).  They can use their existing privileges
-        to try to gain more privileges.  A malicious developer might
-        try to modify the data used by a CM system so that it looks
-        like someone else made the change (e.g., provide someone else's
-        name in a ChangeLog entry).  A malicious developer might try to
-        modify a CM "hook" to make it appear that some other developer
-        has inserted malicious code (perhaps to avoid blame or frame
-        the other developer).  A malicious developer might modify the
-        build process, e.g., so that when another developer builds the
-        software, the build system attempts to steal credentials or harm
-        the developer.
+    A malicious developer might even try to make it appear that some
+    <i>other</i> developer has done a malicious deed (or at least
+    make it untraceable).  They can use their existing privileges
+    to try to gain more privileges.  A malicious developer might
+    try to modify the data used by a CM system so that it looks
+    like someone else made the change (e.g., provide someone else's
+    name in a ChangeLog entry).  A malicious developer might try to
+    modify a CM "hook" to make it appear that some other developer
+    has inserted malicious code (perhaps to avoid blame or frame
+    the other developer).  A malicious developer might modify the
+    build process, e.g., so that when another developer builds the
+    software, the build system attempts to steal credentials or harm
+    the developer.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis trusts the operating system to authenticate users.
-        Once authenticated, users do not have write access to the
-        meta-data or history files of any change set.  The vast majority
-        of "hooks" are in files controlled by Aegis' process; to
-        maliciously change one requires a conspiracy of developer,
-        reviewer and integrator.
+    Aegis trusts the operating system to authenticate users.
+    Once authenticated, users do not have write access to the
+    meta-data or history files of any change set.  The vast majority
+    of "hooks" are in files controlled by Aegis' process; to
+    maliciously change one requires a conspiracy of developer,
+    reviewer and integrator.
 </td></tr>
 <tr><td width="50%" valign=top>
-        Since developers have the privileges to read and change data,
-        malicious developers (and attackers with their credentials) are
-        harder to counter.  But there <i>are</i> counter-measures that
-        can be used against them.  Here are some reasonable measures:
+    Since developers have the privileges to read and change data,
+    malicious developers (and attackers with their credentials) are
+    harder to counter.  But there <i>are</i> counter-measures that
+    can be used against them.  Here are some reasonable measures:
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        While developers have the privileges to read source files, and
-        the ability to change them in their private work areas, they are
-        unable (by themselves) to modify file histories or change set
-        meta-data.  Here are some of Aegis' counter-measures:
+    While developers have the privileges to read source files, and
+    the ability to change them in their private work areas, they are
+    unable (by themselves) to modify file histories or change set
+    meta-data.  Here are some of Aegis' counter-measures:
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Make sure that developers can't corrupt the repository.  As a
-        counter-example, GNU Arch allows developers to share a writable
-        directory as a repository.  That's very convenient, but if
-        you're worried about malicious developers, that's not enough;
-        a malicious developer could easily remove data or corrupt it
-        in such a way that it'd be hard to tell who caused the problem
-        (there's current effort to create an "archd" server that would
-        probably counter this problem).
-	</ul>
+    <ul><li>
+    Make sure that developers can't corrupt the repository.  As a
+    counter-example, GNU Arch allows developers to share a writable
+    directory as a repository.  That's very convenient, but if
+    you're worried about malicious developers, that's not enough;
+    a malicious developer could easily remove data or corrupt it
+    in such a way that it'd be hard to tell who caused the problem
+    (there's current effort to create an "archd" server that would
+    probably counter this problem).
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        The recommended Aegis configuration has the history files and
-        the project meta-data read-only to the <i>entire</i> development
-        team, even users authorized to integrate change sets into the
-        repository.  All operations which advance a change set along
-        the process are logged, including the final one which actually
-        alters the change set's files' histories.
-	</ul>
+    <ul><li>
+    The recommended Aegis configuration has the history files and
+    the project meta-data read-only to the <i>entire</i> development
+    team, even users authorized to integrate change sets into the
+    repository.  All operations which advance a change set along
+    the process are logged, including the final one which actually
+    alters the change set's files' histories.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Make sure that all developer actions are logged in a
-        non-repudiatable, immutable way.  That way, even if someone makes
-        a change, it's easy to see who made what changes, in any time
-        in the future.  That "someone" may be a malicious developer, or
-        an attacker with the credentials (e.g., cryptographic keys) of
-        a developer -- but in either case, once you find out who did a
-        malicious act, the SCM should make it easy to identify all of
-        their actions.  In short, if you make it easy to catch someone,
-        you increase the attackers' risk... and that means the attacker
-        is less likely to do it.  In practice, this can be done by
-        requiring that all changes be cryptographically signed by each
-        developer.  Implied here is that there is an easy way to undo
-        those changes; after all, if it's easy to identify exactly what
-        a developer did, they can be undone.
-	</ul>
+    <ul><li>
+    Make sure that all developer actions are logged in a
+    non-repudiatable, immutable way.  That way, even if someone makes
+    a change, it's easy to see who made what changes, in any time
+    in the future.  That "someone" may be a malicious developer, or
+    an attacker with the credentials (e.g., cryptographic keys) of
+    a developer -- but in either case, once you find out who did a
+    malicious act, the SCM should make it easy to identify all of
+    their actions.  In short, if you make it easy to catch someone,
+    you increase the attackers' risk... and that means the attacker
+    is less likely to do it.  In practice, this can be done by
+    requiring that all changes be cryptographically signed by each
+    developer.  Implied here is that there is an easy way to undo
+    those changes; after all, if it's easy to identify exactly what
+    a developer did, they can be undone.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        All operations which advance a change set along the process are
-        logged.  There are no facilities for removing this meta-data,
-        and the meta-data files themselves are read-only to the entire
-        project team.
-	<li>
-        The non-repudiation of logged change set events is limited to
-        the ability of the operating system to provide non-repudiatable
-        user authentication.
-	</ul>
+    <ul><li>
+    All operations which advance a change set along the process are
+    logged.  There are no facilities for removing this meta-data,
+    and the meta-data files themselves are read-only to the entire
+    project team.
+    <li>
+    The non-repudiation of logged change set events is limited to
+    the ability of the operating system to provide non-repudiatable
+    user authentication.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Make sure all developer actions can be easily reviewed later.  A
-        simple action to show exactly what's been changed recently will
-        make it easy for new changes to be reviewed - and possibly set
-        off alarms.
-	</ul>
+    <ul><li>
+    Make sure all developer actions can be easily reviewed later.  A
+    simple action to show exactly what's been changed recently will
+    make it easy for new changes to be reviewed - and possibly set
+    off alarms.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        Aegis provides numerous ways to review change sets and/or files.
-        You can obtain a listing of all historical events for a change
-        set.  You can obtain a listing of all historical events for a
-        file.  You can obtain a listing of all change sets applied to a
-        project to data.  You can get "blame listings" for files.
-	</ul>
+    <ul><li>
+    Aegis provides numerous ways to review change sets and/or files.
+    You can obtain a listing of all historical events for a change
+    set.  You can obtain a listing of all historical events for a
+    file.  You can obtain a listing of all change sets applied to a
+    project to data.  You can get "blame listings" for files.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Have tools to record and/or require others' review.  If you
-        really want to make sure that malicious code doesn't get
-        through, the best method known is to make sure that some other
-        person (who is unlikely to be colluding) reviews the code.
-        Thus, ways to cryptographically sign that a person reviewed
-        anothers' changes can be helpful, as long as the reviewer's
-        signature can't be forged, and as long as the signature clearly
-        indicates what was reviewed.  A review could be at a brief "I
-        briefly scanned for malicious code" all the way to "I deeply
-        analyzed every line for correctness", so the SCM tool should
-        support recording to what level the review occurred too.
-	</ul>
+    <ul><li>
+    Have tools to record and/or require others' review.  If you
+    really want to make sure that malicious code doesn't get
+    through, the best method known is to make sure that some other
+    person (who is unlikely to be colluding) reviews the code.
+    Thus, ways to cryptographically sign that a person reviewed
+    anothers' changes can be helpful, as long as the reviewer's
+    signature can't be forged, and as long as the signature clearly
+    indicates what was reviewed.  A review could be at a brief "I
+    briefly scanned for malicious code" all the way to "I deeply
+    analyzed every line for correctness", so the SCM tool should
+    support recording to what level the review occurred too.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        By default, Aegis requires code reviews; it is possible to
-        configure them away.  It is possible to require several code
-        reviewers for a change set, or specific code reviewers for
-        portions of the code.  The review policy is highly configurable.
-	<li>
-        There are several "hooks" that can be used to perform automatic
-        checking for change sets: the build hook, the diff hook and the
-        review policy hook.
-	</ul>
+    <ul><li>
+    By default, Aegis requires code reviews; it is possible to
+    configure them away.  It is possible to require several code
+    reviewers for a change set, or specific code reviewers for
+    portions of the code.  The review policy is highly configurable.
+    <li>
+    There are several "hooks" that can be used to perform automatic
+    checking for change sets: the build hook, the diff hook and the
+    review policy hook.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Support automated checking before acceptance, including
-        detection of suspicious/malicious changes.  An SCM system
-        should make it possible to enforce certain rules before
-        accepting a change (at some level): such as enforcing formatting
-        rules, requiring a clean compile, and/or requiring a clean
-        run of a regression test suite (in a suitably protected
-        environment).  It should be possible to watch changes to
-        find "suspicious" changes: the first time that developer
-        has modified a given file, code that looks a like a Trojan
-        horse, formatting/naming style that's significantly different
-        than this developer's normal material, attempts to send
-        email or other network traffic during a code build, and
-        so on.  This is basically intrusion detection at the code
-        change level.  It should also be possible for an automated
-        process to quickly check for hints of "stolen" code before
-        accepting anything (e.g., to detect copyright-encumbered
-        code), by calling to programs such as Eric S. Raymond's
-	<a href="http://www.catb.org/~esr/comparator">comparator</a>.
-	</ul>
+    <ul><li>
+    Support automated checking before acceptance, including
+    detection of suspicious/malicious changes.  An SCM system
+    should make it possible to enforce certain rules before
+    accepting a change (at some level): such as enforcing formatting
+    rules, requiring a clean compile, and/or requiring a clean
+    run of a regression test suite (in a suitably protected
+    environment).  It should be possible to watch changes to
+    find "suspicious" changes: the first time that developer
+    has modified a given file, code that looks a like a Trojan
+    horse, formatting/naming style that's significantly different
+    than this developer's normal material, attempts to send
+    email or other network traffic during a code build, and
+    so on.  This is basically intrusion detection at the code
+    change level.  It should also be possible for an automated
+    process to quickly check for hints of "stolen" code before
+    accepting anything (e.g., to detect copyright-encumbered
+    code), by calling to programs such as Eric S. Raymond's
+    <a href="http://www.catb.org/~esr/comparator">comparator</a>.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        Aegis provides the ability to prevent a change set from
-        advancing to code review until it builds successfully.
-	<li>
-        Aegis provides the ability to prevent a change set form
-        advancing without a unit test <i>and the test must pass</i>.
-	<li>
-        Aegis provides the ability to require a bug-fix change set's
-        unit test <i>to fail</i> against the unaltered code baseline, to
-        confirm that the test accurately reproduces the bug.
-	<li>
-        Aegis makes it simple to run all of these accumulated tests
-        against a change set's private work area to confirm that the
-        change set will not break anything.
-	<li>
-        It is possible to have Aegis suggest suitable tests to run for
-        the files in a change set, based on the correlation between
-        source files and accompanying test files in previous change
-        sets.
-	</ul>
+    <ul><li>
+    Aegis provides the ability to prevent a change set from
+    advancing to code review until it builds successfully.
+    <li>
+    Aegis provides the ability to prevent a change set form
+    advancing without a unit test <i>and the test must pass</i>.
+    <li>
+    Aegis provides the ability to require a bug-fix change set's
+    unit test <i>to fail</i> against the unaltered code baseline, to
+    confirm that the test accurately reproduces the bug.
+    <li>
+    Aegis makes it simple to run all of these accumulated tests
+    against a change set's private work area to confirm that the
+    change set will not break anything.
+    <li>
+    It is possible to have Aegis suggest suitable tests to run for
+    the files in a change set, based on the correlation between
+    source files and accompanying test files in previous change
+    sets.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Support authentication/cryptographic signature key changes
-        and re-signing.  No matter what protection is put in place, a
-        developer's secrets (e.g., their login passwords or private
-        keys) may be acquired by an attacker.  Thus, an SCM (along with
-        its support environment) need to support changing such secrets.
-        In particular, it may be useful to "cycle" developer private
-        keys, having developers switch to new private keys, ensuring
-        that the old keys will not be accepted for newer changes, and
-        possibly destroying all copies of the older private keys (so
-        that they cannot be stolen by anyone).  Since private keys
-        may be compromised, once such a compromise has been detected,
-        it should be possible to invalidate the compromised keys and
-        re-sign data (once it's checked) with new cryptographic keys.
-        This is yet another reason to support multiple signature keys
-        (in addition to supporting multi-person review).
-	</ul>
+    <ul><li>
+    Support authentication/cryptographic signature key changes
+    and re-signing.  No matter what protection is put in place, a
+    developer's secrets (e.g., their login passwords or private
+    keys) may be acquired by an attacker.  Thus, an SCM (along with
+    its support environment) need to support changing such secrets.
+    In particular, it may be useful to "cycle" developer private
+    keys, having developers switch to new private keys, ensuring
+    that the old keys will not be accepted for newer changes, and
+    possibly destroying all copies of the older private keys (so
+    that they cannot be stolen by anyone).  Since private keys
+    may be compromised, once such a compromise has been detected,
+    it should be possible to invalidate the compromised keys and
+    re-sign data (once it's checked) with new cryptographic keys.
+    This is yet another reason to support multiple signature keys
+    (in addition to supporting multi-person review).
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Aegis depends on the host operating system for authentication services.
-	<li>
-        When transmitting change set between repositories, it is
-        possible to use OpenPGP or GnuPG to provide adequate security.
-	</ul>
+    <ul><li>
+    Aegis depends on the host operating system for authentication services.
+    <li>
+    When transmitting change set between repositories, it is
+    possible to use OpenPGP or GnuPG to provide adequate security.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        On login, acquisition, and commit, report the "last time" and
-        source location (e.g., IP address) where reading and writing
-        (committing) were performed.  Although this doesn't deal with
-        a malicious developer, it does increase the likelihood that an
-        attack using stolen credentials will be detected.  After all,
-        the developer is mostly likely to know the last time that they
-        read from and wrote to some repository, so they'll be able to
-        detect when someone else forges their identity.  Ideally, this
-        would be resistant to repository attacks.
-	</ul>
+    <ul><li>
+    On login, acquisition, and commit, report the "last time" and
+    source location (e.g., IP address) where reading and writing
+    (committing) were performed.  Although this doesn't deal with
+    a malicious developer, it does increase the likelihood that an
+    attack using stolen credentials will be detected.  After all,
+    the developer is mostly likely to know the last time that they
+    read from and wrote to some repository, so they'll be able to
+    detect when someone else forges their identity.  Ideally, this
+    would be resistant to repository attacks.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Aegis depends on the host operating system for authentication services.
-	</ul>
+    <ul><li>
+    Aegis depends on the host operating system for authentication services.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<!-- Thanks to cabo, at, informatik.uni-bremen.de. -->
-        On April 11, 2004, Dr. Carsten Bormann from the University of
-        Bremen sent me an email about a specialized attack that he
-        terms the "encumbrance pollution attack".  In an encumbrance
-        pollution attack, the attacker inserts material that cannot be
-        legally included.  To understand it, first imagine an SCM with
-        perfectly indestructible history.  The attacker steals developer
-        credentials, or is himself a malicious developer, and checks in
-        a change that contains some encumbered material.  "Encumbered"
-        material is simply material which cannot be legally included.
-        Examples include child pornography, slanderous/libelous
-        statements, or code which has copyright or patent encumbrances.
-        This could be very advantageous, for example, a company might
-        hire a malicious developer to insert that company's code into
-        a competing product, and then sue the competitor for copyright
-        infringement, knowing that their SCM system "can't" undo the
-        problem.  Or a lazy programmer might copy code that they have no
-        right to copy (this is rare in open source software projects,
-        because every line of code and who provided it is a matter of
-        public record, but it proprietary projects do have this risk).
-        Any SCM can record a change that essentially undoes a previous
-        change, but if the history is indestructible and viewable by
-        all, then you can't get rid of the history.  This makes your
-        SCM archive irrevocably encumbered.  This can especially be a
-        problem if the SCM is indestructibly recording proposals by
-        outsiders!  An SCM system could be designed so that a special
-        privilege allowed someone to completely deletion the history
-        data of illegal changes, of course.  However, if there are
-        special privileges to delete history data, it might be possible
-        to misuse those privileges to cause other problems.
-	<p>
-        One mechanism for dealing with an encumbrance pollution attack
-        is to allow specially-privileged accounts to "mask" history
-        elements; i.e., preventing access to certain material by normal
-        developers so that it's no longer available, so that the
-        material isn't included in later versions (essentially it works
-        like an "undo" against that change).  However, a "mask" would
-        still record the event in some way so that it would be possible
-        to prove that the event occurred at a later time.  Perhaps the
-        system could record a hash of the encumbered change, allowing
-        the encumbered material to be removed from the normal repository
-        yet proving that, at one time, the material was included.  A
-        "masking" should include a cryptographic signature of whoever
-        did the masking.  This mechanism in particular requires careful
-        design, because the mechanism should be design so that it
-        doesn't permit other attacks.
+    <!-- Thanks to cabo, at, informatik.uni-bremen.de. -->
+    On April 11, 2004, Dr. Carsten Bormann from the University of
+    Bremen sent me an email about a specialized attack that he
+    terms the "encumbrance pollution attack".  In an encumbrance
+    pollution attack, the attacker inserts material that cannot be
+    legally included.  To understand it, first imagine an SCM with
+    perfectly indestructible history.  The attacker steals developer
+    credentials, or is himself a malicious developer, and checks in
+    a change that contains some encumbered material.  "Encumbered"
+    material is simply material which cannot be legally included.
+    Examples include child pornography, slanderous/libelous
+    statements, or code which has copyright or patent encumbrances.
+    This could be very advantageous, for example, a company might
+    hire a malicious developer to insert that company's code into
+    a competing product, and then sue the competitor for copyright
+    infringement, knowing that their SCM system "can't" undo the
+    problem.  Or a lazy programmer might copy code that they have no
+    right to copy (this is rare in open source software projects,
+    because every line of code and who provided it is a matter of
+    public record, but it proprietary projects do have this risk).
+    Any SCM can record a change that essentially undoes a previous
+    change, but if the history is indestructible and viewable by
+    all, then you can't get rid of the history.  This makes your
+    SCM archive irrevocably encumbered.  This can especially be a
+    problem if the SCM is indestructibly recording proposals by
+    outsiders!  An SCM system could be designed so that a special
+    privilege allowed someone to completely deletion the history
+    data of illegal changes, of course.  However, if there are
+    special privileges to delete history data, it might be possible
+    to misuse those privileges to cause other problems.
+    <p>
+    One mechanism for dealing with an encumbrance pollution attack
+    is to allow specially-privileged accounts to "mask" history
+    elements; i.e., preventing access to certain material by normal
+    developers so that it's no longer available, so that the
+    material isn't included in later versions (essentially it works
+    like an "undo" against that change).  However, a "mask" would
+    still record the event in some way so that it would be possible
+    to prove that the event occurred at a later time.  Perhaps the
+    system could record a hash of the encumbered change, allowing
+    the encumbered material to be removed from the normal repository
+    yet proving that, at one time, the material was included.  A
+    "masking" should include a cryptographic signature of whoever
+    did the masking.  This mechanism in particular requires careful
+    design, because the mechanism should be design so that it
+    doesn't permit other attacks.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        By using Aegis' code review feature, it is possible to mitigate
-        the risk of an "encumbrance pollution attack".  If the change
-        set is unacceptable, it will be (should be) caught by the code
-        reviewer.
-	<li>
-        Until a change set is integrated, its history and meta-data are
-        not immutably encumbered.
-	<li>
-        The meta-data files (and often the source file) are all simple
-        text files.  It would be possible (via root) to edit the
-        offending portions away.
-	</ul>
+    <ul><li>
+    By using Aegis' code review feature, it is possible to mitigate
+    the risk of an "encumbrance pollution attack".  If the change
+    set is unacceptable, it will be (should be) caught by the code
+    reviewer.
+    <li>
+    Until a change set is integrated, its history and meta-data are
+    not immutably encumbered.
+    <li>
+    The meta-data files (and often the source file) are all simple
+    text files.  It would be possible (via root) to edit the
+    offending portions away.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-        Most SCM systems have multiple components, say, a client and
-        server.  Even GNU arch, which can use a simple secure FTP server
-        as a shared repository, has a possible server (the FTP server).
-        Clients and servers should resist attack from other potentially
-        subverted components, including loss of SCM data.
+    Most SCM systems have multiple components, say, a client and
+    server.  Even GNU arch, which can use a simple secure FTP server
+    as a shared repository, has a possible server (the FTP server).
+    Clients and servers should resist attack from other potentially
+    subverted components, including loss of SCM data.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        The Aegis support for geographically distributed development
-        includes the whole process for each change set.  This means
-        that synchronizing with a remote repository is not a back door
-        to your repository.
+    The Aegis support for geographically distributed development
+    includes the whole process for each change set.  This means
+    that synchronizing with a remote repository is not a back door
+    to your repository.
 </td></tr>
 <tr><td width="50%" align=center>
-	<i>Repository attacks</i>
+    <i>Repository attacks</i>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<i>Repository attacks</i>
+    <i>Repository attacks</i>
 </td></tr>
 <tr><td width="50%" valign=top>
-	Many repositories have themselves undergone attack,
-	including the Linux CVS mirror, Savannah, Debian, and
-	Microsoft (attackers have acquired, at least twice, significant portions
-	of Windows' code).
-	Thus, a good SCM should be able to resist attack, even when the
-	repository it's running on subverted
-	(through malicious administrators of a repository, attacker
-	root control over a repository, and so on).
-	This isn't just limited to centralized SCM systems;
-	distributed SCM systems still have the problem that an attacker may
-	take over the system used to distribute someone's changes.
+    Many repositories have themselves undergone attack,
+    including the Linux CVS mirror, Savannah, Debian, and
+    Microsoft (attackers have acquired, at least twice, significant portions
+    of Windows' code).
+    Thus, a good SCM should be able to resist attack, even when the
+    repository it's running on subverted
+    (through malicious administrators of a repository, attacker
+    root control over a repository, and so on).
+    This isn't just limited to centralized SCM systems;
+    distributed SCM systems still have the problem that an attacker may
+    take over the system used to distribute someone's changes.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis depends on the host operating system for limiting access
-        to the repository history and meta-data.  Aegis has no defense
-        against a compromised root account making direct access to the
-        history and meta-data, without executing Aegis.
+    Aegis depends on the host operating system for limiting access
+    to the repository history and meta-data.  Aegis has no defense
+    against a compromised root account making direct access to the
+    history and meta-data, without executing Aegis.
 </td></tr>
 <tr><td width="50%" valign=top>
-        An SCM should be able to prevent read access, even if the
-        repository is attacked.  The obvious way to do this is by using
-        encrypted archives.  But there are many variations on this
-        theme, primarily in where the key(s) are stored for decryption.
-        If the real problem is just to make sure that backup media or
-        transfer disks aren't easily read, the key could simply be
-        stored on a separate (more protected) media.  The archive keys
-        might only be stored in RAM, and required on boot up; this is
-        more annoying for boot up, and an attacker is likely to be able
-        to acquire the data anyway.  The repository might not normally
-        have the keys necessary to decrypt the archive contents at all;
-        it could require the developer to provide those keys, which
-        it uses and then destroys.  This is harder to attack, but a
-        determined adversary could subvert the repository program (or
-        memory) and get the key.  Another alternative is to arrange for
-        the repository to <i>not</i> have the keys necessary to decrypt
-        the archive contents at any time.  In this case, developers
-        must somehow be provided with the keys necessary to do the
-        decryption, and essentially the repository doesn't really "know"
-        the contents of the files it's managing!
+    An SCM should be able to prevent read access, even if the
+    repository is attacked.  The obvious way to do this is by using
+    encrypted archives.  But there are many variations on this
+    theme, primarily in where the key(s) are stored for decryption.
+    If the real problem is just to make sure that backup media or
+    transfer disks aren't easily read, the key could simply be
+    stored on a separate (more protected) media.  The archive keys
+    might only be stored in RAM, and required on boot up; this is
+    more annoying for boot up, and an attacker is likely to be able
+    to acquire the data anyway.  The repository might not normally
+    have the keys necessary to decrypt the archive contents at all;
+    it could require the developer to provide those keys, which
+    it uses and then destroys.  This is harder to attack, but a
+    determined adversary could subvert the repository program (or
+    memory) and get the key.  Another alternative is to arrange for
+    the repository to <i>not</i> have the keys necessary to decrypt
+    the archive contents at any time.  In this case, developers
+    must somehow be provided with the keys necessary to do the
+    decryption, and essentially the repository doesn't really "know"
+    the contents of the files it's managing!
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis has no support for encrypted meta-data, and limited
-        support for encrypting history files.  Add to this the problem
-        that a change set must be approved by a code reviewer, who may
-        not have the developer's keys.
-	<p>
-        Aegis was designed long before this concept evolved.  Its
-        meta-data is not in a form which allows it to be placed in an
-        immutable file, with each update to the meta-data being placed
-        in another immutable file.
-	<p>
-        Portions of the meta-data are immutable, but because it is
-        stored in the same file as some changeable data (for example,
-        where the change set is in the process) digital signatures are
-        problematic.
-	<p>
-        It is possible to encrypt change sets when they are in transit
-        between repositories, using OpenPGP or GnuPG.
+    Aegis has no support for encrypted meta-data, and limited
+    support for encrypting history files.  Add to this the problem
+    that a change set must be approved by a code reviewer, who may
+    not have the developer's keys.
+    <p>
+    Aegis was designed long before this concept evolved.  Its
+    meta-data is not in a form which allows it to be placed in an
+    immutable file, with each update to the meta-data being placed
+    in another immutable file.
+    <p>
+    Portions of the meta-data are immutable, but because it is
+    stored in the same file as some changeable data (for example,
+    where the change set is in the process) digital signatures are
+    problematic.
+    <p>
+    It is possible to encrypt change sets when they are in transit
+    between repositories, using OpenPGP or GnuPG.
 </td></tr>
 <tr><td width="50%" valign=top>
-        Preventing write access when an attacker controls a repository
-        is a difficult challenge, especially since you still want to
-        permit legitimate changes by normal developers.  Since the
-        attacker can modify arbitrary files in this case, the goal is to
-        be able to quickly detect any such changes:
+    Preventing write access when an attacker controls a repository
+    is a difficult challenge, especially since you still want to
+    permit legitimate changes by normal developers.  Since the
+    attacker can modify arbitrary files in this case, the goal is to
+    be able to quickly detect any such changes:
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	Aegis was not designed to do this.
+    Aegis was not designed to do this.
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Cryptographic signing of changes can help significantly here,
-        since this makes it possible to detect changes by anyone other
-        than the authorized developers.  Clearly, the list of public
-        keys needs to be protected; this can be protected in part by
-        ensuring that the list is visible to all developers, and having
-        tools automatically check that the public listed key is correct
-        (each developer's tool checks that the key listed is really that
-        developer's key).
-	</ul>
+    <ul><li>
+    Cryptographic signing of changes can help significantly here,
+    since this makes it possible to detect changes by anyone other
+    than the authorized developers.  Clearly, the list of public
+    keys needs to be protected; this can be protected in part by
+    ensuring that the list is visible to all developers, and having
+    tools automatically check that the public listed key is correct
+    (each developer's tool checks that the key listed is really that
+    developer's key).
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Aegis was not designed to do this.
-	</ul>
+    <ul><li>
+    Aegis was not designed to do this.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Change set chaining can help detect problems (including
-        unintentional ones).  Basically, as changes are made, a chain
-        recording those changes can be recorded and later checked.  This
-        is typically done using cryptographic hashes, possibly signed so
-        you know who verified the chain.  Note that this is also useful
-        for detecting accidental corruption.
-	</ul>
+    <ul><li>
+    Change set chaining can help detect problems (including
+    unintentional ones).  Basically, as changes are made, a chain
+    recording those changes can be recorded and later checked.  This
+    is typically done using cryptographic hashes, possibly signed so
+    you know who verified the chain.  Note that this is also useful
+    for detecting accidental corruption.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Aegis was not designed to do this.
-	</ul>
+    <ul><li>
+    Aegis was not designed to do this.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	Automated tools to detect if "my" change has been altered.
-	Any given developer will know what changes <i>they</i> checked in.
-	So, record that information locally/separately, and check it later.
-	That way, someone can modify the repository to remove the latest
-	security fix, but the developer of the change can quickly tell that
-	it's been removed.
-	</ul>
+    <ul><li>
+    Automated tools to detect if "my" change has been altered.
+    Any given developer will know what changes <i>they</i> checked in.
+    So, record that information locally/separately, and check it later.
+    That way, someone can modify the repository to remove the latest
+    security fix, but the developer of the change can quickly tell that
+    it's been removed.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Aegis was not designed to do this.
-	</ul>
+    <ul><li>
+    Aegis was not designed to do this.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	Immutable backups, and tools to check them, can help as well.
-	If a repository's history is changed, that change can be compared
-	with backups.
-	Be careful that a corrupted tool won't create misleading backups, and
-	make sure that the repository can't give one view to backup tools, and
-	another view to whoever actually takes and uses the program.
-	</ul>
+    <ul><li>
+    Immutable backups, and tools to check them, can help as well.
+    If a repository's history is changed, that change can be compared
+    with backups.
+    Be careful that a corrupted tool won't create misleading backups, and
+    make sure that the repository can't give one view to backup tools, and
+    another view to whoever actually takes and uses the program.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        Aegis relies on the host operating system for backups.  If the
-        host operating system is capable of cryptographically signed
-        backups, use them.
-	</ul>
+    <ul><li>
+    Aegis relies on the host operating system for backups.  If the
+    host operating system is capable of cryptographically signed
+    backups, use them.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        Simple, transparent formats can help make it harder to hide
-        attacks.  Data that is stored in simple, well-understood formats
-        that can be analyzed independently (e.g., a signed tar file
-        of patches) tend to be more resistant to attack than data
-        structures that presume that no other process will manipulate
-        the data contents (e.g., typical databases).
-	</ul>
+    <ul><li>
+    Simple, transparent formats can help make it harder to hide
+    attacks.  Data that is stored in simple, well-understood formats
+    that can be analyzed independently (e.g., a signed tar file
+    of patches) tend to be more resistant to attack than data
+    structures that presume that no other process will manipulate
+    the data contents (e.g., typical databases).
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-	Aegis' meta-data is in simple text files.
-	These can be parsed by external verification programs if desired.
-        (Aegis pre-dates XML by over a decade; these days XML would have
-        been a good choice.)
-	</ul>
+    <ul><li>
+    Aegis' meta-data is in simple text files.
+    These can be parsed by external verification programs if desired.
+    (Aegis pre-dates XML by over a decade; these days XML would have
+    been a good choice.)
+    </ul>
 </td></tr>
 <tr><td width="50%" align=center>
-	<b>Related Work</b>
-	</td><td width="50%" align=center>
-	<b>Related Work</b>
+    <b>Related Work</b>
+    </td><td width="50%" align=center>
+    <b>Related Work</b>
 </td></tr>
 <tr><td width="50%" valign=top>
-        [This section omitted.  See the <a
-        href="http://www.dwheeler.com/essays/scm-security.html">original
-        paper</a>.]
+    [This section omitted.  See the <a
+    href="http://www.dwheeler.com/essays/scm-security.html">original
+    paper</a>.]
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<i>Omitted</i>.
+    <i>Omitted</i>.
 </td></tr>
 <tr><td width="50%" align=center>
-	<b>Conclusions</b>
+    <b>Conclusions</b>
 </td><td width="50%" align=center bgcolor="#eeeeee">
-	<b>Conclusions</b>
+    <b>Conclusions</b>
 </td></tr>
 <tr><td width="50%" valign=top>
-	All of this can't prevent all attacks.
-	But such an SCM system can make the attacks much harder to perform,
-	more likely to be detected, and make detection much more rapid.
-	Here are some examples:
+    All of this can't prevent all attacks.
+    But such an SCM system can make the attacks much harder to perform,
+    more likely to be detected, and make detection much more rapid.
+    Here are some examples:
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis was designed to prevent several classes of attacks.  The
-        process used by Aegis is designed to make defective change sets
-        (including malicious change sets) more likely to be detected.
-	Here are some examples:
+    Aegis was designed to prevent several classes of attacks.  The
+    process used by Aegis is designed to make defective change sets
+    (including malicious change sets) more likely to be detected.
+    Here are some examples:
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-        A malicious developer could insert a few lines into a build
-        process that said "when you compile, email to me your private
-        key data" - then, once they had the private key, remove that
-        line, and then forge other changes as that unsuspecting
-        developer.  But an SCM system with all of the capabilities above
-        would make it much harder to hide this.  The change with these
-        malicious instructions would be clearly labelled as from that
-        developer, and later changes would be labelled as being from
-        that developer or one of the compromised systems - and removing
-        the change later would record yet <i>another</i> change that
-        might be detected.
-	</ul>
+    <ul><li>
+    A malicious developer could insert a few lines into a build
+    process that said "when you compile, email to me your private
+    key data" - then, once they had the private key, remove that
+    line, and then forge other changes as that unsuspecting
+    developer.  But an SCM system with all of the capabilities above
+    would make it much harder to hide this.  The change with these
+    malicious instructions would be clearly labelled as from that
+    developer, and later changes would be labelled as being from
+    that developer or one of the compromised systems - and removing
+    the change later would record yet <i>another</i> change that
+    might be detected.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        In a properly configured project, in order for malicious code
-        to be inserted into the build system, the code reviewer has
-        to be compromised, negligent or the attacker must compromise
-        <i>two</i> users' accounts, not just one.
-	<li>
-        The second change set must also pass through the process,
-        increasing the risk that something will be noticed.
-	</ul>
+    <ul><li>
+    In a properly configured project, in order for malicious code
+    to be inserted into the build system, the code reviewer has
+    to be compromised, negligent or the attacker must compromise
+    <i>two</i> users' accounts, not just one.
+    <li>
+    The second change set must also pass through the process,
+    increasing the risk that something will be noticed.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	<ul><li>
-	A malicious attacker might take over the repository, and repeatedly
-	remove a critical patch to a security vulnerability.
-	Still, the removal could be detected by the creator of the patch, and
-	actions such as changing to a different repository could be performed.
-	Trying to change older copies would likely be detected by chaining and
-	comparisons with backups.
-	</ul>
+    <ul><li>
+    A malicious attacker might take over the repository, and repeatedly
+    remove a critical patch to a security vulnerability.
+    Still, the removal could be detected by the creator of the patch, and
+    actions such as changing to a different repository could be performed.
+    Trying to change older copies would likely be detected by chaining and
+    comparisons with backups.
+    </ul>
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-	<ul><li>
-        As mentioned above, Aegis has no defense against a compromised
-        root account, however this is not a back-door into any other
-        machine via Aegis' support for geographically distributed
-        development.
-	If root isn't compromised, rescinding a previous critical
-	security change set requires at least the help of a reviewer.
-	</ul>
+    <ul><li>
+    As mentioned above, Aegis has no defense against a compromised
+    root account, however this is not a back-door into any other
+    machine via Aegis' support for geographically distributed
+    development.
+    If root isn't compromised, rescinding a previous critical
+    security change set requires at least the help of a reviewer.
+    </ul>
 </td></tr>
 <tr><td width="50%" valign=top>
-	It's my hope that SCM systems will have more of these capabilities
-	in the future.
+    It's my hope that SCM systems will have more of these capabilities
+    in the future.
 </td><td width="50%" valign=top bgcolor="#eeeeee">
-        Aegis has been capable of of preventing many of the described
-        attacks for over a decade.  It is a mature SCM with users
-        including medical equipment vendors with strict FDA compliance
-        requirements.
+    Aegis has been capable of of preventing many of the described
+    attacks for over a decade.  It is a mature SCM with users
+    including medical equipment vendors with strict FDA compliance
+    requirements.
 </td></tr>
 </table>
-.so footer2.so
+.so web/footer2.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

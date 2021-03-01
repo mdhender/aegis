@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2004-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2004-2008, 2012 Peter Miller
+#       Copyright (C) 2008, 2010 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -42,7 +43,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -53,46 +54,46 @@ export PATH
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
                 -e 's/uuid = ".*"/uuid = "UUID"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 no_result()
 {
-	set +x
-	echo "NO RESULT for test of aed functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT for test of aed functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 fail()
 {
-	set +x
-	echo "FAILED test of aed functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of aed functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 trap "no_result" 1 2 3 15
 
@@ -103,11 +104,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -122,7 +123,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 119"
+activity="working directory 126"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -141,14 +142,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 138"
+activity="new project 145"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 145"
+activity="project attributes 152"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aefa functionality.";
 developer_may_review = true;
@@ -163,7 +164,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 160"
+activity="staff 167"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -176,7 +177,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 173"
+activity="new change 180"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -194,7 +195,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 191"
+activity="new file 198"
 $bin/aegis -nf $workchan/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -229,14 +230,14 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 226"
+activity="build 233"
 $bin/aegis -build -c 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # clone the change
 #
-activity="clone 233"
+activity="clone 240"
 $bin/aegis -clone 1 3 -dir $workchan.3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -247,49 +248,49 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # build the change
 #
-activity="build 244"
+activity="build 251"
 $bin/aegis -build -c 3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 251"
+activity="diff 258"
 $bin/aegis -diff -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 258"
+activity="develop end 265"
 $bin/aegis -de -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 265"
+activity="review pass 272"
 $bin/aegis -rpass -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 272"
+activity="integrate begin 279"
 $bin/aegis -ib -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 279"
+activity="build 286"
 $bin/aegis -b -c 3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 286"
+activity="integrate pass 293"
 $bin/aegis -intpass -c 3 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -300,75 +301,79 @@ if test $? -ne 0 ; then cat log; no_result; fi
 cat > test.ok <<EOF
 src =
 [
-	{
-		file_name = "aegis.conf";
-		action = create;
-		usage = config;
-	},
-	{
-		file_name = "bogus";
-		action = create;
-		usage = source;
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = create;
+                usage = config;
+        },
+        {
+                file_name = "bogus";
+                uuid = "UUID";
+                action = create;
+                usage = source;
+        },
 ];
 EOF
 if test $? -ne 0 ; then no_result ; fi
 check_it test.ok $workproj/info/change/0/001.fs
 
-activity="difference 312"
+activity="difference 321"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail ; fi
 
-activity="change file state 316"
+activity="change file state 325"
 cat > test.ok << 'fubar'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "bogus";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "UUID";
+                action = modify;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "bogus";
+                uuid = "UUID";
+                action = modify;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "UUID";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+                diff_file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -380,3 +385,4 @@ check_it test.ok $workproj/info/change/0/001.fs
 # can't speak for the rest of the code
 #
 pass
+# vim: set ts=8 sw=4 et :

@@ -23,3 +23,6 @@ void
 ${id ${trim_directory ${trim_extension $fn}}}(void)
 {
 }
+
+
+/* vim: set ts=8 sw=4 et : */

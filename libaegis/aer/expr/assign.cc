@@ -1,21 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
+
+#include <common/ac/assert.h>
 
 #include <common/error.h>
 #include <common/trace.h>
@@ -48,7 +50,7 @@ rpt_expr_assign::rpt_expr_assign(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -73,8 +75,8 @@ rpt_expr_assign::evaluate()
     trace(("lv is a %s\n", lv->name()));
     if (lv->is_an_error())
     {
-	trace(("}\n"));
-	return lv;
+        trace(("}\n"));
+        return lv;
     }
 
     //
@@ -85,19 +87,19 @@ rpt_expr_assign::evaluate()
     if (!lv_ref)
     {
         trace(("oops\n"));
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", lv->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", lv->name());
+        nstring s
         (
             sc.subst_intl
-	    (
-		i18n("illegal left hand side of assignment (was given $name)")
-	    )
+            (
+                i18n("illegal left hand side of assignment (was given $name)")
+            )
         );
-	rpt_value::pointer vp =
+        rpt_value::pointer vp =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
-	trace(("}\n"));
-	return vp;
+        trace(("}\n"));
+        return vp;
     }
 
     //
@@ -108,8 +110,8 @@ rpt_expr_assign::evaluate()
     trace(("rv is a %s\n", rv->name()));
     if (rv->is_an_error())
     {
-	trace(("}\n"));
-	return rv;
+        trace(("}\n"));
+        return rv;
     }
 
     //
@@ -121,7 +123,7 @@ rpt_expr_assign::evaluate()
     //
     // cleanup and go home
     //
-    trace(("return %08lX;\n", (long)rv.get()));
+    trace(("return %p;\n", rv.get()));
     trace(("}\n"));
     return rv;
 }
@@ -140,8 +142,8 @@ bin_eval(const rpt_expr::pointer &lhs,
     rpt_value::pointer ptr = lhs->evaluate(true, false);
     if (ptr->is_an_error())
     {
-	trace(("}\n"));
-	return ptr;
+        trace(("}\n"));
+        return ptr;
     }
 
     //
@@ -150,31 +152,31 @@ bin_eval(const rpt_expr::pointer &lhs,
     //
     if (!dynamic_cast<rpt_value_reference *>(ptr.get()))
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", ptr->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", ptr->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("illegal left hand side of assignment (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("illegal left hand side of assignment (was given $name)")
+            )
         );
         assert(lhs->get_pos());
-	rpt_value::pointer result = rpt_value_error::create(lhs->get_pos(), s);
+        rpt_value::pointer result = rpt_value_error::create(lhs->get_pos(), s);
 
-        trace(("return %08lX;\n", (long)result.get()));
+        trace(("return %p;\n", result.get()));
         trace(("}\n"));
         return result;
     }
 
     //
     // construct
-    //	lhs = lhs "op" rhs
+    //  lhs = lhs "op" rhs
     //
     // Note:
-    //	e1 and e2 are separate because one is an lvalue, and
-    //	the other is an rvalue.  They e1 is altered by
-    //	rpt_expr_assign, while e2 is not.
+    //  e1 and e2 are separate because one is an lvalue, and
+    //  the other is an rvalue.  They e1 is altered by
+    //  rpt_expr_assign, while e2 is not.
     //
     rpt_expr::pointer e1 = rpt_expr_constant::create(ptr);
     e1->pos_from(lhs);
@@ -190,14 +192,14 @@ bin_eval(const rpt_expr::pointer &lhs,
 
     //
     // evaluate the simple assignment
-    //	and discard the fake expression tree
+    //  and discard the fake expression tree
     //
     rpt_value::pointer result = e4->evaluate(true, true);
 
     //
     // clean up and go home
     //
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -215,7 +217,7 @@ rpt_expr_assign_power::rpt_expr_assign_power(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -234,7 +236,7 @@ rpt_expr_assign_power::evaluate()
     trace(("power_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_power::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -252,7 +254,7 @@ rpt_expr_assign_mul::rpt_expr_assign_mul(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -271,7 +273,7 @@ rpt_expr_assign_mul::evaluate()
     trace(("mul_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_mul::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -289,7 +291,7 @@ rpt_expr_assign_div::rpt_expr_assign_div(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -308,7 +310,7 @@ rpt_expr_assign_div::evaluate()
     trace(("div_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_div::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -326,7 +328,7 @@ rpt_expr_assign_mod::rpt_expr_assign_mod(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -345,7 +347,7 @@ rpt_expr_assign_mod::evaluate()
     trace(("mod_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_mod::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -363,7 +365,7 @@ rpt_expr_assign_plus::rpt_expr_assign_plus(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -382,7 +384,7 @@ rpt_expr_assign_plus::evaluate()
     trace(("plus_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_plus::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -400,7 +402,7 @@ rpt_expr_assign_minus::rpt_expr_assign_minus(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -419,7 +421,7 @@ rpt_expr_assign_minus::evaluate()
     trace(("minus_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_minus::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -437,7 +439,7 @@ rpt_expr_assign_and_bit::rpt_expr_assign_and_bit(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -456,7 +458,7 @@ rpt_expr_assign_and_bit::evaluate()
     trace(("and_bit_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_and_bit::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -474,7 +476,7 @@ rpt_expr_assign_xor_bit::rpt_expr_assign_xor_bit(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -493,7 +495,7 @@ rpt_expr_assign_xor_bit::evaluate()
     trace(("xor_bit_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_xor_bit::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -511,7 +513,7 @@ rpt_expr_assign_or_bit::rpt_expr_assign_or_bit(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -530,7 +532,7 @@ rpt_expr_assign_or_bit::evaluate()
     trace(("or_bit_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_or_bit::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -548,7 +550,7 @@ rpt_expr_assign_shift_left::rpt_expr_assign_shift_left(
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -567,7 +569,7 @@ rpt_expr_assign_shift_left::evaluate()
     trace(("shift_left_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_shift_left::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -585,7 +587,7 @@ rpt_expr_assign_shift_right::rpt_expr_assign_shift_right(
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -604,7 +606,7 @@ rpt_expr_assign_shift_right::evaluate()
     trace(("shift_right_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_shift_right::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -622,7 +624,7 @@ rpt_expr_assign_join::rpt_expr_assign_join(const rpt_expr::pointer &a,
     append(b);
 
     if (!a->lvalue())
-	a->parse_error(i18n("illegal left hand side of assignment"));
+        a->parse_error(i18n("illegal left hand side of assignment"));
 }
 
 
@@ -641,7 +643,10 @@ rpt_expr_assign_join::evaluate()
     trace(("join_assign::evaluate()\n{\n"));
     rpt_value::pointer result =
         bin_eval(nth_child(0), &rpt_expr_join::create, nth_child(1));
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

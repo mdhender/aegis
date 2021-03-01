@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 2006-2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .if t .1C
 .hy 0
@@ -24,20 +23,21 @@
 .\}
 .nr PS 24
 .nr VS 25
-.so foil.01.so
+.so lib/en/auug96/foil.01.so
 .bp
-.so foil.02.so
+.so lib/en/auug96/foil.02.so
 .bp
-.so foil.03.so
+.so lib/en/auug96/foil.03.so
 .bp
-.so foil.04.so
+.so lib/en/auug96/foil.04.so
 .bp
-.so foil.05.so
+.so lib/en/auug96/foil.05.so
 .bp
-.so foil.06.so
+.so lib/en/auug96/foil.06.so
 .bp
-.so foil.07.so
+.so lib/en/auug96/foil.07.so
 .bp
-.so foil.08.so
+.so lib/en/auug96/foil.08.so
 .bp
-.so foil.09.so
+.so lib/en/auug96/foil.09.so
+.\" vim: set ts=8 sw=4 et :

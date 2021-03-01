@@ -1,28 +1,27 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2001, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "The Big Picture"
 This section brings together all of the preceding discussion, and
 presents the example project with its separate modules, but with a
-whole-project \f(CWMakefile\fP.  The directory structure is changed
+whole\[hy]project \f(CWMakefile\fP.  The directory structure is changed
 little from the recursive case, except that the deeper \f(CWMakefiles\fP
 are replaced by module specific include files:
-.so 07.figure1.so
+.so lib/en/auug97/07.figure1.so
 .LP
 The \f(CWMakefile\fP looks like this:
 .TS H
@@ -33,7 +32,7 @@ MODULES := ant bee
 .sp 0.2
 # look for include files in
 #   each of the modules
-CFLAGS += $(patsubst %,-I%,\e
+CFLAGS += $(patsubst %,\-I%,\e
   $(MODULES))
 .sp 0.2
 # extra libraries if required
@@ -56,7 +55,7 @@ OBJ :=                    \e
 .sp 0.2
 # link the program
 prog: $(OBJ)
-  $(CC) -o $@ $(OBJ) $(LIBS)
+  $(CC) \-o $@ $(OBJ) $(LIBS)
 .sp 0.2
 # include the C include
 #   dependencies
@@ -82,40 +81,41 @@ The \f(CWbee/module.mk\fP file looks like:
 center,box;
 lw(2.5i)f(CW).
 SRC += bee/parse.y
-LIBS += -ly
+LIBS += \-ly
 .sp 0.2
 %.c %.h: %.y
-  $(YACC) -d $*.y
+  $(YACC) \-d $*.y
   mv y.tab.c $*.c
   mv y.tab.h $*.h
 .TE
 .LP
-Notice that the built-in rules are used for the C files,
+Notice that the built\[hy]in rules are used for the C files,
 but we need special yacc processing to get the generated \f(CW.h\fP file.
 .LP
-The savings in this example look irrelevant, because the top-level
+The savings in this example look irrelevant, because the top\[hy]level
 \f[CW]Makefile\fP is so large.  But consider if there were 100 modules,
-each with only a few non-comment lines, and those specifically relevant
+each with only a few non\[hy]comment lines, and those specifically relevant
 to the module.  The savings soon add up to a total size often \fIless
 than\fP the recursive case, without loss of modularity.
 .LP
 The equivalent DAG of the \f(CWMakefile\fP after all of the includes
 looks like this:
-.so 07.figure2.so
+.so lib/en/auug97/07.figure2.so
 .LP
 The vertexes and edges for the include file dependency files are also
 present as these are important for \fImake\fP to function correctly.
 .nh 2 "Side Effects"
-There are a couple of desirable side-effects of using a single Makefile.
+There are a couple of desirable side\[hy]effects of using a single Makefile.
 .LP
 \(bu
-The GNU Make \f[CW]-j\fP option, for parallel builds, works even better
+The GNU Make \f[CW]\-j\fP option, for parallel builds, works even better
 than before.  It can find even more unrelated things to do at once,
 and no longer has some subtle problems.
-.\" My thanks to Marcus Harnisch <marcus_harnisch@mint-tech.com> for this
+.\" My thanks to Marcus Harnisch <marcus_harnisch@mint\[hy]tech.com> for this
 .\" insight into parallel build problems.
 .LP
 \(bu
-The general make \f[CW]-k\fP option, to continue as far as possible even
+The general make \f[CW]\-k\fP option, to continue as far as possible even
 in the face of errors, works even better than before.  It can find even
 more things to continue with.
+.\" vim: set ts=8 sw=4 et :

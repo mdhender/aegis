@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1997, 1999, 2001-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -75,11 +75,11 @@ gr_to_struct(struct group *gr)
     p->assign(name, value);
     for (size_t j = 0; gr->gr_mem[j]; ++j)
     {
-	rpt_value::pointer vp = rpt_value_string::create(gr->gr_mem[j]);
-	lp->append(vp);
+        rpt_value::pointer vp = rpt_value_string::create(gr->gr_mem[j]);
+        lp->append(vp);
     }
 
-    trace(("return %8.8lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -94,10 +94,10 @@ rpt_value_group::lookup(const rpt_value::pointer &rhs, bool)
     rpt_value_integer *rhs2ip = dynamic_cast<rpt_value_integer *>(rhs2.get());
     if (rhs2ip)
     {
-	int gid = rhs2ip->query();
-	struct group *gr = getgrgid_cached(gid);
-	if (gr)
-	    return gr_to_struct(gr);
+        int gid = rhs2ip->query();
+        struct group *gr = getgrgid_cached(gid);
+        if (gr)
+            return gr_to_struct(gr);
 
         sub_context_ty sc;
         sc.var_set_long("Number", gid);
@@ -137,9 +137,9 @@ rpt_value_group::keys()
     setgrent();
     for (;;)
     {
-	struct group *gr = getgrent();
-	if (!gr)
-	    break;
+        struct group *gr = getgrent();
+        if (!gr)
+            break;
         p->append(rpt_value_string::create(gr->gr_name));
     }
     return result;
@@ -154,10 +154,10 @@ rpt_value_group::count()
     long n = 0;
     for (;;)
     {
-	struct group *gr = getgrent();
-	if (!gr)
-	    break;
-	++n;
+        struct group *gr = getgrent();
+        if (!gr)
+            break;
+        ++n;
     }
     return rpt_value_integer::create(n);
 }
@@ -185,3 +185,6 @@ rpt_value_group::is_a_struct()
 {
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

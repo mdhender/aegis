@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2001, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aesub
 .TH "aesub" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -30,10 +29,10 @@ aesub \- substitute and echo strings
 string \&...
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I \*(n)
@@ -50,18 +49,19 @@ double (\f(CW"\fP) quotes.)
 Quote \fIaesub\fP(1) arguments using \f(CW'\fP \fIsingle\fP \f(CW'\fP quotes.
 .SH OPTIONS
 The following options are understood:
-.so o_baselin.so
-.so o_change.so
+.so lib/en/man1/o_baselin.so
+.so lib/en/man1/o_change.so
 .TP 8n
 \fB\-File\fP \fIfilename\fP
 Take the text to be substituted from the specified file.
-The filename `-' is understood to mean the standard input.
-.so o_help.so
-.so o_project.so
-.so o__rules.so
-.so z_exit.so
+The filename `\-' is understood to mean the standard input.
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 \fBaesub\fP(5)
 Available string substitutions.
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

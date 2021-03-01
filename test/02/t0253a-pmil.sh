@@ -125,9 +125,6 @@ if test $? -ne 0; then cat LOG; no_result; fi
 # integrate the change
 #
 activity="finis int 123"
-aegis -ib 1 > LOG 2>&1
-if test $? -ne 0; then cat LOG; no_result; fi
-
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
@@ -183,9 +180,6 @@ if test $? -ne 0; then cat LOG; no_result; fi
 # integrate the change
 #
 activity="finish int 178"
-aegis -ib 3 > LOG 2>&1
-if test $? -ne 0; then cat LOG; no_result; fi
-
 aefinish 3 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 
@@ -225,9 +219,6 @@ if test $? -ne 0; then cat LOG; no_result; fi
 # integrate the change
 #
 activity="finish int 217"
-aegis -ib 4 > LOG 2>&1
-if test $? -ne 0; then cat LOG; no_result; fi
-
 aefinish 4 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 

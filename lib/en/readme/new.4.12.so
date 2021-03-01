@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -47,7 +47,7 @@ some branches in some cases.
 .if n *
 .if t \(bu
 .\" change 15
-A  bugs has been fixed in the \fIaenrv -Descend_Project_Tree\fP
+A  bugs has been fixed in the \fIaenrv \-Descend_Project_Tree\fP
 option, which was free()ing a project twice, sometimes causing segfaults.
 .PP
 .if n *
@@ -81,7 +81,7 @@ information in object files.
 .if t \(bu
 .\" change 30
 The \fIaeget\fP CGI interface has been enhanced to provide more
-information about project files and change files -
+information about project files and change files \-
 activity, conflicts, history.
 .PP
 .if n *
@@ -108,7 +108,7 @@ consecutive changes.
 .if t \(bu
 .\" change 29
 The \fIaecp \-independent\fP command has been enhanced to allow you
-to extract versions of built files (created with \fIaenf -build\fP and
+to extract versions of built files (created with \fIaenf \-build\fP and
 maintained at \fIaeipass\fP(1) time).
 .PP
 .if n *
@@ -132,4 +132,5 @@ There is a new \fIProject_\%Branch_\%Dates\fP report, which may be used
 to see when branches of a project were begun and completed.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.12 (29-Sep-2003)
+.SS Version 4.12 (29\[hy]Sep\[hy]2003)
+.\" vim: set ts=8 sw=4 et :

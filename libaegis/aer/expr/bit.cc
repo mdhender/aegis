@@ -1,23 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1996, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/trace.h>
 #include <libaegis/aer/expr/bit.h>
 #include <libaegis/aer/value/error.h>
@@ -58,49 +58,49 @@ rpt_expr_and_bit::evaluate()
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     trace(("v1 is %s\n", v1->name()));
     if (v1->is_an_error())
-	return v1;
+        return v1;
     rpt_value::pointer v1i = rpt_value::integerize(v1);
     trace(("v1i is %s\n", v1i->name()));
     rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
     if (!v1ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v1->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v1->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("integer value required for bit and (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("integer value required for bit and (was given $name)")
+            )
         );
-	assert(nth_child(0)->get_pos());
-	rpt_value::pointer result =
+        assert(nth_child(0)->get_pos());
+        rpt_value::pointer result =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
-	return result;
+        return result;
     }
     trace(("v1ip is %ld\n", v1ip->query()));
 
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     trace(("v2 is %s\n", v2->name()));
     if (v2->is_an_error())
-	return v2;
+        return v2;
     rpt_value::pointer v2i = rpt_value::integerize(v2);
     trace(("v2i is %s\n", v2i->name()));
     rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
     if (!v2ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("integer value required for bit and (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("integer value required for bit and (was given $name)")
+            )
         );
         rpt_value::pointer result =
             rpt_value_error::create(nth_child(1)->get_pos(), s);
-	return result;
+        return result;
     }
     trace(("v2ip is %ld\n", v2ip->query()));
 
@@ -136,44 +136,44 @@ rpt_expr_xor_bit::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
     rpt_value::pointer v1i = rpt_value::integerize(v1);
     rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
     if (!v1ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v1->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v1->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("integer value required for bit xor (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("integer value required for bit xor (was given $name)")
+            )
         );
-	rpt_value::pointer result =
+        rpt_value::pointer result =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
-	return result;
+        return result;
     }
 
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
     rpt_value::pointer v2i = rpt_value::integerize(v2);
     rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
     if (!v2ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("integer value required for bit xor (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("integer value required for bit xor (was given $name)")
+            )
         );
-	rpt_value::pointer result =
+        rpt_value::pointer result =
             rpt_value_error::create(nth_child(1)->get_pos(), s);
-	return result;
+        return result;
     }
 
     return rpt_value_integer::create(v1ip->query() ^ v2ip->query());
@@ -208,44 +208,44 @@ rpt_expr_or_bit::evaluate()
     assert(get_nchildren() == 2);
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
-	return v1;
+        return v1;
     rpt_value::pointer v1i = rpt_value::integerize(v1);
     rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
     if (!v1ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v1->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v1->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("integer value required for bit or (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("integer value required for bit or (was given $name)")
+            )
         );
         rpt_value::pointer result =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
-	return result;
+        return result;
     }
 
     rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
     if (v2->is_an_error())
-	return v2;
+        return v2;
     rpt_value::pointer v2i = rpt_value::integerize(v2);
     rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
     if (!v2ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("integer value required for bit or (was given $name)")
-	    )
+            sc.subst_intl
+            (
+                i18n("integer value required for bit or (was given $name)")
+            )
         );
         rpt_value::pointer result =
             rpt_value_error::create(nth_child(1)->get_pos(), s);
-	return result;
+        return result;
     }
 
     return rpt_value_integer::create(v1ip->query() | v2ip->query());
@@ -282,13 +282,13 @@ rpt_expr_not_bit::evaluate()
     rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
     // coerce the argument to an arithmetic type
-    //	(will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
     rpt_value::pointer v2 = rpt_value::integerize(v1);
 
@@ -299,13 +299,16 @@ rpt_expr_not_bit::evaluate()
     rpt_value_integer *vip = dynamic_cast<rpt_value_integer *>(v2.get());
     if (!vip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", v2->name());
-	nstring s(sc.subst_intl(i18n("illegal bit not ($name)")));
-	rpt_value::pointer vp =
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s(sc.subst_intl(i18n("illegal bit not ($name)")));
+        rpt_value::pointer vp =
             rpt_value_error::create(nth_child(0)->get_pos(), s);
         return vp;
     }
 
     return rpt_value_integer::create(~vip->query());
 }
+
+
+// vim: set ts=8 sw=4 et :

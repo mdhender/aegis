@@ -1,39 +1,39 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001-2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
 .if t \(bu
 .\" change 57
-There is a new \[lq]\--No-Page-Headers\[rq] option which
+There is a new \[lq]\-No\[hy]Page\[hy]Headers\[rq] option which
 may be used to suppress page and column headers in listings and reports.
 .PP
 .if n *
 .if t \(bu
 .\" change 56
-There is a new \[lq]aecp \-delta-from-change\[rq] option, allowing the
+There is a new \[lq]aecp \-delta\[hy]from\[hy]change\[rq] option, allowing the
 specification of a delta number by specifying the number of a
 completed change.
 .PP
 .if n *
 .if t \(bu
 .\" change 55
-The \[lq]aecp -ind -delta\[rq] command now omits files which did not exist at
+The \[lq]aecp \-ind \-delta\[rq] command now omits files which did not exist at
 the given delta.
 .PP
 .if n *
@@ -64,12 +64,13 @@ The web interface is now able to show you file differences between deltas.
 .if n *
 .if t \(bu
 .\" change 47
-A bug has been fixed in the \[lq]\fIaecp -delta\fP\[rq] command (for all
+A bug has been fixed in the \[lq]\fIaecp \-delta\fP\[rq] command (for all
 delta variants).  The problem occurred when you wanted to copy a
 version of the file before the file has been modified by the branch
 (but it wasonly a problem for files modified later in the branch, files
-never modified by the branch were OK).  As a side-effect of the bug fix,
-\[lq]\fIaecp -delta\fP\[rq] now goes significantly faster (\fIN\fP times faster,
+never modified by the branch were OK).  As a side\[hy]effect of the bug fix,
+\[lq]\fIaecp \-delta\fP\[rq] now goes significantly faster (\fIN\fP
+times faster,
 where \fIN\fP is the number of files you are copying).
 .PP
 .if n *
@@ -104,7 +105,7 @@ A Russian localization of the error messages has been contributed.
 .if n *
 .if t \(bu
 .\" change 36
-A bug has been fixed in the \[lq]aecp -output\[rq] code, which sometimes
+A bug has been fixed in the \[lq]aecp \-output\[rq] code, which sometimes
 incorrectly created directories.
 .PP
 .if n *
@@ -144,7 +145,7 @@ history tool had done the damage.)
 .if n *
 .if t \(bu
 .\" change 22
-A bug has been fixed in \[lq]aecpu -unchanged\[rq] in the case where the change
+A bug has been fixed in \[lq]aecpu \-unchanged\[rq] in the case where the change
 had no files.  (It tried to uncopy a file called the empty thring.)
 .PP
 .if n *
@@ -153,4 +154,5 @@ had no files.  (It tried to uncopy a file called the empty thring.)
 The missing \fIaemvu\fP(1) man page has been added.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.1 (6-Dec-2001)
+.SS Version 4.1 (6\[hy]Dec\[hy]2001)
+.\" vim: set ts=8 sw=4 et :

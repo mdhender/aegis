@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aediff
 .TH "aediff" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -30,10 +29,10 @@ aediff \- file differences between deltas
 .I filename
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I "\*(n)"
@@ -55,13 +54,13 @@ To see the difference in the project configuration file,
 \fIaegis.conf\fP, between deltas 1.2.D003 and 4.5.D067 the following
 command may be used:
 .RS
-\*(n) aegis.conf -c 1.2.D003 -c 4.5.D067
+\*(n) aegis.conf \-c 1.2.D003 \-c 4.5.D067
 .RE
 To see the differences in the project configuration file, between the
 head of the 7.6 branch and the current change, the following command may
 be used:
 .RS
-\*(n) -branch 7.6 -bl  aegis.conf
+\*(n) \-branch 7.6 \-bl  aegis.conf
 .RE
 Many, many other combinatiosn are possible.
 .SS Using Graphical Tools
@@ -71,18 +70,18 @@ the \f[CW]AE2DIFF\fP environment variable.  For example, to use the
 \fItkdiff\fP(1) command to display the differences you would use a
 command such as:
 .RS
-\*(n) --command=tkdiff \fIfilename\fP
+\*(n) \-command=tkdiff \fIfilename\fP
 .RE
-If you use this option, many of the \fIdiff\fP(1)-specific options will
+If you use this option, many of the \fIdiff\fP(1)\[hy]specific options will
 be ignored.
 .SH OPTIONS
 The following options are understood:
-.so o_baselin.so
-.so o_change.so
+.so lib/en/man1/o_baselin.so
+.so lib/en/man1/o_change.so
 .TP 8n
 \fB\-COMmand\fP \fIstring\fP
 This option may be used to set the command used to display differences.
-Using this option will cause \fIdiff\fP(1)-specific options to be
+Using this option will cause \fIdiff\fP(1)\[hy]specific options to be
 ignored.  If not set, defaults to the value of the \f[CW]AE2DIFF\fP
 environment variable, or "diff" otherwise.
 .TP 8n
@@ -90,7 +89,7 @@ environment variable, or "diff" otherwise.
 Use the context output format, showing \fIlines\fP (an integer) lines of
 context, or three if \fIlines\fP is not given.  For proper operation,
 \fIpatch\fP(1) typically needs at least two lines of context.
-.so o_delta.so
+.so lib/en/man1/o_delta.so
 .TP 8n
 \fB\-Ignore_Blank_Lines\fP
 Ignore changes that just insert or delete blank lines.
@@ -99,21 +98,23 @@ Ignore changes that just insert or delete blank lines.
 Ignore white space when comparing lines.
 .TP 8n
 \fB\-Ignore_Case\fP
-Ignore changes in case; consider upper- and lower-case to be the same.
+Ignore changes in case; consider upper\[hy]case and lower\[hy]case to be
+the same.
 .TP 8n
 \fB\-Ignore_Space_Change\fP
 Ignore changes in amount of white space.
-.so o_project.so
+.so lib/en/man1/o_project.so
 .TP 8n
 \fB\-Show_C_Function\fP
 Show which C function each change is in.
-.so o_trunk.so
+.so lib/en/man1/o_trunk.so
 .TP 8n
 \fB\-unified\fP [ \fIlines\fP ]
 Use the unified output format, showing \fIlines\fP (an integer) lines
 of context, or three if lines is not given.  For proper operation,
 \fIpatch\fP(1) typically needs at least two lines of context.
-.so o_help.so
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

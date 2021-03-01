@@ -1,26 +1,26 @@
 //
-//	cook - file construction tool
-//	Copyright (C) 1995, 1999, 2003-2006, 2008 Peter Miller
+// cook - file construction tool
+// Copyright (C) 1995, 1999, 2003-2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
-#include <common/error.h>
+#include <common/debug.h>
 #include <common/fp/ident.h>
 #include <common/fp/combined.h>
 #include <common/fp/crc32.h>
@@ -47,7 +47,7 @@ ident_constructor(fingerprint_ty *p)
 static void
 ident_destructor(fingerprint_ty *p)
 {
-    ident_ty	    *f;
+    ident_ty        *f;
 
     f = (ident_ty *)p;
     fingerprint_delete(f->combined);
@@ -58,7 +58,7 @@ ident_destructor(fingerprint_ty *p)
 static void
 ident_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 {
-    ident_ty	*f;
+    ident_ty    *f;
 
     f = (ident_ty *)p;
     fingerprint_addn(f->combined, s, n);
@@ -68,7 +68,7 @@ ident_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 static int
 ident_hash(fingerprint_ty *p, unsigned char *h)
 {
-    ident_ty	    *f;
+    ident_ty        *f;
     size_t          nbytes;
     unsigned char   t[1024];
 
@@ -85,12 +85,17 @@ ident_sum(fingerprint_ty *p, char *obuf, size_t obuf_len)
 {
     unsigned char   h[1024];
     unsigned long   x;
-    int		    nbytes;
-    static char	digits[] = "0123456789";
-    char	    *cp;
+    static char digits[] = "0123456789";
+    char            *cp;
+
+#ifdef DEBUG
+    int             nbytes;
 
     nbytes = ident_hash(p, h);
     assert(nbytes == 4);
+#else
+    ident_hash(p, h);
+#endif
 
     x = h[0] | (h[1] << 8) | (h[2] << 16) | (h[3] << 24);
     snprintf(obuf, obuf_len, "%8.8lx", x);
@@ -100,8 +105,8 @@ ident_sum(fingerprint_ty *p, char *obuf, size_t obuf_len)
     // string, so hunt down and kill any spaces.
     //
     for (cp = obuf; *cp; ++cp)
-	if (*cp == ' ')
-    	    *cp = '0';
+        if (*cp == ' ')
+            *cp = '0';
 
     //
     // This forces the first character to be a letter, so
@@ -110,7 +115,7 @@ ident_sum(fingerprint_ty *p, char *obuf, size_t obuf_len)
     //
     cp = strchr(digits, *obuf);
     if (cp)
-	*obuf = "ghijklmnop"[cp - digits];
+        *obuf = "ghijklmnop"[cp - digits];
 }
 
 
@@ -124,3 +129,6 @@ fingerprint_methods_ty fp_ident =
     ident_hash,
     ident_sum
 };
+
+
+// vim: set ts=8 sw=4 et :

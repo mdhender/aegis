@@ -1,27 +1,27 @@
-.\"
+'\"p
 .\" The is the source of the paper
-.\"	Aegis - A Project Change Supervisor
-.\"	Copyright (C) 1993, 2006 Peter Miller
+.\"     Aegis - A Project Change Supervisor
+.\"     Copyright (C) 1993, 2006, 2009, 2012 Peter Miller
 .\"
 .\" This paper appeared in the proceedings of the AUUG'93 conference.
 .\"
 .\" It is a troff -mm source file and
 .\" it should be preprocessed by pic and tbl, e.g.:
-.\"	pic aegis.mm | tbl | troff -t -mm | lpr -t
+.\"     pic aegis.mm | tbl | troff -t -mm | lpr -t
 .\" or you could use groff
-.\"	groff -p -t -mgm aegis.mm | lpr
+.\"     groff -p -t -mgm aegis.mm | lpr
 .\"
 .\" Any queries concerened with copyright should be addressed to the
 .\" Principal Information Officer, AGSO.
 .\"
 .\" Any matter regarding the content of the paper should be referred to
-.\" Peter Miller <millerp@canb.auug.org.au>
+.\" Peter Miller <pmiller@opensource.org.au>
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
 .if n .ftr CW R
 .if n .ftr C  R
-.so version.so
+.so etc/version.so
 .nr UX 0
 .de UX
 .ie \\n(UX \s-1UNIX\s0\\$1
@@ -232,24 +232,32 @@ arrow " integrate" ljust " begin" ljust
 S5: box "being" "integrated"
 arrow " integrate" ljust " pass" ljust
 S6: box "completed"
-spline -> from 1/3<S1.nw,S1.sw> then left 0.75 then up 2/3 "new" "change" "undo"
-T1: spline -> from 1/2<S2.nw,S2.w> then left 0.75 then up 11/12 \
-	then to 1/3<S1.sw,S1.nw>
+move to 1/3<S1.nw,S1.sw>
+spline -> left 0.75 then up 2/3 "new" "change" "undo"
+move to 1/2<S2.nw,S2.w>
+T1: spline -> left 0.75 then up 11/12 \
+        then to 1/3<S1.sw,S1.nw>
 " develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
-T2: spline -> from S3.w then left 0.5 then up 1 \
-	then to 1/2<S2.sw,S2.w>
+move to S3.w
+T2: spline -> left 0.5 then up 1 \
+        then to 1/2<S2.sw,S2.w>
 " develop" ljust " end" ljust " undo" ljust at T2.c - (0.5,0)
-T3: spline -> from 1/3<S4.nw,S4.sw> then left 1 then up 2.25-1/12 \
-	then to S2.w
+move to 1/3<S4.nw,S4.sw>
+T3: spline -> left 1 then up 2.25-1/12 \
+        then to S2.w
 "" "" " develop" ljust " end" ljust " undo" ljust at T3.c - (1,0)
-T4: spline -> from S5.w then left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
+move to S5.w
+T4: spline -> left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
 " integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.75,0)
-T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 \
-	then up 1 then to 1/3<S2.se,S2.ne>
+move to 1/3<S3.ne,S3.se>
+T5: spline -> right 0.5 \
+        then up 1 then to 1/3<S2.se,S2.ne>
 "review " rjust "fail " rjust at T5.c + (0.5,0)
-T6: spline -> from S4.e then right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
+move to S4.e
+T6: spline -> right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
 "review " rjust "pass " rjust "undo " rjust at T6.c + (0.5,0)
-T7: spline -> from S5.e then right 1 then up 3.5-1/12 then to 1/3<S2.ne,S2.se>
+move to S5.e
+T7: spline -> right 1 then up 3.5-1/12 then to 1/3<S2.ne,S2.se>
 "integrate " rjust "fail " rjust "" "" at T7.c + (1,0)
 .PE
 .ce 1
@@ -501,9 +509,10 @@ move right down
 E1: ellipse "integrator"
 arrow "integrate " rjust "begin " rjust
 B3: box "integration" "directory"
-S1: spline -> from B3.s then down then right 1.25 then up \
-	then to B1.n right 1.25 then to B1.n up right 1.25 \
-	then to B1.n up then to B1.n
+move to B3.s
+S1: spline -> down then right 1.25 then up \
+        then to B1.n right 1.25 then to B1.n up right 1.25 \
+        then to B1.n up then to B1.n
 "integrate " rjust "pass " rjust at S1.c+(1.25,-0.75)
 arrow from B2.s to E1.nw
 arrow from 1/3<B1.sw,B1.se> to B2.n
@@ -724,7 +733,7 @@ rules like
 .DS 1
 .ft C
 %.o: %.c `\fIincludes-of\fP %.c`
-	$(CC) -c %.c
+        $(CC) -c %.c
 .ft R
 .DE
 where
@@ -872,7 +881,7 @@ You can get Aegis by WWW from
 center,tab(;);
 l lf(CW) s
 l lf(CW) lf(I).
-URL:;http://www.canb.auug.org.au/~millerp/
+URL:;http://miller.emu.id.au/pmiller/
 File:;aegis.\*(v).tar.gz;the full source
 File:;aegis.\*(v).ps.gz;the User Guide
 .TE
@@ -932,3 +941,4 @@ you can find them at
 in the
 .I /gnu
 directory.
+.\" vim: set ts=8 sw=4 et :

@@ -1,35 +1,37 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2009, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 
+#include <common/error.h>
+#include <common/now.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
-#include <common/error.h>
-#include <aecvsserver/fake_version.h>
-#include <aecvsserver/file_info.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/input/string.h>
-#include <aecvsserver/module/cvsroot.h>
-#include <common/now.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
+
+#include <aecvsserver/fake_version.h>
+#include <aecvsserver/file_info.h>
+#include <aecvsserver/module/cvsroot.h>
 #include <aecvsserver/response/clear_sticky.h>
 #include <aecvsserver/response/clearstatdir.h>
 #include <aecvsserver/response/created.h>
@@ -57,11 +59,11 @@ module_cvsroot::modified(server_ty *sp, string_ty *file_name, file_info_ty *,
     //
     server_m
     (
-	sp,
-	"Module \"%s\" file \"%s\" modify ignored; please\n"
-	    "use Aegis project management commands instead.",
-	name()->str_text,
-	file_name->str_text
+        sp,
+        "Module \"%s\" file \"%s\" modify ignored; please\n"
+            "use Aegis project management commands instead.",
+        name()->str_text,
+        file_name->str_text
     );
 }
 
@@ -76,45 +78,40 @@ module_cvsroot::calculate_canonical_name()
 
 
 static int
-sanitary_length(string_ty *s, int llen)
+sanitary_length(const nstring &s, int llen)
 {
     if (llen < 15)
-	llen = 15;
+        llen = 15;
     llen = 76 - 2 * llen;
     if (llen <= 0)
-	return 0;
-    const char *cp = s->str_text;
+        return 0;
+    const char *cp = s.c_str();
     const char *cp_max = cp + llen;
     while (cp < cp_max && *cp && isprint((unsigned char)*cp))
-	++cp;
-    return (cp - s->str_text);
+        ++cp;
+    return (cp - s.c_str());
 }
 
 
 static void
-checkout_modules_inner(string_list_ty *modules, project_ty *pp)
+checkout_modules_inner(string_list_ty *modules, project *pp)
 {
-    long            k;
-    string_ty       *s;
-    string_ty       *desc;
-    int             desc_len;
-
     //
     // Add the cannonical name of this project to the list
     // with a project description as a comment.
     //
-    s = project_name_get(pp);
-    desc = project_brief_description_get(pp);
-    desc_len = sanitary_length(desc, s->str_length);
-    s =
-	str_format
-	(
-	    "%-15s %-15s # %.*s\n",
-	    s->str_text,
-	    s->str_text,
-	    desc_len,
-	    desc->str_text
-	);
+    nstring proj = project_name_get(pp);
+    nstring desc(project_brief_description_get(pp));
+    int desc_len = sanitary_length(desc, 20);
+    string_ty *s =
+        str_format
+        (
+            "%-15s %-15s # %.*s\n",
+            s->str_text,
+            s->str_text,
+            desc_len,
+            desc.c_str()
+        );
     modules->push_back(s);
     str_free(s);
 
@@ -123,52 +120,49 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
     // add it to the list of it is being developed
     // recurse if it is an active branch
     //
-    for (k = 0; ; ++k)
+    for (long k = 0; ; ++k)
     {
-	long		cn;
-	change::pointer cp2;
+        long            cn;
+        change::pointer cp2;
 
-	if (!project_change_nth(pp, k, &cn))
-    	    break;
-	cp2 = change_alloc(pp, cn);
-	change_bind_existing(cp2);
-	// active only
-	if (change_is_a_branch(cp2))
-	{
-	    project_ty *pp2 = pp->bind_branch(cp2);
-	    checkout_modules_inner(modules, pp2);
-	    project_free(pp2);
-	}
-	else
-	{
-	    if (cp2->is_being_developed())
-	    {
-		string_ty       *s2;
-
-		s =
-		    str_format
-		    (
-			"%s.C%3.3ld",
-			project_name_get(pp)->str_text,
-			cn
-		    );
-		desc = change_brief_description_get(cp2);
-		desc_len = sanitary_length(desc, s->str_length);
-		s2 =
-		    str_format
-		    (
-			"%-15s %-15s # %.*s\n",
-			s->str_text,
-			s->str_text,
-			desc_len,
-			desc->str_text
-		    );
-		str_free(s);
-		modules->push_back(s2);
-		str_free(s2);
-	    }
-	    change_free(cp2);
-	}
+        if (!project_change_nth(pp, k, &cn))
+            break;
+        cp2 = change_alloc(pp, cn);
+        change_bind_existing(cp2);
+        // active only
+        if (cp2->is_a_branch())
+        {
+            project *pp2 = pp->bind_branch(cp2);
+            checkout_modules_inner(modules, pp2);
+            project_free(pp2);
+        }
+        else
+        {
+            if (cp2->is_being_developed())
+            {
+                nstring ss =
+                    nstring::format
+                    (
+                        "%s.C%3.3ld",
+                        project_name_get(pp).c_str(),
+                        cn
+                    );
+                nstring desc2 = cp2->brief_description_get();
+                int desc2_len = sanitary_length(desc2, ss.size());
+                string_ty *s2 =
+                    str_format
+                    (
+                        "%-15s %-15s # %.*s\n",
+                        ss.c_str(),
+                        ss.c_str(),
+                        desc2_len,
+                        desc2.c_str()
+                    );
+                modules->push_back(s2);
+                str_free(s2);
+            }
+            change_free(cp2);
+        }
     }
     // do NOT free "lp"
     // do NOT free "cp"
@@ -400,14 +394,14 @@ module_cvsroot::checkout_modules(server_ty *sp)
     //
     string_list_ty modules;
     s =
-	str_from_c
-	(
-	    "#\n"
-	    "# This file is generated.  You can not commit it.\n"
-	    "# You must perform Aegis administration using Aegis commands.\n"
-	    "#\n"
-	    "CVSROOT         CVSROOT\n"
-	);
+        str_from_c
+        (
+            "#\n"
+            "# This file is generated.  You can not commit it.\n"
+            "# You must perform Aegis administration using Aegis commands.\n"
+            "#\n"
+            "CVSROOT         CVSROOT\n"
+        );
     modules.push_back(s);
     str_free(s);
 
@@ -418,28 +412,28 @@ module_cvsroot::checkout_modules(server_ty *sp)
     gonzo_project_list(&toplevel);
     for (j = 0; j < toplevel.nstrings; ++j)
     {
-	string_ty	*prjname;
-	project_ty	*pp;
-	int		err;
+        string_ty       *prjname;
+        project *pp;
+        int             err;
 
-	prjname = toplevel.string[j];
-	pp = project_alloc(prjname);
-	pp->bind_existing();
+        prjname = toplevel.string[j];
+        pp = project_alloc(prjname);
+        pp->bind_existing();
 
-	//
-	// watch out for permissions
-	// (returns errno of attempt to read project state)
-	//
-	err = project_is_readable(pp);
+        //
+        // watch out for permissions
+        // (returns errno of attempt to read project state)
+        //
+        err = project_is_readable(pp);
 
-	//
-	// Recurse into readable branch trees.
-	//
-	if (!err)
-	    checkout_modules_inner(&modules, pp);
-	else
-	    modules.push_back(project_name_get(pp));
-	project_free(pp);
+        //
+        // Recurse into readable branch trees.
+        //
+        if (!err)
+            checkout_modules_inner(&modules, pp);
+        else
+            modules.push_back(project_name_get(pp).get_ref_copy());
+        project_free(pp);
     }
     toplevel.clear();
 
@@ -449,17 +443,17 @@ module_cvsroot::checkout_modules(server_ty *sp)
     gonzo_alias_list(&toplevel);
     for (j = 0; j < toplevel.nstrings; ++j)
     {
-	string_ty       *alias_name;
-	string_ty       *other;
+        string_ty       *alias_name;
+        string_ty       *other;
 
-	alias_name = toplevel.string[j];
-	other = gonzo_alias_to_actual(alias_name);
-	assert(other);
-	if (!other)
-	    continue;
-	s = str_format("%-12s -a %s\n", alias_name->str_text, other->str_text);
-	modules.push_back(s);
-	str_free(s);
+        alias_name = toplevel.string[j];
+        other = gonzo_alias_to_actual(alias_name);
+        assert(other);
+        if (!other)
+            continue;
+        s = str_format("%-12s -a %s\n", alias_name->str_text, other->str_text);
+        modules.push_back(s);
+        str_free(s);
     }
 
     //
@@ -489,8 +483,8 @@ module_cvsroot::checkout_modules(server_ty *sp)
     server_updating_verbose(sp, client_side);
     server_response_queue
     (
-	sp,
-	new response_created(client_side, server_side, ip, mode, version)
+        sp,
+        new response_created(client_side, server_side, ip, mode, version)
     );
     str_free(version);
     str_free(client_side);
@@ -530,10 +524,10 @@ module_cvsroot::groan(server_ty *sp, const char *request_name)
 {
     server_error
     (
-	sp,
-	"%s: You can not administer Aegis from this interface, "
-	    "you must use Aegis commands directly.",
-	request_name
+        sp,
+        "%s: You can not administer Aegis from this interface, "
+            "you must use Aegis commands directly.",
+        request_name
     );
 }
 
@@ -560,3 +554,6 @@ module_cvsroot::remove(server_ty *sp, string_ty *, string_ty *, const options &)
     groan(sp, "remove");
     return false;
 }
+
+
+// vim: set ts=8 sw=4 et :

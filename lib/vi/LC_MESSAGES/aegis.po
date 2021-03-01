@@ -1,24 +1,23 @@
 #
-#       aegis - project change supervisor
-#       Copyright (C) 2007-2008 Peter Miller
+#   aegis - project change supervisor
+#   Copyright (C) 2007-2010, 2012 Peter Miller
 #
 # Vietnamese translation for Aegis.
 # Copyright (C) 2007, 2008 Free Software Foundation, Inc.
 # Copyright (C) 2007, 2008 Clytie Siddall
 #
-#       This program is free software; you can redistribute it and/or
-#       modify it under the terms of the GNU General Public License as
-#       published by the Free Software Foundation; either version 3 of
-#       the License, or (at your option) any later version.
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 3 of the License, or
+#   (at your option) any later version.
 #
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
 #
-#       You should have received a copy of the GNU General Public License
-#       along with this program. If not, see
-#       <http://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU General Public License
+#   along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Just A Few Notes...
 #
@@ -50,7 +49,7 @@
 msgid	""
 msgstr	"Project-Id-Version: aegis 4.24\n"
 	"Report-Msgid-Bugs-To: \n"
-	"PO-Revision-Date: 2008-04-11 21:39+0930\n"
+	"PO-Revision-Date: 2012-08-13\n"
 	"Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 	"Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
 	"MIME-Version: 1.0\n"
@@ -415,6 +414,30 @@ msgid	"$filename uuid duplicate"
 msgstr	"UUID được ghi rõ cho tập tin « $filename » đang "
 	"được tập tin « $other » dùng"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued when a aede-policy's comment
+# policy finds a C comment in a C++ file.
+#
+#       $File_Name      The name of the offending file.
+#       $Line_Number    The line number of the message
+#
+#, fuzzy
+msgid   "$filename: $linenumber: C comment in a C++ file"
+msgstr  "$filename: $linenumber: C comment in a C++ file"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when a aede-policy's comment
+# policy finds a C++ comment in a C file.
+#
+#       $File_Name      The name of the offending file.
+#       $Line_Number    The line number of the message
+#
+#, fuzzy
+msgid   "$filename: $linenumber: C++ comment in a C file"
+msgstr  "$filename: $linenumber: C++ comment in a C file"
+
 #
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
@@ -573,6 +596,18 @@ msgstr	"$filename: chứa ký tự tab"
 #
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: trường « $field_name » bị hỏng"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects a file that does
+# not contain a vim mode line, when the vim-mode policy is being enforced.
+#
+#       $File_Name      The offending file.
+#
+#,fuzzy
+msgid   "$filename: does not contain a vim mode line"
+msgstr  "the \"$filename\" file does not contain a vim mode line of the "
+        "form \"vim: set ... :\""
 
 #
 # This error message is issued when aede-policy detects a file isung DOS
@@ -755,6 +790,16 @@ msgstr	"$filename: tập tin này có UID (mã số người dùng) quá "
 	"trường hợp này, cho một tên người dùng thích hợp "
 	"nào đó. [Bạn cần phải là người chủ (root).]"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a file is being checked by
+# aede-policy for the escape-hyphen policy, and it finds an unescaped
+# hyphen (minus) character.
+#
+#, fuzzy
+msgid   "$filename: unescaped minus character"
+msgstr  "$filename: unescaped minus character"
+
 #
 # This fatal error message is issued by the aesvt -checkin command if
 # the history file already contains a particular version.
@@ -764,6 +809,19 @@ msgstr	"$filename: tập tin này có UID (mã số người dùng) quá "
 #
 msgid	"$filename: version $number already exists"
 msgstr	"$filename: phiên bản $number đã có"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy soname discovers a
+# shared library file with an incorrect version (SONAME) header.
+#
+#       $File_Name      The name of the offending shared library file
+#       $Number1        The calculated correct value.
+#       $Number2        The present incorrect value.
+#
+#, fuzzy
+msgid   "$filename: version should be $number1, not $number2"
+msgstr  "$filename: version should be $number1, not $number2"
 
 #
 # This error message is issued when aesvt -checkin finds an
@@ -1227,6 +1285,16 @@ msgid	"aedbu, has files"
 msgstr	"thay đổi này có một số tập tin liên quan, nhưng "
 	"bạn chỉ có thể dùng lệnh này với thay đổi không "
 	"có tập tin liên quan"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error is issued when the aedn command is used to attach a
+# delta name (label) to a change that is not in the "completed" state.
+#
+#, fuzzy
+msgid   "aedn bad state"
+msgstr  "this change is in the \"$state\" state; it must be in the "
+        "\"completed\" state to be used with the aedn command"
 
 #
 # This error message is issued when the aegis -new-project command is
@@ -4867,6 +4935,17 @@ msgstr	"pathconf(\"$filename\", {NAME_MAX}): $errno"
 msgid	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued by aede-policy when it finds a program
+# that does not appear to have a manual page (e.g. man/man1/example.1)
+#
+#       $File_Name      The name of the offending file.
+#
+#, fuzzy
+msgid   "prog $filename has no man page"
+msgstr  "program \"$filename\" does not have a manual page"
+
 #
 # This information message is issued when aenpr automatically allocates
 # the project home directory.
@@ -4875,6 +4954,17 @@ msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 #
 msgid	"proj dir $filename"
 msgstr	"thư mục dự án « $filename »"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy is checking the
+# "authors" policy, but the project has no "AUTHORS" file.
+#
+#       $File_Name      The name of the absent file.
+#
+#, fuzzy
+msgid	"proj has no $filename file"
+msgstr	"this project requires a \"$filename\" file"
 
 #
 # This error message is issued when a request is made to run regression
@@ -6299,3 +6389,5 @@ msgstr	"không thể hiểu được bạn muốn nói gì, quá phức "
 #
 msgid	"you must create a \"$filename\" file"
 msgstr	"bạn phải tạo một tập tin kiểu « $filename »"
+
+# vim: set ts=8 sw=4 et :

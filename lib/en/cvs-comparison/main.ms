@@ -1,29 +1,29 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2001, 2002, 2006-2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" Format this file with
-.\"	roffpp main.ms | pic | tbl | troff -t -ms | lpr -t
+.\"     roffpp main.ms | pic | tbl | troff -t -ms | lpr -t
 .\" from the directory this file appears in.
 .\" Roffpp is part of "cook" available from the same author,
 .\" or you could use soelim instead.
 .\"
 .\" Note that the GNU groff package uses a command like
-.\"	groff -s -p -t -ms main.ms | lpr
+.\"     groff -s -p -t -ms main.ms | lpr
 .\" and gives PostScript output and far better error messages.
 .\"
 .if n .ftr CB B
@@ -78,7 +78,7 @@ CVS Transition Guide
 Peter Miller
 .ft I
 .ce 1
-millerp@canb.auug.org.au
+pmiller@opensource.org.au
 .ft P
 .OH 'Aegis''CVS Transition Guide'
 .EH 'CVS Transition Guide''Aegis'
@@ -89,8 +89,8 @@ millerp@canb.auug.org.au
 .vs 14
 \&.
 .sp 4i
-.so version.so
-.so libdir.so
+.so etc/version.so
+.so etc/libdir.so
 This document describes Aegis version \*(v)
 .br
 and was prepared \*(DY.
@@ -120,9 +120,9 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 .vs 12
 .bp
 .\" ------------------------------------------------------------------------
-.so c1.so
-.so c2.so
-.so c3.so
+.so lib/en/cvs-comparison/c1.so
+.so lib/en/cvs-comparison/c2.so
+.so lib/en/cvs-comparison/c3.so
 .br
 .if t .1C
 .bp
@@ -141,3 +141,4 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 .pg@begin 1001 i
 .PX
 .if o .bp
+.\" vim: set ts=8 sw=4 et :

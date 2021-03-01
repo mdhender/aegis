@@ -1,20 +1,19 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994, 1995, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .ds n) aefp
 .TH \*(n) 1 \*(N) "Reference Manual"
@@ -30,10 +29,10 @@ aefp \- calculate file fingerprint
 ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I \*(n)
@@ -51,17 +50,17 @@ This program produces identical results;
 the expected test results were generated using Dan's package.
 .PP
 The
-fingerprint is a base-64-sanely-encoded fingerprint of the input.
+fingerprint is a base\[hy]64\[hy]sanely\[hy]encoded fingerprint of the input.
 Imagine this fingerprint as something universal and permanent.
 A fingerprint is 76 characters long, containing the following:
 .TP 4n
 1.
-A Snefru-8 (version 2.5, 8 passes, 512->256) hash.
+A Snefru\[hy]8 (version 2.5, 8 passes, 512\[->]256) hash.
 (Derived from the Xerox Secure Hash Function.)
 .TP 4n
 2.
 An MD5 hash, as per RFC 1321.
-(Derived from the RSADSI MD5 Message-Digest Algorithm.)
+(Derived from the RSADSI MD5 Message\[hy]Digest Algorithm.)
 .TP 4n
 3.
 A CRC checksum, as in the new cksum utility.
@@ -73,54 +72,54 @@ The output format is not expected to be compatible with anything.
 However,
 options are available to produce
 the purported output of Merkle's snefru program,
-the purported output of RSADSI's mddriver -x,
+the purported output of RSADSI's mddriver \-x,
 or the purported output of the POSIX cksum program.
 .PP
 If no files are named as input,
 the standard input will be used.
-The special file name \[lq]-\[rq] is understood to mean the standard input.
+The special file name \[lq]\-\[rq] is understood to mean the standard input.
 .br
 .ne 1i
 .SH OPTIONS
 The following options are understood:
 .TP 8n
-.B -Checksum
+.B \-Checksum
 Print the CRC32 checksum and length of the named file(s).
 .TP 8n
-.B -Identifier
+.B \-Identifier
 Print a condensed form of the fingerprint (obtained by performing a
-CRC32 checksum on the full fingerprint described above - a definite
+CRC32 checksum on the full fingerprint described above \- a definite
 overkill).
-This is an 8-digit hexadecimal number,
+This is an 8\[hy]digit hexadecimal number,
 useful for generating unique short identifiers out of long names.
-The first character is forced to be a letter (g-p),
+The first character is forced to be a letter (g\[hy]p),
 so there is no problem in using the output as a variable name.
 .TP 8n
-.B -Help
+.B \-Help
 .br
 Provide some help with using the
 .I \*(n)
 program.
 .TP 8n
-.B -Message_Digest
+.B \-Message_Digest
 Print the
-RSA Data Security, Inc. MD5 Message-Digest Algorithm
+RSA Data Security, Inc. MD5 Message\[hy]Digest Algorithm
 hash of the named file(s).
 .TP 8n
-.B -Snefru
+.B \-Snefru
 Print the Snefru hash of the named file(s),
 derived from the Xerox Secure Hash Function.
 .TP 8n
-.B -VERSion
+.B \-VERSion
 .br
 Print the version of the
 .I \*(n)
 program being executed.
 .PP
 All other options will produce a diagnostic error.
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
 .PP
 Portions of this program are derived from sources from other people,
 sometimes with liberal copyrights, and sometimes in the public domain.
@@ -152,3 +151,4 @@ see the named files for details.
 Files names are relative to the root of the
 .I aegis
 distribution.
+.\" vim: set ts=8 sw=4 et :

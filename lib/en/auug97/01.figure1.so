@@ -1,20 +1,19 @@
+'\"p
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2006-2008, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2006-2008 Peter Miller
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .PS
 dir_factor = 0.6
@@ -26,13 +25,13 @@ folder_miter  = 0.03 * dir_factor
 define folder {
 B: box invis wid folder_width ht folder_height
 line from B.sw \
-	then to B.nw-(0,folder_miter) \
-	then to B.nw+(folder_miter,0) \
-	then to B.n-(folder_miter/2,0) \
-	then to B.n+(folder_miter/2,-folder_miter) \
-	then to B.ne-(0,folder_miter) \
-	then to B.se \
-	then to B.sw
+    then to B.nw-(0,folder_miter) \
+    then to B.nw+(folder_miter,0) \
+    then to B.n-(folder_miter/2,0) \
+    then to B.n+(folder_miter/2,-folder_miter) \
+    then to B.ne-(0,folder_miter) \
+    then to B.se \
+    then to B.sw
 }
 
 document_height = 0.22 * dir_factor
@@ -42,14 +41,14 @@ document_miter  = 0.05 * dir_factor
 define document {
 B: box invis wid document_width ht document_height
 line from B.sw \
-	then to B.nw \
-	then to B.ne-(document_miter,0) \
-	then to B.ne-(0,document_miter) \
-	then to B.se \
-	then to B.sw
+    then to B.nw \
+    then to B.ne-(document_miter,0) \
+    then to B.ne-(0,document_miter) \
+    then to B.se \
+    then to B.sw
 line from B.ne-(document_miter,0) \
-	then to B.ne-(document_miter,document_miter) \
-	then to B.ne-(0,document_miter)
+    then to B.ne-(document_miter,document_miter) \
+    then to B.ne-(0,document_miter)
 }
 
 dir_wid = 0.35 * dir_factor
@@ -110,3 +109,4 @@ D3: box invis
 .\" picture is centered within the column.
 box invis wid 1 with .w at D3.e
 .PE
+.\" vim: set ts=8 sw=4 et :

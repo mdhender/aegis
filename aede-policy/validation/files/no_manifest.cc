@@ -1,6 +1,6 @@
 //
 // aegis - project change supervisor
-// Copyright (C) 2007, 2008 Peter Miller
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 // Copyright (C) 2007 Walter Franzini
 //
 // This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,9 @@
 // with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <libaegis/attribute.h>
 #include <libaegis/change/file.h>
 #include <libaegis/input/file_text.h>
@@ -40,6 +40,13 @@ validation_files_no_manifest::~validation_files_no_manifest()
 
 validation_files_no_manifest::validation_files_no_manifest()
 {
+}
+
+
+validation::pointer
+validation_files_no_manifest::create(void)
+{
+    return pointer(new validation_files_no_manifest());
 }
 
 
@@ -110,7 +117,7 @@ validation_files_no_manifest::check(change::pointer cp, fstate_src_ty *src)
     if (ok)
         return true;
 
-    nstring path(change_file_path(cp, src));
+    nstring path(cp->file_path(src));
     assert(!path.empty());
     if (path.empty())
         return true;
@@ -143,3 +150,6 @@ validation_files_no_manifest::check(change::pointer cp, fstate_src_ty *src)
     os_become_undo();
     return ok;
 }
+
+
+// vim: set ts=8 sw=4 et :

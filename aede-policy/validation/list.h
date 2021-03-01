@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2005-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDE_POLICY_VALIDATION_LIST_H
@@ -45,7 +44,7 @@ public:
       * The push_back method is used to append another validation to the
       * end of the list.
       */
-    void push_back(validation *vp);
+    void push_back(const validation::pointer &vp);
 
     /**
       * The run method is used to run each of the validations in the
@@ -68,12 +67,12 @@ public:
 private:
     size_t length;
     size_t maximum;
-    validation **list;
+    validation::pointer *list;
 
     /**
       * The clear method is used to delete all of the list members.
       */
-    void clear();
+    void clear(void);
 
     /**
       * The copy constructor.  Do not use.
@@ -87,3 +86,4 @@ private:
 };
 
 #endif // AEDE_POLICY_VALIDATION_LIST_H
+// vim: set ts=8 sw=4 et :

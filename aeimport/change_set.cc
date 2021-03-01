@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004-2006, 2008 Peter Miller
+//      Copyright (C) 2001, 2002, 2004-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,8 +17,11 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
+#include <common/debug.h>
+
 #include <aeimport/change_set.h>
-#include <common/error.h> // for assert
 
 
 change_set_ty::change_set_ty()
@@ -60,3 +63,6 @@ change_set_ty::validate()
 }
 
 #endif
+
+
+// vim: set ts=8 sw=4 et :

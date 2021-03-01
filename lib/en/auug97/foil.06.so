@@ -1,20 +1,19 @@
+'\"p
+.\" aegis - project change supervisor
+.\" Copyright (C) 1998, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2006-2008 Peter Miller
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nr PS 72
 .nr VS 75000
@@ -84,7 +83,7 @@ arrow from D1.n to CC2.sw
 .nr VS 25
 .XP
 \(bu
-Ignore the picky details, like -I options.
+Ignore the picky details, like \-I options.
 And yacc files, \fIetc\fP.
 .XP
 \(bu
@@ -118,3 +117,4 @@ Make then performs two separate traversals of these graphs.
 \(dg To work properly, \fImake\fP needs the whole graph.
 .br
 \(dg To work properly, \fImake\fP needs to be free to choose its own order.
+.\" vim: set ts=8 sw=4 et :

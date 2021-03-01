@@ -1,20 +1,20 @@
+'\"tp
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1997, 1999, 2001, 2002, 2005-2009, 2012 Peter Miller
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2001, 2002, 2005-2008 Peter Miller
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -47,7 +47,7 @@ Recursive Make Considered Harmful
 .LP
 .ce 2
 \fIPeter Miller\fP
-\f(CWmillerp@canb.auug.org.au\fP
+\f(CWpmiller@opensource.org.au\fP
 .LP
 .sp 2
 .in +0.5i
@@ -60,7 +60,7 @@ project is to use recursive
 .I make.
 On some projects, this results in
 build times which are unacceptably large, when all you want to
-do is change one file.	In examining the source of the overly
+do is change one file.  In examining the source of the overly
 long build times, it became evident that a number of
 apparently unrelated problems combine to produce the delay,
 but on analysis all have the same root cause.
@@ -114,25 +114,26 @@ T}
 .sp 2
 .if t .2C
 .\" ---------------------------------------------------------------------------
-.so 01-intro.so
-.so 02-problem.so
-.so 03-analysis.so
-.so 04-cure.so
-.so 05-makefile.so
-.so 06-vpath.so
-.so 07-synthesi.so
-.so 08-books.so
-.so 09-summary.so
-.so 10-ref.so
+.so lib/en/auug97/01-intro.so
+.so lib/en/auug97/02-problem.so
+.so lib/en/auug97/03-analysis.so
+.so lib/en/auug97/04-cure.so
+.so lib/en/auug97/05-makefile.so
+.so lib/en/auug97/06-vpath.so
+.so lib/en/auug97/07-synthesi.so
+.so lib/en/auug97/08-books.so
+.so lib/en/auug97/09-summary.so
+.so lib/en/auug97/10-ref.so
 .br
 .ne 3i
 .nh 1 "About the Author"
 Peter Miller has worked for many years in the software R&D
-industry, principally on UNIX systems.	In that time he has
+industry, principally on UNIX systems.  In that time he has
 written tools such as Aegis (a software configuration management
 system) and Cook (yet another \fImake\fP-oid), both of which are freely
 available on the Internet.  Supporting the use of these tools at
 many Internet sites provided the insights which led to this paper.
 .LP
-Please visit \f(CWhttp://www\%.canb\%.auug\%.org\%.au\%/~millerp/\fP if
+Please visit \f(CWhttp://miller.emu.id.au\%/pmiller/\fP if
 you would like to look at some of the author's free software.
+.\" vim: set ts=8 sw=4 et :

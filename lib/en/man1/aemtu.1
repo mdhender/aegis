@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Make_Transparent_Undo" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Make_Transparent_Undo" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aegis make transparent undo \- no longer make branch file transparent
 .XX "aemtu(1)" "no longer make branch file transparent"
@@ -54,7 +53,7 @@ You may name a directory to delete from the change all files
 in that directory tree previously copied into the change,
 other files in the tree will be ignored.
 It is an error if there are no relevant files.
-.so z_intuit.so
+.so lib/en/man1/z_intuit.so
 .SS Process Side Effects
 This command will cancel any build or test registrations,
 because deleting a file logically invalidates them.
@@ -75,24 +74,24 @@ and if there has been an integration recently.  See \fIaepconf\fP(5)
 for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_baserel.so
-.so o_change.so
-.so o_help.so
-.so o_interact.so
-.so o_keep.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_symlnk_vfy.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_interact.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_symlnk_vfy.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aemtu '\*(n) -mtu \e!* -v'
-sh$	aemtu(){\*(n) -mtu "$@" -v}
+csh%    alias aemtu '\*(n) \-mtu \e!* \-v'
+sh$     aemtu(){\*(n) \-mtu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -102,7 +101,7 @@ state.
 .br
 It is an error if
 the change is not assigned to the current user.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -115,4 +114,5 @@ make branch files transparent
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

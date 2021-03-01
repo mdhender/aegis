@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # aegis - project change supervisor
-# Copyright (C) 1997, 2002, 2006-2008 Peter Miller
+# Copyright (C) 1997, 2002, 2006-2008, 2012 Peter Miller
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,3 +48,4 @@ $changes
 fubar
 fi
 exit 0
+# vim: set ts=8 sw=4 et :

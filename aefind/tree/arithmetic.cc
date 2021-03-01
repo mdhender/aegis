@@ -1,25 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1997, 1999, 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/math.h>
 
-#include <common/error.h> // for assert
 #include <common/str.h>
 #include <common/trace.h>
 #include <libaegis/aer/value/error.h>
@@ -33,7 +31,7 @@
 #include <aefind/tree/list.h>
 
 
-#define PAIR(a, b)	((a) * rpt_value_type_MAX + (b))
+#define PAIR(a, b)      ((a) * rpt_value_type_MAX + (b))
 
 
 tree_mul::~tree_mul()
@@ -74,8 +72,8 @@ tree_mul::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
         get_left()->evaluate(path_unres, path, path_res, st);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
@@ -91,8 +89,8 @@ tree_mul::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
         get_right()->evaluate(path_unres, path, path_res, st);
     if (v2->is_an_error())
     {
-	trace(("}\n"));
-	return v2;
+        trace(("}\n"));
+        return v2;
     }
 
     //
@@ -236,8 +234,8 @@ tree_divide::evaluate(string_ty *path_unres, string_ty *path,
         get_left()->evaluate(path_unres, path, path_res, st);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
@@ -253,8 +251,8 @@ tree_divide::evaluate(string_ty *path_unres, string_ty *path,
         get_right()->evaluate(path_unres, path, path_res, st);
     if (v2->is_an_error())
     {
-	trace(("}\n"));
-	return v2;
+        trace(("}\n"));
+        return v2;
     }
 
     //
@@ -391,8 +389,8 @@ tree_mod::evaluate(string_ty *path_unres, string_ty *path,
         get_left()->evaluate(path_unres, path, path_res, st);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
@@ -408,8 +406,8 @@ tree_mod::evaluate(string_ty *path_unres, string_ty *path,
         get_right()->evaluate(path_unres, path, path_res, st);
     if (v2->is_an_error())
     {
-	trace(("}\n"));
-	return v2;
+        trace(("}\n"));
+        return v2;
     }
 
     //
@@ -537,8 +535,8 @@ tree_neg::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
     rpt_value::pointer v1 = get_arg()->evaluate(path_unres, path, path_res, st);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
@@ -627,7 +625,7 @@ tree_pos::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
     trace(("pos::evaluate()\n"));
     rpt_value::pointer v1 = get_arg()->evaluate(path_unres, path, path_res, st);
     if (v1->is_an_error())
-	return v1;
+        return v1;
 
     //
     // coerce the argument to an arithmetic type
@@ -712,7 +710,7 @@ tree_plus::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
     rpt_value::pointer lv1 =
         get_left()->evaluate(path_unres, path, path_res, st);
     if (lv1->is_an_error())
-	return lv1;
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
@@ -726,7 +724,7 @@ tree_plus::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
     rpt_value::pointer rv1 =
         get_right()->evaluate(path_unres, path, path_res, st);
     if (rv1->is_an_error())
-	return rv1;
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
@@ -859,7 +857,7 @@ tree_subtract::evaluate(string_ty *path_unres, string_ty *path,
     rpt_value::pointer lv1 =
         get_left()->evaluate(path_unres, path, path_res, st);
     if (lv1->is_an_error())
-	return lv1;
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
@@ -873,7 +871,7 @@ tree_subtract::evaluate(string_ty *path_unres, string_ty *path,
     rpt_value::pointer rv1 =
         get_right()->evaluate(path_unres, path, path_res, st);
     if (rv1->is_an_error())
-	return rv1;
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
@@ -1007,8 +1005,8 @@ tree_join::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
         get_left()->evaluate(path_unres, path, path_res, st);
     if (v1->is_an_error())
     {
-	trace(("}\n"));
-	return v1;
+        trace(("}\n"));
+        return v1;
     }
 
     //
@@ -1018,8 +1016,8 @@ tree_join::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
         get_right()->evaluate(path_unres, path, path_res, st);
     if (v2->is_an_error())
     {
-	trace(("}\n"));
-	return v2;
+        trace(("}\n"));
+        return v2;
     }
 
     //
@@ -1032,8 +1030,8 @@ tree_join::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
 
     if (v1sp && v2sp)
     {
-	nstring s = v1sp->query() + v2sp->query();
-	return rpt_value_string::create(s);
+        nstring s = v1sp->query() + v2sp->query();
+        return rpt_value_string::create(s);
     }
 
     sub_context_ty sc;
@@ -1061,3 +1059,6 @@ tree_join::name()
 {
     return ":";
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2007, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/trace.h>
@@ -25,7 +25,7 @@ int
 user_ty::get_gid()
     const
 {
-    trace(("user_ty::get_gid(this = %08lX)\n{\n", (long)this));
+    trace(("user_ty::get_gid(this = %p)\n{\n", this));
     trace(("return %d;\n", group_id));
     trace(("}\n"));
     return group_id;
@@ -35,9 +35,12 @@ user_ty::get_gid()
 int
 user_gid(user_ty::pointer up)
 {
-    trace(("user_gid(up = %08lX)\n{\n", (long)up.get()));
+    trace(("user_gid(up = %p)\n{\n", up.get()));
     int result = up->get_gid();
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

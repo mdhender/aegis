@@ -1,0 +1,430 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1991-1996, 1999, 2001-2004, 2006-2009 Peter Miller
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
+#
+# @configure_input@
+#
+# Please Note: this file will be over-written by the next installation
+# of Aegis.  If you make local modifications, you will need to remember
+# to make them again after the next upgrade.
+#
+# On Linux, or any system using zsh, a symlink to this file
+# from /etc/profile.d/aegis.zsh can be very useful.
+#
+if test -z "$AEGIS_PATH" -a -d $HOME/lib/aegis/.
+then
+	AEGIS_PATH=$HOME/lib/aegis
+	export AEGIS_PATH
+fi
+
+#
+# Set the MANPATH environment variable to include the Aegis' library
+# directory.  This directory contains subdirectories for each of the
+# supported languages, structured in such a way that man(1) programs
+# which understand the $LANGUAGE environment variable will be able to find
+# manual pages in the user's preferred language.
+#
+if [ "${MANPATH-no}" = "no" ]; then
+    MANPATH="`@MANPATH_PROG@`"
+fi
+MANPATH=${MANPATH}:@mandir@:@datadir@
+# MANPATH=${MANPATH}:@mandir@:@datadir@:@datarootdir@
+export MANPATH
+
+#
+# Set the AEGIS_AUTOMOUNT_POINTS environment variable to the names
+# of the directories which the automounter uses to temporarily mount
+# file systems.  Use with extreme caution as this distorts Aegis' idea
+# of the shape of the filesystem.
+#
+#	/tmp_mnt is typical of Sun automounters
+#	/a is the default for amd, an OpenSource automounter
+#	/.automount is typical of amd on Linux
+#
+# The automounters need to be configured so that the path below the
+# automount point is *identical* to the path without it - because all
+# Aegis tries to do is remove the automount prefix *if* the file
+# stat()s the same with and without it.  This is the default for the
+# Sun automounter, but not typical in the examples in the amd user guide.
+#
+AEGIS_AUTOMOUNT_POINTS="/tmp_mnt:/a:/.automount"
+export AEGIS_AUTOMOUNT_POINTS
+
+#
+# Each of the Aegis commands has its own alias.  This is essential for
+# aecd, and convenient for the others.  (Splitting Aegis into many
+# commands is only efficient if the target system has shared libraries,
+# because the size of the common code portion usually greatly exceeds
+# the size of the unique portions.)
+#
+# Note: while Bash uses the "function" keyword to define functions, the
+# original Bourne shell does not.  Bash understands the form with out he
+# "funtion" keyword, so it is omitted.
+#
+aeb()
+{
+	aegis -b "$@" -v
+}
+aeca()
+{
+	aegis -ca "$@" -v
+}
+aecd()
+{
+	ae_response="`aegis -cd "$@" -v`"
+	if test -d "$ae_response"
+	then
+		cd "$ae_response"
+	else
+		echo "$ae_response"
+	fi
+	unset ae_response
+}
+aechown()
+{
+	aegis -chown "$@" -v
+}
+aeclean()
+{
+	aegis -clean "$@" -v
+}
+aeclone()
+{
+	aegis -clone "$@" -v
+}
+aecp()
+{
+	aegis -cp "$@" -v
+}
+aecpu()
+{
+	aegis -cpu "$@" -v
+}
+aed()
+{
+	aegis -diff "$@" -v
+}
+aedb()
+{
+	aegis -db "$@" -v
+}
+aedbu()
+{
+	aegis -dbu "$@" -v
+}
+aede()
+{
+	aegis -de "$@" -v
+}
+aedeu()
+{
+	aegis -deu "$@" -v
+}
+aedless()
+{
+	less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
+}
+aedmore()
+{
+	more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
+}
+aedn()
+{
+	aegis -dn "$@" -v
+}
+aefa()
+{
+	aegis -fat "$@" -v
+}
+aeib()
+{
+	aegis -ib "$@" -v
+}
+aeibu()
+{
+	aegis -ibu "$@" -v
+}
+aeifail()
+{
+	aegis -ifail "$@" -v
+}
+aeipass()
+{
+	aegis -ipass "$@" -v
+}
+ael()
+{
+	aegis -l "$@" -v
+}
+aem()
+{
+	aegis -diff -only_merge "$@" -v
+}
+aemt()
+{
+        aegis -mt "$@" -v
+}
+aemtu()
+{
+        aegis -mtu "$@" -v
+}
+aemv()
+{
+	aegis -mv "$@" -v
+}
+aemvu()
+{
+	aegis -mvu "$@" -v
+}
+aena()
+{
+	aegis -na "$@" -v
+}
+aenbr()
+{
+	aegis -nbr "$@" -v
+}
+aenbru()
+{
+	aegis -nbru "$@" -v
+}
+aenc()
+{
+	aegis -nc "$@" -v
+}
+aencu()
+{
+	aegis -ncu "$@" -v
+}
+aend()
+{
+	aegis -nd "$@" -v
+}
+aenf()
+{
+	aegis -nf "$@" -v
+}
+aenfu()
+{
+	aegis -nfu "$@" -v
+}
+aeni()
+{
+	aegis -ni "$@" -v
+}
+aenpa()
+{
+	aegis -new-project-alias "$@" -v
+}
+aenpr()
+{
+	aegis -npr "$@" -v
+}
+aenrls()
+{
+	aegis -nrls "$@" -v
+}
+aenrv()
+{
+	aegis -nrv "$@" -v
+}
+aent()
+{
+	aegis -nt "$@" -v
+}
+aentu()
+{
+	aegis -ntu "$@" -v
+}
+aepa()
+{
+	aegis -pa "$@" -v
+}
+aepwd()
+{
+	aegis -Change_Directory "$@" -terse
+}
+aeq()
+{
+	aegis -q "$@" -v
+}
+aer()
+{
+	aereport "$@" -v
+}
+aera()
+{
+	aegis -ra "$@" -v
+}
+aerb()
+{
+	aegis -rb "$@" -v
+}
+aerbu()
+{
+	aegis -rbu "$@" -v
+}
+aerd()
+{
+	aegis -rd "$@" -v
+}
+aerfail()
+{
+	aegis -rfail "$@" -v
+}
+aeri()
+{
+	aegis -ri "$@" -v
+}
+aerm()
+{
+	aegis -rm "$@" -v
+}
+aermu()
+{
+	aegis -rmu "$@" -v
+}
+aerpass()
+{
+	aegis -rpass "$@" -v
+}
+aerpa()
+{
+	aegis -remove-project-alias "$@" -v
+}
+aerpu()
+{
+	aegis -rpu "$@" -v
+}
+aermpr()
+{
+	aegis -rmpr "$@" -v
+}
+aerrv()
+{
+	aegis -rrv "$@" -v
+}
+aet()
+{
+	aegis -t "$@" -v
+}
+aev()
+{
+	aegis -VERSion "$@" -v
+}
+
+ae_c()
+{
+	AEGIS_CHANGE="$1"
+	export AEGIS_CHANGE
+}
+ae_p()
+{
+	AEGIS_PROJECT="$1"
+	export AEGIS_PROJECT
+}
+
+aeunset()
+{
+	unset -f aeb
+	unset -f ae_c
+	unset -f aeca
+	unset -f aecd
+	unset -f aechown
+	unset -f aeclean
+	unset -f aeclone
+	unset -f aecp
+	unset -f aecpu
+	unset -f aed
+	unset -f aedb
+	unset -f aedbu
+	unset -f aede
+	unset -f aedeu
+	unset -f aedless
+	unset -f aedmore
+	unset -f aedn
+	unset -f aeunset
+	unset -f aeib
+	unset -f aeibu
+	unset -f aeifail
+	unset -f aeipass
+	unset -f ael
+	unset -f aem
+        unset -f aemt
+        unset -f aemtu
+        unset -f aemv
+	unset -f aemvu
+	unset -f aena
+	unset -f aenbr
+	unset -f aenbru
+	unset -f aenc
+	unset -f aencu
+	unset -f aend
+	unset -f aenf
+	unset -f aenfu
+	unset -f aeni
+	unset -f aenpa
+	unset -f aenpr
+	unset -f aenrls
+	unset -f aenrv
+	unset -f aent
+	unset -f aentu
+	unset -f ae_p
+	unset -f aepa
+        unset -f aepwd
+	unset -f aeq
+	unset -f aer
+	unset -f aera
+        unset -f aerb
+        unset -f aerbu
+	unset -f aerd
+	unset -f aerfail
+	unset -f aeri
+	unset -f aerm
+	unset -f aermpr
+	unset -f aermu
+	unset -f aerpa
+	unset -f aerpass
+	unset -f aerpu
+	unset -f aerrv
+	unset -f aet
+        unset -f aev
+	unset AEGIS
+	unset AEGIS_PROJECT
+	unset AEGIS_CHANGE
+	unset AEGIS_PATH
+	unset AEGIS_AUTOMOUNT_POINTS
+}
+
+#
+# Command completion is gradually being implemented for a wide range of
+# arguments for many Aegis commands.
+#
+if [ -n "$PS1" ]
+then
+    case "$ZSH_VERSION" in
+
+    4.[2-9]* | [5-9].* | [1-9][0-9].* )
+	_aegis_complete () {
+	    local output
+	    output=( ${(f)"$(aecomplete $words[1]  2>/dev/null)"} )
+	    test $? = 0 && compadd -a output
+	}
+	compdef _aegis_complete -P "ae*"
+	;;
+    esac
+fi

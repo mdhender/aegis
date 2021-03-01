@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aelcf
 .TH "aelcf" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -29,10 +28,10 @@ aelcf \- list change files
 ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to
 list the files which make up a change.
@@ -41,7 +40,7 @@ The file names are printed one per line on the output.
 If there are no files matching your criteria (see below) the output will be
 empty, and no error will be issued.
 .PP
-This is very similar to the \fIaegis -l cf\fP listing,
+This is very similar to the \fIaegis \-l cf\fP listing,
 but it only lists file names, it lists no other attributes,
 and it is considerably faster.
 .PP
@@ -59,7 +58,7 @@ The following options are understood:
 \fB\-ACtion\fP \fIname\fP
 This option may be used to specify which file actions you are interested in.
 Valid values are "create", "modify", "remove", \fIetc\fP,
-as may be observed in the Action column of the \fIaegis -l pf\fP listing.
+as may be observed in the Action column of the \fIaegis \-l pf\fP listing.
 The default is to list files with all actions except removed files.
 You may use this option more than once.
 .TP 8n
@@ -68,14 +67,14 @@ This option may be used to exclude an action from the listing.
 If no actions are explicitly included or excluded,
 the default is to exclude removed files.
 You may use this option more than once.
-.so o_change.so
-.so o_help.so
-.so o_project.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_project.so
 .TP 8n
 \fB\-USAge\fP \fIname\fP
 This option may be used to specify which file usages you are interested in.
 Valid values are "source", "test", \fIetc\fP,
-as may be observed in the Usage column of the \fIaegis -l pf\fP listing.
+as may be observed in the Usage column of the \fIaegis \-l pf\fP listing.
 The default is to list files with all usages.
 You may use this option more than once.
 .TP 8n
@@ -83,8 +82,9 @@ You may use this option more than once.
 This option may be used to exclude usages from the listing.
 The default is to exclude no usages.
 You may use this option more than once.
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o_aelsf_quot.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 \fIael\fP(1)
@@ -98,4 +98,5 @@ add new files to be created by a change
 .TP 8n
 \fIaepconf\fP(5)
 project configuration file
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

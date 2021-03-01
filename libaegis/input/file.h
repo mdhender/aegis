@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1999, 2001, 2002, 2005, 2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-2001, 2002, 2005, 2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see
+// <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_INPUT_FILE_H
@@ -49,22 +49,22 @@ public:
       *     to false if not specified.
       */
     input_file(const nstring &path, bool unlink_on_close = false,
-	bool empty_if_absent = false);
+        bool empty_if_absent = false);
 
     // See base class for documentation.
     nstring name();
 
     // See base class for documentation.
-    long length();
+    off_t length();
 
     // See base class for documentation.
     void keepalive();
 
     // See base class for documentation.
-    long read_inner(void *data, size_t nbytes);
+    ssize_t read_inner(void *data, size_t nbytes);
 
     // See base class for documentation.
-    long ftell_inner();
+    off_t ftell_inner();
 
     /**
       * The unlink_on_close method may be used to specify that the file
@@ -76,7 +76,7 @@ private:
     nstring path;
     int fd;
     bool unlink_on_close_flag;
-    long pos;
+    off_t pos;
     bool empty_if_absent_flag;
 
     /**
@@ -100,7 +100,7 @@ private:
   * the path is "-", or a URL if it looks like a URL, or otherwise an
   * ordinary file.
   *
-  * @param path
+  * @param fn
   *     The path of the file to be opened.
   * @param unlink_on_close
   *     If true, the file is to be unlinked in the destructor.  Defaults
@@ -118,18 +118,15 @@ input input_file_open(const nstring &fn, bool unlink_on_close = false,
   * the path is "-", or a URL if it looks like a URL, or otherwise an
   * ordinary file.
   *
-  * @param path
+  * @param fn
   *     The path of the file to be opened.
   * @param unlink_on_close
   *     If true, the file is to be unlinked in the destructor.  Defaults
   *     to false if not specified.
-  * @param empty_if_absent
-  *     If true, the file is to be treated as if it was empty if it does
-  *     not exist.  No warning message will be issued.  Defaults to
-  *     false if not specified.
   * @note
   *     This function will soon be deprecated.
   */
 input input_file_open(struct string_ty *fn, bool unlink_on_close = false);
 
 #endif // AEGIS_INPUT_FILE_H
+// vim: set ts=8 sw=4 et :

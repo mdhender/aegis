@@ -1,28 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_WSTRING_H
 #define COMMON_WSTRING_H
 
-/** \addtogroup WString
-  * \brief Wide char strings
-  * \ingroup String
+/** @addtogroup WString
+  * @brief Wide char strings
+  * @ingroup String
   * @{
   */
 
@@ -52,7 +52,7 @@ public:
       * The default constructor.
       */
     wstring() :
-	ref(get_empty_ref())
+        ref(get_empty_ref())
     {
     }
 
@@ -61,7 +61,7 @@ public:
       */
     explicit
     wstring(const char *arg) :
-	ref(arg ? wstr_from_c(arg) : get_empty_ref())
+        ref(arg ? wstr_from_c(arg) : get_empty_ref())
     {
     }
 
@@ -70,7 +70,7 @@ public:
       */
     explicit
     wstring(const wchar_t *arg) :
-	ref(arg ? wstr_from_wc(arg) : get_empty_ref())
+        ref(arg ? wstr_from_wc(arg) : get_empty_ref())
     {
     }
 
@@ -78,7 +78,7 @@ public:
       * The constructor.
       */
     wstring(const char *data, size_t len) :
-	ref(wstr_n_from_c(data, len))
+        ref(wstr_n_from_c(data, len))
     {
     }
 
@@ -86,7 +86,7 @@ public:
       * The constructor.
       */
     wstring(const wchar_t *data, size_t len) :
-	ref(wstr_n_from_wc(data, len))
+        ref(wstr_n_from_wc(data, len))
     {
     }
 
@@ -94,7 +94,7 @@ public:
       * The constructor.
       */
     wstring(wstring_ty *arg) :
-	ref(arg ? wstr_copy(arg) : get_empty_ref())
+        ref(arg ? wstr_copy(arg) : get_empty_ref())
     {
     }
 
@@ -114,7 +114,7 @@ public:
       * The copy constructor.
       */
     wstring(const wstring &arg) :
-	ref(wstr_copy(arg.ref))
+        ref(wstr_copy(arg.ref))
     {
     }
 
@@ -124,12 +124,12 @@ public:
     wstring &
     operator=(const wstring &arg)
     {
-	if (this != &arg)
-	{
-	    wstr_free(ref);
-	    ref = wstr_copy(arg.ref);
-	}
-	return *this;
+        if (this != &arg)
+        {
+            wstr_free(ref);
+            ref = wstr_copy(arg.ref);
+        }
+        return *this;
     }
 
     /**
@@ -144,9 +144,9 @@ public:
       */
     const wchar_t *
     c_str()
-	const
+        const
     {
-	return ref->wstr_text;
+        return ref->wstr_text;
     }
 
     /**
@@ -157,186 +157,186 @@ public:
 
     bool
     empty()
-	const
+        const
     {
-	return (ref->wstr_length == 0);
+        return (ref->wstr_length == 0);
     }
 
     size_t
     size()
-	const
+        const
     {
-	return ref->wstr_length;
+        return ref->wstr_length;
     }
 
     size_t
     length()
-	const
+        const
     {
-	return ref->wstr_length;
+        return ref->wstr_length;
     }
 
     /**
-      * \brief
-      *	join two strings together
+      * @brief
+      * join two strings together
       *
       * The wstr_catenate function is used to join two strings togther to
       * form a new string.  The are joined in the order given.
       *
-      * \param arg
-      *	    A string to be joined.  Will not be modified.
+      * @param arg
+      *     A string to be joined.  Will not be modified.
       *
-      * \return
+      * @return
       *     a pointer to a string in dynamic memory.  Use wstr_free()
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
     wstring
     catenate(const wstring &arg)
-	const
+        const
     {
-	return wstring(wstr_catenate(ref, arg.ref));
+        return wstring(wstr_catenate(ref, arg.ref));
     }
 
     wstring
     operator+(const wstring &arg)
-	const
+        const
     {
-	return wstring(wstr_catenate(ref, arg.ref));
+        return wstring(wstr_catenate(ref, arg.ref));
     }
 
     wstring &
     operator+=(const wstring &arg)
     {
-	if (!arg.empty())
-	{
-	    wstring_ty *s = wstr_catenate(ref, arg.ref);
-	    wstr_free(ref);
-	    ref = s;
-	}
-	return *this;
+        if (!arg.empty())
+        {
+            wstring_ty *s = wstr_catenate(ref, arg.ref);
+            wstr_free(ref);
+            ref = s;
+        }
+        return *this;
     }
 
     /**
-      * \brief
-      *	joing strings together
+      * @brief
+      * joing strings together
       *
       * The wstr_cat_three function is used to join three strings together
       * to form a new string.  The are joined in the order given.
       *
-      * \param str2
-      *	    A string to be joined.  Will not be modified.
-      * \param str3
-      *	    A string to be joined.  Will not be modified.
+      * @param str2
+      *     A string to be joined.  Will not be modified.
+      * @param str3
+      *     A string to be joined.  Will not be modified.
       *
-      * \return
-      *	    a pointer to a string in dynamic memory.  Use wstr_free() when
+      * @return
+      *     a pointer to a string in dynamic memory.  Use wstr_free() when
       *     finished with.  The contents of the structure pointed to
       *     <b>shall not</b> be altered.
       */
     wstring
     cat_three(const wstring &str2, const wstring &str3)
-	const
+        const
     {
-	return wstring(wstr_cat_three(ref, str2.ref, str3.ref));
+        return wstring(wstr_cat_three(ref, str2.ref, str3.ref));
     }
 
     /**
-      * \brief
-      *	convert to upper case
+      * @brief
+      * convert to upper case
       *
       * The wstr_upcase function is used to create a new string where the
       * lower case characters in the input string are converted to upper
       * case.
       *
-      * \return
+      * @return
       *     a pointer to a string in dynamic memory.  Use wstr_free()
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
     wstring
     upcase()
-	const
+        const
     {
-	return wstring(wstr_to_upper(ref));
+        return wstring(wstr_to_upper(ref));
     }
 
     /**
-      * \brief
-      *	convert to lower case
+      * @brief
+      * convert to lower case
       *
       * The wstr_downcase function is used to create a new string where the
       * upper case characters in the input string are converted to lower
       * case.
       *
-      * \return
+      * @return
       *     a pointer to a string in dynamic memory.  Use wstr_free()
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
     wstring
     downcase()
-	const
+        const
     {
-	return wstring(wstr_to_lower(ref));
+        return wstring(wstr_to_lower(ref));
     }
 
     /**
-      * \brief
-      *	convert to title case
+      * @brief
+      * convert to title case
       *
       * The wstr_capitalize function is used to create a new string where the
       * first letter or each word of the inopuyt string are upper case, and
       * the remaining letters in each word are lower case.  (Sometimes called
       * Title Case.)
       *
-      * \returns
-      *	    a pointer to a string in dynamic memory.
+      * @returns
+      *     a pointer to a string in dynamic memory.
       */
     wstring
     capitalize()
-	const
+        const
     {
-	return wstring(wstr_capitalize(ref));
+        return wstring(wstr_capitalize(ref));
     }
 
     /**
-      * \brief
-      *	test string equality
+      * @brief
+      * test string equality
       *
       * The wstr_equal function is used to test to see if two strings are
       * exactly the same.
       *
-      * \param arg
-      *	    A string to be compared.  Will not be modified.
+      * @param arg
+      *     A string to be compared.  Will not be modified.
       *
-      * \note
+      * @note
       *     Users shall always write code as if they did not know that a
       *     string equality test is a pointer equality test.
       *
-      * \return
-      *	    Non-zero if the strings are equal,
-      *	    zero if the strings are unequal.
+      * @return
+      *     Non-zero if the strings are equal,
+      *     zero if the strings are unequal.
       */
     bool
     equal(const wstring &arg)
-	const
+        const
     {
-	return (ref == arg.ref);
+        return (ref == arg.ref);
     }
 
     bool
     operator==(const wstring &arg)
-	const
+        const
     {
-	return (ref == arg.ref);
+        return (ref == arg.ref);
     }
 
     bool
     operator!=(const wstring &arg)
-	const
+        const
     {
-	return (ref != arg.ref);
+        return (ref != arg.ref);
     }
 
     /**
@@ -349,9 +349,9 @@ public:
       */
     wstring_ty *
     get_ref()
-	const
+        const
     {
-	return ref;
+        return ref;
     }
 
     /**
@@ -361,27 +361,27 @@ public:
       */
     wstring
     identifier()
-	const
+        const
     {
-	return wstr_to_ident(get_ref());
+        return wstr_to_ident(get_ref());
     }
 
     /**
       * The indexing operator is used to extract the nth character of a
       * string.  Indexes out of range will result in the NUL character
-      * ('\0') being returned.
+      * being returned.
       *
       * @param n
       *     The character to extract.  Zero based.
       * @returns
-      *     The character requested, or NUL ('\0') if the index is out
+      *     The character requested, or NUL if the index is out
       *     of range.
       */
     char
     operator[](size_t n)
-	const
+        const
     {
-	return (n < size() ? ref->wstr_text[n] : L'\0');
+        return (n < size() ? ref->wstr_text[n] : L'\0');
     }
 
     /**
@@ -412,7 +412,7 @@ private:
     static wstring_ty *
     get_empty_ref()
     {
-	return wstr_from_c("");
+        return wstr_from_c("");
     }
 };
 
@@ -431,3 +431,4 @@ operator+(const wstring &lhs, const char *rhs)
 /** @} */
 
 #endif // COMMON_WSTRING_H
+// vim: set ts=8 sw=4 et :

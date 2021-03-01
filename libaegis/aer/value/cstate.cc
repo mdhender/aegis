@@ -1,23 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1996, 1999, 2001-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/trace.h>
 #include <libaegis/aer/value/cstate.h>
@@ -43,7 +44,7 @@ rpt_value_cstate::~rpt_value_cstate()
 }
 
 
-rpt_value_cstate::rpt_value_cstate(project_ty *a_pp, size_t a_length,
+rpt_value_cstate::rpt_value_cstate(project *a_pp, size_t a_length,
         const long *a_list) :
     pp(project_copy(a_pp)),
     length(a_length),
@@ -52,12 +53,12 @@ rpt_value_cstate::rpt_value_cstate(project_ty *a_pp, size_t a_length,
     trace(("%s\n", __PRETTY_FUNCTION__));
     list = new long [length];
     for (size_t j = 0; j < length; ++j)
-	list[j] = magic_zero_decode(a_list[j]);
+        list[j] = magic_zero_decode(a_list[j]);
 }
 
 
 rpt_value::pointer
-rpt_value_cstate::create(project_ty *pptr, size_t o_length, const long *vlist)
+rpt_value_cstate::create(project *pptr, size_t o_length, const long *vlist)
 {
     trace(("%s\n", __PRETTY_FUNCTION__));
     return pointer(new rpt_value_cstate(pptr, o_length, vlist));
@@ -71,20 +72,20 @@ rpt_value_cstate::lookup(const rpt_value::pointer &rhs, bool)
     //
     // extract the change number
     //
-    trace(("rpt_value_cstate::lookup(this = %08lX)\n{\n", (long)this));
+    trace(("rpt_value_cstate::lookup(this = %p)\n{\n", this));
     rpt_value::pointer rhs2 = rpt_value::integerize(rhs);
     rpt_value_integer *rhs2ip = dynamic_cast<rpt_value_integer *>(rhs2.get());
     if (!rhs2ip)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", rhs2->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", rhs2->name());
+        nstring s
         (
             sc.subst_intl(i18n("integer index required (was given $name)"))
         );
-	rpt_value::pointer result = rpt_value_error::create(s);
-	trace(("}\n"));
-	return result;
+        rpt_value::pointer result = rpt_value_error::create(s);
+        trace(("}\n"));
+        return result;
     }
     long change_number = rhs2ip->query();
     trace(("change_number = %ld;\n", change_number));
@@ -94,13 +95,13 @@ rpt_value_cstate::lookup(const rpt_value::pointer &rhs, bool)
     //
     size_t j = 0;
     for (j = 0; j < length; ++j)
-	if (list[j] == change_number)
-    	    break;
+        if (list[j] == change_number)
+            break;
     if (j >= length)
     {
         trace(("change number not found\n"));
-	trace(("}\n"));
-	return rpt_value_null::create();
+        trace(("}\n"));
+        return rpt_value_null::create();
     }
 
     //
@@ -108,7 +109,7 @@ rpt_value_cstate::lookup(const rpt_value::pointer &rhs, bool)
     //
     change::pointer cp = change_alloc(pp, magic_zero_encode(change_number));
     change_bind_existing(cp);
-    trace(("cp = %08lX;\n", (long)cp));
+    trace(("cp = %p;\n", cp));
 
     //
     // create the result value
@@ -154,30 +155,30 @@ rpt_value_cstate::lookup(const rpt_value::pointer &rhs, bool)
     //
     if (cstate_data->branch && cstate_data->branch->change)
     {
-	sname = "branch";
-	vp1 = rpt_value_string::create(sname);
-	assert(vp1);
-	rpt_value::pointer vp2 = result->lookup(vp1, false);
-	assert(vp2);
+        sname = "branch";
+        vp1 = rpt_value_string::create(sname);
+        assert(vp1);
+        rpt_value::pointer vp2 = result->lookup(vp1, false);
+        assert(vp2);
         rpt_value_struct *vp2sp = dynamic_cast<rpt_value_struct *>(vp2.get());
         assert(vp2sp);
 
-	rpt_value::pointer vp3 =
-	    rpt_value_cstate::create
-	    (
-	       	pp,
-	       	cstate_data->branch->change->length,
-	       	cstate_data->branch->change->list
-	    );
-	sname = "change";
-	vp2sp->assign(sname, vp3);
+        rpt_value::pointer vp3 =
+            rpt_value_cstate::create
+            (
+                pp,
+                cstate_data->branch->change->length,
+                cstate_data->branch->change->list
+            );
+        sname = "change";
+        vp2sp->assign(sname, vp3);
     }
 
     //
     // clean up and go home
     //
     change_free(cp);
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -187,16 +188,16 @@ rpt_value::pointer
 rpt_value_cstate::keys()
     const
 {
-    trace(("rpt_value_cstate::keys(this = %08lX)\n{\n", (long)this));
+    trace(("rpt_value_cstate::keys(this = %p)\n{\n", this));
     rpt_value_list *p = new rpt_value_list();
     rpt_value::pointer result(p);
     for (size_t j = 0; j < length; ++j)
     {
-	rpt_value::pointer elem =
+        rpt_value::pointer elem =
             rpt_value_integer::create(magic_zero_decode(list[j]));
-	p->append(elem);
+        p->append(elem);
     }
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -206,9 +207,9 @@ rpt_value::pointer
 rpt_value_cstate::count()
     const
 {
-    trace(("rpt_value_cstate::count(this = %08lX)\n{\n", (long)this));
+    trace(("rpt_value_cstate::count(this = %p)\n{\n", this));
     rpt_value::pointer result = rpt_value_integer::create(length);
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(("}\n"));
     return result;
 }
@@ -240,3 +241,6 @@ rpt_value_cstate::name()
 {
     return "cstate";
 }
+
+
+// vim: set ts=8 sw=4 et :

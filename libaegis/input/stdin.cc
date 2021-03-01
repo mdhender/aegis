@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2003-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -46,37 +46,37 @@ standard_input(void)
     static nstring cache;
     if (cache.empty())
     {
-	sub_context_ty sc;
-	cache = nstring(sc.subst_intl(i18n("standard input")));
+        sub_context_ty sc;
+        cache = nstring(sc.subst_intl(i18n("standard input")));
     }
     return cache;
 }
 
 
-long
+ssize_t
 input_stdin::read_inner(void *data, size_t len)
 {
     if (len <= 0)
-	return 0;
+        return 0;
     if (unbuffered)
-	len = 1;
+        len = 1;
     int fd = fileno(stdin);
     long result = ::read(fd, data, len);
     if (result < 0)
     {
-	int errno_old = errno;
-	sub_context_ty sc;
-	sc.errno_setx(errno_old);
-	sc.var_set_string("File_Name", standard_input());
-	sc.fatal_intl(i18n("read $filename: $errno"));
-	// NOTREACHED
+        int errno_old = errno;
+        sub_context_ty sc;
+        sc.errno_setx(errno_old);
+        sc.var_set_string("File_Name", standard_input());
+        sc.fatal_intl(i18n("read $filename: $errno"));
+        // NOTREACHED
     }
     pos += result;
     return result;
 }
 
 
-long
+off_t
 input_stdin::ftell_inner()
 {
     return pos;
@@ -90,14 +90,14 @@ input_stdin::name()
 }
 
 
-long
+off_t
 input_stdin::length()
 {
     struct stat st;
     if (fstat(fileno(stdin), &st) < 0)
-	return -1;
+        return -1;
     if (!S_ISREG(st.st_mode))
-	return -1;
+        return -1;
     return st.st_size;
 }
 
@@ -123,3 +123,6 @@ input_stdin::keepalive()
     //
     unbuffered = true;
 }
+
+
+// vim: set ts=8 sw=4 et :

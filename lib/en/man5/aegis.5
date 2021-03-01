@@ -1,25 +1,24 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1995, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 1995, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH \*(n) 5 \*(N) "Reference Manual"
 .SH NAME
-aegis - meta-data file format
+aegis \- meta\[hy]data file format
 .XX "aegis(5)" "file format"
 .SH DESCRIPTION
 The files used by the
@@ -30,17 +29,17 @@ and some are created an maintained by \*(n) itself.
 The various manual entries say which is which.
 .SH LEXICAL CONSIDERATIONS
 Names are any C identifier.
-Comments are C-style comments (or C++ or shell).
+Comments are C\[hy]style comments (or C++ or shell).
 Numbers are decimal, octal or hexadecimal, as for C constants.
 Whitespace (spaces, tabs and newlines) are ignored
 except in strings or as they serve to separate tokens.
 .PP
-Strings are C-style strings, and similar to C, sequential string constants
+Strings are C\[hy]style strings, and similar to C, sequential string constants
 are silently catenated together.
 .PP
-In addition, there is a style of \f[CW]@string@\fP which use at-signs (@)
+In addition, there is a style of \f[CW]@string@\fP which use at\[hy]signs (@)
 for quoting.  Unlike the C style of string, newlines are allowed within
-these strings.  To get an at-sign in such a string, double the at-sign.
+these strings.  To get an at\[hy]sign in such a string, double the at\[hy]sign.
 There is no other escape mechanism available.
 .SH GRAMMAR
 The format of all \*(n) files is described by a
@@ -49,31 +48,31 @@ grammar.
 .eB
 %%
 file
-	: field_list
-	;
+    : field_list
+    ;
 .eE
 A file contains a field list.
 .eB
 field_list
-	: /* empty */
-	| field_list field
-	;
+    : /* empty */
+    | field_list field
+    ;
 .eE
 A field list is zero or more fields.
 .eB
 field
-	: NAME '=' value ';'
-	;
+    : NAME '=' value ';'
+    ;
 .eE
 A field is set by giving a name and a value.
 .eB
 value
-	: NAME
-	| INTEGER
-	| STRING
-	| structure
-	| list
-	;
+    : NAME
+    | INTEGER
+    | STRING
+    | structure
+    | list
+    ;
 .eE
 A value may be a member of an enumeration (NAME),
 or an integer constant,
@@ -81,22 +80,22 @@ or a literal string.
 More complex values may be constructed from these simple values.
 .eB
 structure
-	: '{' field_list '}'
-	;
+    : '{' field_list '}'
+    ;
 .eE
 A structure is a grouped list of fields.
 .eB
 list
-	: '[' list_body ']'
-	;
+    : '[' list_body ']'
+    ;
 list_body
-	: /* empty */
-	| value_list
-	| value_list ','
-	;
+    : /* empty */
+    | value_list
+    | value_list ','
+    ;
 value_list
-	: value
-	| value_list ',' value
+    : value
+    | value_list ',' value
 .eE
 A list is a sequential list of values separated by commas.
 It may be empty,
@@ -146,4 +145,5 @@ user configuration file format
 .TP 8n
 .IR aeustate (5)
 user state file format
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

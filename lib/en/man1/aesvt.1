@@ -1,32 +1,31 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aesvt
 .TH "aesvt" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aesvt \- simple version tool
 .XX "aesvt(1)" "simple vertion tool"
 .SH SYNOPSIS
-\fB\*(n) \-CHeck_Out \-HIstory\fP \fIfile\fP \fB\-File\fP \fIoutput-file\fP
+\fB\*(n) \-CHeck_Out \-HIstory\fP \fIfile\fP \fB\-File\fP \fIoutput\[hy]file\fP
 [ \fB\-e\fP \fIedit\fP ]
 .br
-\fB\*(n) \-CHeck_In \-HIstory\fP \fIfile\fP \fB\-File\fP \fIinput-file\fP
+\fB\*(n) \-CHeck_In \-HIstory\fP \fIfile\fP \fB\-File\fP \fIinput\[hy]file\fP
 [ \fB\-e\fP \fIedit\fP ]
 [ \fIname\fP\fB=\fP\fIvalue\fP ...]
 .br
@@ -43,75 +42,75 @@ a work area.
 It is able to cope with binary files, and with reasonable efficiently if
 they are not too large.
 .PP
-It has good end-to-end properties because it keeps a checksum for each
+It has good end\[hy]to\[hy]end properties because it keeps a checksum for each
 file version, and a checksum for the whole history file.
 .PP
 There is no provision for keyword substitution of any kind.
-A check-out will exactly reproduce the input file.
-A check-in will never alter the input file.
+A check\[hy]out will exactly reproduce the input file.
+A check\[hy]in will never alter the input file.
 .PP
 .br
 .ne 1i
 .SH OPTIONS
 The following options are understood:
 .TP
-\fB\-History\fP \fIhistory-file\fP
+\fB\-History\fP \fIhistory\[hy]file\fP
 This option is used to specify the name of the history file.
 .TP 8n
-\fB\-File\fP \fIfile-name\fP
+\fB\-File\fP \fIfile\[hy]name\fP
 This option is used to specify the name of the input or output file.
-On check-out, the file name "\-" is understood to mean the standard output.
-There is \fBno\fP equivalent for check-in.
+On check\[hy]out, the file name "\-" is understood to mean the standard output.
+There is \fBno\fP equivalent for check\[hy]in.
 .TP 8n
-\fB\-Edit \fIedit-number\fP
+\fB\-Edit \fIedit\[hy]number\fP
 This option is used to specify the edit number (version number).
-On check-out, if no version number is specified,
+On check\[hy]out, if no version number is specified,
 the most recent version is given.
-On check-in, if no version number is specifiued (and it usually isn't),
+On check\[hy]in, if no version number is specifiued (and it usually isn't),
 the previous version will have one added to it,
-or version 1 will be used if this is the first check-in.
+or version 1 will be used if this is the first check\[hy]in.
 .TP 8n
 \fB\-CHeck_In
 This option is used to check a file into the history.
 .TP 8n
 \fB\-CHeck_Out
-This option is used to check-out a file from the history.
-.so o_compress.so
+This option is used to check\[hy]out a file from the history.
+.so lib/en/man1/o_compress.so
 .TP 8n
 \fB\-List
 This option is used to list the file's history.
 .TP 8n
 \fB\-Query
-This option is used to query edit number of most recent check-in.
+This option is used to query edit number of most recent check\[hy]in.
 .TP 8n
 \fB\-Version
 This option is used to print version number.
 .PP
 All other options will produce a diagnostic error.
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH FILE FORMAT
 Each version in the history file consists of an RFC822 header, plus the
-file contents.  The header includes (at least) the Content-Length, used
+file contents.  The header includes (at least) the Content\[hy]Length, used
 to remember the length of the file data in bytes; the Checksum, used
 to remember the Adler32 checksum of the file data; and Version, used
 to remember the version number.  The file data can be text or binary,
 because its length is determined by the header.  There is no quoting
 mechanism of any kind for the data.  Except for the mandatory fields,
-additional user-defined us-ascii meta-data may also be stored in the
+additional user\[hy]defined us\[hy]ascii meta\[hy]data may also be stored in the
 header.  There is no diff or delta of any kind for any version.
 .PP
-This combination of header and data has good end-to-end behaviour,
+This combination of header and data has good end\[hy]to\[hy]end behaviour,
 because there is a checksum to validate the file data against.  Bad
-blocks in the data will be detected then next time a check-in or check-out
-is attempted.
+blocks in the data will be detected then next time a check\[hy]in or
+check\[hy]out is attempted.
 .PP
 The format of the history file consists of one or more file versions
-with the above layout, joined head-to-tail with no separators or
+with the above layout, joined head\[hy]to\[hy]tail with no separators or
 boundary indicators of any kind.  The versions are in descending order,
 from most recent (greatest edit number) to least recent (version number
 one).  To determine where one version stops and the next version starts,
-use the Content-Length field in the header.  The entire history file is
+use the Content\[hy]Length field in the header.  The entire history file is
 then compressed using the bunzip2 algorithm (via libbz2).  There is no
 diff or delta of any kind in the history file.
 .PP
@@ -127,18 +126,20 @@ a history file even without the \fI\*(n)\fP program, or for testing, or
 because you are curious.
 .PP
 You can actually choose from a number of compression algorithms,
-including GNU Zip and bunzip2, via the \f[CW]\-compression-algorithm\fP
+including GNU Zip and bunzip2, via the \f[CW]\-compression\[hy]algorithm\fP
 option.  More copmpresison algoritthms may be added in the future.  The
 best available comression is used, because this results in the most
 compact history files.  Future versions will always be able to access
 the compression used by earlier versions.
-.SS End-To-End Issues
+.SS End\[hy]To\[hy]End Issues
 See also
-Saltzer, J.H. \fIet al\fP (1981) \fIEnd-to-end arguments in system design\fP,
+Saltzer, J.H. \fIet al\fP (1981) \fIEnd\[hy]to\[hy]end arguments in
+system design\fP,
 http://web.mit.edu/\%Saltzer/\%www/\%publications/\%endtoend/\%endtoend.pdf
 .SS Xdelta
 This style of history file was inspired by RFC 3284 \- \fIThe VCDIFF
 Generic Differencing and Compression Data Format\fP.  While the
 \fI\*(n)\fP format does not use RFC3284 internally, the arguments for
 compression across file versions are just as relevant.
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

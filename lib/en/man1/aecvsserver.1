@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aecvsserver
 .TH "aecvsserver" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -28,7 +27,7 @@ aecvsserver \- serve CVS client protocol against Aegis projects
 .B \*(n) pserver
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to serve the CVS client protocol.
 The repository, of course, is stored within Aegis.
@@ -72,9 +71,9 @@ changes.  The special CVSROOT administrative module is simulated.
 Each Aegis project appears to the CVS client as a module; the module's
 name is the same as the Aegis project's name.  This type of module isn't
 immediately useful except for the \fIcvs export\fP command, or to perform
-a read-only \fIcvs checkout\fP command.
+a read\[hy]only \fIcvs checkout\fP command.
 .PP
-You can't commit to a project-named module.  This because Aegis requires
+You can't commit to a project\[hy]named module.  This because Aegis requires
 all operations which would change the repository to be performed through
 a change set.
 .PP
@@ -109,14 +108,15 @@ to use the \fIaede\fP(1) command and the rest of the usual Aegis process.
 .PP
 Once a change is no longer in the \fIbeing developed\fP state, it cannot
 be changed via \fIaecvsserver\fP(1) and you will need to create a new
-Aegis change set, and then \fIcvs checkout\fP a new client-side work area.
+Aegis change set, and then \fIcvs checkout\fP a new client\[hy]side work area.
 .PP
 Please note: if you are experimenting with the interface via \fIcvs
-\&-d :fork:/aegis\fP or similar, the work area you create \fBmust\fP be
+\&\-d :fork:/aegis\fP or similar, the work area you create \fBmust\fP be
 outside the Aegis change set's development directory.
 .SS CVSROOT
-The CVSROOT module's contents are synthesized from Aegis meta-data.
+The CVSROOT module's contents are synthesized from Aegis meta\[hy]data.
 You can't add or modify files in this module;
 you need to administer Aegis directly with \fIaegis\fP(1) commands.
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,23 +1,22 @@
 '\" t
-.\"     aegis - project change supervisor
-.\"     Copyright (C) 2002, 2004-2008 Peter Miller
-.\"     Copyright (C) 2006 Endocardial Solutions, Inc.
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002, 2004-2008, 2010, 2012 Peter Miller
+.\" Copyright (C) 2006 Endocardial Solutions, Inc.
 .\"
-.\"     This program is free software; you can redistribute it and/or modify
-.\"     it under the terms of the GNU General Public License as published by
-.\"     the Free Software Foundation; either version 3 of the License, or
-.\"     (at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"     This program is distributed in the hope that it will be useful,
-.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"     GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"     You should have received a copy of the GNU General Public License
-.\"     along with this program. If not, see
-.\"     <http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aeintegratq
 .TH "\*(n)" 1 \*(N) "Reference Manual"
 .SH NAME
@@ -28,7 +27,7 @@ aeintegratq \- integrate changes into projects
 [
 .IR option \&...
 ]
-.IR project-name \&...
+.IR project\[hy]name \&...
 .SH DESCRIPTION
 The
 .I "\*(n)"
@@ -39,7 +38,7 @@ for integration even when \fB\-Build\fP and \fB\-Test\fP are required
 on multiple architectures. If a change review is revoked after the queue
 is running \*(n) will notice the bad state and silently move on.
 If one or more changes are ended or passed after the queue is running,
-and -loop has been given, \*(n) will notice the new change[s] and
+and \-loop has been given, \*(n) will notice the new change[s] and
 integrate them. Additional options allow the integrator full control
 over most aspects of queue management such as the order of integration
 of multiple changes.
@@ -90,13 +89,13 @@ Ready, specify order and subset, \fIe.g.\fP \-R 29,45
 \fB\-S\fP \fIstage\fP
 Pick up at given stage (diff|build|test|integrate)
 .TP 8n
-\fB\-c\fP \fIchange-number\fP
+\fB\-c\fP \fIchange\[hy]number\fP
 specify Change to integrate at Stage
 .TP 8n
-\fB\-p\fP \fIproject-name\fP
+\fB\-p\fP \fIproject\[hy]name\fP
 specify single Project name
 .PP
-NOTE: if custom options such as -P -R -S -c -p are given
+NOTE: if custom options such as \-P \-R \-S \-c \-p are given
 only a single project may be integrated since the
 options would be meaningless to the next project given.
 .PP
@@ -158,9 +157,9 @@ If \fB\-loop\fP is given any change[s] specified as minimum will run at
 the end of the loop in which they are ready, they will not be pushed
 to the final loop.
 .TP 8n
-\fB\-ib\fP[server] \fIserver-name\fP or ""
+\fB\-ib\fP[server] \fIserver\[hy]name\fP or ""
 .TP 8n
-\fB\-ip\fP[server] \fIserver-name\fP or ""
+\fB\-ip\fP[server] \fIserver\[hy]name\fP or ""
 To specify a remote server on which to run \fB\-ibegin\fP or \B\-ipass\fP
 respecively. These options are rarely needed, but may be useful if a
 project is hosted on a different file server and has a large
@@ -171,7 +170,7 @@ The option form of giving an empty name depends on the output of
 \fBdf \-k\fP giving a parseable host name. If that is not true on your
 integration host architecture, you will have to specify the server name.
 .TP 8n
-\fB\-display\fP \fIdisplay-value\fP or ""
+\fB\-display\fP \fIdisplay\[hy]value\fP or ""
 To specify a valid X display for use during integration operations.
 .SS Stage Options
 The following options allow [re]starting an integration which has
@@ -202,8 +201,8 @@ large projects.
 These hooks are searched for in the directory
 \fB$HOME/integration_hooks\fP.  None need exist; \*(n) will only
 pay attention to any that do exist.  Hooks may be any form of executable
-(script, etc) and are called with 2 arguments: \fBproject-name
-change-number\fP.  They run as the integrator on the machine from which
+(script, etc) and are called with 2 arguments: \fBproject\[hy]name
+change\[hy]number\fP.  They run as the integrator on the machine from which
 \*(n) was started.  They are named using the project name along with a suffix
 according to what place in the integration process you want them to run.
 .PP
@@ -221,23 +220,23 @@ center,box,tab(;);
 l l.
 run at time;extension
 _
-before attempting -Integrate_Begin;.pre_ib
-after -Integrate_Begin completes;.ib
-before attempting -Diff;.pre_d
-after -Diff completes;.d
-before attempting -Build;.pre_b
-after -Build completes;.b
-before attempting -Build on <arch>;.pre_<arch>b
-after -Build on <arch> completes;.<arch>b
-before attempting -Test;.pre_t
-after -Test completes;.t
-before attempting -IPass;.pre_ip
-after -IPass completes;.ip
-before attempting -IFail;.pre_if
-after -IFail completes;.if
+before attempting \-Integrate_Begin;.pre_ib
+after \-Integrate_Begin completes;.ib
+before attempting \-Diff;.pre_d
+after \-Diff completes;.d
+before attempting \-Build;.pre_b
+after \-Build completes;.b
+before attempting \-Build on <arch>;.pre_<arch>b
+after \-Build on <arch> completes;.<arch>b
+before attempting \-Test;.pre_t
+after \-Test completes;.t
+before attempting \-IPass;.pre_ip
+after \-IPass completes;.ip
+before attempting \-IFail;.pre_if
+after \-IFail completes;.if
 .TE
 .PP
-The hook program should exit with 0 if successful or 1 if not.  A non-zero
+The hook program should exit with 0 if successful or 1 if not.  A non\[hy]zero
 exit causes the change being integrated to fail immediately unless it was
 marked precious.
 .PP
@@ -252,8 +251,8 @@ can be implemented.
 In addition two special hooks, \fBaeintegratq.end\fP and
 \fBaeintegratq.fail\fP, are recognized.  They are called when
 \fBaeintegratq\fP finishes a queue run.  They are called with 2 arguments
-like any other hook (\fBproject-name change-number\fP) although both the
-project-name and change-number given are of the last change integrated
+like any other hook (\fBproject\[hy]name change\[hy]number\fP) although both the
+project\[hy]name and change\[hy]number given are of the last change integrated
 and may be less than useful.
 .PP
 The \fB.end\fP hook is called if/when the queue run is finished and was
@@ -268,8 +267,8 @@ using the newly integrated project as source.
 .PP
 If queue errors were encountered, or a change failed that was marked
 \fIprecious\fP, then the \fB.fail\fP hook is called.  An obvious use of that
-hook would be an e-mailed page to the integrator.
-.SS Strategy or Oops-retry
+hook would be an e\[hy]mailed page to the integrator.
+.SS Strategy or Oops\[hy]retry
 Sometimes a persistent build problem will plague integrations.  This
 can be very annoying if it ruins an overnight run, especially if the cure
 is simple when it happens.  Examples of this can be timeouts due to a busy
@@ -278,14 +277,14 @@ data server or other transient errors.  Note that this applies only to
 .PP
 To deal with such problems the integrator may provide a \fIstrategy\fP
 script specific to a project.  An executable program should be found in
-\fB$HOME/strategy.<project_name>\fB.  The program will be run as the
+\fB$HOME/strategy.<project_name>\fP.  The program will be run as the
 integrator with the \fIdelta\fP directory as current directory.  The program
 may do any commands necessary to clean up and/or diagnose the error.  If the
-script finds the problem to be transient and fix-able, it exits successfully
-(with 0 status) and \*(n) will re-launch the \fB\-Build\fP and log the
-re-try.  Otherwise the script should exit with a 1 and the change will
+script finds the problem to be transient and fix\[hy]able, it exits successfully
+(with 0 status) and \*(n) will re\[hy]launch the \fB\-Build\fP and log the
+re\[hy]try.  Otherwise the script should exit with a 1 and the change will
 fail.
-.SH Multi-Architecture integrations
+.SH Multi\[hy]Architecture integrations
 For projects which build and test on multiple architectures, \*(n)
 requires \fIarch_hosts\fP be installed and have available at least
 one machine of each architecture required.  This is also true if the
@@ -346,7 +345,7 @@ for shell script tests might be:
 
 .LP
 .nb 1
-CSTATE=`aesub -p $AEGIS_PROJECT -c $AEGIS_CHANGE '${state}'`
+CSTATE=`aesub \-p $AEGIS_PROJECT \-c $AEGIS_CHANGE '${state}'`
 .br
 if [ "$CSTATE" = "being_integrated" ]
 .br
@@ -360,7 +359,7 @@ fi
 .br
 
 .SH Optional Support Programs
-.so libdir.so
+.so etc/libdir.so
 There are some programs which \*(n) will use if they are installed.
 .PP
 \(bu \fIarch_hosts\fP
@@ -392,12 +391,12 @@ results of a given attempt.  Two sound files are required:
 if provided to customize the sounds so that each developer may have
 one or more personal sounds.  If a file named \fI<developer>_pass\fP is
 located, it will be used.  If a set of files exist named
-\fI<developer_pass.[0-9]\fP they will be used in random sequence.  The
+\fI<developer_pass.[0\[hy]9]\fP they will be used in random sequence.  The
 same search rule applies to \fI_fail\fP sets.
 The \fIsound_all_machines\fP program may use a host list and play the
 sound file on each machine or, assuming that other audio capabilities
 exist, might do any form of announcement desired.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .SH FILES
 Control files are searched for in the \fI$HOME\fP directory.  They are
 named strategy.<project>, They need not exist if no special action is
@@ -410,20 +409,15 @@ special action is desired.
 .br
 .ne 2i
 .SH COPYRIGHT
-.so version.so
+.so etc/version.so
 \*(n) version \*(V)
 .br
 .if t .ds C) \(co
 .if n .ds C) (C)
-Copyright \*(C) 1998-2005 Endocardial Solutions, Inc.
+Copyright \*(C) 1998\[hy]2005 Endocardial Solutions, Inc.
 .br
 .PP
 The \*(n) program comes with ABSOLUTELY NO WARRANTY;
 This is free software
 and you are welcome to redistribute it under certain conditions;
-.br
-.ne 1i
-.SH AUTHOR
-.TS
-tab(;);
-l r l.
+.\" vim: set ts=8 sw=4 et :

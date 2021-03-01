@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991, 1993, 1994, 2002-2008 Peter Miller.
+//      aegis - project change supervisor
+//      Copyright (C) 1991, 1993, 1994, 2002-2008, 2012 Peter Miller.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // This code is based on the heart of a file comparison program
 // written by David I. Bell, and used by kind permission.
@@ -22,20 +22,21 @@
 // Contact the author of aegis for a copy of the file comparison program.
 //
 // This code is based on the algorithm in:
-//	An O(ND) Difference Algorithm and Its Variations
-//	Eugene W. Myers
-//	(TR 85-6, April 10, 1985)
-//	Department of Computer Science
-//	The University of Arizona
-//	Tuscon, Arizona 85721
+//      An O(ND) Difference Algorithm and Its Variations
+//      Eugene W. Myers
+//      (TR 85-6, April 10, 1985)
+//      Department of Computer Science
+//      The University of Arizona
+//      Tuscon, Arizona 85721
 //
 // Also see:
-//	A File Comparison Program
-//	Webb Miller and Eugene W. Myers
-//	Software Practice and Experience
-//	(Volume 15, No. 11, November 1985)
+//      A File Comparison Program
+//      Webb Miller and Eugene W. Myers
+//      Software Practice and Experience
+//      (Volume 15, No. 11, November 1985)
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
 #include <common/error.h>
@@ -52,14 +53,14 @@ struct snake_t
     snake_t         *next;
 };
 
-static long     tablesize;	// needed table size
-static long     tablesize_max;	// allocated table size
-static long    *V1;		// the row containing the last d
+static long     tablesize;      // needed table size
+static long     tablesize_max;  // allocated table size
+static long    *V1;             // the row containing the last d
 static long    *V1_table;
-static long    *V2;		// another row
+static long    *V2;             // another row
 static long    *V2_table;
-static snake_t *nextsnake;	// next allocable snake structure
-static snake_t *snake_table;	// allocable snake structures
+static snake_t *nextsnake;      // next allocable snake structure
+static snake_t *snake_table;    // allocable snake structures
 
 struct file
 {
@@ -122,106 +123,106 @@ midsnake(long A, long N, long B, long M, long *ulx, long *uly,
     //
     for (D = 0; D <= MAXD; D++)
     {
-	changes += 2;
+        changes += 2;
 
-	//
-	// Examine all diagonals within current distance.
-	// First search from upper left to lower right,
-	// and then search from lower right to upper left.
-	//
-	for (k = -D; k <= D; k += 2)
-	{
-	    //
-	    // Find the end of the furthest forward D-path
-	    // in diagonal k.
-	    //
-	    if (k == -D || (k != D && (V1[k - 1] < V1[k + 1])))
-		x = V1[k + 1];
-	    else
-		x = V1[k - 1] + 1;
-	    y = x - k;
-	    lp1 = &fc.fileA.f_lines[A + x];
-	    lp2 = &fc.fileB.f_lines[B + y];
-	    oldx = x;
-	    while (x < N && y < M && *lp1 == *lp2)
-	    {
-		x++;
-		y++;
-		lp1++;
-		lp2++;
-	    }
-	    V1[k] = x;
+        //
+        // Examine all diagonals within current distance.
+        // First search from upper left to lower right,
+        // and then search from lower right to upper left.
+        //
+        for (k = -D; k <= D; k += 2)
+        {
+            //
+            // Find the end of the furthest forward D-path
+            // in diagonal k.
+            //
+            if (k == -D || (k != D && (V1[k - 1] < V1[k + 1])))
+                x = V1[k + 1];
+            else
+                x = V1[k - 1] + 1;
+            y = x - k;
+            lp1 = &fc.fileA.f_lines[A + x];
+            lp2 = &fc.fileB.f_lines[B + y];
+            oldx = x;
+            while (x < N && y < M && *lp1 == *lp2)
+            {
+                x++;
+                y++;
+                lp1++;
+                lp2++;
+            }
+            V1[k] = x;
 
-	    //
-	    // See if path overlaps furthest reverse D-path.
-	    // If so, then we have found the snake.
-	    //
-	    if (odd && (k >= (DELTA - (D - 1))) && (k <= (DELTA + (D - 1))))
-	    {
-		if ((x + V2[k - DELTA]) >= N)
-		{
-		    *ulx = oldx;
-		    *uly = oldx - k;
-		    *lrx = x;
-		    *lry = y;
-		    trace(("midsnake: %ld,%ld to %ld,%ld (odd)\n", *ulx, *uly,
-			    *lrx, *lry));
-		    trace(("return %ld;\n", changes));
-		    trace(("}\n"));
-		    return changes;
-		}
-	    }
-	}
+            //
+            // See if path overlaps furthest reverse D-path.
+            // If so, then we have found the snake.
+            //
+            if (odd && (k >= (DELTA - (D - 1))) && (k <= (DELTA + (D - 1))))
+            {
+                if ((x + V2[k - DELTA]) >= N)
+                {
+                    *ulx = oldx;
+                    *uly = oldx - k;
+                    *lrx = x;
+                    *lry = y;
+                    trace(("midsnake: %ld,%ld to %ld,%ld (odd)\n", *ulx, *uly,
+                            *lrx, *lry));
+                    trace(("return %ld;\n", changes));
+                    trace(("}\n"));
+                    return changes;
+                }
+            }
+        }
 
-	for (k = -D; k <= D; k += 2)
-	{
-	    //
-	    // Find the end of the furthest reaching reverse
-	    // path in diagonal k+DELTA.
-	    //
-	    if (k == D || (k != -D && (V2[k + 1] < V2[k - 1])))
-		x = V2[k - 1];
-	    else
-		x = V2[k + 1] + 1;
-	    y = x + k;
-	    lp1 = &fc.fileA.f_lines[A + N - x - 1];
-	    lp2 = &fc.fileB.f_lines[B + M - y - 1];
-	    oldx = x;
-	    while (x < N && y < M && *lp1 == *lp2)
-	    {
-		x++;
-		y++;
-		lp1--;
-		lp2--;
-	    }
-	    V2[k] = x;
+        for (k = -D; k <= D; k += 2)
+        {
+            //
+            // Find the end of the furthest reaching reverse
+            // path in diagonal k+DELTA.
+            //
+            if (k == D || (k != -D && (V2[k + 1] < V2[k - 1])))
+                x = V2[k - 1];
+            else
+                x = V2[k + 1] + 1;
+            y = x + k;
+            lp1 = &fc.fileA.f_lines[A + N - x - 1];
+            lp2 = &fc.fileB.f_lines[B + M - y - 1];
+            oldx = x;
+            while (x < N && y < M && *lp1 == *lp2)
+            {
+                x++;
+                y++;
+                lp1--;
+                lp2--;
+            }
+            V2[k] = x;
 
-	    //
-	    // See if path overlaps furthest forward D-path.
-	    // If so, then we have found the snake.
-	    //
-	    if (!odd && (k <= D - DELTA) && (k >= -D - DELTA))
-	    {
-		if ((x + V1[k + DELTA]) >= N)
-		{
-		    *ulx = N - x;
-		    *uly = M - y;
-		    *lrx = N - oldx;
-		    *lry = *lrx + *uly - *ulx;
-		    trace(("midsnake: %ld,%ld to %ld,%ld (even)\n",
-			*ulx, *uly, *lrx, *lry));
-		    trace(("return %ld;\n", changes));
-		    trace(("}\n"));
-		    return changes;
-		}
-	    }
-	}
+            //
+            // See if path overlaps furthest forward D-path.
+            // If so, then we have found the snake.
+            //
+            if (!odd && (k <= D - DELTA) && (k >= -D - DELTA))
+            {
+                if ((x + V1[k + DELTA]) >= N)
+                {
+                    *ulx = N - x;
+                    *uly = M - y;
+                    *lrx = N - oldx;
+                    *lry = *lrx + *uly - *ulx;
+                    trace(("midsnake: %ld,%ld to %ld,%ld (even)\n",
+                        *ulx, *uly, *lrx, *lry));
+                    trace(("return %ld;\n", changes));
+                    trace(("}\n"));
+                    return changes;
+                }
+            }
+        }
     }
 
     //
     // Middle snake procedure failed!
     //
-    assert(0);
+    assert(!"Middle snake procedure failed");
     return 0;
 }
 
@@ -247,7 +248,7 @@ findsnake(int depth, long A, long N, long B, long M)
     long            count;
 
     trace(("findsnake(depth = %d, A = %ld, N = %ld, B = %ld, M = %ld)\n{\n",
-	depth, A, N, B, M));
+        depth, A, N, B, M));
 
     //
     // If more than one change needed, then call ourself for each part.
@@ -256,19 +257,19 @@ findsnake(int depth, long A, long N, long B, long M)
 
     if (D > 1)
     {
-	if (ulx > 0 && uly > 0)
-	    findsnake(depth + 1, A, ulx, B, uly);
-	count = lrx - ulx;
-	sp = nextsnake++;
-	sp->line1 = A + ulx;
-	sp->line2 = B + uly;
-	sp->count = count;
-	N -= lrx;
-	M -= lry;
-	if (N > 0 && M > 0)
-	    findsnake(depth + 1, A + lrx, N, B + lry, M);
-	trace(("}\n"));
-	return;
+        if (ulx > 0 && uly > 0)
+            findsnake(depth + 1, A, ulx, B, uly);
+        count = lrx - ulx;
+        sp = nextsnake++;
+        sp->line1 = A + ulx;
+        sp->line2 = B + uly;
+        sp->count = count;
+        N -= lrx;
+        M -= lry;
+        if (N > 0 && M > 0)
+            findsnake(depth + 1, A + lrx, N, B + lry, M);
+        trace(("}\n"));
+        return;
     }
 
     //
@@ -276,9 +277,9 @@ findsnake(int depth, long A, long N, long B, long M)
     // First compute the snake coming from the upper left corner if any.
     //
     if (N > M)
-	count = uly;
+        count = uly;
     else
-	count = ulx;
+        count = ulx;
     sp = nextsnake++;
     sp->line1 = A;
     sp->line2 = B;
@@ -300,11 +301,11 @@ double
 fstrcmp(const char *s1, const char *s2)
 {
     double          result;
-    snake_t         *sp;		// current snake element
-    long            line1;	// current line in file A
-    long            line2;	// current line in file B
+    snake_t         *sp;                // current snake element
+    long            line1;      // current line in file A
+    long            line2;      // current line in file B
 
-    trace(("fstrcmp(s1 = %08lX, s2 = %08lX)\n{\n", (long)s1, (long)s2));
+    trace(("fstrcmp(s1 = %p, s2 = %p)\n{\n", s1, s2));
     trace(("s1 = \"%s\";\n", s1));
     trace(("s2 = \"%s\";\n", s2));
     fc.fileA.f_lines = s1;
@@ -318,32 +319,32 @@ fstrcmp(const char *s1, const char *s2)
     //
     if (!fc.fileA.f_linecount && !fc.fileB.f_linecount)
     {
-	trace(("return 1;\n"));
-	trace(("}\n"));
-	return 1;
+        trace(("return 1;\n"));
+        trace(("}\n"));
+        return 1;
     }
 
     if (fc.fileA.f_linecount < fc.fileB.f_linecount)
     {
-	fc.minlines = fc.fileA.f_linecount;
-	fc.maxlines = fc.fileB.f_linecount;
+        fc.minlines = fc.fileA.f_linecount;
+        fc.maxlines = fc.fileB.f_linecount;
     }
     else
     {
-	fc.minlines = fc.fileB.f_linecount;
-	fc.maxlines = fc.fileA.f_linecount;
+        fc.minlines = fc.fileB.f_linecount;
+        fc.maxlines = fc.fileA.f_linecount;
     }
 
     tablesize = fc.maxlines * 2 + 1;
     if (tablesize > tablesize_max)
     {
-	tablesize_max = tablesize;
-	delete [] V1_table;
-	V1_table = new long [tablesize_max];
-	delete [] V2_table;
-	V2_table = new long [tablesize_max];
-	delete [] snake_table;
-	snake_table = new snake_t [tablesize_max];
+        tablesize_max = tablesize;
+        delete [] V1_table;
+        V1_table = new long [tablesize_max];
+        delete [] V2_table;
+        V2_table = new long [tablesize_max];
+        delete [] snake_table;
+        snake_table = new snake_t [tablesize_max];
     }
 
     V1 = V1_table + fc.maxlines;
@@ -351,7 +352,7 @@ fstrcmp(const char *s1, const char *s2)
     nextsnake = snake_table;
     if (fc.fileA.f_linecount > 0 && fc.fileB.f_linecount > 0)
     {
-	findsnake(0, 0L, fc.fileA.f_linecount, 0L, fc.fileB.f_linecount);
+        findsnake(0, 0L, fc.fileA.f_linecount, 0L, fc.fileB.f_linecount);
     }
 
     //
@@ -368,8 +369,8 @@ fstrcmp(const char *s1, const char *s2)
 #ifdef DEBUG
     for (sp = snake_table; sp < nextsnake; sp++)
     {
-	trace(("%ld: line1 = %ld; line2 = %ld; count = %ld;\n",
-	    sp - snake_table, sp->line1, sp->line2, sp->count));
+        trace(("%ld: line1 = %ld; line2 = %ld; count = %ld;\n",
+            sp - snake_table, sp->line1, sp->line2, sp->count));
     }
 #endif
 
@@ -384,11 +385,11 @@ fstrcmp(const char *s1, const char *s2)
     fc.matches = 0;
     for (sp = snake_table; sp < nextsnake; sp++)
     {
-	fc.deletes += (sp->line1 - line1);
-	fc.inserts += (sp->line2 - line2);
-	fc.matches += sp->count;
-	line1 = sp->line1 + sp->count;
-	line2 = sp->line2 + sp->count;
+        fc.deletes += (sp->line1 - line1);
+        fc.inserts += (sp->line2 - line2);
+        fc.matches += sp->count;
+        line1 = sp->line1 + sp->count;
+        line2 = sp->line2 + sp->count;
     }
 
     //
@@ -397,14 +398,17 @@ fstrcmp(const char *s1, const char *s2)
     // if the are in any way similar.
     //
     result =
-	(
-	    1
-	-
-	    (double)(fc.inserts + fc.deletes)
-	/
-	    (fc.fileA.f_linecount + fc.fileB.f_linecount)
-	);
+        (
+            1
+        -
+            (double)(fc.inserts + fc.deletes)
+        /
+            (fc.fileA.f_linecount + fc.fileB.f_linecount)
+        );
     trace(("return %.6f;\n", result));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

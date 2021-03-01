@@ -1,6 +1,6 @@
 //
 // aegis - project change supervisor
-// Copyright (C) 1992-1995, 2005, 2006, 2008 Peter Miller
+// Copyright (C) 1992-1995, 2005, 2006, 2008, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
   * @{
   */
 
-#include <common/main.h>
 
 /**
   * The r250 function is used to obtain a pseudo random number.  All 32
@@ -33,3 +32,4 @@ unsigned long r250(void);
 
 /** @} */
 #endif // COMMON_R250_H
+// vim: set ts=8 sw=4 et :

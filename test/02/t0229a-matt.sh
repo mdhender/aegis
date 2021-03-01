@@ -3,7 +3,7 @@
 #       aegis - project change supervisor
 #       Copyright (C) 2005 Matthew Lee;
 #       All rights reserved.
-#       Copyright (C) 2007, 2008 Peter Miller
+#       Copyright (C) 2007, 2008, 2012 Peter Miller
 #       Copyright (C) 2007, 2008 Walter Franzini
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ check_one()
 
     USERNAME=`aesub '${user name}' -c 10 -p test`
     EMAIL_ADDRESS=`aesub '${user email}' -c 10 -p test | \
-	sed -e 's/</\&lt;/' -e 's/>/\&gt;/'`
+        sed -e 's/</\&lt;/' -e 's/>/\&gt;/'`
     VERSION=`aegis -version | head -1 | awk '{print $3}'`
 
     cat > aeget.served.expected << EOF
@@ -82,7 +82,7 @@ check_two()
 
     USERNAME=`aesub '${user name}' -c 11 -p test`
     EMAIL_ADDRESS=`aesub '${user email}' -c 11 -p test | \
-	sed -e 's/</\&lt;/' -e 's/>/\&gt;/' `
+        sed -e 's/</\&lt;/' -e 's/>/\&gt;/' `
     VERSION=`aegis -version | head -1 | awk '{print $3}'`
 
     cat > aeget.served.expected << EOF
@@ -122,7 +122,7 @@ check_three()
     strip_served $1 aeget.served.stripped
     USERNAME=`aesub '${user name}' -c 11 -p test`
     EMAIL_ADDRESS=`aesub '${user email}' -c 11 -p test | \
-	sed -e 's/</\&lt;/' -e 's/>/\&gt;/' `
+        sed -e 's/</\&lt;/' -e 's/>/\&gt;/' `
     VERSION=`aegis -version | head -1 | awk '{print $3}'`
 
     cat > aeget.served.expected<<EOF
@@ -263,20 +263,20 @@ project_specific =
       value = "en-AU";
     },
     {
-	name = "rss:feedfilename-completed.xml";
-	value = "completed";
+        name = "rss:feedfilename-completed.xml";
+        value = "completed";
     },
     {
       name = "rss:feedtitle-completed.xml";
       value = "Titolo del canale di test";
     },
     {
-	name = "rss:feeddescription-completed.xml";
-	value = "Descrizione del canale dei change set completi";
+        name = "rss:feeddescription-completed.xml";
+        value = "Descrizione del canale dei change set completi";
     },
     {
-	name = "rss:feedlanguage-completed.xml";
-	value = "it";
+        name = "rss:feedlanguage-completed.xml";
+        value = "it";
     },
 ];
 fubar
@@ -373,3 +373,4 @@ check_three aeget.served
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

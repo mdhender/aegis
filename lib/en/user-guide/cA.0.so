@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2002, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -34,7 +33,7 @@ ditto for the formats and contents of some files.
 Probably the quickest start of all is to copy
 an already existing project.
 The project used in chapter 2 is complete,
-assuming you use the author's "cook" dependency maintenance tool.
+assuming you use the author's \[lq]cook\[rq] dependency maintenance tool.
 The entirety of this example may be found,
 if slightly obfuscated,
 in the aegis source file
@@ -122,7 +121,7 @@ command to commence development of the first change.
 The
 .I aecd
 command can be used to change directory into the
-just-created development directory.
+just\[hy]created development directory.
 .LP
 Add files to the change.
 The
@@ -144,12 +143,12 @@ what file difference tools to use,
 and much more.
 The \fIaepconf\fP(5) manual entry describes this file.
 .LP
-If you are going to use the "cook" dependency maintenance tool,
+If you are going to use the \[lq]cook\[rq] dependency maintenance tool,
 another new file
-you will need to create in this change is the "Howto.cook" file.
+you will need to create in this change is the \[lq]Howto.cook\[rq] file.
 Some other tool will want some other rules file.
 .LP
-You probably have a prototype or some other "seed" you have sort-of
+You probably have a prototype or some other \[lq]seed\[rq] you have sort\[hy]of
 working.  Create new files for each source file
 and \fIthen\fP copy the files from wherever they are now
 into the development directory.
@@ -170,7 +169,7 @@ command to add new tests to the command.
 It will need to have tests before it can advance to the next step.
 .LP
 Most existing projects don't have formal tests.
-These tests will form a regression test-bed,
+These tests will form a regression test\[hy]bed,
 used to make sure that future changes never compromise
 existing functionality.
 .LP
@@ -207,10 +206,10 @@ the
 .I aecd
 command may be used to change directory to the development directory of
 the change.
-The difference files all end with a "comma D" suffix, so the
+The difference files all end with a \[lq]comma D\[rq] suffix, so the
 .E(
 .fi
-more `find . -name "*,D" -print | sort`
+more `find . \-name "*,D" \-print | sort`
 .E)
 command may be used to search them out and see them.
 This is probably fairly useless for the first change,
@@ -225,11 +224,11 @@ alias if you prefer the
 command.
 .LP
 There are some facts that a reviewer \fIknows\fP because otherwise
-the change would not be in the "being reviewed" state:
+the change would not be in the \[lq]being reviewed\[rq] state:
 \(bu the change compiles cleanly,
 \(bu the change passes all of its tests.
 Other information about the change may be obtained
-using the "change_details" variation of the
+using the \[lq]change_details\[rq] variation of the
 .I ael
 command.
 .LP
@@ -253,15 +252,15 @@ applying the modifications described by the change to this
 integration directory,
 then building and testing all over again.
 .LP
-This re-build and re-test is to ensure that no
+This re\[hy]build and re\[hy]test is to ensure that no
 special aspect of the developers environment influenced the
 success up to this point,
 such as a unique environment variable setting.
-The re-build also ensures that all of the files in the baseline,
+The re\[hy]build also ensures that all of the files in the baseline,
 remembering that this includes source files and all other intermediate files
 required by the build process,
 remain consistent with each other,
-that the baseline is self-consistent.
+that the baseline is self\[hy]consistent.
 The definition of the baseline is that it passes its own tests,
 so the tests are run on the baseline.
 .LP
@@ -279,7 +278,7 @@ command is used to test the integration copy of the change.
 .LP
 On later changes,
 the integration may also require the
-.I "aet -bl"
+.I "aet \-bl"
 command to test the change against the baseline.
 This tests ensures that the test
 .I fails
@@ -293,14 +292,14 @@ and so tests of new functionality will also fail against the old baseline.
 .LP
 Later changes may also have the regression tests run,
 using the
-.I "aet -reg"
+.I "aet \-reg"
 command.
-This can be a very time-consuming step
+This can be a very time\[hy]consuming step
 for projects with a long history,
 and thus a large collection of tests.
 The
-.I "aet -suggest"
-command can also be used to run "representative" sets of existing tests,
+.I "aet \-suggest"
+command can also be used to run \[lq]representative\[rq] sets of existing tests,
 but a full regression test run is recommended before a major release,
 or, say, weekly if it will complete over the weekend.
 This command is also available to developers,
@@ -339,7 +338,7 @@ The development directory is deleted at this time, too.
 There,
 the first change is completed.
 The whole cycle may now be repeated,
-starting at "Create Change,"
+starting at \[lq]Create Change,\[rq]
 for all subsequent changes,
 with very few differences.
 .LP
@@ -348,34 +347,37 @@ It is recommended that you read the
  chapter
 for a full worked
 example of the first four changes of an example project,
-including some of the twists which occur in real-world use of aegis.
+including some of the twists which occur in real\[hy]world use of aegis.
 .LP
 Remember, too, the definition:
 .DS
 \fBaegis\fP (ee.j.iz) \fIn.\fP a protection, a defence.
 .DE
-It is not always the case that aegis exists to make life "easier" for
+It is not always the case that aegis exists to make life \[lq]easier\[rq] for
 the software engineers.
-The goal is to have a baseline which always "works",
-where "works" is defined as passing all of its own tests.
+The goal is to have a baseline which always \[lq]works\[rq],
+where \[lq]works\[rq] is defined as passing all of its own tests.
 Wherever possible,
 the aegis program attempts to be as helpful and as unintrusive as possible,
-but when the "working" definition is threatened,
+but when the \[lq]working\[rq] definition is threatened,
 the aegis program intrudes as necessary.
 (Example: you can't do an integrate pass without the integration copy
 building successfully.)
 .LP
-All of the "extra work" of writing tests is a long-term win,
+All of the \[lq]extra work\[rq] of writing tests is a long\[hy]term win,
 where old problems never again reappear.
-All of the "extra work" of reviewing changes means that another pair of eyes
+All of the \[lq]extra work\[rq] of reviewing changes means that another
+pair of eyes
 sees the code and finds potential problems before they manifest
 themselves in shipped product.
-All of the "extra work" of integration ensures that the baseline always works,
-and is always self-consistent.
-All of the "extra work" of having a baseline and separate
+All of the \[lq]extra work\[rq] of integration ensures that the baseline
+always works,
+and is always self\[hy]consistent.
+All of the \[lq]extra work\[rq] of having a baseline and separate
 development directories allows multiple parallel development,
-with no inter-developer interference;
-and the baseline always works, it is never in an "in-between" state.
+with no inter\[hy]developer interference;
+and the baseline always works, it is never in an \[lq]in\[hy]between\[rq] state.
 In each case,
-not doing this "extra work" is a false economy.
+not doing this \[lq]extra work\[rq] is a false economy.
 .if t .1C
+.\" vim: set ts=8 sw=4 et :

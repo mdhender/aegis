@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1998, 2005-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1998, 2005-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef FMTGEN_TYPE_REAL_H
@@ -35,33 +34,17 @@ public:
       */
     virtual ~type_real();
 
+protected:
     /**
-      * the default constructor.
+      * The constructor.
+      * It is protected on purpose, only derived classes may call it.
+      *
+      * @param gen
+      *     where to write the generated code
       */
-    type_real();
+    type_real(generator *gen);
 
-    // See base class for documentation.
-    void gen_include_declarator(const nstring &variable_name, bool is_a_list)
-	const;
-
-    // See base class for documentation.
-    void gen_code_declarator(const nstring &variable_name, bool is_a_list,
-	int attributes) const;
-
-    // See base class for documentation.
-    void gen_code_call_xml(const nstring &form_name, const nstring &member_name,
-	int attributes) const;
-
-    // See base class for documentation.
-    void gen_code_copy(const nstring &member_name) const;
-
-    // See base class for documentation.
-    void gen_code_trace(const nstring &name, const nstring &value) const;
-
-    // See base class for documentation.
-    void gen_free_declarator(const nstring &variable_name, bool is_a_list)
-	const;
-
+protected:
     // See base class for documentation.
     nstring c_name_inner() const;
 
@@ -69,6 +52,11 @@ public:
     bool has_a_mask() const;
 
 private:
+    /**
+      * The default constructor.  Do not use.
+      */
+    type_real();
+
     /**
       * The copy constructor.  Do not use.
       */
@@ -81,3 +69,4 @@ private:
 };
 
 #endif // FMTGEN_TYPE_REAL_H
+// vim: set ts=8 sw=4 et :

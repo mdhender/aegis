@@ -1,22 +1,26 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1991-1994, 1996, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1994, 1996, 2002-2008, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
+#include <common/fstrcmp.h>
+#include <common/sizeof.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/name.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/enum.h>
@@ -25,9 +29,6 @@
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/struct.h>
 #include <libaegis/aer/value/time.h>
-#include <common/error.h>
-#include <common/fstrcmp.h>
-#include <common/trace.h>
 #include <libaegis/meta_type.h>
 #include <libaegis/zero.h>
 
@@ -53,11 +54,11 @@ boolean_parse(string_ty *name, void *ptr)
     slow_to_fast(boolean_s, boolean_f, SIZEOF(boolean_s));
     for (size_t j = 0; j < SIZEOF(boolean_f); ++j)
     {
-	if (str_equal(name, boolean_f[j]))
-	{
-	    *(bool *)ptr = (bool)j;
-	    return true;
-	}
+        if (str_equal(name, boolean_f[j]))
+        {
+            *(bool *)ptr = (bool)j;
+            return true;
+        }
     }
     return false;
 }
@@ -219,9 +220,9 @@ generic_struct_parse(void *this_thing, string_ty *name, meta_type **type_pp,
     void            *addr;
     type_table_ty   *table_end;
 
-    trace(("generic_struct_parse(this_thing = %08lX, name = %08lX, "
-        "type_pp = %08lX)\n{\n",
-           (long)this_thing, (long)name, (long)type_pp));
+    trace(("generic_struct_parse(this_thing = %p, name = %p, "
+        "type_pp = %p)\n{\n",
+           this_thing, name, type_pp));
     table_end = table + table_length;
     addr = 0;
     for (tp = table; tp < table_end; ++tp)
@@ -235,11 +236,11 @@ generic_struct_parse(void *this_thing, string_ty *name, meta_type **type_pp,
             addr = (char *)this_thing + tp->offset;
             trace_pointer(addr);
             *mask_p = tp->mask;
-	    *redefinition_ok_p = tp->redefinition_ok;
+            *redefinition_ok_p = tp->redefinition_ok;
             break;
         }
     }
-    trace(("return %08lX;\n}\n", (long)addr));
+    trace(("return %p;\n}\n", addr));
     return addr;
 }
 
@@ -252,7 +253,7 @@ generic_struct_fuzzy(string_ty *name, type_table_ty *table, size_t table_length)
     string_ty       *best_name;
     double          best_weight;
 
-    trace(("generic_struct_fuzzy(name = %08lX)\n{\n", (long)name));
+    trace(("generic_struct_fuzzy(name = %p)\n{\n", name));
     table_end = table + table_length;
     best_name = 0;
     best_weight = 0.6;
@@ -268,7 +269,7 @@ generic_struct_fuzzy(string_ty *name, type_table_ty *table, size_t table_length)
             best_weight = weight;
         }
     }
-    trace(("return %08lX;\n", (long)best_name));
+    trace(("return %p;\n", best_name));
     trace(("}\n"));
     return best_name;
 }
@@ -284,8 +285,8 @@ generic_struct_convert(void *that, type_table_ty *table, size_t table_length)
     this_thing = *(generic_struct **)that;
     if (!this_thing)
         return rpt_value::pointer();
-    trace(("generic_struct_convert(this_thing = %08lX)\n{\n",
-           (long)this_thing));
+    trace(("generic_struct_convert(this_thing = %p)\n{\n",
+           this_thing));
     table_end = table + table_length;
     rpt_value_struct *rvs = new rpt_value_struct();
     rpt_value::pointer result(rvs);
@@ -303,7 +304,7 @@ generic_struct_convert(void *that, type_table_ty *table, size_t table_length)
             }
         }
     }
-    trace(("return %08lX;\n}\n", (long)result.get()));
+    trace(("return %p;\n}\n", result.get()));
     return result;
 }
 
@@ -384,3 +385,6 @@ type_enum_option_clear(void)
 {
     enum_option = 0;
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2006-2008 Peter Miller
+//      Copyright (C) 2006-2009, 2011, 2012 Peter Miller
 //      Copyright (C) 2005 Matthew Lee;
 //      Copyright (C) 2007 Walter Franzini
 //
@@ -25,7 +25,7 @@
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/os.h>
-#include <libaegis/pconf.h>
+#include <libaegis/pconf.fmtgen.h>
 #include <libaegis/project.h>
 #include <libaegis/rss/feed.h>
 #include <libaegis/rss.h>
@@ -36,13 +36,13 @@ const nstring rss_script_name_placeholder("@@SCRIPTNAME@@");
 
 
 nstring
-rss_feed_filename(project_ty *pp, const nstring &state)
+rss_feed_filename(project *pp, const nstring &state)
 {
     change::pointer cp = pp->change_get();
-    if (!change_is_a_branch(cp))
-	return "";
+    if (!cp->is_a_branch())
+        return "";
     if (!cp->is_being_developed())
-	return "";
+        return "";
 
     // Get the project-specific attributes.
     pconf_ty *pconf_data = project_pconf_get(pp);
@@ -85,7 +85,7 @@ rss_feed_filename(project_ty *pp, const nstring &state)
                     nstring path = project_rss_path_get(pp, 1);
                     path += "/";
                     path += ap->name->str_text + feed_filename_prefix.size();
-		    return path;
+                    return path;
                 }
             }
         }
@@ -118,7 +118,7 @@ rss_feed_attr_to_str(enum rss_feed_attribute attribute)
 
 
 nstring
-rss_feed_attribute(project_ty *pp, const nstring &filename,
+rss_feed_attribute(project *pp, const nstring &filename,
     enum rss_feed_attribute attribute)
 {
     trace(("rss_feed_attribute(pp, \"%s\", %s)\n{\n",
@@ -178,7 +178,7 @@ rss_feed_attribute(project_ty *pp, const nstring &filename,
 
 
 nstring
-rss_get_project_url(project_ty *pp)
+rss_get_project_url(project *pp)
 {
     nstring url = rss_script_name_placeholder;
     url += "/";
@@ -188,7 +188,7 @@ rss_get_project_url(project_ty *pp)
 
 
 void
-rss_add_item_by_change(project_ty *pp, change::pointer cp)
+rss_add_item_by_change(project *pp, change::pointer cp)
 {
     trace(("rss_add_item_by_change()\n{\n"));
     cstate_ty *cstate_data = cp->cstate_get();
@@ -203,7 +203,7 @@ rss_add_item_by_change(project_ty *pp, change::pointer cp)
 
 
 void
-rss_add_item(const nstring &filename, project_ty *pp, change::pointer cp)
+rss_add_item(const nstring &filename, project *pp, change::pointer cp)
 {
     trace(("rss_add_item()\n{\n"));
     cstate_ty *cstate_data = cp->cstate_get();
@@ -229,7 +229,10 @@ rss_add_item(const nstring &filename, project_ty *pp, change::pointer cp)
     //
     feed.parse();
     while (feed.size() > 20)
-	delete feed.pop_back();
+        delete feed.pop_back();
     feed.print();
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

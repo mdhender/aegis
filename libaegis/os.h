@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1997, 1999, 2001-2009, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef OS_H
@@ -26,8 +25,8 @@
   * @{
   */
 #include <common/ac/time.h>
+#include <common/ac/sys/types.h>
 
-#include <common/main.h>
 #include <common/nstring.h>
 
 class string_list_ty; // forward
@@ -76,31 +75,37 @@ bool os_exists(const nstring &path, bool eaccess_is_ok = false);
 
 /**
   * The os_mkdir function is used to create a new directory.  It does
-  * not mak intermediate directories.
+  * not make intermediate directories.
   *
-  * \param path
+  * @param path
   *     The path opf the directory to be created.
-  * \param mode
+  * @param mode
   *     The mode of the created directory.
-  * \note
+  * @param eexist_ok
+  *     If true, if mkdir(2) fails with EEXIST, this is not an error.
+  *     Defaults to false.
+  * @note
   *     This function does not return for any error, but prints an error
   *     and exits.
   */
-void os_mkdir(string_ty *path, int mode);
+void os_mkdir(string_ty *path, int mode, bool eexist_ok = false);
 
 /**
   * The os_mkdir function is used to create a new directory.  It does
-  * not mak intermediate directories.
+  * not make intermediate directories.
   *
-  * \param path
+  * @param path
   *     The path opf the directory to be created.
-  * \param mode
+  * @param mode
   *     The mode of the created directory.
-  * \note
+  * @param eexist_ok
+  *     If true, if mkdir(2) fails with EEXIST, this is not an error.
+  *     Defaults to false.
+  * @note
   *     This function does not return for any error, but prints an error
   *     and exits.
   */
-void os_mkdir(const nstring &path, int mode);
+void os_mkdir(const nstring &path, int mode, bool eexist_ok = false);
 
 /**
   * The os_rmdir function is used to remove an empty directory.
@@ -405,17 +410,6 @@ string_ty *os_path_join(string_ty *lhs, string_ty *rhs);
 nstring os_path_join(const nstring &lhs, const nstring &rhs);
 
 /**
-  * The os_path_join function may be used to joint two strings together
-  * with a slash between them.
-  *
-  * \param lhs
-  *     The root or upper portion.
-  * \param rhs
-  *     The relative or lower portion.
-  */
-nstring os_path_join(const nstring &lhs, const nstring &rhs);
-
-/**
   * The os_path_cat function is used to carefully join two path
   * components together with a slash.  Care is taken to remove redundant
   * "." components and redundant slashes.
@@ -429,18 +423,6 @@ string_ty *os_path_cat(string_ty *lhs, string_ty *rhs);
 
 /**
   * The os_path_cat function is used to carefully join two path
-  * components together with a slash.  Care is taken to remove redundant
-  * "." components and redundant slashes.
-  *
-  * \param lhs
-  *     The directory the next part is relative to.
-  * \param rhs
-  *     The additional path, relative to the first argument.
-  */
-nstring os_path_cat(const nstring &lhs, const nstring &rhs);
-
-/**
-  * The os_path_cat function is used to carefully joint two path
   * components together with a slash.  Care is taken to remove redundant
   * "." components and redundant slashes.
   *
@@ -826,7 +808,7 @@ void os_xargs(string_ty *the_command, struct string_list_ty *the_list,
 void os_xargs(const nstring &the_command, const nstring_list &the_list,
     const nstring &dir);
 
-long os_file_size(string_ty *);
+off_t os_file_size(string_ty *);
 void os_mtime_range(string_ty *, time_t *, time_t *);
 time_t os_mtime_actual(string_ty *);
 void os_mtime_set(string_ty *, time_t);
@@ -944,23 +926,23 @@ void os_become_orig_query(int *uid, int *gid, int *umsk);
 
 int os_become_active(void);
 #define os_become_must_be_active() \
-	os_become_must_be_active_gizzards(__FILE__, __LINE__)
+        os_become_must_be_active_gizzards(__FILE__, __LINE__)
 void os_become_must_be_active_gizzards(const char *, int);
 #define os_become_must_not_be_active() \
-	os_become_must_not_be_active_gizzards(__FILE__, __LINE__)
+        os_become_must_not_be_active_gizzards(__FILE__, __LINE__)
 void os_become_must_not_be_active_gizzards(const char *, int);
 
 
 /**
   * \brief
-  *	test for backgroundness
+  *     test for backgroundness
   *
   * The background function is used to determine if the curent process
   * is running in the background.
   *
   *\return
-  *	zero if process is not in the background, nonzero if the process
-  *	is in the background.
+  *     zero if process is not in the background, nonzero if the process
+  *     is in the background.
   */
 int os_background(void);
 
@@ -994,14 +976,14 @@ const char *os_shell(void);
 
 enum edit_ty
 {
-	edit_not_set,
-	edit_foreground,
-	edit_background
+        edit_not_set,
+        edit_foreground,
+        edit_background
 };
 
 /**
-  * The os_edit function is used to pass the named file to an edirot for
-  * the user to edit.  It returns whn the user quit the editor.
+  * The os_edit function is used to pass the named file to an editor for
+  * the user to edit.  It returns when the user quits the editor.
   *
   * @param filename
   *     The name of the file to be edited.
@@ -1011,8 +993,8 @@ enum edit_ty
 void os_edit(string_ty *filename, edit_ty mode);
 
 /**
-  * The os_edit function is used to pass the named file to an edirot for
-  * the user to edit.  It returns whn the user quit the editor.
+  * The os_edit function is used to pass the named file to an editor for
+  * the user to edit.  It returns when the user quits the editor.
   *
   * @param filename
   *     The name of the file to be edited.
@@ -1020,6 +1002,19 @@ void os_edit(string_ty *filename, edit_ty mode);
   *     How the editing is to be done.
   */
 void os_edit(const nstring &filename, edit_ty mode);
+
+/**
+  * The os_edit function is used to pass the named file to an editor for
+  * the user to edit.  It returns when the user quits the editor.
+  *
+  * @param filenames
+  *     The name of the file to be edited.
+  * @param mode
+  *     How the editing is to be done.
+  * @param dir
+  *     Edit in this directory (filenames relative to this directory).
+  */
+void os_edit(const nstring_list &filenames, edit_ty mode, const nstring &dir);
 
 string_ty *os_edit_string(string_ty *, edit_ty);
 string_ty *os_edit_new(edit_ty);
@@ -1095,7 +1090,33 @@ void os_symlink(const nstring &src, const nstring &dst);
   */
 void os_symlink_or_copy(string_ty *src, string_ty *dst);
 
-string_ty *os_readlink(string_ty *);
+/**
+  * The os_readlink function is used to read the value of a symbolic link.
+  *
+  * @param path
+  *     The path of the symbolic link.
+  * @returns
+  *     The pointer to a string contaning contents of the symbolic link;
+  *     it is never NULL.
+  * @note
+  *     It is a fatal error if the symbolic link does not exist;
+  *     this function does not return in this case.
+  */
+string_ty *os_readlink(string_ty *path);
+
+/**
+  * The os_readlink function is used to read the value of a symbolic link.
+  *
+  * @param path
+  *     The path of the symbolic link.
+  * @returns
+  *     The contents of the symbolic link
+  * @note
+  *     It is a fatal error if the symbolic link does not exist;
+  *     this function does not return in this case.
+  */
+nstring os_readlink(const nstring &path);
+
 int os_symlink_query(string_ty *);
 
 /**
@@ -1136,7 +1157,7 @@ int os_interrupt_has_occurred(void);
   *     The absolute file path to be examined.
   * \returns
   *     bool; true if the file exists and is a directory,
-  *	false if the file does not exist,
+  *     false if the file does not exist,
   *     false if the file exists and is not a directory.
   */
 int os_isa_directory(string_ty *path);
@@ -1149,7 +1170,7 @@ int os_isa_directory(string_ty *path);
   *     The absolute file path to be examined.
   * \returns
   *     bool; true if the file exists and is a symbolic link,
-  *	false if the file does not exists,
+  *     false if the file does not exists,
   *     false if the file exists and is not a symbolic link.
   */
 bool os_isa_symlink(string_ty *path);
@@ -1162,10 +1183,10 @@ bool os_isa_symlink(string_ty *path);
   *     The absolute file path to be examined.
   * \returns
   *     bool;
-  *	false if the file does not exist,
+  *     false if the file does not exist,
   *     false if the file exists and is a regular file,
-  *	true if the file exists and is a directory,
-  *	true if the file exists and is a symlink,
+  *     true if the file exists and is a directory,
+  *     true if the file exists and is a symlink,
   *     true if the file exists and is not a regular file,
   */
 int os_isa_special_file(string_ty *path);
@@ -1232,3 +1253,4 @@ void os_check_path_traversable(string_ty *path);
 
 /** @} */
 #endif // OS_H
+// vim: set ts=8 sw=4 et :

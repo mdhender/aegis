@@ -1,23 +1,26 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2002-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
+
+#include <common/sizeof.h>
+#include <common/symtab.h>
 
 #include <aecomplete/command/aeb.h>
 #include <aecomplete/command/aeca.h>
@@ -27,11 +30,11 @@
 #include <aecomplete/command/aeclean.h>
 #include <aecomplete/command/aecp.h>
 #include <aecomplete/command/aecpu.h>
-#include <aecomplete/command/aed.h>
 #include <aecomplete/command/aedb.h>
 #include <aecomplete/command/aedbu.h>
 #include <aecomplete/command/aede.h>
 #include <aecomplete/command/aedeu.h>
+#include <aecomplete/command/aed.h>
 #include <aecomplete/command/aedn.h>
 #include <aecomplete/command/aefa.h>
 #include <aecomplete/command/aegis.h>
@@ -67,8 +70,6 @@
 #include <aecomplete/command/private.h>
 #include <aecomplete/command/unknown.h>
 #include <aecomplete/complete.h>
-#include <common/error.h> // for assert
-#include <common/symtab.h>
 
 
 typedef command_ty *(*funcptr)(void);
@@ -132,19 +133,19 @@ command_find(string_ty *name)
 
     if (!stp)
     {
-	stp = symtab_alloc(SIZEOF(table));
-	for (tp = table; tp < ENDOF(table); ++tp)
-	{
-	    func = *tp;
-	    cp = func();
-	    s = str_from_c(command_name(cp));
-	    symtab_assign(stp, s, cp);
-	    str_free(s);
-	}
+        stp = new symtab_ty(SIZEOF(table));
+        for (tp = table; tp < ENDOF(table); ++tp)
+        {
+            func = *tp;
+            cp = func();
+            s = str_from_c(command_name(cp));
+            stp->assign(s, cp);
+            str_free(s);
+        }
     }
-    cp = (command_ty *)symtab_query(stp, name);
+    cp = (command_ty *)stp->query(name);
     if (cp)
-	return cp;
+        return cp;
     return command_unknown();
 }
 
@@ -166,3 +167,6 @@ command_completion_get(command_ty *this_thing)
     assert(this_thing->vptr->completion_get);
     return this_thing->vptr->completion_get(this_thing);
 }
+
+
+// vim: set ts=8 sw=4 et :

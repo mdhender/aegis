@@ -1,0 +1,60 @@
+This LICENSE file is a modification to the main LICENSE file, which is
+AGPLv3. It applies only to the files in the following directories:
+
+ae-repo-ci
+aeannotate
+aecomplete
+aecvsserver
+aede-policy
+aediff
+aedist
+aefind
+aefinish
+aefp
+aeget
+aegis
+aeimport
+aelcf
+aelock
+aelpf
+aels
+aelsf
+aemakefile
+aemakegen
+aemeasure
+aepatch
+aepromptcmd
+aerect
+aereport
+aerevml
+aesub
+aesubunit
+aesvt
+aetar
+aexml
+common
+fmtgen
+libaegis
+test_base64
+test_cfn
+test_cpio
+test_execute
+test_felp
+test_getdate
+test_magic
+test_shared_ptr
+test_strverscmp
+test_uuid
+test_xml
+test_zlib
+
+In addition, as a special exception, the copyright holders give
+permission to link the code of this program with the OpenSSL library,
+and distribute linked combinations including the two.
+You must obey the GNU Affero General Public License in all respects
+for all of the code used other than OpenSSL. If you modify
+file(s) with this exception, you may extend this exception to your
+version of the file(s), but you are not obligated to do so. If you
+do not wish to do so, delete this exception statement from your
+version. If you delete this exception statement from all source
+files in the program, then also delete it here.

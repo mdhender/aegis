@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1999, 2001, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994, 1999, 2001, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.so libdir.so
+.so lib/en/man1/z_name.so
+.so etc/libdir.so
 .ds n) aereport
 .TH "\*(n)" 1 \*(N) "Reference Manual"
 .SH NAME
@@ -28,36 +27,36 @@ aegis report \- report generator
 [
 .IR option \&...
 ]
-.IR report-name
+.IR report\[hy]name
 .br
 .B \*(n)
 [
 .IR option \&...
 ]
-.B -File
+.B \-File
 .IR filename
 .br
 .B \*(n)
-.B -RePorT
-.B -List
+.B \-RePorT
+.B \-List
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I \*(n)
 command is used to
 generate reports from \*(n)' database.
-Reports are specified in a C-like language
+Reports are specified in a C\[hy]like language
 described in the
 .IR aer (5)
 manual entry.
 .PP
 For a list of the reports available on your system,
-use the '\fIaer -list\fP' command.
+use the '\fIaer \-list\fP' command.
 These reports live in the
 .I \*(D)/report
 directory,
@@ -87,31 +86,31 @@ Each of the above man pages also contains a section towards the end which
 specifically addresses report generator use, usually with code fragments.
 .SH OPTIONS
 The following options are understood:
-.so o_baselin.so
-.so o_branch.so
-.so o_change.so
-.so o_delta.so
+.so lib/en/man1/o_baselin.so
+.so lib/en/man1/o_branch.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_delta.so
 .TP 8n
-\fB-File\fP \fIfilename\fP
+\fB\-File\fP \fIfilename\fP
 .br
 Take the report script from the specified file, rather than looking for
 the named report in the library of reports distributed with \*(N).
 The filename \[lq]\-\[rq] is understood to mean the standard input.
-.so o_help.so
-.so o_list.so
-.so o_output.so
-.so o_project.so
-.so o_terse.so
-.so o_trunk.so
-.so o_unforma.so
-.so o_verbose.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_output.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_trunk.so
+.so lib/en/man1/o_unforma.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%    alias aer '\*(n) \e!* -v'
-sh$     aer(){\*(n) "$@" -v}
+csh%    alias aer '\*(n) \e!* \-v'
+sh$     aer(){\*(n) "$@" \-v}
 .fi
 .SH SEE ALSO
 .TP 8n
@@ -120,5 +119,6 @@ list (possibly) interesting things
 .TP 8n
 .IR aer (5)
 report script language definition
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

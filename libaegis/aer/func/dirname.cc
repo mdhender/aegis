@@ -1,25 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1998, 1999, 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h>
 #include <common/mem.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/dirname.h>
@@ -79,19 +78,19 @@ rpt_func_basename::run(const rpt_expr::pointer &ep, size_t,
     rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(arg.get());
     if (!rvsp)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Function", "basename");
-	sc.var_set_long("Number", 1);
-	sc.var_set_charstar("Name", argv[0]->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "basename");
+        sc.var_set_long("Number", 1);
+        sc.var_set_charstar("Name", argv[0]->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
+            sc.subst_intl
+            (
                 i18n("$function: argument $number: string value required "
                     "(was given $name)")
-	    )
+            )
         );
-	return rpt_value_error::create(ep->get_pos(), s);
+        return rpt_value_error::create(ep->get_pos(), s);
     }
     nstring pathname(rvsp->query());
 
@@ -158,19 +157,19 @@ rpt_func_dirname::run(const rpt_expr::pointer &ep, size_t,
     rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(arg.get());
     if (!rvsp)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Function", "dirname");
-	sc.var_set_long("Number", 1);
-	sc.var_set_charstar("Name", argv[0]->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "dirname");
+        sc.var_set_long("Number", 1);
+        sc.var_set_charstar("Name", argv[0]->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
+            sc.subst_intl
+            (
                 i18n("$function: argument $number: string value required "
                     "(was given $name)")
-	    )
+            )
         );
-	return rpt_value_error::create(ep->get_pos(), s);
+        return rpt_value_error::create(ep->get_pos(), s);
     }
     nstring pathname(rvsp->query());
 
@@ -184,3 +183,6 @@ rpt_func_dirname::run(const rpt_expr::pointer &ep, size_t,
     //
     return rpt_value_string::create(d);
 }
+
+
+// vim: set ts=8 sw=4 et :

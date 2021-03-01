@@ -1,21 +1,21 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2005-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2005-2008, 2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -35,12 +35,12 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never; \
-	default_development_directory = \"$work\";"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never; \
+        default_development_directory = \"$work\";"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -66,30 +66,30 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aesvt checkin functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the aesvt checkin functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the aesvt checkin functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT when testing the aesvt checkin functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
@@ -144,19 +144,19 @@ cat > test.ok << 'fubar'
 Checksum: 2454591773
 Content-Length: 71
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Version: 3
 
 Checksum: 2550537303
 Content-Length: 81
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Version: 2
 
 Checksum: 3027046709
 Content-Length: 49
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Version: 1
 fubar
 test $? -eq 0 || no_result
@@ -177,7 +177,9 @@ test $? -eq 0 || fail
 $bin/aesvt -l -hist test,svt > test.out.dated
 test $? -eq 0 || fail
 
-sed -e '/Date:/d' -e '/User:/d' test.out.dated > test.out
+sed -e '/Date:/d' -e '/User:/d' \
+        -e 's|; charset=us-ascii||' \
+        test.out.dated > test.out
 test $? -eq 0 || no_result
 
 diff test.ok test.out
@@ -189,3 +191,4 @@ test $? -eq 0 || fail
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Working in Teams"
 .LP
@@ -30,12 +29,12 @@ modes of development are related in the model used by Aegis.
 The simplest case to understand is the single user.  In such an
 environment, there is a project and the user makes changes to this project
 in the usual way described in the User Guide and earlier sections of
-this How-To.
+this How\[hy]To.
 .LP
 Even in this environment, it is often the case that a single user will
 be working on more than one thing at once.  You could have a large new
 feature being added, and a series of bug fixes happening in parallel
-during the course of this development.  Or some-one may interrupt you
+during the course of this development.  Or some\[hy]one may interrupt you
 with a more important feature they need to be added.  Aegis allows
 you to simply and rapidly create as many or as few independent changes
 (and development directories) as required.
@@ -58,7 +57,7 @@ to code quality.
 Aegis assumes that when working on a LAN, you will use a networked
 file system, of some sort.  NFS is adequate for this task, and commonly
 available.  By using NFS, there is very little difference between the
-single-machine case and the multi-machine case.
+single\[hy]machine case and the multi\[hy]machine case.
 .LP
 There are some system administration constraints imposed by this,
 however: it is assumed that each machine is apparently "the same",
@@ -73,8 +72,8 @@ You need exactly the same \fI/etc/passwd\fP and \fP/etc/group\fP file on
 every machine.  This gives a uniform environment, with uniform security.
 (It also gets the UIDs right, which NFS needs.)  Keeping \fI/etc/passwd\fP
 and \fI/etc/group\fP in sync across more than about 3 machines can be
-time consuming and error prone if done manually - so don't.  Use NIS or
-similar - do sys admin once, automatically takes effect everywhere.
+time consuming and error prone if done manually \- so don't.  Use NIS or
+similar \- do sys admin once, automatically takes effect everywhere.
 .IP \(bu 2n
 All of the machines see the same file systems with the same path names as
 all the others.  (Actually, you only need worry about the ones Aegis is
@@ -98,7 +97,7 @@ you have military contracts, it's rarely worth it.
 .LP
 Fortunately, NFS and NIS readily available, both for proprietary systems
 and open source systems.  Large sites use these techniques successfully
-and securely - and they \fBdon't\fP have \fIO(n^2)\fP or even \fIO(n)\fP
+and securely \- and they \fBdon't\fP have \fIO(n^2)\fP or even \fIO(n)\fP
 sys admin issues, they get most sys admin tasks down to \fIO(1)\fP.
 .LP
 But, \fIbut\fP, \fBbut!\fP
@@ -113,7 +112,7 @@ It is an illusion that you can work independently indefinitely.  In the
 ultimate siege mentality, you need a full and complete private copy of
 everything in order to pull this off; but expect the other team member
 to carefully inspect everything you produce this way.
-.nh 4 "Aegis-specific Requirements"
+.nh 4 "Aegis\[hy]specific Requirements"
 .LP
 There are a couple of things required, once you have the above up and running.
 .IP \(bu 2n
@@ -160,7 +159,7 @@ The distributed functionality of Aegis is designed to be able to operate
 through corporate firewalls.  Corporate firewall administrators, however,
 take a very dim view of adding holes to the for proprietary protocols.
 Aegis, as a result, requires none.  Instead it uses existing protocols
-such as e-mail, FTP and HTTP.  It will even work with "sneaker net"
+such as e\[hy]mail, FTP and HTTP.  It will even work with "sneaker net"
 (hand carried media).
 .LP
 The other aspect of Aegis, which you have probably noticed already,
@@ -171,7 +170,7 @@ Incoming change sets are subject to the same scrutiny as a change set
 produced locally.  It is dropped into a work area, built and tested,
 before being presented for review.  Just like any local change set
 would be.
-.nh 3 "Multiple Single-User Sites"
+.nh 3 "Multiple Single\[hy]User Sites"
 .LP
 In the case of an Open Source project maintainer, this is essential,
 because incoming contributions are of varying quality, or may interact
@@ -192,12 +191,12 @@ In the reverse direction, from the maintainer out to the developer,
 developers in an Open Source project probably aren't going to want to
 see each and every change set made to the project.  Again, they can use
 an aggregation (\fIe.g.\fP grab the latest snapshot when each release
-is announced) to re-sync in larger chunks, less often.  The chances of
+is announced) to re\[hy]sync in larger chunks, less often.  The chances of
 an intersection are fairly low (otherwise someone is duplicating effort)
 so the merge is usually quite simple.
-.nh 3 "Multiple Multi-User Sites"
+.nh 3 "Multiple Multi\[hy]User Sites"
 .LP
-Most distributed large-scale corporate operations are actually similar
+Most distributed large\[hy]scale corporate operations are actually similar
 to Open Source projects, though they usually have more staff.
 There is usually a "senior" site, and the other sites make their
 contributions, which are scrutinized carefully before being promoted to
@@ -225,7 +224,7 @@ projects.  All of this is already present in the Aegis distribution.
 However, many corporate sites are not going to want to make all of their
 intimate development details to comprehensively available on the web.
 For such sites, I would suggest either a direct "behind the firewall"
-dial-in, or some virtual private networking software (which means users
+dial\[hy]in, or some virtual private networking software (which means users
 can use a local ISP, and still be treated "as if" they were behind
 the firewall).
 .LP
@@ -235,7 +234,7 @@ encrypted updates could be posted "outside", or perhaps an procmail
 .nh 4 "Developer to Office"
 .LP
 It is unlikely (though possible) that you would have a web server on
-the developer's machine - usually you aren't connected, to the office
+the developer's machine \- usually you aren't connected, to the office
 pulling changes sets back is probably not viable.
 .LP
 The simplest mechanism is for the satellite developer to
@@ -245,9 +244,10 @@ happened) pull down the latest version of "the office" as a change set
 and apply it.
 This way, the trunk tracks the official version.
 .LP
-The developer works in a sub-branch, with aeipass configured to e-mail
+The developer works in a sub\[hy]branch, with aeipass configured to e\[hy]mail
 branch integrations (but not individual change sets) back to the office.
 In this way, a work package can be encapsulated in a branch, and sent
 when finished.  You also have the ability to manually send the branch
 at any earlier state, and it still encapsulates the set of changes you
 have made to date.
+.\" vim: set ts=8 sw=4 et :

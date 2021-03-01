@@ -1,6 +1,6 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 2002-2004, 2006-2008 Peter Miller
+ * Copyright (C) 2002-2004, 2006-2008, 2012 Peter Miller
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,15 +89,17 @@ if [find_command ctags] then
 tags: [change_files]
     set shallow no-cascade
 {
+    if [quiet] then
+        function print Generate [target];
     xargs ctags [ctags-opts] [target]
-            set meter;
+        set meter;
 data
 [unsplit "\n"
     [resolve
         [stringset [source_files] - [match_mask %0%.h [source_files]]]
         [match_mask %0%.h [source_files]]
-        [fromto %0%.def %0%.cc [match_mask %0%.def [source_files]]]
-        [fromto %0%.def %0%.h [match_mask %0%.def [source_files]]]
+        [fromto %0%.def %0%.fmtgen.cc [match_mask %0%.def [source_files]]]
+        [fromto %0%.def %0%.fmtgen.h [match_mask %0%.def [source_files]]]
     ]
 ]
 dataend
@@ -106,15 +108,20 @@ dataend
 TAGS: [change_files]
     set shallow no-cascade
 {
-    xargs [etags] [etags-opts] [target]
+    if [quiet] then
+        function print Generate [target];
+    xargs [etags] [etags-opts]
         set meter;
 data
 [unsplit "\n"
     [resolve
         [source_files]
-        [fromto %0%.def %0%.cc [match_mask %0%.def [source_files]]]
-        [fromto %0%.def %0%.h [match_mask %0%.def [source_files]]]
+        [fromto %0%.def %0%.fmtgen.cc [match_mask %0%.def [source_files]]]
+        [fromto %0%.def %0%.fmtgen.h [match_mask %0%.def [source_files]]]
     ]
 ]
 dataend
 }
+
+
+/* vim: set ts=8 sw=4 et : */

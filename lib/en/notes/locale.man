@@ -1,20 +1,20 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1996, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .TH Localization Aegis
 .SH NAME
@@ -46,7 +46,7 @@ The XPG format is much preferred,
 because it nominates a codeset set name.
 .RE
 .SS Language Name
-The language name must be one of the 2-letter names
+The language name must be one of the 2\[hy]letter names
 from the ISO 639 standard.
 .PP
 See
@@ -58,14 +58,15 @@ directory of the GNU Gettext distribution.
 .PP
 Please do
 .I not
-use the proposed 3-letter ISO 639/2 codes until it is ratified.
+use the proposed 3\[hy]letter ISO 639/2 codes until it is ratified.
 .SS Territory Name
 The language identifier is mandatory, all other parts are
 optional.  Usually \[lq]territory\[rq] means country, so please the
-the ISO 3166 2-letter country code.  (e.g. en_us :-)
+the ISO 3166 2\[hy]letter country code.  (e.g. en_us :\[hy])
 .PP
 You can find the list at
-ftp://rs.internic.net/netinfo/iso3166-countrycodes
+ftp://rs.internic.net/netinfo/iso3166\[hy]countrycodes
 .SS Codeset Name
 It is important to nominate the codeset name, so that the GNU Recode
 program can be used to move translations to a different codeset.
+.\" vim: set ts=8 sw=4 et :

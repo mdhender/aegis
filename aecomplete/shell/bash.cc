@@ -1,20 +1,19 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2002-2008, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 //
 //      The following is abstracted from the bash(1) man page:
@@ -58,13 +57,13 @@
 //      of the current command.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
 #include <common/arglex.h>
-#include <common/error.h>
 #include <common/mem.h>
 #include <common/progname.h>
 #include <aecomplete/shell/bash.h>
@@ -194,11 +193,11 @@ test(shell_ty *sp)
             if (ac >= ac_max)
             {
                 ac_max = ac_max * 2 + 8;
-		char **new_av = new char * [ac_max];
-		for (int k = 0; k < ac; ++k)
-		    new_av[k] = av[k];
-		delete [] av;
-		av = new_av;
+                char **new_av = new char * [ac_max];
+                for (int k = 0; k < ac; ++k)
+                    new_av[k] = av[k];
+                delete [] av;
+                av = new_av;
             }
             inco_ac = ac;
             av[ac++] = copy_of(cp, 0);
@@ -247,11 +246,11 @@ test(shell_ty *sp)
         if (ac >= ac_max)
         {
             ac_max = ac_max * 2 + 8;
-	    char **new_av = new char * [ac_max];
-	    for (int j = 0; j < ac; ++j)
-		new_av[j] = av[j];
-	    delete [] av;
-	    av = new_av;
+            char **new_av = new char * [ac_max];
+            for (int j = 0; j < ac; ++j)
+                new_av[j] = av[j];
+            delete [] av;
+            av = new_av;
         }
         if
         (
@@ -278,11 +277,11 @@ test(shell_ty *sp)
     if (ac >= ac_max)
     {
         ac_max = ac_max * 2 + 8;
-	char **new_av = new char * [ac_max];
-	for (int j = 0; j < ac; ++j)
-	    new_av[j] = av[j];
-	delete [] av;
-	av = new_av;
+        char **new_av = new char * [ac_max];
+        for (int j = 0; j < ac; ++j)
+            new_av[j] = av[j];
+        delete [] av;
+        av = new_av;
     }
     av[ac] = 0;
 
@@ -364,3 +363,6 @@ shell_bash(void)
     this_thing->prefix = 0;
     return sp;
 }
+
+
+// vim: set ts=8 sw=4 et :

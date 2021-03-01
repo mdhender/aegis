@@ -1,23 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994-2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.so libdir.so
+.so lib/en/man1/z_name.so
+.so etc/libdir.so
 .TH aer 5 \*(N) "Reference Manual"
 .SH NAME
 aer \- aegis report script language definition
@@ -118,33 +117,33 @@ c c c.
 "The End\n";"slosh is \e\e";"Say \e"Please\e""
 .TE
 .SS Symbols
-The non-alphanumeric characters are used to represent symbols,
+The non\[hy]alphanumeric characters are used to represent symbols,
 usually expression operators or statement terminators.
 The symbols used include:
 .TS
-center,box;
+center,box,tab(@);
 cf(CW) cf(CW) cf(CW) cf(CW) cf(CW).
-!	!=	!~	##	##=
-%	%=	&	&&	&=
-(	)	*	**	**=
-*=	+	++	+=	,
--	--	-=	.	/
-/=	:	;	<	<<
-<<=	<=	\&=	==	>
->=	>>	>>=	?	[
-]	^	^=	{	|
-|=	||	}	~	~~
+!@!=@!~@##@##=
+%@%=@&@&&@&=
+(@)@*@**@**=
+*=@+@++@+=@,
+\-@\-\-@\-=@.@/
+/=@:@;@<@<<
+<<=@<=@\&=@==@>
+>=@>>@>>=@?@[
+]@^@^=@{@|
+|=@||@}@~@~~
 .TE
 .SS White Space
 White space serves to separate words and symbols,
 and has no other significance.
-The language is free-form.
+The language is free\[hy]form.
 White space includes the
-\s-2SPACE\s+2,
-\s-2TAB\s+2,
-\s-2FF\s+2,
+SPACE,
+TAB,
+FF,
 and
-\s-2NEWLINE\s+2
+NEWLINE
 characters.
 .SS Comments
 Comments are delimited by \f(CW/*\fP and \f(CW*/\fP pairs,
@@ -180,11 +179,11 @@ statement include:
 .ft CW
 .ta 0.5i 1i 1.5i
 if (x == 42)
-	x = 1;
+    x = 1;
 if (x * x < 1)
-	print("no");
+    print("no");
 else
-	print("yes");
+    print("yes");
 .ft R
 .fi
 .RE
@@ -198,7 +197,7 @@ The first form is described as
 .ft CW
 .ta 0.5i 1i 1.5i
 for (\fIexpr1\fP; \fIexpr2\fP; \fIexpr3\fP)
-	\fIstmt\fP
+    \fIstmt\fP
 .ft R
 .fi
 .RE
@@ -227,7 +226,7 @@ loop:
 .ft CW
 .ta 0.5i 1i 1.5i
 for (j = 0; j < 10; ++j)
-	print(j);
+    print(j);
 .ft R
 .fi
 .RE
@@ -239,7 +238,7 @@ statement looks like this:
 .nf
 .ft CW
 for (name in keys(passwd))
-	print(name, passwd[name].pw_comment);
+    print(name, passwd[name].pw_comment);
 .ft R
 .fi
 .FE
@@ -257,9 +256,9 @@ statement:
 .ta 0.5i 1i 1.5i
 for (j = 0; ; j = 2 * j + 4)
 {
-	print(j);
-	if (j >= 0x800)
-		break;
+    print(j);
+    if (j >= 0x800)
+        break;
 }
 .ft R
 .fi
@@ -281,9 +280,9 @@ statement:
 .ta 0.5i 1i 1.5i
 for (j = 0; j < 1000; j = 2 * j + 4)
 {
-	if (j < 42)
-		continue;
-	print(j);
+    if (j < 42)
+        continue;
+    print(j);
 }
 .ft R
 .fi
@@ -303,8 +302,8 @@ The condition is evaluated before the loop body.
 line = 0;
 while (line < 7)
 {
-	print("");
-	++line;
+    print("");
+    ++line;
 }
 .ft R
 .fi
@@ -319,9 +318,9 @@ The condition is evaluate after the loop body.
 .ft CW
 .ta 0.5i 1i 1.5i
 do
-	print("yuck");
+    print("yuck");
 while
-	(line++ < 7);
+    (line++ < 7);
 .ft R
 .fi
 .RE
@@ -337,13 +336,13 @@ It is enclosed in curly braces.
 .ta 0.5i 1i 1.5i
 if ( lines < 7)
 {
-	print("This\en");;
-	print("could\en");;
-	print("have\en");;
-	print("been\en");;
-	print("seven\en");;
-	print("blank\en");;
-	print("lines.\en");;
+    print("This\en");;
+    print("could\en");;
+    print("have\en");;
+    print("been\en");;
+    print("seven\en");;
+    print("blank\en");;
+    print("lines.\en");;
 }
 .ft R
 .fi
@@ -362,7 +361,7 @@ x = 42;
 .ft R
 .fi
 .RE
-All user-defined variables must be declared before they are used.
+All user\[hy]defined variables must be declared before they are used.
 .SS The Null Statement
 The
 .I null
@@ -374,7 +373,7 @@ It is most often seen as a loop body.
 .nf
 .ta 0.5i 1i 1.5i
 for (n = 0, bit = 1; n < bit_num; ++n, bit <<= 1)
-	;
+    ;
 .fi
 .ft R
 .RE
@@ -386,9 +385,9 @@ cause the report to fail.
 .nf
 .ta 0.5i 1i 1.5i
 try
-	\fIstatement1\fP
+    \fIstatement1\fP
 catch (\fIvariable\fP)
-	\fIstatement2\fP
+    \fIstatement2\fP
 .fi
 .ft R
 .RE
@@ -418,11 +417,11 @@ tab(;);
 lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
 ++;post increment;\fIlvalue\fP ++
 ++;pre increment;++\fIlvalue\fP
---;post decrement;\fIlvalue\fP --
---;pre decrement;--\fIlvalue\fP
+\-\-;post decrement;\fIlvalue\fP \-\-
+\-\-;pre decrement;\-\-\fIlvalue\fP
 ~;compliment;~ \fIexpr\fP
 !;not;! \fIexpr\fP
--;unary minus;- \fIexpr\fP
+-;unary minus;\- \fIexpr\fP
 +;unary plus;+ \fIexpr\fP
 .TE
 .sp
@@ -447,7 +446,7 @@ in;list member;\fIexpr\fP in \fIexpr\fP
 tab(;);
 lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
 +;addition (plus);\fIexpr\fP + \fIexpr\fP
--;subtraction (minus);\fIexpr\fP - \fIexpr\fP
+\-;subtraction (minus);\fIexpr\fP \- \fIexpr\fP
 ##;list and string join;\fIexpr\fP ## \fIexpr\fP
 .TE
 .sp
@@ -506,7 +505,7 @@ lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
 /=;divide and assign;\fIexpr\fP /= \fIexpr\fP
 %=;modulo and assign;\fIexpr\fP %= \fIexpr\fP
 +=;add and assign;\fIexpr\fP += \fIexpr\fP
--=;subtract and assign;\fIexpr\fP -= \fIexpr\fP
+-=;subtract and assign;\fIexpr\fP \-= \fIexpr\fP
 <<=;shift left and assign;\fIexpr\fP <<= \fIexpr\fP
 >>=;shift right and assign;\fIexpr\fP >>= \fIexpr\fP
 &=;AND and assign;\fIexpr\fP &= \fIexpr\fP
@@ -563,7 +562,7 @@ integer
 This type is represented by the
 .I long
 C type.
-It has a limited range of values (usually -2e9 to 2e9 approximately).
+It has a limited range of values (usually \-2e9 to 2e9 approximately).
 If used in a string context,
 it will be silently converted to a string.
 For exact control of the format,
@@ -598,7 +597,7 @@ used the
 .I sprintf
 function.
 .SH FUNCTIONS
-There are a number of built-in functions.
+There are a number of built\[hy]in functions.
 .\" ------------------------------ A ------------------------------
 .\" ------------------------------ B ------------------------------
 .TP 8n
@@ -616,7 +615,7 @@ towards positive infinity.
 change_number
 This function is used to determine the change number.
 It may be set by the
-.B -Change
+.B \-Change
 command line option,
 or it may default.
 The return value is an integer.
@@ -624,7 +623,7 @@ The return value is an integer.
 change_number_set
 This function maybe used to determine if the
 change number was set by the
-.B -Change
+.B \-Change
 command line option.
 The return value is a boolean.
 .TP 8n
@@ -741,7 +740,7 @@ Columns will wrap around.
 project_name
 This function is used to determine the project name.
 It may be set by the
-.B -Project
+.B \-Project
 command line option,
 or it may default.
 The return value is a string.
@@ -749,7 +748,7 @@ The return value is a string.
 project_name_set
 This function maybe used to determine if the
 project name was set by the
-.B -Project
+.B \-Project
 command line option.
 The return value is a boolean.
 .\" ------------------------------ Q ------------------------------
@@ -758,17 +757,17 @@ quote_html
 This function quotes its argument string to insulate HTML special
 characters; these include \[lq]less than\[rq] (\fC<\fP),
 \[lq]ampersand\[rq] (\fC&\fP)
-and non-printing characters.  This is most often used to generate suitable
+and non\[hy]printing characters.  This is most often used to generate suitable
 text for web pages.
 .TP 8n
 quote_tcl
 This function quotes its argument string to insulate TCL special
-characters; these include \[lq][]\[rq] and non-printing characters.
+characters; these include \[lq][]\[rq] and non\[hy]printing characters.
 This is most often used to generate suitable text for TCL interface scripts.
 .TP 8n
 quote_url
 This function quotes its argument string to insulate URL special
-characters; these include \[lq]?+#:&=\[rq] and non-printing characters.
+characters; these include \[lq]?+#:&=\[rq] and non\[hy]printing characters.
 This is most often used to generate suitable text for web pages.
 .\" ------------------------------ R ------------------------------
 .TP 8n
@@ -818,7 +817,7 @@ and the third argument is the length.
 .TP 8n
 terse
 This function may be used to determine of the
-.B -TERse
+.B \-TERse
 command line option was used.
 The return type is a boolean.
 .TP 8n
@@ -872,7 +871,7 @@ section.
 .\" ------------------------------ Z ------------------------------
 .\" ---------------------------------------------------------------
 .SH VARIABLES
-There are a number of built-in variables.
+There are a number of built\[hy]in variables.
 .\" ------------------------------ A ------------------------------
 .TP 8n
 arg
@@ -993,4 +992,5 @@ project state description
 .TP 8n
 .IR aerptidx (5)
 report index file format
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

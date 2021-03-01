@@ -1,27 +1,29 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2002, 2004-2006, 2008, 2009, 2012 Peter Miller
+//      Copyright (C) 2008, 2009 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_INPUT_H
 #define LIBAEGIS_INPUT_H
 
+#include <common/ac/sys/types.h>
+
 #include <common/nstring.h>
-#include <common/main.h>
 
 class input; // forward
 
@@ -31,6 +33,8 @@ class input; // forward
 class input_ty
 {
 public:
+    typedef input_ty* pointer;
+
     /**
       * The destructor is used to close the given input, and delete all
       * resources associated with it.  Once this returns, the given
@@ -59,7 +63,7 @@ public:
       * @returns
       *     The actual number of bytes read, or zero for end-of-file.
       */
-    long read(void *data, size_t nbytes);
+    ssize_t read(void *data, size_t nbytes);
 
     /**
       * The read_strictest method is used to read data from the given
@@ -103,8 +107,19 @@ public:
     /**
       * The fatal_error method is used to report a fatal error on
       * an input stream.  This method does not return.
+      *
+      * @param msg
+      *     The error message to be printed.
       */
     void fatal_error(const char *msg);
+
+    /**
+      * The error method is used to report an error on an input stream.
+      *
+      * @param msg
+      *     The error message to be printed.
+      */
+    void error(const char *msg);
 
     /**
       * The one_line method is used to read one line from the input
@@ -122,7 +137,7 @@ public:
       * The ftell method is used to determine the current buffered
       * data position within the input.
       */
-    long ftell();
+    off_t ftell();
 
     /**
       * The name method is used to determine the name of the input.
@@ -133,7 +148,7 @@ public:
       * The length method is used to determine the length of the input.
       * May return -1 if the length is unknown.
       */
-    virtual long length() = 0;
+    virtual off_t length() = 0;
 
     /**
       * The getch method is used to get the next character from
@@ -142,9 +157,9 @@ public:
     int
     getch()
     {
-	if (buffer_position < buffer_end)
-	    return *buffer_position++;
-	return getc_complicated();
+        if (buffer_position < buffer_end)
+            return *buffer_position++;
+        return getc_complicated();
     }
 
     /**
@@ -154,13 +169,13 @@ public:
     void
     ungetc(int c)
     {
-	if (c >= 0)
-	{
-	    if (buffer_position > buffer)
-		*--buffer_position = c;
-	    else
-		ungetc_complicated(c);
-	}
+        if (c >= 0)
+        {
+            if (buffer_position > buffer)
+                *--buffer_position = c;
+            else
+                ungetc_complicated(c);
+        }
     }
 
     /**
@@ -173,9 +188,9 @@ public:
     int
     peek()
     {
-	int c = getch();
-	ungetc(c);
-	return c;
+        int c = getch();
+        ungetc(c);
+        return c;
     }
 
     /**
@@ -194,7 +209,7 @@ public:
       * The pullback_transfer method is used by input filter classes'
       * destructors to return unused buffeered input.
       */
-    void pullback_transfer(input_ty *to);
+    void pullback_transfer(input_ty::pointer to);
 
     /**
       * The pullback_transfer method is used by input filter classes'
@@ -249,13 +264,13 @@ protected:
       * @returns
       *     The actual number of bytes read, or zero for end-of-file.
       */
-    virtual long read_inner(void *data, size_t nbytes) = 0;
+    virtual ssize_t read_inner(void *data, size_t nbytes) = 0;
 
     /**
       * The ftell_inner method is used to determine the unbuffered
       * current position within the input.
       */
-    virtual long ftell_inner() = 0;
+    virtual off_t ftell_inner() = 0;
 
     /**
       * The getc_complicated method is used to get a character from the
@@ -301,55 +316,6 @@ private:
 };
 
 
-inline DEPRECATED string_ty *
-input_name(input_ty *ip)
-{
-    return ip->name().get_ref();
-}
-
-
-inline DEPRECATED void
-input_delete(input_ty *ip)
-{
-    ip->reference_count_down();
-}
-
-
-inline DEPRECATED int
-input_getc(input_ty *ip)
-{
-    return ip->getch();
-}
-
-
-inline DEPRECATED void
-input_ungetc(input_ty *ip, int c)
-{
-    ip->ungetc(c);
-}
-
-
-inline DEPRECATED long
-input_length(input_ty *ip)
-{
-    return ip->length();
-}
-
-
-inline DEPRECATED long
-input_read(input_ty *ip, void *data, size_t nbytes)
-{
-    return ip->read(data, nbytes);
-}
-
-
-inline DEPRECATED void
-input_fatal_error(input_ty *ip, const char *msg)
-{
-    ip->fatal_error(msg);
-}
-
-
 /**
   * The input class is a so-called smart pointer, which automatically
   * keeps track of input usage, and deletes the instance once the last
@@ -386,7 +352,7 @@ public:
       *     you are giving the "dumb" pointer to this "smart pointer" to
       *     manage.
       */
-    input(input_ty *arg);
+    input(input_ty::pointer arg);
 
     /**
       * The copy constructor.
@@ -418,7 +384,7 @@ public:
       * object, this class presents what appears to be the same
       * interface as input_ty to the interface user.
       */
-    input_ty *operator->() { return ref; }
+    input_ty::pointer operator->() { return ref; }
 
     /**
       * The member operator.
@@ -428,7 +394,7 @@ public:
       * object, this class presents what appears to be the same
       * interface as input_ty to the interface user.
       */
-    const input_ty *operator->() const { return ref; }
+    input_ty::pointer operator->() const { return ref; }
 
     /**
       * The close method may be used to delete (actually, decriment
@@ -456,8 +422,9 @@ private:
       * The ref instance variable is used to remember the location of
       * the dynamically allocated input object.
       */
-    input_ty *ref;
+    input_ty::pointer ref;
 };
 
 
 #endif // LIBAEGIS_INPUT_H
+// vim: set ts=8 sw=4 et :

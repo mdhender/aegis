@@ -1,7 +1,7 @@
 //
 // aegis - project change supervisor
 // Copyright (C) 2007 Walter Franzini
-// Copyright (C) 2008 Peter Miller
+// Copyright (C) 2008, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,24 +18,26 @@
 //
 
 #include <common/arglex.h>
-#include <common/error.h>       // for assert
 #include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 
 
 time_t
-change::time_limit_get()
+change::time_limit_get(void)
 {
     trace(("change::time_limit_get()\n{\n"));
     if (is_completed())
     {
         trace(("return completion_timestamp;\n"));
         trace(("}\n"));
-        return ::change_completion_timestamp(this);
+        return completion_timestamp();
     }
 
     trace(("return TIME_NOT_SET;\n"));
     trace(("}\n"));
     return TIME_NOT_SET;
 }
+
+
+// vim: set ts=8 sw=4 et :

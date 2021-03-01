@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # aegis - The "aegis" program.
-# Copyright (C) 2008, 2009 Walter Franzini
+# Copyright (C) 2008 Walter Franzini
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -129,9 +129,6 @@ if test $? -ne 0; then cat LOG; no_result; fi
 # integrate the change
 #
 activity="finish int 131"
-aegis -ibegin 1 > LOG 2>&1
-test $? -eq 0 || no_result
-
 aefinish 1 > LOG 2>&1
 if test $? -ne 0; then cat LOG; no_result; fi
 

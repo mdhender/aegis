@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2005, 2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1999, 2001, 2002, 2005, 2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_WIDE_OUTPUT_HEADER_H
@@ -55,10 +54,10 @@ public:
       */
     static hpointer open(const wide_output::pointer &deeper);
 
-    void title(const char *, const char *);
+    void title(const nstring &first, const nstring &second);
 
     static void
-    title(wide_output::pointer fp, const char *l1, const char *l2)
+    title(wide_output::pointer fp, const nstring &l1, const nstring &l2)
     {
         wide_output_header *hp = dynamic_cast<wide_output_header *>(fp.get());
         if (hp)
@@ -152,3 +151,4 @@ private:
 };
 
 #endif // LIBAEGIS_WIDE_OUTPUT_HEADER_H
+// vim: set ts=8 sw=4 et :

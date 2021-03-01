@@ -1,6 +1,6 @@
 '\" t
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2004, 2006-2008 Peter Miller
+.\"     Copyright (C) 2004, 2006-2010, 2012 Peter Miller
 .\"     Copyright (C) 2008 Walter Franzini
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
@@ -17,53 +17,53 @@
 .\"     along with this program. If not, see
 .\"     <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -File_ATtributes" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-File_ATtributes" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis file attributes \- modify the attributes of a file
 .XX "aefa(1)" "modify the attributes of a file"
 .SH SYNOPSIS
 .B \*(n)
-.B -File_ATtributes
-.B -File
-.I attr-file
+.B \-File_ATtributes
+.B \-File
+.I attr\[hy]file
 [
 .IR option ...
 ]
 .I filename
 .br
 .B \*(n)
-.B -File_ATtributes
-.B -Edit
+.B \-File_ATtributes
+.B \-Edit
 [
 .IR option ...
 ]
 .I filename
 .br
 .B \*(n)
-.B -File_ATtributes
+.B \-File_ATtributes
 [
 .IR option ...
 ]
-\fIname\fP\fB=\fP\fIvalue\fP
+\f[I]name\fP\fB=\fP\f[I]value\fP
 .I filename
 .br
 .B \*(n)
-.B -File_ATtributes
-.B -UUID \f[I]number\f[P]
-.B -File \f[I]filename\f[P]
+.B \-File_ATtributes
+.B \-UUID \f[I]number\f[P]
+.B \-File \f[I]filename\f[P]
 .br
 .B \*(n)
-.B -File_ATtributes
-.B -Help
+.B \-File_ATtributes
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -File_ATtributes
+.I \-File_ATtributes
 command is used to set, edit or list the attributes of a file.
 .PP
 The output of the
-.B -List
+.B \-List
 variant is suitable for use as input at a later time.
 .PP
 See
@@ -71,12 +71,12 @@ See
 for a description of the file format.
 .PP
 Attribute names are not case sensitive.  File attributes with a name
-starting with an upper case letter will appear in \fIael\fP(1) and
-\fIaeget\fP(1) listings, while those starting with a lower case letter
+starting with an upper case letter will appear in \f[I]ael\fP(1) and
+\f[I]aeget\fP(1) listings, while those starting with a lower case letter
 will not.
 .SS Shorthand
 If you are only setting the values of unique attributes, it is possible
-to do this from the command line, using the \fIname\fP\fB=\fP\fIvalue\fP
+to do this from the command line, using the \f[I]name\fP\fB=\fP\f[I]value\fP
 form.
 .PP
 Note that this usage will replace the first attribute with the given name.  If
@@ -93,64 +93,91 @@ also uses some attributes for its own purposes (and arguably, should
 always have done so to maximize forwards compatibility across Aegis
 upgrades).
 .TP 8n
-content-type
-This is taken directly from the MIME definition of Content-Type.
-It remembers what sort of file this is.  It is anticipated that a
-\fIdiff\fP tool, for example, could make use of this attribute to
-provide format-specific file difference listings.  Some change set
-interchange formats are capable of carrying this information.
-.TP 8n
-entire-source-hide
-boolean.  If true, this file is not included by the \fIaedist \-entire-source\fP
-flag.  The \fIaetar\fP and \fIaerevml\fP commands work similarly.
-Think of it as a "local only" flag.
-.TP 8n
-foreign-copyright
-boolean.  If true, this file will not be checked by the
-\fIaede-policy\fP(1) \f[CW]copyright\fP validation.
-.TP 8n
-aede-policy-tabs-allowed
+aede\[hy]policy\[hy]crlf\[hy]allowed
 boolean.
-If true, the \fIno-tabs\fP policy of the \fIaede-policy\fP(1) command
+If true, the \f[I]crlf\fP policy of the \f[I]aede\[hy]policy\fP(1) command
 does not apply.
 .TP 8n
-aede-policy-line-length
-integer.
-The maximum allowed line length in the \fIline-length\fP policy of the
-\fIaede-policy\fP(1) command; infinity if 0.
+aede\[hy]policy\[hy]escape\[hy]hyphen
+boolean.
+If false, the \f[I]escape\[hy]hyphen\fP policy of the
+\f[I]aede\[hy]policy\fP(1) command does not apply.
 .TP 8n
-local-source-hide
-boolean.  If true, this file is not included by \fIaedist\fP
-change sets.  The \fIaetar\fP and \fIaerevml\fP commands work similarly.
+aede\[hy]policy\[hy]line\[hy]length
+integer.
+The maximum allowed line length in the \f[I]line\[hy]length\fP policy of the
+\f[I]aede\[hy]policy\fP(1) command; infinity if 0.
+.\" .TP 8n
+.\" aede\[hy]policy\[hy]manifest\[hy]allowed
+.\" boolean.  If true, the aded "manifest" policy is not applied.
+.\" .TP 8n
+.\" aede\[hy]policy\[hy]no\[hy]manifest
+.\" boolean.  If false, the aded "manifest" policy is not applied.
+.TP 8n
+aede\[hy]policy\[hy]tabs\[hy]allowed
+boolean.
+If true, the \f[I]no\[hy]tabs\fP policy of the
+\f[I]aede\[hy]policy\fP(1) command
+does not apply.
+.TP 8n
+aeipass\[hy]options:assign\[hy]file\[hy]uuid
+boolean.  If false, \f[I]aeipass\fP will not assign a fresh UUID to this
+file.  This flag is set by \f[I]aedist\fP \-rec if the action associated
+with the file is a create and the file is missing the UUID.  This
+behaviour is needed to prevent the effect of having different UUIDs
+assigned to the same file in different repositories.
+.TP 8n
+aemakegen:noinst
+boolean.  If true, \f[I]aemakegen\fP(1) will not cause the program
+to be installed.  Usually attached to the source file containing the
+\f[I]main\fP function, or to script files.  Defaults to false if not
+defined (\f[I]i.e.\fP do install program).
+.TP 8n
+content\[hy]type
+This is taken directly from the MIME definition of Content\[hy]Type.
+It remembers what sort of file this is.  It is anticipated that a
+\f[I]diff\fP tool, for example, could make use of this attribute to
+provide format\[hy]specific file difference listings.  Some change set
+interchange formats are capable of carrying this information.
+.TP 8n
+entire\[hy]source\[hy]hide
+boolean.  If true, this file is not included by the \f[I]aedist
+\-entire\[hy]source\fP flag.  The \f[I]aetar\fP and \f[I]aerevml\fP commands
+work similarly.  Think of it as a "local only" flag.
+.TP 8n
+foreign\[hy]copyright
+boolean.  If true, this file will not be checked by the
+\f[I]aede\[hy]policy\fP(1) \f[CW]copyright\fP validation.
+.TP 8n
+local\[hy]source\[hy]hide
+boolean.  If true, this file is not included by \f[I]aedist\fP
+change sets.  The \f[I]aetar\fP and \f[I]aerevml\fP commands work similarly.
 Change sets which contain \f[I]only\fP thee files will be omitted
 from the \f[I]aedist \-inventory\fP output.
 Think of it as a "local only" flag.
 .TP 8n
-aeipass-options:assign-file-uuid
-boolean.  If false, \fIaeipass\fP will not assign a fresh UUID to this
-file.  This flag is set by \fIaedist\fP -rec if the action associated
-with the file is a create and the file is missing the UUID.  This
-behaviour is needed to prevent the effect of having different UUIDs
-assigned to the same file in different repositories.
+test/\f[I]arch\fP/elapsed
+This is used to estimate test duration.
+See \f[I]aet\fP(1) for more information.
 .SH OPTIONS
 The following options are understood:
-.so o_baserel.so
-.so o_change.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-\f[B]-Universal_Unique_IDentifier\f[P] \f[I]number\f[P]
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+\f[B]\-Universal_Unique_IDentifier\f[P] \f[I]number\f[P]
 This option may be used to set the UUID of a file.
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%    alias aefa '\*(n) -fat \e!* -v'
-sh$     aefa(){\*(n) -fat "$@" -v}
+csh%    alias aefa '\*(n) \-fat \e!* \-v'
+sh$     aefa(){\*(n) \-fat "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if the current user is not an administrator of the
@@ -160,7 +187,7 @@ It is an error if the current user is not the developer of the specified
 change.
 .br
 It is an error if the file is not included in the specified change.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -170,4 +197,5 @@ modify the attributes of a change
 .TP 8n
 .IR aefattr (5)
 file attributes file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

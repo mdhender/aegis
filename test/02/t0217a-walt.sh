@@ -1,22 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2005-2008 Peter Miller
-#	Copyright (C) 2004, 2007 Walter Franzini
+#       aegis - project change supervisor
+#       Copyright (C) 2005-2008, 2012 Peter Miller
+#       Copyright (C) 2004, 2007, 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -36,11 +36,11 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -60,7 +60,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -71,47 +71,47 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aedist functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the aedist functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the aedist functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT when testing the aedist functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/uuid = ".*"/uuid = "UUID"/' \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 activity="create test directory 117"
@@ -138,7 +138,7 @@ export AEGIS_PATH
 
 activity="new project 139"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
-	-lib $AEGIS_PATH > log 2>&1
+        -lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=test
@@ -182,7 +182,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 183"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
-	$work/test.C010/barney -v > log 2>&1
+        $work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
@@ -196,7 +196,7 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 link_integration_directory = true;
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -313,20 +313,33 @@ do
   if test $? -ne 0; then cat LOG; no_result; fi
 done
 
+activity="change list 316"
+cat > $work/change.ok <<EOF
+2
+10
+EOF
+if test $? -ne 0; then no_result; fi
+
+$bin/aegis -list change -p test -ter > test.changes
+if test $? -ne 0; then no_result; fi
+
+diff $work/change.ok test.changes
+if test $? -ne 0; then no_result; fi
+
 # ----------------------------------------------------------------
 
 #
 # Create a second project: test2
 #
-activity="new project 321"
+activity="new project 334"
 $bin/aegis -npr test2 -version - -v -dir $work/test2.dir \
-	-lib $AEGIS_PATH > log 2>&1
+        -lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=test2
 export AEGIS_PROJECT
 
-activity="project attributes 329"
+activity="project attributes 342"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -339,7 +352,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 342"
+activity="staff 355"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -351,16 +364,30 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # The URL handling code must be improved, now we must write
 # ./test.html (note the leading ./) instead of test.html
 #
-activity="replay 354"
+activity="replay 367"
 $bin/aedist  --replay -p test2 -f ./test.html -no-trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="dump inventory for test2 358"
+activity="dump inventory for test2 371"
 $bin/aegis -list change_inventory -p test2 -terse > test2.cin
 if test $? -ne 0; then no_result; fi
 
-activity="check inventories 362"
+activity="check inventories 375"
 diff test.cin test2.cin > cin.diff
 if test $? -ne 0; then cat cin.diff; fail; fi
 
+activity="change list 379"
+$bin/aegis -list change -p test2 -ter > test2.changes
+if test $? -ne 0; then no_result; fi
+
+activity="check change list 383"
+diff $work/change.ok test2.changes
+if test $? -ne 0; then fail; fi
+
+#
+# Only definite negatives are possible.
+# The functionality exercised by this test appears to work,
+# no other guarantees are made.
+#
 pass
+# vim: set ts=8 sw=4 et :

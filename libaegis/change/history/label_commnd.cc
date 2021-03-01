@@ -1,28 +1,29 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2006-2008 Peter Miller
-//	Copyright (C) 2002 John Darrington
+//      aegis - project change supervisor
+//      Copyright (C) 2006-2008, 2012 Peter Miller
+//      Copyright (C) 2002 John Darrington
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
+
+#include <common/ac/assert.h>
 
 #include <libaegis/change.h>
 #include <libaegis/project.h>
 #include <libaegis/change/env_set.h>
 #include <libaegis/change/branch.h>
-#include <common/error.h>	// for assert
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
 #include <libaegis/user.h>
@@ -52,21 +53,21 @@ change_run_history_label_command(change::pointer cp, fstate_src_ty *src,
     // ${Label}
     //      label
     //
-    trace(("change_run_history_label_command(cp = %8.8lX, filename = \"%s\", "
-	"label = \"%s\")\n{\n", (long)cp, src->file_name->str_text,
-	label->str_text));
+    trace(("change_run_history_label_command(cp = %p, filename = \"%s\", "
+        "label = \"%s\")\n{\n", cp, src->file_name->str_text,
+        label->str_text));
     assert(cp->reference_count >= 1);
 
     pconf_data = change_pconf_get(cp, 0);
     if
     (
-	!pconf_data->history_label_command
+        !pconf_data->history_label_command
     ||
-	!pconf_data->history_label_command->str_length
+        !pconf_data->history_label_command->str_length
     )
     {
-	trace(("}\n"));
-	return;
+        trace(("}\n"));
+        return;
     }
 
     //
@@ -102,3 +103,6 @@ change_run_history_label_command(change::pointer cp, fstate_src_ty *src,
     str_free(the_command);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

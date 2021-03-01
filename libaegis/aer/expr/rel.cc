@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994-1996, 1999, 2001-2008 Peter Miller
+//      Copyright (C) 1994-1996, 1999, 2001-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,18 +17,18 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
+#include <common/fstrcmp.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/rel.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/fstrcmp.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 #define PAIR(a, b)      ((a) * rpt_value_type_MAX + (b))
 
@@ -997,3 +997,6 @@ rpt_expr_nmatch::evaluate()
     nstring s(sc.subst_intl(i18n("illegal comparison ($name1 !~ $name2)")));
     return rpt_value_error::create(get_pos(), s);
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,33 +1,31 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2005 Matthew Lee;
-//      All rights reserved.
-//      Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2005 Matthew Lee
+// Copyright (C) 2007-2009, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
 #include <common/gettime.h>
 #include <common/now.h>
 #include <common/uuidentifier.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/io.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
@@ -77,7 +75,7 @@ rss_item::operator=(const rss_item &arg)
         comments = arg.comments;
         enclosure = arg.enclosure;
         guid = arg.guid;
-	guidIsPermaLink = arg.guidIsPermaLink;
+        guidIsPermaLink = arg.guidIsPermaLink;
         source = arg.source;
     }
     return *this;
@@ -163,17 +161,17 @@ rss_item::print(output::pointer out)
 
     if (!title.empty())
     {
-	string_write_xml(out, "title", title);
+        string_write_xml(out, "title", title);
     }
 
     if (!description.empty())
     {
-	string_write_xml(out, "description", description);
+        string_write_xml(out, "description", description);
     }
 
     if (!pub_date.empty())
     {
-	string_write_xml(out, "pubDate", pub_date);
+        string_write_xml(out, "pubDate", pub_date);
     }
 
     if (!link.empty())
@@ -203,12 +201,12 @@ rss_item::print(output::pointer out)
 
     if (!guid.empty())
     {
-	out->fputs("<guid");
-	if (!guidIsPermaLink)
-	    out->fputs(" isPermaLink=\"false\"");
-	out->fputc('>');
-	out->fputs_xml(guid);
-	out->fputs("</guid>\n");
+        out->fputs("<guid");
+        if (!guidIsPermaLink)
+            out->fputs(" isPermaLink=\"false\"");
+        out->fputc('>');
+        out->fputs_xml(guid);
+        out->fputs("</guid>\n");
     }
 
     if (!source.empty())
@@ -233,18 +231,18 @@ rss_item::handle_change(change::pointer cp)
     assert(hlp);
     assert(hlp->length);
     if (hlp && hlp->length)
-	hp = hlp->list[hlp->length - 1];
+        hp = hlp->list[hlp->length - 1];
     assert(hp);
     assert(hp->when);
     if (hp && hp->when)
     {
-	time_t when = hp->when;
-	handle_pub_date(nstring(date_string(when)));
+        time_t when = hp->when;
+        handle_pub_date(nstring(date_string(when)));
     }
     else
     {
-	time_t when = now();
-	handle_pub_date(nstring(date_string(when)));
+        time_t when = now();
+        handle_pub_date(nstring(date_string(when)));
     }
 
     //
@@ -259,10 +257,10 @@ rss_item::handle_change(change::pointer cp)
         nstring::format
         (
             "%s - %s - %s",
-            change_version_get(cp)->str_text,
-            nstring(cstate_data->brief_description).substring(0, 128).c_str(),
+            cp->version_get().c_str(),
+            cp->brief_description_get().substr(0, 128).c_str(),
             cstate_state_ename(cstate_data->state)
-	);
+        );
     title = tmp.html_quote();
 
     //
@@ -278,13 +276,13 @@ rss_item::handle_change(change::pointer cp)
     // configurable.
     //
     description =
-	nstring(cstate_data->description).substring(0, 2000).html_quote(true);
+        nstring(cstate_data->description).substr(0, 2000).html_quote(true);
 
     //
     // Set the <author> from the change's history
     //
     user_ty::pointer up =
-	(hp && hp->who ? user_ty::create(nstring(hp->who)) : user_ty::create());
+        (hp && hp->who ? user_ty::create(nstring(hp->who)) : user_ty::create());
     author = up->get_email_address();
 
     //
@@ -306,10 +304,13 @@ rss_item::handle_change(change::pointer cp)
     //
     link = rss_script_name_placeholder;
     link +=
-	nstring::format
-	(
-	    "/%s.C%ld/?menu",
-	    project_name_get(cp->pp)->str_text,
-	    cp->number
-	);
+        nstring::format
+        (
+            "/%s.C%ld/?menu",
+            project_name_get(cp->pp).c_str(),
+            cp->number
+        );
 }
+
+
+// vim: set ts=8 sw=4 et :

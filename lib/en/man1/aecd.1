@@ -1,53 +1,52 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1996, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -Change_Directory" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-Change_Directory" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis change directory \- change directory
 .XX "aecd(1)" "change directory"
 .SH SYNOPSIS
 .B \*(n)
-.B -Change_Directory
+.B \-Change_Directory
 [
 .IR option ...
 ][
-.I relative-path
+.I relative\[hy]path
 ]
 .br
 .B \*(n)
-.B -Change_Directory
-.B -List
+.B \-Change_Directory
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -Change_Directory
-.B -Help
+.B \-Change_Directory
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -Change_Directory
+.I \-Change_Directory
 command is used to
 obtain a path to change directory to.
 If the
-.I relative-path
+.I relative\[hy]path
 is supplied, this will be added to the output.
 .PP
 This command is usually used to calculate an argument for
@@ -56,29 +55,29 @@ however it can also be used to obtain an absolute path
 for change and project files.
 .SH OPTIONS
 The following options are understood:
-.so o_baselin.so
-.so o_branch.so
-.so o_change.so
-.so o_devdir.so
-.so o_help.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-.so o_trunk.so
-.so o_verbose.so
-.so o__rules.so
+.so lib/en/man1/o_baselin.so
+.so lib/en/man1/o_branch.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_devdir.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_trunk.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aecd 'cd `\*(n) -cd \e!* -v`'
-sh$	aecd(){cd `\*(n) -cd "$@" -v`}
+csh%    alias aecd 'cd `\*(n) \-cd \e!* \-v`'
+sh$     aecd(){cd `\*(n) \-cd "$@" \-v`}
 .fi
 .SH ERRORS
 It is an error if
 the specified change is not in a state where it has a directory to
 change to.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -97,4 +96,5 @@ fail review of a change
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

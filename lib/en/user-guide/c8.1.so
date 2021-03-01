@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 2005-2008 Peter Miller.
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1993, 2005-2008, 2010, 2012 Peter Miller.
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Interfacing"
 .LP
@@ -46,9 +46,9 @@ Usually in the development directory.
 .LP
 An exit status of 0 means successful,
 even of the files differ (and they usually do).
-An exit status which is non-zero means something is wrong.
+An exit status which is non\[hy]zero means something is wrong.
 .LP
-The non-zero exit status may be used to overload this command
+The non\[hy]zero exit status may be used to overload this command
 with extra tests,
 such as line length limits.
 The difference files must be produced in addition to these extra tests.
@@ -81,7 +81,7 @@ This is usually the name of a change source file.
 .LP
 An exit status of 0 means successful,
 even of the files differ (and they usually do).
-An exit status which is non-zero means something is wrong.
+An exit status which is non\[hy]zero means something is wrong.
 .nh 2 "When No Diff is Required"
 .LP
 It is possible to configure a project to omit the diff step as
@@ -92,3 +92,4 @@ diff_command = "exit 0";
 This disables all generation, checking and validation of difference files
 for each change source file.  The merge functions of the \fIaediff\fP(1)
 command are unaffected by this setting.
+.\" vim: set ts=8 sw=4 et :

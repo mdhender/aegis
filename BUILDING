@@ -3,7 +3,8 @@ Build(Aegis)							  Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008 Peter Miller
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008, 2009, 2010,
+	2011, 2012 Peter Miller
 
 	The aegis program is distributed under the terms of the	GNU General
 	Public License.	 See the LICENSE section, below, for more details.
@@ -97,7 +98,7 @@ SITE CONFIGURATION
 	prints some messages that tell what it is doing.  If you don't want to
 	see the	messages, run configure	with its standard output redirected to
 	/dev/null; for example,
-		% ./configure  --sysconfdir=/etc --quiet
+		% ./configure --sysconfdir=/etc	--quiet
 		%
 
 	There is a known problem with GCC 2.8.3	and HP/UX.  You	will need to
@@ -383,6 +384,11 @@ OTHER USEFUL SOFTWARE
 		For best results with the aepatch(1) and aedist(1) when
 		receiving change sets, you need	the GNU	patch utility.
 
+	iso-codes
+		This package provides the ISO 639 and ISO 639-3	language code
+		lists, the ISO 3166 territory code list, list as XML files.
+		Homepage: http://pkg-isocodes.alioth.debian.org/
+
 	RCS	This is	a source control package, and is available from	any of
 		the GNU	archives.  (It is best to compile and install RCS
 		after GNU diff.	 This is because the RCS configuration hard-
@@ -666,13 +672,13 @@ TIME SYNCHRONIZATION
 GETTING	HELP
 	If you need assistance with Aegis, please do not hesitate to contact
 	the author at
-		Peter Miller <millerp@canb.auug.org.au>
+		Peter Miller <pmiller@opensource.org.au>
 	Any and	all feedback is	welcome.
 
 	When reporting problems, please	include	the version number given by
 	the
 		% aegis	-version
-		aegis version 4.D007
+		aegis version 4.25.D505
 		...
 		%
 	command.  Please run this command to get the exact number, do not send
@@ -784,8 +790,8 @@ LICENSE
 	It should be in	the LICENSE file included in this distribution.
 
 AUTHOR
-	Peter MillerE-Mail:   millerp@canb.auug.org.au
-	/\/\*					  WWW:	 http://www.canb.auug.org.au/~millerp/
+	Peter Miller   E-Mail:	 pmiller@opensource.org.au
+	/\/\*		  WWW:	 http://miller.emu.id.au/pmiller/
 
 WINDOWS-NT
 	It is possible to build	Aegis for Windows-NT.  I have only done	this
@@ -870,13 +876,13 @@ WINDOWS-NT
 		local mirror, and these	are scattered around the globe.
 		Follow the "mirrors" link on their front page to find your
 		closest	mirror.	 Also, it's often a good idea to configure
-		these packages with the	"--with-gnu-gettext" option to their
+		these packages with the	"-with-gnu-gettext" option to their
 		./configure commands.
 
 	Do not use WinZip to unpack the	tarball.  It has a nasty habit of
 		turning	all of the newlines into CRLFs.	 This will confuse
 		lots of	utilities, especially GNU Groff.  Use the "tar xzf
-		aegis-4.tar.gz"	command	from within Cygwin.
+		aegis-4.25.tar.gz" command from	within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or later
 		(use a "groff -v" command).  Grab and install the latest from
@@ -964,10 +970,12 @@ WINDOWS-NT
 	through	first).	 If you	want to	use the	"/usr/local" prefix (or	any
 	other install prefix) you mount	it right at the	start.	For anything
 	other than the "/usr/local" default prefix, you	also needed to give a
-	"--prefix=blahblah" argument to	the configure script, right at the
+	"-prefix=blahblah" argument to the configure script, right at the
 	start.
 		bash$ make install
 		...lots	of output...
 		bash$
+
+	// vim:	set ts=8 sw=4 et :
 
 Reference Manual		     Aegis			  Build(Aegis)

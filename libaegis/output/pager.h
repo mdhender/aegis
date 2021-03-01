@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1992-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1992-2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef OUTPUT_PAGER_H
@@ -72,22 +71,22 @@ public:
 
 protected:
     // See base class for documentation.
-    nstring filename() const;
+    nstring filename(void) const;
 
     // See base class for documentation.
-    const char *type_name() const;
+    nstring type_name(void) const;
 
     // See base class for documentation.
-    long ftell_inner() const;
+    long ftell_inner(void) const;
 
     // See base class for documentation.
     void write_inner(const void *data, size_t length);
 
     // See base class for documentation.
-    void end_of_line_inner();
+    void end_of_line_inner(void);
 
     // See base class for documentation.
-    void flush_inner();
+    void flush_inner(void);
 
 private:
     void *vdeeper;
@@ -95,8 +94,8 @@ private:
     nstring pager;
     bool bol;
 
-    void pipe_open();
-    void pager_error();
+    void pipe_open(void);
+    void pager_error(void);
 
     /**
       * The copy constructor.  Do not use.
@@ -120,3 +119,4 @@ private:
 void option_pager_set(int flag, void(*usage)(void));
 
 #endif // OUTPUT_PAGER_H
+// vim: set ts=8 sw=4 et :

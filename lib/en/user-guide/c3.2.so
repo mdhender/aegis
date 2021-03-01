@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1991-1995, 1998, 2001-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .nh 2 "Using RCS"
@@ -31,11 +31,11 @@ and
 and
 .I rlog
 are in the command search PATH,
-but you may like to hard-wire the paths,
+but you may like to hard\[hy]wire the paths,
 or set PATH at the start of each.
 You should also note that the strings are always handed to
 the Bourne shell to be executed,
-and are set to exit with an error immediately a sub-command fails.
+and are set to exit with an error immediately a sub\[hy]command fails.
 .LP
 In these commands,
 the RCS file is kept unlocked,
@@ -61,28 +61,28 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "ci -u -d -M -m$c -t/dev/null \e
-  $i $h,v; rcs -U $h,v";
+  "ci \-u \-d \-M \-m$c \-t/dev/null \e
+  $i $h,v; rcs \-U $h,v";
 .E)
 .LP
-.\" The "\f(CWci -f\fP" option is used to specify that
-.\" a copy is to be checked-in even if there are no changes.
-The "\f(CWci -u\fP" option is used to specify that
+.\" The "\f(CWci \-f\fP" option is used to specify that
+.\" a copy is to be checked\[hy]in even if there are no changes.
+The "\f(CWci \-u\fP" option is used to specify that
 an unlocked copy will remain in the baseline.
-The "\f(CWci -d\fP" option is used to specify that
+The "\f(CWci \-d\fP" option is used to specify that
 the file time rather than the current time is to be used for the new revision.
-The "\f(CWci -M\fP" option is used to specify that
+The "\f(CWci \-M\fP" option is used to specify that
 the mode date on the original file is not to be altered.
-The "\f(CWci -t\fP" option is used to specify that
+The "\f(CWci \-t\fP" option is used to specify that
 there is to be no description text for the new RCS file.
-The "\f(CWci -m\fP" option is used to specify that
+The "\f(CWci \-m\fP" option is used to specify that
 the change number is to be stored in the file log
 if this is actually an update (typically from
 .I aenf
 after
 .I aerm
 on the same file name).
-The "\f(CWrcs -U\fP" option is used to specify that
+The "\f(CWrcs \-U\fP" option is used to specify that
 the new RCS file is to have unstrict locking.
 .LP
 It is essential that the \fIhistory_\%create_\%command\fP and the
@@ -107,19 +107,19 @@ The entry in the
 file looks like this:
 .E(
 history_get_command =
-  "co -r'$e' -p $h,v > $o";
+  "co \-r'$e' \-p $h,v > $o";
 .E)
 .LP
-The "\f(CWco -r\fP option is used to specify
+The "\f(CWco \-r\fP option is used to specify
 the edit to be retrieved.
-The "\f(CWco -p\fP option is used to specify that
+The "\f(CWco \-p\fP option is used to specify that
 the results be printed on the standard output;
 this is because the destination filename will
 .I never
 look anything like the history source filename.
 .nh 3 "history_put_command"
 .LP
-This command is used to add a new "top-most" entry to the
+This command is used to add a new "top\[hy]most" entry to the
 history file.
 This command is always executed as the project owner.
 .LP
@@ -134,31 +134,31 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "ci -u -d -M -m$c -t/dev/null \e
-  $i $h,v; rcs -U $h,v";
+  "ci \-u \-d \-M \-m$c \-t/dev/null \e
+  $i $h,v; rcs \-U $h,v";
 .E)
 .LP
-Uses ci to deposit a new revision, using -d and -M as described
-for history_create_command.  The -m flag stores the change number
+Uses ci to deposit a new revision, using \-d and \-M as described
+for history_create_command.  The \-m flag stores the change number
 in the file log, which allows \fIrlog\fP(1) to be used to find the Aegis
 change numbers to which each revision of the file corresponds.
 .LP
-.\" The "\f(CWci -f\fP" option is used to specify that
-.\" a copy is to be checked-in even if there are no changes.
-The "\f(CWci -u\fP" option is used to specify that
+.\" The "\f(CWci \-f\fP" option is used to specify that
+.\" a copy is to be checked\[hy]in even if there are no changes.
+The "\f(CWci \-u\fP" option is used to specify that
 an unlocked copy will remain in the baseline.
-The "\f(CWci -d\fP" option is used to specify that
+The "\f(CWci \-d\fP" option is used to specify that
 the file time rather than the current time is to be used for the new revision.
-The "\f(CWci -M\fP" option is used to specify that
+The "\f(CWci \-M\fP" option is used to specify that
 the mode date on the original file is not to be altered.
-The "\f(CWci -m\fP" option is used to specify that
+The "\f(CWci \-m\fP" option is used to specify that
 the change number is to be stored in the file log,
 which allows
 .I rlog
 to be used to find the change numbers to which
 each revision of the file corresponds.
-You might want to use \f(CW-m$p,$c\fP instead which stores both the
-project name and the change number.  Or \f(CW-m$version\fP, which will
+You might want to use \f(CW\-m$p,$c\fP instead which stores both the
+project name and the change number.  Or \f(CW\-m$version\fP, which will
 be composed of the branch and the delta.  These make it much easier to
 track changes across branches.
 .LP
@@ -168,7 +168,7 @@ that there are two separate commands: before Aegis supported branches,
 this was not a requirement.
 .nh 3 "history_query_command"
 .LP
-This command is used to query what the history mechanism calls the top-most
+This command is used to query what the history mechanism calls the top\[hy]most
 edit of a history file.
 The result may be any arbitrary string,
 it need not be anything like a number,
@@ -188,7 +188,7 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "rlog -r $h,v | "
+  "rlog \-r $h,v | "
   "awk '/^revision/ {print $$2}'";
 .E)
 .nh 3 "merge_command"
@@ -196,7 +196,7 @@ history_query_command =
 RCS also provides a
 .I merge
 program,
-which can be used to provide a three-way merge.
+which can be used to provide a three\[hy]way merge.
 .LP
 All of the command substitutions described in
 .I aesub (5)
@@ -224,16 +224,16 @@ file looks like this:
 .E(
 merge_command =
   "set +e; "
-  "merge -p -L baseline -L C$c "
+  "merge \-p \-L baseline \-L C$c "
   " $mr $orig $in > $out; "
-  "test $? -le 1";
+  "test $? \-le 1";
 .E)
 .LP
-The "\f(CWmerge -L\fP" options are used to specify
+The "\f(CWmerge \-L\fP" options are used to specify
 labels for the baseline and the development directory,
 respectively,
 when conflict lines are inserted into the result.
-The "\f(CWmerge -p\fP" options is used to specify that
+The "\f(CWmerge \-p\fP" options is used to specify that
 the results are to be printed on the standard output.
 .LP
 It is important that this command does not move its input and output
@@ -253,7 +253,7 @@ Many history tools (including RCS) can modify the contents of the file
 when it is committed.  While there are usually options to turn this
 off, they are seldom used.  The problem is: if the commit changes the
 file, the source in the repository now no longer matches the object
-file in the repository - \fIi.e.\fP the history tool has compromised the
+file in the repository \- \fIi.e.\fP the history tool has compromised the
 referential integrity of the repository.
 .E(
 history_put_trashes_file = warn;
@@ -281,21 +281,21 @@ the use of the ${quote} substitution around all of the files names in
 the commands.
 .LP
 In addition, it is possible to have a much more useful description for
-the \fB\-m\fP option.  For example: \[lq]\f[CW]-m${quote ($version) ${change
+the \fB\-m\fP option.  For example: \[lq]\f[CW]\-m${quote ($version) ${change
 description}}\fP\[rq] inserts the version number and the brief description
 into the file's log.  This means that using the \fIrlog\fP(1) command
 will provide quite useful summaries.
 .nh 3 "Binary Files"
 .LP
 RCS (version 5.6 and later) is able to cope with binary files.
-It does so by saving a whole copy of the file at each check-in.
+It does so by saving a whole copy of the file at each check\[hy]in.
 .LP
 If you want Aegis
 to transparently encode all such files, simply leave the
 \fIhistory_\%content_\%limitation\fP field unset.
 .LP
-If you want to check-in binary files, add the \f[CW]\-kb\fP option to
-each of the \f[CW]rcs -U\fP commands in the fields above, and also set
+If you want to check\[hy]in binary files, add the \f[CW]\-kb\fP option to
+each of the \f[CW]rcs \-U\fP commands in the fields above, and also set
 .E(
 history_content_limitation =
     binary_capable;
@@ -318,10 +318,11 @@ also be very destructive if, for example, such a string appeared in a
 uuencoded or MIME base 64 encoded file.
 .LP
 If you wish to prevent RCS from performing keyword expansion, used the
-\f[CW]rcs -kb\fP option.
+\f[CW]rcs \-kb\fP option.
 .LP
 If, however, you wish to keep using keyword expansion, set
 .E(
 history_tool_trashes_file = warning;
 .E)
 to cause Aegis to warn you, rather than fail.
+.\" vim: set ts=8 sw=4 et :

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "CVS Comparison"
 .PP
@@ -30,7 +29,7 @@ know, so I can correct this document.
 .nh 2 "Contributors"
 .PP
 In putting this chapter together, I solicited assistance from users
-on the \f[CW]aegis-users\fP mailing list.  Where you are reading
+on the \f[CW]aegis\[hy]users\fP mailing list.  Where you are reading
 their comments and not mine, you'll see it as a name at the end of
 the paragraph.
 .nh 2 "The Aegis Process"
@@ -65,7 +64,7 @@ They must also compile successfully, they must also pass tests.  Just as
 some database systems validate transactions before allowing a commit,
 so does Aegis require validation.
 .IP \(bu 2n
-In order to enforce this validation, no-one on the project has write
+In order to enforce this validation, no\[hy]one on the project has write
 permission to the repository.  Not even the staff authorized to commit
 changes.
 .IP \(bu 2n
@@ -84,7 +83,7 @@ in Aegis it is like the foundations of a house: essential, but usually
 unattractive and largely out of sight.
 .LP
 Aegis delegates as much as possible to other tools, both because they
-already exist and don't need re-writing, and also to provide developers
+already exist and don't need re\[hy]writing, and also to provide developers
 with maximum choice.  One of the easiest ways to think of Aegis, to
 misquote the X11 folks, is
 .ce 1
@@ -93,7 +92,7 @@ Aegis is about rules, not tools.
 because the rules (the process) is the \[lq]missing bit\[rq] Aegis was written
 to provide.
 The "management" part of software configuration management.
-.nh 2 "CVS has no Built-in Process"
+.nh 2 "CVS has no Built\[hy]in Process"
 .LP
 \[lq]By not having a process built into CVS, the team must work out a process
 separately.  Since you're not likely to do better than the Aegis process,
@@ -111,7 +110,7 @@ It works.\[rq]
 \[lq]For one thing, [Aegis] was actually designed, rather than just having
 accreted like CVS.  And if you are looking for code reviews and all
 that stuff, it's probably easier to do them with Aegis (with CVS it is
-a roll-your-own type affair).\[rq]
+a roll\[hy]your\[hy]own type affair).\[rq]
 \fIJim Kingdon <kingdon@panix7.panix.com>\fP
 (for many years, the chief CVS maintainer)
 .nh 2 "The Good, the Bad and the Ugly"
@@ -119,7 +118,7 @@ a roll-your-own type affair).\[rq]
 This section contains the answers to some frequently asked questions.
 .nh 3 "Why should I change from CVS to Aegis?"
 .IP \(bu 2n
-enforced review - damn important in a company environment
+enforced review \- damn important in a company environment
 \fIGus <gus@getsystems.com>\fP
 .IP \(bu 2n
 mandatory testing (this may be disabled, per project)
@@ -159,7 +158,7 @@ You can commit just a few files from your work area.
 .IP \(bu 2n
 Works with both Windows and Unix.
 Aegis still struggles with this, and only has weak support for Windows.
-.nh 3 "How do I do CVS-style remote development?"
+.nh 3 "How do I do CVS\[hy]style remote development?"
 .PP
 A comprehensive answer will require quite a
 bit of understanding how Aegis' development process works.
@@ -167,7 +166,7 @@ See the "Teamwork" portion of Aegis Howto and the "Geographically
 Distributed Development" chapter of the Aegis User Guide for more
 information.  Here, however, is a brief summary.
 .PP
-"CVS-style remote development" is a development model whereby there is one
+"CVS\[hy]style remote development" is a development model whereby there is one
 master "server" containing an authoritative copy of the repository, and
 developers run CVS "clients" which contain shadow copies of the repository
 which are locally updated by developers to add new code.  Periodically each
@@ -183,7 +182,7 @@ Aegis's remote development can emulate this model, although Aegis
 supports a much broader range of distributed development topologies,
 as well as providing security against a corrupted baseline.
 .PP
-Here is one way of doing CVS-style remote development using Aegis.  You
+Here is one way of doing CVS\[hy]style remote development using Aegis.  You
 need: one server machine running Aegis, many client machines running
 Aegis, and optionally but recommended a web server (this can be the
 same machine as the web server, or a separate machine).  Briefly, you
@@ -235,18 +234,18 @@ Note that if for any reason a client gets badly out of sync with the
 server (for instance if the client loses track of which aedist change sets
 it has already applied), the client can always download an aedist change set
 containing the server's entire project baseline, and apply this to the
-client's local repository (using the aedist -receive -nopatch option,
-which forces the received files to be applied as-is and not to try to
+client's local repository (using the aedist \-receive \-nopatch option,
+which forces the received files to be applied as\[hy]is and not to try to
 patch the files).  This will effectively synchronize the client's
 repository with the server's baseline, at which point the client can
 again download and apply incremental aedist change sets from the server.
 Also note
 that this situation can be avoided by keeping server and client well
-synchronized; one way of doing this is via e-mail automation, whereby
-the server automatically sends out aedist change sets via e-mail to all
+synchronized; one way of doing this is via e\[hy]mail automation, whereby
+the server automatically sends out aedist change sets via e\[hy]mail to all
 interested clients when the server integrates such a changeset.  The clients
 could have a procmail filter to automatically pipe such messages through
-aedist -receive, at which point the change sets from the server are
+aedist \-receive, at which point the change sets from the server are
 automatically unpacked and built, thus requiring only that they be
 reviewed and integrated.
 .PP
@@ -274,10 +273,10 @@ T};T{
 Fetch the latest complete version from
 a web server running the Aegis CGI interface.
 Process this downloaded \[lq].ae\[rq] file with
-\fIaedist --receive\fP,
+\fIaedist \-receive\fP,
 building and integrating with the usual Aegis process.
 T};T{
-Analogue of first-time remote \fIcvs co\fP.
+Analogue of first\[hy]time remote \fIcvs co\fP.
 T}
 T{
 Receive the latest change sets from the remote server
@@ -286,7 +285,7 @@ Fetch the latest complete version \fIor\fP
 the individual change sets of interest, from
 a web server runnjing the Aegis CGI interface.
 Process this downloaded \[lq].ae\[rq] file with
-\fIaedist --receive\fP,
+\fIaedist \-receive\fP,
 building and integrating with the usual Aegis process.
 T};T{
 Analogue of remote \fIcvs update\fP.
@@ -295,7 +294,7 @@ T{
 Send a change set to a remote server
 T};T{
 Use the
-\fIaedist --send\fP command, and send the to the project maintainer.
+\fIaedist \-send\fP command, and send the to the project maintainer.
 This is usually done by email.
 T};T{
 Analogue of remote \fIcvs commit\fP.
@@ -312,12 +311,13 @@ T}
 T{
 Receive and integrate changesets from contributors
 T};T{
-The project maintainer uses the \fIaedist --receive\fP command on change
-sets received via email, or \fIaepatch --receive\fP for ordinary
-patches, or \fIaetar --receive\fP for tarballs.  Automatic processing
+The project maintainer uses the \fIaedist \-receive\fP command on change
+sets received via email, or \fIaepatch \-receive\fP for ordinary
+patches, or \fIaetar \-receive\fP for tarballs.  Automatic processing
 via procmail is also possible, but authentication (\fIe.g.\fP GnuPG)
 is essential.
 T};T{
 Much like the usual \fIpatch\fP command.
 T}
 .TE
+.\" vim: set ts=8 sw=4 et :

@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AECVSSERVER_MODULE_CHANGE_H
@@ -24,7 +24,7 @@
 #include <libaegis/user.h>
 #include <aecvsserver/module.h>
 
-struct project_ty; // forward
+struct project; // forward
 struct string_ty; // forward
 
 /**
@@ -50,30 +50,30 @@ public:
 
     // See base class for documentation.
     void modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
-	input &contents);
+        input &contents);
 
     // See base class for documentation.
     bool checkin(server_ty *sp, string_ty *client_side,
-	string_ty *server_side);
+        string_ty *server_side);
 
     // See base class for documentation.
     bool update(server_ty *sp, string_ty *client_side,
-	string_ty *server_side, const options &opt);
+        string_ty *server_side, const options &opt);
 
     // See base class for documentation.
     bool add(server_ty *sp, string_ty *client_side,
-	string_ty *server_side, const options &opt);
+        string_ty *server_side, const options &opt);
 
     // See base class for documentation.
     bool remove(server_ty *sp, string_ty *client_side,
-	string_ty *server_side, const options &opt);
+        string_ty *server_side, const options &opt);
 
     // See base class for documentation.
     string_ty *calculate_canonical_name() const;
 
 private:
     change::pointer cp;
-    project_ty *pp;
+    project *pp;
     user_ty::pointer up;
 
     /**
@@ -102,3 +102,4 @@ private:
 module_ty *module_change_new(string_ty *projname, long change_number);
 
 #endif // AECVSSERVER_MODULE_CHANGE_H
+// vim: set ts=8 sw=4 et :

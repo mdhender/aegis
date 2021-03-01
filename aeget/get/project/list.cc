@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003-2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2003-2006, 2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program.  If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -57,25 +57,25 @@ get_project_list(void)
     num = 0;
     for (j = 0; j < name.nstrings; ++j)
     {
-	project_ty	*pp;
-	int		err;
+        project *pp;
+        int             err;
 
-	pp = project_alloc(name.string[j]);
-	pp->bind_existing();
+        pp = project_alloc(name.string[j]);
+        pp->bind_existing();
 
-	err = project_is_readable(pp);
-	if (err)
-	    continue;
+        err = project_is_readable(pp);
+        if (err)
+            continue;
 
-	printf("<tr class=\"%s-group\">", ((num / 3) & 1) ? "even" : "odd");
-	printf("<td valign=top>\n");
-	emit_project_href(pp, "menu");
-	html_encode_string(project_name_get(pp));
-	printf("</a>\n</td><td valign=top>\n");
-	html_encode_string(project_description_get(pp));
-	project_free(pp);
-	printf("\n</td></tr>\n");
-	++num;
+        printf("<tr class=\"%s-group\">", ((num / 3) & 1) ? "even" : "odd");
+        printf("<td valign=top>\n");
+        emit_project_href(pp, "menu");
+        html_encode_string(project_name_get(pp));
+        printf("</a>\n</td><td valign=top>\n");
+        html_encode_string(project_description_get(pp));
+        project_free(pp);
+        printf("\n</td></tr>\n");
+        ++num;
     }
 
     //
@@ -92,3 +92,6 @@ get_project_list(void)
     html_footer(0, 0);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

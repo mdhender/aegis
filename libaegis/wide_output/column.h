@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2002, 2004-2006, 2008 Peter Miller
+//      Copyright (C) 1999, 2002, 2004-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -51,14 +51,19 @@ public:
 private:
     /**
       * The constructor.  It is private on purpose, use the
-      * #create class method instead.
+      * create class method instead.
       */
     wide_output_column(int width, int length);
 
 public:
     /**
-      * The default constructor.  It is private on purpose, use the
-      * #create class method instead.
+      * The open class method is used to create a new dynamically
+      * allocated out[ut column.
+      *
+      * @param width
+      *     The width of file column, in printing characters.
+      * @param length
+      *     The length of the column. in lines (for pagination purposes).
       */
     static cpointer open(int width, int length);
 
@@ -107,3 +112,4 @@ private:
 };
 
 #endif // LIBAEGIS_WIDE_OUTPUT_COLUMN_H
+// vim: set ts=8 sw=4 et :

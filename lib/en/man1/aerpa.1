@@ -1,22 +1,22 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2004, 2006-2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH "\*(n) -Remove_Project_Alias" 1 \*(N) "Reference Manual" ""
 .SH NAME
 aegis remove project alias \- remove a project alias
@@ -42,18 +42,19 @@ remove a project alias.
 .PP
 The project alias \fImust\fP be given on the command line,
 the default project is not sufficient.
-.so z_alias.so
+.so lib/en/man1/z_alias.so
 .SH OPTIONS
 The following options are understood:
-.so o_help.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
 .SH ERRORS
 It is an error if the current user is not a project administrator.
 .br
 It is an error if the given name is not a project alias.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 \fIaenpa\fP(1)
 Create a new project alias.
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

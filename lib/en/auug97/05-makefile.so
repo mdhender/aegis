@@ -1,25 +1,24 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2001-2003, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 1998, 2001-2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Efficient Makefiles"
 The central theme of this paper is the
 .I semantic
-side-effects of artificially separating a \f(CWMakefile\fP into the
+side\[hy]effects of artificially separating a \f(CWMakefile\fP into the
 pieces necessary to perform a recursive \fImake\fP.
 However, once you have a large number of \f(CWMakefile\fPs,
 the speed at which
@@ -50,7 +49,7 @@ in memory.
 As an example of this, consider the following assignment:
 .TS
 box,center;
-lw(2.5i)f(CW).
+lf(CW).
 OBJ = main.o parse.o
 .TE
 Humans read this as the variable OBJ being assigned two filenames
@@ -91,7 +90,7 @@ OBJ = \e
     $(filter %.y,$(SRC)))
 .sp 0.2
 test: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .TE
 How many times will the shell command be executed?
 .B "Ouch!"
@@ -111,8 +110,8 @@ But it is worth looking at the other portions of that OBJ macro.
 Each time it is named, a huge amount of processing is performed:
 .IP \(bu 2n
 The argument to \fIshell\fP is a single string
-(all built-in-functions take a single string argument).
-The string is executed in a sub-shell,
+(all built\[hy]in\[hy]functions take a single string argument).
+The string is executed in a sub\[hy]shell,
 and the standard output of this command is read back in,
 translating newlines into spaces.
 The result is a single string.
@@ -120,23 +119,23 @@ The result is a single string.
 The argument to \fIfilter\fP is a single string.
 This argument is broken into two strings at the first comma.
 These two strings are then each broken into
-sub-strings separated by spaces.  The first set are the patterns, the
-second set are the filenames.  Then, for each of the pattern sub-strings,
-if a filename sub-string matches it, that filename is included in the
-output.  Once all of the output has been found, it is re-assembled into
-a single space-separated string.
+sub\[hy]strings separated by spaces.  The first set are the patterns, the
+second set are the filenames.  Then, for each of the pattern sub\[hy]strings,
+if a filename sub\[hy]string matches it, that filename is included in the
+output.  Once all of the output has been found, it is re\[hy]assembled into
+a single space\[hy]separated string.
 .IP \(bu 2n
 The argument to \fIpatsubst\fP is a single string.
 This argument is broken into three strings at the first and second commas.
-The third string is then broken into sub-strings separated by spaces,
+The third string is then broken into sub\[hy]strings separated by spaces,
 these are the filenames.
 Then, for each of the filenames which match the first string
 it is substituted according to the second string.
 If a filename does not match, it is passed through unchanged.
 Once all of the output has been generated,
-it is re-assembled into a single space-separated string.
+it is re\[hy]assembled into a single space\[hy]separated string.
 .LP
-Notice how many times those strings are disassembled and re-assembled.
+Notice how many times those strings are disassembled and re\[hy]assembled.
 Notice how many ways that happens.
 .I "This is slow."
 The example here names just two files
@@ -145,9 +144,9 @@ Doing it \fIfour\fP times
 becomes decidedly inefficient.
 .LP
 If you
-are using a dumb \fImake\fP that has no substitutions and no built-in
+are using a dumb \fImake\fP that has no substitutions and no built\[hy]in
 functions, this cannot bite you.  But a modern \fImake\fP has lots of
-built-in functions and can even invoke shell commands on-the-fly.
+built\[hy]in functions and can even invoke shell commands on\[hy]the\[hy]fly.
 The semantics of \fImake\fP's text manipulation is such that
 string manipulation in \fImake\fP is very CPU intensive, compared to
 performing the same string manipulations in C or AWK.
@@ -156,7 +155,7 @@ Modern
 .I make
 implementations have an
 immediate evaluation \[lq]\f(CW:=\fP\[rq] assignment operator.
-The above example can be re-written as
+The above example can be re\[hy]written as
 .TS
 box,center;
 lw(2.5i)f(CW).
@@ -170,7 +169,7 @@ OBJ := \e
     $(filter %.y,$(SRC)))
 .sp 0.2
 test: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .TE
 Note that \fIboth\fP assignments are immediate evaluation assignments.
 If the first were not, the shell command would always be executed twice.
@@ -196,12 +195,12 @@ so more rather than less doesn't greatly affect efficiency.
 .LP
 As an example of this, it is first necessary to describe a useful
 feature of GNU Make: once a \f(CWMakefile\fP has been read in,
-if any of its included files were out-of-date (or do not yet exist),
-they are re-built, and then
+if any of its included files were out\[hy]of\[hy]date (or do not yet exist),
+they are re\[hy]built, and then
 .I make
 starts again, which has the result that
 .I make
-is now working with up-to-date include files.
+is now working with up\[hy]to\[hy]date include files.
 This feature can be exploited to obtain automatic include file
 dependency tracking for C sources.
 The obvious way to implement it, however, has a subtle flaw.
@@ -212,7 +211,7 @@ SRC := $(wildcard *.c)
 OBJ := $(SRC:.c=.o)
 .sp 0.2
 test: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 include dependencies
 .sp 0.2
@@ -232,21 +231,21 @@ if you have a different compiler:
 box,center;
 lw(2.5i)f(CW).
 #!/bin/sh
-gcc -MM -MG "$@"
+gcc \-MM \-MG "$@"
 .TE
 This implementation of tracking C include dependencies
 has several serious flaws, but the one most commonly discovered
 is that the \f(CWdependencies\fP file does not, itself,
 depend on the C include files.
-That is, it is not re-built if one of the include files changes.
+That is, it is not re\[hy]built if one of the include files changes.
 There is no edge in the DAG joining the \f(CWdependencies\fP vertex to
 any of the include file vertices.
 If an include file changes to include another file (a nested include),
 the dependencies will not be recalculated, and potentially the C file
 will not be recompiled,
-and thus the program will not be re-built correctly.
+and thus the program will not be re\[hy]built correctly.
 .LP
-A classic build-too-little problem, caused by giving \fImake\fP
+A classic build\[hy]too\[hy]little problem, caused by giving \fImake\fP
 inadequate information, and thus causing it to build an inadequate DAG
 and reach the wrong conclusion.
 .LP
@@ -258,7 +257,7 @@ SRC := $(wildcard *.c)
 OBJ := $(SRC:.c=.o)
 .sp 0.2
 test: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 include dependencies
 .sp 0.2
@@ -268,21 +267,21 @@ dependencies: $(SRC)
   depend.sh $(CFLAGS) \e
     $(SRC) > $@
 .TE
-Now, even if the project is completely up-do-date,
-the dependencies will be re-built.
+Now, even if the project is completely up\[hy]do\[hy]date,
+the dependencies will be re\[hy]built.
 For a large project, this is very wasteful, and can be a major contributor
 to \fImake\fP taking \[lq]forever\[rq] to work out that nothing needs to
 be done.
 .LP
 There is a second problem, and that is that if any \fIone\fP of the C
 files changes,
-\fIall\fP of the C files will be re-scanned for include dependencies.
+\fIall\fP of the C files will be re\[hy]scanned for include dependencies.
 This is as inefficient as having a \f(CWMakefile\fP which reads
 .TS
 box,center;
 lw(2.5i)f(CW).
 prog: $(SRC)
-  $(CC) -o $@ $(SRC)
+  $(CC) \-o $@ $(SRC)
 .TE
 What is needed, in exact analogy to the C case,
 is to have an intermediate form.
@@ -297,7 +296,7 @@ SRC := $(wildcard *.c)
 OBJ := $(SRC:.c=.o)
 .sp 0.2
 test: $(OBJ)
-  $(CC) -o $@ $(OBJ)
+  $(CC) \-o $@ $(OBJ)
 .sp 0.2
 include $(OBJ:.o=.d)
 .sp 0.2
@@ -316,17 +315,17 @@ so do the dependency (\f(CW.d\fP) files.
 This means tinkering with the \f(CWdepend.sh\fP script again:
 .TS
 box,center;
-lw(2.5i)f(CW).
+lw(3i)f(CW).
 #!/bin/sh
-gcc -MM -MG "$@" |
-sed -e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
+gcc \-MM \-MG "$@" |
+sed \-e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
 .TE
 .LP
 This method of determining include file dependencies results in
 the \f(CWMakefile\fP including more files
 than the original method, but opening files is less expensive than
 rebuilding all of the dependencies every time.
-Typically a developer will edit one or two files before re-building;
+Typically a developer will edit one or two files before re\[hy]building;
 this method will rebuild the \fIexact\fP dependency file affected (or
 more than one, if you edited an include file).
 On balance, this will use less CPU, and less time.
@@ -347,12 +346,12 @@ DIR="$1"
 shift 1
 case "$DIR" in
 "" | ".")
-gcc -MM -MG "$@" |
-sed -e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
+gcc \-MM \-MG "$@" |
+sed \-e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
 ;;
 *)
-gcc -MM -MG "$@" |
-sed -e "s@^\e(.*\e)\e.o:@$DIR/\e1.d \e
+gcc \-MM \-MG "$@" |
+sed \-e "s@^\e(.*\e)\e.o:@$DIR/\e1.d \e
 $DIR/\e1.o:@"
 ;;
 esac
@@ -378,3 +377,4 @@ if the interpretation requires complex processing
 or performs unnecessary work, or both.
 A whole project \fImake\fP, on
 the other hand, only needs to interpret a single \f(CWMakefile\fP.
+.\" vim: set ts=8 sw=4 et :

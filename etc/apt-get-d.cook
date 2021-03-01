@@ -1,0 +1,91 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2012 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+apt-package-list = ;
+
+function apt-get-command =
+{
+    if [not [find_command [@1]]] then
+        apt-package-list += [@1];
+}
+
+function apt-get-package =
+{
+    if [not [collect dpkg -l | grep "'^ii  "[@1]" '" | wc -l || true]] then
+        apt-package-list += [@1];
+}
+
+/*
+ * Make sure the package we want are present
+ */
+if [find_command apt-get] then
+{
+    function apt-get-command cook;
+    function apt-get-command fhist; /* our history tool */
+    function apt-get-command tardy;
+
+    function apt-get-package autoconf;
+    function apt-get-package automake;
+    function apt-get-package bison;
+    function apt-get-package build-essential;
+    function apt-get-package bzip2;
+    function apt-get-package cdbs;
+    function apt-get-package coreutils; /* ptx, md5sum */
+    function apt-get-package cssc; /* for tests */
+    function apt-get-package cvs; /* for tests */
+    function apt-get-package debhelper;
+    function apt-get-package devscripts; /* debuild cmd */
+    function apt-get-package doxygen;
+    function apt-get-package dpkg-dev; /* dpkg-buildpackage cmd */
+    function apt-get-package ed; /* tests */
+    function apt-get-package exuberant-ctags; /* ctags cmd */
+    function apt-get-package flex;
+    function apt-get-package gawk;
+    function apt-get-package gettext; /* xgettext cmd */
+    function apt-get-package ghostscript; /* ps2pdf */
+    function apt-get-package groff;
+    function apt-get-package imagemagick; /* convert(1) */
+    function apt-get-package iso-codes; /* for validating locale names */
+    function apt-get-package libbz2-dev;
+    function apt-get-package libcap-dev;
+    function apt-get-package libcurl4-gnutls-dev;
+    function apt-get-package libmagic-dev;
+    function apt-get-package libxml2-dev;
+    function apt-get-package lintian;
+    function apt-get-package linux-libc-dev;
+    function apt-get-package perl;
+    function apt-get-package pngcrush;
+    function apt-get-package po-debconf;
+    function apt-get-package psutils; /* psselect */
+    function apt-get-package rcs; /* for tests */
+    function apt-get-package subversion; /* for tests */
+    function apt-get-package tar;
+    function apt-get-package uuid-dev;
+    function apt-get-package wdg-html-validator; /* for building web pages */
+    function apt-get-package zlib1g-dev;
+
+    if [count [apt-package-list]] then
+    {
+        sudo apt-get install -y [apt-package-list]
+            < /dev/tty > /dev/tty 2>&1
+            || true;
+    }
+}
+
+
+/* vim: set ts=8 sw=4 et : */

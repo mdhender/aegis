@@ -1,36 +1,35 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005, 2006, 2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2005, 2006, 2008, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
 .ad l
 .hy 0
+.nf
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN" "html/dtd/4.0/loose.dtd">
 <html><head>
-.br
 <link rel="icon" href="../favicon.ico" type="image/x-icon">
-.br
 <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-.br
 <title>
 CM Crossroads
-</title></head><body bgcolor="#ffffff"><h1 align=center>
-<img src="../aegis.png" align=left>
-<img src="../missiku/world_2.png" align=right>
+</title></head><body bgcolor="#ffffff">
+<h1 align="center" >
+<img src="../aegis.png" align="left" alt="" />
+<img src="../missiku/world_2.png" align="right" alt="" />
 <a href="http://www.cmcrossroads.com/">
 CM Crossroads</a>
 </h1>
@@ -48,7 +47,6 @@ result, open source alternatives are rarely mentioned.
 With rare exceptions, don't mention <i>any</i> OSS VC/SCM other than CVS.
 <br clear=all>
 <dl>
-.br
 .\" ------------------------------------------------------------------------
 <dt>
 <a href="http://www.cmcrossroads.com/article/31626">
@@ -59,7 +57,6 @@ odd errors, stops the -n option from working and prevents speedy
 parallel Make. It can even cause Make to do the wrong work and update an
 up-to-date file.
 <p>
-.br
 .\" ------------------------------------------------------------------------
 <dt>
 <a href="http://www.cmcrossroads.com/article/32601">
@@ -71,7 +68,6 @@ whether the build you are doing creates debuggable or release code.
 The relevance for Aegis users is that this can be automated by different
 <i>integration_build_command</i> and <i>build_command</i> fields of
 the project configuration file.
-.br
 .\" ------------------------------------------------------------------------
 <dt>
 <a href="http://software.ericsink.com/scm/source_control.html">
@@ -82,7 +78,6 @@ don't teach people how to do source control.  We need some materials
 that explain how source control is done.  My goal for this series of
 articles is to create a comprehensive guide to help meet this need.
 <br>
-.br
 (Part 1, <a href="http://www.cmcrossroads.com/article/33848">What is
 Source Control?</a>;
 Part 2, <a href="http://www.cmcrossroads.com/article/35270">A Tale of
@@ -92,7 +87,6 @@ Checkins</a>;
 Part 4, <a href="http://www.cmcrossroads.com/article/37515">
 File Merge</a>)
 <p>
-.br
 .\" ------------------------------------------------------------------------
 <dt>
 <a href="http://www.cmcrossroads.com/article/35661">
@@ -101,7 +95,6 @@ Integrating a change at a time needs a tool which supports change sets.
 More than that, it must support incremental development environments,
 incremental impact analysis and the ability to roll back changes easily.
 <p>
-.br
 .\" ------------------------------------------------------------------------
 <dt>
 <a href="http://www.cmcrossroads.com/article/35661">The Role of
@@ -112,7 +105,6 @@ greatest challenges of team software development is integrating the
 changes made by several developers, each completing coding tasks in an
 isolated environment.
 <p>
-.br
 .\" ------------------------------------------------------------------------
 <dt>
 <a href="http://www.cmcrossroads.com/article/35638">
@@ -121,7 +113,7 @@ The term continuous integration is getting a bit of attention these
 days. It refers to the process of integrating often (or immediately) to
 reduce integration effort, complexity, and pain and to make changes more
 readily available to others.
-.br
 </dl>
-.so footer2.so
+.so web/footer2.so
 </body></html>
+.\" vim: set ts=8 sw=4 et :

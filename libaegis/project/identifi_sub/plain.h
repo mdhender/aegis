@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_PROJECT_IDENTIFI_SUB_PLAIN_H
@@ -48,7 +48,7 @@ public:
     void command_line_check(usage_t);
 
     // See base class for documentation.
-    project_ty *get_pp();
+    project *get_pp();
 
     // See base class for documentation.
     user_ty::pointer get_up();
@@ -61,7 +61,7 @@ public:
 
     // See base class for documentation.
     void parse_change_with_branch(long &change_number, const char *&branch_arg,
-	usage_t usage);
+        usage_t usage);
 
     // See base class for documentation.
     bool set() const;
@@ -77,7 +77,7 @@ private:
       * The pp instance variable is used to remember which project we
       * are bound to.
       */
-    project_ty *pp;
+    project *pp;
 
     /**
       * The up instance variable is used to remember which user we are
@@ -94,7 +94,8 @@ private:
       * The assignment operator.  Do not use.
       */
     project_identifier_subset_plain &operator=(
-	const project_identifier_subset_plain &);
+        const project_identifier_subset_plain &);
 };
 
 #endif // LIBAEGIS_PROJECT_IDENTIFI_SUB_PLAIN_H
+// vim: set ts=8 sw=4 et :

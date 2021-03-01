@@ -1,30 +1,29 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#include <common/ac/assert.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
+#include <common/symtab.h>
 
 #include <aecvsserver/module/change.h>
 #include <aecvsserver/module/cvsroot.h>
 #include <aecvsserver/module/project.h>
-#include <common/symtab.h>
 
 
 static bool
@@ -40,15 +39,15 @@ extract_change_number(string_ty **project_name_p, long *change_number_p)
         memmem(project_name->str_text, project_name->str_length, ".C", 2);
     if (!cp)
     {
-	cp =
+        cp =
             (const char *)
             memmem(project_name->str_text, project_name->str_length, ".c", 2);
     }
     if (!cp)
-	return false;
+        return false;
     change_number = strtol(cp + 2, &end, 10);
     if (end == cp + 2 || *end)
-	return false;
+        return false;
 
     //
     // We have a change number.
@@ -57,7 +56,7 @@ extract_change_number(string_ty **project_name_p, long *change_number_p)
     //
     *change_number_p = change_number;
     *project_name_p =
-	str_n_from_c(project_name->str_text, cp - project_name->str_text);
+        str_n_from_c(project_name->str_text, cp - project_name->str_text);
     return true;
 }
 
@@ -80,8 +79,8 @@ module::find(string_ty *name)
     static symtab_ty *stp;
     if (!stp)
     {
-	stp = new symtab_ty(5);
-	stp->set_reap(reaper);
+        stp = new symtab_ty(5);
+        stp->set_reap(reaper);
     }
     module_ty *mp = (module_ty *)stp->query(name);
     if (mp)
@@ -89,10 +88,10 @@ module::find(string_ty *name)
         //
         // We increase the reference count, so that the symbol table
         // always has a valid reference.
-	//
-	assert(mp->reference_count_valid());
-	mp->reference_count_up();
-	return mp;
+        //
+        assert(mp->reference_count_valid());
+        mp->reference_count_up();
+        return mp;
     }
 
     //
@@ -103,11 +102,11 @@ module::find(string_ty *name)
         mp = new module_cvsroot();
     else
     {
-	long change_number = 0;
-	if (extract_change_number(&name, &change_number))
-	    mp = module_change_new(name, change_number);
-	else
-	    mp = module_project_new(name);
+        long change_number = 0;
+        if (extract_change_number(&name, &change_number))
+            mp = module_change_new(name, change_number);
+        else
+            mp = module_project_new(name);
     }
 
     //
@@ -120,12 +119,12 @@ module::find(string_ty *name)
     string_ty *name2 = mp->name();
     if (!str_equal(name, name2))
     {
-	//
+        //
         // This isn't supposed to happen, because the client calls
         // expand-modules forst.
-	//
-	mp->reference_count_up();
-	stp->assign(name2, mp);
+        //
+        mp->reference_count_up();
+        stp->assign(name2, mp);
     }
 
     //
@@ -150,3 +149,6 @@ module::find_trim(string_ty *arg)
     str_free(name);
     return m;
 }
+
+
+// vim: set ts=8 sw=4 et :

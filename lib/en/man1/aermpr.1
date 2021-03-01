@@ -1,48 +1,47 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 1998, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -ReMove_PRoject" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-ReMove_PRoject" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis remove project \- remove project
 .XX "aermpr(1)" "remove project"
 .SH SYNOPSIS
 .B \*(n)
-.B -ReMove_Project
-.I project-name
+.B \-ReMove_Project
+.I project\[hy]name
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -ReMove_Project
-.B -List
+.B \-ReMove_Project
+.B \-List
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -ReMove_Project
-.B -Help
+.B \-ReMove_Project
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -ReMove_PRoject
+.I \-ReMove_PRoject
 command is used to
 remove a project, either entirely,
 or just from \*(n)' supervision.
@@ -50,22 +49,22 @@ or just from \*(n)' supervision.
 Project aliases to the removed project are also removed.
 .SH OPTIONS
 The following options are understood:
-.so o_help.so
-.so o_interact.so
-.so o_keep.so
-.so o_lib.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_interact.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_lib.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aermpr '\*(n) -rmpr \e!* -v'
-sh$	aermpr(){\*(n) -rmpr "$@" -v}
+csh%    alias aermpr '\*(n) \-rmpr \e!* \-v'
+sh$     aermpr(){\*(n) \-rmpr "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -78,7 +77,7 @@ inclusive.
 .br
 It is an error if
 the current user is not an administrator.
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -88,4 +87,5 @@ create a new project
 .TP 8n
 .IR aenrls (1)
 create a new project from an existing project
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

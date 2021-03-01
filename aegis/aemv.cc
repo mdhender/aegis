@@ -1,28 +1,29 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2009 Peter Miller
-//	Copyright (C) 2005, 2008, 2009 Walter Franzini
+// aegis - project change supervisor
+// Copyright (C) 1993-1999, 2001-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2005, 2008, 2009 Walter Franzini
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 
 #include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/project/files.h>
@@ -41,6 +42,7 @@
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
+#include <libaegis/search_path/base_get.h>
 #include <libaegis/sub.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
@@ -56,9 +58,9 @@ move_file_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -MoVe_file [ <option>... ] <old-name> <new-name>...\n",
-	progname
+        stderr,
+        "usage: %s -MoVe_file [ <option>... ] <old-name> <new-name>...\n",
+        progname
     );
     fprintf(stderr, "       %s -MoVe_file -List [ <option>... ]\n", progname);
     fprintf(stderr, "       %s -MoVe_file -Help\n", progname);
@@ -90,58 +92,58 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     string_ty *new_name, string_list_ty *wl_nf, string_list_ty *wl_nt,
     string_list_ty *wl_rm)
 {
-    project_ty	    *pp;
+    project      *pp;
     fstate_src_ty   *p_src_data;
     fstate_src_ty   *pn_src_data;
     fstate_src_ty   *c_src_data;
-    string_ty	    *from;
-    string_ty	    *to;
-    string_ty	    *dd;
+    string_ty       *from;
+    string_ty       *to;
+    string_ty       *dd;
 
     pp = cp->pp;
 
     //
     // the old file may not be in the change already
     //
-    if (change_file_find(cp, old_name, view_path_first))
+    if (cp->file_find(nstring(old_name), view_path_first))
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", old_name);
-	change_fatal(cp, scp, i18n("file $filename dup"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", old_name);
+        change_fatal(cp, scp, i18n("file $filename dup"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
     // the old file must be in the baseline
     //
-    p_src_data = project_file_find(pp, old_name, view_path_extreme);
+    p_src_data = pp->file_find(old_name, view_path_extreme);
     if (!p_src_data)
     {
-	p_src_data = pp->file_find_fuzzy(old_name, view_path_extreme);
-	if (p_src_data)
-	{
-	    sub_context_ty  *scp;
+        p_src_data = pp->file_find_fuzzy(old_name, view_path_extreme);
+        if (p_src_data)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", old_name);
-	    sub_var_set_string(scp, "Guess", p_src_data->file_name);
-	    project_fatal(pp, scp, i18n("no $filename, closest is $guess"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-	else
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", old_name);
+            sub_var_set_string(scp, "Guess", p_src_data->file_name);
+            project_fatal(pp, scp, i18n("no $filename, closest is $guess"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        else
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", old_name);
-	    project_fatal(pp, scp, i18n("no $filename"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", old_name);
+            project_fatal(pp, scp, i18n("no $filename"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
     }
 
     //
@@ -149,13 +151,13 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     //
     if (str_equal(old_name, new_name))
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", old_name);
-	change_fatal(cp, scp, i18n("nil move $filename"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", old_name);
+        change_fatal(cp, scp, i18n("nil move $filename"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -180,7 +182,7 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
         sub_var_set_string(scp, "File_Name2", conflicting_name);
         sub_var_optional(scp, "File_Name2");
         change_fatal
-	(
+        (
             cp,
             scp,
             i18n("file $filename directory name conflict")
@@ -198,7 +200,7 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
         sub_var_set_string(scp, "File_Name2", conflicting_name);
         sub_var_optional(scp, "File_Name2");
         project_fatal
-	(
+        (
             pp,
             scp,
             i18n("file $filename directory name conflict")
@@ -210,30 +212,30 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     //
     // the new file must not already be part of the change
     //
-    if (change_file_find(cp, new_name, view_path_first))
+    if (cp->file_find(nstring(new_name), view_path_first))
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", new_name);
-	change_fatal(cp, scp, i18n("file $filename dup"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", new_name);
+        change_fatal(cp, scp, i18n("file $filename dup"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
     // the new file must not be part of the baseline
     //
-    pn_src_data = project_file_find(pp, new_name, view_path_extreme);
+    pn_src_data = pp->file_find(new_name, view_path_extreme);
     if (pn_src_data)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", new_name);
-	project_fatal(pp, scp, i18n("$filename in baseline"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", new_name);
+        project_fatal(pp, scp, i18n("$filename in baseline"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -246,14 +248,14 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     assert(p_src_data->edit);
     assert(p_src_data->edit->revision);
     if (p_src_data->edit)
-	c_src_data->edit_origin = history_version_copy(p_src_data->edit);
+        c_src_data->edit_origin = history_version_copy(p_src_data->edit);
 
     c_src_data = cp->file_new(new_name);
     c_src_data->action = file_action_create;
     change_file_copy_basic_attributes(c_src_data, p_src_data);
     c_src_data->move = str_copy(old_name);
     if (p_src_data->edit && c_src_data->uuid)
-	c_src_data->edit_origin = history_version_copy(p_src_data->edit);
+        c_src_data->edit_origin = history_version_copy(p_src_data->edit);
 
     //
     // Add the file to the appropriate notification lists.
@@ -263,14 +265,14 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     {
     case file_usage_test:
     case file_usage_manual_test:
-	wl_nt->push_back(new_name);
-	break;
+        wl_nt->push_back(new_name);
+        break;
 
     case file_usage_source:
     case file_usage_config:
     case file_usage_build:
-	wl_nf->push_back(new_name);
-	break;
+        wl_nf->push_back(new_name);
+        break;
     }
 
     //
@@ -279,13 +281,13 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     switch (c_src_data->usage)
     {
     case file_usage_build:
-	return;
+        return;
 
     case file_usage_source:
     case file_usage_config:
     case file_usage_test:
     case file_usage_manual_test:
-	break;
+        break;
     }
 
     //
@@ -294,7 +296,7 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     //
     from = project_file_path(pp, old_name);
     assert(from);
-    to = change_file_path(cp, new_name);
+    to = cp->file_path(new_name);
     assert(to);
     dd = change_development_directory_get(cp, 0);
 
@@ -308,7 +310,7 @@ move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     os_mkdir_between(dd, new_name, 02755);
     undo_unlink_errok(to);
     if (os_exists(to))
-	os_unlink(to);
+        os_unlink(to);
     copy_whole_file(from, to, 0);
     up->become_end();
     str_free(from);
@@ -325,19 +327,17 @@ static void
 move_file_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *s1;
-    string_ty	    *s2;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
+    string_ty       *s1;
+    string_ty       *s2;
+    string_ty       *project_name;
+    project      *pp;
+    long            change_number;
     change::pointer cp;
     log_style_ty    log_style;
     user_ty::pointer up;
-    size_t	    k;
+    size_t          k;
     string_list_ty  search_path;
     move_list_ty    ml;
-    int		    based;
-    string_ty	    *base;
     size_t          j;
     size_t          i;
 
@@ -350,59 +350,59 @@ move_file_main(void)
     move_list_constructor(&ml);
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(move_file_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(move_file_usage);
+            continue;
 
-	case arglex_token_string:
-	    s1 = str_from_c(arglex_value.alv_string);
+        case arglex_token_string:
+            s1 = str_from_c(arglex_value.alv_string);
             wl_args.push_back(s1);
             str_free(s1);
             break;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, move_file_usage);
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change(&project_name, &change_number, move_file_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, move_file_usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, move_file_usage);
+            continue;
 
-	case arglex_token_nolog:
-	    if (log_style == log_style_none)
-		duplicate_option(move_file_usage);
-	    log_style = log_style_none;
-	    break;
+        case arglex_token_nolog:
+            if (log_style == log_style_none)
+                duplicate_option(move_file_usage);
+            log_style = log_style_none;
+            break;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_ty::lock_wait_argument(move_file_usage);
-	    break;
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_ty::lock_wait_argument(move_file_usage);
+            break;
 
-	case arglex_token_whiteout:
-	case arglex_token_whiteout_not:
-	    user_ty::whiteout_argument(move_file_usage);
-	    break;
+        case arglex_token_whiteout:
+        case arglex_token_whiteout_not:
+            user_ty::whiteout_argument(move_file_usage);
+            break;
 
-	case arglex_token_base_relative:
-	case arglex_token_current_relative:
-	    user_ty::relative_filename_preference_argument(move_file_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_base_relative:
+        case arglex_token_current_relative:
+            user_ty::relative_filename_preference_argument(move_file_usage);
+            break;
+        }
+        arglex();
     }
 
     if (wl_args.nstrings < 2)
     {
-	error_intl(0, i18n("too few files named"));
-	move_file_usage();
+        error_intl(0, i18n("too few files named"));
+        move_file_usage();
     }
     // It is an error if the user supply an odd number of
     // files/directories.
@@ -419,7 +419,7 @@ move_file_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -434,7 +434,7 @@ move_file_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = up->default_change(pp);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -449,11 +449,11 @@ move_file_main(void)
     // It is an error if the change is not assigned to the current user.
     //
     if (!cp->is_being_developed())
-	change_fatal(cp, 0, i18n("bad mv state"));
-    if (change_is_a_branch(cp))
-	change_fatal(cp, 0, i18n("bad branch cp"));
-    if (nstring(change_developer_name(cp)) != up->name())
-	change_fatal(cp, 0, i18n("not developer"));
+        change_fatal(cp, 0, i18n("bad mv state"));
+    if (cp->is_a_branch())
+        change_fatal(cp, 0, i18n("bad branch cp"));
+    if (nstring(cp->developer_name()) != up->name())
+        change_fatal(cp, 0, i18n("not developer"));
 
     //
     // resolve the path of each file
@@ -468,32 +468,12 @@ move_file_main(void)
     // and any comparison of paths is done on this "system idea"
     // of the pathname.
     //
-    change_search_path_get(cp, &search_path, 1);
+    cp->search_path_get(&search_path, true);
 
     //
     // Find the base for relative filenames.
     //
-    based =
-	(
-	    search_path.nstrings >= 1
-	&&
-	    (
-		up->relative_filename_preference
-		(
-		    uconf_relative_filename_preference_current
-		)
-	    ==
-		uconf_relative_filename_preference_base
-	    )
-	);
-    if (based)
-	base = search_path.string[0];
-    else
-    {
-	os_become_orig();
-	base = os_curdir();
-	os_become_undo();
-    }
+    nstring base(search_path_base_get(search_path, up));
 
     for (i = 0; i < (wl_args.nstrings - 1); ++i)
     {
@@ -514,7 +494,7 @@ move_file_main(void)
         //
         if (old_name->str_text[0] != '/')
         {
-            s1 = os_path_join(base, old_name);
+            s1 = os_path_join(base.get_ref(), old_name);
             str_free(old_name);
             old_name = s1;
         }
@@ -551,7 +531,7 @@ move_file_main(void)
         //
         if (new_name->str_text[0] != '/')
         {
-            s1 = os_path_join(base, new_name);
+            s1 = os_path_join(base.get_ref(), new_name);
             str_free(new_name);
             new_name = s1;
         }
@@ -569,7 +549,7 @@ move_file_main(void)
         {
             s2 = os_below_dir(search_path.string[k], new_name);
             if (s2)
-	    break;
+            break;
         }
         if (!s2)
         {
@@ -584,19 +564,19 @@ move_file_main(void)
 
         //
         // If the old file was a directory, then move all of its
-        // contents into the new directory.	 If the old file was not a
-        // directory, just move it.	 All checks to see if the action is
+        // contents into the new directory.      If the old file was not a
+        // directory, just move it.      All checks to see if the action is
         // valid are done in the inner function.
         //
-	string_list_ty wl_in;
-        project_file_directory_query(pp, old_name, &wl_in, 0, view_path_simple);
+        string_list_ty wl_in;
+        pp->file_directory_query(old_name, &wl_in, 0, view_path_simple);
         if (wl_in.nstrings)
         {
             for (j = 0; j < wl_in.nstrings; ++j)
             {
-                string_ty	    *filename_old;
-                string_ty	    *filename_tail;
-                string_ty	    *filename_new;
+                string_ty           *filename_old;
+                string_ty           *filename_tail;
+                string_ty           *filename_new;
 
                 //
                 // Note: old_name and new_name will be empty
@@ -608,7 +588,7 @@ move_file_main(void)
                 {
                     filename_tail = os_below_dir(old_name, filename_old);
                     if (!filename_tail)
-		    this_is_a_bug();
+                    this_is_a_bug();
                 }
                 else
                 {
@@ -680,7 +660,7 @@ move_file_main(void)
     //
     // release the locks
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     commit();
     lock_release();
 
@@ -706,9 +686,9 @@ move_file_main(void)
     log_open(change_logfile_get(cp), up, log_style);
     assert(wl_nf.nstrings > 0 || wl_nt.nstrings > 0);
     if (wl_nf.nstrings)
-	cp->run_new_file_command(&wl_nf, up);
+        cp->run_new_file_command(&wl_nf, up);
     if (wl_nt.nstrings)
-	cp->run_new_file_command(&wl_nt, up);
+        cp->run_new_file_command(&wl_nt, up);
     assert(wl_rm.nstrings > 0);
     assert(wl_rm.nstrings == wl_nf.nstrings + wl_nt.nstrings);
     cp->run_remove_file_command(&wl_rm, up);
@@ -725,11 +705,14 @@ move_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, move_file_help, 0 },
-	{ arglex_token_list, move_file_list, 0 },
+        { arglex_token_help, move_file_help, 0 },
+        { arglex_token_list, move_file_list, 0 },
     };
 
     trace(("move_file()\n{\n"));
     arglex_dispatch(dispatch, SIZEOF(dispatch), move_file_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

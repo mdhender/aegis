@@ -1,24 +1,26 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2005, 2006, 2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2005, 2006, 2008, 2009, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_RFC822_H
 #define LIBAEGIS_RFC822_H
+
+#include <common/ac/sys/types.h>
 
 #include <common/symtab/template.h>
 #include <libaegis/output.h>
@@ -53,6 +55,16 @@ public:
       * The assignment operator.
       */
     rfc822 &operator=(const rfc822 &arg);
+
+    /**
+      * The set method is used to insert a record into the database.
+      *
+      * @param name
+      *     The name of the record to set.
+      * @param value
+      *     The value of the record being set.
+      */
+    void set(const nstring &name, const char *value);
 
     /**
       * The set method is used to insert a record into the database.
@@ -97,6 +109,23 @@ public:
       *     The value of the record being set.
       */
     void set(const nstring &name, unsigned long value);
+
+    /**
+      * The set_off_t method is a convenience function which reformats
+      * the off_t value as a string, and then sets that value.
+      *
+      * The name needs to be mention the type to avoid portability and
+      * compilation problems:
+      * - on 32 bit systems without LFS off_t is probably a long;
+      * - on 32 bit systems with LFS off_t is probably a long long;
+      * - on 64 bit systems off_t is probably a long again.
+      *
+      * @param name
+      *     The name of the record to set.
+      * @param value
+      *     The value of the record being set.
+      */
+    void set_off_t(const nstring &name, off_t value);
 
     /**
       * The set method is a convenience function which reformats the
@@ -171,12 +200,30 @@ public:
     unsigned long get_ulong(const nstring &name);
 
     /**
+      * The get_off_t method is used to get the named header value, as an
+      * off_t.
+      *
+      * @param name
+      *     The name of the record to get.
+      * @returns
+      *     The record's value.
+      * @note
+      *     Values which are not numbers will be silently converted to
+      *     zero.
+      */
+    off_t get_off_t(const nstring &name);
+
+
+    /**
       * The load method is used to load the database contents by reading
       * the given input for and RFC 822 formatted header.  It stops
       * after reading a blank line.
       *
       * @param src
       *     The input to read the data from.
+      * @param maybe_not
+      *     false if a header <i>must</i> be present,
+      *     true if it is acceptable for the header to be absent.
       */
     void load(input &src, bool maybe_not = false);
 
@@ -248,3 +295,4 @@ private:
 };
 
 #endif // LIBAEGIS_RFC822_H
+// vim: set ts=8 sw=4 et :

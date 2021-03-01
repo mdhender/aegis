@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Zusammenfassung"
 Dieser Artikel erl\*:autert einige miteinander in Beziehung
@@ -23,7 +22,7 @@ allgemein angenommen, um Make anhaftende
 Unzul\*:anglichkeiten handelt, sondern dass sie eine Folge
 davon sind, dass Make falsche Informationen eingegben
 wurden. Hier arbeitet das alte "Garbage in, Garbage
-out"-Prinzip (wo M\*:ull hineinkommt, kommt M\*:ull
+out"\[hy]Prinzip (wo M\*:ull hineinkommt, kommt M\*:ull
 heraus). Der Fehler besteht darin, dass man das \f[CW]Makefile\fP
 in unvollst\*:andige Teilst\*:ucke zerlegt, denn Make kann nur
 mit einem vollst\*:andigen DAG fehlerfrei arbeiten.
@@ -39,14 +38,14 @@ Beziehungen zwischen Dateien im gleichen
 Verzeichniss. Daraus folgt, dass es genau ein \f[CW]Makefile\fP
 f\*:ur ein Projekt geben sollte, aber der Gro\(ssteil der
 Beschreibung kann man durch Verwendung von
-Make-Include-Dateien in den einzelnen Verzeichnissen,
+Make\[hy]Include\[hy]Dateien in den einzelnen Verzeichnissen,
 die die Teilmenge der Projektdateien in den jeweiligen
 Verzeichnissen beschreiben, handhaben. Dieses Vorgehen
 ist genauso modular, als w\*:are ein \f[CW]Makefile\fP in jedem
 Verzeichnis.
 .LP
 Es wurde gezeigt, dass bei Verwendung des
-Ganzprojekt-Make eine Entwicklungsproduktion und eine
+Ganzprojekt\[hy]Make eine Entwicklungsproduktion und eine
 Vollproduktion gleich kurze Laufzeiten haben. Angesichts
 der gleichen Laufzeiten wiegen die durch die genaueren
 Abh\*:angigkeiten erzielten Vorteile umso schwerer und
@@ -56,7 +55,7 @@ w\*:urde.
 .nh 2 "Projekt\*:ubergreifende Abh\*:angigkeiten"
 In Unternehmen mit einer starken Neigung zur
 Mehrfachverwendung kann die Verwirklichung eines
-Ganzprojekt-Makes eine Herausforderung darstellen. Sich
+Ganzprojekt\[hy]Makes eine Herausforderung darstellen. Sich
 dieser Herausforderung zu stellen, mag erfordern, dass
 man sich einen Gesamteindruck der Situation verschafft.
 .IP \(bu 2n
@@ -69,7 +68,7 @@ nicht). Die Abh\*:angigkeiten m\*:ussen ausdr\*:ucklich angegeben
 werden und \*:Anderungen des Moduls ziehen nach sich, dass
 beide Programme entsprechend neu \*:ubersetzt und neu
 gebunden werden m\*:ussen. Vereinigt man sie alle in einem
-einzigen Projekt, kann das Ganzprojekt-Make dies
+einzigen Projekt, kann das Ganzprojekt\[hy]Make dies
 leisten.
 .IP \(bu 2n
 Es ist m\*:oglich, dass ein Modul von zwei Projekten
@@ -80,21 +79,21 @@ aufnehmen kann. Die Abh\*:angigkeiten m\*:ussen ausdr\*:ucklich
 angegeben werden und \*:Anderungen am Modul ziehen nach
 sich, dass beide Pojekte entsprechend neu \*:ubersetzt und
 neu gebunden werden m\*:ussen. Vereinigt man sie alle in
-einem einzigen Projekt, kann das Ganzprojekt-Make dies
+einem einzigen Projekt, kann das Ganzprojekt\[hy]Make dies
 leisten.
 .IP \(bu 2n
 Es ist normal, die Kanten zwischen Ihrem Projekt und
 ihrem Betriebssystem oder dritten installierten
 Werkzeugen wegzulassen. Das ist so normal, dass sie in
 den \f[CW]Makefiles\fP in diesem Artikel und bei den
-vordefinierten Regeln im Make-Programm ignoriert
+vordefinierten Regeln im Make\[hy]Programm ignoriert
 werden. Module, die von mehreren Projekten gemeinsam
 genutzt werden, k\*:onnten in diese Kategorie
 fallen. Werden sie ge\*:andert, bauen Sie Ihre Projekte
 extra neu oder beziehen die \*:Anderungen stillschweigend
 bei der n\*:achsten Produktion mit ein. In beiden F\*:allen
 geben Sie die Abh\*:angigkeiten nicht ausdr\*:ucklich an und
-das Ganzprojekt-Make findet keine Anwendung.
+das Ganzprojekt\[hy]Make findet keine Anwendung.
 .IP \(bu 2n
 Es ist der Wiederverwendung m\*:oglicherweise dienlich,
 wenn das Modul als Schablone verwendet und Abweichnungen
@@ -121,7 +120,7 @@ wenn Sie rekursives Make beibehalten. Aber das ist nicht
 das Anliegen dieses Artikels, eher ein n\*:utzlicher
 Umweg. Die Hauptaussage ist, dass Sie korrektere
 Produktionen Ihres Projekts erhalten, wenn Sie das
-Ganzprojekt-Make anstatt des rekursiven Makes anwenden.
+Ganzprojekt\[hy]Make anstatt des rekursiven Makes anwenden.
 .IP \(bu 2n
 Make bedarf nicht mehr und oft sogar weniger Zeit, um
 herauszufinden, das es nichts zu tun braucht.
@@ -137,10 +136,10 @@ Die Pflege des \f[CW]Makefiles\fP ist nicht aufwendiger, oft
 sogar geringer.
 .LP
 Die angeblichen Nachteile der Anwendung eines
-Ganzprojekt-Makes gegen\*:uber dem rekursiven Make sind oft
+Ganzprojekt\[hy]Makes gegen\*:uber dem rekursiven Make sind oft
 nicht \*:uberpr\*:uft. Wieviel Zeit wird damit verbracht,
 herauszufinden, warum Make etwas Unerwartetes getan hat?
-Wieviel Zeit wird damit verbracht, an dem Build-Prozess
+Wieviel Zeit wird damit verbracht, an dem Build\[hy]Prozess
 herumzubasteln? Diese T\*:atigkeiten werden oft als
 normaler Entwicklungsaufwand angesehen.
 .LP
@@ -148,8 +147,9 @@ Die Projektproduktion ist eine wesentliche
 T\*:atigkeit. Wenn sie schlecht funktioniert, werden auch
 die Entwicklung, die Fehlerbehebung und das Testen in
 Mitleidenschaft gezogen. Die Projektproduktion sollte so
-einfach sein, dass sie der neuste Mitarbeiter - ohne eine
-noch so kurze schriftliche Anleitung - sofort
+einfach sein, dass sie der neuste Mitarbeiter \- ohne eine
+noch so kurze schriftliche Anleitung \- sofort
 durchf\*:uhren kann. Sie sollte so einfach sein, dass sie
 so gut wie keinen Entwicklungsaufwand erfordert. Ist Ihr
 Produktionsprozess so einfach?
+.\" vim: set ts=8 sw=4 et :

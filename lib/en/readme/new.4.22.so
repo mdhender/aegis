@@ -1,24 +1,24 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2006, 2008 Peter Miller
-.\"	Copyright (C) 2007 Walter Franzini
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2006, 2008, 2010, 2012 Peter Miller
+.\"     Copyright (C) 2007, 2008 Walter Franzini
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program.  If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program.  If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" you can create the initial cut of this file using the
-.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 22 -unf
+.\"     aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 22 -unf
 .\" command, and then editing it to be more appropriate.
 .\"
 .\" .PP
@@ -27,7 +27,7 @@
 .\" .\" Change NN
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.22.2 (18-Oct-2007)
+.SS Version 4.22.2 (18\[hy]Oct\[hy]2007)
 .PP
 This is an update for the 4.22 stable release, it is meant to help
 Aegis users while the next release cycle ends.
@@ -37,7 +37,7 @@ Aegis users while the next release cycle ends.
 .PP
 .if n *
 .if t \(bu
-[ 1684820 ] Fixed a bug in aeclone that caused aecp -delta segfaults.
+[ 1684820 ] Fixed a bug in aeclone that caused aecp \-delta segfaults.
 . \"
 . \" 4.22.C558
 . \"
@@ -52,11 +52,11 @@ like normal derived files.
 .PP
 .if n *
 .if t \(bu
-The change_pconf_get function no longer looks for historical versions
-of files, if it can help it.  This makes many things go faster and
-solved the problem of configuration fields redefinition.  While this
-change does not make Aegis more time safe, it cures one of the
-symptoms.
+[ 1697199 ] The change_pconf_get function no longer looks for
+historical versions of files, if it can help it.  This makes many
+things go faster and solved the problem of configuration fields
+redefinition.  While this change does not make Aegis more time safe,
+it cures one of the symptoms.
 . \"
 . \" 4.22.C341
 . \"
@@ -70,7 +70,7 @@ Fixed test 222 to work with recent releases of subversion.
 .PP
 .if n *
 .if t \(bu
-The \f[I]aepconf\f[P](5) has been improved.
+The \f[I]aepconf\f[P](5) man page has been improved.
 . \"
 . \" 4.22.C624
 . \"
@@ -78,24 +78,15 @@ The \f[I]aepconf\f[P](5) has been improved.
 .if n *
 .if t \(bu
 [ Debian 435422 ] The reference manual was wrongly referring to
--Page-Headings instead of -Page-Header.  The documentation has been
+\-Page\[hy]Headings instead of \-Page\[hy]Header.  The documentation has been
 updated to match the source code.
-. \"
-. \" 4.22.C561
-. \"
-.PP
-.if n *
-.if t \(bu
-The test/02/t0257a-walt.sh script has been back-ported from the
-development branch (4.23) to prevent bug #...... to appear in the
-stable branch.
 . \"
 . \" 4.22.C578
 . \"
 .PP
 .if n *
 .if t \(bu
-[ 1704108 ] The \f[I]aecp\f[P](1) -delta command now follows the whiteout
+[ 1704108 ] The \f[I]aecp\f[P](1) \-delta command now follows the whiteout
 preference when copying a "removed"file.
 . \"
 . \" 4.22.585
@@ -103,7 +94,7 @@ preference when copying a "removed"file.
 .PP
 .if n *
 .if t \(bu
-[ 1685304 ] A bug has been fixed that caused \f[I]aecp\f[P](1) -delta
+[ 1704100 ] A bug has been fixed that caused \f[I]aecp\f[P](1) \-delta
 X to copy in a change also a file with the old name of a file
 \f[I]aemv\f[P](1)ed before delta X.
 . \"
@@ -120,8 +111,9 @@ correct permissions.
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed in the \f[I]aetar\f[P](1) command, it no longer
-creates tarballs that cause BSD tar to complain like this:
+[ 1701701 ] A bug has been fixed in the \f[I]aetar\f[P](1) command, it
+no longer creates tarballs that cause BSD and other tar to complain
+like this:
 tar: End of archive volume 1 reached
 tar: Unexpected EOF on archive file
 . \"
@@ -131,14 +123,14 @@ tar: Unexpected EOF on archive file
 .if n *
 .if t \(bu
 The configure script now handle correctly the datadir substitution.
-.SS Version 4.22.1 (14-Apr-2007)
+.SS Version 4.22.1 (14\[hy]Apr\[hy]2007)
 . \"
 . \" 4.22.C596
 . \"
 .PP
 .if n *
 .if t \(bu
-Test t0247a-walt.sh has been fixed, it was not exporting
+Test t0247a\[hy]walt.sh has been fixed, it was not exporting
 AEGIS_TEST_DIR.  This make \f[I]aeintegratq\f[P](1) leaving stuff in
 the home directory of the user.
 . \"
@@ -165,7 +157,7 @@ modified to pass even when \f[I]lex\f[P](1) is missing.
 .if n *
 .if t \(bu
 \f[I]aedist\f[P](1) now handle certain renamed files correctly when
-receiving branches or entire-source.
+receiving branches or entire\[hy]source.
 . \"
 . \" 4.22.C592
 . \"
@@ -182,7 +174,7 @@ pass even when \f[I]lex\f[P](1) is missing.
 .if n *
 .if t \(bu
 \f[I]aedist\f[P](1) now handle certain renamed files correctly
-when receiving branches or entire-source.
+when receiving branches or entire\[hy]source.
 . \"
 . \" 4.22.D033
 . \"
@@ -199,8 +191,8 @@ configure does not trigger anymore those warnings.
 .PP
 .if n *
 .if t \(bu
-The test suite does not use anymore \f[I]diff\f[P](1) -u because not
-all systems have gnu diff, so the use of gnu diff's -u option is nor
+The test suite does not use anymore \f[I]diff\f[P](1) \-u because not
+all systems have gnu diff, so the use of gnu diff's \-u option is nor
 portable, and will give false negatives on some systems.
 . \"
 . \" 4.22.D030
@@ -208,14 +200,14 @@ portable, and will give false negatives on some systems.
 .PP
 .if n *
 .if t \(bu
-The test suite does not use anymore \f[I]diff\f[P](1) -u because not all
-systems have gnu diff, so the use of gnu diff's -u option is
+The test suite does not use anymore \f[I]diff\f[P](1) \-u because not all
+systems have gnu diff, so the use of gnu diff's \-u option is
 nor portable, and will give false negatives on some systems.
 .PP
 .if n *
 .if t \(bu
-\f[I]aedist\f[P](1) -rec now save the UUID as the user defined
-original-UUID if the UUID is already present in the repository.  This
+\f[I]aedist\f[P](1) \-rec now save the UUID as the user defined
+original\[hy]UUID if the UUID is already present in the repository.  This
 is especially useful when receiving changes in the same repository.
 . \"
 . \" 4.22.D029
@@ -224,15 +216,15 @@ is especially useful when receiving changes in the same repository.
 .if n *
 .if t \(bu
 \f[I]aeclone\f[P](1) now preserve the the UUID of the original change
-as the original-UUID user defined attribute of the new change. It also
-copy any other used-defined attribute.
+as the original\[hy]UUID user defined attribute of the new change. It also
+copy any other used\[hy]defined attribute.
 .\"
 .\" 4.22.D028
 .\"
 .PP
 .if n *
 .if t \(bu
-Test 89 has been disable on HP-UX-10 because that system has a "vendor
+Test 89 has been disable on HP\[hy]UX\[hy]10 because that system has a "vendor
 specific" (i.e. broken) \f[I]cpio\f[P](1) archive format.
 . \"
 . \" 4.22.D027
@@ -262,7 +254,7 @@ The project_specific setenv:* variables are now exported only once.
 .if t \(bu
 [ 1674882 ] The following bug as been fixed: if a file is created and
 renamed within a single branch, and that branch is integrated, then
-the file is not included in the output of 'aedist -send -es' from
+the file is not included in the output of 'aedist \-send \-es' from
 subsequent branches.
 . \"
 . \" 4.22.D024
@@ -279,7 +271,7 @@ complains about permissions when the
 .PP
 .if n *
 .if t \(bu
-The \f[I]aedist\f[P](1) -rec command now better handles file renamed
+The \f[I]aedist\f[P](1) \-rec command now better handles file renamed
 (not aemved) to match the local repository state.
 . \"
 . \" 4.22.D022
@@ -297,7 +289,7 @@ closed branch).
 .PP
 .if n *
 .if t \(bu
-The \f[I]aenpr(1) -keep\f[P] command now set the administrator
+The \f[I]aenpr(1) \-keep\f[P] command now set the administrator
 recursively.
 . \"
 . \" 4.22.D020
@@ -305,8 +297,8 @@ recursively.
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed in the ${project-specific} substitution, it now
-works correctly with the \f[I]aesub\f[P](1) -bl command.
+A bug has been fixed in the ${project\[hy]specific} substitution, it now
+works correctly with the \f[I]aesub\f[P](1) \-bl command.
 . \"
 . \" 4.22.D019
 . \"
@@ -319,9 +311,9 @@ works correctly with the \f[I]aesub\f[P](1) -bl command.
 .PP
 .if n *
 .if t \(bu
-\f[I]aedist(1) -received\f[P] has been modified to set the user
-defined attribute foreign-copyright to true when receiving a remote
-change set.  This in order to avoid \f[I]aede-policy\f[P](1) complain
+\f[I]aedist(1) \-received\f[P] has been modified to set the user
+defined attribute foreign\[hy]copyright to true when receiving a remote
+change set.  This in order to avoid \f[I]aede\[hy]policy\f[P](1) complain
 about incorrect copyright notice at \f[I]aede\f[P](1) time.\n\
 . \"
 . \" 4.22.D016
@@ -352,8 +344,8 @@ of file descriptors.
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed in the \f[I]aet\f[P](1) -regression command, it
-no longer reports free()ing a non-existent string.
+A bug has been fixed in the \f[I]aet\f[P](1) \-regression command, it
+no longer reports free()ing a non\[hy]existent string.
 . \"
 . \" 4.22.D012
 . \"
@@ -402,7 +394,7 @@ subsequent changes to modify the removed file.
 A bug has been fixed in the handling of the symlink farm, for
 development directory styles which use them for derived files.
 Derived files in the baseline directory which were formerly source
-files, but then aerm-ed, are now included in the development directory
+files, but then aerm\[hy]ed, are now included in the development directory
 when copy/link styles are used.
 . \"
 . \" 4.22.D005
@@ -422,4 +414,5 @@ file development directory.
 .\" Change 123
 The ./configure script has been improved to stop with a fatal error if
 the bzip2 library is not available.
-.SS Version 4.22 (29-Mar-2006)
+.SS Version 4.22 (29\[hy]Mar\[hy]2006)
+.\" vim: set ts=8 sw=4 et :

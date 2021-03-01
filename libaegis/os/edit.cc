@@ -1,26 +1,25 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2002-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
 #include <libaegis/arglex2.h>
-#include <common/error.h> // for assert
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
 #include <libaegis/user.h>
@@ -36,15 +35,15 @@ os_edit(const nstring &filename, edit_ty et)
     nstring editor;
     if (et == edit_background)
     {
-	editor = user_ty::create()->editor_command();
+        editor = user_ty::create()->editor_command();
     }
     else
     {
-	editor = user_ty::create()->visual_command();
-	const char *cp = strrchr(editor.c_str(), '/');
-	if (!cp)
+        editor = user_ty::create()->visual_command();
+        const char *cp = strrchr(editor.c_str(), '/');
+        if (!cp)
             cp = editor.c_str();
-	if (0 == strcmp(cp, "ed"))
+        if (0 == strcmp(cp, "ed"))
             et = edit_background;
     }
 
@@ -53,10 +52,10 @@ os_edit(const nstring &filename, edit_ty et)
     //
     if (et != edit_background && os_background())
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Name", arglex_token_name(arglex_token_edit));
-	sc.fatal_intl(i18n("may not use $name in the background"));
-	// NOTREACHED
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", arglex_token_name(arglex_token_edit));
+        sc.fatal_intl(i18n("may not use $name in the background"));
+        // NOTREACHED
     }
 
     //
@@ -79,3 +78,6 @@ os_edit(string_ty *filename, edit_ty et)
 {
     os_edit(nstring(filename), et);
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,26 +1,25 @@
 '\" t
-.\"     aegis - project change supervisor
-.\"     Copyright (C) 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2005-2012 Peter Miller
 .\"
-.\"     This program is free software; you can redistribute it and/or
-.\"     modify it under the terms of the GNU General Public License as
-.\"     published by the Free Software Foundation; either version 3 of
-.\"     the License, or (at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"     This program is distributed in the hope that it will be useful,
-.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"     GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"     You should have received a copy of the GNU General Public License
-.\"     along with this program. If not, see
-.\"     <http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.ds n) aede-policy
-.TH "aede-policy" 1 \*(N) "Reference Manual" ""
+.so lib/en/man1/z_name.so
+.ds n) aede\[hy]policy
+.TH "aede\[hy]policy" 1 \*(N) "Reference Manual" ""
 .SH NAME
-aede-policy \- check change set is ready for aede
+aede\[hy]policy \- check change set is ready for aede
 .XX "aede-policy(1)" "check change set is ready for aede"
 .SH SYNOPSIS
 .B \*(n)
@@ -45,9 +44,9 @@ ready to end development.  This is intended to be used by the
 configuration file.
 .RS
 develop_end_policy_command =
-    "aede-policy -p $project -c $change all";
+    "aede\[hy]policy \-p $project \-c $change all";
 .RE
-If any of the pilies should fail, the \fI\*(n)\fP command will fail with
+If any of the policies should fail, the \fI\*(n)\fP command will fail with
 an exit status of 1.  This, in turn, will cause the \f[I]aede\fP(1) command
 to leave the change in the \f[I]being developed\fP state.
 .PP
@@ -55,11 +54,18 @@ Note that the \f[I]aede\fP(1) command sets the appropriate environment
 variables, so the \fB\-Project\fP and \fB\-Change\fP options are rarely
 necessary.
 .PP
-If no policies appear on the command line, the \f[I]aede-policy\fP project
+If no policies appear on the command line, the \f[I]aede\[hy]policy\fP project
 specific attribute will be checked.  If it exists, it contains a list of
 space separated policy names.
+.PP
+The \f[I]aede\[hy]policy\fP(1) command expects to be invoked on changes in
+the \f[CW]being_\%developed\fP state.
+If invoked for a change in the \f[CW]being_\%integrated\fP state (common
+if invoked as part of the build) it will silently do nothing.
+All other change states will result in a fatal error message.
 .SS POLICIES
 There are a range of policies that can be selected.
+.\" ----------  A  ---------------------------------------------------------
 .TP 8n
 all
 Check all of the
@@ -68,106 +74,211 @@ Check all of the
 \f[I]description\fP and
 \f[I]printable\fP
 policies.
+.\" ----------  B  ---------------------------------------------------------
+.\" ----------  C  ---------------------------------------------------------
+.TP 8n
+comments
+.RS
+This policy checks for C comments in C++ files, or C++ comments in C
+files.  The forms of the comments give sublimial hints to the reader
+as to what language is being read.  Mismatched comments make the code
+subtly harder to read and thus harder to maintain.
+.RE
 .TP 8n
 copyright
 .RS
 This policy checks that each file in the change set contains
 a copyright notice of the form
 .RS
-Copyright (C) \fByear\fP \f[I]something\fP
+Copyright (C) \f[B]year\fP \f[I]something\fP
 .RE
-where \fByear\fP is the current year (you can have a range of years, too).
+where \f[B]year\fP is the current year (you can have a range of years, too).
 Binary files are ignored.
-Change sets marked with a \f[I]foreign-copyright=true\fP attribute are ignored,
-as are files similarly marked.
 The \f[I]something\fP part is either the project specific
-\f[I]copyright-owner\fP attribute, or the executing users full name.
+\f[I]copyright\[hy]owner\fP attribute, or the executing users full name.
+.TP 8n
+foreign\[hy]copyright
+Change sets marked with a \f[I]foreign\[hy]copyright=true\fP attribute
+are ignored,
+as are files similarly marked.
 .RE
 .TP 8n
 crlf
-This policy cheks that all files are using UNIX line termination (NL),
+This policy checks that all files are using UNIX line termination (NL),
 not DOS line termination (CRLF).
 Binary files are ignored.
+.\" ----------  D  ---------------------------------------------------------
 .TP 8n
 description
 This policy checks that the change set \f[I]brief_description\fP and
 \f[I]description\fP attributes have been updated to something other than
 the defaults.
+.\" ----------  E  ---------------------------------------------------------
 .TP 8n
-fsf-address
+escape\[hy]hyphen
+.RS
+This policy checks that hypen in roff sources (such as \f[I]man\fP(1)
+pages) that contain unescaped minus or hyphen characters.  This is
+one of the more annoying warnings produced by \f[I]lintian\fP(1) when
+building Debian packages.
+.TP 8n
+aede\[hy]policy\[hy]escape\[hy]hyphen
+This check is not applied to files carrying a
+\f[I]aede\[hy]policy\[hy]escape\[hy]hyphen=false\fP attribute.
+.RE
+.\" ----------  F  ---------------------------------------------------------
+.TP 8n
+fsf\[hy]address
 This policy checks that the FSF address, if present in source files, is
-up-to-date.  This is useful for Free Software projects.
+up\[hy]to\[hy]date.  This is useful for Free Software projects.
+.\" ----------  G  ---------------------------------------------------------
 .TP 8n
-gpl-version
+gpl\[hy]version
 .TP 8n
-gpl-version=\f[I]nn\fP
+gpl\[hy]version=\f[I]nn\fP
 This policy checks files that cite the GNU GPL in their file headers, to
 be sure they contain the correct version of the GNU GPL.  Defaults to
 version 3 if no version number specified.
+.\" ----------  H  ---------------------------------------------------------
+.\" ----------  I  ---------------------------------------------------------
+.\" ----------  J  ---------------------------------------------------------
+.\" ----------  K  ---------------------------------------------------------
+.\" ----------  L  ---------------------------------------------------------
 .TP 8n
-line-length
+line\[hy]length
 .TP 8n
-line-length=\f[I]nn\fP
+line\[hy]length=\f[I]nn\fP
 This policy checks that files have this maximum line length.
 Defaults to 80 if no width is specified.
-Can be overridden per file using the
-\f[I]aede-policy-line-length\fP file attribute.
+It understands \f[I]vim\fP(1) mode lines, particularly for the
+\[lq]tabsize\[rq] setting.
 .TP 8n
-merge-fhist
+aede\[hy]policy\[hy]line\[hy]length
+Can be overridden per file using the
+\f[I]aede\[hy]policy\[hy]line\[hy]length\fP file attribute.
+.\" ----------  M  ---------------------------------------------------------
+.TP 8n
+man\[hy]pages
+This policy requires that each installable program
+be accompanied by a \f[I]man\fP(1) manual page.
+.TP 8n
+merge\[hy]fhist
 This policy requires that there be no \f[I]fmerge\fP(1) conflict lines
 present in any source files.  The name comes from the name of the
 package containing this tool: \f[I]fhist\fP.
 .TP 8n
-merge-rcs
+merge\[hy]rcs
 This policy requires that there be no \f[I]merge\fP(1) conflict lines
 present in any source files.  The name comes from the name of the
 package containing this tool: \f[I]rcs\fP.
+.\" ----------  N  ---------------------------------------------------------
 .TP 8n
-no-tabs
+no\[hy]tabs
 .RS
 This policy checks that files have no tabs characters in them.  This
 is useful when a team of developers all use different editors and
-differnt tab stops.  By only using spaces, the code is presented to all
+different tab stops.  By only using spaces, the code is presented to all
 developers the same way.
-.PP
+.TP 8n
+foreign\[hy]copyright
 This check is not applied to change sets with a
-\Iforeign-copyright=true\fP attribute, because you have little control
+\f[I]foreign\[hy]copyright=true\fP attribute, because you have little control
 over them (change the tabs in a later change set, if at all).
-.PP
+.TP 8n
+aede\[hy]policy\[hy]tabs\[hy]allowed
 This check is not applied to files which are called \f[CW]Makefile\fP
 or similar, and it is not applied to files carrying a
-\f[I]aede-policy-tabs-allowed=true\fP attribute.
+\f[I]aede\[hy]policy\[hy]tabs\[hy]allowed=true\fP attribute.
 .RE
+.\" ----------  O  ---------------------------------------------------------
+.\" ----------  P  ---------------------------------------------------------
 .TP 8n
 printable
 This policy checks that each file in the change set contains only
-printable text characters and white space.  The \f[I]content-type\fP file
-attribute is taken into account; if there is no \f[I]content-type\fP file
-attribute, or there is no charset specified by the \f[I]content-type\fP
-file attribute, plain 7-bit ASCII text is assumed.
+printable text characters and white space.
+.TP 8n
+content\[hy]type
+The \f[I]content\[hy]type\fP file
+attribute is taken into account; if there is no \f[I]content\[hy]type\fP file
+attribute, or there is no charset specified by the \f[I]content\[hy]type\fP
+file attribute, plain 7\[hy]bit ASCII text is assumed.
+.\" ----------  Q  ---------------------------------------------------------
+.\" ----------  R  ---------------------------------------------------------
+.TP 8n
+reserved
+This policy checks that C and C++ identifiers reserved by the ANSI C and
+C++ Standards are used.  See section 2.10 of both standards.
+Only C and C++ source files are checked.
+.\" ----------  S  ---------------------------------------------------------
+.\" ----------  T  ---------------------------------------------------------
 .TP 8n
 text
 This policy checks that each file in the change set contains only text,
 although international character sets are acceptable.  This is basically
 a test for NUL characters, because everything else could be part of a
 valid character encoding of some international character set.
+.\" ----------  U  ---------------------------------------------------------
+.\" ----------  V  ---------------------------------------------------------
 .TP 8n
-white-space
+version\[hy]info
+.RS
+This policy checks the version\[hy]info rules for shared libraries, as laid
+out by the \f[I]libtool\fP(1) manual, and required by the Debian Policy
+Manual.  This is done by examining the actual shared libraries, the
+one being built, and the one in the ancestor baseline (\f[I]i.e.\fP the one
+to be replaced) to confirm that the version\[hy]info strings conform.  By
+examining the actual shared libraries, an objective view of what has
+been added, modified and removed can be obtained.
+.PP
+The shared library to examine is obtained from a \f[CW]project_specific\fP
+attribute:
+.TP 8n
+aede\[hy]policy:version\[hy]info:library
+This is set to the baseline\[hy]relative name of the shared library file.
+You don't have to add the secret \f[I]libtool\fP(1) \[lq].libs\[rq]
+directory, this policy can work that out for itself.
+.TP 8n
+aemakegen:version\[hy]info
+This is the string which \f[I]aemakegen\fP(1) would use if
+it were invoked.  This is also checked.  If you aren't using
+\f[I]aemakegen\fP(1), it is a good idea to set this attribute anyway and
+access it via \f[I]aesub\fP(1) from within your build system.
+.PP
+This policy requires \f[I]nm\fP(1)'s \f[B]\-\-dynamic\fP option to work
+correctly on the \f[CW].so\fP file (it is part of the GNU binutils
+package).
+.RE
+.TP 8n
+vim\[hy]mode
+.RS
+This policy checks that each file in the change set contains
+contains a \f[I]vim\fP(1) mode line.  Binary files are ignored.
+.TP 8n
+aede\[hy]policy\[hy]vim\[hy]mode\[hy]required
+Set this attribute to false on files for which this is not to be
+checked.
+.RE
+.\" ----------  W  ---------------------------------------------------------
+.TP 8n
+white\[hy]space
 This policy checks that there is no white space on the ends of lines,
 that there are no blank lines at the ends of files.
 .PP
 If no policy is specified,
 only the \f[I]description\fP policy will be checked.
+.\" ----------  X  ---------------------------------------------------------
+.\" ----------  Y  ---------------------------------------------------------
+.\" ----------  Z  ---------------------------------------------------------
 .SH OPTIONS
 The following options are understood:
-.so o_change.so
-.so o_help.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
 .TP 8n
 \fB\-List\fP
 List all of the available validations.
-.so o_project.so
-.so o__rules.so
-.so z_exit.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH SEE ALSO
 .TP 8n
 .IR aede (1)
@@ -175,4 +286,5 @@ end development of a change
 .TP 8n
 .IR aepconf (5)
 project configuration file
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

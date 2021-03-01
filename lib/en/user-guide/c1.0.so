@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998, 2001, 2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1991-1994, 1998, 2001, 2002, 2006-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 \&.
 .sp 2i
@@ -35,7 +35,7 @@ User Guide
 Peter Miller
 .ft I
 .ce 1
-millerp@canb.auug.org.au
+pmiller@opensource.org.au
 .ft P
 .OH 'Aegis''User Guide'
 .EH 'User Guide''Aegis'
@@ -61,8 +61,8 @@ Jean Florence Pelham
 1905 \(em 1992
 Always in our hearts.
 .sp 1i
-.so version.so
-.so libdir.so
+.so etc/version.so
+.so etc/libdir.so
 This document describes Aegis version \*(v)
 .br
 and was prepared \*(DY.
@@ -108,9 +108,9 @@ for instance), then that is just tough.
 .LP
 In contrast,
 .UX
-provides many components of a CASE system - compilers,
+provides many components of a CASE system \- compilers,
 editors, dependency tools (such as make), source control (such as SCCS).
-You may substitute the tool of your choice - gcc, jove, cake,
+You may substitute the tool of your choice \- gcc, jove, cake,
 rcs (to name a few) if you don't like the ones supplied with the system.
 .LP
 Aegis adds to this list with software configuration
@@ -120,7 +120,8 @@ and consistent with
 philosophy,
 Aegis does not dictate the choice of any of the other tools
 (although it may stretch them to their limits).
-.so c1.5.so
-.so c1.1.so
-.so c1.2.so
-.so c1.4.so
+.so lib/en/user-guide/c1.5.so
+.so lib/en/user-guide/c1.1.so
+.so lib/en/user-guide/c1.2.so
+.so lib/en/user-guide/c1.4.so
+.\" vim: set ts=8 sw=4 et :

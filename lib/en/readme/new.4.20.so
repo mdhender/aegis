@@ -1,23 +1,23 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" you can create the initial cut of this file using the
-.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 20 -unf
+.\"     aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 20 -unf
 .\" command, and then editing it to be more appropriate.
 .\"
 .PP
@@ -26,14 +26,14 @@ You must have the \fIGnome libxml2\fP library
 Please install the xml2 library version 1.8.17 or later.  You do not
 have to install the rest of Gnome, the library can be used on its
 own.  If you are using a package based install, you will need the
-\fIlibxml2-devel\fP or \fIlibxml2-dev\fP package in addition to the
+\fIlibxml2\[hy]devel\fP or \fIlibxml2\[hy]dev\fP package in addition to the
 \fIlibxml2\fP package.
 .PP
 Ideally, you would also install the \fIlibmagic\fP package, used
 to determine file types, just as \fIfile\fP(1) does.  (This is
 not to be confused with the \f[CW]libmagic6\fP image manipluation
 library.  If you are using a package based install, you will need the
-\fIlibmagic-devel\fP or \fIlibmagic-dev\fP package in addition to the
+\fIlibmagic\[hy]devel\fP or \fIlibmagic\[hy]dev\fP package in addition to the
 \fIlibmagic\fP package.
 .\" .PP
 .\" .if n *
@@ -44,7 +44,7 @@ library.  If you are using a package based install, you will need the
 .if n *
 .if t \(bu
 .\" Change 200
-A bug has been fixed in the \fIaecp -independent -output\fP option,
+A bug has been fixed in the \fIaecp \-independent \-output\fP option,
 which resulted in an error when Aegis tried to chmod nothing.
 .PP
 .if n *
@@ -125,8 +125,8 @@ project source files for use by your build tool.
 .\" Change 53
 There is a new cache of state information attached to each
 delta, the project file state at the time of the delta. This has
-the potential to accelerate aecp -delta, and all other
-project_file_roll_forward-based operations.
+the potential to accelerate aecp \-delta, and all other
+project_file_roll_forward\[hy]based operations.
 Large projects may want to turn this off, because each delta will produce
 another large project file state cache.
 .PP
@@ -155,9 +155,9 @@ say what was expected.
 .\" Change 150
 There is a new optional \fI$filename\fP substitution for
 the \fIhistory_\%put_\%command\fP, so that you can attach the current name of
-the check-in to the history file meta-data.
+the check\[hy]in to the history file meta\[hy]data.
 There is a new optional \fI$uuid\fP substitution for
-history_put_command, so you can attach that as mete-data, too.
+history_put_command, so you can attach that as mete\[hy]data, too.
 .PP
 .if n *
 .if t \(bu
@@ -175,9 +175,10 @@ project attribute.
 .if t \(bu
 .\" Change 27, 129, 175
 The \fIaedist \-receive\fP delta selection mechanism has been improved:
-previously the edit-origin-UUID attribute was considered in favour of
-the original-UUID attribute, with this change it is used the change
-set, bounded to the edit-origin-UUID or to original-UUID, more recently
+previously the edit\[hy]origin\[hy]UUID attribute was considered in favour of
+the original\[hy]UUID attribute, with this change it is used the change
+set, bounded to the edit\[hy]origin\[hy]UUID or to original\[hy]UUID,
+more recently
 integrated.  This should reduce the frequency of logical conflicts.
 .PP
 .if n *
@@ -224,7 +225,7 @@ framework available.  See \fIaesubunit\fP(1) for more information.
 .if t \(bu
 .\" Change 107
 A bug was fixed in \fIaedist\fP that caused an error when receiving a branch's
-archive generated with the \fIaedist \-send \-entire-source\fP option.
+archive generated with the \fIaedist \-send \-entire\[hy]source\fP option.
 .PP
 .if n *
 .if t \(bu
@@ -269,7 +270,7 @@ local change sets missing from a remote repository.
 .if t \(bu
 .\" Change 79
 The \fIaedist \-receive\fP command is now able to use the
-edit-origin-UUID attribute to copy modified files from the right origin.
+edit\[hy]origin\[hy]UUID attribute to copy modified files from the right origin.
 .PP
 .if n *
 .if t \(bu
@@ -293,7 +294,7 @@ file to an existing directory
 .if n *
 .if t \(bu
 .\" Change 52
-It is now possible to specify user-defined user attributes in
+It is now possible to specify user\[hy]defined user attributes in
 the \f[CW]~/.aegisrc\fP file.
 .PP
 .if n *
@@ -307,13 +308,13 @@ project configuration file, the new name is "aegis.conf".
 .if t \(bu
 .\" Change 51
 The \fIaefind\fP(1) command now understands \f[CW]{+}\fP to mean the
-resolved file name, and \f[CW]{-}\fP as the unresolved file name.
+resolved file name, and \f[CW]{\-}\fP as the unresolved file name.
 .PP
 .if n *
 .if t \(bu
 .\" Change 33
 There was a bug where Aegis would exit with a fatal error if one
-of the directories on the AEGIS_PATH was read-only. Such
+of the directories on the AEGIS_PATH was read\[hy]only. Such
 directories are now ignored.
 .PP
 .if n *
@@ -332,7 +333,7 @@ printed when error message translation files can't be found.
 .if t \(bu
 .\" Change 18
 The \fIaenf\fP(1) command now understands the \fI\-keep\fP and
-\fI\-no-keep\fP options, to explicitly control the creation of new files
+\fI\-no\[hy]keep\fP options, to explicitly control the creation of new files
 in the development directory.
 .PP
 .if n *
@@ -342,4 +343,5 @@ A bug has been fixed in \fIaemv\fP(1) which failed to check the new name
 against the filename charset, \fIetc\fP.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.20 (28-Jan-2005)
+.SS Version 4.20 (28\[hy]Jan\[hy]2005)
+.\" vim: set ts=8 sw=4 et :

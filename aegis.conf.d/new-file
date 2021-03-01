@@ -1,0 +1,146 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2012 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * whenever files are added to or removed from the change,
+ * execute the following command.
+ *
+ * The project files are wiped, too, because a removed file will alter
+ * the project file list.
+ */
+change_file_command =
+    "rm -f etc/cook/change_files.$version etc/cook/project_files.$version";
+project_file_command = "rm -f etc/cook/project_files.$version";
+
+/*
+ * make sure the filenames are OK with Windows.
+ */
+windows_filename_required = true;
+
+/*
+ * watch out for these
+ */
+trojan_horse_suspect =
+[
+    "*.awk",
+    "*.cook",
+    "*.sh",
+];
+
+/*
+ * Limit filenames to 15 characters.
+ *
+ * For a while the Aegis sources could be compiled on old V7 14
+ * character filename systems, however that hasn't be true for some
+ * time (due to all sorts of files being constructed at build time, all
+ * of which were longer than the source files).
+ *
+ * When the langauge was change from C to C++, the file name length
+ * increased to 15.  Any limit could have been chosen, including 255,
+ * but I have this feeling that shorter filenames are better.
+ */
+maximum_filename_length = 15;
+posix_filename_charset = true;
+
+filename_pattern_reject =
+[
+    /* No Aegis-special file names. */
+    "*,*",
+
+    /* No C source files */
+    "*.c",
+
+    /* No C++ files with upper case letters in their names. */
+    "*[A-Z]*.cc"
+    "*[A-Z]*.h"
+
+    /* No alternative C++ file names. */
+    "*.C",
+    "*.CC",
+    "*.[cC][xX][xX]",
+    "*.H",
+    "*.[hH][hH]",
+    "*.[hH][xX][xX]",
+];
+
+/*
+ * new file templates
+ */
+file_template =
+[
+    {
+        pattern = [ "aegis.conf.d/site.conf" ];
+        body = "${read_file ${source etc/template/site.conf abs}}";
+    },
+    {
+        pattern = [ "aegis.conf.d/*" ];
+        body = "${read_file ${source etc/template/conf abs}}";
+    },
+    {
+        pattern = [ "*.[cyl]" ];
+        body = "${read_file ${source etc/template/c abs}}";
+    },
+    {
+        pattern = [ "aemakegen/process_item/*.cc" ];
+        body =
+            "${read_file ${source etc/template/aemakegen/process_item_cc abs}}";
+    },
+    {
+        pattern = [ "*.cc" ];
+        body = "${read_file ${source etc/template/cc abs}}";
+    },
+    {
+        pattern = [ "aemakegen/process_item/*.h" ];
+        body =
+            "${read_file ${source etc/template/aemakegen/process_item_h abs}}";
+    },
+    {
+        pattern = [ "*.h" ];
+        body = "${read_file ${source etc/template/h abs}}";
+    },
+    {
+        pattern = [ "test/*/*.sh" ];
+        body = "${read_file ${source etc/template/test abs}}";
+    },
+    {
+        pattern = [ "*.sh" ];
+        body = "${read_file ${source etc/template/sh abs}}";
+    },
+    {
+        pattern = [ "*.man", "*.[12345678]" ];
+        body = "${read_file ${source etc/template/man abs}}";
+    },
+    {
+        pattern = [ "*.rpt" ];
+        body = "${read_file ${source etc/template/report abs}}";
+    },
+    {
+        pattern = [ "*.so", "*.ms", "*.me" ];
+        body = "${read_file ${source etc/template/ms abs}}";
+    },
+    {
+        pattern = [ "*.po" ];
+        body = "${read_file ${source etc/template/po abs}}";
+    },
+    {
+        pattern = [ "*" ];
+        body = "${read_file ${source etc/template/generic abs}}";
+    }
+];
+
+/* vim: set ts=8 sw=4 et : */

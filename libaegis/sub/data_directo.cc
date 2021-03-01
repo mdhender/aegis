@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2003-2008 Peter Miller
+//      Copyright (C) 1999, 2003-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -55,7 +55,10 @@ sub_data_directory(sub_context_ty *scp, const wstring_list &arg)
         scp->error_set(i18n("requires zero arguments"));
     else
         result = wstring(configured_datadir());
-    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("return %p;\n", result.get_ref()));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

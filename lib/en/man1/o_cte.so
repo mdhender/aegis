@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2001, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .TP 8n
 \fB\-Content_Transfer_Encoding\fP \fIname\fP
@@ -32,13 +31,14 @@ Quoted_Printable
 The MIME quoted printable encoding is to be used.
 .TP 8n
 Unix_to_Unix_encode
-The ancient unix-to-unix encoding is to be used.
+The ancient unix\[hy]to\[hy]unix encoding is to be used.
 .PP
 These encodings may be abbreviated in the same way as comment line options.
 .RE
 .TP 8n
 \fB\-Ascii_Armor
-This means the same as the \[lq]-cte=base64\[rq] option above.
+This means the same as the \[lq]\-cte=base64\[rq] option above.
 .TP 8n
 \fB\-No_Ascii_Armor
-This means the same as the \[lq]-cte=none\[rq] option above.
+This means the same as the \[lq]\-cte=none\[rq] option above.
+.\" vim: set ts=8 sw=4 et :

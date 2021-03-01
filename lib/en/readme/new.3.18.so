@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1999, 2003, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .PP
 .if n *
@@ -84,7 +84,7 @@ whole directory trees.
 .if n *
 .if t \(bu
 .\" change 16
-There is a new \fIState-File-Name\fP list type, useful when writing
+There is a new \fIState\[hy]File\[hy]Name\fP list type, useful when writing
 cookbooks or makefiles to keep a web page in sync with a change.
 .PP
 .if n *
@@ -100,4 +100,5 @@ A bug has been fixed which caused \fIaeclean\fP to delete the development
 directory of changes with no files.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.18 (8-Jul-1999)
+.SS Version 3.18 (8\[hy]Jul\[hy]1999)
+.\" vim: set ts=8 sw=4 et :

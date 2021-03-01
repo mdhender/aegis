@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee
-//      Copyright (C) 2007, 2008 Peter Miller
+//      Copyright (C) 2007, 2008, 2011, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include <common/nstring.h>
 
-struct project_ty; // forward
+struct project; // forward
 
 
 /**
@@ -49,7 +49,7 @@ extern const nstring rss_script_name_placeholder;
   * Find the filename for an RSS feed.
   *
   * This function searches the project-specific attributes for entries of
-  * the form: <pre> rss:feedfilename-<filename> = "<state>"; </pre>
+  * the form: <pre> rss:feedfilename-<i>filename</i> = "<i>state</>"; </pre>
   * When an entry with a matching state is found, the filename is returned.
   * Available states are:
   * <pre>
@@ -74,13 +74,14 @@ extern const nstring rss_script_name_placeholder;
   *   empty string if no filename has been associated with the specified
   *   state (this includes illegal state strings).
   */
-nstring rss_feed_filename(project_ty *pp, const nstring &state);
+nstring rss_feed_filename(project *pp, const nstring &state);
 
 /**
   * Find the RSS Channel attribute for an RSS feed file.
   *
   * This function searches the project-specific attributes for an entry of the
-  * form: <pre> rss:feed<attribute>-<filename> = "<value>"; </pre>
+  * form:
+  * <pre> rss:feed<i>attribute</i>-<i>filename</i> = "<i>value</i>"; </pre>
   * The value corresponding to the specified filename is returned.
   * If an appropriate entry is not found, 0 is returned.
   *
@@ -97,7 +98,7 @@ nstring rss_feed_filename(project_ty *pp, const nstring &state);
   * \return
   *   The attribute's value, or the empty string if not found.
   */
-nstring rss_feed_attribute(project_ty *pp, const nstring &filename,
+nstring rss_feed_attribute(project *pp, const nstring &filename,
     rss_feed_attribute attribute);
 
 /**
@@ -106,7 +107,7 @@ nstring rss_feed_attribute(project_ty *pp, const nstring &filename,
   * The returned URL contains a URL placeholder and includes scriptname
   * and project name.
   */
-nstring rss_get_project_url(project_ty *pp);
+nstring rss_get_project_url(project *pp);
 
 /**
   * Look for an RSS feed file based on change state.  Add an RSS item if a feed
@@ -119,7 +120,7 @@ nstring rss_get_project_url(project_ty *pp);
   * \param cp
   *   The changeset details.
   */
-void rss_add_item_by_change(project_ty *pp, change::pointer cp);
+void rss_add_item_by_change(project *pp, change::pointer cp);
 
 /**
   * Add an RSS item to the specified RSS feed file.
@@ -133,6 +134,7 @@ void rss_add_item_by_change(project_ty *pp, change::pointer cp);
   * \param cp
   *   The changeset to which the new item relates.
   */
-void rss_add_item(const nstring &filename, project_ty *pp, change::pointer cp);
+void rss_add_item(const nstring &filename, project *pp, change::pointer cp);
 
 #endif // LIBAEGIS_RSS_H
+// vim: set ts=8 sw=4 et :

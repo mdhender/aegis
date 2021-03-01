@@ -1,31 +1,31 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1997, 2001, 2005-2009, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .\" Format and print this file using the GNU groff command
-.\"	groff -s -p -t -ms -I../../aux -I../man1 -I../man5 main.man | lpr
+.\"     groff -s -p -t -ms -I../../aux -I../man1 -I../man5 main.man | lpr
 .\"
 .\" Some of the formatting constructs used in this document assume GNU groff.
 .\"
 .lg 0  \" no ligatures
 .pn -1 \" the first (unnumbered) is -1, second is 0,
 .\"       the third is 1, just like I wanted.  Sheesh!
-.so toc.so \"from the aux directory
-.so version.so \"from the aux directory
+.so etc/toc.so
+.so etc/version.so
 .if n .ftr CB B
 .if n .ftr CI I
 .if n .ftr CW R
@@ -68,7 +68,7 @@ Reference Manual
 Peter Miller
 .ft I
 .ce 1
-millerp@canb.auug.org.au
+pmiller@opensource.org.au
 .ft P
 .\" ---------------------------------------------------------------------------
 .bp
@@ -105,12 +105,12 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 .\" ----------  Include the Other Stuff  --------------------------------------
 .\"
 .nr C 1 \"continuous page numbers (see GNU groff tmac.an)
-.so ../readme/main.man
-.so ../building/main.man
+.so lib/en/readme/main.man
+.so lib/en/building/main.man
 .\"
 .\" ----------  Include the Manual Pages  -------------------------------------
 .\"
-.so parts.so
+.so lib/en/refman/parts.so
 .\"
 .\" ----------  Include the Table of Contents  --------------------------------
 .\"
@@ -118,7 +118,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 .nr % 1000
 .TH "Table of Contents" "Aegis" "Aegis" "Reference Manual"
 .\"
-.\"	-----
+.\"     -----
 .\" This next section redefines the page footer to use roman numbering
 .\" from "iii" onwards.  It is overly GNU Groff specific.
 .\" Fortunately, the page number does not appear in the page header.
@@ -136,7 +136,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 .el .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
 .ev
 ..
-.\"	-----
+.\"     -----
 .in 0
 .TC
 .\"
@@ -144,4 +144,5 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .TH "Permuted Index" "Aegis" "Aegis" "Reference Manual"
 .in 0
-.so index.so
+.so lib/en/refman/index.so
+.\" vim: set ts=8 sw=4 et :

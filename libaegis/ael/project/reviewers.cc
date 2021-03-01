@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2008 Peter Miller
+//      Copyright (C) 1999, 2001-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ list_reviewers(change_identifier &cid, string_list_ty *)
     //
     colp = col::open((string_ty *) 0);
     line1 =
-        str_format("Project \"%s\"", project_name_get(cid.get_pp())->str_text);
+        str_format("Project \"%s\"", project_name_get(cid.get_pp()).c_str());
     colp->title(line1->str_text, "List of Reviewers");
     str_free(line1);
 
@@ -78,3 +78,6 @@ list_reviewers(change_identifier &cid, string_list_ty *)
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

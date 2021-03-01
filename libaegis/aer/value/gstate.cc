@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1999, 2000, 2003-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see
+// <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h> // for strerror()
@@ -50,7 +50,7 @@ rpt_value_gstate::create()
 {
     static rpt_value::pointer vp;
     if (!vp)
-	vp = pointer(new rpt_value_gstate());
+        vp = pointer(new rpt_value_gstate());
     return vp;
 }
 
@@ -62,7 +62,7 @@ grab_one(const nstring &project_name)
     // get details of the project
     // to put in the structure
     //
-    project_ty *pp = project_alloc(project_name.get_ref());
+    project *pp = project_alloc(project_name.get_ref());
     pp->bind_existing();
     rpt_value_struct *rsp = new rpt_value_struct();
     rpt_value::pointer result(rsp);
@@ -74,23 +74,23 @@ grab_one(const nstring &project_name)
     int err = project_is_readable(pp);
     if (err)
     {
-	rsp->assign("error", rpt_value_string::create(strerror(err)));
+        rsp->assign("error", rpt_value_string::create(strerror(err)));
     }
     else
     {
-	//
-	// The development directory of the project change is
-	// the one which contains the trunk or branch baseline.
-	//
-	change::pointer cp = pp->change_get();
-	if (cp->is_being_developed())
-	{
-	    nstring dd(change_development_directory_get(cp, 0));
-	    rsp->assign("directory", rpt_value_string::create(dd));
-	}
+        //
+        // The development directory of the project change is
+        // the one which contains the trunk or branch baseline.
+        //
+        change::pointer cp = pp->change_get();
+        if (cp->is_being_developed())
+        {
+            nstring dd(change_development_directory_get(cp, 0));
+            rsp->assign("directory", rpt_value_string::create(dd));
+        }
 
-	value = rpt_value_pstate::create(project_name_get(pp));
-	rsp->assign("state", value);
+        value = rpt_value_pstate::create(project_name_get(pp));
+        rsp->assign("state", value);
     }
 
     project_free(pp);
@@ -113,11 +113,11 @@ rpt_value_gstate::lookup(const rpt_value::pointer &rhs, bool)
     if (!rhs2sp)
     {
         trace(("keys is not a string\n"));
-	sub_context_ty sc;
-	sc.var_set_charstar("Name1", "project");
-	sc.var_set_charstar("Name2", rhs->name());
-	nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
-	return rpt_value_error::create(s);
+        sub_context_ty sc;
+        sc.var_set_charstar("Name1", "project");
+        sc.var_set_charstar("Name2", rhs->name());
+        nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+        return rpt_value_error::create(s);
     }
 
     return grab_one(rhs2sp->query());
@@ -134,7 +134,7 @@ rpt_value_gstate::grab()
     //
     // create a structure/array to hold the thing
     //
-    trace(("rpt_value_gstate::grab(this = %08lX)\n{\n", (long)this));
+    trace(("rpt_value_gstate::grab(this = %p)\n{\n", this));
 
     //
     // ask gonzo for the list of project names
@@ -146,7 +146,7 @@ rpt_value_gstate::grab()
     for (size_t j = 0; j < names.size(); ++j)
     {
         nstring s(names[j]);
-	p->append(rpt_value_string::create(s));
+        p->append(rpt_value_string::create(s));
     }
     trace(("}\n"));
 }
@@ -156,7 +156,7 @@ rpt_value::pointer
 rpt_value_gstate::keys()
     const
 {
-    trace(("rpt_value_gstate::keys(this = %08lX)\n{\n", (long)this));
+    trace(("rpt_value_gstate::keys(this = %p)\n{\n", this));
     grab();
     return vkeys;
 }
@@ -166,7 +166,7 @@ rpt_value::pointer
 rpt_value_gstate::count()
     const
 {
-    trace(("rpt_value_gstate::count(this = %08lX)\n", (long)this));
+    trace(("rpt_value_gstate::count(this = %p)\n", this));
     grab();
     return vkeys->count();
 }
@@ -194,3 +194,6 @@ rpt_value_gstate::is_a_struct()
 {
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

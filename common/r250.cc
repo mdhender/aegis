@@ -1,6 +1,6 @@
 //
 // aegis - project change supervisor
-// Copyright (C) 1992-1995, 2002-2006, 2008 Peter Miller
+// Copyright (C) 1992-1995, 2002-2006, 2008, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,12 +9,11 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see
-// <http://www.gnu.org/licenses/>.
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 //
 //
@@ -28,6 +27,7 @@
 
 #include <common/now.h>
 #include <common/r250.h>
+#include <common/sizeof.h>
 
 static unsigned long buf[250];
 static unsigned long *pos;
@@ -57,16 +57,16 @@ r250_init(void)
     //
     for (bp = buf; bp < ENDOF(buf); ++bp)
     {
-	*bp =
-	    (
-		((unsigned long)rand8() << 24)
-	    |
-		((unsigned long)rand8() << 16)
-	    |
-		((unsigned long)rand8() << 8)
-	    |
-		(unsigned long)rand8()
-	    );
+        *bp =
+            (
+                ((unsigned long)rand8() << 24)
+            |
+                ((unsigned long)rand8() << 16)
+            |
+                ((unsigned long)rand8() << 8)
+            |
+                (unsigned long)rand8()
+            );
     }
 
     //
@@ -74,9 +74,9 @@ r250_init(void)
     //
     for (bit = 1, bp = buf + 3; bit; bp += 11, bit <<= 1)
     {
-	if (bp >= ENDOF(buf))
-    	    bp -= SIZEOF(buf);
-	*bp = (*bp & ~(bit - 1)) | bit;
+        if (bp >= ENDOF(buf))
+            bp -= SIZEOF(buf);
+        *bp = (*bp & ~(bit - 1)) | bit;
     }
 }
 
@@ -85,13 +85,16 @@ unsigned long
 r250(void)
 {
     if (!pos)
-	r250_init();
+        r250_init();
     unsigned long *other = pos + 103;
     if (other >= ENDOF(buf))
-	other -= SIZEOF(buf);
+        other -= SIZEOF(buf);
     *pos ^= *other;
     unsigned long result = *pos++;
     if (pos >= ENDOF(buf))
-	pos = buf;
+        pos = buf;
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

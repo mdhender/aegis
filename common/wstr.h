@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1995, 1998, 1999, 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1995, 1998, 1999, 2004-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_WSTR_H
@@ -22,7 +21,7 @@
 
 #include <common/ac/stddef.h>
 #include <common/ac/stdlib.h>
-#include <common/main.h>
+#include <common/debug.h>
 
 /** \addtogroup WString
   * \brief Wide char strings
@@ -35,10 +34,10 @@ typedef unsigned long wstr_hash_ty;
 struct wstring_ty
 {
     wstr_hash_ty    wstr_hash;
-    wstring_ty	    *wstr_next;
-    long	    wstr_references;
-    size_t	    wstr_length;
-    wchar_t	    wstr_text[1];
+    wstring_ty      *wstr_next;
+    long            wstr_references;
+    size_t          wstr_length;
+    wchar_t         wstr_text[1];
 };
 
 #define wstr_n_from_c_release() wstr_n_from_c((const char *)0, 0)
@@ -73,3 +72,4 @@ int wstr_column_width(wstring_ty *);
 
 /** @} */
 #endif // COMMON_WSTR_H
+// vim: set ts=8 sw=4 et :

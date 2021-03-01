@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2004, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Development Directory Style"
 .LP
@@ -51,7 +51,7 @@ scale less well than a view path; some scale \fImuch\fP less well.
 .\" ------------------------------------------------------------------------
 .nh 3 "Link the Baseline"
 .LP
-The first two sub-fields of interest in the
+The first two sub\[hy]fields of interest in the
 \fIdevelopment_\%directory_\%style\fP are \fIsource_\%file_\%link\fP and
 \fIsource_\%file_\%symlink\fP.
 .XP
@@ -66,27 +66,28 @@ files (which are not part of the change) so that the work area has a
 complete set of source files.
 .LP
 By using these settings, all source files are present in the development
-directory.  They will be read-only.  As you decide to modify files in
+directory.  They will be read\[hy]only.  As you decide to modify files in
 the change set, the \fIaecp\fP command will remove the link and replace
-it with a read-write copy of the file.
+it with a read\[hy]write copy of the file.
 .LP
-You need both these sub-fields set, because hard links are not allowed
+You need both these sub\[hy]fields set, because hard links are not allowed
 to cross file system boundaries.  Aegis will use hard links in
 preference to soft links when it can.
 .LP
 Maintaining the hard links can be time consuming for large projects, and
 add quite a noticeable delay before builds start doing anything.  But
-see the \fI\-assume-symbolic-links\fP option of the \fIaeb\fP(1) command;
+see the \fI\-assume\[hy]symbolic\[hy]links\fP option of the \fIaeb\fP(1)
+command;
 use it sparingly.
 .LP
 The biggest penalty with this method is that the initial build for a
 change set for a large project can be \fIvery\fP time consuming.  Recall
 that the baseline has a complete "prebuild" already available.  To
-take advantage of these pre-built derived files, there are a few more
-sub-fields:
+take advantage of these pre\[hy]built derived files, there are a few more
+sub\[hy]fields:
 .XP
 \fIderived_file_copy = true;\fP
-This field is true if copies are to be used for non-source files which
+This field is true if copies are to be used for non\[hy]source files which
 are present in the project baseline but which are not present in the
 work area, so that the work area has a complete set of derived files.
 .XP
@@ -100,13 +101,13 @@ If you are prepared to change your build slightly, it is possible
 to use the following fields:
 .XP
 \fIderived_file_link = true;\fP
-This field is true if hard links are to be used for non-source files
+This field is true if hard links are to be used for non\[hy]source files
 which are present in the project baseline but which are not present
 in the work area, so that the work area has a complete set of derived
 files.
 .XP
 \fIderived_file_symlink = true;\fP
-This field is true if symbolic links are to be used for non-source files
+This field is true if symbolic links are to be used for non\[hy]source files
 which are present in the project baseline but which are not present
 in the work area, so that the work area has a complete set of derived
 files.
@@ -118,7 +119,7 @@ Note that \fIevery\fP rule in your Makefile (or whatever your DMT uses)
 \fBmust\fP remove its outputs before doing enything else, to break the
 links to the files in the baseline, otherwise you will corrupt the baseline.
 Aegis tries very hard to ensure that the baseline files (and thus the
-links) are read-only, so that you get an error from the build
+links) are read\[hy]only, so that you get an error from the build
 if you forget to break a link.
 .LP
 This development directory style is called "arch style" after Tom Lord's
@@ -132,7 +133,7 @@ derived file links.
 .\" ------------------------------------------------------------------------
 .nh 3 "Copy All Sources"
 .LP
-The sub-fields of interest in the
+The sub\[hy]fields of interest in the
 \fIdevelopment_\%directory_\%style\fP is \fIsource_\%file_\%copy\fP.
 .XP
 \fIsource_file_copy = true;\fP
@@ -141,23 +142,24 @@ are not part of the change) so that the work area has a complete set of
 source files.  File modification time attributes will be preserved.
 .LP
 By using this setting, all source files are present in the development
-directory.  They will be read-only.  As you decide to modify files in
+directory.  They will be read\[hy]only.  As you decide to modify files in
 the change set, the \fIaecp\fP command will remove the file and replace
-it with a read-write copy of the file.
+it with a read\[hy]write copy of the file.
 .LP
 Maintaining the copies can be time consuming for large projects, and
 add quite a noticeable delay before builds start doing anything.  But
-see the \fI\-assume-symbolic-links\fP option of the \fIaeb\fP(1) command;
+see the \fI\-assume\[hy]symbolic\[hy]links\fP option of the \fIaeb\fP(1)
+command;
 use it sparingly (yes, it applies to copies as well).
 .LP
 The biggest penalty with this method is that the initial build for a
 change set for a large project can be \fIvery\fP time consuming.  Recall
 that the baseline has a complete "prebuild" already available.  To
-take advantage of these pre-built derived files, there are a few more
-sub-fields:
+take advantage of these pre\[hy]built derived files, there are a few more
+sub\[hy]fields:
 .XP
 \fIderived_file_copy = true;\fP
-This says copies are to be used for non-source files which
+This says copies are to be used for non\[hy]source files which
 are present in the project baseline but which are not present in the
 work area, so that the work area has a complete set of derived files.
 .XP
@@ -198,3 +200,4 @@ This is like setting the
 field.
 .LP
 Aegis will print a warning if you use any of these fields.
+.\" vim: set ts=8 sw=4 et :

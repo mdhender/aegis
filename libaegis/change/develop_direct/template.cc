@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2002-2008 Peter Miller
+//      Copyright (C) 1999, 2002-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
+
 #include <libaegis/change.h>
-#include <common/error.h> // for assert
 #include <libaegis/os.h>
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
@@ -117,3 +118,6 @@ change_development_directory_template(change::pointer cp, user_ty::pointer up)
     assert(devdir);
     return str_copy(devdir.get_ref());
 }
+
+
+// vim: set ts=8 sw=4 et :

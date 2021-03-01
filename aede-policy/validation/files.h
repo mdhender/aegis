@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDE_POLICY_VALIDATION_FILES_H
@@ -36,12 +35,13 @@ public:
       */
     virtual ~validation_files();
 
+protected:
     /**
       * The default constructor.
+      * For use by derived classes only.
       */
     validation_files();
 
-protected:
     // See base class for documentation.
     bool run(change::pointer cp);
 
@@ -56,7 +56,8 @@ protected:
       * @param cp
       *     the containing change set
       * @returns
-      *     bool; true if the file is a text file, false if it is a binary file
+      *     bool; true if the file is a text file, false if it is a
+      *     binary file
       */
     static bool is_a_text_file(fstate_src_ty *src, change::pointer cp);
 
@@ -81,7 +82,7 @@ protected:
       * @returns
       *     bool; true if branches should be checked, false if should not be.
       */
-    virtual bool check_branches() const;
+    virtual bool check_branches(void) const;
 
     /**
       * The check_downloaded method is used to determine whether or not
@@ -93,7 +94,7 @@ protected:
       *     bool; true if downloaded change sets should be checked,
       *     false if should not be.
       */
-    virtual bool check_downloaded() const;
+    virtual bool check_downloaded(void) const;
 
     /**
       * The check_foreign_copyright method is used to determine whether
@@ -106,7 +107,7 @@ protected:
       *     bool; true if foreign copyright change sets should be
       *     checked, false if should not be.
       */
-    virtual bool check_foreign_copyright() const;
+    virtual bool check_foreign_copyright(void) const;
 
     /**
       * The check_binaries method is used to determine whether or not
@@ -119,7 +120,7 @@ protected:
       *     bool; true if binary files should be checked, false if
       *     should not be.
       */
-    virtual bool check_binaries() const;
+    virtual bool check_binaries(void) const = 0;
 
 private:
     /**
@@ -134,3 +135,4 @@ private:
 };
 
 #endif // AEDE_POLICY_VALIDATION_FILES_H
+// vim: set ts=8 sw=4 et :

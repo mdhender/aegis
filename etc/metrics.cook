@@ -1,6 +1,6 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 1999, 2002-2004, 2006-2008 Peter Miller
+ * Copyright (C) 1999, 2002-2004, 2006-2008, 2012 Peter Miller
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,18 +28,18 @@ source_file_order += [metrics_include_file] ;
  * integration pass time.
  */
 metrics.targets =
-        [addsuffix ",S"
-            [stringset [project_files] [change_files] - [metrics_include_file]]
-        ]
-        ;
+    [addsuffix ",S"
+        [stringset [project_files] [change_files] - [metrics_include_file]]
+    ]
+    ;
 metrics.targets: [metrics.targets];
 
 [metrics_include_file]: [metrics.targets] etc/statistics.awk
 {
-        [awk] -f [resolve etc/statistics.awk]
-                `cat -`
-                > [target]
-                ;
+    [awk] -f [resolve etc/statistics.awk]
+        `cat -`
+        > [target]
+        ;
 data
 [unsplit "\n" [resolve [metrics.targets]]]
 dataend
@@ -51,13 +51,13 @@ dataend
 %1/%0%2.cc,S: %1/%0%2.cc
     set nocascade
 {
-        sw_measure
-                [stringset
-                        -I/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/include
-                        [prepost "-I" "/%1" [search_list]]
-                        [cc_include_flags]
-                ]
-                [resolve %1/%0%2.cc] [target];
+    sw_measure
+        [stringset
+            -I/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/include
+            [prepost "-I" "/%1" [search_list]]
+            [cc_include_flags]
+        ]
+        [resolve %1/%0%2.cc] [target];
 }
 
 #endif
@@ -68,3 +68,6 @@ dataend
 {
     [resolve [arch]/bin/aemeasure] [resolve %0%] [target];
 }
+
+
+/* vim: set ts=8 sw=4 et : */

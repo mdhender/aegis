@@ -1,22 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2006-2008 Peter Miller
-#	Copyright (C) 2007 Walter Franzini
+#       aegis - project change supervisor
+#       Copyright (C) 2006-2009, 2012 Peter Miller
+#       Copyright (C) 2007 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -36,12 +36,12 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never; \
-	default_development_directory = \"$work\";"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never; \
+        default_development_directory = \"$work\";"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -64,7 +64,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${parch}bin:
+        tpath=${tpath}${tpath2}/${parch}bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -85,30 +85,30 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the html_quote href functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the html_quote href functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the html_quote href functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT when testing the html_quote href functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
@@ -136,15 +136,15 @@ unset LANGUAGE
 #
 if test "$CXX" != "c++"
 then
-	cat >> $work/c++ << fubar
+        cat >> $work/c++ << fubar
 #!/bin/sh
 exec ${CXX-g++} \$*
 fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/c++
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
+        if test $? -ne 0 ; then no_result; fi
+        chmod a+rx $work/c++
+        if test $? -ne 0 ; then no_result; fi
+        PATH=${work}:${PATH}
+        export PATH
 fi
 
 #
@@ -155,7 +155,7 @@ export AEGIS_PATH
 
 activity="new project 172"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
-	-lib $AEGIS_PATH > log 2>&1
+        -lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=test
@@ -190,8 +190,8 @@ description = "Make sure external links like "
 "work properly.\n"
 "\n"
 "Second style www.google.com\n"
-"Third style mailto:millerp@canb.auug.org.au\n"
-"Fourth style millerp@canb.auug.org.au\n"
+"Third style mailto:pmiller@opensource.org.au\n"
+"Fourth style pmiller@opensource.org.au\n"
 ;
 cause = internal_enhancement;
 test_baseline_exempt = true;
@@ -206,7 +206,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 215"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred/wilma \
-	$work/test.C010/barney -v > log 2>&1
+        $work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
@@ -220,7 +220,7 @@ history_content_limitation = binary_capable;
 
 diff_command = "exit 0";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+        echo '1,$$p' ) | ed - $mr > $out";
 link_integration_directory = true;
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -261,8 +261,8 @@ one</div>
 Make sure external links like <A HREF="http://aegis.sf.net/">http://aegis.sf.net/</A> work properly.
 <p>
 Second style <A HREF="http://www.google.com">www.google.com</A><br>
-Third style <A HREF="mailto:millerp@canb.auug.org.au">mailto:millerp@canb.auug.org.au</A><br>
-Fourth style <A HREF="mailto:millerp@canb.auug.org.au">millerp@canb.auug.org.au</A></div>
+Third style <A HREF="mailto:pmiller@opensource.org.au">mailto:pmiller@opensource.org.au</A><br>
+Fourth style <A HREF="mailto:pmiller@opensource.org.au">pmiller@opensource.org.au</A></div>
 <div class="information">
 <h2>Information Available</h2>
 <dl>
@@ -350,3 +350,6 @@ if test $? -ne 0 ; then fail; fi
 # no other guarantees are made.
 #
 pass
+
+
+# vim: set ts=8 sw=4 et :

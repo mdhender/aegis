@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994, 1996, 2003-2008 Peter Miller
+//      Copyright (C) 1994, 1996, 2003-2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ void
 rpt_stmt_compound::run(rpt_stmt_result_ty *rp)
     const
 {
-    trace(("rpt_stmt_compound::run(this = %08lX)\n{\n", (long)this));
+    trace(("rpt_stmt_compound::run(this = %p)\n{\n", this));
     for (size_t j = 0; ; ++j)
     {
         pointer sp = nth_child(j);
@@ -60,3 +60,6 @@ rpt_stmt_compound::run(rpt_stmt_result_ty *rp)
     rp->thrown.reset();
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

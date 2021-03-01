@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2002, 2004, 2006-2008 Peter Miller.
+.\" aegis - project change supervisor
+.\" Copyright (C) 1993-2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .ne 3i
 .nh 2 "Using fhist"
@@ -38,12 +37,12 @@ configuration
 file looks like this:
 .E(
 diff_command =
-  "fcomp -w $original $input "
-  "-o $output";
+  "fcomp \-w $original $input "
+  "\-o $output";
 .E)
 .LP
 The
-.B -w
+.B \-w
 option produces an output of the entire file,
 with insertions and deletions marked by "change bars" in the left margin.
 This is superior to context difference,
@@ -61,7 +60,7 @@ file looks like this:
 .E(
 merge_command =
   "fmerge $original $MostRecent \e
-   $input -o $output -c /dev/null";
+   $input \-o $output \-c /dev/null";
 .E)
 .LP
 The output of this command is similar to the output of the merge_command
@@ -71,3 +70,4 @@ For more information,
 see the
 .I fmerge (1)
 manual entry.
+.\" vim: set ts=8 sw=4 et :

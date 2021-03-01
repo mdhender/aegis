@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1995, 1997-1999, 2001-2008 Peter Miller
-//      Copyright (C) 2007, 2009 Walter Franzini
+//      Copyright (C) 1991-1995, 1997-1999, 2001-2008, 2011, 2012 Peter Miller
+//      Copyright (C) 2007-2009 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
@@ -35,14 +36,14 @@
 #include <libaegis/arglex2.h>
 #include <libaegis/commit.h>
 #include <libaegis/gonzo.h>
-#include <libaegis/gstate.h>
+#include <libaegis/gstate.fmtgen.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <libaegis/ustate.h>
+#include <libaegis/ustate.fmtgen.h>
 
 struct gonzo_ty
 {
@@ -139,7 +140,7 @@ gonzo_library_append(const char *s)
     gp->dir = dir;
     gp->temporary = is_temporary(dir);
     gp->gstate_filename = str_format("%s/state", gp->dir->str_text);
-    trace(("gonzo = %08lX;\n", (long)gonzo));
+    trace(("gonzo = %p;\n", gonzo));
     trace(("ngonzos = %ld;\n", (long)ngonzos));
 
     if (ngonzos >= ngonzos_max)
@@ -159,7 +160,7 @@ gonzo_library_append(const char *s)
 static void
 lock_sync(gonzo_ty *gp)
 {
-    trace(("lock_sync(gp = %08lX)\n{\n", (long)gp));
+    trace(("lock_sync(gp = %p)\n{\n", gp));
     long n = lock_magic();
     if (gp->lock_magic == n)
         goto ret;
@@ -179,7 +180,7 @@ lock_sync(gonzo_ty *gp)
 static gstate_ty *
 gonzo_gstate_get(gonzo_ty *gp)
 {
-    trace(("gonzo_gstate_get(gp = %08lX)\n{\n", (long)gp));
+    trace(("gonzo_gstate_get(gp = %p)\n{\n", gp));
     lock_sync(gp);
     if (!gp->gstate_data)
     {
@@ -214,7 +215,7 @@ gonzo_gstate_get(gonzo_ty *gp)
                 (gstate_where_list_ty *)gstate_where_list_type.alloc();
         gonzo_become_undo();
     }
-    trace(("return %08lX;\n", (long)gp->gstate_data));
+    trace(("return %p;\n", gp->gstate_data));
     trace(("}\n"));
     return gp->gstate_data;
 }
@@ -484,7 +485,7 @@ gonzo_nth(size_t j)
         result = 0;
     else
         result = gonzo[j];
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %p;\n", result));
     trace(("}\n"));
     return result;
 }
@@ -519,8 +520,8 @@ gonzo_project_home_path_sub(gonzo_ty *gp, string_ty *name)
     //
     // find the project in the gstate
     //
-    trace(("gonzo_project_home_path_sub(gp = %08lX, name = \"%s\")\n{\n",
-        (long)gp, name->str_text));
+    trace(("gonzo_project_home_path_sub(gp = %p, name = \"%s\")\n{\n",
+        gp, name->str_text));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
     result = 0;
@@ -583,8 +584,8 @@ gonzo_alias_to_actual_sub(gonzo_ty *gp, string_ty *name)
     //
     // find the project in the gstate
     //
-    trace(("gonzo_alias_to_actual_sub(gp = %08lX, name = \"%s\")\n{\n",
-        (long)gp, name->str_text));
+    trace(("gonzo_alias_to_actual_sub(gp = %p, name = \"%s\")\n{\n",
+        gp, name->str_text));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
     result = 0;
@@ -646,7 +647,7 @@ gonzo_project_list(string_list_ty *result)
     gonzo_ty        *gp;
     gstate_ty       *gstate_data;
 
-    trace(("gonzo_project_list(result = %08lX)\n{\n", (long)result));
+    trace(("gonzo_project_list(result = %p)\n{\n", result));
     result->clear();
     for (n = 0;; ++n)
     {
@@ -685,7 +686,7 @@ gonzo_alias_list(string_list_ty *result)
     gonzo_ty        *gp;
     gstate_ty       *gstate_data;
 
-    trace(("gonzo_project_list(result = %08lX)\n{\n", (long)result));
+    trace(("gonzo_project_list(result = %p)\n{\n", result));
     result->clear();
     for (n = 0;; ++n)
     {
@@ -719,8 +720,8 @@ gonzo_alias_list(string_list_ty *result)
 void
 gonzo_project_list_user(const nstring &uname, nstring_list &result)
 {
-    trace(("gonzo_project_list_user(uname = %s, result = @%08lX)\n{\n",
-        uname.quote_c().c_str(), (long)&result));
+    trace(("gonzo_project_list_user(uname = %s, result = @%p)\n{\n",
+        uname.quote_c().c_str(), &result));
     result.clear();
     for (size_t n = 0;; ++n)
     {
@@ -793,9 +794,9 @@ sort_gstate_where(gonzo_ty *gp)
 
 
 void
-gonzo_project_add(project_ty *pp)
+gonzo_project_add(project *pp)
 {
-    trace(("gonzo_project_add(pp = %08lX)\n{\n", (long)pp));
+    trace(("gonzo_project_add(pp = %p)\n{\n", pp));
     gonzo_ty *gp = gonzo_nth(0);
     gstate_ty *gstate_data = gonzo_gstate_get(gp);
     meta_type *type_p = 0;
@@ -806,7 +807,7 @@ gonzo_project_add(project_ty *pp)
     gstate_where_ty *addr = (gstate_where_ty *)gstate_where_type.alloc();
     *addr_p = addr;
     trace_pointer(addr);
-    addr->project_name = str_copy(project_name_get(pp));
+    addr->project_name = project_name_get(pp).get_ref_copy();
     addr->directory = str_copy(pp->home_path_get());
     gp->modified = 1;
     sort_gstate_where(gp);
@@ -815,9 +816,9 @@ gonzo_project_add(project_ty *pp)
 
 
 void
-gonzo_alias_add(project_ty *pp, string_ty *name)
+gonzo_alias_add(project *pp, string_ty *name)
 {
-    trace(("gonzo_alias_add(pp = %08lX)\n{\n", (long)pp));
+    trace(("gonzo_alias_add(pp = %p)\n{\n", pp));
     gonzo_ty *gp = gonzo_nth(0);
     gstate_ty *gstate_data = gonzo_gstate_get(gp);
     meta_type *type_p = 0;
@@ -829,7 +830,7 @@ gonzo_alias_add(project_ty *pp, string_ty *name)
     *addr_p = addr;
     trace_pointer(addr);
     addr->project_name = str_copy(name);
-    addr->alias_for = str_copy(project_name_get(pp));
+    addr->alias_for = project_name_get(pp).get_ref_copy();
     gp->modified = 1;
     sort_gstate_where(gp);
     trace(("}\n"));
@@ -837,7 +838,7 @@ gonzo_alias_add(project_ty *pp, string_ty *name)
 
 
 static int
-gonzo_project_delete_sub(gonzo_ty *gp, project_ty *pp)
+gonzo_project_delete_sub(gonzo_ty *gp, project *pp)
 {
     gstate_ty       *gstate_data;
     size_t          j;
@@ -846,8 +847,8 @@ gonzo_project_delete_sub(gonzo_ty *gp, project_ty *pp)
     //
     // find the project in the gstate
     //
-    trace(("gonzo_project_delete_sub(gp = %08lX, pp = %08lX)\n{\n",
-        (long)gp, (long)pp));
+    trace(("gonzo_project_delete_sub(gp = %p, pp = %p)\n{\n",
+        gp, pp));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
     result = 0;
@@ -859,7 +860,7 @@ gonzo_project_delete_sub(gonzo_ty *gp, project_ty *pp)
         addr = gstate_data->where->list[j];
         if (addr->alias_for)
             continue;
-        if (!str_equal(addr->project_name, project_name_get(pp)))
+        if (nstring(addr->project_name) != project_name_get(pp))
             continue;
 
         //
@@ -913,8 +914,8 @@ gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
     //
     // find the project in the gstate
     //
-    trace(("gonzo_alias_delete_destination_sub(gp = %08lX, name = \"%s\")\n{\n",
-           (long)gp, name->str_text));
+    trace(("gonzo_alias_delete_destination_sub(gp = %p, name = \"%s\")\n{\n",
+           gp, name->str_text));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
     for (j = 0; j < gstate_data->where->length; ++j)
@@ -952,18 +953,18 @@ gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
 
 
 void
-gonzo_project_delete(project_ty *pp)
+gonzo_project_delete(project *pp)
 {
     gonzo_ty        *gp;
     long            j;
 
-    trace(("gonzo_project_delete(pp = %08lX)\n{\n", (long)pp));
+    trace(("gonzo_project_delete(pp = %p)\n{\n", pp));
     for (j = 0;; ++j)
     {
         gp = gonzo_nth(j);
         if (!gp)
             break;
-        gonzo_alias_delete_destination_sub(gp, project_name_get(pp));
+        gonzo_alias_delete_destination_sub(gp, project_name_get(pp).get_ref());
         if (gonzo_project_delete_sub(gp, pp))
             break;
     }
@@ -981,8 +982,8 @@ gonzo_alias_delete_sub(gonzo_ty *gp, string_ty *name)
     //
     // find the project in the gstate
     //
-    trace(("gonzo_alias_delete_sub(gp = %08lX, name = \"%s\")\n{\n",
-        (long)gp, name->str_text));
+    trace(("gonzo_alias_delete_sub(gp = %p, name = \"%s\")\n{\n",
+        gp, name->str_text));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
     result = 0;
@@ -1091,7 +1092,7 @@ gonzo_ustate_path_sub(gonzo_ty *gp, string_ty *project_name)
     //
     // find the project in the gstate
     //
-    trace(("gonzo_ustate_path_sub(gp = %08lX)\n{\n", (long)gp));
+    trace(("gonzo_ustate_path_sub(gp = %p)\n{\n", gp));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
     result = 0;
@@ -1211,3 +1212,6 @@ gonzo_alias_acceptable(string_ty *name)
     str_free(s);
     return ok;
 }
+
+
+// vim: set ts=8 sw=4 et :

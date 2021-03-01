@@ -1,28 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1993, 1994, 1999, 2002, 2004-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1993, 1994, 1999, 2002, 2004-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_GLUE_H
 #define AEGIS_GLUE_H
 
 #include <common/ac/stdio.h>
+#include <common/ac/sys/types.h>
 
-#include <common/main.h>
 #include <common/config.h>
 
 struct stat;
@@ -123,7 +123,7 @@ int glue_lstat(const char *path, struct stat *st);
 int glue_mkdir(const char *path, int mode);
 int glue_open(const char *path, int mode, int perm);
 long glue_pathconf(const char *path, int mode);
-long glue_read(int fd, void *data, size_t len);
+ssize_t glue_read(int fd, void *data, size_t len);
 int glue_readlink(const char *path, char *buf, int max);
 int glue_read_whole_dir(const char *path, char **data, long *datalen);
 int glue_rename(const char *p1, const char *p2);
@@ -151,45 +151,46 @@ int glue_fwrite(char *, long, long, FILE *);
 // use the functions directly,
 // not the glue functions
 //
-#define	glue_access	access
-#define	glue_catfile	catfile
-#define	glue_chmod	chmod
-#define	glue_chown	chown
-#define	glue_close	::close
-#define	glue_creat	creat
-#define	glue_copyfile	copyfile
-#define	glue_fclose	fclose
-#define	glue_fcntl	fcntl
-#define	glue_ferror	ferror
-#define	glue_fflush	fflush
-#define	glue_fgetc	getc
+#define glue_access     access
+#define glue_catfile    catfile
+#define glue_chmod      chmod
+#define glue_chown      chown
+#define glue_close      ::close
+#define glue_creat      creat
+#define glue_copyfile   copyfile
+#define glue_fclose     fclose
+#define glue_fcntl      fcntl
+#define glue_ferror     ferror
+#define glue_fflush     fflush
+#define glue_fgetc      getc
 #define glue_file_compare file_compare
 #define glue_file_fingerprint file_fingerprint
-#define	glue_fopen	fopen
-#define	glue_fputc	putc
-#define	glue_getcwd	getcwd
-#define	glue_link	link
-#define	glue_lstat	lstat
-#define	glue_mkdir	mkdir
-#define	glue_open	::open
-#define	glue_pathconf	pathconf
-#define	glue_read	::read
-#define	glue_readlink	readlink
-#define	glue_read_whole_dir	read_whole_dir
-#define	glue_rename	rename
-#define	glue_rmdir	rmdir
-#define	glue_rmdir_bg	rmdir_bg
-#define	glue_rmdir_tree	rmdir_tree
-#define	glue_stat	stat
-#define	glue_symlink	symlink
-#define	glue_ungetc	ungetc
-#define	glue_unlink	unlink
-#define	glue_utime	utime
-#define	glue_lutime	lutime
-#define	glue_write	::write
-#define	glue_fwrite	fwrite
+#define glue_fopen      fopen
+#define glue_fputc      putc
+#define glue_getcwd     getcwd
+#define glue_link       link
+#define glue_lstat      lstat
+#define glue_mkdir      mkdir
+#define glue_open       ::open
+#define glue_pathconf   pathconf
+#define glue_read       ::read
+#define glue_readlink   readlink
+#define glue_read_whole_dir     read_whole_dir
+#define glue_rename     rename
+#define glue_rmdir      rmdir
+#define glue_rmdir_bg   rmdir_bg
+#define glue_rmdir_tree rmdir_tree
+#define glue_stat       stat
+#define glue_symlink    symlink
+#define glue_ungetc     ungetc
+#define glue_unlink     unlink
+#define glue_utime      utime
+#define glue_lutime     lutime
+#define glue_write      ::write
+#define glue_fwrite     fwrite
 
 #endif // aegis_glue_disable
 #endif // CONF_NO_seteuid
 
 #endif // AEGIS_GLUE_H
+// vim: set ts=8 sw=4 et :

@@ -1,23 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1999, 2001, 2003-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h> // for assert
+#include <common/ac/assert.h>
+
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/inappropriat.h>
@@ -42,7 +42,7 @@ list_project_aliases(change_identifier &cid, string_list_ty *)
 
     trace(("list_project_aliases()\n{\n"));
     if (cid.set())
-	list_change_inappropriate();
+        list_change_inappropriate();
 
     //
     // list the projects
@@ -58,9 +58,9 @@ list_project_aliases(change_identifier &cid, string_list_ty *)
     size_t longest = PROJECT_WIDTH;
     for (size_t k = 0; k < name.nstrings; ++k)
     {
-	size_t x = name.string[k]->str_length;
-	if (longest < x)
-	    longest = x;
+        size_t x = name.string[k]->str_length;
+        if (longest < x)
+            longest = x;
     }
     longest |= 7;
 
@@ -76,8 +76,8 @@ list_project_aliases(change_identifier &cid, string_list_ty *)
 
     if (!option_terse_get())
     {
-	desc_col =
-	    colp->create(left, 0, "Project\n-----------");
+        desc_col =
+            colp->create(left, 0, "Project\n-----------");
     }
 
     //
@@ -86,52 +86,55 @@ list_project_aliases(change_identifier &cid, string_list_ty *)
     nprinted = 0;
     for (size_t j = 0; j < name.nstrings; ++j)
     {
-	if (cid.project_set())
-	{
-	    string_ty       *other;
+        if (cid.project_set())
+        {
+            string_ty       *other;
 
-	    other = gonzo_alias_to_actual(name.string[j]);
-	    assert(other);
-	    if
-	    (
-		other
-	    &&
-		(
-		    str_equal(other, cid.get_pp()->name_get())
-		||
-		    str_equal(name.string[j], cid.get_pp()->name_get())
-		)
-	    )
-	    {
-		name_col->fputs(name.string[j]);
-		if (desc_col)
-	    	    desc_col->fputs(other);
-		colp->eoln();
-		++nprinted;
-	    }
-	}
-	else
-	{
-	    name_col->fputs(name.string[j]);
+            other = gonzo_alias_to_actual(name.string[j]);
+            assert(other);
+            if
+            (
+                other
+            &&
+                (
+                    str_equal(other, cid.get_pp()->name_get())
+                ||
+                    str_equal(name.string[j], cid.get_pp()->name_get())
+                )
+            )
+            {
+                name_col->fputs(name.string[j]);
+                if (desc_col)
+                    desc_col->fputs(other);
+                colp->eoln();
+                ++nprinted;
+            }
+        }
+        else
+        {
+            name_col->fputs(name.string[j]);
 
-	    if (desc_col)
-	    {
-		string_ty       *other;
+            if (desc_col)
+            {
+                string_ty       *other;
 
-		other = gonzo_alias_to_actual(name.string[j]);
-		assert(other);
-		if (other)
-	    	    desc_col->fputs(other);
-	    }
-	    colp->eoln();
-	    ++nprinted;
-	}
+                other = gonzo_alias_to_actual(name.string[j]);
+                assert(other);
+                if (other)
+                    desc_col->fputs(other);
+            }
+            colp->eoln();
+            ++nprinted;
+        }
     }
     if (option_verbose_get() && !nprinted)
     {
-	output::pointer fp = colp->create(0, 0, (const char *)0);
-	fp->fputs("No project aliases.\n");
-	colp->eoln();
+        output::pointer fp = colp->create(0, 0, (const char *)0);
+        fp->fputs("No project aliases.\n");
+        colp->eoln();
     }
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,23 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1996, 1999, 2001-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/trace.h>
 #include <libaegis/aer/expr.h>
@@ -78,7 +78,7 @@ rpt_func_print::verify(const rpt_expr::pointer &ep)
     if (!rpt_func_print__ncolumns)
     {
         trace(("no columns defined yet\n"));
-	return false;
+        return false;
     }
 
     //
@@ -99,19 +99,19 @@ rpt_func_print::run(const rpt_expr::pointer &ep, size_t argc,
     trace(("%s\n", __PRETTY_FUNCTION__));
     if (argc > (size_t)rpt_func_print__ncolumns)
     {
-	sub_context_ty sc;
-	sc.var_set_charstar("Function", "print");
-	sc.var_set_long("Number1", (long)argc);
-	sc.var_set_long("Number2", (long)rpt_func_print__ncolumns);
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "print");
+        sc.var_set_long("Number1", (long)argc);
+        sc.var_set_long("Number2", (long)rpt_func_print__ncolumns);
+        nstring s
         (
-	    sc.subst_intl
-	    (
+            sc.subst_intl
+            (
                 i18n("$function: too many arguments ($number1 given, "
                     "only $number2 used)")
-	    )
+            )
         );
-	return rpt_value_error::create(ep->get_pos(), s);
+        return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
@@ -121,34 +121,34 @@ rpt_func_print::run(const rpt_expr::pointer &ep, size_t argc,
     for (size_t j = 0; j < argc; ++j)
     {
         trace(("j = %d of %d\n", (int)j, (int)argc));
-	rpt_value::pointer vp = rpt_value::stringize(argv[j]);
+        rpt_value::pointer vp = rpt_value::stringize(argv[j]);
         trace(("mark\n"));
         rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(vp.get());
-	if (rvsp)
-	{
+        if (rvsp)
+        {
             trace(("ok\n"));
-	    argv2[j] = vp;
-	    continue;
-	}
+            argv2[j] = vp;
+            continue;
+        }
 
-	delete [] argv2;
+        delete [] argv2;
 
-	//
-	// ...and complain bitterly
-	//
+        //
+        // ...and complain bitterly
+        //
         trace(("erk\n"));
-	sub_context_ty sc;
-	sc.var_set_charstar("Function", "print");
-	sc.var_set_long("Number", (long)j + 1);
-	sc.var_set_charstar("Name", argv[j]->name());
-	nstring s
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "print");
+        sc.var_set_long("Number", (long)j + 1);
+        sc.var_set_charstar("Name", argv[j]->name());
+        nstring s
         (
-	    sc.subst_intl
-	    (
-		i18n("$function: argument $number: unable to print $name value")
-	    )
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: unable to print $name value")
+            )
         );
-	return rpt_value_error::create(ep->get_pos(), s);
+        return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
@@ -157,13 +157,13 @@ rpt_func_print::run(const rpt_expr::pointer &ep, size_t argc,
     for (size_t j = 0; j < argc; ++j)
     {
         trace(("j = %d of %d\n", (int)j, (int)argc));
-	rpt_value::pointer vp = argv2[j];
+        rpt_value::pointer vp = argv2[j];
         rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(vp.get());
-	assert(rvsp);
-	if (rpt_func_print__column[j])
-	{
-	    rpt_func_print__column[j]->fputs(rvsp->query());
-	}
+        assert(rvsp);
+        if (rpt_func_print__column[j])
+        {
+            rpt_func_print__column[j]->fputs(rvsp->query());
+        }
     }
     delete [] argv2;
 
@@ -182,3 +182,6 @@ rpt_func_print::run(const rpt_expr::pointer &ep, size_t argc,
     trace(("bye bye\n"));
     return rpt_value_void::create();
 }
+
+
+// vim: set ts=8 sw=4 et :

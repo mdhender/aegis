@@ -222,7 +222,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="integrate build 208"
 $bin/aegis -b -v > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
+if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="integrate diff 212"
 $bin/aegis -diff -v > log 2>&1

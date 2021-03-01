@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004-2006, 2008 Peter Miller
+//      Copyright (C) 2001, 2002, 2004-2006, 2008, 2012 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,10 +17,12 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <common/error.h>
-#include <aeimport/format/search.h>
+#include <common/ac/assert.h>
+
 #include <common/mem.h>
 #include <common/str_list.h>
+
+#include <aeimport/format/search.h>
 
 
 format_search_ty *
@@ -82,3 +84,6 @@ format_search_validate(format_search_ty *fsp)
 }
 
 #endif
+
+
+// vim: set ts=8 sw=4 et :

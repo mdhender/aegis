@@ -1,20 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1993-1995, 1997-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1993-1995, 1997-1999, 2001-2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 //
 // Most of the functions in this file are only used when
 // the CONF_NO_seteuid symbol is defined in "[arch]/common/config.h".
@@ -33,12 +33,12 @@
 // which is broken.  These systems will also need to use this glue.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 #include <common/ac/errno.h>
 #include <common/ac/signal.h>
-
 #include <common/ac/sys/types.h>
 #include <common/ac/fcntl.h>
 #include <common/ac/unistd.h>
@@ -53,6 +53,7 @@
 
 #include <common/error.h>
 #include <common/mem.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/glue.h>
 #include <libaegis/lock.h> // for lock_release_child
@@ -117,7 +118,7 @@ struct proxy_ty
 // The maximum number of entries expected is 4.
 // The size MUST be prime.
 //
-static proxy_ty	*proxy_table[17];
+static proxy_ty *proxy_table[17];
 
 
 #ifdef DEBUG
@@ -125,11 +126,11 @@ static proxy_ty	*proxy_table[17];
 static const char *
 command_name(int n)
 {
-    static char	buf[12];
+    static char buf[12];
 
     switch (n)
     {
-    case EOF: 	return "quit";
+    case EOF:   return "quit";
     case command_access: return "access";
     case command_catfile: return "catfile";
     case command_chmod: return "chmod";
@@ -173,9 +174,9 @@ put_int(FILE *fp, int n)
     trace(("put_int(%d)\n{\n", n));
     unsigned char *ptr = (unsigned char *)&n;
     for (size_t j = 0; j < sizeof(int); ++j)
-	fputc(ptr[j], fp);
+        fputc(ptr[j], fp);
     if (ferror(fp))
-	nfatal("writing pipe");
+        nfatal("writing pipe");
     trace(("}\n"));
 }
 
@@ -183,22 +184,22 @@ put_int(FILE *fp, int n)
 static int
 get_int(FILE *fp)
 {
-    int		result;
-    size_t		j;
-    unsigned char	*ptr;
+    int         result;
+    size_t              j;
+    unsigned char       *ptr;
 
     trace(("get_int()\n{\n"));
     ptr = (unsigned char *)&result;
     for (j = 0; j < sizeof(int); ++j)
     {
-	int c = fgetc(fp);
-	if (c == EOF)
-	{
-	    if (ferror(fp))
-	       	nfatal("reading pipe");
-	    fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
-	}
-	ptr[j] = c;
+        int c = fgetc(fp);
+        if (c == EOF)
+        {
+            if (ferror(fp))
+                nfatal("reading pipe");
+            fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+        }
+        ptr[j] = c;
     }
     trace(("return %d;\n", result));
     trace(("}\n"));
@@ -209,15 +210,15 @@ get_int(FILE *fp)
 static void
 put_long(FILE *fp, long n)
 {
-    size_t		j;
-    unsigned char	*ptr;
+    size_t              j;
+    unsigned char       *ptr;
 
     trace(("put_long(%ld)\n{\n", n));
     ptr = (unsigned char *)&n;
     for (j = 0; j < sizeof(long); ++j)
-	fputc(ptr[j], fp);
+        fputc(ptr[j], fp);
     if (ferror(fp))
-	nfatal("writing pipe");
+        nfatal("writing pipe");
     trace(("}\n"));
 }
 
@@ -225,22 +226,22 @@ put_long(FILE *fp, long n)
 static long
 get_long(FILE *fp)
 {
-    long		result;
-    size_t		j;
-    unsigned char	*ptr;
+    long                result;
+    size_t              j;
+    unsigned char       *ptr;
 
     trace(("get_long()\n{\n"));
     ptr = (unsigned char *)&result;
     for (j = 0; j < sizeof(long); ++j)
     {
-	int c = fgetc(fp);
-	if (c == EOF)
-	{
-	    if (ferror(fp))
-	       	nfatal("reading pipe");
-	    fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
-	}
-	ptr[j] = c;
+        int c = fgetc(fp);
+        if (c == EOF)
+        {
+            if (ferror(fp))
+                nfatal("reading pipe");
+            fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+        }
+        ptr[j] = c;
     }
     trace(("return %ld;\n", result));
     trace(("}\n"));
@@ -254,7 +255,7 @@ put_binary(FILE *fp, const void *ptr, size_t len)
     trace(("put_binary(%ld)\n{\n", (long)len));
     fwrite(ptr, 1, len, fp);
     if (ferror(fp))
-	nfatal("writing pipe");
+        nfatal("writing pipe");
     trace(("}\n"));
 }
 
@@ -262,15 +263,15 @@ put_binary(FILE *fp, const void *ptr, size_t len)
 static void
 get_binary(FILE *fp, void *ptr, size_t len)
 {
-    long		n;
+    long                n;
 
     trace(("get_binary(%ld)\n{\n", (long)len));
     n = fread(ptr, 1, len, fp);
     if ((size_t)n != len)
     {
-	if (ferror(fp))
-    	    nfatal("reading pipe");
-	fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+        if (ferror(fp))
+            nfatal("reading pipe");
+        fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
     }
     trace(("}\n"));
 }
@@ -282,12 +283,12 @@ put_string(FILE *fp, const char *s)
     trace(("put_string(\"%s\")\n{\n", s));
     for (;;)
     {
-	fputc(*s, fp);
-	if (ferror(fp))
-    	    nfatal("writing pipe");
-	if (!*s)
-    	    break;
-	++s;
+        fputc(*s, fp);
+        if (ferror(fp))
+            nfatal("writing pipe");
+        if (!*s)
+            break;
+        ++s;
     }
     trace(("}\n"));
 }
@@ -296,39 +297,39 @@ put_string(FILE *fp, const char *s)
 static void *
 get_string(FILE *fp)
 {
-    static char	*result;
-    static size_t	result_max;
-    size_t		pos;
+    static char *result;
+    static size_t       result_max;
+    size_t              pos;
 
     trace(("get_string()\n{\n"));
     if (!result)
     {
-	result_max = (1L << 10 ) - 32;
-	result = (char *)mem_alloc(result_max);
+        result_max = (1L << 10 ) - 32;
+        result = (char *)mem_alloc(result_max);
     }
 
     pos = 0;
     for (;;)
     {
-	int c = fgetc(fp);
-	if (c == EOF)
-	{
-	    if (ferror(fp))
-	       	nfatal("reading pipe");
-	    fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
-	}
-	if (pos >= result_max)
-	{
-	    result_max = result_max * 2 + 16;
-	    char *new_result = new char [result_max];
-	    memcpy(new_result, result, result_max);
-	    delete [] result;
-	    result = new_result;
-	}
-	result[pos] = c;
-	if (!c)
-	    break;
-	++pos;
+        int c = fgetc(fp);
+        if (c == EOF)
+        {
+            if (ferror(fp))
+                nfatal("reading pipe");
+            fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+        }
+        if (pos >= result_max)
+        {
+            result_max = result_max * 2 + 16;
+            char *new_result = new char [result_max];
+            memcpy(new_result, result, result_max);
+            delete [] result;
+            result = new_result;
+        }
+        result[pos] = c;
+        if (!c)
+            break;
+        ++pos;
     }
     trace(("return \"%s\";\n", result));
     trace(("}\n"));
@@ -344,37 +345,37 @@ proxy(int rd_fd, int wr_fd)
     FILE *command = fdopen(rd_fd, "r");
     if (!command)
     {
-	if (!errno)
-    	    errno = ENOMEM;
-	exit(errno);
+        if (!errno)
+            errno = ENOMEM;
+        exit(errno);
     }
 
     errno = 0;
     FILE *reply = fdopen(wr_fd, "w");
     if (!reply)
     {
-	if (!errno)
-    	    errno = ENOMEM;
-	exit(errno);
+        if (!errno)
+            errno = ENOMEM;
+        exit(errno);
     }
 
     for (;;)
     {
-	int c = fgetc(command);
-	trace(("command: %s\n", command_name(c)));
-	trace(("uid = %d;\n", getuid()));
-	trace(("gid = %d;\n", getgid()));
-	switch (c)
-	{
-	case EOF:
-	    if (ferror(command))
-	       	exit(errno);
-	    exit(0);
+        int c = fgetc(command);
+        trace(("command: %s\n", command_name(c)));
+        trace(("uid = %d;\n", getuid()));
+        trace(("gid = %d;\n", getgid()));
+        switch (c)
+        {
+        case EOF:
+            if (ferror(command))
+                exit(errno);
+            exit(0);
 
-	default:
-	    fatal_raw("proxy: unknown %d command (bug)", c);
+        default:
+            fatal_raw("proxy: unknown %d command (bug)", c);
 
-	case command_access:
+        case command_access:
             {
                 char *path = (char *)get_string(command);
                 int mode = get_int(command);
@@ -383,9 +384,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_catfile:
+        case command_catfile:
             {
                 char *path = (char *)get_string(command);
                 int result = 0;
@@ -393,9 +394,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_chmod:
+        case command_chmod:
             {
                 char *path = (char *)get_string(command);
                 int mode = get_int(command);
@@ -404,9 +405,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_chown:
+        case command_chown:
             {
                 char *path = (char *)get_string(command);
                 int uid = get_int(command);
@@ -416,9 +417,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_close:
+        case command_close:
             {
                 int fd = get_int(command);
                 int result = 0;
@@ -426,9 +427,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_copyfile:
+        case command_copyfile:
             {
                 char *path = (char *)get_string(command);
                 char *path1 = mem_copy_string(path);
@@ -439,9 +440,9 @@ proxy(int rd_fd, int wr_fd)
                 mem_free(path1);
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_creat:
+        case command_creat:
             {
                 char *path = (char *)get_string(command);
                 int mode = get_int(command);
@@ -450,9 +451,9 @@ proxy(int rd_fd, int wr_fd)
                 if (result < 0)
                     put_int(reply, errno);
             }
-	    break;
+            break;
 
-	case command_getcwd:
+        case command_getcwd:
             {
                 int path_max = get_int(command);
                 char *path = (char *)mem_alloc(path_max);
@@ -465,9 +466,9 @@ proxy(int rd_fd, int wr_fd)
                 }
                 mem_free(path);
             }
-	    break;
+            break;
 
-	case command_fcntl:
+        case command_fcntl:
             {
                 int fd = get_int(command);
                 int mode = get_int(command);
@@ -479,9 +480,9 @@ proxy(int rd_fd, int wr_fd)
                 put_int(reply, result);
                 put_binary(reply, &theFlock, sizeof(theFlock));
             }
-	    break;
+            break;
 
-	case command_file_compare:
+        case command_file_compare:
             {
                 char *path = (char *)get_string(command);
                 char *path1 = mem_copy_string(path);
@@ -492,9 +493,9 @@ proxy(int rd_fd, int wr_fd)
                 mem_free(path1);
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_file_fingerprint:
+        case command_file_fingerprint:
             {
                 char *path = (char *)get_string(command);
                 int path1_max = get_int(command);
@@ -507,9 +508,9 @@ proxy(int rd_fd, int wr_fd)
                     put_binary(reply, path1, result);
                 mem_free(path1);
             }
-	    break;
+            break;
 
-	case command_link:
+        case command_link:
             {
                 char *path = (char *)get_string(command);
                 char *path1 = mem_copy_string(path);
@@ -520,9 +521,9 @@ proxy(int rd_fd, int wr_fd)
                 mem_free(path1);
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_lstat:
+        case command_lstat:
             {
                 char *path = (char *)get_string(command);
                 struct stat st;
@@ -539,9 +540,9 @@ proxy(int rd_fd, int wr_fd)
                     put_binary(reply, &st, sizeof(st));
                 }
             }
-	    break;
+            break;
 
-	case command_lutime:
+        case command_lutime:
             {
                 char *path = (char *)get_string(command);
                 struct utimbuf utb;
@@ -556,9 +557,9 @@ proxy(int rd_fd, int wr_fd)
 #endif
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_mkdir:
+        case command_mkdir:
             {
                 char *path = (char *)get_string(command);
                 int mode = get_int(command);
@@ -567,9 +568,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_open:
+        case command_open:
             {
                 char *path = (char *)get_string(command);
                 int mode = get_int(command);
@@ -579,9 +580,9 @@ proxy(int rd_fd, int wr_fd)
                 if (result < 0)
                     put_int(reply, errno);
             }
-	    break;
+            break;
 
-	case command_pathconf:
+        case command_pathconf:
             {
                 char *path = (char *)get_string(command);
                 int mode = get_int(command);
@@ -598,9 +599,9 @@ proxy(int rd_fd, int wr_fd)
                     put_int(reply, errno);
 #endif
             }
-	    break;
+            break;
 
-	case command_rename:
+        case command_rename:
             {
                 char *path = (char *)get_string(command);
                 char *path1 = mem_copy_string(path);
@@ -611,9 +612,9 @@ proxy(int rd_fd, int wr_fd)
                 mem_free(path1);
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_read:
+        case command_read:
             {
                 int fd = get_int(command);
                 long nbytes = get_long(command);
@@ -626,9 +627,9 @@ proxy(int rd_fd, int wr_fd)
                     put_int(reply, errno);
                 mem_free(buf);
             }
-	    break;
+            break;
 
-	case command_readlink:
+        case command_readlink:
             {
                 char *path = (char *)get_string(command);
                 int path1_max = get_int(command);
@@ -646,9 +647,9 @@ proxy(int rd_fd, int wr_fd)
 #endif
                 mem_free(path1);
             }
-	    break;
+            break;
 
-	case command_read_whole_dir:
+        case command_read_whole_dir:
             {
                 char *path = (char *)get_string(command);
                 long nbytes = 0;
@@ -664,9 +665,9 @@ proxy(int rd_fd, int wr_fd)
                 }
                 // do not free *buf, or *buf[*]
             }
-	    break;
+            break;
 
-	case command_rmdir:
+        case command_rmdir:
             {
                 char *path = (char *)get_string(command);
                 int result = 0;
@@ -674,9 +675,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_rmdir_bg:
+        case command_rmdir_bg:
             {
                 char *path = (char *)get_string(command);
                 int result = 0;
@@ -684,9 +685,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_rmdir_tree:
+        case command_rmdir_tree:
             {
                 char *path = (char *)get_string(command);
                 int result = 0;
@@ -694,9 +695,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_stat:
+        case command_stat:
             {
                 char *path = (char *)get_string(command);
                 struct stat st;
@@ -709,9 +710,9 @@ proxy(int rd_fd, int wr_fd)
                     put_binary(reply, &st, sizeof(st));
                 }
             }
-	    break;
+            break;
 
-	case command_symlink:
+        case command_symlink:
             {
                 char *path = (char *)get_string(command);
                 char *path1 = mem_copy_string(path);
@@ -726,9 +727,9 @@ proxy(int rd_fd, int wr_fd)
                 mem_free(path1);
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_unlink:
+        case command_unlink:
             {
                 char *path = (char *)get_string(command);
                 int result = unlink(path);
@@ -736,9 +737,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_utime:
+        case command_utime:
             {
                 char *path = (char *)get_string(command);
                 struct utimbuf utb;
@@ -748,9 +749,9 @@ proxy(int rd_fd, int wr_fd)
                     result = errno;
                 put_int(reply, result);
             }
-	    break;
+            break;
 
-	case command_write:
+        case command_write:
             {
                 int fd = get_int(command);
                 long nbytes = get_long(command);
@@ -762,11 +763,11 @@ proxy(int rd_fd, int wr_fd)
                     put_int(reply, errno);
                 mem_free(buf);
             }
-	    break;
-	}
-	fflush(reply);
-	if (ferror(reply))
-	    exit(errno);
+            break;
+        }
+        fflush(reply);
+        if (ferror(reply))
+            exit(errno);
     }
     trace(("}\n"));
 }
@@ -775,11 +776,11 @@ proxy(int rd_fd, int wr_fd)
 static void
 get_pipe(int *rd, int *wr)
 {
-    int	fd[2];
+    int fd[2];
 
     trace(("get_pipe()\n{\n"));
     if (pipe(fd))
-	nfatal("pipe");
+        nfatal("pipe");
     *rd = fd[0];
     *wr = fd[1];
     trace(("read %d\n", fd[0]));
@@ -791,25 +792,25 @@ get_pipe(int *rd, int *wr)
 static void
 proxy_close(void)
 {
-    proxy_ty	*p;
-    size_t		j;
+    proxy_ty    *p;
+    size_t              j;
 
     trace(("proxy_close()\n{\n"));
     trace(("pid = %d;\n", getpid()));
     for (j = 0; j < SIZEOF(proxy_table); ++j)
     {
-	for (;;)
-	{
-	    p = proxy_table[j];
-	    if (!p)
-		break;
-	    trace(("p->pid %d; uid %d; gid %d\n",
-		p->pid, p->uid, p->gid));
-	    proxy_table[j] = p->next;
-	    fclose(p->command);
-	    fclose(p->reply);
-	    mem_free((char *)p);
-	}
+        for (;;)
+        {
+            p = proxy_table[j];
+            if (!p)
+                break;
+            trace(("p->pid %d; uid %d; gid %d\n",
+                p->pid, p->uid, p->gid));
+            proxy_table[j] = p->next;
+            fclose(p->command);
+            fclose(p->reply);
+            mem_free((char *)p);
+        }
     }
     trace(("}\n"));
 }
@@ -818,19 +819,19 @@ proxy_close(void)
 static void
 proxy_spawn(proxy_ty *pp)
 {
-    int		command_read_fd;
-    int		command_write_fd;
-    int		reply_read_fd;
-    int		reply_write_fd;
-    int		pid;
-    static int	quitregd;
+    int         command_read_fd;
+    int         command_write_fd;
+    int         reply_read_fd;
+    int         reply_write_fd;
+    int         pid;
+    static int  quitregd;
 
     trace(("proxy_spawn()\n{\n"));
     if (!quitregd)
     {
-	quitregd = 1;
-	signal(SIGPIPE, SIG_IGN);
-	trace(("master pid %d;\n", getpid()));
+        quitregd = 1;
+        signal(SIGPIPE, SIG_IGN);
+        trace(("master pid %d;\n", getpid()));
     }
 
     get_pipe(&command_read_fd, &command_write_fd);
@@ -838,85 +839,85 @@ proxy_spawn(proxy_ty *pp)
     switch (pid = fork())
     {
     case -1:
-	nfatal("fork");
+        nfatal("fork");
 
     case 0:
-	//
-	// close the ends of the pipes the proxy will not be using
-	//
-	close(command_write_fd);
-	close(reply_read_fd);
-	os_interrupt_ignore();
+        //
+        // close the ends of the pipes the proxy will not be using
+        //
+        close(command_write_fd);
+        close(reply_read_fd);
+        os_interrupt_ignore();
 
-	//
-	// the proxy now assumes the appropriate ID
-	//
-	if (setgid(pp->gid))
-		exit(errno);
-	if (setuid(pp->uid))
-		exit(errno);
-	umask(pp->umask);
+        //
+        // the proxy now assumes the appropriate ID
+        //
+        if (setgid(pp->gid))
+                exit(errno);
+        if (setuid(pp->uid))
+                exit(errno);
+        umask(pp->umask);
 
-	//
-	// close all of the master ends of all the other proxys
-	// otherwise they will keep each other alive
-	// after the master dies
-	//
-	trace_indent_reset();
-	proxy_close();
+        //
+        // close all of the master ends of all the other proxys
+        // otherwise they will keep each other alive
+        // after the master dies
+        //
+        trace_indent_reset();
+        proxy_close();
 
-	//
-	// normally the proxys are silent,
-	// returning all errors to the master.
-	// Should one of the error functions be called,
-	// make sure the proxy does not perform the undo.
-	//
-	undo_cancel();
+        //
+        // normally the proxys are silent,
+        // returning all errors to the master.
+        // Should one of the error functions be called,
+        // make sure the proxy does not perform the undo.
+        //
+        undo_cancel();
 
-	//
-	// do whatever is asked
-	//
-	proxy(command_read_fd, reply_write_fd);
-	exit(0);
+        //
+        // do whatever is asked
+        //
+        proxy(command_read_fd, reply_write_fd);
+        exit(0);
 
     default:
-	//
-	// close the ends of the pipes the master will not be using
-	//
-	close(command_read_fd);
-	close(reply_write_fd);
+        //
+        // close the ends of the pipes the master will not be using
+        //
+        close(command_read_fd);
+        close(reply_write_fd);
 
-	//
-	// remember who the child is
-	// (even though we don't have a use for it at the moment)
-	//
-	pp->pid = pid;
-	trace(("child pid %d\n", getpid()));
+        //
+        // remember who the child is
+        // (even though we don't have a use for it at the moment)
+        //
+        pp->pid = pid;
+        trace(("child pid %d\n", getpid()));
 
-	//
-	// open a buffered stream for commands
-	//
-	errno = 0;
-	pp->command = fdopen(command_write_fd, "w");
-	if (!pp->command)
-	{
-	    if (!errno)
-	       	errno = ENOMEM;
-	    nfatal("fdopen");
-	}
+        //
+        // open a buffered stream for commands
+        //
+        errno = 0;
+        pp->command = fdopen(command_write_fd, "w");
+        if (!pp->command)
+        {
+            if (!errno)
+                errno = ENOMEM;
+            nfatal("fdopen");
+        }
 
-	//
-	// open a buffered stream for replies
-	//
-	errno = 0;
-	pp->reply = fdopen(reply_read_fd, "r");
-	if (!pp->reply)
-	{
-	    if (!errno)
-	       	errno = ENOMEM;
-	    nfatal("fdopen");
-	}
-	break;
+        //
+        // open a buffered stream for replies
+        //
+        errno = 0;
+        pp->reply = fdopen(reply_read_fd, "r");
+        if (!pp->reply)
+        {
+            if (!errno)
+                errno = ENOMEM;
+            nfatal("fdopen");
+        }
+        break;
     }
     trace(("}\n"));
 }
@@ -925,12 +926,12 @@ proxy_spawn(proxy_ty *pp)
 static proxy_ty *
 proxy_find(void)
 {
-    int		uid;
-    int		gid;
-    int		um;
-    int		hash;
-    int		pix;
-    proxy_ty	*pp;
+    int         uid;
+    int         gid;
+    int         um;
+    int         hash;
+    int         pix;
+    proxy_ty    *pp;
 
     //
     // search for an existing proxy
@@ -942,11 +943,11 @@ proxy_find(void)
     pix = hash % SIZEOF(proxy_table);
     for (pp = proxy_table[pix]; pp; pp = pp->next)
     {
-	if (pp->hash != hash)
-    	    continue;
-	if (pp->uid != uid || pp->gid != gid || pp->umask != um)
-    	    continue;
-	goto done;
+        if (pp->hash != hash)
+            continue;
+        if (pp->uid != uid || pp->gid != gid || pp->umask != um)
+            continue;
+        goto done;
     }
 
     //
@@ -975,7 +976,7 @@ proxy_find(void)
     // here for all exits
     //
     done:
-    trace(("return %08lX;\n", (long)pp));
+    trace(("return %p;\n", pp));
     trace(("}\n"));
     return pp;
 }
@@ -986,7 +987,7 @@ end_of_command(proxy_ty *pp)
 {
     trace(("end_of_command()\n{\n"));
     if (fflush(pp->command))
-	nfatal("write pipe");
+        nfatal("write pipe");
     trace(("}\n"));
 }
 
@@ -994,8 +995,8 @@ end_of_command(proxy_ty *pp)
 int
 glue_stat(const char *path, struct stat *st)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_stat()\n{\n"));
     pp = proxy_find();
@@ -1005,11 +1006,11 @@ glue_stat(const char *path, struct stat *st)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     else
-	get_binary(pp->reply, st, sizeof(*st));
+        get_binary(pp->reply, st, sizeof(*st));
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
     return result;
@@ -1019,8 +1020,8 @@ glue_stat(const char *path, struct stat *st)
 int
 glue_lstat(const char *path, struct stat *st)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_lstat()\n{\n"));
     pp = proxy_find();
@@ -1030,11 +1031,11 @@ glue_lstat(const char *path, struct stat *st)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     else
-	get_binary(pp->reply, st, sizeof(*st));
+        get_binary(pp->reply, st, sizeof(*st));
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
     return result;
@@ -1044,8 +1045,8 @@ glue_lstat(const char *path, struct stat *st)
 int
 glue_mkdir(const char *path, int mode)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_mkdir()\n{\n"));
     pp = proxy_find();
@@ -1056,8 +1057,8 @@ glue_mkdir(const char *path, int mode)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1068,8 +1069,8 @@ glue_mkdir(const char *path, int mode)
 int
 glue_chown(const char *path, int uid, int gid)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_chown()\n{\n"));
     pp = proxy_find();
@@ -1081,8 +1082,8 @@ glue_chown(const char *path, int uid, int gid)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1093,8 +1094,8 @@ glue_chown(const char *path, int uid, int gid)
 int
 glue_catfile(const char *path)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_catfile()\n{\n"));
     pp = proxy_find();
@@ -1104,8 +1105,8 @@ glue_catfile(const char *path)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1116,8 +1117,8 @@ glue_catfile(const char *path)
 int
 glue_chmod(const char *path, int mode)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_chmod()\n{\n"));
     pp = proxy_find();
@@ -1128,8 +1129,8 @@ glue_chmod(const char *path, int mode)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1140,8 +1141,8 @@ glue_chmod(const char *path, int mode)
 int
 glue_rmdir(const char *path)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_rmdir()\n{\n"));
     pp = proxy_find();
@@ -1151,8 +1152,8 @@ glue_rmdir(const char *path)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1163,8 +1164,8 @@ glue_rmdir(const char *path)
 int
 glue_rmdir_bg(const char *path)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_rmdir_bg()\n{\n"));
     pp = proxy_find();
@@ -1174,8 +1175,8 @@ glue_rmdir_bg(const char *path)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1186,8 +1187,8 @@ glue_rmdir_bg(const char *path)
 int
 glue_rename(const char *p1, const char *p2)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_rename()\n{\n"));
     pp = proxy_find();
@@ -1198,8 +1199,8 @@ glue_rename(const char *p1, const char *p2)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1210,8 +1211,8 @@ glue_rename(const char *p1, const char *p2)
 int
 glue_symlink(const char *name1, const char *name2)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_symlink()\n{\n"));
     pp = proxy_find();
@@ -1222,8 +1223,8 @@ glue_symlink(const char *name1, const char *name2)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1234,8 +1235,8 @@ glue_symlink(const char *name1, const char *name2)
 int
 glue_unlink(const char *path)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_unlink()\n{\n"));
     pp = proxy_find();
@@ -1245,8 +1246,8 @@ glue_unlink(const char *path)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1257,8 +1258,8 @@ glue_unlink(const char *path)
 int
 glue_link(const char *p1, const char *p2)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_link()\n{\n"));
     pp = proxy_find();
@@ -1269,8 +1270,8 @@ glue_link(const char *p1, const char *p2)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1281,8 +1282,8 @@ glue_link(const char *p1, const char *p2)
 int
 glue_access(const char *path, int mode)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_access()\n{\n"));
     pp = proxy_find();
@@ -1293,8 +1294,8 @@ glue_access(const char *path, int mode)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1319,15 +1320,15 @@ glue_getcwd(char *buf, int buf_len)
     char *s = 0;
     if (result)
     {
-	trace(("return NULL; /* errno = %d */\n", result));
-	errno = result;
+        trace(("return NULL; /* errno = %d */\n", result));
+        errno = result;
     }
     else
     {
-	s = (char *)get_string(pp->reply);
-	strendcpy(buf, s, buf + buf_len);
-	s = buf;
-	trace(("return \"%s\";\n", s));
+        s = (char *)get_string(pp->reply);
+        strendcpy(buf, s, buf + buf_len);
+        s = buf;
+        trace(("return \"%s\";\n", s));
     }
     trace(("}\n"));
     return s;
@@ -1346,13 +1347,13 @@ glue_readlink(const char *path, char *buf, int buf_len)
     int result = get_int(pp->reply);
     if (result < 0)
     {
-	errno = get_int(pp->reply);
-	result = -1;
+        errno = get_int(pp->reply);
+        result = -1;
     }
     else
     {
-	get_binary(pp->reply, buf, result);
-	trace(("buf = \"%.*s\";\n", result, buf));
+        get_binary(pp->reply, buf, result);
+        trace(("buf = \"%.*s\";\n", result, buf));
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1363,8 +1364,8 @@ glue_readlink(const char *path, char *buf, int buf_len)
 int
 glue_utime(const char *path, struct utimbuf *values)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_utime()\n{\n"));
     pp = proxy_find();
@@ -1375,8 +1376,8 @@ glue_utime(const char *path, struct utimbuf *values)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1388,8 +1389,8 @@ int
 glue_lutime(const char *path, struct utimbuf *values)
 {
 #ifdef HAVE_LUTIME
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_utime()\n{\n"));
     pp = proxy_find();
@@ -1400,8 +1401,8 @@ glue_lutime(const char *path, struct utimbuf *values)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1418,8 +1419,8 @@ glue_lutime(const char *path, struct utimbuf *values)
 int
 glue_copyfile(const char *p1, const char *p2)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_copyfile()\n{\n"));
     pp = proxy_find();
@@ -1430,8 +1431,8 @@ glue_copyfile(const char *p1, const char *p2)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1441,38 +1442,38 @@ glue_copyfile(const char *p1, const char *p2)
 
 struct glue_file_ty
 {
-    long		guard1;
-    char		*path;
-    int		fmode;
-    char		*buffer_end;
-    char		*buffer_pos;
-    int		fd;
-    int		errno_sequester;
-    int		pushback;
-    proxy_ty	*pp;
-    char		buffer[1 << 11]; // fits within knl pipe buf
-    long		guard2;
+    long                guard1;
+    char                *path;
+    int         fmode;
+    char                *buffer_end;
+    char                *buffer_pos;
+    int         fd;
+    int         errno_sequester;
+    int         pushback;
+    proxy_ty    *pp;
+    char                buffer[1 << 11]; // fits within knl pipe buf
+    long                guard2;
 };
 
 
 FILE *
 glue_fopen(const char *path, const char *mode)
 {
-    glue_file_ty	*gfp;
-    proxy_ty	*pp;
-    int		fmode;
-    int		fd;
+    glue_file_ty        *gfp;
+    proxy_ty    *pp;
+    int         fmode;
+    int         fd;
 
     trace(("glue_fopen()\n{\n"));
     if (!strcmp(mode, "r"))
-	fmode = O_RDONLY;
+        fmode = O_RDONLY;
     else if (!strcmp(mode, "w"))
-	fmode = O_WRONLY | O_CREAT | O_TRUNC;
+        fmode = O_WRONLY | O_CREAT | O_TRUNC;
     else
     {
-	errno = EINVAL;
-	gfp = 0;
-	goto done;
+        errno = EINVAL;
+        gfp = 0;
+        goto done;
     }
 
     pp = proxy_find();
@@ -1484,9 +1485,9 @@ glue_fopen(const char *path, const char *mode)
     fd = get_int(pp->reply);
     if (fd < 0)
     {
-	errno = get_int(pp->reply);
-	gfp = 0;
-	goto done;
+        errno = get_int(pp->reply);
+        gfp = 0;
+        goto done;
     }
 
     //
@@ -1501,13 +1502,13 @@ glue_fopen(const char *path, const char *mode)
     gfp->guard2 = GUARD2;
     if (gfp->fmode == O_RDONLY)
     {
-	gfp->buffer_end = 0;
-	gfp->buffer_pos = 0;
+        gfp->buffer_end = 0;
+        gfp->buffer_pos = 0;
     }
     else
     {
-	gfp->buffer_pos = gfp->buffer;
-	gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
+        gfp->buffer_pos = gfp->buffer;
+        gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
     }
     gfp->errno_sequester = 0;
     gfp->pushback = EOF;
@@ -1518,7 +1519,7 @@ glue_fopen(const char *path, const char *mode)
     // but is only useful to the glue file functions.
     //
     done:
-    trace(("return %08lX; /* errno = %d */\n", (long)gfp, errno));
+    trace(("return %p; /* errno = %d */\n", gfp, errno));
     trace(("}\n"));
     return (FILE *)gfp;
 }
@@ -1527,17 +1528,17 @@ glue_fopen(const char *path, const char *mode)
 int
 glue_fclose(FILE *fp)
 {
-    proxy_ty	*pp;
-    glue_file_ty	*gfp;
-    int		result;
-    int		result2;
+    proxy_ty    *pp;
+    glue_file_ty        *gfp;
+    int         result;
+    int         result2;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return fclose(fp);
+        return fclose(fp);
 
     //
     // flush the buffers
@@ -1561,7 +1562,7 @@ glue_fclose(FILE *fp)
     end_of_command(pp);
     result2 = get_int(pp->reply);
     if (!result)
-	result = result2;
+        result = result2;
 
     //
     // Fclose always closes the file,
@@ -1576,8 +1577,8 @@ glue_fclose(FILE *fp)
     //
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -1588,17 +1589,17 @@ glue_fclose(FILE *fp)
 int
 glue_fgetc(FILE *fp)
 {
-    proxy_ty	*pp;
-    glue_file_ty	*gfp;
-    int		result;
-    long		nbytes;
+    proxy_ty    *pp;
+    glue_file_ty        *gfp;
+    int         result;
+    long                nbytes;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return fgetc(fp);
+        return fgetc(fp);
 
     //
     // locate the appropriate proxy
@@ -1614,16 +1615,16 @@ glue_fgetc(FILE *fp)
     //
     if (gfp->errno_sequester)
     {
-	errno = gfp->errno_sequester;
-	result = EOF;
-	goto done;
+        errno = gfp->errno_sequester;
+        result = EOF;
+        goto done;
     }
     if (gfp->fmode != O_RDONLY)
     {
-	gfp->errno_sequester = EINVAL;
-	errno = EINVAL;
-	result = EOF;
-	goto done;
+        gfp->errno_sequester = EINVAL;
+        errno = EINVAL;
+        result = EOF;
+        goto done;
     }
 
     //
@@ -1631,9 +1632,9 @@ glue_fgetc(FILE *fp)
     //
     if (gfp->pushback != EOF)
     {
-	result = gfp->pushback;
-	gfp->pushback = EOF;
-	goto done;
+        result = gfp->pushback;
+        gfp->pushback = EOF;
+        goto done;
     }
 
     //
@@ -1641,8 +1642,8 @@ glue_fgetc(FILE *fp)
     //
     if (gfp->buffer_pos && gfp->buffer_pos < gfp->buffer_end)
     {
-	result = (unsigned char)*gfp->buffer_pos++;
-	goto done;
+        result = (unsigned char)*gfp->buffer_pos++;
+        goto done;
     }
     gfp->buffer_pos = 0;
     gfp->buffer_end = 0;
@@ -1658,16 +1659,16 @@ glue_fgetc(FILE *fp)
     nbytes = get_long(pp->reply);
     if (nbytes < 0)
     {
-	gfp->errno_sequester = get_int(pp->reply);
-	errno = gfp->errno_sequester;
-	result = EOF;
-	goto done;
+        gfp->errno_sequester = get_int(pp->reply);
+        errno = gfp->errno_sequester;
+        result = EOF;
+        goto done;
     }
     if (nbytes == 0)
     {
-	errno = 0;
-	result = EOF;
-	goto done;
+        errno = 0;
+        result = EOF;
+        goto done;
     }
     assert((size_t)nbytes <= sizeof(gfp->buffer));
     get_binary(pp->reply, gfp->buffer, nbytes);
@@ -1683,18 +1684,18 @@ glue_fgetc(FILE *fp)
 }
 
 
-long
+ssize_t
 glue_read(int fd, void *data, size_t len)
 {
-    proxy_ty	*pp;
-    long		nbytes;
+    proxy_ty    *pp;
+    long                nbytes;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fd == fileno(stdout) || fd == fileno(stdin) || fd == fileno(stderr))
-	return read(fd, data, len);
+        return read(fd, data, len);
 
     //
     // locate the appropriate proxy
@@ -1711,13 +1712,13 @@ glue_read(int fd, void *data, size_t len)
     nbytes = get_long(pp->reply);
     if (nbytes < 0)
     {
-	errno = get_int(pp->reply);
-	return -1;
+        errno = get_int(pp->reply);
+        return -1;
     }
     if (nbytes == 0)
     {
-	errno = 0;
-	return 0;
+        errno = 0;
+        return 0;
     }
     assert((size_t)nbytes <= len);
     get_binary(pp->reply, data, nbytes);
@@ -1728,15 +1729,15 @@ glue_read(int fd, void *data, size_t len)
 int
 glue_ungetc(int c, FILE *fp)
 {
-    glue_file_ty	*gfp;
-    int		result;
+    glue_file_ty        *gfp;
+    int         result;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return ungetc(c, fp);
+        return ungetc(c, fp);
 
     //
     // make a pointer to our data
@@ -1752,10 +1753,10 @@ glue_ungetc(int c, FILE *fp)
     //
     if (gfp->pushback != EOF || c == EOF)
     {
-	gfp->errno_sequester = EINVAL;
-	errno = EINVAL;
-	gfp->pushback = EOF;
-	goto done;
+        gfp->errno_sequester = EINVAL;
+        errno = EINVAL;
+        gfp->pushback = EOF;
+        goto done;
     }
 
     //
@@ -1777,16 +1778,16 @@ glue_ungetc(int c, FILE *fp)
 int
 glue_fputc(int c, FILE *fp)
 {
-    proxy_ty	*pp;
-    glue_file_ty	*gfp;
-    int		result;
+    proxy_ty    *pp;
+    glue_file_ty        *gfp;
+    int         result;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return fputc(c, fp);
+        return fputc(c, fp);
 
     //
     // locate the appropriate proxy
@@ -1804,14 +1805,14 @@ glue_fputc(int c, FILE *fp)
     //
     if (gfp->errno_sequester)
     {
-	errno = gfp->errno_sequester;
-	goto done;
+        errno = gfp->errno_sequester;
+        goto done;
     }
     if (gfp->fmode == O_RDONLY)
     {
-	gfp->errno_sequester = EINVAL;
-	errno = EINVAL;
-	goto done;
+        gfp->errno_sequester = EINVAL;
+        errno = EINVAL;
+        goto done;
     }
 
     //
@@ -1821,30 +1822,30 @@ glue_fputc(int c, FILE *fp)
     assert(gfp->buffer_pos);
     if (gfp->buffer_pos >= gfp->buffer_end)
     {
-	long	nbytes;
-	long	nbytes2;
+        long    nbytes;
+        long    nbytes2;
 
-	fputc(command_write, pp->command);
-	put_int(pp->command, gfp->fd);
-	nbytes = gfp->buffer_pos - gfp->buffer;
-	put_long(pp->command, nbytes);
-	put_binary(pp->command, gfp->buffer, nbytes);
-	end_of_command(pp);
-	nbytes2 = get_long(pp->reply);
-	if (nbytes2 < 0)
-	{
-	    gfp->errno_sequester = get_int(pp->reply);
-	    errno = gfp->errno_sequester;
-	    goto done;
-	}
-	if (nbytes2 != nbytes)
-	{
-	    gfp->errno_sequester = EIO;
-	    errno = EIO;
-	    goto done;
-	}
-	gfp->buffer_pos = gfp->buffer;
-	gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
+        fputc(command_write, pp->command);
+        put_int(pp->command, gfp->fd);
+        nbytes = gfp->buffer_pos - gfp->buffer;
+        put_long(pp->command, nbytes);
+        put_binary(pp->command, gfp->buffer, nbytes);
+        end_of_command(pp);
+        nbytes2 = get_long(pp->reply);
+        if (nbytes2 < 0)
+        {
+            gfp->errno_sequester = get_int(pp->reply);
+            errno = gfp->errno_sequester;
+            goto done;
+        }
+        if (nbytes2 != nbytes)
+        {
+            gfp->errno_sequester = EIO;
+            errno = EIO;
+            goto done;
+        }
+        gfp->buffer_pos = gfp->buffer;
+        gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
     }
 
     //
@@ -1864,17 +1865,17 @@ glue_fputc(int c, FILE *fp)
 int
 glue_fwrite(char *buf, long len1, long len2, FILE *fp)
 {
-    proxy_ty	*pp;
-    glue_file_ty	*gfp;
-    int		result;
-    long		len;
+    proxy_ty    *pp;
+    glue_file_ty        *gfp;
+    int         result;
+    long                len;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return fwrite(buf, len1, len2, fp);
+        return fwrite(buf, len1, len2, fp);
 
     //
     // locate the appropriate proxy
@@ -1892,14 +1893,14 @@ glue_fwrite(char *buf, long len1, long len2, FILE *fp)
     //
     if (gfp->errno_sequester)
     {
-	errno = gfp->errno_sequester;
-	goto done;
+        errno = gfp->errno_sequester;
+        goto done;
     }
     if (gfp->fmode == O_RDONLY)
     {
-	gfp->errno_sequester = EINVAL;
-	errno = EINVAL;
-	goto done;
+        gfp->errno_sequester = EINVAL;
+        errno = EINVAL;
+        goto done;
     }
 
     //
@@ -1908,46 +1909,46 @@ glue_fwrite(char *buf, long len1, long len2, FILE *fp)
     len = len1 * len2;
     while (len > 0)
     {
-	int c = (unsigned char)*buf++;
-	--len;
+        int c = (unsigned char)*buf++;
+        --len;
 
-	//
-	// if there is no room in the buffer,
-	// flush it to the proxy
-	//
-	assert(gfp->buffer_pos);
-	if (gfp->buffer_pos >= gfp->buffer_end)
-	{
-	    long	nbytes;
-	    long	nbytes2;
+        //
+        // if there is no room in the buffer,
+        // flush it to the proxy
+        //
+        assert(gfp->buffer_pos);
+        if (gfp->buffer_pos >= gfp->buffer_end)
+        {
+            long        nbytes;
+            long        nbytes2;
 
-	    fputc(command_write, pp->command);
-	    put_int(pp->command, gfp->fd);
-	    nbytes = gfp->buffer_pos - gfp->buffer;
-	    put_long(pp->command, nbytes);
-	    put_binary(pp->command, gfp->buffer, nbytes);
-	    end_of_command(pp);
-	    nbytes2 = get_long(pp->reply);
-	    if (nbytes2 < 0)
-	    {
-		gfp->errno_sequester = get_int(pp->reply);
-		errno = gfp->errno_sequester;
-		goto done;
-	    }
-	    if (nbytes2 != nbytes)
-	    {
-		gfp->errno_sequester = EIO;
-		errno = EIO;
-		goto done;
-	    }
-	    gfp->buffer_pos = gfp->buffer;
-	    gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
-	}
+            fputc(command_write, pp->command);
+            put_int(pp->command, gfp->fd);
+            nbytes = gfp->buffer_pos - gfp->buffer;
+            put_long(pp->command, nbytes);
+            put_binary(pp->command, gfp->buffer, nbytes);
+            end_of_command(pp);
+            nbytes2 = get_long(pp->reply);
+            if (nbytes2 < 0)
+            {
+                gfp->errno_sequester = get_int(pp->reply);
+                errno = gfp->errno_sequester;
+                goto done;
+            }
+            if (nbytes2 != nbytes)
+            {
+                gfp->errno_sequester = EIO;
+                errno = EIO;
+                goto done;
+            }
+            gfp->buffer_pos = gfp->buffer;
+            gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
+        }
 
-	//
-	// stash the character
-	//
-	*gfp->buffer_pos++ = c;
+        //
+        // stash the character
+        //
+        *gfp->buffer_pos++ = c;
     }
     result = len1;
 
@@ -1962,14 +1963,14 @@ glue_fwrite(char *buf, long len1, long len2, FILE *fp)
 int
 glue_ferror(FILE *fp)
 {
-    glue_file_ty	*gfp;
+    glue_file_ty        *gfp;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return ferror(fp);
+        return ferror(fp);
 
     //
     // locate the appropriate proxy
@@ -1984,9 +1985,9 @@ glue_ferror(FILE *fp)
     //
     if (gfp->errno_sequester)
     {
-	errno = gfp->errno_sequester;
-	gfp->errno_sequester = 0;
-	return 1;
+        errno = gfp->errno_sequester;
+        gfp->errno_sequester = 0;
+        return 1;
     }
     return 0;
 }
@@ -1995,16 +1996,16 @@ glue_ferror(FILE *fp)
 int
 glue_fflush(FILE *fp)
 {
-    glue_file_ty	*gfp;
-    proxy_ty	*pp;
-    int		result;
+    glue_file_ty        *gfp;
+    proxy_ty    *pp;
+    int         result;
 
     //
     // Leave the standard file streams alone.
     // There is a chance these will be seen here.
     //
     if (fp == stdout || fp == stdin || fp == stderr)
-	return fflush(fp);
+        return fflush(fp);
 
     //
     // locate the appropriate proxy
@@ -2022,14 +2023,14 @@ glue_fflush(FILE *fp)
     //
     if (gfp->errno_sequester)
     {
-	errno = gfp->errno_sequester;
-	goto done;
+        errno = gfp->errno_sequester;
+        goto done;
     }
     if (gfp->fmode == O_RDONLY)
     {
-	gfp->errno_sequester = EINVAL;
-	errno = EINVAL;
-	goto done;
+        gfp->errno_sequester = EINVAL;
+        errno = EINVAL;
+        goto done;
     }
 
     //
@@ -2038,30 +2039,30 @@ glue_fflush(FILE *fp)
     //
     if (gfp->buffer_pos && gfp->buffer_pos > gfp->buffer)
     {
-	long	nbytes;
-	long	nbytes2;
+        long    nbytes;
+        long    nbytes2;
 
-	fputc(command_write, pp->command);
-	put_int(pp->command, gfp->fd);
-	nbytes = gfp->buffer_pos - gfp->buffer;
-	put_long(pp->command, nbytes);
-	put_binary(pp->command, gfp->buffer, nbytes);
-	end_of_command(pp);
-	nbytes2 = get_long(pp->reply);
-	if (nbytes2 < 0)
-	{
-	    gfp->errno_sequester = get_int(pp->reply);
-	    errno = gfp->errno_sequester;
-	    goto done;
-	}
-	if (nbytes2 != nbytes)
-	{
-	    gfp->errno_sequester = EIO;
-	    errno = EIO;
-	    goto done;
-	}
-	gfp->buffer_pos = gfp->buffer;
-	gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
+        fputc(command_write, pp->command);
+        put_int(pp->command, gfp->fd);
+        nbytes = gfp->buffer_pos - gfp->buffer;
+        put_long(pp->command, nbytes);
+        put_binary(pp->command, gfp->buffer, nbytes);
+        end_of_command(pp);
+        nbytes2 = get_long(pp->reply);
+        if (nbytes2 < 0)
+        {
+            gfp->errno_sequester = get_int(pp->reply);
+            errno = gfp->errno_sequester;
+            goto done;
+        }
+        if (nbytes2 != nbytes)
+        {
+            gfp->errno_sequester = EIO;
+            errno = EIO;
+            goto done;
+        }
+        gfp->buffer_pos = gfp->buffer;
+        gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
     }
     result = 0;
 
@@ -2078,8 +2079,8 @@ glue_fflush(FILE *fp)
 int
 glue_open(const char *path, int mode, int perm)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_open()\n{\n"));
     pp = proxy_find();
@@ -2090,7 +2091,7 @@ glue_open(const char *path, int mode, int perm)
     end_of_command(pp);
     result = get_int(pp->reply);
     if (result < 0)
-	errno = get_int(pp->reply);
+        errno = get_int(pp->reply);
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
     return result;
@@ -2100,8 +2101,8 @@ glue_open(const char *path, int mode, int perm)
 int
 glue_creat(const char *path, int mode)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_creat()\n{\n"));
     pp = proxy_find();
@@ -2111,7 +2112,7 @@ glue_creat(const char *path, int mode)
     end_of_command(pp);
     result = get_int(pp->reply);
     if (result < 0)
-	errno = get_int(pp->reply);
+        errno = get_int(pp->reply);
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
     return result;
@@ -2121,8 +2122,8 @@ glue_creat(const char *path, int mode)
 int
 glue_close(int fd)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_close()\n{\n"));
     pp = proxy_find();
@@ -2132,8 +2133,8 @@ glue_close(int fd)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -2144,8 +2145,8 @@ glue_close(int fd)
 int
 glue_write(int fd, const void *buf, long len)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_write()\n{\n"));
     pp = proxy_find();
@@ -2157,8 +2158,8 @@ glue_write(int fd, const void *buf, long len)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -2169,12 +2170,12 @@ glue_write(int fd, const void *buf, long len)
 int
 glue_fcntl(int fd, int cmd, struct flock *data)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_fcntl()\n{\n"));
     assert(cmd == F_SETLKW || cmd == F_SETLK || cmd == F_UNLCK ||
-	    cmd == F_GETLK);
+            cmd == F_GETLK);
     pp = proxy_find();
     fputc(command_fcntl, pp->command);
     put_int(pp->command, fd);
@@ -2185,8 +2186,8 @@ glue_fcntl(int fd, int cmd, struct flock *data)
     get_binary(pp->reply, data, sizeof(*data));
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -2197,8 +2198,8 @@ glue_fcntl(int fd, int cmd, struct flock *data)
 int
 glue_file_compare(const char *p1, const char *p2)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_file_compare()\n{\n"));
     pp = proxy_find();
@@ -2209,8 +2210,8 @@ glue_file_compare(const char *p1, const char *p2)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = -result;
-	result = -1;
+        errno = -result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -2221,8 +2222,8 @@ glue_file_compare(const char *p1, const char *p2)
 int
 glue_file_fingerprint(const char *path, char *buf, int buf_len)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_file_fingerprint()\n{\n"));
     pp = proxy_find();
@@ -2233,13 +2234,13 @@ glue_file_fingerprint(const char *path, char *buf, int buf_len)
     result = get_int(pp->reply);
     if (result < 0)
     {
-	errno = get_int(pp->reply);
-	result = -1;
+        errno = get_int(pp->reply);
+        result = -1;
     }
     else
     {
-	get_binary(pp->reply, buf, result);
-	trace(("buf = \"%.*s\";\n", result, buf));
+        get_binary(pp->reply, buf, result);
+        trace(("buf = \"%.*s\";\n", result, buf));
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -2250,11 +2251,11 @@ glue_file_fingerprint(const char *path, char *buf, int buf_len)
 int
 glue_read_whole_dir(const char *path, char **data_p, long *data_len_p)
 {
-    static char	*data;
-    static long	data_max;
-    long		data_len;
-    proxy_ty	*pp;
-    int		result;
+    static char *data;
+    static long data_max;
+    long                data_len;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_read_whole_dir(path = \"%s\")\n{\n", path));
     pp = proxy_find();
@@ -2264,26 +2265,26 @@ glue_read_whole_dir(const char *path, char **data_p, long *data_len_p)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     else
     {
-	data_len = get_long(pp->reply);
-	if (data_len > data_max)
-	{
-	    for (;;)
-	    {
-		data_max = data_max * 2 + 16;
-		if (data_len <= data_max)
-		    break;
-	    }
-	    delete [] data;
-	    data = new char [data_max];
-	}
-	get_binary(pp->reply, data, data_len);
-	*data_len_p = data_len;
-	*data_p = data;
+        data_len = get_long(pp->reply);
+        if (data_len > data_max)
+        {
+            for (;;)
+            {
+                data_max = data_max * 2 + 16;
+                if (data_len <= data_max)
+                    break;
+            }
+            delete [] data;
+            data = new char [data_max];
+        }
+        get_binary(pp->reply, data, data_len);
+        *data_len_p = data_len;
+        *data_p = data;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
@@ -2294,8 +2295,8 @@ glue_read_whole_dir(const char *path, char **data_p, long *data_len_p)
 long
 glue_pathconf(const char *path, int cmd)
 {
-    proxy_ty	*pp;
-    long		result;
+    proxy_ty    *pp;
+    long                result;
 
     trace(("glue_pathconf()\n{\n"));
     pp = proxy_find();
@@ -2305,7 +2306,7 @@ glue_pathconf(const char *path, int cmd)
     end_of_command(pp);
     result = get_long(pp->reply);
     if (result < 0)
-	errno = get_int(pp->reply);
+        errno = get_int(pp->reply);
     trace(("return %ld; /* errno = %d */\n", result, errno));
     trace(("}\n"));
     return result;
@@ -2315,8 +2316,8 @@ glue_pathconf(const char *path, int cmd)
 int
 glue_rmdir_tree(const char *path)
 {
-    proxy_ty	*pp;
-    int		result;
+    proxy_ty    *pp;
+    int         result;
 
     trace(("glue_open()\n{\n"));
     pp = proxy_find();
@@ -2326,10 +2327,13 @@ glue_rmdir_tree(const char *path)
     result = get_int(pp->reply);
     if (result)
     {
-	errno = result;
-	result = -1;
+        errno = result;
+        result = -1;
     }
     trace(("return %d; /* errno = %d */\n", result, errno));
     trace(("}\n"));
     return result;
 }
+
+
+// vim: set ts=8 sw=4 et :

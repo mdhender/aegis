@@ -1,22 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
-//
-//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// //
 // Root <pathname>
 //
 // Tell the server which CVSROOT to use.  Note that <pathname> is a local
@@ -34,9 +32,9 @@
 // Root required: no.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h>
 #include <aecvsserver/response/error.h>
 #include <aecvsserver/request/root.h>
 #include <aecvsserver/server.h>
@@ -60,15 +58,15 @@ request_root::run_inner(server_ty *sp, string_ty *arg)
     assert(sp->np);
     if (sp->np->get_is_rooted())
     {
-	//
-	// The Root request must be sent only once, and it must be sent before
-	//
-	server_error(sp, "too many Root requests");
-	return;
+        //
+        // The Root request must be sent only once, and it must be sent before
+        //
+        server_error(sp, "too many Root requests");
+        return;
     }
     if (0 != strcmp(arg->str_text, ROOT_PATH))
     {
-	//
+        //
         // cvsclient.texi:
         // "The client must send the identical string for cvs root both
         // [at authentication time] and later in the Root request of
@@ -78,8 +76,8 @@ request_root::run_inner(server_ty *sp, string_ty *arg)
         // We only allow one Root specification, exactly ROOT_PATH,
         // and we check it in both places.
         //
-	server_error(sp, "%s: no such repository", arg->str_text);
-	return;
+        server_error(sp, "%s: no such repository", arg->str_text);
+        return;
     }
 
     //
@@ -103,3 +101,6 @@ request_root::reset()
 {
     return false;
 }
+
+
+// vim: set ts=8 sw=4 et :

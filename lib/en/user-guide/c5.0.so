@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998-2000, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-2000, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see
+.\" <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -317,7 +317,7 @@ rather than everyone.
 .LP
 Aegis has the ability to publish RSS 2.0 items to an RSS channel when
 changesets transition to a new state.  This is an optional feature that
-must be enabled and configured via the project-specific attributes.
+must be enabled and configured via the project\[hy]specific attributes.
 .LP
 Project administrators can configure each change of state to cause an RSS
 item to be added to a specified RSS channel.  Each transition is
@@ -327,9 +327,9 @@ combination thereof.
 .LP
 Generating RSS items for particular state transitions is enabled by the
 \fIrss:feedfilename\fP
-project-specific attibute.  The format of this attribute is:
+project\[hy]specific attibute.  The format of this attribute is:
 .E(
-name = "rss:feedfilename-<filename>";
+name = "rss:feedfilename\-<filename>";
 value = "<state> [<state> <state>]";
 .E)
 The
@@ -339,10 +339,10 @@ part of this attribute includes a
 which is the name of the RSS feed file (channel) to which the item is to
 be added.  The
 \fIvalue\fP
-part of the attribute is a space-separated list of states that will cause
+part of the attribute is a space\[hy]separated list of states that will cause
 an RSS item to be added to the specified file.  For example,
 .E(
-name = "rss:feedfilename-foo.xml";
+name = "rss:feedfilename\-foo.xml";
 value = "awaiting_review
          awaiting_integration";
 .E)
@@ -355,15 +355,15 @@ The channel description can be specified using the
 \fIrss:feeddescription\fP
 attribute.  The format of this attribute is:
 .E(
-name = "rss:feeddescription-<filenane>";
+name = "rss:feeddescription\-<filenane>";
 value = "<Some description>";
 .E)
 For example,
 .E(
-name = "rss:feeddescription-foo.xml";
+name = "rss:feeddescription\-foo.xml";
 value = "This is a description";
 .E)
-will cause the <description> sub-element of the <channel> element stored in
+will cause the <description> sub\[hy]element of the <channel> element stored in
 the file foo.xml to have the value
 "\fIThis is a description\fP".
 If this attribute is not used, the default description is:
@@ -373,15 +373,15 @@ The channel title can be specified using the
 \fIrss:feedtitle\fP
 attribute.  The format of this attribute is:
 .E(
-name = "rss:feedtitle-<filename>";
+name = "rss:feedtitle\-<filename>";
 value = <Some title>;
 .E)
 For example,
 .E(
-name = "rss:feedtitle-foo.xml";
+name = "rss:feedtitle\-foo.xml";
 value = "This is a title";
 .E)
-will cause the <title> sub-element of the <channel> element stored in the
+will cause the <title> sub\[hy]element of the <channel> element stored in the
 file foo.xml to have the value
 "\fPProject ...: This is a title\fP"
 The title will always start with the word "Project" and the project name.
@@ -392,24 +392,25 @@ The channel language can be specified using the
 \fIrss:feedlanguage\fP
 attribute.  The format of this attribute is:
 .E(
-name = "rss:feedlanguage-\fIfilename\fP";
+name = "rss:feedlanguage\-\fIfilename\fP";
 value = "\fIlanguage\fP";
 .E)
 For example,
 .E(
-name = "rss:feedlanguage-foo.xml";
-value = "en-AU";
+name = "rss:feedlanguage\-foo.xml";
+value = "en\-AU";
 .E)
-will cause the <language> sub-element of the <channel> element stored in
+will cause the <language> sub\[hy]element of the <channel> element stored in
 the file foo.xml to have the value
-\fIen-AU\fP
-If not specified, the default value of the language sub-element is "en-US".
+\fIen\[hy]AU\fP
+If not specified, the default value of the language sub\[hy]element is
+"en\[hy]US".
 .nh 4 "Serving RSS Channels"
 .LP
 aeget is able to serve up RSS channels, with an appropriate URL.  An example
 URL is
 .E(
-http://somehost/cgi-bin/aeget/proj.1.0/?rss+foo.xml
+http://somehost/cgi\-bin/aeget/proj.1.0/?rss+foo.xml
 .E)
 The key aspect of the URL shown is the
 "\fI?rss+foo.xml\fP"
@@ -418,7 +419,7 @@ modifier.
 should obviously be replaced with the name of your RSS channel feed
 (that is, the filename specified with the
 "\fIrss:feedfilename\fP"
-project-specified attribute(s).
+project\[hy]specified attribute(s).
 .LP
 In order to read the RSS channels, it is recommended to point your RSS
 aggregator of choice to the appropriate URL.  In order to make determining
@@ -433,3 +434,4 @@ knows about hte URL of a particular installation is encapsulated within aeget.
 .LP
 The placeholder is replaced with the real scriptname when the file is served
 by aeget.
+.\" vim: set ts=8 sw=4 et :

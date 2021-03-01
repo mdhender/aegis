@@ -1,22 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2006, 2008, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
-//
-//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// //
 // Directory <local-directory>
 //
 // Additional data: <repository>
@@ -38,22 +36,22 @@
 // Here is an example of where a client gets <repository> and
 // <local-directory>.  Suppose that there is a module defined by
 //
-//	moddir 1dir
+//      moddir 1dir
 //
 // That is, one can check out 'moddir' and it will take '1dir' in
 // the repository and check it out to 'moddir' in the working
 // directory.  Then an initial check out could proceed like this:
 //
-//	C: Root /home/kingdon/zwork/cvsroot
-//	. . .
-//	C: Argument moddir
-//	C: Directory .
-//	C: /home/kingdon/zwork/cvsroot
-//	C: co
-//	S: Clear-sticky moddir/
-//	S: /home/kingdon/zwork/cvsroot/1dir/
-//	. . .
-//	S: ok
+//      C: Root /home/kingdon/zwork/cvsroot
+//      . . .
+//      C: Argument moddir
+//      C: Directory .
+//      C: /home/kingdon/zwork/cvsroot
+//      C: co
+//      S: Clear-sticky moddir/
+//      S: /home/kingdon/zwork/cvsroot/1dir/
+//      . . .
+//      S: ok
 //
 // In this example the response shown is 'Clear-sticky', but it could
 // be another response instead.  Note that it returns two pathnames.
@@ -63,10 +61,10 @@
 // 'Directory' request.  For example, a subsequent 'update'
 // request might look like:
 //
-//	C: Directory moddir
-//	C: /home/kingdon/zwork/cvsroot/1dir
-//	. . .
-//	C: update
+//      C: Directory moddir
+//      C: /home/kingdon/zwork/cvsroot/1dir
+//      . . .
+//      C: update
 //
 // For a given <local-directory>, the repository will be the same for
 // each of the responses, so one can use the repository from whichever
@@ -91,19 +89,19 @@
 // working directory which has been checked out from multiple places in
 // the repository.
 //
-//	C: Argument dir1
-//	C: Directory dir1
-//	C: /home/foo/repos/mod1
-//	. . .
-//	C: Argument dir2
-//	C: Directory dir2
-//	C: /home/foo/repos/mod2
-//	. . .
-//	C: Argument dir3
-//	C: Directory dir3/subdir3
-//	C: /home/foo/repos/mod3
-//	. . .
-//	C: update
+//      C: Argument dir1
+//      C: Directory dir1
+//      C: /home/foo/repos/mod1
+//      . . .
+//      C: Argument dir2
+//      C: Directory dir2
+//      C: /home/foo/repos/mod2
+//      . . .
+//      C: Argument dir3
+//      C: Directory dir3/subdir3
+//      C: /home/foo/repos/mod3
+//      . . .
+//      C: update
 //
 // While directories 'dir1' and 'dir2' will be handled in similar fashion
 // to the other examples given above, 'dir3' is slightly different from
@@ -125,22 +123,22 @@
 // a 'Directory' request.  A functional version of the above that would
 // run on a 1.10 or earlier server is as follows:
 //
-//	C: Argument dir1
-//	C: Directory dir1
-//	C: /home/foo/repos/mod1
-//	. . .
-//	C: Argument dir2
-//	C: Directory dir2
-//	C: /home/foo/repos/mod2
-//	. . .
-//	C: Argument dir3
-//	C: Directory dir3
-//	C: /home/foo/repos/.
-//	. . .
-//	C: Directory dir3/subdir3
-//	C: /home/foo/repos/mod3
-//	. . .
-//	C: update
+//      C: Argument dir1
+//      C: Directory dir1
+//      C: /home/foo/repos/mod1
+//      . . .
+//      C: Argument dir2
+//      C: Directory dir2
+//      C: /home/foo/repos/mod2
+//      . . .
+//      C: Argument dir3
+//      C: Directory dir3
+//      C: /home/foo/repos/.
+//      . . .
+//      C: Directory dir3/subdir3
+//      C: /home/foo/repos/mod3
+//      . . .
+//      C: update
 //
 // Note the extra 'Directory dir3' request.  It might be better to use
 // 'Emptydir' as the repository for the 'dir3' directory, but the above
@@ -152,15 +150,15 @@
 // be sent first.  For example, the following would not work to update
 // 'dir3/subdir3':
 //
-//	. . .
-//	C: Argument dir3
-//	C: Directory dir3/subdir3
-//	C: /home/foo/repos/mod3
-//	. . .
-//	C: Directory dir3
-//	C: /home/foo/repos/.
-//	. . .
-//	C: update
+//      . . .
+//      C: Argument dir3
+//      C: Directory dir3/subdir3
+//      C: /home/foo/repos/mod3
+//      . . .
+//      C: Directory dir3
+//      C: /home/foo/repos/.
+//      . . .
+//      C: update
 //
 // The implementation of the server in 1.10 and earlier writes the
 // administration files for a given directory at the time of the
@@ -173,9 +171,9 @@
 // the administration files do not yet exist for 'dir3'.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h>
 #include <aecvsserver/net.h>
 #include <aecvsserver/request/directory.h>
 #include <aecvsserver/server.h>
@@ -201,13 +199,13 @@ request_directory::run_inner(server_ty *sp, string_ty *client_side)
     assert(sp);
     assert(sp->np);
     if (server_root_required(sp, "Directory"))
-	return;
+        return;
 
     nstring server_side;
     if (!sp->np->getline(server_side))
     {
-	server_error(sp, "Directory: additional data required");
-	return;
+        server_error(sp, "Directory: additional data required");
+        return;
     }
 
     //
@@ -217,37 +215,37 @@ request_directory::run_inner(server_ty *sp, string_ty *client_side)
     root_path_len = strlen(root_path);
     if
     (
-	server_side.size() == root_path_len
+        server_side.size() == root_path_len
     &&
-	0 == memcmp(server_side.c_str(), root_path, root_path_len)
+        0 == memcmp(server_side.c_str(), root_path, root_path_len)
     )
     {
-	server_side = ".";
+        server_side = ".";
     }
     else if
     (
-	server_side.size() > root_path_len
+        server_side.size() > root_path_len
     &&
-	0 == memcmp(server_side.c_str(), root_path, root_path_len)
+        0 == memcmp(server_side.c_str(), root_path, root_path_len)
     &&
-	server_side[root_path_len] == '/'
+        server_side[root_path_len] == '/'
     )
     {
-	//
-	// Strip out the Root part, we don't need it because it's fake,
-	// and it makes some of the other processing cumbersome.
-	//
-	server_side =
-	    nstring
-	    (
-		server_side.c_str() + (root_path_len + 1),
-		server_side.size()  - (root_path_len + 1)
-	    );
+        //
+        // Strip out the Root part, we don't need it because it's fake,
+        // and it makes some of the other processing cumbersome.
+        //
+        server_side =
+            nstring
+            (
+                server_side.c_str() + (root_path_len + 1),
+                server_side.size()  - (root_path_len + 1)
+            );
     }
     else
     {
-	server_error(sp, "Directory: server-side path must include Root");
-	return;
+        server_error(sp, "Directory: server-side path must include Root");
+        return;
     }
 
     sp->np->directory_set(client_side, server_side.get_ref());
@@ -268,3 +266,6 @@ request_directory::reset()
 {
     return false;
 }
+
+
+// vim: set ts=8 sw=4 et :

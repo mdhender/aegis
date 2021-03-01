@@ -1,22 +1,23 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
@@ -24,9 +25,9 @@
 #include <common/ac/sys/types.h>
 #include <common/ac/sys/stat.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/arglex2.h>
@@ -39,7 +40,7 @@
 #include <libaegis/change.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <libaegis/common.h>
+#include <libaegis/common.fmtgen.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
@@ -108,7 +109,7 @@ develop_end_undo_main(void)
     cstate_history_ty *history_data;
     int             j;
     string_ty       *project_name;
-    project_ty      *pp;
+    project      *pp;
     long            change_number;
     change::pointer cp;
 
@@ -151,25 +152,25 @@ develop_end_undo_main(void)
             user_ty::lock_wait_argument(develop_end_undo_usage);
             break;
 
-	case arglex_token_reason:
-	    if (reason)
-		duplicate_option(develop_end_undo_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string
-		(
-	    	    arglex_token_reason,
-	    	    develop_end_undo_usage
-		);
-		// NOTREACHED
+        case arglex_token_reason:
+            if (reason)
+                duplicate_option(develop_end_undo_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_string
+                (
+                    arglex_token_reason,
+                    develop_end_undo_usage
+                );
+                // NOTREACHED
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = str_from_c(arglex_value.alv_string);
-		break;
-	    }
-	    break;
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = str_from_c(arglex_value.alv_string);
+                break;
+            }
+            break;
         }
         arglex();
     }
@@ -180,7 +181,7 @@ develop_end_undo_main(void)
     if (!project_name)
     {
         nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
+        project_name = str_copy(n.get_ref());
     }
     pp = project_alloc(project_name);
     str_free(project_name);
@@ -215,15 +216,15 @@ develop_end_undo_main(void)
     //
     if
     (
-        change_was_a_branch(cp)
+        cp->was_a_branch()
     &&
-        nstring(change_developer_name(cp)) != up->name()
+        nstring(cp->developer_name()) != up->name()
     &&
         project_administrator_query(pp, up->name())
     )
     {
         up_admin = up;
-        up = user_ty::create(nstring(change_developer_name(cp)));
+        up = user_ty::create(nstring(cp->developer_name()));
     }
 
     //
@@ -257,7 +258,7 @@ develop_end_undo_main(void)
         cstate_data->state != cstate_state_awaiting_integration
     )
         change_fatal(cp, 0, i18n("bad deu state"));
-    if (nstring(change_developer_name(cp)) != up->name())
+    if (nstring(cp->developer_name()) != up->name())
         change_fatal(cp, 0, i18n("was not developer"));
 
     //
@@ -269,21 +270,21 @@ develop_end_undo_main(void)
     history_data->what = cstate_history_what_develop_end_undo;
     if (up_admin)
     {
-	string_ty *r2 =
+        string_ty *r2 =
             str_format
             (
                 "Forced by administrator %s.",
                 up_admin->name().quote_c().c_str()
             );
-	if (reason)
-	{
-	    string_ty *r1 = reason;
-	    reason = str_format("%s\n%s", r1->str_text, r2->str_text);
-	    str_free(r1);
-	    str_free(r2);
-	}
-	else
-	    reason = r2;
+        if (reason)
+        {
+            string_ty *r1 = reason;
+            reason = str_format("%s\n%s", r1->str_text, r2->str_text);
+            str_free(r1);
+            str_free(r2);
+        }
+        else
+            reason = r2;
     }
     history_data->why = reason;
 
@@ -305,7 +306,7 @@ develop_end_undo_main(void)
         if (!c_src_data)
             break;
         p_src_data =
-            project_file_find(pp, c_src_data->file_name, view_path_none);
+            pp->file_find(c_src_data->file_name, view_path_none);
         if (!p_src_data)
         {
             // this is really a corrupted file
@@ -352,7 +353,7 @@ develop_end_undo_main(void)
     //
     // write out the data and release the locks
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
     pp->pstate_write();
     up->ustate_write();
     commit();
@@ -391,3 +392,6 @@ develop_end_undo(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), develop_end_undo_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

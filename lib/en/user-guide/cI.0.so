@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1995, 1998, 2002, 2005-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -27,7 +27,7 @@ author's native English.
 This was a large and often painful task,
 but it allows a degree of customization of error messages and other behaviours
 which would not have been otherwise possible.
-(It also makes the job of running a spell-checker over the error
+(It also makes the job of running a spell\[hy]checker over the error
 messages significantly easier.)
 .LP
 Localization is the process of translating the error messages and other
@@ -44,7 +44,7 @@ You will see that each message has a comment attached,
 describing the message and the context in which it is used.
 Many messages also have \[lq]substitutions\[rq] described,
 which are strings similar to shell variables which may be substituted into
-the message - such as the file name for messages which have
+the message \- such as the file name for messages which have
 something to do with a specific file.
 .LP
 The substitution mechanism is the same one as is used for
@@ -80,18 +80,18 @@ rpt_value_error;
 .TE
 .LP
 In general, the \fIetc/Howto.cook\fP file causes the
-messages to be extracted into \fIi18n-tmp/*.po\fP for checking
+messages to be extracted into \f[I]i18n\[hy]tmp/*.po\fP for checking
 during the build.
 .nh 2 "Translators Welcome"
 .LP
 If \fIyou\fP are able to translate the error messages into another
 language, please contact
-Peter Miller <millerp@canb.auug.org.au>
+Peter Miller <pmiller@opensource.org.au>
 and he will tell you how it is done.
-(Actually, he'll point you to this part of the User Guide.  :-)
+(Actually, he'll point you to this part of the User Guide.  :\-)
 .LP
 To translate the error messages, look up the
-two-letter abbreviation (http://www.w3.org/WAI/ER/IG/ert/iso639.htm)
+two\[hy]letter abbreviation (http://www.w3.org/WAI/ER/IG/ert/iso639.htm)
 of the language you are going to translate the error
 messages to.  The rest of these instructions will call it \fIxx\fP.
 .LP
@@ -105,7 +105,7 @@ messages into it.
 .E(
 mkdir lib/\fIxx\fP/LC_MESSAGES
 cp lib/en/LC_MESSAGES/*.po \e
-	lib/\fIxx\fP/LC_MESSAGES
+        lib/\fIxx\fP/LC_MESSAGES
 .E)
 Now you need to edit each of the
 \f[CW]lib/\fP\fIxx\fP\f[CW]/LC_MESSAGES/*.po\fP
@@ -131,5 +131,8 @@ If you average 1 message every 2 minutes, this is approximately 20 hours work.
 The German translation, for example, required around 12 hours.
 .LP
 When you are done translating, email the results to
-Peter Miller <millerp@canb.auug.org.au>
+Peter Miller <pmiller@opensource.org.au>
 and they will be included in the next release of Aegis.
+
+
+/* vim: set ts=8 sw=4 et : */

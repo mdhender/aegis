@@ -1,48 +1,47 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -New_File" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-New_File" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new file \- add new files to be created by a change
 .XX "aenf(1)" "add new files to be created by a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_File
-.IR file-name ...
+.B \-New_File
+.IR file\[hy]name ...
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_File
-.B -List
+.B \-New_File
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_File
-.B -Help
+.B \-New_File
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -New_File
+.I \-New_File
 command is used to
 add new files to a change.
 The named files will be
@@ -107,9 +106,9 @@ excludes automatically:
 .nf
 $ \f[CB]aelcf > exclude\fP
 $ \f[CB]aelpf >> exclude\fP
-$ \f[CB]find fubar -type f | \e
-    grep -v -f exclude | \e
-    xargs aegis --new-file -v\fP
+$ \f[CB]find fubar \-type f | \e
+    grep \-v \-f exclude | \e
+    xargs aegis \-\-new\[hy]file \-v\fP
 .fi
 aegis: project "example": change 42: file "fubar/smiley" added
 .br
@@ -121,14 +120,14 @@ $
 .RE
 If you aren't using the exclude list,
 the \f[I]find\fP(1) command will need fine tuning for your development
-directory style.  If you are using the symlink-style, you will need to
-add the \f[I]find -nlink 1\fP option in addition to the
-\f[I]find -type f\fP option.
+directory style.  If you are using the symlink\[hy]style, you will need to
+add the \f[I]find \-nlink 1\fP option in addition to the
+\f[I]find \-type f\fP option.
 .RS
 .ft CW
 .nf
-$ \f[CB]find fubar -type f -nlinks 1 | \e
-    xargs aegis --new-file -v\fP
+$ \f[CB]find fubar \-type f \-nlinks 1 | \e
+    xargs aegis \-\-new\[hy]file \-v\fP
 .fi
 aegis: project "example": change 42: file "fubar/smiley" added
 .br
@@ -138,24 +137,25 @@ $
 .fi
 .ft R
 .RE
-If you are using the full-copy development directory style,
+If you are using the full\[hy]copy development directory style,
 you will have to use the exclude list method, above.
-.so z_template.so
-.so z_filesize.so
-.so z_intuit.so
-.so z_retype.so
-.so z_promotion.so
+.so lib/en/man1/z_template.so
+.so lib/en/man1/z_filesize.so
+.so lib/en/man1/z_intuit.so
+.so lib/en/man1/z_retype.so
+.so lib/en/man1/z_promotion.so
 .SS Notification
 The \fInew_file_command\fP in the project configuration file is run,
 if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
 if there has been an integration recently.  See \fIaepconf\fP(5) for
 more information.
 .\" unlike the above, z_test_corr.so starts a new section
-.so z_test_corr.so
+.so lib/en/man1/z_test_corr.so
 .SH OPTIONS
 The following options are understood
+.so lib/en/man1/o_as_needed.so
 .TP 8n
-.B -Build
+.B \-Build
 .br
 This option may be used to specify that the file is constructed
 during a build (often only an integrate build),
@@ -166,8 +166,8 @@ Files created in this way may not be copied into a change,
 though they may be deleted.
 Avoid using files of this type,
 if at all possible.
-.so o_baserel.so
-.so o_change.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
 .TP 8n
 \fB\-CONFIGured\fP
 This option may be used to specify that the file is an Aegis project
@@ -175,22 +175,27 @@ configuration file.  The default project configuration file is called
 \fIaegis.conf\fP, however any file name may be used.  You may also use
 more than one file, splitting the content across several files, all of
 which must be of this type.
-.so o_help.so
-.so o_keep.so
-.so o_list.so
-.so o_nolog.so
-.so o_project.so
-.so o_template.so
-.so o_terse.so
-.so o_verbose.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_help.so
+.TP 8n
+\fB\-INDependent\fP
+The option may be used to request all the necessary actions, but not to
+actually add the new file to the change set.
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_nolog.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_template.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_uuid.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aenf '\*(n) -nf \e!* -v'
-sh$	aenf(){\*(n) -nf "$@" -v}
+csh%    alias aenf '\*(n) \-nf \e!* \-v'
+sh$     aenf(){\*(n) \-nf "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -210,7 +215,7 @@ the file is already part of the baseline.
 It is an error if the files named on the command line are not normal
 files and not directories.  (If you need symbolic links or special files,
 create them at build time.)
-.so z_exit.so
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -238,4 +243,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

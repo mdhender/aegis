@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1999, 2002, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1993, 1999, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .SS File Name Interpretation
 The \*(n) program will attempt to determine the project file names
@@ -28,15 +27,16 @@ are first converted to absolute paths if necessary.
 They are then compared with the baseline path,
 the development directory path,
 and the integration directory path,
-to determine a baseline-relative name.
+to determine a baseline\[hy]relative name.
 It is an error if the file named is outside
 one of these directory trees.
 .PP
-The \fB-BAse_RElative\fP option may be used to cause relative filenames
+The \fB\-BAse_RElative\fP option may be used to cause relative filenames
 to be interpreted as relative to the baseline path; absolute filenames
 will still be compared with the various paths in order to determine a
-baseline-relative name.
+baseline\[hy]relative name.
 .PP
 The \fIrelative_filename_preference\fP in the user configuration file
 may be used to modify this default behavior.  See \fIaeuconf\fP(5) for
 more information.
+.\" vim: set ts=8 sw=4 et :

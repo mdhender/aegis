@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002, 2006-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2001, 2002, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .nh 2 "Patches"
 .LP
@@ -30,12 +30,12 @@ manage your development, the \fIaepatch \-send\fP command may be used to
 construct a patch to send to the other developers.
 .LP
 It is very similar in operation to the \fIaedist\fP(1) command,
-however it is intended for non-Aegis-using recipients.
+however it is intended for non\[hy]Aegis\[hy]using recipients.
 .LP
 To send a change to someone (a completed change, or one in progress)
 simply use a command such as
 .E(
-\f(CB%\fP aepatch -send -c \fInumber\fP | \e
+\f(CB%\fP aepatch \-send \-c \fInumber\fP | \e
   mail joe.blow@example.com
 \f(CB%\fP
 .E)
@@ -46,19 +46,20 @@ which are going to survive email transport.
 .LP
 The simplest way of receiving a patch and turn it into a
 change set is to save it from your
-e-mail program into a file, and then
+e\[hy]mail program into a file, and then
 .\" This is a bit confusing since above we said
-.\" ... intended for non-Aegis-using recipients.
+.\" ... intended for non\[hy]Aegis\[hy]using recipients.
 .E(
-\f(CB%\fP aepatch -receive -file \fIfilename\fP
+\f(CB%\fP aepatch \-receive \-file \fIfilename\fP
 \&\fI...lots of information...\fP
 \f(CB%\fP
 .E)
-where \fIfilename\fP is where you saved the e-mail message.
-If your e-mail program is able to write to a pipe, you can use a simpler form.
+where \fIfilename\fP is where you saved the e\[hy]mail message.
+If your e\[hy]mail program is able to write to a pipe, you can use a
+simpler form.
 This example uses the Rand Mail Handler's \fIshow\fP(1) command:
 .E(
-\f(CB%\fP show | aepatch -receive
+\f(CB%\fP show | aepatch \-receive
 \&\fI...lots of information...\fP
 \f(CB%\fP
 .E)
@@ -105,9 +106,10 @@ and similar tools.
 .LP
 Conversely, there is no guarantee that the input to \fIaepatch
 \-receive\fP came from \fIaepatch \-send\fP.  It can and must be able
-to cope with the outout of a simple \fIdiff -r -N -c\fP command,
+to cope with the outout of a simple \fIdiff \-r \-N \-c\fP command,
 with no additional information.
 .LP
 All this means, use \fIaedist\fP wherever possible.  The \fIaepatch\fP
-command is to simplify and streamline communication with non-Aegis
+command is to simplify and streamline communication with non\[hy]Aegis
 developers.
+.\" vim: set ts=8 sw=4 et :

@@ -1,6 +1,6 @@
 //
 // aegis - project change supervisor
-// Copyright (C) 2001-2008 Peter Miller
+// Copyright (C) 2001-2008, 2012 Peter Miller
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ getpwnam_cached(const nstring &name)
     //
     if (!login_table)
     {
-        login_table = symtab_alloc(5);
+        login_table = new symtab_ty(5);
         uid_table = itab_alloc();
     }
 
@@ -174,7 +174,7 @@ getpwuid_cached(int uid)
     //
     if (!login_table)
     {
-        login_table = symtab_alloc(5);
+        login_table = new symtab_ty(5);
         uid_table = itab_alloc();
     }
 
@@ -249,3 +249,6 @@ getpwnam_fuzzy(const nstring &name)
     }
     return best;
 }
+
+
+// vim: set ts=8 sw=4 et :

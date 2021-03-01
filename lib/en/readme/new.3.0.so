@@ -1,20 +1,20 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1995-1997, 1999, 2002, 2005-2008 Peter Miller
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 1995-1997, 1999, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 3 of the License, or
+.\"     (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .SS Version 3.0
 .PP
@@ -23,7 +23,7 @@ however once a project has been used under 3.0,
 it will not be possible to revert, e.g. to version 2.3,
 without restoring the project's \[lq]info\[rq] directory from backup.
 While this was generally true of previous releases,
-any additional state information was usually undo-able
+any additional state information was usually undo\[hy]able
 with
 .IR vi (1).
 This time the process is much more involved because
@@ -116,7 +116,7 @@ allowing the report generator to be used in places where more trust is required.
 .if t \(bu
 There is an intranet Web interface, which is installed automaticly when
 the install script discovers a web server.
-This interface allows browsing of much of the Aegis meta-data,
+This interface allows browsing of much of the Aegis meta\[hy]data,
 of all publicly accessible projects.
 .PP
 .if n *
@@ -130,10 +130,10 @@ two directories; the \fIaefind\fP(1) command makes this simple again.
 .PP
 .if n *
 .if t \(bu
-There is now a -No_Pager option,
+There is now a \-No_Pager option,
 to prevent listings and help from being redirected to a pager.
 There is also a user preference to more thoroughly disable paging,
-and a -PAGer option to override it.
+and a \-PAGer option to override it.
 See
 .IR aegis (1)
 and
@@ -142,13 +142,13 @@ for more information.
 .PP
 .if n *
 .if t \(bu
-There is now a -No_PErsevere option to
+There is now a \-No_PErsevere option to
 .IR aet (1),
 allowing you to request that
 .IR aet (1)
 stop after the first test failure.
 There is also a user preference to set this permanently if desired,
-and a -PErsever option to override it.
+and a \-PErsever option to override it.
 See
 .IR aet (1)
 and
@@ -270,9 +270,9 @@ such as those being developed or being reviewed.
 .if n *
 .if t \(bu
 All of the commands which accept the
-.I -Edit
+.I \-Edit
 option now also accept a
-.I -Edit_BackGround
+.I \-Edit_BackGround
 option,
 allowing edit commands to be piped in from the standard input.
 .PP
@@ -281,10 +281,10 @@ allowing edit commands to be piped in from the standard input.
 The
 .IR aecp (1)
 command now accepts a
-.I -INDependent
+.I \-INDependent
 option, allowing files to be copied independent of any change
 (similar to the
-.I -INDependent
+.I \-INDependent
 option of the
 .IE aet (1)
 command.)
@@ -297,7 +297,7 @@ for more information.
 The
 .IR aecp (1)
 command now accepts a
-.I -Read_Only
+.I \-Read_Only
 option, allowing files to be copied into a change
 specifically to insulate it from baseline changes.
 Such files must be uncopied before development may end.
@@ -311,7 +311,7 @@ The
 .IR aenrls (1)
 command is now used
 .I only
-to convert pre-3.0 projects into post-3.0 projects.
+to convert pre\[hy]3.0 projects into post\[hy]3.0 projects.
 This is because the full branching support in 3.0 makes it
 more useful to create a new release of a project by
 ending development on the branch of the previous release and starting
@@ -321,3 +321,4 @@ See the
 chapter of the
 .I "User Guide"
 for more information.
+.\" vim: set ts=8 sw=4 et :

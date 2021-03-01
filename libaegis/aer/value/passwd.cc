@@ -1,20 +1,19 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 1994-1997, 1999, 2002-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1994-1997, 1999, 2002-2008, 2012 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -82,7 +81,7 @@ pw_to_struct(struct passwd *pw)
     //
     const char *comma = strchr(full_name.c_str(), ',');
     if (comma)
-        full_name = full_name.substring(0, comma - full_name.c_str());
+        full_name = full_name.substr(0, comma - full_name.c_str());
     rpt_value::pointer fn = rpt_value_string::create(full_name);
     p->assign("pw_gecos", fn);
     p->assign("pw_comment", fn);
@@ -93,7 +92,7 @@ pw_to_struct(struct passwd *pw)
     trace(("pw_shell\n"));
     p->assign("pw_shell", rpt_value_string::create(pw->pw_shell));
 
-    trace(("return %08lX;\n", (long)result.get()));
+    trace(("return %p;\n", result.get()));
     trace(( "}\n"));
     return result;
 }
@@ -206,3 +205,6 @@ rpt_value_passwd::is_a_struct()
 {
     return true;
 }
+
+
+// vim: set ts=8 sw=4 et :

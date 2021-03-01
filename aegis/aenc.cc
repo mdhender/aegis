@@ -1,36 +1,37 @@
 //
-//      aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 1991-1999, 2001-2009, 2011, 2012 Peter Miller
+// Copyright (C) 2008 Walter Franzini
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 3 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program. If not, see
-//      <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/time.h>
 
-#include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
+#include <common/sizeof.h>
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/changes.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/arglex2.h>
-#include <libaegis/cattr.h>
+#include <libaegis/cattr.fmtgen.h>
 #include <libaegis/change.h>
 #include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
@@ -38,7 +39,7 @@
 #include <libaegis/change/verbose.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <libaegis/common.h>
+#include <libaegis/common.fmtgen.h>
 #include <libaegis/file.h>
 #include <libaegis/help.h>
 #include <libaegis/io.h>
@@ -93,7 +94,7 @@ new_change_list(void)
 
 
 void
-new_change_check_permission(project_ty *pp, user_ty::pointer up)
+new_change_check_permission(project *pp, user_ty::pointer up)
 {
     //
     // it is an error if
@@ -123,7 +124,7 @@ new_change_main(void)
     cstate_history_ty *history_data;
     cattr_ty        *cattr_data;
     string_ty       *project_name;
-    project_ty      *pp;
+    project      *pp;
     long            change_number;
     change::pointer cp;
     user_ty::pointer up;
@@ -199,7 +200,7 @@ new_change_main(void)
             cattr_data = cattr_read_file(inp);
             os_become_undo();
             assert(cattr_data);
-	    change_attributes_fixup(cattr_data);
+            change_attributes_fixup(cattr_data);
             change_attributes_verify(inp, cattr_data);
             break;
 
@@ -256,21 +257,21 @@ new_change_main(void)
             }
             break;
 
-	case arglex_token_reason:
-	    if (reason)
-		duplicate_option(new_change_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_string(arglex_token_reason, new_change_usage);
-		// NOTREACHED
+        case arglex_token_reason:
+            if (reason)
+                duplicate_option(new_change_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_string(arglex_token_reason, new_change_usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
-	    case arglex_token_number:
-		reason = str_from_c(arglex_value.alv_string);
-		break;
-	    }
-	    break;
+            case arglex_token_string:
+            case arglex_token_number:
+                reason = str_from_c(arglex_value.alv_string);
+                break;
+            }
+            break;
         }
         arglex();
     }
@@ -330,7 +331,7 @@ new_change_main(void)
     //
     // make sure this branch of the project is still active
     //
-    if (!change_is_a_branch(pp->change_get()))
+    if (!pp->change_get()->is_a_branch())
         project_fatal(pp, 0, i18n("branch completed"));
 
     //
@@ -544,7 +545,7 @@ new_change_main(void)
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_new_change;
     if (reason)
-	history_data->why = reason;
+        history_data->why = reason;
     if (cattr_data->description)
         cstate_data->description = str_copy(cattr_data->description);
     assert(cattr_data->brief_description);
@@ -564,7 +565,7 @@ new_change_main(void)
     for (j = 0; j < cattr_data->architecture->length; ++j)
         change_architecture_add(cp, cattr_data->architecture->list[j]);
     if (cattr_data->attribute)
-	cstate_data->attribute = attributes_list_copy(cattr_data->attribute);
+        cstate_data->attribute = attributes_list_copy(cattr_data->attribute);
     cattr_type.free(cattr_data);
 
     //
@@ -573,7 +574,7 @@ new_change_main(void)
     // as it does not exist yet;
     // the project state file, with the number in it, is locked.
     //
-    change_cstate_write(cp);
+    cp->cstate_write();
 
     //
     // Add the change to the list of existing changes.
@@ -640,3 +641,6 @@ new_change(void)
     arglex_dispatch(dispatch, SIZEOF(dispatch), new_change_main);
     trace(("}\n"));
 }
+
+
+// vim: set ts=8 sw=4 et :

@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2001, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Literature Survey"
 How can it be possible that we have been misusing \fImake\fP for 20 years?
@@ -54,7 +53,7 @@ It is hardly surprising that the original paper did not discuss recursive
 directory.
 .LP
 It may be this which set the \[lq]one \f(CWMakefile\fP in every directory\[rq]
-concept so firmly in the collective Unix development mind-set.
+concept so firmly in the collective Unix development mind\[hy]set.
 .nh 2 "GNU Make"
 The GNU Make manual
 [stal93]
@@ -96,7 +95,7 @@ The book may give us a clue as to why recursive \fImake\fP has been used
 in this way for so many years.  Notice how the above quotes confuse the
 concept of a directory with the concept of a \f(CWMakefile\fP.
 .LP
-This paper suggests a simple change to the mind-set:
+This paper suggests a simple change to the mind\[hy]set:
 directory trees, however deep, are places to store files;
 \f(CWMakefile\fPs are places to describe the relationships
 between those files, however many.
@@ -113,3 +112,4 @@ There is also a wonderful quote
 it's a good chance the \f(CWmakefile\fP is wrong.\[rq] (p. 10)
 .LP
 Which is a pithy summary of the thesis of this paper.
+.\" vim: set ts=8 sw=4 et :

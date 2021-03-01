@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2002-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aeannotate
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -30,20 +29,20 @@ aeannotate \- annotated source file listing
 .IR filename
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -List
+.B \-List
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The
 .I "\*(n)"
 command is used to
 produce an annotated listing of the named source file.
 .PP
-The columns specified by the user (see the \fB\--column\fP option, below)
+The columns specified by the user (see the \fB\-column\fP option, below)
 are used of the left hand side of the output.  Two additional columns
 are always added: the line number and the source code.
 .PP
@@ -51,14 +50,14 @@ If no columns are specified, the default columns are
 .TS
 center,tab(;);
 l l l l.
-\-column;'${change date %Y-%m}';Date;7
+\-column;'${change date %Y\-%m}';Date;7
 \-column;'$version';Version;9
 \-column;'${change developer}';Who;8
 .TE
 The \fI$version\fP string always contains enough information to reproduce
 the entire project baseline at the time of the delta.  The first portion
 is the project branch, and the second portion (following the `D') is
-the delta number; use these to form the -branch and -delta options for
+the delta number; use these to form the \-branch and \-delta options for
 an \fIaecp\fP(1) command.
 .PP
 At the end of the listing, accumulated statistics are presented,
@@ -80,7 +79,7 @@ This option causes file statistics to be appended.  This lists the number
 of lines in the file were changed at the same time as another file.
 For example, this allows you to see tests associated with source files,
 and \fIvice versa\fP.
-.so o_help.so
+.so lib/en/man1/o_help.so
 .TP 8n
 \fB\-Diff_Option\fP \fIstring\fP
 This option may be used to pass addition arguments to the diff commands
@@ -90,11 +89,11 @@ results.  Probably the best use of this option is to pass the \fB\-b\fP
 option, to ignore white space changes, because this ignores the vast
 majority of cosmetic formatting changes, showing you the content changes
 instead.  The \fB\-i\fP option, to ignore case, can also be useful for
-case-insensitive languages.
-.so o_output.so
-.so o_project.so
-.so o__rules.so
-.so z_exit.so
+case\[hy]insensitive languages.
+.so lib/en/man1/o_output.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
 .SH EXAMPLES
 If you wanted to list only the year against the lines of the file,
 use this column specification:
@@ -129,6 +128,7 @@ only the \fI${change ...}\fP variants are particularly useful.
 To see only content changes, and ignore changes in indentation (assuming
 you are using GNU diff), use this command:
 .RS
-aeannotate -diff-opt -b \fIfilename\fP
+aeannotate \-diff\[hy]opt \-b \fIfilename\fP
 .RE
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

@@ -1,21 +1,20 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2007, 2008 Peter Miller
+# aegis - project change supervisor
+# Copyright (C) 2007-2012 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -35,12 +34,12 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never; \
-	default_development_directory = \"$work\";"
+    lock_wait_preference = always; \
+    diff_preference = automatic_merge; \
+    pager_preference = never; \
+    persevere_preference = all; \
+    log_file_preference = never; \
+    default_development_directory = \"$work\";"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -63,7 +62,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${parch}bin:
+        tpath=${tpath}${tpath2}/${parch}bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -84,35 +83,35 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+    set +x
+    echo PASSED 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aemakegen functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+    set +x
+    echo "FAILED test of the aemakegen functionality ($activity)" 1>&2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 1
 }
 no_result()
 {
-	set +x
-	echo 'NO RESULT when testing the aemakegen functionality' \
+    set +x
+    echo 'NO RESULT when testing the aemakegen functionality' \
             "($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+    cd $here
+    find $work -type d -user $USER -exec chmod u+w {} \;
+    rm -rf $work
+    exit 2
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory"
+activity="create test directory 114"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -128,13 +127,67 @@ export AEGIS_MESSAGE_LIBRARY
 unset LANG
 unset LANGUAGE
 
+activity="new project 130"
+$bin/aegis -newpro foo -version "" -dir $work/proj -lib $work/lib
+if test $? -ne 0 ; then no_result; fi
+
+AEGIS_PROJECT=foo
+export AEGIS_PROJECT
+AEGIS_PATH=$work/lib
+export AEGIS_PATH
+
+activity="project attributes 139"
+cat > paf << fubar
+developer_may_review = true;
+developer_may_integrate = true;
+reviewer_may_integrate = true;
+default_test_exemption = true;
+develop_end_action = goto_awaiting_integration;
+default_development_directory = "$work";
+fubar
+if test $? -ne 0 ; then no_result; fi
+aegis -pa -f paf -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="staff 152"
+aegis -nd $USER -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+aegis -nrv $USER -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+aegis -ni $USER -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="new change 160"
+cat > caf << 'fubar'
+brief_description = "one";
+cause = internal_enhancement;
+test_baseline_exempt = true;
+fubar
+if test $? -ne 0 ; then no_result; fi
+aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="develop begin 170"
+aegis -db 10 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="new file 174"
+aegis -nf -nl $work/${AEGIS_PROJECT}.C010/configure.ac
+if test $? -ne 0 ; then no_result; fi
+
+cat > $work/${AEGIS_PROJECT}.C010/configure.ac << 'fubar'
+AC_CHECK_PROGS(GROFF, groff roff)
+fubar
+if test $? -ne 0 ; then no_result; fi
+
 #
 # test the aemakegen functionality
 #
-activity="aemakegen"
+activity="aemakegen 186"
 
 TAB=`awk 'BEGIN{printf("\t")}' /dev/null`
-sed "s|        |$TAB|g" > test.ok << 'fubar'
+sed "s|{TAB}|$TAB|g" > test.ok << 'fubar'
+#
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
 #    W   W    A    RRRR   N   N   III  N   N  III  N   N   GGG
@@ -144,84 +197,70 @@ sed "s|        |$TAB|g" > test.ok << 'fubar'
 #    W W W  A   A  R  R   N   N    I   N   N   I   N   N  G   G
 #     W W   A   A  R   R  N   N   III  N   N  III  N   N   GGG
 #
-# Warning: DO NOT send patches which fix this file.
-# This file is GENERATED from the Aegis repository file
-# manifest.  If you find a bug in this file, it could
-# well be an Aegis bug.
+# Warning: DO NOT send patches which fix this file. IT IS NOT the original
+# source file. This file is GENERATED from the Aegis repository file manifest.
+# If you find a bug in this file, it could well be an Aegis bug.
 #
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
 
 #
-# Tell automake to put the object file for foo/bar.cc in
-# directory foo/
+# Tell automake to put the object file for foo/bar.cc in directory foo/
 #
 AUTOMAKE_OPTIONS = subdir-objects
 
-bin/test_prelude.inc: aegis.extra/test_prelude.inc.sh
-        cp aegis.extra/test_prelude.inc.sh $@
-        chmod a+rx $@
-
-bin/foo: elsewhere/foo.sh
-        cp elsewhere/foo.sh $@
-        chmod a+rx $@
-
 bin/guano: script/guano.sh
-        cp script/guano.sh $@
-        chmod a+rx $@
-
-# executables to be installed
-bin_PROGRAMS = \
-        bin/prog1
+{TAB}@mkdir -p bin
+{TAB}cp script/guano.sh $@
+{TAB}chmod a+rx $@
 
 # manual pages
-man_MANS = \
-        prog1.1
+man_MANS = prog1/prog1.1
 
-EXTRA_DIST = \
-        aegis.extra/test_prelude.inc.sh \
-        elsewhere/foo.sh \
-        lib/a.cc \
-        lib/c.cc \
-        prog1.1 \
-        prog1/main.cc \
-        script/guano.sh \
-        test/00/t0001a.sh \
-        test/00/t0002a.sh
+# executables to be installed
+bin_PROGRAMS = bin/prog1
 
 # scripts to be installed
-bin_SCRIPTS = \
-        bin/guano
+bin_SCRIPTS = bin/guano
 
-# scripts needed to run tests
-check_SCRIPTS = \
-        bin/test_prelude.inc
+# The lib/libfoo.a library.
+lib_libfoo_a_SOURCES = lib/a.cc lib/c.cc
 
-# scripts not to be installed
-noinst_SCRIPTS = \
-        bin/foo
+# Static libraries, not to be installed.
+noinst_LIBRARIES = lib/libfoo.a
 
-noinst_LIBRARIES = \
-        lib/lib.a
+# Files to be removed by the "distclean" make target.
+DISTCLEANFILES = lib/config.h
 
-lib_lib_a_SOURCES = \
-        lib/a.cc \
-        lib/c.cc
+# The prog1 program.
+bin_prog1_SOURCES = prog1/main.cc
+bin_prog1_LDADD = lib/libfoo.a
 
-bin_prog1_SOURCES = \
-        prog1/main.cc
+# How to run the test scripts.
+TESTS_ENVIRONMENT = PATH=`pwd`/bin:$$PATH $(SHELL)
 
-bin_prog1_LDADD = \
-        lib/lib.a
+# The test scripts to be run.
+TESTS = test/00/t0001a.sh test/00/t0002a.sh
+
+# Additional source files to be included in the tarball.
+EXTRA_DIST = aegis.extra/test_prelude.inc.sh configure.ac elsewhere/foo.sh \
+     extra-super-realy-very-ultra-mega-long-source-code-line-to-check-for-size \
+{TAB}{TAB}script/guano.sh
+
+# vim: set ts=8 sw=8 noet :
 fubar
 test $? -eq 0 || no_result
 
+# if we add --script '*.sh' to the command line,
+# several more scripts get installed.
 $bin/aemakegen --target=automake prog1/main.cc lib/a.cc lib/c.cc \
         test/00/t0001a.sh test/00/t0002a.sh \
-        prog1.1 \
-        --script '*.sh' \
+        prog1/prog1.1 \
         aegis.extra/test_prelude.inc.sh \
+extra-super-realy-very-ultra-mega-long-source-code-line-to-check-for-size \
         script/guano.sh \
         elsewhere/foo.sh \
+        --project=foo --change=10 \
         > test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -234,3 +273,4 @@ test $? -eq 0 || fail
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

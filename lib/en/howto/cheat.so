@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2000, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Cheat Sheet"
 .LP
@@ -26,36 +25,37 @@ on a particular command.
 .IP \(bu 2n
 See also the official Aegis quick reference in the User Guide, page 88.
 .IP \(bu 2n
-The \[lq]\f[CW]-p\fP \fIname\fP\[rq] option is used to specify the project name.
+The \[lq]\f[CW]\-p\fP \fIname\fP\[rq] option is used to specify the
+project name.
 .IP \(bu 2n
-The \[lq]\f[CW]-c\fP \fInumber\fP\[rq] option is used to specify the
+The \[lq]\f[CW]\-c\fP \fInumber\fP\[rq] option is used to specify the
 change number.
 .IP \(bu 2n
-The \[lq]\f[CW]-l\fP\[rq] (or \[lq]\f[CW]-List\fP\[rq]) option can often
+The \[lq]\f[CW]\-l\fP\[rq] (or \[lq]\f[CW]\-List\fP\[rq]) option can often
 be used to
 list subjects for the given command (eg. change numbers or projects) or
 simply to list rather than edit (\fIe.g.\fP a file or change attributes).
 .\" ------------------------------------------------------------------------
 .nh 2 "Common Commands"
-.IP "\f[CW]ae_p\fP \fIproject-name.branch-number\fP" 8n
+.IP "\f[CW]ae_p\fP \fIproject\[hy]name.branch\[hy]number\fP" 8n
 Set current project number for all following Aegis commands.  The
 \f[CW]ae_p\fP command with no arguments will `unset' this forced default.
 .IP "\f[CW]ae_c\fP \fInumber\fP" 8n
 Set current change number for all following Aegis commands.  The
 \f[CW]ae_c\fP command with no arguments will `unset' this forced default.
-.IP "\f[CW]aecd\fP [ \f[CW]-bl\fP ]" 8n
+.IP "\f[CW]aecd\fP [ \f[CW]\-bl\fP ]" 8n
 Change directory [change to baseline].
 .IP "\f[CW]aeb\fP"
-Aegis build - used by developers, reviewers and/ or integrators.
+Aegis build \- used by developers, reviewers and/ or integrators.
 .IP "\f[CW]aet\fP"
-Run tests - used by developers.
+Run tests \- used by developers.
 .IP "\f[CW]aed\fP"
 Difference of change files with baseline.
 .IP "\f[CW]aedless\fP"
 View difference files generated with \f[CW]aed\fP.
 .IP "\f[CW]ael cd\fP"
 List change details.
-.IP "\f[CW]aeca\fP [ \f[CW]-l\fP ]"
+.IP "\f[CW]aeca\fP [ \f[CW]\-l\fP ]"
 Edit [list] change attributes.
 .IP "\f[CW]tkaenc\fP"
 Create a new change (see \fIaenc\fP(1) for details),
@@ -110,14 +110,14 @@ Prepares a file in the project for editing within the change; \fIi.e.\fP copy
 file into change from baseline.  Remove symlink if necessary, etc.
 .IP "\f[CW]aecpu\fP"
 Reverse the effects of the above.
-.IP "\f[CW]aecpu -unch\fP"
+.IP "\f[CW]aecpu \-unch\fP"
 Will check all files in your change to see if any
 have not been modified, and perform an \fIaecpu\fP on them.  This will stop
 an unnecessary version number increment for files that have not changed.
 (And also improves test correlations.)
 .IP "\f[CW]aem\fP"
-Merge out-of-date files.
-See the \fI-Only-merge\fP option of the \fIaed\fP(1) command.
+Merge out\[hy]of\[hy]date files.
+See the \fI\-Only\[hy]merge\fP option of the \fIaed\fP(1) command.
 .IP "\f[CW]aenf[u]\fP"
 Create/ add a new file [undo].
 .IP "\f[CW]aemv\fP"
@@ -133,7 +133,7 @@ Procedure:
 \f[CW]ael cd\fP \(->
 \f[CW]aecd\fP \(->
 \f[CW]aedless\fP \(->
-\fIview output, review source files\fP ->
+\fIview output, review source files\fP \(->
 \f[CW]aerpass\fP
 .LP
 Remember: the point of reviews is to find problems, not be a rubber stamp.
@@ -185,3 +185,4 @@ Edit [list] change attributes (see \fIaecattr\fP(5) for file format).
 .IP "\f[CW]tkaeca\fP"
 Edit change attributes using a GUI.
 This makes it much easier to type in the description field.
+.\" vim: set ts=8 sw=4 et :

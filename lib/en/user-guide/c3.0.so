@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998, 2001, 2002, 2004-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2001, 2002, 2004-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .bp
 .if t .2C
@@ -115,7 +114,7 @@ This field describes the content style which the history tool is
 capable of working with.
 .IP ascii_text
 The history tool can only cope with files which contain printable
-ASCII characters, plus space, tab and newline.	The file must
+ASCII characters, plus space, tab and newline.  The file must
 end with a newline.  This is the default.
 .IP international_text
 The history tool can only cope with files which do not contain
@@ -142,7 +141,7 @@ Many history tools (e.g. RCS) can modify the contents of the file
 when it is committed.  While there are usually options to turn this
 off, they are seldom used.  The problem is: if the commit changes the
 file, the source in the repository now no longer matches the object
-file in the repository - \fIi.e.\fP the history tool has compromised the
+file in the repository \- \fIi.e.\fP the history tool has compromised the
 referential integrity of the repository.
 .LP
 By default, when this happens Aegis issues a fatal error (at \fIintergate
@@ -166,10 +165,11 @@ the commands in the sections which follow.
 The source distribution contains numerous configuration examples in
 a directory called \fIlib/config.example/\fP which is installed into
 \fI\*(D)/config.example/\fP by default.  In the interests of accuracy,
-it may be best to copy configurations from there, rather than copy-type
+it may be best to copy configurations from there, rather than copy\[hy]type
 the ones below.
-.so c3.5.so
-.so c3.1.so
-.so c3.2.so
-.so c3.3.so
-.so c3.4.so
+.so lib/en/user-guide/c3.5.so
+.so lib/en/user-guide/c3.1.so
+.so lib/en/user-guide/c3.2.so
+.so lib/en/user-guide/c3.3.so
+.so lib/en/user-guide/c3.4.so
+.\" vim: set ts=8 sw=4 et :

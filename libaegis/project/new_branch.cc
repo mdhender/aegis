@@ -1,31 +1,31 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2008 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2001-2008, 2011, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 
-#include <common/error.h> // for assert
 #include <common/trace.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change.h>
-#include <libaegis/cstate.h>
+#include <libaegis/cstate.fmtgen.h>
 #include <libaegis/os.h>
-#include <libaegis/pconf.h>
+#include <libaegis/pconf.fmtgen.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
@@ -34,60 +34,53 @@
 
 
 static string_ty *
-branch_description_invent(project_ty *pp)
+branch_description_invent(project *pp)
 {
-    string_ty	    *s1;
-    string_ty	    *s2;
-    size_t	    len;
-    string_ty	    *result;
+    nstring s2(project_version_short_get(pp));
 
-    s2 = project_version_short_get(pp);
     pp = pp->trunk_get();
-    s1 = project_description_get(pp);
-    if (s1->str_length == 0)
-    {
-	str_free(s2);
-	return str_copy(s1);
-    }
-    for (len = s1->str_length; len; --len)
-    {
-	unsigned char	c;
+    nstring s1(project_description_get(pp));
+    if (s1.length() == 0)
+        return s1.get_ref_copy();
 
-	c = s1->str_text[len - 1];
-	if (c == '.')
-	    continue;
-	// C locale
-	if (isspace(c))
-	    continue;
-	break;
+    size_t          len;
+    for (len = s1.length(); len; --len)
+    {
+        unsigned char   c;
+
+        c = s1[len - 1];
+        if (c == '.')
+            continue;
+        // C locale
+        if (isspace(c))
+            continue;
+        break;
     }
-    result =
-	str_format("%.*s, branch %s.", (int)len, s1->str_text, s2->str_text);
-    // do not free s1
-    str_free(s2);
+    string_ty *result =
+        str_format("%.*s, branch %s.", (int)len, s1.c_str(), s2.c_str());
     return result;
 }
 
 
-project_ty *
-project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
+project *
+project_new_branch(project *ppp, user_ty::pointer up, long change_number,
     string_ty *topdir, string_ty *reason)
 {
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
     change::pointer cp;
-    size_t	    j;
+    size_t          j;
     pconf_ty        *pconf_data;
-    string_ty	    *s;
-    project_ty	    *pp;
+    string_ty       *s;
+    project         *pp;
 
     //
     // On entry it is assumed that you have
     // a project state lock, to create the branches
     //
-    trace(("project_new_branch(ppp = %8.8lX, change_number = %ld, "
-           "topdir = %ld, reason = %ld)\n{\n", (long)ppp, change_number,
-           (long)topdir, (long)reason));
+    trace(("project_new_branch(ppp = %p, change_number = %ld, "
+           "topdir = %p, reason = %p)\n{\n", ppp, change_number,
+           topdir, reason));
 
     //
     // create the new branch.
@@ -119,19 +112,19 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     //
     if (!topdir)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	topdir =
-	    str_format
-	    (
-		"%s/branch.%ld",
-		project_top_path_get(ppp, 0)->str_text,
-		magic_zero_decode(change_number)
-	    );
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", topdir);
-	change_verbose(cp, scp, i18n("development directory \"$filename\""));
-	sub_context_delete(scp);
+        topdir =
+            str_format
+            (
+                "%s/branch.%ld",
+                project_top_path_get(ppp, 0)->str_text,
+                magic_zero_decode(change_number)
+            );
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", topdir);
+        change_verbose(cp, scp, i18n("development directory \"$filename\""));
+        sub_context_delete(scp);
     }
     change_top_path_set(cp, topdir);
 
@@ -139,9 +132,9 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     // Create the development directory.
     //
     // In a branch, the development directory contains
-    //	    (a) a directory called "baseline" for the branch's baseline
-    //	    (b) directories called "delta.*" for integrations, later
-    //	    (c) directories called "branch.*" for branches, later
+    //      (a) a directory called "baseline" for the branch's baseline
+    //      (b) directories called "delta.*" for integrations, later
+    //      (c) directories called "branch.*" for branches, later
     //
     // A branch's development directory is owned by the project
     // owner, not the creating user.
@@ -165,7 +158,7 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_new_change;
     if (reason)
-	history_data->why = str_copy(reason);
+        history_data->why = str_copy(reason);
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_develop_begin;
     cstate_data = cp->cstate_get();
@@ -190,7 +183,7 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     assert(pconf_data->integration_directory_style);
     work_area_style_ty style = *pconf_data->integration_directory_style;
     if (!style.during_build_only)
-	change_create_symlinks_to_baseline(cp, project_user(ppp), style);
+        change_create_symlinks_to_baseline(cp, project_user(ppp), style);
 
     //
     // Clear the time fields.
@@ -203,98 +196,98 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     change_branch_umask_set(cp, project_umask_get(ppp));
     change_branch_developer_may_review_set
     (
-	cp,
-	project_developer_may_review_get(ppp)
+        cp,
+        project_developer_may_review_get(ppp)
     );
     change_branch_developer_may_integrate_set
     (
-	cp,
-	project_developer_may_integrate_get(ppp)
+        cp,
+        project_developer_may_integrate_get(ppp)
     );
     change_branch_reviewer_may_integrate_set
     (
-	cp,
-	project_reviewer_may_integrate_get(ppp)
+        cp,
+        project_reviewer_may_integrate_get(ppp)
     );
     change_branch_developers_may_create_changes_set
     (
-	cp,
-	project_developers_may_create_changes_get(ppp)
+        cp,
+        project_developers_may_create_changes_get(ppp)
     );
     change_branch_forced_develop_begin_notify_command_set
     (
-	cp,
-	project_forced_develop_begin_notify_command_get(ppp)
+        cp,
+        project_forced_develop_begin_notify_command_get(ppp)
     );
     change_branch_develop_end_notify_command_set
     (
-	cp,
-	project_develop_end_notify_command_get(ppp)
+        cp,
+        project_develop_end_notify_command_get(ppp)
     );
     change_branch_develop_end_undo_notify_command_set
     (
-	cp,
-	project_develop_end_undo_notify_command_get(ppp)
+        cp,
+        project_develop_end_undo_notify_command_get(ppp)
     );
     change_branch_review_begin_notify_command_set
     (
-	cp,
-	project_review_begin_notify_command_get(ppp)
+        cp,
+        project_review_begin_notify_command_get(ppp)
     );
     change_branch_review_begin_undo_notify_command_set
     (
-	cp,
-	project_review_begin_undo_notify_command_get(ppp)
+        cp,
+        project_review_begin_undo_notify_command_get(ppp)
     );
     change_branch_review_pass_notify_command_set
     (
-	cp,
-	project_review_pass_notify_command_get(ppp)
+        cp,
+        project_review_pass_notify_command_get(ppp)
     );
     change_branch_review_pass_undo_notify_command_set
     (
-	cp,
-	project_review_pass_undo_notify_command_get(ppp)
+        cp,
+        project_review_pass_undo_notify_command_get(ppp)
     );
     change_branch_review_fail_notify_command_set
     (
-	cp,
-	project_review_fail_notify_command_get(ppp)
+        cp,
+        project_review_fail_notify_command_get(ppp)
     );
     change_branch_integrate_pass_notify_command_set
     (
-	cp,
-	project_integrate_pass_notify_command_get(ppp)
+        cp,
+        project_integrate_pass_notify_command_get(ppp)
     );
     change_branch_integrate_fail_notify_command_set
     (
-	cp,
-	project_integrate_fail_notify_command_get(ppp)
+        cp,
+        project_integrate_fail_notify_command_get(ppp)
     );
     change_branch_default_test_exemption_set
     (
-	cp,
-	project_default_test_exemption_get(ppp)
+        cp,
+        project_default_test_exemption_get(ppp)
     );
     change_branch_default_test_regression_exemption_set
     (
-	cp,
-	project_default_test_regression_exemption_get(ppp)
+        cp,
+        project_default_test_regression_exemption_get(ppp)
     );
     change_branch_default_development_directory_set
     (
-	cp,
-	project_default_development_directory_get(ppp)
+        cp,
+        project_default_development_directory_get(ppp)
     );
     change_branch_compress_database_set
     (
-	cp,
-	project_compress_database_get(ppp)
+        cp,
+        project_compress_database_get(ppp)
     );
     change_branch_protect_development_directory_set
     (
-	cp,
-	project_protect_development_directory_get(ppp)
+        cp,
+        project_protect_development_directory_get(ppp)
     );
 
     //
@@ -302,52 +295,52 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     //
     for (j = 0;; ++j)
     {
-	s = project_administrator_nth(ppp, j);
-	if (!s)
-	    break;
-	change_branch_administrator_add(cp, s);
+        s = project_administrator_nth(ppp, j);
+        if (!s)
+            break;
+        change_branch_administrator_add(cp, s);
     }
     for (j = 0;; ++j)
     {
-	s = project_developer_nth(ppp, j);
-	if (!s)
-	    break;
-	change_branch_developer_add(cp, s);
+        s = project_developer_nth(ppp, j);
+        if (!s)
+            break;
+        change_branch_developer_add(cp, s);
     }
     for (j = 0;; ++j)
     {
-	s = project_reviewer_nth(ppp, j);
-	if (!s)
-	    break;
-	change_branch_reviewer_add(cp, s);
+        s = project_reviewer_nth(ppp, j);
+        if (!s)
+            break;
+        change_branch_reviewer_add(cp, s);
     }
     for (j = 0;; ++j)
     {
-	s = project_integrator_nth(ppp, j);
-	if (!s)
-	    break;
-	change_branch_integrator_add(cp, s);
+        s = project_integrator_nth(ppp, j);
+        if (!s)
+            break;
+        change_branch_integrator_add(cp, s);
     }
     change_branch_minimum_change_number_set
     (
-	cp,
-	project_minimum_change_number_get(ppp)
+        cp,
+        project_minimum_change_number_get(ppp)
     );
     change_branch_reuse_change_numbers_set
     (
-	cp,
-	project_reuse_change_numbers_get(ppp)
+        cp,
+        project_reuse_change_numbers_get(ppp)
     );
     change_branch_minimum_branch_number_set
     (
-	cp,
-	project_minimum_branch_number_get(ppp)
+        cp,
+        project_minimum_branch_number_get(ppp)
     );
     change_branch_skip_unlucky_set(cp, project_skip_unlucky_get(ppp));
     change_branch_develop_end_action_set
     (
-	cp,
-	project_develop_end_action_get(ppp)
+        cp,
+        project_develop_end_action_get(ppp)
     );
 
     //
@@ -357,14 +350,17 @@ project_new_branch(project_ty *ppp, user_ty::pointer up, long change_number,
     change_architecture_clear(cp);
     for (j = 0; j < pconf_data->architecture->length; ++j)
     {
-	change_architecture_add(cp, pconf_data->architecture->list[j]->name);
+        change_architecture_add(cp, pconf_data->architecture->list[j]->name);
     }
 
     //
     // Add the change to the list of existing changes
     //
     project_change_append(ppp, change_number, 1);
-    trace(("return %8.8lX;\n", (long)pp));
+    trace(("return %p;\n", pp));
     trace(("}\n"));
     return pp;
 }
+
+
+// vim: set ts=8 sw=4 et :

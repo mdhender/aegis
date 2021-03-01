@@ -1,22 +1,21 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .ds n) aerevml
 .TH "aerevml" 1 \*(N) "Reference Manual" ""
 .SH NAME
@@ -28,10 +27,10 @@ aerevml \- send and receive RevML change sets
 \fB\*(n) \-Receive\fP [ \fIoption\fP... ]
 .br
 .B \*(n)
-.B -Help
+.B \-Help
 .br
 .B \*(n)
-.B -VERSion
+.B \-VERSion
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to send and receive change sets using
 the RevML format.  This format is independent of any particular VC/SCM
@@ -40,23 +39,26 @@ and import into any other RevML capable VC/SCM system.
 .PP
 The basic function is to reproduce a change, so a command like
 .RS
-\f[CW]aerevml -send | aerevml -receive\fP
+\f[CW]aerevml \-send | aerevml \-receive\fP
 .RE
 may be used to clone a change, though less efficiently than \fIaeclone\fP(1).
 The file format used is designed to withstand mail servers,
 so activities such as
 .RS
-\f[CW]aerevml -send | \fIe-mail\f[CW] | aerevml -receive\fR
+\f[CW]aerevml \-send | \fIe\[hy]mail\f[CW] | aerevml \-receive\fR
 .RE
-(where \fIe-mail\fP represents sending, transporting and receiving your e-mail)
+(where \fIe\[hy]mail\fP represents sending, transporting and receiving
+your e\[hy]mail)
 will reproduce the change on a remote system.
 With suitable tools (such as PGP) is it possible to
 .RS
-\f[CW]aerevml -send | encrypt | \fIe-mail\f[CW] | decrypt | aerevml -receive\fR
+\f[CW]aerevml \-send | encrypt | \fIe\[hy]mail\f[CW] | decrypt |
+aerevml \-receive\fR
 .RE
-The mechanism is also designed to allow web-based distribution such as
+The mechanism is also designed to allow web\[hy]based distribution such as
 .RS
-\f[CW]aerevml -send | \fIweb-server \(-> web-browser\f[CW] | aerevml -receive\fR
+\f[CW]aerevml \-send | \fIweb\[hy]server \(-> web\[hy]browser\f[CW] |
+aerevml \-receive\fR
 .RE
 by the use of appropriate CGI scripts and mailcap entries.
 .PP
@@ -76,7 +78,7 @@ The latest RevML DTD may be found at
 The send variant takes a specified change, or baseline, and constructs
 a distribution package containing all of the change attributes and source
 file attributes and source file contents.  The result is compressed,
-and encoded into a text format which can be sent as e-mail without being
+and encoded into a text format which can be sent as e\[hy]mail without being
 corrupted by the mail transfer agents along the way.
 .SS Options
 The following options are understood by the send variant:
@@ -84,12 +86,12 @@ The following options are understood by the send variant:
 \fB\-BaseLine\fP
 This option may be used to specify the source of a project,
 rather than a change.
-Implies the \fI\-Entire_Source\fP option, unless over-ridden.
-.so o_change.so
-.so o_compatibil.so
-.so o_compress.so
-.so o_cte.so
-.so o_delta.so
+Implies the \fI\-Entire_Source\fP option, unless over\[hy]ridden.
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_compatibil.so
+.so lib/en/man1/o_compress.so
+.so lib/en/man1/o_cte.so
+.so lib/en/man1/o_delta.so
 .TP 8n
 \fB\-Description_Header\fP
 This option may be used to add an RFC 822 style header to the change
@@ -102,14 +104,14 @@ This option suppresses the description header.
 \fB\-Entire_Source\fP
 This option may be used to send the entire source of the project,
 as well as the change source files.
-.so o_mime_heade.so
+.so lib/en/man1/o_mime_heade.so
 .TP 8n
 \fB\-Partial_Source\fP
 This option may be used to send only source files of a change.
 This is the default, except for the \fI\-BaseLine\fP option.
-.so o_output.so
-.so o_project.so
-.so o_sob.so
+.so lib/en/man1/o_output.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_sob.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
 and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
@@ -138,8 +140,8 @@ This option may be used to specify a particular
 delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
-.so o_dir.so
-.so o_file_cs.so
+.so lib/en/man1/o_dir.so
+.so lib/en/man1/o_file_cs.so
 .TP 8n
 \fB\-Ignore_UUID\fP
 This option may be used to ignore the UUID, if present, of the
@@ -153,9 +155,9 @@ This is the default.
 This option may be used to set the project name.
 If not specified, the project name in the input package will be used,
 rather than the usual project name defaulting mechanism.
-.so o_trojan.so
+.so lib/en/man1/o_trojan.so
 .SS Security
-Receiving changes by e-mail, and automatically committing them to the
+Receiving changes by e\[hy]mail, and automatically committing them to the
 baseline without checking them, would be a recipe for disaster.
 A number of safeguards are provided:
 .TP 2n
@@ -183,10 +185,10 @@ here to specify files in addition to the project configuration file which should
 cause the automatic processing to halt.
 .TP 2n
 \(bu
-The use of e-mail authentication and encryption systems, such as PGP and
+The use of e\[hy]mail authentication and encryption systems, such as PGP and
 GPG, are encouraged.  However, it is expected that this processing will
-occur after \&\fIaerevml --send\fP has constructed the package and before
-\&\fIaerevml --receive\fP examines and acts on the package.
+occur after \&\fIaerevml \-send\fP has constructed the package and before
+\&\fIaerevml \-receive\fP examines and acts on the package.
 Verification of the sender is the surest defense against trojan horses.
 .TP 2n
 \(bu
@@ -212,22 +214,23 @@ explosion of redundant change sets being distributed again and again.
 .PP
 To combat this, changes are checked after the files are unpacked, but
 before and build or difference or test is performed.  The \[lq]\fIaecpu
---unchanged\fP\[rq] command is used to exclude all files that the local
+\-unchanged\fP\[rq] command is used to exclude all files that the local
 repository already has in the desired form.  If no change files remain
 after this, the change is dropped entirely (see \&\fIaedbu\fP(1) and
 \&\fIaencu\fP(1)).
 .SH LIST
 The list variant can be used to list the contents of a package without
 actually unpacking it first.
-The output is reminiscent of the \fIaegis -list change-details\fP output.
+The output is reminiscent of the \fIaegis \-list change\[hy]details\fP output.
 .SS Options
 The following options are understood by the list variant:
-.so o_file_cs.so
-.so o_output.so
+.so lib/en/man1/o_file_cs.so
+.so lib/en/man1/o_output.so
 Only useful with the \-List option.
 .SH OPTIONS
 The following options to this command haven't been mentioned yet:
-.so o_help.so
-.so o__rules.so
-.so z_exit.so
-.so z_cr.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o__rules.so
+.so lib/en/man1/z_exit.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

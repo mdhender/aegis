@@ -1,25 +1,25 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/string.h>
 
-#include <common/error.h> // for assert
+#include <common/sizeof.h>
 #include <libaegis/attribute.h>
 #include <libaegis/change/file.h>
 #include <libaegis/os.h>
@@ -37,7 +37,7 @@ validation_files::is_a_text_file(fstate_src_ty *src, change::pointer cp)
     attributes_ty *ap = attributes_list_find(src->attribute, "content-type");
     if (!ap || !ap->value)
     {
-        nstring path(change_file_path(cp, src));
+        nstring path(cp->file_path(src));
         if (path.empty())
             return true;
 
@@ -81,9 +81,12 @@ validation_files::is_a_text_file(fstate_src_ty *src, change::pointer cp)
     static const char *scripts[] =
     {
         "awk"
+        "bash",
+        "csh",
         "gawk"
         "nawk",
         "perl",
+        "sh",
         "shellscript",
     };
     for (const char **script = scripts; script < ENDOF(scripts); ++script)
@@ -97,3 +100,6 @@ validation_files::is_a_text_file(fstate_src_ty *src, change::pointer cp)
     //
     return false;
 }
+
+
+// vim: set ts=8 sw=4 et :

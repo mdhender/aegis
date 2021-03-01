@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2005-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1997, 2002, 2005-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "Summary"
 This paper presents a number of related problems,
@@ -42,47 +41,47 @@ describe the subset of the project files in that directory.
 This is just as modular as having a \f[CW]Makefile\fP in each directory.
 .LP
 This paper has shown how a project build and a development build can be
-equally brief for a whole-project \fImake\fP.  Given this parity of
+equally brief for a whole\[hy]project \fImake\fP.  Given this parity of
 time, the gains provided by accurate dependencies mean that this process
 will, in fact, be faster than the recursive \fImake\fP case, and more
 accurate.
-.nh 2 "Inter-dependent Projects"
-In organizations with a strong culture of re-use,
-implementing whole-project \fImake\fP can present challenges.
+.nh 2 "Inter\[hy]dependent Projects"
+In organizations with a strong culture of re\[hy]use,
+implementing whole\[hy]project \fImake\fP can present challenges.
 Rising to these challenges, however, may require looking at the bigger picture.
 .IP \(bu 2n
 A module may be shared between two programs because the programs are
 closely related.  Clearly, the two programs plus the shared module
-belong to the same project (the module may be self-contained, but the
+belong to the same project (the module may be self\[hy]contained, but the
 programs are not).  The dependencies must be explicitly stated, and
 changes to the module must result in both programs being recompiled and
-re-linked as appropriate.  Combining them all into a single project means
-that whole-project \fImake\fP can accomplish this.
+re\[hy]linked as appropriate.  Combining them all into a single project means
+that whole\[hy]project \fImake\fP can accomplish this.
 .IP \(bu 2n
 A module may be shared between two projects because they must
-inter-operate.  Possibly your project is bigger than your current
+inter\[hy]operate.  Possibly your project is bigger than your current
 directory structure implies.  The dependencies must be explicitly stated,
 and changes to the module must result in both projects being recompiled
-and re-linked as appropriate.  Combining them all into a single project
-means that whole-project \fImake\fP can accomplish this.
+and re\[hy]linked as appropriate.  Combining them all into a single project
+means that whole\[hy]project \fImake\fP can accomplish this.
 .IP \(bu 2n
 It is the normal case to omit the edges between your project and the
 operating system or other installed third party tools.  So normal that
 they are ignored in the \f(CWMakefile\fPs in this paper, and they are
-ignored in the built-in rules of \fImake\fP programs.
+ignored in the built\[hy]in rules of \fImake\fP programs.
 .sp 0.5
 Modules shared between your projects may fall into a similar category:
-if they change, you will deliberately re-build to include their changes,
+if they change, you will deliberately re\[hy]build to include their changes,
 or quietly include their changes whenever the next build may happen.
 In either case, you do not explicitly state the dependencies,
-and whole-project \fImake\fP does not apply.
+and whole\[hy]project \fImake\fP does not apply.
 .IP \(bu 2n
-Re-use may be better served if the module were used as a template, and
+Re\[hy]use may be better served if the module were used as a template, and
 divergence between two projects is seen as normal.  Duplicating the
 module in each project allows the dependencies to be explicitly stated,
 but requires additional effort if maintenance is required to the common portion.
 .LP
-How to structure dependencies in a strong re-use environment thus
+How to structure dependencies in a strong re\[hy]use environment thus
 becomes an exercise in \fIrisk management\fP.  What is the danger that
 omitting chunks of the DAG will harm your projects?
 How vital is it to rebuild if a module changes?
@@ -96,7 +95,7 @@ your builds, even if you continue to use recursive \fImake\fP.  These
 are not the focus of this paper, merely a useful detour.
 .LP
 The focus of this paper is that you will get more accurate builds of
-your project if you use whole-project \fImake\fP rather than recursive
+your project if you use whole\[hy]project \fImake\fP rather than recursive
 \fImake\fP.
 .IP \(bu 2n
 The time for \fImake\fP to work out that nothing needs to be done
@@ -111,8 +110,9 @@ in the resursive case.
 The difficulty of maintaining the total \f(CWMakefile\fP input
 will not be more, and will often be less.
 .LP
-The disadvantages of using whole-project \fImake\fP over recursive \fImake\fP
-are often un-measured.
+The disadvantages of using whole\[hy]project \fImake\fP over recursive
+\fImake\fP
+are often un\[hy]measured.
 How much time is spent figuring out why \fImake\fP did something unexpected?
 How much time is spent figuring out that \fImake\fP \fBdid\fP something
 unexpected?
@@ -127,3 +127,4 @@ with only a single page of instructions.
 Building your project needs to be so simple that it rarely needs any
 development effort at all.
 Is your build process this simple?
+.\" vim: set ts=8 sw=4 et :

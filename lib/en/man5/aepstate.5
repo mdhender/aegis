@@ -1,25 +1,24 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1999, 2001-2003, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1995, 1999, 2001-2003, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
+.so lib/en/man1/z_name.so
 .TH aepstate 5 \*(N) "Reference Manual"
 .SH NAME
-aepstate - aegis project state file
+aepstate \- aegis project state file
 .XX "aepstate(5)" "project state file format"
 .SH SYNOPSIS
 \fIproject\fP\f(CW/info/state\fP
@@ -36,7 +35,7 @@ and thus should not be edited by humans.
 next_test_number = integer;
 Each test is numbered uniquely across all branches of the project.
 The name is of the form
-.I "t[0-9][0-9][0-9][0-9][am].sh"
+.I "t[0\-9][0\-9][0\-9][0\-9][am].sh"
 ('a' for automatic and 'm' for manual.)
 .SS Almost Obsolete Fields
 The following fields are obsolete.
@@ -99,7 +98,7 @@ forced_develop_begin_notify_command = string;
 This command is used to notify a developer
 that a change requires developing;
 it is issued when a project administrator uses an
-.I "aedb -User"
+.I "aedb \-User"
 command to force development of a change by a specific user.
 All of the substitutions described in
 .IR aesub (5)
@@ -117,7 +116,7 @@ develop_end_notify_command = string;
 This command is used to
 notify that a change is ready for review.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -137,7 +136,7 @@ This command is used to
 notify that a change had been withdrawn from review
 for further development.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -156,7 +155,7 @@ review_pass_notify_command = string;
 This command is used to
 notify that a review has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -174,7 +173,7 @@ review_pass_undo_notify_command = string;
 This command is used to
 notify that a review has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -189,7 +188,7 @@ review_fail_notify_command = string;
 This command is used to
 notify that a review has failed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -208,7 +207,7 @@ integrate_pass_notify_command = string;
 This command is used to
 notify that an integration has passed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -233,7 +232,7 @@ integrate_fail_notify_command = string;
 This command is used to
 notify that an integration has failed.
 It will probably use mail,
-or it could be an in-house bulletin board.
+or it could be an in\[hy]house bulletin board.
 This field is optional,
 if not present no notification will be given.
 This command could also be used to notify other management systems,
@@ -325,7 +324,7 @@ We never throw them away, because
 .TP
 history = [{ ... }];
 This field contains a history of integrations for the project.
-Updated by each successful '\*(n) -Integrate_Pass' command.
+Updated by each successful '\*(n) \-Integrate_Pass' command.
 .RS
 .TP 8n
 delta_number = integer;
@@ -413,4 +412,5 @@ change state file
 .TP 8n
 .IR aefstate (5)
 file state file
-.so ../man1/z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

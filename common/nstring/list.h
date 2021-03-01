@@ -1,20 +1,19 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2004-2008, 2010-2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_NSTRING_LIST_H
@@ -51,7 +50,7 @@ public:
       * The copy constructor.
       */
     nstring_list(const nstring_list &arg) :
-	content(arg.content)
+        content(arg.content)
     {
     }
 
@@ -59,7 +58,7 @@ public:
       * The backwards compatible copy constructor.
       */
     nstring_list(const string_list_ty &arg) :
-	content(arg)
+        content(arg)
     {
     }
 
@@ -69,13 +68,39 @@ public:
     nstring_list &operator=(const nstring_list &);
 
     /**
+      * The push_front method is used to add a string to the front of a
+      * string list.
+      *
+      * @param arg
+      *     The list of strings to be prepended.
+      */
+    void
+    push_front(const nstring &arg)
+    {
+        content.push_front(arg.get_ref());
+    }
+
+    /**
+      * The push_front method is used to add a string list to the front
+      * of a string list.
+      *
+      * @param arg
+      *     The list of strings to be prepended.
+      */
+    void
+    push_front(const nstring_list &arg)
+    {
+        content.push_front(arg.content);
+    }
+
+    /**
       * The push_back method is used to add a string to the end of a
       * string list.
       */
     void
     push_back(const nstring &arg)
     {
-	content.push_back(arg.get_ref());
+        content.push_back(arg.get_ref());
     }
 
     /**
@@ -94,7 +119,7 @@ public:
     void
     push_back_unique(const nstring &arg)
     {
-	content.push_back_unique(arg.get_ref());
+        content.push_back_unique(arg.get_ref());
     }
 
     /**
@@ -109,9 +134,9 @@ public:
       * This has O(1) behaviour.
       */
     void
-    pop_back()
+    pop_back(void)
     {
-	content.pop_back();
+        content.pop_back();
     }
 
     /**
@@ -119,12 +144,31 @@ public:
       * of a string list.
       */
     const nstring
-    back()
-	const
+    back(void)
+        const
     {
-	if (!content.nstrings)
-	    return nstring();
-	return nstring(content.string[content.nstrings - 1]);
+        if (!content.nstrings)
+            return nstring();
+        return nstring(content.string[content.nstrings - 1]);
+    }
+
+    /**
+      * The pop_front method is used to discard the first value in the list.
+      * This has O(n) behaviour.
+      */
+    void pop_front(void);
+
+    /**
+      * The front method is used to obtain the value of the first element
+      * of a string list.
+      */
+    nstring
+    front(void)
+        const
+    {
+        if (!content.nstrings)
+            return nstring();
+        return nstring(content.string[0]);
     }
 
     /**
@@ -132,10 +176,10 @@ public:
       * number of string in the list).
       */
     size_t
-    size()
-	const
+    size(void)
+        const
     {
-	return content.nstrings;
+        return content.nstrings;
     }
 
     /**
@@ -143,16 +187,16 @@ public:
       * empty (no elements) or not.
       */
     bool
-    empty()
-	const
+    empty(void)
+        const
     {
-	return !content.nstrings;
+        return !content.nstrings;
     }
 
     /**
       * The clear method is used to discard all elemets of a string list.
       */
-    void clear();
+    void clear(void);
 
     /**
       * The get method is used to obtain the value of the nth element
@@ -166,9 +210,9 @@ public:
       */
     nstring
     operator[](int n)
-	const
+        const
     {
-	return get(n);
+        return get(n);
     }
 
     /**
@@ -176,29 +220,46 @@ public:
       * with a new list, formed by splitting "str" into several pieces,
       * separated by any pf the characters in "sep".
       *
-      * \param str
+      * @param str
       *     The string to be split.
-      * \param sep
+      * @param sep
       *     The separators between each field.
-      * \param ewhite
+      * @param ewhite
       *     If true, get rid of extra white space at the beginning and
       *     end of each field.  Default to false.
       */
     void split(const nstring &str, const char *sep = 0, bool ewhite = false);
 
     /**
-      * The unsplit method is used to form a single string by gluing all
+      * The unsplit method is used to form a single string by glueing all
       * of the string list members together.
+      *
+      * @param separator
+      *     The string to place bewteen each list emlement
       */
     nstring unsplit(const char *separator = 0) const;
+
+    /**
+      * The unsplit method is used to form a single string by glueing all
+      * of the string list members together.
+      *
+      * @param begin
+      *     The index of the first element to be joined
+      * @param length
+      *     The number of elements to join together.
+      * @param separator
+      *     The string to place bewteen each list element.
+      */
+    nstring unsplit(size_t begin, size_t length, const char *separator = 0)
+        const;
 
     /**
       * The member method is used to test whether the given narrow
       * string is present in the narrow string list,
       *
-      * \param arg
+      * @param arg
       *     The narrow string to look for.
-      * \returns
+      * @returns
       *     bool; false if not present, true if present at least once.
       */
     bool member(const nstring &arg) const;
@@ -208,18 +269,32 @@ public:
       * string list values in a string list.  The comparison function
       * used is strcmp.
       */
-    void sort();
+    void sort(void);
+
+    /**
+      * The sort method is used to perform an <i>in situ</i> sort the
+      * string list values in a string list.  The comparison function
+      * used is strverscmp.
+      */
+    void sort_version(void);
+
+    /**
+      * The sort method is used to perform an <i>in situ</i> sort the
+      * string list values in a string list.  The comparison function
+      * used is strcasecmp.
+      */
+    void sort_nocase(void);
 
     /**
       * The gmatch_pattern method is used to determine if there is at
       * least one member of the string list which matches the given
       * pattern.
       *
-      * \param pattern
+      * @param pattern
       *     This is a file globbing pattern, such as used by the shell
       *     for expanding file names.  See glob(3) for a definition of
       *     the patterns.
-      * \returns
+      * @returns
       *     int; 1 for a match, 0 for no match, -1 for invalid pattern.
       */
     int gmatch_pattern(const nstring &pattern) const;
@@ -229,10 +304,10 @@ public:
       * least one member of the string list which matches the given
       * pattern.
       *
-      * \param candidate
+      * @param candidate
       *     This is the candidate string to be matched against each
       *     pattern in the string list.
-      * \returns
+      * @returns
       *     int; 1 for a match, 0 for no match, -1 for invalid pattern.
       */
     int gmatch_candidate(const nstring &candidate) const;
@@ -246,6 +321,90 @@ public:
       */
     void remove(const nstring &arg);
 
+    /**
+      * The add-in-situ operator is used to perform an in-situ set union
+      * of this string list with another string list.
+      *
+      * @param rhs
+      *     The right has side of the string set union.
+      */
+    void operator+=(const nstring_list &rhs);
+
+    /**
+      * The add operator is used to perform a set union of this string
+      * list with another string list.
+      *
+      * @param rhs
+      *     The right has side of the string set union.
+      * @returns
+      *     string set union
+      */
+    nstring_list operator+(const nstring_list &rhs) const;
+
+    /**
+      * The subtract-in-situ operator is used to perform an in-situ set
+      * difference of this string list with another string list.
+      *
+      * @param rhs
+      *     The right has side of the string set difference.
+      */
+    void operator-=(const nstring_list &rhs);
+
+    /**
+      * The subtract operator is used to perform a set difference of
+      * this string list with another string list.
+      *
+      * @param rhs
+      *     The right has side of the string set difference.
+      * @returns
+      *     string set difference
+      */
+    nstring_list operator-(const nstring_list &rhs) const;
+
+    /**
+      * The multiply-in-situ operator is used to perform an in-situ set
+      * intersection of this string list with another string list.
+      *
+      * @param rhs
+      *     The right has side of the string set intersection.
+      */
+    void operator*=(const nstring_list &rhs);
+
+    /**
+      * The multiply operator is used to perform a set intersection of
+      * this string list with another string list.
+      *
+      * @param rhs
+      *     The right has side of the string set intersection.
+      * @returns
+      *     string set intersection
+      */
+    nstring_list operator*(const nstring_list &rhs) const;
+
+    /**
+      * The inequality operator is used to determine whether or not this
+      * string set is the same as another string set.
+      *
+      * @param rhs
+      *     The right hand side of the comparison
+      * @returns
+      *     bool; true if not equal (at least one string not in common),
+      *     false if equal (all strings in common)
+      */
+    bool operator!=(const nstring_list &rhs) const;
+
+    /**
+      * The equality operator is used to determine whether or not this
+      * string set is the same as another string set.
+      *
+      * @param rhs
+      *     The right hand side of the comparison
+      * @returns
+      *     bool; true if equal (all strings in common), false if not
+      *     equal (at least one string not in common).
+      */
+    bool operator==(const nstring_list &rhs) const;
+
 private:
     /**
       * The content instance variable is used to remember the contents
@@ -255,3 +414,4 @@ private:
 };
 
 #endif // COMMON_NSTRING_LIST_H
+// vim: set ts=8 sw=4 et :

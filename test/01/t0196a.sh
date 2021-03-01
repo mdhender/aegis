@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2004-2008 Peter Miller
+#       aegis - project change supervisor
+#       Copyright (C) 2004-2008, 2012 Peter Miller
+#       Copyright (C) 2008 Walter Franzini
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 3 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -35,11 +36,11 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
@@ -56,7 +57,7 @@ then
     IFS=":$IFS"
     for tpath2 in $EXEC_SEARCH_PATH
     do
-	tpath=${tpath}${tpath2}/${1-.}/bin:
+        tpath=${tpath}${tpath2}/${1-.}/bin:
     done
     IFS="$hold"
     PATH=${tpath}${PATH}
@@ -67,46 +68,46 @@ export PATH
 
 pass()
 {
-	set +x
-	echo PASSED 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 0
+        set +x
+        echo PASSED 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 0
 }
 fail()
 {
-	set +x
-	echo "FAILED test of the aemv/merge functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 1
+        set +x
+        echo "FAILED test of the aemv/merge functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 1
 }
 no_result()
 {
-	set +x
-	echo "NO RESULT when testing the aemv/merge functionality ($activity)" 1>&2
-	cd $here
-	find $work -type d -user $USER -exec chmod u+w {} \;
-	rm -rf $work
-	exit 2
+        set +x
+        echo "NO RESULT when testing the aemv/merge functionality ($activity)" 1>&2
+        cd $here
+        find $work -type d -user $USER -exec chmod u+w {} \;
+        rm -rf $work
+        exit 2
 }
 trap \"no_result\" 1 2 3 15
 
 check_it()
 {
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
+        sed     -e "s|$work|...|g" \
+                -e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+                -e "s/\"$USER\"/\"USER\"/g" \
+                -e 's/19[0-9][0-9]/YYYY/' \
+                -e 's/20[0-9][0-9]/YYYY/' \
+                -e 's/node = ".*"/node = "NODE"/' \
+                -e 's/crypto = ".*"/crypto = "GUNK"/' \
+                < $2 > $work/sed.out
+        if test $? -ne 0; then no_result; fi
+        diff -b $1 $work/sed.out
+        if test $? -ne 0; then fail; fi
 }
 
 activity="create test directory 106"
@@ -193,13 +194,13 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 activity="new file 188"
 $bin/aegis -nf  $workchan/bogus1 -nl \
-	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
+        --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/bogus2 -nl \
-	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
+        --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/aegis.conf -nl \
-	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
+        --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $workchan/bogus1 << 'end'
@@ -227,7 +228,7 @@ history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 merge_command = "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $i > $out";
+        echo '1,$$p' ) | ed - $i > $out";
 patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
 test $$? -le 1";
 end
@@ -245,6 +246,10 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 activity="diff 240"
 $bin/aegis -diff > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="set the change UUID"
+$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
@@ -291,72 +296,78 @@ activity="check project file state 284"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "bogus1";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "bogus2";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "bogus1";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "bogus2";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -398,30 +409,32 @@ activity="check change file state 391"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "bogus2";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = remove;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "bogus3";
-	},
-	{
-		file_name = "bogus3";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = create;
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		move = "bogus2";
-	},
+        {
+                file_name = "bogus2";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+                action = remove;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = source;
+                move = "bogus3";
+        },
+        {
+                file_name = "bogus3";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+                action = create;
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = source;
+                move = "bogus2";
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -466,6 +479,10 @@ activity="diff 459"
 $bin/aegis -diff 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="set the change UUID 481"
+$bin/aegis -ca 3 -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
 activity="develop end 463"
 $bin/aegis -de 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -495,72 +512,78 @@ activity="check project file state 488"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "aegis.conf";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "bogus1";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
-		action = create;
-		edit =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "bogus2";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = create;
-		edit =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
+        {
+                file_name = "aegis.conf";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = config;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "bogus1";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+                action = create;
+                edit =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                edit_origin =
+                {
+                        revision = "1";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
+        {
+                file_name = "bogus2";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+                action = create;
+                edit =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5";
+                };
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5";
+                };
+                usage = source;
+                file_fp =
+                {
+                        youngest = TIME;
+                        oldest = TIME;
+                        crypto = "GUNK";
+                };
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -587,30 +610,32 @@ activity="check change file state 580"
 cat > ok << 'fubar'
 src =
 [
-	{
-		file_name = "bogus2";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = remove;
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		move = "bogus3";
-	},
-	{
-		file_name = "bogus3";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = create;
-		edit_origin =
-		{
-			revision = "2";
-			encoding = none;
-		};
-		usage = source;
-		move = "bogus2";
-	},
+        {
+                file_name = "bogus2";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+                action = remove;
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5";
+                };
+                usage = source;
+                move = "bogus3";
+        },
+        {
+                file_name = "bogus3";
+                uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+                action = create;
+                edit_origin =
+                {
+                        revision = "2";
+                        encoding = none;
+                        uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5";
+                };
+                usage = source;
+                move = "bogus2";
+        },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -629,3 +654,4 @@ if test $? -ne 0 ; then fail; fi
 # no other guarantees are made.
 #
 pass
+# vim: set ts=8 sw=4 et :

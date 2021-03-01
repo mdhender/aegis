@@ -1,25 +1,24 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2007, 2008 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2007, 2008, 2010, 2012 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 3 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program. If not, see
-//	<http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/assert.h>
 #include <common/ac/ctype.h>
 
-#include <common/error.h> // for assert
 #include <libaegis/attribute.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
@@ -38,6 +37,13 @@ validation_files_white_space::~validation_files_white_space()
 
 validation_files_white_space::validation_files_white_space()
 {
+}
+
+
+validation::pointer
+validation_files_white_space::create(void)
+{
+    return pointer(new validation_files_white_space());
 }
 
 
@@ -76,7 +82,7 @@ validation_files_white_space::check_binaries()
 bool
 validation_files_white_space::check(change::pointer cp, fstate_src_ty *src)
 {
-    nstring path(change_file_path(cp, src));
+    nstring path(cp->file_path(src));
     assert(!path.empty());
     if (path.empty())
         return true;
@@ -85,11 +91,13 @@ validation_files_white_space::check(change::pointer cp, fstate_src_ty *src)
     int num_blank_lines = 0;
     bool ok = true;
     input ip = input_file_text_open(path);
+    int line_number = 0;
     for (;;)
     {
         nstring line;
         if (!ip->one_line(line))
             break;
+        ++line_number;
 
         //
         // check for white space on the end of the line
@@ -99,7 +107,13 @@ validation_files_white_space::check(change::pointer cp, fstate_src_ty *src)
         if (dp < ep && isspace((unsigned char)ep[-1]))
         {
             sub_context_ty sc;
-            sc.var_set_string("File_Name", ip->name());
+            sc.var_set_format
+            (
+                "File_Name",
+                "%s: %d",
+                src->file_name->str_text,
+                line_number
+            );
             change_error
             (
                 cp,
@@ -136,3 +150,6 @@ validation_files_white_space::check(change::pointer cp, fstate_src_ty *src)
     }
     return ok;
 }
+
+
+// vim: set ts=8 sw=4 et :

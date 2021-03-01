@@ -1,26 +1,25 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1996, 1998, 1999, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1994-1999, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .SH SYMBOLIC LINKS
 Many dependency maintenance tools, and indeed some compilers, have
 little or no support for include file search paths, and thus for the
-concept of the two-level directory hierarchy employed by Aegis.  (It
-becomes multi-level when Aegis' branching functionality is used.)  To
+concept of the two\[hy]level directory hierarchy employed by Aegis.  (It
+becomes multi\[hy]level when Aegis' branching functionality is used.)  To
 allow these tools to be used, Aegis provides the ability to maintain a
 set of symbolic links between the development directory of a change and
 the baseline of a project, so it appears to these tools that all of the
@@ -71,9 +70,9 @@ any, will be removed before the file is copied.
 \fBNote:\fP Using this functionality in either form has implications for
 how the rules file of the dependency maintenance tool is written.  Rules
 must \fIremove\fP their targets before creating them (usually with an
-\fIrm \-f\fP command) if you use any of the link sub-fields (both hard
+\fIrm \-f\fP command) if you use any of the link sub\[hy]fields (both hard
 links and symbolic links).  This is to avoid attempting to write the
-result on the symbolic link, which will point at a read-only file in the
+result on the symbolic link, which will point at a read\[hy]only file in the
 project baseline.  This is similar to the same requirement for using the
 \fIlink_\%integration_\%directory\fP field of the project configuration
 file.
@@ -81,29 +80,30 @@ file.
 There is a \fIsymbolic_\%link_\%preference\fP field in the user
 configuration file (see \fIaeuconf\fP(5) for more information).  This
 controls whether \fIaeb\fP(1) will verify the symbolic links before
-the build (default) or whether it will assume they are up-to-date.
+the build (default) or whether it will assume they are up\[hy]to\[hy]date.
 (This field is only relevant if
 \fIdevelopment_\%directory_\%_style.\%source_\%file_\%symlink\fP
 is true.)
 .PP
-For medium-to-large projects, verifying the symbolic links can take
-as long as the build itself.  Assuming the symbolic links are up-to-date
-can be a large time-saving for these projects.
+For medium\[hy]to\[hy]large projects, verifying the symbolic links can take
+as long as the build itself.  Assuming the symbolic links are up\[hy]to\[hy]date
+can be a large time\[hy]saving for these projects.
 It may be advisable to review your choice of DMT in such a situation.
 .PP
 The \fIaedb\fP(1) command \fBdoes not\fP consult this preference.
-Thus, in most situations, the symbolic links will be up-to-date when
+Thus, in most situations, the symbolic links will be up\[hy]to\[hy]date when
 the build is performed.  The only Aegis function which may result in the
-symbolic links becoming out-of-date is the integration of another change,
+symbolic links becoming out\[hy]of\[hy]date is the integration of
+another change,
 as this may alter the presence or absence of files in the baseline.
 In this situation, the default \fIaeb\fP(1) action is to ignore the user
 preference and the verify symbolic links.
 .PP
 There are two command line options which modify \fIaeb\fP(1) behavior
-further: the \fB\-Verify-Symbolic-Links\fP option says to verify the
-symbolic links; and the \fB\-Assume-Symbolic-Links\fP option says
-to assume the symbolic links are up-to-date.
-In each case the option over-rides the default and the user preference.
+further: the \fB\-Verify\[hy]Symbolic\[hy]Links\fP option says to verify the
+symbolic links; and the \fB\-Assume\[hy]Symbolic\[hy]Links\fP option says
+to assume the symbolic links are up\[hy]to\[hy]date.
+In each case the option over\[hy]rides the default and the user preference.
 .PP
 It is possible to obtain behaviour similar to Tom Lord'a Arch by using a
 setting such as:
@@ -133,8 +133,9 @@ development_directory_style =
 .RE
 There are many more possible configurations of the
 \fIdevelopment_\%directory_\%style\fP, usually with helpful build
-side-effects.  See \fIaepconf\fP(1) and the \fIDepenedency
+side\[hy]effects.  See \fIaepconf\fP(1) and the \fIDepenedency
 Maintenance Tool\fP chapter of the User Guide for more information.
 .PP
 The symbolic link command line options and preferences apply equally
 to hard links and file copies (the names have historical origins).
+.\" vim: set ts=8 sw=4 et :

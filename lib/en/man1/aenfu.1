@@ -1,59 +1,58 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998, 2002, 2004, 2006-2008 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1991-1998, 2002, 2004, 2006-2008, 2010, 2012 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 3 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
-.so z_name.so
-.TH "\*(n) -New_File_Undo" 1 \*(N) "Reference Manual"
+.so lib/en/man1/z_name.so
+.TH "\*(n) \-New_File_Undo" 1 \*(N) "Reference Manual"
 .SH NAME
 aegis new file undo \- remove new files from a change
 .XX "aenfu(1)" "remove new files from a change"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_File_Undo
-.IR file-name ...
+.B \-New_File_Undo
+.IR file\[hy]name ...
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_File_Undo
-.B -List
+.B \-New_File_Undo
+.B \-List
 [
 .IR option ...
 ]
 .br
 .B \*(n)
-.B -New_File_Undo
-.B -Help
+.B \-New_File_Undo
+.B \-Help
 .SH DESCRIPTION
 The
 .I \*(n)
-.I -New_File_Undo
+.I \-New_File_Undo
 command is used to
 remove new files from a change
-(reverse the actions of the '\*(n) -New_File' command).
+(reverse the actions of the '\*(n) \-New_File' command).
 The file is removed from the list of files in the change.
 .PP
 The file is removed from the development directory
 unless the
-.B -Keep
+.B \-Keep
 option is used.
 The
-.B -Keep
+.B \-Keep
 option should be used with great care,
 as you can confuse tools such as
 .IR make (1)
@@ -63,7 +62,7 @@ You may specify a directory name to remove all
 new files in the named directory tree,
 other files in the tree will be ignored.
 It is an error if there are no relevant files.
-.so z_intuit.so
+.so lib/en/man1/z_intuit.so
 .SS Notification
 The \fInew_\%file_\%undo_\%command\fP in the project \fIconfig\fP file is
 run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
@@ -82,24 +81,24 @@ and cannot know what these derived file may be called.
 You may need to delete derived files manually.
 .SH OPTIONS
 The following options are understood:
-.so o_baserel.so
-.so o_change.so
-.so o_help.so
-.so o_interact.so
-.so o_keep.so
-.so o_list.so
-.so o_project.so
-.so o_terse.so
-.so o_verbose.so
-.so o_symlnk_vfy.so
-.so o_wait.so
-.so o__rules.so
+.so lib/en/man1/o_baserel.so
+.so lib/en/man1/o_change.so
+.so lib/en/man1/o_help.so
+.so lib/en/man1/o_interact.so
+.so lib/en/man1/o_keep.so
+.so lib/en/man1/o_list.so
+.so lib/en/man1/o_project.so
+.so lib/en/man1/o_terse.so
+.so lib/en/man1/o_verbose.so
+.so lib/en/man1/o_symlnk_vfy.so
+.so lib/en/man1/o_wait.so
+.so lib/en/man1/o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is
 .nf
 .ta 8n 16n
-csh%	alias aenfu '\*(n) -nfu \e!$ -v'
-sh$	aenfu(){\*(n) -nfu "$@" -v}
+csh%    alias aenfu '\*(n) \-nfu \e!$ \-v'
+sh$     aenfu(){\*(n) \-nfu "$@" \-v}
 .fi
 .SH ERRORS
 It is an error if
@@ -114,8 +113,8 @@ It is an error if
 the file is not in the change.
 .br
 It is an error if
-the file was not added to the change with the '\*(n) -New_File' command.
-.so z_exit.so
+the file was not added to the change with the '\*(n) \-New_File' command.
+.so lib/en/man1/z_exit.so
 .br
 .ne 1i
 .SH SEE ALSO
@@ -128,4 +127,5 @@ project configuration file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
-.so z_cr.so
+.so lib/en/man1/z_cr.so
+.\" vim: set ts=8 sw=4 et :

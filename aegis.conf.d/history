@@ -1,0 +1,70 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2012 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * create a new history
+ * always executed as the project owner
+ */
+history_create_command =
+    "fhist "
+    "${quote ${basename $history}} -cr -cu "
+    "-i ${quote $input} "
+    "-p ${quote ${dirname $history}} "
+    "-r"
+    ;
+
+/*
+ * get a file from history
+ * may be executed by developers
+ */
+history_get_command =
+    "fhist "
+    "${quote ${basename $history}} "
+    "-e ${quote $edit} "
+    "-o ${quote $output} "
+    "-p ${quote ${dirname $history}} "
+    "-v 0"
+    ;
+
+/*
+ * add a new change to the history
+ * always executed as the project owner
+ */
+history_put_command =
+    "fhist "
+    "${quote ${basename $history}} "
+    "-cr -cu "
+    "-i ${quote $input} "
+    "-p ${quote ${dirname $history}} "
+    "-r"
+    ;
+
+/*
+ * query the topmost edit of a history file
+ * Result to be printed on stdout.
+ * may be executed by developers
+ */
+history_query_command =
+    "fhist "
+    "${quote ${basename $history}} "
+    "-l 0 "
+    "-p ${quote ${dirname $history}} "
+    "-q"
+    ;
+
+/* vim: set ts=8 sw=4 et : */
