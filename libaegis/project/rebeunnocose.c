@@ -26,12 +26,10 @@
 
 
 void
-project_review_begin_undo_notify_command_set(pp, value)
-	project_ty	*pp;
-	string_ty	*value;
+project_review_begin_undo_notify_command_set(project_ty *pp, string_ty *value)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	cp = project_change_get(pp);
-	change_branch_review_begin_undo_notify_command_set(cp, value);
+    cp = project_change_get(pp);
+    change_branch_review_begin_undo_notify_command_set(cp, value);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,31 +32,27 @@
 #include <sub.h>
 
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
-	/*
-	 * initialize everything
-	 */
-	progname_set(argv[0]);
-	r250_init();
-	os_become_init_mortal();
-	str_initialize();
-	env_initialize();
-	language_init();
+    /*
+     * initialize everything
+     */
+    progname_set(argv[0]);
+    r250_init();
+    os_become_init_mortal();
+    str_initialize();
+    env_initialize();
+    language_init();
 
-	/*
-	 * parse the command line
-	 */
-	cmdline_grammar(argc, argv);
+    /*
+     * parse the command line
+     */
+    cmdline_grammar(argc, argv);
 
-	/*
-	 * If we get to gere, everything went OK.
-	 */
-	exit(0);
-	return 0;
+    /*
+     * If we get to gere, everything went OK.
+     */
+    exit(0);
+    return 0;
 }

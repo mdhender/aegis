@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,68 +25,59 @@
 #include <tree/list.h>
 
 
-static void tree_list_constructor _((tree_list_ty *tlp));
-
 static void
-tree_list_constructor(tlp)
-	tree_list_ty	*tlp;
+tree_list_constructor(tree_list_ty *tlp)
 {
-	tlp->length = 0;
-	tlp->maximum = 0;
-	tlp->item = 0;
+    tlp->length = 0;
+    tlp->maximum = 0;
+    tlp->item = 0;
 }
 
 
 tree_list_ty *
-tree_list_new()
+tree_list_new(void)
 {
-	tree_list_ty	*tlp;
+    tree_list_ty    *tlp;
 
-	tlp = mem_alloc(sizeof(tree_list_ty));
-	tree_list_constructor(tlp);
-	return tlp;
+    tlp = mem_alloc(sizeof(tree_list_ty));
+    tree_list_constructor(tlp);
+    return tlp;
 }
 
-
-static void tree_list_destructor _((tree_list_ty *tlp));
 
 static void
-tree_list_destructor(tlp)
-	tree_list_ty	*tlp;
+tree_list_destructor(tree_list_ty *tlp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < tlp->length; ++j)
-		tree_delete(tlp->item[j]);
-	if (tlp->item)
-		mem_free(tlp->item);
-	tlp->length = 0;
-	tlp->maximum = 0;
-	tlp->item = 0;
+    for (j = 0; j < tlp->length; ++j)
+	tree_delete(tlp->item[j]);
+    if (tlp->item)
+	mem_free(tlp->item);
+    tlp->length = 0;
+    tlp->maximum = 0;
+    tlp->item = 0;
 }
 
 
 void
-tree_list_delete(tlp)
-	tree_list_ty	*tlp;
+tree_list_delete(tree_list_ty *tlp)
 {
-	tree_list_destructor(tlp);
-	mem_free(tlp);
+    tree_list_destructor(tlp);
+    mem_free(tlp);
 }
 
 
 void
-tree_list_append(tlp, tp)
-	tree_list_ty	*tlp;
-	tree_ty		*tp;
+tree_list_append(tree_list_ty *tlp, tree_ty *tp)
 {
-	if (tlp->length >= tlp->maximum)
-	{
-		size_t		nbytes;
+    if (tlp->length >= tlp->maximum)
+    {
+	size_t		nbytes;
 
-		tlp->maximum = tlp->maximum * 2 + 4;
-		nbytes = tlp->maximum * sizeof(tlp->item[0]);
-		tlp->item = mem_change_size(tlp->item, nbytes);
-	}
-	tlp->item[tlp->length++] = tree_copy(tp);
+	tlp->maximum = tlp->maximum * 2 + 4;
+	nbytes = tlp->maximum * sizeof(tlp->item[0]);
+	tlp->item = mem_change_size(tlp->item, nbytes);
+    }
+    tlp->item[tlp->length++] = tree_copy(tp);
 }

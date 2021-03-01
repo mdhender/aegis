@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,15 +26,13 @@
 
 
 void
-project_file_remove(pp, file_name)
-	project_ty	*pp;
-	string_ty	*file_name;
+project_file_remove(project_ty *pp, string_ty *file_name)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	trace(("project_file_remove(pp = %8.8lX, file_name = \"%s\")\n{\n"/*}*/,
-		(long)pp, file_name->str_text));
-	cp = project_change_get(pp);
-	change_file_remove(cp, file_name);
-	trace((/*{*/"}\n"));
+    trace(("project_file_remove(pp = %8.8lX, file_name = \"%s\")\n{\n",
+	(long)pp, file_name->str_text));
+    cp = project_change_get(pp);
+    change_file_remove(cp, file_name);
+    trace(("}\n"));
 }

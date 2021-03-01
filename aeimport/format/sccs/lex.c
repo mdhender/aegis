@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,112 +33,101 @@
 #include <symtab.h>
 #include <format/sccs/gram.gen.h> /* needs to be after <str.h> */
 
-static	input_ty	*ip;
-static	int		error_count;
-static	int		start_of_line;
-static	stracc_t	getch_line_buffer;
-static	size_t		getch_line_pos;
+static input_ty *ip;
+static int	error_count;
+static int	start_of_line;
+static stracc_t	getch_line_buffer;
+static size_t	getch_line_pos;
 
 
 void
-sccs_lex_open(fn)
-	string_ty	*fn;
+sccs_lex_open(string_ty *fn)
 {
-	ip = input_file_text_open(fn);
-	start_of_line = 1;
-}
-
-
-void
-sccs_lex_close()
-{
-	if (error_count)
-		quit(1);
-	input_delete(ip);
-	ip = 0;
-}
-
-
-void sccs_lex_error _((sub_context_ty *, const char *));
-
-void
-sccs_lex_error(scp, s)
-	sub_context_ty	*scp;
-	const char 	*s;
-{
-	string_ty       *msg;
-
-	msg = subst_intl(scp, s);
-
-	/* re-use substitution context */
-	sub_var_set_string(scp, "Message", msg);
-	sub_var_set_string(scp, "File_Name", input_name(ip));
-	error_intl(scp, i18n("$filename: $message"));
-	str_free(msg);
-
-	if (++error_count >= 20)
-	{
-		/* re-use substitution context */
-		sub_var_set_string(scp, "File_Name", input_name(ip));
-		fatal_intl(scp, i18n("$filename: too many errors"));
-	}
+    ip = input_file_text_open(fn);
+    start_of_line = 1;
 }
 
 
 void
-format_sccs_gram_error(s)
-	const char	*s;
+sccs_lex_close(void)
 {
-	sub_context_ty  *scp;
-
-	scp = sub_context_new();
-	sccs_lex_error(scp, s);
-	sub_context_delete(scp);
+    if (error_count)
+	quit(1);
+    input_delete(ip);
+    ip = 0;
 }
 
-
-static int getch _((void));
-
-static int
-getch()
-{
-	int		c;
-
-	if (getch_line_pos >= getch_line_buffer.length)
-	{
-		getch_line_buffer.length = 0;
-		getch_line_pos = 0;
-		for (;;)
-		{
-			c = input_getc(ip);
-			if (c < 0)
-			{
-				if (getch_line_buffer.length == 0)
-					return -1;
-				break;
-			}
-			stracc_char(&getch_line_buffer, c);
-			if (c == '\n')
-				break;
-		}
-	}
-	start_of_line = !getch_line_pos;
-	c = getch_line_buffer.buffer[getch_line_pos++];
-	return c;
-}
-
-
-static void ungetch _((int));
 
 static void
-ungetch(c)
-	int		c;
+sccs_lex_error(sub_context_ty *scp, const char *s)
 {
-	if (c < 0)
-		return;
-	assert(getch_line_pos > 0);
-	--getch_line_pos;
-	assert(c == getch_line_buffer.buffer[getch_line_pos]);
+    string_ty       *msg;
+
+    msg = subst_intl(scp, s);
+
+    /* re-use substitution context */
+    sub_var_set_string(scp, "Message", msg);
+    sub_var_set_string(scp, "File_Name", input_name(ip));
+    error_intl(scp, i18n("$filename: $message"));
+    str_free(msg);
+
+    if (++error_count >= 20)
+    {
+	/* re-use substitution context */
+	sub_var_set_string(scp, "File_Name", input_name(ip));
+	fatal_intl(scp, i18n("$filename: too many errors"));
+    }
+}
+
+
+void
+format_sccs_gram_error(const char *s)
+{
+    sub_context_ty  *scp;
+
+    scp = sub_context_new();
+    sccs_lex_error(scp, s);
+    sub_context_delete(scp);
+}
+
+
+static int
+getch(void)
+{
+    int             c;
+
+    if (getch_line_pos >= getch_line_buffer.length)
+    {
+	getch_line_buffer.length = 0;
+	getch_line_pos = 0;
+	for (;;)
+	{
+	    c = input_getc(ip);
+	    if (c < 0)
+	    {
+		if (getch_line_buffer.length == 0)
+	    	    return -1;
+		break;
+	    }
+	    stracc_char(&getch_line_buffer, c);
+	    if (c == '\n')
+		break;
+	}
+    }
+    start_of_line = !getch_line_pos;
+    c = getch_line_buffer.buffer[getch_line_pos++];
+    return c;
+}
+
+
+static void
+ungetch(int c)
+{
+    if (c < 0)
+	return;
+    assert(getch_line_pos > 0);
+    --getch_line_pos;
+    assert(c == getch_line_buffer.buffer[getch_line_pos]);
 }
 
 
@@ -146,135 +135,135 @@ ungetch(c)
 
 
 int
-format_sccs_gram_lex()
+format_sccs_gram_lex(void)
 {
-	static stracc_t	buffer;
-	int		c;
+    static stracc_t buffer;
+    int             c;
 
-	for (;;)
+    for (;;)
+    {
+	c = getch();
+	if (c == EOF)
+	    return 0;
+
+	if (start_of_line)
 	{
-		c = getch();
-		if (c == EOF)
-			return 0;
-
-		if (start_of_line)
-		{
-			if (c != '\1')
-			{
-				stracc_open(&buffer);
-				for (;;)
-				{
-					if (c == '\n')
-						break;
-					stracc_char(&buffer, c);
-					c = getch();
-					if (c == EOF)
-						break;
-				}
-				yylval.lv_string = stracc_close(&buffer);
-				return TEXTLINE;
-			}
-
-			/*
-			 * we are looking for a keyword
-			 */
-			c = getch();
-			switch (c)
-			{
-			case 'c':
-				stracc_open(&buffer);
-				c = getch();
-				if (c != ' ')
-					stracc_char(&buffer, c);
-				for (;;)
-				{
-					c = getch();
-					if (c == EOF)
-						break;
-					if (c == '\n')
-					{
-						ungetch(c);
-						break;
-					}
-					stracc_char(&buffer, c);
-				}
-				yylval.lv_string = stracc_close(&buffer);
-				return COMMENT;
-
-			case 'd':
-				return DELTA_BEGIN;
-
-			case 'D':
-				return D_KEYWORD;
-
-			case 'e':
-				return DELTA_END;
-
-			case 'E':
-				return E_KEYWORD;
-
-			case 'f':
-				return FLAGS;
-
-			case 'g':
-				return MR_IGNORE;
-
-			case 'h':
-				return HEADER;
-
-			case 'i':
-				return MR_INCLUDE;
-
-			case 'I':
-				return I_KEYWORD;
-
-			case 'm':
-				return MR;
-
-			case 's':
-				return SUMMARY;
-
-			case 't':
-				return TITLE_BEGIN;
-
-			case 'T':
-				return TITLE_END;
-
-			case 'u':
-				return USERS_BEGIN;
-
-			case 'U':
-				return USERS_END;
-
-			case 'x':
-				return MR_EXCLUDE;
-			}
-			return JUNK;
-		}
-
-		/*
-		 * Throw away white space.
-		 */
-		if (isspace((unsigned char)c))
-			continue;
-
-		/*
-		 * "normal" processing
-		 */
+	    if (c != '\1')
+	    {
 		stracc_open(&buffer);
 		for (;;)
 		{
-			stracc_char(&buffer, c);
-			c = getch();
-			if (c == EOF)
-				break;
-			if (isspace((unsigned char)c))
-			{
-				ungetch(c);
-				break;
-			}
+		    if (c == '\n')
+			break;
+		    stracc_char(&buffer, c);
+		    c = getch();
+		    if (c == EOF)
+			break;
 		}
 		yylval.lv_string = stracc_close(&buffer);
-		return STRING;
+		return TEXTLINE;
+	    }
+
+	    /*
+	     * we are looking for a keyword
+	     */
+	    c = getch();
+	    switch (c)
+	    {
+	    case 'c':
+		stracc_open(&buffer);
+		c = getch();
+		if (c != ' ')
+		    stracc_char(&buffer, c);
+		for (;;)
+		{
+		    c = getch();
+		    if (c == EOF)
+			break;
+		    if (c == '\n')
+		    {
+			ungetch(c);
+			break;
+		    }
+		    stracc_char(&buffer, c);
+		}
+		yylval.lv_string = stracc_close(&buffer);
+		return COMMENT;
+
+	    case 'd':
+		return DELTA_BEGIN;
+
+	    case 'D':
+		return D_KEYWORD;
+
+	    case 'e':
+		return DELTA_END;
+
+	    case 'E':
+		return E_KEYWORD;
+
+	    case 'f':
+		return FLAGS;
+
+	    case 'g':
+		return MR_IGNORE;
+
+	    case 'h':
+		return HEADER;
+
+	    case 'i':
+		return MR_INCLUDE;
+
+	    case 'I':
+		return I_KEYWORD;
+
+	    case 'm':
+		return MR;
+
+	    case 's':
+		return SUMMARY;
+
+	    case 't':
+		return TITLE_BEGIN;
+
+	    case 'T':
+		return TITLE_END;
+
+	    case 'u':
+		return USERS_BEGIN;
+
+	    case 'U':
+		return USERS_END;
+
+	    case 'x':
+		return MR_EXCLUDE;
+	    }
+	    return JUNK;
 	}
+
+	/*
+	 * Throw away white space.
+	 */
+	if (isspace((unsigned char)c))
+	    continue;
+
+	/*
+	 * "normal" processing
+	 */
+	stracc_open(&buffer);
+	for (;;)
+	{
+	    stracc_char(&buffer, c);
+	    c = getch();
+	    if (c == EOF)
+		break;
+	    if (isspace((unsigned char)c))
+	    {
+		ungetch(c);
+		break;
+	    }
+	}
+	yylval.lv_string = stracc_close(&buffer);
+	return STRING;
+    }
 }

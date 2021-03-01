@@ -28,12 +28,12 @@
 typedef struct complete_vtbl_ty complete_vtbl_ty;
 struct complete_vtbl_ty
 {
-    void (*destructor)_((complete_ty *));
-    void (*perform)_((complete_ty *, struct shell_ty *));
+    void (*destructor)(complete_ty *);
+    void (*perform)(complete_ty *, struct shell_ty *);
     int size;
     char *name;
 };
 
-complete_ty *complete_new _((complete_vtbl_ty *));
+complete_ty *complete_new(complete_vtbl_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_PRIVATE_H */

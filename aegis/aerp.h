@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void review_pass _((void));
+void review_pass(void);
 
 #endif /* AEGIS_AERP_H */

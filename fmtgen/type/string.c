@@ -28,44 +28,44 @@
 static void
 gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-	char		*deref;
+    char	    *deref;
 
-	deref = (is_a_list ? "*" : "");
-	indent_printf("%s\1%s*%s;\n", "string_ty", deref, name->str_text);
+    deref = (is_a_list ? "*" : "");
+    indent_printf("%s\1%s*%s;\n", "string_ty", deref, name->str_text);
 }
 
 
 static void
 gen_code_declarator(type_ty *this, string_ty *name, int is_a_list, int show)
 {
-	indent_printf("string_write(fp, ");
-	if (is_a_list)
-		indent_printf("(char *)0");
-	else
-		indent_printf("\"%s\"", name->str_text);
-	indent_printf(", this->%s);\n", name->str_text);
+    indent_printf("string_write(fp, ");
+    if (is_a_list)
+       	indent_printf("(char *)0");
+    else
+       	indent_printf("\"%s\"", name->str_text);
+    indent_printf(", this->%s);\n", name->str_text);
 }
 
 
 static void
 gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-	indent_printf("str_free(this->%s);\n", name->str_text);
+    indent_printf("str_free(this->%s);\n", name->str_text);
 }
 
 
 type_method_ty type_string =
 {
-	sizeof(type_ty),
-	"string",
-	0, /* has a mask NOT */
-	0, /* constructor */
-	0, /* destructor */
-	0, /* gen_include */
-	gen_include_declarator,
-	0, /* gen_code */
-	gen_code_declarator,
-	gen_free_declarator,
-	0, /* member_add */
-	0, /* in_include_file */
+    sizeof(type_ty),
+    "string",
+    0, /* has a mask NOT */
+    0, /* constructor */
+    0, /* destructor */
+    0, /* gen_include */
+    gen_include_declarator,
+    0, /* gen_code */
+    gen_code_declarator,
+    gen_free_declarator,
+    0, /* member_add */
+    0, /* in_include_file */
 };

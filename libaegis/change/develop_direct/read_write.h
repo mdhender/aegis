@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: interface definition for libaegis/change/develop_direct/read_write.c
+ * MANIFEST: interface defn for libaegis/change/develop_direct/read_write.c
  */
 
 #ifndef LIBAEGIS_CHANGE_DEVELOP_DIRECT_READ_WRITE_H
@@ -27,6 +27,6 @@
 
 struct change_ty; /* forward */
 
-void change_development_directory_chmod_read_write _((struct change_ty *));
+void change_development_directory_chmod_read_write(struct change_ty *);
 
 #endif /* LIBAEGIS_CHANGE_DEVELOP_DIRECT_READ_WRITE_H */

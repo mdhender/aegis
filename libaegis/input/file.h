@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <input.h>
 
-input_ty *input_file_open _((struct string_ty *));
-void input_file_unlink_on_close _((input_ty *));
+input_ty *input_file_open(struct string_ty *);
+void input_file_unlink_on_close(input_ty *);
 
 #endif /* AEGIS_INPUT_FILE_H */

@@ -221,4 +221,6 @@ architecture =
 ];
 
 test_command =
-	"AEGIS_SEARCH_PATH=$search_path $sh ${quote $filename} ${quote $arch}";
+	"AEGIS_SEARCH_PATH=$search_path "
+	"EXEC_SEARCH_PATH=$spe "
+	"$sh ${quote $filename} ${quote $arch}";

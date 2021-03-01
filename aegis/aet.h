@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void test _((void));
+void test(void);
 
 #endif /* AEGIS_AET_H */

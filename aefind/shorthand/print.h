@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-struct tree_ty *shorthand_print _((void));
+struct tree_ty *shorthand_print(void);
 
 #endif /* AEFIND_SHORTHAND_PRINT_H */

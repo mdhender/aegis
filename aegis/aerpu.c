@@ -45,10 +45,8 @@
 #include <user.h>
 
 
-static void review_pass_undo_usage _((void));
-
 static void
-review_pass_undo_usage()
+review_pass_undo_usage(void)
 {
     char	    *progname;
 
@@ -70,19 +68,15 @@ review_pass_undo_usage()
 }
 
 
-static void review_pass_undo_help _((void));
-
 static void
-review_pass_undo_help()
+review_pass_undo_help(void)
 {
     help("aerpu", review_pass_undo_usage);
 }
 
 
-static void review_pass_undo_list _((void));
-
 static void
-review_pass_undo_list()
+review_pass_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -127,10 +121,8 @@ review_pass_undo_list()
 }
 
 
-static void review_pass_undo_main _((void));
-
 static void
-review_pass_undo_main()
+review_pass_undo_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -283,7 +275,7 @@ review_pass_undo_main()
 
 
 void
-review_pass_undo()
+review_pass_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

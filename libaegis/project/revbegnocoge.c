@@ -26,11 +26,10 @@
 
 
 string_ty *
-project_review_begin_notify_command_get(pp)
-	project_ty	*pp;
+project_review_begin_notify_command_get(project_ty *pp)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	cp = project_change_get(pp);
-	return change_branch_review_begin_notify_command_get(cp);
+    cp = project_change_get(pp);
+    return change_branch_review_begin_notify_command_get(cp);
 }

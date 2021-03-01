@@ -29,37 +29,37 @@
 typedef struct type_enum_ty type_enum_ty;
 struct type_enum_ty
 {
-	/* inherited */
-	TYPE_TY
+    /* inherited */
+    TYPE_TY
 
-	/* instance variables */
-	size_t		nelements;
-	string_ty	**element;
+    /* instance variables */
+    size_t	    nelements;
+    string_ty	    **element;
 };
 
 
 static void
 constructor(type_ty *type)
 {
-	type_enum_ty	*this;
+    type_enum_ty    *this;
 
-	this = (type_enum_ty *)type;
-	this->nelements = 0;
-	this->element = 0;
+    this = (type_enum_ty *)type;
+    this->nelements = 0;
+    this->element = 0;
 }
 
 
 static void
 destructor(type_ty *type)
 {
-	type_enum_ty	*this;
-	size_t		j;
+    type_enum_ty    *this;
+    size_t	    j;
 
-	this = (type_enum_ty *)type;
-	for (j = 0; j < this->nelements; ++j)
-		str_free(this->element[j]);
-	if (this->element)
-		mem_free(this->element);
+    this = (type_enum_ty *)type;
+    for (j = 0; j < this->nelements; ++j)
+	str_free(this->element[j]);
+    if (this->element)
+	mem_free(this->element);
 }
 
 
@@ -312,8 +312,8 @@ gen_code_declarator(type_ty *type, string_ty *variable_name, int is_a_list,
 static void
 gen_free_declarator(type_ty *type, string_ty *variable_name, int is_a_list)
 {
-	if (is_a_list)
-		indent_printf(";\n");
+    if (is_a_list)
+       	indent_printf(";\n");
 }
 
 
@@ -333,16 +333,16 @@ member_add(type_ty *type, string_ty *member_name, type_ty *member_type,
 
 type_method_ty type_enumeration =
 {
-	sizeof(type_enum_ty),
-	"enumeration",
-	1, /* has a mask */
-	constructor,
-	destructor,
-	gen_include,
-	gen_include_declarator,
-	gen_code,
-	gen_code_declarator,
-	gen_free_declarator,
-	member_add,
-	0, /* in_include_file */
+    sizeof(type_enum_ty),
+    "enumeration",
+    1, /* has a mask */
+    constructor,
+    destructor,
+    gen_include,
+    gen_include_declarator,
+    gen_code,
+    gen_code_declarator,
+    gen_free_declarator,
+    member_add,
+    0, /* in_include_file */
 };

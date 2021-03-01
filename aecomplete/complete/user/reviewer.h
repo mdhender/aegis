@@ -27,7 +27,7 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_user_reviewer _((struct project_ty *));
-complete_ty *complete_user_reviewer_not _((struct project_ty *));
+complete_ty *complete_user_reviewer(struct project_ty *);
+complete_ty *complete_user_reviewer_not(struct project_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_USER_REVIEWER_H */

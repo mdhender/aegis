@@ -36,11 +36,8 @@
 #include <user.h>
 
 
-static string_ty *branch_description_invent _((project_ty *));
-
 static string_ty *
-branch_description_invent(pp)
-    project_ty	    *pp;
+branch_description_invent(project_ty *pp)
 {
     string_ty	    *s1;
     string_ty	    *s2;
@@ -76,11 +73,8 @@ branch_description_invent(pp)
 
 
 project_ty *
-project_new_branch(ppp, up, change_number, topdir)
-    project_ty	    *ppp;
-    user_ty	    *up;
-    long	    change_number;
-    string_ty	    *topdir;
+project_new_branch(project_ty *ppp, user_ty *up, long change_number,
+    string_ty *topdir)
 {
     cstate	    cstate_data;
     cstate_history  history_data;

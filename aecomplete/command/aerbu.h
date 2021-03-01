@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aerbu _((void));
+command_ty *command_aerbu(void);
 
 #endif /* AECOMPLETE_COMMAND_AERBU_H */

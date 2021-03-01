@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 struct sub_context_ty; /* existence */
 struct wstring_list_ty; /* existence */
 
-struct wstring_ty *sub_downcase _((struct sub_context_ty *,
-	struct wstring_list_ty *arg));
+struct wstring_ty *sub_downcase(struct sub_context_ty *,
+	struct wstring_list_ty *arg);
 
 #endif /* LIBAEGIS_SUB_DOWNCASE_H */

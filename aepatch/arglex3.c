@@ -25,25 +25,23 @@
 
 static arglex_table_ty argtab[] =
 {
-	{ "-Ascii_Armor", arglex_token_ascii_armor, },
-	{ "-Not_Ascii_Armor", arglex_token_ascii_armor_not, },
-	{ "-COmpress", arglex_token_compress, },
-	{ "-Not_COmpress", arglex_token_compress_not, },
-	{ "-Content_Transfer_Encoding", arglex_token_content_transfer_encoding},
-	{ "-Receive", arglex_token_receive, },
-	{ "-Send", arglex_token_send, },
-	{ "-Trojan", arglex_token_trojan, },
-	{ "-Not_Trojan", arglex_token_trojan_not, },
-	{ "-Add_Path_Prefix", arglex_token_path_prefix_add, },
-	{ "-Remove_Path_Prefix", arglex_token_path_prefix_remove, },
-	{ 0, }
+    { "-Ascii_Armor", arglex_token_ascii_armor, },
+    { "-Not_Ascii_Armor", arglex_token_ascii_armor_not, },
+    { "-COmpress", arglex_token_compress, },
+    { "-Not_COmpress", arglex_token_compress_not, },
+    { "-Content_Transfer_Encoding", arglex_token_content_transfer_encoding},
+    { "-Receive", arglex_token_receive, },
+    { "-Send", arglex_token_send, },
+    { "-Trojan", arglex_token_trojan, },
+    { "-Not_Trojan", arglex_token_trojan_not, },
+    { "-Add_Path_Prefix", arglex_token_path_prefix_add, },
+    { "-Remove_Path_Prefix", arglex_token_path_prefix_remove, },
+    { 0, }
 };
 
 
 void
-arglex3_init(argc, argv)
-	int		argc;
-	char		**argv;
+arglex3_init(int argc, char **argv)
 {
-	arglex2_init3(argc, argv, argtab);
+    arglex2_init3(argc, argv, argtab);
 }

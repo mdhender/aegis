@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 #include <main.h>
 
-struct tree_ty *tree_and_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_or_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_not_new _((struct tree_ty *));
-struct tree_ty *tree_comma_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_triadic_new _((struct tree_ty *, struct tree_ty *,
-	struct tree_ty *));
+struct tree_ty *tree_and_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_or_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_not_new(struct tree_ty *);
+struct tree_ty *tree_comma_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_triadic_new(struct tree_ty *, struct tree_ty *,
+    struct tree_ty *);
 
 #endif /* AEFIND_TREE_LOGICAL_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,16 +28,16 @@
 typedef struct tree_diadic_ty tree_diadic_ty;
 struct tree_diadic_ty
 {
-	tree_ty		inherited;
-	tree_ty		*left;
-	tree_ty		*right;
+    tree_ty	    inherited;
+    tree_ty	    *left;
+    tree_ty	    *right;
 };
 
-tree_ty *tree_diadic_new _((tree_method_ty *, tree_ty *, tree_ty *));
-void tree_diadic_destructor _((tree_ty *));
-void tree_diadic_print _((tree_ty *));
-int tree_diadic_useful _((tree_ty *));
-int tree_diadic_constant _((tree_ty *));
-tree_ty *tree_diadic_optimize _((tree_ty *));
+tree_ty *tree_diadic_new(tree_method_ty *, tree_ty *, tree_ty *);
+void tree_diadic_destructor(tree_ty *);
+void tree_diadic_print(tree_ty *);
+int tree_diadic_useful(tree_ty *);
+int tree_diadic_constant(tree_ty *);
+tree_ty *tree_diadic_optimize(tree_ty *);
 
 #endif /* AEFIND_TREE_DIADIC_H */

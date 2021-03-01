@@ -48,10 +48,8 @@
 #include <user.h>
 
 
-static void integrate_begin_undo_usage _((void));
-
 static void
-integrate_begin_undo_usage()
+integrate_begin_undo_usage(void)
 {
     char	    *progname;
 
@@ -73,19 +71,15 @@ integrate_begin_undo_usage()
 }
 
 
-static void integrate_begin_undo_help _((void));
-
 static void
-integrate_begin_undo_help()
+integrate_begin_undo_help(void)
 {
     help("aeibu", integrate_begin_undo_usage);
 }
 
 
-static void integrate_begin_undo_list _((void));
-
 static void
-integrate_begin_undo_list()
+integrate_begin_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -133,10 +127,8 @@ integrate_begin_undo_list()
 }
 
 
-static void integrate_begin_undo_main _((void));
-
 static void
-integrate_begin_undo_main()
+integrate_begin_undo_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -371,7 +363,7 @@ integrate_begin_undo_main()
 
 
 void
-integrate_begin_undo()
+integrate_begin_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

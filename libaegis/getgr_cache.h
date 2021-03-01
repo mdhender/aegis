@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 
 struct string_ty; /* forward */
 
-struct group *getgrnam_cached _((struct string_ty *name));
-struct group *getgrgid_cached _((int gid));
+struct group *getgrnam_cached(struct string_ty *name);
+struct group *getgrgid_cached(int gid);
 
 #endif /* LIBAEGIS_GETGR_CACHE_H */

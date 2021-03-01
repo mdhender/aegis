@@ -30,25 +30,25 @@
 
 #define MAX_PAGE_WIDTH 5000
 
-void option_progname_set _((char *));
-char *option_progname_get _((void));
+void option_progname_set(char *);
+char *option_progname_get(void);
 
-void option_verbose_set _((void(*)(void)));
-int option_verbose_get _((void));
-void option_unformatted_set _((void(*)(void)));
-int option_unformatted_get _((void));
-void option_terse_set _((void(*)(void)));
-int option_terse_get _((void));
+void option_verbose_set(void(*)(void));
+int option_verbose_get(void);
+void option_unformatted_set(void(*)(void));
+int option_unformatted_get(void);
+void option_terse_set(void(*)(void));
+int option_terse_get(void);
 
-void option_page_width_set _((int columns, void (*usage)(void)));
-int option_page_width_get _((int));
-void option_page_length_set _((int rows, void (*usage)(void)));
-int option_page_length_get _((int));
+void option_page_width_set(int columns, void (*usage)(void));
+int option_page_width_get(int);
+void option_page_length_set(int rows, void (*usage)(void));
+int option_page_length_get(int);
 
-void option_tab_width_set _((int, void(*)(void)));
-int option_tab_width_get _((void));
+void option_tab_width_set(int, void(*)(void));
+int option_tab_width_get(void);
 
-void option_page_headers_set _((int, void(*)(void)));
-int option_page_headers_get _((void));
+void option_page_headers_set(int, void(*)(void));
+int option_page_headers_get(void);
 
 #endif /* OPTION_H */

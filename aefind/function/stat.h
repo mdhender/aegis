@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,15 +27,15 @@
 
 struct tree_list_ty; /* existence */
 
-struct tree_ty *function_atime _((struct tree_list_ty *));
-struct tree_ty *function_ctime _((struct tree_list_ty *));
-struct tree_ty *function_gid _((struct tree_list_ty *));
-struct tree_ty *function_ino _((struct tree_list_ty *));
-struct tree_ty *function_mode _((struct tree_list_ty *));
-struct tree_ty *function_mtime _((struct tree_list_ty *));
-struct tree_ty *function_nlink _((struct tree_list_ty *));
-struct tree_ty *function_size _((struct tree_list_ty *));
-struct tree_ty *function_uid _((struct tree_list_ty *));
-struct tree_ty *function_type _((struct tree_list_ty *));
+struct tree_ty *function_atime(struct tree_list_ty *);
+struct tree_ty *function_ctime(struct tree_list_ty *);
+struct tree_ty *function_gid(struct tree_list_ty *);
+struct tree_ty *function_ino(struct tree_list_ty *);
+struct tree_ty *function_mode(struct tree_list_ty *);
+struct tree_ty *function_mtime(struct tree_list_ty *);
+struct tree_ty *function_nlink(struct tree_list_ty *);
+struct tree_ty *function_size(struct tree_list_ty *);
+struct tree_ty *function_uid(struct tree_list_ty *);
+struct tree_ty *function_type(struct tree_list_ty *);
 
 #endif /* AEFIND_FUNCTION_STAT_H */

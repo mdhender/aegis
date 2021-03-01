@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,17 +28,17 @@
 typedef struct tree_method_ty tree_method_ty;
 struct tree_method_ty
 {
-	int		size;
-	char		*name;
-	void		(*destructor)_((tree_ty *));
-	void		(*print)_((tree_ty *));
-	struct rpt_value_ty *(*evaluate)_((tree_ty *, struct string_ty *,
-				struct stat *));
-	int		(*useful)_((tree_ty *));
-	int		(*constant)_((tree_ty *));
-	tree_ty		*(*optimize)_((tree_ty *));
+    int             size;
+    char            *name;
+    void	    (*destructor)(tree_ty *);
+    void	    (*print)(tree_ty *);
+    struct rpt_value_ty *(*evaluate)(tree_ty *, struct string_ty *,
+		    struct stat *);
+    int		    (*useful)(tree_ty *);
+    int		    (*constant)(tree_ty *);
+    tree_ty	    *(*optimize)(tree_ty *);
 };
 
-tree_ty *tree_new _((tree_method_ty *));
+tree_ty *tree_new(tree_method_ty *);
 
 #endif /* AEFIND_TREE_PRIVATE_H */

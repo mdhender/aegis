@@ -28,8 +28,8 @@
 struct project_ty; /* forward */
 struct string_ty; /* forward */
 
-typedef int (*complete_user_func)_((struct project_ty *, struct string_ty *));
+typedef int (*complete_user_func)(struct project_ty *, struct string_ty *);
 
-complete_ty *complete_user _((struct project_ty *, complete_user_func));
+complete_ty *complete_user(struct project_ty *, complete_user_func);
 
 #endif /* AECOMPLETE_COMPLETE_USER_H */

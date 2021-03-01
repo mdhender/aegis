@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,11 +26,10 @@
 
 
 int
-project_compress_database_get(pp)
-	project_ty	*pp;
+project_compress_database_get(project_ty *pp)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	cp = project_change_get(pp);
-	return change_branch_compress_database_get(cp);
+    cp = project_change_get(pp);
+    return change_branch_compress_database_get(cp);
 }

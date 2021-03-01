@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 #include <main.h>
 
 struct string_ty; /* forward */
-struct change_set_list_ty; /* forward */
 
-void reconstruct _((struct string_ty *, struct change_set_list_ty *));
+void reconstruct(struct string_ty *);
 
 #endif /* AEIMPORT_RECONSTRUCT_H */

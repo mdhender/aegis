@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -119,7 +119,11 @@ header(this)
 	output_hex8(this->deeper, 0);		/* rdev_minor */
 	output_hex8(this->deeper, this->name->str_length + 1);
 	output_hex8(this->deeper, 0);		/* no checksum */
-	output_write(this->deeper, this->name->str_text, this->name->str_length + 1);
+	output_write
+	(
+	    this->deeper,
+	    this->name->str_text, this->name->str_length + 1
+	);
 	padding(this);
 }
 

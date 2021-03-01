@@ -26,6 +26,6 @@
 #include <main.h>
 #include <config.h>
 
-RETSIGTYPE os_interrupt _((int));
+RETSIGTYPE os_interrupt(int);
 
 #endif /* LIBAEGIS_OS_INTERRUPT_H */

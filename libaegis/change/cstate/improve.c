@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,52 +26,47 @@
 
 
 void
-change_cstate_improve(d)
-	cstate		d;
+change_cstate_improve(cstate d)
 {
-	trace(("improve(d = %8.8lX)\n{\n"/*}*/, (long)d));
-	if (!d->history)
-		d->history = cstate_history_list_type.alloc();
-	assert(!d->src);
-	if (!(d->mask & cstate_regression_test_exempt_mask))
-	{
-		d->regression_test_exempt =
-			(
-				d->cause != change_cause_internal_improvement
-			&&
-				d->cause != change_cause_external_improvement
-			);
-	}
-	if (!d->architecture)
-		d->architecture = cstate_architecture_list_type.alloc();
-	if (!d->architecture->length)
-	{
-		type_ty		*type_p;
-		string_ty	**str_p;
+    trace(("improve(d = %8.8lX)\n{\n", (long)d));
+    if (!d->history)
+	d->history = cstate_history_list_type.alloc();
+    assert(!d->src);
+    if (!(d->mask & cstate_regression_test_exempt_mask))
+    {
+	d->regression_test_exempt =
+    	    (
+       		d->cause != change_cause_internal_improvement
+    	    &&
+       		d->cause != change_cause_external_improvement
+    	    );
+    }
+    if (!d->architecture)
+	d->architecture = cstate_architecture_list_type.alloc();
+    if (!d->architecture->length)
+    {
+	type_ty		*type_p;
+	string_ty	**str_p;
 
-		str_p =
-			cstate_architecture_list_type.list_parse
-			(
-				d->architecture,
-				&type_p
-			);
-		assert(type_p == &string_type);
-		*str_p = str_from_c("unspecified");
-	}
-	if (d->branch)
-	{
-		if (!(d->branch->mask & cstate_branch_umask_mask))
-			d->branch->umask = DEFAULT_UMASK;
-		d->branch->umask = (d->branch->umask & 5) | 022;
-		if (d->branch->umask == 023)
-			d->branch->umask = 022;
-		/* 022, 026 and 027 are OK */
+	str_p =
+	    cstate_architecture_list_type.list_parse(d->architecture, &type_p);
+	assert(type_p == &string_type);
+	*str_p = str_from_c("unspecified");
+    }
+    if (d->branch)
+    {
+	if (!(d->branch->mask & cstate_branch_umask_mask))
+	    d->branch->umask = DEFAULT_UMASK;
+	d->branch->umask = (d->branch->umask & 5) | 022;
+	if (d->branch->umask == 023)
+	    d->branch->umask = 022;
+	/* 022, 026 and 027 are OK */
 
-		if (!(d->branch->mask & cstate_branch_reuse_change_numbers_mask))
-		{
-			d->branch->reuse_change_numbers = 1;
-			d->branch->mask |= cstate_branch_reuse_change_numbers_mask;
-		}
+	if (!(d->branch->mask & cstate_branch_reuse_change_numbers_mask))
+	{
+	    d->branch->reuse_change_numbers = 1;
+	    d->branch->mask |= cstate_branch_reuse_change_numbers_mask;
 	}
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }

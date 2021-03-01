@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void send _((void));
+void send(void);
 
 #endif /* AETAR_SEND_H */

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aeipass _((void));
+command_ty *command_aeipass(void);
 
 #endif /* AECOMPLETE_COMMAND_AEIPASS_H */

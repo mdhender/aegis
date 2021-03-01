@@ -24,25 +24,23 @@
 
 static arglex_table_ty argtab[] =
 {
-	{ "-COmpress", arglex_token_compress, },
-	{ "-Entire_Source", arglex_token_entire_source, },
-	{ "-Not_COmpress", arglex_token_compress_not, },
-	{ "-Not_Entire_Source", arglex_token_entire_source_not, },
-	{ "-Not_Trojan", arglex_token_trojan_not, },
-	{ "-Partial_Source", arglex_token_entire_source_not, },
-	{ "-Add_Path_Prefix", arglex_token_path_prefix_add, },
-	{ "-Remove_Path_Prefix", arglex_token_path_prefix_remove, },
-	{ "-Receive", arglex_token_receive, },
-	{ "-Send", arglex_token_send, },
-	{ "-Trojan", arglex_token_trojan, },
-	{ 0, }
+    { "-COmpress", arglex_token_compress, },
+    { "-Entire_Source", arglex_token_entire_source, },
+    { "-Not_COmpress", arglex_token_compress_not, },
+    { "-Not_Entire_Source", arglex_token_entire_source_not, },
+    { "-Not_Trojan", arglex_token_trojan_not, },
+    { "-Partial_Source", arglex_token_entire_source_not, },
+    { "-Add_Path_Prefix", arglex_token_path_prefix_add, },
+    { "-Remove_Path_Prefix", arglex_token_path_prefix_remove, },
+    { "-Receive", arglex_token_receive, },
+    { "-Send", arglex_token_send, },
+    { "-Trojan", arglex_token_trojan, },
+    { 0, }
 };
 
 
 void
-arglex3_init(argc, argv)
-	int		argc;
-	char		**argv;
+arglex3_init(int argc, char **argv)
 {
-	arglex2_init3(argc, argv, argtab);
+    arglex2_init3(argc, argv, argtab);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,16 +23,15 @@
 #ifndef COMMON_LIBDIR_H
 #define COMMON_LIBDIR_H
 
-#include <main.h>
-
-char *configured_bindir(void);
-char *configured_comdir(void);
-char *configured_datadir(void);
-char *configured_libdir(void);
-char *configured_nlsdir(void);
-char *configured_mandir(void);
+const char *configured_prefix(void);
+const char *configured_bindir(void);
+const char *configured_comdir(void);
+const char *configured_datadir(void);
+const char *configured_libdir(void);
+const char *configured_nlsdir(void);
+const char *configured_mandir(void);
 int configured_aegis_uid(void);
 int configured_aegis_gid(void);
-char *configured_exeext(void);
+const char *configured_exeext(void);
 
 #endif /* COMMON_LIBDIR_H */

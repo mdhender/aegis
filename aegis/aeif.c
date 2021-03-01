@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 #include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <commit.h>
+#include <change/branch.h>
 #include <change/develop_direct/read_write.h>
 #include <change/file.h>
 #include <error.h>
@@ -48,10 +49,8 @@
 #include <user.h>
 
 
-static void integrate_fail_usage _((void));
-
 static void
-integrate_fail_usage()
+integrate_fail_usage(void)
 {
     char	    *progname;
 
@@ -85,19 +84,15 @@ integrate_fail_usage()
 }
 
 
-static void integrate_fail_help _((void));
-
 static void
-integrate_fail_help()
+integrate_fail_help(void)
 {
     help("aeifail", integrate_fail_usage);
 }
 
 
-static void integrate_fail_list _((void));
-
 static void
-integrate_fail_list()
+integrate_fail_list(void)
 {
     string_ty	    *project_name;
 
@@ -139,11 +134,8 @@ integrate_fail_list()
 }
 
 
-static void check_directory _((change_ty *));
-
 static void
-check_directory(cp)
-    change_ty	    *cp;
+check_directory(change_ty *cp)
 {
     string_ty	    *dir;
 
@@ -155,12 +147,8 @@ check_directory(cp)
 }
 
 
-static void check_permissions _((change_ty *, user_ty *));
-
 static void
-check_permissions(cp, up)
-    change_ty	    *cp;
-    user_ty	    *up;
+check_permissions(change_ty *cp, user_ty *up)
 {
     cstate	    cstate_data;
 
@@ -176,10 +164,8 @@ check_permissions(cp, up)
 }
 
 
-static void integrate_fail_main _((void));
-
 static void
-integrate_fail_main()
+integrate_fail_main(void)
 {
     string_ty	    *s;
     sub_context_ty  *scp;
@@ -476,10 +462,13 @@ integrate_fail_main()
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)
 	    break;
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	p_src_data =
+	    project_file_find(pp, c_src_data->file_name, view_path_none);
 	if (!p_src_data)
-	/* This is actualy a bug. */
+	{
+	    /* This is actualy a bug. */
 	    continue;
+	}
 	p_src_data->locked_by = 0;
 
 	/*
@@ -539,7 +528,12 @@ integrate_fail_main()
     /*
      * Make the development directory writable again.
      */
-    if (project_protect_development_directory_get(pp))
+    if
+    (
+	!change_was_a_branch(cp)
+    &&
+	project_protect_development_directory_get(pp)
+    )
 	change_development_directory_chmod_read_write(cp);
 
     /*
@@ -571,7 +565,7 @@ integrate_fail_main()
 
 
 void
-integrate_fail()
+integrate_fail(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

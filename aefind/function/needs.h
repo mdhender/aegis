@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 struct tree_list_ty; /* existence */
 
-void function_needs_one _((char *, struct tree_list_ty *));
-void function_needs_two _((char *, struct tree_list_ty *));
+void function_needs_one(char *, struct tree_list_ty *);
+void function_needs_two(char *, struct tree_list_ty *);
 
 #endif /* AEFIND_FUNCTION_NEEDS_H */

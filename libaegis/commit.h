@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 #include <str.h>
 
-void commit_rename _((string_ty *from, string_ty *to));
-void commit_unlink_errok _((string_ty *path));
-void commit_rmdir_errok _((string_ty *path));
-void commit_rmdir_tree_bg _((string_ty *path));
-void commit_rmdir_tree_errok _((string_ty *path));
-void commit _((void));
+void commit_rename(string_ty *from, string_ty *to);
+void commit_unlink_errok(string_ty *path);
+void commit_rmdir_errok(string_ty *path);
+void commit_rmdir_tree_bg(string_ty *path);
+void commit_rmdir_tree_errok(string_ty *path);
+void commit(void);
 
 #endif /* COMMIT_H */

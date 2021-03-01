@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,11 +33,11 @@ change_branch_developer_may_review_set(cp, n)
 	cstate		cstate_data;
 	cstate_branch	bp;
 
-	trace(("change_branch_developer_may_review(cp = %8.8lX, n = %d)\n{\n"/*}*/,
+	trace(("change_branch_developer_may_review(cp = %8.8lX, n = %d)\n{\n",
 		(long)cp, n));
 	cstate_data = change_cstate_get(cp);
 	bp = cstate_data->branch;
 	assert(bp);
 	bp->developer_may_review = n;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

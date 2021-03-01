@@ -28,7 +28,7 @@
 struct sub_context_ty;
 struct wstring_list_ty;
 
-struct wstring_ty *sub_development_directory _((struct sub_context_ty *,
-    struct wstring_list_ty *));
+struct wstring_ty *sub_development_directory(struct sub_context_ty *,
+    struct wstring_list_ty *);
 
 #endif /* LIBAEGIS_SUB_CHANGE_DEVELO_DIREC_H */

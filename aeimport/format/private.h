@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,20 +28,20 @@
 typedef struct format_vtable_ty format_vtable_ty;
 struct format_vtable_ty
 {
-	size_t size;
-	void (*destructor) _((format_ty *));
-	int (*is_a_candidate) _((format_ty *, string_ty *));
-	string_ty *(*sanitize) _((format_ty *, string_ty *));
-	struct format_version_ty *(*read_versions) _((format_ty *,
-		string_ty *, string_ty *));
-	string_ty *(*history_put) _((format_ty *));
-	string_ty *(*history_get) _((format_ty *));
-	string_ty *(*history_query) _((format_ty *));
-	string_ty *(*diff) _((format_ty *));
-	string_ty *(*merge) _((format_ty *));
-	void (*unlock) _((format_ty *, string_ty *));
+    size_t          size;
+    void            (*destructor)(format_ty *);
+    int             (*is_a_candidate)(format_ty *, string_ty *);
+    string_ty       *(*sanitize)(format_ty *, string_ty *);
+    struct format_version_ty *(*read_versions)(format_ty *, string_ty *,
+	                string_ty *);
+    string_ty       *(*history_put)(format_ty *);
+    string_ty       *(*history_get)(format_ty *);
+    string_ty       *(*history_query)(format_ty *);
+    string_ty       *(*diff)(format_ty *);
+    string_ty       *(*merge)(format_ty *);
+    void            (*unlock)(format_ty *, string_ty *);
 };
 
-format_ty *format_new _((format_vtable_ty *));
+format_ty *format_new(format_vtable_ty *);
 
 #endif /* AEIMPORT_FORMAT_PRIVATE_H */

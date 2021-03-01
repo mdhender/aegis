@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aeni _((void));
+command_ty *command_aeni(void);
 
 #endif /* AECOMPLETE_COMMAND_AENI_H */

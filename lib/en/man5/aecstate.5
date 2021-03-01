@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1997, 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1997, 1999, 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -82,6 +82,18 @@ completed
 The change has been completed and is now
 part of the baseline.
 Changes in this state can not be reversed.
+.RE
+.TP 8n
+given_test_exemption = boolean;
+.br
+This field is the value of test_exemption (see \fIaecattr\fP(5)) when the
+change was created.
+.RE
+.TP 8n
+given_regression_test_exemption = boolean;
+.br
+This field is the value of regression_test_exemption (see \fIaecattr\fP(5))
+when the change was created.
 .RE
 .TP 8n
 delta_number = integer;

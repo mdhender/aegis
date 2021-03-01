@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <output.h>
 
-output_ty *output_base64 _((output_ty *, int));
+output_ty *output_base64(output_ty *, int);
 
 #endif /* LIBAEGIS_OUTPUT_BASE64_H */

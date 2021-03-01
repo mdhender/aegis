@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1995-1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,18 +26,92 @@
 #include <project.h>
 #include <fstate.h>
 
-fstate_src project_file_find _((project_ty *, string_ty *));
-string_ty *project_file_path _((project_ty *, string_ty *));
-fstate_src project_file_find_fuzzy _((project_ty *, string_ty *));
-void project_file_directory_query _((project_ty *, string_ty *,
-	struct string_list_ty *, struct string_list_ty *));
-string_ty *project_file_directory_conflict _((project_ty *, string_ty *));
-fstate_src project_file_new _((project_ty *, string_ty *));
-void project_file_remove _((project_ty *, string_ty *));
-fstate_src project_file_nth _((project_ty *, size_t));
-void project_search_path_get _((project_ty *, struct string_list_ty *, int));
-void project_file_shallow _((project_ty *, string_ty *, long));
-int project_file_shallow_check _((project_ty *, string_ty *));
-string_ty *project_file_version_path _((project_ty *, fstate_src, int *));
+/*
+ * If you add to this enum, make sure you extend project_ty::file_list
+ */
+enum view_path_ty
+{
+    /*
+     * Do not impose a view path when searching for files.
+     */
+    view_path_none,
+
+    /*
+     * Apply the transparency when searching for files, but return
+     * removed files when you see them.
+     */
+    view_path_simple,
+
+    /*
+     * Apply the transparency when searching for files, and also omit
+     * any mention of removed files.
+     */
+    view_path_extreme
+};
+typedef enum view_path_ty view_path_ty;
+
+/**
+  * The project_file_find function is used to find the state information
+  * of the named file within the project.  It will search the immediate
+  * branch, and then any ancestor branches until the file is found.
+  *
+  * \param pp
+  *	The project to search.
+  * \param filename
+  *	The base-relative name of the file to search for.
+  * \param as_view_path
+  *	If this is true, apply viewpath rules to the file (i.e. if
+  *	it is removed, return a null pointer) if false return first
+  *	instance found.
+  */
+fstate_src project_file_find(project_ty *pp, string_ty *filename,
+    view_path_ty as_view_path);
+
+string_ty *project_file_path(project_ty *, string_ty *);
+
+/**
+  * The project_file_find_fuzzy function is used to find the state
+  * information for a project file when the project_file_find function
+  * fails.  It uses fuzzy string matching, which is significantly slower
+  * than exact searching, but can provide very useful error messages
+  * for users.
+  *
+  * \param pp
+  *	The project to search.
+  * \param filename
+  *	The base-relative name of the file to search for.
+  * \param as_view_path
+  *	If this is true, apply viewpath rules to the file (i.e. if
+  *	it is removed, return a null pointer) if false return first
+  *	instance found.
+  */
+fstate_src project_file_find_fuzzy(project_ty *pp, string_ty *filename,
+    view_path_ty as_view_path);
+
+void project_file_directory_query(project_ty *, string_ty *,
+    struct string_list_ty *, struct string_list_ty *,
+    view_path_ty as_view_path);
+string_ty *project_file_directory_conflict(project_ty *, string_ty *);
+fstate_src project_file_new(project_ty *, string_ty *);
+void project_file_remove(project_ty *, string_ty *);
+
+/**
+  * The project_file_nth function is used to get the 'n'th file from
+  * the list of project files.
+  *
+  * \param pp
+  *	The project to search.
+  * \param n
+  *	The file number to obtain (zero based).
+  * \param as_view_path
+  *	If this is false, return all files; if true, ignore removed files.
+  */
+fstate_src project_file_nth(project_ty *pp, size_t n,
+    view_path_ty as_view_path);
+
+void project_search_path_get(project_ty *, struct string_list_ty *, int);
+void project_file_shallow(project_ty *, string_ty *, long);
+int project_file_shallow_check(project_ty *, string_ty *);
+string_ty *project_file_version_path(project_ty *, fstate_src, int *);
 
 #endif /* AEGIS_PROJECT_FILE_H */

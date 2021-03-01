@@ -29,60 +29,48 @@
 
 
 void
-function_needs_one(name, args)
-	char		*name;
-	tree_list_ty	*args;
+function_needs_one(char *name, tree_list_ty *args)
 {
-	sub_context_ty	*scp;
+    sub_context_ty  *scp;
 
-	if (args->length == 1)
-		return;
+    if (args->length == 1)
+	return;
 
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", name);
-	cmdline_lex_error
-	(
-		scp,
-		i18n("function $name requires one argument")
-	);
-	sub_context_delete(scp);
+    scp = sub_context_new();
+    sub_var_set_charstar(scp, "Name", name);
+    cmdline_lex_error(scp, i18n("function $name requires one argument"));
+    sub_context_delete(scp);
 
-	if (args->length < 1)
-	{
-		tree_ty		*tp;
+    if (args->length < 1)
+    {
+	tree_ty		*tp;
 
-		tp = tree_this_new();
-		tree_list_append(args, tp);
-		tree_delete(tp);
-	}
+	tp = tree_this_new();
+	tree_list_append(args, tp);
+	tree_delete(tp);
+    }
 }
 
 
 void
-function_needs_two(name, args)
-	char		*name;
-	tree_list_ty	*args;
+function_needs_two(char *name, tree_list_ty *args)
 {
-	sub_context_ty	*scp;
+    sub_context_ty  *scp;
 
-	if (args->length == 2)
-		return;
+    if (args->length == 2)
+	return;
 
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", name);
-	cmdline_lex_error
-	(
-		scp,
-		i18n("function $name requires two arguments")
-	);
-	sub_context_delete(scp);
+    scp = sub_context_new();
+    sub_var_set_charstar(scp, "Name", name);
+    cmdline_lex_error(scp, i18n("function $name requires two arguments"));
+    sub_context_delete(scp);
 
-	while (args->length < 2)
-	{
-		tree_ty		*tp;
+    while (args->length < 2)
+    {
+	tree_ty		*tp;
 
-		tp = tree_this_new();
-		tree_list_append(args, tp);
-		tree_delete(tp);
-	}
+	tp = tree_this_new();
+	tree_list_append(args, tp);
+	tree_delete(tp);
+    }
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,8 @@
 #include <trace.h>
 
 
-static void project_list_inner _((string_list_ty *, project_ty *));
-
-static void
-project_list_inner(wlp, pp)
-	string_list_ty	*wlp;
-	project_ty	*pp;
+void
+project_list_inner(string_list_ty *wlp, project_ty *pp)
 {
 	change_ty	*cp;
 	long		*lp;
@@ -79,8 +75,7 @@ project_list_inner(wlp, pp)
 
 
 void
-project_list_get(wlp)
-	string_list_ty	*wlp;
+project_list_get(string_list_ty *wlp)
 {
 	size_t		j;
 	string_list_ty	toplevel;

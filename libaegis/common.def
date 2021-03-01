@@ -81,7 +81,7 @@ type change_cause =
 	 */
 	chain
 );
-type file_action = (create, modify, remove, insulate);
+type file_action = (create, modify, remove, insulate, transparent);
 type file_usage = (source, build, test, manual_test);
 
 type metric =

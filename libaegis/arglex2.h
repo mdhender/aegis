@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@ enum
 	arglex_token_change_owner,
 	arglex_token_clean,
 	arglex_token_clone,
+	arglex_token_configured,
 	arglex_token_copy_file,
 	arglex_token_copy_file_undo,
 	arglex_token_current_relative,
@@ -73,6 +74,8 @@ enum
 	arglex_token_list,
 	arglex_token_log,
 	arglex_token_major,
+	arglex_token_make_transparent,
+	arglex_token_make_transparent_undo,
 	arglex_token_manual,
 	arglex_token_maximum,
 	arglex_token_merge_automatic,
@@ -113,6 +116,7 @@ enum
 	arglex_token_project_attributes,
 	arglex_token_project_alias_create,
 	arglex_token_project_alias_remove,
+        arglex_token_project_recursive,
 	arglex_token_regression,
 	arglex_token_read_only,
 	arglex_token_reason,
@@ -151,9 +155,9 @@ enum
 	ARGLEX2_MAX
 };
 
-void arglex2_init _((int, char **));
-void arglex2_init3 _((int, char **, arglex_table_ty *));
+void arglex2_init(int, char **);
+void arglex2_init3(int, char **, arglex_table_ty *);
 
-void arglex2_retable _((arglex_table_ty *));
+void arglex2_retable(arglex_table_ty *);
 
 #endif /* ARGLEX2_H */

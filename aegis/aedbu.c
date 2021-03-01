@@ -50,10 +50,8 @@
 #include <user.h>
 
 
-static void develop_begin_undo_usage _((void));
-
 static void
-develop_begin_undo_usage()
+develop_begin_undo_usage(void)
 {
     char	    *progname;
 
@@ -75,19 +73,15 @@ develop_begin_undo_usage()
 }
 
 
-static void develop_begin_undo_help _((void));
-
 static void
-develop_begin_undo_help()
+develop_begin_undo_help(void)
 {
     help("aedbu", develop_begin_undo_usage);
 }
 
 
-static void develop_begin_undo_list _((void));
-
 static void
-develop_begin_undo_list()
+develop_begin_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -134,10 +128,8 @@ develop_begin_undo_list()
 }
 
 
-static void develop_begin_undo_main _((void));
-
 static void
-develop_begin_undo_main()
+develop_begin_undo_main(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -414,7 +406,7 @@ develop_begin_undo_main()
 
 
 void
-develop_begin_undo()
+develop_begin_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,15 +39,14 @@
 #include <project/pattr/set.h>
 #include <project/history.h>
 #include <sub.h>
+#include <str_list.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
 
 
-static void project_attributes_usage _((void));
-
 static void
-project_attributes_usage()
+project_attributes_usage(void)
 {
     char	    *progname;
 
@@ -75,19 +74,15 @@ project_attributes_usage()
 }
 
 
-static void project_attributes_help _((void));
-
 static void
-project_attributes_help()
+project_attributes_help(void)
 {
     help("aepa", project_attributes_usage);
 }
 
 
-static void project_attributes_list _((void));
-
 static void
-project_attributes_list()
+project_attributes_list(void)
 {
     pattr	    pattr_data;
     string_ty	    *project_name;
@@ -148,12 +143,8 @@ project_attributes_list()
 }
 
 
-static void check_permissions _((project_ty *, user_ty *));
-
 static void
-check_permissions(pp, up)
-    project_ty	    *pp;
-    user_ty	    *up;
+check_permissions(project_ty *pp, user_ty *up)
 {
     /*
      * it is an error if the user is not an administrator
@@ -163,10 +154,44 @@ check_permissions(pp, up)
 }
 
 
-static void project_attributes_main _((void));
+static void
+change_existing_project_attributes(project_ty *pp, pattr pattr_data)
+{
+    user_ty  *up;
+
+    /*
+     * locate user data
+     */
+    up = user_executing(pp);
+
+    /*
+     * take project lock
+     */
+    project_pstate_lock_prepare(pp);
+    lock_take();
+
+    /*
+     * make sure they are allowed to
+     * (even if edited, it could have changed while editing)
+     */
+    check_permissions(pp, up);
+
+    /*
+     * copy the attributes across
+     */
+    project_pattr_set(pp, pattr_data);
+
+    project_pstate_write(pp);
+    commit();
+    lock_release();
+    project_verbose(pp, 0, i18n("project attributes complete"));
+    user_free(up);
+}
+
+
 
 static void
-project_attributes_main()
+project_attributes_main(void)
 {
     string_ty	    *s;
     sub_context_ty  *scp;
@@ -174,12 +199,13 @@ project_attributes_main()
     string_ty	    *project_name;
     project_ty	    *pp;
     edit_ty	    edit;
-    user_ty	    *up;
+    int             recursive;
 
     trace(("project_attributes_main()\n{\n"));
     arglex();
     project_name = 0;
     edit = edit_not_set;
+    recursive = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -187,6 +213,10 @@ project_attributes_main()
 	default:
 	    generic_argument(project_attributes_usage);
 	    continue;
+
+	case arglex_token_project_recursive:
+	    recursive = 1;
+	    break;
 
 	case arglex_token_string:
 	    scp = sub_context_new();
@@ -321,15 +351,14 @@ project_attributes_main()
     project_bind_existing(pp);
 
     /*
-     * locate user data
-     */
-    up = user_executing(pp);
-
-    /*
      * edit the attributes
      */
     if (edit != edit_not_set)
     {
+        user_ty         *up;
+
+        up = user_executing(pp);
+
 	/*
 	 * make sure they are allowed to,
 	 * to avoid a wasted edit
@@ -351,36 +380,36 @@ project_attributes_main()
 	project_pattr_edit(&pattr_data, edit);
     }
 
-    /*
-     * take project lock
-     */
-    project_pstate_lock_prepare(pp);
-    lock_take();
+    if (recursive)
+    {
+	string_list_ty  pl;
+	size_t          j;
 
-    /*
-     * make sure they are allowed to
-     * (even if edited, it could have changed while editing)
-     */
-    check_permissions(pp, up);
+	string_list_constructor(&pl);
+	project_list_inner(&pl, pp);
+	for (j = 0; j < pl.nstrings; ++j)
+	{
+	    project_ty      *branch;
 
-    /*
-     * copy the attributes across
-     */
-    project_pattr_set(pp, pattr_data);
-
+	    branch = project_alloc(pl.string[j]);
+	    project_bind_existing(branch);
+	    change_existing_project_attributes(branch, pattr_data);
+	    project_free(branch);
+	}
+	string_list_destructor(&pl);
+    }
+    else
+    {
+	change_existing_project_attributes(pp,  pattr_data);
+    }
     pattr_type.free(pattr_data);
-    project_pstate_write(pp);
-    commit();
-    lock_release();
-    project_verbose(pp, 0, i18n("project attributes complete"));
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
 
 void
-project_attributes()
+project_attributes(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -188,13 +188,10 @@ static int	resolve;
 static int	debug;
 
 
-static void report_error _((rpt_value_ty *));
-
 static void
-report_error(vp)
-    rpt_value_ty    *vp;
+report_error(rpt_value_ty *vp)
 {
-    sub_context_ty *scp;
+    sub_context_ty  *scp;
 
     if (vp->method->type != rpt_value_type_error)
        	return;
@@ -205,14 +202,8 @@ report_error(vp)
 }
 
 
-static void walker _((void *, descend_message_ty, string_ty *, struct stat *));
-
 static void
-walker(p, msg, pathname, st)
-    void	    *p;
-    descend_message_ty msg;
-    string_ty	    *pathname;
-    struct stat	    *st;
+walker(void *p, descend_message_ty msg, string_ty *pathname, struct stat *st)
 {
     rpt_value_ty    *vp;
 
@@ -224,7 +215,7 @@ walker(p, msg, pathname, st)
        	if (vp->method->type == rpt_value_type_error)
 	    report_error(vp);
        	rpt_value_free(vp);
-	    break;
+	break;
 
     case descend_message_dir_after:
        	break;
@@ -238,8 +229,7 @@ static change_ty *cp;
 
 
 string_ty *
-stack_relative(fn)
-    string_ty	    *fn;
+stack_relative(string_ty *fn)
 {
     string_ty	    *s1;
     string_ty	    *s2;
@@ -282,8 +272,7 @@ stack_relative(fn)
 
 
 string_ty *
-stack_nth(n)
-    int		    n;
+stack_nth(int n)
 {
     assert(n >= 0);
     assert(stack);
@@ -297,9 +286,7 @@ stack_nth(n)
 
 
 void
-cmdline_grammar(argc, argv)
-    int		    argc;
-    char	    **argv;
+cmdline_grammar(int argc, char **argv)
 {
     extern int yyparse _((void));
     size_t	    j;
@@ -505,11 +492,8 @@ cmdline_grammar(argc, argv)
 }
 
 
-static tree_ty *make_sure_has_side_effects _((tree_ty *));
-
 static tree_ty *
-make_sure_has_side_effects(x)
-    tree_ty	    *x;
+make_sure_has_side_effects(tree_ty *x)
 {
     tree_ty	    *tp1;
     tree_ty	    *tp2;

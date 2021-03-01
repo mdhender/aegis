@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001 Peter Miller;
+.\"	Copyright (C) 1997, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 .\" MANIFEST: AUUGN Feb'98 Article
 .\"
 .nh 1 "Prevention"
-The above analysis is based one one simple
+The above analysis is based on one simple
 action: the DAG was artificially separated into incomplete pieces.
 This separation resulted in all of the problems familiar to recursive
 .I make

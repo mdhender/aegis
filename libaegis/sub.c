@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,15 +52,15 @@
 #include <sub.h>
 #include <sub/addpathsuffi.h>
 #include <sub/architecture.h>
-#include <sub/basename.h>
 #include <sub/base_relativ.h>
+#include <sub/basename.h>
 #include <sub/binary_direc.h>
 #include <sub/capitalize.h>
 #include <sub/change/delta.h>
-#include <sub/change/developer.h>
 #include <sub/change/develo_direc.h>
-#include <sub/change/integrator.h>
+#include <sub/change/developer.h>
 #include <sub/change/integr_direc.h>
+#include <sub/change/integrator.h>
 #include <sub/change/number.h>
 #include <sub/change/reviewer.h>
 #include <sub/change/state.h>
@@ -90,18 +90,21 @@
 #include <sub/project/baseline.h>
 #include <sub/project/develop_list.h>
 #include <sub/project/integra_list.h>
-#include <sub/project/specific.h>
 #include <sub/project/reviewe_list.h>
+#include <sub/project/specific.h>
 #include <sub/quote.h>
 #include <sub/read_file.h>
 #include <sub/right.h>
 #include <sub/search_path.h>
 #include <sub/shell.h>
 #include <sub/source.h>
+#include <sub/split.h>
 #include <sub/substitute.h>
+#include <sub/substr.h>
 #include <sub/switch.h>
 #include <sub/trim_directo.h>
 #include <sub/trim_extensi.h>
+#include <sub/unsplit.h>
 #include <sub/upcase.h>
 #include <sub/user.h>
 #include <sub/zero_pad.h>
@@ -400,12 +403,15 @@ static sub_table_ty table[] =
     {"Search_Path_Executable", sub_search_path, },
     {"SHell", sub_shell, },
     {"Source", sub_source, },
+    {"SPLit", sub_split, },
     {"STate", sub_state, },
     {"SUBSTitute", sub_substitute, },
+    {"SUBSTRing", sub_substr, },
     {"SWitch", sub_switch, },
     {"Trim_DIRectory", sub_trim_directory, },
     {"Trim_EXTension", sub_trim_extension, },
     {"UName", sub_architecture, }, /* undocumented */
+    {"UNSplit", sub_unsplit, },
     {"UpCase", sub_upcase, },
     {"USer", sub_user, },
     {"Version", sub_version, },

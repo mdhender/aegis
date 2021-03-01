@@ -27,29 +27,27 @@
 
 
 long
-project_change_number_to_delta_number(pp, change_number)
-	project_ty	*pp;
-	long		change_number;
+project_change_number_to_delta_number(project_ty *pp, long change_number)
 {
-	change_ty	*cp;
-	cstate		cstate_data;
-	long		result;
+    change_ty	    *cp;
+    cstate	    cstate_data;
+    long	    result;
 
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
-	if (cstate_data->state != cstate_state_completed)
-	{
-		sub_context_ty	*scp;
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
+    cstate_data = change_cstate_get(cp);
+    if (cstate_data->state != cstate_state_completed)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		change_fatal(cp, scp, i18n("change $number not completed"));
-		/*NOTREACHED*/
-		sub_context_delete(scp);
-	}
-	result = cstate_data->delta_number;
-	assert(result);
-	change_free(cp);
-	return result;
+	scp = sub_context_new();
+	sub_var_set_long(scp, "Number", change_number);
+	change_fatal(cp, scp, i18n("change $number not completed"));
+	/*NOTREACHED*/
+	sub_context_delete(scp);
+    }
+    result = cstate_data->delta_number;
+    assert(result);
+    change_free(cp);
+    return result;
 }

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aerfail _((void));
+command_ty *command_aerfail(void);
 
 #endif /* AECOMPLETE_COMMAND_AERFAIL_H */

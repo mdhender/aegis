@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 
 struct string_ty; /* forward */
 
-struct passwd *getpwnam_cached _((struct string_ty *name));
-struct passwd *getpwuid_cached _((int uid));
+struct passwd *getpwnam_cached(struct string_ty *name);
+struct passwd *getpwuid_cached(int uid);
 
 #endif /* LIBAEGIS_GETPW_CACHE_H */

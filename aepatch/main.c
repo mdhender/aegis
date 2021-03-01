@@ -36,66 +36,58 @@
 #include <str.h>
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
-	char		*progname;
+    char	    *progname;
 
-	progname = progname_get();
-	fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s --receive [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s --list [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s --help\n", progname);
-	exit(1);
+    progname = progname_get();
+    fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
+    fprintf(stderr, "       %s --receive [ <option>... ]\n", progname);
+    fprintf(stderr, "       %s --list [ <option>... ]\n", progname);
+    fprintf(stderr, "       %s --help\n", progname);
+    exit(1);
 }
 
 
-static void main_help _((void));
-
 static void
-main_help()
+main_help(void)
 {
-	help(0, usage);
+    help(0, usage);
 }
 
-
-int main _((int, char **));
 
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
-	static arglex_dispatch_ty dispatch[] =
-        {
-		{ arglex_token_send,	send,		},
-		{ arglex_token_list,	list,		},
-		{ arglex_token_receive,	receive,	},
-		{ arglex_token_help,	main_help,	},
-	};
+    static arglex_dispatch_ty dispatch[] =
+    {
+	{ arglex_token_send, send, },
+	{ arglex_token_list, list, },
+	{ arglex_token_receive, receive, },
+	{ arglex_token_help, main_help, },
+    };
 
-	/*
-	 * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
-	 * kinda dumb, because it breaks assumptions made in libc (like
-	 * pclose, for instance).  It also blows away most of Cook's
-	 * process handling.  We explicitly set the SIGCHLD signal
-	 * handling to SIG_DFL to make sure this signal does what we
-	 * expect no matter how we are invoked.
-	 */
+    /*
+     * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
+     * kinda dumb, because it breaks assumptions made in libc (like
+     * pclose, for instance).  It also blows away most of Cook's
+     * process handling.  We explicitly set the SIGCHLD signal
+     * handling to SIG_DFL to make sure this signal does what we
+     * expect no matter how we are invoked.
+     */
 #ifdef SIGCHLD
-	signal(SIGCHLD, SIG_DFL);
+    signal(SIGCHLD, SIG_DFL);
 #else
-	signal(SIGCLD, SIG_DFL);
+    signal(SIGCLD, SIG_DFL);
 #endif
 
-	arglex3_init(argc, argv);
-	str_initialize();
-	env_initialize();
-	language_init();
-	os_become_init_mortal();
-	arglex_dispatch(dispatch, SIZEOF(dispatch), usage);
-	exit(0);
-	return 0;
+    arglex3_init(argc, argv);
+    str_initialize();
+    env_initialize();
+    language_init();
+    os_become_init_mortal();
+    arglex_dispatch(dispatch, SIZEOF(dispatch), usage);
+    exit(0);
+    return 0;
 }

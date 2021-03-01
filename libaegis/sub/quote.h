@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 struct wstring_list_ty; /* existence */
 struct sub_context_ty; /* existence */
 
-struct wstring_ty *sub_quote _((struct sub_context_ty *,
-	struct wstring_list_ty *));
+struct wstring_ty *sub_quote(struct sub_context_ty *,
+	struct wstring_list_ty *);
 
 #endif /* LIBAEGIS_SUB_QUOTE_H */

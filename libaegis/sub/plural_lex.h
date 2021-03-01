@@ -27,8 +27,8 @@
 
 struct string_ty; /* forward */
 
-void sub_plural_lex_open _((struct string_ty *));
-void sub_plural_lex_close _((void));
-int sub_plural_gram_lex _((void));
+void sub_plural_lex_open(struct string_ty *);
+void sub_plural_lex_close(void);
+int sub_plural_gram_lex(void);
 
 #endif /* LIBAEGIS_SUB_PLURAL_LEX_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,6 @@
 extern rpt_func_ty rpt_func_now;
 extern rpt_func_ty rpt_func_working_days;
 
-double working_days _((time_t, time_t));
+double working_days(time_t, time_t);
 
 #endif /* AEGIS_AER_FUNC_NOW_H */

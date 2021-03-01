@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 struct string_ty; /* existence */
 
-input_ty *input_cpio _((input_ty *));
-input_ty *input_cpio_child _((input_ty *, struct string_ty **));
+input_ty *input_cpio(input_ty *);
+input_ty *input_cpio_child(input_ty *, struct string_ty **);
 
 #endif /* AEDIST_INPUT_CPIO_H */

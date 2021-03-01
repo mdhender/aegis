@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997-2002 Peter Miller;
+#	Copyright (C) 1997-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -304,7 +304,7 @@ check_it ok $work/test/info/change/0/012.fs
 
 activity="check change state 305"
 cat > ok << 'fubar'
-brief_description = "two (clone of .D002)";
+brief_description = "two (clone of D002)";
 description = "two";
 cause = internal_enhancement;
 test_exempt = true;

@@ -71,9 +71,9 @@
 #define YYDEBUG 1
 
 static format_version_ty *current;
-static itab_ty		*itp;
-static string_ty	*pfn;
-static string_ty	*lfn;
+static itab_ty  *itp;
+static string_ty *pfn;
+static string_ty *lfn;
 
 
 static format_version_ty *

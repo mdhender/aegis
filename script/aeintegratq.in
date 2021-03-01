@@ -82,6 +82,7 @@ sub usage
   #  -h Help - show this information
   #  -H Help - show this plus all helpful comment information
   #  -a run on Any machine (normally only $IntegrationHost)
+  #  -s run remote operations via ssh (default rsh)
   #  -n No action - just tell what would be done
   #  -k Keep the scripts and report files
   #  -K Keep the temp file even if integration passes
@@ -99,8 +100,8 @@ EO_USAGE
     exit 1;
 }
 
-$opt_H = $opt_K = $opt_M = $opt_P = $opt_a = $opt_h = 0;
-getopts("hHankKM:p:P:R:S:c:") || die "\n";
+$opt_H = $opt_K = $opt_M = $opt_P = $opt_a = $opt_s = $opt_h = 0;
+getopts("hHasnkKM:p:P:R:S:c:") || die "\n";
   # if they asked for help - just do it
 if ( $opt_h )
 {
@@ -112,6 +113,8 @@ if ( $opt_H )
     system "sed -n -e 's/^  *#:#/  #/p' $0";
     &usage;
 }
+
+$RemoteCommand = $opt_s ? "ssh" : "rsh";
 
   # Convert the -P and -M options to a hash for future reference
 %Precious = ();
@@ -128,9 +131,6 @@ if ( -d "$ComDir/integrations" ) {
 }else{
     $LogFile  = "$ENV{'HOME'}/integrate.log";
 }
-
-$IntLockExt = '_iq_lock';        # signal other instance of ongoing queue run
-%IntLockFiles = ();              # allow for multiple project locks
 
 $Q_status = 0;                   # unless/until something goes wrong
 
@@ -260,24 +260,6 @@ if ( scalar(@Projects) )
         $project = &canonical_name($project);
         $Q_status = 0;  # want to integrate other projects after 1 fails
            # generate and store lock file name
-        $IntLockFiles{$project} = "$ComDir/" . $project . $IntLockExt;
-        my $ilockfile = $IntLockFiles{$project};
-
-        if ( $opt_n )
-        {
-            warn "creating lock: $ilockfile\n";
-        }
-        elsif ( -s $ilockfile )
-        {
-            warn "Integration of $project in progress\n";
-            warn "If not correct, rm $ilockfile\n";
-            next;
-        }
-        else
-        {
-            system "rm -f $ilockfile;"
-                 . "date > $ilockfile && chmod 666 $ilockfile";
-        }
 
         my @changes = &ready($project);
         while(($Q_status == 0) && ($entry = shift(@changes)) )
@@ -285,28 +267,38 @@ if ( scalar(@Projects) )
 	    my $flags;
             ($change, $flags) = split(/:/, $entry);
 
-              # get architecture lists, and check support for same
-            if ( &check_arch_support($project, $change, \%info) )
-            {
-                  # set the name of the temp file to use
-                $info{"logfile"} = "$Tmp.$project.$change";
+	    chop(my $stage = `aesub -p $project -c $change \'\${state}\'`);
 
-                  # Get relevant info as to what must be done for this change
-                  # first the developer's name
-                @tmplist = &aegis_report($project, $change,
-                                         $info{"dev_report"});
-                $info{"developer"} = shift( @tmplist );
+	    if( ( ( $stage =~ /awaiting_integration/ ) )
+             || ( ( $stage =~ /being_integrated/     ) && $StageStatus ) )
+	    {
+		  # get architecture lists, and check support for same
+		if ( &check_arch_support($project, $change, \%info) )
+		{
+		      # set the name of the temp file to use
+		    $info{"logfile"} = "$Tmp.$project.$change";
 
-                  # And the test types required on the change
-                @tmplist = &aegis_report($project, $change,
-                                         $info{"test_report"});
-                @{ $info{"tests_req"} } = @tmplist;
+		      # Get relevant info re: what must be done for this change
+		      # first the developer's name
+		    @tmplist = &aegis_report($project, $change,
+					     $info{"dev_report"});
+		    $info{"developer"} = shift( @tmplist );
 
-                  # Got all info now - go do it
-                $Q_status = &integrate($project, $change, $flags, \%info);
-            }
+		      # And the test types required on the change
+		    @tmplist = &aegis_report($project, $change,
+					     $info{"test_report"});
+		    @{ $info{"tests_req"} } = @tmplist;
+
+		      # Got all info now - go do it
+		    $Q_status = &integrate($project, $change, $flags, \%info);
+		}
+	    }
+	    else
+	    {
+		&write_log("Skipping $project $change $stage - bad state");
+	    }
+
         }
-        unlink $ilockfile;      # done with this project
     }
       # clean up our report generation program files
     unlink $info{"dev_report"}, $info{"test_report"}, $info{"arch_report"}
@@ -388,12 +380,10 @@ sub integrate_begin
         {
             warn "no aegis -ib for $project $change - cannot pick up\n";
             $errors++;
-            $intdir = "_failed_ib_";
         }
     }
     elsif ( &check_space($project) )
     {
-        my $retries = 2;
           #
           # log entries
           #
@@ -403,7 +393,7 @@ sub integrate_begin
           #
         $errors = &run_hooks($project, $change, "pre_ib");
 
-        while( ($retries > 0) && ($errors == 0) )
+        unless( $errors )
         {
               #
               # run aegis -ib  send errs to $logf
@@ -413,12 +403,7 @@ sub integrate_begin
               #
               # If the ib failed there is nothing we can do
               #
-            if ( $errors )
-            {
-                $retries = 0;
-                $intdir = "_failed_ib_";
-            }
-            else
+            unless ( $errors )
             {
                   #
                   # get the actual integration directory.
@@ -427,46 +412,28 @@ sub integrate_begin
                   # that we do not know about until now
                   #
                 if ( $opt_n ) {
-                    $intdir = $ENV{'HOME'}; # to allow the perms check
+                    $intdir = $ENV{'HOME'}; # to provide existing directory
                 }else{
                     chop($intdir = `aegis -cd -p $project -c $change -ter`);
                 }
 
-                  #
-                  # Now check for correct ownership
-                  # some obscure problem sometimes causes the
-                  # delta directory to be owned by root and non-writable
-                  # Should be owned by this process owner and be writable
-                  #
-                if ( -w $intdir )
-                {
-                      # all is well - try the ib hook
-                    $errors = &run_hooks($project, $change, "ib");
+		$errors = &run_hooks($project, $change, "ib");
 
-                    $retries = 0;   # no more tries
-                }
-                else   # owner/perms error - try again - first undo the ib
-                {
-                    &write_log("ib bad directory - retry ib $project $change");
-                    $errors =
-                       &system_cmd("aegis -ibu -p $project -c $change",
-                                   $logf);
-
-                    if ( --$retries <= 0 ) # ran out of retries
-                    {
-                        $errors++;        # it is an error no matter what
-                        $intdir = "_failed_ib_";
-                    }
-                }
+		if( $errors )	# if the hook finds errors, undo the ib
+		{
+                     &system_cmd("aegis -ibu -p $project -c $change", $logf);
+		}
             }
         }
     }
     else
     {
           # gripe
-        warn "not enough space\n";
-        $errors++;
+        &write_log("$User Failed aeib $project $change No Space");
+	$errors++;
     }
+
+    $intdir = "_failed_ib_" if $errors;
 
     $intdir;
 }
@@ -1079,7 +1046,7 @@ sub host_cmd
         $sysres = 0;            # no action always succeeds
         my $info = $logfile ? "with $logfile" : "no-tmp";
 
-        warn " -rsh-$host- $cmdstring $info\n";
+        warn " -$RemoteCommand-$host- $cmdstring $info\n";
         $sysres = 0;
     }
     else
@@ -1108,18 +1075,18 @@ sub host_cmd
             $cwd =~ s:^/tmp_mnt/:/:; # trim the blanketty blank automount
 
               # preload the status file with non-success code
-              # so that if the rsh itself fails the result will be failure.
-            my $rshcmd = "echo 99 > $status;"
-                           . "rsh $host 'cd " . $cwd
+              # so that if the rsh|ssh itself fails result will be failure.
+            my $rmtcmd = "echo 99 > $status;"
+                           . "$RemoteCommand $host 'cd " . $cwd
                            . ";/bin/sh -c ./" . $script . "'";
 
             if ( $logfile =~ /\w+/ )
             {
-                $rshcmd .= " >> $logfile 2>&1";
+                $rmtcmd .= " >> $logfile 2>&1";
             }
 
               # Run the built up command string
-            system("$rshcmd");
+            system("$rmtcmd");
               #
               # pick up the status of the remote command
               # from the status file
@@ -1147,20 +1114,33 @@ sub host_cmd
 sub sift_user_env
 {
     my @env = ();
+    my %uniq = ();
+    my @path = ();
+      # build a path that covers the system stuff on most system types
+      # also deal with configuration directory which
+      # might be different on host compared to target machine.
+      # Most should be covered by /bin /usr/bin /usr/local/bin /opt/local/bin
+      # If BinDir is one of those, it will come first and the dup eliminated
+    my @paths = (   # the venerable (and preferable) $BinDir
+                  $BinDir,
+                    # common "prefix" directories
+                  "/usr/local/bin", "/opt/local/bin", "/usr/bin", "/bin",
+                    # basic system directories
+                  "/usr/sbin", "/usr/etc",
+	            # bsd tools on sgi|solaris|others
+                  "/usr/bsd", "/usr/ucb",
+                    # build tools on solaris
+                  "/usr/ccs/bin",
+	        );
 
-      # build a path that covers the system stuff
-      #
-    push(@env, "PATH="
-         # basic system +
-         . "/usr/bin:/usr/sbin:/usr/etc"
-         # bsd for sgi+solaris
-         . ":/usr/bsd:/usr/ucb"
-         # build tools on solaris
-         . ":/usr/ccs/bin"
-         # and the venerable $BinDir
-         . ":$BinDir"
-         . ";export PATH"
-         );
+      # Take pains to eliminate dups
+    foreach my $part (@paths)
+    {
+	push(@path, $part) unless defined( $uniq{$part} );
+	$uniq{$part}++;
+    }
+
+    push(@env, "PATH=" . join(":", @path) . ";export PATH");
 
     push(@env, "SHELL=/bin/sh;export SHELL");
     push(@env, "TMPDIR=$TmpDir;export TMPDIR");
@@ -1487,11 +1467,7 @@ sub preview
 
 sub cleanup_and_quit
 {
-    foreach my $lockf (values %IntLockFiles)
-    {
-        unlink $lockf if ( -e $lockf );
-    }
     exit 0;
 }
 
-# EOF perl/aeintegratq.pl
+# EOF script/aeintegratq.in

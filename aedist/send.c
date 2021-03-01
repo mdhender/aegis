@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -98,6 +98,7 @@ one_more_src(change_set, src_data)
     dst_data->file_name = str_copy(src_data->file_name);
     dst_data->action = src_data->action;
     dst_data->usage = src_data->usage;
+    dst_data->executable = src_data->executable;
 }
 
 
@@ -714,6 +715,20 @@ send_main(usage)
     str_free(s);
     output_fprintf(ofp, "%s\n", project_name_get(pp)->str_text);
     output_delete(ofp);
+
+    /*
+     * Add the change number to the archive.
+     * (If they have omitted patches for compatibility reasons, they
+     * probably need to omit the change number as well.)
+     */
+    if (use_patch)
+    {
+	s = str_from_c("etc/change-number");
+	ofp = output_cpio_child(cpio_p, s, -1);
+	str_free(s);
+	output_fprintf(ofp, "%ld\n", change_number);
+	output_delete(ofp);
+    }
     os_become_undo();
 
     /*
@@ -811,6 +826,14 @@ send_main(usage)
 	    src_data->action == file_action_modify
 	)
 	    continue;
+	if (cstate_data->state < cstate_state_completed)
+	{
+	    s = change_file_path(cp, src_data->file_name);
+	    os_become_orig();
+	    src_data->executable = os_executable(s);
+	    os_become_undo();
+	    str_free(s);
+	}
 	one_more_src(change_set, src_data);
     }
     if (entire_source)
@@ -819,11 +842,9 @@ send_main(usage)
 	{
 	    fstate_src      src_data;
 
-	    src_data = project_file_nth(pp, j);
+	    src_data = project_file_nth(pp, j, view_path_simple);
 	    if (!src_data)
 		break;
-	    if (src_data->about_to_be_created_by)
-		continue;
 	    if (src_data->action == file_action_insulate)
 		continue;
 	    if
@@ -1056,6 +1077,7 @@ send_main(usage)
 	{
 	case file_action_create:
 	case file_action_remove:
+	case file_action_transparent:
 	    break;
 
 	case file_action_modify:
@@ -1106,6 +1128,7 @@ send_main(usage)
 	    input_delete(ifp);
 	    os_become_undo();
 	    str_free(diff_output_filename);
+	    break;
 	}
 
 	/*
@@ -1119,6 +1142,7 @@ send_main(usage)
 	switch (csrc->action)
 	{
 	case file_action_remove:
+	case file_action_transparent:
 	    break;
 
 	case file_action_create:

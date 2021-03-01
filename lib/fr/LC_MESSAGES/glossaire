@@ -1,6 +1,6 @@
 #
 #       aegis - project change supervisor
-#       Copyright (C) 2002 Peter Miller;
+#       Copyright (C) 2002, 2003 Peter Miller;
 #       All rights reserved.
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -38,71 +38,71 @@ attribute      ---  attribut, nm
 background     ---  arrière-plan (d')
 baseline       ---  base de réference
 bit            ---  bit, nm
-bit-wise       ---  opérateur de manipulation de bits, nm
+bit-wise       ---  (opérateur) de manipulation de bits, nm
 boolean        ---  booléen[enne], adj
-branch         ---  Branche (an aegis change branch of a project)
-build          ---  Le constructeur fais la construction -- `aegis -build'
-build          ---  construir, vi
+branch         ---  branche (an aegis change branch of a project)
+build          ---  le constructeur fabrique la construction -- `aegis -build'
+build          ---  construire, vi
 build          ---  constructeur, nm   - the build control (make file etc)
 build          ---  construction, nf   - result/process of the build action
 
 cancel         ---  annuler
 change         ---  modification, nf (an aegis change in a project)
-change is locked by ---  modification est barré par
-closest is     ---  plus proche est
+change is locked by ---  la modification est verrouillée par
+closest is     ---  le plus proche est
 command        ---  commande, nf
 command line   ---  ligne de commande, nm
-command line option ---  option du commande
-complete       ---  mettre fin
-compress       ---  compress
+command line option ---  option de la ligne de commande
+complete       ---  achever
+compress       ---  compresser, comprimer
 configuration  ---  configuration
 constant       ---  constante, nf
 context        ---  contexte, nm
-core dumped    ---  core dumped (abort(), SEGV etc)
+core dumped    ---  core dumped (abort(), SEGV etc), image mémoire vidée/déposée
 corrupted      ---  corrompu
 create         ---  créer, v
 
-data may have been corrupted   ---  data est peut être corrompu
-decompress     ---  décompressé
-decrement      ---  décrémentation, nf (effectuer la décrémentation de ...)
+data may have been corrupted   ---  les données sont peut-être corrompues
+decompress     ---  décompresser, décomprimer
+decrement      ---  décrémenter, v décrémentation, nf décrément, nm
 default        ---  normal, adj - par défaut
 delta	       ---  delta, nm
 developer      ---  développeur, nm -- programmeur
 developement   ---  développement, nm  -- traitement
-development begin      ---  débuter du développement
-development directory  ---  répertoire du développement, nm
-development end        ---  fin de développement, nf
+development begin      ---  début du développement
+development directory  ---  répertoire de développement, nm
+development end        ---  fin du développement, nf
 difference     ---  différence, nf
 difference     ---  différencier, vt
-diff           ---  Diff `aegis -diff'
-diff, do a     ---  faire un Diff
+diff           ---  diff `aegis -diff'
+diff, do a     ---  faire un diff
 directory      ---  répertoire, nm
 
 end-of-file             ---  fin de fichier, nf (EOF nm)
-end-of-line             ---  extrémité d'une ligne, nf
+end-of-line             ---  fin de ligne, nf
 environment variable    ---  variable d'environnement, nm
 error                   ---  erreur, nf
-escape                  ---  échappatoire, nf
+escape                  ---  échappement, nm - échap (key name)
 exit status             ---  code de sortie, nm
 expression              ---  expression, nf
 
 fail           ---  échouer, v
-failed         ---  échec de qqch pour faire qqch
+failed         ---  échec de qqch à faire qqch
 failure        ---  défaillance, nf - échec, nm
-failure        ---  Défaillance, n. f.
-fatal	       ---  fatale, catastrophique, adj
+failure        ---  défaillance, n. f.
+fatal	       ---  fatal, catastrophique, adj
 file           ---  fichier, nm
-file modification time  ---  Änderungszeit der/einer Datei
-file name pattern       ---  Dateinamensmuster
-fingerprint             ---  enpreinte digitale, nf
-floating                ---  déconnecté
-format                  ---  format, nm
-functionality           ---  fonctionnalité, nf
+file modification time  ---  date de modification du fichier
+file name pattern       ---  modèle de nom de fichier
+fingerprint    ---  signature, nf ? - somme de contrôle, nf ? (in software)
+floating       ---  flottant, adj
+format         ---  format, nm
+functionality  ---  fonctionnalité, nf
 
 group                   ---  groupe, nm
 
 hex                     ---  hexadécimal, adj
-history tool            ---  outil d'Histoire
+history tool            ---  outil d'historique
 
 illegal                 ---  illégal
 inappropriate           ---  mal adapté
@@ -110,35 +110,35 @@ increment               ---  incrémenter, v incrémentation, nf incrément, nm
 information	        ---  renseignement, nm
 input                   ---  input, nm - entrée, nf
 integer                 ---  entier, nm
-integrate begin         ---  commance d'intégration
-integrate fail          ---  échec d'intégration
-integration directory   ---  Répertoire d'integration
-integrator              ---  Intégrateur
+integrate begin         ---  début de l'intégration
+integrate fail          ---  échec de l'intégration
+integration directory   ---  répertoire d'integration
+integrator              ---  intégrateur
 interrupt               ---  interruption, nf
 
 join           ---  joindre, v - jointure, nf
 
-key            ---  Clé
+key            ---  clé, nf
 
-left hand side, LHS  ---  Gauchet
+left hand side, LHS  ---  gaucher - à gauche
 left shift     ---  décalage à gauche
 list           ---  liste, nf
 list           ---  lister, vt
-list name      ---  Listen-Name
+list name      ---  nom de liste, nm
 lock           ---  verrou, nm
 log            ---  journal, nm (fichier journal, nm)
 logging        ---  journalisation, nf
 lookup         ---  consultation (de table), nf
 loop           ---  boucle, nf
-loop condition ---  conditionnel, nm
+loop condition ---  condition de boucle, nf
 lvalue         ---  lvalue, nm
 
 malformed      ---  malformé
 mandatory      ---  obligatoire
 merge          ---  fusion, nf
 merge, to ~    ---  fusionner, vt
-merged version ---  Version fusioné
-misplaced      ---  déclassé
+merged version ---  version fusionnée
+misplaced      ---  mal placé, adj
 mode           ---  mode, nm
 modulo         ---  modulo, nm
 modifiable     ---  modifiable, adj
@@ -146,74 +146,76 @@ modifiable     ---  modifiable, adj
 name           ---  nom, nm
 number         ---  nombre, nm - numéro, nm
 
-obsolete       ---  hors d'usage, démodé(eé), désuet
+obsolete       ---  obsolète, caduc, désuet, périmé
 option         ---  option, nf
 owner          ---  propriétaire, n
 ownership      ---  propriété, nf
-out of range   ---  hors gamme
-out of set     ---  hors série
-output         ---  output, nm - sortie
-outstanding    ---  reste à faire
+out of date    ---  périmé, adj
+out of range   ---  hors de l'intervalle, hors du domaine
+out of set     ---  hors de l'ensemble
+output         ---  output, nm - sortie, nf
+outstanding    ---  pas encore fait - non résolu
 
-parameter      --- paratètre, nm (function - type known) see argument
+parameter      --- paramètre, nm (function - type known) see argument
 pass integration  ---   accepter une modification
 path           ---  chemin (chemin d'accès), nm
 pattern        ---  forme, nf - filtre, nm (regular expression)
 power          ---  pouvoir, puissance
-print, to ~    ---  imprimer
+print, to ~    ---  imprimer, afficher
 program        ---  programme, nm
 project	       ---  projet, nm
 
-quotes         ---  guillemet, nm
+quotes         ---  guillemets, nmp
 
 recovery       ---  reprise, nf  -- restauration, nf
 remove         ---  supprimer, vt  (`aegis -remove_file')
 report         ---  rapport, nm
-repository     ---  référentiel d'entreprise, nm
+repository     ---  référentiel (d'entreprise), nm
 request        ---  requête, nf
 result	       ---  résultat, nm
 review, to ~   ---  réviser
-review fail    ---  Désapprouve
-review failed  ---  Désapprouvé
-review pass    ---  Approuve
-reviewer       ---  Réviseur
+review fail    ---  désapprouve
+review failed  ---  désapprouvé
+review pass    ---  approuve
+reviewer       ---  réviseur
 right shift    ---  décalage à droite
-root           ---  Root (Unix superuser)
-run tests      ---  passage des Tests
+root           ---  root (Unix superuser)
+run tests      ---  passage des tests
 
 shift          ---  décalage
-source file    ---  Fichier source
-specify, to ~  ---  préciser, vi
-specifier      ---  descripteur,nm prescripteur[euse], spécificateur[euse]
-standard input ---  input standard, nm
-standard output --- output standard, nm
+source file    ---  fichier source
+specify, to ~  ---  spécifier, vi
+specifier      ---  spécificateur[trice]
+standard input ---  entrée standard, nf
+standard output --- sortie standard, nf
 state          ---  stade (being_developed, awaiting_integration etc)
 state lock     ---  verrou, nm
 statement      ---  instruction, nf
 status         ---  état, nm
-string         ---  chaìne, nf
+string         ---  chaîne, nf
 substitution   ---  substitution, nf
-successfully complete a diff ---   faire réussir une différence
-symbolic link  ---  Lien symbolique
+successfully complete a diff ---   achever une différence avec succès
+symbolic link  ---  lien symbolique
 
-tab            ---  Tab (ASCII 9, C-i)
+tab            ---  tab (ASCII 9, C-i)
 tamper, to ~   ---  manipuler frauduleusement, v
 target         ---  cible, nf
-termination    ---  terminaison, nm
+termination    ---  fin, nf
 test           ---  test, nm
-trunk          ---  tige, nf
+trunk          ---  tronc, nf
 
-undo           ---  défaire
-unfinished     ---  brut, adj
+undo           ---  annuler, défaire
+unfinished     ---  non terminé, adj
 unterminated   ---  non terminé, adj
 upgrade        ---  mise à niveau [supérieur], nf
-user           ---  utilisateur,euse
-use, to ~      ---  utiliser, vi
+user           ---  utilisateur,trice
+use, to ~      ---  utiliser, vt
 
 value          ---  valeur, nf
 variable       ---  variable, nf
 variant        ---  variante, nf
 version        ---  version, nf
-version information name  ---  nom du renseignement de la version
+version information name  ---  nom d'information de version
 
-(was given ...)  ---  a donné - a précisé
+warning          ---  avertissement, nf - attention (in error messages)
+(was given ...)  ---  (... a été donné/fourni)

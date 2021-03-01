@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void change_directory _((void));
+void change_directory(void);
 
 #endif /* AEGIS_AECD_H */

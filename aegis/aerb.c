@@ -49,10 +49,8 @@
 #include <user.h>
 
 
-static void review_begin_usage _((void));
-
 static void
-review_begin_usage()
+review_begin_usage(void)
 {
     char	    *progname;
 
@@ -74,19 +72,15 @@ review_begin_usage()
 }
 
 
-static void review_begin_help _((void));
-
 static void
-review_begin_help()
+review_begin_help(void)
 {
     help("aerb", review_begin_usage);
 }
 
 
-static void review_begin_list _((void));
-
 static void
-review_begin_list()
+review_begin_list(void)
 {
     string_ty	    *project_name;
     int		    mask;
@@ -157,10 +151,8 @@ review_begin_list()
 }
 
 
-static void review_begin_main _((void));
-
 static void
-review_begin_main()
+review_begin_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -416,7 +408,7 @@ review_begin_main()
 
 
 void
-review_begin()
+review_begin(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

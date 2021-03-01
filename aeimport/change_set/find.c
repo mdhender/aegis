@@ -32,11 +32,8 @@
 static symtab_ty *stp;
 
 
-static void reaper _((void *));
-
 static void
-reaper(p)
-    void	    *p;
+reaper(void *p)
 {
     format_version_list_ty *fvlp;
 
@@ -45,11 +42,8 @@ reaper(p)
 }
 
 
-static format_version_list_ty *find_user _((string_ty *));
-
 static format_version_list_ty *
-find_user(name)
-    string_ty	    *name;
+find_user(string_ty *name)
 {
     format_version_list_ty *fvlp;
 
@@ -68,14 +62,8 @@ find_user(name)
 }
 
 
-static void walker _((symtab_ty *, string_ty *, void *, void *));
-
 static void
-walker(stpx, key, data, aux)
-    symtab_ty	    *stpx;
-    string_ty	    *key;
-    void	    *data;
-    void	    *aux;
+walker(symtab_ty *stpx, string_ty *key, void *data, void *aux)
 {
     format_version_list_ty *fvlp =  data;
     change_set_list_ty *cslp =	    aux;
@@ -126,6 +114,7 @@ walker(stpx, key, data, aux)
 	{
 	    format_version_ty *fvp;
 	    change_set_file_action_ty action;
+	    string_ty       *edit;
 
 	    fvp = fvlp->item[j];
 	    if (fvp->description && fvp->description->str_length)
@@ -134,8 +123,13 @@ walker(stpx, key, data, aux)
 	    /*
 	     * Figure out what the file action is.
 	     */
+	    edit = fvp->edit;
 	    if (fvp->dead)
+	    {
 		action = change_set_file_action_remove;
+		if (fvp->before && fvp->before->edit)
+		    edit = fvp->before->edit;
+	    }
 	    else
 	    {
 		if (!fvp->before || fvp->before->dead)
@@ -148,7 +142,7 @@ walker(stpx, key, data, aux)
 	    (
 		&csp->file,
 		fvp->filename_logical,
-		fvp->edit,
+		edit,
 		action,
 		&fvp->tag
 	    );
@@ -166,8 +160,7 @@ walker(stpx, key, data, aux)
 
 
 change_set_list_ty *
-change_set_find(fslp)
-    format_search_list_ty *fslp;
+change_set_find(format_search_list_ty *fslp)
 {
     size_t	    j;
     change_set_list_ty *result;

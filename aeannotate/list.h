@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void list _((void));
+void list(void);
 
 #endif /* AEANNOTATE_LIST_H */

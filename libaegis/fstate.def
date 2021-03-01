@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -220,7 +220,7 @@ src =
 		 * when the file is copied.
 		 *
 		 * This field is only meaningful for changes in the
-		 * "completed" state, becuase this field is only set
+		 * "completed" state, because this field is only set
 		 * by aeip.  Until then, the mode if the file itself is
 		 * the authority.
 		 */

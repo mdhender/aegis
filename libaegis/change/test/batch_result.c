@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,90 +25,95 @@
 
 
 batch_result_list_ty *
-batch_result_list_new()
+batch_result_list_new(void)
 {
-	batch_result_list_ty *p;
+    batch_result_list_ty *p;
 
-	p = mem_alloc(sizeof(batch_result_list_ty));
-	p->length = 0;
-	p->length_max = 0;
-	p->item = 0;
+    p = mem_alloc(sizeof(batch_result_list_ty));
+    p->length = 0;
+    p->length_max = 0;
+    p->item = 0;
 
-	p->pass_count = 0;
-	p->no_result_count = 0;
-	p->fail_count = 0;
-	return p;
+    p->pass_count = 0;
+    p->no_result_count = 0;
+    p->fail_count = 0;
+    return p;
 }
 
 
 void
-batch_result_list_delete(p)
-	batch_result_list_ty *p;
+batch_result_list_delete(batch_result_list_ty *p)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < p->length; ++j)
-		str_free(p->item[j].file_name);
-	if (p->item)
-		mem_free(p->item);
-	p->length = 0;
-	p->length_max = 0;
-	p->item = 0;
-	mem_free(p);
+    for (j = 0; j < p->length; ++j)
+    {
+	str_free(p->item[j].file_name);
+	if (p->item[j].architecture)
+	    str_free(p->item[j].architecture);
+    }
+    if (p->item)
+	mem_free(p->item);
+    p->length = 0;
+    p->length_max = 0;
+    p->item = 0;
+    mem_free(p);
 }
 
 
 void
-batch_result_list_append(p, file_name, exit_status)
-	batch_result_list_ty *p;
-	string_ty	*file_name;
-	int		exit_status;
+batch_result_list_append(batch_result_list_ty *p, string_ty *file_name,
+    int exit_status, string_ty *architecture)
 {
-	batch_result_ty	*brp;
+    batch_result_ty *brp;
 
-	if (p->length >= p->length_max)
-	{
-		size_t		nbytes;
+    if (p->length >= p->length_max)
+    {
+	size_t		nbytes;
 
-		p->length_max = p->length_max * 2 + 4;
-		nbytes = p->length_max * sizeof(p->item[0]);
-		p->item = mem_change_size(p->item, nbytes);
-	}
-	brp = p->item + p->length++;
-	brp->file_name = str_copy(file_name);
-	brp->exit_status = exit_status;
+	p->length_max = p->length_max * 2 + 4;
+	nbytes = p->length_max * sizeof(p->item[0]);
+	p->item = mem_change_size(p->item, nbytes);
+    }
+    brp = p->item + p->length++;
+    brp->file_name = str_copy(file_name);
+    brp->exit_status = exit_status;
+    brp->architecture = architecture ? str_copy(architecture) : 0;
 }
 
 
 void
-batch_result_list_append_list(p, p2)
-	batch_result_list_ty *p;
-	const batch_result_list_ty *p2;
+batch_result_list_append_list(batch_result_list_ty *p,
+    const batch_result_list_ty *p2)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < p2->length; ++j)
-	{
-		const batch_result_ty *brp2 = p2->item + j;
-		batch_result_list_append(p, brp2->file_name, brp2->exit_status);
-	}
-	p->pass_count += p2->pass_count;
-	p->no_result_count += p2->no_result_count;
-	p->fail_count += p2->fail_count;
+    for (j = 0; j < p2->length; ++j)
+    {
+	const batch_result_ty *brp2 = p2->item + j;
+	batch_result_list_append
+	(
+	    p,
+	    brp2->file_name,
+	    brp2->exit_status,
+	    brp2->architecture
+	);
+    }
+    p->pass_count += p2->pass_count;
+    p->no_result_count += p2->no_result_count;
+    p->fail_count += p2->fail_count;
 }
 
 
 int
-batch_result_list_member(p, file_name)
-	batch_result_list_ty *p;
-	string_ty	*file_name;
+batch_result_list_member(batch_result_list_ty *p, string_ty *file_name)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < p->length; ++j)
-	{
-		if (str_equal(file_name, p->item[j].file_name))
-			return 1;
-	}
-	return 0;
+    for (j = 0; j < p->length; ++j)
+    {
+	if (str_equal(file_name, p->item[j].file_name))
+    	    return 1;
+    }
+    return 0;
 }

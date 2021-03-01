@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,10 +51,8 @@
 #include <user.h>
 
 
-static void develop_end_undo_usage _((void));
-
 static void
-develop_end_undo_usage()
+develop_end_undo_usage(void)
 {
     char	    *progname;
 
@@ -71,19 +69,15 @@ develop_end_undo_usage()
 }
 
 
-static void develop_end_undo_help _((void));
-
 static void
-develop_end_undo_help()
+develop_end_undo_help(void)
 {
     help("aedeu", develop_end_undo_usage);
 }
 
 
-static void develop_end_undo_list _((void));
-
 static void
-develop_end_undo_list()
+develop_end_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -134,10 +128,8 @@ develop_end_undo_list()
 }
 
 
-static void develop_end_undo_main _((void));
-
 static void
-develop_end_undo_main()
+develop_end_undo_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -317,10 +309,13 @@ develop_end_undo_main()
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)
 	    break;
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	p_src_data =
+	    project_file_find(pp, c_src_data->file_name, view_path_none);
 	if (!p_src_data)
-	/* this is really a corrupted file */
+	{
+	    /* this is really a corrupted file */
 	    continue;
+	}
 	p_src_data->locked_by = 0;
 
 	/*
@@ -351,7 +346,12 @@ develop_end_undo_main()
     /*
      * Make the development directory writable again.
      */
-    if (project_protect_development_directory_get(pp))
+    if
+    (
+	!change_was_a_branch(cp)
+    &&
+	project_protect_development_directory_get(pp)
+    )
 	change_development_directory_chmod_read_write(cp);
 
     /*
@@ -380,7 +380,7 @@ develop_end_undo_main()
 
 
 void
-develop_end_undo()
+develop_end_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

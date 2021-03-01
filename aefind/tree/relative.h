@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 #include <main.h>
 
-struct tree_ty *tree_ge_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_gt_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_le_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_lt_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_eq_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_ne_new _((struct tree_ty *, struct tree_ty *));
+struct tree_ty *tree_ge_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_gt_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_le_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_lt_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_eq_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_ne_new(struct tree_ty *, struct tree_ty *);
 
 #endif /* AEFIND_TREE_RELATIVE_H */

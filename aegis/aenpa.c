@@ -38,10 +38,8 @@
 #include <user.h>
 
 
-static void project_alias_create_usage _((void));
-
 static void
-project_alias_create_usage()
+project_alias_create_usage(void)
 {
     char	    *progname;
 
@@ -63,19 +61,15 @@ project_alias_create_usage()
 }
 
 
-static void project_alias_create_help _((void));
-
 static void
-project_alias_create_help()
+project_alias_create_help(void)
 {
     help("aenpa", project_alias_create_usage);
 }
 
 
-static void project_alias_create_list _((void));
-
 static void
-project_alias_create_list()
+project_alias_create_list(void)
 {
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -84,10 +78,8 @@ project_alias_create_list()
 }
 
 
-static void project_alias_create_main _((void));
-
 static void
-project_alias_create_main()
+project_alias_create_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *project_name[2];
@@ -214,7 +206,7 @@ project_alias_create_main()
 
 
 void
-project_alias_create()
+project_alias_create(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

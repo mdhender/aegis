@@ -31,12 +31,12 @@
 
 #define INDENT 4
 
-static	FILE	*fp;
-static	char	*fn;
+static FILE	*fp;
+static char	*fn;
 static int	depth;
 static int	in_col;
 static int	out_col;
-static	int	continuation_line;
+static int	continuation_line;
 
 
 /*
@@ -63,7 +63,7 @@ static	int	continuation_line;
 void
 indent_more(void)
 {
-	++depth;
+    ++depth;
 }
 
 
@@ -91,7 +91,7 @@ indent_more(void)
 void
 indent_less(void)
 {
-	--depth;
+    --depth;
 }
 
 
@@ -209,55 +209,55 @@ indent_putchar(int c)
 void
 indent_printf(char *s, ...)
 {
-	va_list		ap;
-	char		buffer[2000];
+    va_list	    ap;
+    char	    buffer[2000];
 
-	va_start(ap, s);
-	vsprintf(buffer, s, ap);
-	va_end(ap);
-	for (s = buffer; *s; ++s)
-		indent_putchar(*s);
+    va_start(ap, s);
+    vsprintf(buffer, s, ap);
+    va_end(ap);
+    for (s = buffer; *s; ++s)
+	indent_putchar(*s);
 }
 
 
 void
 indent_open(char *s)
 {
-	trace(("indent_open(s = %08lX)\n{\n", (long)s));
-	if (!s)
-	{
-		fp = stdout;
-		s = "(stdout)";
-	}
-	else
-	{
-		trace_string(s);
-		fp = fopen(s, "w");
-		if (!fp)
-			nfatal("open \"%s\"", s);
-	}
-	trace_pointer(fp);
-	fn = s;
-	depth = 0;
-	in_col = 0;
-	out_col = 0;
-	continuation_line = 0;
-	trace(("}\n"));
+    trace(("indent_open(s = %08lX)\n{\n", (long)s));
+    if (!s)
+    {
+	fp = stdout;
+	s = "(stdout)";
+    }
+    else
+    {
+	trace_string(s);
+	fp = fopen(s, "w");
+	if (!fp)
+    	    nfatal("open \"%s\"", s);
+    }
+    trace_pointer(fp);
+    fn = s;
+    depth = 0;
+    in_col = 0;
+    out_col = 0;
+    continuation_line = 0;
+    trace(("}\n"));
 }
 
 
 void
 indent_close(void)
 {
-	trace(("indent_close()\n{\n"));
-	trace_pointer(fp);
-	if (out_col)
-		indent_putchar('\n');
-	if (fflush(fp))
-		nfatal("write \"%s\"", fn);
-	if (fp != stdout && fclose(fp))
-		nfatal("close \"%s\"", fn);
-	fp = 0;
-	fn = 0;
-	trace(("}\n"));
+    trace(("indent_close()\n{\n"));
+    trace_pointer(fp);
+    if (out_col)
+	indent_putchar('\n');
+    if (fflush(fp))
+	nfatal("write \"%s\"", fn);
+    if (fp != stdout && fclose(fp))
+	nfatal("close \"%s\"", fn);
+    fp = 0;
+    fn = 0;
+    trace(("}\n"));
 }

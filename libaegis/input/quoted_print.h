@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <input.h>
 
-input_ty *input_quoted_printable _((input_ty *, int));
+input_ty *input_quoted_printable(input_ty *, int);
 
 #endif /* LIBAEGIS_INPUT_QUOTED_PRINT_H */

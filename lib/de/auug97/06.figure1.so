@@ -1,0 +1,38 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.PS
+golden = (1+sqrt(5))/2
+boxht = 0.68
+boxwid = boxht * golden
+B1: box "\fIMaster Source\fP" "\f(CWmain.c\fP" "\f(CWparse.y\fP" "" fill 0.05
+B2: box "\fISand-Box\fP" "\f(CWmain.c\fP" "" "\f(CWvariable.c\fP" \
+	fill 0 with .nw at B1.nw-(boxht/3,boxht*0.8)
+box invis fill 0.10 wid boxwid ht boxht/4 \
+	with .nw at 1/2<B1.e,B2.e>+(boxht*2/3,0)
+B3: box "\fICombined View\fP" "\f(CWmain.c\fP" "\f(CWparse.y\fP" \
+	"\f(CWvariable.c\fP" with .w at 1/2<B1.e,B2.e>+(boxht*2/3,0)
+arrow from B1.e to 1/3<B3.nw,B3.sw>
+arrow from B2.e to 2/3<B3.nw,B3.sw>
+line dashed from B1.ne to B2.ne
+line dashed from B1.nw to B2.nw
+line dashed from B1.se to B2.se
+.PE

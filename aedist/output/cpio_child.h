@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,6 @@
 #include <output.h>
 
 struct string_ty; /* existence */
-output_ty *output_cpio_child_open _((output_ty *, struct string_ty *, long));
+output_ty *output_cpio_child_open(output_ty *, struct string_ty *, long);
 
 #endif /* AEDIST_OUTPUT_CPIO_CHILD_H */

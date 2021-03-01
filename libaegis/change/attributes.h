@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2001 Peter Miller;
+ *	Copyright (C) 2000-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,10 @@ struct cstate;
 struct pconf;
 struct project_ty;
 
-void change_attributes_default _((struct cattr *, struct project_ty *,
-	struct pconf *));
-void change_attributes_copy _((struct cattr *, struct cstate *));
-void change_attributes_verify _((string_ty *, struct cattr *));
-void change_attributes_edit _((struct cattr **, int));
+void change_attributes_default(struct cattr *, struct project_ty *,
+	struct pconf *);
+void change_attributes_copy(struct cattr *, struct cstate *);
+void change_attributes_verify(string_ty *, struct cattr *);
+void change_attributes_edit(struct cattr **, int);
 
 #endif /* LIBAEGIS_CHANGE_ATTRIBUTES_H */

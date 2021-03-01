@@ -1,0 +1,149 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002, 2003 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 4.10 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 66
+For Aegis developers: the developer build now uses \fIsudo\fP(8) to
+simplify and automate the tricky bit.
+The regular distribution build is unchanged.
+.PP
+.if n *
+.if t \(bu
+.\" change 65
+A bug has been fixed where the '\fIaet \-reg\fP' command could not find
+any tests to run, cause by inconsistencies in the view path handling
+for project file searches.
+.PP
+.if n *
+.if t \(bu
+.\" change 68
+A partial Romainian translation has been added.
+.PP
+.if n *
+.if t \(bu
+.\" change 69
+A Spanish localization has been added.  It needs work by a human.
+.PP
+.if n *
+.if t \(bu
+.\" change 14
+The French localization has been improved.
+.PP
+.if n *
+.if t \(bu
+.\" change 67
+The \fIaedist\fP(1) command now preserves the executable bit on files.
+.PP
+.if n *
+.if t \(bu
+.\" change 63
+There is a new \fI\-descend-project-tree\fP option for the \fIaena\fP(1),
+\fIaera\fP(1), \fIaend\fP(1), \fIaerd\fP(1), \fIaeni\fP(1), \fIaeri\fP(1),
+\fIaenrv\fP(1), \fIaerrv\fP(1) and \fIaepa\fP(1) commands, to apply the
+action to all descendant branches of the project.
+.PP
+.if n *
+.if t \(bu
+.\" change 62
+A bug has been fixed in \fItkaer\fP(1) which stopped it working on
+some systems.
+.PP
+.if n *
+.if t \(bu
+.\" change 61
+The \fIaeintegratq\fP(1) command now copes better with changes leaving
+the \fIawaiting integration\fP state.
+.PP
+.if n *
+.if t \(bu
+.\" change 56, 57
+A bug has been fixed in the \fIaeimport\fP(1) command which misunderstood
+RCS branches.
+.PP
+.if n *
+.if t \(bu
+.\" change 52
+A bug has been fixed where there \fIaenf\fP(1) command would use the
+new \fIconfig\fP file about to be created, which was almost always wrong.
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+There is a new \fI${substr}\fP substitution.
+See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+The \fIaeclone\fP(1) command now understands transparent files.
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+The \fIaecpu\fP(1) command now restores test exemptions in some cases.
+.PP
+.if n *
+.if t \(bu
+.\" change 12, 31
+There is a new \fIaemeasure\fP(1) command, which procudes simple file
+metrics for use with Aegis.
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+There is a new \fIproject ancestors\fP report.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+Trunk version number no longer have a leading dot.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+Command line completion now works for \fIzsh\fP(1).
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+The \fIaetar\fP(1) command now preserves the executable bit on files.
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+A bug has been fixed which caused \fIaetar\fP(1) to hang.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+The \fIaereport\fP(1) and \fIaesub\fP(1) commands now gave the same email
+address for users.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+The \fIaeannotate\fP(1) command now olny prints caption columns if their
+value changes.  This highlights the differences, and is less distracting.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.10

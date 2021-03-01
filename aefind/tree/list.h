@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,14 +33,14 @@ struct tree_ty; /* existence */
 typedef struct tree_list_ty tree_list_ty;
 struct tree_list_ty
 {
-	size_t		length;
-	size_t		maximum;
-	struct tree_ty	**item;
+    size_t	    length;
+    size_t	    maximum;
+    struct tree_ty  **item;
 };
 
 
-tree_list_ty *tree_list_new _((void));
-void tree_list_delete _((tree_list_ty *));
-void tree_list_append _((tree_list_ty *, struct tree_ty *));
+tree_list_ty *tree_list_new(void);
+void tree_list_delete(tree_list_ty *);
+void tree_list_append(tree_list_ty *, struct tree_ty *);
 
 #endif /* AEFIND_TREE_LIST_H */

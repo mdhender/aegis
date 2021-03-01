@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aeib _((void));
+command_ty *command_aeib(void);
 
 #endif /* AECOMPLETE_COMMAND_AEIB_H */

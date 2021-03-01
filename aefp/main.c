@@ -37,154 +37,148 @@
 
 enum
 {
-	arglex_token_cksum,
-	arglex_token_ident,
-	arglex_token_md5,
-	arglex_token_snefru
+    arglex_token_cksum,
+    arglex_token_ident,
+    arglex_token_md5,
+    arglex_token_snefru
 };
 
 static arglex_table_ty argtab[] =
 {
-	{ "-Checksum",		arglex_token_cksum,	},
-	{ "-Identifier",	arglex_token_ident,	},
-	{ "-Message_Digest",	arglex_token_md5,	},
-	{ "-Snefru",		arglex_token_snefru,	},
-	{ 0, 0, } /* end marker */
+    { "-Checksum",       arglex_token_cksum,	},
+    { "-Identifier",     arglex_token_ident,	},
+    { "-Message_Digest", arglex_token_md5,	},
+    { "-Snefru",         arglex_token_snefru,	},
+    { 0, 0, } /* end marker */
 };
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
-	fprintf
-	(
-	    stderr,
-	    "Usage: %s [ <option>... ][ <filename>... ]\n",
-	    progname_get()
-	);
-	exit(1);
+    fprintf
+    (
+	stderr,
+	"Usage: %s [ <option>... ][ <filename>... ]\n",
+	progname_get()
+    );
+    exit(1);
 }
 
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
-	string_ty	*minus;
-	string_list_ty		file;
-	long		j;
-	fingerprint_methods_ty *method;
-	string_ty	*s;
+    string_ty	    *minus;
+    string_list_ty  file;
+    long	    j;
+    fingerprint_methods_ty *method;
+    string_ty	    *s;
 
-	arglex_init(argc, argv, argtab);
-	str_initialize();
+    arglex_init(argc, argv, argtab);
+    str_initialize();
+    arglex();
+
+    method = 0;
+    string_list_constructor(&file);
+    minus = str_from_c("-");
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
+	{
+	default:
+	    error_raw
+	    (
+		"misplaced \"%s\" command line argument",
+		arglex_value.alv_string
+	    );
+	    usage();
+
+	case arglex_token_snefru:
+	    if (method)
+	    {
+		too_many_methods:
+		error_raw("too many methods specified");
+		usage();
+	    }
+	    method = &fp_snefru;
+	    break;
+
+	case arglex_token_ident:
+	    if (method)
+		goto too_many_methods;
+	    method = &fp_ident;
+	    break;
+
+	case arglex_token_md5:
+	    if (method)
+		goto too_many_methods;
+	    method = &fp_md5;
+	    break;
+
+	case arglex_token_cksum:
+	    if (method)
+		goto too_many_methods;
+	    method = &fp_cksum;
+	    break;
+
+	case arglex_token_string:
+	    s = str_from_c(arglex_value.alv_string);
+	    string_list_append(&file, s);
+	    str_free(s);
+	    break;
+
+	case arglex_token_stdio:
+	    if (string_list_member(&file, minus))
+	    {
+		error_raw("may only name stdin once");
+		usage();
+	    }
+	    string_list_append(&file, minus);
+	    break;
+	}
 	arglex();
+    }
 
-	method = 0;
-	string_list_constructor(&file);
-	minus = str_from_c("-");
-	while (arglex_token != arglex_token_eoln)
+    /*
+     * if no files named, read stdin
+     */
+    if (!file.nstrings)
+	string_list_append(&file, minus);
+
+    /*
+     * by default, use the fp_combined class
+     */
+    if (!method)
+	method = &fp_combined;
+
+    /*
+     * read the named files
+     */
+    for (j = 0; j < file.nstrings; ++j)
+    {
+	fingerprint_ty	*p;
+	char		buf[1000];
+
+	p = fingerprint_new(method);
+	s = file.string[j];
+	if (str_equal(s, minus))
 	{
-		switch (arglex_token)
-		{
-		default:
-			error_raw
-			(
-				"misplaced \"%s\" command line argument",
-				arglex_value.alv_string
-			);
-			usage();
-
-		case arglex_token_snefru:
-			if (method)
-			{
-				too_many_methods:
-				error_raw("too many methods specified");
-				usage();
-			}
-			method = &fp_snefru;
-			break;
-
-		case arglex_token_ident:
-			if (method)
-				goto too_many_methods;
-			method = &fp_ident;
-			break;
-
-		case arglex_token_md5:
-			if (method)
-				goto too_many_methods;
-			method = &fp_md5;
-			break;
-
-		case arglex_token_cksum:
-			if (method)
-				goto too_many_methods;
-			method = &fp_cksum;
-			break;
-
-		case arglex_token_string:
-			s = str_from_c(arglex_value.alv_string);
-			string_list_append(&file, s);
-			str_free(s);
-			break;
-
-		case arglex_token_stdio:
-			if (string_list_member(&file, minus))
-			{
-				error_raw("may only name stdin once");
-				usage();
-			}
-			string_list_append(&file, minus);
-			break;
-		}
-		arglex();
+	    if (fingerprint_file_sum(p, (char *)0, buf))
+	       	nfatal("standard input");
+	    printf("%s", buf);
+	    if (file.nstrings != 1)
+	       	printf("\tstdin");
+	    printf("\n");
 	}
-
-	/*
-	 * if no files named, read stdin
-	 */
-	if (!file.nstrings)
-		string_list_append(&file, minus);
-
-	/*
-	 * by default, use the fp_combined class
-	 */
-	if (!method)
-		method = &fp_combined;
-
-	/*
-	 * read the named files
-	 */
-	for (j = 0; j < file.nstrings; ++j)
+	else
 	{
-		fingerprint_ty	*p;
-		char		buf[1000];
-
-		p = fingerprint_new(method);
-		s = file.string[j];
-		if (str_equal(s, minus))
-		{
-			if (fingerprint_file_sum(p, (char *)0, buf))
-				nfatal("standard input");
-			printf("%s", buf);
-			if (file.nstrings != 1)
-				printf("\tstdin");
-			printf("\n");
-		}
-		else
-		{
-			if (fingerprint_file_sum(p, s->str_text, buf))
-				nfatal("%s", s->str_text);
-			printf("%s\t%s\n", buf, s->str_text);
-		}
-		fingerprint_delete(p);
+	    if (fingerprint_file_sum(p, s->str_text, buf))
+	       	nfatal("%s", s->str_text);
+	    printf("%s\t%s\n", buf, s->str_text);
 	}
-	exit(0);
-	return 0;
+	fingerprint_delete(p);
+    }
+    exit(0);
+    return 0;
 }

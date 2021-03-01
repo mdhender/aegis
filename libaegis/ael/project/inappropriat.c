@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,10 @@
 void
 list_project_inappropriate()
 {
-	sub_context_ty	*scp;
+    sub_context_ty	*scp;
 
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_project));
-	fatal_intl(scp, i18n("inappropriate $name option"));
-	/* NOTREACHED */
+    scp = sub_context_new();
+    sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_project));
+    fatal_intl(scp, i18n("inappropriate $name option"));
+    /* NOTREACHED */
 }

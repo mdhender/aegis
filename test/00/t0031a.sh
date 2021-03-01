@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995-2002 Peter Miller;
+#	Copyright (C) 1995-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -587,6 +587,7 @@ architecture =
 	"unspecified",
 ];
 state = awaiting_development;
+given_regression_test_exemption = true;
 history =
 [
 	{
@@ -757,7 +758,7 @@ src =
 [
 	{
 		file_name = "main.c";
-		action = create;
+		action = transparent;
 		edit =
 		{
 			revision = "1.1";
@@ -778,7 +779,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
-		action = create;
+		action = transparent;
 		usage = test;
 		locked_by = 1;
 		about_to_be_created_by = 1;
@@ -1061,7 +1062,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
-		action = create;
+		action = transparent;
 		usage = test;
 		locked_by = 2;
 		about_to_be_created_by = 2;

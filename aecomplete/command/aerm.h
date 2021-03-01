@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aerm _((void));
+command_ty *command_aerm(void);
 
 #endif /* AECOMPLETE_COMMAND_AERM_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,13 @@
 
 #include <main.h>
 
-struct tree_ty *tree_divide_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_join_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_subtract_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_mod_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_mul_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_neg_new _((struct tree_ty *));
-struct tree_ty *tree_plus_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_pos_new _((struct tree_ty *));
+struct tree_ty *tree_divide_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_join_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_subtract_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_mod_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_mul_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_neg_new(struct tree_ty *);
+struct tree_ty *tree_plus_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_pos_new(struct tree_ty *);
 
 #endif /* AEFIND_TREE_ARITHMETIC_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
 
 struct string_ty; /* forward */
 
-void sub_expr_lex_open _((struct string_ty *));
-void sub_expr_lex_close _((void));
-int sub_expr_gram_lex _((void));
+void sub_expr_lex_open(struct string_ty *);
+void sub_expr_lex_close(void);
+int sub_expr_gram_lex(void);
 
 #endif /* AEGIS_SUB_EXPR_LEX_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,83 +30,76 @@
 #include <tree/diadic.h>
 
 
-static rpt_value_ty *match_evaluate _((tree_ty *, string_ty *, struct stat *));
-
 static rpt_value_ty *
-match_evaluate(tp, path, st)
-	tree_ty		*tp;
-	string_ty	*path;
-	struct stat	*st;
+match_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-	tree_diadic_ty	*this;
-	rpt_value_ty	*v1;
-	rpt_value_ty	*v1s;
-	rpt_value_ty	*v2;
-	rpt_value_ty	*v2s;
-	rpt_value_ty	*result;
+    tree_diadic_ty  *this;
+    rpt_value_ty    *v1;
+    rpt_value_ty    *v1s;
+    rpt_value_ty    *v2;
+    rpt_value_ty    *v2s;
+    rpt_value_ty    *result;
 
-	this = (tree_diadic_ty *)tp;
+    this = (tree_diadic_ty *)tp;
 
-	v1 = tree_evaluate(this->left, path, st);
-	v1s = rpt_value_stringize(v1);
-	v2 = tree_evaluate(this->right, path, st);
-	v2s = rpt_value_stringize(v2);
+    v1 = tree_evaluate(this->left, path, st);
+    v1s = rpt_value_stringize(v1);
+    v2 = tree_evaluate(this->right, path, st);
+    v2s = rpt_value_stringize(v2);
 
-	if
-	(
-		v1s->method->type == rpt_value_type_string
-	&&
-		v2s->method->type == rpt_value_type_string
-	)
-	{
-		result =
-			rpt_value_boolean
-			(
-				gmatch
-				(
-					rpt_value_string_query(v1s)->str_text,
-					rpt_value_string_query(v2s)->str_text
-				)
-			);
-	}
-	else
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
+    if
+    (
+	v1s->method->type == rpt_value_type_string
+    &&
+	v2s->method->type == rpt_value_type_string
+    )
+    {
+	result =
+    	    rpt_value_boolean
+    	    (
+       		gmatch
+       		(
+	  	    rpt_value_string_query(v1s)->str_text,
+	  	    rpt_value_string_query(v2s)->str_text
+       		)
+    	    );
+    }
+    else
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name1", v1->method->name);
-		sub_var_set_charstar(scp, "Name2", v2->method->name);
-		s = subst_intl(scp, i18n("illegal match ($name1 ~ $name2)"));
-		sub_context_delete(scp);
-		result = rpt_value_error(0, s);
-		str_free(s);
-	}
-	rpt_value_free(v1);
-	rpt_value_free(v2);
-	rpt_value_free(v1s);
-	rpt_value_free(v2s);
-	return result;
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name1", v1->method->name);
+	sub_var_set_charstar(scp, "Name2", v2->method->name);
+	s = subst_intl(scp, i18n("illegal match ($name1 ~ $name2)"));
+	sub_context_delete(scp);
+	result = rpt_value_error(0, s);
+	str_free(s);
+    }
+    rpt_value_free(v1);
+    rpt_value_free(v2);
+    rpt_value_free(v1s);
+    rpt_value_free(v2s);
+    return result;
 }
 
 
 static tree_method_ty match_method =
 {
-	sizeof(tree_diadic_ty),
-	"~",
-	tree_diadic_destructor,
-	tree_diadic_print,
-	match_evaluate,
-	tree_diadic_useful,
-	tree_diadic_constant,
-	tree_diadic_optimize,
+    sizeof(tree_diadic_ty),
+    "~",
+    tree_diadic_destructor,
+    tree_diadic_print,
+    match_evaluate,
+    tree_diadic_useful,
+    tree_diadic_constant,
+    tree_diadic_optimize,
 };
 
 
 tree_ty *
-tree_match_new(left, right)
-	tree_ty		*left;
-	tree_ty		*right;
+tree_match_new(tree_ty *left, tree_ty *right)
 {
-	return tree_diadic_new(&match_method, left, right);
+    return tree_diadic_new(&match_method, left, right);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 struct string_ty; /* forward */
 struct fstate_src; /* forward */
 
-struct string_ty *change_history_encode _((struct change_ty *cp,
-	struct fstate_src *c_src));
+struct string_ty *change_history_encode(struct change_ty *cp,
+	struct fstate_src *c_src);
 
 #endif /* LIBAEGIS_CHANGE_HISTORY_ENCODE_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,17 @@
 #ifndef LIBAEGIS_PROJECT_FILE_LIST_GET_H
 #define LIBAEGIS_PROJECT_FILE_LIST_GET_H
 
-#include <main.h>
+#include <project/file.h>
 
-struct project_ty; /* existence */
-
-struct string_list_ty *project_file_list_get _((struct project_ty *));
+/**
+  * The project_file_list_get function is used to obtain a list of file names.
+  *
+  * \param pp
+  *	The project to be scanned.
+  * \param as_view_path
+  *	If false, list all files.  If true, omit files which have been removed.
+  */
+struct string_list_ty *project_file_list_get(struct project_ty *pp,
+    view_path_ty as_view_path);
 
 #endif /* LIBAEGIS_PROJECT_FILE_LIST_GET_H */

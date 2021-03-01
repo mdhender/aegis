@@ -29,7 +29,7 @@ struct wstring_ty; /* existence */
 struct sub_context_ty; /* existence */
 struct wstring_list_ty; /* existence */
 
-struct wstring_ty *sub_search_path _((struct sub_context_ty *,
-    struct wstring_list_ty *arg));
+struct wstring_ty *sub_search_path(struct sub_context_ty *,
+    struct wstring_list_ty *arg);
 
 #endif /* LIBAEGIS_SUB_SEARCH_PATH_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,73 +28,72 @@
 
 
 void
-change_check_architectures(cp)
-	change_ty	*cp;
+change_check_architectures(change_ty *cp)
 {
-	cstate		cstate_data;
-	pconf		pconf_data;
-	size_t		j, k;
-	int		error_count;
+    cstate	    cstate_data;
+    pconf	    pconf_data;
+    size_t	    j, k;
+    int		    error_count;
 
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->architecture)
-		return; /* should not happen */
-	pconf_data = change_pconf_get(cp, 1);
-	assert(pconf_data->architecture);
-	if (!pconf_data->architecture)
-		return; /* should not happen */
-	error_count = 0;
-	for (j = 0; j < cstate_data->architecture->length; ++j)
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->architecture)
+	return; /* should not happen */
+    pconf_data = change_pconf_get(cp, 1);
+    assert(pconf_data->architecture);
+    if (!pconf_data->architecture)
+	return; /* should not happen */
+    error_count = 0;
+    for (j = 0; j < cstate_data->architecture->length; ++j)
+    {
+	string_ty	*variant;
+
+	variant = cstate_data->architecture->list[j];
+	for (k = 0; k < pconf_data->architecture->length; ++k)
 	{
-		string_ty	*variant;
-
-		variant = cstate_data->architecture->list[j];
-		for (k = 0; k < pconf_data->architecture->length; ++k)
+	    pconf_architecture ap;
+	    ap = pconf_data->architecture->list[k];
+	    if (str_equal(variant, ap->name))
+	    {
+		if (ap->mode == pconf_architecture_mode_forbidden)
 		{
-			pconf_architecture ap;
-			ap = pconf_data->architecture->list[k];
-			if (str_equal(variant, ap->name))
-			{
-				if (ap->mode == pconf_architecture_mode_forbidden)
-				{
-					sub_context_ty	*scp;
+		    sub_context_ty	*scp;
 
-					scp = sub_context_new();
-					sub_var_set_string(scp, "Name", variant);
-					change_fatal
-					(
-						cp,
-						scp,
-					i18n("architecture \"$name\" forbidden")
-					);
-					/*NOTREACHED*/
-					sub_context_delete(scp);
-					++error_count;
-				}
-				break;
-			}
+		    scp = sub_context_new();
+		    sub_var_set_string(scp, "Name", variant);
+		    change_fatal
+		    (
+			cp,
+			scp,
+			i18n("architecture \"$name\" forbidden")
+		    );
+		    /*NOTREACHED*/
+		    sub_context_delete(scp);
+		    ++error_count;
 		}
-		if (k >= pconf_data->architecture->length)
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", variant);
-			change_error(cp, scp, i18n("architecture \"$name\" unlisted"));
-			sub_context_delete(scp);
-			++error_count;
-		}
+		break;
+	    }
 	}
-	if (error_count)
+	if (k >= pconf_data->architecture->length)
 	{
-		sub_context_ty	*scp;
+	    sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", error_count);
-		sub_var_optional(scp, "Number");
-		change_fatal(cp, scp, i18n("found unlisted architectures"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", variant);
+	    change_error(cp, scp, i18n("architecture \"$name\" unlisted"));
+	    sub_context_delete(scp);
+	    ++error_count;
 	}
+    }
+    if (error_count)
+    {
+	sub_context_ty	*scp;
+
+	scp = sub_context_new();
+	sub_var_set_long(scp, "Number", error_count);
+	sub_var_optional(scp, "Number");
+	change_fatal(cp, scp, i18n("found unlisted architectures"));
+	/* NOTREACHED */
+	sub_context_delete(scp);
+    }
 }

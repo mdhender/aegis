@@ -55,10 +55,8 @@
  *	tell the user how to use the 'aegis -ReMove_file_Undo' command.
  */
 
-static void remove_file_undo_usage _((void));
-
 static void
-remove_file_undo_usage()
+remove_file_undo_usage(void)
 {
     char	    *progname;
 
@@ -92,10 +90,8 @@ remove_file_undo_usage()
  *	describe the 'aegis -ReMove_file_undo' command to the user.
  */
 
-static void remove_file_undo_help _((void));
-
 static void
-remove_file_undo_help()
+remove_file_undo_help(void)
 {
     help("aermu", remove_file_undo_usage);
 }
@@ -114,10 +110,8 @@ remove_file_undo_help()
  *	as a deletion.	All relevant change files are listed.
  */
 
-static void remove_file_undo_list _((void));
-
 static void
-remove_file_undo_list()
+remove_file_undo_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -206,10 +200,8 @@ remove_file_undo_list()
  *	The names of the relevant files are gleaned from the command line.
  */
 
-static void remove_file_undo_main _((void));
-
 static void
-remove_file_undo_main()
+remove_file_undo_main(void)
 {
     string_list_ty  wl;
     string_list_ty  wl2;
@@ -609,15 +601,8 @@ remove_file_undo_main()
 	if (mend_symlinks)
 	{
 	    user_become_undo();
-	    psrc_data = project_file_find(pp, s1);
+	    psrc_data = project_file_find(pp, s1, view_path_extreme);
 	    user_become(up);
-	    if
-	    (
-		psrc_data
-	    &&
-		(psrc_data->deleted_by || psrc_data->about_to_be_created_by)
-	    )
-		psrc_data = 0;
 	}
 	else
 	    psrc_data = 0;
@@ -717,7 +702,7 @@ remove_file_undo_main()
  */
 
 void
-remove_file_undo()
+remove_file_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -274,11 +274,3 @@ main(int argc, char **argv)
     exit(0);
     return 0;
 }
-
-#if 0
-void
-dummy()
-{
-    i18n("dummy.sub");
-}
-#endif

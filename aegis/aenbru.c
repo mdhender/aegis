@@ -51,10 +51,8 @@
 #include <user.h>
 
 
-static void new_branch_undo_usage _((void));
-
 static void
-new_branch_undo_usage()
+new_branch_undo_usage(void)
 {
     char	    *progname;
 
@@ -76,19 +74,15 @@ new_branch_undo_usage()
 }
 
 
-static void new_branch_undo_help _((void));
-
 static void
-new_branch_undo_help()
+new_branch_undo_help(void)
 {
     help("aenbru", new_branch_undo_usage);
 }
 
 
-static void new_branch_undo_list _((void));
-
 static void
-new_branch_undo_list()
+new_branch_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -129,11 +123,8 @@ new_branch_undo_list()
 }
 
 
-static string_ty *branch_changes_path_get _((change_ty *));
-
 static string_ty *
-branch_changes_path_get(cp)
-    change_ty	    *cp;
+branch_changes_path_get(change_ty *cp)
 {
     project_ty	    *pp;
     string_ty	    *result;
@@ -146,10 +137,8 @@ branch_changes_path_get(cp)
 }
 
 
-static void new_branch_undo_main _((void));
-
 static void
-new_branch_undo_main()
+new_branch_undo_main(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -357,7 +346,7 @@ new_branch_undo_main()
 
 
 void
-new_branch_undo()
+new_branch_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

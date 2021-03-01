@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,13 +55,13 @@ struct wide_output_vtbl_ty
 {
 	int		size;
 
-	void (*destructor)_((wide_output_ty *));
-	struct string_ty *(*filename)_((wide_output_ty *));
-	void (*write)_((wide_output_ty *, const wchar_t *, size_t));
-	void (*flush)_((wide_output_ty *));
-	int (*page_width)_((wide_output_ty *));
-	int (*page_length)_((wide_output_ty *));
-	void (*end_of_line)_((wide_output_ty *));
+	void (*destructor)(wide_output_ty *);
+	struct string_ty *(*filename)(wide_output_ty *);
+	void (*write)(wide_output_ty *, const wchar_t *, size_t);
+	void (*flush)(wide_output_ty *);
+	int (*page_width)(wide_output_ty *);
+	int (*page_length)(wide_output_ty *);
+	void (*end_of_line)(wide_output_ty *);
 
 	/*
 	 * By putting this last, we catch many cases where a method
@@ -70,7 +70,7 @@ struct wide_output_vtbl_ty
 	const char	*typename;
 };
 
-typedef void (*wide_output_callback_ty)_((wide_output_ty *, void *));
+typedef void (*wide_output_callback_ty)(wide_output_ty *, void *);
 
 typedef struct wide_output_callback_record wide_output_callback_record;
 struct wide_output_callback_record
@@ -79,21 +79,21 @@ struct wide_output_callback_record
 	void		*arg;
 };
 
-void wide_output_delete _((wide_output_ty *));
-struct string_ty *wide_output_filename _((wide_output_ty *));
-void wide_output_putwc _((wide_output_ty *, wint_t));
-void wide_output_putws _((wide_output_ty *, const wchar_t *));
-void wide_output_put_cstr _((wide_output_ty *, const char *));
-void wide_output_put_str _((wide_output_ty *, struct string_ty *));
-void wide_output_put_wstr _((wide_output_ty *, struct wstring_ty *));
-void wide_output_write _((wide_output_ty *, const wchar_t *, size_t));
-void wide_output_flush _((wide_output_ty *));
-int wide_output_page_width _((wide_output_ty *));
-int wide_output_page_length _((wide_output_ty *));
-void wide_output_end_of_line _((wide_output_ty *));
+void wide_output_delete(wide_output_ty *);
+struct string_ty *wide_output_filename(wide_output_ty *);
+void wide_output_putwc(wide_output_ty *, wint_t);
+void wide_output_putws(wide_output_ty *, const wchar_t *);
+void wide_output_put_cstr(wide_output_ty *, const char *);
+void wide_output_put_str(wide_output_ty *, struct string_ty *);
+void wide_output_put_wstr(wide_output_ty *, struct wstring_ty *);
+void wide_output_write(wide_output_ty *, const wchar_t *, size_t);
+void wide_output_flush(wide_output_ty *);
+int wide_output_page_width(wide_output_ty *);
+int wide_output_page_length(wide_output_ty *);
+void wide_output_end_of_line(wide_output_ty *);
 
-void wide_output_delete_callback _((wide_output_ty *, wide_output_callback_ty,
-	void *));
+void wide_output_delete_callback(wide_output_ty *, wide_output_callback_ty,
+	void *);
 
 /*
  * Despite looking recursive, it isn't.  Ansi C macros do not recurse,

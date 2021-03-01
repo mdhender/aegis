@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <input.h>
 
-input_ty *input_base64 _((input_ty *, int));
-int input_base64_recognise _((input_ty *));
+input_ty *input_base64(input_ty *, int);
+int input_base64_recognise(input_ty *);
 
 #endif /* LIBAEGIS_INPUT_BASE64_H */

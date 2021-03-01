@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,95 +27,93 @@
 
 
 format_version_ty *
-format_version_new()
+format_version_new(void)
 {
-	format_version_ty *fvp;
+    format_version_ty *fvp;
 
-	fvp = mem_alloc(sizeof(format_version_ty));
-	fvp->filename_physical = 0;
-	fvp->filename_logical = 0;
-	fvp->edit = 0;
-	fvp->when = 0;
-	fvp->who = 0;
-	fvp->description = 0;
-	fvp->before = 0;
-	string_list_constructor(&fvp->tag);
-	fvp->after = 0;
-	fvp->after_branch = 0;
-	fvp->dead = 0;
-	return fvp;
+    fvp = mem_alloc(sizeof(format_version_ty));
+    fvp->filename_physical = 0;
+    fvp->filename_logical = 0;
+    fvp->edit = 0;
+    fvp->when = 0;
+    fvp->who = 0;
+    fvp->description = 0;
+    fvp->before = 0;
+    string_list_constructor(&fvp->tag);
+    fvp->after = 0;
+    fvp->after_branch = 0;
+    fvp->dead = 0;
+    return fvp;
 }
 
 
 void
-format_version_delete(fvp)
-	format_version_ty *fvp;
+format_version_delete(format_version_ty *fvp)
 {
-	if (fvp->filename_physical)
-	{
-		str_free(fvp->filename_physical);
-		fvp->filename_physical = 0;
-	}
-	if (fvp->filename_logical)
-	{
-		str_free(fvp->filename_logical);
-		fvp->filename_logical = 0;
-	}
-	if (fvp->edit)
-	{
-		str_free(fvp->edit);
-		fvp->edit = 0;
-	}
-	fvp->when = 0;
-	if (fvp->who)
-	{
-		str_free(fvp->who);
-		fvp->who = 0;
-	}
-	if (fvp->description)
-	{
-		str_free(fvp->description);
-		fvp->description = 0;
-	}
-	string_list_destructor(&fvp->tag);
-	fvp->before = 0;
-	if (fvp->after)
-	{
-		format_version_delete(fvp->after);
-		fvp->after = 0;
-	}
-	if (fvp->after_branch)
-	{
-		format_version_list_delete(fvp->after_branch, 1);
-		fvp->after_branch = 0;
-	}
-	fvp->dead = 0;
-	mem_free(fvp);
+    if (fvp->filename_physical)
+    {
+	str_free(fvp->filename_physical);
+	fvp->filename_physical = 0;
+    }
+    if (fvp->filename_logical)
+    {
+	str_free(fvp->filename_logical);
+	fvp->filename_logical = 0;
+    }
+    if (fvp->edit)
+    {
+	str_free(fvp->edit);
+	fvp->edit = 0;
+    }
+    fvp->when = 0;
+    if (fvp->who)
+    {
+	str_free(fvp->who);
+	fvp->who = 0;
+    }
+    if (fvp->description)
+    {
+	str_free(fvp->description);
+	fvp->description = 0;
+    }
+    string_list_destructor(&fvp->tag);
+    fvp->before = 0;
+    if (fvp->after)
+    {
+	format_version_delete(fvp->after);
+	fvp->after = 0;
+    }
+    if (fvp->after_branch)
+    {
+	format_version_list_delete(fvp->after_branch, 1);
+	fvp->after_branch = 0;
+    }
+    fvp->dead = 0;
+    mem_free(fvp);
 }
 
 
 #ifdef DEBUG
 
 void
-format_version_validate(fvp)
-	format_version_ty *fvp;
+format_version_validate(format_version_ty *fvp)
 {
-	assert(fvp);
-	if (fvp->filename_physical)
-		assert(str_validate(fvp->filename_physical));
-	if (fvp->filename_logical)
-		assert(str_validate(fvp->filename_logical));
-	if (fvp->edit)
-		assert(str_validate(fvp->edit));
-	if (fvp->who)
-		assert(str_validate(fvp->who));
-	if (fvp->description)
-		assert(str_validate(fvp->description));
-	assert(string_list_validate(&fvp->tag));
-	if (fvp->after)
-		format_version_validate(fvp->after);
-	if (fvp->after_branch)
-		format_version_list_validate(fvp->after_branch);
+    assert(fvp);
+    if (fvp->filename_physical)
+	assert(str_validate(fvp->filename_physical));
+    if (fvp->filename_logical)
+	assert(str_validate(fvp->filename_logical));
+    if (fvp->edit)
+	assert(str_validate(fvp->edit));
+    if (fvp->who)
+	assert(str_validate(fvp->who));
+    if (fvp->description)
+	assert(str_validate(fvp->description));
+    assert(string_list_validate(&fvp->tag));
+    if (fvp->after)
+	format_version_validate(fvp->after);
+    if (fvp->after_branch)
+	format_version_list_validate(fvp->after_branch);
 }
 
 #endif

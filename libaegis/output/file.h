@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <output.h>
 
-output_ty *output_file_text_open _((struct string_ty *));
-output_ty *output_file_binary_open _((struct string_ty *));
+output_ty *output_file_text_open(struct string_ty *);
+output_ty *output_file_binary_open(struct string_ty *);
 
 #endif /* LIBAEGIS_OUTPUT_FILE_H */

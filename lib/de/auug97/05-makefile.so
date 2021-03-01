@@ -1,0 +1,395 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 1998, 2001, 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Effiziente Makefiles"
+Das zentrale Thema dieses Artikels sind die semantischen
+Nebenwirkungen des k\*:unstlichen In-St\*:ucke-Zerteilens
+eines \f[CW]Makefiles\fP, das notwendig ist, um ein rekursives
+Make durchzuf\*:uhren. Wenn Sie jedoch viele \f[CW]Makefiles\fP
+haben, wird die Geschwindigkeit, in der Make diese Menge
+Dateien interpretieren kann, ebenfalls zum Thema.
+.LP
+Builds k\*:onnen aus zwei Gr\*:unden \*:uberm\*:a\(ssig lange dauern:
+Die herk\*:ommlichen Korrekturen f\*:ur den zerteilten DAG
+bauen zu viel oder Ihr \f[CW]Makefile\fP ist nicht effizient.
+.nh 2 "Verz\*:ogerte  Auswertung"
+Make muss den Text eines \f[CW]Makefiles\fP irgendwie aus einer
+Textdatei lesen und verstehen, so dass ein DAG erstellt
+und die angegebenen Aktionen den Kanten zugeordnet
+werden k\*:onnen. All das wird im Speicher festgehalten.
+.LP
+Die Eingabesprache f\*:ur \f[CW]Makefiles\fP ist irref\*:uhrend
+einfach. Sie ist textbasiert, im Gegensatz zu den
+tokenbasierten z. B. f\*:ur C und AWK. Das ist ein
+entscheidender Unterschied, der Neulingen genauso wie
+Experten oft entgeht. Make tut das absolute Minimum, um
+die Eingabezeilen zu verarbeiten und sie im
+Hauptspeicher zu verstauen.
+.LP
+Folgende Zuordnung ist ein Beispiel daf\*:ur:
+.TS
+box,center;
+lw(2.5i)f(CW).
+OBJ = main.o parse.o
+.TE
+Wenn Menschen das lesen, hei\(sst das, der Variablen OBJ
+sind zwei Dateinamen \f[CW]main.o\fP und
+\f[CW]parse.o\fP zugeordnet. Aber Make versteht das ganz
+anders. \f[CW]OBJ\fP wird die Zeichenfolge \f[CW]main.o
+parse.o\fP zugeordnet. Und es wird noch schlimmer:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC = main.c parse.c
+OBJ = $(SRC:.c=.o)
+.TE
+In diesem Fall erwartet der Mensch, dass \f[CW]OBJ\fP
+durch Make zwei Dateinamen zugeordnet werden, aber Make
+ordnet in Wirklichkeit die Zeichenkette
+\f[CW]$(SRC:,c=.o)\fP zu. Das r\*:uhrt daher, dass es sich
+um eine Makrosprache mit verz\*:ogerter Auswertung handelt
+im Gegensatz zu einer mit Variablen und sofortiger
+Auswertung.
+.LP
+Wenn es Ihnen nicht zu schwierig erscheint, schauen Sie sich die
+folgende \f[CW]Makefile\fP an:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC = $(shell echo 'Ouch!' \e
+  1>&2 ; echo *.[cy])
+OBJ = \e
+  $(patsubst %.c,%.o,\e
+    $(filter %.c,$(SRC))) \e
+  $(patsubst %.y,%.o,\e
+    $(filter %.y,$(SRC)))
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.TE
+Wie oft wird das Shell-Kommando ausgef\*:uhrt? Autsch! Er
+wird, allein um den DAG zu konstruieren, zweimal
+ausgef\*:uhrt und noch zweimal, wenn die Regel ausgef\*:uhrt
+werden muss. Wenn dieser Shell-Befehl nichts komplexes
+oder zeitaufwendiges ausf\*:uhrt (was er aber normalerweise
+tut), braucht er viermal so lang, wie erwartet.
+.LP
+Aber es lohnt sich, andere Teile dieses
+\f[CW]OBJ\fP-Makros n\*:aher anzuschauen. Jedesmal, wenn es
+genannt wird, werden riesige Mengen von Vorg\*:angen
+abgewickelt:
+.IP \(bu 2n
+Der Parameter f\*:ur Shell ist eine einzige Zeichenkette
+(alle Built-in-Funktionen haben als Parameter eine
+einzige Zeichenkette). Die Zeichenkette wird in der
+untergeordneten Shell ausgef\*:uhrt und die
+Standardausgabe dieses Kommandos wird wieder
+eingegeben, wobei Zeilenumbr\*:uche in Leerschritte
+verwandelt werden. Das Ergebnis ist eine einzige
+Zeichenkette.
+.IP \(bu 2n
+Der Parameter zum Filtern ist eine einzige
+Zeichenkette. Dieser Parameter wird beim ersten Komma
+in zwei Zeichenketten zerlegt. Jede der beiden
+Zeichenketten wird dann in durch Leerschritte
+getrennte Teilketten aufspalten. Die erste Reihe
+entspricht den Mustern und die zweite den
+Dateinamen. Dann wird f\*:ur jede Musterteilkette, mit
+der eine Dateinamenteilkette \*:ubereinstimmt, der
+Dateiname in die Ausgabe eingef\*:ugt. Sobald die Ausgabe
+vollst\*:andig ist, werden die Teilketten wieder zu einer
+einzigen durch Leerschritte unterteilten Zeichenkette
+zusammengesetzt.
+.IP \(bu 2n
+Der Parameter zur Musterersetzung ist eine einzige
+Zeichenkette. Dieser Parameter wird beim ersten und
+zweiten Komma in drei Ketten aufgespalten. Die dritte
+Kette wird dann in durch Leerschritte getrennte
+Teilketten zerteilt, die den Dateinamen
+entsprechen. Dann wird jeder Dateiname, der mit der
+ersten Kette \*:ubereinstimmt, gem\*:a\(ss der zweiten Kette
+ersetzt. Wenn ein Dateiname nicht mit der ersten Kette
+\*:ubereinstimmt, passiert er unver\*:andert. Sobald die
+Ausgabe vollst\*:andig erzeugt wurde, werden die
+Teilketten wieder zu einer einzigen durch Leerschritte
+unterteilten Zeichenkette zusammengesetzt.
+.LP
+Sie sehen, wie oft diese Zeichenketten aufgespalten und
+wieder zusammengestzt werden. Sie sehen, auf wieviel
+verschiedene Weisen das passiert. Das ist langsam. In
+unserem Beispiel gibt es nur zwei Dateien, aber stellen
+Sie sich vor, wie lange diese Prozeduren f\*:ur 1000
+Dateien dauern. Diese Aktion viermal auszuf\*:uhren, ist
+sehr ineffizient.
+.LP
+Wenn Sie ein einfaches Make, das \*:uber keine Ersetzung
+und keine Built-in-Funktionen verf\*:ugt, benutzen,
+beeintr\*:achtigt Sie das nicht. Aber ein modernes Make hat
+viele Built-in-Funktionen und kann sogar nebenbei
+Shell-Kommandos ausf\*:uhren. Die Semantik der
+Textmanipulation von Make f\*:uhrt, verglichen mit C oder
+AWK, zu einer sehr CPU-intesiven
+Zeichenkettenmanipuation in Make.
+.nh 2 "Unmittelbare Auswertung"
+Moderne Make-Ausf\*:uhrungen haben einen \f[CW]:=\fP
+Zuordnungsoperator f\*:ur unmittelbare Auswertung. Das oben
+genannte Beispiel kann folgenderma\(ssen neu geschrieben
+werden:
+.TS
+box,center;
+lw(2.5i)f(CW).
+.\" --------------------------|
+SRC := $(shell echo 'Ouch!' \e
+  1>&2 ; echo *.[cy])
+OBJ := \e
+  $(patsubst %.c,%.o,\e
+    $(filter %.c,$(SRC))) \e
+  $(patsubst %.y,%.o,\e
+    $(filter %.y,$(SRC)))
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.TE
+Beachten Sie, dass beide Zuordnungen Zuordnungen f\*:ur
+unmittelbare Auswertung sind. W\*:are die erste keine,
+w\*:urde das Shell-Kommando immer zweimal ausgef\*:uhrt
+werden. W\*:are die zweite keine, w\*:urden die aufwendigen
+Ersetzungen mindestens zweimal, m\*:oglicherweise sogar
+viermal durchgef\*:uhrt werden.
+.LP
+Als Daumenregel gilt: Benutzen Sie immer Zuordnungen f\*:ur
+unmittelbare Auswertung, es sei denn Sie w\*:unschen
+bewusst eine verz\*:ogerte Auswertung.
+.nh 2 "Include-Dateien"
+Viele \f[CW]Makefiles\fP f\*:uhren denselben Textbearbeitungsvorgang
+(z. B. die o. g. Filter) bei jedem einzelnen
+Make-Durchlauf erneut durch; das Ergebnis dieser
+Prozeduren \*:andert sich jedoch selten. Wenn es auch
+praktisch ist, ist es doch effizienter, die Ergebnisse
+der Textbearbeitung einer Datei zu speichern und diese
+Datei in das \f[CW]Makefile\fP einzuf\*:ugen.
+.nh 2 "Abh\*:angigkeiten"
+Seien Sie nicht geizig mit Include-Dateien. Man kann
+sie, verglichen mit $(shell), mit relativ wenig Aufwand
+lesen und sie beintr\*:achtigen auch die Effizienz nur
+wenig.
+.LP
+Um ein Beispiel daf\*:ur zu zeigen, ist es erst einmal
+notwendig, eine n\*:utzliche Eigenschaft des GNU-Makes zu
+beschreiben: Wenn Make das \f[CW]Makefile\fP gelesen hat und
+einige ihrer Include-Dateien sind nicht mehr aktuell
+(oder existieren noch nicht), werden sie neu erzeugt und
+Make beginnt noch einmal. Das f\*:uhrt dazu, dass Make
+jetzt mit aktuellen Include-Dateien arbeitet. Diese
+Funktion kann genutzt werden, um ein automatische
+Berechnung der Include-Dateiabh\*:angigkeiten f\*:ur C-Quellen
+zu realisieren. Die naheliegendste Art, es auszuf\*:uhren,
+hat jedoch einen kleinen Fehler.
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.sp 0.2
+include dependencies
+.sp 0.2
+dependencies: $(SRC)
+  depend.sh $(CFLAGS) \e
+    $(SRC) > $@
+.TE
+Das \f[CW]depend.sh\fP-Skript druckt seine Zeilen in folgender
+Weise:
+.QP
+\fIDatei\fP\f[CW].o: \fP\fIDatei\fP\f[CW].c \fP\fIInclude\fP\f[CW].h\fP ...
+.LP
+Die einfachste Art, das umzusetzen, ist, GCC zu
+verwenden, aber Sie brauchen eine entsprechendes
+AWK-Skript oder C-Programm, wenn Sie einen anderen
+Compiler verwenden:
+.TS
+box,center;
+lw(2.5i)f(CW).
+#!/bin/sh
+gcc -MM -MG "$@"
+.TE
+Diese Methode, C-Includeabh\*:angikeiten aufzufinden, hat
+mehrere ernste M\*:angel, aber der verbreiteteste Mangel
+ist, dass die Abh\*:angigkeitendatei selbst nicht von den
+C-Include-Dateien abh\*:angig ist. Das bedeutet, dass sie
+nicht neu erzeugt wird, wenn sich Include-Dateien
+ver\*:andern. Es gibt im DAG keine Kante zwischen einem
+Knotenpunkt der Abh\*:angigkeiten und einem Knotenpunkt der
+Include-Dateien. Wenn sich eine Include-Datei \*:andert,
+weil sie eine andere Datei aufnimmt (verschachtelte
+Include), werden die Abh\*:angigkeiten nicht neu bestimmt
+und die C-Datei wird m\*:oglicherweise nicht neu \*:ubersetzt,
+wodurch das Programm nicht korrekt neu gebaut wird.
+.LP
+Das ist ein klassischer Fall von \fIzu wenig
+bauen\fP. Das Problem wird dadurch verursacht, dass
+man Make unzul\*:angliche Informationen gibt und es dadurch
+veranlasst, einen unzureichenden DAG zu erstellen und
+das falsche Ergebnis zu liefern.
+.LP
+Die traditionelle L\*:osung ist, zu viel zu bauen:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.sp 0.2
+include dependencies
+.sp 0.2
+\&.PHONY: dependencies
+.sp 0.2
+dependencies: $(SRC)
+  depend.sh $(CFLAGS) \e
+    $(SRC) > $@
+.TE
+Jetzt werden selbst, wenn das Projekt aktualisiert ist,
+die Abh\*:angigkeiten neu ermittelt. Wenn Projekte gro\(ss
+sind, ist das eine erhebliche Zeitverschwendung und kann
+einer der Hauptgr\*:unde daf\*:ur sein, dass Make sehr lange
+braucht, um herauszufinden, dass nichts zu tun ist.
+.LP
+Es gibt ein zweites Problem: Wenn sich irgendeine der
+C-Dateien ver\*:andert, werden wieder f\*:ur alle C-Dateien
+die Includeabh\*:angigkeiten neu berechnet. Das ist genauso
+wenig effizient, als h\*:atte man ein \f[CW]Makefile\fP, das
+folgenderma\(ssen aussieht:
+.TS
+box,center;
+lw(2.5i)f(CW).
+prog: $(SRC)
+  $(CC) -o $@ $(SRC)
+.TE
+In exakter Entsprechung zum C-Fall ben\*:otigt man hier
+eine Zwischenform. Dieser verleiht man gew\*:ohnlich ein
+\f[CW].d\fP-Suffix. Dank der Tatsache, dass man in einer
+Include-Anweisung mehr als eine Datei benennen kann,
+existiert keine Notwendigkeit alle \f[CW].d\fP-Dateien zu
+verkn\*:upfen:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.sp 0.2
+include $(OBJ:.o=.d)
+.sp 0.2
+%.d: %.c
+  depend.sh $(CFLAGS) $* > $@
+.TE
+.LP
+Diese Form erfordert noch eine Korrektur: Genau wie die
+Objektdateien (.o) h\*:angen die Abh\*:angigkeitsdateien (.d)
+von den Quelldateien und den Include-Dateien ab.
+.QP
+\fIDatei\fP\f[CW].d \fP\fIDatei\fP\f[CW].o:
+\fP\fIDatei\fP\f[CW].c \fP\fIInclude\fP\f[CW].h\fP
+.LP
+Das bedeutet, dass man wieder an dem \f[CW]depend.sh\fP-Skript
+herumbasteln muss:
+.TS
+box,center;
+lw(2.5i)f(CW).
+#!/bin/sh
+gcc -MM -MG "$@" |
+sed -e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
+.TE
+.LP
+Durch dieses Vorgehen bei der Bestimmung der
+Abh\*:angigkeiten der Include-Dateien erh\*:oht sich die
+Anzahl der Dateien, die das Makfile beinhaltet, im
+Gegensatz zur herk\*:ommlichen Methode.  Dateien zu \*:offnen
+ist jedoch weniger aufwendig, als jedesmal wieder alle
+Abh\*:angigkeiten zu ermitteln. Normalerweise bearbeitet
+ein Entwickler ein oder zwei Dateien, bevor er ein
+Re-Build durchf\*:uhrt; bei dieser Methode wird genau die
+betroffene Abh\*:angigkeitsdatei wiederhergestellt (oder
+mehr als eine, wenn Sie eine Include-Datei bearbeitet
+haben). Unterm Strich erfordert diese Vorgehensweise
+weniger Rechenarbeit durch die CPU und weniger
+Zeitaufwand.
+.LP
+Muss bei einem Build nichts gemacht werden, tut Make
+tats\*:achlich nichts und findet das auch sehr schnell
+heraus.
+.LP
+Die beschriebene Technik nimmt jedoch an, dass Ihr
+Projekt vollst\*:andig in ein Verzeichnis hineinpasst. Das
+ist bei gro\(ssen Projekten gew\*:ohnlich nicht der Fall. Also
+muss noch einmal an dem depend.sh-Skript herumgebastelt
+werden:
+.\" ---------------------------|
+.TS
+box,center;
+lw(2.5i)f(CW).
+#!/bin/sh
+DIR="$1"
+shift 1
+case "$DIR" in
+"" | ".")
+gcc -MM -MG "$@" |
+sed -e 's@^\e(.*\e)\e.o:@\e1.d \e
+  \e1.o:@'
+;;
+*)
+gcc -MM -MG "$@" |
+sed -e "s@^\e(.*\e)\e.o:@$DIR/\e
+\e1.d $DIR/\e1.o:@"
+;;
+esac
+.TE
+Und die Regel muss auch ge\*:andert werden, damit das
+Verzeichnis, wie das Skript annimmt, als erster
+Parameter \*:ubergeben wird.
+.\" ---------------------------|
+.TS
+box,center;
+lw(2.5i)f(CW).
+%.d: %.c
+  depend.sh `dirname $*` \e
+    $(CFLAGS) $* > $@
+.TE
+Bitte beachten Sie, dass die Namen der .d-Dateien
+relativ zum Verzeichnis der obersten Ebene sind. Man
+kann sie auch so schreiben, dass sie von jeder Ebene aus
+benutzt werden, aber das geht \*:uber den Rahmen dieses
+Artikels hinaus.
+.nh 2 "Multiplikator"
+Alle in diesem Kapitel beschriebenen Ineffizienzen
+h\*:angen zusammen. Wenn Sie 100 \f[CW]Makefile\fP-Interpretationen
+f\*:ur jedes Modul einmal durchf\*:uhren, kann es sehr lange
+dauern, 1000 Quelldateien zu \*:uberpr\*:ufen; ebenso wenn die
+Interpretation komplexe Bearbeitungsprozesse erfordert
+oder unn\*:otige Arbeiten ausf\*:uhrt, oder beides. Das
+Ganzprojekt-Make muss auf der andere Seite nur ein
+einziges \f[CW]Makefile\fP interpretieren.

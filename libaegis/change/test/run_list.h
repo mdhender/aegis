@@ -30,9 +30,9 @@ struct project_ty;
 struct string_list_ty;
 struct user_ty;
 
-batch_result_list_ty *change_test_run_list _((struct change_ty *,
-	struct string_list_ty *, struct user_ty *, int, int));
-batch_result_list_ty *project_test_run_list _((struct project_ty *,
-	struct string_list_ty *, struct user_ty *, int));
+batch_result_list_ty *change_test_run_list(struct change_ty *,
+	struct string_list_ty *, struct user_ty *, int, int);
+batch_result_list_ty *project_test_run_list(struct project_ty *,
+	struct string_list_ty *, struct user_ty *, int);
 
 #endif /* LIBAEGIS_CHANGE_TEST_RUN_LIST_H */

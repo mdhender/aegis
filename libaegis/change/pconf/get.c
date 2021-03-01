@@ -38,13 +38,8 @@
 #include <trace.h>
 
 
-static void pconf_improve _((change_ty *, pconf, string_ty *));
-
 static void
-pconf_improve(cp, d, filename)
-    change_ty       *cp;
-    pconf           d;
-    string_ty       *filename;
+pconf_improve(change_ty *cp, pconf d, string_ty *filename)
 {
     sub_context_ty  *scp;
     size_t          j;
@@ -294,11 +289,8 @@ pconf_improve(cp, d, filename)
 }
 
 
-static void set_pconf_symlink_exceptions_defaults _((pconf));
-
 static void
-set_pconf_symlink_exceptions_defaults(pconf_data)
-    pconf           pconf_data;
+set_pconf_symlink_exceptions_defaults(pconf pconf_data)
 {
     type_ty         *type_p;
     string_ty       **str_p;
@@ -324,11 +316,8 @@ set_pconf_symlink_exceptions_defaults(pconf_data)
 }
 
 
-static input_ty *input_catenate_tricky _((string_list_ty *));
-
 static input_ty *
-input_catenate_tricky(filename)
-    string_list_ty  *filename;
+input_catenate_tricky(string_list_ty *filename)
 {
     input_ty        **fpl;
     size_t          j;
@@ -346,12 +335,8 @@ input_catenate_tricky(filename)
 }
 
 
-static pconf read_the_pconf_list _((change_ty *, string_ty *));
-
 static pconf
-read_the_pconf_list(cp, dirname)
-    change_ty       *cp;
-    string_ty       *dirname;
+read_the_pconf_list(change_ty *cp, string_ty *dirname)
 {
     symtab_ty       *stp;
     string_ty       *s;
@@ -445,9 +430,7 @@ read_the_pconf_list(cp, dirname)
 
 
 pconf
-change_pconf_get(cp, required)
-    change_ty       *cp;
-    int             required;
+change_pconf_get(change_ty *cp, int required)
 {
     static string_ty *star_comma_d;
     size_t          j;
@@ -507,7 +490,8 @@ change_pconf_get(cp, required)
 		    cp->pconf_data = temp;
 		}
 	    }
-	    pconf_improve(cp, cp->pconf_data, filename);
+	    if (required)
+		pconf_improve(cp, cp->pconf_data, filename);
 	}
 
 	/*

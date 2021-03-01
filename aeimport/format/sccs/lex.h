@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,10 @@
 
 #include <str.h>
 
-void sccs_lex_open _((string_ty *));
-void sccs_lex_close _((void));
+void sccs_lex_open(string_ty *);
+void sccs_lex_close(void);
 
-int format_sccs_gram_lex _((void));
-void format_sccs_gram_error _((const char *));
+int format_sccs_gram_lex(void);
+void format_sccs_gram_error(const char *);
 
 #endif /* AEIMPORT_FORMAT_SCCS_LEX_H */

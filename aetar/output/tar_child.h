@@ -26,6 +26,6 @@
 #include <output.h>
 
 struct string_ty; /* existence */
-output_ty *output_tar_child_open _((output_ty *, struct string_ty *, long));
+output_ty *output_tar_child_open(output_ty *, struct string_ty *, long, int);
 
 #endif /* AETAR_OUTPUT_TAR_CHILD_H */

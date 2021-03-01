@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,10 @@
 
 #include <str_list.h>
 
-void report_parse_filename_set _((string_ty *));
-void report_parse_output_set _((string_ty *));
-void report_parse_argument_set _((string_list_ty *));
-void report_run _((void));
-void report_parse__init_arg _((void));
+void report_parse_filename_set(string_ty *);
+void report_parse_output_set(string_ty *);
+void report_parse_argument_set(string_list_ty *);
+void report_run(void);
+void report_parse__init_arg(void);
 
 #endif /* AEGIS_AER_PARSE_H */

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aecp _((void));
+command_ty *command_aecp(void);
 
 #endif /* AECOMPLETE_COMMAND_AECP_H */

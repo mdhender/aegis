@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,8 +34,8 @@ struct column_row_ty
 	int		printing_width;
 };
 
-struct wide_output_ty *wide_output_column_open _((int, int));
-column_row_ty *wide_output_column_get _((struct wide_output_ty *, int));
-void wide_output_column_reset _((struct wide_output_ty *));
+struct wide_output_ty *wide_output_column_open(int, int);
+column_row_ty *wide_output_column_get(struct wide_output_ty *, int);
+void wide_output_column_reset(struct wide_output_ty *);
 
 #endif /* LIBAEGIS_WIDE_OUTPUT_COLUMN_H */

@@ -28,7 +28,7 @@
 struct sub_context_ty;
 struct wstring_list_ty;
 
-struct wstring_ty *sub_state _((struct sub_context_ty *,
-    struct wstring_list_ty *arg));
+struct wstring_ty *sub_state(struct sub_context_ty *,
+    struct wstring_list_ty *arg);
 
 #endif /* LIBAEGIS_SUB_CHANGE_STATE_H */

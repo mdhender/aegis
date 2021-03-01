@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993 Peter Miller.
+ *	Copyright (C) 1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void remove_integrator _((void));
+void remove_integrator(void);
 
 #endif /* AEGIS_AERI_H */

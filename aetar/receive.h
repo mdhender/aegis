@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void receive _((void));
+void receive(void);
 
 #endif /* AETAR_RECEIVE_H */

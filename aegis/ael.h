@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
+ *	Copyright (C) 1991-1993, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void list _((void));
+void list(void);
 
 #endif /* AEGIS_AEL_H */

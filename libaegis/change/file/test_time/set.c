@@ -26,121 +26,117 @@
 
 
 void
-change_file_test_time_set(cp, src_data, when)
-	change_ty	*cp;
-	fstate_src	src_data;
-	time_t		when;
+change_file_test_time_set(change_ty *cp, fstate_src src_data, time_t when,
+    string_ty *variant)
 {
-	string_ty	*variant;
-	fstate_src_architecture_times_list atlp;
-	fstate_src_architecture_times atp = 0;
-	size_t		j, k;
+    fstate_src_architecture_times_list atlp;
+    fstate_src_architecture_times atp = 0;
+    size_t          j;
+    size_t          k;
 
-	/*
-	 * Find the appropriate architecture record;
-	 * create a new one if necessary.
-	 */
-	trace(("change_file_test_time_set(cp = %08lX)\n{\n"/*}*/, (long)cp));
+    /*
+     * Find the appropriate architecture record;
+     * create a new one if necessary.
+     */
+    trace(("change_file_test_time_set(cp = %08lX)\n{\n"/*}*/, (long)cp));
+    if (!variant)
 	variant = change_architecture_name(cp, 1);
-	if (!src_data->architecture_times)
-		src_data->architecture_times =
-			fstate_src_architecture_times_list_type.alloc();
+    if (!src_data->architecture_times)
+	src_data->architecture_times =
+    	    fstate_src_architecture_times_list_type.alloc();
+    atlp = src_data->architecture_times;
+    for (j = 0; j < atlp->length; ++j)
+    {
+	atp = atlp->list[j];
+	if
+	(
+	    /* bug if not set */
+	    atp->variant
+	&&
+	    str_equal(atp->variant, variant)
+	)
+	    break;
+    }
+    if (j >= atlp->length)
+    {
+	fstate_src_architecture_times *addr;
+	type_ty		*type_p;
+
+	addr =
+	    fstate_src_architecture_times_list_type.list_parse(atlp, &type_p);
+	assert(type_p == &fstate_src_architecture_times_type);
+	atp = fstate_src_architecture_times_type.alloc();
+	*addr = atp;
+	atp->variant = str_copy(variant);
+    }
+
+    /*
+     * Remember the test time.
+     */
+    assert(atp);
+    assert(when);
+    atp->test_time = when;
+
+    /*
+     * We need to make sure that the change summary reflects whether
+     * or not all tests have been run for this architecture.
+     */
+    for (j = 0; ; ++j)
+    {
+	src_data = change_file_nth(cp, j);
+	if (!src_data)
+	    break;
+	switch (src_data->usage)
+	{
+	case file_usage_test:
+	case file_usage_manual_test:
+	    if (src_data->action == file_action_remove)
+		continue;
+	    if (src_data->deleted_by)
+		continue;
+	    if (src_data->about_to_be_created_by)
+		continue;
+	    break;
+
+	case file_usage_source:
+	case file_usage_build:
+	    continue;
+	}
+
 	atlp = src_data->architecture_times;
-	for (j = 0; j < atlp->length; ++j)
+	if (!atlp)
 	{
-		atp = atlp->list[j];
-		if
-		(
-			/* bug if not set */
-			atp->variant
-		&&
-			str_equal(atp->variant, variant)
-		)
-			break;
+	    /* All architectures missing.  */
+	    when = 0;
+	    break;
 	}
-	if (j >= atlp->length)
+	for (k = 0; k < atlp->length; ++k)
 	{
-		fstate_src_architecture_times *addr;
-		type_ty		*type_p;
-
-		addr =
-			fstate_src_architecture_times_list_type.list_parse
-			(
-				atlp,
-				&type_p
-			);
-		assert(type_p == &fstate_src_architecture_times_type);
-		atp = fstate_src_architecture_times_type.alloc();
-		*addr = atp;
-		atp->variant = str_copy(variant);
+	    atp = atlp->list[k];
+	    if
+	    (
+	       	/* bug if not set */
+	       	atp->variant
+	    &&
+	       	str_equal(atp->variant, variant)
+	    )
+	    {
+	       	if (atp->test_time < when)
+		    when = atp->test_time;
+	       	break;
+	    }
 	}
-
-	/*
-	 * Remember the test time.
-	 */
-	assert(atp);
-	assert(when);
-	atp->test_time = when;
-
-	/*
-	 * We need to make sure that the change summary reflects whether
-	 * or not all tests have been run for this architecture.
-	 */
-	for (j = 0; ; ++j)
+	if (k >= atlp->length)
 	{
-		src_data = change_file_nth(cp, j);
-		if (!src_data)
-			break;
-		switch (src_data->usage)
-		{
-		case file_usage_test:
-		case file_usage_manual_test:
-			if (src_data->action == file_action_remove)
-				continue;
-			if (src_data->deleted_by)
-				continue;
-			if (src_data->about_to_be_created_by)
-				continue;
-			break;
-
-		default:
-			continue;
-		}
-
-		atlp = src_data->architecture_times;
-		if (!atlp)
-		{
-			/* All architectures missing.  */
-			when = 0;
-			break;
-		}
-		for (k = 0; k < atlp->length; ++k)
-		{
-			atp = atlp->list[k];
-			if
-			(
-				/* bug if not set */
-				atp->variant
-			&&
-				str_equal(atp->variant, variant)
-			)
-			{
-				if (atp->test_time < when)
-					when = atp->test_time;
-				break;
-			}
-		}
-		if (k >= atlp->length)
-		{
-			/* Found a missing architecture.  */
-			when = 0;
-			break;
-		}
+	    /* Found a missing architecture.  */
+	    when = 0;
+	    break;
 	}
+    }
 
-	/*
-	 * set the change test time
-	 */
-	change_test_time_set(cp, when);
-	trace((/*{*/"}\n"));
+    /*
+     * set the change test time
+     */
+    change_test_time_set(cp, when);
+    trace((/*{*/"}\n"));
 }

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aecpu _((void));
+command_ty *command_aecpu(void);
 
 #endif /* AECOMPLETE_COMMAND_AECPU_H */

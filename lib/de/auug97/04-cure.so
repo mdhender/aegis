@@ -1,0 +1,321 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Vorsorge"
+Die obige Analyse basiert auf einer einfachen Aktion:
+Der DAG wurde k\*:unstlich in unvollst\*:andige St\*:ucke
+unterteilt. Diese Unterteilung hat all die Probleme, die
+man von rekursiv verwendetem Make kennt, zur Folge.
+.LP
+Hat Make es nicht richtig verstanden? Nein, das ist
+nicht der Grund. Hier liegt ein Fall des uralten
+GIGO-Prinzips (Garbage in, Garbage out) vor: Wo man M\*:ull
+hereintut, kommt M\*:ull heraus. Unvollst\*:andige
+\f[CW]Makefiles\fP sind fehlerhafte \f[CW]Makefiles\fP.
+.LP
+Wenn Sie diese Probleme vermeiden wollen, zerlegen Sie
+den DAG nicht in einzelne Teile. Verwenden sie
+stattdessen ein einziges \f[CW]Makefile\fP f\*:ur das ganze
+Projekt. Die Rekursion an sich ist nicht sch\*:adlich,
+sondern das verst\*:ummelte \f[CW]Makefile\fP, das man f\*:ur
+die Rekursion verwendet, ist falsch. Es ist kein Fehler
+von Make, dass das rekursive Make nicht funktioniert; es
+macht das bestm\*:ogliche aus den mangelhaften
+Eingabeinformationen.
+.QP
+"\fIAber, aber, aber... Das k\*:onnen Sie doch nicht
+machen!\fP", h\*:ore ich Sie jammern, "\fIein einziges
+Makefile ist viel zu gro\(ss, man kann es
+gar nicht warten, es ist viel zu schwierig, die
+Regeln daf\*:ur zu schreiben, der Platz im
+Hauptspeicher wird nicht ausreichen,
+ich will nur meinen kleinen Teil bauen, das Build
+wird viel zu lange dauern. Es ist schlichtweg nicht
+praktikabel.\fP"
+.LP
+Das sind stichhaltige Einw\*:ande und oft ziehen
+Make-Benutzer aus ihnen den Schluss, dass es keinerlei
+kurz- oder l\*:angerfristigen Nutzen f\*:ur sie bringen w\*:urde,
+ihren Build-Prozess einmal zu \*:uberarbeiten. Diese
+Schlussfolgerung ist auf \*:uberholten, falschen Annahmen
+gegr\*:undet, die sich jedoch hartn\*:ackig halten.
+.LP
+In den n\*:achsten Abschnitten wird der Reihe nach auf
+jeden dieser Einw\*:ande eingegangen.
+.nh 2 "Ein einziges Makefile ist zu gro\(ss"
+W\*:are die vollst\*:andige Produktionsbeschreibung f\*:ur das
+ganze Projekt in einem einzigen \f[CW]Makefile\fP
+untergebracht, w\*:urde dieser Satz sicherlich
+zutreffen. Aber moderne Make-Implementierungen kennen
+Include-Anweisungen. Dadurch, dass ein entscheidendes
+Fragment jedes Moduls einschlossen wird, ist die
+Gesamtgr\*:o\(sse des \f[CW]Makefiles\fP und seiner Includes
+nicht unbedingt gr\*:o\(sser als die des beim rekursiven
+Vorgehen verwendeten \f[CW]Makefiles\fP.
+.nh 2 "Ein einziges Makefile kann man nicht warten"
+Ein Haupt-\f[CW]Makefile\fP, das eine Referenz auf ein
+Fragment jedes Moduls enth\*:alt, ist nicht komplexer als
+das beim rekursiven Make verwendete. Da der DAG nicht
+zerst\*:uckelt ist, ist diese Art \f[CW]Makefile\fP sogar
+weniger komplex und damit besser zu warten, einfach weil
+weniger Korrekturen notwendig sind, um seine
+Funktionst\*:uchtigkeit zu erhalten.
+.LP
+Rekursive \f[CW]Makefiles\fP beinhalten eine Menge
+Wiederholungen. Bei vielen Projekten wird dieses Problem
+durch die Verwendung von Include-Dateien gel\*:ost. Wenn
+man ein einziges \f[CW]Makefile\fP f\*:ur das Projekt
+benutzt, f\*:allt der Bedarf an diesen "allgemeinen"
+Include-Dateien weg - das eine \f[CW]Makefile\fP ist der
+allgemeine Teil.
+.nh 2 "Es ist zu schwierig, die Regeln zu formulieren"
+Man muss lediglich den Verzeichnisteil an einer Reihe
+von Stellen in die Dateinamen einf\*:ugen. Das ist
+notwendig, weil Make vom Verzeichnis der obersten Ebene
+ausgef\*:uhrt wird; in dem aktuellen Verzeichnis erscheint
+die Datei nicht. Man muss sich nicht darum k\*:ummern, wo
+die Ausgabedatei ausdr\*:ucklich in einer Regel genannt
+wird.
+.LP
+GCC erlaubt im Zusammenhang mit der -c-Option eine
+-o-Option und GNU-Make wei\(ss das. Daraus folgt eine
+implizite Kompilationsregel, die die Ausgabedatei an die
+richtige Stelle setzt. \*:Altere und weniger intelligente
+Compiler lassen die -o-Option mit der -c-Option jedoch
+vielleicht nicht zu und lassen die Objektdatei im
+Verzeichnis der obersten Ebene zur\*:uck (d. h. im falschen
+Verzeichnis). Es gibt drei M\*:oglichkeiten, wie Sie diesen
+Fehler korrigieren k\*:onnen: Entweder Sie beschaffen sich
+GNU-Make und GCC, sie \*:uberschreiben die Build-Regel
+durch eine korrekt funktionierende oder Sie beschweren
+sich bei ihrem H\*:andler.
+.LP
+Auch K&R; C-Compiler beginnen den in Anf\*:uhrungszeichen
+notierten Includepfad (\f[CW]#include "filename.h"\fP) vom
+aktuellen Verzeichnis aus. Das bedeutet, dass sie nicht
+das ausf\*:uhren, was Sie wollen. ANSI C-konforme
+C-Compiler aber beginnen den in Anf\*:uhrungszeichen
+notierten Includepfad von dem Verzeichnis aus, in dem
+die Quelldatei erscheint; hier sind keine Ver\*:anderungen
+der Quelle notwendig. Falls Sie keinen ANSI C-konformen
+C-Compiler besitzen, sollten Sie in Betracht ziehen, so
+bald wie m\*:oglich einen GCC auf Ihrem System zu
+installieren.
+.nh 2 "Ich will doch nur mein kleines Teilprodukt bauen"
+Die meiste Zeit sind Entwickler mitten im Projektbaum
+besch\*:aftigt. Sie bearbeiten ein oder zwei Dateien lassen
+dann Make durchlaufen, was ihre Ver\*:anderungen \*:ubersezt,
+und probieren sie aus. Diesen Arbeitsschritt f\*:uhren sie
+t\*:aglich Dutzende oder Hunderte Male aus. Es w\*:are absurd,
+wenn sie gezwungen w\*:aren jedesmal das ganze Projekt zu
+bauen.
+.LP
+Entwickler habe immer die Option, ein besonderes
+Zielprodukt f\*:ur Make zu definieren. Das gilt immer, wir
+verlassen uns lediglich gew\*:ohnlich auf das im \f[CW]Makefile\fP
+des aktuellen Verzeichnisses vorgegebene Zielprodukt, um
+unsere Befehlszeile zu verk\*:urzen. Man kann also auch mit
+einem Ganzprojekt-\f[CW]Makefile\fP sein kleines Teilprodukt
+bauen, indem man einfach ein bestimmtes Zielprodukt
+definiert und, falls die Befehlszeile zu lang wird, ein
+Pseudonym verwendet.
+.LP
+Es stellt sich aber auch die Frage, ob es immer so
+absurd ist, das ganze Projekt zu bauen. Wenn z. B. eine
+in einem Modul vorgenommene \*:Anderung in anderen Modulen
+Auswirkungen hat, weil eine Abh\*:angigkeit existiert, die
+dem Entwickler nicht bewusst ist (aber dem \f[CW]Makefile\fP ist
+sie bewusst), w\*:are es dann nicht besser, wenn der
+Entwickler das so schnell wie m\*:oglich herausfindet?
+Solche Abh\*:angigkeiten werden gefunden, weil der DAG
+vollst\*:andiger ist als beim rekursiven Vorgehen.
+.LP
+In den seltensten F\*:allen sind Entwickler erfahrene, alte
+Hasen, die jede einzelne der Millionen von Zeilen Kode
+des Produktes auswendig kennen. Meistens haben sie einen
+zeitlich begrenzten Vertrag oder sie sind j\*:ungere
+Mitarbeiter. Sie wollen nat\*:urlich nicht, dass
+Auswirkungen wie die eben beschriebene entdeckt werden,
+nachdem Ihre \*:Anderungen in den Hauptkode einf\*:ugt wurden,
+sondern w\*:urden sie gerne ganz in Ruhe in ihrem lokalen
+Arbeitsbereich entdecken, weit weg vom Hauptkode.
+.LP
+Wenn Sie "nur Ihr kleines Teilprodukt" bauen wollen,
+weil Sie bef\*:urchten, dass ein Bau des ganzen Projekts
+infolge der Verzeichnisstruktur, die Sie in Ihrem
+Projekt verwendet haben, die Master Source des Projekts
+besch\*:adigen k\*:onnte, lesen Sie bitte das Kapitel
+\fIProjekte im Vergleich zu Sandk\*:asten\fP.
+.nh 2 "Das Bauen dauert zu lange"
+Diese Aussage kann man f\*:ur eine von zwei Situationen
+machen: 1. Die Durchf\*:uhrung des Make eines ganzen
+Projekts dauert, obwohl alles aktualisiert ist,
+unvermeidlich sehr lange. 2. Diese unvermeidbaren
+Verz\*:ogerungen sind unakzeptabel, wenn der Entwickler die
+eine Datei, die er ver\*:andert hat, schnell kompilieren
+und linken will.
+.nh 3 "Builds von Projekten"
+Stellen Sie sich ein hypothetisches Projekt vor mit 1000 Quelldateien
+(.c), von denen jede ihre Aufrufschnittstelle hat, welche in
+der zugeh\*:origen Include-Datei (\f[CW].h\fP) mit Definitionen,
+Typvereinbarungen und Funktionsdeklarationen definiert ist. Diese 1000
+Quelldateien beinhalten ihre eigenen Interfacedefinitionen und zus\*:atzlich
+die Interfacedefinitionen aller Module, die sie aufrufen k\*:onnen. Diese
+1000 Quelldateien werden in 1000 Objektdateien \*:ubersetzt, die wiederum
+zu einem ausf\*:uhrbaren Programm gebunden werden. In diesem System gibt
+es etwa 3000 Dateien, \*:uber die Make informiert werden muss. Au\(sserdem
+muss Make \*:uber die Includeabh\*:angigkeiten informiert werden und man muss
+untersuchen, ob implizite Regeln (z. B. .y - .c) anwendbar sind.
+.LP
+Um den DAG zu erstellen, muss Make f\*:ur 3000 Dateien
+deren \*:Anderungsdatum ermitteln und au\(sserdem noch f\*:ur
+etwa 2000 zus\*:atzliche Dateien, abh\*:angig davon, welche
+impliziten Regeln Ihr Make kennt und welche Ihr
+\f[CW]Makefile\fP nicht ausgeschaltet hat. Auf dem
+bescheidenen 66MHz i486 des Authors dauert das etwa 10
+Sekunden; auf systemeigenen Laufwerken auf schnelleren
+Hardwarebasen geht es sogar noch schneller. Mit NFS \*:uber
+10MB Ehernet dauert es ebenfalls etwa 10 Sekunden,
+gleichg\*:ultig, von welcher Hardwarebasis die Aktion
+ausgef\*:uhrt wird.
+.LP
+Das ist eine erstaunliche Statistik. Stellen Sie sich
+einmal vor, dass Sie ihn der Lage sind, eine einzige von
+1000 Quelldateien in nur 10 Sekunden - zuz\*:uglich der
+Zeit f\*:ur das Kompilieren selbst - zu kompilieren.
+.LP
+Die Dateien auf 100 Module zu verteilen und den Prozess
+als ein rekursives Make durchzuf\*:uhren, dauert immerhin
+25 Sekunden. Die wiederholte Prozesserzeugung f\*:ur die
+untergeordneten Make-Aufrufe nehmen eine relativ lange
+Zeit in Anspruch.
+.LP
+Aber warten Sie einen Moment! Bei realen Projekten mit
+weniger als 1000 Dateien dauert es sehr viel l\*:anger als
+25 Sekunden bis Make herausgefunden hat, das es nichts
+zu tun hat. F\*:ur manche Projekte w\*:are es ein Fortschritt,
+wenn es nur 25 Minuten dauerte. Dieses Beispiel zeigt
+uns, dass es nicht die Anzahl der Dateien ist, die
+bremst (das dauert nur 10 Sekunden), und es ist auch
+nicht die wiederholte Prozesserzeugung f\*:ur die
+untergeordneten Make-Aufrufe (die dauert nur 15
+Sekunden).  Was aber nimmt dann so viel Zeit in
+Anspruch?
+.LP
+Bei traditionellen L\*:osungen des durch rekursives Make
+enstandenen Problems werden die untergeordneten
+Make-Aufrufe oft \*:uber das hier beschriebene Minimum
+erh\*:oht: z. B. um vielf\*:altige Wiederholungen (3.3.2.)
+durchzuf\*:uhren oder um Modulgrenzen \*:uberschreitende
+Abh\*:angigkeiten (3.3.3.) \*:uberm\*:a\(ssig abzudecken. Das kann
+lange Zeit dauern, besonders, wenn beides
+zusammenkommt. Aber es ist nicht f\*:ur die besonders
+langen Produktionszeiten verantwortlich. Was nimmt also
+noch soviel Zeit in Anspruch?
+.LP
+Die Komplexit\*:at des \f[CW]Makefiles\fP ist so
+zeitaufwendig. Mehr dar\*:uber im Kapitel \fIEffiziente
+Makefiles\fP.
+.nh 3 "Builds w\*:ahrend der Entwicklung"
+Wenn es - wie bei dem Beispiel mit den 100 Dateien - nur
+10 Sekunden dauert, herauszufinden welche Datei neu
+\*:ubersetzt werden muss, wird die Produktivit\*:at der
+Entwickler nicht bedeutend eingeschr\*:ankt, wenn sie ein
+Ganzprojekt-Make durchf\*:uhren anstatt eines
+modulspezifischen Makes. Der Vorteil f\*:ur das Projekt
+ist, dass der modulzentrierte Entwickler in
+entscheidenden Momenten (und nur in den entscheidenden)
+daran erinnert wird, dass seine Arbeit auch
+weitgehendere Auswirkungen hat.
+.LP
+Die st\*:andige Verwendung von C-Include-Dateien, die
+genaue Interface-Definitionen (einschlie\(sslich
+Funktionsprototypen) enthalten, w\*:urde in vielen F\*:allen
+zu \*:Ubersetzungsfehlern f\*:uhren, was wiederum ein
+fehlerhaftes Produkt zur Folge h\*:atte. Werden Builds f\*:ur
+das ganze Projekt durchgef\*:uhrt, entdecken Entwickler
+solche Fehler sehr fr\*:uh im Entwicklungsprozess und sind
+in der Lage Fehlerbehebungen dann vorzunehmen, wenn sie
+den geringsten Aufwand verursachen.
+.nh 2 "Ihre Speicherkapazit\*:aten sind ersch\*:opft"
+Das ist der interessanteste Einwand. Irgenwann einmal
+vor langer Zeit auf einem Mikroprozessor weit, weit weg
+ist das vielleicht sogar vorgekommen. Als Feldman das
+erste Make entwickelte, schrieb man das Jahr 1978 und er
+benutzte eine PDP11. Unix-Prozesse waren auf 64B Daten
+beschr\*:ankt.
+.LP
+Solch ein Rechner w\*:urde bei dem oben genannte Beispiel
+mit seinen 3000 in dem Ganzprojekt-\f[CW]Makefile\fP
+genau beschriebenen Dateien warscheinlich nicht
+zulassen, einen DAG und die Regeln im Hauptspeicher zu
+halten.
+.LP
+Aber wir benutzen keine PDP11 mehr. Die physische
+Speicherkapazit\*:at eines kleinen modernen Computers
+\*:uberschreitet 10MB und der virtuelle Speicher oft
+100MB. Ein Projekt mit hunderttausenden Quelldateien ist
+notwendig, um die virtuelle Speicherkapazit\*:at eines
+kleinen modernen Rechners zu ersch\*:opfen. Da das
+Beispielprojekt mit 1000 Quelldateien weniger als 100KB
+Speicherplatz in Anspruch nimmt (probieren Sie es aus,
+Sie werden sehen, dass es stimmt), ist es sehr
+unwahrscheinlich, dass irgendein Projekt, das man in
+einem einzigen Verzeichnisbaum auf einem einzigen
+Laufwerk verwalten kann, die Speicherkapazit\*:aten ihres
+Rechners \*:ubersteigt.
+.nh 2 "Warum erstellt man den DAG nicht in den Modulen?"
+Oben wurde erl\*:autert, dass die Gr\*:unde f\*:ur die Probleme
+bei rekursivem Make in dem unvollst\*:andigen DAG zu suchen
+sind. Dem zufolge kann das Problem gel\*:ost werden, indem
+man die fehlenden Abh\*:angigkeiten wieder hinzuf\*:ugt, ohne
+die existierende Investition in das rekursive Make
+aufzugeben.
+.IP \(bu 2n
+Der Entwickler darf es jedoch nicht vergessen. Die
+Folgen tr\*:agt nicht er, sondern die Entwickler der
+anderen Module bekommen sie zu sp\*:uren. Es gibt keine
+bessere Methode, einen Entwickler daran zu erinnern,
+etwas zu tun, als den Zorn der Kollegen.
+.IP \(bu 2n
+Es ist schwierig, herauszufinden, an welcher Stelle die
+\*:Anderungen vorgenommen werden m\*:ussen. M\*:oglicherweise
+muss jedes \f[CW]Makefile\fP im ganzen Projekt auf
+erforderliche \*:Anderungen hin untersucht
+werden. Nat\*:urlich k\*:onnen Sie auch darauf warten, dass
+Ihre Kollegen die Stellen f\*:ur Sie finden.
+.IP \(bu 2n
+Die Includeabh\*:angigkeiten werden unn\*:otigerweise neu
+berechnet oder werden nicht korrekt interpretiert. Das
+passiert, weil Make auf Zeichenketten basiert, wodurch
+\f[CW].\fP und \f[CW]../ant\fP zwei verschiedene Stellen
+sind, selbst wenn Sie im \f[CW]ant\fP-Verzeichnis
+stehen. Das ist von Bedeutung, wenn
+Includeabh\*:angigkeiten automatisch berechnet werden, wie
+es bei allen gro\(ssen Projekten der Fall ist.
+.LP
+Indem man sicherstellt, dass jedes \f[CW]Makefile\fP vollst\*:andig
+ist, kommt man an den Punkt, dass das \f[CW]Makefile\fP
+wenigstens eines Moduls bereits die Informationen des
+Ganzprojekt-\f[CW]Makefiles\fP umfasst (Sie d\*:urfen nicht
+vergessen, dass diese Module ein einziges Projekt formen
+und daher miteinander verbunden sind), wodurch das
+rekursive Make \*:uberfl\*:ussig wird.

@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void usage _((void));
+void usage(void);
 
 #endif /* AEANNOTATE_USAGE_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ change_branch_reviewer_query(cp, name)
 	cstate_branch_reviewer_list lp;
 	size_t		j;
 
-	trace(("change_branch_reviewer_query(cp = %8.8lX, name = \"%s\")\n{\n"/*}*/,
+	trace(("change_branch_reviewer_query(cp = %8.8lX, name = \"%s\")\n{\n",
 		(long)cp, name->str_text));
 	cstate_data = change_cstate_get(cp);
 	assert(cstate_data->branch);
@@ -47,11 +47,11 @@ change_branch_reviewer_query(cp, name)
 		if (str_equal(lp->list[j], name))
 		{
 			trace(("return 1;\n"));
-			trace((/*{*/"}\n"));
+			trace(("}\n"));
 			return 1;
 		}
 	}
 	trace(("return 0;\n"));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return 0;
 }

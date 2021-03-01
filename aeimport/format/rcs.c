@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -154,7 +154,7 @@ history_query(format_ty	*fp)
     return
 	str_from_c
 	(
-	    "rlog -r ${quote $history,v} | awk '/^head:/ {print $$2}'"
+	    "rlog -r ${quote $history,v} | awk '/^revision/ {print $$2}'"
 	);
 }
 
@@ -171,7 +171,13 @@ diff(format_ty *fp)
 	str_from_c
 	(
 	    "set +e; "
-	    "diff -c ${quote $original} ${quote $input} > ${quote $output}; "
+	    "diff "
+#ifdef HAVE_GNU_DIFF
+		"-U10 --text "
+#else
+		"-c "
+#endif
+		"${quote $original} ${quote $input} > ${quote $output}; "
 	    "test $? -le 1"
 	);
 }
@@ -199,6 +205,7 @@ unlock(format_ty *fp, string_ty *filename)
     string_ty	    *qfn;
 
     /*
+     * -b   means resume working from the trunk, not a branch
      * -e   means get rid of any access list
      * -ko  means no keyword expansion
      * -M   means do not send mail
@@ -208,7 +215,7 @@ unlock(format_ty *fp, string_ty *filename)
      * There doesn't seem to be an option to get rid of all locks.
      */
     qfn = str_quote_shell(filename);
-    cmd = str_format("rcs -e -M -q -U %S", qfn);
+    cmd = str_format("rcs -b -e -M -q -U %S", qfn);
     str_free(qfn);
     flags = OS_EXEC_FLAG_ERROK;
     os_execute(cmd, flags, os_curdir());

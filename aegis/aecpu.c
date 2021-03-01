@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,10 +47,8 @@
 #include <str_list.h>
 
 
-static void copy_file_undo_usage _((void));
-
 static void
-copy_file_undo_usage()
+copy_file_undo_usage(void)
 {
     char	    *progname;
 
@@ -72,19 +70,15 @@ copy_file_undo_usage()
 }
 
 
-static void copy_file_undo_help _((void));
-
 static void
-copy_file_undo_help()
+copy_file_undo_help(void)
 {
     help("aecpu", copy_file_undo_usage);
 }
 
 
-static void copy_file_undo_list _((void));
-
 static void
-copy_file_undo_list()
+copy_file_undo_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -153,10 +147,8 @@ copy_file_undo_list()
 }
 
 
-static void copy_file_undo_main _((void));
-
 static void
-copy_file_undo_main()
+copy_file_undo_main(void)
 {
     sub_context_ty  *scp;
     string_list_ty  wl;
@@ -180,6 +172,7 @@ copy_file_undo_main()
     pconf	    pconf_data;
     int		    based;
     string_ty	    *base;
+    int             tests_uncopied;
 
     trace(("copy_file_undo_main()\n{\n"));
     arglex();
@@ -448,6 +441,7 @@ copy_file_undo_main()
 
 		    case file_action_create:
 		    case file_action_remove:
+		    case file_action_transparent:
 			break;
 		    }
 		}
@@ -528,6 +522,7 @@ copy_file_undo_main()
 
 	case file_action_create:
 	case file_action_remove:
+	case file_action_transparent:
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "File_Name", s1);
 	    change_error(cp, scp, i18n("bad cp undo $filename"));
@@ -606,24 +601,24 @@ copy_file_undo_main()
 		assert(src_data->edit_origin_new->revision);
 		goto not_this_one;
 	    }
-	    if (src_data->action == file_action_create)
+	    switch (src_data->action)
+	    {
+	    case file_action_modify:
+	    case file_action_insulate:
+		break;
+
+	    case file_action_create:
+	    case file_action_remove:
+	    case file_action_transparent:
 		goto not_this_one;
-	    if (src_data->action == file_action_remove)
-		goto not_this_one;
+	    }
 
 	    /*
 	     * The file could have vanished from under us,
 	     * so make sure this is sensable.
 	     */
-	    psrc_data = project_file_find(pp, s1);
-	    if
-	    (
-		!psrc_data
-	    ||
-		psrc_data->deleted_by
-	    ||
-		psrc_data->about_to_be_created_by
-	    )
+	    psrc_data = project_file_find(pp, s1, view_path_extreme);
+	    if (!psrc_data)
 		goto not_this_one;
 
 	    /*
@@ -653,16 +648,7 @@ copy_file_undo_main()
 	    fstate_src	    psrc_data;
 
 	    if (mend_symlinks)
-	    {
-		psrc_data = project_file_find(pp, s1);
-		if
-		(
-		    psrc_data
-		&&
-		    (psrc_data->deleted_by || psrc_data->about_to_be_created_by)
-		)
-		    psrc_data = 0;
-	    }
+		psrc_data = project_file_find(pp, s1, view_path_extreme);
 	    else
 		psrc_data = 0;
 
@@ -721,8 +707,59 @@ copy_file_undo_main()
      * Remove each file from the change file,
      * and write it back out.
      */
+    tests_uncopied = 0;
     for (j = 0; j < wl.nstrings; ++j)
+    {
+	fstate_src      psrc_data;
+
 	change_file_remove(cp, wl.string[j]);
+
+	/*
+	 * See if there are any tests were uncopied by this action.
+	 */
+	psrc_data = project_file_find(pp, wl.string[j], view_path_simple);
+	switch (psrc_data->usage)
+	{
+	case file_usage_source:
+	case file_usage_build:
+	    break;
+
+	case file_usage_test:
+	case file_usage_manual_test:
+	    tests_uncopied = 1;
+	    break;
+	}
+    }
+
+    if (tests_uncopied)
+    {
+	int             more_tests;
+
+	more_tests = 0;
+	change_force_regression_test_exemption_undo(cp);
+	for (j = 0; ; ++j)
+	{
+	    fstate_src      src_data;
+
+	    src_data = change_file_nth(cp, j);
+	    if (!src_data)
+	       	break;
+	    switch (src_data->usage)
+	    {
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		more_tests = 1;
+		break;
+
+	    case file_usage_source:
+	    case file_usage_build:
+		continue;
+	    }
+	    break;
+	}
+	if (!more_tests)
+	    change_rescind_test_exemption_undo(cp);
+    }
 
     /*
      * the number of files changed,
@@ -751,7 +788,7 @@ copy_file_undo_main()
     {
 	scp = sub_context_new();
 	sub_var_set_string(scp, "File_Name", wl.string[j]);
-	change_verbose(cp, scp, i18n("$filename gone"));
+	change_verbose(cp, scp, i18n("copy file undo $filename complete"));
 	sub_context_delete(scp);
     }
 
@@ -764,7 +801,7 @@ copy_file_undo_main()
 
 
 void
-copy_file_undo()
+copy_file_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

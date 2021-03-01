@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <wide_output.h>
 
-wide_output_ty *wide_output_head_open _((wide_output_ty *, int, int));
+wide_output_ty *wide_output_head_open(wide_output_ty *, int, int);
 
 #endif /* LIBAEGIS_WIDE_OUTPUT_HEAD_H */

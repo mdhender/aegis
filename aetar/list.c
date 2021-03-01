@@ -35,10 +35,8 @@
 #include <str.h>
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
 	char	*progname;
 
@@ -50,7 +48,7 @@ usage()
 
 
 void
-list()
+list(void)
 {
     string_ty	    *ifn;
     input_ty	    *ifp;

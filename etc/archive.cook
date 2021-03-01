@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2002 Peter Miller;
+ *	Copyright (C) 1997-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@ if [find_command tardy] then
 	;
 
     if [find_command rpm] then
+    if [find_command ppmtoxpm] then /* have to be able to build icon */
     {
 	rpm-arch = [collect rpm --showrc | awk "'/^build arch/{print $4}'" ];
 	if [matches %1.D%2 [version]] then
@@ -57,9 +58,10 @@ html-targets =
 	[fromto etc/%.html archive/%.html
 		[html-sources]
 	]
+	archive/index.html
 	;
 if [find_command uudecode] then
-	html-targets += archive/[project_short].gif;
+	html-targets += archive/[project_short].png;
 
 if [count [html-sources]] then
 cascade [html-sources] = etc/version.so;
@@ -125,7 +127,8 @@ archive/[project_minus].README: lib/en/readme/readme.txt
 source_file_order =
 	README
 	[project_short].spec /* so RPM can build without separate spec file */
-	[project_short].gif
+	[project_short].png
+	[project_short].xpm
 	[sort
 		[stringset
 			[source_files]
@@ -286,21 +289,25 @@ archive/[project_minus].spec: [project_short].spec
 	rm patch.orig;
 }
 
-lib/icon/%: lib/icon/%.uue
+lib/%0%: lib/%0%.uue
 {
 	uudecode -o [target] [resolve [need]];
 }
 
-archive/[project_short].gif: lib/icon/[project_short].gif
+archive/[project_short].png: lib/icon2/64x64.png
 	set shallow
 {
 	cp [resolve [need]] [target];
 }
 
-[project_short].gif: lib/icon/[project_short].gif
-	set shallow
+[project_short].png: archive/[project_short].png
 {
 	cp [resolve [need]] [target];
+}
+
+%0%.xpm: %0%.png
+{
+	pngtopnm [resolve %0%.png] | ppmquant 91 | ppmtoxpm > [target];
 }
 
 /*
@@ -312,7 +319,7 @@ RPM: archive/[project_minus]-1.[rpm-arch].rpm;
 
 archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
 		archive/[project_minus].tar.gz
-		archive/[project_short].gif
+		archive/[project_short].xpm
 		etc/rpm-build.sh
 	set shallow
 {
@@ -320,10 +327,13 @@ archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
 	 * The book says that the icon files need to be in the SOURCES
 	 * directory.  Actually, they need to be in the same directory
 	 * as the tarball.
+	 *
+	 * The icon must be GIF or XPM.
 	 */
 	sh [resolve etc/rpm-build.sh]
 		RPM-temporary
 		[resolve archive/[project_minus].tar.gz]
+		[resolve archive/[project_short].xpm]
 		;
 	mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
 		archive/[project_minus]-1.[rpm-arch].rpm
@@ -358,7 +368,7 @@ archive/[project_minus].ae: [source_files]
 example-cook-fhist-version = 1.0;
 example-cook-fhist-baseline =
      [collect aegis -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
-	|| true];
+	'2>&1' || true];
 
 if [example-cook-fhist-baseline] then
 {
@@ -386,7 +396,7 @@ if [example-cook-fhist-baseline] then
 example-make-rcs-version = 1.0;
 example-make-rcs-baseline =
 	[collect aegis -cd -bl -p example-make-rcs.[example-make-rcs-version]
-		|| true];
+		'2>&1' || true];
 
 if [example-make-rcs-baseline] then
 {
@@ -408,4 +418,9 @@ if [example-make-rcs-baseline] then
     {
 	cp [need] [target];
     }
+}
+
+archive/index.html: archive/[project_short].html
+{
+    cp [resolve [need]] [target];
 }

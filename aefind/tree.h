@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,19 +31,19 @@ struct stat; /* existence */
 typedef struct tree_ty tree_ty;
 struct tree_ty
 {
-	struct tree_method_ty *method;
-	long		reference_count;
+    struct tree_method_ty *method;
+    long	    reference_count;
 };
 
-tree_ty *tree_copy _((tree_ty *));
-void tree_delete _((tree_ty *));
-void tree_print _((tree_ty *));
-struct rpt_value_ty *tree_evaluate _((tree_ty *, struct string_ty *,
-	struct stat *));
-int tree_useful _((tree_ty *));
-int tree_constant _((tree_ty *));
-struct rpt_value_ty *tree_evaluate_constant _((tree_ty *));
-tree_ty *tree_optimize _((tree_ty *));
-tree_ty *tree_optimize_constant _((tree_ty *));
+tree_ty *tree_copy(tree_ty *);
+void tree_delete(tree_ty *);
+void tree_print(tree_ty *);
+struct rpt_value_ty *tree_evaluate(tree_ty *, struct string_ty *,
+    struct stat *);
+int tree_useful(tree_ty *);
+int tree_constant(tree_ty *);
+struct rpt_value_ty *tree_evaluate_constant(tree_ty *);
+tree_ty *tree_optimize(tree_ty *);
+tree_ty *tree_optimize_constant(tree_ty *);
 
 #endif /* AEFIND_TREE_H */

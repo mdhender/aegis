@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2002 Peter Miller;
+.\"	Copyright (C) 1992-1995, 1997-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,14 @@ files.
 It also creates a shell script
 .I config.status
 that you can run in the future to recreate the current configuration.
+.SS Upgrading
+The \f[CW]./configure\fP script will look for an existing install of
+Aegis and use the existing configuration settings.
+This works best if the version you are upgrading is 4.11 or later.
+.PP
+To disable looking for an existing installation (maybe because
+you want to change the prefix),
+use the \f[CW]./configure --with-no-aegis-configured\fP option.
 .SS Before You Start
 Before you start configuring,
 it is worth reading the \fIOTHER USEFUL SOFTWARE\fP section,
@@ -318,6 +326,17 @@ $
 when running configure.  Substitute the appropriate prefix if you are
 using something other than the default \fI/usr/local\fP prefix.
 Watch the output... it should now find your installed packages correctly.
+.SS AIX Command Line Lengths
+For some reason, AIX has a very short command line length limit by default.
+You can extend this by using the command
+.RS
+.ft CW
+$ \f(CBsystune ncargs 0x8000\fP
+$
+.ft R
+.RE
+You will need to do this to build Aegis.
+It has some very long link lines.
 .SS PRIVILEGES
 There are a number of items in the generated
 .I Makefile

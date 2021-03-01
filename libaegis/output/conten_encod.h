@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ enum content_encoding_t
 };
 typedef enum content_encoding_t content_encoding_t;
 
-content_encoding_t content_encoding_grok _((const char *));
-void content_encoding_header _((output_ty *, content_encoding_t));
-output_ty *output_content_encoding _((output_ty *, content_encoding_t));
+content_encoding_t content_encoding_grok(const char *);
+void content_encoding_header(output_ty *, content_encoding_t);
+output_ty *output_content_encoding(output_ty *, content_encoding_t);
 
 #endif /* LIBAEGIS_OUTPUT_CONTEN_ENCOD_H */

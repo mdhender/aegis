@@ -59,6 +59,8 @@ struct column_t
     output_ty	    *fp;
     symtab_ty	    *stp;
     long	    maximum;
+    string_ty       *previous;
+    string_ty       *newval;
 };
 
 
@@ -77,8 +79,8 @@ static int      filestat = -1;
 static char     *diff_option;
 
 
-static void column_list_append _((column_list_t *, string_ty *, string_ty *,
-    int));
+static void column_list_append(column_list_t *, string_ty *, string_ty *,
+    int);
 
 static void
 column_list_append(clp, formula, heading, width)
@@ -104,6 +106,8 @@ column_list_append(clp, formula, heading, width)
     cp->fp = 0;
     cp->stp = symtab_alloc(5);
     cp->maximum = 1;
+    cp->previous = 0;
+    cp->newval = 0;
 }
 
 
@@ -153,7 +157,7 @@ process(pp, filename, buffer)
     }
 
     /*
-     * We need a temporaty file to park patches in.
+     * We need a temporary file to park patches in.
      */
     output_file_name = os_edit_filename(0);
     os_become_orig();
@@ -217,6 +221,7 @@ process(pp, filename, buffer)
 	    break;
 
 	case file_action_insulate:
+	case file_action_transparent:
 	    assert(0);
 	    /* fall through... */
 
@@ -438,18 +443,39 @@ emit_range(line_col, source_col, line_array, line_len, linum_p, ofp)
     {
 	size_t		k;
 	line_t		*lp;
+	int		changed;
 
 	lp = line_array + j;
+	changed = 0;
 	for (k = 0; k < columns.length; ++k)
 	{
 	    column_t	    *cp;
-	    string_ty	    *s;
 
 	    cp = columns.item + k;
-	    s = substitute(0, lp->cp, cp->formula);
-	    output_put_str(cp->fp, s);
-	    incr(cp->stp, s, &cp->maximum);
-	    str_free(s);
+	    cp->newval = substitute(0, lp->cp, cp->formula);
+	    incr(cp->stp, cp->newval, &cp->maximum);
+
+	    if (!cp->previous || !str_equal(cp->previous, cp->newval))
+		++changed;
+	}
+	for (k = 0; k < columns.length; ++k)
+	{
+	    column_t	    *cp;
+
+	    cp = columns.item + k;
+	    if (changed)
+	    {
+		/*
+		 * The choices are to print only the columns changed, or
+		 * all the columns when one column changes.  CVS annotate
+		 * prints all of the columns.
+		 */
+		output_put_str(cp->fp, cp->newval);
+	    }
+	    if (cp->previous)
+		str_free(cp->previous);
+	    cp->previous = cp->newval;
+	    cp->newval = 0;
 	}
 	output_fprintf(line_col, "%5ld", *linum_p);
 	output_put_str(source_col, lp->text);
@@ -609,8 +635,8 @@ emit(buffer, outfilename, filename, pp)
 	    assert(key);
 	    if (!data)
 		continue;
-	    src = project_file_find(pp, key);
-	    if (!src || src->deleted_by)
+	    src = project_file_find(pp, key, view_path_extreme);
+	    if (!src)
 		continue;
 	    output_fprintf(line_col, "%5ld", *data);
 	    output_put_str(source_col, key);

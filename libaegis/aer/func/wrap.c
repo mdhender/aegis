@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,411 +32,392 @@
 #include <sub.h>
 
 
-static int wrap_verify _((rpt_expr_ty *));
-
 static int
-wrap_verify(ep)
-	rpt_expr_ty	*ep;
+wrap_verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 2);
+    return (ep->nchild == 2);
 }
 
-
-static string_ty *trim _((string_ty *));
 
 static string_ty *
-trim(s)
-	string_ty	*s;
+trim(string_ty *s)
 {
-	static size_t	buflen;
-	static char	*buf;
-	char		*bp;
-	char		*sp;
+    static size_t   buflen;
+    static char	    *buf;
+    char	    *bp;
+    char	    *sp;
 
-	if (buflen < s->str_length)
+    if (buflen < s->str_length)
+    {
+	buflen = s->str_length;
+	buf = mem_change_size(buf, buflen);
+    }
+    bp = buf;
+    sp = s->str_text;
+    while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
+	++sp;
+    while (*sp)
+    {
+	if (!*sp)
+	    break;
+	if (*sp == '\n')
 	{
-		buflen = s->str_length;
-		buf = mem_change_size(buf, buflen);
+	    *bp++ = *sp++;
+	    while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
+	       	++sp;
 	}
-	bp = buf;
-	sp = s->str_text;
-	while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
-		++sp;
-	while (*sp)
+	else if (isspace((unsigned char)*sp))
 	{
-		if (!*sp)
-			break;
-		if (*sp == '\n')
-		{
-			*bp++ = *sp++;
-			while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
-				++sp;
-		}
-		else if (isspace((unsigned char)*sp))
-		{
-			*bp++ = ' ';
-			do
-				++sp;
-			while
-				(*sp && *sp != '\n' && isspace((unsigned char)*sp));
-			if (!*sp || *sp == '\n')
-				--bp;
-		}
-		else
-			*bp++ = *sp++;
+	    *bp++ = ' ';
+	    do
+	       	++sp;
+	    while
+	       	(*sp && *sp != '\n' && isspace((unsigned char)*sp));
+	    if (!*sp || *sp == '\n')
+	       	--bp;
 	}
-	return str_n_from_c(buf, bp - buf);
+	else
+	    *bp++ = *sp++;
+    }
+    return str_n_from_c(buf, bp - buf);
 }
 
 
-static rpt_value_ty *wrap_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-wrap_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+wrap_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	rpt_value_ty	*a1;
-	rpt_value_ty	*a2;
-	rpt_value_ty	*result;
-	rpt_value_ty	*tmp;
-	string_ty	*subject;
-	string_ty	*s;
-	long		width;
-	char		*sp;
+    rpt_value_ty    *a1;
+    rpt_value_ty    *a2;
+    rpt_value_ty    *result;
+    rpt_value_ty    *tmp;
+    string_ty	    *subject;
+    string_ty	    *s;
+    long	    width;
+    char	    *sp;
 
-	a1 = rpt_value_stringize(argv[0]);
-	if (a1->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
+    a1 = rpt_value_stringize(argv[0]);
+    if (a1->method->type != rpt_value_type_string)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		rpt_value_free(a1);
-		sub_var_set_charstar(scp, "Function", "wrap");
-		sub_var_set_charstar(scp, "Number", "1");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
-	}
-	subject = trim(rpt_value_string_query(a1));
+	scp = sub_context_new();
 	rpt_value_free(a1);
+	sub_var_set_charstar(scp, "Function", "wrap");
+	sub_var_set_charstar(scp, "Number", "1");
+	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+    subject = trim(rpt_value_string_query(a1));
+    rpt_value_free(a1);
 
-	a2 = rpt_value_integerize(argv[1]);
-	if (a2->method->type != rpt_value_type_integer)
-	{
-		sub_context_ty	*scp;
+    a2 = rpt_value_integerize(argv[1]);
+    if (a2->method->type != rpt_value_type_integer)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		rpt_value_free(a2);
-		sub_var_set_charstar(scp, "Function", "wrap");
-		sub_var_set_charstar(scp, "Number", "2");
-		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
-	}
-	width = rpt_value_integer_query(a2);
+	scp = sub_context_new();
 	rpt_value_free(a2);
-	if (width < 1)
-	{
-		sub_context_ty	*scp;
+	sub_var_set_charstar(scp, "Function", "wrap");
+	sub_var_set_charstar(scp, "Number", "2");
+	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+   i18n("$function: argument $number: integer value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+    width = rpt_value_integer_query(a2);
+    rpt_value_free(a2);
+    if (width < 1)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "wrap");
-		sub_var_set_charstar(scp, "Number", "2");
-		sub_var_set_long(scp, "Value", width);
-		s =
-			subst_intl
-			(
-				scp,
-		  i18n("$function: argument $number: width $value out of range")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Function", "wrap");
+	sub_var_set_charstar(scp, "Number", "2");
+	sub_var_set_long(scp, "Value", width);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+		i18n("$function: argument $number: width $value out of range")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+
+    /*
+     * the result is a list
+     * create an empty one se we can start filling it
+     */
+    result = rpt_value_list();
+
+    sp = subject->str_text;
+    while (*sp)
+    {
+	char		*end_p;
+	string_ty	*os;
+
+	/*
+	 * find where the line ends
+	 */
+	end_p = sp;
+	while (end_p - sp < width && *end_p && *end_p != '\n')
+	    ++end_p;
+	if (*end_p && *end_p != '\n')
+	{
+	    char	    *w;
+
+	    /*
+	     * see if there is a better place to wrap
+	     */
+	    w = end_p;
+	    while (w > sp && !isspace((unsigned char)(w[-1])))
+		--w;
+	    if (w > sp + 1)
+		end_p = w - 1;
+	    else
+	    {
+		w = end_p;
+		while (w > sp && !ispunct((unsigned char)(w[-1])))
+	    	    --w;
+		if (w > sp + 1)
+	    	    end_p = w - 1;
+	    }
 	}
 
 	/*
-	 * the result is a list
-	 * create an empty one se we can start filling it
+	 * append the line to the result
 	 */
-	result = rpt_value_list();
-
-	sp = subject->str_text;
-	while (*sp)
-	{
-		char		*end_p;
-		string_ty	*os;
-
-		/*
-		 * find where the line ends
-		 */
-		end_p = sp;
-		while (end_p - sp < width && *end_p && *end_p != '\n')
-			++end_p;
-		if (*end_p && *end_p != '\n')
-		{
-			char		*w;
-
-			/*
-			 * see if there is a better place to wrap
-			 */
-			w = end_p;
-			while (w > sp && !isspace((unsigned char)(w[-1])))
-				--w;
-			if (w > sp + 1)
-				end_p = w - 1;
-			else
-			{
-				w = end_p;
-				while (w > sp && !ispunct((unsigned char)(w[-1])))
-					--w;
-				if (w > sp + 1)
-					end_p = w - 1;
-			}
-		}
-
-		/*
-		 * append the line to the result
-		 */
-		os = str_n_from_c(sp, end_p - sp);
-		tmp = rpt_value_string(os);
-		str_free(os);
-		rpt_value_list_append(result, tmp);
-		rpt_value_free(tmp);
-
-		/*
-		 * skip line terminator and spaces
-		 */
-		sp = end_p;
-		if (*sp == '\n')
-			++sp;
-		while (isspace((unsigned char)*sp) && *sp != '\n')
-			++sp;
-	}
+	os = str_n_from_c(sp, end_p - sp);
+	tmp = rpt_value_string(os);
+	str_free(os);
+	rpt_value_list_append(result, tmp);
+	rpt_value_free(tmp);
 
 	/*
-	 * clean up and go home
+	 * skip line terminator and spaces
 	 */
-	str_free(subject);
-	return result;
+	sp = end_p;
+	if (*sp == '\n')
+	    ++sp;
+	while (isspace((unsigned char)*sp) && *sp != '\n')
+	    ++sp;
+    }
+
+    /*
+     * clean up and go home
+     */
+    str_free(subject);
+    return result;
 }
 
 
 rpt_func_ty rpt_func_wrap =
 {
-	"wrap",
-	1, /* optimizable */
-	wrap_verify,
-	wrap_run
+    "wrap",
+    1, /* optimizable */
+    wrap_verify,
+    wrap_run
 };
 
 
-static int wrap_html_verify _((rpt_expr_ty *));
-
 static int
-wrap_html_verify(ep)
-	rpt_expr_ty	*ep;
+wrap_html_verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 2);
+    return (ep->nchild == 2);
 }
 
 
-static rpt_value_ty *wrap_html_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-wrap_html_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+wrap_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	rpt_value_ty	*a1;
-	rpt_value_ty	*a2;
-	rpt_value_ty	*result;
-	rpt_value_ty	*tmp;
-	string_ty	*subject;
-	string_ty	*s;
-	long		width;
-	char		*sp;
+    rpt_value_ty    *a1;
+    rpt_value_ty    *a2;
+    rpt_value_ty    *result;
+    rpt_value_ty    *tmp;
+    string_ty	    *subject;
+    string_ty	    *s;
+    long	    width;
+    char	    *sp;
 
-	a1 = rpt_value_stringize(argv[0]);
-	if (a1->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
+    a1 = rpt_value_stringize(argv[0]);
+    if (a1->method->type != rpt_value_type_string)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		rpt_value_free(a1);
-		sub_var_set_charstar(scp, "Function", "wrap");
-		sub_var_set_charstar(scp, "Number", "1");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
-	}
-	subject = trim(rpt_value_string_query(a1));
+	scp = sub_context_new();
 	rpt_value_free(a1);
+	sub_var_set_charstar(scp, "Function", "wrap");
+	sub_var_set_charstar(scp, "Number", "1");
+	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+    subject = trim(rpt_value_string_query(a1));
+    rpt_value_free(a1);
 
-	a2 = rpt_value_integerize(argv[1]);
-	if (a2->method->type != rpt_value_type_integer)
-	{
-		sub_context_ty	*scp;
+    a2 = rpt_value_integerize(argv[1]);
+    if (a2->method->type != rpt_value_type_integer)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		rpt_value_free(a2);
-		sub_var_set_charstar(scp, "Function", "wrap");
-		sub_var_set_charstar(scp, "Number", "2");
-		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
-	}
-	width = rpt_value_integer_query(a2);
+	scp = sub_context_new();
 	rpt_value_free(a2);
-	if (width < 1)
-	{
-		sub_context_ty	*scp;
+	sub_var_set_charstar(scp, "Function", "wrap");
+	sub_var_set_charstar(scp, "Number", "2");
+	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+   i18n("$function: argument $number: integer value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+    width = rpt_value_integer_query(a2);
+    rpt_value_free(a2);
+    if (width < 1)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "wrap");
-		sub_var_set_charstar(scp, "Number", "2");
-		sub_var_set_long(scp, "Value", width);
-		s =
-			subst_intl
-			(
-				scp,
-		  i18n("$function: argument $number: width $value out of range")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Function", "wrap");
+	sub_var_set_charstar(scp, "Number", "2");
+	sub_var_set_long(scp, "Value", width);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+	        i18n("$function: argument $number: width $value out of range")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+
+    /*
+     * the result is a list
+     * create an empty one se we can start filling it
+     */
+    result = rpt_value_list();
+
+    sp = subject->str_text;
+    while (*sp)
+    {
+	char		*end_p;
+	string_ty	*os;
+
+	/*
+	 * find where the line ends
+	 */
+	end_p = sp;
+	while (end_p - sp < width && *end_p && *end_p != '\n')
+	    ++end_p;
+	if (*end_p && *end_p != '\n')
+	{
+	    char	    *w;
+
+	    /*
+	     * see if there is a better place to wrap
+	     */
+	    w = end_p;
+	    while (w > sp && !isspace((unsigned char)(w[-1])))
+		--w;
+	    if (w > sp + 1)
+		end_p = w - 1;
+	    else
+	    {
+		w = end_p;
+		while (w > sp && !ispunct((unsigned char)(w[-1])))
+	    	    --w;
+		if (w > sp + 1)
+	    	    end_p = w - 1;
+	    }
 	}
 
 	/*
-	 * the result is a list
-	 * create an empty one se we can start filling it
+	 * append the line to the result
 	 */
-	result = rpt_value_list();
+	os = str_n_from_c(sp, end_p - sp);
+	tmp = rpt_value_string(os);
+	str_free(os);
+	rpt_value_list_append(result, tmp);
+	rpt_value_free(tmp);
 
-	sp = subject->str_text;
-	while (*sp)
+	/*
+	 * skip line terminator and spaces
+	 *
+	 * Insert HTML paragraph breaks or line breaks
+	 * if appropriate.
+	 */
+	sp = end_p;
+	while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
+	    ++sp;
+	if (*sp == '\n')
 	{
-		char		*end_p;
-		string_ty	*os;
-
-		/*
-		 * find where the line ends
-		 */
-		end_p = sp;
-		while (end_p - sp < width && *end_p && *end_p != '\n')
-			++end_p;
-		if (*end_p && *end_p != '\n')
-		{
-			char		*w;
-
-			/*
-			 * see if there is a better place to wrap
-			 */
-			w = end_p;
-			while (w > sp && !isspace((unsigned char)(w[-1])))
-				--w;
-			if (w > sp + 1)
-				end_p = w - 1;
-			else
-			{
-				w = end_p;
-				while (w > sp && !ispunct((unsigned char)(w[-1])))
-					--w;
-				if (w > sp + 1)
-					end_p = w - 1;
-			}
-		}
-
-		/*
-		 * append the line to the result
-		 */
-		os = str_n_from_c(sp, end_p - sp);
+	    ++sp;
+	    if (*sp && isspace((unsigned char)*sp))
+	    {
+		os = str_from_c("<p>");
 		tmp = rpt_value_string(os);
 		str_free(os);
 		rpt_value_list_append(result, tmp);
 		rpt_value_free(tmp);
-
-		/*
-		 * skip line terminator and spaces
-		 *
-		 * Insert HTML paragraph breaks or line breaks
-		 * if appropriate.
-		 */
-		sp = end_p;
-		while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
-			++sp;
-		if (*sp == '\n')
-		{
-			++sp;
-			if (*sp && isspace((unsigned char)*sp))
-			{
-				os = str_from_c("<p>");
-				tmp = rpt_value_string(os);
-				str_free(os);
-				rpt_value_list_append(result, tmp);
-				rpt_value_free(tmp);
-			}
-			else
-			{
-				os = str_from_c("<br>");
-				tmp = rpt_value_string(os);
-				str_free(os);
-				rpt_value_list_append(result, tmp);
-				rpt_value_free(tmp);
-			}
-		}
-		while (*sp && isspace((unsigned char)*sp))
-			++sp;
+	    }
+	    else
+	    {
+		os = str_from_c("<br>");
+		tmp = rpt_value_string(os);
+		str_free(os);
+		rpt_value_list_append(result, tmp);
+		rpt_value_free(tmp);
+	    }
 	}
+	while (*sp && isspace((unsigned char)*sp))
+	    ++sp;
+    }
 
-	/*
-	 * clean up and go home
-	 */
-	str_free(subject);
-	return result;
+    /*
+     * clean up and go home
+     */
+    str_free(subject);
+    return result;
 }
 
 
 rpt_func_ty rpt_func_wrap_html =
 {
-	"wrap_html",
-	1, /* optimizable */
-	wrap_html_verify,
-	wrap_html_run
+    "wrap_html",
+    1, /* optimizable */
+    wrap_html_verify,
+    wrap_html_run
 };

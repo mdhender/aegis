@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct string_ty;
 
-rpt_value_ty *rpt_value_enumeration _((long, struct string_ty *));
+rpt_value_ty *rpt_value_enumeration(long, struct string_ty *);
 
 #endif /* AEGIS_AER_VALUE_ENUM_H */

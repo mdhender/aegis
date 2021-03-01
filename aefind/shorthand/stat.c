@@ -37,511 +37,486 @@
 
 
 tree_ty *
-shorthand_atime(cmp, n, units)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
-	int		units;
+shorthand_atime(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n, int units)
 {
-	tree_ty		*tp1;
-	tree_ty		*tp2;
-	tree_list_ty	*tlp3;
-	tree_ty		*tp3;
-	tree_ty		*tp4;
-	rpt_value_ty	*vp5;
-	tree_ty		*tp5;
-	tree_ty		*tp6;
-	rpt_value_ty	*vp7;
-	tree_ty		*tp7;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_ty	    *tp2;
+    tree_list_ty    *tlp3;
+    tree_ty	    *tp3;
+    tree_ty	    *tp4;
+    rpt_value_ty    *vp5;
+    tree_ty	    *tp5;
+    tree_ty	    *tp6;
+    rpt_value_ty    *vp7;
+    tree_ty	    *tp7;
+    tree_ty	    *result;
 
-	/* now */
-	tp1 = tree_now_new();
+    /* now */
+    tp1 = tree_now_new();
 
-	/* {} */
-	tp2 = tree_this_new();
+    /* {} */
+    tp2 = tree_this_new();
 
-	/* atime({}) */
-	tlp3 = tree_list_new();
-	tree_list_append(tlp3, tp2);
-	tree_delete(tp2);
-	tp3 = function_atime(tlp3);
-	tree_list_delete(tlp3);
+    /* atime({}) */
+    tlp3 = tree_list_new();
+    tree_list_append(tlp3, tp2);
+    tree_delete(tp2);
+    tp3 = function_atime(tlp3);
+    tree_list_delete(tlp3);
 
-	/* now - atime({}) */
-	tp4 = tree_subtract_new(tp1, tp3);
-	tree_delete(tp1);
-	tree_delete(tp3);
+    /* now - atime({}) */
+    tp4 = tree_subtract_new(tp1, tp3);
+    tree_delete(tp1);
+    tree_delete(tp3);
 
-	/* units */
-	vp5 = rpt_value_integer(units);
-	tp5 = tree_constant_new(vp5);
-	rpt_value_free(vp5);
+    /* units */
+    vp5 = rpt_value_integer(units);
+    tp5 = tree_constant_new(vp5);
+    rpt_value_free(vp5);
 
-	/* (now - atime({})) / units */
-	tp6 = tree_divide_new(tp4, tp5);
-	tree_delete(tp4);
-	tree_delete(tp5);
+    /* (now - atime({})) / units */
+    tp6 = tree_divide_new(tp4, tp5);
+    tree_delete(tp4);
+    tree_delete(tp5);
 
-	vp7 = rpt_value_integer(n);
-	tp7 = tree_constant_new(vp7);
-	rpt_value_free(vp7);
+    vp7 = rpt_value_integer(n);
+    tp7 = tree_constant_new(vp7);
+    rpt_value_free(vp7);
 
-	/* (now - atime({})) / units == n */
-	result = cmp(tp6, tp7);
-	tree_delete(tp6);
-	tree_delete(tp7);
-	return result;
+    /* (now - atime({})) / units == n */
+    result = cmp(tp6, tp7);
+    tree_delete(tp6);
+    tree_delete(tp7);
+    return result;
 }
 
 
 tree_ty *
-shorthand_ctime(cmp, n, units)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
-	int		units;
+shorthand_ctime(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n, int units)
 {
-	tree_ty		*tp1;
-	tree_ty		*tp2;
-	tree_list_ty	*tlp3;
-	tree_ty		*tp3;
-	tree_ty		*tp4;
-	rpt_value_ty	*vp5;
-	tree_ty		*tp5;
-	tree_ty		*tp6;
-	rpt_value_ty	*vp7;
-	tree_ty		*tp7;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_ty	    *tp2;
+    tree_list_ty    *tlp3;
+    tree_ty	    *tp3;
+    tree_ty	    *tp4;
+    rpt_value_ty    *vp5;
+    tree_ty	    *tp5;
+    tree_ty	    *tp6;
+    rpt_value_ty    *vp7;
+    tree_ty	    *tp7;
+    tree_ty	    *result;
 
-	/* now */
-	tp1 = tree_now_new();
+    /* now */
+    tp1 = tree_now_new();
 
-	/* {} */
-	tp2 = tree_this_new();
+    /* {} */
+    tp2 = tree_this_new();
 
-	/* ctime({}) */
-	tlp3 = tree_list_new();
-	tree_list_append(tlp3, tp2);
-	tree_delete(tp2);
-	tp3 = function_ctime(tlp3);
-	tree_list_delete(tlp3);
+    /* ctime({}) */
+    tlp3 = tree_list_new();
+    tree_list_append(tlp3, tp2);
+    tree_delete(tp2);
+    tp3 = function_ctime(tlp3);
+    tree_list_delete(tlp3);
 
-	/* now - ctime({}) */
-	tp4 = tree_subtract_new(tp1, tp3);
-	tree_delete(tp1);
-	tree_delete(tp3);
+    /* now - ctime({}) */
+    tp4 = tree_subtract_new(tp1, tp3);
+    tree_delete(tp1);
+    tree_delete(tp3);
 
-	/* units */
-	vp5 = rpt_value_integer(units);
-	tp5 = tree_constant_new(vp5);
-	rpt_value_free(vp5);
+    /* units */
+    vp5 = rpt_value_integer(units);
+    tp5 = tree_constant_new(vp5);
+    rpt_value_free(vp5);
 
-	/* (now - ctime({})) / units */
-	tp6 = tree_divide_new(tp4, tp5);
-	tree_delete(tp4);
-	tree_delete(tp5);
+    /* (now - ctime({})) / units */
+    tp6 = tree_divide_new(tp4, tp5);
+    tree_delete(tp4);
+    tree_delete(tp5);
 
-	vp7 = rpt_value_integer(n);
-	tp7 = tree_constant_new(vp7);
-	rpt_value_free(vp7);
+    vp7 = rpt_value_integer(n);
+    tp7 = tree_constant_new(vp7);
+    rpt_value_free(vp7);
 
-	/* (now - ctime({})) / units == n */
-	result = cmp(tp6, tp7);
-	tree_delete(tp6);
-	tree_delete(tp7);
-	return result;
+    /* (now - ctime({})) / units == n */
+    result = cmp(tp6, tp7);
+    tree_delete(tp6);
+    tree_delete(tp7);
+    return result;
 }
 
 
 tree_ty *
-shorthand_gid(cmp, n)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
+shorthand_gid(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* gid({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_gid(tlp2);
-	tree_list_delete(tlp2);
+    /* gid({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_gid(tlp2);
+    tree_list_delete(tlp2);
 
-	/* n */
-	vp3 = rpt_value_integer(n);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* n */
+    vp3 = rpt_value_integer(n);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* gid({}) == n */
-	result = cmp(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* gid({}) == n */
+    result = cmp(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }
 
 
 tree_ty *
-shorthand_ino(cmp, n)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
+shorthand_ino(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* ino({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_ino(tlp2);
-	tree_list_delete(tlp2);
+    /* ino({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_ino(tlp2);
+    tree_list_delete(tlp2);
 
-	/* n */
-	vp3 = rpt_value_integer(n);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* n */
+    vp3 = rpt_value_integer(n);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* ino({}) == n */
-	result = cmp(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* ino({}) == n */
+    result = cmp(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }
 
 
 tree_ty *
-shorthand_mode(n)
-	int		n;
+shorthand_mode(int n)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* mode({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_mode(tlp2);
-	tree_list_delete(tlp2);
+    /* mode({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_mode(tlp2);
+    tree_list_delete(tlp2);
 
-	/* n */
-	vp3 = rpt_value_integer(n);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* n */
+    vp3 = rpt_value_integer(n);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* mode({}) == n */
-	result = tree_eq_new(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* mode({}) == n */
+    result = tree_eq_new(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }
 
 
 tree_ty *
-shorthand_mtime(cmp, n, units)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
-	int		units;
+shorthand_mtime(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n, int units)
 {
-	tree_ty		*tp1;
-	tree_ty		*tp2;
-	tree_list_ty	*tlp3;
-	tree_ty		*tp3;
-	tree_ty		*tp4;
-	rpt_value_ty	*vp5;
-	tree_ty		*tp5;
-	tree_ty		*tp6;
-	rpt_value_ty	*vp7;
-	tree_ty		*tp7;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_ty	    *tp2;
+    tree_list_ty    *tlp3;
+    tree_ty	    *tp3;
+    tree_ty	    *tp4;
+    rpt_value_ty    *vp5;
+    tree_ty	    *tp5;
+    tree_ty	    *tp6;
+    rpt_value_ty    *vp7;
+    tree_ty	    *tp7;
+    tree_ty	    *result;
 
-	/* now */
-	tp1 = tree_now_new();
+    /* now */
+    tp1 = tree_now_new();
 
-	/* {} */
-	tp2 = tree_this_new();
+    /* {} */
+    tp2 = tree_this_new();
 
-	/* mtime({}) */
-	tlp3 = tree_list_new();
-	tree_list_append(tlp3, tp2);
-	tree_delete(tp2);
-	tp3 = function_mtime(tlp3);
-	tree_list_delete(tlp3);
+    /* mtime({}) */
+    tlp3 = tree_list_new();
+    tree_list_append(tlp3, tp2);
+    tree_delete(tp2);
+    tp3 = function_mtime(tlp3);
+    tree_list_delete(tlp3);
 
-	/* now - mtime({}) */
-	tp4 = tree_subtract_new(tp1, tp3);
-	tree_delete(tp1);
-	tree_delete(tp3);
+    /* now - mtime({}) */
+    tp4 = tree_subtract_new(tp1, tp3);
+    tree_delete(tp1);
+    tree_delete(tp3);
 
-	/* units */
-	vp5 = rpt_value_integer(units);
-	tp5 = tree_constant_new(vp5);
-	rpt_value_free(vp5);
+    /* units */
+    vp5 = rpt_value_integer(units);
+    tp5 = tree_constant_new(vp5);
+    rpt_value_free(vp5);
 
-	/* (now - mtime({})) / units */
-	tp6 = tree_divide_new(tp4, tp5);
-	tree_delete(tp4);
-	tree_delete(tp5);
+    /* (now - mtime({})) / units */
+    tp6 = tree_divide_new(tp4, tp5);
+    tree_delete(tp4);
+    tree_delete(tp5);
 
-	/* n */
-	vp7 = rpt_value_integer(n);
-	tp7 = tree_constant_new(vp7);
-	rpt_value_free(vp7);
+    /* n */
+    vp7 = rpt_value_integer(n);
+    tp7 = tree_constant_new(vp7);
+    rpt_value_free(vp7);
 
-	/* (now - mtime({})) / units == n */
-	result = cmp(tp6, tp7);
-	tree_delete(tp6);
-	tree_delete(tp7);
-	return result;
+    /* (now - mtime({})) / units == n */
+    result = cmp(tp6, tp7);
+    tree_delete(tp6);
+    tree_delete(tp7);
+    return result;
 }
 
 
 tree_ty *
-shorthand_newer(filename)
-	string_ty	*filename;
+shorthand_newer(string_ty *filename)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_list_ty	*tlp4;
-	tree_ty		*tp4;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_list_ty    *tlp4;
+    tree_ty	    *tp4;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* mtime({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_mtime(tlp2);
-	tree_list_delete(tlp2);
+    /* mtime({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_mtime(tlp2);
+    tree_list_delete(tlp2);
 
-	/* filename */
-	vp3 = rpt_value_string(filename);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* filename */
+    vp3 = rpt_value_string(filename);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* mtime(filename) */
-	tlp4 = tree_list_new();
-	tree_list_append(tlp4, tp3);
-	tree_delete(tp3);
-	tp4 = function_mtime(tlp4);
-	tree_list_delete(tlp4);
+    /* mtime(filename) */
+    tlp4 = tree_list_new();
+    tree_list_append(tlp4, tp3);
+    tree_delete(tp3);
+    tp4 = function_mtime(tlp4);
+    tree_list_delete(tlp4);
 
-	/* mtime({}) > mtime(filename) */
-	result = tree_gt_new(tp2, tp4);
-	tree_delete(tp2);
-	tree_delete(tp4);
-	return result;
+    /* mtime({}) > mtime(filename) */
+    result = tree_gt_new(tp2, tp4);
+    tree_delete(tp2);
+    tree_delete(tp4);
+    return result;
 }
 
 
 tree_ty *
-shorthand_nlink(cmp, n)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
+shorthand_nlink(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* nlink({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_nlink(tlp2);
-	tree_list_delete(tlp2);
+    /* nlink({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_nlink(tlp2);
+    tree_list_delete(tlp2);
 
-	/* n */
-	vp3 = rpt_value_integer(n);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* n */
+    vp3 = rpt_value_integer(n);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* nlink({}) == n */
-	result = cmp(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* nlink({}) == n */
+    result = cmp(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }
 
 
 tree_ty *
-shorthand_size(cmp, n)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
+shorthand_size(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* size({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_size(tlp2);
-	tree_list_delete(tlp2);
+    /* size({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_size(tlp2);
+    tree_list_delete(tlp2);
 
-	/* n */
-	vp3 = rpt_value_integer(n);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* n */
+    vp3 = rpt_value_integer(n);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* size({}) == n */
-	result = cmp(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* size({}) == n */
+    result = cmp(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }
 
 
 tree_ty *
-shorthand_uid(cmp, n)
-	tree_ty		*(*cmp)_((tree_ty *, tree_ty *));
-	int		n;
+shorthand_uid(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
 {
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* uid({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_uid(tlp2);
-	tree_list_delete(tlp2);
+    /* uid({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_uid(tlp2);
+    tree_list_delete(tlp2);
 
-	/* n */
-	vp3 = rpt_value_integer(n);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* n */
+    vp3 = rpt_value_integer(n);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* uid({}) == n */
-	result = cmp(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* uid({}) == n */
+    result = cmp(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }
 
-
-static string_ty *type_name_by_pattern _((string_ty *));
 
 static string_ty *
-type_name_by_pattern(abbrev)
-	string_ty	*abbrev;
+type_name_by_pattern(string_ty *abbrev)
 {
-	typedef struct table_ty table_ty;
-	struct table_ty
-	{
-		char	*pattern;
-		char	*name;
-	};
+    typedef struct table_ty table_ty;
+    struct table_ty
+    {
+	char            *pattern;
+	char            *name;
+    };
 
-	static table_ty table[] =
-	{
-		{ "Block",		"block_special",	},
-		{ "Block_Special",	"block_special",	},
-		{ "Character",		"character_special",	},
-		{ "Character_Special",	"character_special",	},
-		{ "Directory",		"directory",		},
-		{ "File",		"file",			},
-		{ "Link",		"symbolic_link",	},
-		{ "Named_Pipe",		"named_pipe",		},
-		{ "First_In_First_Out",	"named_pipe",		},
-		{ "Normal",		"file",			},
-		{ "Pipe",		"named_pipe",		},
-		{ "Plain",		"file",			},
-		{ "Socket",		"socket",		},
-		{ "Symbolic_Link",	"symbolic_link",	},
-	};
+    static table_ty table[] =
+    {
+	{ "Block",		"block_special",	},
+	{ "Block_Special",	"block_special",	},
+	{ "Character",		"character_special",	},
+	{ "Character_Special",	"character_special",	},
+	{ "Directory",		"directory",		},
+	{ "File",		"file",			},
+	{ "Link",		"symbolic_link",	},
+	{ "Named_Pipe",		"named_pipe",		},
+	{ "First_In_First_Out",	"named_pipe",		},
+	{ "Normal",		"file",			},
+	{ "Pipe",		"named_pipe",		},
+	{ "Plain",		"file",			},
+	{ "Socket",		"socket",		},
+	{ "Symbolic_Link",	"symbolic_link",	},
+    };
 
-	table_ty	*tp;
-	sub_context_ty	*scp;
+    table_ty        *tp;
+    sub_context_ty  *scp;
 
-	for (tp = table; tp < ENDOF(table); ++tp)
-		if (arglex_compare(tp->pattern, abbrev->str_text))
-			return str_from_c(tp->name);
-	scp = sub_context_new();
-	sub_var_set_string(scp, "Name", abbrev);
-	fatal_intl(scp, i18n("file type $name unknown"));
-	/* NOTREACHED */
-	sub_context_delete(scp);
-	return str_from_c("unknown");
+    for (tp = table; tp < ENDOF(table); ++tp)
+	if (arglex_compare(tp->pattern, abbrev->str_text))
+    	    return str_from_c(tp->name);
+    scp = sub_context_new();
+    sub_var_set_string(scp, "Name", abbrev);
+    fatal_intl(scp, i18n("file type $name unknown"));
+    /* NOTREACHED */
+    sub_context_delete(scp);
+    return str_from_c("unknown");
 }
 
 
 tree_ty *
-shorthand_type(abbrev)
-	string_ty	*abbrev;
+shorthand_type(string_ty *abbrev)
 {
-	string_ty	*name;
-	tree_ty		*tp1;
-	tree_list_ty	*tlp2;
-	tree_ty		*tp2;
-	rpt_value_ty	*vp3;
-	tree_ty		*tp3;
-	tree_ty		*result;
+    string_ty	    *name;
+    tree_ty	    *tp1;
+    tree_list_ty    *tlp2;
+    tree_ty	    *tp2;
+    rpt_value_ty    *vp3;
+    tree_ty	    *tp3;
+    tree_ty	    *result;
 
-	name = type_name_by_pattern(abbrev);
+    name = type_name_by_pattern(abbrev);
 
-	/* {} */
-	tp1 = tree_this_new();
+    /* {} */
+    tp1 = tree_this_new();
 
-	/* type({}) */
-	tlp2 = tree_list_new();
-	tree_list_append(tlp2, tp1);
-	tree_delete(tp1);
-	tp2 = function_type(tlp2);
-	tree_list_delete(tlp2);
+    /* type({}) */
+    tlp2 = tree_list_new();
+    tree_list_append(tlp2, tp1);
+    tree_delete(tp1);
+    tp2 = function_type(tlp2);
+    tree_list_delete(tlp2);
 
-	/* name */
-	vp3 = rpt_value_string(name);
-	str_free(name);
-	tp3 = tree_constant_new(vp3);
-	rpt_value_free(vp3);
+    /* name */
+    vp3 = rpt_value_string(name);
+    str_free(name);
+    tp3 = tree_constant_new(vp3);
+    rpt_value_free(vp3);
 
-	/* type({}) == name */
-	result = tree_eq_new(tp2, tp3);
-	tree_delete(tp2);
-	tree_delete(tp3);
-	return result;
+    /* type({}) == name */
+    result = tree_eq_new(tp2, tp3);
+    tree_delete(tp2);
+    tree_delete(tp3);
+    return result;
 }

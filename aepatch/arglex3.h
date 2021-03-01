@@ -27,20 +27,20 @@
 
 enum
 {
-	arglex_token_ascii_armor = ARGLEX2_MAX,
-	arglex_token_ascii_armor_not,
-	arglex_token_compress,
-	arglex_token_compress_not,
-	arglex_token_content_transfer_encoding,
-	arglex_token_receive,
-	arglex_token_send,
-	arglex_token_trojan,
-	arglex_token_trojan_not,
-	arglex_token_path_prefix_add,
-	arglex_token_path_prefix_remove,
-	ARGLEX3_MAX
+    arglex_token_ascii_armor = ARGLEX2_MAX,
+    arglex_token_ascii_armor_not,
+    arglex_token_compress,
+    arglex_token_compress_not,
+    arglex_token_content_transfer_encoding,
+    arglex_token_receive,
+    arglex_token_send,
+    arglex_token_trojan,
+    arglex_token_trojan_not,
+    arglex_token_path_prefix_add,
+    arglex_token_path_prefix_remove,
+    ARGLEX3_MAX
 };
 
-void arglex3_init _((int, char **));
+void arglex3_init(int, char **);
 
 #endif /* AEPATCH_ARGLEX3_H */

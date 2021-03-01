@@ -45,10 +45,8 @@
 #include <zero.h>
 
 
-static void move_file_undo_usage _((void));
-
 static void
-move_file_undo_usage()
+move_file_undo_usage(void)
 {
     char	    *progname;
 
@@ -70,19 +68,15 @@ move_file_undo_usage()
 }
 
 
-static void move_file_undo_help _((void));
-
 static void
-move_file_undo_help()
+move_file_undo_help(void)
 {
     help("aemvu", move_file_undo_usage);
 }
 
 
-static void move_file_undo_list _((void));
-
 static void
-move_file_undo_list()
+move_file_undo_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -151,10 +145,8 @@ move_file_undo_list()
 }
 
 
-static void move_file_undo_main _((void));
-
 static void
-move_file_undo_main()
+move_file_undo_main(void)
 {
     sub_context_ty  *scp;
     string_list_ty  wl;
@@ -567,16 +559,7 @@ move_file_undo_main()
 	    fstate_src	    psrc_data;
 
 	    if (mend_symlinks)
-	    {
-		psrc_data = project_file_find(pp, s1);
-		if
-		(
-		    psrc_data
-		&&
-		    (psrc_data->deleted_by || psrc_data->about_to_be_created_by)
-		)
-		    psrc_data = 0;
-	    }
+		psrc_data = project_file_find(pp, s1, view_path_extreme);
 	    else
 		psrc_data = 0;
 
@@ -700,7 +683,7 @@ move_file_undo_main()
     {
 	scp = sub_context_new();
 	sub_var_set_string(scp, "File_Name", wl.string[j]);
-	change_verbose(cp, scp, i18n("$filename gone"));
+	change_verbose(cp, scp, i18n("move file undo $filename complete"));
 	sub_context_delete(scp);
     }
 
@@ -713,7 +696,7 @@ move_file_undo_main()
 
 
 void
-move_file_undo()
+move_file_undo(void)
 {
     trace(("move_file_undo()\n{\n"));
     switch (arglex())

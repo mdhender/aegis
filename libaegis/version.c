@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,27 +30,27 @@
 void
 version_copyright()
 {
-	static char *text[] =
-	{
-		"All rights reserved.\n",
-		"\n",
-		"The %s program comes with ABSOLUTELY NO WARRANTY; ",
-		"for details use the '%s -VERSion License' command.  ",
-		"The %s program is free software, and you are welcome ",
-		"to redistribute it under certain conditions; for ",
-		"details use the '%s -VERSion License' command.\n",
-	};
+    static char *text[] =
+    {
+	"All rights reserved.\n",
+	"\n",
+	"The %s program comes with ABSOLUTELY NO WARRANTY; ",
+	"for details use the '%s -VERSion License' command.  ",
+	"The %s program is free software, and you are welcome ",
+	"to redistribute it under certain conditions; for ",
+	"details use the '%s -VERSion License' command.\n",
+    };
 
-	output_ty	*fp;
-	char		**cpp;
-	char		*progname;
+    output_ty	    *fp;
+    char	    **cpp;
+    char	    *progname;
 
-	progname = progname_get();
-	fp = output_pager_open();
-	fp = output_wrap_open(fp, 1, -1);
-	output_fprintf(fp, "%s version %s\n", progname, version_stamp());
-	output_fprintf(fp, "Copyright (C) %s Peter Miller;\n", copyright_years());
-	for (cpp = text; cpp < ENDOF(text); ++cpp)
-		output_fprintf(fp, *cpp, progname);
-	output_delete(fp);
+    progname = progname_get();
+    fp = output_pager_open();
+    fp = output_wrap_open(fp, 1, -1);
+    output_fprintf(fp, "%s version %s\n", progname, version_stamp());
+    output_fprintf(fp, "Copyright (C) %s Peter Miller;\n", copyright_years());
+    for (cpp = text; cpp < ENDOF(text); ++cpp)
+	output_fprintf(fp, *cpp, progname);
+    output_delete(fp);
 }

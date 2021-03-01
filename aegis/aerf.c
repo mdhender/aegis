@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <ael/change/by_state.h>
 #include <aerf.h>
 #include <arglex2.h>
+#include <change/branch.h>
 #include <change/develop_direct/read_write.h>
 #include <change/file.h>
 #include <commit.h>
@@ -126,28 +127,28 @@ static void
 check_permissions(change_ty *cp, user_ty *up)
 {
     cstate	    cstate_data;
-    project_ty	    *pp;
+    cstate_history  hp;
 
     cstate_data = change_cstate_get(cp);
-    pp = cp->pp;
 
     /*
      * it is an error if the change is not in the 'being_reviewed' state.
      */
     if (cstate_data->state != cstate_state_being_reviewed)
 	change_fatal(cp, 0, i18n("bad rf state"));
-    if
-    (
-	project_develop_end_action_get(pp)
-    ==
-	pattr_develop_end_action_goto_awaiting_review
-    )
+    assert(cstate_data->history->length >= 3);
+    hp = cstate_data->history->list[cstate_data->history->length - 1];
+    if (hp->what == cstate_history_what_review_begin)
     {
 	if (!str_equal(change_reviewer_name(cp), user_name(up)))
 	    change_fatal(cp, 0, i18n("not reviewer"));
     }
     else
     {
+	project_ty      *pp;
+
+	assert(hp->what == cstate_history_what_develop_end);
+	pp = cp->pp;
 	if (!project_reviewer_query(pp, user_name(up)))
 	    project_fatal(pp, 0, i18n("not a reviewer"));
 	if
@@ -429,7 +430,8 @@ review_fail_main(void)
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)
 	    break;
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	p_src_data =
+	    project_file_find(pp, c_src_data->file_name, view_path_none);
 	if (!p_src_data)
 	    continue;
 	p_src_data->locked_by = 0;
@@ -462,7 +464,12 @@ review_fail_main(void)
     /*
      * Make the development directory writable again.
      */
-    if (project_protect_development_directory_get(pp))
+    if
+    (
+	!change_was_a_branch(cp)
+    ||
+	project_protect_development_directory_get(pp)
+    )
 	change_development_directory_chmod_read_write(cp);
 
     /*

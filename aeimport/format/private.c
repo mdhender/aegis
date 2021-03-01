@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,11 @@
 
 
 format_ty *
-format_new(vptr)
-	format_vtable_ty *vptr;
+format_new(format_vtable_ty *vptr)
 {
-	format_ty	*fp;
+    format_ty       *fp;
 
-	fp = mem_alloc(vptr->size);
-	fp->vptr = vptr;
-	return fp;
+    fp = mem_alloc(vptr->size);
+    fp->vptr = vptr;
+    return fp;
 }

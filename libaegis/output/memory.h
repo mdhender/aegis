@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <output.h>
 
-output_ty *output_memory_open _((void));
-void output_memory_forward _((output_ty *, output_ty *));
+output_ty *output_memory_open(void);
+void output_memory_forward(output_ty *, output_ty *);
 
 #endif /* LIBAEGIS_OUTPUT_MEMORY_H */

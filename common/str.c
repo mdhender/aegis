@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,12 +43,8 @@
 
 static string_ty **hash_table;
 static str_hash_ty hash_modulus;
-static str_hash_ty hash_cutover;
-static str_hash_ty hash_cutover_mask;
-static str_hash_ty hash_cutover_split_mask;
-static str_hash_ty hash_split;
+static str_hash_ty hash_mask;
 static str_hash_ty hash_load;
-static int      changed;
 
 #define MAX_HASH_LEN 20
 
@@ -98,10 +94,7 @@ str_initialize(void)
     str_hash_ty     j;
 
     hash_modulus = 1 << 8;	/* MUST be a power of 2 */
-    hash_cutover = hash_modulus;
-    hash_split = hash_modulus - hash_cutover;
-    hash_cutover_mask = hash_cutover - 1;
-    hash_cutover_split_mask = (hash_cutover * 2) - 1;
+    hash_mask = hash_modulus - 1;
     hash_load = 0;
     hash_table = (string_ty **)mem_alloc(hash_modulus * sizeof(string_ty *));
     for (j = 0; j < hash_modulus; ++j)
@@ -129,46 +122,54 @@ str_initialize(void)
 static void
 split(void)
 {
-    string_ty       *p;
-    string_ty       *p2;
+    string_ty       **new_hash_table;
+    str_hash_ty     new_hash_modulus;
+    str_hash_ty     new_hash_mask;
     str_hash_ty     idx;
 
     /*
-     * get the list to be split across buckets
+     * double the modulus
+     *
+     * This is subtle.  If we only increase the modulus by one, the
+     * load always hovers around 80%, so we have to do a split for
+     * every insert.  I.e. thr malloc burden os O(n) for the lifetime of
+     * the program.  BUT if we double the modulus, the length of time
+     * until the next split also doubles, making the probablity of a
+     * split halve, and sigma(2**-n)=1, so the malloc burden becomes O(1)
+     * for the lifetime of the program.
      */
-    p = hash_table[hash_split];
-    hash_table[hash_split] = 0;
-
-    /*
-     * increase the modulus by one
-     */
-    hash_modulus++;
-    hash_table =
-	mem_change_size(hash_table, hash_modulus * sizeof(string_ty *));
-    hash_table[hash_modulus - 1] = 0;
-    hash_split = hash_modulus - hash_cutover;
-    if (hash_split >= hash_cutover)
-    {
-	hash_cutover = hash_modulus;
-	hash_split = 0;
-	hash_cutover_mask = hash_cutover - 1;
-	hash_cutover_split_mask = (hash_cutover * 2) - 1;
-    }
+    new_hash_modulus = hash_modulus * 2;
+    new_hash_table = mem_alloc(new_hash_modulus * sizeof(string_ty *));
+    new_hash_mask = new_hash_modulus - 1;
 
     /*
      * now redistribute the list elements
      */
-    while (p)
+    for (idx = 0; idx < hash_modulus; ++idx)
     {
-	p2 = p;
-	p = p->str_next;
+	string_ty       *p;
 
-	idx = p2->str_hash & hash_cutover_mask;
-	if (idx < hash_split)
-	    idx = p2->str_hash & hash_cutover_split_mask;
-	p2->str_next = hash_table[idx];
-	hash_table[idx] = p2;
+	new_hash_table[idx] = 0;
+	new_hash_table[idx + hash_modulus] = 0;
+	p = hash_table[idx];
+	while (p)
+	{
+	    string_ty       *p2;
+	    str_hash_ty     new_idx;
+
+	    p2 = p;
+	    p = p->str_next;
+
+	    assert((p2->str_hash & hash_mask) == idx);
+	    new_idx = p2->str_hash & new_hash_mask;
+	    p2->str_next = new_hash_table[new_idx];
+	    new_hash_table[new_idx] = p2;
+	}
     }
+    mem_free(hash_table);
+    hash_table = new_hash_table;
+    hash_modulus = new_hash_modulus;
+    hash_mask = new_hash_mask;
 }
 
 
@@ -192,9 +193,7 @@ str_n_from_c(const char *s, size_t length)
     if (!hash_table)
 	fatal_raw("you have not called str_initialize from main");
 #endif
-    idx = hash & hash_cutover_mask;
-    if (idx < hash_split)
-	idx = hash & hash_cutover_split_mask;
+    idx = hash & hash_mask;
 
     for (p = hash_table[idx]; p; p = p->str_next)
     {
@@ -222,9 +221,8 @@ str_n_from_c(const char *s, size_t length)
     p->str_text[length] = 0;
 
     hash_load++;
-    while (hash_load * 10 > hash_modulus * 8)
+    if (hash_load * 10 > hash_modulus * 8)
 	split();
-    ++changed;
     return p;
 }
 
@@ -250,15 +248,12 @@ str_free(string_ty *s)
 	s->str_references--;
 	return;
     }
-    ++changed;
 
     /*
      * find the hash bucket it was in,
      * and remove it
      */
-    idx = s->str_hash & hash_cutover_mask;
-    if (idx < hash_split)
-	idx = s->str_hash & hash_cutover_split_mask;
+    idx = s->str_hash & hash_mask;
     for (spp = &hash_table[idx]; *spp; spp = &(*spp)->str_next)
     {
 	if (*spp == s)
@@ -294,9 +289,7 @@ str_validate(string_ty *s)
 	return 0;
     if (s->str_references == 0)
 	return 0;
-    idx = s->str_hash & hash_cutover_mask;
-    if (idx < hash_split)
-	idx = s->str_hash & hash_cutover_split_mask;
+    idx = s->str_hash & hash_mask;
     for (spp = &hash_table[idx]; *spp; spp = &(*spp)->str_next)
 	if (*spp == s)
 	    return 1;

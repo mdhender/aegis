@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,8 @@ change_fingerprint_same(fp, path, check_always)
 	/*
 	 * a NULL pointer means something very weird is going on
 	 */
-	trace(("change_fingerprint_same(fp = %8.8lX, path = \"%s\")\n{\n"/*}*/, (long)fp, path->str_text));
+	trace(("change_fingerprint_same(fp = %8.8lX, path = \"%s\")\n{\n"/*}*/,
+	    (long)fp, path->str_text));
 	if (!fp)
 	{
 		trace(("No existing fingerprint\n"));

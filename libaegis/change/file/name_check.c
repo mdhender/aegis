@@ -490,15 +490,8 @@ change_filename_check(cp, filename, nodup)
 	    fstate_src      src_data;
 
 	    s2 = wl2str(&part, 0, k, "/");
-	    src_data = project_file_find(cp->pp, s2);
-	    if
-	    (
-		src_data
-	    &&
-		!src_data->deleted_by
-	    &&
-		!src_data->about_to_be_created_by
-	    )
+	    src_data = project_file_find(cp->pp, s2, view_path_extreme);
+	    if (src_data)
 	    {
 		if (part.nstrings == 1 || str_equal(s2, filename))
 		{

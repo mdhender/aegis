@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,11 +26,10 @@
 
 
 pconf
-project_pconf_get(pp)
-	project_ty	*pp;
+project_pconf_get(project_ty *pp)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	cp = project_change_get(pp);
-	return change_pconf_get(cp, 0);
+    cp = project_change_get(pp);
+    return change_pconf_get(cp, 0);
 }

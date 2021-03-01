@@ -2,7 +2,7 @@
 
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller.
+ *	Copyright (C) 1991-2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,9 @@
 
 /* Define to 1 if you have the `gettext' function. */
 #undef HAVE_GETTEXT
+
+/* Define this symbol of your system has GNU diff. */
+#undef HAVE_GNU_DIFF
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H

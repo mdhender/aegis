@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void remove_file _((void));
+void remove_file(void);
 
 #endif /* AEGIS_AERM_H */

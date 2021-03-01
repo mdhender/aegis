@@ -49,10 +49,8 @@
 #define NOT_SET (-1)
 
 
-static void difference_usage _((void));
-
 static void
-difference_usage()
+difference_usage(void)
 {
     char            *progname;
 
@@ -69,19 +67,15 @@ difference_usage()
 }
 
 
-static void difference_help _((void));
-
 static void
-difference_help()
+difference_help(void)
 {
     help("aed", difference_usage);
 }
 
 
-static void difference_list _((void));
-
 static void
-difference_list()
+difference_list(void)
 {
     string_ty       *project_name;
     long            change_number;
@@ -145,17 +139,9 @@ difference_list()
 }
 
 
-static void anticipate _((string_ty *, long, char *, long, log_style_ty,
-    string_list_ty *));
-
 static void
-anticipate(project_name, change_number, branch, cn2, log_style, wl)
-    string_ty       *project_name;
-    long            change_number;
-    char            *branch;
-    long            cn2;
-    log_style_ty    log_style;
-    string_list_ty  *wl;
+anticipate(string_ty *project_name, long change_number, char *branch, long cn2,
+    log_style_ty log_style, string_list_ty *wl)
 {
     string_ty       *dd1;
     string_ty       *dd2;
@@ -528,33 +514,18 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 }
 
 
-static int project_file_exists _((project_ty *, string_ty *));
-
 static int
-project_file_exists(pp, filename)
-    project_ty      *pp;
-    string_ty       *filename;
+project_file_exists(project_ty *pp, string_ty *filename)
 {
     fstate_src      p_src_data;
 
-    p_src_data = project_file_find(pp, filename);
-    return
-	(
-	    p_src_data
-	&&
-	    !p_src_data->deleted_by
-	&&
-	    !p_src_data->about_to_be_created_by
-	);
+    p_src_data = project_file_find(pp, filename, view_path_extreme);
+    return !!p_src_data;
 }
 
 
-static int change_file_exists _((change_ty *, string_ty *));
-
 static int
-change_file_exists(cp, filename)
-    change_ty       *cp;
-    string_ty       *filename;
+change_file_exists(change_ty *cp, string_ty *filename)
 {
     fstate_src      c_src_data;
 
@@ -570,10 +541,8 @@ change_file_exists(cp, filename)
 }
 
 
-static void difference_main _((void));
-
 static void
-difference_main()
+difference_main(void)
 {
     string_ty       *dd;
     string_list_ty  wl;
@@ -1120,6 +1089,7 @@ difference_main()
 
 	case file_action_modify:
 	case file_action_insulate:
+	case file_action_transparent:
 	    /* keep these ones */
 	    break;
 	}
@@ -1131,7 +1101,7 @@ difference_main()
 	 * If the edit numbers match (is up to date)
 	 * then do not merge this one.
 	 */
-	src2_data = project_file_find(pp2, s1);
+	src2_data = project_file_find(pp2, s1, view_path_extreme);
 	if (!src2_data)
 	    continue;
 	if (change_file_up_to_date(pp2, src1_data))
@@ -1239,6 +1209,7 @@ difference_main()
 
 	    case file_action_modify:
 	    case file_action_insulate:
+	    case file_action_transparent:
 		/* keep these ones */
 		break;
 	    }
@@ -1250,14 +1221,7 @@ difference_main()
 	     * If the edit numbers match (is up to date)
 	     * then do not merge this one.
 	     */
-	    src2_data = project_file_find(pp2, s1);
-	    if
-	    (
-		src2_data
-	    &&
-		(src2_data->deleted_by || src2_data->about_to_be_created_by)
-	    )
-		src2_data = 0;
+	    src2_data = project_file_find(pp2, s1, view_path_extreme);
 	    if (!src2_data)
 	    {
 		sub_context_ty  *scp;
@@ -1315,23 +1279,16 @@ difference_main()
 	    {
 		fstate_src      p_src_data;
 
-		p_src_data = project_file_find(cp->pp, s1);
+		p_src_data = project_file_find(cp->pp, s1, view_path_extreme);
 		assert
 		(
+		    !p_src_data
+		||
 		    !p_src_data->edit_origin
 		||
 		    p_src_data->edit_origin->revision
 		);
-		if
-		(
-		    p_src_data
-		&&
-		    p_src_data->edit_origin
-		&&
-		    !p_src_data->deleted_by
-		&&
-		    !p_src_data->about_to_be_created_by
-		)
+		if (p_src_data && p_src_data->edit_origin)
 		{
 		    history_version_type.free(reconstruct->edit);
 		    reconstruct->edit =
@@ -1527,18 +1484,29 @@ difference_main()
 	    if (src1_data->usage == file_usage_build)
 		continue;
 
-	    /*
-	     * the removed half of a move is not differenced
-	     */
-	    if
-	    (
-		src1_data->action == file_action_remove
-	    &&
-		src1_data->move
-	    &&
-		change_file_find(cp, src1_data->move)
-	    )
-		continue;
+	    switch (src1_data->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+		break;
+
+	    case file_action_remove:
+		/*
+		 * the removed half of a move is not differenced
+		 */
+		if (src1_data->move && change_file_find(cp, src1_data->move))
+		    continue;
+		break;
+
+	    case file_action_transparent:
+		/*
+		 * Transparent files are not differenced when integrating.
+		 */
+		if (integrating)
+		    continue;
+		break;
+	    }
 
 	    /*
 	     * build various paths
@@ -1599,14 +1567,7 @@ difference_main()
 	    /*
 	     * locate the equivalent project file
 	     */
-	    src2_data = project_file_find(pp2bl, s1);
-	    if
-	    (
-		src2_data
-	    &&
-		(src2_data->deleted_by || src2_data->about_to_be_created_by)
-	    )
-		src2_data = 0;
+	    src2_data = project_file_find(pp2bl, s1, view_path_extreme);
 
 	    switch (src1_data->action)
 	    {
@@ -1788,6 +1749,10 @@ difference_main()
 		str_free(original);
 		goto set_fingerprint;
 
+	    case file_action_transparent:
+		trace(("transparent\n"));
+		goto modifying_file;
+
 	    case file_action_insulate:
 		/*
 		 * At integration time, ignore read only
@@ -1839,7 +1804,7 @@ difference_main()
 
 
 void
-difference()
+difference(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

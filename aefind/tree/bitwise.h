@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 #include <main.h>
 
-struct tree_ty *tree_bitwise_and_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_bitwise_or_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_bitwise_xor_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_bitwise_not_new _((struct tree_ty *));
-struct tree_ty *tree_shift_left_new _((struct tree_ty *, struct tree_ty *));
-struct tree_ty *tree_shift_right_new _((struct tree_ty *, struct tree_ty *));
+struct tree_ty *tree_bitwise_and_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_bitwise_or_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_bitwise_xor_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_bitwise_not_new(struct tree_ty *);
+struct tree_ty *tree_shift_left_new(struct tree_ty *, struct tree_ty *);
+struct tree_ty *tree_shift_right_new(struct tree_ty *, struct tree_ty *);
 
 #endif /* AEFIND_TREE_BITWISE_H */

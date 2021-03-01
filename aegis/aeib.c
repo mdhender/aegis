@@ -53,10 +53,8 @@
 #include <user.h>
 
 
-static void integrate_begin_usage _((void));
-
 static void
-integrate_begin_usage()
+integrate_begin_usage(void)
 {
     char	    *progname;
 
@@ -73,19 +71,15 @@ integrate_begin_usage()
 }
 
 
-static void integrate_begin_help _((void));
-
 static void
-integrate_begin_help()
+integrate_begin_help(void)
 {
     help("aeib", integrate_begin_usage);
 }
 
 
-static void integrate_begin_list _((void));
-
 static void
-integrate_begin_list()
+integrate_begin_list(void)
 {
     string_ty	    *project_name;
 
@@ -127,11 +121,8 @@ integrate_begin_list()
 }
 
 
-static string_ty *remove_comma_d_if_present _((string_ty *));
-
 static string_ty *
-remove_comma_d_if_present(s)
-    string_ty	    *s;
+remove_comma_d_if_present(string_ty *s)
 {
     char	    *cp;
 
@@ -144,12 +135,8 @@ remove_comma_d_if_present(s)
 }
 
 
-static int isa_suppressed_filename _((change_ty *, string_ty *));
-
 static int
-isa_suppressed_filename(cp, fn)
-    change_ty	    *cp;
-    string_ty	    *fn;
+isa_suppressed_filename(change_ty *cp, string_ty *fn)
 {
     pconf	    pconf_data;
     pconf_integrate_begin_exceptions_list p;
@@ -168,14 +155,8 @@ isa_suppressed_filename(cp, fn)
 }
 
 
-static void chmod_common _((string_ty *, struct stat *, int, change_ty *));
-
 static void
-chmod_common(filename, st, rdwr, cp)
-    string_ty	    *filename;
-    struct stat	    *st;
-    int		    rdwr;
-    change_ty	    *cp;
+chmod_common(string_ty *filename, struct stat *st, int rdwr, change_ty *cp)
 {
     int		    mode;
 
@@ -207,15 +188,9 @@ chmod_common(filename, st, rdwr, cp)
 }
 
 
-static void link_tree_callback_minimum _((void *, dir_walk_message_ty,
-    string_ty *, struct stat *));
-
 static void
-link_tree_callback_minimum(arg, message, path, st)
-    void	    *arg;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+link_tree_callback_minimum(void	*arg, dir_walk_message_ty message,
+    string_ty *path, struct stat *st)
 {
     string_ty	    *s1;
     string_ty	    *s1short;
@@ -257,7 +232,7 @@ link_tree_callback_minimum(arg, message, path, st)
 	     * They shouldn't be source, anyway.
 	     */
 	    project_become_undo();
-	    exists = 0 != project_file_find(cp->pp, s1);
+	    exists = !!project_file_find(cp->pp, s1, view_path_extreme);
 	    project_become(cp->pp);
 	    if (!exists)
 		break;
@@ -277,15 +252,13 @@ link_tree_callback_minimum(arg, message, path, st)
 	 * relevant ,D file.
 	 */
 	project_become_undo();
-	src = project_file_find(cp->pp, s1short);
+	src = project_file_find(cp->pp, s1short, view_path_simple);
 	project_become(cp->pp);
 	if
 	(
 	    !src
 	||
 	    (src->deleted_by && str_equal(s1, s1short))
-	||
-	    src->about_to_be_created_by
 	)
 	{
 	    str_free(s1short);
@@ -314,7 +287,7 @@ link_tree_callback_minimum(arg, message, path, st)
 	project_become_undo();
 	remove_the_file =
 	    (
-		!project_file_find(cp->pp, s1short)
+		!project_file_find(cp->pp, s1short, view_path_simple)
 	    &&
 		isa_suppressed_filename(cp, s1short)
 	    );
@@ -332,7 +305,7 @@ link_tree_callback_minimum(arg, message, path, st)
 	trace(("ln %s %s\n", path->str_text, s2->str_text));
 	os_link(path, s2);
 	project_become_undo();
-	exists = 0 != project_file_find(cp->pp, s1);
+	exists = !!project_file_find(cp->pp, s1, view_path_simple);
 	project_become(cp->pp);
 	chmod_common(s2, st, !exists, cp);
 
@@ -365,15 +338,9 @@ link_tree_callback_minimum(arg, message, path, st)
 }
 
 
-static void link_tree_callback _((void *, dir_walk_message_ty, string_ty *,
-    struct stat *));
-
 static void
-link_tree_callback(arg, message, path, st)
-    void	    *arg;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
+    struct stat *st)
 {
     string_ty	    *s1;
     string_ty	    *s1short;
@@ -406,7 +373,7 @@ link_tree_callback(arg, message, path, st)
 
     case dir_walk_file:
 	project_become_undo();
-	src = project_file_find(cp->pp, s1);
+	src = project_file_find(cp->pp, s1, view_path_extreme);
 	project_become(cp->pp);
 	if (st->st_mode & 07000)
 	{
@@ -436,7 +403,7 @@ link_tree_callback(arg, message, path, st)
 	project_become_undo();
 	remove_the_file =
 	    (
-		!project_file_find(cp->pp, s1short)
+		!project_file_find(cp->pp, s1short, view_path_simple)
 	    &&
 		isa_suppressed_filename(cp, s1short)
 	    );
@@ -488,15 +455,9 @@ link_tree_callback(arg, message, path, st)
 }
 
 
-static void copy_tree_callback_minimum _((void *, dir_walk_message_ty,
-    string_ty *, struct stat *));
-
 static void
-copy_tree_callback_minimum(arg, message, path, st)
-    void	    *arg;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
+    string_ty *path, struct stat *st)
 {
     string_ty	    *s1;
     string_ty	    *s1short;
@@ -545,7 +506,7 @@ copy_tree_callback_minimum(arg, message, path, st)
 	if ((st->st_uid != uid) || (st->st_mode & 07000))
 	{
 	    project_become_undo();
-	    exists = 0 != project_file_find(cp->pp, s1);
+	    exists = !!project_file_find(cp->pp, s1, view_path_extreme);
 	    project_become(cp->pp);
 	    if (!exists)
 		break;
@@ -566,14 +527,12 @@ copy_tree_callback_minimum(arg, message, path, st)
 	 * relevant ,D file.
 	 */
 	project_become_undo();
-	src = project_file_find(cp->pp, s1short);
+	src = project_file_find(cp->pp, s1short, view_path_simple);
 	remove_the_file =
 	    (
 		!src
 	    ||
 		(src->deleted_by && str_equal(s1, s1short))
-	    ||
-		src->about_to_be_created_by
 	    );
 	project_become(cp->pp);
 	if (remove_the_file)
@@ -604,7 +563,7 @@ copy_tree_callback_minimum(arg, message, path, st)
 	project_become_undo();
 	remove_the_file =
 	    (
-		!project_file_find(cp->pp, s1short)
+		!project_file_find(cp->pp, s1short, view_path_extreme)
 	    &&
 		isa_suppressed_filename(cp, s1short)
 	    );
@@ -622,7 +581,7 @@ copy_tree_callback_minimum(arg, message, path, st)
 	trace(("cp %s %s\n", path->str_text, s2->str_text));
 	copy_whole_file(path, s2, 1);
 	project_become_undo();
-	exists = 0 != project_file_find(cp->pp, s1);
+	exists = !!project_file_find(cp->pp, s1, view_path_extreme);
 	project_become(cp->pp);
 	chmod_common(s2, st, !exists, cp);
 	break;
@@ -647,15 +606,9 @@ copy_tree_callback_minimum(arg, message, path, st)
 }
 
 
-static void copy_tree_callback _((void *, dir_walk_message_ty, string_ty *,
-    struct stat *));
-
 static void
-copy_tree_callback(arg, message, path, st)
-    void	    *arg;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
+    struct stat *st)
 {
     string_ty	    *s1;
     string_ty	    *s1short;
@@ -701,7 +654,7 @@ copy_tree_callback(arg, message, path, st)
 	if ((st->st_uid != uid) || (st->st_mode & 07000))
 	{
 	    project_become_undo();
-	    exists = 0 != project_file_find(cp->pp, s1);
+	    exists = !!project_file_find(cp->pp, s1, view_path_extreme);
 	    project_become(cp->pp);
 	    if (!exists)
 		break;
@@ -734,7 +687,7 @@ copy_tree_callback(arg, message, path, st)
 	project_become_undo();
 	remove_the_file =
 	    (
-		!project_file_find(cp->pp, s1short)
+		!project_file_find(cp->pp, s1short, view_path_extreme)
 	    &&
 		isa_suppressed_filename(cp, s1short)
 	    );
@@ -751,7 +704,7 @@ copy_tree_callback(arg, message, path, st)
 	 */
 	copy_whole_file(path, s2, 1);
 	project_become_undo();
-	exists = 0 != project_file_find(cp->pp, s1);
+	exists = !!project_file_find(cp->pp, s1, view_path_extreme);
 	project_become(cp->pp);
 	chmod_common(s2, st, !exists, cp);
 	break;
@@ -781,10 +734,8 @@ copy_tree_callback(arg, message, path, st)
 }
 
 
-static void integrate_begin_main _((void));
-
 static void
-integrate_begin_main()
+integrate_begin_main(void)
 {
     string_ty	    *bl;
     string_ty	    *dd;
@@ -1037,8 +988,18 @@ integrate_begin_main()
 	    src_data = change_file_nth(cp, j);
 	    if (!src_data)
 		break;
-	    if (src_data->action == file_action_remove)
+	    switch (src_data->action)
 	    {
+	    case file_action_create:
+	    case file_action_modify:
+		break;
+
+	    case file_action_insulate:
+		assert(0);
+		break;
+
+	    case file_action_remove:
+	    case file_action_transparent:
 		minimum = 1;
 		break;
 	    }
@@ -1072,10 +1033,34 @@ integrate_begin_main()
 	src_data = change_file_nth(cp, j);
 	if (!src_data)
 	    break;
-	if (src_data->usage == file_usage_build)
+	switch (src_data->usage)
+	{
+	case file_usage_source:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+
+	case file_usage_build:
 	    continue;
-	if (src_data->action == file_action_remove)
+	}
+	switch (src_data->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_insulate:
+	    assert(0);
+	    break;
+
+	case file_action_transparent:
+	    if (change_was_a_branch(cp))
+		continue;
+	    break;
+
+	case file_action_remove:
 	    continue;
+	}
 
 	s1 = change_file_path(cp, src_data->file_name);
 	project_become(pp);
@@ -1195,6 +1180,7 @@ integrate_begin_main()
 	    break;
 
 	case file_action_remove:
+	case file_action_transparent:
 	    break;
 
 	case file_action_modify:

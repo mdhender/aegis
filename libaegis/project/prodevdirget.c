@@ -26,11 +26,10 @@
 
 
 int
-project_protect_development_directory_get(pp)
-	project_ty	*pp;
+project_protect_development_directory_get(project_ty *pp)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	cp = project_change_get(pp);
-	return change_branch_protect_development_directory_get(cp);
+    cp = project_change_get(pp);
+    return change_branch_protect_development_directory_get(cp);
 }

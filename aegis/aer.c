@@ -48,10 +48,8 @@
  *	briefly describe how to used the 'aegis -RePorT' command.
  */
 
-static void report_usage _((void));
-
 static void
-report_usage()
+report_usage(void)
 {
     char	    *progname;
 
@@ -86,19 +84,15 @@ report_usage()
  *	describe in detail how to use the 'aegis -RePorT' command.
  */
 
-static void report_help _((void));
-
 static void
-report_help()
+report_help(void)
 {
     help("aer", report_usage);
 }
 
 
-static void report_list2 _((void));
-
 static void
-report_list2()
+report_list2(void)
 {
     report_list(report_usage);
 }
@@ -117,10 +111,8 @@ report_list2()
  *	It extracts what to do from the command line.
  */
 
-static void report_main _((void));
-
 static void
-report_main()
+report_main(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -275,7 +267,7 @@ report_main()
  */
 
 void
-report()
+report(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

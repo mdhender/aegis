@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,24 +28,28 @@
 
 
 fstate_src
-project_file_nth(pp, n)
-	project_ty	*pp;
-	size_t		n;
+project_file_nth(project_ty *pp, size_t n, view_path_ty as_view_path)
 {
-	string_list_ty	*wlp;
-	fstate_src	src_data;
+    string_list_ty  *wlp;
+    fstate_src      src_data;
 
-	trace(("project_file_nth(pp = %8.8lX, n = %ld)\n{\n"/*}*/,
-		(long)pp, (long)n));
-	wlp = project_file_list_get(pp);
-	if (n < wlp->nstrings)
-	{
-		src_data = project_file_find(pp, wlp->string[n]);
-		assert(src_data);
-	}
-	else
-		src_data = 0;
-	trace(("return %8.8lX;\n", (long)src_data));
-	trace((/*{*/"}\n"));
-	return src_data;
+    trace(("project_file_nth(pp = %8.8lX, n = %ld)\n{\n", (long)pp, (long)n));
+    /* do not free wlp, it's cached */
+    wlp = project_file_list_get(pp, as_view_path);
+
+    if (n < wlp->nstrings)
+    {
+	src_data = project_file_find(pp, wlp->string[n], as_view_path);
+
+	/*
+	 * If this assert fails, it means thato project_file_list_get and
+	 * project_file_find are interpreting the view path differently.
+	 */
+	assert(src_data);
+    }
+    else
+	src_data = 0;
+    trace(("return %8.8lX;\n", (long)src_data));
+    trace(("}\n"));
+    return src_data;
 }

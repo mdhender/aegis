@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,17 +57,17 @@ struct rpt_value_method_ty
 	size_t		size;
 	char		*name;
 	rpt_value_type_ty type;
-	void (*construct)_((struct rpt_value_ty *));
-	void (*destruct)_((struct rpt_value_ty *));
-	struct rpt_value_ty *(*arithmetic)_((struct rpt_value_ty *));
-	struct rpt_value_ty *(*stringize)_((struct rpt_value_ty *));
-	struct rpt_value_ty *(*booleanize)_((struct rpt_value_ty *));
-	struct rpt_value_ty *(*lookup)_((struct rpt_value_ty *,
-		struct rpt_value_ty *, int));
-	struct rpt_value_ty *(*keys)_((struct rpt_value_ty *));
-	struct rpt_value_ty *(*count)_((struct rpt_value_ty *));
-	char *(*type_of)_((struct rpt_value_ty *));
-	struct rpt_value_ty *(*undefer)_((struct rpt_value_ty *));
+	void (*construct)(struct rpt_value_ty *);
+	void (*destruct)(struct rpt_value_ty *);
+	struct rpt_value_ty *(*arithmetic)(struct rpt_value_ty *);
+	struct rpt_value_ty *(*stringize)(struct rpt_value_ty *);
+	struct rpt_value_ty *(*booleanize)(struct rpt_value_ty *);
+	struct rpt_value_ty *(*lookup)(struct rpt_value_ty *,
+		struct rpt_value_ty *, int);
+	struct rpt_value_ty *(*keys)(struct rpt_value_ty *);
+	struct rpt_value_ty *(*count)(struct rpt_value_ty *);
+	char *(*type_of)(struct rpt_value_ty *);
+	struct rpt_value_ty *(*undefer)(struct rpt_value_ty *);
 };
 
 #define RPT_VALUE				\
@@ -80,16 +80,16 @@ struct rpt_value_ty
 	RPT_VALUE
 };
 
-rpt_value_ty *rpt_value_alloc _((rpt_value_method_ty *));
-void rpt_value_free _((rpt_value_ty *));
-rpt_value_ty *rpt_value_copy _((rpt_value_ty *));
-rpt_value_ty *rpt_value_arithmetic _((rpt_value_ty *));
-rpt_value_ty *rpt_value_stringize _((rpt_value_ty *));
-rpt_value_ty *rpt_value_booleanize _((rpt_value_ty *));
-rpt_value_ty *rpt_value_lookup _((rpt_value_ty *, rpt_value_ty *, int));
-rpt_value_ty *rpt_value_keys _((rpt_value_ty *));
-rpt_value_ty *rpt_value_count _((rpt_value_ty *));
-char *rpt_value_typeof _((rpt_value_ty *));
-rpt_value_ty *rpt_value_undefer _((rpt_value_ty *));
+rpt_value_ty *rpt_value_alloc(rpt_value_method_ty *);
+void rpt_value_free(rpt_value_ty *);
+rpt_value_ty *rpt_value_copy(rpt_value_ty *);
+rpt_value_ty *rpt_value_arithmetic(rpt_value_ty *);
+rpt_value_ty *rpt_value_stringize(rpt_value_ty *);
+rpt_value_ty *rpt_value_booleanize(rpt_value_ty *);
+rpt_value_ty *rpt_value_lookup(rpt_value_ty *, rpt_value_ty *, int);
+rpt_value_ty *rpt_value_keys(rpt_value_ty *);
+rpt_value_ty *rpt_value_count(rpt_value_ty *);
+char *rpt_value_typeof(rpt_value_ty *);
+rpt_value_ty *rpt_value_undefer(rpt_value_ty *);
 
 #endif /* AEGIS_AER_VALUE_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <input.h>
 
-input_ty *input_stdin _((void));
+input_ty *input_stdin(void);
 
 #endif /* LIBAEGIS_INPUT_STDIN_H */

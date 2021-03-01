@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct rpt_value_ty; /* existence */
 
-struct tree_ty *tree_constant_new _((struct rpt_value_ty *));
+struct tree_ty *tree_constant_new(struct rpt_value_ty *);
 
 #endif /* AEFIND_TREE_CONSTANT_H */

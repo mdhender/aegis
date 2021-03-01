@@ -1,6 +1,6 @@
 dnl
 dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997-1999, 2001, 2002 Peter Miller;
+dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2003 Peter Miller;
 dnl	All rights reserved.
 dnl
 dnl	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,33 @@ AC_PROG_CC
 AC_PROG_CPP
 
 dnl
+dnl	Look for an existing Aegis installation, and use the "aegis
+dnl	--configured" command to replicate its configuration.
+dnl	Unless they said --witn-no-aegis-configured
+dnl
+if test "x$prefix" = "xNONE"
+then
+    if test "x$with_no_aegis_configured" = "x"; then
+	cfgval=`aegis --configured 2> /dev/null`
+	if test $? -eq 0; then
+	    eval "$cfgval"
+	else
+	    cfgval=`which aegis 2> /dev/null`
+	    if test $? -ne 0; then
+		case "$cfgval" in
+		/bin/aegis )
+		    prefix=/
+		    ;;
+		*/bin/aegis )
+		    prefix=`echo $cfgval | sed 's|/bin/aegis$||'`
+		    ;;
+		esac
+	    fi
+	fi
+    fi
+fi
+
+dnl
 dnl	Avoid the /usr/ucb/cc compiler, it screws up readdir,
 dnl	some systems seem to have the ucb one early in the path.
 dnl
@@ -46,7 +73,6 @@ fi
 AC_PROG_INSTALL
 AC_PROG_YACC
 AC_PROG_RANLIB
-dnl AC_AIX  - omitted because it hangs?!?
 AC_MINIX
 AC_ISC_POSIX
 AC_OBJEXT
@@ -77,6 +103,22 @@ AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
 AC_PATH_PROG(PERL, perl, /usr/local/bin/perl)
 AC_DEFINE_UNQUOTED(CONF_PERL, ["$PERL"],
 [Set this to be the absolute path of a Perl interpreter.])
+
+dnl
+dnl	See if we are using GNU diff
+dnl
+AC_MSG_CHECKING([for GNU diff])
+HAVE_GNU_DIFF=no
+if diff --version > conftest.out 2>&1
+then
+    if grep 'GNU diff' conftest.out > conftest.err 2>&1
+    then
+	AC_DEFINE(HAVE_GNU_DIFF, 1,
+	    [Define this symbol of your system has GNU diff.])
+	HAVE_GNU_DIFF=yes
+    fi
+fi
+AC_MSG_RESULT([$HAVE_GNU_DIFF])
 
 dnl
 dnl	Test if groff takes -ms or -mgs for the macro package.
@@ -388,11 +430,12 @@ dnl
 dnl	Cygwin always runs in "single user" mode, so this test isn't
 dnl	useful.  Just default the values to the preferred ones.
 dnl
-AC_MSG_CHECKING([for owner of aegis library files])
-AEGIS_UID=3
-AEGIS_GID=3
-if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
-if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
+if test "x$AEGIS_UID" = "x"; then
+    AC_MSG_CHECKING([for owner of aegis library files])
+    AEGIS_UID=3
+    AEGIS_GID=3
+    if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
+    if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
 #line __oline__ "configure"
 #include <sys/types.h>
@@ -418,11 +461,12 @@ EOF
 		fi
 	fi
 	rm -rf conftest*
+    fi
+    fi
+    AC_SUBST(AEGIS_UID)
+    AC_SUBST(AEGIS_GID)
+    AC_MSG_RESULT([$AEGIS_UID, $AEGIS_GID])
 fi
-fi
-AC_SUBST(AEGIS_UID)
-AC_SUBST(AEGIS_GID)
-AC_MSG_RESULT([$AEGIS_UID, $AEGIS_GID])
 
 dnl
 dnl	Test to see if enums are the same size as ints
@@ -518,7 +562,7 @@ AC_SUBST(PROGRAM_SUFFIX)
 AH_TOP(
 [/*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller.
+ *	Copyright (C) 1991-2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify

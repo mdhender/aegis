@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <output.h>
 
-output_ty *output_uuencode _((output_ty *, int));
+output_ty *output_uuencode(output_ty *, int);
 
 #endif /* LIBAEGIS_OUTPUT_UUENCODE_H */

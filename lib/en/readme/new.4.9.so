@@ -19,10 +19,96 @@
 .\"
 .\" MANIFEST: document describing new 4.9 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change NN
+.PP
+.if n *
+.if t \(bu
+.\" change 25, 28, 33, 39, 52
+There is a new \fIaemt\fP(1) command, used to make branch files
+"transparent".  This is like an \fIaecpu\fP(1) command for branches, but
+done through the agency of a change set.
+.PP
+\fBNote:\fP The behaviour of the view path in the presence of transparent
+files is complete, however full support for \fIaecp \-delta\fP and reports
+is not.  Support will be present in the next release.  File transparency
+information stored by this release will be able to be used by \fIaecp
+\-delta\fP and reports in the next release.
+.PP
+.if n *
+.if t \(bu
+.\" change 56
+There is a new \fIaemtu\fP(1) command, to undo the effects of the
+\fIaemt\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" change 58
+It is now possible to use the \fIaeclone\fP(1) command on changes in
+the \fIawaiting development\fP state.
+.PP
+.if n *
+.if t \(bu
+.\" change 55
+The problematics directory permissions check has been removed from the
+\fIaeintegratq\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" change 53
+A bug has been fixed in \fIaecp\fP(1) when retrieving deltas before
+files were removed.
+.PP
+.if n *
+.if t \(bu
+.\" change 38
+There are new \fI${split}\fP and \fI${unsplit}\fP substitutions for
+manipulating search paths (\fIetc)\fP.  See \fIaesub\fP(5) for more
+information.
+.PP
+.if n *
+.if t \(bu
+.\" change 37
+A bug has been fixed where test time stamps were not updated for batch
+tests which covered multiple architectures.
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+The \fIaedist\fP(1) program now includes a change number, which will be
+used on receipt if possible.  Note that this produces .ae files which
+are not backwards compatible; the -nopatch option will suppress inclusion
+of the change number in the archive.
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+A German translation of Recursive Make Considered Harmful has been added,
+courtesy of CM Magazin.
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+A bug with \fIaeimport\fP(1) and removed files has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+A problem has been fixed with the transition case when a project
+changed from \f[CW]develop_end_action = goto_being_reviewed\fP to
+\f[CW]goto_awaiting_review\fP while having changes in the \fIbeing
+reviewed\fP state.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+A problem with long command lines has been fixed in the
+\fIaedist \-receive\fP,
+\fIaepatch \-receive\fP and
+\fIaetar \-receive\fP commands.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+A problem with \fIaeimport\fP(1) and binary files has been fixed.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.9

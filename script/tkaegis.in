@@ -2191,7 +2191,7 @@ proc enter_integrate_mode {} {
         set mode "integrate"
 
         AddMainMenuItem integrate Integrate
-          AddDropDownMenuCommand review "View Changes" view_changes
+          AddDropDownMenuCommand integrate "View Changes" view_changes
           AddDropDownMenuSeparator integrate
           AddDropDownMenuCommand integrate "Start Integration" integrate_begin
           AddDropDownMenuCommand integrate "Resume Integration" integrate_resume

@@ -63,7 +63,7 @@
 #include <zero.h>
 
 
-static void list_list_list _((string_ty *, long)); /* forward */
+static void list_list_list(string_ty *, long); /* forward */
 
 
 typedef struct table_ty table_ty;
@@ -71,7 +71,7 @@ struct table_ty
 {
     char	    *name;
     char	    *description;
-    void	    (*func)_((string_ty *, long));
+    void	    (*func)(string_ty *, long);
 };
 
 
@@ -190,10 +190,8 @@ static table_ty table[] =
 };
 
 
-static void list_usage _((void));
-
 static void
-list_usage()
+list_usage(void)
 {
     char	    *progname;
 
@@ -205,19 +203,15 @@ list_usage()
 }
 
 
-static void list_help _((void));
-
 static void
-list_help()
+list_help(void)
 {
     help("ael", list_usage);
 }
 
 
-static void list_list _((void));
-
 static void
-list_list()
+list_list(void)
 {
     trace(("list_list()\n{\n"));
     arglex();
@@ -228,10 +222,8 @@ list_list()
 }
 
 
-static void list_main _((void));
-
 static void
-list_main()
+list_main(void)
 {
     sub_context_ty  *scp;
     char	    *listname;
@@ -343,7 +335,7 @@ list_main()
 
 
 void
-list()
+list(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
@@ -357,12 +349,8 @@ list()
 }
 
 
-static void list_list_list _((string_ty *, long));
-
 static void
-list_list_list(project_name, change_number)
-    string_ty	    *project_name;
-    long	    change_number;
+list_list_list(string_ty *project_name, long change_number)
 {
     output_ty	    *name_col =	    0;
     output_ty	    *desc_col =	    0;

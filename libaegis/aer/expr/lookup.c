@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994-1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,131 +33,121 @@
 #include <trace.h>
 
 
-static rpt_value_ty *evaluate _((rpt_expr_ty *));
-
 static rpt_value_ty *
-evaluate(this)
-	rpt_expr_ty	*this;
+evaluate(rpt_expr_ty *this)
 {
-	rpt_value_ty	*lhs;
-	rpt_value_ty	*rhs;
-	int		lvalue;
-	rpt_value_ty	*result;
+    rpt_value_ty    *lhs;
+    rpt_value_ty    *rhs;
+    int		    lvalue;
+    rpt_value_ty    *result;
 
-	trace(("expr_lookup::evaluate(this = %08lX)\n{\n"/*}*/, (long)this));
-	assert(this->nchild == 2);
-	trace(("evaluate lhs\n"));
-	lhs = rpt_expr_evaluate(this->child[0], 1);
-	if (lhs->method->type == rpt_value_type_error)
-	{
-		trace((/*{*/"}\n"));
-		return lhs;
-	}
-	assert(lhs->reference_count >= 1);
-	trace(("evaluate rhs\n"));
-	rhs = rpt_expr_evaluate(this->child[1], 1);
-	if (rhs->method->type == rpt_value_type_error)
-	{
-		rpt_value_free(lhs);
-		trace((/*{*/"}\n"));
-		return rhs;
-	}
-	assert(rhs->reference_count >= 1);
-	lvalue = (lhs->method->type == rpt_value_type_reference);
-	if (lvalue)
-	{
-		rpt_value_ty	*vp1;
-
-		trace(("make sure lvalue is a struct\n"));
-		vp1 = rpt_value_reference_get(lhs);
-		assert(vp1->reference_count >= 2);
-		if (vp1->method->type != rpt_value_type_structure)
-		{
-			rpt_value_ty	*vp2;
-
-			trace(("create and assign empty struct\n"));
-			vp2 = rpt_value_struct((struct symtab_ty *)0);
-			rpt_value_reference_set(lhs, vp2);
-			assert(vp2->reference_count == 2);
-			rpt_value_free(vp2);
-		}
-		rpt_value_free(vp1);
-	}
-
-	/*
-	 * do the lookup
-	 */
-	trace(("do the lookup\n"));
-	result = rpt_value_lookup(lhs, rhs, lvalue);
-	if (result->method->type == rpt_value_type_error)
-	{
-		assert(this->pos);
-		rpt_value_error_setpos(result, this->pos);
-	}
-
-	/*
-	 * clean up and go home
-	 */
-	trace(("clean up and go home\n"));
+    trace(("expr_lookup::evaluate(this = %08lX)\n{\n", (long)this));
+    assert(this->nchild == 2);
+    trace(("evaluate lhs\n"));
+    lhs = rpt_expr_evaluate(this->child[0], 1);
+    if (lhs->method->type == rpt_value_type_error)
+    {
+	trace(("}\n"));
+	return lhs;
+    }
+    assert(lhs->reference_count >= 1);
+    trace(("evaluate rhs\n"));
+    rhs = rpt_expr_evaluate(this->child[1], 1);
+    if (rhs->method->type == rpt_value_type_error)
+    {
 	rpt_value_free(lhs);
-	assert(rhs->reference_count >= 1);
-	rpt_value_free(rhs);
-	assert(result->reference_count >= 1);
-	trace((/*{*/"}\n"));
-	return result;
+	trace(("}\n"));
+	return rhs;
+    }
+    assert(rhs->reference_count >= 1);
+    lvalue = (lhs->method->type == rpt_value_type_reference);
+    if (lvalue)
+    {
+	rpt_value_ty	*vp1;
+
+	trace(("make sure lvalue is a struct\n"));
+	vp1 = rpt_value_reference_get(lhs);
+	assert(vp1->reference_count >= 2);
+	if (vp1->method->type != rpt_value_type_structure)
+	{
+	    rpt_value_ty    *vp2;
+
+	    trace(("create and assign empty struct\n"));
+	    vp2 = rpt_value_struct((struct symtab_ty *)0);
+	    rpt_value_reference_set(lhs, vp2);
+	    assert(vp2->reference_count == 2);
+	    rpt_value_free(vp2);
+	}
+	rpt_value_free(vp1);
+    }
+
+    /*
+     * do the lookup
+     */
+    trace(("do the lookup\n"));
+    result = rpt_value_lookup(lhs, rhs, lvalue);
+    if (result->method->type == rpt_value_type_error)
+    {
+	assert(this->pos);
+	rpt_value_error_setpos(result, this->pos);
+    }
+
+    /*
+     * clean up and go home
+     */
+    trace(("clean up and go home\n"));
+    rpt_value_free(lhs);
+    assert(rhs->reference_count >= 1);
+    rpt_value_free(rhs);
+    assert(result->reference_count >= 1);
+    trace(("}\n"));
+    return result;
 }
 
 
-static int lvalue _((rpt_expr_ty *));
-
 static int
-lvalue(ep)
-	rpt_expr_ty	*ep;
+lvalue(rpt_expr_ty *ep)
 {
-	assert(ep->nchild == 2);
-	return rpt_expr_lvalue(ep->child[0]);
+    assert(ep->nchild == 2);
+    return rpt_expr_lvalue(ep->child[0]);
 }
 
 
 static rpt_expr_method_ty method =
 {
-	sizeof(rpt_expr_ty),
-	"lookup",
-	0, /* construct */
-	0, /* destruct */
-	evaluate,
-	lvalue,
+    sizeof(rpt_expr_ty),
+    "lookup",
+    0, /* construct */
+    0, /* destruct */
+    evaluate,
+    lvalue,
 };
 
 
 rpt_expr_ty *
-rpt_expr_lookup(e1, e2)
-	rpt_expr_ty	*e1;
-	rpt_expr_ty	*e2;
+rpt_expr_lookup(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-	rpt_expr_ty	*this;
+    rpt_expr_ty     *this;
 
-	this = rpt_expr_alloc(&method);
-	rpt_expr_append(this, e1);
-	rpt_expr_append(this, e2);
-	return this;
+    this = rpt_expr_alloc(&method);
+    rpt_expr_append(this, e1);
+    rpt_expr_append(this, e2);
+    return this;
 }
 
 
 rpt_expr_ty *
-rpt_expr_dot(e1, name)
-	rpt_expr_ty	*e1;
-	string_ty	*name;
+rpt_expr_dot(rpt_expr_ty *e1, string_ty *name)
 {
-	rpt_value_ty	*vp;
-	rpt_expr_ty	*e2;
-	rpt_expr_ty	*result;
+    rpt_value_ty    *vp;
+    rpt_expr_ty     *e2;
+    rpt_expr_ty     *result;
 
-	vp = rpt_value_string(name);
-	e2 = rpt_expr_constant(vp);
-	e2->pos = rpt_lex_pos_get();
-	rpt_value_free(vp);
-	result = rpt_expr_lookup(e1, e2);
-	rpt_expr_free(e2);
-	return result;
+    vp = rpt_value_string(name);
+    e2 = rpt_expr_constant(vp);
+    e2->pos = rpt_lex_pos_get();
+    rpt_value_free(vp);
+    result = rpt_expr_lookup(e1, e2);
+    rpt_expr_free(e2);
+    return result;
 }

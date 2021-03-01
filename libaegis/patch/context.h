@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,9 @@ struct patch_context_ty
 	string_list_ty	buffer;
 };
 
-patch_context_ty *patch_context_new _((input_ty *));
-void patch_context_delete _((patch_context_ty *));
-string_ty *patch_context_getline _((patch_context_ty *, int));
-void patch_context_discard _((patch_context_ty *, int));
+patch_context_ty *patch_context_new(input_ty *);
+void patch_context_delete(patch_context_ty *);
+string_ty *patch_context_getline(patch_context_ty *, int);
+void patch_context_discard(patch_context_ty *, int);
 
 #endif /* LIBAEGIS_PATCH_CONTEXT_H */

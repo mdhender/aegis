@@ -39,11 +39,12 @@ cklinlen_obj =
     ;
 
 cklinlen/.checked: [arch]/bin/cklinlen [change_files]
+    set nocascade
 {
-    [resolve [arch]/bin/cklinlen]
-	['if' [not [in [collect hostname] osprey]] 'then' -w ]
-	[resolve [sort [change_files]]]
-	;
+    [resolve [arch]/bin/cklinlen] `cat`;
+data
+[unsplit "\n" [resolve [sort [change_files] [project_files]]]]
+dataend
     date > [target]
 	set silent;
 }

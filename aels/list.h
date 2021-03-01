@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,6 @@ extern int group_flag;
 extern int size_flag;
 extern int when_flag;
 
-void list _((string_list_ty *, struct project_ty *, struct change_ty *));
+void list(string_list_ty *, struct project_ty *, struct change_ty *);
 
 #endif /* AELS_LIST_H */

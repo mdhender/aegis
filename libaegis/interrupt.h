@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-void interrupt_disable _((void));
-void interrupt_enable _((void));
+void interrupt_disable(void);
+void interrupt_enable(void);
 
 #endif /* LIBAEGIS_INTERRUPT_H */

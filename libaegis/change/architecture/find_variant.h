@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: interface definition for libaegis/change/architecture/find_variant.c
+ * MANIFEST: interface defn for libaegis/change/architecture/find_variant.c
  */
 
 #ifndef LIBAEGIS_CHANGE_ARCHITECTURE_FIND_VARIANT_H
@@ -26,6 +26,6 @@
 #include <change.h>
 #include <cstate.h>
 
-cstate_architecture_times change_find_architecture_variant _((change_ty *cp));
+cstate_architecture_times change_find_architecture_variant(change_ty *cp);
 
 #endif /* LIBAEGIS_CHANGE_ARCHITECTURE_FIND_VARIANT_H */

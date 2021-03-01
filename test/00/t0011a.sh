@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002 Peter Miller;
+#	Copyright (C) 1991-1998, 2002, 2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -211,7 +211,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 
 cat > $workchan/Howto.cook << 'TheEnd'
 set unlink mkdir;
-if [match_mask %1C%2 [version]] then
+if [match_mask %1C%2 x[version]] then
 {
 	baseline = [collect aegis -cd -bl -p [project]];
 	search_list = . [baseline];

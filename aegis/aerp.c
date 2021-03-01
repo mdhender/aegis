@@ -29,6 +29,7 @@
 #include <aerp.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <dir.h>
@@ -121,27 +122,26 @@ check_permissions(change_ty *cp, user_ty *up)
 {
     cstate	    cstate_data;
     project_ty	    *pp;
+    cstate_history  hp;
 
     cstate_data = change_cstate_get(cp);
-    pp = cp->pp;
 
     /*
      * it is an error if the change is not in the 'being_reviewed' state.
      */
     if (cstate_data->state != cstate_state_being_reviewed)
 	change_fatal(cp, 0, i18n("bad rp state"));
-    if
-    (
-	project_develop_end_action_get(pp)
-    ==
-	pattr_develop_end_action_goto_awaiting_review
-    )
+    assert(cstate_data->history->length >= 3);
+    hp = cstate_data->history->list[cstate_data->history->length - 1];
+    if (hp->what == cstate_history_what_review_begin)
     {
 	if (!str_equal(change_reviewer_name(cp), user_name(up)))
 	    change_fatal(cp, 0, i18n("not reviewer"));
     }
     else
     {
+	assert(hp->what == cstate_history_what_develop_end);
+	pp = cp->pp;
 	if (!project_reviewer_query(pp, user_name(up)))
 	    project_fatal(pp, 0, i18n("not a reviewer"));
 	if
@@ -401,13 +401,37 @@ review_pass_main(void)
 
 	file_required = 1;
 	diff_file_required = 1;
-	if (src_data->usage == file_usage_build)
+	switch (src_data->usage)
 	{
+	case file_usage_source:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+
+	case file_usage_build:
 	    file_required = 0;
 	    diff_file_required = 0;
+	    break;
 	}
-	if (src_data->action == file_action_remove)
+	switch (src_data->action)
 	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_insulate:
+	    assert(0);
+	    break;
+
+	case file_action_transparent:
+	    if (change_was_a_branch(cp))
+	    {
+		file_required = 0;
+		diff_file_required = 0;
+	    }
+	    break;
+
+	case file_action_remove:
 	    file_required = 0;
 
 	    /*
@@ -415,6 +439,7 @@ review_pass_main(void)
 	     */
 	    if (src_data->move && change_file_find(cp, src_data->move))
 		diff_file_required = 0;
+	    break;
 	}
 
 	path = change_file_path(cp, src_data->file_name);

@@ -367,7 +367,7 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
     )
 	return;
 
-    p_src = project_file_find(pp, long_name);
+    p_src = project_file_find(pp, long_name, view_path_simple);
     if (p_src && p_src->about_to_be_created_by)
 	p_src = 0;
     if

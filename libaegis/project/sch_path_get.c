@@ -27,10 +27,7 @@
 
 
 void
-project_search_path_get(pp, wlp, resolve)
-    project_ty      *pp;
-    string_list_ty  *wlp;
-    int             resolve;
+project_search_path_get(project_ty *pp, string_list_ty *wlp, int resolve)
 {
     project_ty      *ppp;
 

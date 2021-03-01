@@ -49,10 +49,8 @@
 #include <str_list.h>
 
 
-static void new_test_usage _((void));
-
 static void
-new_test_usage()
+new_test_usage(void)
 {
     char	    *progname;
 
@@ -64,19 +62,15 @@ new_test_usage()
 }
 
 
-static void new_test_help _((void));
-
 static void
-new_test_help()
+new_test_help(void)
 {
     help("aent", new_test_usage);
 }
 
 
-static void new_test_list _((void));
-
 static void
-new_test_list()
+new_test_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -133,10 +127,8 @@ new_test_list()
 }
 
 
-static void new_test_main _((void));
-
 static void
-new_test_main()
+new_test_main(void)
 {
     cstate	    cstate_data;
     string_ty	    *s1;
@@ -450,15 +442,8 @@ new_test_main()
 	    }
 	    else
 	    {
-		src_data = project_file_find(pp, s1);
-		if
-		(
-		    src_data
-		&&
-		    !src_data->deleted_by
-		&&
-		    !src_data->about_to_be_created_by
-		)
+		src_data = project_file_find(pp, s1, view_path_extreme);
+		if (src_data)
 		{
 		    sub_context_ty  *scp;
 
@@ -484,7 +469,12 @@ new_test_main()
 	{
 	    n = project_next_test_number_get(pp);
 	    s1 = change_new_test_filename_get(cp, n, !manual_flag);
-	    if (!change_file_find(cp, s1) && !project_file_find(pp, s1))
+	    if
+	    (
+		!change_file_find(cp, s1)
+	    &&
+		!project_file_find(pp, s1, view_path_extreme)
+	    )
 		break;
 	    s1 = 0;
 	}
@@ -691,7 +681,7 @@ new_test_main()
 
 
 void
-new_test()
+new_test(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

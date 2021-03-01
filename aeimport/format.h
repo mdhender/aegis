@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,22 +33,22 @@
 typedef struct format_ty format_ty;
 struct format_ty
 {
-	struct format_vtable_ty *vptr;
+    struct format_vtable_ty *vptr;
 };
 
-void format_delete _((format_ty *));
-struct format_search_list_ty *format_search _((format_ty *, string_ty *));
+void format_delete(format_ty *);
+struct format_search_list_ty *format_search(format_ty *, string_ty *);
 
 /*
  * Fetch strings suitable for placing in the project "config" file.
  */
-string_ty *format_history_get _((format_ty *));
-string_ty *format_history_put _((format_ty *));
-string_ty *format_history_query _((format_ty *));
-string_ty *format_diff _((format_ty *));
-string_ty *format_merge _((format_ty *));
-void format_unlock _((format_ty *, string_ty *));
+string_ty *format_history_get(format_ty *);
+string_ty *format_history_put(format_ty *);
+string_ty *format_history_query(format_ty *);
+string_ty *format_diff(format_ty *);
+string_ty *format_merge(format_ty *);
+void format_unlock(format_ty *, string_ty *);
 
-format_ty *format_find _((const char *));
+format_ty *format_find(const char *);
 
 #endif /* AEIMPORT_FORMAT_H */

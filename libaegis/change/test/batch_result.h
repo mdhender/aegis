@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,27 +28,29 @@
 typedef struct batch_result_ty batch_result_ty;
 struct batch_result_ty
 {
-	string_ty	*file_name;
-	int		exit_status;
+    string_ty       *file_name;
+    int             exit_status;
+    string_ty       *architecture;
 };
 
 typedef struct batch_result_list_ty batch_result_list_ty;
 struct batch_result_list_ty
 {
-	size_t		length;
-	size_t		length_max;
-	batch_result_ty	*item;
+    size_t          length;
+    size_t          length_max;
+    batch_result_ty *item;
 
-	long		pass_count;
-	long		no_result_count;
-	long		fail_count;
+    long            pass_count;
+    long            no_result_count;
+    long            fail_count;
 };
 
-batch_result_list_ty *batch_result_list_new _((void));
-void batch_result_list_delete _((batch_result_list_ty *));
-void batch_result_list_append _((batch_result_list_ty *, string_ty *, int));
-void batch_result_list_append_list _((batch_result_list_ty *,
-	const batch_result_list_ty *));
-int batch_result_list_member _((batch_result_list_ty *, string_ty *));
+batch_result_list_ty *batch_result_list_new(void);
+void batch_result_list_delete(batch_result_list_ty *);
+void batch_result_list_append(batch_result_list_ty *brlp, string_ty *file_name,
+    int exit_status, string_ty *architecture);
+void batch_result_list_append_list(batch_result_list_ty *,
+    const batch_result_list_ty *);
+int batch_result_list_member(batch_result_list_ty *, string_ty *);
 
 #endif /* LIBAEGIS_CHANGE_TEST_BATCH_RESULT_H */

@@ -25,6 +25,6 @@
 
 #include <shell/private.h>
 
-shell_ty *shell_bash _((void));
+shell_ty *shell_bash(void);
 
 #endif /* AECOMPLETE_SHELL_BASH_H */

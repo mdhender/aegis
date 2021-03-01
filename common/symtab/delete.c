@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,12 +42,10 @@
 void
 symtab_delete(symtab_ty *stp, string_ty *key)
 {
-    str_hash_ty	index;
-    symtab_row_ty	**pp;
+    str_hash_ty     index;
+    symtab_row_ty   **pp;
 
-    index = key->str_hash & stp->hash_cutover_mask;
-    if (index < stp->hash_split)
-	index = key->str_hash & stp->hash_cutover_split_mask;
+    index = key->str_hash & stp->hash_mask;
 
     pp = &stp->hash_table[index];
     for (;;)

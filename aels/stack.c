@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,70 +36,66 @@ static	string_list_ty	*stack;
 
 
 string_ty *
-stack_relative(fn)
-	string_ty	*fn;
+stack_relative(string_ty *fn)
 {
-	string_ty	*s1;
-	string_ty	*s2;
-	size_t		k;
+    string_ty       *s1;
+    string_ty       *s2;
+    size_t	    k;
 
-	assert(stack);
-	os_become_orig();
-	s1 = os_pathname(fn, 1);
-	os_become_undo();
+    assert(stack);
+    os_become_orig();
+    s1 = os_pathname(fn, 1);
+    os_become_undo();
 
-	s2 = 0;
-	for (k = 0; k < stack->nstrings; ++k)
-	{
-		s2 = os_below_dir(stack->string[k], s1);
-		if (s2)
-			break;
-	}
-	str_free(s1);
+    s2 = 0;
+    for (k = 0; k < stack->nstrings; ++k)
+    {
+	s2 = os_below_dir(stack->string[k], s1);
+	if (s2)
+    	    break;
+    }
+    str_free(s1);
 
-	if (!s2)
-		return 0;
+    if (!s2)
+	return 0;
 
-	if (s2->str_length == 0)
-	{
-		str_free(s2);
-		s2 = str_from_c(".");
-	}
+    if (s2->str_length == 0)
+    {
+	str_free(s2);
+	s2 = str_from_c(".");
+    }
 
-	return s2;
+    return s2;
 }
 
 
 string_ty *
-stack_nth(n)
-	size_t		n;
+stack_nth(size_t n)
 {
-	assert(n >= 0);
-	assert(stack);
-	assert(stack->nstrings);
-	if (!stack)
-		return 0;
-	if (n >= stack->nstrings)
-		return 0;
-	return stack->string[n];
+    assert(n >= 0);
+    assert(stack);
+    assert(stack->nstrings);
+    if (!stack)
+	return 0;
+    if (n >= stack->nstrings)
+	return 0;
+    return stack->string[n];
 }
 
 
 void
-stack_from_project(pp)
-	project_ty	*pp;
+stack_from_project(project_ty *pp)
 {
-	stack = string_list_new();
-	project_search_path_get(pp, stack, 1);
+    stack = string_list_new();
+    project_search_path_get(pp, stack, 1);
 
-	/* error if project is a completed branch... */
+    /* error if project is a completed branch... */
 }
 
 
 void
-stack_from_change(cp)
-	change_ty	*cp;
+stack_from_change(change_ty *cp)
 {
-	stack = string_list_new();
-	change_search_path_get(cp, stack, 1);
+    stack = string_list_new();
+    change_search_path_get(cp, stack, 1);
 }

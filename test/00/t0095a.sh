@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1994-1999, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -348,7 +348,7 @@ cat > test.ok << 'end'
 Distribution Change Set							 Page 1
 
 PROJECT
-	foo
+	foo, change 2
 
 SUMMARY
 	A bogus project created to test the aedist -send -entire-source

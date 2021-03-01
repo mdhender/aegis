@@ -49,10 +49,8 @@
 #define NO_TIME_SET ((time_t)(-1))
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
     char            *progname;
 
@@ -64,7 +62,7 @@ usage()
 
 
 void
-send()
+send(void)
 {
     string_ty       *project_name;
     long            change_number;
@@ -361,6 +359,9 @@ send()
 	);
     }
 
+    if (entire_source < 0)
+	entire_source = 0;
+
     /*
      * locate project data
      */
@@ -510,11 +511,9 @@ send()
 	{
 	    fstate_src      src_data;
 
-	    src_data = project_file_nth(pp, j);
+	    src_data = project_file_nth(pp, j, view_path_extreme);
 	    if (!src_data)
 		break;
-	    if (src_data->about_to_be_created_by)
-		continue;
 	    string_list_append_unique(&wl, src_data->file_name);
 	}
     }
@@ -558,7 +557,7 @@ send()
 	     */
 	    csrc = change_file_find(cp, filename);
 	    if (!csrc)
-		csrc = project_file_find(pp, filename);
+		csrc = project_file_find(pp, filename, view_path_simple);
 	    if (csrc->action == file_action_remove)
 		continue;
 	    if (csrc->action == file_action_insulate)
@@ -569,8 +568,20 @@ send()
 		continue;
 	    if (csrc->about_to_be_created_by)
 		continue;
+
 	    abs_filename = change_file_path(cp, csrc->file_name);
+	    if (!abs_filename)
+	        abs_filename = project_file_path(pp, csrc->file_name);
 	    abs_filename_unlink = 0;
+
+	    /*
+	     * The executable field is only set by aeipass, so we need
+	     * to go and look at the file itself for accurate information
+	     * for changes which are not yet in the completed state.
+	     */
+	    os_become_orig();
+	    csrc->executable = os_executable(abs_filename);
+	    os_become_undo();
 	    break;
 
 	case cstate_state_completed:
@@ -607,6 +618,7 @@ send()
 	switch (csrc->action)
 	{
 	case file_action_remove:
+	case file_action_transparent:
 	    break;
 
 	case file_action_create:
@@ -616,7 +628,7 @@ send()
 	    ifp = input_file_open(abs_filename);
 	    assert(ifp);
 	    len = input_length(ifp);
-	    ofp = output_tar_child(tar_p, filename, len);
+	    ofp = output_tar_child(tar_p, filename, len, csrc->executable);
 	    input_to_output(ifp, ofp);
 	    input_delete(ifp);
 	    output_delete(ofp);

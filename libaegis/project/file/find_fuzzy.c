@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,60 +28,53 @@
 
 
 fstate_src
-project_file_find_fuzzy(pp, file_name)
-	project_ty	*pp;
-	string_ty	*file_name;
+project_file_find_fuzzy(project_ty *pp, string_ty *file_name,
+    view_path_ty as_view_path)
 {
-	fstate_src	src_data;
-	string_list_ty	*wlp;
-	size_t		j;
-	fstate_src	best_src;
-	double		best_weight;
+    fstate_src      src_data;
+    string_list_ty  *wlp;
+    size_t          j;
+    fstate_src      best_src;
+    double          best_weight;
 
-	/*
-	 * This is used to find names when project_file_find does not.
-	 * Deleted and almost created files are thus ignored.
-	 */
-	trace(("project_file_find_fuzzy(pp = %8.8lX, fn = \"%s\")\n{\n"/*}*/,
-		(long)pp, file_name->str_text));
+    /*
+     * This is used to find names when project_file_find does not.
+     * Deleted and almost created files are thus ignored.
+     */
+    trace(("project_file_find_fuzzy(pp = %8.8lX, fn = \"%s\")\n{\n",
+	(long)pp, file_name->str_text));
 
-	/*
-	 * get the merged list of file names
-	 */
-	wlp = project_file_list_get(pp);
+    /*
+     * get the merged list of file names
+     * (do not free wlp, it's cached)
+     */
+    wlp = project_file_list_get(pp, as_view_path);
 
-	/*
-	 * find the closest name
-	 * that actually exists
-	 */
-	best_src = 0;
-	best_weight = 0.6;
-	for (j = 0; j < wlp->nstrings; ++j)
+    /*
+     * find the closest name
+     * that actually exists
+     */
+    best_src = 0;
+    best_weight = 0.6;
+    for (j = 0; j < wlp->nstrings; ++j)
+    {
+	string_ty	*name;
+	double		weight;
+
+	name = wlp->string[j];
+	weight = fstrcmp(name->str_text, file_name->str_text);
+	if (weight > best_weight)
 	{
-		string_ty	*name;
-		double		weight;
-
-		name = wlp->string[j];
-		weight = fstrcmp(name->str_text, file_name->str_text);
-		if (weight > best_weight)
-		{
-			src_data = project_file_find(pp, name);
-			if
-			(
-				src_data
-			&&
-				!src_data->deleted_by
-			&&
-				!src_data->about_to_be_created_by
-			)
-			{
-				best_src = src_data;
-				best_weight = weight;
-			}
-		}
+	    src_data = project_file_find(pp, name, as_view_path);
+	    if (src_data)
+	    {
+	       	best_src = src_data;
+	       	best_weight = weight;
+	    }
 	}
+    }
 
-	trace(("return %8.8lX;\n", (long)best_src));
-	trace((/*{*/"}\n"));
-	return best_src;
+    trace(("return %8.8lX;\n", (long)best_src));
+    trace(("}\n"));
+    return best_src;
 }

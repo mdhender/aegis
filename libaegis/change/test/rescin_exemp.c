@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,22 @@
 
 
 void
-change_rescind_test_exemption(cp)
-	change_ty	*cp;
+change_rescind_test_exemption(change_ty *cp)
 {
-	cstate		cstate_data;
+    cstate          cstate_data;
 
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	cstate_data->test_exempt = 0;
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    cstate_data->test_exempt = 0;
+}
+
+
+void
+change_rescind_test_exemption_undo(change_ty *cp)
+{
+    cstate          cstate_data;
+
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    cstate_data->test_exempt = cstate_data->given_test_exemption;
 }

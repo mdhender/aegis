@@ -276,8 +276,9 @@ if { $development_directory == "" } {
 
 # OK now that we (should) have all the facts....
 
-wm title . [format "aecomp - \"%s\" - Change \"%d\" vs. \"%s\" - Change \"%d\"" \
-             $project_name1 $change_number1 $project_name2 $change_number2 ]
+wm title . [format \
+	"aecomp - \"%s\" - Change \"%d\" vs. \"%s\" - Change \"%d\"" \
+	$project_name1 $change_number1 $project_name2 $change_number2 ]
 wm iconname . aecomp
 
 # define the review commands.

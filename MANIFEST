@@ -2,7 +2,8 @@
 
 README	Blurb about aegis
 aegis.spec	
-aegis.gif	
+aegis.png	
+aegis.xpm	
 BUILDING	Instructions how to build, test and install aegis
 LICENSE	GNU General Public License
 MANIFEST	This file
@@ -160,6 +161,8 @@ aecomplete/shell/bash.h	 interface definition for aecomplete/shell/bash.c
 aecomplete/shell/emitfilelist.c	 functions to manipulate emitfilelists
 aecomplete/shell/private.c	 functions to manipulate privates
 aecomplete/shell/private.h	 interface definition for aecomplete/shell/private.c
+aecomplete/shell/zsh.c	 functions to manipulate zshs
+aecomplete/shell/zsh.h	 interface definition for aecomplete/shell/zsh.c
 aedist/arglex3.c	 functions to manipulate arglex3s
 aedist/arglex3.h	 interface definition for aedist/arglex3.c
 aedist/input/cpio.c	 functions to manipulate cpios
@@ -273,6 +276,10 @@ aegis/aeip.c	 functions for implementing integrate pass
 aegis/aeip.h	 interface definition for aegis/aeip.c
 aegis/ael.c	 list interesting things about changes and projects
 aegis/ael.h	 interface definition for aegis/ael.c
+aegis/aemt.c	 functions to manipulate aemts
+aegis/aemt.h	 interface definition for aegis/aemt.c
+aegis/aemtu.c	 functions to manipulate aemtus
+aegis/aemtu.h	 interface definition for aegis/aemtu.c
 aegis/aemv.c	 functions to implement move file
 aegis/aemv.h	 interface definition for aegis/aemv.c
 aegis/aemvu.c	 functions to manipulate aemvus
@@ -317,11 +324,11 @@ aegis/aerb.c	 functions to manipulate aerbs
 aegis/aerb.h	 interface definition for aegis/aerb.c
 aegis/aerbu.c	 functions to manipulate aerbus
 aegis/aerbu.h	 interface definition for aegis/aerbu.c
-aegis/aerd.c	 functions to implement remove developer
+aegis/aerd.c	 functions to implement removal of developers
 aegis/aerd.h	 interface definition for aegis/aerd.c
 aegis/aerf.c	 functions to impliment review fail
 aegis/aerf.h	 interface definition for aegis/aerf.c
-aegis/aeri.c	 functions to implement remove administrator
+aegis/aeri.c	 functions to implement removal of integrators
 aegis/aeri.h	 interface definition for aegis/aeri.c
 aegis/aerm.c	 functions to implement remove file
 aegis/aerm.h	 interface definition for aegis/aerm.c
@@ -341,6 +348,8 @@ aegis/aet.c	 functions to implement test
 aegis/aet.h	 interface definition for aegis/aet.c
 aegis/aev.c	 give version information
 aegis/aev.h	 interface definition for aegis/aev.c
+aegis/configured.c	 functions to manipulate configureds
+aegis/configured.h	 interface definition for aegis/configured.c
 aegis/main.c	 the operating system start-up point
 aeimport/arglex3.c	 functions to manipulate arglex3s
 aeimport/arglex3.h	 interface definition for aeimport/arglex3.c
@@ -393,6 +402,9 @@ aels/list.h	 interface definition for aels/list.c
 aels/main.c	 functions to manipulate mains
 aels/stack.c	 functions to manipulate stacks
 aels/stack.h	 interface definition for aels/stack.c
+aemeasure/count.c	 functions to manipulate counts
+aemeasure/count.h	 interface definition for simp_file_stat/count.c
+aemeasure/main.c	 operating system start point, and command line argument parsing
 aepatch/arglex3.c	 functions to manipulate arglex3s
 aepatch/arglex3.h	 interface definition for aepatch/arglex3.c
 aepatch/list.c	 functions to manipulate lists
@@ -581,6 +593,7 @@ etc/Makefi.file.sh	 shell script to generate Makefile fragment for each source f
 etc/Makefile.awk	 helper file for generating the Makefile file
 etc/Makefile.head	 instructions to make, how to build the Aegis package
 etc/Makefile.sh	 shell script to generate the Makefile.in file
+etc/adver2.gif.uue	 adver2.gif.uue
 etc/aegis.html	 input for archive/aegis.html
 etc/archive.cook	 instructions to cook(1), how to build archive directory
 etc/autoconf.cook	 autoconf.cook
@@ -623,6 +636,7 @@ etc/ptx.sh	 shell script to manipulate ptxs
 etc/ptx1.awk	 ptx1.awk
 etc/ptx2.awk	 ptx2.awk
 etc/rpm-build.sh	 shell script to rpm-build
+etc/set-uid-root	 set-uid-root
 etc/sites.html	 sites.html
 etc/so.sh	 shell script to generate include lists
 etc/spec.sh	 shell script to generate RedHat spec file
@@ -646,7 +660,6 @@ etc/version.so
 etc/webiface.html	 input for archive/webiface.html
 etc/windowsnt.html	 input for archive/aegis.html
 etc/year2000.html	 input for archive/aegis.html
-etc/zer-len-msg.sh	 make sure there are no shared messages not in common
 find_sizes/main.c	 functions to manipulate mains
 fmtgen/indent.c	 functions to automatically indent output
 fmtgen/indent.h	 interface definition for fmtgen/indent.c
@@ -688,33 +701,32 @@ lib/cshrc.in	 csh user config for aegis
 lib/db_forced.sh	 shell script to notify 'aedb -User' events
 lib/de.inews.sh	 command used to notify by usenet that a change is ready for review
 lib/de.sh	 command used to notify by email that a change is ready for review
-lib/de/LC_MESSAGES/aecomplete.so	 aecomplete.po
-lib/de/LC_MESSAGES/aedist.po	 German localization
-lib/de/LC_MESSAGES/aefind.po	 German localization
 lib/de/LC_MESSAGES/aegis.po	 German localization
-lib/de/LC_MESSAGES/aeimport.po	 German localization
-lib/de/LC_MESSAGES/aepatch.po	 German localization
-lib/de/LC_MESSAGES/aerect.po	 German localization
-lib/de/LC_MESSAGES/aereport.po	 German localization
-lib/de/LC_MESSAGES/aesub.po	 German localization
-lib/de/LC_MESSAGES/aetar.po	 aetar.po
 lib/de/LC_MESSAGES/glossary	 glossary
-lib/de/LC_MESSAGES/libaegis.po	 German localization
+lib/de/auug97/01-intro.so	 AUUGN Feb'98 Article
+lib/de/auug97/01.figure1.so	 AUUGN Feb'98 Article
+lib/de/auug97/02-problem.so	 AUUGN Feb'98 Article
+lib/de/auug97/03-analysis.so	 AUUGN Feb'98 Article
+lib/de/auug97/03.figure2.so	 AUUGN Feb'98 Article
+lib/de/auug97/03.figure3.so	 AUUGN Feb'98 Article
+lib/de/auug97/03.figure4.so	 AUUGN Feb'98 Article
+lib/de/auug97/03.figure5.so	 AUUGN Feb'98 Article
+lib/de/auug97/03.figure6.so	 AUUGN Feb'98 Article
+lib/de/auug97/03.figure7.so	 AUUGN Feb'98 Article
+lib/de/auug97/04-cure.so	 AUUGN Feb'98 Article
+lib/de/auug97/05-makefile.so	 AUUGN Feb'98 Article
+lib/de/auug97/06-vpath.so	 AUUGN Feb'98 Article
+lib/de/auug97/06.figure1.so	 AUUGN Feb'98 Article
+lib/de/auug97/07-synthesi.so	 AUUGN Feb'98 Article
+lib/de/auug97/07.figure1.so	 AUUGN Feb'98 Article
+lib/de/auug97/07.figure2.so	 AUUGN Feb'98 Article
+lib/de/auug97/08-books.so	 AUUGN Feb'98 Article
+lib/de/auug97/09-summary.so	 AUUGN Feb'98 Article
+lib/de/auug97/10-ref.so	 AUUGN Feb'98 Article
+lib/de/auug97/main.ms	 Proposed AUUGN'97 article
 lib/deu.inews.sh	 command used to notify by usenet that a change has been
 lib/deu.sh	 command used to notify by email that a change has been
-lib/en/LC_MESSAGES/aeannotate.po	 aeannotate.po
-lib/en/LC_MESSAGES/aecomplete.po	 aecomplete.po
-lib/en/LC_MESSAGES/aedist.po	 English localization
-lib/en/LC_MESSAGES/aefind.po	 English localization
 lib/en/LC_MESSAGES/aegis.po	 English localization
-lib/en/LC_MESSAGES/aeimport.po	 aeimport.po
-lib/en/LC_MESSAGES/aels.po	 aels.po
-lib/en/LC_MESSAGES/aepatch.po	 aepatch.po
-lib/en/LC_MESSAGES/aerect.po	 English localization
-lib/en/LC_MESSAGES/aereport.po	 English localization
-lib/en/LC_MESSAGES/aesub.po	 English localization
-lib/en/LC_MESSAGES/aetar.po	 English localization
-lib/en/LC_MESSAGES/libaegis.po	 English localization
 lib/en/aoss4/main.mm	 Testing? What testing?
 lib/en/auug93/main.mm	
 lib/en/auug96/foil.01.so	 document describing foil.01.so
@@ -845,6 +857,9 @@ lib/en/man1/aeipass.1	 manual entry for 'aegis -Integrate_Pass' command
 lib/en/man1/ael.1	 manual entry for 'aegis -List' command
 lib/en/man1/aelic.1	
 lib/en/man1/aels.1	 manual page describing the lib/en/man1/aels command.
+lib/en/man1/aemeasure.1	 manual page describing the lib/en/man1/aemeasure command.
+lib/en/man1/aemt.1	 manual page describing the lib/en/man1/aemt command.
+lib/en/man1/aemtu.1	 manual page describing the lib/en/man1/aemtu command.
 lib/en/man1/aemv.1	 manual entry for 'aegis -MoVe_file' command
 lib/en/man1/aemvu.1	 manual page describing the lib/en/man1/aemvu command.
 lib/en/man1/aena.1	 manual entry for 'aegis -New_Administrator' command
@@ -912,6 +927,7 @@ lib/en/man1/o_overw.so	 description of -OverWriting command line option
 lib/en/man1/o_page.so	 description of -Page_Length and -Page_Width command line options
 lib/en/man1/o_project.so	 description of -Project command line option
 lib/en/man1/o_reason.so	 document describing o_reason.so
+lib/en/man1/o_recurse.so	 document describing the recursive option to commands
 lib/en/man1/o_regress.so	 description of -REGression command line option
 lib/en/man1/o_symlnk.so	 document describing symlink farms
 lib/en/man1/o_template.so	 document describing template options
@@ -996,6 +1012,8 @@ lib/en/readme/new.3.7.so	 document describing new 3.7 features
 lib/en/readme/new.3.8.so	 document describing new 3.8 features
 lib/en/readme/new.3.9.so	 document describing new 3.9 features
 lib/en/readme/new.4.1.so	 document describing 4.1 features
+lib/en/readme/new.4.10.so	 document describing new 4.10 features
+lib/en/readme/new.4.11.so	 document describing new 4.11 features
 lib/en/readme/new.4.2.so	 document describing new 4.2 features
 lib/en/readme/new.4.3.so	 document describing new 4.3 features
 lib/en/readme/new.4.4.so	 document describing new 4.4 features
@@ -1066,35 +1084,20 @@ lib/en/user-guide/cB.0.so	 User Guide, Appendix B: Glossary
 lib/en/user-guide/cD.0.so	 User Guide, Appendix D, Why is Aegis Set-Uid-Root?
 lib/en/user-guide/cI.0.so	 document describing cI.0.so
 lib/en/user-guide/main.ms	 User Guide
-lib/fr/LC_MESSAGES/aedist.po	 French localization
-lib/fr/LC_MESSAGES/aefind.po	 French localization
+lib/es/LC_MESSAGES/aegis.po	 Spanish localization
 lib/fr/LC_MESSAGES/aegis.po	 French localization
-lib/fr/LC_MESSAGES/aeimport.po	 French localization
-lib/fr/LC_MESSAGES/aels.po	 French localization
-lib/fr/LC_MESSAGES/aepatch.po	 French localization
-lib/fr/LC_MESSAGES/aerect.po	 French localization
-lib/fr/LC_MESSAGES/aereport.po	 French localization
-lib/fr/LC_MESSAGES/aesub.po	 French localization
-lib/fr/LC_MESSAGES/aetar.po	 aetar.po
 lib/fr/LC_MESSAGES/glossaire	 glossaire
-lib/fr/LC_MESSAGES/libaegis.po	 French localization
 lib/icon/aegis.gif	
 lib/icon/aegis.gif.uue	 Aegis icon in transparent GIF format
+lib/icon2/64x64.png.uue	 64x64.png.uue
+lib/icon2/bigger.png.uue	 bigger.png.uue
 lib/if.inews.sh	 command used to notify by usenet that a change failed integration
 lib/if.sh	 command used to notify by email that a change failed integration
 lib/ip.inews.sh	 command used to notify by usenet that a change has passed integratio
 lib/ip.sh	 command used to notify by email that a change has passed integration
 lib/man1/en/ae_c.1	 manual page describing the ae_c command.
 lib/man1/en/ae_p.1	 manual page describing the ae_p command.
-lib/nl/LC_MESSAGES/aecomplete.so	 aecomplete.po
-lib/nl/LC_MESSAGES/aedist.po	 Dutch localization
-lib/nl/LC_MESSAGES/aefind.po	 Dutch localization
 lib/nl/LC_MESSAGES/aegis.po	 Dutch localization
-lib/nl/LC_MESSAGES/aerect.po	 Dutch localization
-lib/nl/LC_MESSAGES/aereport.po	 Dutch localization
-lib/nl/LC_MESSAGES/aesub.po	 Dutch localization
-lib/nl/LC_MESSAGES/aetar.po	 aetar.po
-lib/nl/LC_MESSAGES/libaegis.po	 Dutch localization
 lib/profile.in	 Bourne shell user config for aegis
 lib/remind/awt_dvlp.sh	 shell script to remind users of changes which need to be developed
 lib/remind/awt_intgrtn.sh	 shell script to remind users of changes which need to be integrated
@@ -1113,6 +1116,7 @@ lib/report/file_cflct.rpt	 report conflicting files of a change
 lib/report/file_hstry.rpt	 report the history of files
 lib/report/proj_activ.rpt	 report the lib/report/proj_activ.rpt
 lib/report/proj_admin.rpt	 report the administrators currently assigned to a project
+lib/report/proj_ances.rpt	 report the lib/report/proj_ances.rpt
 lib/report/proj_bran.rpt	 report the brances in a project
 lib/report/proj_brana.rpt	 report the brances in a project
 lib/report/proj_detai.rpt	 report the lib/report/proj_detai.rpt
@@ -1127,23 +1131,12 @@ lib/report/proj_staff.rpt	 report the staff currently assigned to a project
 lib/report/proj_stats.rpt	 report statistics about a project
 lib/rf.inews.sh	 command used to notify by usenet that a change failed review
 lib/rf.sh	 command used to notify by email that a change failed review
+lib/ro/LC_MESSAGES/aegis.po	 Mesajele în limba românã pentru aegis.
 lib/rp.inews.sh	 command used to notify by usenet that a change has passed review
 lib/rp.sh	 command used to notify by email that a change has passed review
 lib/rpu.inews.sh	 command used to notify by usenet that a change review passed
 lib/rpu.sh	 command used to notify by email that a change review passed
-lib/ru/LC_MESSAGES/aecomplete.po	 aecomplete.po
-lib/ru/LC_MESSAGES/aecomplete.so	 aecomplete.po
-lib/ru/LC_MESSAGES/aedist.po	 Russian localization
-lib/ru/LC_MESSAGES/aefind.po	 Russian localization
 lib/ru/LC_MESSAGES/aegis.po	 Russian localization
-lib/ru/LC_MESSAGES/aeimport.po	 Russian localization
-lib/ru/LC_MESSAGES/aels.po	 Russian localization
-lib/ru/LC_MESSAGES/aepatch.po	 Russian localization
-lib/ru/LC_MESSAGES/aerect.po	 Russian localization
-lib/ru/LC_MESSAGES/aereport.po	 Russian localization
-lib/ru/LC_MESSAGES/aesub.po	 Russian localization
-lib/ru/LC_MESSAGES/aetar.po	 aetar.po
-lib/ru/LC_MESSAGES/libaegis.po	 Russian localization
 lib/wish/aebuffy.rpt	 report the lib/wish/aebuffy.rpt
 lib/wish/aecomp.rpt	 TCL script used by aecomp
 lib/wish/chan_attr.rpt	 write tcl assignments for change attributes
@@ -1389,7 +1382,7 @@ libaegis/change/architecture/add.c	 functions to manipulate adds
 libaegis/change/architecture/check.c	 functions to manipulate checks
 libaegis/change/architecture/clear.c	 functions to manipulate clears
 libaegis/change/architecture/find_variant.c	 functions to manipulate find_variants
-libaegis/change/architecture/find_variant.h	 interface definition for libaegis/change/architecture/find_variant.c
+libaegis/change/architecture/find_variant.h	 interface defn for libaegis/change/architecture/find_variant.c
 libaegis/change/architecture/from_pconf.c	 functions to manipulate from_pconfs
 libaegis/change/architecture/name.c	 functions to manipulate names
 libaegis/change/architecture/times_find.c	 functions to manipulate times_finds
@@ -1505,7 +1498,7 @@ libaegis/change/develop_direct/get.c	 functions to manipulate gets
 libaegis/change/develop_direct/read_only.c	 functions to manipulate read_onlys
 libaegis/change/develop_direct/read_only.h	 interface definition for libaegis/change/develop_direct/read_only.c
 libaegis/change/develop_direct/read_write.c	 functions to manipulate read_writes
-libaegis/change/develop_direct/read_write.h	 interface definition for libaegis/change/develop_direct/read_write.c
+libaegis/change/develop_direct/read_write.h	 interface defn for libaegis/change/develop_direct/read_write.c
 libaegis/change/develop_direct/set.c	 functions to manipulate sets
 libaegis/change/develop_direct/template.c	 functions to manipulate templates
 libaegis/change/develop_name.c	 functions to manipulate develop_names
@@ -1616,6 +1609,7 @@ libaegis/change/test/batch_fake.c	 functions to manipulate batch_fakes
 libaegis/change/test/batch_fake.h	 interface definition for libaegis/change/test/batch_fake.c
 libaegis/change/test/batch_result.c	 functions to manipulate batch_results
 libaegis/change/test/batch_result.h	 interface definition for libaegis/change/test/batch_result.c
+libaegis/change/test/fce_reg_expt.c	 functions to manipulate regression test exemption status
 libaegis/change/test/new_file_get.c	 functions to manipulate new_file_gets
 libaegis/change/test/reg_time_set.c	 functions to manipulate reg_time_sets
 libaegis/change/test/rescin_exemp.c	 functions to manipulate rescin_exemps
@@ -1799,6 +1793,7 @@ libaegis/os/unlink/errok.c	 wrappers around operating system functions
 libaegis/os/unlink/unlink.c	 wrappers around operating system functions
 libaegis/os/waitpid.c	 functions to manipulate waitpids
 libaegis/os/waitpid_st.c	 functions to manipulate waitpid_sts
+libaegis/os/xargs.c	 functions to manipulate xargss
 libaegis/output.c	 functions to manipulate outputs through a common API
 libaegis/output.h	 interface definition for libaegis/output.c
 libaegis/output/base64.c	 functions to encode output as MIME base 64
@@ -2020,14 +2015,20 @@ libaegis/sub/shell.c	 functions to manipulate shells
 libaegis/sub/shell.h	 interface definition for libaegis/sub/shell.c
 libaegis/sub/source.c	 functions to manipulate sources
 libaegis/sub/source.h	 interface definition for libaegis/sub/source.c
+libaegis/sub/split.c	 functions to manipulate splits
+libaegis/sub/split.h	 interface definition for libaegis/sub/split.c
 libaegis/sub/substitute.c	 functions to manipulate substitutes
 libaegis/sub/substitute.h	 interface definition for libaegis/sub/substitute.c
+libaegis/sub/substr.c	 functions to manipulate substrs
+libaegis/sub/substr.h	 interface definition for libaegis/sub/substr.c
 libaegis/sub/switch.c	 functions to manipulate switchs
 libaegis/sub/switch.h	 interface definition for libaegis/sub/switch.c
 libaegis/sub/trim_directo.c	 functions to manipulate trim_directos
 libaegis/sub/trim_directo.h	 interface definition for libaegis/sub/trim_directo.c
 libaegis/sub/trim_extensi.c	 functions to manipulate trim_extensis
 libaegis/sub/trim_extensi.h	 interface definition for libaegis/sub/trim_extensi.c
+libaegis/sub/unsplit.c	 functions to manipulate unsplits
+libaegis/sub/unsplit.h	 interface definition for libaegis/sub/unsplit.c
 libaegis/sub/upcase.c	 functions to manipulate upcases
 libaegis/sub/upcase.h	 interface definition for libaegis/sub/upcase.c
 libaegis/sub/user.c	 functions to manipulate users
@@ -2083,9 +2084,6 @@ script/tkaenc.in	 tcl-tk aenc equivalent
 script/tkaepa.in	 tcl-tk aepa equivalent
 script/tkaer.in	 tcl-tk review assist program contributed by Scott Finneran.
 script/xaegis.in	 wish script to give aegis a GUI interface
-simp_file_stat/count.c	 functions to manipulate counts
-simp_file_stat/count.h	 interface definition for simp_file_stat/count.c
-simp_file_stat/main.c	 operating system start point, and command line argument parsing
 test/00/t0001a.sh	 test -Help for each function
 test/00/t0002a.sh	 Test core functionality.
 test/00/t0003a.sh	 Test 'aegis -VERSion'
@@ -2211,6 +2209,7 @@ test/01/t0122a.sh	 Test the aecp -delta functionality
 test/01/t0123a.sh	 Test the aeimport functionality
 test/01/t0124a.sh	 Test the minimum synchronisation functionality
 test/01/t0125a.sh	 Test the aesub quote functionality
+test/01/t0126a.sh	 Test the aetar functionality
 test/01/t0127a.sh	 Test the aeimport sccs functionality
 test/01/t0128a.sh	 Test the aemvu functionality
 test/01/t0129a.sh	 Test the aede branch functionality
@@ -2218,11 +2217,15 @@ test/01/t0130a.sh	 Test the aenbru functionality
 test/01/t0131a.sh	 Test the input_quoted_printable functionality
 test/01/t0132a.sh	 Test the output_quoted_printable functionality
 test/01/t0133a.sh	 Test the history encoding functionality
+test/01/t0134a.sh	 Test the test exemption functionality
 test/01/t0135a.sh	 Test the aeib symlink functionality
 test/01/t0136a.sh	 Test patch -send functionality
 test/01/t0137a.sh	 Test the aepatch --list functionality
 test/01/t0138a.sh	 Test patch -send functionality
 test/01/t0139a.sh	 Test patch -send functionality
+test/01/t0140a.sh	 Test the test exemption (aecpu) functionality
+test/01/t0144a.sh	 Test the email address functionality
+test/01/t0145a.sh	 Test the -Descend_Project_Tree option
 test/01/t0150a.sh	 Test patch -send functionality
 test/01/t0151a.sh	 Test the uuencode functionality
 test/01/t0152a.sh	 Test build_time_adjust_notify_command functionality
@@ -2242,6 +2245,12 @@ test/01/t0167a.sh	 Test patch -send (uni) functionality
 test/01/t0168a.sh	 Test patch -send (context) functionality
 test/01/t0169a.sh	 Test patch -rec (uudecode) functionality
 test/01/t0170a.sh	 Test the plural-forms functionality
+test/01/t0171a.sh	 Test the aeimport functionality
+test/01/t0172a.sh	 Test aemt functionality
+test/01/t0173a.sh	 Test the aesub (un)split functionality
+test/01/t0175a.sh	 Test the aeimport functionality
+test/01/t0176a.sh	 Test aemtu functionality
+test/01/t0177a.sh	 Test aeclone functionality
 test/activity.awk	 Renumber activity lines in tests
 test/activity.sh	 shell script to manipulate activitys
 test_base64/main.c	 functions to manipulate mains

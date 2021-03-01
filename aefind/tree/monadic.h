@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,15 +28,15 @@
 typedef struct tree_monadic_ty tree_monadic_ty;
 struct tree_monadic_ty
 {
-	tree_ty		inherited;
-	tree_ty		*arg;
+    tree_ty         inherited;
+    tree_ty	    *arg;
 };
 
-tree_ty *tree_monadic_new _((tree_method_ty *, tree_ty *));
-void tree_monadic_destructor _((tree_ty *));
-void tree_monadic_print _((tree_ty *));
-int tree_monadic_useful _((tree_ty *));
-int tree_monadic_constant _((tree_ty *));
-tree_ty *tree_monadic_optimize _((tree_ty *));
+tree_ty *tree_monadic_new(tree_method_ty *, tree_ty *);
+void tree_monadic_destructor(tree_ty *);
+void tree_monadic_print(tree_ty *);
+int tree_monadic_useful(tree_ty *);
+int tree_monadic_constant(tree_ty *);
+tree_ty *tree_monadic_optimize(tree_ty *);
 
 #endif /* AEFIND_TREE_MONADIC_H */

@@ -27,6 +27,6 @@
 
 struct string_ty; /* existence */
 
-input_ty *input_tar_child_open _((input_ty *, struct string_ty **));
+input_ty *input_tar_child_open(input_ty *, struct string_ty **);
 
 #endif /* AETAR_INPUT_TAR_CHILD_H */

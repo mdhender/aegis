@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,80 +25,73 @@
 
 
 void
-change_set_file_list_constructor(csflp)
-	change_set_file_list_ty *csflp;
+change_set_file_list_constructor(change_set_file_list_ty *csflp)
 {
-	csflp->item = 0;
-	csflp->length = 0;
-	csflp->maximum = 0;
+    csflp->item = 0;
+    csflp->length = 0;
+    csflp->maximum = 0;
 }
 
 
 void
-change_set_file_list_destructor(csflp)
-	change_set_file_list_ty *csflp;
+change_set_file_list_destructor(change_set_file_list_ty *csflp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < csflp->length; ++j)
-		change_set_file_destructor(csflp->item + j);
-	if (csflp->item)
-		mem_free(csflp->item);
-	csflp->item = 0;
-	csflp->length = 0;
-	csflp->maximum = 0;
+    for (j = 0; j < csflp->length; ++j)
+	change_set_file_destructor(csflp->item + j);
+    if (csflp->item)
+	mem_free(csflp->item);
+    csflp->item = 0;
+    csflp->length = 0;
+    csflp->maximum = 0;
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_file_list_validate(csflp)
-	change_set_file_list_ty *csflp;
+change_set_file_list_validate(change_set_file_list_ty *csflp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < csflp->length; ++j)
-		change_set_file_validate(csflp->item + j);
+    for (j = 0; j < csflp->length; ++j)
+	change_set_file_validate(csflp->item + j);
 }
 
 #endif
 
 
 void
-change_set_file_list_append(csflp, filename, edit, action, tag)
-	change_set_file_list_ty *csflp;
-	string_ty	*filename;
-	string_ty	*edit;
-	change_set_file_action_ty action;
-	string_list_ty	*tag;
+change_set_file_list_append(change_set_file_list_ty *csflp, string_ty *filename,
+    string_ty *edit, change_set_file_action_ty action, string_list_ty *tag)
 {
-	change_set_file_ty *csfp;
-	size_t		j;
+    change_set_file_ty *csfp;
+    size_t	    j;
 
-	/*
-	 * If we already have the file, just update the edit number.
-	 */
-	for (j = 0; j < csflp->length; ++j)
+    /*
+     * If we already have the file, just update the edit number.
+     */
+    for (j = 0; j < csflp->length; ++j)
+    {
+	csfp = csflp->item + j;
+	if (str_equal(filename, csfp->filename))
 	{
-		csfp = csflp->item + j;
-		if (str_equal(filename, csfp->filename))
-		{
-			str_free(csfp->edit);
-			csfp->edit = str_copy(edit);
-			csfp->action = action;
-			return;
-		}
+	    str_free(csfp->edit);
+	    csfp->edit = str_copy(edit);
+	    csfp->action = action;
+	    return;
 	}
+    }
 
-	if (csflp->length >= csflp->maximum)
-	{
-		size_t		nbytes;
+    if (csflp->length >= csflp->maximum)
+    {
+	size_t		nbytes;
 
-		csflp->maximum = csflp->maximum * 2 + 4;
-		nbytes = csflp->maximum * sizeof(csflp->item[0]);
-		csflp->item = mem_change_size(csflp->item, nbytes);
-	}
-	csfp = csflp->item + csflp->length++;
-	change_set_file_constructor(csfp, filename, edit, action, tag);
+	csflp->maximum = csflp->maximum * 2 + 4;
+	nbytes = csflp->maximum * sizeof(csflp->item[0]);
+	csflp->item = mem_change_size(csflp->item, nbytes);
+    }
+    csfp = csflp->item + csflp->length++;
+    change_set_file_constructor(csfp, filename, edit, action, tag);
 }

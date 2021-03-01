@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993 Peter Miller.
+ *	Copyright (C) 1992, 1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-int gram_parse _((void));
+int gram_parse(void);
 
 #endif /* GRAM_H */

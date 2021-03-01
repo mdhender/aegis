@@ -39,10 +39,8 @@
 #include <user.h>
 
 
-static void change_directory_usage _((void));
-
 static void
-change_directory_usage()
+change_directory_usage(void)
 {
     char	    *progname;
 
@@ -64,19 +62,15 @@ change_directory_usage()
 }
 
 
-static void change_directory_help _((void));
-
 static void
-change_directory_help()
+change_directory_help(void)
 {
     help("aecd", change_directory_usage);
 }
 
 
-static void change_directory_list _((void));
-
 static void
-change_directory_list()
+change_directory_list(void)
 {
     string_ty	    *project_name;
 
@@ -128,10 +122,8 @@ change_directory_list()
 }
 
 
-static void change_directory_main _((void));
-
 static void
-change_directory_main()
+change_directory_main(void)
 {
     sub_context_ty  *scp;
     char	    *subdir =	    0;
@@ -431,7 +423,7 @@ change_directory_main()
 
 
 void
-change_directory()
+change_directory(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

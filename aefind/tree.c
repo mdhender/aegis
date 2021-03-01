@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,107 +33,96 @@
 
 
 tree_ty *
-tree_copy(tp)
-	tree_ty		*tp;
+tree_copy(tree_ty *tp)
 {
-	assert(tp->reference_count > 0);
-	tp->reference_count++;
-	return tp;
+    assert(tp->reference_count > 0);
+    tp->reference_count++;
+    return tp;
 }
 
 
 void
-tree_delete(tp)
-	tree_ty		*tp;
+tree_delete(tree_ty *tp)
 {
-	assert(tp->reference_count > 0);
-	tp->reference_count--;
-	if (tp->reference_count > 0)
-		return;
-	assert(tp->method->destructor);
-	tp->method->destructor(tp);
-	mem_free(tp);
+    assert(tp->reference_count > 0);
+    tp->reference_count--;
+    if (tp->reference_count > 0)
+	return;
+    assert(tp->method->destructor);
+    tp->method->destructor(tp);
+    mem_free(tp);
 }
 
 
 void
-tree_print(tp)
-	tree_ty		*tp;
+tree_print(tree_ty *tp)
 {
-	assert(tp->reference_count > 0);
-	assert(tp->method->print);
-	tp->method->print(tp);
+    assert(tp->reference_count > 0);
+    assert(tp->method->print);
+    tp->method->print(tp);
 }
 
 
 rpt_value_ty *
-tree_evaluate(tp, pathname, st)
-	tree_ty		*tp;
-	string_ty	*pathname;
-	struct stat	*st;
+tree_evaluate(tree_ty *tp, string_ty *pathname, struct stat *st)
 {
-	assert(tp->reference_count > 0);
-	assert(tp->method->evaluate);
-	return tp->method->evaluate(tp, pathname, st);
+    assert(tp->reference_count > 0);
+    assert(tp->method->evaluate);
+    return tp->method->evaluate(tp, pathname, st);
 }
 
 
 rpt_value_ty *
-tree_evaluate_constant(tp)
-	tree_ty		*tp;
+tree_evaluate_constant(tree_ty *tp)
 {
-	string_ty	*pathname;
-	struct stat	st;
-	rpt_value_ty	*vp;
+    string_ty       *pathname;
+    struct stat     st;
+    rpt_value_ty    *vp;
 
-	pathname = str_from_c("\377");
-	memset(&st, 0, sizeof(st));
-	vp = tree_evaluate(tp, pathname, &st);
-	str_free(pathname);
-	return vp;
+    pathname = str_from_c("\377");
+    memset(&st, 0, sizeof(st));
+    vp = tree_evaluate(tp, pathname, &st);
+    str_free(pathname);
+    return vp;
 }
 
 
 int
-tree_useful(tp)
-	tree_ty		*tp;
+tree_useful(tree_ty *tp)
 {
-	assert(tp->reference_count > 0);
-	assert(tp->method->useful);
-	return tp->method->useful(tp);
+    assert(tp->reference_count > 0);
+    assert(tp->method->useful);
+    return tp->method->useful(tp);
 }
 
 
 int
-tree_constant(tp)
-	tree_ty		*tp;
+tree_constant(tree_ty *tp)
 {
-	assert(tp->reference_count > 0);
-	if (!tp->method->constant)
-		return 0;
-	return tp->method->constant(tp);
+    assert(tp->reference_count > 0);
+    if (!tp->method->constant)
+	return 0;
+    return tp->method->constant(tp);
 }
 
 
 tree_ty *
-tree_optimize(tp)
-	tree_ty		*tp;
+tree_optimize(tree_ty *tp)
 {
-	if (!tp->method->optimize)
-		return tree_copy(tp);
-	return tp->method->optimize(tp);
+    if (!tp->method->optimize)
+	return tree_copy(tp);
+    return tp->method->optimize(tp);
 }
 
 
 tree_ty *
-tree_optimize_constant(tp)
-	tree_ty		*tp;
+tree_optimize_constant(tree_ty *tp)
 {
-	rpt_value_ty	*vp;
-	tree_ty		*result;
+    rpt_value_ty    *vp;
+    tree_ty         *result;
 
-	vp = tree_evaluate_constant(tp);
-	result = tree_constant_new(vp);
-	rpt_value_free(vp);
-	return result;
+    vp = tree_evaluate_constant(tp);
+    result = tree_constant_new(vp);
+    rpt_value_free(vp);
+    return result;
 }

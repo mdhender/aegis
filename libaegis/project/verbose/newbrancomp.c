@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 
 
 void
-project_verbose_new_branch_complete(pp)
-	project_ty	*pp;
+project_verbose_new_branch_complete(project_ty *pp)
 {
-	project_verbose(pp, 0, i18n("new branch complete"));
+    project_verbose(pp, 0, i18n("new branch complete"));
 }

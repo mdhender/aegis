@@ -117,8 +117,23 @@ uses additional information to supplement file modification times, this
 command gives you the opportunity to re-sync the associated database.
 .PP
 Executed as: the project owner.
-Current directory: the project baseline.
-Exit status: ignored.
+.PP
+Current directory: the project baseline. Note that the contents of the
+project baseline reflect content
+.IR before
+the currently integrating change. In particular note that for the
+first delta in a project or branch, the baseline directory is empty.
+If data is required from the change just completed one must use the
+.IR ${INTegration_Directory}
+substitution.
+.PP
+Exit status: NOT ignored. Note that a failure here puts the change in
+a partial state from which recovery may be difficult. Best to define
+this command with a
+.IR set +e
+so that errors are ignored at the command level.
+.\" Neither of these make much sense - but it is what I observed when
+.\" the command failed in a new branch first integration.
 .RE
 .TP 8n
 build_covers_all_architectures = boolean;

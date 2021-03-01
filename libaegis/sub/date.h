@@ -28,7 +28,7 @@
 struct sub_context_ty;
 struct wstring_list_ty;
 
-struct wstring_ty *sub_date _((struct sub_context_ty *,
-    struct wstring_list_ty *));
+struct wstring_ty *sub_date(struct sub_context_ty *,
+    struct wstring_list_ty *);
 
 #endif /* LIBAEGIS_SUB_DATE_H */

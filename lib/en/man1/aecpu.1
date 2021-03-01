@@ -65,6 +65,10 @@ You may name a directory to delete from the change all files
 in that directory tree previously copied into the change,
 other files in the tree will be ignored.
 It is an error if there are no relevant files.
+.SS Branch \fIvs\fP Change
+The \fIaecpu\fP(1) command may only be applied to a change.  If you
+wish to perform the same operation on a branch, use the \fIaemt\fP(1)
+command, through the agency of a change.
 .so z_intuit.so
 .SS Process Side Effects
 This command will cancel any build or test registrations,
@@ -129,6 +133,9 @@ the change is not assigned to the current user.
 .TP 8n
 .IR aecp (1)
 copy files into a change
+.TP 8n
+.IR aemt (1)
+make branch files transparent
 .TP 8n
 .IR aeuconf (5)
 user configuration file format

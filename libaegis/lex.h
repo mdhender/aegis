@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,12 @@ struct sub_context_ty; /* existence */
 struct input_ty; /* existence */
 struct string_ty; /* existence */
 
-void lex_open _((struct string_ty *));
-void lex_open_env _((const char *name));
-void lex_open_input _((struct input_ty *));
-void lex_close _((void));
-void lex_error _((struct sub_context_ty *, const char *));
-void gram_error _((const char *));
-int gram_lex _((void));
+void lex_open(struct string_ty *);
+void lex_open_env(const char *name);
+void lex_open_input(struct input_ty *);
+void lex_close(void);
+void lex_error(struct sub_context_ty *, const char *);
+void gram_error(const char *);
+int gram_lex(void);
 
 #endif /* LEX_H */

@@ -29,7 +29,7 @@ struct change_ty;
 struct string_list_ty;
 struct user_ty;
 
-batch_result_list_ty *change_test_batch _((struct change_ty *,
-	struct string_list_ty *, struct user_ty *, int, int, int));
+batch_result_list_ty *change_test_batch(struct change_ty *,
+	struct string_list_ty *, struct user_ty *, int, int, int);
 
 #endif /* LIBAEGIS_CHANGE_TEST_BATCH_H */

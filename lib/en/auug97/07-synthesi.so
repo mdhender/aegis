@@ -68,7 +68,7 @@ include $(OBJ:.o=.d)
 # calculate C include
 #   dependencies
 %.d: %.c
-  depend.sh $(CFLAGS) $< > $@
+  depend.sh `dirname $*.c` $(CFLAGS) $*.c > $@
 .TE
 This looks absurdly large, but it has all of the common elements in the
 one place, so that each of the modules' \fImake\fP includes may be small.

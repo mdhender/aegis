@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aencu _((void));
+command_ty *command_aencu(void);
 
 #endif /* AECOMPLETE_COMMAND_AENCU_H */

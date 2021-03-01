@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994 Peter Miller.
+ *	Copyright (C) 1993, 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <str.h>
 
-string_ty *uname_variant_get _((void));
-string_ty *uname_node_get _((void));
+string_ty *uname_variant_get(void);
+string_ty *uname_node_get(void);
 
 #endif /* AEGIS_UNAME_H */

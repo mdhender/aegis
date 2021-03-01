@@ -2239,6 +2239,28 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+if test "x$prefix" = "xNONE"
+then
+    if test "x$with_no_aegis_configured" = "x"; then
+	cfgval=`aegis --configured 2> /dev/null`
+	if test $? -eq 0; then
+	    eval "$cfgval"
+	else
+	    cfgval=`which aegis 2> /dev/null`
+	    if test $? -ne 0; then
+		case "$cfgval" in
+		/bin/aegis )
+		    prefix=/
+		    ;;
+		*/bin/aegis )
+		    prefix=`echo $cfgval | sed 's|/bin/aegis$||'`
+		    ;;
+		esac
+	    fi
+	fi
+    fi
+fi
+
 if test -z "$GCC" ; then
 echo "$as_me:$LINENO: checking for Pyramid" >&5
 echo $ECHO_N "checking for Pyramid... $ECHO_C" >&6
@@ -3795,6 +3817,24 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
+echo "$as_me:$LINENO: checking for GNU diff" >&5
+echo $ECHO_N "checking for GNU diff... $ECHO_C" >&6
+HAVE_GNU_DIFF=no
+if diff --version > conftest.out 2>&1
+then
+    if grep 'GNU diff' conftest.out > conftest.err 2>&1
+    then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GNU_DIFF 1
+_ACEOF
+
+	HAVE_GNU_DIFF=yes
+    fi
+fi
+echo "$as_me:$LINENO: result: $HAVE_GNU_DIFF" >&5
+echo "${ECHO_T}$HAVE_GNU_DIFF" >&6
+
 echo "$as_me:$LINENO: checking for $GROFF -ms macros" >&5
 echo $ECHO_N "checking for $GROFF -ms macros... $ECHO_C" >&6
 if test `echo ' ' | groff -mgs 2> /dev/null | wc -l` -gt 0
@@ -5157,14 +5197,15 @@ fi
 
 
 
-echo "$as_me:$LINENO: checking for owner of aegis library files" >&5
+if test "x$AEGIS_UID" = "x"; then
+    echo "$as_me:$LINENO: checking for owner of aegis library files" >&5
 echo $ECHO_N "checking for owner of aegis library files... $ECHO_C" >&6
-AEGIS_UID=3
-AEGIS_GID=3
-if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
-if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
+    AEGIS_UID=3
+    AEGIS_GID=3
+    if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
+    if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
-#line 5167 "configure"
+#line 5208 "configure"
 #include <sys/types.h>
 #include <sys/stat.h>
 main(ac,av)int ac; char **av;{struct stat st;
@@ -5192,12 +5233,13 @@ EOF
 		fi
 	fi
 	rm -rf conftest*
-fi
-fi
+    fi
+    fi
 
 
-echo "$as_me:$LINENO: result: $AEGIS_UID, $AEGIS_GID" >&5
+    echo "$as_me:$LINENO: result: $AEGIS_UID, $AEGIS_GID" >&5
 echo "${ECHO_T}$AEGIS_UID, $AEGIS_GID" >&6
+fi
 
 echo "$as_me:$LINENO: checking for enums of int size" >&5
 echo $ECHO_N "checking for enums of int size... $ECHO_C" >&6

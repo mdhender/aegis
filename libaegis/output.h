@@ -31,7 +31,7 @@
 struct string_ty; /* existence */
 struct output_ty;
 
-typedef void (*output_delete_callback_ty)_((struct output_ty *, void *));
+typedef void (*output_delete_callback_ty)(struct output_ty *, void *);
 
 typedef struct output_ty output_ty;
 struct output_ty
@@ -58,14 +58,14 @@ struct output_vtbl_ty
 {
 	int		size;
 
-	void (*destructor)_((output_ty *));
-	struct string_ty *(*filename)_((output_ty *));
-	long (*ftell)_((output_ty *));
-	void (*write)_((output_ty *, const void *, size_t));
-	void (*flush)_((output_ty *));
-	int (*page_width)_((output_ty *));
-	int (*page_length)_((output_ty *));
-	void (*eoln)_((output_ty *));
+	void (*destructor)(output_ty *);
+	struct string_ty *(*filename)(output_ty *);
+	long (*ftell)(output_ty *);
+	void (*write)(output_ty *, const void *, size_t);
+	void (*flush)(output_ty *);
+	int (*page_width)(output_ty *);
+	int (*page_length)(output_ty *);
+	void (*eoln)(output_ty *);
 
 	/*
 	 * By putting this last, we catch many cases where a method
@@ -74,21 +74,21 @@ struct output_vtbl_ty
 	const char	*typename;
 };
 
-void output_delete _((output_ty *));
-struct string_ty *output_filename _((output_ty *));
-long output_ftell _((output_ty *));
-void output_fputc _((output_ty *, int));
-void output_fputs _((output_ty *, const char *));
-void output_put_str _((output_ty *, struct string_ty *));
-void output_write _((output_ty *, const void *, size_t));
-void output_flush _((output_ty *));
-int output_page_width _((output_ty *));
-int output_page_length _((output_ty *));
-void output_fprintf _((output_ty *, const char *, ...)) ATTR_PRINTF(2, 3);
-void output_vfprintf _((output_ty *, const char *, va_list));
-void output_end_of_line _((output_ty *));
-void output_delete_callback _((output_ty *, output_delete_callback_ty,
-	void *));
+void output_delete(output_ty *);
+struct string_ty *output_filename(output_ty *);
+long output_ftell(output_ty *);
+void output_fputc(output_ty *, int);
+void output_fputs(output_ty *, const char *);
+void output_put_str(output_ty *, struct string_ty *);
+void output_write(output_ty *, const void *, size_t);
+void output_flush(output_ty *);
+int output_page_width(output_ty *);
+int output_page_length(output_ty *);
+void output_fprintf(output_ty *, const char *, ...) ATTR_PRINTF(2, 3);
+void output_vfprintf(output_ty *, const char *, va_list);
+void output_end_of_line(output_ty *);
+void output_delete_callback(output_ty *, output_delete_callback_ty,
+	void *);
 
 /*
  * Despite looking recursive, it isn't.  Ansi C macros do not recurse,

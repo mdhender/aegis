@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct string_ty;
 
-rpt_expr_ty *rpt_expr_struct_assign _((struct string_ty *, rpt_expr_ty *));
+rpt_expr_ty *rpt_expr_struct_assign(struct string_ty *, rpt_expr_ty *);
 
 #endif /* AEGIS_AER_EXPR_STRUCT_ASIGN_H */

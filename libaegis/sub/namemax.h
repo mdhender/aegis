@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 struct wstring_list_ty; /* existence*/
 struct sub_context_ty; /* existence */
 
-struct wstring_ty *sub_namemax _((struct sub_context_ty *,
-	struct wstring_list_ty *));
+struct wstring_ty *sub_namemax(struct sub_context_ty *,
+	struct wstring_list_ty *);
 
 #endif /* AEGIS_SUB_NAMEMAX_H */

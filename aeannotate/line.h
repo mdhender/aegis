@@ -32,7 +32,7 @@ struct line_t
     string_ty	    *text;
 };
 
-void line_constructor _((line_t *, struct change_ty *, struct string_ty *));
-void line_destructor _((line_t *));
+void line_constructor(line_t *, struct change_ty *, struct string_ty *);
+void line_destructor(line_t *);
 
 #endif /* AEANNOTATE_LINE_H */

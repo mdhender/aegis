@@ -47,11 +47,8 @@ struct complete_change_file_union_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
     complete_change_file_union_ty *this;
 
@@ -60,12 +57,8 @@ destructor(cp)
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
     complete_change_file_union_ty *this;
     string_ty       *prefix;
@@ -159,9 +152,7 @@ perform(cp, sh)
 	{
 	    fstate_src      src;
 
-	    src = project_file_find(this->cp->pp, path);
-	    if (src && (src->deleted_by || src->about_to_be_created_by))
-		src = 0;
+	    src = project_file_find(this->cp->pp, path, view_path_extreme);
 	    if (src)
 	    {
 		str_free(path);
@@ -239,10 +230,7 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_change_file_union(cp, baserel, dir_only)
-    change_ty       *cp;
-    int             baserel;
-    int             dir_only;
+complete_change_file_union(change_ty *cp, int baserel, int dir_only)
 {
     complete_ty     *result;
     complete_change_file_union_ty *this;

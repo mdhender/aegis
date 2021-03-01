@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2002 Peter Miller;
+ *	Copyright (C) 1997-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -82,6 +82,10 @@ static arglex_table_ty argtab[] =
 	(arglex_token_ty)arglex_token_clone,
     },
     {
+	"-CONFIGured",
+	(arglex_token_ty)arglex_token_configured,
+    },
+    {
 	"-CoPy_file",
 	(arglex_token_ty)arglex_token_copy_file,
     },
@@ -124,6 +128,10 @@ static arglex_table_ty argtab[] =
     {
 	"-Delta_Time",
 	(arglex_token_ty)arglex_token_delta_date,
+    },
+    {
+        "-Descend_Project_Tree",
+        (arglex_token_ty)arglex_token_project_recursive,
     },
     {
 	"-Description_Only",
@@ -224,6 +232,14 @@ static arglex_table_ty argtab[] =
     {
 	"-MAJor",
 	(arglex_token_ty)arglex_token_major,
+    },
+    {
+	"-Make_Transparent",
+	(arglex_token_ty)arglex_token_make_transparent,
+    },
+    {
+	"-Make_Transparent_Undo",
+	(arglex_token_ty)arglex_token_make_transparent_undo,
     },
     {
 	"-MANual",

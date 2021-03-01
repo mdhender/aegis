@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <aer/stmt.h>
 
-rpt_stmt_ty *rpt_stmt_while _((struct rpt_expr_ty *, rpt_stmt_ty *));
-rpt_stmt_ty *rpt_stmt_do _((struct rpt_expr_ty *, rpt_stmt_ty *));
+rpt_stmt_ty *rpt_stmt_while(struct rpt_expr_ty *, rpt_stmt_ty *);
+rpt_stmt_ty *rpt_stmt_do(struct rpt_expr_ty *, rpt_stmt_ty *);
 
 #endif /* AEGIS_AER_STMT_WHILE_H */

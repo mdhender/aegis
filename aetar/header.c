@@ -26,12 +26,8 @@
 #include <header.h>
 
 
-static long octal _((char *buf, size_t len));
-
 static long
-octal(buf, len)
-    char	    *buf;
-    size_t	    len;
+octal(char *buf, size_t len)
 {
     long	    value;
 
@@ -68,14 +64,8 @@ octal(buf, len)
 }
 
 
-static void to_octal _((char *buf, size_t len, long n));
-
-
 static void
-to_octal(buf, len, n)
-    char	    *buf;
-    size_t	    len;
-    long	    n;
+to_octal(char *buf, size_t len, long n)
 {
     buf[--len] = 0;
     memset(buf, ' ', len);
@@ -89,12 +79,8 @@ to_octal(buf, len, n)
 }
 
 
-static size_t careful_strlen _((char *s, size_t n));
-
 static size_t
-careful_strlen(s, n)
-    char	    *s;
-    size_t	    n;
+careful_strlen(char *s, size_t n)
 {
     char	    *ss;
 
@@ -108,13 +94,8 @@ careful_strlen(s, n)
 }
 
 
-static void string_field_set _((char *to_buf, size_t to_len, string_ty *from));
-
 static void
-string_field_set(to_buf, to_len, from)
-    char	    *to_buf;
-    size_t	    to_len;
-    string_ty	    *from;
+string_field_set(char *to_buf, size_t to_len, string_ty *from)
 {
     int from_len = from->str_length;
     const char *from_buf = from->str_text;
@@ -128,144 +109,119 @@ string_field_set(to_buf, to_len, from)
 
 
 string_ty *
-header_name_get(hp)
-    header_ty	    *hp;
+header_name_get(header_ty *hp)
 {
     return str_n_from_c(hp->name, careful_strlen(hp->name, sizeof(hp->name)));
 }
 
 
 void
-header_name_set(hp, arg)
-    header_ty	    *hp;
-    string_ty	    *arg;
+header_name_set(header_ty *hp, string_ty *arg)
 {
     string_field_set(hp->name, sizeof(hp->name), arg);
 }
 
 
 long
-header_mode_get(hp)
-    header_ty	    *hp;
+header_mode_get(header_ty *hp)
 {
     return (07777 & octal(hp->mode, sizeof(hp->mode)));
 }
 
 
 void
-header_mode_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_mode_set(header_ty *hp, long n)
 {
     to_octal(hp->mode, sizeof(hp->mode), n);
 }
 
 
 long
-header_uid_get(hp)
-    header_ty	    *hp;
+header_uid_get(header_ty *hp)
 {
     return octal(hp->uid, sizeof(hp->uid));
 }
 
 
 void
-header_uid_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_uid_set(header_ty *hp, long n)
 {
     to_octal(hp->uid, sizeof(hp->uid), n);
 }
 
 
 long
-header_gid_get(hp)
-    header_ty	    *hp;
+header_gid_get(header_ty *hp)
 {
     return octal(hp->gid, sizeof(hp->gid));
 }
 
 
 void
-header_gid_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_gid_set(header_ty *hp, long n)
 {
     to_octal(hp->gid, sizeof(hp->gid), n);
 }
 
 
 long
-header_size_get(hp)
-    header_ty	    *hp;
+header_size_get(header_ty *hp)
 {
     return octal(hp->size, sizeof(hp->size));
 }
 
 
 void
-header_size_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_size_set(header_ty *hp, long n)
 {
     to_octal(hp->size, sizeof(hp->size), n);
 }
 
 
 long
-header_mtime_get(hp)
-    header_ty	    *hp;
+header_mtime_get(header_ty *hp)
 {
     return octal(hp->mtime, sizeof(hp->mtime));
 }
 
 
 void
-header_mtime_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_mtime_set(header_ty *hp, long n)
 {
     to_octal(hp->mtime, sizeof(hp->mtime), n);
 }
 
 
 long
-header_checksum_get(hp)
-    header_ty	    *hp;
+header_checksum_get(header_ty *hp)
 {
     return octal(hp->checksum, sizeof(hp->checksum));
 }
 
 
 void
-header_checksum_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_checksum_set(header_ty *hp, long n)
 {
     to_octal(hp->checksum, sizeof(hp->checksum), n);
 }
 
 
 int
-header_linkflag_get(hp)
-    header_ty	    *hp;
+header_linkflag_get(header_ty *hp)
 {
     return (unsigned char)hp->linkflag;
 }
 
 
 void
-header_linkflag_set(hp, n)
-    header_ty	    *hp;
-    int		    n;
+header_linkflag_set(header_ty *hp, int n)
 {
     hp->linkflag = n;
 }
 
 
 string_ty *
-header_linkname_get(hp)
-    header_ty	    *hp;
+header_linkname_get(header_ty *hp)
 {
     return
 	str_n_from_c
@@ -277,17 +233,14 @@ header_linkname_get(hp)
 
 
 void
-header_linkname_set(hp, arg)
-    header_ty	    *hp;
-    string_ty	    *arg;
+header_linkname_set(header_ty *hp, string_ty *arg)
 {
     string_field_set(hp->linkname, sizeof(hp->linkname), arg);
 }
 
 
 string_ty *
-header_uname_get(hp)
-    header_ty	    *hp;
+header_uname_get(header_ty *hp)
 {
     if (0 != strncmp(hp->magic, TMAGIC, sizeof(hp->magic)))
 	return 0;
@@ -297,9 +250,7 @@ header_uname_get(hp)
 
 
 void
-header_uname_set(hp, arg)
-    header_ty	    *hp;
-    string_ty	    *arg;
+header_uname_set(header_ty *hp, string_ty *arg)
 {
     string_field_set(hp->uname, sizeof(hp->uname), arg);
     strcpy(hp->magic, TMAGIC);
@@ -307,8 +258,7 @@ header_uname_set(hp, arg)
 
 
 string_ty *
-header_gname_get(hp)
-    header_ty	    *hp;
+header_gname_get(header_ty *hp)
 {
     if (0 != strncmp(hp->magic, TMAGIC, sizeof(hp->magic)))
 	return 0;
@@ -318,9 +268,7 @@ header_gname_get(hp)
 
 
 void
-header_gname_set(hp, arg)
-    header_ty	    *hp;
-    string_ty	    *arg;
+header_gname_set(header_ty *hp, string_ty *arg)
 {
     string_field_set(hp->gname, sizeof(hp->gname), arg);
     strcpy(hp->magic, TMAGIC);
@@ -328,42 +276,35 @@ header_gname_set(hp, arg)
 
 
 long
-header_devmajor_get(hp)
-    header_ty	    *hp;
+header_devmajor_get(header_ty *hp)
 {
     return octal(hp->devmajor, sizeof(hp->devmajor));
 }
 
 
 void
-header_devmajor_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_devmajor_set(header_ty *hp, long n)
 {
     to_octal(hp->devmajor, sizeof(hp->devmajor), n);
 }
 
 
 long
-header_devminor_get(hp)
-    header_ty	    *hp;
+header_devminor_get(header_ty *hp)
 {
     return octal(hp->devminor, sizeof(hp->devminor));
 }
 
 
 void
-header_devminor_set(hp, n)
-    header_ty	    *hp;
-    long	    n;
+header_devminor_set(header_ty *hp, long n)
 {
     to_octal(hp->devminor, sizeof(hp->devminor), n);
 }
 
 
 long
-header_checksum_calculate(hp)
-    header_ty	    *hp;
+header_checksum_calculate(header_ty *hp)
 {
     unsigned char *cp = (unsigned char *)hp;
     unsigned char *ep = (unsigned char *)hp->checksum;
@@ -382,8 +323,7 @@ header_checksum_calculate(hp)
 
 
 void
-header_dump(hp)
-    header_ty	    *hp;
+header_dump(header_ty *hp)
 {
     int		    j;
     int		    k;

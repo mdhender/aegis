@@ -41,10 +41,8 @@
 #include <user.h>
 
 
-static void remove_project_usage _((void));
-
 static void
-remove_project_usage()
+remove_project_usage(void)
 {
     char	    *progname;
 
@@ -61,19 +59,15 @@ remove_project_usage()
 }
 
 
-static void remove_project_help _((void));
-
 static void
-remove_project_help()
+remove_project_help(void)
 {
     help("aermpr", remove_project_usage);
 }
 
 
-static void remove_project_list _((void));
-
 static void
-remove_project_list()
+remove_project_list(void)
 {
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -82,10 +76,8 @@ remove_project_list()
 }
 
 
-static void remove_project_main _((void));
-
 static void
-remove_project_main()
+remove_project_main(void)
 {
     long	    nerr;
     string_ty	    *project_name;
@@ -244,7 +236,7 @@ remove_project_main()
 
 
 void
-remove_project()
+remove_project(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -46,9 +46,12 @@ build_result(pw)
     string_ty	    *name;
     rpt_value_ty    *value;
     string_ty	    *s;
+    user_ty         *up;
 
     trace(("build_struct()\n{\n"));
     path = str_format("%s/.aegisrc", pw->pw_dir);
+
+    up = user_numeric(0, pw->pw_uid);
 
     /*
      * Read the file if it exists and is readable,
@@ -74,7 +77,7 @@ build_result(pw)
     tmp = uconf_read_file(path);
     os_become_undo();
     if (!tmp->email_address)
-	tmp->email_address = str_from_c(pw->pw_name);
+      tmp->email_address = user_email_address(up);
     str_free(path);
 
     /*

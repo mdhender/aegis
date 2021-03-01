@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aeclean _((void));
+command_ty *command_aeclean(void);
 
 #endif /* AECOMPLETE_COMMAND_AECLEAN_H */

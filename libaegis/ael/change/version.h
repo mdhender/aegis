@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct string_ty; /* existence */
 
-void list_version _((struct string_ty *, long));
+void list_version(struct string_ty *, long);
 
 #endif /* LIBAEGIS_AEL_CHANGE_VERSION_H */

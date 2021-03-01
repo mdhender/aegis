@@ -25,6 +25,6 @@
 
 #include <complete.h>
 
-complete_ty *complete_nil _((void));
+complete_ty *complete_nil(void);
 
 #endif /* AECOMPLETE_COMPLETE_NIL_H */

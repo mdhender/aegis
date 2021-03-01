@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,21 +30,21 @@
 typedef struct format_version_ty format_version_ty;
 struct format_version_ty
 {
-	string_ty	*filename_physical;
-	string_ty	*filename_logical;
-	string_ty	*edit;
-	time_t		when;
-	string_ty	*who;
-	string_ty	*description;
-	string_list_ty	tag;
-	format_version_ty *before;
-	format_version_ty *after;
-	struct format_version_list_ty *after_branch;
-	int		dead;
+    string_ty       *filename_physical;
+    string_ty       *filename_logical;
+    string_ty       *edit;
+    time_t	    when;
+    string_ty	    *who;
+    string_ty	    *description;
+    string_list_ty  tag;
+    format_version_ty *before;
+    format_version_ty *after;
+    struct format_version_list_ty *after_branch;
+    int		    dead;
 };
 
-format_version_ty *format_version_new _((void));
-void format_version_delete _((format_version_ty *));
-void format_version_validate _((format_version_ty *));
+format_version_ty *format_version_new(void);
+void format_version_delete(format_version_ty *);
+void format_version_validate(format_version_ty *);
 
 #endif /* AEIMPORT_FORMAT_VERSION_H */

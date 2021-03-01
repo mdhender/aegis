@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-2002 Peter Miller;
+#	Copyright (C) 1991-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #
 aefp_files=
 cklinlen_files=
-simp_file_stat_files=
+aemeasure_files=
 aegis_files=
 clean_files="core bin/find_sizes\$(EXEEXT) bin/fmtgen\$(EXEEXT)		\
 	libaegis/libaegis.\$(LIBEXT) common/common.\$(LIBEXT) .bin	\
@@ -150,7 +150,7 @@ do
 		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
 
 		case $name in
-		aefp | fmtgen | find_sizes | cklinlen | simp_file_stat )
+		aefp | fmtgen | find_sizes | cklinlen )
 			;;
 		test_*)
 			;;
@@ -190,7 +190,7 @@ ${stem}.c ${stem}.h"
 		;;
 
 	lib/*/libaegis.po)
-		# not installed directly, used by the others to suppliment
+		# obsolete
 		;;
 
 	lib/*.po)
@@ -271,7 +271,7 @@ do
 		echo '	@sleep 1'
 		;;
 
-	aefp | simp_file_stat )
+	aefp )
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
 common/common.\$(LIBEXT) .bin"
 		echo '	@sleep 1'

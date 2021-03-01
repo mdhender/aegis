@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,10 +51,8 @@
 #include <user.h>
 
 
-static void new_change_usage _((void));
-
 static void
-new_change_usage()
+new_change_usage(void)
 {
     char	    *progname;
 
@@ -72,19 +70,15 @@ new_change_usage()
 }
 
 
-static void new_change_help _((void));
-
 static void
-new_change_help()
+new_change_help(void)
 {
     help("aenc", new_change_usage);
 }
 
 
-static void new_change_list _((void));
-
 static void
-new_change_list()
+new_change_list(void)
 {
     string_ty	    *project_name;
 
@@ -123,9 +117,7 @@ new_change_list()
 
 
 void
-new_change_check_permission(pp, up)
-    project_ty	    *pp;
-    user_ty	    *up;
+new_change_check_permission(project_ty *pp, user_ty *up)
 {
     /*
      * it is an error if
@@ -147,10 +139,8 @@ new_change_check_permission(pp, up)
 }
 
 
-static void new_change_main _((void));
-
 static void
-new_change_main()
+new_change_main(void)
 {
     sub_context_ty  *scp;
     cstate	    cstate_data;
@@ -589,6 +579,9 @@ new_change_main()
     cstate_data->test_baseline_exempt = cattr_data->test_baseline_exempt;
     assert(cattr_data->mask&cattr_regression_test_exempt_mask);
     cstate_data->regression_test_exempt = cattr_data->regression_test_exempt;
+    cstate_data->given_regression_test_exemption =
+	cattr_data->regression_test_exempt;
+    cstate_data->given_test_exemption = cattr_data->test_exempt;
     change_architecture_clear(cp);
     for (j = 0; j < cattr_data->architecture->length; ++j)
 	change_architecture_add(cp, cattr_data->architecture->list[j]);
@@ -652,7 +645,7 @@ new_change_main()
 
 
 void
-new_change()
+new_change(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

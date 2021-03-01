@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,12 +33,12 @@ typedef struct col_vtbl_ty col_vtbl_ty;
 struct col_vtbl_ty
 {
 	int		size;
-	void		(*destructor)_((col_ty *));
-	struct output_ty *(*create)_((col_ty *, int, int, const char *));
-	void		(*title)_((col_ty *, const char *, const char *));
-	void		(*eoln)_((col_ty *));
-	void		(*eject)_((col_ty *));
-	void		(*need)_((col_ty *, int));
+	void		(*destructor)(col_ty *);
+	struct output_ty *(*create)(col_ty *, int, int, const char *);
+	void		(*title)(col_ty *, const char *, const char *);
+	void		(*eoln)(col_ty *);
+	void		(*eject)(col_ty *);
+	void		(*need)(col_ty *, int);
 
 	/*
 	 * Putting this field last catches many instances of forgetting
@@ -47,6 +47,6 @@ struct col_vtbl_ty
 	const char	*typename;
 };
 
-col_ty *col_new _((col_vtbl_ty *));
+col_ty *col_new(col_vtbl_ty *);
 
 #endif /* LIBAEGIS_COL_PRIVATE_H */

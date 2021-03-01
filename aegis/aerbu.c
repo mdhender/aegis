@@ -46,10 +46,8 @@
 #include <user.h>
 
 
-static void review_begin_undo_usage _((void));
-
 static void
-review_begin_undo_usage()
+review_begin_undo_usage(void)
 {
     char	    *progname;
 
@@ -66,19 +64,15 @@ review_begin_undo_usage()
 }
 
 
-static void review_begin_undo_help _((void));
-
 static void
-review_begin_undo_help()
+review_begin_undo_help(void)
 {
     help("aerbu", review_begin_undo_usage);
 }
 
 
-static void review_begin_undo_list _((void));
-
 static void
-review_begin_undo_list()
+review_begin_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -125,10 +119,8 @@ review_begin_undo_list()
 }
 
 
-static void review_begin_undo_main _((void));
-
 static void
-review_begin_undo_main()
+review_begin_undo_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -306,7 +298,7 @@ review_begin_undo_main()
 
 
 void
-review_begin_undo()
+review_begin_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

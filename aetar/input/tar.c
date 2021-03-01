@@ -35,11 +35,8 @@ struct input_tar_ty
 };
 
 
-static void input_tar_destructor _((input_ty *));
-
 static void
-input_tar_destructor(fp)
-    input_ty	    *fp;
+input_tar_destructor(input_ty *fp)
 {
     input_tar_ty    *this;
 
@@ -48,35 +45,24 @@ input_tar_destructor(fp)
 }
 
 
-static long input_tar_read _((input_ty *, void *, size_t));
-
 static long
-input_tar_read(fp, data, len)
-    input_ty	    *fp;
-    void	    *data;
-    size_t	    len;
+input_tar_read(input_ty *fp, void *data, size_t len)
 {
     assert(0);
     return -1;
 }
 
 
-static long input_tar_ftell _((input_ty *));
-
 static long
-input_tar_ftell(fp)
-    input_ty	*fp;
+input_tar_ftell(input_ty *fp)
 {
     assert(0);
     return 0;
 }
 
 
-static string_ty *input_tar_name _((input_ty *));
-
 static string_ty *
-input_tar_name(fp)
-    input_ty	    *fp;
+input_tar_name(input_ty *fp)
 {
     input_tar_ty    *this;
 
@@ -85,11 +71,8 @@ input_tar_name(fp)
 }
 
 
-static long input_tar_length _((input_ty *));
-
 static long
-input_tar_length(fp)
-    input_ty	    *fp;
+input_tar_length(input_ty *fp)
 {
     input_tar_ty    *this;
 
@@ -110,8 +93,7 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_tar(deeper)
-    input_ty	    *deeper;
+input_tar(input_ty *deeper)
 {
     input_ty	    *result;
     input_tar_ty    *this;
@@ -124,9 +106,7 @@ input_tar(deeper)
 
 
 input_ty *
-input_tar_child(fp, archive_name_p)
-    input_ty	    *fp;
-    string_ty	    **archive_name_p;
+input_tar_child(input_ty *fp, string_ty **archive_name_p)
 {
     input_tar_ty    *this;
 

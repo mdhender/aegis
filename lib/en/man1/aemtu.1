@@ -1,0 +1,120 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aemtu command.
+.\"
+.so z_name.so
+.TH "\*(n) -Make_Transparent_Undo" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) -Make_Transparent_Undo \- no longer make branch file transparent
+.XX "aemtu(1)" "no longer make branch file transparent"
+.SH SYNOPSIS
+.B \*(n)
+.B \-Make_Transparent_Undo
+[
+.IR option \&...
+]
+.IR filename \&...
+.br
+.B \*(n)
+.B \-Make_Transparent_Undo
+.B \-List
+.br
+.B \*(n)
+.B \-Make_Transparent_Undo
+.B \-Help
+.SH DESCRIPTION
+The
+.I "\*(n) \-Make_Transparent_Undo"
+command is used to
+reverse the effects of the
+.I "\*(n) \-Make_Transparent"
+command.
+The named files will be removed from the list of files in the change.
+.PP
+The file is deleted from the development directory unless the \fB\-Keep\fP
+option is specified.  The \fB\-Keep\fP option should be used with great
+care, as you can confuse tools such as \fImake\fP(1) by leaving these
+files in place.
+.PP
+You may name a directory to delete from the change all files
+in that directory tree previously copied into the change,
+other files in the tree will be ignored.
+It is an error if there are no relevant files.
+.so z_intuit.so
+.SS Process Side Effects
+This command will cancel any build or test registrations,
+because deleting a file logically invalidates them.
+If the project \fIconfig\fP file was deleted,
+any diff registration will also be canceled.
+.PP
+The difference file (\f(CW,D\fP) will also be removed,
+however any DMT derived files
+(e.g a \f(CW.o\fP file from a \f(CW.c\fP file)
+will not be removed.
+This is because \*(n) is decoupled from the DMT,
+and cannot know what these derived file may be called.
+You may need to delete derived files manually.
+.SS Notification
+The \fImake_transparent_undo_command\fP in the project \fIconfig\fP file
+is run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
+and if there has been an integration recently.  See \fIaepconf\fP(5)
+for more information.
+.SH OPTIONS
+The following options are understood:
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_interact.so
+.so o_keep.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aemtu '\*(n) -mtu \e!* -v'
+sh$	aemtu(){\*(n) -mtu "$@" -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecpu (1)
+no longer modify a file
+.TP 8n
+.IR aemt (1)
+make branch files transparent
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

@@ -25,6 +25,6 @@
 
 #include <complete.h>
 
-complete_ty *complete_project_name _((void));
+complete_ty *complete_project_name(void);
 
 #endif /* AECOMPLETE_COMPLETE_PROJECT_NAME_H */

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1999, 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -131,7 +131,7 @@ done
 RCS file: /projects/example/history/Howto.cook,v
 done
 aegis: rlog -r /projects/example/history/Howto.cook,v | awk
-        '/^head:/ {print $2}' > /tmp/aegis.15309
+        '/^revision/ {print $2}' > /tmp/aegis.15309
 \fI\&...lots of similar RCS output...\fP
 aegis: project "example.1.0": change 10: remove development directory
 aegis: sh \*(L)/ip.sh example.1.0 10 pat robyn isa

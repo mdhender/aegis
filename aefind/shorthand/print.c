@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,17 +28,17 @@
 
 
 tree_ty *
-shorthand_print()
+shorthand_print(void)
 {
-	tree_ty		*result;
-	tree_ty		*tp2;
-	tree_list_ty	*tlp;
+    tree_ty	    *result;
+    tree_ty	    *tp2;
+    tree_list_ty    *tlp;
 
-	tp2 = tree_this_new();
-	tlp = tree_list_new();
-	tree_list_append(tlp, tp2);
-	tree_delete(tp2);
-	result = function_print(tlp);
-	tree_list_delete(tlp);
-	return result;
+    tp2 = tree_this_new();
+    tlp = tree_list_new();
+    tree_list_append(tlp, tp2);
+    tree_delete(tp2);
+    result = function_print(tlp);
+    tree_list_delete(tlp);
+    return result;
 }

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aet _((void));
+command_ty *command_aet(void);
 
 #endif /* AECOMPLETE_COMMAND_AET_H */

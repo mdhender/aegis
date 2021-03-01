@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aerd _((void));
+command_ty *command_aerd(void);
 
 #endif /* AECOMPLETE_COMMAND_AERD_H */

@@ -30,13 +30,8 @@
 #include <tree/monadic.h>
 
 
-static rpt_value_ty *evaluate _((tree_ty *, string_ty *, struct stat *));
-
 static rpt_value_ty *
-evaluate(tp, path, st)
-    tree_ty	    *tp;
-    string_ty	    *path;
-    struct stat	    *st;
+evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
     tree_monadic_ty *this;
     rpt_value_ty    *vp;
@@ -62,11 +57,8 @@ evaluate(tp, path, st)
 }
 
 
-static int useful _((tree_ty *));
-
 static int
-useful(tp)
-    tree_ty	    *tp;
+useful(tree_ty *tp)
 {
     trace(("tree::execute::useful\n"));
     return 1;
@@ -87,8 +79,7 @@ static tree_method_ty method =
 
 
 tree_ty *
-function_execute(args)
-    tree_list_ty    *args;
+function_execute(tree_list_ty *args)
 {
     trace(("tree::execute::new\n"));
     function_needs_one("execute", args);

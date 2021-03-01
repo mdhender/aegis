@@ -27,7 +27,7 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_user_developer _((struct project_ty *));
-complete_ty *complete_user_developer_not _((struct project_ty *));
+complete_ty *complete_user_developer(struct project_ty *);
+complete_ty *complete_user_developer_not(struct project_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_USER_DEVELOPER_H */

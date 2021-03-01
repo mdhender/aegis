@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,6 @@
 struct string_ty;
 struct tree_list_ty;
 
-struct tree_ty *function_indirection _((struct string_ty *,
-	struct tree_list_ty *));
+struct tree_ty *function_indirection(struct string_ty *, struct tree_list_ty *);
 
 #endif /* AEFIND_FUNCTION_H */

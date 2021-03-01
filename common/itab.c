@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 2002 Peter Miller;
+ *	Copyright (C) 1998, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@
  * MANIFEST: functions to manipulate integer indexed tables
  */
 
+#include <error.h> /* for assert */
 #include <itab.h>
 #include <mem.h>
 #include <trace.h>
@@ -52,13 +53,8 @@ itab_alloc(int size)
     trace(("itab_alloc(size = %d)\n{\n", size));
     itp = mem_alloc(sizeof(itab_ty));
     itp->reap = 0;
-    itp->hash_modulus = 1 << 2; /* MUST be a power of 2 */
-    while (itp->hash_modulus < size)
-	itp->hash_modulus <<= 1;
-    itp->hash_cutover = itp->hash_modulus;
-    itp->hash_split = itp->hash_modulus - itp->hash_cutover;
-    itp->hash_cutover_mask = itp->hash_cutover - 1;
-    itp->hash_cutover_split_mask = (itp->hash_cutover * 2) - 1;
+    itp->hash_modulus = 1 << 5; /* MUST be a power of 2 */
+    itp->hash_mask = itp->hash_modulus - 1;
     itp->load = 0;
     itp->hash_table = mem_alloc(itp->hash_modulus * sizeof(itab_row_ty *));
     for (j = 0; j < itp->hash_modulus; ++j)
@@ -129,58 +125,65 @@ itab_free(itab_ty *itp)
 static void
 split(itab_ty *itp)
 {
-    itab_row_ty     *p;
-    itab_row_ty     **ipp;
-    itab_row_ty     *p2;
-    itab_key_ty     index;
+    itab_row_ty     **new_hash_table;
+    itab_key_ty     new_hash_modulus;
+    itab_key_ty     new_hash_mask;
+    itab_key_ty     idx;
 
-    /*
-     * get the list to be split across buckets
-     */
     trace(("split(itp = %08lX)\n{\n", (long)itp));
-    p = itp->hash_table[itp->hash_split];
-    itp->hash_table[itp->hash_split] = 0;
 
     /*
-     * increase the modulus by one
+     * double the modulus
+     *
+     * This is subtle.  If we only increase the modulus by one, the
+     * load always hovers around 80%, so we have to do a split for
+     * every insert.  I.e. the malloc burden os O(n) for the lifetime of
+     * the itab.  BUT if we double the modulus, the length of time
+     * until the next split also doubles, making the probablity of a
+     * split halve, and sigma(2**-n)=1, so the malloc burden becomes O(1)
+     * for the lifetime of the itab.
      */
-    itp->hash_modulus++;
-    itp->hash_table =
-	mem_change_size
-	(
-    	    itp->hash_table,
-    	    itp->hash_modulus * sizeof(itab_row_ty *)
-	);
-    itp->hash_table[itp->hash_modulus - 1] = 0;
-    itp->hash_split = itp->hash_modulus - itp->hash_cutover;
-    if (itp->hash_split >= itp->hash_cutover)
-    {
-	itp->hash_cutover = itp->hash_modulus;
-	itp->hash_split = 0;
-	itp->hash_cutover_mask = itp->hash_cutover - 1;
-	itp->hash_cutover_split_mask = (itp->hash_cutover * 2) - 1;
-    }
+    new_hash_modulus = itp->hash_modulus * 2;
+    new_hash_mask = new_hash_modulus - 1;
+    new_hash_table = mem_alloc(new_hash_modulus * sizeof(itab_row_ty *));
 
     /*
      * now redistribute the list elements
-     *
-     * It is important to preserve the order of the links because
-     * they can be push-down stacks, and to simply add them to the
-     * head of the list will reverse the order of the stack!
      */
-    while (p)
+    for (idx = 0; idx < itp->hash_modulus; ++idx)
     {
-	p2 = p;
-	p = p2->overflow;
-	p2->overflow = 0;
+	itab_row_ty     *p;
 
-	index = p2->key & itp->hash_cutover_mask;
-	if (index < itp->hash_split)
-	    index = p2->key & itp->hash_cutover_split_mask;
-	for (ipp = &itp->hash_table[index]; *ipp; ipp = &(*ipp)->overflow)
-	    ;
-	*ipp = p2;
+	new_hash_table[idx] = 0;
+	new_hash_table[idx + itp->hash_modulus] = 0;
+
+	p = itp->hash_table[idx];
+	while (p)
+	{
+	    itab_row_ty     *p2;
+	    itab_key_ty     index;
+	    itab_row_ty     **ipp;
+
+	    p2 = p;
+	    p = p2->overflow;
+	    p2->overflow = 0;
+
+	    /*
+	     * It is important to preserve the order of the links because
+	     * they can be push-down stacks, and to simply add them to the
+	     * head of the list will reverse the order of the stack!
+	     */
+	    assert((p2->key & itp->hash_mask) == idx);
+	    index = p2->key & new_hash_mask;
+	    for (ipp = &new_hash_table[index]; *ipp; ipp = &(*ipp)->overflow)
+		;
+	    *ipp = p2;
+	}
     }
+    mem_free(itp->hash_table);
+    itp->hash_table = new_hash_table;
+    itp->hash_modulus = new_hash_modulus;
+    itp->hash_mask = new_hash_mask;
     trace(("}\n"));
 }
 
@@ -211,9 +214,7 @@ itab_query(itab_ty *itp, itab_key_ty key)
 
     trace(("itab_query(itp = %08lX, key = %ld)\n{\n", (long)itp, (long)key));
     result = 0;
-    index = key & itp->hash_cutover_mask;
-    if (index < itp->hash_split)
-	index = key & itp->hash_cutover_split_mask;
+    index = key & itp->hash_mask;
     for (p = itp->hash_table[index]; p; p = p->overflow)
     {
 	if (key == p->key)
@@ -251,9 +252,7 @@ itab_assign(itab_ty *itp, itab_key_ty key, void *data)
 
     trace(("itab_assign(itp = %08lX, key = %ld, data = %08lX)\n{\n",
 	(long)itp, (long)key, (long)data));
-    index = key & itp->hash_cutover_mask;
-    if (index < itp->hash_split)
-	index = key & itp->hash_cutover_split_mask;
+    index = key & itp->hash_mask;
 
     for (p = itp->hash_table[index]; p; p = p->overflow)
     {
@@ -275,7 +274,7 @@ itab_assign(itab_ty *itp, itab_key_ty key, void *data)
     itp->hash_table[index] = p;
 
     itp->load++;
-    while (itp->load * 10 >= itp->hash_modulus * 8)
+    if (itp->load * 10 >= itp->hash_modulus * 8)
 	split(itp);
     done:
     trace(("}\n"));
@@ -305,9 +304,7 @@ itab_delete(itab_ty *itp, itab_key_ty key)
 
     trace(("itab_delete(itp = %08lX, key = %ld)\n{\n",
 	(long)itp, (long)key));
-    index = key & itp->hash_cutover_mask;
-    if (index < itp->hash_split)
-	index = key & itp->hash_cutover_split_mask;
+    index = key & itp->hash_mask;
 
     pp = &itp->hash_table[index];
     for (;;)

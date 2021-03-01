@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,55 +31,46 @@
 #include <tree/monadic.h>
 
 
-static rpt_value_ty *evaluate _((tree_ty *, string_ty *, struct stat *));
-
 static rpt_value_ty *
-evaluate(tp, path, st)
-	tree_ty		*tp;
-	string_ty	*path;
-	struct stat	*st;
+evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-	tree_monadic_ty	*this;
-	rpt_value_ty	*vp;
-	rpt_value_ty	*svp;
+    tree_monadic_ty *this;
+    rpt_value_ty    *vp;
+    rpt_value_ty    *svp;
 
-	this = (tree_monadic_ty *)tp;
-	vp = tree_evaluate(this->arg, path, st);
-	svp = rpt_value_stringize(vp);
-	rpt_value_free(vp);
-	printf("%s\n", rpt_value_string_query(svp)->str_text);
-	rpt_value_free(svp);
-	return rpt_value_boolean(1);
+    this = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this->arg, path, st);
+    svp = rpt_value_stringize(vp);
+    rpt_value_free(vp);
+    printf("%s\n", rpt_value_string_query(svp)->str_text);
+    rpt_value_free(svp);
+    return rpt_value_boolean(1);
 }
 
 
-static int useful _((tree_ty *));
-
 static int
-useful(tp)
-	tree_ty		*tp;
+useful(tree_ty *tp)
 {
-	return 1;
+    return 1;
 }
 
 
 static tree_method_ty method =
 {
-	sizeof(tree_monadic_ty),
-	"print",
-	tree_monadic_destructor,
-	tree_monadic_print,
-	evaluate,
-	useful,
-	0, /* constant */
-	0, /* optimize */
+    sizeof(tree_monadic_ty),
+    "print",
+    tree_monadic_destructor,
+    tree_monadic_print,
+    evaluate,
+    useful,
+    0, /* constant */
+    0, /* optimize */
 };
 
 
 tree_ty *
-function_print(args)
-	tree_list_ty	*args;
+function_print(tree_list_ty *args)
 {
-	function_needs_one("print", args);
-	return tree_monadic_new(&method, args->item[0]);
+    function_needs_one("print", args);
+    return tree_monadic_new(&method, args->item[0]);
 }

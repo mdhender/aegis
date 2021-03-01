@@ -2,7 +2,7 @@
 #-*-tcl-*-
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000, 2001 Peter Miller;
+#	Copyright (C) 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -36,167 +36,171 @@ wm iconbitmap . @$datadir/aegis.icon
 wm iconmask . @$datadir/aegis.mask
 
 proc inform { arg } {
-	.info.blurb insert end $arg
-	.info.blurb see end
-	.info.blurb insert end "\n"
-	update
+    .info.blurb insert end $arg
+    .info.blurb see end
+    .info.blurb insert end "\n"
+    update
 }
 
 proc read_pipe { command errok } {
-	set data ""
-	set fd [open $command r]
-	if { $fd != "" } {
-		set data [read $fd]
-		set codevar ""
-		catch { close $fd } codevar
-		if { $codevar != "" && !$errok } {
-			inform [format "Command \"%s\"\nreturned \"%s\"" $command $codevar]
-		}
+    set data ""
+    set fd [open $command r]
+    if { $fd != "" } {
+	set data [read $fd]
+	set codevar ""
+	catch { close $fd } codevar
+	if { $codevar != "" && !$errok } {
+	    inform [format "Command \"%s\"\nreturned \"%s\"" \
+		$command $codevar]
 	}
-	return [string trim $data]
+    }
+    return [string trim $data]
 }
 
 proc command_option_menu { w varName cmd firstValue args } {
-	upvar #0 $varName var
+    upvar #0 $varName var
 
-	if {![info exists var]} {
-		set var $firstValue
-	}
-	menubutton $w \
-		-textvariable $varName \
-		-indicatoron 1 \
-		-menu $w.menu \
-		-relief raised \
-		-bd 2 \
-		-highlightthickness 2 \
-		-anchor c \
-		-direction flush
-	menu $w.menu -tearoff 0
-	$w.menu add radiobutton -label $firstValue -variable $varName
-	foreach i $args {
-		$w.menu add radiobutton -label $i -variable $varName \
-			-command $cmd
-	}
-	return $w.menu
+    if {![info exists var]} {
+	set var $firstValue
+    }
+    menubutton $w \
+	-textvariable $varName \
+	-indicatoron 1 \
+	-menu $w.menu \
+	-relief raised \
+	-bd 2 \
+	-highlightthickness 2 \
+	-anchor c \
+	-direction flush
+    menu $w.menu -tearoff 0
+    $w.menu add radiobutton -label $firstValue -variable $varName
+    foreach i $args {
+	$w.menu add radiobutton -label $i -variable $varName \
+    	    -command $cmd
+    }
+    return $w.menu
 }
 
 proc project_drop_list { } {
-	global project_name
-	global project_list
-	set x [winfo rootx .id.project.button]
-	set y [winfo rooty .id.project.button]
-	catch { destroy .popup } errcode
-	toplevel .popup
-	wm overrideredirect .popup 1
-	wm geometry .popup +$x+$y
-	listbox .popup.list -height 12 -selectmode single \
-		-yscrollcommand ".popup.scroll set"
-	set pos -1
-	foreach pn $project_list {
-		if { $pn == $project_name } { set pos [.popup.list size] }
-		.popup.list insert end $pn
+    global project_name
+    global project_list
+    set x [winfo rootx .id.project.button]
+    set y [winfo rooty .id.project.button]
+    catch { destroy .popup } errcode
+    toplevel .popup
+    wm overrideredirect .popup 1
+    wm geometry .popup +$x+$y
+    listbox .popup.list -height 12 -selectmode single \
+	-yscrollcommand ".popup.scroll set"
+    set pos -1
+    foreach pn $project_list {
+	if { $pn == $project_name } { set pos [.popup.list size] }
+	.popup.list insert end $pn
+    }
+    if { $pos >= 0 } {
+	.popup.list selection set $pos
+	.popup.list see $pos
+    }
+    scrollbar .popup.scroll -command ".popup.list yview"
+    pack .popup.scroll -side right -fill y
+    pack .popup.list -side left
+    bind .popup.list <Double-Button-1> {
+	set item [.popup.list curselection]
+	if { $item != "" } { set item [.popup.list get $item] }
+	if { $item != "" } {
+    	    set project_name $item
+    	    project_name_changed
 	}
-	if { $pos >= 0 } {
-		.popup.list selection set $pos
-		.popup.list see $pos
-	}
-	scrollbar .popup.scroll -command ".popup.list yview"
-	pack .popup.scroll -side right -fill y
-	pack .popup.list -side left
-	bind .popup.list <Double-Button-1> {
-		set item [.popup.list curselection]
-		if { $item != "" } { set item [.popup.list get $item] }
-		if { $item != "" } {
-			set project_name $item
-			project_name_changed
-		}
-		destroy .popup
-	}
+	destroy .popup
+    }
 }
 
 proc project_name_changed { } {
-	global project_name
-	global change_number
-	global change_list
-	global datadir
+    global project_name
+    global change_number
+    global change_list
+    global datadir
 
-	#
-	# Ask Aegis for the list of projects names.  We use a specialized
-	# report script which emits TCL code to set the project_list
-	# variable.  ASSUMES project_name is valid!
-	#
-	inform [format "Reading project %s change list..." $project_name]
-	eval [read_pipe [format "|aereport -f %s/wish/chan_list.rpt -unf\
--pw=1000 -project=%s" $datadir $project_name] 0]
+    #
+    # Ask Aegis for the list of projects names.  We use a specialized
+    # report script which emits TCL code to set the project_list
+    # variable.  ASSUMES project_name is valid!
+    #
+    inform [format "Reading project %s change list..." $project_name]
+    eval [read_pipe [format \
+	"|aereport -f %s/wish/chan_list.rpt -unf -pw=1000 -project=%s" \
+	$datadir $project_name] 0]
 
-	#
-	# Set the change_number variable.  We need to ask Aegis for this,
-	# so that we get what *aegis* thinks is the default change number.
-	#
-	inform [format "Reading project %s default change number..." $project_name]
-	set change_number [read_pipe [format "|aegis -list default_change -project=%s" $project_name ] 1 ]
-	if { $change_number == "" } {
-		set change_number [lindex $change_list 0]
-	}
+    #
+    # Set the change_number variable.  We need to ask Aegis for this,
+    # so that we get what *aegis* thinks is the default change number.
+    #
+    inform [format "Reading project %s default change number..." $project_name]
+    set change_number [read_pipe [format \
+	"|aegis -list default_change -project=%s" $project_name ] 1 ]
+    if { $change_number == "" } {
+	set change_number [lindex $change_list 0]
+    }
 
-	change_number_changed
-	inform "   ...done"
+    change_number_changed
+    inform "   ...done"
 }
 
 proc change_drop_list { } {
-	global change_number
-	global change_list
-	set x [winfo rootx .id.change.button]
-	set y [winfo rooty .id.change.button]
-	catch { destroy .popup } errcode
-	toplevel .popup
-	wm overrideredirect .popup 1
-	wm geometry .popup +$x+$y
-	listbox .popup.list -height 12 -selectmode single \
-		-yscrollcommand ".popup.scroll set"
-	set pos -1
-	foreach cn $change_list {
-		if { $cn == $change_number } { set pos [.popup.list size] }
-		.popup.list insert end $cn
+    global change_number
+    global change_list
+    set x [winfo rootx .id.change.button]
+    set y [winfo rooty .id.change.button]
+    catch { destroy .popup } errcode
+    toplevel .popup
+    wm overrideredirect .popup 1
+    wm geometry .popup +$x+$y
+    listbox .popup.list -height 12 -selectmode single \
+	-yscrollcommand ".popup.scroll set"
+    set pos -1
+    foreach cn $change_list {
+	if { $cn == $change_number } { set pos [.popup.list size] }
+	.popup.list insert end $cn
+    }
+    if { $pos >= 0 } {
+	.popup.list selection set $pos
+	.popup.list see $pos
+    }
+    scrollbar .popup.scroll -command ".popup.list yview"
+    pack .popup.scroll -side right -fill y
+    pack .popup.list -side left
+    bind .popup.list <Double-Button-1> {
+	set item [.popup.list curselection]
+	if { $item != "" } { set item [.popup.list get $item] }
+	if { $item != "" } {
+    	    set change_number $item
+    	    change_number_changed
 	}
-	if { $pos >= 0 } {
-		.popup.list selection set $pos
-		.popup.list see $pos
-	}
-	scrollbar .popup.scroll -command ".popup.list yview"
-	pack .popup.scroll -side right -fill y
-	pack .popup.list -side left
-	bind .popup.list <Double-Button-1> {
-		set item [.popup.list curselection]
-		if { $item != "" } { set item [.popup.list get $item] }
-		if { $item != "" } {
-			set change_number $item
-			change_number_changed
-		}
-		destroy .popup
-	}
+	destroy .popup
+    }
 }
 
 proc change_number_changed { } {
-	global project_name
-	global change_number
-	global test_nor test_bas test_reg cause state
-	global datadir
+    global project_name
+    global change_number
+    global test_nor test_bas test_reg cause state
+    global datadir
 
-	#
-	# Ask Aegis for the change attributes
-	#
-	inform [format "Reading project %s change %s attributes..." $project_name $change_number]
-	eval [read_pipe [format "|aereport -f %s/wish/chan_attr.rpt -unf\
--pw=1000 -project=%s -change=%s" $datadir $project_name $change_number] 0]
-	#
-	# Set the values of the text widgets explicitly,
-	# they don't take -textvariable options.
-	#
-	.bdesc.text delete 1.0 end
-	.bdesc.text insert end $brief_description
-	.desc.text delete 1.0 end
-	.desc.text insert end $description
+    #
+    # Ask Aegis for the change attributes
+    #
+    inform [format "Reading project %s change %s attributes..." \
+	$project_name $change_number]
+    eval [read_pipe [format "|aereport -f %s/wish/chan_attr.rpt -unf -pw=1000 \
+-project=%s -change=%s" $datadir $project_name $change_number] 0]
+    #
+    # Set the values of the text widgets explicitly,
+    # they don't take -textvariable options.
+    #
+    .bdesc.text delete 1.0 end
+    .bdesc.text insert end $brief_description
+    .desc.text delete 1.0 end
+    .desc.text insert end $description
 }
 
 #
@@ -235,7 +239,8 @@ pack .bdesc -fill x
 frame .desc
 label .desc.label -text "Description:"
 pack .desc.label -side top -anchor w
-text .desc.text -height 8 -yscrollcommand ".desc.scroll set" -wrap word -spacing3 5
+text .desc.text -height 8 -yscrollcommand ".desc.scroll set" -wrap word \
+    -spacing3 5
 scrollbar .desc.scroll -command ".desc.text yview"
 pack .desc.scroll -side right -fill y
 pack .desc.text -side bottom -fill both -expand 1
@@ -250,11 +255,14 @@ set test_reg 1
 frame .bottom.tests -relief ridge -width 100 -borderwidth 2
 label .bottom.tests.label -text "Testing Required:"
 pack .bottom.tests.label -side top -anchor w
-checkbutton .bottom.tests.normal -text "Normal (Positive)" -variable test_nor -onvalue 1 -offvalue 0
+checkbutton .bottom.tests.normal -text "Normal (Positive)" \
+    -variable test_nor -onvalue 1 -offvalue 0
 pack .bottom.tests.normal -side top -anchor w
-checkbutton .bottom.tests.baseline -text "Baseline (Negative)" -variable test_bas -onvalue 1 -offvalue 0
+checkbutton .bottom.tests.baseline -text "Baseline (Negative)" \
+    -variable test_bas -onvalue 1 -offvalue 0
 pack .bottom.tests.baseline -side top -anchor w
-checkbutton .bottom.tests.regression -text "Regression" -variable test_reg -onvalue 1 -offvalue 0
+checkbutton .bottom.tests.regression -text "Regression" -variable test_reg \
+    -onvalue 1 -offvalue 0
 pack .bottom.tests.regression -side top -anchor w
 pack .bottom.tests -side left -padx 5 -pady 5 -anchor nw
 
@@ -271,26 +279,34 @@ pack .bottom.control -side right -padx 5
 frame .bottom.cause -relief ridge -borderwidth 2
 label .bottom.cause.label -text "Cause:"
 pack .bottom.cause.label -side top -anchor w
-radiobutton .bottom.cause.intbug -text "Internal Bug" -value "internal_bug" -variable cause -anchor w
+radiobutton .bottom.cause.intbug -text "Internal Bug" -value "internal_bug" \
+    -variable cause -anchor w
 pack .bottom.cause.intbug -side top -anchor w
-radiobutton .bottom.cause.intenh -text "Internal Enhancement" -value "internal_enhancement" -variable cause -anchor w
+radiobutton .bottom.cause.intenh -text "Internal Enhancement" \
+    -value "internal_enhancement" -variable cause -anchor w
 pack .bottom.cause.intenh -side top -anchor w
-radiobutton .bottom.cause.intimp -text "Internal Improvement" -value "internal_improvement" -variable cause -anchor w
+radiobutton .bottom.cause.intimp -text "Internal Improvement" \
+    -value "internal_improvement" -variable cause -anchor w
 pack .bottom.cause.intimp -side top -anchor w
-radiobutton .bottom.cause.extbug -text "External Bug" -value "external_bug" -variable cause -anchor w
+radiobutton .bottom.cause.extbug -text "External Bug" -value "external_bug" \
+    -variable cause -anchor w
 pack .bottom.cause.extbug -side top -anchor w
-radiobutton .bottom.cause.extenh -text "External Enhancement" -value "external_enhancement" -variable cause -anchor w
+radiobutton .bottom.cause.extenh -text "External Enhancement" \
+    -value "external_enhancement" -variable cause -anchor w
 pack .bottom.cause.extenh -side top -anchor w
-radiobutton .bottom.cause.extimp -text "External Improvement" -value "external_improvement" -variable cause -anchor w
+radiobutton .bottom.cause.extimp -text "External Improvement" \
+    -value "external_improvement" -variable cause -anchor w
 pack .bottom.cause.extimp -side top -anchor w
-radiobutton .bottom.cause.chain -text "Chain Defect" -value "chain" -variable cause -anchor w
+radiobutton .bottom.cause.chain -text "Chain Defect" -value "chain" \
+    -variable cause -anchor w
 pack .bottom.cause.chain -side top -anchor w
 pack .bottom.cause -side left -anchor nw -pady 5
 
 pack .bottom -fill x
 
 frame .info
-text .info.blurb -height 3 -yscrollcommand ".info.scroll set" -wrap word -borderwidth 1
+text .info.blurb -height 3 -yscrollcommand ".info.scroll set" \
+    -wrap word -borderwidth 1
 scrollbar .info.scroll -command ".info.blurb yview" -borderwidth 1
 pack .info.scroll -side right -fill y
 pack .info.blurb -side left -fill both -expand 1
@@ -317,50 +333,57 @@ project_name_changed
 set errorCode 0
 
 proc apply { } {
-	global brief_description description cause
-	global test_nor test_bas test_reg
-	global project_name change_number
-	global errorCode
+    global brief_description description cause
+    global test_nor test_bas test_reg
+    global project_name change_number
+    global errorCode
 
-	set filename [format "/tmp/tkaeca-%d" [pid]]
-	set errcode ""
-	catch { set fd [open $filename w 0600] } errcode
-	if { $fd == "" } {
-		inform [format "Open %s: %s" $filename $errcode]
-		set errorCode 1
-		return
-	}
+    set filename [format "/tmp/tkaeca-%d" [pid]]
+    set errcode ""
+    catch { set fd [open $filename w 0600] } errcode
+    if { $fd == "" } {
+	    inform [format "Open %s: %s" $filename $errcode]
+	    set errorCode 1
+	    return
+    }
 
-	set brief_description [.bdesc.text get 1.0 end]
-	set description [.desc.text get 1.0 end]
-	set tmp $brief_description
-	regsub -all {[\\"]} $tmp {\\&} tmp
-	regsub -all \n $tmp \\n\\\n tmp
-	puts $fd [format "brief_description = \"%s\";" $tmp]
-	set tmp $description
-	regsub -all {[\\"]} $tmp {\\&} tmp
-	regsub -all \n $tmp \\n\\\n tmp
-	puts $fd [format "description = \"%s\";" $tmp]
-	puts $fd [format "cause = %s;" $cause]
-	if { $test_nor } then { puts $fd "test_exempt = false;" } else { puts $fd "test_exempt = true;" }
-	if { $test_bas } then { puts $fd "test_baseline_exempt = false;" } else { puts $fd "test_baseline_exempt = true;" }
-	if { $test_reg } then { puts $fd "regression_test_exempt = false;" } else { puts $fd "regression_test_exempt = true;" }
-	close $fd
+    set brief_description [.bdesc.text get 1.0 end]
+    set description [.desc.text get 1.0 end]
+    set tmp $brief_description
+    regsub -all {[\\"]} $tmp {\\&} tmp
+    regsub -all \n $tmp \\n\\\n tmp
+    puts $fd [format "brief_description = \"%s\";" $tmp]
+    set tmp $description
+    regsub -all {[\\"]} $tmp {\\&} tmp
+    regsub -all \n $tmp \\n\\\n tmp
+    puts $fd [format "description = \"%s\";" $tmp]
+    puts $fd [format "cause = %s;" $cause]
+    if { $test_nor } \
+    then { puts $fd "test_exempt = false;" } \
+    else { puts $fd "test_exempt = true;" }
+    if { $test_bas } \
+    then { puts $fd "test_baseline_exempt = false;" } \
+    else { puts $fd "test_baseline_exempt = true;" }
+    if { $test_reg } \
+    then { puts $fd "regression_test_exempt = false;" } \
+    else { puts $fd "regression_test_exempt = true;" }
+    close $fd
 
-	inform [format "Setting project %s change %s attributes..." $project_name $change_number]
-	set command [list aegis -ca -f $filename -p $project_name -c $change_number]
-	inform [format "Command = \"%s\"" $command]
-	set errcode ""
-	set errorCode 0
-	catch { eval exec $command } errcode
-	set errorCode2 $errorCode
-	catch { exec rm -f $filename } errcode2
-	if { $errorCode != 0 } {
-		inform $errcode
-	} {
-		inform "   ...done"
-	}
-	set errorCode $errorCode2
+    inform [format "Setting project %s change %s attributes..." \
+	$project_name $change_number]
+    set command [list aegis -ca -f $filename -p $project_name -c $change_number]
+    inform [format "Command = \"%s\"" $command]
+    set errcode ""
+    set errorCode 0
+    catch { eval exec $command } errcode
+    set errorCode2 $errorCode
+    catch { exec rm -f $filename } errcode2
+    if { $errorCode != 0 } {
+	    inform $errcode
+    } {
+	    inform "   ...done"
+    }
+    set errorCode $errorCode2
 }
 
 proc do_it { } {

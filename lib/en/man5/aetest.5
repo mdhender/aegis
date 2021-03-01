@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2001 Peter Miller;
+.\"	Copyright (C) 2000-2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,13 @@ Use the same filename as was given to the test command.
 exit_status = integer;
 .br
 This is the exit status returned by the test.
+.TP 8n
+architecture = string;
+.br
+This is the architecture which the test was run on.
+Defaults to the architecture of the current system if not set.
+(Try to avoid setting this field unless you have a very clever
+multi-architecture test system.)
 .RE
 .SH SEE ALSO
 .TP 8n

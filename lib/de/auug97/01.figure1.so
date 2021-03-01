@@ -1,0 +1,115 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.PS
+dir_factor = 0.6
+
+folder_height = 0.16 * dir_factor
+folder_width  = 0.25 * dir_factor
+folder_miter  = 0.03 * dir_factor
+
+define folder {
+B: box invis wid folder_width ht folder_height
+line from B.sw \
+	then to B.nw-(0,folder_miter) \
+	then to B.nw+(folder_miter,0) \
+	then to B.n-(folder_miter/2,0) \
+	then to B.n+(folder_miter/2,-folder_miter) \
+	then to B.ne-(0,folder_miter) \
+	then to B.se \
+	then to B.sw
+}
+
+document_height = 0.22 * dir_factor
+document_width  = 0.16 * dir_factor
+document_miter  = 0.05 * dir_factor
+
+define document {
+B: box invis wid document_width ht document_height
+line from B.sw \
+	then to B.nw \
+	then to B.ne-(document_miter,0) \
+	then to B.ne-(0,document_miter) \
+	then to B.se \
+	then to B.sw
+line from B.ne-(document_miter,0) \
+	then to B.ne-(document_miter,document_miter) \
+	then to B.ne-(0,document_miter)
+}
+
+dir_wid = 0.35 * dir_factor
+dir_ht = 0.26 * dir_factor
+
+boxwid = dir_wid
+boxht = dir_ht
+A: box invis
+   [ folder ] with .c at A.c
+   "\fIProject\fP" ljust at A.e
+
+   line from A.s then down boxht/2 then right boxwid/2
+B: box invis
+   [ document ] with .c at B.c
+   "\f(CWMakefile\fP" ljust at B.e
+
+   line from A.s then down 3*boxht/2 then right boxwid/2
+C: box invis
+   [ folder ] with .c at C.c
+   "\f(CWmodule1\fP" ljust at C.e
+
+   line from C.s then down boxht/2 then right boxwid/2
+C1: box invis
+   [ document ] with .c at C1.c
+   "\f(CWMakefile\fP" ljust at C1.e
+
+   line from C.s then down 3*boxht/2 then right boxwid/2
+C2: box invis
+   [ document ] with .c at C2.c
+   "\f(CWsource1.c\fP" ljust at C2.e
+
+   line from C.s then down 5*boxht/2 then right boxwid/2
+C3: box invis
+   [ document ] with .c at C3.c
+   "\fIetc...\fP" ljust at C3.e
+
+   line from A.s then down 11*boxht/2 then right boxwid/2
+D: box invis
+   [ folder ] with .c at D.c
+   "\f(CWmodule2\fP" ljust at D.e
+
+   line from D.s then down boxht/2 then right boxwid/2
+D1: box invis
+   [ document ] with .c at D1.c
+   "\f(CWMakefile\fP" ljust at D1.e
+
+   line from D.s then down 3*boxht/2 then right boxwid/2
+D2: box invis
+   [ document ] with .c at D2.c
+   "\f(CWsource2.c\fP" ljust at D2.e
+
+   line from D.s then down 5*boxht/2 then right boxwid/2
+D3: box invis
+   [ document ] with .c at D3.c
+   "\fIetc...\fP" ljust at D3.e
+
+.\" Make sure the width of the text is taken into account when the
+.\" picture is centered within the column.
+box invis wid 1 with .w at D3.e
+.PE

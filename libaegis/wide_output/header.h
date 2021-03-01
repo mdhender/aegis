@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,13 @@
 
 #include <main.h>
 
-struct wide_output_ty *wide_output_header_open _((struct wide_output_ty *, int));
+struct wide_output_ty *wide_output_header_open(struct wide_output_ty *, int);
 
-void wide_output_header_title _((struct wide_output_ty *, const char *, const char *));
-void wide_output_header_need _((struct wide_output_ty *, int));
-void wide_output_header_need1 _((struct wide_output_ty *, int));
-void wide_output_header_eject _((struct wide_output_ty *));
-int wide_output_header_is_at_top_of_page _((struct wide_output_ty *));
+void wide_output_header_title(struct wide_output_ty *, const char *,
+    const char *);
+void wide_output_header_need(struct wide_output_ty *, int);
+void wide_output_header_need1(struct wide_output_ty *, int);
+void wide_output_header_eject(struct wide_output_ty *);
+int wide_output_header_is_at_top_of_page(struct wide_output_ty *);
 
 #endif /* LIBAEGIS_WIDE_OUTPUT_HEADER_H */

@@ -54,10 +54,8 @@
 #define NOT_GIVEN -2
 
 
-static void new_release_usage _((void));
-
 static void
-new_release_usage()
+new_release_usage(void)
 {
     char	    *progname;
 
@@ -74,19 +72,15 @@ new_release_usage()
 }
 
 
-static void new_release_help _((void));
-
 static void
-new_release_help()
+new_release_help(void)
 {
     help("aenrls", new_release_usage);
 }
 
 
-static void new_release_list _((void));
-
 static void
-new_release_list()
+new_release_list(void)
 {
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -103,15 +97,9 @@ struct copy_tree_arg_ty
 };
 
 
-static void copy_tree_callback _((void *, dir_walk_message_ty, string_ty *,
-    struct stat *));
-
 static void
-copy_tree_callback(arg, message, path, st)
-    void	    *arg;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
+    struct stat *st)
 {
     string_ty	    *s1;
     string_ty	    *s2;
@@ -159,10 +147,8 @@ copy_tree_callback(arg, message, path, st)
 }
 
 
-static void new_release_main _((void));
-
 static void
-new_release_main()
+new_release_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *ip;
@@ -818,15 +804,9 @@ new_release_main()
 	fstate_src	p1_src_data;
 	fstate_src	c_src_data;
 
-	p_src_data = project_file_nth(pp[0], j);
+	p_src_data = project_file_nth(pp[0], j, view_path_extreme);
 	if (!p_src_data)
 	    break;
-	if (p_src_data->deleted_by)
-	    continue;
-	if (p_src_data->about_to_be_created_by)
-	    continue;
-	if (p_src_data->about_to_be_copied_by)
-	    continue;
 
 	p1_src_data = project_file_new(ppp, p_src_data->file_name);
 	p1_src_data->action = file_action_create;
@@ -893,7 +873,7 @@ new_release_main()
 	/*
 	 * find the relevant change src data
 	 */
-	src_data = project_file_nth(ppp, j);
+	src_data = project_file_nth(ppp, j, view_path_extreme);
 	if (!src_data)
 	    break;
 
@@ -968,7 +948,8 @@ new_release_main()
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)
 	    break;
-	p_src_data = project_file_find(ppp, c_src_data->file_name);
+	p_src_data =
+	    project_file_find(ppp, c_src_data->file_name, view_path_none);
 	assert(p_src_data);
 
 	/*
@@ -1044,7 +1025,7 @@ new_release_main()
 
 
 void
-new_release()
+new_release(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

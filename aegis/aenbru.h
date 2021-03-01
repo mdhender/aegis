@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void new_branch_undo _((void));
+void new_branch_undo(void);
 
 #endif /* AEGIS_AENBRU_H */

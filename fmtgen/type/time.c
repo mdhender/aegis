@@ -28,52 +28,52 @@
 static void
 gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-	char		*deref;
+    char	    *deref;
 
-	deref = (is_a_list ? "*" : "");
-	indent_printf("%s\1%s%s;\n", "time_t", deref, name->str_text);
+    deref = (is_a_list ? "*" : "");
+    indent_printf("%s\1%s%s;\n", "time_t", deref, name->str_text);
 }
 
 
 static void
 gen_code_declarator(type_ty *type, string_ty *name, int is_a_list, int show)
 {
-	indent_printf("time_write(fp, ");
-	if (is_a_list)
-	{
-		indent_printf("(char *)0");
-		show = 1;
-	}
-	else
-	{
-		indent_printf("\"%s\"", name->str_text);
-		if (show < 0)
-			show = 0;
-	}
-	indent_printf(", this->%s, %d);\n", name->str_text, show);
+    indent_printf("time_write(fp, ");
+    if (is_a_list)
+    {
+	indent_printf("(char *)0");
+	show = 1;
+    }
+    else
+    {
+	indent_printf("\"%s\"", name->str_text);
+	if (show < 0)
+    	    show = 0;
+    }
+    indent_printf(", this->%s, %d);\n", name->str_text, show);
 }
 
 
 static void
 gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-	if (is_a_list)
-		indent_printf(";\n");
+    if (is_a_list)
+       	indent_printf(";\n");
 }
 
 
 type_method_ty type_time =
 {
-	sizeof(type_ty),
-	"time",
-	1, /* has a mask */
-	0, /* constructor */
-	0, /* destructor */
-	0, /* gen_include */
-	gen_include_declarator,
-	0, /* gen_code */
-	gen_code_declarator,
-	gen_free_declarator,
-	0, /* member_add */
-	0, /* in_include_file */
+    sizeof(type_ty),
+    "time",
+    1, /* has a mask */
+    0, /* constructor */
+    0, /* destructor */
+    0, /* gen_include */
+    gen_include_declarator,
+    0, /* gen_code */
+    gen_code_declarator,
+    gen_free_declarator,
+    0, /* member_add */
+    0, /* in_include_file */
 };

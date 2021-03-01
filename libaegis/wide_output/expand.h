@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-struct wide_output_ty *wide_output_expand_open _((struct wide_output_ty *, int));
+struct wide_output_ty *wide_output_expand_open(struct wide_output_ty *, int);
 
 #endif /* LIBAEGIS_WIDE_OUTPUT_EXPAND_H */

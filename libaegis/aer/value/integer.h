@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 #include <aer/value.h>
 
-rpt_value_ty *rpt_value_integer _((long));
-long rpt_value_integer_query _((rpt_value_ty *));
-rpt_value_ty *rpt_value_integerize _((rpt_value_ty *));
+rpt_value_ty *rpt_value_integer(long);
+long rpt_value_integer_query(rpt_value_ty *);
+rpt_value_ty *rpt_value_integerize(rpt_value_ty *);
 
 #endif /* AEGIS_AER_VALUE_INTEGER_H */

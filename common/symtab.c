@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1990-1995, 2002 Peter Miller;
+ *	Copyright (C) 1990-1995, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,16 +35,10 @@ symtab_alloc(int size)
     stp = mem_alloc(sizeof(symtab_ty));
     stp->chain = 0;
     stp->reap = 0;
-    stp->hash_modulus = 1 << 2; /* MUST be a power of 2 */
-    while (stp->hash_modulus < size)
-	stp->hash_modulus <<= 1;
-    stp->hash_cutover = stp->hash_modulus;
-    stp->hash_split = stp->hash_modulus - stp->hash_cutover;
-    stp->hash_cutover_mask = stp->hash_cutover - 1;
-    stp->hash_cutover_split_mask = (stp->hash_cutover * 2) - 1;
+    stp->hash_modulus = 1 << 5; /* MUST be a power of 2 */
+    stp->hash_mask = stp->hash_modulus - 1;
     stp->hash_load = 0;
-    stp->hash_table =
-	mem_alloc(stp->hash_modulus * sizeof(symtab_row_ty *));
+    stp->hash_table = mem_alloc(stp->hash_modulus * sizeof(symtab_row_ty *));
     for (j = 0; j < stp->hash_modulus; ++j)
 	stp->hash_table[j] = 0;
     return stp;
@@ -98,62 +92,63 @@ static void split(symtab_ty *);
 static void
 split(symtab_ty *stp)
 {
-    symtab_row_ty   *p;
-    symtab_row_ty   **ipp;
-    symtab_row_ty   *p2;
-    str_hash_ty     index;
+    str_hash_ty     new_hash_modulus;
+    str_hash_ty     new_hash_mask;
+    symtab_row_ty   **new_hash_table;
+    str_hash_ty     idx;
 
     /*
-     * get the list to be split across buckets
+     * double the modulus
+     *
+     * This is subtle.  If we only increase the modulus by one, the
+     * load always hovers around 80%, so we have to do a split for
+     * every insert.  I.e. the malloc burden os O(n) for the lifetime of
+     * the symtab.  BUT if we double the modulus, the length of time
+     * until the next split also doubles, making the probablity of a
+     * split halve, and sigma(2**-n)=1, so the malloc burden becomes O(1)
+     * for the lifetime of the symtab.
      */
-    p = stp->hash_table[stp->hash_split];
-    stp->hash_table[stp->hash_split] = 0;
-
-    /*
-     * increase the modulus by one
-     */
-    stp->hash_modulus++;
-    stp->hash_table =
-	mem_change_size
-	(
-    	    stp->hash_table,
-    	    stp->hash_modulus * sizeof(symtab_row_ty *)
-	);
-    stp->hash_table[stp->hash_modulus - 1] = 0;
-    stp->hash_split = stp->hash_modulus - stp->hash_cutover;
-    if (stp->hash_split >= stp->hash_cutover)
-    {
-	stp->hash_cutover = stp->hash_modulus;
-	stp->hash_split = 0;
-	stp->hash_cutover_mask = stp->hash_cutover - 1;
-	stp->hash_cutover_split_mask = (stp->hash_cutover * 2) - 1;
-    }
+    new_hash_modulus = stp->hash_modulus * 2;
+    new_hash_mask = new_hash_modulus - 1;
+    new_hash_table = mem_alloc(new_hash_modulus * sizeof(symtab_row_ty *));
 
     /*
      * now redistribute the list elements
-     *
-     * It is important to preserve the order of the links because
-     * they can be push-down stacks, and to simply add them to the
-     * head of the list will reverse the order of the stack!
      */
-    while (p)
+    for (idx = 0; idx < stp->hash_modulus; ++idx)
     {
-	p2 = p;
-	p = p2->overflow;
-	p2->overflow = 0;
+	symtab_row_ty   *p;
 
-	index = p2->key->str_hash & stp->hash_cutover_mask;
-	if (index < stp->hash_split)
-    	    index = (p2->key->str_hash & stp->hash_cutover_split_mask);
-	for
-	(
-    	    ipp = &stp->hash_table[index];
-    	    *ipp;
-    	    ipp = &(*ipp)->overflow
-	)
-    	    ;
-	*ipp = p2;
+	new_hash_table[idx] = 0;
+	new_hash_table[idx + stp->hash_modulus] = 0;
+
+	p = stp->hash_table[idx];
+	while (p)
+	{
+	    str_hash_ty     index;
+	    symtab_row_ty   **ipp;
+	    symtab_row_ty   *p2;
+
+	    p2 = p;
+	    p = p2->overflow;
+	    p2->overflow = 0;
+
+	    /*
+	     * It is important to preserve the order of the links because
+	     * they can be push-down stacks, and to simply add them to the
+	     * head of the list will reverse the order of the stack!
+	     */
+	    assert((p2->key->str_hash & stp->hash_mask) == idx);
+	    index = p2->key->str_hash & new_hash_mask;
+	    for (ipp = &new_hash_table[index]; *ipp; ipp = &(*ipp)->overflow)
+		;
+	    *ipp = p2;
+	}
     }
+    mem_free(stp->hash_table);
+    stp->hash_table = new_hash_table;
+    stp->hash_modulus = new_hash_modulus;
+    stp->hash_mask = new_hash_mask;
 }
 
 
@@ -177,14 +172,12 @@ split(symtab_ty *stp)
 void *
 symtab_query(symtab_ty *stp, string_ty *key)
 {
-    str_hash_ty     index;
-    symtab_row_ty   *p;
-
     while (stp)
     {
-	index = key->str_hash & stp->hash_cutover_mask;
-	if (index < stp->hash_split)
-	    index = key->str_hash & stp->hash_cutover_split_mask;
+	str_hash_ty     index;
+	symtab_row_ty   *p;
+
+	index = key->str_hash & stp->hash_mask;
 	for (p = stp->hash_table[index]; p; p = p->overflow)
 	{
 	    if (str_equal(key, p->key))
@@ -214,20 +207,23 @@ symtab_query(symtab_ty *stp, string_ty *key)
 string_ty *
 symtab_query_fuzzy(symtab_ty *stp, string_ty *key)
 {
-    str_hash_ty     index;
-    symtab_row_ty   *p;
     string_ty	    *best_name;
     double	    best_weight;
-    double	    weight;
 
     best_name = 0;
     best_weight = 0.6;
     while (stp)
     {
+	str_hash_ty     index;
+
 	for (index = 0; index < stp->hash_modulus; ++index)
 	{
+	    symtab_row_ty   *p;
+
 	    for (p = stp->hash_table[index]; p; p = p->overflow)
 	    {
+		double          weight;
+
 		weight = fstrcmp(key->str_text, p->key->str_text);
 		if (weight > best_weight)
 		    best_name = p->key;
@@ -260,9 +256,7 @@ symtab_assign(symtab_ty *stp, string_ty *key, void *data)
     str_hash_ty     index;
     symtab_row_ty   *p;
 
-    index = key->str_hash & stp->hash_cutover_mask;
-    if (index < stp->hash_split)
-	index = key->str_hash & stp->hash_cutover_split_mask;
+    index = key->str_hash & stp->hash_mask;
 
     for (p = stp->hash_table[index]; p; p = p->overflow)
     {
@@ -282,7 +276,7 @@ symtab_assign(symtab_ty *stp, string_ty *key, void *data)
     stp->hash_table[index] = p;
 
     stp->hash_load++;
-    while (stp->hash_load * 10 >= stp->hash_modulus * 8)
+    if (stp->hash_load * 10 >= stp->hash_modulus * 8)
 	split(stp);
 }
 
@@ -310,9 +304,7 @@ symtab_assign_push(symtab_ty *stp, string_ty *key, void *data)
     str_hash_ty     index;
     symtab_row_ty   *p;
 
-    index = key->str_hash & stp->hash_cutover_mask;
-    if (index < stp->hash_split)
-	index = key->str_hash & stp->hash_cutover_split_mask;
+    index = key->str_hash & stp->hash_mask;
 
     p = mem_alloc(sizeof(symtab_row_ty));
     p->key = str_copy(key);
@@ -321,6 +313,6 @@ symtab_assign_push(symtab_ty *stp, string_ty *key, void *data)
     stp->hash_table[index] = p;
 
     stp->hash_load++;
-    while (stp->hash_load * 10 >= stp->hash_modulus * 8)
+    if (stp->hash_load * 10 >= stp->hash_modulus * 8)
 	split(stp);
 }

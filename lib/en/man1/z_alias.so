@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ When this was finished, and 4.3 started, a project administrator could say
 .ft CW
 aerpa example.cur
 .br
-aenpa example.4.2 example.cur
+aenpa example.4.3 example.cur
 .ft R
 .RE
 Now ``example.cur'' is an alias for the ``example.4.3'' branch, but the

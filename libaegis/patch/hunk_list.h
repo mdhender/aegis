@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,8 @@ struct patch_hunk_list_ty
 	patch_hunk_ty	**item;
 };
 
-void patch_hunk_list_constructor _((patch_hunk_list_ty *));
-void patch_hunk_list_destructor _((patch_hunk_list_ty *));
-void patch_hunk_list_append _((patch_hunk_list_ty *, patch_hunk_ty *));
+void patch_hunk_list_constructor(patch_hunk_list_ty *);
+void patch_hunk_list_destructor(patch_hunk_list_ty *);
+void patch_hunk_list_append(patch_hunk_list_ty *, patch_hunk_ty *);
 
 #endif /* LIBAEGIS_PATCH_HUNK_LIST_H */

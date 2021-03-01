@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -106,6 +106,13 @@ This can sometimes be slow to generate.";
 		description =
 	      "Report all state change for all change in the project, by user.";
 		filename = "report/proj_activ.rpt";
+	},
+	{
+		name = "Project_ANcestors";
+		description =
+"Report the name of the project, and the names of all the project's direct \
+ancestors.";
+		filename = "report/proj_ances.rpt";
 	},
 	{
 		name = "Project_Branches";

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct string_ty; /* existence */
 
-int os_isa_path_prefix _((struct string_ty *, struct string_ty *));
+int os_isa_path_prefix(struct string_ty *, struct string_ty *);
 
 #endif /* LIBAEGIS_OS_ISA_PATH_PREFIX_H */

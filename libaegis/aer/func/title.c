@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,100 +30,92 @@
 #include <sub.h>
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild <= 2);
+    return (ep->nchild <= 2);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	string_ty	*t1;
-	string_ty	*t2;
-	rpt_value_ty	*vp;
+    string_ty	*t1;
+    string_ty	*t2;
+    rpt_value_ty	*vp;
 
-	if (argc >= 1)
+    if (argc >= 1)
+    {
+	vp = rpt_value_stringize(argv[0]);
+	if (vp->method->type != rpt_value_type_string)
 	{
-		vp = rpt_value_stringize(argv[0]);
-		if (vp->method->type != rpt_value_type_string)
-		{
-			sub_context_ty	*scp;
-			string_ty	*s;
+	    sub_context_ty  *scp;
+	    string_ty	    *s;
 
-			scp = sub_context_new();
-			rpt_value_free(vp);
-			sub_var_set_charstar(scp, "Function", "title");
-			sub_var_set_charstar(scp, "Number", "1");
-			sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-			s =
-				subst_intl
-				(
-					scp,
-		i18n("$function: argument $number: unable to print $name value")
-				);
-			sub_context_delete(scp);
-			vp = rpt_value_error(ep->pos, s);
-			str_free(s);
-			return vp;
-		}
-		t1 = str_copy(rpt_value_string_query(vp));
-		rpt_value_free(vp);
+	    scp = sub_context_new();
+	    rpt_value_free(vp);
+	    sub_var_set_charstar(scp, "Function", "title");
+	    sub_var_set_charstar(scp, "Number", "1");
+	    sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+	    s =
+		subst_intl
+		(
+	    	    scp,
+                i18n("$function: argument $number: unable to print $name value")
+		);
+	    sub_context_delete(scp);
+	    vp = rpt_value_error(ep->pos, s);
+	    str_free(s);
+	    return vp;
 	}
-	else
-		t1 = str_from_c("");
+	t1 = str_copy(rpt_value_string_query(vp));
+	rpt_value_free(vp);
+    }
+    else
+	t1 = str_from_c("");
 
-	if (argc >= 2)
+    if (argc >= 2)
+    {
+	vp = rpt_value_stringize(argv[1]);
+	if (vp->method->type != rpt_value_type_string)
 	{
-		vp = rpt_value_stringize(argv[1]);
-		if (vp->method->type != rpt_value_type_string)
-		{
-			sub_context_ty	*scp;
-			string_ty	*s;
+	    sub_context_ty  *scp;
+	    string_ty	    *s;
 
-			scp = sub_context_new();
-			str_free(t1);
-			rpt_value_free(vp);
-			sub_var_set_charstar(scp, "Function", "title");
-			sub_var_set_charstar(scp, "Number", "2");
-			sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-			s =
-				subst_intl
-				(
-					scp,
-		i18n("$function: argument $number: unable to print $name value")
-				);
-			sub_context_delete(scp);
-			vp = rpt_value_error(ep->pos, s);
-			str_free(s);
-			return vp;
-		}
-		t2 = str_copy(rpt_value_string_query(vp));
-		rpt_value_free(vp);
+	    scp = sub_context_new();
+	    str_free(t1);
+	    rpt_value_free(vp);
+	    sub_var_set_charstar(scp, "Function", "title");
+	    sub_var_set_charstar(scp, "Number", "2");
+	    sub_var_set_charstar(scp, "Name", argv[1]->method->name);
+	    s =
+		subst_intl
+		(
+	    	    scp,
+                i18n("$function: argument $number: unable to print $name value")
+		);
+	    sub_context_delete(scp);
+	    vp = rpt_value_error(ep->pos, s);
+	    str_free(s);
+	    return vp;
 	}
-	else
-		t2 = str_from_c("");
+	t2 = str_copy(rpt_value_string_query(vp));
+	rpt_value_free(vp);
+    }
+    else
+	t2 = str_from_c("");
 
-	col_title(rpt_func_print__colp, t1->str_text, t2->str_text);
-	str_free(t1);
-	str_free(t2);
-	return rpt_value_void();
+    col_title(rpt_func_print__colp, t1->str_text, t2->str_text);
+    str_free(t1);
+    str_free(t2);
+    return rpt_value_void();
 }
 
 
 rpt_func_ty rpt_func_title =
 {
-	"title",
-	0, /* not optimizable */
-	verify,
-	run
+    "title",
+    0, /* not optimizable */
+    verify,
+    run
 };

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ if [in [arch] [primary_arch]] then
 doc.targets =
     cat
     special
+    LICENSE
     ;
 doc.targets: [doc.targets];
 
@@ -135,6 +136,14 @@ pdf =
 		[match_mask lib/en/%2/main.mm [source_files]]]
 	[fromto lib/en/%2/main.man archive/%2.pdf
 		[match_mask lib/en/%2/main.man [source_files]]]
+
+	[fromto lib/%3/%2/main.ms archive/%2-%3.pdf
+	    [match_mask lib/%3/%2/main.ms
+		[filter_out lib/en/%2/main.ms
+		    [source_files]
+		]
+	    ]
+       	]
 	;
 pdf: [pdf];
 
@@ -176,6 +185,30 @@ archive/%2.pdf: lib/en/%2/main.ms etc/page-list.awk
 	ps2pdf archive/%2.ps archive/%2.pdf
 		set meter;
 	rm archive/%2.ps
+		set silent;
+}
+
+archive/%2-%3.pdf: lib/%3/%2/main.ms etc/page-list.awk
+	set shallow
+{
+	roffpp
+		[prepost "-I" "/lib/%3/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%3/%2/main.ms]
+		> archive/%2-%3.groff;
+	groff -p -t [groff_ms_macros] -mpic archive/%2-%3.groff
+		> archive/%2-%3.ps.tmp
+		set meter;
+	rm archive/%2-%3.groff
+		set silent;
+	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2-%3.ps.tmp`
+		archive/%2-%3.ps.tmp > archive/%2-%3.ps;
+	rm archive/%2-%3.ps.tmp
+		set silent;
+	ps2pdf archive/%2-%3.ps archive/%2-%3.pdf
+		set meter;
+	rm archive/%2-%3.ps
 		set silent;
 }
 

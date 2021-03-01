@@ -27,6 +27,6 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_project_delta _((struct project_ty *));
+complete_ty *complete_project_delta(struct project_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_PROJECT_DELTA_H */

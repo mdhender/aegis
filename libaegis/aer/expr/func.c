@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,114 +29,109 @@
 #include <sub.h>
 
 
-static rpt_value_ty *evaluate _((rpt_expr_ty *));
-
 static rpt_value_ty *
-evaluate(ep)
-	rpt_expr_ty	*ep;
+evaluate(rpt_expr_ty *ep)
 {
-	size_t		argc;
-	rpt_value_ty	**argv;
-	size_t		j;
-	rpt_value_ty	*vp;
-	rpt_func_ty	*fp;
+    size_t	    argc;
+    rpt_value_ty    **argv;
+    size_t	    j;
+    rpt_value_ty    *vp;
+    rpt_func_ty     *fp;
 
-	/*
-	 * get the function pointer from the first argument
-	 */
-	assert(ep->nchild == 2);
-	vp = rpt_expr_evaluate(ep->child[0], 1);
-	if (vp->method->type == rpt_value_type_error)
-		return vp;
-	if (vp->method->type != rpt_value_type_function)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", vp->method->name);
-		rpt_value_free(vp);
-		s = subst_intl(scp, i18n("invalid function name ($name)"));
-		sub_context_delete(scp);
-		vp = rpt_value_error(ep->child[0]->pos, s);
-		str_free(s);
-		return vp;
-	}
-	fp = rpt_value_func_query(vp);
-	rpt_value_free(vp);
-
-	/*
-	 * get the argument list from the second argument
-	 */
-	ep = ep->child[1];
-	if (!fp->verify(ep))
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		s = subst_intl(scp, i18n("invalid function arguments"));
-		sub_context_delete(scp);
-		vp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return vp;
-	}
-	argc = ep->nchild;
-	argv = mem_alloc(argc * sizeof(rpt_value_ty *));
-	for (j = 0; j < argc; ++j)
-	{
-		vp = rpt_expr_evaluate(ep->child[j], 0);
-		argv[j] = vp;
-		if (vp->method->type == rpt_value_type_error)
-		{
-			size_t	k;
-
-			for (k = 0; k < j; ++k)
-				rpt_value_free(argv[k]);
-			mem_free(argv);
-			return vp;
-		}
-	}
-
-	/*
-	 * evaluate the function
-	 */
-	vp = fp->run(ep, argc, argv);
-
-	/*
-	 * free the argument list
-	 */
-	for (j = 0; j < argc; ++j)
-		rpt_value_free(argv[j]);
-	mem_free(argv);
-
-	/*
-	 * return the function return value
-	 */
+    /*
+     * get the function pointer from the first argument
+     */
+    assert(ep->nchild == 2);
+    vp = rpt_expr_evaluate(ep->child[0], 1);
+    if (vp->method->type == rpt_value_type_error)
 	return vp;
+    if (vp->method->type != rpt_value_type_function)
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
+
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", vp->method->name);
+	rpt_value_free(vp);
+	s = subst_intl(scp, i18n("invalid function name ($name)"));
+	sub_context_delete(scp);
+	vp = rpt_value_error(ep->child[0]->pos, s);
+	str_free(s);
+	return vp;
+    }
+    fp = rpt_value_func_query(vp);
+    rpt_value_free(vp);
+
+    /*
+     * get the argument list from the second argument
+     */
+    ep = ep->child[1];
+    if (!fp->verify(ep))
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
+
+	scp = sub_context_new();
+	s = subst_intl(scp, i18n("invalid function arguments"));
+	sub_context_delete(scp);
+	vp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return vp;
+    }
+    argc = ep->nchild;
+    argv = mem_alloc(argc * sizeof(rpt_value_ty *));
+    for (j = 0; j < argc; ++j)
+    {
+	vp = rpt_expr_evaluate(ep->child[j], 0);
+	argv[j] = vp;
+	if (vp->method->type == rpt_value_type_error)
+	{
+	    size_t          k;
+
+	    for (k = 0; k < j; ++k)
+		rpt_value_free(argv[k]);
+	    mem_free(argv);
+	    return vp;
+	}
+    }
+
+    /*
+     * evaluate the function
+     */
+    vp = fp->run(ep, argc, argv);
+
+    /*
+     * free the argument list
+     */
+    for (j = 0; j < argc; ++j)
+	rpt_value_free(argv[j]);
+    mem_free(argv);
+
+    /*
+     * return the function return value
+     */
+    return vp;
 }
 
 
 static rpt_expr_method_ty method =
 {
-	sizeof(rpt_expr_ty),
-	"function call",
-	0, /* construct */
-	0, /* destruct */
-	evaluate,
-	0, /* lvalue */
+    sizeof(rpt_expr_ty),
+    "function call",
+    0, /* construct */
+    0, /* destruct */
+    evaluate,
+    0, /* lvalue */
 };
 
 
 rpt_expr_ty *
-rpt_expr_func(e1, e2)
-	rpt_expr_ty	*e1;
-	rpt_expr_ty	*e2;
+rpt_expr_func(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-	rpt_expr_ty	*this;
+    rpt_expr_ty     *this;
 
-	this = rpt_expr_alloc(&method);
-	rpt_expr_append(this, e1);
-	rpt_expr_append(this, e2);
-	return this;
+    this = rpt_expr_alloc(&method);
+    rpt_expr_append(this, e1);
+    rpt_expr_append(this, e2);
+    return this;
 }

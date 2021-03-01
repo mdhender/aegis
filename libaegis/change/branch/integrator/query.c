@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,32 +26,30 @@
 
 
 int
-change_branch_integrator_query(cp, name)
-	change_ty	*cp;
-	string_ty	*name;
+change_branch_integrator_query(change_ty *cp, string_ty *name)
 {
-	cstate		cstate_data;
-	cstate_branch_integrator_list lp;
-	size_t		j;
+    cstate	    cstate_data;
+    cstate_branch_integrator_list lp;
+    size_t	    j;
 
-	trace(("change_branch_integrator_query(cp = %8.8lX, name = \"%s\")\n{\n"/*}*/,
-		(long)cp, name->str_text));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->integrator)
-		cstate_data->branch->integrator =
-			cstate_branch_integrator_list_type.alloc();
-	lp = cstate_data->branch->integrator;
-	for (j = 0; j < lp->length; ++j)
+    trace(("change_branch_integrator_query(cp = %8.8lX, name = \"%s\")\n{\n",
+	(long)cp, name->str_text));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->integrator)
+	cstate_data->branch->integrator =
+    	    cstate_branch_integrator_list_type.alloc();
+    lp = cstate_data->branch->integrator;
+    for (j = 0; j < lp->length; ++j)
+    {
+	if (str_equal(lp->list[j], name))
 	{
-		if (str_equal(lp->list[j], name))
-		{
-			trace(("return 1;\n"));
-			trace((/*{*/"}\n"));
-			return 1;
-		}
+    	    trace(("return 1;\n"));
+    	    trace(("}\n"));
+    	    return 1;
 	}
-	trace(("return 0;\n"));
-	trace((/*{*/"}\n"));
-	return 0;
+    }
+    trace(("return 0;\n"));
+    trace(("}\n"));
+    return 0;
 }

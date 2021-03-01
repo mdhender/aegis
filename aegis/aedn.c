@@ -43,10 +43,8 @@
 #include <zero.h>
 
 
-static void delta_name_usage _((void));
-
 static void
-delta_name_usage()
+delta_name_usage(void)
 {
     char            *progname;
 
@@ -63,19 +61,15 @@ delta_name_usage()
 }
 
 
-static void delta_name_help _((void));
-
 static void
-delta_name_help()
+delta_name_help(void)
 {
     help("aedn", delta_name_usage);
 }
 
 
-static void delta_name_list _((void));
-
 static void
-delta_name_list()
+delta_name_list(void)
 {
     string_ty       *project_name;
     long            change_number;
@@ -138,10 +132,8 @@ delta_name_list()
 }
 
 
-static void delta_name_main _((void));
-
 static void
-delta_name_main()
+delta_name_main(void)
 {
     sub_context_ty  *scp;
     string_ty       *project_name;
@@ -429,7 +421,7 @@ delta_name_main()
 	    fstate_src      src;
 	    file_event_ty   *fep;
 
-	    src = project_file_nth(pp, j);
+	    src = project_file_nth(pp, j, view_path_simple);
 	    if (!src)
 		break;
 	    fep = project_file_roll_forward_get_last(src->file_name);
@@ -482,7 +474,7 @@ delta_name_main()
 
 
 void
-delta_name_assignment()
+delta_name_assignment(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

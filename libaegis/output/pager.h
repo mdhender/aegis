@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1995, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1992, 1993, 1995, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 #include <output.h>
 
-void option_pager_set _((int, void(*)(void)));
+void option_pager_set(int, void(*)(void));
 
-output_ty *output_pager_open _((void));
+output_ty *output_pager_open(void);
 
 #endif /* OUTPUT_PAGER_H */

@@ -30,8 +30,7 @@
 
 
 void
-format_delete(fp)
-    format_ty	    *fp;
+format_delete(format_ty	*fp)
 {
     assert(fp);
     assert(fp->vptr);

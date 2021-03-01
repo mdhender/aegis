@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <output.h>
 
-output_ty *output_quoted_printable _((output_ty *deeper, int close_on_close,
-	int allow_international_characters));
+output_ty *output_quoted_printable(output_ty *deeper, int close_on_close,
+	int allow_international_characters);
 
 #endif /* LIBAEGIS_OUTPUT_QUOTED_PRINT_H */

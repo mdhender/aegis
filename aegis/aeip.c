@@ -72,10 +72,8 @@ struct time_map_list_ty
 };
 
 
-static void integrate_pass_usage _((void));
-
 static void
-integrate_pass_usage()
+integrate_pass_usage(void)
 {
     char	    *progname;
 
@@ -92,19 +90,15 @@ integrate_pass_usage()
 }
 
 
-static void integrate_pass_help _((void));
-
 static void
-integrate_pass_help()
+integrate_pass_help(void)
 {
     help("aeipass", integrate_pass_usage);
 }
 
 
-static void integrate_pass_list _((void));
-
 static void
-integrate_pass_list()
+integrate_pass_list(void)
 {
     string_ty	    *project_name;
 
@@ -146,15 +140,9 @@ integrate_pass_list()
 }
 
 
-static void time_map_get _((void *, dir_walk_message_ty, string_ty *,
-    struct stat *));
-
 static void
-time_map_get(p, message, path, st)
-    void	    *p;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+time_map_get(void *p, dir_walk_message_ty message, string_ty *path,
+    struct stat *st)
 {
     time_map_list_ty *tlp;
     time_map_ty	    *tp;
@@ -212,15 +200,9 @@ time_map_get(p, message, path, st)
 }
 
 
-static void time_map_set _((void *, dir_walk_message_ty, string_ty *,
-    struct stat *));
-
 static void
-time_map_set(p, message, path, st)
-    void	    *p;
-    dir_walk_message_ty message;
-    string_ty	    *path;
-    struct stat	    *st;
+time_map_set(void *p, dir_walk_message_ty message, string_ty *path,
+    struct stat *st)
 {
     time_map_list_ty *tlp;
     time_t	    t;
@@ -277,11 +259,8 @@ time_map_set(p, message, path, st)
 }
 
 
-static metric_list metric_list_copy _((metric_list));
-
 static metric_list
-metric_list_copy(mlp)
-    metric_list	    mlp;
+metric_list_copy(metric_list mlp)
 {
     metric_list	    result;
     size_t	    j;
@@ -303,10 +282,8 @@ metric_list_copy(mlp)
 }
 
 
-static void integrate_pass_main _((void));
-
 static void
-integrate_pass_main()
+integrate_pass_main(void)
 {
     time_t	    mtime;
     time_t	    youngest;
@@ -534,6 +511,8 @@ integrate_pass_main()
 	&&
 	    c_src_data->usage != file_usage_build
 	&&
+	    c_src_data->action != file_action_transparent
+	&&
 	    !(
 		c_src_data->action == file_action_remove
 	    &&
@@ -563,7 +542,7 @@ integrate_pass_main()
 	if (!project_file_shallow_check(pp, c_src_data->file_name))
 	    this_is_a_bug();
 
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	p_src_data = change_file_find(pcp, c_src_data->file_name);
 	if (!p_src_data)
 	    this_is_a_bug();
 
@@ -613,7 +592,12 @@ integrate_pass_main()
 	 * don't do any of the transfers
 	 * if the file is built
 	 */
-	if (c_src_data->usage == file_usage_build)
+	if
+	(
+	    c_src_data->usage == file_usage_build
+	||
+	    c_src_data->action == file_action_transparent
+	)
 	{
 	    transfer_architecture_times = 0;
 	    transfer_file_times = 0;
@@ -764,7 +748,16 @@ integrate_pass_main()
 	 * changed things to generate a file which was previously
 	 * a source file, but you forgot to aerm the file.
 	 */
-	if (c_src_data->file_fp)
+	if
+	(
+	    c_src_data->file_fp
+	&&
+	    !(
+		c_src_data->action == file_action_remove
+	    ||
+		c_src_data->action == file_action_transparent
+	    )
+	)
 	{
 	    string_ty	    *absfn;
 	    int		    ok;
@@ -1102,14 +1095,10 @@ integrate_pass_main()
 	fstate_src	c_src_data;
 	fstate_src	p_src_data;
 
-	p_src_data = project_file_nth(pp, j);
+	p_src_data = project_file_nth(pp, j, view_path_extreme);
 	if (!p_src_data)
 	    break;
 	if (p_src_data->usage != file_usage_build)
-	    continue;
-	if (p_src_data->deleted_by)
-	    continue;
-	if (p_src_data->about_to_be_created_by)
 	    continue;
 	c_src_data = change_file_find(cp, p_src_data->file_name);
 	if (c_src_data)
@@ -1120,6 +1109,12 @@ integrate_pass_main()
 	c_src_data->edit_origin = history_version_copy(p_src_data->edit);
 	c_src_data->action = file_action_modify;
 	c_src_data->usage = p_src_data->usage;
+
+	/*
+	 * Make sure the branch has them, too, otherwise the code will
+	 * barf a little further on.
+	 */
+	project_file_shallow(pp, c_src_data->file_name, change_number);
     }
 
     /*
@@ -1165,14 +1160,31 @@ integrate_pass_main()
 	    c_src_data->architecture_times = 0;
 	}
 
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	/*
+	 * Do absolutely nothing for transparent branch files.
+	 */
+	if
+	(
+	    c_src_data->action == file_action_transparent
+	&&
+	    change_was_a_branch(cp)
+	)
+	    continue;
+
+	p_src_data = change_file_find(pcp, c_src_data->file_name);
 	if (!p_src_data)
 	{
 	    sub_context_ty  *scp;
 
 	    scp = sub_context_new();
 	    sub_var_set_charstar(scp, "File_Name", "fstate file");
-	    sub_var_set_charstar(scp, "FieLD_Name", "src");
+	    sub_var_set_format
+	    (
+		scp,
+		"FieLD_Name",
+		"src[%s]",
+		c_src_data->file_name->str_text
+	    );
 	    project_fatal
 	    (
 		pp,
@@ -1390,6 +1402,10 @@ integrate_pass_main()
 	     */
 	    assert(0);
 	    break;
+
+	case file_action_transparent:
+	    trace(("transparent\n"));
+	    break;
 	}
 
 	/*
@@ -1406,27 +1422,46 @@ integrate_pass_main()
 	/*
 	 * make sure the branch action is appropriate
 	 */
-	if (c_src_data->action == file_action_remove)
-	    p_src_data->action = file_action_remove;
-	else if (pp->parent)
+	switch (c_src_data->action)
 	{
-	    fstate_src	    pp_src_data;
+	case file_action_remove:
+	    p_src_data->action = file_action_remove;
+	    break;
 
-	    pp_src_data = project_file_find(pp->parent, c_src_data->file_name);
-	    if
-	    (
-		pp_src_data
-	    &&
-		!pp_src_data->about_to_be_created_by
-	    &&
-		!pp_src_data->deleted_by
-	    )
-		p_src_data->action = file_action_modify;
+	case file_action_transparent:
+	    p_src_data->action = file_action_transparent;
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	    if (pp->parent)
+	    {
+		fstate_src	    pp_src_data;
+
+		pp_src_data =
+		    project_file_find
+		    (
+			pp->parent,
+			c_src_data->file_name,
+			view_path_none
+		    );
+		if
+		(
+		    pp_src_data
+		&&
+		    !pp_src_data->about_to_be_created_by
+		&&
+		    !pp_src_data->deleted_by
+		)
+		    p_src_data->action = file_action_modify;
+		else
+		    p_src_data->action = file_action_create;
+	    }
 	    else
 		p_src_data->action = file_action_create;
+	    break;
 	}
-	else
-	    p_src_data->action = file_action_create;
 
 	/*
 	 * For the project trunk, the edit number and the edit
@@ -1461,6 +1496,12 @@ integrate_pass_main()
     if (pconf_data->history_label_command)
     {
 	/*
+	 * The above code changed the project file list,
+	 * so we need to clear out the cache before the following will work.
+	 */
+	project_file_list_invalidate(pp);
+
+	/*
 	 * For all the project's files, label the history.
 	 *
 	 * Note that at this point in the aeipass commant, our
@@ -1471,18 +1512,15 @@ integrate_pass_main()
 	{
 	    fstate_src	    src_data;
 
-	    src_data = project_file_nth(cp->pp, j);
+	    src_data = project_file_nth(cp->pp, j, view_path_extreme);
 	    if (!src_data)
 		break;
-	    if (!src_data->about_to_be_created_by && !src_data->deleted_by)
-	    {
-		change_run_history_label_command
-		(
-		    cp,
-		    src_data,
-		    project_version_get(cp->pp)
-		);
-	    }
+	    change_run_history_label_command
+	    (
+		cp,
+		src_data,
+		project_version_get(cp->pp)
+	    );
 	}
     }
 
@@ -1710,7 +1748,7 @@ integrate_pass_main()
 
 
 void
-integrate_pass()
+integrate_pass(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

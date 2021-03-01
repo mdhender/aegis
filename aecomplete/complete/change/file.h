@@ -27,6 +27,6 @@
 
 struct change_ty; /* forward */
 
-complete_ty *complete_change_file _((struct change_ty *, int, int, int));
+complete_ty *complete_change_file(struct change_ty *, int, int, int);
 
 #endif /* AECOMPLETE_COMPLETE_CHANGE_FILE_H */

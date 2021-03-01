@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,79 +28,67 @@
 
 
 int
-change_file_up_to_date(pp, c_src_data)
-	project_ty	*pp;
-	fstate_src	c_src_data;
+change_file_up_to_date(project_ty *pp, fstate_src c_src_data)
 {
-	fstate_src	p_src_data;
-	int		result;
+    fstate_src      p_src_data;
+    int             result;
 
-	/*
-	 * No edit origin implies a new file, and is always
-	 * up-to-date.
-	 */
-	trace(("change_file_up_to_date(pp = %08lX)\n{\n"/*}*/, (long)pp));
-	trace(("filename = \"%s\";\n", c_src_data->file_name->str_text));
-	assert(!c_src_data->edit || c_src_data->edit->revision);
-	assert(!c_src_data->edit_origin || c_src_data->edit_origin->revision);
-	if (!c_src_data->edit_origin)
-	{
-		trace(("return 1;\n"));
-		trace((/*{*/"}\n"));
-		return 1;
-	}
+    /*
+     * No edit origin implies a new file, and is always
+     * up-to-date.
+     */
+    trace(("change_file_up_to_date(pp = %08lX)\n{\n", (long)pp));
+    trace(("filename = \"%s\";\n", c_src_data->file_name->str_text));
+    assert(!c_src_data->edit || c_src_data->edit->revision);
+    assert(!c_src_data->edit_origin || c_src_data->edit_origin->revision);
+    if (!c_src_data->edit_origin)
+    {
+	trace(("return 1;\n"));
+	trace(("}\n"));
+	return 1;
+    }
 
-	/*
-	 * Look for the file in the project.  If it is not there, it
-	 * implies a new file, which is always up-to-date.
-	 */
-	p_src_data = project_file_find(pp, c_src_data->file_name);
-	if
+    /*
+     * Look for the file in the project.  If it is not there, it
+     * implies a new file, which is always up-to-date.
+     */
+    p_src_data =
+	project_file_find(pp, c_src_data->file_name, view_path_extreme);
+    if (!p_src_data || !p_src_data->edit)
+    {
+	trace(("return 1;\n"));
+	trace(("}\n"));
+	return 1;
+    }
+
+    /*
+     * The file is out-of-date if the edit number of the file in the
+     * project is not the same as the edit number of the file when
+     * originally copied from the project.
+     *
+     * p_src_data->edit
+     *     The head revision of the branch.
+     * p_src_data->edit_origin
+     *     The version originally copied.
+     *
+     * c_src_data->edit
+     *     Not meaningful until after integrate pass.
+     * c_src_data->edit_origin
+     *     The version originally copied.
+     * c_src_data->edit_origin_new
+     *     Updates branch edit_origin on integrate pass.
+     */
+    assert(p_src_data->edit);
+    assert(p_src_data->edit->revision);
+    assert(c_src_data->edit_origin);
+    assert(c_src_data->edit_origin->revision);
+    result =
+	str_equal
 	(
-		!p_src_data
-	||
-		p_src_data->deleted_by
-	||
-		p_src_data->about_to_be_created_by
-	||
-		p_src_data->about_to_be_copied_by
-	||
-		!p_src_data->edit
-	)
-	{
-		trace(("return 1;\n"));
-		trace((/*{*/"}\n"));
-		return 1;
-	}
-
-	/*
-	 * The file is out-of-date if the edit number of the file in the
-	 * project is not the same as the edit number of the file when
-	 * originally copied from the project.
-	 *
-	 * p_src_data->edit
-	 *	The head revision of the branch.
-	 * p_src_data->edit_origin
-	 *	The version originally copied.
-	 *
-	 * c_src_data->edit
-	 *	Not meaningful until after integrate pass.
-	 * c_src_data->edit_origin
-	 *	The version originally copied.
-	 * c_src_data->edit_origin_new
-	 *	Updates branch edit_origin on integrate pass.
-	 */
-	assert(p_src_data->edit);
-	assert(p_src_data->edit->revision);
-	assert(c_src_data->edit_origin);
-	assert(c_src_data->edit_origin->revision);
-	result =
-		str_equal
-		(
-			p_src_data->edit->revision,
-			c_src_data->edit_origin->revision
-		);
-	trace(("return %d;\n", result));
-	trace((/*{*/"}\n"));
-	return result;
+    	    p_src_data->edit->revision,
+    	    c_src_data->edit_origin->revision
+	);
+    trace(("return %d;\n", result));
+    trace(("}\n"));
+    return result;
 }

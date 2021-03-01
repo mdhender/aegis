@@ -28,238 +28,212 @@
 
 
 void
-project_pattr_set(pp, pattr_data)
-	project_ty	*pp;
-	pattr		pattr_data;
+project_pattr_set(project_ty *pp, pattr pattr_data)
 {
-	if (pattr_data->description)
-		project_description_set(pp, pattr_data->description);
+    if (pattr_data->description)
+	project_description_set(pp, pattr_data->description);
 
-	if (pattr_data->mask & pattr_developer_may_review_mask)
-	{
-		project_developer_may_review_set
-		(
-			pp,
-			pattr_data->developer_may_review
-		);
-	}
-	if (pattr_data->mask & pattr_developer_may_integrate_mask)
-	{
-		project_developer_may_integrate_set
-		(
-			pp,
-			pattr_data->developer_may_integrate
-		);
-	}
-	if (pattr_data->mask & pattr_reviewer_may_integrate_mask)
-	{
-		project_reviewer_may_integrate_set
-		(
-			pp,
-			pattr_data->reviewer_may_integrate
-		);
-	}
-	if (pattr_data->mask & pattr_developers_may_create_changes_mask)
-	{
-		project_developers_may_create_changes_set
-		(
-			pp,
-			pattr_data->developers_may_create_changes
-		);
-	}
-
-	if (pattr_data->mask & pattr_umask_mask)
-		project_umask_set(pp, pattr_data->umask);
-
-	if (pattr_data->mask & pattr_default_test_exemption_mask)
-	{
-		project_default_test_exemption_set
-		(
-			pp,
-			pattr_data->default_test_exemption
-		);
-	}
-	if (pattr_data->mask & pattr_skip_unlucky_mask)
-	{
-		project_skip_unlucky_set
-		(
-			pp,
-			pattr_data->skip_unlucky
-		);
-	}
-	if (pattr_data->mask & pattr_compress_database_mask)
-	{
-		project_compress_database_set
-		(
-			pp,
-			pattr_data->compress_database
-		);
-	}
-	if (pattr_data->mask & pattr_develop_end_action_mask)
-	{
-		project_develop_end_action_set
-		(
-			pp,
-			pattr_data->develop_end_action
-		);
-	}
-
-	/*
-	 * Make sure that developers_may_review and
-	 * develop_end_action don't contradict each other.
-	 *
-	 * At this point, we quietly change the action, but
-	 * maybe we should emit a fatal error message?
-	 */
-	if
+    if (pattr_data->mask & pattr_developer_may_review_mask)
+	project_developer_may_review_set(pp, pattr_data->developer_may_review);
+    if (pattr_data->mask & pattr_developer_may_integrate_mask)
+    {
+	project_developer_may_integrate_set
 	(
-		!project_developer_may_review_get(pp)
-	&&
-		project_develop_end_action_get(pp) ==
-		      pattr_develop_end_action_goto_awaiting_integration
-	)
-	{
-		project_develop_end_action_set
-		(
-			pp,
-			pattr_develop_end_action_goto_being_reviewed
-		);
-	}
+    	    pp,
+    	    pattr_data->developer_may_integrate
+	);
+    }
+    if (pattr_data->mask & pattr_reviewer_may_integrate_mask)
+    {
+	project_reviewer_may_integrate_set
+	(
+    	    pp,
+    	    pattr_data->reviewer_may_integrate
+	);
+    }
+    if (pattr_data->mask & pattr_developers_may_create_changes_mask)
+    {
+	project_developers_may_create_changes_set
+	(
+    	    pp,
+    	    pattr_data->developers_may_create_changes
+	);
+    }
 
-	if (pattr_data->forced_develop_begin_notify_command)
-	{
-		project_forced_develop_begin_notify_command_set
-		(
-			pp,
-			pattr_data->forced_develop_begin_notify_command
-		);
-	}
+    if (pattr_data->mask & pattr_umask_mask)
+	project_umask_set(pp, pattr_data->umask);
 
-	if (pattr_data->develop_end_notify_command)
-	{
-		project_develop_end_notify_command_set
-		(
-			pp,
-			pattr_data->develop_end_notify_command
-		);
-	}
+    if (pattr_data->mask & pattr_default_test_exemption_mask)
+    {
+	project_default_test_exemption_set
+	(
+    	    pp,
+    	    pattr_data->default_test_exemption
+	);
+    }
+    if (pattr_data->mask & pattr_skip_unlucky_mask)
+	project_skip_unlucky_set(pp, pattr_data->skip_unlucky);
+    if (pattr_data->mask & pattr_compress_database_mask)
+	project_compress_database_set(pp, pattr_data->compress_database);
+    if (pattr_data->mask & pattr_develop_end_action_mask)
+	project_develop_end_action_set(pp, pattr_data->develop_end_action);
 
-	if (pattr_data->develop_end_undo_notify_command)
-	{
-		project_develop_end_undo_notify_command_set
-		(
-			pp,
-			pattr_data->develop_end_undo_notify_command
-		);
-	}
+    /*
+     * Make sure that developers_may_review and
+     * develop_end_action don't contradict each other.
+     *
+     * At this point, we quietly change the action, but
+     * maybe we should emit a fatal error message?
+     */
+    if
+    (
+	!project_developer_may_review_get(pp)
+    &&
+	project_develop_end_action_get(pp) ==
+    	    pattr_develop_end_action_goto_awaiting_integration
+    )
+    {
+	project_develop_end_action_set
+	(
+    	    pp,
+    	    pattr_develop_end_action_goto_being_reviewed
+	);
+    }
 
-	if (pattr_data->review_begin_notify_command)
-	{
-		project_review_begin_notify_command_set
-		(
-			pp,
-			pattr_data->review_begin_notify_command
-		);
-	}
-	if (pattr_data->review_begin_undo_notify_command)
-	{
-		project_review_begin_undo_notify_command_set
-		(
-			pp,
-			pattr_data->review_begin_undo_notify_command
-		);
-	}
+    if (pattr_data->forced_develop_begin_notify_command)
+    {
+	project_forced_develop_begin_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->forced_develop_begin_notify_command
+	);
+    }
 
-	if (pattr_data->review_pass_notify_command)
-	{
-		project_review_pass_notify_command_set
-		(
-			pp,
-			pattr_data->review_pass_notify_command
-		);
-	}
+    if (pattr_data->develop_end_notify_command)
+    {
+	project_develop_end_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->develop_end_notify_command
+	);
+    }
 
-	if (pattr_data->review_pass_undo_notify_command)
-	{
-		project_review_pass_undo_notify_command_set
-		(
-			pp,
-			pattr_data->review_pass_undo_notify_command
-		);
-	}
+    if (pattr_data->develop_end_undo_notify_command)
+    {
+	project_develop_end_undo_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->develop_end_undo_notify_command
+	);
+    }
 
-	if (pattr_data->review_fail_notify_command)
-	{
-		project_review_fail_notify_command_set
-		(
-			pp,
-			pattr_data->review_fail_notify_command
-		);
-	}
+    if (pattr_data->review_begin_notify_command)
+    {
+	project_review_begin_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->review_begin_notify_command
+	);
+    }
+    if (pattr_data->review_begin_undo_notify_command)
+    {
+	project_review_begin_undo_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->review_begin_undo_notify_command
+	);
+    }
 
-	if (pattr_data->integrate_pass_notify_command)
-	{
-		project_integrate_pass_notify_command_set
-		(
-			pp,
-			pattr_data->integrate_pass_notify_command
-		);
-	}
+    if (pattr_data->review_pass_notify_command)
+    {
+	project_review_pass_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->review_pass_notify_command
+	);
+    }
 
-	if (pattr_data->integrate_fail_notify_command)
-	{
-		project_integrate_fail_notify_command_set
-		(
-			pp,
-			pattr_data->integrate_fail_notify_command
-		);
-	}
+    if (pattr_data->review_pass_undo_notify_command)
+    {
+	project_review_pass_undo_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->review_pass_undo_notify_command
+	);
+    }
 
-	if (pattr_data->default_development_directory)
-	{
-		string_ty	*s;
+    if (pattr_data->review_fail_notify_command)
+    {
+	project_review_fail_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->review_fail_notify_command
+	);
+    }
 
-		s = pattr_data->default_development_directory;
-		if (!s->str_length)
-			s = 0;
-		else
-		{
-			if (s->str_text[0] != '/')
-				fatal_intl(0, i18n("bad pa, rel def dev dir"));
-		}
-		project_default_development_directory_set(pp, s);
-	}
+    if (pattr_data->integrate_pass_notify_command)
+    {
+	project_integrate_pass_notify_command_set
+	(
+    	    pp,
+    	    pattr_data->integrate_pass_notify_command
+	);
+    }
 
-	if (pattr_data->mask & pattr_minimum_change_number_mask)
+    if (pattr_data->integrate_fail_notify_command)
+    {
+	    project_integrate_fail_notify_command_set
+	    (
+		    pp,
+		    pattr_data->integrate_fail_notify_command
+	    );
+    }
+
+    if (pattr_data->default_development_directory)
+    {
+	string_ty	*s;
+
+	s = pattr_data->default_development_directory;
+	if (!s->str_length)
+	    s = 0;
+	else
 	{
-		project_minimum_change_number_set
-		(
-			pp,
-			pattr_data->minimum_change_number
-		);
+	    if (s->str_text[0] != '/')
+	       	fatal_intl(0, i18n("bad pa, rel def dev dir"));
 	}
-	if (pattr_data->mask & pattr_reuse_change_numbers_mask)
-	{
-		project_reuse_change_numbers_set
-		(
-			pp,
-			pattr_data->reuse_change_numbers
-		);
-	}
-	if (pattr_data->mask & pattr_minimum_branch_number_mask)
-	{
-		project_minimum_branch_number_set
-		(
-			pp,
-			pattr_data->minimum_branch_number
-		);
-	}
-	if (pattr_data->mask & pattr_protect_development_directory_mask)
-	{
-		project_protect_development_directory_set
-		(
-			pp,
-			pattr_data->protect_development_directory
-		);
-	}
+	project_default_development_directory_set(pp, s);
+    }
+
+    if (pattr_data->mask & pattr_minimum_change_number_mask)
+    {
+	project_minimum_change_number_set
+	(
+    	    pp,
+    	    pattr_data->minimum_change_number
+	);
+    }
+    if (pattr_data->mask & pattr_reuse_change_numbers_mask)
+    {
+	project_reuse_change_numbers_set
+	(
+    	    pp,
+    	    pattr_data->reuse_change_numbers
+	);
+    }
+    if (pattr_data->mask & pattr_minimum_branch_number_mask)
+    {
+	project_minimum_branch_number_set
+	(
+    	    pp,
+    	    pattr_data->minimum_branch_number
+	);
+    }
+    if (pattr_data->mask & pattr_protect_development_directory_mask)
+    {
+	project_protect_development_directory_set
+	(
+    	    pp,
+    	    pattr_data->protect_development_directory
+	);
+    }
 }

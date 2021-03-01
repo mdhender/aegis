@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,90 +27,81 @@
 
 
 change_set_list_ty *
-change_set_list_new()
+change_set_list_new(void)
 {
-	change_set_list_ty *cslp;
+    change_set_list_ty *cslp;
 
-	cslp = mem_alloc(sizeof(change_set_list_ty));
-	cslp->length = 0;
-	cslp->maximum = 0;
-	cslp->item = 0;
-	return cslp;
+    cslp = mem_alloc(sizeof(change_set_list_ty));
+    cslp->length = 0;
+    cslp->maximum = 0;
+    cslp->item = 0;
+    return cslp;
 }
 
 
 void
-change_set_list_delete(cslp)
-	change_set_list_ty *cslp;
+change_set_list_delete(change_set_list_ty *cslp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < cslp->length; ++j)
-		change_set_delete(cslp->item[j]);
-	if (cslp->item)
-		mem_free(cslp->item);
-	cslp->length = 0;
-	cslp->maximum = 0;
-	cslp->item = 0;
-	mem_free(cslp);
+    for (j = 0; j < cslp->length; ++j)
+	    change_set_delete(cslp->item[j]);
+    if (cslp->item)
+	    mem_free(cslp->item);
+    cslp->length = 0;
+    cslp->maximum = 0;
+    cslp->item = 0;
+    mem_free(cslp);
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_list_validate(cslp)
-	change_set_list_ty *cslp;
+change_set_list_validate(change_set_list_ty *cslp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < cslp->length; ++j)
-		change_set_validate(cslp->item[j]);
+    for (j = 0; j < cslp->length; ++j)
+	change_set_validate(cslp->item[j]);
 }
 
 #endif
 
 
 void
-change_set_list_append(cslp, csp)
-	change_set_list_ty *cslp;
-	change_set_ty	*csp;
+change_set_list_append(change_set_list_ty *cslp, change_set_ty *csp)
 {
-	size_t		nbytes;
+    size_t	    nbytes;
 
-	if (cslp->length >= cslp->maximum)
-	{
-		cslp->maximum = cslp->maximum * 2 + 4;
-		nbytes = cslp->maximum * sizeof(cslp->item[0]);
-		cslp->item = mem_change_size(cslp->item, nbytes);
-	}
-	cslp->item[cslp->length++] = csp;
+    if (cslp->length >= cslp->maximum)
+    {
+	cslp->maximum = cslp->maximum * 2 + 4;
+	nbytes = cslp->maximum * sizeof(cslp->item[0]);
+	cslp->item = mem_change_size(cslp->item, nbytes);
+    }
+    cslp->item[cslp->length++] = csp;
 }
 
 
-static int cmp _((const void *, const void *));
-
 static int
-cmp(va, vb)
-	const void	*va;
-	const void	*vb;
+cmp(const void *va, const void *vb)
 {
-	change_set_ty	*a;
-	change_set_ty	*b;
+    change_set_ty   *a;
+    change_set_ty   *b;
 
-	a = *(change_set_ty **)va;
-	b = *(change_set_ty **)vb;
-	if (a->when < b->when)
-		return -1;
-	if (a->when > b->when)
-		return 1;
-	return 0;
+    a = *(change_set_ty **)va;
+    b = *(change_set_ty **)vb;
+    if (a->when < b->when)
+	return -1;
+    if (a->when > b->when)
+	return 1;
+    return 0;
 }
 
 
 void
-change_set_list_sort_by_date(cslp)
-	change_set_list_ty *cslp;
+change_set_list_sort_by_date(change_set_list_ty *cslp)
 {
-	qsort(cslp->item, cslp->length, sizeof(cslp->item[0]), cmp);
+    qsort(cslp->item, cslp->length, sizeof(cslp->item[0]), cmp);
 }

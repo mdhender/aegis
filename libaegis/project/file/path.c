@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,35 +27,37 @@
 
 
 string_ty *
-project_file_path(pp, file_name)
-	project_ty	*pp;
-	string_ty	*file_name;
+project_file_path(project_ty *pp, string_ty *file_name)
 {
-	project_ty	*ppp;
+    project_ty      *ppp;
 
-	trace(("project_file_path(pp = %8.8lX, file_name = \"%s\")\n{\n"/*}*/,
-		(long)pp, file_name->str_text));
-	for (ppp = pp; ppp; ppp = ppp->parent)
-	{
-		change_ty	*cp;
-		fstate_src	src_data;
-		string_ty	*result;
+    trace(("project_file_path(pp = %8.8lX, file_name = \"%s\")\n{\n",
+	    (long)pp, file_name->str_text));
+    for (ppp = pp; ppp; ppp = ppp->parent)
+    {
+	change_ty	*cp;
+	fstate_src	src_data;
+	string_ty	*result;
 
-		cp = project_change_get(ppp);
-		src_data = change_file_find(cp, file_name);
-		if (!src_data)
-			continue;
-		if (src_data->about_to_be_copied_by)
-			continue;
-		result = change_file_path(cp, file_name);
-		assert(result);
-		assert(result->str_text[0] == '/');
-		trace(("return \"%s\";\n", result->str_text));
-		trace((/*{*/"}\n"));
-		return result;
-	}
-	this_is_a_bug();
-	trace(("return NULL;\n"));
-	trace((/*{*/"}\n"));
-	return 0;
+	cp = project_change_get(ppp);
+	src_data = change_file_find(cp, file_name);
+	if (!src_data)
+	    continue;
+	if (src_data->action == file_action_transparent)
+	    continue;
+	if (src_data->about_to_be_copied_by)
+	    continue;
+	if (src_data->about_to_be_created_by)
+	    continue;
+	result = change_file_path(cp, file_name);
+	assert(result);
+	assert(result->str_text[0] == '/');
+	trace(("return \"%s\";\n", result->str_text));
+	trace(("}\n"));
+	return result;
+    }
+    this_is_a_bug();
+    trace(("return NULL;\n"));
+    trace(("}\n"));
+    return 0;
 }

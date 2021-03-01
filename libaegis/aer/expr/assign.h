@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,18 +25,18 @@
 
 #include <aer/expr.h>
 
-rpt_expr_ty *rpt_expr_assign _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_power _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_mul _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_div _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_mod _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_plus _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_minus _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_join _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_and_bit _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_xor_bit _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_or_bit _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_shift_left _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_assign_shift_right _((rpt_expr_ty *, rpt_expr_ty *));
+rpt_expr_ty *rpt_expr_assign(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_power(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_mul(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_div(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_mod(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_plus(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_minus(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_join(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_and_bit(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_xor_bit(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_or_bit(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_shift_left(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_assign_shift_right(rpt_expr_ty *, rpt_expr_ty *);
 
 #endif /* AEGIS_AER_EXPR_ASSIGN_H */

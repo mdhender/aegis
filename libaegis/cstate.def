@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,6 +74,20 @@ state =
 	 */
 	completed
 );
+
+
+/*
+ * This field is the value of test_exemption (see libaegis/cattr.def)
+ * when the change was created.
+ */
+given_test_exemption = boolean hide_if_default;
+
+
+/*
+ * This field is the value of regression_test_exemption (see
+ * libaegis/cattr.def) when the change was created.
+ */
+given_regression_test_exemption = boolean hide_if_default;
 
 /*
  * This field records the delta number for this change.
@@ -635,5 +649,18 @@ src =
 		 * With new files, this field is used to say where it came from.
 		 */
 		move = string;
+
+		/*
+		 * This field tracks whether this incarnation of the file
+		 * was executable at `develop end' time.  This mode
+		 * is restored (taking the project umask into account)
+		 * when the file is copied.
+		 *
+		 * This field is only meaningful for changes in the
+		 * "completed" state, because this field is only set
+		 * by aeip.  Until then, the mode if the file itself is
+		 * the authority.
+		 */
+		executable = boolean hide_if_default;
 	}
 ];

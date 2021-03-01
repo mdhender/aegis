@@ -1,0 +1,133 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Literaturstudie"
+Wie ist es m\*:oglich das wir 20 Jahre lang Make falsch
+eingesetzt haben? Wie ist es m\*:oglich, dass das Verhalten
+von Make, das wir bisher seiner begrenzten
+Funktionalit\*:at zugeschrieben haben, sich nun als falsche
+Anwendung von Make herausstellt?
+.LP
+Der Autor begann \*:uber die Ideen, die in diesem Artikel
+vorgestellt werden, nachzudenken, als er sich mit einer
+Reihe h\*:a\(sslicher Build-Probleme in g\*:anzlich
+unterschiedlichen Projekten aber mit gemeinsamen
+Symptomen konfrontiert sah. Indem er von den einzelnen
+Projekten Abstand nahm und die Gemeinsamkeiten der
+Probleme eingehend untersuchte, wurde ihm m\*:oglich, eine
+Regelm\*:a\(ssigkeit zu erkennen. Die meisten von uns sind zu
+sehr mit den Flickarbeiten f\*:ur eine fehlerfreie Funktion
+des mangelhaften Builds besch\*:aftigt, als dass sie Zeit
+finden w\*:urden, die Sache einmal mit Distanz zu
+begutachten und sich einen Gesamteindruck der
+Schwierigkeiten zu verschaffen. Besonders dann, wenn das
+fragliche Produkt offensichtlich arbeitet und das seit
+20 Jahren.
+.LP
+Es ist interssant, dass die Probleme des rekursiven
+Makes in den einschl\*:agigen B\*:uchern, auf die sich
+Unixprogrammierer verlassen, wenn sie pr\*:azisen
+praktischen Rat ben\*:otigen, kaum erw\*:ahnt werden.
+.nh 2 "Das Original"
+Das originale Make-Handbuch
+[feld78]
+enth\*:alt keinen Hinweis auf
+rekursives Make, und erst recht keine Er\*:orterung der
+relativen Vorteile des Ganzprojekt-Makes gegen\*:uber dem
+rekursiven Make.
+.LP
+Es \*:uberrascht nicht, dass das Originalhandbuch
+rekursives Make nicht erw\*:ahnte. Damals passten
+Unix-Pojekte gew\*:ohnlich in eine einziges Verzeichnis.
+.LP
+Das ist vielleicht auch ein Grund, warum sich das "ein
+\f[CW]Makefile\fP in jedem Verzeichnis"-Konzept so in der
+kollektiven Unix-Entwicklungsdenkweise festsetzte.
+.nh 2 "GNU-Make"
+Das GNU-Make-Handbuch
+[stal93]
+besch\*:aftigt sich auf mehreren
+Seiten mit dem rekursiven Make; die Erl\*:auterung seiner
+Vorz\*:uge oder der Technik ist auf folgende Bemerkung
+reduziert:
+.QP
+"Diese Technik ist n\*:utzlich, wenn Sie getrennte
+Makefiles f\*:ur verschiedene Teilsysteme, die
+zusammen ein gr\*:o\(sseres System bilden, anlegen
+wollen."
+.LP
+Kein Wort \*:uber die Schwierigkeiten, auf die Sie sto\(ssen
+k\*:onnten.
+.nh 2 "Projektverwaltung mit Makefiles"
+Das Nutshell-Make-Handbuch
+[talb91]
+preist das rekursive Make
+besonders als dem Ganzprojekt-Make \*:uberlegen an:
+.QP
+Der "sauberste" Weg, ein Build zu erstellen, ist, indem man
+in jedem Verzeichnis ein gesondertes Makefile anlegt
+und sie durch ein Haupt-Makefile verbindet, das
+eine rekursive Make-Funktion hervorruft. Wenn diese
+Technik auch umst\*:andlich ist, ist sie doch leichter zu
+verwalten als eine einzige, riesenhafte Datei, die
+mehrere Verzeichnisse abdeckt."
+(Seite 65)
+.LP
+Das widerspricht genau dem Rat, den das Buch nur zwei
+Paragraphen weiter vorne erteilt:
+.QP
+"Make ist am gl\*:ucklichsten, wenn Sie all seine Dateien in
+einem Verzeichnis lassen" (Seite 64)
+.LP
+Aber das Buch vers\*:aumt es, den Widerspruch in diesen
+beiden Aussagen zu er\*:ortern, und f\*:ahrt stattdessen fort,
+eine der herk\*:ommlichen M\*:oglichkeiten zu beschreiben, mit
+der man die Symptome eines durch rekursives Make
+verursachten unvollst\*:andigen DAGs zu umgehen versucht.
+.LP
+Dieses Buch bietet einen Anhaltspunkt, warum rekursives
+Make seit so vielen Jahren in dieser Weise verwendet
+wurde. Sie sehen, wie die beiden o. g. Aussagen das
+Konzept eines Verzeichnisses mit dem Konzept eines
+\f[CW]Makefiles\fP verwechseln.
+.LP
+Dieser Artikel legt eine einfache \*:Anderung der Denkweise
+nahe: In Verzeichnisb\*:aumen, egal wie verzweigt sie sind,
+werden Dateien gespeichert; \f[CW]Makefiles\fP dagegen
+sind dazu da, die Beziehungen dieser Dateien
+untereinander zu beschreiben, gleichg\*:ultig wieviele
+Dateien es sind.
+.nh 2 "BSD-Make"
+Die Anleitung f\*:ur BSD-Make
+[debo88]
+erw\*:ahnt das rekursive Make
+\*:uberhaupt nicht, aber sie ist eines der wenigen
+Handb\*:ucher, das, wenn auch sehr kurz, tats\*:achlich die
+Beziehung zwischen \f[CW]Makefile\fP und DAG beschreibt (Seite
+30). Daher stammt auch dieses wunderbare Zitat:
+.QP
+"Falls Make nicht das macht, was Sie erwarten, ist
+die Wahrscheinlichkeit sehr gro\(ss, dass das Makefile
+falsch ist."
+(Seite 10)
+.LP
+Das ist eine kurze und pr\*:agnante Zusammenfassung dieses
+Artikels.

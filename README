@@ -3,8 +3,8 @@ Read Me(Aegis)					   Read	Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,
-	1998, 1999, 2000, 2001,	2002 Peter Miller; All rights
-	reserved.
+	1998, 1999, 2000, 2001,	2002, 2003 Peter Miller; All
+	rights reserved.
 
 	Aegis is distributed under the terms of	the GNU	General
 	Public License.	 See the LICENSE section, below, for more
@@ -110,12 +110,12 @@ BENEFITS
 ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 		URL:	http://www.canb.auug.org.au/~millerp/
-		File:	aegis.html	   # the Aegis page
-		File:	aegis.4.9.README   # Description, from tar file
-		File:	aegis.4.9.lsm	   # Description, in LSM format
-		File:	aegis.4.9.ae	   # the complete source, aedist format
-		File:	aegis.4.9.spec	   # RedHat package specification
-		File:	aegis.4.9.tar.gz   # the complete source
+		File:	aegis.html	    # the Aegis	page
+		File:	aegis.4.11.README   # Description, from	tar file
+		File:	aegis.4.11.lsm	    # Description, in LSM format
+		File:	aegis.4.11.ae	    # the complete source, aedist format
+		File:	aegis.4.11.spec	    # RedHat package specification
+		File:	aegis.4.11.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of
 	software written by me.	 Some are referred to in the
@@ -130,11 +130,11 @@ ARCHIVE	SITE
 	archives.  You will be able to find Aegis on any of its
 	mirrors.
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.9.README   # Description, from tar file
-		File:	aegis.4.9.lsm	   # Description, in LSM format
-		File:	aegis.4.9.spec	   # RedHat package specification
-		File:	aegis.4.9.ae	   # the complete source, aedist format
-		File:	aegis.4.9.tar.gz   # the complete source
+		File:	aegis.4.11.README   # Description, from	tar file
+		File:	aegis.4.11.lsm	    # Description, in LSM format
+		File:	aegis.4.11.spec	    # RedHat package specification
+		File:	aegis.4.11.ae	    # the complete source, aedist format
+		File:	aegis.4.11.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so
 	look for a copy	near you (you will get much better
 	response).
@@ -283,6 +283,130 @@ RELEASE	NOTES
 	running	the same release of Aegis.  While the database
 	format is backwards compatible,	it is rarely forwards
 	compatible in the face of new capabilities.
+
+   Version 4.11
+	* For Aegis developers:	the developer build now	uses
+	sudo(8)	to simplify and	automate the tricky bit.  The
+	regular	distribution build is unchanged.
+
+	* A bug	has been fixed where the 'aet -reg' command could
+	not find any tests to run, cause by inconsistencies in
+	the view path handling for project file	searches.
+
+	* A partial Romainian translation has been added.
+
+	* A Spanish localization has been added.  It needs work
+	by a human.
+
+	* The French localization has been improved.
+
+	* The aedist(1)	command	now preserves the executable bit
+	on files.
+
+	* There	is a new -descend-project-tree option for the
+	aena(1), aera(1), aend(1), aerd(1), aeni(1), aeri(1),
+	aenrv(1), aerrv(1) and aepa(1) commands, to apply the
+	action to all descendant branches of the project.
+
+	* A bug	has been fixed in tkaer(1) which stopped it
+	working	on some	systems.
+
+	* The aeintegratq(1) command now copes better with
+	changes	leaving	the awaiting integration state.
+
+	* A bug	has been fixed in the aeimport(1) command which
+	misunderstood RCS branches.
+
+	* A bug	has been fixed where there aenf(1) command would
+	use the	new config file	about to be created, which was
+	almost always wrong.
+
+	* There	is a new ${substr} substitution.  See aesub(5)
+	for more information.
+
+	* The aeclone(1) command now understands transparent
+	files.
+
+	* The aecpu(1) command now restores test exemptions in
+	some cases.
+
+	* There	is a new aemeasure(1) command, which procudes
+	simple file metrics for	use with Aegis.
+
+	* There	is a new project ancestors report.
+
+	* Trunk	version	number no longer have a	leading	dot.
+
+	* Command line completion now works for	zsh(1).
+
+	* The aetar(1) command now preserves the executable bit
+	on files.
+
+	* A bug	has been fixed which caused aetar(1) to	hang.
+
+	* The aereport(1) and aesub(1) commands	now gave the same
+	email address for users.
+
+	* The aeannotate(1) command now	olny prints caption
+	columns	if their value changes.	 This highlights the
+	differences, and is less distracting.
+
+   Version 4.10
+	* There	is a new aemt(1) command, used to make branch
+	files "transparent".  This is like an aecpu(1) command
+	for branches, but done through the agency of a change
+	set.
+
+	Note: The behaviour of the view	path in	the presence of
+	transparent files is complete, however full support for
+	aecp -delta and	reports	is not.	 Support will be present
+	in the next release.  File transparency	information
+	stored by this release will be able to be used by aecp
+	-delta and reports in the next release.
+
+	* There	is a new aemtu(1) command, to undo the effects of
+	the aemt(1) command.
+
+	* It is	now possible to	use the	aeclone(1) command on
+	changes	in the awaiting	development state.
+
+	* The problematics directory permissions check has been
+	removed	from the aeintegratq(1)	command.
+
+	* A bug	has been fixed in aecp(1) when retrieving deltas
+	before files were removed.
+
+	* There	are new	${split} and ${unsplit}	substitutions for
+	manipulating search paths (etc).  See aesub(5) for more
+	information.
+
+	* A bug	has been fixed where test time stamps were not
+	updated	for batch tests	which covered multiple
+	architectures.
+
+	* The aedist(1)	program	now includes a change number,
+	which will be used on receipt if possible.  Note that
+	this produces .ae files	which are not backwards
+	compatible; the	-nopatch option	will suppress inclusion
+	of the change number in	the archive.
+
+	* A German translation of Recursive Make Considered
+	Harmful	has been added,	courtesy of CM Magazin.
+
+	* A bug	with aeimport(1) and removed files has been
+	fixed.
+
+	* A problem has	been fixed with	the transition case when
+	a project changed from develop_end_action =
+	goto_being_reviewed to goto_awaiting_review while having
+	changes	in the being reviewed state.
+
+	* A problem with long command lines has	been fixed in the
+	aedist -receive, aepatch -receive and aetar -receive
+	commands.
+
+	* A problem with aeimport(1) and binary	files has been
+	fixed.
 
    Version 4.9
 	* The aepatch(1) and aetar(1) commands now accept -add-

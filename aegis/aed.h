@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void difference _((void));
+void difference(void);
 
 #endif /* AEGIS_AED_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,10 +41,7 @@ struct itab_ty
     void            (*reap)(void *);
     itab_row_ty     **hash_table;
     itab_key_ty     hash_modulus;
-    itab_key_ty     hash_cutover;
-    itab_key_ty     hash_cutover_mask;
-    itab_key_ty     hash_cutover_split_mask;
-    itab_key_ty     hash_split;
+    itab_key_ty     hash_mask;
     itab_key_ty     load;
 };
 

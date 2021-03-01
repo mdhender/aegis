@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,53 +25,51 @@
 
 
 change_set_ty *
-change_set_new()
+change_set_new(void)
 {
-	change_set_ty	*csp;
+    change_set_ty   *csp;
 
-	csp = mem_alloc(sizeof(change_set_ty));
-	csp->who = 0;
-	csp->when = 0;
-	csp->description = 0;
-	change_set_file_list_constructor(&csp->file);
-	string_list_constructor(&csp->tag);
-	return csp;
+    csp = mem_alloc(sizeof(change_set_ty));
+    csp->who = 0;
+    csp->when = 0;
+    csp->description = 0;
+    change_set_file_list_constructor(&csp->file);
+    string_list_constructor(&csp->tag);
+    return csp;
 }
 
 
 void
-change_set_delete(csp)
-	change_set_ty	*csp;
+change_set_delete(change_set_ty *csp)
 {
-	if (csp->who)
-	{
-		str_free(csp->who);
-		csp->who = 0;
-	}
-	csp->when = 0;
-	if (csp->description)
-	{
-		str_free(csp->description);
-		csp->description = 0;
-	}
-	change_set_file_list_destructor(&csp->file);
-	string_list_destructor(&csp->tag);
-	mem_free(csp);
+    if (csp->who)
+    {
+	str_free(csp->who);
+	csp->who = 0;
+    }
+    csp->when = 0;
+    if (csp->description)
+    {
+	str_free(csp->description);
+	csp->description = 0;
+    }
+    change_set_file_list_destructor(&csp->file);
+    string_list_destructor(&csp->tag);
+    mem_free(csp);
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_validate(csp)
-	change_set_ty	*csp;
+change_set_validate(change_set_ty *csp)
 {
-	if (csp->who)
-		str_validate(csp->who);
-	if (csp->description)
-		str_validate(csp->description);
-	change_set_file_list_validate(&csp->file);
-	string_list_validate(&csp->tag);
+    if (csp->who)
+	str_validate(csp->who);
+    if (csp->description)
+	str_validate(csp->description);
+    change_set_file_list_validate(&csp->file);
+    string_list_validate(&csp->tag);
 }
 
 #endif

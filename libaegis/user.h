@@ -52,70 +52,70 @@ struct user_ty
 };
 
 
-user_ty *user_numeric _((struct project_ty *, int));
-user_ty *user_numeric2 _((int, int));
-user_ty *user_symbolic _((struct project_ty *, string_ty *));
-user_ty *user_executing _((struct project_ty *));
-void user_free _((user_ty *));
-user_ty *user_copy _((user_ty *));
+user_ty *user_numeric(struct project_ty *, int);
+user_ty *user_numeric2(int, int);
+user_ty *user_symbolic(struct project_ty *, string_ty *);
+user_ty *user_executing(struct project_ty *);
+void user_free(user_ty *);
+user_ty *user_copy(user_ty *);
 
-string_ty *user_name _((user_ty *));
-string_ty *user_name2 _((user_ty *));
-int user_id _((user_ty *));
-int user_gid _((user_ty *));
-int user_umask _((user_ty *));
+string_ty *user_name(user_ty *);
+string_ty *user_name2(user_ty *);
+int user_id(user_ty *);
+int user_gid(user_ty *);
+int user_umask(user_ty *);
 
-void user_ustate_lock_prepare _((user_ty *));
+void user_ustate_lock_prepare(user_ty *);
 
-string_ty *user_group _((user_ty *));
+string_ty *user_group(user_ty *);
 
-string_ty *user_home _((user_ty *));
-string_ty *user_email_address _((user_ty *));
-string_ty *user_editor_command _((user_ty *));
-string_ty *user_visual_command _((user_ty *));
-string_ty *user_pager_command _((user_ty *));
+string_ty *user_home(user_ty *);
+string_ty *user_email_address(user_ty *);
+string_ty *user_editor_command(user_ty *);
+string_ty *user_visual_command(user_ty *);
+string_ty *user_pager_command(user_ty *);
 
-char *user_full_name _((string_ty *));
+char *user_full_name(string_ty *);
 
-void user_ustate_write _((user_ty *));
+void user_ustate_write(user_ty *);
 
-void user_own_add _((user_ty *, struct string_ty *, long));
-int user_own_nth _((user_ty *, struct string_ty *, long, long *));
-void user_own_remove _((user_ty *, struct string_ty *, long));
+void user_own_add(user_ty *, struct string_ty *, long);
+int user_own_nth(user_ty *, struct string_ty *, long, long *);
+void user_own_remove(user_ty *, struct string_ty *, long);
 
-long user_default_change _((user_ty *));
-string_ty *user_default_project _((void));
-string_ty *user_default_development_directory _((user_ty *));
-string_ty *user_default_project_directory _((user_ty *));
+long user_default_change(user_ty *);
+string_ty *user_default_project(void);
+string_ty *user_default_development_directory(user_ty *);
+string_ty *user_default_project_directory(user_ty *);
 
-int user_uid_check _((string_ty *));
-int user_gid_check _((string_ty *));
-void user_become _((user_ty *));
-void user_become_undo _((void));
+int user_uid_check(string_ty *);
+int user_gid_check(string_ty *);
+void user_become(user_ty *);
+void user_become_undo(void);
 
-int user_delete_file_query _((user_ty *, string_ty *, int));
-void user_delete_file_argument _((void (*)(void)));
+int user_delete_file_query(user_ty *, string_ty *, int);
+void user_delete_file_argument(void (*)(void));
 
-int user_diff_preference _((user_ty *));
-int user_pager_preference _((user_ty *));
+int user_diff_preference(user_ty *);
+int user_pager_preference(user_ty *);
 
-int user_persevere_preference _((user_ty *, int));
-void user_persevere_argument _((void(*)(void)));
+int user_persevere_preference(user_ty *, int);
+void user_persevere_argument(void(*)(void));
 
-uconf_log_file_preference_ty user_log_file_preference _((user_ty *,
-	uconf_log_file_preference_ty));
+uconf_log_file_preference_ty user_log_file_preference(user_ty *,
+	uconf_log_file_preference_ty);
 
-void user_lock_wait_argument _((void(*)(void)));
-int user_lock_wait _((user_ty *));
+void user_lock_wait_argument(void(*)(void));
+int user_lock_wait(user_ty *);
 
-void user_whiteout_argument _((void(*)(void)));
-int user_whiteout _((user_ty *));
+void user_whiteout_argument(void(*)(void));
+int user_whiteout(user_ty *);
 
-void user_symlink_pref_argument _((void(*)(void)));
-int user_symlink_pref _((user_ty *, int));
+void user_symlink_pref_argument(void(*)(void));
+int user_symlink_pref(user_ty *, int);
 
-void user_relative_filename_preference_argument _((void(*)(void)));
-uconf_relative_filename_preference_ty user_relative_filename_preference _((
-	user_ty *, uconf_relative_filename_preference_ty));
+void user_relative_filename_preference_argument(void(*)(void));
+uconf_relative_filename_preference_ty user_relative_filename_preference(
+	user_ty *, uconf_relative_filename_preference_ty);
 
 #endif /* AEGIS_USER_H */

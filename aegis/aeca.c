@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,10 +49,8 @@
 #include <user.h>
 
 
-static void change_attributes_usage _((void));
-
 static void
-change_attributes_usage()
+change_attributes_usage(void)
 {
     char	    *progname;
 
@@ -80,19 +78,15 @@ change_attributes_usage()
 }
 
 
-static void change_attributes_help _((void));
-
 static void
-change_attributes_help()
+change_attributes_help(void)
 {
     help("aeca", change_attributes_usage);
 }
 
 
-static void change_attributes_list _((void));
-
 static void
-change_attributes_list()
+change_attributes_list(void)
 {
     string_ty	    *project_name;
     project_ty	    *pp;
@@ -233,12 +227,8 @@ change_attributes_list()
 }
 
 
-static void check_permissions _((change_ty *, user_ty *));
-
 static void
-check_permissions(cp, up)
-    change_ty	    *cp;
-    user_ty	    *up;
+check_permissions(change_ty *cp, user_ty *up)
 {
     project_ty	    *pp;
     cstate	    cstate_data;
@@ -262,11 +252,8 @@ check_permissions(cp, up)
 }
 
 
-static cattr cattr_fix_arch _((change_ty *));
-
 static cattr
-cattr_fix_arch(cp)
-    change_ty       *cp;
+cattr_fix_arch(change_ty *cp)
 {
     cstate	    cstate_data;
     cattr	    cattr_data;
@@ -359,10 +346,8 @@ cattr_fix_arch(cp)
 }
 
 
-static void change_attributes_main _((void));
-
 static void
-change_attributes_main()
+change_attributes_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *project_name;
@@ -693,19 +678,34 @@ change_attributes_main()
     if (project_administrator_query(pp, user_name(up)))
     {
 	if (cattr_data->mask & cattr_test_exempt_mask)
+	{
 	    cstate_data->test_exempt = cattr_data->test_exempt;
+	    cstate_data->given_test_exemption = cattr_data->test_exempt;
+	}
 	if (cattr_data->mask & cattr_test_baseline_exempt_mask)
+	{
 	    cstate_data->test_baseline_exempt =
 		cattr_data->test_baseline_exempt;
+	}
 	if (cattr_data->mask & cattr_regression_test_exempt_mask)
+	{
 	    cstate_data->regression_test_exempt =
 		cattr_data->regression_test_exempt;
+	    cstate_data->given_regression_test_exemption =
+		cattr_data->regression_test_exempt;
+	}
     }
     else
     {
 	if
 	(
-	    (cattr_data->test_exempt && !cstate_data->test_exempt)
+	    (
+		cattr_data->test_exempt
+	    &&
+		!cstate_data->test_exempt
+	    &&
+		!cstate_data->given_test_exemption
+	    )
 	||
 	    (
 		cattr_data->test_baseline_exempt
@@ -717,6 +717,8 @@ change_attributes_main()
 		cattr_data->regression_test_exempt
 	    &&
 		!cstate_data->regression_test_exempt
+	    &&
+		!cstate_data->given_regression_test_exemption
 	    )
 	)
 	{
@@ -727,27 +729,20 @@ change_attributes_main()
 	    /*
 	     * developers may remove exemptions
 	     */
-	    if
-	    (
-		(cattr_data->mask & cattr_test_exempt_mask)
-	    &&
-		!cattr_data->test_exempt
-	    )
-		cstate_data->test_exempt = 0;
-	    if
-	    (
-		(cattr_data->mask & cattr_test_baseline_exempt_mask)
-	    &&
-		!cattr_data->test_baseline_exempt
-	    )
-		cstate_data->test_baseline_exempt = 0;
-	    if
-	    (
-		(cattr_data->mask & cattr_regression_test_exempt_mask)
-	    &&
-		!cattr_data->regression_test_exempt
-	    )
-		cstate_data->regression_test_exempt = 0;
+	    if (cattr_data->mask & cattr_test_exempt_mask)
+	    {
+		cstate_data->test_exempt = cattr_data->test_exempt;
+	    }
+	    if (cattr_data->mask & cattr_test_baseline_exempt_mask)
+	    {
+		cstate_data->test_baseline_exempt =
+		    cattr_data->test_baseline_exempt;
+	    }
+	    if (cattr_data->mask & cattr_regression_test_exempt_mask)
+	    {
+		cstate_data->regression_test_exempt =
+		    cattr_data->regression_test_exempt;
+	    }
 	}
     }
 
@@ -863,7 +858,7 @@ change_attributes_main()
 
 
 void
-change_attributes()
+change_attributes(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

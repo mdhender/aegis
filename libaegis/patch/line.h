@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ struct patch_line_ty
 	string_ty	*value;
 };
 
-void patch_line_constructor _((patch_line_ty *, patch_line_type, string_ty *));
-void patch_line_destructor _((patch_line_ty *));
+void patch_line_constructor(patch_line_ty *, patch_line_type, string_ty *);
+void patch_line_destructor(patch_line_ty *);
 
 #endif /* LIBAEGIS_PATCH_LINE_H */

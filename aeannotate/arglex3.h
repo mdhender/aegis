@@ -34,6 +34,6 @@ enum
     ARGLEX3_MAX
 };
 
-void arglex3_init _((int, char **));
+void arglex3_init(int, char **);
 
 #endif /* AEANNOTATE_ARGLEX3_H */

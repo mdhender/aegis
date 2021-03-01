@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,19 +38,7 @@ langs =
 		[fromto lib/%1/%0%2.po %1
 			[match_mask lib/%1/%0%2.po [source_files]]
 		]
-		[fromto lib/%1/%0%2.mm %1
-			[match_mask lib/%1/%0%2.mm [source_files]]
-		]
-		[fromto lib/%1/%0%2.ms %1
-			[match_mask lib/%1/%0%2.ms [source_files]]
-		]
-		[fromto lib/%1/%0%2.1 %1
-			[match_mask lib/%1/%0%2.1 [source_files]]
-		]
 	];
-
-i18n_commands = [filter_out test_% [commands]];
-
 
 /*
  * Translate the localization files into their binary form.  This will
@@ -58,13 +46,13 @@ i18n_commands = [filter_out test_% [commands]];
  * if not in practice).
  */
 
-internationalization:
+internationalization: [internationalization];
+
+internationalization =
 	[fromto lib/%0%.po [arch]/lib/%0%.mo
 		[match_mask lib/%0%.po [source_files]]]
 	[fromto lib/%0%.po lib/%0%.merge
 		[match_mask lib/%0%.po [source_files]]]
-	LICENSE
-	i18n-tmp/libaegis.ok
 
 	/*
 	 * This next file is for the benefit of the Translation Project
@@ -105,6 +93,7 @@ internationalization:
 	 * AND ALSO any other documentation, once it is translated.
 	 */
 	po/[project_short].pot
+	/* [prepost "po/"[project_short]"." ".po" [langs]] */
 	;
 
 all,I =
@@ -113,35 +102,10 @@ all,I =
 	[fromto %0%.c %0%.c,I [match_mask %0%.c [source_files]]]
 	;
 
-libaegis,I = [match_mask libaegis/%0% [all,I]];
-
-
-i18n-tmp/libaegis.ok: i18n-tmp/libaegis.extra etc/zer-len-msg.sh
-{
-	sh [resolve etc/zer-len-msg.sh i18n-tmp/libaegis.extra];
-	touch [target];
-}
-
-msgcomm = msgcomm;
-
-i18n-tmp/libaegis.extra: [prepost "i18n-tmp/" ",I" [i18n_commands]]
-{
-	[msgcomm]
-		--force-po
-		--omit-header
-		--sort-output
-		--add-location
-		--indent
-		--width\=75
-		-o [target]
-		[prepost "--dir=" "" [search_list]]
-		/* no need to resolve, --dir will do it */
-		[need];
-}
-
 msgmerge = msgmerge;
 
-lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/%,I
+lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/aegis.pot
+	lib/en/LC_MESSAGES/aegis.po
 {
 	[msgmerge]
 		--indent
@@ -151,28 +115,9 @@ lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/%,I
 		--no-location
 		--force-po
 		-o [target]
-		[resolve lib/%1/LC_MESSAGES/%.po i18n-tmp/%,I]
-		[addprefix "--compendium="
-		    [resolve
-			[stringset
-			    [match_mask
-				lib/%1/LC_MESSAGES/%%.po
-				[source_files]
-			    ]
-			-
-			    lib/%1/LC_MESSAGES/%.po
-			]
-		    ]
-		]
+		[resolve lib/%1/LC_MESSAGES/%.po i18n-tmp/aegis.pot]
 		['if' [not [in %1 en]] 'then'
-		    [addprefix "--compendium="
-			[resolve
-			    [match_mask
-				lib/en/LC_MESSAGES/%%.po
-				[source_files]
-			    ]
-			]
-		    ]
+		    --compendium\=[resolve lib/en/LC_MESSAGES/aegis.po]
 		]
 		;
 
@@ -189,62 +134,30 @@ lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/%,I
 }
 
 
-[arch]/lib/%0%.mo: lib/%0%.po lib/%0libaegis.po
+[arch]/lib/%0%.mo: lib/%0%.po
 	etc/msgfmt.sh
 	set ['if' [not [defined baseline]] 'then' shallow]
 {
 	/*
-	 * This only works for GNU gettext (and Solaris).
-	 * The SunOS msgfmt program does not grok the -o option.
+	 * This only works for GNU gettext.
 	 */
 	sh [resolve etc/msgfmt.sh]
 	    --msgfmt\=[msgfmt]
 	    --msgcat\=[msgcat]
 	    --output\=[target]
-	    [resolve lib/%0%.po lib/%0libaegis.po]
+	    [resolve lib/%0%.po]
 	    ;
 }
 
 
 xgettext = xgettext;
 
-/*
- * This file will hopefully act as a "header file" to check the
- * lib/%0%.po files against.  There should not be any extras or
- * omissions.
- */
-
-i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po"
-	[i18n_commands]] etc/i18n.clean.sh
+i18n-tmp/aegis.pot: [all,I]:
+	etc/i18n.clean.sh
 {
 	/*
 	 * The author only speaks English, so the master translation is
-	 * "en", hence lib/en/LC_MESSAGES/....po are the files intended.
-	 */
-	[xgettext]
-		--sort-output
-		--indent
-		--add-location
-		-o [target]
-		[prepost "--dir=" "" [search_list]]
-		[prepost "--exclude-file=lib/en/LC_MESSAGES/" ".po"
-		    [i18n_commands]]
-		--language\=PO
-		/* no need to resolve, --dir will do it */
-		[all,I];
-	/*
-	 * Get rid of the "POT-Creation-Date" header,
-	 * it messes up the .po file checking.
-	 */
-	sh [resolve etc/i18n.clean.sh] [target];
-}
-
-i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
-		etc/i18n.clean.sh
-{
-	/*
-	 * The author only speaks English, so the master translation is
-	 * "en", hence lib/en/LC_MESSAGES/libaegis.po is the file
+	 * "en", hence lib/en/LC_MESSAGES/aegis.po is the file
 	 * intended.
 	 */
 	[xgettext]
@@ -254,9 +167,8 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 		--force-po
 		-o [target]
 		[prepost "--dir=" "" [search_list]]
-		--exclude-file\=lib/en/LC_MESSAGES/libaegis.po
 		--language\=PO
-		[%,I];
+		[all,I];
 	/*
 	 * Get rid of the "POT-Creation-Date" header,
 	 * it messes up the .po file checking.
@@ -327,25 +239,26 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
  * AND ALSO any other documentation, once it is translated.
  */
 
-po/[project_short].pot: [match_mask lib/en/LC_MESSAGES/%.po [source_files]]
+po/[project_short].pot: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
 {
-	msgcat
-		--use-first
+	[msgmerge]
 		--indent
 		--sort-output
-		--width\=75
+		--add-location
+		--force-po
 		-o [target]
-		[resolve
-		    /*
-		     * Put libaegis.po at the start, it has an informative
-		     * comment at the beginning (which gets bound to
-		     * "", and is subject a the --use-first clause).
-		     */
-		    lib/en/LC_MESSAGES/libaegis.po
-		    [stringset
-			[need]
-		    -
-			lib/en/LC_MESSAGES/libaegis.po
-		    ]
-		];
+		[resolve lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
+		;
+}
+
+po/[project_short].%.po: lib/%/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
+{
+	[msgmerge]
+		--indent
+		--sort-output
+		--add-location
+		--force-po
+		-o [target]
+		[resolve lib/%/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
+		;
 }

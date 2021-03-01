@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -206,10 +206,15 @@ all: [all]
 {
     if [not [defined baseline]] then
     {
+	if [in [resolve etc/set-uid-root] etc/set-uid-root] then
+	    chmod a+rx etc/set-uid-root;
        	set silent;
+	echo\;ls -l [arch]/bin/aegis [arch]/bin/aeimport;
        	echo "Integrator: please do the following:";
-	echo "\"  su1 sh -c 'chown root "[arch]"/bin/aegis && chmod u+s "[arch
-	    ]"/bin/aegis'\"";
+	echo "\"  sudo" [pathname [resolve etc/set-uid-root]] [arch]
+	    "aegis aeimport\"";
+	echo "\"if they aren't already.  See etc/set-uid-root for\"";
+	echo "\"instructions for how to set-up your /etc/sudoers file.\"";
     }
 }
 
@@ -322,7 +327,6 @@ commands =
 		find_sizes
 		aefp
 		cklinlen
-		simp_file_stat
 	];
 
 /*
@@ -378,9 +382,9 @@ aefp_obj =
 	[common_obj]
 	;
 
-simp_file_stat_obj =
-	[arch]/simp_file_stat/main.o
-	[arch]/simp_file_stat/count.o
+aemeasure_obj =
+	[arch]/aemeasure/main.o
+	[arch]/aemeasure/count.o
 	[arch]/common/common.a
 	;
 
@@ -838,10 +842,12 @@ ranlib = [find_command ranlib];
 	/*
 	 * aegis itself must be set-uid-root
 	 */
-	if [defined baseline] then
 	if [in [target] [arch]/bin/aegis [arch]/bin/aeimport] then
 	{
-		su1 sh -c "'chown root "[target]" && chmod u+s "[target]"'"
+		if [in [resolve etc/set-uid-root] etc/set-uid-root] then
+		    chmod a+rx etc/set-uid-root;
+		sudo [pathname [resolve etc/set-uid-root]]
+		    [arch] [entryname [target]]
 			set errok;
 	}
 }

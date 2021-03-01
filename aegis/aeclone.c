@@ -46,10 +46,8 @@
 #include <user.h>
 
 
-static void clone_usage _((void));
-
 static void
-clone_usage()
+clone_usage(void)
 {
     char	    *progname;
 
@@ -61,19 +59,15 @@ clone_usage()
 }
 
 
-static void clone_help _((void));
-
 static void
-clone_help()
+clone_help(void)
 {
     help("aeclone", clone_usage);
 }
 
 
-static void clone_list _((void));
-
 static void
-clone_list()
+clone_list(void)
 {
     string_ty	    *project_name;
 
@@ -109,10 +103,8 @@ clone_list()
 }
 
 
-static long get_change_number _((void));
-
 static long
-get_change_number()
+get_change_number(void)
 {
     long	    cn;
 
@@ -133,10 +125,8 @@ get_change_number()
 }
 
 
-static void clone_main _((void));
-
 static void
-clone_main()
+clone_main(void)
 {
     string_ty	    *s;
     sub_context_ty  *scp;
@@ -164,6 +154,7 @@ clone_main()
     string_list_ty  wl_nt;
     string_list_ty  wl_cp;
     string_list_ty  wl_rm;
+    int             the_umask;
 
     trace(("clone_main()\n{\n"));
     arglex();
@@ -380,13 +371,6 @@ clone_main()
     cstate_data2 = change_cstate_get(cp2);
 
     /*
-     * It is an error if the other change is not at or after the
-     * 'being developed' state
-     */
-    if (cstate_data2->state < cstate_state_being_developed)
-	change_fatal(cp2, 0, i18n("bad clone state"));
-
-    /*
      * create a new change
      */
     if (!change_number)
@@ -439,233 +423,300 @@ clone_main()
     history_data->why =
 	str_format("Cloned from change %d.", magic_zero_decode(change_number2));
 
-    /*
-     * Construct the name of the development directory.
-     *
-     * (Do this before the state advances to being developed,
-     * it tries to find the config file in the as-yet
-     * non-existant development directory.)
-     */
-    if (!devdir)
+    the_umask = change_umask(cp);
+
+    if (cstate_data2->state >= cstate_state_being_developed)
     {
-	scp = sub_context_new();
-	devdir = change_development_directory_template(cp, up);
-	sub_var_set_string(scp, "File_Name", devdir);
-	change_verbose(cp, scp, i18n("development directory \"$filename\""));
-	sub_context_delete(scp);
-    }
-    change_development_directory_set(cp, devdir);
-
-    /*
-     * add to history for develop begin
-     */
-    cstate_data->state = cstate_state_being_developed;
-    history_data = change_history_new(cp, up);
-    history_data->what = cstate_history_what_develop_begin;
-
-    /*
-     * Clear the build-time field.
-     * Clear the test-time field.
-     * Clear the test-baseline-time field.
-     * Clear the src field.
-     */
-    change_build_times_clear(cp);
-
-    /*
-     * Assign the new change to the user.
-     */
-    user_own_add(up, project_name_get(pp), change_number);
-
-    /*
-     * Create the development directory.
-     */
-    user_become(up);
-    os_mkdir(devdir, 02755);
-    undo_rmdir_bg(devdir);
-    user_become_undo();
-
-    /*
-     * Determine the correct mode for the copied files.
-     */
-    mode = 0644 & ~change_umask(cp);
-
-    /*
-     * add all of the files to the new change
-     * copy the files into the development directory
-     */
-    change_verbose(cp, 0, i18n("copy change source files"));
-    for (j = 0;; ++j)
-    {
-	string_ty	*from;
-	string_ty	*to;
-	fstate_src	src_data;
-	fstate_src	src_data2;
-	fstate_src	p_src_data;
-
 	/*
-	 * find the file
+	 * Construct the name of the development directory.
 	 *
-	 * There are many files we will ignore.
+	 * (Do this before the state advances to being developed,
+	 * it tries to find the config file in the as-yet
+	 * non-existant development directory.)
 	 */
-	src_data2 = change_file_nth(cp2, j);
-	if (!src_data2)
-	    break;
-	if (src_data2->action == file_action_insulate)
-	    continue;
-	if
-	(
-	    src_data2->usage == file_usage_build
-	&&
-	    src_data2->action != file_action_create
-	&&
-	    src_data2->action != file_action_remove
-	)
-	    continue;
+	if (!devdir)
+	{
+	    scp = sub_context_new();
+	    devdir = change_development_directory_template(cp, up);
+	    sub_var_set_string(scp, "File_Name", devdir);
+	    change_verbose
+	    (
+		cp,
+		scp,
+		i18n("development directory \"$filename\"")
+	    );
+	    sub_context_delete(scp);
+	}
+	change_development_directory_set(cp, devdir);
 
 	/*
-	 * find the file in the project
+	 * add to history for develop begin
 	 */
-	p_src_data = project_file_find(pp, src_data2->file_name);
-	if (p_src_data)
-	{
-	    if (p_src_data->deleted_by || p_src_data->about_to_be_created_by)
-		p_src_data = 0;
-	}
-	if (!p_src_data)
-	{
-	    if (src_data2->action == file_action_remove)
-		continue;
-	    src_data2->action = file_action_create;
-	}
+	cstate_data->state = cstate_state_being_developed;
+	history_data = change_history_new(cp, up);
+	history_data->what = cstate_history_what_develop_begin;
 
 	/*
-	 * create the file in the new change
+	 * Clear the build-time field.
+	 * Clear the test-time field.
+	 * Clear the test-baseline-time field.
+	 * Clear the src field.
 	 */
-	src_data = change_file_new(cp, src_data2->file_name);
-	src_data->action = src_data2->action;
-	src_data->usage = src_data2->usage;
-	if (src_data2->move)
-	    src_data->move = str_copy(src_data2->move);
+	change_build_times_clear(cp);
 
 	/*
-	 * removed files aren't copied,
-	 * they have whiteout instead.
+	 * Assign the new change to the user.
 	 */
-	if (src_data->action == file_action_remove)
-	{
-	    change_file_whiteout_write(cp, src_data->file_name, up);
-	    continue;
-	}
+	user_own_add(up, project_name_get(pp), change_number);
 
 	/*
-	 * If the change has already been completed, get the
-	 * file from history, but if it is still active, get
-	 * the file from the old development directory.
+	 * Create the development directory.
 	 */
-	if (cstate_data2->state == cstate_state_completed)
+	user_become(up);
+	os_mkdir(devdir, 02755);
+	undo_rmdir_bg(devdir);
+	user_become_undo();
+
+	/*
+	 * add all of the files to the new change
+	 * copy the files into the development directory
+	 */
+	change_verbose(cp, 0, i18n("copy change source files"));
+	for (j = 0;; ++j)
 	{
-	    /*
-	     * We could be creating the file, from the point
-	     * of view of this branch.
-	     */
-	    assert(src_data2->edit);
-	    assert(src_data2->edit->revision);
-	    if (p_src_data && src_data2->edit)
-	    {
-		src_data->edit_origin = history_version_copy(src_data2->edit);
-	    }
-	    else if (p_src_data && p_src_data->edit)
-	    {
-		src_data->edit_origin = history_version_copy(p_src_data->edit);
-	    }
-	    else
-		src_data->action = file_action_create;
+	    string_ty	*from;
+	    string_ty	*to;
+	    fstate_src	src_data;
+	    fstate_src	src_data2;
+	    fstate_src	p_src_data;
 
 	    /*
-	     * figure where to send it
-	     */
-	    to = str_format("%S/%S", devdir, src_data2->file_name);
-
-	    /*
-	     * make sure there is a directory for it
-	     */
-	    user_become(up);
-	    os_mkdir_between(devdir, src_data2->file_name, 02755);
-	    if (os_exists(to))
-		os_unlink(to);
-	    os_unlink_errok(to);
-	    user_become_undo();
-
-	    /*
-	     * get the file from history
-	     */
-	    change_run_history_get_command(cp2, src_data2, to, up);
-
-	    /*
-	     * set the file mode
-	     */
-	    user_become(up);
-	    os_chmod(to, mode);
-	    user_become_undo();
-
-	    /*
-	     * clean up afterwards
-	     */
-	    str_free(to);
-	}
-	else
-	{
-	    /*
-	     * If possible, use the edit number origin of
-	     * the change we are cloning, this gives us the
-	     * best chance to merge correctly.
+	     * find the file
 	     *
-	     * Otherwise, see if the file exists in the
-	     * project and copy the head revision number
+	     * There are many files we will ignore.
 	     */
-	    if (p_src_data && src_data2->edit_origin)
+	    src_data2 = change_file_nth(cp2, j);
+	    if (!src_data2)
+		break;
+	    if (src_data2->action == file_action_insulate)
+		continue;
+	    if
+	    (
+		src_data2->action == file_action_transparent
+	    &&
+		change_was_a_branch(cp2)
+	    )
+		continue;
+	    if
+	    (
+		src_data2->usage == file_usage_build
+	    &&
+		src_data2->action != file_action_create
+	    &&
+		src_data2->action != file_action_remove
+	    )
+		continue;
+
+	    /*
+	     * find the file in the project
+	     */
+	    p_src_data =
+		project_file_find(pp, src_data2->file_name, view_path_extreme);
+	    if (!p_src_data)
 	    {
-		src_data->edit_origin =
-		    history_version_copy(src_data2->edit_origin);
+		if (src_data2->action == file_action_remove)
+		    continue;
+		if (src_data2->action != file_action_transparent)
+		    src_data2->action = file_action_create;
 	    }
-	    else if (p_src_data && p_src_data->edit)
+
+	    /*
+	     * create the file in the new change
+	     */
+	    src_data = change_file_new(cp, src_data2->file_name);
+	    src_data->action = src_data2->action;
+	    src_data->usage = src_data2->usage;
+	    if (src_data2->move)
+		src_data->move = str_copy(src_data2->move);
+
+	    /*
+	     * removed files aren't copied,
+	     * they have whiteout instead.
+	     */
+	    if (src_data->action == file_action_remove)
 	    {
-		src_data->edit_origin = history_version_copy(p_src_data->edit);
+		change_file_whiteout_write(cp, src_data->file_name, up);
+		continue;
+	    }
+
+	    /*
+	     * Transparent files are copied, but from the project's
+	     * parent, not from the other change.
+	     */
+	    if (src_data->action == file_action_transparent)
+	    {
+		/*
+		 * construct the paths to the files
+		 */
+		from = project_file_path(pp->parent, src_data2->file_name);
+		to = str_format("%S/%S", devdir, src_data2->file_name);
+
+		/*
+		 * copy the file
+		 */
+		user_become(up);
+		os_mkdir_between(devdir, src_data2->file_name, 02755);
+		if (os_exists(to))
+	    	    os_unlink(to);
+		copy_whole_file(from, to, 0);
+
+		/*
+		 * Set the file mode.
+		 */
+		mode = 0444;
+		if (p_src_data->executable)
+		    mode |= 0111;
+		mode &= ~the_umask;
+		os_chmod(to, mode);
+		user_become_undo();
+
+		/*
+		 * If possible, use the edit number origin of the project
+		 * and copy the head revision number.
+		 */
+		if (p_src_data && p_src_data->edit)
+		{
+		    src_data->edit_origin =
+			history_version_copy(p_src_data->edit);
+		}
+
+		/*
+		 * Go on to the next file.
+		 */
+		continue;
+	    }
+
+	    /*
+	     * If the change has already been completed, get the
+	     * file from history, but if it is still active, get
+	     * the file from the old development directory.
+	     */
+	    if (cstate_data2->state == cstate_state_completed)
+	    {
+		/*
+		 * We could be creating the file, from the point
+		 * of view of this branch.
+		 */
+		assert(src_data2->edit);
+		assert(src_data2->edit->revision);
+		if (p_src_data && src_data2->edit)
+		{
+		    src_data->edit_origin =
+			history_version_copy(src_data2->edit);
+		}
+		else if (p_src_data && p_src_data->edit)
+		{
+		    src_data->edit_origin =
+			history_version_copy(p_src_data->edit);
+		}
+		else
+		    src_data->action = file_action_create;
+
+		/*
+		 * figure where to send it
+		 */
+		to = str_format("%S/%S", devdir, src_data2->file_name);
+
+		/*
+		 * make sure there is a directory for it
+		 */
+		user_become(up);
+		os_mkdir_between(devdir, src_data2->file_name, 02755);
+		if (os_exists(to))
+		    os_unlink(to);
+		os_unlink_errok(to);
+		user_become_undo();
+
+		/*
+		 * get the file from history
+		 */
+		change_run_history_get_command(cp2, src_data2, to, up);
+
+		/*
+		 * set the file mode
+		 */
+		user_become(up);
+		mode = 0644;
+		if (src_data2->executable)
+		    mode |= 0111;
+		mode &= ~the_umask;
+		os_chmod(to, mode);
+		user_become_undo();
+
+		/*
+		 * clean up afterwards
+		 */
+		str_free(to);
 	    }
 	    else
-		src_data->action = file_action_create;
-	    if (p_src_data && src_data2->edit_origin_new)
 	    {
-		src_data->edit_origin_new =
-		    history_version_copy(src_data2->edit_origin_new);
+		/*
+		 * If possible, use the edit number origin of
+		 * the change we are cloning, this gives us the
+		 * best chance to merge correctly.
+		 *
+		 * Otherwise, see if the file exists in the
+		 * project and copy the head revision number
+		 */
+		if (p_src_data && src_data2->edit_origin)
+		{
+		    src_data->edit_origin =
+			history_version_copy(src_data2->edit_origin);
+		}
+		else if (p_src_data && p_src_data->edit)
+		{
+		    src_data->edit_origin =
+			history_version_copy(p_src_data->edit);
+		}
+		else
+		    src_data->action = file_action_create;
+		if (p_src_data && src_data2->edit_origin_new)
+		{
+		    src_data->edit_origin_new =
+			history_version_copy(src_data2->edit_origin_new);
+		}
+
+		/*
+		 * construct the paths to the files
+		 */
+		from = change_file_path(cp2, src_data2->file_name);
+		to = str_format("%S/%S", devdir, src_data2->file_name);
+
+		/*
+		 * copy the file
+		 */
+		user_become(up);
+		os_mkdir_between(devdir, src_data2->file_name, 02755);
+		if (os_exists(to))
+		    os_unlink(to);
+		copy_whole_file(from, to, 0);
+
+		/*
+		 * set the file mode
+		 */
+		mode = 0644;
+		if (os_executable(from))
+		    mode |= 0111;
+		mode &= ~the_umask;
+		os_chmod(to, mode);
+		user_become_undo();
+
+		/*
+		 * clean up afterwards
+		 */
+		str_free(from);
+		str_free(to);
 	    }
-
-	    /*
-	     * construct the paths to the files
-	     */
-	    from = change_file_path(cp2, src_data2->file_name);
-	    to = str_format("%S/%S", devdir, src_data2->file_name);
-
-	    /*
-	     * copy the file
-	     */
-	    user_become(up);
-	    os_mkdir_between(devdir, src_data2->file_name, 02755);
-	    if (os_exists(to))
-		os_unlink(to);
-	    copy_whole_file(from, to, 0);
-
-	    /*
-	     * set the file mode
-	     */
-	    os_chmod(to, mode);
-	    user_become_undo();
-
-	    /*
-	     * clean up afterwards
-	     */
-	    str_free(from);
-	    str_free(to);
 	}
     }
 
@@ -718,81 +769,88 @@ clone_main()
     commit();
     lock_release();
 
-    /*
-     * run the develop begin command
-     */
-    change_run_develop_begin_command(cp, up);
-
-    /*
-     * run the change file command
-     * and the project file command if necessary
-     */
-    string_list_constructor(&wl_nf);
-    string_list_constructor(&wl_nt);
-    string_list_constructor(&wl_cp);
-    string_list_constructor(&wl_rm);
-    for (j = 0;; ++j)
+    if (cstate_data2->state >= cstate_state_being_developed)
     {
-	fstate_src	c_src;
+	/*
+	 * run the develop begin command
+	 */
+	change_run_develop_begin_command(cp, up);
 
-	c_src = change_file_nth(cp, j);
-	if (!c_src)
-	    break;
-	switch (c_src->action)
+	/*
+	 * run the change file command
+	 * and the project file command if necessary
+	 */
+	string_list_constructor(&wl_nf);
+	string_list_constructor(&wl_nt);
+	string_list_constructor(&wl_cp);
+	string_list_constructor(&wl_rm);
+	for (j = 0;; ++j)
 	{
-	case file_action_create:
-	    switch (c_src->usage)
+	    fstate_src	c_src;
+
+	    c_src = change_file_nth(cp, j);
+	    if (!c_src)
+		break;
+	    switch (c_src->action)
 	    {
-	    case file_usage_test:
-	    case file_usage_manual_test:
-		string_list_append(&wl_nt, c_src->file_name);
+	    case file_action_create:
+		switch (c_src->usage)
+		{
+		case file_usage_test:
+		case file_usage_manual_test:
+		    string_list_append(&wl_nt, c_src->file_name);
+		    break;
+
+		case file_usage_source:
+		case file_usage_build:
+		    string_list_append(&wl_nf, c_src->file_name);
+		    break;
+		}
 		break;
 
-	    case file_usage_source:
-	    case file_usage_build:
-		string_list_append(&wl_nf, c_src->file_name);
+	    case file_action_modify:
+	    case file_action_insulate:
+		string_list_append(&wl_cp, c_src->file_name);
+		break;
+
+	    case file_action_transparent:
+		/* FIXME: change_run_make_transparent_command */
+		break;
+
+	    case file_action_remove:
+		string_list_append(&wl_rm, c_src->file_name);
 		break;
 	    }
-	    break;
-
-	case file_action_modify:
-	case file_action_insulate:
-	    string_list_append(&wl_cp, c_src->file_name);
-	    break;
-
-	case file_action_remove:
-	    string_list_append(&wl_rm, c_src->file_name);
-	    break;
 	}
-    }
-    if (wl_nf.nstrings)
-	change_run_new_file_command(cp, &wl_nf, up);
-    if (wl_nt.nstrings)
-	change_run_new_test_command(cp, &wl_nf, up);
-    if (wl_cp.nstrings)
-	change_run_copy_file_command(cp, &wl_nf, up);
-    if (wl_rm.nstrings)
-	change_run_remove_file_command(cp, &wl_nf, up);
-    string_list_destructor(&wl_nf);
-    string_list_destructor(&wl_nt);
-    string_list_destructor(&wl_cp);
-    string_list_destructor(&wl_rm);
-    change_run_project_file_command(cp, up);
+	if (wl_nf.nstrings)
+	    change_run_new_file_command(cp, &wl_nf, up);
+	if (wl_nt.nstrings)
+	    change_run_new_test_command(cp, &wl_nf, up);
+	if (wl_cp.nstrings)
+	    change_run_copy_file_command(cp, &wl_nf, up);
+	if (wl_rm.nstrings)
+	    change_run_remove_file_command(cp, &wl_nf, up);
+	string_list_destructor(&wl_nf);
+	string_list_destructor(&wl_nt);
+	string_list_destructor(&wl_cp);
+	string_list_destructor(&wl_rm);
+	change_run_project_file_command(cp, up);
 
-    /*
-     * if symlinks are being used to pander to dumb DMT,
-     * and they are not removed after each build,
-     * create them now, rather than waiting for the first build.
-     * This will present a more uniform interface to the developer.
-     */
-    pconf_data = change_pconf_get(cp, 0);
-    if
-    (
-	pconf_data->create_symlinks_before_build
-    &&
-	!pconf_data->remove_symlinks_after_build
-    )
-	change_create_symlinks_to_baseline(cp, pp, up, 0);
+	/*
+	 * if symlinks are being used to pander to dumb DMT,
+	 * and they are not removed after each build,
+	 * create them now, rather than waiting for the first build.
+	 * This will present a more uniform interface to the developer.
+	 */
+	pconf_data = change_pconf_get(cp, 0);
+	if
+	(
+	    pconf_data->create_symlinks_before_build
+	&&
+	    !pconf_data->remove_symlinks_after_build
+	)
+	    change_create_symlinks_to_baseline(cp, pp, up, 0);
+    }
 
     /*
      * verbose success message
@@ -814,7 +872,7 @@ clone_main()
 
 
 void
-clone()
+clone(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

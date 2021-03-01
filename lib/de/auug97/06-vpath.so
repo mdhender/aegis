@@ -1,0 +1,94 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Projekte im Vergleich zu Sandk\*:asten"
+Das oben Besprochene setzt voraus, das ein Projekt sich
+im Rahmen eines einzigen Verzeichnisbaums befindet und
+das ist in der Regel der Idealfall. Die
+Arbeitswirklichkeit in gro\(ssen Softwareprojekten f\*:uhrt
+dagegen oft zu bizarren und wundervollen
+Verzeichnisstrukturen, damit die Entwickler in
+verschiedenen Bereichen des Projekts arbeiten k\*:onnen,
+ohne vollst\*:andige Kopien des Projekts zu ben\*:otigen und
+damit wertvollen Speicherplatz zu verschwenden.
+.LP
+Sie k\*:onnen das hier vorgeschlagene Ganzprojekt-Make
+unpraktisch finden, weil es nicht zu den entwickelten
+Methoden Ihres Entwicklungsprozesses passt.
+.LP
+Das hier vorgestellte Ganzprojekt-Make hat eine
+Auswirkung auf die Entwicklungsmethoden: Es schafft eine
+sauberere und einfachere Produktionsumgebung f\*:ur Ihre
+Entwickler. Indem man die VPATH-Funktion von Make
+anwendet, ist es m\*:oglich, dass Sie nur jene Dateien, die
+Sie bearbeiten m\*:ussen, in Ihren privaten Arbeitsbereich,
+oft auch Sandkasten genannt, kopieren.
+.LP
+Die einfachste Weise, zu erkl\*:aren, was VPATH tut, ist,
+eine Analogie zu dem Suchpfad f\*:ur Include-Dateien
+herzustellen, indem man -I-Pfadoptionen f\*:ur den
+C-Compiler benutzt. Diese Optionen beschreiben, wo man
+nach Dateien suchen muss, genauso wie VPATH-Make
+anweist, wo es nach Dateien suchen muss.
+.LP
+Durch die Verwendung von VPATH wird es m\*:oglich, die sich
+im Sandkasten befindenden Dateien oben auf der
+Master-Source des Projekts \fIaufzustapeln\fP. Auf
+diese Weise bekommen die Dateien, die sich im Sandkasten
+befinden, Vorrang. Make verwendet jedoch den gesamten
+Dateienverband, um ein Build durchzuf\*:uhren.
+.so 06.figure1.so
+.\" these next two paragraphs are only one in the original.  why?
+.LP
+In dieser Umgebung hat der Sandkasten dieselbe
+Baumstruktur wie die Master-Source (Stammdatenquelle)
+des Projekts. Das erm\*:oglicht den Entwicklern, gefahrlos
+modul\*:ubergreifenden Kode zu ver\*:andern z. B. bei der
+\*:Anderung einer Modulschnittstelle.
+.LP
+Es erm\*:oglicht au\(sserdem, den Sandkasten physicalisch von
+der Master-Source zu trennen, ihn z. B auf einem anderen
+Laufwerk oder in Ihrem privaten Arbeitsbereich anzulegen
+und der Master-Source des Projekts einen
+schreibgesch\*:utzten Status zu verleihen, sofern Sie ein
+strenges Check-in-Verfahren haben (oder sich zulegen
+wollen).
+.LP
+Bitte beachten Sie: Sie m\*:ussen nicht nur ihrem
+Entwicklungs-\f[CW]Makefilec\fP eine VPATH-Reihe
+hinzuf\*:ugen, sondern auch die -I-Optionen dem
+CFLAGS-Makro, damit der C-Compiler denselben Pfad wie
+Make benutzt. Das kann man einfach mit einem
+3-Zeilen-\f[CW]Makefile\fP in Ihrem Arbeitsbereich
+durchf\*:uhren - Sie definieren erst ein Makro, dann VPATH
+und f\*:ugen schlie\(sslich das \f[CW]Makefile\fP der
+Master-Source des Projekts ein.
+.nh 2 "VPATH-Semantik"
+Um das eben Erl\*:auterte anzuwenden, m\*:ussen Sie GNU-Make
+3.76 oder eine neuere Version verwenden. F\*:ur fr\*:uhere
+GNU-Make-Versionen ben\*:otigen Sie Paul Smith's VPATH+
+Patch. Den k\*:onnen Sie bei
+\f[CW]ftp://ftp\%.wellfleet\%.com/\%netman/\%psmith/\%gmake/\fP
+beziehen.
+.LP
+Die POSIX-Semantiken von VPATH sind unzul\*:anglich genauso
+wie viele existierende Make-Ausf\*:uhrungen. Vielleicht
+\*:uberlegen Sie sich, GNU-Make zu installieren.

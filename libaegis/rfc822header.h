@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ struct rfc822_header_ty
 	struct symtab_ty *stp;
 };
 
-rfc822_header_ty *rfc822_header_read _((struct input_ty *));
-struct string_ty *rfc822_header_query _((rfc822_header_ty *, const char *));
-void rfc822_header_delete _((rfc822_header_ty *));
+rfc822_header_ty *rfc822_header_read(struct input_ty *);
+struct string_ty *rfc822_header_query(rfc822_header_ty *, const char *);
+void rfc822_header_delete(rfc822_header_ty *);
 
 #endif /* AEDIST_HEADER_H */

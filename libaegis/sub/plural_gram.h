@@ -27,6 +27,6 @@
 
 struct string_ty;
 
-unsigned sub_plural_gram _((struct string_ty *, unsigned));
+unsigned sub_plural_gram(struct string_ty *, unsigned);
 
 #endif /* LIBAEGIS_SUB_PLURAL_GRAM_H */

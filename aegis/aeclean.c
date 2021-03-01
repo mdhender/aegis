@@ -47,10 +47,8 @@
 #include <user.h>
 
 
-static void clean_usage _((void));
-
 static void
-clean_usage()
+clean_usage(void)
 {
     char	    *progname;
 
@@ -62,19 +60,15 @@ clean_usage()
 }
 
 
-static void clean_help _((void));
-
 static void
-clean_help()
+clean_help(void)
 {
     help("aeclean", clean_usage);
 }
 
 
-static void clean_list _((void));
-
 static void
-clean_list()
+clean_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -143,15 +137,9 @@ struct clean_info_ty
 };
 
 
-static void clean_out_the_garbage _((void *, dir_walk_message_ty, string_ty *,
-    struct stat *));
-
 static void
-clean_out_the_garbage(p, msg, path, st)
-    void	    *p;
-    dir_walk_message_ty msg;
-    string_ty	    *path;
-    struct stat	    *st;
+clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
+    struct stat *st)
 {
     clean_info_ty   *sip;
     string_ty	    *s1;
@@ -250,7 +238,12 @@ clean_out_the_garbage(p, msg, path, st)
 	 * which obscure project files (though aecp -ro
 	 * would have been more appropriate).
 	 */
-	if (sip->minimum && project_file_find(sip->cp->pp, s1))
+	if
+	(
+	    sip->minimum
+	&&
+	    project_file_find(sip->cp->pp, s1, view_path_extreme)
+	)
 	    delete_me = 0;
 
 	/*
@@ -275,10 +268,8 @@ clean_out_the_garbage(p, msg, path, st)
 }
 
 
-static void clean_main _((void));
-
 static void
-clean_main()
+clean_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *dd;
@@ -465,6 +456,7 @@ clean_main()
 
 	case file_action_modify:
 	case file_action_insulate:
+	case file_action_transparent:
 	    /* keep these ones */
 	    break;
 	}
@@ -476,7 +468,8 @@ clean_main()
 	 * If the edit numbers match (is up to date)
 	 * then do not merge this one.
 	 */
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	p_src_data =
+	    project_file_find(pp, c_src_data->file_name, view_path_extreme);
 	if (!p_src_data)
 	    continue;
 
@@ -647,6 +640,10 @@ clean_main()
 	    string_list_append(&wl_cp, c_src_data->file_name);
 	    break;
 
+	case file_action_transparent:
+	    /* FIXME: change_run_make_transparent_command */
+	    break;
+
 	case file_action_remove:
 	    string_list_append(&wl_rm, c_src_data->file_name);
 	    break;
@@ -696,7 +693,7 @@ clean_main()
 
 
 void
-clean()
+clean(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

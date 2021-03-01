@@ -25,6 +25,6 @@
 
 #include <input.h>
 
-input_ty *input_catenate _((input_ty **, size_t, int));
+input_ty *input_catenate(input_ty **, size_t, int);
 
 #endif /* LIBAEGIS_INPUT_CATENATE_H */

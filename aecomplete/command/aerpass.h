@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aerpass _((void));
+command_ty *command_aerpass(void);
 
 #endif /* AECOMPLETE_COMMAND_AERPASS_H */

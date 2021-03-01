@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) ${date %Y} Peter Miller;
+.\"	Copyright (C) ${date %Y} ${user name};
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -149,10 +149,10 @@ list_main(usage)
 	col_eoln(colp);
 	output_put_str(body_col, s);
 	str_free(s);
-	col_eoln(colp);
 
 	/*
-	 * get the change details from the input
+         * read the change number from the archive, and use it to default
+         * the change number if not given, and if possible.
 	 */
 	os_become_orig();
 	archive_name = 0;
@@ -160,6 +160,31 @@ list_main(usage)
 	if (!ifp)
 		input_fatal_error(cpio_p, "file missing");
 	assert(archive_name);
+	s = str_from_c("etc/change-number");
+	if (str_equal(s, archive_name))
+	{
+	    str_free(s);
+	    s = input_one_line(ifp);
+	    input_delete(ifp);
+	    os_become_undo();
+	    str_free(archive_name);
+
+	    output_fputs(body_col, ", change ");
+	    output_put_str(body_col, s);
+	    str_free(s);
+
+	    os_become_orig();
+	    archive_name = 0;
+	    ifp = input_cpio_child(cpio_p, &archive_name);
+	    if (!ifp)
+		input_fatal_error(cpio_p, "file missing");
+	    assert(archive_name);
+	}
+	col_eoln(colp);
+
+	/*
+	 * get the change details from the input
+	 */
 	s = str_from_c("etc/change-set");
 	if (!str_equal(s, archive_name))
 		input_fatal_error(ifp, "wrong file");

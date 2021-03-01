@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
 <html>
 <head><title>Aegis Web Interface</title></head>
 <body bgcolor="#ffffff"><h1>
-<img src="aegis.gif" align=left>
-<img src="aegis.gif" align=right>
+<img src="aegis.png" align=left>
+<img src="aegis.png" align=right>
 <center>Aegis \*(v)<br>Web Interface</center></h1>
 Aegis has a read-only web interface to its database.  The page uses Aegis'
 own web interface to look at Aegis' own development (because Aegis is
@@ -66,15 +66,34 @@ information about each change.
 </table>
 .br
 <hr>
+<h2 align=center> SourceForge </h2>
+Is your project hosted at sourceforge?  If so, there is no need for you
+to compile Aegis to run on SourceForge, because it is already there.
+If you send email to <a href="mailto:millerp@canb.auug.org.au">Peter Miller</a>
+he will add a project pointer and your project will appear in the
+<a href="/cgi-bin/aegis.cgi?">list of projects</a>.
+<p>
+You will need to <a href="#num7">upload your project tree</a>, as
+mentioned in the instructions below.
+.br
+<hr>
 <h2 align=center> SourceForge Hack </h2>
 .br
+This section contains instructions for building and installing the CGI
+script that runs at <tt>sourceforge.net</tt>.  If you want an externally
+accessable server, but outside you firewall, this is how to do it.
+You then update the external tree using <i>rsync</i> or similar, either
+weekly or at integrate pass, or something.
+.br
+<p>
 Using the Aegis web interface on SourceForge is a little different than
 at your own site, due to the chroot jail that is used.  (Change these
 instructions to suit the name of your project.)  You wont be able to
 compile on SourceForge, so on a linux PC elsewhere
 <ol>
 <li>
-Configure with <i>./configure --prefix=/home/groups/a/ae/aegis</i>
+Configure with <i>./configure --prefix=/home/groups/a/ae/aegis
+--with-no-aegis-configured</i>
 <li>
 Edit the generated Makefile, and add -DSOURCE_FORGE_HACK to the CFLAGS
 variable.
@@ -94,7 +113,7 @@ You only need
 <i>bin/aereport</i>,
 <i>bin/aetar</i>,
 <i>bin/ae_diff2htm</i>,
-<i>cgi-bin/aegis.cgi</i>, and the
+<i>bin/aegis.cgi</i>, and the
 <i>share/en/html</i> tree.
 The rest can be removed.
 <blockquote>
@@ -104,6 +123,7 @@ mv bin/aegis.cgi cgi-bin
 rm bin/aeannotate bin/aebuffy bin/aecomp bin/aecomplete
 rm bin/ae_diff2htm bin/aefind bin/aegis.cgi.i bin/aeimport
 rm bin/aeintegratq bin/aels bin/ae-sccs-put bin/aesub
+rm bin/aemeasure
 rm bin/tkaeca bin/tkaegis bin/tkaenc bin/tkaepa bin/tkaer bin/xaegis
 rm -r com lib man
 mkdir -p share-new/en
@@ -115,14 +135,15 @@ mv share-new share</pre>
 <li>
 Make a tarball, <i>scp</i> it to SourceForge, unpack at the other end.
 <li>
-Now upload your project.  I use <i>rsync</i> for efficient differential
+<a name="num7">Now upload your project.</a>
+I use <i>rsync</i> for efficient differential
 uploads.  The directory needs to be inside the chroot jail, but outside
 the <i>htdocs</i> directory.
 The instructions assume it is in the
 <tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i >project</i></tt>
 directory.
 You need the whole project tree, but you can leave out derived files
-in the baselines (<i>e.g.</i> <tt>.o</tt> files, </tt>.a</tt> files and
+in the baselines (<i>e.g.</i> <tt>.o</tt> files, <tt>.a</tt> files and
 executables).
 <li>
 Edit <tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/com/aegis/state</tt>

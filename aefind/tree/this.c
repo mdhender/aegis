@@ -30,34 +30,23 @@
 #include <tree/private.h>
 
 
-static void destructor _((tree_ty *));
-
 static void
-destructor(tp)
-    tree_ty	    *tp;
+destructor(tree_ty *tp)
 {
     trace(("tree::this::destructor\n"));
 }
 
 
-static void print _((tree_ty *));
-
 static void
-print(tp)
-    tree_ty	    *tp;
+print(tree_ty *tp)
 {
     trace(("tree::this::destructor\n"));
     printf("{}");
 }
 
 
-static rpt_value_ty *evaluate _((tree_ty *, string_ty *, struct stat *));
-
 static rpt_value_ty *
-evaluate(tp, path, st)
-    tree_ty	    *tp;
-    string_ty	    *path;
-    struct stat     *st;
+evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
     assert(path);
     trace(("tree::this::evaluate\n"));
@@ -65,22 +54,16 @@ evaluate(tp, path, st)
 }
 
 
-static int useful _((tree_ty *));
-
 static int
-useful(tp)
-    tree_ty	    *tp;
+useful(tree_ty *tp)
 {
     trace(("tree::this::useful\n"));
     return 0;
 }
 
 
-static int constant _((tree_ty *));
-
 static int
-constant(tp)
-    tree_ty	    *tp;
+constant(tree_ty *tp)
 {
     trace(("tree::this::constant\n"));
     return 0;
@@ -101,7 +84,7 @@ static tree_method_ty method =
 
 
 tree_ty *
-tree_this_new()
+tree_this_new(void)
 {
     return tree_new(&method);
 }

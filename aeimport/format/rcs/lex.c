@@ -30,16 +30,16 @@
 #include <trace.h>
 #include <format/rcs/gram.gen.h> /* needs to be after <str_list.h> */
 
-static input_ty		*ip;
-static int		keyword_expected;
-static symtab_ty	*stp;
-static int		error_count;
+static input_ty *ip;
+static int      keyword_expected;
+static symtab_ty *stp;
+static int	error_count;
 
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    const char	*name;
-    int		value;
+    const char      *name;
+    int             value;
 };
 
 static table_ty table[] =

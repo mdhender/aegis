@@ -182,6 +182,35 @@ _
 .TE
 .nh 2 "How do I use a Remote Server?"
 .LP
-There is no direct equivalent.
-See \fIaedist\fP(1) or the "Teamwork" section of the HOWTO, or the
+There is no direct equivalent, but see the section in this document titled
+"How do I do CVS-style remote development?"  for an explanation of how
+to simulate this development model using Aegis distributed development
+tools.  For more information on Aegis' distributed development model and
+tools, see \fIaedist\fP(1) or the "Teamwork" section of the HOWTO, or the
 "Geographically Distributed Development" chapter of the User Guide.
+.nh 2 "How do I synchronize an Aegis project with a CVS project?"
+.LP
+This situation might occur if you are using Aegis to track your source
+code changes to a project which is primarily managed in CVS.  For this
+discussion we assume you have a CVS work directory in which you checked
+out the latest CVS sources.  Further we assume that these source files
+have been imported and integrated into an Aegis project.  Then, some
+time passes, and you have updated your Aegis sources via changes, and
+the CVS tree has also been updated via commits.  The question is how can
+to synchronize the two source trees.  The answer is to use patch files.
+.LP
+To import the latest CVS changes, create a copy of the CVS tree.  Assume
+the old CVS tree is called cvs/ and the new copy is called new_cvs/.
+In the new_cvs/ directory, run "cvs update" to get the newest sources.
+Then run "diff -Nur cvs/ new_cvs/ -x Entries.Log > patchfile" to generate
+a patchfile showing the differences between the old and new CVS trees.
+Use \fIaepatch\fP to import this patchfile into an Aegis change, then follow
+the usual Aegis change procedure (build, test, diff, review, integrate).
+(The \fIaetar\fP(1) command is another possibility.)
+.LP
+To export your changes into CVS, again use \fIaepatch\fP to export your Aegis
+changes as patchfiles.  Apply this patch to your local CVS tree (you
+might want to make a copy first), then execute "cvs commit" to submit
+your changes.  Or, if you don't have write access to the CVS repository,
+send the patchfile via other means (\fIe.g.\fP e-mail) to the project CVS
+maintainers.

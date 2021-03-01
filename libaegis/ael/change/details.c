@@ -41,13 +41,8 @@
 #include <user.h>
 
 
-static void showtime _((output_ty *, time_t, int));
-
 static void
-showtime(fp, when, exempt)
-    output_ty	    *fp;
-    time_t	    when;
-    int		    exempt;
+showtime(output_ty *fp, time_t when, int exempt)
 {
     if (when)
     {
@@ -66,9 +61,7 @@ showtime(fp, when, exempt)
 
 
 void
-list_change_details(project_name, change_number)
-    string_ty	    *project_name;
-    long	    change_number;
+list_change_details(string_ty *project_name, long change_number)
 {
     int		    j;
     output_ty	    *head_col;
@@ -499,7 +492,13 @@ list_change_details(project_name, change_number)
 		 * branch may not equal the version
 		 * ``originally'' copied.
 		 */
-		psrc_data = project_file_find(pp, src_data->file_name);
+		psrc_data =
+		    project_file_find
+		    (
+			pp,
+			src_data->file_name,
+			view_path_extreme
+		    );
 		if (psrc_data && psrc_data->edit)
 		{
 		    assert(psrc_data->edit->revision);

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_ae_p _((void));
+command_ty *command_ae_p(void);
 
 #endif /* AECOMPLETE_COMMAND_AE_P_H */

@@ -97,22 +97,16 @@ static arglex_table_ty argtab[] =
 };
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
     fprintf(stderr, "Usage: %s [ -w ] <filename>...\n", progname_get());
     exit(1);
 }
 
 
-int main _((int argc, char **argv));
-
 int
-main(argc, argv)
-    int             argc;
-    char            **argv;
+main(int argc, char **argv)
 {
     arglex_init(argc, argv, argtab);
     str_initialize();

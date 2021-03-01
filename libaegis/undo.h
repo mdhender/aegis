@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991-1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,15 +25,15 @@
 
 #include <str.h>
 
-void undo_rename _((string_ty *from, string_ty *to));
-void undo_chmod _((string_ty *path, int mode));
-void undo_chmod_errok _((string_ty *path, int mode));
-void undo_unlink_errok _((string_ty *path));
-void undo_rmdir_bg _((string_ty *path));
-void undo_rmdir_errok _((string_ty *path));
-void undo_message _((string_ty *));
-void undo _((void));
-void undo_quitter _((int));
-void undo_cancel _((void));
+void undo_rename(string_ty *from, string_ty *to);
+void undo_chmod(string_ty *path, int mode);
+void undo_chmod_errok(string_ty *path, int mode);
+void undo_unlink_errok(string_ty *path);
+void undo_rmdir_bg(string_ty *path);
+void undo_rmdir_errok(string_ty *path);
+void undo_message(string_ty *);
+void undo(void);
+void undo_quitter(int);
+void undo_cancel(void);
 
 #endif /* UNDO_H */

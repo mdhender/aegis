@@ -40,11 +40,8 @@ struct complete_project_file_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
     complete_project_file_ty *this;
 
@@ -53,12 +50,8 @@ destructor(cp)
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
     complete_project_file_ty *this;
     string_ty       *prefix;
@@ -121,17 +114,9 @@ perform(cp, sh)
 	fstate_src      src;
 	string_ty       *relfn;
 
-	src = project_file_nth(this->cp->pp, j);
+	src = project_file_nth(this->cp->pp, j, view_path_simple);
 	if (!src)
 	    break;
-
-	/*
-	 * Ignore files that aren't there.
-	 */
-	if (src->deleted_by)
-	    continue;
-	if (src->about_to_be_created_by)
-	    continue;
 
 	/*
 	 * Ignore files that don't match the prefix.
@@ -227,10 +212,7 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_project_file_union(cp, baserel, usage_mask)
-    change_ty       *cp;
-    int             baserel;
-    int             usage_mask;
+complete_project_file_union(change_ty *cp, int baserel, int usage_mask)
 {
     complete_ty     *result;
     complete_project_file_ty *this;

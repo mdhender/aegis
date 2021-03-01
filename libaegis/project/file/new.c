@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,18 +26,16 @@
 
 
 fstate_src
-project_file_new(pp, file_name)
-	project_ty	*pp;
-	string_ty	*file_name;
+project_file_new(project_ty *pp, string_ty *file_name)
 {
-	change_ty	*cp;
-	fstate_src	src_data;
+    change_ty       *cp;
+    fstate_src      src_data;
 
-	trace(("project_file_new(pp = %8.8lX, file_name = \"%s\")\n{\n"/*}*/,
-		(long)pp, file_name->str_text));
-	cp = project_change_get(pp);
-	src_data = change_file_new(cp, file_name);
-	trace(("return %8.8lX;\n", (long)src_data));
-	trace((/*{*/"}\n"));
-	return src_data;
+    trace(("project_file_new(pp = %8.8lX, file_name = \"%s\")\n{\n",
+	(long)pp, file_name->str_text));
+    cp = project_change_get(pp);
+    src_data = change_file_new(cp, file_name);
+    trace(("return %8.8lX;\n", (long)src_data));
+    trace(("}\n"));
+    return src_data;
 }

@@ -25,6 +25,6 @@
 
 #include <output.h>
 
-output_ty *output_bit_bucket _((void));
+output_ty *output_bit_bucket(void);
 
 #endif /* LIBAEGIS_OUTPUT_BIT_BUCKET_H */

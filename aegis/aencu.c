@@ -45,10 +45,8 @@
 #include <user.h>
 
 
-static void new_change_undo_usage _((void));
-
 static void
-new_change_undo_usage()
+new_change_undo_usage(void)
 {
     char	    *progname;
 
@@ -65,19 +63,15 @@ new_change_undo_usage()
 }
 
 
-static void new_change_undo_help _((void));
-
 static void
-new_change_undo_help()
+new_change_undo_help(void)
 {
     help("aencu", new_change_undo_usage);
 }
 
 
-static void new_change_undo_list _((void));
-
 static void
-new_change_undo_list()
+new_change_undo_list(void)
 {
     string_ty	    *project_name;
 
@@ -119,10 +113,8 @@ new_change_undo_list()
 }
 
 
-static void new_change_undo_main _((void));
-
 static void
-new_change_undo_main()
+new_change_undo_main(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -282,7 +274,7 @@ new_change_undo_main()
 
 
 void
-new_change_undo()
+new_change_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

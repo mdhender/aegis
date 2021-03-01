@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ change_branch_administrator_nth(cp, n)
 	cstate_branch_administrator_list lp;
 	string_ty	*result;
 
-	trace(("change_branch_administrator_nth(cp = %8.8lX, n = %ld)\n{\n"/*}*/,
+	trace(("change_branch_administrator_nth(cp = %8.8lX, n = %ld)\n{\n",
 		(long)cp, n));
 	cstate_data = change_cstate_get(cp);
 	assert(cstate_data->branch);
@@ -48,6 +48,6 @@ change_branch_administrator_nth(cp, n)
 	else
 		result = lp->list[n];
 	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
 }

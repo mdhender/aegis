@@ -47,10 +47,8 @@
 #include <user.h>
 
 
-static void change_owner_usage _((void));
-
 static void
-change_owner_usage()
+change_owner_usage(void)
 {
     char	    *progname;
 
@@ -67,19 +65,15 @@ change_owner_usage()
 }
 
 
-static void change_owner_help _((void));
-
 static void
-change_owner_help()
+change_owner_help(void)
 {
     help("aechown", change_owner_usage);
 }
 
 
-static void change_owner_list _((void));
-
 static void
-change_owner_list()
+change_owner_list(void)
 {
     string_ty	    *project_name;
 
@@ -117,10 +111,8 @@ change_owner_list()
 }
 
 
-static void change_owner_main _((void));
-
 static void
-change_owner_main()
+change_owner_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *project_name;
@@ -485,7 +477,7 @@ change_owner_main()
 
 
 void
-change_owner()
+change_owner(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

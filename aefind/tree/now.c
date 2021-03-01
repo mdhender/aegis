@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,16 +29,16 @@
 
 
 tree_ty *
-tree_now_new()
+tree_now_new(void)
 {
-	static rpt_value_ty *vp;
+    static rpt_value_ty *vp;
 
-	if (!vp)
-	{
-		time_t		now;
+    if (!vp)
+    {
+	time_t		now;
 
-		time(&now);
-		vp = rpt_value_time(now);
-	}
-	return tree_constant_new(vp);
+	time(&now);
+	vp = rpt_value_time(now);
+    }
+    return tree_constant_new(vp);
 }

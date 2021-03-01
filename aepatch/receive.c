@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -164,7 +164,7 @@ mangle_file_names(patch_list_ty *plp, project_ty *pp)
 	    for (;;)
 	    {
 		s = str_from_c(cp);
-		if (project_file_find(pp, s))
+		if (project_file_find(pp, s, view_path_extreme))
 		{
 		    if
 		    (
@@ -276,8 +276,6 @@ receive(void)
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;
     int		    uncopy;
-    string_list_ty  wl;
-    string_ty	    *s2;
     int		    config_seen;
     int		    trojan;
 
@@ -552,18 +550,8 @@ receive(void)
 
 	p = plp->item[j];
 	assert(p->name.nstrings>=2);
-	p_src_data = project_file_find(pp, p->name.string[0]);
-	if
-	(
-	    p_src_data
-	&&
-	    (
-		p_src_data->about_to_be_created_by
-	    ||
-		p_src_data->action == file_action_remove
-	    )
-	)
-	    p_src_data = 0;
+	p_src_data =
+	    project_file_find(pp, p->name.string[0], view_path_extreme);
 	if (!p_src_data)
 	{
 	    if (p->action == file_action_remove)
@@ -632,24 +620,17 @@ receive(void)
 	    str_free(s);
 	}
 	uncopy = 1;
-	string_list_quote_shell(&wl, &files_source);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --copy-file %S --project=%S --change=%ld --verbose%s",
-		s2,
+		"aegis --copy-file --project=%S --change=%ld --verbose%s",
 		project_name,
 		change_number,
 		(delopt ? delopt->str_text : "")
 	    );
 	if (delopt)
 	    str_free(delopt);
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -676,21 +657,14 @@ receive(void)
     }
     if (files_source.nstrings)
     {
-	string_list_quote_shell(&wl, &files_source);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --remove-file %S --project=%S --change=%ld --verbose",
-		s2,
+		"aegis --remove-file --project=%S --change=%ld --verbose",
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -734,42 +708,28 @@ receive(void)
 
     if (files_test_auto.nstrings)
     {
-	string_list_quote_shell(&wl, &files_test_auto);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-"aegis --new-test %S --automatic --project=%S --change=%ld --verbose \
---no-template",
-		s2,
+		"aegis --new-test --automatic --project=%S --change=%ld "
+		    "--verbose --no-template",
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_test_auto, dd);
 	str_free(s);
     }
     if (files_test_manual.nstrings)
     {
-	string_list_quote_shell(&wl, &files_test_manual);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-"aegis --new-test %S --manual --project=%S --change=%ld --verbose \
---no-template",
-		s2,
+		"aegis --new-test --manual --project=%S --change=%ld --verbose "
+		    "--no-template",
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_test_manual, dd);
 	str_free(s);
     }
 
@@ -779,21 +739,27 @@ receive(void)
      */
     if (files_source.nstrings)
     {
-	string_list_quote_shell(&wl, &files_source);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
+	s = str_from_c(THE_CONFIG_FILE);
+	if (string_list_member(&files_source, s))
+	{
+	    /*
+	     * The project config file must be created in the last set
+	     * of files created, so move it to the end of the list.
+	     */
+	    string_list_remove(&files_source, s);
+	    string_list_append(&files_source, s);
+	}
+	str_free(s);
+
 	s =
 	    str_format
 	    (
-	"aegis --new-file %S --project=%S --change=%ld --verbose --no-template",
-		s2,
+		"aegis --new-file --project=%S --change=%ld --verbose "
+		    "--no-template",
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -988,7 +954,7 @@ receive(void)
     s =
 	str_format
 	(
-	    "aegis --diff --change=%ld --project=%S --verbose",
+	    "aegis --diff --no-merge --change=%ld --project=%S --verbose",
 	    change_number,
 	    project_name
 	);

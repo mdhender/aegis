@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -192,7 +192,7 @@ file looks like this:
 .E(
 history_query_command =
   "rlog -r $h,v | \e
-   awk '/^head:/ {print $$2}'";
+   awk '/^revision/ {print $$2}'";
 .E)
 .nh 3 "merge_command"
 .LP

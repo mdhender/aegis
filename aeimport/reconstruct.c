@@ -23,188 +23,147 @@
 #include <change.h>
 #include <change/file.h>
 #include <commit.h>
-#include <error.h>
-#include <format.h>
 #include <fstate.h>
 #include <lock.h>
-#include <change_set/list.h>
 #include <os.h>
-#include <project.h>
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
 #include <reconstruct.h>
 #include <sub.h>
-#include <symtab.h>
 #include <trace.h>
 #include <user.h>
 
 
-static void str_reaper _((void *));
-
 static void
-str_reaper(p)
-	void		*p;
+process(change_ty *cp, fstate_src src, user_ty *up)
 {
-	string_ty	*s;
+    project_ty	    *pp;
+    string_ty	    *bl;
+    string_ty	    *path;
+    int		    mode;
+    static string_ty *the_config_file;
 
-	s = p;
-	str_free(s);
-}
+    trace(("reconstruct::process(filename = \"%s\")\n{\n",
+	src->file_name->str_text));
+    if (!the_config_file)
+	the_config_file = str_from_c(THE_CONFIG_FILE);
+    if (str_equal(the_config_file, src->file_name))
+    {
+	trace(("}\n"));
+	return;
+    }
+    pp = cp->pp;
+    bl = project_baseline_path_get(pp, 0);
+    mode = 0755 & ~project_umask_get(pp);
+    project_become(pp);
+    os_mkdir_between(bl, src->file_name, mode);
+    project_become_undo();
 
-
-static void walker _((symtab_ty *, string_ty *, void *, void *));
-
-static void
-walker(stp, filename, data, aux)
-	symtab_ty	*stp;
-	string_ty	*filename;
-	void		*data;
-	void		*aux;
-{
-	string_ty	*edit_number;
-	project_ty	*pp;
-	change_ty	*cp_bogus;
-	string_ty	*bl;
-	string_ty	*path;
-	string_ty	*path_d;
-	string_ty	*original;
-	fstate_src	p_src_data;
-	user_ty		*up;
-	int		mode;
-	fstate_src	src;
-
-	/*
-	 * Make a bogus change so that we can work with it.
-	 */
-	trace(("reconstruct::walker(filename = \"%s\")\n{\n",
-		filename->str_text));
-	pp = aux;
-	cp_bogus = change_alloc(pp, project_next_change_number(pp, 1));
-	change_bind_new(cp_bogus);
-	change_architecture_from_pconf(cp_bogus);
-	cp_bogus->bogus = 1;
-	up = project_user(pp);
-
-	bl = project_baseline_path_get(pp, 0);
-	change_integration_directory_set(cp_bogus, bl);
-	mode = 0755 & ~project_umask_get(pp);
-	project_become(pp);
-	os_mkdir_between(bl, filename, mode);
-	project_become_undo();
-
+    path = os_path_cat(bl, src->file_name);
+    trace(("src->action = %s;\n", file_action_ename(src->action)));
+    if (src->action != file_action_remove)
+    {
 	/*
 	 * Extract the file
 	 */
-	edit_number = data;
-	path = os_path_cat(bl, filename);
 	trace_string(path->str_text);
-	src = fstate_src_type.alloc();
-	src->file_name = str_copy(filename);
-	src->edit = history_version_type.alloc();
-	src->edit->revision = str_copy(edit_number);
-	change_run_history_get_command
-	(
-		cp_bogus,
-		src,
-		path,
-		up
-	);
-	fstate_src_type.free(src);
+	trace(("extract %s\n", src->edit->revision->str_text));
+	change_run_history_get_command(cp, src, path, up);
 
 	/*
 	 * Fingerprint the file.
 	 */
-	p_src_data = project_file_find(pp, filename);
-	assert(p_src_data);
-	p_src_data->file_fp = fingerprint_type.alloc();
+	src->file_fp = fingerprint_type.alloc();
 	project_become(pp);
-	change_fingerprint_same(p_src_data->file_fp, path, 0);
+	change_fingerprint_same(src->file_fp, path, 0);
 	project_become_undo();
+    }
+
+    if (pp->parent)
+    {
+	string_ty	*path_d;
+	static string_ty *dev_null;
 
 	/*
 	 * Difference the file.
 	 */
+	if (!dev_null)
+	    dev_null = str_from_c("/dev/null");
 	path_d = str_format("%S,D", path);
 	trace_string(path_d->str_text);
-	original = str_from_c("/dev/null");
-	change_run_diff_command(cp_bogus, up, original, path, path_d);
-	str_free(original);
+	change_run_diff_command
+	(
+	    cp,
+	    up,
+	    dev_null,
+	    (src->action != file_action_remove ? path : dev_null),
+	    path_d
+	);
 
 	/*
 	 * Fingerprint the difference file.
 	 */
-	p_src_data->diff_file_fp = fingerprint_type.alloc();
+	src->diff_file_fp = fingerprint_type.alloc();
 	project_become(pp);
-	change_fingerprint_same(p_src_data->diff_file_fp, path_d, 0);
+	change_fingerprint_same(src->diff_file_fp, path_d, 0);
 	project_become_undo();
-
-	str_free(path);
 	str_free(path_d);
-	change_free(cp_bogus);
-	trace(("}\n"));
+    }
+
+    str_free(path);
+    trace(("}\n"));
 }
 
 
 void
-reconstruct(project_name, cslp)
-	string_ty	*project_name;
-	change_set_list_ty *cslp;
+reconstruct(string_ty *project_name)
 {
-	project_ty	*pp;
-	size_t		j;
-	symtab_ty	*fvstp;
+    project_ty	    *pp;
+    size_t	    j;
+    change_ty       *cp_bogus;
+    string_ty	    *bl;
+    user_ty	    *up;
 
-	/*
-	 * Take some locks.
-	 */
-	trace(("reconstruct()\n{\n"));
-	pp = project_alloc(project_name);
-	project_bind_existing(pp);
-	project_error(pp, 0, i18n("reconstruct baseline"));
-	project_pstate_lock_prepare(pp);
-	project_baseline_write_lock_prepare(pp);
-	lock_take();
+    /*
+     * Take some locks.
+     */
+    trace(("reconstruct()\n{\n"));
+    pp = project_alloc(project_name);
+    project_bind_existing(pp);
+    project_error(pp, 0, i18n("reconstruct baseline"));
+    project_pstate_lock_prepare(pp);
+    project_baseline_write_lock_prepare(pp);
+    lock_take();
 
-	/*
-	 * Figure the file versions.
-	 */
-	fvstp = symtab_alloc(5);
-	fvstp->reap = str_reaper;
-	for (j = 0; j < cslp->length; ++j)
-	{
-		size_t		k;
-		change_set_ty	*csp;
+    /*
+     * Process each file.
+     */
+    cp_bogus = change_alloc(pp, project_next_change_number(pp, 1));
+    change_bind_new(cp_bogus);
+    change_architecture_from_pconf(cp_bogus);
+    cp_bogus->bogus = 1;
+    bl = project_baseline_path_get(pp, 0);
+    change_integration_directory_set(cp_bogus, bl);
+    up = project_user(pp);
+    for (j = 0; ; ++j)
+    {
+	fstate_src	src;
 
-		csp = cslp->item[j];
-		for (k = 0; k < csp->file.length; ++k)
-		{
-			change_set_file_ty *csfp;
+	src = project_file_nth(pp, j, view_path_simple);
+	if (!src)
+	    break;
+	process(cp_bogus, src, up);
+    }
+    change_free(cp_bogus);
 
-			csfp = csp->file.item + k;
-			symtab_assign
-			(
-				fvstp,
-				csfp->filename,
-				str_copy(csfp->edit)
-			);
-		}
-	}
-
-	/*
-	 * Check out a copy of each file into the baseline,
-	 * and produce a diff file to go with it.
-	 */
-	symtab_walk(fvstp, walker, pp);
-
-	/*
-	 * Write it all back out.
-	 */
-	project_pstate_write(pp);
-	commit();
-	lock_release();
-	symtab_free(fvstp);
-	project_verbose(pp, 0, i18n("import complete"));
-	project_free(pp);
-	trace(("}\n"));
+    /*
+     * Write it all back out.
+     */
+    project_pstate_write(pp);
+    commit();
+    lock_release();
+    project_verbose(pp, 0, i18n("import complete"));
+    project_free(pp);
+    trace(("}\n"));
 }

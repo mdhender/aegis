@@ -32,98 +32,96 @@
 #include <slurp.h>
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
-	char	*progname;
+    char            *progname;
 
-	progname = progname_get();
-	fprintf(stderr, "Usage: %s --list [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s --help\n", progname);
-	exit(1);
+    progname = progname_get();
+    fprintf(stderr, "Usage: %s --list [ <option>... ]\n", progname);
+    fprintf(stderr, "       %s --help\n", progname);
+    exit(1);
 }
 
 
 void
-list()
+list(void)
 {
-	string_ty	*ifn;
-	patch_list_ty	*plp;
-	size_t		j;
-	string_ty	*ofn;
-	output_ty	*ofp;
+    string_ty       *ifn;
+    patch_list_ty   *plp;
+    size_t	    j;
+    string_ty	    *ofn;
+    output_ty	    *ofp;
 
-	ifn = 0;
-	ofn = 0;
+    ifn = 0;
+    ofn = 0;
+    arglex();
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
+	{
+	default:
+	    generic_argument(usage);
+	    continue;
+
+	case arglex_token_file:
+	    if (ifn)
+		duplicate_option(usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_file(arglex_token_file, usage);
+		/* NOTREACHED */
+
+	    case arglex_token_stdio:
+		ifn = str_from_c("");
+		break;
+
+	    case arglex_token_string:
+		ifn = str_from_c(arglex_value.alv_string);
+		break;
+	    }
+	    break;
+
+	case arglex_token_output:
+	    if (ofn)
+		duplicate_option(usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_file(arglex_token_output, usage);
+		/* NOTREACHED */
+
+	    case arglex_token_stdio:
+		ofn = str_from_c("");
+		break;
+
+	    case arglex_token_string:
+		ofn = str_from_c(arglex_value.alv_string);
+		break;
+	    }
+	    break;
+	}
 	arglex();
-	while (arglex_token != arglex_token_eoln)
-	{
-		switch (arglex_token)
-		{
-		default:
-			generic_argument(usage);
-			continue;
+    }
 
-		case arglex_token_file:
-			if (ifn)
-				duplicate_option(usage);
-			switch (arglex())
-			{
-			default:
-				option_needs_file(arglex_token_file, usage);
-				/* NOTREACHED */
+    /*
+     * read the input
+     */
+    plp = patch_slurp(ifn);
+    assert(plp);
 
-			case arglex_token_stdio:
-				ifn = str_from_c("");
-				break;
-
-			case arglex_token_string:
-				ifn = str_from_c(arglex_value.alv_string);
-				break;
-			}
-			break;
-
-		case arglex_token_output:
-			if (ofn)
-				duplicate_option(usage);
-			switch (arglex())
-			{
-			default:
-				option_needs_file(arglex_token_output, usage);
-				/* NOTREACHED */
-
-			case arglex_token_stdio:
-				ofn = str_from_c("");
-				break;
-
-			case arglex_token_string:
-				ofn = str_from_c(arglex_value.alv_string);
-				break;
-			}
-			break;
-		}
-		arglex();
-	}
-
-	/*
-	 * read the input
-	 */
-	plp = patch_slurp(ifn);
-	assert(plp);
-
-	/*
-	 * Write the file names to the output.
-	 */
-	ofp = output_file_text_open(ofn);
-	for (j = 0; j < plp->length; ++j)
-	{
-		assert(plp->item[j]);
-		assert(plp->item[j]->name.nstrings);
-		assert(plp->item[j]->name.string[0]);
-		output_put_str(ofp, plp->item[j]->name.string[0]);
-		output_fputc(ofp, '\n');
-	}
-	output_delete(ofp);
+    /*
+     * Write the file names to the output.
+     */
+    ofp = output_file_text_open(ofn);
+    for (j = 0; j < plp->length; ++j)
+    {
+	assert(plp->item[j]);
+	assert(plp->item[j]->name.nstrings);
+	assert(plp->item[j]->name.string[0]);
+	output_put_str(ofp, plp->item[j]->name.string[0]);
+	output_fputc(ofp, '\n');
+    }
+    output_delete(ofp);
 }

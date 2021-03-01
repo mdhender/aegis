@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990-2002 Peter Miller;
+#	Copyright (C) 1990-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -156,8 +156,7 @@ lib/*.sh)
 	;;
 
 lib/*/libaegis.po)
-	# do not do explicitly,
-	# is implicit in the other PO files
+	# obsolete
 	;;
 
 lib/*.po)
@@ -168,9 +167,9 @@ lib/*.po)
 	stem=`echo $file | sed -e 's|^lib/\(.*\)\.po$|\1|'`
 	dir=`dirname $file`
 	echo ""
-	echo "lib/$stem.mo: etc/msgfmt.sh $file $dir/libaegis.po"
+	echo "lib/$stem.mo: etc/msgfmt.sh $file"
 	echo "	\$(SH) etc/msgfmt.sh --msgfmt=\$(MSGFMT) --msgcat=\$(MSGCAT)" \
-	    "--output=\$@ $file $dir/libaegis.po"
+	    "--output=\$@ $file"
 	echo ""
 	echo "\$(RPM_BUILD_ROOT)\$(NLSDIR)/$stem.mo: lib/$stem.mo \
 $dir/.mkdir.libdir"

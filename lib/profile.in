@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001, 2002 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -457,6 +457,18 @@ then
 	    aerpu \
 	    aerrv \
 	    aet
+	;;
+    esac
+
+    case "$ZSH_VERSION" in
+
+    4.[2-9]* | [5-9].* | [1-9][0-9].* )
+	_aegis_complete () {
+	    local output
+	    output=( ${(f)"$(aecomplete $words[1]  2>/dev/null)"} )
+	    test $? = 0 && compadd -a output
+	}
+	compdef _aegis_complete -P "ae*"
 	;;
     esac
 fi

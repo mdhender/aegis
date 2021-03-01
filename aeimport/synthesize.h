@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,6 @@
 struct string_ty; /* forward */
 struct change_set_ty; /* forward */
 
-void synthesize _((struct string_ty *, struct change_set_ty *));
+void synthesize(struct string_ty *, struct change_set_ty *);
 
 #endif /* AEIMPORT_SYNTHESIZE_H */

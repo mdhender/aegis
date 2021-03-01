@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,40 +24,39 @@
 
 
 void
-change_file_test_baseline_time_clear(cp, src_data)
-	change_ty	*cp;
-	fstate_src	src_data;
+change_file_test_baseline_time_clear(change_ty *cp, fstate_src src_data,
+    string_ty *variant)
 {
-	fstate_src_architecture_times_list atlp;
-	fstate_src_architecture_times atp;
-	size_t		j;
-	string_ty	*variant;
+    fstate_src_architecture_times_list atlp;
+    fstate_src_architecture_times atp;
+    size_t          j;
 
-	/*
-	 * We are clearing a test time stamp,
-	 * so the change summary must also be cleared 
-	 */
-	change_test_baseline_time_set(cp, (time_t)0);
+    /*
+     * We are clearing a test time stamp,
+     * so the change summary must also be cleared
+     */
+    change_test_baseline_time_set(cp, (time_t)0);
 
-	/*
-	 * find the appropriate architecture record
-	 */
-	atlp = src_data->architecture_times;
-	if (!atlp)
-		return;
+    /*
+     * find the appropriate architecture record
+     */
+    atlp = src_data->architecture_times;
+    if (!atlp)
+	return;
+    if (!variant)
 	variant = change_architecture_name(cp, 1);
-	for (j = 0; j < atlp->length; ++j)
-	{
-		atp = atlp->list[j];
-		if (!atp->variant)
-			continue; /* probably a bug */
-		if (!str_equal(atp->variant, variant))
-			continue;
+    for (j = 0; j < atlp->length; ++j)
+    {
+	atp = atlp->list[j];
+	if (!atp->variant)
+	    continue; /* probably a bug */
+	if (!str_equal(atp->variant, variant))
+	    continue;
 
-		/*
-		 * Clear the time stamp
-		 */
-		atp->test_baseline_time = 0;
-		break;
-	}
+	/*
+	 * Clear the time stamp
+	 */
+	atp->test_baseline_time = 0;
+	break;
+    }
 }

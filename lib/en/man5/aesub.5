@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1997-2002 Peter Miller;
+.\"	Copyright (C) 1993-1995, 1997-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -591,6 +591,12 @@ absolute will always result in an absolute path.
 The default is "Relative".
 (For the inverse mapping, see \fI${BAse_RElative}\fP, above.)
 .TP 8n
+SPLit
+This substitution may be used to split strings are specified separators.
+The first argument is the separator character to be used, subsequent
+arguments are strings to be split.  The result is the collection is
+split strings of the second a follwoing arguments, separated by spaces.
+.TP 8n
 STate
 .br
 The state the current change is in.
@@ -604,6 +610,12 @@ subsequent arguments are modified as specified by the first two arguments.
 The search is not anchored, and the replacement will happen
 as many times as possible.
 Use ``^'' to match the beginning, and ``$'' to match the end.
+.TP 8n
+SUBSTRing
+.br
+This substitution extracts a substring from the middle of strings.
+It takes three arguments: the first is the string, the second is the star
+character (counting from zero), the third is the number of characters.
 .TP 8n
 SWitch
 .br
@@ -627,6 +639,12 @@ This substitution takes one argument.  Any file name extension (a dot
 characters and the characters following) will be removed from the final
 filename section of the argument.
 .\" -------------------- U --------------------
+.TP 8n
+UNSplit
+This substitution may be used to reverse the effects of the \fIsplit\fP
+substitution.  The first arguments is a seaparator character, the second
+and following arguments are strings to be joined together using the
+separator character.  The result is a single string.
 .TP 8n
 UpCase
 .br

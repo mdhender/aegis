@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,17 +26,17 @@
 
 
 int
-project_file_shallow_check(pp, file_name)
-	project_ty	*pp;
-	string_ty	*file_name;
+project_file_shallow_check(project_ty *pp, string_ty *file_name)
 {
-	change_ty	*pcp;
-	fstate_src	src_data;
+    change_ty	*pcp;
+    fstate_src	src_data;
 
-	if (!pp->parent)
-		/* accelerator */
-		return 1;
-	pcp = project_change_get(pp);
-	src_data = change_file_find(pcp, file_name);
-	return (src_data != 0);
+    if (!pp->parent)
+    {
+	/* accelerator */
+	return 1;
+    }
+    pcp = project_change_get(pp);
+    src_data = change_file_find(pcp, file_name);
+    return (src_data != 0);
 }

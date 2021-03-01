@@ -27,6 +27,6 @@
 
 struct change_ty; /* forward */
 
-complete_ty *complete_change_file_union _((struct change_ty *, int, int));
+complete_ty *complete_change_file_union(struct change_ty *, int, int);
 
 #endif /* AECOMPLETE_COMPLETE_CHANGE_FILE_UNION_H */

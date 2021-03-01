@@ -28,7 +28,7 @@
 struct sub_context_ty;
 struct wstring_list_ty;
 
-struct wstring_ty *sub_copyright_years _((struct sub_context_ty *,
-    struct wstring_list_ty *));
+struct wstring_ty *sub_copyright_years(struct sub_context_ty *,
+    struct wstring_list_ty *);
 
 #endif /* LIBAEGIS_SUB_COPYRI_YEARS_H */

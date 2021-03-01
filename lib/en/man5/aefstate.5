@@ -45,9 +45,36 @@ file_name = string;
 This file names the file.
 The name is relative to the root of the baseline directory tree.
 .TP 8n
-action = (create, modify, remove);
-.br
+action = (create, modify, remove, insulate, transparent);
+.RS
 This field describes what is being done with the file.
+.TP 8n
+create
+The file is being created.
+Once integrated, the edit fields record the file version created and
+stored in the history.
+.TP 8n
+modify
+The file is being created.
+Once integrated, the edit fields record the file version
+stored in the history.
+.TP 8n
+remove
+The file is being created.
+The edit field is only informational, and describes the file version at
+the time it was removed from the repository.
+.TP 8n
+insulate
+The file is insulating a development directory from changes to the
+baseline, it shall be uncopied before development may end.
+This action shall only be present in changes.
+It shall never  be present in branch change state files.
+.TP 8n
+transparent
+The file wasonce present in the branch, however it is desired that the
+ancestor version "show through".  This is the equivalent of "uncopy"
+for branches.  When the branch is integrated, this file will be omitted.
+.RE
 .TP 8n
 edit = { ... };
 .RS

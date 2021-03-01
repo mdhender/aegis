@@ -27,7 +27,7 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_user_integrator _((struct project_ty *));
-complete_ty *complete_user_integrator_not _((struct project_ty *));
+complete_ty *complete_user_integrator(struct project_ty *);
+complete_ty *complete_user_integrator_not(struct project_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_USER_INTEGRATOR_H */

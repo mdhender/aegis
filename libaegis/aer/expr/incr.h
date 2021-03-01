@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 
 #include <aer/expr.h>
 
-rpt_expr_ty *rpt_expr_inc_pre _((rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_inc_post _((rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_dec_pre _((rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_dec_post _((rpt_expr_ty *));
+rpt_expr_ty *rpt_expr_inc_pre(rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_inc_post(rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_dec_pre(rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_dec_post(rpt_expr_ty *);
 
 #endif /* AEGIS_AER_EXPR_INCR_H */

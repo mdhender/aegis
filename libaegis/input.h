@@ -46,11 +46,11 @@ typedef struct input_vtbl_ty input_vtbl_ty;
 struct input_vtbl_ty
 {
 	size_t size;
-	void (*destruct)_((input_ty *));
-	long (*read)_((input_ty *, void *, size_t));
-	long (*ftell)_((input_ty *));
-	struct string_ty *(*name)_((input_ty *));
-	long (*length)_((input_ty *));
+	void (*destruct)(input_ty *);
+	long (*read)(input_ty *, void *, size_t);
+	long (*ftell)(input_ty *);
+	struct string_ty *(*name)(input_ty *);
+	long (*length)(input_ty *);
 };
 
 /**
@@ -61,14 +61,14 @@ struct input_vtbl_ty
   * read errors or format errors are fatal, and will cause the function
   * to not return.
   */
-long input_read _((input_ty *ip, void *buffer, size_t size));
+long input_read(input_ty *ip, void *buffer, size_t size);
 
 /**
   * The input_read_strictest function is used to read data from the given input
   * stream.  Exactly "size" bytes will be read from "ip" into "buffer".
   * If there are less than "size" bytes available, a fatal error will result.
   */
-void input_read_strictest _((input_ty *ip, void *buffer, size_t size));
+void input_read_strictest(input_ty *ip, void *buffer, size_t size);
 
 /**
   * The input_read_strict function is used to read data from the
@@ -77,7 +77,7 @@ void input_read_strictest _((input_ty *ip, void *buffer, size_t size));
   * available.  It returns zero at end of file, or non zero (but NOT
   * the number of bytes) if not at end of file.
   */
-int input_read_strict _((input_ty *ip, void *buffer, size_t size));
+int input_read_strict(input_ty *ip, void *buffer, size_t size);
 
 /**
   * The input_skip function is used to read data from the given input
@@ -85,28 +85,28 @@ int input_read_strict _((input_ty *ip, void *buffer, size_t size));
   * "ip" into "buffer".  If there are less than "size" bytes available,
   * a fatal error will result.
   */
-void input_skip _((input_ty *ip, size_t size));
+void input_skip(input_ty *ip, size_t size);
 
 /**
   * The input_getc_complicated function is used to get a character from
   * the input.  Usually users do not call this function directly, but
   * use the input_getc macro instead.
   */
-int input_getc_complicated _((input_ty *));
+int input_getc_complicated(input_ty *);
 
 /**
   * The input_ungetc_complicated function is used to push a character
   * back onto an input.  Usually users do not call this function directly,
   * but use the input_ungetc macro instead.
   */
-void input_ungetc_complicated _((input_ty *, int));
+void input_ungetc_complicated(input_ty *, int);
 
 /**
   * The input_unread function is used to return a block of charcatgres
   * to the input.  Think of it as a whole bunch of input_ungetc function
   * calls.
   */
-void input_unread _((input_ty *, const void *, size_t));
+void input_unread(input_ty *, const void *, size_t);
 
 /**
   * The input_delete function is used to close the given input, and delete
@@ -114,19 +114,19 @@ void input_unread _((input_ty *, const void *, size_t));
   * input is no longer available for *any* use.  (Think of this function
   * as input_close if it helps.)
   */
-void input_delete _((input_ty *));
+void input_delete(input_ty *);
 
 /**
   * The input_ftell function is used to determine the current position
   * within the input.
   */
-long input_ftell _((input_ty *));
+long input_ftell(input_ty *);
 
 /**
   * The input_fatal_error function is used to report a fatal error on
   * an input thream.  This function does not return.
   */
-void input_fatal_error _((input_ty *, const char *));
+void input_fatal_error(input_ty *, const char *);
 
 struct output_ty; /* existence */
 
@@ -134,7 +134,7 @@ struct output_ty; /* existence */
   * The input_to_output function is used to copy the entire contents of
   * the inoput to the specified output.
   */
-void input_to_output _((input_ty *, struct output_ty *));
+void input_to_output(input_ty *, struct output_ty *);
 
 /**
   * The input_one_line function is used to read one line from the input
@@ -142,7 +142,7 @@ void input_to_output _((input_ty *, struct output_ty *));
   * not included in the returned string.  Returns NULL if end-of-file
   * is reached.
   */
-struct string_ty *input_one_line _((input_ty *));
+struct string_ty *input_one_line(input_ty *);
 
 /**
   * The input_name function is used to determine the name of the input.

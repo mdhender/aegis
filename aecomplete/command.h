@@ -31,9 +31,9 @@ struct command_ty
     struct command_vtbl_ty *vptr;
 };
 
-command_ty *command_find _((string_ty *));
-struct complete_ty *command_completion_get _((command_ty *));
-const char *command_name _((command_ty *));
-void command_delete _((command_ty *));
+command_ty *command_find(string_ty *);
+struct complete_ty *command_completion_get(command_ty *);
+const char *command_name(command_ty *);
+void command_delete(command_ty *);
 
 #endif /* AECOMPLETE_COMMAND_H */

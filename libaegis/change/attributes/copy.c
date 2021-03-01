@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,96 +28,93 @@
 
 
 void
-change_attributes_copy(a, s)
-	cattr	a;
-	cstate	s;
+change_attributes_copy(cattr a, cstate s)
 {
-	trace(("cattr_copy()\n{\n"));
-	if (!a->description && s->description)
-	{
-		a->description = str_copy(s->description);
-		a->mask |= cattr_description_mask;
-	}
-	if (!a->brief_description && s->brief_description)
-	{
-		a->brief_description = str_copy(s->brief_description);
-		a->mask |= cattr_brief_description_mask;
-	}
-	if (!(a->mask & cattr_cause_mask))
-	{
-		a->cause = s->cause;
-		a->mask |= cattr_cause_mask;
-	}
-	if (!(a->mask & cattr_regression_test_exempt_mask))
-	{
-		a->regression_test_exempt = s->regression_test_exempt;
-		a->mask |= cattr_regression_test_exempt_mask;
-	}
-	if (!(a->mask & cattr_test_exempt_mask))
-	{
-		a->test_exempt = s->test_exempt;
-		a->mask |= cattr_test_exempt_mask;
-	}
-	if (!(a->mask & cattr_test_baseline_exempt_mask))
-	{
-		a->test_baseline_exempt = s->test_baseline_exempt;
-		a->mask |= cattr_test_baseline_exempt_mask;
-	}
+    trace(("cattr_copy()\n{\n"));
+    if (!a->description && s->description)
+    {
+	a->description = str_copy(s->description);
+	a->mask |= cattr_description_mask;
+    }
+    if (!a->brief_description && s->brief_description)
+    {
+	a->brief_description = str_copy(s->brief_description);
+	a->mask |= cattr_brief_description_mask;
+    }
+    if (!(a->mask & cattr_cause_mask))
+    {
+	a->cause = s->cause;
+	a->mask |= cattr_cause_mask;
+    }
+    if (!(a->mask & cattr_regression_test_exempt_mask))
+    {
+	a->regression_test_exempt = s->regression_test_exempt;
+	a->mask |= cattr_regression_test_exempt_mask;
+    }
+    if (!(a->mask & cattr_test_exempt_mask))
+    {
+	a->test_exempt = s->test_exempt;
+	a->mask |= cattr_test_exempt_mask;
+    }
+    if (!(a->mask & cattr_test_baseline_exempt_mask))
+    {
+	a->test_baseline_exempt = s->test_baseline_exempt;
+	a->mask |= cattr_test_baseline_exempt_mask;
+    }
 
-	if (!a->architecture)
-		a->architecture =
-			(cattr_architecture_list)
-			cattr_architecture_list_type.alloc();
-	if (!a->architecture->length)
+    if (!a->architecture)
+	a->architecture =
+    	    (cattr_architecture_list)cattr_architecture_list_type.alloc();
+    if (!a->architecture->length)
+    {
+	long		j;
+
+	for (j = 0; j < s->architecture->length; ++j)
 	{
-		long		j;
+	    type_ty		*type_p;
+	    string_ty	**str_p;
 
-		for (j = 0; j < s->architecture->length; ++j)
-		{
-			type_ty		*type_p;
-			string_ty	**str_p;
-
-			str_p =
-				cattr_architecture_list_type.list_parse
-				(
-					a->architecture,
-					&type_p
-				);
-			assert(type_p == &string_type);
-			*str_p = str_copy(s->architecture->list[j]);
-		}
+	    str_p =
+	       	cattr_architecture_list_type.list_parse
+	       	(
+		    a->architecture,
+		    &type_p
+		);
+	    assert(type_p == &string_type);
+	    *str_p = str_copy(s->architecture->list[j]);
 	}
+    }
 
-	if (s->copyright_years)
+    if (s->copyright_years)
+    {
+	if (!a->copyright_years)
+	    a->copyright_years =
+	       	(cattr_copyright_years_list)
+		cattr_copyright_years_list_type.alloc();
+	if (!a->copyright_years->length)
 	{
-		if (!a->copyright_years)
-			a->copyright_years =
-				(cattr_copyright_years_list)
-				cattr_copyright_years_list_type.alloc();
-		if (!a->copyright_years->length)
-		{
-			long		j;
+	    long	    j;
 
-			for (j = 0; j < s->copyright_years->length; ++j)
-			{
-				type_ty		*type_p;
-				long		*int_p;
+	    for (j = 0; j < s->copyright_years->length; ++j)
+	    {
+		type_ty		*type_p;
+		long		*int_p;
 
-				int_p =
-					cattr_copyright_years_list_type.list_parse
-					(
-						a->copyright_years,
-						&type_p
-					);
-				assert(type_p == &integer_type);
-				*int_p = s->copyright_years->list[j];
-			}
-		}
+		int_p =
+		    cattr_copyright_years_list_type.list_parse
+		    (
+			a->copyright_years,
+			&type_p
+		    );
+		assert(type_p == &integer_type);
+		*int_p = s->copyright_years->list[j];
+	    }
 	}
-	if (!a->version_previous && s->version_previous)
-	{
-		a->version_previous = str_copy(s->version_previous);
-		a->mask |= cattr_version_previous_mask;
-	}
-	trace(("}\n"));
+    }
+    if (!a->version_previous && s->version_previous)
+    {
+	a->version_previous = str_copy(s->version_previous);
+	a->mask |= cattr_version_previous_mask;
+    }
+    trace(("}\n"));
 }

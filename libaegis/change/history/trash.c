@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,76 +47,74 @@
  */
 
 void
-change_history_trashed_fingerprints(cp, slp)
-	change_ty	*cp;
-	string_list_ty	*slp;
+change_history_trashed_fingerprints(change_ty *cp, string_list_ty *slp)
 {
-	pconf		config;
-	size_t		j;
-	sub_context_ty	*scp;
+    pconf	    config;
+    size_t	    j;
+    sub_context_ty  *scp;
 
-	if (slp->nstrings < 1)
-		return;
-	config = change_pconf_get(cp, 0);
-	if (config->history_put_trashes_file == pconf_history_put_trashes_file_ignore)
-		return;
-	for (j = 0; j < slp->nstrings; ++j)
-	{
-		string_ty	*fn;
+    if (slp->nstrings < 1)
+	return;
+    config = change_pconf_get(cp, 0);
+    if
+    (
+	config->history_put_trashes_file
+    ==
+	pconf_history_put_trashes_file_ignore
+    )
+	return;
+    for (j = 0; j < slp->nstrings; ++j)
+    {
+	string_ty	*fn;
 
-		fn = slp->string[j];
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		switch (config->history_put_trashes_file)
-		{
-		case pconf_history_put_trashes_file_ignore:
-			break;
-
-		case pconf_history_put_trashes_file_warn:
-			change_verbose
-			(
-				cp,
-				scp,
-			     i18n("warning: $filename modified by history tool")
-			);
-			break;
-
-		case pconf_history_put_trashes_file_fatal:
-			change_error
-			(
-				cp,
-				scp,
-				i18n("$filename modified by history tool")
-			);
-			break;
-		}
-		sub_context_delete(scp);
-	}
+	fn = slp->string[j];
 	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", (long)slp->nstrings);
-	sub_var_optional(scp, "Number");
+	sub_var_set_string(scp, "File_Name", fn);
 	switch (config->history_put_trashes_file)
 	{
 	case pconf_history_put_trashes_file_ignore:
-		break;
+	    break;
 
 	case pconf_history_put_trashes_file_warn:
-		change_verbose
-		(
-			cp,
-			scp,
-			i18n("warning: files modified by history tool")
-		);
-		break;
+	    change_verbose
+	    (
+	       	cp,
+	       	scp,
+	       	i18n("warning: $filename modified by history tool")
+	    );
+	    break;
 
 	case pconf_history_put_trashes_file_fatal:
-		change_fatal
-		(
-			cp,
-			scp,
-			i18n("files modified by history tool")
-		);
-		break;
+	    change_error
+	    (
+	       	cp,
+	       	scp,
+	       	i18n("$filename modified by history tool")
+	    );
+	    break;
 	}
 	sub_context_delete(scp);
+    }
+    scp = sub_context_new();
+    sub_var_set_long(scp, "Number", (long)slp->nstrings);
+    sub_var_optional(scp, "Number");
+    switch (config->history_put_trashes_file)
+    {
+    case pconf_history_put_trashes_file_ignore:
+	break;
+
+    case pconf_history_put_trashes_file_warn:
+	change_verbose
+	(
+    	    cp,
+    	    scp,
+    	    i18n("warning: files modified by history tool")
+	);
+	break;
+
+    case pconf_history_put_trashes_file_fatal:
+	change_fatal(cp, scp, i18n("files modified by history tool"));
+	break;
+    }
+    sub_context_delete(scp);
 }

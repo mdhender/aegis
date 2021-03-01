@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,25 +27,25 @@
 
 enum change_set_file_action_ty
 {
-	change_set_file_action_create,
-	change_set_file_action_modify,
-	change_set_file_action_remove
+    change_set_file_action_create,
+    change_set_file_action_modify,
+    change_set_file_action_remove
 };
 typedef enum change_set_file_action_ty change_set_file_action_ty;
 
 typedef struct change_set_file_ty change_set_file_ty;
 struct change_set_file_ty
 {
-	string_ty	*filename;
-	string_ty	*edit;
-	change_set_file_action_ty action;
-	string_list_ty	tag;
+    string_ty       *filename;
+    string_ty       *edit;
+    change_set_file_action_ty action;
+    string_list_ty  tag;
 };
 
-void change_set_file_constructor _((change_set_file_ty *, string_ty *,
-	string_ty *, change_set_file_action_ty, string_list_ty *));
-void change_set_file_destructor _((change_set_file_ty *));
-const char *change_set_file_action_name _((change_set_file_action_ty));
-void change_set_file_validate _((change_set_file_ty *));
+void change_set_file_constructor(change_set_file_ty *, string_ty *,
+    string_ty *, change_set_file_action_ty, string_list_ty *);
+void change_set_file_destructor(change_set_file_ty *);
+const char *change_set_file_action_name(change_set_file_action_ty);
+void change_set_file_validate(change_set_file_ty *);
 
 #endif /* AEIMPORT_CHANGE_SET_FILE_H */

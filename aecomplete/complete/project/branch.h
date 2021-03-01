@@ -27,6 +27,6 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_project_branch _((struct project_ty *, int));
+complete_ty *complete_project_branch(struct project_ty *, int);
 
 #endif /* AECOMPLETE_COMPLETE_PROJECT_BRANCH_H */

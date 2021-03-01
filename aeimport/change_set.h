@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,15 +31,15 @@
 typedef struct change_set_ty change_set_ty;
 struct change_set_ty
 {
-	string_ty	*who;
-	time_t		when;
-	string_ty	*description;
-	change_set_file_list_ty file;
-	string_list_ty	tag;
+    string_ty       *who;
+    time_t	    when;
+    string_ty       *description;
+    change_set_file_list_ty file;
+    string_list_ty  tag;
 };
 
-change_set_ty *change_set_new _((void));
-void change_set_delete _((change_set_ty *));
-void change_set_validate _((change_set_ty *));
+change_set_ty *change_set_new(void);
+void change_set_delete(change_set_ty *);
+void change_set_validate(change_set_ty *);
 
 #endif /* AEIMPORT_CHANGE_SET_H */

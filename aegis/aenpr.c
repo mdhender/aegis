@@ -50,10 +50,8 @@
 #include <user.h>
 
 
-static void new_project_usage _((void));
-
 static void
-new_project_usage()
+new_project_usage(void)
 {
     char	    *progname;
 
@@ -70,19 +68,15 @@ new_project_usage()
 }
 
 
-static void new_project_help _((void));
-
 static void
-new_project_help()
+new_project_help(void)
 {
     help("aenpr", new_project_usage);
 }
 
 
-static void new_project_list _((void));
-
 static void
-new_project_list()
+new_project_list(void)
 {
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -91,10 +85,8 @@ new_project_list()
 }
 
 
-static void new_project_main _((void));
-
 static void
-new_project_main()
+new_project_main(void)
 {
     string_ty	    *s;
     sub_context_ty  *scp;
@@ -635,7 +627,7 @@ new_project_main()
 
 
 void
-new_project()
+new_project(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, 1998, 2000 Peter Miller.
+ *	This file is in the Public Domain, 1995, 1998, 2000, 2002 Peter Miller.
  *
  * MANIFEST: example of using rcs in the project config file
  *
@@ -130,7 +130,7 @@ rcs -U ${quote $history,v}";
  *	absolute path of the history file
  */
 history_query_command =
-	"rlog -r ${quote $history,v} | awk '/^head:/ {print $$2}'";
+	"rlog -r ${quote $history,v} | awk '/^revision/ {print $$2}'";
 
 /*
  * RCS also provides a merge program, which can be used to provide a three-way

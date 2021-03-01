@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1997 Peter Miller;
+ *	Copyright (C) 1991-1993, 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,28 +25,28 @@
 
 #include <main.h>
 
-void help _((char *progname, void (*usage)(void)));
-void generic_argument _((void(*usage)(void)));
-void bad_argument _((void(*usage)(void)));
-void mutually_exclusive_options _((int name1, int name2, void(*usage)(void)));
-void mutually_exclusive_options3 _((int name1, int name2, int name3,
-	void (*usage)(void)));
-void duplicate_option _((void(*usage)(void)));
-void duplicate_option_by_name _((int name, void(*usage)(void)));
-void option_needs_number _((int name, void(*usage)(void)));
-void option_needs_string _((int name, void(*usage)(void)));
-void option_needs_name _((int name, void(*usage)(void)));
-void option_needs_file _((int name, void(*usage)(void)));
-void option_needs_dir _((int name, void(*usage)(void)));
-void option_needs_files _((int name, void(*usage)(void)));
+void help(char *progname, void (*usage)(void));
+void generic_argument(void(*usage)(void));
+void bad_argument(void(*usage)(void));
+void mutually_exclusive_options(int name1, int name2, void(*usage)(void));
+void mutually_exclusive_options3(int name1, int name2, int name3,
+	void (*usage)(void));
+void duplicate_option(void(*usage)(void));
+void duplicate_option_by_name(int name, void(*usage)(void));
+void option_needs_number(int name, void(*usage)(void));
+void option_needs_string(int name, void(*usage)(void));
+void option_needs_name(int name, void(*usage)(void));
+void option_needs_file(int name, void(*usage)(void));
+void option_needs_dir(int name, void(*usage)(void));
+void option_needs_files(int name, void(*usage)(void));
 
 struct string_ty; /* forward */
-void fatal_too_many_files _((void));
-void fatal_user_too_privileged _((struct string_ty *));
-void fatal_group_too_privileged _((struct string_ty *));
-void fatal_bad_project_name _((struct string_ty *));
-void fatal_project_name_too_long _((struct string_ty *, int));
-void fatal_date_unknown _((const char *));
-void fatal_project_alias_exists _((struct string_ty *));
+void fatal_too_many_files(void);
+void fatal_user_too_privileged(struct string_ty *);
+void fatal_group_too_privileged(struct string_ty *);
+void fatal_bad_project_name(struct string_ty *);
+void fatal_project_name_too_long(struct string_ty *, int);
+void fatal_date_unknown(const char *);
+void fatal_project_alias_exists(struct string_ty *);
 
 #endif /* HELP_H */

@@ -49,10 +49,8 @@
 #include <user.h>
 
 
-static void test_usage _((void));
-
 static void
-test_usage()
+test_usage(void)
 {
     char	    *progname;
 
@@ -69,19 +67,15 @@ test_usage()
 }
 
 
-static void test_help _((void));
-
 static void
-test_help()
+test_help(void)
 {
     help("aet", test_usage);
 }
 
 
-static void test_list _((void));
-
 static void
-test_list()
+test_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -146,12 +140,8 @@ struct limit_suggestions_ty
 };
 
 
-static int limit_suggestions_cmp _((const void *, const void *));
-
 static int
-limit_suggestions_cmp(va, vb)
-    const void	    *va;
-    const void	    *vb;
+limit_suggestions_cmp(const void *va, const void *vb)
 {
     const limit_suggestions_ty *a;
     const limit_suggestions_ty *b;
@@ -171,14 +161,9 @@ limit_suggestions_cmp(va, vb)
 }
 
 
-static void limit_suggestions _((change_ty *, string_list_ty *, int, int));
-
 static void
-limit_suggestions(cp, flp, want, noise_percent)
-    change_ty	    *cp;
-    string_list_ty  *flp;
-    int		    want;
-    int		    noise_percent;
+limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
+    int noise_percent)
 {
     project_ty	    *pp;
     limit_suggestions_ty *item;
@@ -248,17 +233,9 @@ limit_suggestions(cp, flp, want, noise_percent)
 	    break;
 	if (c_src_data->usage != file_usage_source)
 	    continue;
-	p_src_data = project_file_find(pp, c_src_data->file_name);
-	if
-	(
-	    !p_src_data
-	||
-	    p_src_data->about_to_be_created_by
-	||
-	    p_src_data->about_to_be_copied_by
-	||
-	    p_src_data->deleted_by
-	)
+	p_src_data =
+	    project_file_find(pp, c_src_data->file_name, view_path_extreme);
+	if (!p_src_data)
 	    continue;
 	if (!p_src_data->test || !p_src_data->test->length)
 	    continue;
@@ -340,14 +317,8 @@ limit_suggestions(cp, flp, want, noise_percent)
 }
 
 
-static void verbose_message _((project_ty *, change_ty *,
-    batch_result_list_ty *));
-
 static void
-verbose_message(pp, cp, brlp)
-    project_ty	    *pp;
-    change_ty	    *cp;
-    batch_result_list_ty *brlp;
+verbose_message(project_ty *pp, change_ty *cp, batch_result_list_ty *brlp)
 {
     sub_context_ty  *scp;
 
@@ -395,10 +366,8 @@ verbose_message(pp, cp, brlp)
 }
 
 
-static void test_main _((void));
-
 static void
-test_main()
+test_main(void)
 {
     sub_context_ty  *scp;
     int		    baseline_flag;
@@ -959,17 +928,10 @@ test_main()
 	}
 	else
 	{
-	    p_src_data = project_file_find(pp, s2);
-	    if
-	    (
-		!p_src_data
-	    ||
-		p_src_data->deleted_by
-	    ||
-		p_src_data->about_to_be_created_by
-	    )
+	    p_src_data = project_file_find(pp, s2, view_path_extreme);
+	    if (!p_src_data)
 	    {
-		p_src_data = project_file_find_fuzzy(pp, s2);
+		p_src_data = project_file_find_fuzzy(pp, s2, view_path_extreme);
 		if (p_src_data)
 		{
 		    scp = sub_context_new();
@@ -1035,20 +997,9 @@ test_main()
 	     */
 	    for (j = 0;; ++j)
 	    {
-		p_src_data = project_file_nth(pp, j);
+		p_src_data = project_file_nth(pp, j, view_path_extreme);
 		if (!p_src_data)
 		    break;
-
-		/*
-		 * don't run the test if it does not exist
-		 */
-		if
-		(
-		    p_src_data->deleted_by
-		||
-		    p_src_data->about_to_be_created_by
-		)
-		    continue;
 
 		/*
 		 * don't run the test if it is being
@@ -1125,6 +1076,8 @@ test_main()
     {
 	if (exempt)
 	    quit(0);
+	if (regression_flag)
+	    project_fatal(pp, 0, i18n("proj has no tests"));
 	change_fatal(cp, 0, i18n("has no tests"));
     }
 
@@ -1197,9 +1150,9 @@ test_main()
 	     * Check to see if we need to run the test at all.
 	     */
 	    if (baseline_flag)
-		last_time = change_file_test_baseline_time_get(cp, src_data);
+		last_time = change_file_test_baseline_time_get(cp, src_data, 0);
 	    else
-		last_time = change_file_test_time_get(cp, src_data);
+		last_time = change_file_test_time_get(cp, src_data, 0);
 	    assert(src_data->file_fp);
 	    assert(src_data->file_fp->youngest>=0);
 	    assert(src_data->file_fp->oldest>=0);
@@ -1238,33 +1191,55 @@ test_main()
 	    case 0:
 		if (baseline_flag)
 		{
-		    change_file_test_baseline_time_clear(cp, src_data);
+		    change_file_test_baseline_time_clear
+		    (
+			cp,
+			src_data,
+			rp->architecture
+		    );
 		}
 		else
 		{
-		    change_file_test_time_set(cp, src_data, now);
+		    change_file_test_time_set
+		    (
+			cp,
+			src_data,
+			now,
+			rp->architecture
+		    );
 		}
 		break;
 
 	    case 1:
 		if (baseline_flag)
 		{
-		    change_file_test_baseline_time_set(cp, src_data, now);
+		    change_file_test_baseline_time_set
+		    (
+			cp,
+			src_data,
+			now,
+			rp->architecture
+		    );
 		}
 		else
 		{
-		    change_file_test_time_clear(cp, src_data);
+		    change_file_test_time_clear(cp, src_data, rp->architecture);
 		}
 		break;
 
 	    default:
 		if (baseline_flag)
 		{
-		    change_file_test_baseline_time_clear(cp, src_data);
+		    change_file_test_baseline_time_clear
+		    (
+			cp,
+			src_data,
+			rp->architecture
+		    );
 		}
 		else
 		{
-		    change_file_test_time_clear(cp, src_data);
+		    change_file_test_time_clear(cp, src_data, rp->architecture);
 		}
 		break;
 	    }
@@ -1304,10 +1279,8 @@ test_main()
 }
 
 
-static void test_independent _((void));
-
 static void
-test_independent()
+test_independent(void)
 {
     int		    automatic_flag;
     int		    manual_flag;
@@ -1555,7 +1528,7 @@ test_independent()
 	/*
 	 * check to see if a directory was named
 	 */
-	project_file_directory_query(pp, s2, &wl_in, 0);
+	project_file_directory_query(pp, s2, &wl_in, 0, view_path_extreme);
 	if (wl_in.nstrings)
 	{
 	    int		    used;
@@ -1564,19 +1537,13 @@ test_independent()
 	    for (k = 0; k < wl_in.nstrings; ++k)
 	    {
 		s3 = wl_in.string[k];
-		src_data = project_file_find(pp, s3);
-		assert(src_data);
-		if
-		(
-		    src_data
-		&&
-		    (
-			src_data->usage == file_usage_test
-		    ||
-			src_data->usage == file_usage_manual_test
-		    )
-		)
+		src_data = project_file_find(pp, s3, view_path_extreme);
+		if (!src_data)
+		    continue;
+		switch (src_data->usage)
 		{
+		case file_usage_test:
+		case file_usage_manual_test:
 		    if (string_list_member(&wl2, s3))
 		    {
 			sub_context_ty	*scp;
@@ -1590,6 +1557,11 @@ test_independent()
 		    else
 			string_list_append(&wl2, s3);
 		    used = 1;
+		    break;
+
+		case file_usage_source:
+		case file_usage_build:
+		    break;
 		}
 	    }
 	    if (!used)
@@ -1621,15 +1593,8 @@ test_independent()
 	/*
 	 * make sure the explicitly named file is relevant
 	 */
-	src_data = project_file_find(pp, s2);
-	if
-	(
-	    !src_data
-	||
-	    src_data->deleted_by
-	||
-	    src_data->about_to_be_created_by
-	)
+	src_data = project_file_find(pp, s2, view_path_extreme);
+	if (!src_data)
 	{
 	    sub_context_ty  *scp;
 
@@ -1678,11 +1643,9 @@ test_independent()
     {
 	for (j = 0;; ++j)
 	{
-	    src_data = project_file_nth(pp, j);
+	    src_data = project_file_nth(pp, j, view_path_extreme);
 	    if (!src_data)
 		break;
-	    if (src_data->deleted_by || src_data->about_to_be_created_by)
-		continue;
 	    if
 	    (
 		(src_data->usage == file_usage_test && automatic_flag)
@@ -1725,7 +1688,7 @@ test_independent()
 
 
 void
-test()
+test(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

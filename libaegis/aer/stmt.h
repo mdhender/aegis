@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,9 +51,9 @@ struct rpt_stmt_method_ty
 {
 	size_t		size;
 	char		*name;
-	void (*construct)_((struct rpt_stmt_ty *));
-	void (*destruct)_((struct rpt_stmt_ty *));
-	void (*run)_((struct rpt_stmt_ty *, rpt_stmt_result_ty *));
+	void (*construct)(struct rpt_stmt_ty *);
+	void (*destruct)(struct rpt_stmt_ty *);
+	void (*run)(struct rpt_stmt_ty *, rpt_stmt_result_ty *);
 };
 
 #define RPT_STMT				\
@@ -69,12 +69,12 @@ struct rpt_stmt_ty
 	RPT_STMT
 };
 
-rpt_stmt_ty *rpt_stmt_alloc _((rpt_stmt_method_ty *));
-void rpt_stmt_free _((rpt_stmt_ty *));
-rpt_stmt_ty *rpt_stmt_copy _((rpt_stmt_ty *));
+rpt_stmt_ty *rpt_stmt_alloc(rpt_stmt_method_ty *);
+void rpt_stmt_free(rpt_stmt_ty *);
+rpt_stmt_ty *rpt_stmt_copy(rpt_stmt_ty *);
 
-void rpt_stmt_append _((rpt_stmt_ty *parent, rpt_stmt_ty *child));
-void rpt_stmt_prepend _((rpt_stmt_ty *parent, rpt_stmt_ty *child));
+void rpt_stmt_append(rpt_stmt_ty *parent, rpt_stmt_ty *child);
+void rpt_stmt_prepend(rpt_stmt_ty *parent, rpt_stmt_ty *child);
 
 #define rpt_stmt_run(s, r) (s)->method->run((s), (r))
 

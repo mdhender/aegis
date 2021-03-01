@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -168,7 +168,7 @@ print("a change.  Depending on your browser, it may or may not have");
 print("done the gunzip step for you automagically.");
 print("<p>");
 print("If you download via the <code>aedist</code> links, you will need");
-print("<em>aedist</em>(1) from Aegis 4.3 or later to apply the");
+print("<em>aedist</em>(1) from Aegis 4.11 or later to apply the");
 print("change sets.");
 
 print("<hr>");

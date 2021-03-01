@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,10 @@
 
 enum
 {
-	arglex_token_format = ARGLEX2_MAX,
-	ARGLEX3_MAX
+    arglex_token_format = ARGLEX2_MAX,
+    ARGLEX3_MAX
 };
 
-void arglex3_init _((int, char **));
+void arglex3_init(int, char **);
 
 #endif /* AEIMPORT_ARGLEX3_H */

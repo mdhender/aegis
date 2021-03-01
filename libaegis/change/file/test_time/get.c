@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,30 +24,29 @@
 
 
 time_t
-change_file_test_time_get(cp, src_data)
-	change_ty	*cp;
-	fstate_src	src_data;
+change_file_test_time_get(change_ty *cp, fstate_src src_data,
+    string_ty *variant)
 {
-	fstate_src_architecture_times_list atlp;
-	fstate_src_architecture_times atp;
-	string_ty	*variant;
-	size_t		j;
+    fstate_src_architecture_times_list atlp;
+    fstate_src_architecture_times atp;
+    size_t          j;
 
-	atlp = src_data->architecture_times;
-	if (!atlp)
-		return 0;
-	variant = change_architecture_name(cp, 1);
-	for (j = 0; j < atlp->length; ++j)
-	{
-		atp = atlp->list[j];
-		if
-		(
-			/* bug if not set */
-			atp->variant
-		&&
-			str_equal(atp->variant, variant)
-		)
-			return atp->test_time;
-	}
+    atlp = src_data->architecture_times;
+    if (!atlp)
 	return 0;
+    if (!variant)
+	variant = change_architecture_name(cp, 1);
+    for (j = 0; j < atlp->length; ++j)
+    {
+	atp = atlp->list[j];
+	if
+	(
+	    /* bug if not set */
+	    atp->variant
+	&&
+	    str_equal(atp->variant, variant)
+	)
+	    return atp->test_time;
+    }
+    return 0;
 }

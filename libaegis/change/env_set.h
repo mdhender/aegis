@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct change_ty; /* existence */
 
-void change_env_set _((struct change_ty *, int));
+void change_env_set(struct change_ty *, int);
 
 #endif /* LIBAEGIS_CHANGE_ENV_SET_H */

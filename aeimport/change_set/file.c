@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,60 +24,53 @@
 
 
 void
-change_set_file_constructor(csfp, filename, edit, action, tag)
-	change_set_file_ty *csfp;
-	string_ty	*filename;
-	string_ty	*edit;
-	change_set_file_action_ty action;
-	string_list_ty	*tag;
+change_set_file_constructor(change_set_file_ty *csfp, string_ty *filename,
+    string_ty *edit, change_set_file_action_ty action, string_list_ty *tag)
 {
-	csfp->filename = str_copy(filename);
-	csfp->edit = str_copy(edit);
-	csfp->action = action;
-	string_list_copy(&csfp->tag, tag);
+    csfp->filename = str_copy(filename);
+    csfp->edit = str_copy(edit);
+    csfp->action = action;
+    string_list_copy(&csfp->tag, tag);
 }
 
 
 void
-change_set_file_destructor(csfp)
-	change_set_file_ty *csfp;
+change_set_file_destructor(change_set_file_ty *csfp)
 {
-	str_free(csfp->filename);
-	csfp->filename = 0;
-	str_free(csfp->edit);
-	csfp->edit = 0;
-	string_list_destructor(&csfp->tag);
+    str_free(csfp->filename);
+    csfp->filename = 0;
+    str_free(csfp->edit);
+    csfp->edit = 0;
+    string_list_destructor(&csfp->tag);
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_file_validate(csfp)
-	change_set_file_ty *csfp;
+change_set_file_validate(change_set_file_ty *csfp)
 {
-	str_validate(csfp->filename);
-	str_validate(csfp->edit);
-	string_list_validate(&csfp->tag);
+    str_validate(csfp->filename);
+    str_validate(csfp->edit);
+    string_list_validate(&csfp->tag);
 }
 
 #endif
 
 
 const char *
-change_set_file_action_name(n)
-	change_set_file_action_ty n;
+change_set_file_action_name(change_set_file_action_ty n)
 {
-	switch (n)
-	{
-	case change_set_file_action_create:
-		return "create";
+    switch (n)
+    {
+    case change_set_file_action_create:
+	return "create";
 
-	case change_set_file_action_modify:
-		return "modify";
+    case change_set_file_action_modify:
+	return "modify";
 
-	case change_set_file_action_remove:
-		return "remove";
-	}
-	return "unknown";
+    case change_set_file_action_remove:
+	return "remove";
+    }
+    return "unknown";
 }

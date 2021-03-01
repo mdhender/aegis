@@ -44,11 +44,8 @@ struct output_tar_child_ty
 };
 
 
-static void changed_size _((output_tar_child_ty *));
-
 static void
-changed_size(this)
-    output_tar_child_ty *this;
+changed_size(output_tar_child_ty *this)
 {
     sub_context_ty  *scp;
 
@@ -65,11 +62,8 @@ changed_size(this)
 }
 
 
-static void padding _((output_tar_child_ty *));
-
 static void
-padding(this)
-    output_tar_child_ty *this;
+padding(output_tar_child_ty *this)
 {
     int		    n;
 
@@ -81,11 +75,8 @@ padding(this)
 }
 
 
-static void header _((output_tar_child_ty *));
-
 static void
-header(this)
-    output_tar_child_ty *this;
+header(output_tar_child_ty *this, int executable)
 {
     char	    buffer[TBLOCK];
     header_ty	    *hp;
@@ -133,7 +124,7 @@ header(this)
     hp = (header_ty *)buffer;
     header_name_set(hp, this->name);
     header_size_set(hp, this->length);
-    header_mode_set(hp, 0100644);
+    header_mode_set(hp, 0100644 | (executable ? 0111 : 0));
     header_uid_set(hp, 0);
     header_uname_set(hp, root);
     header_gid_set(hp, 0);
@@ -145,11 +136,8 @@ header(this)
 }
 
 
-static void output_tar_child_destructor _((output_ty *));
-
 static void
-output_tar_child_destructor(fp)
-    output_ty	    *fp;
+output_tar_child_destructor(output_ty *fp)
 {
     output_tar_child_ty *this;
 
@@ -169,11 +157,8 @@ output_tar_child_destructor(fp)
 }
 
 
-static string_ty *output_tar_child_filename _((output_ty *));
-
 static string_ty *
-output_tar_child_filename(fp)
-    output_ty	*fp;
+output_tar_child_filename(output_ty *fp)
 {
     output_tar_child_ty *this;
 
@@ -182,11 +167,8 @@ output_tar_child_filename(fp)
 }
 
 
-static long output_tar_child_ftell _((output_ty *));
-
 static long
-output_tar_child_ftell(fp)
-    output_ty	    *fp;
+output_tar_child_ftell(output_ty *fp)
 {
     output_tar_child_ty *this;
 
@@ -195,13 +177,8 @@ output_tar_child_ftell(fp)
 }
 
 
-static void output_tar_child_write _((output_ty *, const void *, size_t));
-
 static void
-output_tar_child_write(fp, data, len)
-    output_ty	    *fp;
-    const void	    *data;
-    size_t	    len;
+output_tar_child_write(output_ty *fp, const void *data, size_t len)
 {
     output_tar_child_ty *this;
 
@@ -213,11 +190,8 @@ output_tar_child_write(fp, data, len)
 }
 
 
-static void output_tar_child_eoln _((output_ty *));
-
 static void
-output_tar_child_eoln(fp)
-    output_ty	    *fp;
+output_tar_child_eoln(output_ty *fp)
 {
     output_tar_child_ty *this;
 
@@ -243,12 +217,10 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_tar_child_open(deeper, name, length)
-    output_ty	    *deeper;
-    string_ty	    *name;
-    long	    length;
+output_tar_child_open(output_ty *deeper, string_ty *name, long length,
+    int executable)
 {
-    output_ty	*result;
+    output_ty       *result;
     output_tar_child_ty *this;
 
     /* assert(length >= 0); */
@@ -259,6 +231,6 @@ output_tar_child_open(deeper, name, length)
     this->length = length;
     this->pos = 0;
     this->bol = 1;
-    header(this);
+    header(this, executable);
     return result;
 }

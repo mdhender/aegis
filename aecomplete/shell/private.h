@@ -31,7 +31,7 @@ struct shell_vtbl_ty
     /**
       * The destructor method is called when the shell object is deleted.
       */
-    void (*destructor)_((shell_ty *));
+    void (*destructor)(shell_ty *);
 
     /**
       * The test method is used to probe a shell type to see if this is
@@ -42,25 +42,25 @@ struct shell_vtbl_ty
       * the arglex functions) is to be read in.  The command line being
       * completed in to be synthesized and installed in its place.
       */
-    int (*test)_((shell_ty *));
+    int (*test)(shell_ty *);
 
     /**
       * The command name method is used to extract the name of the
       * command being completed.
       */
-    string_ty *(*command_get)_((shell_ty *));
+    string_ty *(*command_get)(shell_ty *);
 
     /**
       * The incomplete_word method is used to extract the incomplete word
       * (the prefix) to be completed.
       */
-    string_ty *(*prefix_get)_((shell_ty *));
+    string_ty *(*prefix_get)(shell_ty *);
 
     /**
       * The emit method is used to emit a completion candidate, in the
       * format required by the particular shell.
       */
-    void (*emit)_((shell_ty *, string_ty *));
+    void (*emit)(shell_ty *, string_ty *);
 
     /**
       * The size of the class instance, as returned by sizeof().
@@ -75,6 +75,6 @@ struct shell_vtbl_ty
     char *name;
 };
 
-shell_ty *shell_new _((shell_vtbl_ty *));
+shell_ty *shell_new(shell_vtbl_ty *);
 
 #endif /* AECOMPLETE_SHELL_PRIVATE_H */

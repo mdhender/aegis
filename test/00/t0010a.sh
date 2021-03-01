@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2000, 2002 Peter Miller;
+#	Copyright (C) 1991-1998, 2000, 2002, 2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -339,6 +339,7 @@ copyright_years =
 	YYYY,
 ];
 state = being_reviewed;
+given_regression_test_exemption = true;
 build_time = TIME;
 test_time = TIME;
 architecture_times =

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <aer/stmt.h>
 
-rpt_stmt_ty *rpt_stmt_compound _((void));
+rpt_stmt_ty *rpt_stmt_compound(void);
 
 #endif /* AEGIS_AER_STMT_COMPOUND_H */

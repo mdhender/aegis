@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aera _((void));
+command_ty *command_aera(void);
 
 #endif /* AECOMPLETE_COMMAND_AERA_H */

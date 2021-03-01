@@ -49,10 +49,8 @@
 #include <str_list.h>
 
 
-static void new_file_usage _((void));
-
 static void
-new_file_usage()
+new_file_usage(void)
 {
     char	    *progname;
 
@@ -69,19 +67,15 @@ new_file_usage()
 }
 
 
-static void new_file_help _((void));
-
 static void
-new_file_help()
+new_file_help(void)
 {
     help("aenf", new_file_usage);
 }
 
 
-static void new_file_list _((void));
-
 static void
-new_file_list()
+new_file_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -150,14 +144,8 @@ struct walker_ty
 };
 
 
-static void walker _((void *, dir_walk_message_ty, string_ty *, struct stat *));
-
 static void
-walker(p, msg, path, st)
-    void	    *p;
-    dir_walk_message_ty msg;
-    string_ty	    *path;
-    struct stat	    *st;
+walker(void *p, dir_walk_message_ty msg, string_ty *path, struct stat *st)
 {
     walker_ty	    *aux;
     string_ty	    *s;
@@ -192,7 +180,7 @@ walker(p, msg, path, st)
 	&&
 	    !change_file_find(aux->cp, s)
 	&&
-	    !project_file_find(aux->cp->pp, s)
+	    !project_file_find(aux->cp->pp, s, view_path_extreme)
 	)
 	{
 	    string_list_append(aux->slp, s);
@@ -205,10 +193,8 @@ walker(p, msg, path, st)
 }
 
 
-static void new_file_main _((void));
-
 static void
-new_file_main()
+new_file_main(void)
 {
     string_ty	    *dd;
     string_list_ty  wl;
@@ -666,15 +652,8 @@ new_file_main()
 	}
 	else
 	{
-	    src_data = project_file_find(pp, s1);
-	    if
-	    (
-		src_data
-	    &&
-		!src_data->deleted_by
-	    &&
-		!src_data->about_to_be_created_by
-	    )
+	    src_data = project_file_find(pp, s1, view_path_extreme);
+	    if (src_data)
 	    {
 		sub_context_ty	*scp;
 
@@ -769,7 +748,7 @@ new_file_main()
 
 
 void
-new_file()
+new_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

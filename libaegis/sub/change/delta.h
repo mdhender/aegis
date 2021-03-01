@@ -28,7 +28,7 @@
 struct wstring_list_ty; /* forward */
 struct sub_context_ty; /* forward */
 
-struct wstring_ty *sub_delta _((struct sub_context_ty *,
-	struct wstring_list_ty *));
+struct wstring_ty *sub_delta(struct sub_context_ty *,
+	struct wstring_list_ty *);
 
 #endif /* LIBAEGIS_SUB_DELTA_H */

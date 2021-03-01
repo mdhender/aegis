@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,11 +35,11 @@ struct rpt_func_ty
 {
 	char		*name;
 	int		optimizable;
-	int (*verify)_((struct rpt_expr_ty *ep));
-	struct rpt_value_ty *(*run)_((struct rpt_expr_ty *, size_t argc,
-		struct rpt_value_ty **argv));
+	int (*verify)(struct rpt_expr_ty *ep);
+	struct rpt_value_ty *(*run)(struct rpt_expr_ty *, size_t argc,
+		struct rpt_value_ty **argv);
 };
 
-void rpt_func_init _((struct symtab_ty *));
+void rpt_func_init(struct symtab_ty *);
 
 #endif /* AEGIS_AER_FUNC_H */

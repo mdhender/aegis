@@ -32,145 +32,137 @@
 #include <version.h>
 
 
-static void version_license _((void));
-
 static void
-version_license()
+version_license(void)
 {
-	help("aelic", (void (*)_((void)))0);
+    help("aelic", (void (*)(void))0);
 }
 
 
-static void version_usage _((void));
-
 static void
-version_usage()
+version_usage(void)
 {
-	char	*progname;
+    char            *progname;
 
-	progname = progname_get();
-	fprintf(stderr, "usage: %s -VERSion [ <info-name> ]\n", progname);
-	fprintf(stderr, "       %s -VERSion -Help\n", progname);
-	quit(1);
+    progname = progname_get();
+    fprintf(stderr, "usage: %s -VERSion [ <info-name> ]\n", progname);
+    fprintf(stderr, "       %s -VERSion -Help\n", progname);
+    quit(1);
 }
 
 
 typedef struct table_ty table_ty;
 struct table_ty
 {
-	char	*name;
-	void	(*func)_((void));
+    char            *name;
+    void            (*func)(void);
 };
 
 
-static	table_ty	table[] =
+static table_ty table[] =
 {
-	{ "Copyright",	version_copyright,	},
-	{ "License",	version_license,	},
+    { "Copyright",	version_copyright,	},
+    { "License",	version_license,	},
 };
 
-
-static void version_main _((void));
 
 static void
-version_main()
+version_main(void)
 {
-	sub_context_ty	*scp;
-	void		(*func)_((void));
-	char		*name;
+    sub_context_ty	*scp;
+    void		(*func)(void);
+    char		*name;
 
-	trace(("version_main()\n{\n"/*}*/));
+    trace(("version_main()\n{\n"));
+    arglex();
+    name = 0;
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
+	{
+	default:
+	    generic_argument(version_usage);
+	    continue;
+
+	case arglex_token_string:
+	    if (name)
+	    {
+	       	scp = sub_context_new();
+	       	fatal_intl(scp, i18n("too many info names"));
+	    }
+	    name = arglex_value.alv_string;
+	    break;
+	}
 	arglex();
-	name = 0;
-	while (arglex_token != arglex_token_eoln)
+    }
+
+    if (name)
+    {
+	int		nhit;
+	table_ty	*tp;
+	string_ty	*s1;
+	string_ty	*s2;
+	table_ty	*hit[SIZEOF(table)];
+	int		j;
+
+	nhit = 0;
+	for (tp = table; tp < ENDOF(table); ++tp)
 	{
-		switch (arglex_token)
-		{
-		default:
-			generic_argument(version_usage);
-			continue;
-
-		case arglex_token_string:
-			if (name)
-			{
-				scp = sub_context_new();
-				fatal_intl(scp, i18n("too many info names"));
-			}
-			name = arglex_value.alv_string;
-			break;
-		}
-		arglex();
+	    if (arglex_compare(tp->name, name))
+	       	hit[nhit++] = tp;
 	}
-
-	if (name)
+	switch (nhit)
 	{
-		int		nhit;
-		table_ty	*tp;
-		string_ty	*s1;
-		string_ty	*s2;
-		table_ty	*hit[SIZEOF(table)];
-		int		j;
+	case 0:
+	    scp = sub_context_new();
+	    sub_var_set_charstar(scp, "Name", name);
+	    fatal_intl(scp, i18n("no info $name"));
+	    /* NOTWEACHED */
 
-		nhit = 0;
-		for (tp = table; tp < ENDOF(table); ++tp)
-		{
-			if (arglex_compare(tp->name, name))
-				hit[nhit++] = tp;
-		}
-		switch (nhit)
-		{
-		case 0:
-			scp = sub_context_new();
-			sub_var_set_charstar(scp, "Name", name);
-			fatal_intl(scp, i18n("no info $name"));
-			/* NOTWEACHED */
+	case 1:
+	    break;
 
-		case 1:
-			break;
-
-		default:
-			s1 = str_from_c(hit[0]->name);
-			for (j = 1; j < nhit; ++j)
-			{
-				s2 = str_format("%S, %s", s1, hit[j]->name);
-				str_free(s1);
-				s1 = s2;
-			}
-			scp = sub_context_new();
-			sub_var_set_charstar(scp, "Name", name);
-			sub_var_set_string(scp, "Name_List", s1);
-			fatal_intl(scp, i18n("info $name ambig ($name_list)"));
-			/* NOTREACHED */
-		}
-		arglex();
-		func = hit[0]->func;
+	default:
+	    s1 = str_from_c(hit[0]->name);
+	    for (j = 1; j < nhit; ++j)
+	    {
+	       	s2 = str_format("%S, %s", s1, hit[j]->name);
+	       	str_free(s1);
+	       	s1 = s2;
+	    }
+	    scp = sub_context_new();
+	    sub_var_set_charstar(scp, "Name", name);
+	    sub_var_set_string(scp, "Name_List", s1);
+	    fatal_intl(scp, i18n("info $name ambig ($name_list)"));
+	    /* NOTREACHED */
 	}
-	else
-		func = version_copyright;
+	arglex();
+	func = hit[0]->func;
+    }
+    else
+	func = version_copyright;
 
-	func();
-	trace((/*{*/"}\n"));
+    func();
+    trace(("}\n"));
 }
 
 
-static void version_help _((void));
-
 static void
-version_help()
+version_help(void)
 {
-	help("aev", version_usage);
+    help("aev", version_usage);
 }
 
 
 void
-version()
+version(void)
 {
-	static arglex_dispatch_ty dispatch[] =
-	{
-		{ arglex_token_help,		version_help,	},
-	};
+    static arglex_dispatch_ty dispatch[] =
+    {
+	{ arglex_token_help, version_help, },
+    };
 
-	trace(("version()\n{\n"));
-	arglex_dispatch(dispatch, SIZEOF(dispatch), version_main);
-	trace(("}\n"));
+    trace(("version()\n{\n"));
+    arglex_dispatch(dispatch, SIZEOF(dispatch), version_main);
+    trace(("}\n"));
 }

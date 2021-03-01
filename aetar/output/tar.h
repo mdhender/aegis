@@ -27,7 +27,7 @@
 
 struct string_ty; /* existence */
 
-output_ty *output_tar _((output_ty *));
-output_ty *output_tar_child _((output_ty *, struct string_ty *, long));
+output_ty *output_tar(output_ty *);
+output_ty *output_tar_child(output_ty *, struct string_ty *, long, int);
 
 #endif /* AETAR_OUTPUT_TAR_H */

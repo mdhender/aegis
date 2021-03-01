@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 #include <output.h>
 
-output_ty *output_indent _((output_ty *));
-void output_indent_more _((output_ty *));
-void output_indent_less _((output_ty *));
+output_ty *output_indent(output_ty *);
+void output_indent_more(output_ty *);
+void output_indent_less(output_ty *);
 
 #endif /* LIBAEGIS_OUTPUT_INDENT_H */

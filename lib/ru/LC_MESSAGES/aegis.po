@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 2002 Peter Miller;
+# 	Copyright (C) 2002, 2003 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,16 @@ msgstr	"PO-Revision-Date: 08-Sep-2002\n"
 	"Plural-Forms: nplurals=3;plural=n%100/10==1 ? 2 : n%10==1 ? 0 : "
 	"(n+9)%10>3 ? 2 : 1\n"
 
-# -------------------------------------------------------------------------
+#
+# This error message is issued when an environment variable is meant to
+# be a positive integer, and it is not.
+#
+# 	$Name		The name of the environment variable.
+#
+msgid	"$$$name must be positive"
+msgstr	"значение переменной окружения $name должно быть положительным "
+	"десятичным числом"
+
 #
 # This error message is issued when a file has been tampered with while
 # in the 'being reviewed' or 'awaiting integration' state.  Files in
@@ -77,6 +86,29 @@ msgid	"$filename bad nf type"
 msgstr	"Файл \"$filename\" неподходящего типа. Эту команду можно "
 	"применять только к обычным файлам. Символические ссылки и  файлы "
 	"других специальных типов должны создаваться при сборке."
+
+#
+# This progress message is issued when a test run against the baseline
+# fails.  This is what it is meant to do because either (a) it is new
+# functionality, and will fail because it is not in the baseline, or (b)
+# it is a bug fix, and failing against the baseline demonstrates that
+# the test reproduces the bug.
+#
+# 	$File_Name	The name of the test file.
+#
+msgid	"$filename baseline fail, good"
+msgstr	"при тестировании базы проекта тест \"$filename\" завершился "
+	"неудачно (как и должен)"
+
+#
+# This error message is issued when a test run against the baseline
+# passes.  See above for why this is not good.
+#
+# 	$File_Name	The name of the test file.
+#
+msgid	"$filename baseline pass, not good"
+msgstr	"при тестировании базы проекта тест \"$filename\" завершился "
+	"успешно (это неправильно)"
 
 #
 # This error message is issued when a request is made to run a specific
@@ -121,15 +153,12 @@ msgstr	"файл \"$filename\" устарел, результат слияния с новой версией "
 	"помещён в файл \"$filename,D\""
 
 #
-# This progress message is issued when the aecpu command completes
-# successfully.  It details files which have been removed from the
-# change.  Please note: this is NOT the same as files added to the
-# change, which are to be removed BY the change.
+# This error message is issued when a test against the change fails.
 #
-# 	$File_Name	Name of the file removed from the change.
+# 	$File_Name	The name of the test file.
 #
-msgid	"$filename gone"
-msgstr	"файл \"$filename\" удалён из блока изменений"
+msgid	"$filename fail"
+msgstr	"тест \"$filename\" завершился неудачно"
 
 #
 # This error message is issued when an aed is performed on a change
@@ -171,6 +200,27 @@ msgstr	"файл \"$filename\" устарел и был объединён с последней версией , "
 	"старый вариант сохранён в файле \"$filename,B\""
 
 #
+# This error message is issued when a change file is modified by the
+# history tool (history_put_command or history_create_command)
+# during aeipass.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"$filename modified by history tool"
+msgstr	"исходный файл \"$filename\" был изменён программой хранения "
+	"истории файла"
+
+#
+# This error message is issued when aet runs a test which returns a ``no
+# result'' exit status.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"$filename no result"
+msgstr	"тест \"$filename\" завершился без результата; это могло "
+	"произойти из-за какой-то другой проблемы"
+
+#
 # This error message is issued when aede cannot find a file in the
 # development directory corresponding to a file listed as part of the
 # change.
@@ -188,6 +238,417 @@ msgstr	"не найден файл \"$filename\""
 #
 msgid	"$filename not test"
 msgstr	"файл \"$filename\" не является тестом"
+
+#
+# This progress message is issued when a test against the change passes.
+#
+# 	$File_Name	The name of the test file.
+#
+msgid	"$filename pass"
+msgstr	"тест \"$filename\" завершился успешно"
+
+#
+# This error message is issued when a file named on the command
+# cannot be related to the change being operated on.
+#
+# 	$File_Name	The offending command line argument.
+#
+msgid	"$filename unrelated"
+msgstr	"файл \"$filename\" не относится к блоку изменений"
+
+#
+# This warning message is issued when an obsolete percent (%)
+# substitution used.
+#
+# 	$File_Name	file containing message
+# 	$Line_Number	line number of message
+#
+#, no-c-format
+msgid	"$filename: $linenumber: don't use %% substitutions"
+msgstr	"$filename: $linenumber: предупреждение: подстановки вида (%%) "
+	"устарели следует использовать аналогичные подстановки вида ($$)"
+
+#
+# This error message is issued when a substitution function is formed
+# incorrectly.  See (+++) below.
+#
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+#
+msgid	"$filename: $linenumber: empty $${} substitution"
+msgstr	"$filename: $linenumber: пустая подстановка $${}"
+
+#
+# This error message is issued when one or more substitution variables
+# are unused.  All of them are reported, and then the substitution stops
+# with this error.
+#
+# 	$File_Name	Name of file containing message
+# 	$Line_Number	Line number of message
+# 	$Message	The *msgstr* part of the offending message.
+# 			(optional)
+# 	$Number		The number of unused substitution variables.
+# 			(Optional)
+#
+msgid	"$filename: $linenumber: in substitution \"$message\" found "
+	"unused variables"
+msgstr	"$filename: $linenumber: в подстановке \"$message\" обнаружено "
+	"$number неиспользуем${plf $n ая ые ых} переменн${plf $n ая ые "
+	"ых} (процесс остановлен)"
+
+#
+# This error message is issued when a substitution variable is not used
+# in a substitution.  In indicates some kind of incompleteness in the
+# use of the substitution.
+#
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+# 	$Message	The *msgstr* part of the offending message.
+# 			(optional)
+# 	$Name		The name of the unused substitution variable.
+# 			(optional)
+#
+msgid	"$filename: $linenumber: in substitution \"$message\" variable "
+	"\"$name\" unused"
+msgstr	"$filename: $linenumber: в подстановке \"$message\" есть "
+	"неиспользуемая переменная \"$name\""
+
+#
+# This error message is issued when a substitution fails.  (It is VERY
+# important that THIS substitution not fail, otherwise there will be an
+# infinite loop - it is caught, but does not yield a particularly
+# helpful message, nor will it impress the users.)
+# This +++ message works with the other messages marked +++ above.
+#
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+# 	$Name		The name of the offending substitution.
+# 	$Message	What was wrong with it.
+#
+msgid	"$filename: $linenumber: substitution $${$name} failed: $message"
+msgstr	"$filename: $linenumber: ошибка в подстановке $${$name}: $message"
+
+#
+# This error message is issued when a substitution function is formed
+# incorrectly.  See (+++) below.
+#
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+#
+msgid	"$filename: $linenumber: unterminated $${} \\ sequence"
+msgstr	"$filename: $linenumber: незавершённая последовательность $${} \\"
+
+#
+# This error message is issued when a substitution function is formed
+# incorrectly.  See (+++) below.
+#
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+#
+msgid	"$filename: $linenumber: unterminated $${} quotes"
+msgstr	"$filename: $linenumber: незавершённые кавычки $${}"
+
+#
+# This error message is issued when a substitution function is formed
+# incorrectly.  See (+++) below.
+#
+msgid	"$filename: $linenumber: unterminated $${} substitution"
+msgstr	"$filename: $linenumber: незавершённая подстановка $${}"
+
+#
+# This error message is issued when a substitution function is formed
+# incorrectly.  See (+++) below.
+#
+#, no-c-format
+msgid	"$filename: $linenumber: unterminated %%() substitution"
+msgstr	"$filename: $linenumber: незавершённая подстановка%%()"
+
+#
+# This error message is issued when a generic error in a text file is required.
+#
+# 	$File_Name	The name of the file being read or parsed.
+# 	$Message	The error message, formed previously.
+#
+msgid	"$filename: $message"
+msgstr	"$filename: $message"
+
+#
+# This error message is issued when the project config file specifies
+# architecture variants incompletely.
+#
+# 	$File_Name	The name of the offending file
+#
+msgid	"$filename: arch needs name and pattern"
+msgstr	"$filename: в описании архитектуры должны присутствовать как "
+	"название(name), так и шаблон(pattern)"
+
+#
+# This error message is issued when an Aegis database file is missing a
+# field which should be present.
+#
+# 	$File_Name	The name of the offending file, usually an
+# 			absolute path, but not always.
+# 	$FieLD_Name	The name of the absent field.
+#
+msgid	"$filename: contains no \"$field_name\" field"
+msgstr	"$filename: пропущено поле \"$field_name\""
+
+#
+# This error message is issued when an Aegis database file has an
+# illegal (impossible) value in a field.
+#
+# 	$File_Name	The name of the offending file, usually an
+# 			absolute path, but not always.
+# 	$FieLD_Name	The name of the absent field.
+#
+msgid	"$filename: corrupted \"$field_name\" field"
+msgstr	"$filename: поле \"$field_name\" искажено"
+
+#
+# This fatal error message is issued when Aegis is checking a project's
+# ownership and finds something incorrect.
+#
+msgid	"$filename: gid $number1 invalid, must be >= $number2"
+msgstr	"$filename: идентификатор группы(GID) этого файла слишком мал "
+	"($number1), он должен быть больше или равен значению переменной "
+	"окружения AEGIS_MIN_GID ($number2).  Скорее всего это результат "
+	"ошибки при резервном копировании и последующем восстановлении "
+	"файлов. Для исправления следует воспользоваться командой ``chgrp "
+	"-R <group> $filename'', с указанием подходящей группы.  "
+	"[Необходимы полномочия администратора(root).]"
+
+#
+# This error message is issued when Aegis is checking a file's group,
+# and finds something incorrect.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The file's gid.
+# 	$Number2	What Aegis expected as the file's gid.
+#
+msgid	"$filename: group is $number1, should be $number2"
+msgstr	"$filename: идентификатор группы(GID) $number1, а должен быть "
+	"$number2"
+
+#
+# This error message is issued when Aegis is checking a file,
+# and found 1 or more things incorrect.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"$filename: has been tampered with (fatal)"
+msgstr	"$filename: файл был искажён (это плохо)"
+
+#
+# This error message is issued when a file parse fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so as many as possible are found before aborting.  This
+# error is emitted when it aborts.
+#
+# 	$File_Name	The name of the file being read or parsed.
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
+#
+msgid	"$filename: has errors"
+msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
+	"$n ка ки ок} в файле $filename"
+
+#
+# This error message is issued when Aegis is checking a file's modes,
+# and finds something incorrect.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The file's mode.
+# 	$Number2	What Aegis expected as the file's mode.
+#
+msgid	"$filename: mode is $number1, should be $number2"
+msgstr	"$filename: режим доступа к файлу $number1, а должен быть $number2"
+
+#
+# This error message is issued when Aegis is checking a file's owner,
+# and finds something incorrect.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The file's uid.
+# 	$Number2	What Aegis expected as the file's uid.
+#
+msgid	"$filename: owner is $number1, should be $number2"
+msgstr	"$filename: идентификатор владельца файла $number1, а должен быть "
+	"$number2"
+
+#
+# This error message is issued when a text file contains too many errors
+# and the parse has been aborted.
+#
+# 	$File_Name	The name of the file being read or parsed.
+#
+msgid	"$filename: too many errors"
+msgstr	"$filename: слишком много серьёзных ошибко, процесс остановлен"
+
+#
+# This fatal error message is issued when Aegis is checking a project's
+# ownership and finds something incorrect.
+#
+msgid	"$filename: uid $number1 invalid, must be >= $number2"
+msgstr	"$filename: идентификатор владельца(UID) этого файла слишком мал "
+	"($number1), он должен быть больше или равен значению переменной "
+	"окружения AEGIS_MIN_UID ($number2).  Скорее всего это результат "
+	"ошибки при резервном копировании и последующем восстановлении "
+	"файлов. Для исправления следует воспользоваться командой ``chown "
+	"-R <user> $filename'', с указанием подходящей группы.  "
+	"[Необходимы полномочия администратора(root).]"
+
+#
+# This error message is issued when a generic error in a function is required.
+#
+# 	$Function	The name of the function being performed.
+# 	$Number		The line number on which the error occurred.
+# 	$Message	The error message, formed previously.
+#
+msgid	"$function: argument $number: $message"
+msgstr	"$function: параметр $number: $message"
+
+#
+# This error message is issued when the user requests to print a value
+# which is unprintable.  It could be a structure or a list, etc.
+#
+# 	$Function	The name of the function
+# 	$Number		The argument number
+#
+msgid	"$function: argument $number: cannot convert string into a time"
+msgstr	"$function: параметр $number: не могу получить время из строки"
+
+#
+# This error message is issued when the sprintf function is
+# given an argument of the wrong type, when an integer was expected.
+#
+# 	$Function	The name of the function being called.
+# 	$Name		The type name of the offending argument.
+# 	$Number		The number of the offending argument (starts at 1).
+#
+msgid	"$function: argument $number: integer value required (was given "
+	"$name)"
+msgstr	"$function: параметр $number: требуется целое значение(передано "
+	"$name)"
+
+#
+# This error message is issued when sprintf is given a precision in a
+# format specifier which is too large.
+#
+# 	$Function	The name of the function being called.
+# 	$Number		The number of the offending argument.
+# 	$Value		The value of the offending precision.
+#
+msgid	"$function: argument $number: precision of $value is out of range"
+msgstr	"$function: параметр $number: слишком высокая точность значения "
+	"$value"
+
+#
+# This error message is issued when the sprintf function is
+# given an argument of the wrong type, when a real was expected.
+#
+# 	$Function	The name of the function being called.
+# 	$Name		The type name of the offending argument.
+# 	$Number		The number of the offending argument (starts at 1).
+#
+msgid	"$function: argument $number: real value required (was given "
+	"$name)"
+msgstr	"$function: параметр $number: требуется действительное значение "
+	"(передано $name)"
+
+#
+# This error message is issued when a function is
+# given an argument of the wrong type.
+#
+# 	$Function	The name of the function being called.
+# 	$Number		The number of the offending argument (starts at 1).
+# 	$Name		The type name of the offending argument.
+#
+msgid	"$function: argument $number: string value required (was given "
+	"$name)"
+msgstr	"$function: параметр $number: требуется строка (передано $name)"
+
+#
+# This error message is issued when a function is not
+# given a time type as an argument.
+#
+# 	$Function	The name of the function being called.
+# 	$Name		The type name of the offending argument.
+# 	$Number		The number of the offending argument (starts at 1).
+#
+msgid	"$function: argument $number: time value required (was given "
+	"$name)"
+msgstr	"$function: параметр $number: требуется значение типа время "
+	"(передано $name)"
+
+#
+# This error message is issued when the user requests to print a value
+# which is unprintable.  It could be a structure or a list, etc.
+#
+# 	$Function	The name of the function
+# 	$Number		The argument number
+# 	$Name		The type name of the offending argument.
+#
+msgid	"$function: argument $number: unable to print $name value"
+msgstr	"$function: параметр $number: не могу вывести значение $name"
+
+#
+# This error message is issued when sprintf is given a print width in a
+# format specifier which is too wide.
+#
+# 	$Function	The name of the function being called.
+# 	$Number		The number of the offending argument.
+# 	$Value		The value of the offending width.
+#
+msgid	"$function: argument $number: width $value out of range"
+msgstr	"$function: параметр $number: слишком большое значение $value"
+
+#
+# This error message is issued when a function result is too large for
+# an internal buffer.
+#
+# 	$Function	The name of the function being called.
+#
+msgid	"$function: result too long"
+msgstr	"$function: слишком длинный результат"
+
+#
+# This error message is issued when a function is called with
+# too few arguments.
+#
+# 	$Function	The name of the function being called.
+#
+msgid	"$function: too few arguments"
+msgstr	"$function: слишком мало параметров"
+
+#
+# This error message is issued when a function is given too many arguments.
+#
+# 	$Function	The name of the function being called.
+# 	$Number1	The number of arguments given to the function call.
+# 	$Number2	The number of arguments used by the format.
+#
+msgid	"$function: too many arguments ($number1 given, only $number2 "
+	"used)"
+msgstr	"$function: слишком много параметров (передано $number1, "
+	"использовано только $number2)"
+
+#
+# This error message is issued when sprintf is given an unknown format
+# specifier.
+#
+# 	$Function	The name of the function being called.
+# 	$Name		The offending format character.
+#
+msgid	"$function: unknown format specifier '$name'"
+msgstr	"$function: неизвестный формат '$name'"
+
+#
+# This is a generic "echo me" format string.
+#
+# 	$Message	The message to be issued.
+#
+msgid	"$message"
+msgstr	"$message"
 
 #
 # This error message is issued when a command line option requires a
@@ -252,6 +713,66 @@ msgid	"$name already reviewer"
 msgstr	"пользователь \"$name\" уже является рецензентом"
 
 #
+# This fatal error message is issued when a lock is not available.
+#
+msgid	"$name lock not available"
+msgstr	"блокировка $name не доступна"
+
+#
+# This error message is issued when an option which should be followed
+# by a directory name, is not followed by any.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"$name needs dir"
+msgstr	"после опции $name должен идти путь к директории"
+
+#
+# This error message is issued when an option which should be followed
+# by one file name, is not followed by any.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"$name needs file"
+msgstr	"после опции $name должно идти имя файла"
+
+#
+# This error message is issued when an option which should be followed
+# by one or more file names, is not followed by any.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"$name needs files"
+msgstr	"после опции $name должно идти одно или несколько имён файлов"
+
+#
+# This error message is issued when an option which should be followed
+# by a name is not.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"$name needs name"
+msgstr	"после опции $name должно идти имя"
+
+#
+# This error message is issued when an option which should be followed
+# by a number is not.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"$name needs number"
+msgstr	"после опции $name должно идти число"
+
+#
+# This error message is issued when an option which should be followed
+# by a string is not.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"$name needs string"
+msgstr	"после опции $name должна идти строка"
+
+#
 # This error message is given when a command line option is not
 # meaningful, but could be at other times.
 #
@@ -261,6 +782,37 @@ msgid	"$name option not meaningful"
 msgstr	"опция ``$name'' не имеет смысла в данном контексте"
 
 #
+# This format string is used to glue together the last two items in the
+# architecture names list.
+#
+# 	$Name1		a quoted architecture name
+# 	$Name2		a quoted architecture name
+#
+msgid	"$name1 and $name2"
+msgstr	"$name1 и $name2"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when an option which needs to be
+# accompanied by another option, but that option is not present.
+#
+# 	$Name1		The name of the offending option.
+# 	$Name2		The name of the offending option.
+#
+msgid	"$name1 needs $name2"
+msgstr	"the $name1 option must be accompanied the $name2 option"
+
+#
+# This format string is used to glue together two items in the
+# architecture names list.  Not used for the last two.
+#
+# 	$Name1		a quoted architecture name
+# 	$Name2		a quoted architecture name
+#
+msgid	"$name1, $name2"
+msgstr	"$name1, $name2"
+
+#
 # This error message is issued when an aechown command attempts to
 # change the ownership of a change to a user who is not a developer.
 #
@@ -268,6 +820,54 @@ msgstr	"опция ``$name'' не имеет смысла в данном контексте"
 #
 msgid	"$target not developer"
 msgstr	"пользователь \"$target\" не является разработчиком"
+
+#
+# This error message is issued a power returns an error.
+# The error will be EDOM or ERANGE.
+#
+# 	$Value1		The value of the left operand.
+# 	$Value2		The value of the right operand.
+#
+msgid	"$value1 ** $value2: $errno"
+msgstr	"$value1 ** $value2: $errno"
+
+#
+# This warning message is issued when the -TRace option is used on a
+# version of Aegis compiled without the DEBUG define in common/main.h
+# turned on.
+#
+msgid	"-TRace needs DEBUG"
+msgstr	"предупреждение: опция -TRace  имеет смысл только если при сборке "
+	"Aegis в файле common/main.h был определён макрос DEBUG."
+
+#
+# This error message is issued when Aegis is misconfigured.
+#
+# 	$Number1	the current AEGIS_USER_GID setting
+# 	$Number2	the current AEGIS_MIN_GID setting
+#
+msgid	"AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) "
+	"misconfigured"
+msgstr	"Ошибка в конфигурации.  Значение переменной окружения "
+	"AEGIS_USER_GID ($number1) должно быть меньше значения переменно "
+	"окружения AEGIS_MIN_GID ($number2). Для правильной работы "
+	"программы важно, чтобы группа с идентификатором AEGIS_USER_GID "
+	"не могла быть владельцем проектов. Это серьёзная ошибка."
+
+#
+# This error message is issued when Aegis is misconfigured.
+#
+# 	$Number1	the current AEGIS_USER_UID setting
+# 	$Number2	the current AEGIS_MIN_UID setting
+#
+msgid	"AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) "
+	"misconfigured"
+msgstr	"Ошибка в конфигурации.  Значение переменной окружения "
+	"AEGIS_USER_UID ($number1) должно быть меньше значения переменно "
+	"окружения AEGIS_MIN_UID ($number2). Для правильной работы "
+	"программы важно, чтобы пользователь с идентификатором "
+	"AEGIS_USER_UID не мог быть владельцем проектов. Это серьёзная "
+	"ошибка."
 
 #
 # This text is used to describe change 1 of a new release.
@@ -299,6 +899,13 @@ msgid	"Project $name, Change $number"
 msgstr	"Проект \"$name\", Блок изменений $number"
 
 #
+# This error message is issued when the ${read_file} substitution is
+# called incorrectly.  See (+++) below.
+#
+msgid	"absolute path required"
+msgstr	"требуется абсолютный путь"
+
+#
 # This verbose message is issued when aeipass is updating the modification
 # times of all the files in the integration directory.
 #
@@ -325,12 +932,26 @@ msgstr	"при использовании опции `-Keep' команды aegis -New-PRoject "
 	"необходимо также указать опцию `-DIRectory'"
 
 #
+# This fatal error message is issued if it appears that there is a
+# reference loop of project aliases.
+#
+msgid	"alias loop detected"
+msgstr	"обнаружено зацикливание псевдонимов"
+
+#
 # This error messages is issued when a user attempts to create a new
 # test, and all the test numbers appear to have been consumed.  This error
 # message should be impossible.
 #
 msgid	"all test numbers used"
 msgstr	"похоже все номера тестов уже использованы"
+
+#
+# This error message is issued when an unknown substitution is
+# referenced.  See (+++) below.
+#
+msgid	"ambiguous substitution name"
+msgstr	"необнозначное имя подстановки"
 
 #
 # This progress message is issued when an 'aegis -diff -anticipate'
@@ -340,6 +961,15 @@ msgid	"anticipated merge complete"
 msgstr	"слияние с упреждением завершено"
 
 #
+# This information message is issued when Aegis appends the log to an
+# existing log file.
+#
+# 	$File_Name	The name of the log file.
+#
+msgid	"appending log to $filename"
+msgstr	"добавление журнала к файлу \"$filename\""
+
+#
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
@@ -347,10 +977,98 @@ msgid	"apply change to integration directory"
 msgstr	"копирование блока изменений в директорию интеграции"
 
 #
+# This fatal error message is issued when Aegis determines that the
+# architecture it is currently running on is forbidden by the (5)
+# architecture field of the project ``config'' file.
+#
+# 	$Name		The offending architecture name.
+#
+msgid	"architecture \"$name\" forbidden"
+msgstr	"архитектура \"$name\" запрещена, команду нельзя выполнить на "
+	"этом компьютере"
+
+#
+# This error message is issued when Aegis is unable to determine which
+# architecture it is currently running on.  This means that the
+# architecture does not match any of the architecture patterns specified
+# in the project ``config'' file.
+#
+# 	$Name		The offending architecture name.
+#
+msgid	"architecture \"$name\" unknown"
+msgstr	"неизвестная архитектура \"$name\""
+
+#
+# This error message is issued when an architecture appears in the list
+# of architectures the change must apply to, but that architecture name
+# is not present in the project's architecture list in the project
+# ``config'' file.
+#
+# 	$Name		The name of the offending architecture.
+#
+msgid	"architecture \"$name\" unlisted"
+msgstr	"архитектура \"$name\" присутствует в атрибутах блока изменений, "
+	"но не указана в файле конфигурации проекта 'config'"
+
+#
+# This fatal error message is issued when a file ches size while the
+# archive is being constructed.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"archive member $filename changed size"
+msgstr	"файл $filename изменил размер во время работы, архив испорчен"
+
+#
+# This message is issued when an inappropriate -- is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"arithmetic type required for decrement (was given $name)"
+msgstr	"для операции декремента требуется параметр арифметического типа "
+	"(передано $name)"
+
+#
+# This message is issued when an inappropriate ++ is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"arithmetic type required for increment (was given $name)"
+msgstr	"для операции инкремента требуется параметр арифметического типа "
+	"(передано $name)"
+
+#
 # This message is issued when an aeca is successfully completed.
 #
 msgid	"attributes changed"
 msgstr	"атрибуты изменены"
+
+#
+# This error message is issued when an aenc command or aeca command
+# fails, to inform the user where s/he may find the text of failed
+# attributes file.
+#
+# 	$File_Name	The absolute path of the file containing the
+# 			offending attributes text file.
+#
+msgid	"attributes in $filename"
+msgstr	"текст атрибутов сохранён в файле \"$filename\""
+
+#
+# This error message is issued when the change is not in a suitable state
+# to search within for files.
+#
+msgid	"bad aefind state"
+msgstr	"этот блок изменений находится в стадии '$state', для поиска "
+	"файлов он должен быть в стадии 'being developed'"
+
+#
+# This fatal error message sis issued when the aels command is used on
+# a change which is in the `aewaiting development' state.
+#
+msgid	"bad aels state"
+msgstr	"этот блок изменений находится в стадии '$state', для вывода "
+	"информации о файлах он должен быть в стадии 'being developed'"
 
 #
 # This error message is issued when a project alias is given to aenpa
@@ -477,15 +1195,6 @@ msgstr	"этот блок изменений находится в стадии '$state', для смены "
 msgid	"bad clean state"
 msgstr	"этот блок изменений находится в стадии '$state', для удаления "
 	"лишних файлов он должен быть в стадии 'being developed'"
-
-#
-# This error message is issued when an attempt is made to clone a change
-# which is in the 'awaiting development' state.  Any other state is acceptable.
-#
-msgid	"bad clone state"
-msgstr	"этот блок изменений находится в стадии '$state', для "
-	"клонирования он должен быть в стадии 'being developed' или в "
-	"одной из более поздних"
 
 #
 # This error message is issued when an attempt is made to copy files
@@ -776,6 +1485,39 @@ msgstr	"этот блок изменений находится в стадии '$state', для удаления "
 	"созданных тестов он должен быть в стадии 'being developed'"
 
 #
+# This error message is issued when aepa is given a default development
+# directory which is not an absolute path.
+#
+msgid	"bad pa, rel def dev dir"
+msgstr	"рабочую директорию по умолчанию следует указывать в виде "
+	"абсолютного пути"
+
+#
+# This fatal error message is issued when a change is not in a suitable
+# state from which to make a distribution change set.
+#
+msgid	"bad patch send state"
+msgstr	"этот блок изменений находится в стадии $state; для пересылки он "
+	"должен быть в одной из более поздних стадий"
+
+#
+# This error message is issued when an illegal filename pattern is specified.
+#
+# 	$File_Name	The offending file name pattern.
+#
+msgid	"bad pattern $filename"
+msgstr	"недопустимый шаблон имени файла \"$filename\""
+
+#
+# This error message is issued when a project name is given to aenpr
+# which contains unprintable characters or spaces.
+#
+# 	$Name		The offending project name.
+#
+msgid	"bad project $name"
+msgstr	"недопустимое название проекта \"$name\""
+
+#
 # This error message is issued when aerb is invoked for a change which is
 # not in the 'awaiting review' state.
 #
@@ -841,6 +1583,21 @@ msgstr	"этот блок изменений находится в стадии '$state', он должен быть "
 	"рецензирования"
 
 #
+# This fatal error message is issued when there would be no files in
+# the distributed change set.
+#
+msgid	"bad send no files"
+msgstr	"отсутствуют файлы для пересылки"
+
+#
+# This fatal error message is issued when a change is not in a suitable
+# state from which to make a distribution change set.
+#
+msgid	"bad send state"
+msgstr	"этот блок изменений находится в стадии $state; для пересылки он "
+	"должен быть в одной из более поздних стадий"
+
+#
 # This error message is issued when a user requests a test of a change
 # from the wrong state.
 #
@@ -848,6 +1605,15 @@ msgid	"bad test state"
 msgstr	"этот блок изменений находится в стадии '$state', для запуска "
 	"тестов он должен быть в стадии 'being developed' или 'being "
 	"integrated'"
+
+#
+# This error message is issued when a version string is given to aenpr
+# which can't be broken into ``ispunct'' separated number.
+#
+# 	$Number		The offending version number.
+#
+msgid	"bad version $number"
+msgstr	"недопустимый номер версии \"$number\""
 
 #
 # This error message is issued when aede finds a file which has been
@@ -877,6 +1643,82 @@ msgstr	"Файл \"$filename\" в родительской ветви был изменён после его "
 	"завершения интеграции блока изменений, файл будет "
 	"соответствовать содержимому родительской ветви. Подробная "
 	"информация находится в главе Branching руководстве пользователя."
+
+#
+# This fatal error message is issued when a lock is not available.
+#
+msgid	"baseline read lock not available"
+msgstr	"не доступна блокировка базы проекта на чтение"
+
+#
+# This fatal error message is issued when a lock is not available.
+#
+msgid	"baseline write lock not available"
+msgstr	"не доступна блокировка базы проекта на запись"
+
+#
+# This error message is issued before running batch_test_command if
+# progress messages were requested
+#
+# 	$Current	Number of the first test in batch
+# 	$Last		Number of the last test in batch
+# 	$Total		Total number of tests
+#
+msgid	"batch test from $current to $last of $total"
+msgstr	"пакет тестов от $current до $last из $total"
+
+#
+# This error message is issued when the bevel size specified is negative,
+# or too big.
+#
+msgid	"bevel size $number out of range"
+msgstr	"недопустимый параметр скругления $number, должен быть от 0 до 10"
+
+#
+# This message is issued when an inappropriate e?e:e is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"boolean value required for arithmetic if (was given $name)"
+msgstr	"для операции арифметического if требуется параметр логического "
+	"типа (передано $name)"
+
+#
+# This error message is issued when a ternary "if" expression (e1 ? e2 :
+# e3) expression is not given a boolean expression as for first argument (e1).
+#
+# 	$name	The name of the type of e1.
+#
+msgid	"boolean value required for if (was given $name)"
+msgstr	"для выражения ?: требуется логическая величина (передано $name)"
+
+#
+# This message is issued when an inappropriate && is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"boolean value required for logical and (was given $name)"
+msgstr	"для операции логического ``and'' требуется параметр логического "
+	"типа (передано $name)"
+
+#
+# This message is issued when an inappropriate || is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"boolean value required for logical or (was given $name)"
+msgstr	"для операции логического ``or'' требуется параметр логического "
+	"типа (передано $name)"
+
+#
+# This error message is issued when the control expression for an ``if''
+# statement does not evaluate to a boolean.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"boolean value required in if statement (not $name)"
+msgstr	"для оператора ``if'' требуется параметр логического типа "
+	"(передано $name)"
 
 #
 # This error message is issued when an absurd branch number is given.
@@ -935,6 +1777,54 @@ msgstr	"В процессе сборки был изменён исходный файл \"$filename\" Чаще "
 	"или ``aerm $filename'', а затем ``aenf -build $filename''."
 
 #
+# This error message is issued when copying a file to stdout fails.
+# Exactly which file (the source or stdout) is at fault is not
+# immediately available, because Aegis could have one this in a child
+# process.
+#
+# 	$File_Name	The name of the source file.
+#
+msgid	"cat $filename: $errno"
+msgstr	"ошибка при выводе файла \"$filename\": $errno"
+
+#
+# This information message is issued when Aegis is about to execute a
+# command, to tell the user where the command is to be executed.
+#
+msgid	"cd $filename"
+msgstr	"cd $filename"
+
+#
+# This is the format of change messages (error, fatal and verbose).
+# Some changes are actually branches.
+#
+# 	$Message"	The message to be issued.
+#
+msgid	"change $change: $message"
+msgstr	"блок $change: $message"
+
+#
+# This fatal error is issued when the --delta-from-change option is used
+# with a change which has not yet been completed.
+#
+# 	$Number		The offending change's number.
+#
+msgid	"change $number not completed"
+msgstr	"блок изменений $number находится в стадии \"$state\"; он должен "
+	"быть в стадии \"completed\" для использования опции --delta-from-"
+	"change"
+
+#
+# This error message is issued when an absurd change number is given.
+# This is different to an unknown but valid change number.
+#
+# 	$Number		The offending change number.
+#
+msgid	"change $number out of range"
+msgstr	"недопустимый номер блока изменений $number, это должно быть "
+	"небольшое положительное число"
+
+#
 # This error message is issued when aenbr is given an explicit change
 # number, but that number has already been used as change number or as
 # a change number.
@@ -946,12 +1836,46 @@ msgstr	"номер блока изменений $number уже используется, следует выбрать "
 	"другой или не указывать ни какого для автоматического выбора"
 
 #
+# This message is issued when aedist --receive cancells a change because
+# the change is alreday present in the repository.  No action required.
+#
+msgid	"change already present"
+msgstr	"Этот блок изменений не был принят, поскольку изменения уже "
+	"сделаныв репозитарии."
+
+#
 # This message is issued when an aecd command is successfully completed.
 #
 # 	$File_Name	The absolute path of the directory changed to.
 #
 msgid	"change directory $filename complete"
 msgstr	"$filename"
+
+#
+# This error message is issued when a chdir fails.
+#
+# 	$File_Name	The name of the directory to chdir to.
+#
+msgid	"chdir $filename: $errno"
+msgstr	"chdir \"$filename\": $errno"
+
+#
+# This error message is issued when a chgrp fails.
+#
+# 	$File_Name	The name of the file to be changed.
+# 	$Argument	The GID the file is to be set.
+#
+msgid	"chgrp(\"$filename\", $arg): $errno"
+msgstr	"chgrp(\"$filename\", $arg): $errno"
+
+#
+# This error message is issued when a chmod fails.
+#
+# 	$File_Name	The name of the file to be changed.
+# 	$Argument	The mode desired.
+#
+msgid	"chmod(\"$filename\", $arg): $errno"
+msgstr	"chmod(\"$filename\", $arg): $errno"
 
 #
 # This message is issued when an aechown command completes successfully.
@@ -976,6 +1900,99 @@ msgstr	"лишние файлы удалены"
 #
 msgid	"clone complete"
 msgstr	"клонирование блока изменений $original завершено"
+
+#
+# This error message is issued when a file close fails
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"close $filename: $errno"
+msgstr	"close \"$filename\": $errno"
+
+#
+# This error message is issued when a file compare fails with a system
+# error.  (Alike or unalike are normal returns, this is an exception.)
+# Exactly which file is at fault is not immediately available, because
+# Aegis could have one this in a child process.
+#
+# 	$File_Name1	The name of the source file.
+# 	$File_Name2	The name of the destination file.
+#
+msgid	"cmp $filename1 $filename2: $errno"
+msgstr	"cmp \"$filename1\" \"$filename2\": $errno"
+
+#
+# This error message is issued when a color component is not in the
+# range 0..255.
+#
+msgid	"color component $number out of range"
+msgstr	"недопустимое значение компоненты цвета $number, должно быть от 0 "
+	"до 255"
+
+#
+# This error message is issued when a child process stops with a
+# non-zero exit status.
+#
+# 	$Command	The offending command.
+# 	$Number		The exit status of the child.
+#
+msgid	"command \"$command\" exit status $number"
+msgstr	"команда \"$command\" завершилась с кодом $number"
+
+#
+# This error message is issued when a child process stops.
+# Since Aegis didn't ask it to, this is treated as a fatal error.
+#
+# 	$Command	The offending command.
+#
+msgid	"command \"$command\" stopped"
+msgstr	"команда \"$command\" остановлена"
+
+#
+# This error message is issued when a child process terminates due to an
+# uncaught signal.
+#
+# 	$Command	The offending command.
+# 	$Signal		The name of the terminating signal.
+#
+msgid	"command \"$command\" terminated by $signal"
+msgstr	"команда \"$command\" прервана сигналом $signal"
+
+#
+# This error message is issued when a child process stops due to an
+# uncaught signal, and also dumps core.
+#
+# 	$Command	The offending command.
+# 	$Signal		The name of the terminating signal.
+#
+msgid	"command \"$command\" terminated by $signal (core dumped)"
+msgstr	"команда \"$command\" прервана сигналом $signal (core dumped)"
+
+#
+# This error message is issued when the command line is too short.
+#
+msgid	"command line too short"
+msgstr	"слишком короткая командная строка"
+
+#
+# This message is inserted into the top of the project config file
+# automatically created by aeimport.
+#
+msgid	"config file hint"
+msgstr	"Следует изменить этот файл в соответствии с требованиями к "
+	"проекту. Описание полей приведено на странице aepconf(5). В "
+	"качестве примеров настройки имеет\n"
+	"смысл обратить внимание на файлы из директории $datadir/config."
+	"example/"
+
+#
+# This fatal error message is issued when aedist or aepatch don't
+# recognize a content transfer encoding name.
+#
+# 	$Name		The offending encoding name.
+#
+msgid	"content transfer encoding $name unknown"
+msgstr	"неизвестный способ кодирования \"$name\""
 
 #
 # This progress message is issued for aecp file when aecp completes
@@ -1016,6 +2033,52 @@ msgid	"copy file complete"
 msgstr	"скопирован${pl $n о} $n файл${plf $n '' а ов}"
 
 #
+# TRANSLATION REQUIRED
+# This progress message is issued when the aecpu command completes
+# successfully.  It details files which have been removed from the
+# change.  Please note: this is NOT the same as files added to the
+# change by aerm, which are to be removed BY the change.
+#
+# 	$File_Name	Name of the file removed from the change.
+#
+msgid	"copy file undo $filename complete"
+msgstr	"файл \"$filename\" удалён из блока изменений"
+
+#
+# This progress message is issued by aeimport when it starts to copy the
+# history fierls from the old repository into the project history tree.
+#
+msgid	"copy history files"
+msgstr	"копирование файлов истории из внешенго репозитария в директорию "
+	"проекта..."
+
+#
+# This error message is issued when a file copy fails.  Exactly which
+# file is at fault is not immediately available, because Aegis could
+# have one this in a child process.
+#
+# 	$File_Name1	The name of the source file.
+# 	$File_Name2	The name of the destination file.
+#
+msgid	"cp $filename1 $filename2: $errno"
+msgstr	"cp \"$filename1\" \"$filename2\": $errno"
+
+#
+# This error message is issued when a file create fails
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"create $filename: $errno"
+msgstr	"create \"$filename\": $errno"
+
+#
+# This progress message is issued when Aegis creates the symbolic links
+# from the development directory which point to the baseline.
+#
+msgid	"creating symbolic links to baseline"
+msgstr	"создание символичесих ссылок к базе проекта"
+
+#
 # This error message is issued when an aeib command is given, but there
 # is already an integration in progress.  Only one integration may be
 # performed at a time.
@@ -1025,6 +2088,24 @@ msgstr	"скопирован${pl $n о} $n файл${plf $n '' а ов}"
 msgid	"currently integrating $number"
 msgstr	"в настоящее время производится интеграцияя блока изменений "
 	"$number, блоки могут быть интегрированы только по одному"
+
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as a date (time_t).
+#
+# 	$Name		The offending string.
+#
+msgid	"date $name unknown"
+msgstr	"строка \"$name\" не похожа на дату"
+
+#
+# This warning message is issued when aecp -delta-date is given a time
+# which is in the future.  Unlike times in the past, the answer could
+# change at a later date.  This is Damon Poole's "time safe" property.
+#
+msgid	"date in the future"
+msgstr	"Предупреждение: Дата дельты указана в будущем. Если та же самая "
+	"команда будет выполнена позже, результат может быть другим."
 
 #
 # This error message is issued when an attempt is made to reuse an
@@ -1040,6 +2121,16 @@ msgid	"delta $name in use"
 msgstr	"Название \"$name\" уже присвоено дельте $other; чтобы присвоить "
 	"это имя дельте $number следует воспользоваться опцией -"
 	"OverWriting"
+
+#
+# This error message is issued when an absurd delta number is given.
+# This is different to an unknown but valid delta number.
+#
+# 	$Number		The offending delta number.
+#
+msgid	"delta $number out of range"
+msgstr	"недопустимый номер дельты $number, это должно быть небольшое "
+	"положительное число"
 
 #
 # This progress message is issued when aedn completes successfully.
@@ -1176,6 +2267,12 @@ msgid	"discard old directories"
 msgstr	"удаление старых директорий"
 
 #
+# This error message is issued when a division by zero is attempted.
+#
+msgid	"division by zero"
+msgstr	"деление на ноль"
+
+#
 # This error message is issued when the obsolete -major or -minor
 # options are used with the new modern better improved preferred -version
 # option.
@@ -1184,12 +2281,119 @@ msgid	"don't mix old and new version options"
 msgstr	"опции -MAJor and -MINOr несовместимы с опцией -VERSion"
 
 #
+# This error message is issued when an option is used more than one on
+# the command line.
+#
+# 	$Name		The name of the offending option.
+#
+msgid	"duplicate $name option"
+msgstr	"опция $name повторяется, эту опцию можно использовать только "
+	"один раз"
+
+#
+# This error message is issued when an unterminated comment is seen.
+# Comments may not span input files.
+#
+msgid	"end-of-file within comment"
+msgstr	"обнаружен конец файла внутри коментария"
+
+#
+# This error message is issued when an unterminated string is detected.
+# Strings may not span input files.
+#
+msgid	"end-of-file within string"
+msgstr	"обнаружен конец файла внутри строки"
+
+#
+# This error message is issued when an unterminated string is detected.
+# Strings may not span multiple input lines.
+#
+msgid	"end-of-line within string"
+msgstr	"незавершённые кавычки"
+
+#
+# This error message is issued when an environment variable has not been
+# set, it it needs to be.
+#
+# 	$Name		The name of the offending environment variable.
+#
+msgid	"environment variable $name not set"
+msgstr	"не установлена переменная окружения ``$name''"
+
+#
+# This fatal error message is issued when the execution of a command
+# fails.  The filename may, or may not, be absolute.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"exec \"$filename\": $errno"
+msgstr	"exec \"$filename\": $errno"
+
+#
 # This error message is issued when aet completes unsuccessfully.
 #
 # 	$Number		The number of tests which failed.
 #
 msgid	"failed $number tests"
 msgstr	"неудачно завершил${pl $n ось ся} $number тест${plf $n '' а ов}"
+
+#
+# This error message is issued when a fatal error occurs while Aegis is
+# attempting to recover from an earlier fatal error.
+#
+msgid	"fatal error during fatal error recovery"
+msgstr	"При попытке восстановления после серьёзной ошибки возникла новая "
+	"серьёзная ошибка. Некоторые данные могут быть испорчены. Лучше "
+	"всего проконсультироваться с ближайшим \"гуру\"."
+
+#
+# This error message is issued when Aegis fails to get file descriptor flags.
+# This message is so rare as to usually indicate a bug.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"fcntl(\"$filename\", F_GETFD): $errno"
+msgstr	"fcntl(\"$filename\", F_GETFD): $errno"
+
+#
+# This error message is issued when Aegis fails to get a lock status
+# This message is so rare as to usually indicate a bug.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
+#
+msgid	"fcntl(\"$filename\", F_GETLK, $arg): $errno"
+msgstr	"fcntl(\"$filename\", F_GETLK, $arg): $errno"
+
+#
+# This error message is issued when Aegis fails to set file descriptor flags.
+# This message is so rare as to usually indicate a bug.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
+#
+msgid	"fcntl(\"$filename\", F_SETFD, $arg): $errno"
+msgstr	"fcntl(\"$filename\", F_SETFD, $arg): $errno"
+
+#
+# This error message is issued when Aegis fails to set a lock.
+# This message is so rare as to usually indicate a bug.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
+#
+msgid	"fcntl(\"$filename\", F_SETLK, $arg): $errno"
+msgstr	"fcntl(\"$filename\", F_SETLK, $arg): $errno"
+
+#
+# This error message is issued when Aegis fails to set a lock.
+# This message is so rare as to usually indicate a bug.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
+#
+msgid	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
+msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 
 #
 # This warning message is issued when aet has been asked to suggest a
@@ -1206,6 +2410,34 @@ msgstr	"предупреждение: обнаружен${pl $n о} только $number1 подходящ${pl "
 	"использован'}"
 
 #
+# This error message is issued when a field in an Aegis data file or
+# configuration file is defined more than once.
+#
+# 	$Name		The name of the offending field.
+#
+msgid	"field \"$name\" redefined"
+msgstr	"поле \"$name\" переопределено"
+
+#
+# This error message is issued when a change file collides with a file
+# already in the project.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"file \"$filename\" already exists in project"
+msgstr	"файл \"$filename\" уже присутствует в проекте"
+
+#
+# This error message is issued when a change file name is not acceptable
+# to the filename pattern filters.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"file \"$filename\" bombs filters"
+msgstr	"имя файла \"$filename\" недопустимо из-за фильтров (см. файл "
+	"'config')"
+
+#
 # This error message is issued when aeclean discovers that a change
 # source file does not exist.
 #
@@ -1214,6 +2446,15 @@ msgstr	"предупреждение: обнаружен${pl $n о} только $number1 подходящ${pl "
 msgid	"file \"$filename\" does not exist"
 msgstr	"файл \"$filename\" не существует, однако считается исходным "
 	"файлом блока изменений "
+
+#
+# This error message is issued when a change file
+# name is the same as the log file.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"file \"$filename\" is log file"
+msgstr	"имя файла \"$filename\" совпадает с файлом журнала"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -1226,6 +2467,114 @@ msgstr	"файл \"$filename\" не существует, однако считается исходным "
 msgid	"file \"$filename\" locked for change $number"
 msgstr	"файл \"$filename\" заблокирован блоком изменений $number, "
 	"следует попробовать позже"
+
+#
+# This error message is issued when a component of a change file name is
+# not acceptable to the filename pattern filters.  Must be modifiable by
+# (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+#
+msgid	"file \"$filename\" part \"$part\" bombs filters"
+msgstr	"элемент \"$part\" имени файла \"$filename\" недопустим из-за "
+	"фильтров (см. файл 'config')"
+
+#
+# This error message is issued when a component of a change file name
+# contains illegal characters.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+#
+msgid	"file \"$filename\" part \"$part\" contains illegal characters"
+msgstr	"элемент \"$part\" имени файла \"$filename\" содержит "
+	"недопустимые символы"
+
+#
+# This error message is issued when a component of a change file name
+# contains shell special characters.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+#
+msgid	"file \"$filename\" part \"$part\" contains shell special "
+	"characters"
+msgstr	"элемент \"$part\" имени файла \"$filename\" содержит "
+	"специальныесимволы"
+
+#
+# This error message is issued when a component of a change file
+# name is the same as the log file.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+#
+msgid	"file \"$filename\" part \"$part\" is log file"
+msgstr	"элемент \"$part\" имени файла \"$filename\" совпалает с файлом "
+	"журнала"
+
+#
+# This error message is issued when a component of a change file name
+# is not suitable for DOS.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+# 	$SUGgest	Suggested alternative.
+#
+msgid	"file \"$filename\" part \"$part\" not suitable for DOS"
+msgstr	"элемент \"$part\" имени файла \"$filename\" не подходит для DOS, "
+	"лучше использовать \"$suggest\""
+
+#
+# This error message is issued when a component of a change file name
+# is not suitable for Windows.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+#
+msgid	"file \"$filename\" part \"$part\" not suitable for Windows"
+msgstr	"элемент \"$part\" имени файла \"$filename\" не подходит для "
+	"Windows"
+
+#
+# This error message is issued when a directory component of a change file
+# name is too long.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+# 	$Number		How many characters too long, how many to remove.
+# 			(Optional)
+# 	$SUGgest	Suggested abbreviated filename (optional).
+#
+msgid	"file \"$filename\" part \"$part\" too long, suggest \"$suggest\" "
+	"instead"
+msgstr	"слишком длинный элемент \"$part\" имени файла \"$filename\" (на "
+	"$number символ${plf $n '' а ов}), лучше использовать \"$suggest\""
+
+#
+# This error message is issued when the last component of a change file
+# name is too long.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Number		How many characters too long, how many to remove.
+# 			(Optional)
+# 	$SUGgest	Suggested abbreviated filename (optional).
+#
+msgid	"file \"$filename\" too long, suggest \"$suggest\" instead"
+msgstr	"слишком длинное имя файла \"$filename\" (на $number символ${plf "
+	"$n '' а ов}), лучше использовать \"$suggest\""
+
+#
+# This error message is issued when a change file collides with a file
+# already in the project.  Must be modifiable by (***) above.
+#
+# 	$File_Name1	The name of the offending change file.
+# 	$File_Name2	The name of the offending project file.
+#
+msgid	"file \"$filename1\" collides with file \"$filename2\" in project"
+msgstr	"имя файла \"$filename1\" конфликтует с файлом \"$filename2\" в "
+	"проекте"
 
 #
 # This fatal error message is issued when aenf or aent detects a directory
@@ -1248,6 +2597,212 @@ msgid	"file $filename dup"
 msgstr	"файл \"$filename\" уже присутствует в блоке изменений"
 
 #
+# This error message is issued when a change file name
+# contains illegal characters.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"file name \"$filename\" contains illegal characters"
+msgstr	"имя файла \"$filename\" содержит недопустимые символы"
+
+#
+# This error message is issued when a change file name
+# contains illegal characters.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"file name \"$filename\" contains shell special characters"
+msgstr	"имя файла \"$filename\" содержит специальные символы"
+
+#
+# This error message is issued when a change file name
+# is not suitable for DOS.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+# 	$SUGgest	Suggested alternative file name.
+#
+msgid	"file name \"$filename\" not suitable for DOS"
+msgstr	"имя файла \"$filename\" не подходит для DOS, лучше использовать "
+	"\"$suggest\""
+
+#
+# This error message is issued when a change file name
+# is not suitable for Windows.  Must be modifiable by (***) above.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"file name \"$filename\" not suitable for Windows"
+msgstr	"имя файла \"$filename\" не подходит для Windows "
+
+#
+# This error message is issued when an unknown file type name is given
+# to the -type command line option.
+#
+# 	$name	The offending type name.
+#
+msgid	"file type $name unknown"
+msgstr	"неизвестный тип файла ``$name''"
+
+#
+# This error message is a summary issued when one or more change
+# files are modified by the history tool (history_put_command or
+# history_create_commands) during aeipass.
+#
+# 	$Number		The number of files modified.
+# 			(Optional)
+#
+msgid	"files modified by history tool"
+msgstr	"$number файл${plf $n '' а ов} ${pl $n 'были изменены' 'был "
+	"изменён'} программой хранения истории файлов.${pl $n 'Исходные "
+	"файлы' 'Исходный файл'} в репозитарии больше не ${pl $n "
+	"'соответствуют объектным файлам' 'соответствует объектному "
+	"файлу'} Программа хранения истории файлов нарушила целостность "
+	"репозитария."
+
+#
+# This progress message is issued when aeimport starts going through
+# the history information looking for change sets.
+#
+msgid	"find change sets"
+msgstr	"анализ изменений для определения возможных наборов файлов в "
+	"блоках..."
+
+#
+# This error message is issued when a file fingerprint fails
+#
+# 	$File_Name	The file to be fingerprinted
+#
+msgid	"fingerprint $filename: $errno"
+msgstr	"fingerprint \"$filename\": $errno"
+
+#
+# This error message is issued when a break statement is seen outside any
+# enclosing loop or switch statement.
+#
+msgid	"floating ``break'' statement"
+msgstr	"оператор ``break'' вне цикла"
+
+#
+# This error message is issued when a continue statement is seen outside
+# any enclosing loop or switch statement.
+#
+msgid	"floating ``continue'' statement"
+msgstr	"оператор ``continue'' вне цикла"
+
+#
+# This error message is issued when a return statement is used outside
+# any function.
+#
+msgid	"floating ``return'' statement"
+msgstr	"оператор ``return'' вне функции"
+
+#
+# This format string is used when assembling the list of outstanding
+# architectures for some other error message.
+#
+# 	$Name_List	The list of names of outstanding architectures.
+# 	$Number		How many architectures are outstanding.
+# 			(Optional)  Use to pluralize the message.
+#
+msgid	"for the $name_list architectures"
+msgstr	"для архитектур${pl $n '' ы} $name_list"
+
+#
+# This error message is issued as a summary when one or more
+# architectures appear in the list of architectures the change must
+# apply to, but are not present in the project's architecture list in
+# the project ``config'' file.
+#
+# 	$Number		The number of unknown architecture(s).
+# 			(Optional)
+#
+msgid	"found unlisted architectures"
+msgstr	"обнаружено $number неописанн${pl $n ых ая} архитектур${pl $n '' "
+	"а}, необходимо либо удалить лишн${pl $n ие юю} архитектур${pl $n "
+	"ы у} из атрибутов блока изменений, либо описать ${pl $n их её} в "
+	"файле конфигурации проекта 'config'"
+
+#
+# This error message is issued when a function which requires exactly
+# one argument has been given none, or too many.
+#
+# 	$name	The function name.
+#
+msgid	"function $name requires one argument"
+msgstr	"для функции \"$name\" требуется ровно один параметр"
+
+#
+# This error message is issued when a function which requires exactly
+# two arguments has been given too few, or too many.
+#
+# 	$name	The function name.
+#
+msgid	"function $name requires two arguments"
+msgstr	"для функции \"$name\" требуются ровно два параметра"
+
+#
+# This error message is issued when a getcwd fails.
+#
+msgid	"getcwd: $errno"
+msgstr	"get current directory: $errno"
+
+#
+# This error message is issued when a group from the /etc/group file, or
+# equivalent, cannot be found by number.
+#
+# 	$Number		The offending group number.
+#
+msgid	"gid $number unknown"
+msgstr	"неизвестный gid $number"
+
+#
+# This fatal error message is issued when a lock is not available.
+#
+msgid	"global state lock not available"
+msgstr	"недоступна блокировка глобального состояния"
+
+#
+# This error message is issued when a group from the /etc/group file, or
+# equivalent, cannot be found by name.
+#
+# 	$Name		The offending group name.
+#
+msgid	"group \"$name\" unknown"
+msgstr	"неизвестаня группа \"$name\""
+
+#
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the group's gid is too low (too
+# privileged).
+#
+# 	$Name		The offending group name.
+#
+msgid	"group $name too privileged"
+msgstr	"слишком привилегированная группа \"$name\""
+
+#
+# This fatal error message is issued when something goes wrong decompressing
+# a file using zlib.
+#
+# 	$File_Name	The name of the output file
+# 	$ERRNO		Overridden to contain the error string from zlib
+# 			(but sometimes not, because the real errno has it)
+#
+msgid	"gunzip $filename: $errno"
+msgstr	"ошибка при декомпрессии файла \"$filename\": $errno"
+
+#
+# This fatal error message is issued when something goes wrong compressing
+# a file using zlib.
+#
+# 	$File_Name	The name of the output file
+# 	$ERRNO		Overridden to contain the error string from zlib
+# 			(but sometimes not, because the real errno has it)
+#
+msgid	"gzip $filename: $errno"
+msgstr	"ошибка при сжатии файла \"$filename\": $errno"
+
+#
 # This error message is issued when a request is made to run tests, but
 # there are no files which are candidates of the options specified, or
 # the project may have no tests at all.
@@ -1255,6 +2810,300 @@ msgstr	"файл \"$filename\" уже присутствует в блоке изменений"
 msgid	"has no tests"
 msgstr	"перед тестированием этого блока изменений необходимо создать "
 	"тесты"
+
+#
+# This fatal error message is issued when aeimport doesn't recognize a
+# history file format name as specified on the command line.
+#
+# 	$name		The offending format name.
+#
+msgid	"history format \"$name\" unknown"
+msgstr	"неизвестный формат файла истории \"$name\""
+
+#
+# This fatal error message is issued when a lock is not available.
+#
+msgid	"history lock not available"
+msgstr	"недосупна блокировка истории файла"
+
+#
+# This error message is issued when the history query command returns an
+# empty string.  It is meant to return a unique string to identify the
+# top-most version number in the history file.
+#
+msgid	"history_query_command return empty"
+msgstr	"команда history_query_command возвратила пустую строку, это не "
+	"очень полезный результат"
+
+#
+# This error message is issued when an unprintable character is seen in
+# an input file.  The character is unprintable in the C locale.
+#
+# 	$Name		The offending character, as a C octal escape sequence.
+#
+msgid	"illegal '$name' character"
+msgstr	"недопустимый символ '$name'"
+
+#
+# This error message is issued when an illegal e+e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal addition ($name1 + $name2)"
+msgstr	"недопустимое сложение ($name1 + $name2)"
+
+#
+# This message is issued when an inappropriate ~ is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"illegal bit not ($name)"
+msgstr	"для операции побитового ``not'' требуется параметр типа целое "
+	"(передано $name)"
+
+#
+# This error message is issued when an illegal e!=e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 != $name2)"
+msgstr	"недопустимое сравнение ($name1 != $name2)"
+
+#
+# This error message is issued when an illegal e!~e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 !~ $name2)"
+msgstr	"недопустимое сравнение ($name1 !~ $name2)"
+
+#
+# This error message is issued when an illegal e<e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 < $name2)"
+msgstr	"недопустимое сравнение ($name1 < $name2)"
+
+#
+# This error message is issued when an illegal e<=e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 <= $name2)"
+msgstr	"недопустимое сравнение ($name1 <= $name2)"
+
+#
+# This error message is issued when an illegal e==e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 == $name2)"
+msgstr	"недопустимое сравнение ($name1 == $name2)"
+
+#
+# This error message is issued when an illegal e>e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 > $name2)"
+msgstr	"недопустимое сравнение ($name1 > $name2)"
+
+#
+# This error message is issued when an illegal e>=e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 >= $name2)"
+msgstr	"недопустимое сравнение ($name1 >= $name2)"
+
+#
+# This error message is issued when an illegal e~~e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal comparison ($name1 ~~ $name2)"
+msgstr	"недопустимое сравнение ($name1 ~~ $name2)"
+
+#
+# This error message is issued when a request to count the keys of an
+# inappropriate object is requested.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"illegal count request ($name)"
+msgstr	"недопустимый запрос  count ($name)"
+
+#
+# This error message is issued when an illegal / is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal division ($name1 / $name2)"
+msgstr	"недопустимое деление ($name1 / $name2)"
+
+#
+# This error message is issued when an illegal e##e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal join ($name1 ## $name2)"
+msgstr	"недопустимое объединение ($name1 ## $name2)"
+
+#
+# This error message is issued when a request for the keys of an
+# inappropriate object is requested.  (Keys can be used as the right
+# hand side of a lookup.)
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"illegal keys request ($name)"
+msgstr	"недопустимый запрос keys ($name)"
+
+#
+# This message is issued when an inappropriate assignment is attempted.
+#
+msgid	"illegal left hand side of assignment"
+msgstr	"недопустимая левая часть присваивания, это должна быть "
+	"переменная, которой можно присвоить значение"
+
+#
+# This message is issued when an inappropriate assignment is attempted.
+#
+# 	$Name		The type name of the left hand side.
+#
+msgid	"illegal left hand side of assignment (was given $name)"
+msgstr	"недопустимая левая часть присваивания (передано $name), это "
+	"должна быть переменная, которой можно присвоить значение"
+
+#
+# This message is issued when an inappropriate ! is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"illegal logical not ($name)"
+msgstr	"для опреации логического ``not'' требуется логический параметр "
+	"(передано $name)"
+
+#
+# This error message is issued when an illegal lookup is attempted.
+# This occurs both for associative arrays ``e1[e2]'', and also for
+# structures ``e1.e2'' (which are implemented as associative arrays).
+#
+# 	$Name1		The type name of the first operand.
+# 	$Name2		The type name of the second operand.
+#
+msgid	"illegal lookup ($name1[$name2])"
+msgstr	"недопустимое обращение ($name1[$name2])"
+
+#
+# This error message is issued when one or more of the arguments to the
+# match operator are inappropriate types.
+#
+# 	$name1	The name of the type of argument 1
+# 	$name2	The name of the type of argument 2
+#
+msgid	"illegal match ($name1 ~ $name2)"
+msgstr	"недопустимое соответствие ($name1 ~ $name2)"
+
+#
+# This error message is issued when an illegal % is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+#, no-c-format
+msgid	"illegal modulo ($name1 %% $name2)"
+msgstr	"недопустимое деление ($name1 %% $name2)"
+
+#
+# This error message is issued when an illegal * is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal multiplication ($name1 * $name2)"
+msgstr	"недопустимое умножение ($name1 * $name2)"
+
+#
+# This message is issued when an inappropriate -e is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"illegal negative ($name)"
+msgstr	"для операции унарный минус требуется параметр типа целое "
+	"(передано $name)"
+
+#
+# This message is issued when an inappropriate +e is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"illegal positive ($name)"
+msgstr	"для операции унарный плюс требуется параметр типа целое "
+	"(передано $name)"
+
+#
+# This error message is issued when an illegal e**e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal power ($name1 ** $name2)"
+msgstr	"недопустимое возведение в степень ($name1 ** $name2)"
+
+#
+# This error message is issued when an illegal e<<e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal shift ($name1 << $name2)"
+msgstr	"недопустимый сдвиг вправо ($name1 << $name2)"
+
+#
+# This error message is issued when an illegal e>>e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal shift ($name1 >> $name2)"
+msgstr	"недопустимый сдвиг влево ($name1 >> $name2)"
+
+#
+# This error message is issued when an illegal e-e is attempted.
+#
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
+#
+msgid	"illegal subtraction ($name1 - $name2)"
+msgstr	"недопустимое вычитание ($name1 - $name2)"
+
+#
+# This progress message is issued when aeimport completed successfully.
+#
+msgid	"import complete"
+msgstr	"импорт успешно завершён"
+
+#
+# This error message is issued when a command is given an inappropriate
+# command line option.
+#
+# 	$Name		The name of the offending command line option.
+#
+msgid	"inappropriate $name option"
+msgstr	"неправильное использование опции $name"
 
 #
 # This error message is issued when an ambiguous information name is given
@@ -1285,6 +3134,42 @@ msgstr	"при выполнении сравнения блока изменений в стадии 'being "
 msgid	"int must test all"
 msgstr	"при тестировании блока изменений в стадии 'being integrated' "
 	"нельзя указывать файлы в командной строке"
+
+#
+# This error message is issued when a non-integer change number is
+# supplied when fetching a cstate value.
+#
+# 	$Name		The type name of the offending argument.
+#
+msgid	"integer index required (was given $name)"
+msgstr	"требуется целое в качестве индекса (передано $name)"
+
+#
+# This message is issued when an inappropriate & is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"integer value required for bit and (was given $name)"
+msgstr	"для операции побитового ``и'' требуется параметр типа целое "
+	"(передано $name)"
+
+#
+# This message is issued when an inappropriate | is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"integer value required for bit or (was given $name)"
+msgstr	"для операции побитового ``или'' требуется параметр типа целое "
+	"(передано $name)"
+
+#
+# This message is issued when an inappropriate ^ is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"integer value required for bit xor (was given $name)"
+msgstr	"для операции побитового исключающего ``или'' требуется параметр "
+	"типа целое (передано $name)"
 
 #
 # This progress message is issued when aeib complete successfully.
@@ -1334,6 +3219,31 @@ msgid	"integration build started"
 msgstr	"началась сборка ${date %%H:%%M}"
 
 #
+# This error message is issued when Aegis terminates, because an
+# interrupt occurred while waiting for a child process to terminate.
+# This is after the child terminated and its status has been collected.
+#
+# 	$Signal		The name of the signal which interrupted us.
+#
+msgid	"interrupted by $signal"
+msgstr	"прервано сигналом $signal"
+
+#
+# This message is issued when a function is called with incorrect arguments.
+#
+msgid	"invalid function arguments"
+msgstr	"у этого вызова функции неправильное количество параметров или их "
+	"типы"
+
+#
+# This message is issued when a non-function is called.
+#
+# 	$Name		The type name of the non-function expression.
+#
+msgid	"invalid function name ($name)"
+msgstr	"передано выражение типа $name там, где ожидалось имя функции"
+
+#
 # This error message is issued when aeipass wants to delete the
 # baseline, and the user issued the command from there.
 # Some UNIX will allow to delete an active directory, and some will
@@ -1368,6 +3278,15 @@ msgid	"link baseline to integration directory"
 msgstr	"создание ссылок на базу проекта в директории интеграции"
 
 #
+# This error message is issued when a link fails.
+#
+# 	$File_Name1	The name of the source file.
+# 	$File_Name1	The name of the destination file.
+#
+msgid	"link(\"$filename1\", \"$filename2\"): $errno"
+msgstr	"link(\"$filename1\", \"$filename2\"): $errno"
+
+#
 # This error message is issued when ael is given an ambiguous list name.
 #
 # 	$Name		The offending list name.
@@ -1375,6 +3294,152 @@ msgstr	"создание ссылок на базу проекта в директории интеграции"
 #
 msgid	"list $name ambiguous"
 msgstr	"название списка \"$name\" неоднозначно ($name_list)"
+
+#
+# This message is issued when an inappropriate ``in'' is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"list value required (was given $name)"
+msgstr	"требуется список (передано $name)"
+
+#
+# This fatal error message is issued when a lock is not available.
+#
+msgid	"lock not available"
+msgstr	"недоступна блокировка"
+
+#
+# This information message is issued when Aegis begins logging to a new
+# file, or overwrites and existing log file.
+#
+# 	$File_Name	The name of the log file.
+#
+msgid	"logging to $filename"
+msgstr	"журнал в файле \"$filename\""
+
+#
+# This message is issued when a for loop is given a control expression
+# (the middle one) which is not boolean.  Also use for while loops.
+#
+# 	$Name		The type name of the offending expression.
+#
+msgid	"loop condition must be boolean (not $name)"
+msgstr	"условие цикла должно быть логическим выражением (передано $name)"
+
+#
+# This error message is issued when a file lstat fails
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"lstat $filename: $errno"
+msgstr	"$filename: $errno"
+
+#
+# TRANSLATION REQUIRED
+# This fatal error message is issued when the aemt command is asked to
+# make a file transparent which is not present the the branch, but is
+# present in a deeper ancestor branch.
+#
+# $filename	The name of the offending file.
+#
+msgid	"make $filename transparent, fail, too deep"
+msgstr	"it is not possible to make $filename transparent because it is "
+	"not present in the branch, but is present in a deeper ancestor "
+	"branch"
+
+#
+# TRANSLATION REQUIRED
+# This fatal error message is issued when the aemt command is asked to
+# make a file transparent which is present the the branch, but is not
+# present in a deeper ancestor branch.
+#
+# $filename	The name of the offending file.
+#
+msgid	"make $filename transparent, fail, too shallow"
+msgstr	"it is not possible to make $filename transparent because it is "
+	"not also present in a deeper ancestor branch"
+
+#
+# TRANSLATION REQUIRED
+# This fatal error message is issued when the aemt command is asked to
+# make a file transparent, and the branch being operated on is the trunk.
+#
+# $filename	The name of the offending file.
+#
+msgid	"make $filename transparent, fail, trunk"
+msgstr	"it is not possible to make $filename transparent because it is "
+	"in the trunk, you probably want to use the aerm command instead"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when aemt is invoked for a change which
+# is not in the 'being developed' state.
+#
+msgid	"make transparent bad state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to make a file transparent with it"
+
+#
+# TRANSLATION REQUIRED
+# This information message is issued by the aemt command when it
+# successfully complete.
+#
+# $number	The number of files (optional).
+#
+msgid	"make transparent complete"
+msgstr	"making $number ${plural $number files file} transparent"
+
+#
+# TRANSLATION REQUIRED
+# This progress message is issued when the aemtu command completes
+# successfully.  It details files which have been removed from the
+# change.  Please note: this is NOT the same as files added to the
+# change by aerm, which are to be removed BY the change.
+#
+# 	$File_Name	Name of the file removed from the change.
+#
+msgid	"make transparent undo $filename complete"
+msgstr	"файл \"$filename\" удалён из блока изменений"
+
+#
+# This informational message is issued when the aede command makes the
+# development directory read only.  This remindes the developer not to
+# change anything.
+#
+msgid	"making dev dir read only"
+msgstr	"теперь файлы в рабочей директории нельзя изменять"
+
+#
+# This informational message is issued when the aedeu, aerfail or aeifail
+# command make the development directory writable again.
+#
+msgid	"making dev dir writable"
+msgstr	"файлы в рабочей директории снова можно изменять"
+
+#
+# This error message is issued when a number which looks like a floating
+# point constant has an incomplete exponent.
+#
+msgid	"malformed exponent"
+msgstr	"неправильная экспонента"
+
+#
+# This error message is issued when a number which looks like a hex
+# constant is not complete.
+#
+msgid	"malformed hex constant"
+msgstr	"неправильная шестнадцатеричная константа"
+
+#
+# This error message is issued when an attempt is made to assign into a
+# member of a list value.
+#
+# 	$Name1		The type name of the first operand.
+# 	$Name2		The type name of the second operand.
+#
+msgid	"may not assign to a list member ($name1[$name2])"
+msgstr	"нельзя присвоить значение элементу списка ($name1[$name2])"
 
 #
 # This error message is issued when the used attempts to create the
@@ -1409,6 +3474,14 @@ msgid	"may not test $filename"
 msgstr	"файл \"$filename\" не может быть тестов"
 
 #
+# This error message is used when -Edit is used when in the background.
+#
+# 	$Name		The name of the -Edit option.
+#
+msgid	"may not use $name in the background"
+msgstr	"нельзя использовать $name в фоновом режиме"
+
+#
 # This progress message is issued when aed successfully completes a merge.
 #
 # 	$Number		The number of files merged.
@@ -1419,6 +3492,80 @@ msgstr	"объедин${pl $n ено ён} $number файл${plf $n '' а ов}, необходимо "
 	"выполнить команду'aegis -Build'"
 
 #
+# This error message is issued when there is a known but syntactically
+# incorrect option on the command line.
+#
+# 	$Name		The offending command line argument.
+#
+msgid	"misplaced \"$name\" option"
+msgstr	"опция \"$name\" не на месте"
+
+#
+# This error message is issued when there is an extra string on the
+# command line.  It is probably a file name.
+#
+# 	$File_Name	The offending command line argument.
+#
+msgid	"misplaced file name (\"$filename\")"
+msgstr	"имя файла (\"$filename\") не на месте"
+
+#
+# This error message is issued when there is an extra number on the
+# command line.
+#
+# 	$Number		The offending command line argument.
+#
+msgid	"misplaced number ($number)"
+msgstr	"число ($number) не на месте"
+
+#
+# This error message is issued when a mkdir fails.
+#
+# 	$File_Name	The name of the directory to be created.
+# 	$Argument	The mode the directory is to be created.
+#
+msgid	"mkdir(\"$filename\", $arg): $errno"
+msgstr	"mkdir(\"$filename\", $arg): $errno"
+
+#
+# This message is issued when an inappropriate -- is attempted.
+#
+msgid	"modifiable lvalue required for decrement"
+msgstr	"для операции декремента требуется изменяемая величина"
+
+#
+# This message is issued when an inappropriate -- is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"modifiable lvalue required for decrement (was given $name)"
+msgstr	"для операции декремента требуется изменяемая величина (передано "
+	"$name), это должна быть переменная, которой можно присвоитб "
+	"значение"
+
+#
+# This message is issued when an inappropriate ++ is attempted.
+#
+msgid	"modifiable lvalue required for increment"
+msgstr	"для операции инкремента требуется изменяемая величина"
+
+#
+# This message is issued when an inappropriate ++ is attempted.
+#
+# 	$Name		The type name of the offending operand.
+#
+msgid	"modifiable lvalue required for increment (was given $name)"
+msgstr	"для операции инкремента требуется изменяемая величина (передано "
+	"$name), это должна быть переменная, которой можно присвоитб "
+	"значение"
+
+#
+# This error message is issued when a modulo by zero is attempted.
+#
+msgid	"modulo by zero"
+msgstr	"деление на ноль"
+
+#
 # This progress message is issued when aemv completes successfully.
 #
 # 	$File_Name1	The name of the original file.
@@ -1426,6 +3573,18 @@ msgstr	"объедин${pl $n ено ён} $number файл${plf $n '' а ов}, необходимо "
 #
 msgid	"move $filename1 to $filename2 complete"
 msgstr	"файл \"$filename1\" перемещён в \"$filename2\""
+
+#
+# TRANSLATION REQUIRED
+# This progress message is issued when the aemvu command completes
+# successfully.  It details files which have been removed from the
+# change.  Please note: this is NOT the same as files added to the
+# change by aerm, which are to be removed BY the change.
+#
+# 	$File_Name	Name of the file removed from the change.
+#
+msgid	"move file undo $filename complete"
+msgstr	"файл \"$filename\" удалён из блока изменений"
 
 #
 # This text is used when aenc -edit creates a template attributes file,
@@ -1455,10 +3614,22 @@ msgid	"new alias $name complete"
 msgstr	"создан новый псевдоним \"$name\""
 
 #
+# This progress message is issued when aenbr completes successfully.
+#
+msgid	"new branch complete"
+msgstr	"создана новая ветвь проекта"
+
+#
 # This progress message is issued when aenbru completes successfully.
 #
 msgid	"new branch undo complete"
 msgstr	"ветвь проекта удалена"
+
+#
+# This progress message is issued when aenc completes successfully.
+#
+msgid	"new change complete"
+msgstr	"создан новый блок изменений"
 
 #
 # This progress message is issued when aencu completes successfully.
@@ -1479,6 +3650,16 @@ msgstr	"пользователь \"$name\" теперь является разработчиком"
 #
 msgid	"new file $filename completed"
 msgstr	"добавлен файл \"$filename\""
+
+#
+# This fatal error message is issued when the aenf command runs a
+# body_command to create a new file, and the command fails to create
+# the file.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"new file $filename not created"
+msgstr	"файл \"$filename\" не был создан"
 
 #
 # This progress message is issued when aenfu completes successfully.
@@ -1508,6 +3689,12 @@ msgstr	"найден${pl $n о а} $number ошиб${plf $n ка ки ок}, ни один файл "
 #
 msgid	"new integrator $name complete"
 msgstr	"пользователь \"$name\" теперь является интегратором"
+
+#
+# This progress message is issued when aenpr completes successfully.
+#
+msgid	"new project complete"
+msgstr	"создан новый проект"
 
 #
 # This progress message is issued when aenrls completes successfully.
@@ -1574,6 +3761,26 @@ msgid	"nil move $filename"
 msgstr	"нельзя переместить файл \"$filename\" поверх себя"
 
 #
+# This error message is issued when an unknown name is referenced,
+# but a close match is found.
+#
+# 	$Name		The undefined variable name.
+# 	$Guess		The closest match found for the name.
+#
+msgid	"no \"$name\", guessing \"$guess\""
+msgstr	"имя \"$name\" неопределено, вероятно имелось ввиду \"$guess\""
+
+#
+# This error message is issued when the named file cannot be found in a
+# change or project (context will tell which) and no best guess is
+# available.  This is used by many commands.
+#
+# 	$File_Name	The offending file name.
+#
+msgid	"no $filename"
+msgstr	"неизвестный файл \"$filename\""
+
+#
 # This error message is issued when an aed is performed on a change
 # which contains a copied file which has been removed from the baseline
 # by another change.
@@ -1605,6 +3812,26 @@ msgid	"no $name list"
 msgstr	"неизвестный список \"$name\""
 
 #
+# This error message is issued when Aegis is given a project name which
+# is not defined (along the AEGIS_PATH).
+#
+# 	$Name		The offending project name.
+#
+msgid	"no $name project"
+msgstr	"неизвестный проект \"$name\""
+
+#
+# This error message is issued when Aegis is given a project name which
+# is not defined (along the AEGIS_PATH).
+#
+# 	$Name		The offending project name.
+# 	$Guess		The closest matching project name.
+#
+msgid	"no $name project, closest is $guess"
+msgstr	"неизвестный проект \"$name\", есть проект с похожим названием "
+	"\"$guess\""
+
+#
 # This fatal error message is issued when an attempt is made to aechown
 # a branch.
 #
@@ -1613,12 +3840,37 @@ msgstr	"этот блок изменений является ветвью проекта; невозможно изменить "
 	"владельца ветви проекта"
 
 #
+# This error message is issued when a command which requires an explicit
+# change number is not given one.
+#
+msgid	"no change number"
+msgstr	"для этой команды требуется явно указать номер блока изменений"
+
+#
 # This fatal error message is issued when a user attempts to perform a
 # cross branch merge on a change in the ``being integrated'' state.
 #
 msgid	"no cross branch int merge"
 msgstr	"нельзя выполнить слияние ветви проекта с блоком изменений в "
 	"стадии '$state'"
+
+#
+# This error message is issued when an unknown delta name is requested.
+#
+# 	$Name		The offending delta name.
+#
+msgid	"no delta $name"
+msgstr	"неизвестное название дельты \"$name\""
+
+#
+# This error message is issued when an unknown delta name is requested.
+#
+# 	$Name		The offending delta name.
+# 	$Guess		The closest matching known delta name.
+#
+msgid	"no delta $name, closest is $guess"
+msgstr	"неизвестное название дельты \"$name\", есть похожее название "
+	"\"$guess\""
 
 #
 # This error message is issued when an unknown delta number is given.
@@ -1646,6 +3898,15 @@ msgstr	"не было ни одной интеграции, сейчас ещё невозможно присвоить "
 	"название дельты"
 
 #
+# This error message is issued when a request is made which requires the
+# development directory of a change, but the change is in a state which
+# has no development directory.
+#
+msgid	"no dev dir"
+msgstr	"этот блок изменений находится в стадии '$state', рабочей "
+	"директории не существует"
+
+#
 # This error message is issued when an attempt is made to specify a
 # directory name in combination with the -Output option of aecp.  Only
 # single source file may be specified with the -Output option.
@@ -1655,6 +3916,13 @@ msgstr	"не было ни одной интеграции, сейчас ещё невозможно присвоить "
 msgid	"no dir with $name"
 msgstr	"нельзя одновременно указывать директории и использовать опцию "
 	"$name"
+
+#
+# This error message is issued when a command which requires file names
+# on the command line is not given any.
+#
+msgid	"no file names"
+msgstr	"в командной строке не указано ни одного файла"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -1700,6 +3968,13 @@ msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 	"$n ка ки ок}, ни один файл не был удалён из блока изменений"
 
 #
+# This fatal error message is issued when aeimport finds no history
+# files in the directory tree specified on the command line.
+#
+msgid	"no history files found"
+msgstr	"в указанной директории не обнаружено файлов истории"
+
+#
 # This error message is issued when an unknown information name is given
 # to the aev command.
 #
@@ -1707,6 +3982,15 @@ msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 #
 msgid	"no info $name"
 msgstr	"неизвестное название раздела \"$name\" информации о версии"
+
+#
+# This error message is issued when a request is made which requires the
+# integration directory of a change, but the change is in a state which
+# has no integration directory.
+#
+msgid	"no int dir"
+msgstr	"этот блок изменений находится в стадии '$state', директории "
+	"интеграции не существует"
 
 #
 # This error message is issued when an aed -merge command is issued for a
@@ -1722,6 +4006,15 @@ msgstr	"блок изменений в стадии 'being integrated' не может участвовать "
 #
 msgid	"no list"
 msgstr	"не указано название списка"
+
+#
+# This error message is issued when a request is made which requires the
+# log file name of a change, but the change is in a state which
+# has no log file.
+#
+msgid	"no log file"
+msgstr	"этот блок изменений находится в стадии '$state', журнала не "
+	"существует"
 
 #
 # This error message is issued when the user gives a merge option to
@@ -1753,6 +4046,28 @@ msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 	"$n ка ки ок}, ни один файл не был добавлен"
 
 #
+# This error message is issued when a command which requires an explicit
+# project name is not given one.
+#
+msgid	"no project name"
+msgstr	"для этой команды требуется явно указать название проекта"
+
+#
+# This error message is issued when an unknown report name is requested.
+#
+# 	$Name		The offending report name.
+#
+msgid	"no report $name"
+msgstr	"неизвестный отчёт \"$name\""
+
+#
+# This error message is issued when aer is not given a report name on
+# the command line.
+#
+msgid	"no report name"
+msgstr	"название отчёта не указано"
+
+#
 # This error message is issued when aet completes unsuccessfully because
 # one or more tests returned a ``no result'' exit code.
 #
@@ -1760,6 +4075,13 @@ msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 #
 msgid	"no result $number tests"
 msgstr	"$number тест${plf $n '' а ов} завершились без результата"
+
+#
+# This error message is issued if no size was specified on the command
+# line.  Exactly two are required.
+#
+msgid	"no size specified"
+msgstr	"не указан размер"
 
 #
 # This error message is issued when aed attempts to anticipate another
@@ -1781,6 +4103,37 @@ msgstr	"для этой команды необходимо явно указать имя пользователя"
 #
 msgid	"no user names"
 msgstr	"не указано ни одного пользователя"
+
+#
+# This error message is issued when two (of 3) mutually exclusive options are
+# both specified on the command line.
+#
+# 	$Name1		The name of a command line option.
+# 	$Name2		The name of a command line option.
+# 	$Name3		The name of a command line option.
+#
+msgid	"not $name1 and $name2 and $name3 together"
+msgstr	"опции $name1, $name2 и $name3 взаимно исключающие, может быть "
+	"указана только одна из них"
+
+#
+# This error message is issued when two mutually exclusive options are
+# both specified on the command line.
+#
+# 	$Name1		The name of a command line option.
+# 	$Name2		The name of a command line option.
+#
+msgid	"not $name1 and $name2 together"
+msgstr	"опции $name1 и $name2 взаимно исключающие может быть указана "
+	"только одна из них"
+
+#
+# This fatal error message is issued when a change is used in a context
+# which requires a branch.  (The change number will be supplied by the
+# change_fatal function.)
+#
+msgid	"not a branch"
+msgstr	"этот блок изменений не является ветвью проекта"
 
 #
 # This error message is issued when a command which requires
@@ -1850,6 +4203,83 @@ msgstr	"пользователь \"$user\" не является рецензентом этого блока "
 	"этим блоком"
 
 #
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"not valid in current context"
+msgstr	"недопустимо в текущем контексте"
+
+#
+# This error message is issued when a file open fails
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"open $filename: $errno"
+msgstr	"open \"$filename\": $errno"
+
+#
+# This error message is issued by aede when attempting to end the
+# development of a branch and there is still an outstanding change on
+# the branch.  This message will be issued for each outstanding change.
+#
+msgid	"outstanding change"
+msgstr	"этот блок изменений находитcя в стадии '$state'"
+
+#
+# This error message is issued by aede/aenbru/aermpr when attempting to
+# end the development of a branch (kill off a branch) and there is one
+# or more outstanding changes on the branch.
+#
+# 	$Number		Number of changes outstanding.  (Optional)
+#
+msgid	"outstanding changes"
+msgstr	"присутству${pl $n ют ет} $number незавершённ${pl $n ых ый} "
+	"${plural $number блоков блок} изменений; эту команду нельзя "
+	"использовать если присутствуют незавершённые блоки изменений"
+
+#
+# This error message is issued when the argument to -Page_Length is absurd.
+#
+# 	$Number		The offending page length.
+#
+msgid	"page length $number out of range"
+msgstr	"недопустимая длина страницы $number"
+
+#
+# This error message is issued when the argument to -Page_Width is absurd.
+#
+# 	$Number		The offending page width.
+#
+msgid	"page width $number out of range"
+msgstr	"недопустимая ширина страницы $number"
+
+#
+# This error message is issued when bison finds an error at parse time.
+#
+msgid	"parse error"
+msgstr	"невозможно определить что имелось ввиду"
+
+#
+# This error message is issued when bison finds an error at parse time.
+#
+msgid	"parse error; also virtual memory exceeded"
+msgstr	"невозможно определить что имелось ввиду, так как это слишком "
+	"сложное выражение и не помещается в памяти"
+
+#
+# This error message is issued when bison finds an error at parse time.
+#
+msgid	"parse error; also virtual memory exhausted"
+msgstr	"невозможно определить что имелось ввиду, так как это слишком "
+	"сложное выражение и не помещается в памяти"
+
+#
+# This error message is issued when bison finds an error at parse time.
+#
+msgid	"parser stack overflow"
+msgstr	"невозмоно определить что имелось ввиду, из-за переполнения стека"
+
+#
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
@@ -1871,6 +4301,48 @@ msgid	"passed $number tests"
 msgstr	"выполнен${pl $n о} $number тест${plf $n '' а ов}"
 
 #
+# This error message is issued when a pathconf name max fails.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"pathconf(\"$filename\", {NAME_MAX}): $errno"
+msgstr	"pathconf(\"$filename\", {NAME_MAX}): $errno"
+
+#
+# This error message is issued when a pathconf path max fails.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"pathconf(\"$filename\", {PATH_MAX}): $errno"
+msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
+
+#
+# This information message is issued when aenpr automatically allocates
+# the project home directory.
+#
+# 	$File_Name	The absolute path of the project home directory.
+#
+msgid	"proj dir $filename"
+msgstr	"директория проекта \"$filename\""
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a request is made to run regression
+# tests, but there are no files which are candidates of the options
+# specified, or the project may have no tests at all.
+#
+msgid	"proj has no tests"
+msgstr	"this project requires relevant tests before this command may be "
+	"used"
+
+#
+# This is the format of project messages (error, fatal and verbose).
+# Change messages also pass through this format indirectly.
+#
+msgid	"project \"$project\": $message"
+msgstr	"проект \"$project\": $message"
+
+#
 # This string is used to format the various "file unacceptable" error messages
 # to indicate that they refer to project files, not change files. (***)
 #
@@ -1878,6 +4350,37 @@ msgstr	"выполнен${pl $n о} $number тест${plf $n '' а ов}"
 #
 msgid	"project $message"
 msgstr	"проект $message"
+
+#
+# This error message is issued when a user attempts to create a new
+# project, using a project name which already exists.
+#
+# 	$Name		The offending project name.
+#
+msgid	"project $name exists"
+msgstr	"название проекта \"$name\" уже используется"
+
+#
+# This error message is issued when aenpr is given a project name which
+# is too long.  The only restriction on project name length is the
+# file system on which it must reside.
+#
+# 	$Name		The offending project name.
+# 	$Number		How many characters too long (how many to remove)
+# 			(Optional)
+#
+msgid	"project $name too long"
+msgstr	"слишком длинное название проекта \"$name\"(на $number символ"
+	"${plf $n '' а ов})"
+
+#
+# This error message is issued when a user attempts to create a new
+# project alias, using a project name which already exists.
+#
+# 	$Name		The offending project alias.
+#
+msgid	"project alias $name exists"
+msgstr	"псевдоним проекта \"$name\" уже используется"
 
 #
 # This error message is issued when a user attempts to remove a
@@ -1893,6 +4396,50 @@ msgstr	"\"$name\" не является псевдонимом проекта"
 #
 msgid	"project attributes complete"
 msgstr	"атрибуты изменены"
+
+#
+# This error message is issued when a file read fails.
+# Also used when a directory read fails.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"read $filename: $errno"
+msgstr	"read \"$filename\": $errno"
+
+#
+# This error message is issued when a file read fails due to the file
+# being an incorrect format.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"read $filename: format error"
+msgstr	"read \"$filename\": ошибка формата"
+
+#
+# This progress message is issued by aeimport when it starts to scan
+# the directory tree specified on the command line.  It is looking for
+# history files, and reading each one to extract the history information
+# it will use to reconstruct the changes.
+#
+msgid	"read history files"
+msgstr	"чтение файлов истории для определения когда и кем эти файлы "
+	"изменялись..."
+
+#
+# This error message is issued when a readlink fails.
+#
+# 	$File_Name	The name of the file to be readlink()ed.
+#
+msgid	"readlink $filename: $errno"
+msgstr	"readlink \"$filename\": $errno"
+
+#
+# This progress message is issued when aeimport starts to checkout the
+# head revision of each history file to form the baseline of the project.
+#
+msgid	"reconstruct baseline"
+msgstr	"извлечение последний версий файлов для воссоздания базы "
+	"проекта..."
 
 #
 # This verbose message is issued by the aecd command when a change is
@@ -2021,6 +4568,96 @@ msgid	"remove reviewer $name complete"
 msgstr	"пользователь \"$name\" больше не является рецензентом"
 
 #
+# This progress message is issued when Aegis removes the symbolic links
+# from the development directory which point to the baseline.
+#
+msgid	"removing symbolic links to baseline"
+msgstr	"удаляю символические ссылки к базе проекта"
+
+#
+# This error message is issued when a rename fails.
+#
+# 	$File_Name1	The name of the source file or directory.
+# 	$File_Name2	The name of the destination file or directory.
+#
+msgid	"rename(\"$filename1\", \"$filename2\"): $errno"
+msgstr	"rename(\"$filename1\", \"$filename2\"): $errno"
+
+#
+# This error message is issued when an ambiguous report name is specified.
+#
+# 	$Name		The offending report name.
+# 	$Name_List	A list of possible alternatives.
+# 			(Optional)
+#
+msgid	"report $name ambig"
+msgstr	"неоднозначное имя отчёта \"$name\" ($name_list)"
+
+#
+# This error message is issued when an error is discovered in a report
+# at run-time.
+#
+msgid	"report aborted"
+msgstr	"отчёт остановлен"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires at least one argument"
+msgstr	"требуется как минимум один параметр"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires one argument"
+msgstr	"требуется один параметр"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires one or two arguments"
+msgstr	"требуется один или два параметра"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires three arguments"
+msgstr	"требуется три параметра"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires two arguments"
+msgstr	"требуется два параметра"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires two or more arguments"
+msgstr	"требуется два или больше параметров"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires two or three arguments"
+msgstr	"требуется два или три параметра"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"requires zero arguments"
+msgstr	"параметров быть не должно"
+
+#
 # This error message is issued by aeipass when a change was being
 # integrated when aegis was upgraded from 2.3 to 3.0.  The file
 # fingerprints are absent, and restarting the integration will cause
@@ -2078,6 +4715,37 @@ msgid	"rm int dir"
 msgstr	"удаление директории интеграции"
 
 #
+# This error message is issued when a rmdir fails.
+#
+# 	$File_Name	The name of the directory to be removed.
+#
+msgid	"rmdir $filename: $errno"
+msgstr	"rmdir \"$filename\": $errno"
+
+#
+# This error message is issued when a substitution function is called
+# incorrectly.  See (+++) below.
+#
+msgid	"second argument must be \"Absolute\" or \"Relative\""
+msgstr	"второй параметр должен быть \"Absolute\" или \"Relative\""
+
+#
+# This error message is issued when a setgid fails.
+#
+# 	$Argument	The gid argument.
+#
+msgid	"setgid $arg: $errno"
+msgstr	"setgid $arg: $errno"
+
+#
+# This error message is issued when a setuid fails.
+#
+# 	$Argument	The uid argument.
+#
+msgid	"setuid $arg: $errno"
+msgstr	"setuid $arg: $errno"
+
+#
 # This error message is issued when too many or too few source file
 # names are given to the aecp -Output command.
 #
@@ -2089,12 +4757,116 @@ msgstr	"вместе с опцией -Output можно указывать только один исходный "
 	"файл (указано $number)"
 
 #
+# This error message is issued when an inappropriate argument is given
+# to the sort function.
+#
+# 	$Name		The type name of the offending argument.
+#
+msgid	"sort requires a list argument (was given $name)"
+msgstr	"для опреации сортировки требуется список в качетсве параметра "
+	"(передано $name)"
+
+#
+# This error message is issued when too many arguments are given to the
+# sort function.
+#
+# 	$Number		The number of arguments given.
+#
+msgid	"sort requires exactly 1 argument (was given $number)"
+msgstr	"для операции сортировки треуется ровно один параметр (передано "
+	"$number)"
+
+#
+# This error message is issued when the ${source} substitution is called
+# incorrectly.  See (+++) below.
+#
+msgid	"source file unknown"
+msgstr	"неизвестный исходный файл"
+
+#
+# This is the name of the program's standard input.  The place input
+# from getchar (et al) comes from.
+#
+msgid	"standard input"
+msgstr	"стандартный поток ввода"
+
+#
+# This is the name of the program's standard output.  The place output
+# from putchar (et al) goes.
+#
+msgid	"standard output"
+msgstr	"стандартный поток вывода"
+
+#
+# This error message is issued when a file stat fails
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"stat $filename: $errno"
+msgstr	"$filename: $errno"
+
+#
+# This error message is issued when the ${date} substitution needs more
+# than 1000 characters of output.  Hopefully, this is unlikely, and
+# usually indicates some other error.
+#
+msgid	"strftime output too large"
+msgstr	"слишком большой результат функции strftime"
+
+#
+# This error message is issued when a symlink fails.
+#
+# 	$File_Name1	The name of the source file.
+# 	$File_Name1	The name of the destination file.
+#
+msgid	"symlink(\"$filename1\", \"$filename2\"): $errno"
+msgstr	"symlink(\"$filename1\", \"$filename2\"): $errno"
+
+#
 # This error message is issued when something checked before a lock was
 # obtained, has changed by the time the lock was obtained.  This is only
 # seen rarely.
 #
 msgid	"sync error, try again"
 msgstr	"что-то изменилось, операция остановлена, попробуйте ещё раз"
+
+#
+# This error message is issued when yacc finds an error at parse time.
+#
+msgid	"syntax error"
+msgstr	"невозможно определить что имелось ввиду"
+
+#
+# This error message is issued when yacc finds an error at parse time.
+#
+msgid	"syntax error: cannot back up"
+msgstr	"невозможно определить что имелось ввиду"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when bison finds an error at parse time.
+#
+msgid	"syntax error; also virtual memory exhausted"
+msgstr	"невозможно определить что имелось ввиду, так как это слишком "
+	"сложное выражение и не помещается в памяти"
+
+#
+# This error message is issued when the argument to -Tab_Width is absurd.
+#
+# 	$Number		The offending tab width.
+#
+msgid	"tab width $number out of range"
+msgstr	"недопустимый шаг табуляции $number"
+
+#
+# This error message is issued before running test_command if
+# progress messages were requested
+#
+#      $Current        Current test number
+#      $Total          Total number of tests
+#
+msgid	"test $current of $total"
+msgstr	"тест $current из $total"
 
 #
 # This verbose message is issued when aent determines the list of
@@ -2127,6 +4899,15 @@ msgstr	"перед завершением разработки необходимо выполнить команду 'aegis "
 	"-Test -REGression' $outstanding"
 
 #
+# This error message is issued when Aegis is invoked in test mode, but
+# the -LIBrary option was not used to specify the test library path.
+#
+# 	$Name	The name of the -LIBrary option.
+#
+msgid	"test mode needs $name"
+msgstr	"Опция $name не укзана. В тестовом режиме она необходима."
+
+#
 # This error message is issued when aede finds a file which has not been
 # tested.
 #
@@ -2136,6 +4917,86 @@ msgstr	"перед завершением разработки необходимо выполнить команду 'aegis "
 msgid	"test required"
 msgstr	"перед завершением разработки необходимо выполнить команду 'aegis "
 	"-Test' $outstanding"
+
+#
+# This message is printed when the variable named in a catch lause is
+# not a modifiable lvalue.
+#
+msgid	"the catch variable must be modifiable"
+msgstr	"переменной оператора catch должна быть изменяемая величина"
+
+#
+# This message is printed when the variable named in a catch lause is
+# not a modifiable lvalue.
+#
+# 	$Name		The type name of the offending expression.
+#
+msgid	"the catch variable must be modifiable (not $name)"
+msgstr	"переменной оператора catch должна быть изменяемая величина "
+	"(передано $name)"
+
+#
+# This message is issued when a for(a in b) loop is given a sequence expression
+# (the second one) which is not a list.
+#
+# 	$Name		The type name of the offending expression.
+#
+msgid	"the loop iteration value must be a list (not $name)"
+msgstr	"пречислемое значения для цикла должно быть списком (передано "
+	"$name)"
+
+#
+# This message is issued when a for(a in b) loop is given a control
+# expression (the first one) which is not an lvalue.  This is determined
+# at compile time, the other one is determined at run time.
+#
+msgid	"the loop variable must be modifiable"
+msgstr	"переменной цикла должна быть изменяемая величина"
+
+#
+# This message is issued when a for(a in b) loop is given a control expression
+# (the first one) which is not an lvalue.
+#
+# 	$Name		The type name of the offending expression.
+#
+msgid	"the loop variable must be modifiable (not $name)"
+msgstr	"переменной цикла должна быть изменяемая величина (передано $name)"
+
+#
+# This message is issued when a variable name is reused.
+#
+# 	$Name		The offending variable name.
+#
+msgid	"the name \"$name\" has already been used"
+msgstr	"имя \"$name\" уже используется"
+
+#
+# This error message is issued when an unknown name is referenced.
+#
+# 	$Name		The undefined variable name.
+#
+msgid	"the name \"$name\" is undefined"
+msgstr	"неопределённое имя \"$name\""
+
+#
+# This information message is issued when Aegis needs to delay for a
+# number fo seconds to ensure that file modification tikmes do not extend
+# into the future.  Commonest sighting is when aeipass needs to sleep.
+# Also used as a debug message, only visable when DEBUG is defined.
+#
+msgid	"throttling $number seconds"
+msgstr	"задержка на $number секунд${sw ${ex (((($n <10)+($n >19))*$n ) % "
+	"10)-1} у ы ы ы ''} для согласования времени изменения файлов."
+
+#
+# This message is issued whrn a throw statement is evaluated, and the
+# value to be thrown is not a string.
+#
+# 	$Name		The type name of the offending expression.
+#
+msgid	"throw statement requires string argument (not $name)"
+msgstr	"для оператора throw требуется строка в качестве параметра "
+	"(передано $name)"
 
 #
 # This error message is issued when too few files names are specified on
@@ -2168,6 +5029,13 @@ msgid	"too many dir"
 msgstr	"указано слишком много директорий"
 
 #
+# This error message is issued when too many file names are specified on
+# the command line.
+#
+msgid	"too many files"
+msgstr	"указано слишком много файлов"
+
+#
 # This error message is issued when too many information names are
 # specified to the aev command.  It only accepts one.
 #
@@ -2189,12 +5057,134 @@ msgid	"too many proj name"
 msgstr	"указано слишком много проектов"
 
 #
+# This error message is issued too many sizes are specified on the
+# command line.  Exactly two are required.
+#
+msgid	"too many sizes specified"
+msgstr	"указано слишком много размеров"
+
+#
 # This error message is issued when aena is given a user name more than once.
 #
 # 	$Name		The offending user name.
 #
 msgid	"too many user $name"
 msgstr	"пользователь \"$name\" указан более одного раза"
+
+#
+# This format string is used when assembling a change message
+# (information, progress or fatal) for the trunk change of a project.
+#
+# 	$Message	The message to be issued.
+#
+msgid	"trunk: $message"
+msgstr	"ствол: $message"
+
+#
+# This error message is issued when a user from the /etc/passwd file, or
+# equivalent, cannot be found by number.
+#
+# 	$Number		The offending user number.
+#
+msgid	"uid $number unknown"
+msgstr	"неизвестный uid $number"
+
+#
+# This error message is issued when the uname system call fails.
+#
+msgid	"uname: $errno"
+msgstr	"uname: $errno"
+
+#
+# This error message is issued when there is an unfinished recovery
+# action to change the mode of a file or directory.
+#
+# 	$Argument	The mode, in octal, the file is to be changed to.
+# 	$File_Name	The name of the file
+#
+msgid	"unfinished: chmod $arg $filename"
+msgstr	"незаконченное восстановление: chmod $arg $filename"
+
+#
+# This error message is issued when there is an unfinished recovery
+# action to move file file or directory.
+#
+# 	$File_Name1	The name of the source file
+# 	$File_Name2	The name of the destination file
+#
+msgid	"unfinished: mv $filename1 $filename2"
+msgstr	"незаконченное восстановление: mv $filename1 $filename2"
+
+#
+# This error message is issued when there is an unfinished recovery
+# action to remove a file.
+#
+# 	$File_Name	The name of the file
+#
+msgid	"unfinished: rm $filename"
+msgstr	"незаконченное восстановление: rm $filename"
+
+#
+# This error message is issued when there is an unfinished recovery
+# action to remove a directory.
+#
+# 	$File_Name	The name of the directory
+#
+msgid	"unfinished: rmdir $filename"
+msgstr	"незаконченное восстановление: rmdir $filename"
+
+#
+# This error message is issued when there is an unknown option on the
+# command line.
+#
+# 	$Name		The offending command line argument.
+#
+msgid	"unknown \"$name\" option"
+msgstr	"неизвестная опция \"$name\""
+
+#
+# This error message is issued when an unknown C escape sequence is seen.
+#
+# 	$Name		The offending escape sequence, including the backslash.
+#
+msgid	"unknown '$name' escape"
+msgstr	"неизвестная последовательность '$name'"
+
+#
+# This error message is issued when an unknown change is referred to.
+# The change number will be given in the surrounding "wrapper".
+#
+msgid	"unknown change"
+msgstr	"в проекте нет ветви или блока изменений с таким номером"
+
+#
+# This fatal error message is issued when the shell cannot be determined.
+#
+msgid	"unknown shell"
+msgstr	"не удаётся определить командный интерпретатор, запросивший "
+	"завершение параметра"
+
+#
+# This error message is issued when an unknown substitution is
+# referenced.  See (+++) below.
+#
+msgid	"unknown substitution name"
+msgstr	"неизвестное имя подстановки"
+
+#
+# This error message is issued when an unknown substitution variant
+# is referenced.  See (+++) below.
+#
+msgid	"unknown substitution variant"
+msgstr	"неизветстный вариант подстановки"
+
+#
+# This error message is issued when an unlink fails.
+#
+# 	$File_Name	The name of the file to be unlinked.
+#
+msgid	"unlink $filename: $errno"
+msgstr	"unlink \"$filename\": $errno"
 
 #
 # This fatal error message is issued when aedbu command is applied to
@@ -2250,6 +5240,126 @@ msgid	"user \"$name\" is not an integrator"
 msgstr	"пользователь \"$name\" не является интегратором"
 
 #
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the user's uid is too low (too
+# privileged).
+#
+# 	$Name		The offending user name.
+#
+msgid	"user $name too privileged"
+msgstr	"слишком привилегированный пользователь \"$name\""
+
+#
+# This error message is issued when a user from the /etc/passwd file, or
+# equivalent, cannot be found by name.
+#
+# 	$Name		The offending user name.
+#
+msgid	"user $name unknown"
+msgstr	"неизвестный пользователь \"$name\""
+
+#
+# This error message is issued when a user is named who does not appear
+# in the /etc/passwd file, or equivalent.
+#
+# 	$Name		The offending user name.
+# 	$Guess		The closest match in the /etc/passwd file.
+#
+msgid	"user $name unknown, closest is $guess"
+msgstr	"неизвестный пользователь \"$name\", есть похожий пользователь "
+	"\"$guess\""
+
+#
+# This information message is issued when Aegis is about to execute a
+# command, to tell the user who the command will be executed as.
+#
+# 	$Name1		The quoted user name.
+# 	$Name2		The quoted group name.
+#
+msgid	"user $name1, group $name2"
+msgstr	"пользователь $name1, группа $name2"
+
+#
+# This is the format of user messages (error, fatal and verbose).
+#
+msgid	"user $name: $message"
+msgstr	"пользователь \"$name\": $message"
+
+#
+# This error message is issued when a utime fails.
+#
+# 	$File_Name	The name of the file
+#
+msgid	"utime $filename: $errno"
+msgstr	"utime \"$filename\": $errno"
+
+#
+# This error message is issued when an inappropriate data type is
+# supplied in an Aegis data file or configuration file.
+#
+# 	$Name		The type name of the *required* type.
+#
+msgid	"value of type $name required"
+msgstr	"требуется значение типа $name"
+
+#
+# This fatal error message is issued when a version number handed to the
+# -BRanch option has a non-branch it in somewhere.
+#
+# 	$number	The offending version number.
+#
+msgid	"version $number not a branch"
+msgstr	"версия ``$number'' не является ветвью проекта"
+
+#
+# This progress message is issued when Aegis is waiting for a lock.
+# This message is seen often.
+#
+# 	$Name		The type name of the lock being waited for.
+#
+msgid	"waiting for $name lock"
+msgstr	"ожидание освобождения блокировки $name"
+
+#
+# This progress message is issued when Aegis is waiting for a project
+# baseline read lock.  This message is issued with a project indicator.
+#
+msgid	"waiting for baseline read lock"
+msgstr	"ожидание освобождения разделяемой блокировки базы проектаk; это "
+	"происходит из-за работающейкоманды ``aegis -Integrate_PASS''"
+
+#
+# This progress message is issued when Aegis is waiting for a project
+# baseline write lock.  This message is issued with a project indicator.
+#
+msgid	"waiting for baseline write lock"
+msgstr	"ожидание освобождения исключительной блокировки базы проекта; "
+	"это происходит из-за работающей команды ``aegis -Build''"
+
+#
+# This progress message is issued when Aegis is waiting for a global state
+# lock.  The global state remembers project names and where they are.
+#
+msgid	"waiting for global state lock"
+msgstr	"ожидание освобождения блокировки индекса размещения проектов"
+
+#
+# This progress message is issued when Aegis is waiting for a project
+# history lock.  This message is issued with a project indicator.
+#
+msgid	"waiting for history lock"
+msgstr	"ожидание освобождения блокировки истории файла; это происходит "
+	"из-за работающей с другой ветвью проекта команды ``aegis -"
+	"Integrate_PASS''"
+
+#
+# This progress message is issued when Aegis is waiting for a lock.
+# This message is seen often, usually with a change or project indicator.
+#
+msgid	"waiting for lock"
+msgstr	"ожидание освобождения блокировки"
+
+#
 # This warning message is issued when aed automatically alters the file
 # action from create to modify.  This happens when two separate change
 # create the same file, and the second change is differenced after the
@@ -2262,6 +5372,55 @@ msgstr	"предупреждение: файл \"$filename\" уже присутствует в проекте, "
 	"\"create\" автоматически изменяется на \"modify\""
 
 #
+# This warning message is issued when a change file is modified by the
+# history tool (history_put_command or history_create_command)
+# during aeipass.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"warning: $filename modified by history tool"
+msgstr	"предупреждение: исходный файл \"$filename\" был изменён "
+	"программой хранения истории файла"
+
+#
+# TRANSLATION REQUIRED
+# This warning message is issued by aedist when a patch in an incominmg
+# change set cannot be used (it could be malformed, it may have one or
+# more chunks that can't be applied, etc) and so the full source for
+# the file from the incming change set has been used instead.
+#
+# 	$filename	The name of the offending file.
+#
+msgid	"warning: $filename patch not used"
+msgstr	"warning: the patch for \"$filename\" could not be used, so the "
+	"full incoming source for this file has been used; you may need "
+	"to resolve conflicts manually"
+
+#
+# This warning message is issued when the AEGIS environment is observed.
+# This has been obsoleted, and users are encouraged to use the
+# AEGIS_PATH environment variable instead.
+#
+# 	$Name1	The name of the AEGIS environment variable.
+# 	$Name2	The name of the AEGIS_PATH environment variable.
+#
+msgid	"warning: $name1 is obsolete, use $name2 environment variable"
+msgstr	"предупреждение: переменная окружения $name1 устарела, следует "
+	"использовать переменную $name2"
+
+#
+# This warning message is issued when an obsolete % substitution is used.
+# (They are so obsolete they are undocumented, and will eventually be
+# removed.) An equivalent ${...} substitution is suggested.
+#
+# 	$Name1		The offending percent (%) substitution.
+# 	$Name2		The appropriate dollar ($) replacement.
+#
+msgid	"warning: $name1 is obsolete, use $name2 substitution"
+msgstr	"предупреждение: подстановка $name1 устарела, в этом контексте "
+	"следует использовать $name2"
+
+#
 # This warning is issued when an obsolete option is used.
 #
 # 	$Name1		The name of the obsolete option.
@@ -2270,6 +5429,25 @@ msgstr	"предупреждение: файл \"$filename\" уже присутствует в проекте, "
 msgid	"warning: $name1 obsolete, use $name2 option"
 msgstr	"предупреждение: опция $name1 устарела, следует использовать "
 	"опцию $name2"
+
+#
+# This warning message is issued when a chmod fails, but Aegis will continue.
+#
+# 	$File_Name	The name of the file to be changed.
+# 	$Argument	The mode desired.
+#
+msgid	"warning: chmod(\"$filename\", $arg): $errno"
+msgstr	"предупреждение: chmod(\"$filename\", $arg): $errno"
+
+#
+# This warning message is issued when a child process stops with a
+# non-zero exit status, but Aegis will continue.
+#
+# 	$Command	The offending command.
+# 	$Number		The exit status of the child.
+#
+msgid	"warning: command \"$command\" exit status $number"
+msgstr	"предупреждение: команда \"$command\" завершилась с кодом $number"
 
 #
 # This warning message is issued when Aegis finds files which require
@@ -2283,6 +5461,16 @@ msgid	"warning: diffable files"
 msgstr	"предупреждение: в блоке изменений есть ${plural $number '$number "
 	"файл${plf $n '' а ов}, для которых' 'файл, для которого' } "
 	"следует выполнить сравнение"
+
+#
+# This error message is issued when your search expression doesn't
+# do anything.
+#
+msgid	"warning: expression has no side effects, assuming you meant -"
+	"PRint"
+msgstr	"предупреждение: у выражения отсутствуют побочные эффекты, "
+	"предполагается что требовалось вывести(-PRint) файлы "
+	"соответствующие выражению"
 
 #
 # This warning message is issued when aeclean notices that a file needs
@@ -2314,6 +5502,22 @@ msgstr	"предупреждение: для файла \"$filename\" следует выполнить слияние"
 msgid	"warning: file times in future"
 msgstr	"предупреждение: время изменения некоторых файлов установлено на "
 	"$number секунд${plf $n у ы ''} вперёд"
+
+#
+# This warning message is a summary issued when one or more change
+# files are modified by the history tool (history_put_command or
+# history_create_commands) during aeipass.
+#
+# 	$Number		The number of files modified.
+# 			(Optional)
+#
+msgid	"warning: files modified by history tool"
+msgstr	"предупреждение: $number файл${plf $n '' а ов} ${pl $n 'были "
+	"изменены' 'был изменён'} программой хранения истории файлов.${pl "
+	"$n 'Исходные файлы' 'Исходный файл'} в репозитарии больше не "
+	"${pl $n 'соответствуют объектным файлам' 'соответствует "
+	"объектному файлу'} Целостность репозитария нарушена если только "
+	"изменения не были сделаны только в коментариях"
 
 #
 # This warning message is issued when Aegis finds files which require
@@ -2361,6 +5565,68 @@ msgstr	"предупреждение: смена владельца не имеет смысла, поскольку "
 	"новая рабочая директория "
 
 #
+# This warning is issued when a received file could have a Trojan horse
+# attack in it, but the use said to keep going.
+#
+msgid	"warning: potential trojan, proceeding anyway"
+msgstr	"предупреждение: В этом блоке изменений присутствуют файлы в "
+	"которых могут содержаться вирусы (например типа \"троянский конь"
+	"\"). Так как была указана опция --no-trojan, то процесс "
+	"разработки будет продолжен несмотря на потенциальную опасность."
+
+#
+# This warning is issued when a received file could have a Trojan horse
+# attack in it.
+#
+msgid	"warning: potential trojan, review before completing development"
+msgstr	"предупреждение: В этом блоке изменений присутствуют файлы в "
+	"которых могут содержаться вирусы (например типа \"троянский конь"
+	"\"). Файлы этого блока изменений необходимо внимательно изучить "
+	"перед попыткой сборки или тестирования. Этот блок изменений "
+	"остаётся в стадии being_developed."
+
+#
+# This warning message is issued when a rmdir fails, but Aegis will continue.
+#
+# 	$File_Name	The name of the directory to be removed.
+#
+msgid	"warning: rmdir $filename: $errno"
+msgstr	"предупреждение: rmdir \"$filename\": $errno"
+
+#
+# This warning message is issued when a setgid fails, but Aegis will continue.
+#
+# 	$Argument	The gid argument.
+#
+msgid	"warning: setgid $arg: $errno"
+msgstr	"предупреждение: setgid $arg: $errno"
+
+#
+# This warning message is issued when a state fails, but Aegis will continue.
+#
+# 	$File_Name	The name of the file to be stat()ed.
+#
+msgid	"warning: stat $filename: $errno"
+msgstr	"предупреждение: stat \"$filename\": $errno"
+
+#
+# This warning message is issued when in Aegis runs in test mode.
+#
+msgid	"warning: test mode"
+msgstr	"предупреждение: Эта копия Aegis запущена в тестовом режиме. В "
+	"этом режиме некоторые возможности программы недоступны из-за "
+	"сниженых привилегий. Не рекомендуется использовать программу в "
+	"этом режиме для работы (только тестирование)."
+
+#
+# This warning message is issued when an unlink fails, but Aegis will continue.
+#
+# 	$File_Name	The name of the file to be unlinked.
+#
+msgid	"warning: unlink $filename: $errno"
+msgstr	"предупреждение: unlink \"$filename\": $errno"
+
+#
 # This warning message is issued when a command which accepts both -Edit
 # and -File is given a file name without the -File option.  This usage
 # is being phased out, so that -Edit can become the default.
@@ -2371,6 +5637,14 @@ msgstr	"предупреждение: смена владельца не имеет смысла, поскольку "
 msgid	"warning: use $name option"
 msgstr	"предупреждение: при указании файла атрибутов следует "
 	"пользоваться опцией $name форма записи без опции устарела"
+
+#
+# This warning message is issued when a utime fails.
+#
+# 	$File_Name	The name of the file
+#
+msgid	"warning: utime $filename: $errno"
+msgstr	"предупреждение: utime \"$filename\": $errno"
 
 #
 # This error message is issued when a aedbu command is run by a
@@ -2387,3 +5661,28 @@ msgstr	"пользователь \"$user\" не работал над этим блоком изменений, "
 msgid	"was not reviewer"
 msgstr	"пользователь \"$user\" не рецензировал этот блок изменений, "
 	"только пользователь \"$reviewer\" может отозвать рецензию"
+
+#
+# This error message is issued when a file write fails
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"write $filename: $errno"
+msgstr	"ошибка записи в файл \"$filename\": $errno"
+
+#
+# This error message is issued when the input it too complicated for
+# yacc to figure out.
+#
+msgid	"yacc stack overflow"
+msgstr	"невозможно определить что имелось ввиду, слишком сложное "
+	"выражение"
+
+#
+# This error message is issued when Aegis is unable to proceed because
+# the user has not yet created an essential change file.
+#
+# 	$File_Name	The name of the offending file
+#
+msgid	"you must create a \"$filename\" file"
+msgstr	"необходимо создать файл \"$filename\""

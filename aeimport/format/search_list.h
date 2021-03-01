@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,20 +29,17 @@
 typedef struct format_search_list_ty format_search_list_ty;
 struct format_search_list_ty
 {
-	format_search_ty **item;
-	size_t		length;
-	size_t		maximum;
+    format_search_ty **item;
+    size_t	    length;
+    size_t	    maximum;
 };
 
-format_search_list_ty *format_search_list_new _((void));
-void format_search_list_constructor _((format_search_list_ty *));
-void format_search_list_destructor _((format_search_list_ty *));
-void format_search_list_delete _((format_search_list_ty *));
-void format_search_list_append _((format_search_list_ty *,
-	format_search_ty *));
-
-void format_search_list_staff _((format_search_list_ty *,
-	struct string_list_ty *));
-void format_search_list_validate _((format_search_list_ty *));
+format_search_list_ty *format_search_list_new(void);
+void format_search_list_constructor(format_search_list_ty *);
+void format_search_list_destructor(format_search_list_ty *);
+void format_search_list_delete(format_search_list_ty *);
+void format_search_list_append(format_search_list_ty *, format_search_ty *);
+void format_search_list_staff(format_search_list_ty *, struct string_list_ty *);
+void format_search_list_validate(format_search_list_ty *);
 
 #endif /* AEIMPORT_FORMAT_SEARCH_LIST_H */

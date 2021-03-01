@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,6 @@ struct string_ty;
 extern rpt_func_ty rpt_func_project_name;
 extern rpt_func_ty rpt_func_project_name_set;
 
-void report_parse_project_set _((struct string_ty *));
+void report_parse_project_set(struct string_ty *);
 
 #endif /* AEGIS_AER_FUNC_PROJECT_H */

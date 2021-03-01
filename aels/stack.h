@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,9 @@
 struct change_ty; /* forward */
 struct project_ty; /* forward */
 
-void stack_from_change _((struct change_ty *));
-void stack_from_project _((struct project_ty *));
-string_ty *stack_relative _((string_ty *));
-string_ty *stack_nth _((size_t));
+void stack_from_change(struct change_ty *);
+void stack_from_project(struct project_ty *);
+string_ty *stack_relative(string_ty *);
+string_ty *stack_nth(size_t);
 
 #endif /* AELS_STACK_H */

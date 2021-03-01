@@ -38,8 +38,7 @@
 
 
 patch_list_ty *
-patch_slurp(ifn)
-    string_ty	    *ifn;
+patch_slurp(string_ty *ifn)
 {
     input_ty	    *ifp;
     rfc822_header_ty *hp;

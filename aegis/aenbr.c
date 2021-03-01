@@ -43,10 +43,8 @@
 #include <user.h>
 
 
-static void new_branch_usage _((void));
-
 static void
-new_branch_usage()
+new_branch_usage(void)
 {
     char	    *progname;
 
@@ -58,19 +56,15 @@ new_branch_usage()
 }
 
 
-static void new_branch_help _((void));
-
 static void
-new_branch_help()
+new_branch_help(void)
 {
     help("aenbr", new_branch_usage);
 }
 
 
-static void new_branch_list _((void));
-
 static void
-new_branch_list()
+new_branch_list(void)
 {
     string_ty	    *project_name;
 
@@ -108,10 +102,8 @@ new_branch_list()
 }
 
 
-static void new_branch_main _((void));
-
 static void
-new_branch_main()
+new_branch_main(void)
 {
     string_ty	    *project_name;
     project_ty	    *pp;
@@ -330,7 +322,7 @@ new_branch_main()
 
 
 void
-new_branch()
+new_branch(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

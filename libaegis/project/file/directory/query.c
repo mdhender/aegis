@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,43 +22,41 @@
 
 #include <change/file.h>
 #include <error.h> /* for assert */
+#include <os/isa/path_prefix.h>
 #include <project/file.h>
 #include <str_list.h>
 #include <trace.h>
 
 
 void
-project_file_directory_query(pp, file_name, result_in, result_out)
-	project_ty	*pp;
-	string_ty	*file_name;
-	string_list_ty	*result_in;
-	string_list_ty	*result_out;
+project_file_directory_query(project_ty *pp, string_ty *file_name,
+    string_list_ty *result_in, string_list_ty *result_out,
+    view_path_ty as_view_path)
 {
-	project_ty	*ppp;
-	change_ty	*cp;
-	string_list_ty	wl_in;
-	string_list_ty	wl_out;
-	string_list_ty	exclude;
+    size_t          j;
 
-	trace(("project_file_dir(pp = %8.8lX, file_name = \"%s\")\n{\n"/*}*/,
-		(long)pp, file_name->str_text));
-	assert(result_in);
-	string_list_constructor(result_in);
-	string_list_constructor(&exclude);
-	if (result_out)
-		string_list_constructor(result_out);
-	else
-		result_out = &exclude;
-	for (ppp = pp; ppp; ppp = ppp->parent)
+    trace(("project_file_dir(pp = %8.8lX, file_name = \"%s\")\n{\n",
+	(long)pp, file_name->str_text));
+    assert(result_in);
+    string_list_constructor(result_in);
+    if (result_out)
+	string_list_constructor(result_out);
+    for (j = 0;; ++j)
+    {
+	fstate_src	src_data;
+
+	src_data = project_file_nth(pp, j, as_view_path);
+	if (!src_data)
+	    break;
+	if (src_data->usage == file_usage_build)
+	    continue;
+	if (os_isa_path_prefix(file_name, src_data->file_name))
 	{
-		cp = project_change_get(ppp);
-		change_file_directory_query(cp, file_name, &wl_in, &wl_out);
-		string_list_remove_list(&wl_in, result_out);
-		string_list_append_list_unique(result_in, &wl_in);
-		string_list_append_list_unique(result_out, &wl_out);
-		string_list_destructor(&wl_in);
-		string_list_destructor(&wl_out);
+	    if (src_data->action != file_action_remove)
+	       	string_list_append(result_in, src_data->file_name);
+	    else if (result_out)
+	       	string_list_append(result_out, src_data->file_name);
 	}
-	string_list_destructor(&exclude);
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }

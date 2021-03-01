@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void new_project _((void));
+void new_project(void);
 
 #endif /* AEGIS_AENPR_H */

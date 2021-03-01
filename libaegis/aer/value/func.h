@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 struct rpt_func_ty;
 
-rpt_value_ty *rpt_value_func _((struct rpt_func_ty *));
-struct rpt_func_ty *rpt_value_func_query _((rpt_value_ty *));
+rpt_value_ty *rpt_value_func(struct rpt_func_ty *);
+struct rpt_func_ty *rpt_value_func_query(rpt_value_ty *);
 
 #endif /* AEGIS_AER_VALUE_FUNC_H */

@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aermu _((void));
+command_ty *command_aermu(void);
 
 #endif /* AECOMPLETE_COMMAND_AERMU_H */

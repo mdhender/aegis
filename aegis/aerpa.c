@@ -40,10 +40,8 @@
 #include <user.h>
 
 
-static void project_alias_remove_usage _((void));
-
 static void
-project_alias_remove_usage()
+project_alias_remove_usage(void)
 {
     char	    *progname;
 
@@ -65,19 +63,15 @@ project_alias_remove_usage()
 }
 
 
-static void project_alias_remove_help _((void));
-
 static void
-project_alias_remove_help()
+project_alias_remove_help(void)
 {
     help("aerpa", project_alias_remove_usage);
 }
 
 
-static void project_alias_remove_list _((void));
-
 static void
-project_alias_remove_list()
+project_alias_remove_list(void)
 {
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -86,10 +80,8 @@ project_alias_remove_list()
 }
 
 
-static void project_alias_remove_main _((void));
-
 static void
-project_alias_remove_main()
+project_alias_remove_main(void)
 {
     string_ty	    *project_name;
     project_ty	    *pp;
@@ -214,7 +206,7 @@ project_alias_remove_main()
 
 
 void
-project_alias_remove()
+project_alias_remove(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

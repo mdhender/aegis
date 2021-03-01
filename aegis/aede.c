@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@
 #include <commit.h>
 #include <common.h>
 #include <error.h>
+#include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <progname.h>
@@ -52,10 +53,8 @@
 #include <user.h>
 
 
-static void develop_end_usage _((void));
-
 static void
-develop_end_usage()
+develop_end_usage(void)
 {
     char	    *progname;
 
@@ -67,19 +66,15 @@ develop_end_usage()
 }
 
 
-static void develop_end_help _((void));
-
 static void
-develop_end_help()
+develop_end_help(void)
 {
     help("aede", develop_end_usage);
 }
 
 
-static void develop_end_list _((void));
-
 static void
-develop_end_list()
+develop_end_list(void)
 {
     string_ty	    *project_name;
 
@@ -120,10 +115,8 @@ develop_end_list()
 }
 
 
-static void develop_end_main _((void));
-
 static void
-develop_end_main()
+develop_end_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *dd;
@@ -308,20 +301,27 @@ develop_end_main()
 
 	file_required = 1;
 	diff_file_required = 1;
-	if (c_src_data->action == file_action_remove)
+	switch (c_src_data->action)
 	{
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	    break;
+
+	case file_action_remove:
 	    file_required = 0;
 	    if (is_a_branch)
 	    {
-		p_src_data = project_file_find(pp, c_src_data->file_name);
-		if
-		(
-		    !p_src_data
-		||
-		    p_src_data->deleted_by
-		||
-		    p_src_data->about_to_be_created_by
-		)
+		fstate_src      src;
+
+		src =
+		    project_file_find
+		    (
+			pp,
+			c_src_data->file_name,
+			view_path_extreme
+		    );
+		if (!src)
 		{
 		    diff_file_required = 0;
 		}
@@ -332,6 +332,64 @@ develop_end_main()
 	     */
 	    if (c_src_data->move && change_file_find(cp, c_src_data->move))
 		diff_file_required = 0;
+	    break;
+
+	case file_action_transparent:
+	    /*
+	     * Don't check anything for branches (the file is going).
+	     * For changes, make sure it's the same as the ancestor.
+	     */
+	    diff_file_required = 0;
+	    file_required = 0;
+	    if (!is_a_branch)
+	    {
+		assert(pp->parent);
+		if (pp->parent)
+		{
+		    fstate_src      pp_src;
+
+		    pp_src =
+			project_file_find
+			(
+			    pp->parent,
+			    c_src_data->file_name,
+			    view_path_extreme
+			);
+		    if (pp_src)
+		    {
+			string_ty       *blf;
+			int             different;
+
+			path = change_file_path(cp, c_src_data->file_name);
+			blf =
+			    project_file_path
+			    (
+				pp->parent,
+				c_src_data->file_name
+			    );
+			assert(blf);
+			user_become(up);
+			different = files_are_different(path, blf);
+			user_become_undo();
+			str_free(blf);
+			str_free(path);
+			if (different)
+			{
+		    	    scp = sub_context_new();
+			    sub_var_set_string
+			    (
+				scp,
+				"File_Name",
+				c_src_data->file_name
+			    );
+			    change_error(cp, scp, i18n("$filename altered"));
+			    sub_context_delete(scp);
+			    ++errs;
+			}
+		    }
+		}
+	    }
+	    break;
 	}
 	if (c_src_data->usage == file_usage_build)
 	{
@@ -509,7 +567,8 @@ develop_end_main()
 	 * gives the project file on the immediate branch,
 	 * rather than deeper down the family tree.
 	 */
-	p_src_data = project_file_find(pp, c_src_data->file_name);
+	p_src_data =
+	    project_file_find(pp, c_src_data->file_name, view_path_none);
 
 	/*
 	 * It is an error if any files in the change
@@ -526,13 +585,7 @@ develop_end_main()
 	    (
 		!is_a_branch
 	    &&
-		(
-		    !p_src_data
-		||
-		    p_src_data->deleted_by
-		||
-		    p_src_data->about_to_be_created_by
-		)
+		!project_file_find(pp, c_src_data->file_name, view_path_extreme)
 	    )
 	    {
 		scp = sub_context_new();
@@ -617,6 +670,14 @@ develop_end_main()
 		p_src_data->locked_by = change_number;
 	    break;
 
+	case file_action_transparent:
+	    /*
+	     * Do absolutely nothing for transparent branch files.
+	     */
+	    if (change_was_a_branch(cp))
+		break;
+	    /* fall through... */
+
 	case file_action_modify:
 	    /*
 	     * file being modified
@@ -625,13 +686,7 @@ develop_end_main()
 	    (
 		!is_a_branch
 	    &&
-		(
-		    !p_src_data
-		||
-		    p_src_data->deleted_by
-		||
-		    p_src_data->about_to_be_created_by
-		)
+		!project_file_find(pp, c_src_data->file_name, view_path_extreme)
 	    )
 	    {
 		scp = sub_context_new();
@@ -654,8 +709,9 @@ develop_end_main()
 	    {
 		p_src_data = project_file_new(pp, c_src_data->file_name);
 		p_src_data->usage = c_src_data->usage;
+		p_src_data->action = file_action_transparent;
 		p_src_data->about_to_be_created_by = change_number;
-		assert(c_src_data->edit||c_src_data->edit_origin);
+		assert(c_src_data->edit || c_src_data->edit_origin);
 		p_src_data->edit =
 		    history_version_copy
 		    (
@@ -748,6 +804,7 @@ develop_end_main()
 		p_src_data = project_file_new(pp, c_src_data->file_name);
 	    }
 	    p_src_data->usage = c_src_data->usage;
+	    p_src_data->action = file_action_transparent;
 	    p_src_data->about_to_be_created_by = change_number;
 	    p_src_data->locked_by = change_number;
 	    break;
@@ -787,13 +844,9 @@ develop_end_main()
 	    fstate_src	    p_src_data;
 	    string_ty	    *e;
 
-	    p_src_data = project_file_nth(pp, j);
+	    p_src_data = project_file_nth(pp, j, view_path_extreme);
 	    if (!p_src_data)
 		break;
-	    if (p_src_data->deleted_by)
-		continue;
-	    if (p_src_data->about_to_be_created_by)
-		continue;
 	    if (change_file_find(cp, p_src_data->file_name))
 		continue;
 
@@ -976,7 +1029,12 @@ develop_end_main()
     /*
      * Make the development directory read only.
      */
-    if (project_protect_development_directory_get(pp))
+    if
+    (
+	!change_was_a_branch(cp)
+    &&
+	project_protect_development_directory_get(pp)
+    )
 	change_development_directory_chmod_read_only(cp);
 
     /*
@@ -1007,7 +1065,7 @@ develop_end_main()
 
 
 void
-develop_end()
+develop_end(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1997 Peter Miller;
+ *	Copyright (C) 1991-1993, 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <cattr.h>
 
-void change_attributes _((void));
+void change_attributes(void);
 
 #endif /* AEGIS_AECA_H */

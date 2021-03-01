@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,13 @@
 #include <libdir.h>
 
 
+const char *
+configured_prefix(void)
+{
+    return "@prefix@";
+}
+
+
 /*
  * On a network, may ONLY be shared betwen machines of identical
  * cpu-vendor-os flavour.  Probably mounted read-only.
@@ -32,8 +39,8 @@
  * This is where the executable files live.
  */
 
-char *
-configured_bindir()
+const char *
+configured_bindir(void)
 {
 	return "@bindir@";
 }
@@ -44,8 +51,8 @@ configured_bindir()
  * cpu-vendor-os flavour.  Probably mounted read-only.
  */
 
-char *
-configured_libdir()
+const char *
+configured_libdir(void)
 {
 	return "@libdir@";
 }
@@ -55,8 +62,8 @@ configured_libdir()
  * This is where the error message (.mo) files are parked.
  */
 
-char *
-configured_nlsdir()
+const char *
+configured_nlsdir(void)
 {
 	return "@NLSDIR@";
 }
@@ -73,8 +80,8 @@ configured_nlsdir()
  * This is where the reort scripts are parked.
  */
 
-char *
-configured_datadir()
+const char *
+configured_datadir(void)
 {
 	return "@datadir@";
 }
@@ -87,8 +94,8 @@ configured_datadir()
  * This is where the default-language manual entries are parked.
  */
 
-char *
-configured_mandir()
+const char *
+configured_mandir(void)
 {
 	return "@mandir@";
 }
@@ -105,29 +112,29 @@ configured_mandir()
  * This is where the user ownership state files live.
  */
 
-char *
-configured_comdir()
+const char *
+configured_comdir(void)
 {
 	return "@sharedstatedir@";
 }
 
 
 int
-configured_aegis_uid()
+configured_aegis_uid(void)
 {
 	return @AEGIS_UID@;
 }
 
 
 int
-configured_aegis_gid()
+configured_aegis_gid(void)
 {
 	return @AEGIS_GID@;
 }
 
 
-char *
-configured_exeext()
+const char *
+configured_exeext(void)
 {
 	return "@EXEEXT@";
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 2001 Peter Miller;
+ *	Copyright (C) 1991-1994, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,15 +43,15 @@ struct type_ty
 {
 	char		*name;
 
-	void *(*alloc)_((void));
-	void (*free)_((void *this));
-	int (*enum_parse)_((string_ty *name));
-	void *(*list_parse)_((void *this, type_ty **type_pp));
-	void *(*struct_parse)_((void *this, string_ty *name, type_ty **type_pp,
-		unsigned long *maskp));
-	string_ty *(*fuzzy)_((string_ty *name));
-	struct rpt_value_ty *(*convert)_((void *this));
-	int (*is_set)_((void *));
+	void *(*alloc)(void);
+	void (*free)(void *this);
+	int (*enum_parse)(string_ty *name);
+	void *(*list_parse)(void *this, type_ty **type_pp);
+	void *(*struct_parse)(void *this, string_ty *name, type_ty **type_pp,
+		unsigned long *maskp);
+	string_ty *(*fuzzy)(string_ty *name);
+	struct rpt_value_ty *(*convert)(void *this);
+	int (*is_set)(void *);
 };
 
 typedef struct generic_struct_ty generic_struct_ty;
@@ -66,19 +66,19 @@ extern type_ty real_type;
 extern type_ty string_type;
 extern type_ty time_type;
 
-void *generic_struct_parse _((void *, string_ty *, type_ty **, unsigned long *,
-	type_table_ty *, size_t));
-string_ty *generic_struct_fuzzy _((string_ty *, type_table_ty *, size_t));
-int generic_struct_is_set _((void *));
-string_ty *generic_enum_fuzzy _((string_ty *, string_ty **, size_t));
-struct rpt_value_ty *generic_struct_convert _((void *, type_table_ty *,
-	size_t));
-struct rpt_value_ty *generic_enum_convert _((void *, string_ty **, size_t));
-int generic_enum_is_set _((void *));
-void generic_enum__init _((char **, size_t));
+void *generic_struct_parse(void *, string_ty *, type_ty **, unsigned long *,
+	type_table_ty *, size_t);
+string_ty *generic_struct_fuzzy(string_ty *, type_table_ty *, size_t);
+int generic_struct_is_set(void *);
+string_ty *generic_enum_fuzzy(string_ty *, string_ty **, size_t);
+struct rpt_value_ty *generic_struct_convert(void *, type_table_ty *,
+	size_t);
+struct rpt_value_ty *generic_enum_convert(void *, string_ty **, size_t);
+int generic_enum_is_set(void *);
+void generic_enum__init(char **, size_t);
 
-void type_enum_option_set _((void));
-void type_enum_option_clear _((void));
-int type_enum_option_query _((void));
+void type_enum_option_set(void);
+void type_enum_option_clear(void);
+int type_enum_option_query(void);
 
 #endif /* TYPE_H */

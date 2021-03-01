@@ -60,10 +60,8 @@
  *	briefly describe how to used the 'aegis -Build' command.
  */
 
-static void build_usage _((void));
-
 static void
-build_usage()
+build_usage(void)
 {
     char            *progname;
 
@@ -87,10 +85,8 @@ build_usage()
  *	describe in detail how to use the 'aegis -Build' command.
  */
 
-static void build_help _((void));
-
 static void
-build_help()
+build_help(void)
 {
     help("aeb", build_usage);
 }
@@ -108,14 +104,12 @@ build_help()
  *	list the changes which may be built within the project.
  */
 
-static void build_list _((void));
-
 static void
-build_list()
+build_list(void)
 {
     string_ty       *project_name;
 
-    trace(("build_list()\n{\n" /*} */ ));
+    trace(("build_list()\n{\n"));
     arglex();
     project_name = 0;
     while (arglex_token != arglex_token_eoln)
@@ -147,7 +141,7 @@ build_list()
     );
     if (project_name)
 	str_free(project_name);
-    trace(( /*{ */ "}\n"));
+    trace(("}\n"));
 }
 
 
@@ -164,10 +158,8 @@ build_list()
  *	do from the command line.
  */
 
-static void build_main _((void));
-
 static void
-build_main()
+build_main(void)
 {
     cstate          cstate_data;
     pconf           pconf_data;
@@ -184,7 +176,7 @@ build_main()
     int             based;
     string_ty       *base;
 
-    trace(("build_main()\n{\n" /*} */ ));
+    trace(("build_main()\n{\n"));
     arglex();
     log_style = log_style_snuggle_default;
     project_name = 0;
@@ -592,7 +584,7 @@ build_main()
     project_free(pp);
     change_free(cp);
     user_free(up);
-    trace(( /*{ */ "}\n"));
+    trace(("}\n"));
 }
 
 
@@ -610,7 +602,7 @@ build_main()
  */
 
 void
-build()
+build(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

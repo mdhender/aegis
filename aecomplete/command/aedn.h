@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aedn _((void));
+command_ty *command_aedn(void);
 
 #endif /* AECOMPLETE_COMMAND_AEDN_H */

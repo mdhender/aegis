@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -709,5 +709,6 @@ lex_error(scp, s)
      * issues with byacc, put them here, too.
      */
     i18n("syntax error: cannot back up")
+    i18n("syntax error; also virtual memory exhausted");
 #endif
 }

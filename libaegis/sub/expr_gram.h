@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 struct sub_context_ty; /* existence */
 
-struct string_ty *sub_expr_gram _((struct sub_context_ty *,
-	struct string_ty *));
+struct string_ty *sub_expr_gram(struct sub_context_ty *,
+	struct string_ty *);
 
 #endif /* AEGIS_SUB_EXPR_GRAM_H */

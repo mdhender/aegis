@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 2002 Peter Miller;
+ *	Copyright (C) 1995, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,6 @@
 #include <error.h>
 #include <language.h>
 #include <libdir.h>
-#include <progname.h>
 
 
 #ifdef DEBUG
@@ -61,7 +60,8 @@ static state_ty state;
 void
 language_init(void)
 {
-    char	    *lib;
+    const char      *lib;
+    static const char package[] = "aegis";
 
     /*
      * Protect against multiple invokation.
@@ -90,8 +90,8 @@ language_init(void)
 #ifdef HAVE_SETLOCALE
 #ifdef HAVE_GETTEXT
     setlocale(LC_ALL, "");
-    bindtextdomain(progname_get(), lib);
-    textdomain(progname_get());
+    bindtextdomain(package, lib);
+    textdomain(package);
 #endif /* HAVE_GETTEXT */
 
     /*

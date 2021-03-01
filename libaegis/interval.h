@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,23 +32,24 @@ typedef long interval_data_ty;
 typedef struct interval_ty interval_ty;
 struct interval_ty
 {
-	size_t		length;
-	size_t		size;
-	size_t		scan_index;
-	interval_data_ty scan_next_datum;
-	interval_data_ty data[1];
+    size_t	    length;
+    size_t	    size;
+    size_t	    scan_index;
+    interval_data_ty scan_next_datum;
+    interval_data_ty data[1];
 };
 
-interval_ty *interval_create_empty _((void));
-interval_ty *interval_create_range _((interval_data_ty first, interval_data_ty last));
-void interval_free _((interval_ty *));
-interval_ty *interval_union _((interval_ty *, interval_ty *));
-interval_ty *interval_intersection _((interval_ty *, interval_ty *));
-interval_ty *interval_difference _((interval_ty *, interval_ty *));
-int interval_member _((interval_ty *, interval_data_ty));
+interval_ty *interval_create_empty(void);
+interval_ty *interval_create_range(interval_data_ty first,
+    interval_data_ty last);
+void interval_free(interval_ty *);
+interval_ty *interval_union(interval_ty *, interval_ty *);
+interval_ty *interval_intersection(interval_ty *, interval_ty *);
+interval_ty *interval_difference(interval_ty *, interval_ty *);
+int interval_member(interval_ty *, interval_data_ty);
 
-void interval_scan_begin _((interval_ty *));
-int interval_scan_next _((interval_ty *, interval_data_ty *));
-void interval_scan_end _((interval_ty *));
+void interval_scan_begin(interval_ty *);
+int interval_scan_next(interval_ty *, interval_data_ty *);
+void interval_scan_end(interval_ty *);
 
 #endif /* AEGIS_INTERVAL_H */

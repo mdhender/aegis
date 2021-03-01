@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,87 +26,80 @@
 
 
 tree_ty *
-tree_monadic_new(mp, arg)
-	tree_method_ty	*mp;
-	tree_ty		*arg;
+tree_monadic_new(tree_method_ty *mp, tree_ty *arg)
 {
-	tree_ty		*tp;
-	tree_monadic_ty	*this;
+    tree_ty         *tp;
+    tree_monadic_ty *this;
 
-	tp = tree_new(mp);
-	this = (tree_monadic_ty *)tp;
-	this->arg = tree_copy(arg);
-	return tp;
+    tp = tree_new(mp);
+    this = (tree_monadic_ty *)tp;
+    this->arg = tree_copy(arg);
+    return tp;
 }
 
 
 void
-tree_monadic_destructor(tp)
-	tree_ty		*tp;
+tree_monadic_destructor(tree_ty *tp)
 {
-	tree_monadic_ty	*this;
+    tree_monadic_ty *this;
 
-	this = (tree_monadic_ty *)tp;
-	tree_delete(this->arg);
+    this = (tree_monadic_ty *)tp;
+    tree_delete(this->arg);
 }
 
 
 void
-tree_monadic_print(tp)
-	tree_ty		*tp;
+tree_monadic_print(tree_ty *tp)
 {
-	tree_monadic_ty	*this;
+    tree_monadic_ty *this;
 
-	this = (tree_monadic_ty *)tp;
-	printf("%s ( ", tp->method->name);
-	tree_print(this->arg);
-	printf(" )");
+    this = (tree_monadic_ty *)tp;
+    printf("%s ( ", tp->method->name);
+    tree_print(this->arg);
+    printf(" )");
 }
 
 
 int
-tree_monadic_useful(tp)
-	tree_ty		*tp;
+tree_monadic_useful(tree_ty *tp)
 {
-	tree_monadic_ty	*this;
+    tree_monadic_ty *this;
 
-	this = (tree_monadic_ty *)tp;
-	return tree_useful(this->arg);
+    this = (tree_monadic_ty *)tp;
+    return tree_useful(this->arg);
 }
 
 
 int
-tree_monadic_constant(tp)
-	tree_ty		*tp;
+tree_monadic_constant(tree_ty *tp)
 {
-	tree_monadic_ty	*this;
+    tree_monadic_ty *this;
 
-	this = (tree_monadic_ty *)tp;
-	return tree_constant(this->arg);
+    this = (tree_monadic_ty *)tp;
+    return tree_constant(this->arg);
 }
 
 
 tree_ty *
-tree_monadic_optimize(tp)
-	tree_ty		*tp;
+tree_monadic_optimize(tree_ty *tp)
 {
-	tree_monadic_ty	*this;
-	tree_ty		*arg;
-	tree_ty		*result;
+    tree_monadic_ty *this;
+    tree_ty         *arg;
+    tree_ty	    *result;
 
-	this = (tree_monadic_ty *)tp;
-	arg = tree_optimize(this->arg);
-	result = tree_monadic_new(tp->method, arg);
-	tree_delete(arg);
+    this = (tree_monadic_ty *)tp;
+    arg = tree_optimize(this->arg);
+    result = tree_monadic_new(tp->method, arg);
+    tree_delete(arg);
 
-	if (tree_constant(result))
-	{
-		tree_ty		*tp2;
+    if (tree_constant(result))
+    {
+	tree_ty		*tp2;
 
-		tp2 = tree_optimize_constant(result);
-		tree_delete(result);
-		result = tp2;
-	}
+	tp2 = tree_optimize_constant(result);
+	tree_delete(result);
+	result = tp2;
+    }
 
-	return result;
+    return result;
 }

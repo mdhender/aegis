@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,8 @@ typedef struct patch_format_ty patch_format_ty;
 struct patch_format_ty
 {
 	char *name;
-	patch_ty *(*header)_((struct patch_context_ty *));
-	patch_hunk_ty *(*hunk)_((struct patch_context_ty *));
+	patch_ty *(*header)(struct patch_context_ty *);
+	patch_hunk_ty *(*hunk)(struct patch_context_ty *);
 };
 
 #endif /* LIBAEGIS_PATCH_FORMAT_H */

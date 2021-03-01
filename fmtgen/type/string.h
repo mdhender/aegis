@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,5 @@
 #include <type.h>
 
 extern type_method_ty type_string;
-
 
 #endif /* FMTGEN_TYPE_STRING_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,10 +40,8 @@
 #include <user.h>
 
 
-static void remove_administrator_usage _((void));
-
 static void
-remove_administrator_usage()
+remove_administrator_usage(void)
 {
     char	    *progname;
 
@@ -65,19 +63,15 @@ remove_administrator_usage()
 }
 
 
-static void remove_administrator_help _((void));
-
 static void
-remove_administrator_help()
+remove_administrator_help(void)
 {
     help("aera", remove_administrator_usage);
 }
 
 
-static void remove_administrator_list _((void));
-
 static void
-remove_administrator_list()
+remove_administrator_list(void)
 {
     string_ty	    *project_name;
 
@@ -121,22 +115,100 @@ remove_administrator_list()
 }
 
 
-static void remove_administrator_main _((void));
+static void
+remove_administrator_inner(project_ty *pp, string_list_ty *wlp, int strict)
+{
+    user_ty	    *up;
+    size_t          j;
+
+    /*
+     * locate user data
+     */
+    up = user_executing(pp);
+
+    /*
+     * lock the project for change
+     */
+    project_pstate_lock_prepare(pp);
+    lock_take();
+
+    /*
+     * check they are allowed to do this
+     */
+    if (!project_administrator_query(pp, user_name(up)))
+	project_fatal(pp, 0, i18n("not an administrator"));
+
+    /*
+     * check the users are actually administrators
+     */
+    for (j = 0; j < wlp->nstrings; ++j)
+    {
+	string_ty	*name;
+
+	name = wlp->string[j];
+	if (!project_administrator_query(pp, name))
+	{
+	    sub_context_ty  *scp;
+
+	    if (!strict)
+		continue;
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", name);
+	    project_fatal
+	    (
+		pp,
+		scp,
+		i18n("user \"$name\" is not an administrator")
+	    );
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
+	}
+	project_administrator_remove(pp, name);
+    }
+
+    /*
+     * make sure there will always be at least one administrator
+     */
+    if (project_administrator_nth(pp, 0) == 0)
+	project_fatal(pp, 0, i18n("not enough admin"));
+
+    /*
+     * write out and release lock
+     */
+    project_pstate_write(pp);
+    commit();
+    lock_release();
+
+    /*
+     * verbose success message
+     */
+    for (j = 0; j < wlp->nstrings; ++j)
+    {
+	sub_context_ty	*scp;
+
+	scp = sub_context_new();
+	sub_var_set_string(scp, "Name", wlp->string[j]);
+	project_verbose(pp, scp, i18n("remove administrator $name complete"));
+	sub_context_delete(scp);
+    }
+    user_free(up);
+}
+
 
 static void
-remove_administrator_main()
+remove_administrator_main(void)
 {
     string_list_ty  wl;
     string_ty	    *s1;
-    int		    j;
     string_ty	    *project_name;
     project_ty	    *pp;
-    user_ty	    *up;
+    int             recursive;
 
     trace(("remove_administrator_main()\n{\n"));
     arglex();
     string_list_constructor(&wl);
     project_name = 0;
+    recursive = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -144,6 +216,10 @@ remove_administrator_main()
 	default:
 	    generic_argument(remove_administrator_usage);
 	    continue;
+
+	case arglex_token_project_recursive:
+	    recursive = 1;
+	    break;
 
 	case arglex_token_user:
 	    if (arglex() != arglex_token_string)
@@ -214,82 +290,35 @@ remove_administrator_main()
     str_free(project_name);
     project_bind_existing(pp);
 
-    /*
-     * locate user data
-     */
-    up = user_executing(pp);
-
-    /*
-     * lock the project for change
-     */
-    project_pstate_lock_prepare(pp);
-    lock_take();
-
-    /*
-     * check they are allowed to do this
-     */
-    if (!project_administrator_query(pp, user_name(up)))
-	project_fatal(pp, 0, i18n("not an administrator"));
-
-    /*
-     * check the users are actually administrators
-     */
-    for (j = 0; j < wl.nstrings; ++j)
+    if (recursive)
     {
-	string_ty	*name;
+	string_list_ty  pl;
+	size_t          j;
 
-	name = wl.string[j];
-	if (!project_administrator_query(pp, name))
+	string_list_constructor(&pl);
+	project_list_inner(&pl,pp);
+	for (j = 0; j < pl.nstrings; ++j)
 	{
-	    sub_context_ty  *scp;
+	    project_ty      *branch;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    project_fatal
-	    (
-		pp,
-		scp,
-		i18n("user \"$name\" is not an administrator")
-	    );
-	    /* NOTREACHED */
-	    sub_context_delete(scp);
+	    branch = project_alloc(pl.string[j]);
+	    project_bind_existing(branch);
+	    remove_administrator_inner(branch, &wl, 0);
+	    project_free(branch);
 	}
-	project_administrator_remove(pp, name);
+	string_list_destructor(&pl);
     }
-
-    /*
-     * make sure there will always be at least one administrator
-     */
-    if (project_administrator_nth(pp, 0) == 0)
-	project_fatal(pp, 0, i18n("not enough admin"));
-
-    /*
-     * write out and release lock
-     */
-    project_pstate_write(pp);
-    commit();
-    lock_release();
-
-    /*
-     * verbose success message
-     */
-    for (j = 0; j < wl.nstrings; ++j)
+    else
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "Name", wl.string[j]);
-	project_verbose(pp, scp, i18n("remove administrator $name complete"));
-	sub_context_delete(scp);
+	remove_administrator_inner(pp, &wl, 1);
     }
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
 
 void
-remove_administrator()
+remove_administrator(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

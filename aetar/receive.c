@@ -366,14 +366,7 @@ cause = external_bug;\n"
 	 * Work out if the file sxists in the project.
 	 * This is how we decide to copy or create.
 	 */
-	src_data = project_file_find(pp, filename);
-	if
-	(
-	    src_data
-	&&
-	    (src_data->deleted_by || src_data->about_to_be_created_by)
-	)
-	    src_data = 0;
+	src_data = project_file_find(pp, filename, view_path_extreme);
 
 	/*
 	 * Build the command to be run.

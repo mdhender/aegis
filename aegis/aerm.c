@@ -57,10 +57,8 @@
  *	tell the user how to use the 'aegis -ReMove_file' command.
  */
 
-static void remove_file_usage _((void));
-
 static void
-remove_file_usage()
+remove_file_usage(void)
 {
     char	    *progname;
 
@@ -89,10 +87,8 @@ remove_file_usage()
  *	describe the 'aegis -ReMove_file' command to the user.
  */
 
-static void remove_file_help _((void));
-
 static void
-remove_file_help()
+remove_file_help(void)
 {
     help("aerm", remove_file_usage);
 }
@@ -111,10 +107,8 @@ remove_file_help()
  *	as a deletion.	All project files are listed.
  */
 
-static void remove_file_list _((void));
-
 static void
-remove_file_list()
+remove_file_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -199,10 +193,8 @@ remove_file_list()
  *	The names of the relevant files are gleaned from the command line.
  */
 
-static void remove_file_main _((void));
-
 static void
-remove_file_main()
+remove_file_main(void)
 {
     string_list_ty  wl;
     string_list_ty  wl2;
@@ -440,7 +432,7 @@ remove_file_main()
 	    ++number_of_errors;
 	    continue;
 	}
-	project_file_directory_query(pp, s2, &wl_in, 0);
+	project_file_directory_query(pp, s2, &wl_in, 0, view_path_simple);
 	if (wl_in.nstrings)
 	{
 	    int		    used;
@@ -560,17 +552,10 @@ remove_file_main()
 	    ++number_of_errors;
 	    continue;
 	}
-	p_src_data = project_file_find(pp, s1);
-	if
-	(
-	    !p_src_data
-	||
-	    p_src_data->deleted_by
-	||
-	    p_src_data->about_to_be_created_by
-	)
+	p_src_data = project_file_find(pp, s1, view_path_extreme);
+	if (!p_src_data)
 	{
-	    p_src_data = project_file_find_fuzzy(pp, s1);
+	    p_src_data = project_file_find_fuzzy(pp, s1, view_path_extreme);
 	    if (p_src_data)
 	    {
 		sub_context_ty	*scp;
@@ -701,7 +686,7 @@ remove_file_main()
  */
 
 void
-remove_file()
+remove_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

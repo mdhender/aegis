@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aegis _((void));
+command_ty *command_aegis(void);
 
 #endif /* AECOMPLETE_COMMAND_AEGIS_H */

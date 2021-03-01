@@ -35,25 +35,25 @@
 static void
 usage(void)
 {
-	char	*progname;
+    char            *progname;
 
-	progname = progname_get();
-	fprintf
-	(
-		stderr,
-		"usage: %s [ <option>... ] <file.def> <file.c> <file.h>\n",
-		progname
-	);
-	fprintf(stderr, "       %s -Help\n", progname);
-	exit(1);
+    progname = progname_get();
+    fprintf
+    (
+	stderr,
+	"usage: %s [ <option>... ] <file.def> <file.c> <file.h>\n",
+	progname
+    );
+    fprintf(stderr, "       %s -Help\n", progname);
+    exit(1);
 }
 
 
 static void
 help(void)
 {
-	static char *text[] =
-	{
+    static char *text[] =
+    {
 "NAME",
 "	%s - file format read/write generator",
 "",
@@ -117,98 +117,98 @@ help(void)
 "AUTHOR",
 "	Peter Miller   E-Mail: millerp@canb.auug.org.au",
 "	/\\/\\*             WWW: http://www.canb.auug.org.au/~millerp/",
-		0
-	};
+	    0
+    };
 
-	char	**cpp;
-	char	*progname;
+    char	**cpp;
+    char	*progname;
 
-	trace(("help()\n{\n"/*}*/));
-	progname = progname_get();
-	for (cpp = text; *cpp; ++cpp)
-	{
-		printf(*cpp, progname);
-		printf("\n");
-	}
-	trace((/*{*/"}\n"));
+    trace(("help()\n{\n"));
+    progname = progname_get();
+    for (cpp = text; *cpp; ++cpp)
+    {
+	printf(*cpp, progname);
+	printf("\n");
+    }
+    trace(("}\n"));
 }
 
 
 enum
 {
-	arglex_token_include_short,
-	arglex_token_include_long
+    arglex_token_include_short,
+    arglex_token_include_long
 };
 
 static arglex_table_ty argtab[] =
 {
-	{ "-\\I*",	(arglex_token_ty)arglex_token_include_short,	},
-	{ "-Include",	(arglex_token_ty)arglex_token_include_long,	},
-	{ 0, (arglex_token_ty)0, }, /* end marker */
+    { "-\\I*", (arglex_token_ty)arglex_token_include_short, },
+    { "-Include", (arglex_token_ty)arglex_token_include_long, },
+    { 0, (arglex_token_ty)0, }, /* end marker */
 };
 
 
 int
 main(int argc, char **argv)
 {
-	char	*filename[3];
-	int	j;
+    char            *filename[3];
+    int             j;
 
-	arglex_init(argc, argv, argtab);
-	str_initialize();
-	for (j = 0; j < SIZEOF(filename); ++j)
-		filename[j] = 0;
-	if (arglex() == arglex_token_help)
-	{
-		if (arglex() != arglex_token_eoln)
-			usage();
-		help();
-		exit(0);
-	}
-
-	while (arglex_token != arglex_token_eoln)
-	{
-		switch (arglex_token)
-		{
-		default:
-			error_raw
-			(
-				"misplaced \"%s\" command line argument",
-				arglex_value.alv_string
-			);
-			usage();
-
-		case arglex_token_include_long:
-			if (arglex() != arglex_token_string)
-				usage();
-			/* fall through... */
-
-		case arglex_token_include_short:
-			lex_include_path(arglex_value.alv_string);
-			break;
-
-		case arglex_token_string:
-			for (j = 0; j < SIZEOF(filename); ++j)
-				if (!filename[j])
-					break;
-			if (j >= SIZEOF(filename))
-				fatal_raw("too many file names specified");
-			filename[j] = arglex_value.alv_string;
-			break;
-#ifdef DEBUG
-		case arglex_token_trace:
-			while (arglex() == arglex_token_string)
-				trace_enable(arglex_value.alv_string);
-			continue;
-#endif
-		}
-		arglex();
-	}
-	for (j = 0; j < SIZEOF(filename); ++j)
-		if (!filename[j])
-			fatal_raw("too few file names specified");
-
-	parse(filename[0], filename[1], filename[2]);
+    arglex_init(argc, argv, argtab);
+    str_initialize();
+    for (j = 0; j < SIZEOF(filename); ++j)
+	filename[j] = 0;
+    if (arglex() == arglex_token_help)
+    {
+	if (arglex() != arglex_token_eoln)
+    	    usage();
+	help();
 	exit(0);
-	return 0;
+    }
+
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
+	{
+	default:
+	    error_raw
+	    (
+		"misplaced \"%s\" command line argument",
+		arglex_value.alv_string
+	    );
+	    usage();
+
+	case arglex_token_include_long:
+	    if (arglex() != arglex_token_string)
+		usage();
+	    /* fall through... */
+
+	case arglex_token_include_short:
+	    lex_include_path(arglex_value.alv_string);
+	    break;
+
+	case arglex_token_string:
+	    for (j = 0; j < SIZEOF(filename); ++j)
+		if (!filename[j])
+	    	    break;
+	    if (j >= SIZEOF(filename))
+		fatal_raw("too many file names specified");
+	    filename[j] = arglex_value.alv_string;
+	    break;
+#ifdef DEBUG
+	case arglex_token_trace:
+	    while (arglex() == arglex_token_string)
+		trace_enable(arglex_value.alv_string);
+	    continue;
+#endif
+	}
+	arglex();
+    }
+    for (j = 0; j < SIZEOF(filename); ++j)
+	if (!filename[j])
+    	    fatal_raw("too few file names specified");
+
+    parse(filename[0], filename[1], filename[2]);
+    exit(0);
+    return 0;
 }

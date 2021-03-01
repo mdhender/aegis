@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,17 +31,17 @@ struct tree_ty; /* existence */
 
 enum descend_message_ty
 {
-	descend_message_dir_before,
-	descend_message_dir_after,
-	descend_message_file
+    descend_message_dir_before,
+    descend_message_dir_after,
+    descend_message_file
 };
 typedef enum descend_message_ty descend_message_ty;
 
-typedef void (*descend_callback_ty)_((void *arg, descend_message_ty,
-	struct string_ty *, struct stat *));
+typedef void (*descend_callback_ty)(void *arg, descend_message_ty,
+    struct string_ty *, struct stat *);
 
-void descend _((struct string_ty *, int, descend_callback_ty, void *));
+void descend(struct string_ty *, int, descend_callback_ty, void *);
 
-struct string_ty *stat_stack _((struct string_ty *, struct stat *));
+struct string_ty *stat_stack(struct string_ty *, struct stat *);
 
 #endif /* AEFIND_DESCEND_H */

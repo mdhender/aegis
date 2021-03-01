@@ -1,0 +1,71 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Das Problem"
+Es gibt eine Vielzahl von Problemen mit rekursivem Make; in der Praxis
+begegnet man ihnen normalerweise t\*:aglich.  Hier sind einige dieser
+Probleme aufgelistet:
+.IP \(bu 2n
+Es ist sehr schwierig, die Reihenfolge der Rekursion korrekt in die
+Unterverzeichnisse zu formulieren.  Diese Reihenfolge nicht sehr stabil
+und ab und zu muss man sie von Hand korrigieren.  Je mehr Verzeichnisse
+es gibt oder je mehr Ebenen dem Verzeichnisbaum hinzugef\*:ugt werden,
+desto unstabiler wird diese Reihenfolge.
+.IP \(bu 2n
+Es ist oft notwendig, die Unterverzeichnisse mehr als einmal zu
+durchlaufen, um das ganze System herzustellen.  Das f\*:uhrt nat\*:urlich zu
+l\*:angeren Build-Zeiten.
+.IP \(bu 2n
+Da die Produktionszeiten sonst unvertretbar lang w\*:aren, was mit
+einer Unproduktivit\*:at der Entwickler gleichbedeutend w\*:are, l\*:asst man
+einige Informationen bez\*:uglich der Abh\*:angigkeiten der Verzeichnisse
+untereinander weg.  Das f\*:uhrt in der Regel dazu, dass einige Produkte
+nicht aktualisiert werden, obwohl sie es sollten, wodurch h\*:aufige
+Produktionen von Null an erforderlich werden, um sicherzustellen, dass
+tats\*:achlich alles aufgebaut wird.
+.IP \(bu 2n
+Da die Abh\*:angigkeiten zwischen den Verzeichnissen entweder weggelassen
+werden oder zu schwer auszudr\*:ucken sind, werden die \f[CW]Makefiles\fP
+oft so geschrieben, dass sie zu viel machen, um sicherzustellen, dass
+wirklich nichts ausgelassen wurde.
+.IP \(bu 2n
+Die Ungenauigkeit der Abh\*:angigkeiten oder einfach deren Fehlen kann
+zur Folge haben, dass ein Produkt sich nicht fehlerfrei bauen l\*:asst.
+Dadurch wird eine sorgf\*:altige Kontrolle des Build-Prozesses durch einen
+Entwickler erforderlich.
+.IP \(bu 2n
+Eine andere Folge des oben Beschriebenen ist, dass manche Projekte von den
+M\*:oglichkeiten der Parallelisierung durch Make nicht profitieren k\*:onnen,
+weil das Build offensichtlich Unsinn macht.
+.LP
+Nicht jedes Projekt hat alle diese Probleme.  Wenn sie auftauchen,
+tun sie das oft unregelm\*:a\(ssig und werden dann als unerkl\*:arbare einmalige
+Macken abgetan.  In diesem Artikel sollen eine Reihe Symptome, die \*:uber
+eine langen Zeitraum in der Praxis beobachtet wurden, miteinander in
+Beziehung gesetzt werden.  Es folgen eine systematische Analyse und
+ein L\*:osungsvorschlag.
+.LP
+.\" TRANSLATION REQUIRED
+It must be emphasized that this paper does not suggest that \fImake\fP
+itself is the problem.  This paper is working from the premise that
+\fImake\fP does \fBnot\fP have a bug, that \fImake\fP does \fBnot\fP have
+a design flaw.  The problem is not in \fImake\fP at all, but rather in
+the input given to \fImake\fP \- the way \fImake\fP is being used.

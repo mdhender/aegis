@@ -48,11 +48,8 @@
 #include <str_list.h>
 
 
-static void convert_to_new_format _((project_ty *));
-
 static void
-convert_to_new_format(pp)
-    project_ty	    *pp;
+convert_to_new_format(project_ty *pp)
 {
     user_ty	    *up;
     cstate_history  h;
@@ -379,10 +376,10 @@ convert_to_new_format(pp)
 
 
 project_ty *
-project_alloc(s)
-    string_ty	    *s;
+project_alloc(string_ty *s)
 {
     project_ty	    *pp;
+    size_t          n;
 
     trace(("project_alloc(s = \"%s\")\n{\n", s->str_text));
     pp = (project_ty *)mem_alloc(sizeof(project_ty));
@@ -403,7 +400,8 @@ project_alloc(s)
     pp->gid = -1;
     pp->parent = 0;
     pp->parent_bn = 0;
-    pp->file_list = 0;
+    for (n = 0; n < SIZEOF(pp->file_list); ++n)
+	pp->file_list[n] = 0;
     trace(("return %08lX;\n", (long)pp));
     trace(("}\n"));
     return pp;
@@ -411,8 +409,7 @@ project_alloc(s)
 
 
 project_ty *
-project_copy(pp)
-    project_ty	    *pp;
+project_copy(project_ty *pp)
 {
     trace(("project_copy(pp = %08lX)\n{\n", (long)pp));
     assert(pp->reference_count >= 1);
@@ -424,8 +421,7 @@ project_copy(pp)
 
 
 change_ty *
-project_change_get(pp)
-    project_ty	    *pp;
+project_change_get(project_ty *pp)
 {
     /*
      * It could be an old project.  Make sure the pstate is read in,
@@ -448,8 +444,7 @@ project_change_get(pp)
 
 
 void
-project_free(pp)
-    project_ty	    *pp;
+project_free(project_ty *pp)
 {
     trace(("project_free(pp = %08lX)\n{\n", (long)pp));
     assert(pp->reference_count >= 1);
@@ -478,22 +473,31 @@ project_free(pp)
 	    pstate_type.free(pp->pstate_data);
 	if (pp->parent)
 	    project_free(pp->parent);
-	if (pp->file_list)
-	{
-	    string_list_destructor(pp->file_list);
-	    mem_free(pp->file_list);
-	}
+	project_file_list_invalidate(pp);
 	mem_free((char *)pp);
     }
     trace(("}\n"));
 }
 
 
-static void lock_sync _((project_ty *));
+void
+project_file_list_invalidate(project_ty *pp)
+{
+    size_t          n;
+
+    for (n = 0; n < SIZEOF(pp->file_list); ++n)
+    {
+	if (pp->file_list[n])
+	{
+	    string_list_delete(pp->file_list[n]);
+	    pp->file_list[n] = 0;
+	}
+    }
+}
+
 
 static void
-lock_sync(pp)
-    project_ty	    *pp;
+lock_sync(project_ty *pp)
 {
     long	    n;
 
@@ -509,20 +513,12 @@ lock_sync(pp)
 	pstate_type.free(pp->pstate_data);
 	pp->pstate_data = 0;
     }
-    if (pp->file_list)
-    {
-	string_list_destructor(pp->file_list);
-	mem_free(pp->file_list);
-	pp->file_list = 0;
-    }
+    project_file_list_invalidate(pp);
 }
 
 
-static void get_the_owner _((project_ty *));
-
 static void
-get_the_owner(pp)
-    project_ty	    *pp;
+get_the_owner(project_ty *pp)
 {
     string_ty	    *s;
 
@@ -587,8 +583,7 @@ get_the_owner(pp)
 
 
 pstate
-project_pstate_get(pp)
-    project_ty	    *pp;
+project_pstate_get(project_ty *pp)
 {
     trace(("project_pstate_get(pp = %08lX)\n{\n", (long)pp));
     if (pp->parent)
@@ -640,11 +635,8 @@ project_pstate_get(pp)
 }
 
 
-static void waiting_for_lock _((void *));
-
 static void
-waiting_for_lock(p)
-    void	    *p;
+waiting_for_lock(void *p)
 {
     project_ty	    *pp;
 
@@ -657,8 +649,7 @@ waiting_for_lock(p)
 
 
 void
-project_pstate_lock_prepare(pp)
-    project_ty	    *pp;
+project_pstate_lock_prepare(project_ty *pp)
 {
     trace(("project_pstate_lock_prepare(pp = %08lX)\n{\n", (long)pp));
     if (pp->parent)
@@ -673,8 +664,7 @@ project_pstate_lock_prepare(pp)
 
 
 void
-project_pstate_lock_prepare_top(pp)
-    project_ty	    *pp;
+project_pstate_lock_prepare_top(project_ty *pp)
 {
     trace(("project_pstate_lock_prepare_top(pp = %08lX)\n{\n", (long)pp));
     while (pp->parent)
@@ -684,11 +674,8 @@ project_pstate_lock_prepare_top(pp)
 }
 
 
-static void waiting_for_baseline_read_lock _((void *));
-
 static void
-waiting_for_baseline_read_lock(p)
-    void	    *p;
+waiting_for_baseline_read_lock(void *p)
 {
     project_ty	    *pp;
 
@@ -701,8 +688,7 @@ waiting_for_baseline_read_lock(p)
 
 
 void
-project_baseline_read_lock_prepare(pp)
-    project_ty	    *pp;
+project_baseline_read_lock_prepare(project_ty *pp)
 {
     /*
      * A branch's baseline is ``unioned'' with its parent's
@@ -727,11 +713,8 @@ project_baseline_read_lock_prepare(pp)
 }
 
 
-static void waiting_for_baseline_write_lock _((void *));
-
 static void
-waiting_for_baseline_write_lock(p)
-    void	    *p;
+waiting_for_baseline_write_lock(void *p)
 {
     project_ty	    *pp;
 
@@ -744,8 +727,7 @@ waiting_for_baseline_write_lock(p)
 
 
 void
-project_baseline_write_lock_prepare(pp)
-    project_ty	    *pp;
+project_baseline_write_lock_prepare(project_ty *pp)
 {
     trace(("project_baseline_write_lock_prepare(pp = %08lX)\n{\n", (long)pp));
     lock_prepare_baseline_write(pp->name, waiting_for_baseline_write_lock, pp);
@@ -753,11 +735,8 @@ project_baseline_write_lock_prepare(pp)
 }
 
 
-static void waiting_for_history_lock _((void *));
-
 static void
-waiting_for_history_lock(p)
-    void	    *p;
+waiting_for_history_lock(void *p)
 {
     project_ty	    *pp;
 
@@ -770,8 +749,7 @@ waiting_for_history_lock(p)
 
 
 void
-project_history_lock_prepare(pp)
-    project_ty	    *pp;
+project_history_lock_prepare(project_ty *pp)
 {
     /*
      * The history tool may have no locking of its own, and it will
@@ -787,13 +765,8 @@ project_history_lock_prepare(pp)
 }
 
 
-static int name_has_numeric_suffix _((string_ty *, string_ty **, long *));
-
 static int
-name_has_numeric_suffix(name, left, right)
-    string_ty	    *name;
-    string_ty	    **left;
-    long	    *right;
+name_has_numeric_suffix(string_ty *name, string_ty **left, long *right)
 {
     char	    *ep;
 
@@ -812,8 +785,7 @@ name_has_numeric_suffix(name, left, right)
 
 
 void
-project_bind_existing(pp)
-    project_ty	    *pp;
+project_bind_existing(project_ty *pp)
 {
     string_ty	    *s;
     string_ty	    *parent_name;
@@ -945,9 +917,7 @@ project_bind_existing(pp)
 
 
 project_ty *
-project_bind_branch(ppp, cp)
-    project_ty	    *ppp;
-    change_ty	    *cp;
+project_bind_branch(project_ty *ppp, change_ty *cp)
 {
     string_ty	    *project_name;
     project_ty	    *pp;
@@ -970,8 +940,7 @@ project_bind_branch(ppp, cp)
 
 
 void
-project_bind_new(pp)
-    project_ty	    *pp;
+project_bind_new(project_ty *pp)
 {
     int		    um;
     user_ty	    *up;
@@ -1023,12 +992,8 @@ project_bind_new(pp)
 
 
 int
-break_up_version_string(sp, buf, buflen_max, buflen_p, leading_punct)
-    char	    *sp;
-    long	    *buf;
-    int		    buflen_max;
-    int		    *buflen_p;
-    int		    leading_punct;
+break_up_version_string(char *sp, long *buf, int buflen_max, int *buflen_p,
+    int leading_punct)
 {
     int		    buflen;
     long	    n;
@@ -1091,11 +1056,8 @@ break_up_version_string(sp, buf, buflen_max, buflen_p, leading_punct)
 
 
 void
-extract_version_from_project_name(name_p, buf, buflen_max, buflen_p)
-    string_ty	    **name_p;
-    long	    *buf;
-    int		    buflen_max;
-    int		    *buflen_p;
+extract_version_from_project_name(string_ty **name_p, long *buf, int buflen_max,
+    int *buflen_p)
 {
     string_ty	    *name;
     char	    *sp;
@@ -1151,9 +1113,7 @@ extract_version_from_project_name(name_p, buf, buflen_max, buflen_p)
 
 
 project_ty *
-project_find_branch(pp, version_string)
-    project_ty	    *pp;
-    char	    *version_string;
+project_find_branch(project_ty *pp, char *version_string)
 {
     long	    version[20];
     int		    version_length;
@@ -1232,8 +1192,7 @@ project_find_branch(pp, version_string)
 
 
 void
-project_pstate_write(pp)
-    project_ty	    *pp;
+project_pstate_write(project_ty *pp)
 {
     string_ty	    *filename;
     string_ty	    *filename_new;
@@ -1292,8 +1251,7 @@ project_pstate_write(pp)
 
 
 void
-project_pstate_write_top(pp)
-    project_ty	    *pp;
+project_pstate_write_top(project_ty *pp)
 {
     trace(("project_pstate_write_top(pp = %08lX)\n{\n", (long)pp));
     while (pp->parent)
@@ -1304,8 +1262,7 @@ project_pstate_write_top(pp)
 
 
 string_ty *
-project_home_path_get(pp)
-    project_ty	    *pp;
+project_home_path_get(project_ty *pp)
 {
     trace(("project_home_path_get(pp = %08lX)\n{\n", (long)pp));
     if (pp->parent)
@@ -1345,8 +1302,7 @@ project_home_path_get(pp)
 
 
 string_ty *
-project_Home_path_get(pp)
-    project_ty	    *pp;
+project_Home_path_get(project_ty *pp)
 {
     while (pp->parent)
 	pp = pp->parent;
@@ -1355,9 +1311,7 @@ project_Home_path_get(pp)
 
 
 void
-project_home_path_set(pp, s)
-    project_ty	    *pp;
-    string_ty	    *s;
+project_home_path_set(project_ty *pp, string_ty *s)
 {
     /*
      * To cope with automounters, directories are stored as given,
@@ -1396,9 +1350,7 @@ project_home_path_set(pp, s)
 
 
 string_ty *
-project_top_path_get(pp, resolve)
-    project_ty	    *pp;
-    int		    resolve;
+project_top_path_get(project_ty *pp, int resolve)
 {
     change_ty	    *cp;
 
@@ -1408,8 +1360,7 @@ project_top_path_get(pp, resolve)
 
 
 string_ty *
-project_info_path_get(pp)
-    project_ty	    *pp;
+project_info_path_get(project_ty *pp)
 {
     trace(("project_info_path_get(pp = %08lX)\n{\n", (long)pp));
     if (pp->parent)
@@ -1425,8 +1376,7 @@ project_info_path_get(pp)
 
 
 string_ty *
-project_changes_path_get(pp)
-    project_ty	    *pp;
+project_changes_path_get(project_ty *pp)
 {
     trace(("project_changes_path_get(pp = %08lX)\n{\n", (long)pp));
     assert(!pp->parent || pp->changes_path);
@@ -1441,9 +1391,7 @@ project_changes_path_get(pp)
 
 
 string_ty *
-project_change_path_get(pp, n)
-    project_ty	    *pp;
-    long	    n;
+project_change_path_get(project_ty *pp, long n)
 {
     string_ty	    *s;
 
@@ -1460,8 +1408,7 @@ project_change_path_get(pp, n)
 
 
 string_ty *
-project_pstate_path_get(pp)
-    project_ty	    *pp;
+project_pstate_path_get(project_ty *pp)
 {
     trace(("project_pstate_path_get(pp = %08lX)\n{\n", (long)pp));
     if (pp->parent)
@@ -1477,9 +1424,7 @@ project_pstate_path_get(pp)
 
 
 string_ty *
-project_baseline_path_get(pp, resolve)
-    project_ty	    *pp;
-    int		    resolve;
+project_baseline_path_get(project_ty *pp, int resolve)
 {
     string_ty	    *result;
 
@@ -1517,8 +1462,7 @@ project_baseline_path_get(pp, resolve)
 
 
 string_ty *
-project_history_path_get(pp)
-    project_ty	    *pp;
+project_history_path_get(project_ty *pp)
 {
     trace(("project_history_path_get(pp = %08lX)\n{\n", (long)pp));
     while (pp->parent)
@@ -1534,8 +1478,7 @@ project_history_path_get(pp)
 
 
 string_ty *
-project_name_get(pp)
-    project_ty	    *pp;
+project_name_get(project_ty *pp)
 {
     trace(("project_name_get(pp = %08lX)\n{\n", (long)pp));
     trace(("return \"%s\";\n", pp->name->str_text));
@@ -1545,10 +1488,7 @@ project_name_get(pp)
 
 
 void
-project_error(pp, scp, s)
-    project_ty	    *pp;
-    sub_context_ty  *scp;
-    char	    *s;
+project_error(project_ty *pp, sub_context_ty *scp, char *s)
 {
     string_ty	    *msg;
     int		    need_to_delete;
@@ -1582,10 +1522,7 @@ project_error(pp, scp, s)
 
 
 void
-project_fatal(pp, scp, s)
-    project_ty	    *pp;
-    sub_context_ty  *scp;
-    char	    *s;
+project_fatal(project_ty *pp, sub_context_ty *scp, char *s)
 {
     string_ty	    *msg;
     int		    need_to_delete;
@@ -1619,10 +1556,7 @@ project_fatal(pp, scp, s)
 
 
 void
-project_verbose(pp, scp, s)
-    project_ty	    *pp;
-    sub_context_ty  *scp;
-    char	    *s;
+project_verbose(project_ty *pp, sub_context_ty *scp, char *s)
 {
     string_ty	    *msg;
     int		    need_to_delete;
@@ -1656,10 +1590,7 @@ project_verbose(pp, scp, s)
 
 
 void
-project_change_append(pp, cn, is_a_branch)
-    project_ty	    *pp;
-    long	    cn;
-    int		    is_a_branch;
+project_change_append(project_ty *pp, long cn, int is_a_branch)
 {
     change_ty	    *cp;
 
@@ -1669,9 +1600,7 @@ project_change_append(pp, cn, is_a_branch)
 
 
 void
-project_change_delete(pp, cn)
-    project_ty	    *pp;
-    long	    cn;
+project_change_delete(project_ty *pp, long cn)
 {
     change_ty	    *cp;
 
@@ -1681,9 +1610,7 @@ project_change_delete(pp, cn)
 
 
 int
-project_change_number_in_use(pp, cn)
-    project_ty	    *pp;
-    long	    cn;
+project_change_number_in_use(project_ty *pp, long cn)
 {
     change_ty	    *cp;
 
@@ -1693,8 +1620,7 @@ project_change_number_in_use(pp, cn)
 
 
 string_ty *
-project_version_short_get(pp)
-    project_ty	    *pp;
+project_version_short_get(project_ty *pp)
 {
     string_ty	    *s;
 
@@ -1748,8 +1674,7 @@ project_version_short_get(pp)
 
 
 string_ty *
-project_version_get(pp)
-    project_ty	    *pp;
+project_version_get(project_ty *pp)
 {
     change_ty	    *cp;
     long	    dn;
@@ -1769,8 +1694,7 @@ project_version_get(pp)
 
 
 int
-project_uid_get(pp)
-    project_ty	    *pp;
+project_uid_get(project_ty *pp)
 {
     while (pp->parent)
 	pp = pp->parent;
@@ -1780,8 +1704,7 @@ project_uid_get(pp)
 
 
 int
-project_gid_get(pp)
-    project_ty	    *pp;
+project_gid_get(project_ty *pp)
 {
     while (pp->parent)
 	pp = pp->parent;
@@ -1791,8 +1714,7 @@ project_gid_get(pp)
 
 
 user_ty *
-project_user(pp)
-    project_ty	    *pp;
+project_user(project_ty *pp)
 {
     user_ty	    *up;
 
@@ -1807,8 +1729,7 @@ project_user(pp)
 
 
 void
-project_become(pp)
-    project_ty	    *pp;
+project_become(project_ty *pp)
 {
     user_ty	    *up;
 
@@ -1821,7 +1742,7 @@ project_become(pp)
 
 
 void
-project_become_undo()
+project_become_undo(void)
 {
     trace(("project_become_undo()\n{\n"));
     user_become_undo();
@@ -1830,8 +1751,7 @@ project_become_undo()
 
 
 int
-project_is_readable(pp)
-    project_ty	    *pp;
+project_is_readable(project_ty *pp)
 {
     string_ty	    *s;
     int		    err;
@@ -1847,8 +1767,7 @@ project_is_readable(pp)
 
 
 long
-project_next_test_number_get(pp)
-    project_ty	    *pp;
+project_next_test_number_get(project_ty *pp)
 {
     pstate	    pstate_data;
     long	    result;
@@ -1870,8 +1789,7 @@ project_next_test_number_get(pp)
 
 
 long
-project_minimum_change_number_get(pp)
-    project_ty	    *pp;
+project_minimum_change_number_get(project_ty *pp)
 {
     change_ty	    *cp;
 
@@ -1881,9 +1799,7 @@ project_minimum_change_number_get(pp)
 
 
 void
-project_minimum_change_number_set(pp, n)
-    project_ty	    *pp;
-    long	    n;
+project_minimum_change_number_set(project_ty *pp, long n)
 {
     change_ty	    *cp;
 
@@ -1893,8 +1809,7 @@ project_minimum_change_number_set(pp, n)
 
 
 int
-project_reuse_change_numbers_get(pp)
-    project_ty	    *pp;
+project_reuse_change_numbers_get(project_ty *pp)
 {
     change_ty	    *cp;
 
@@ -1904,9 +1819,7 @@ project_reuse_change_numbers_get(pp)
 
 
 void
-project_reuse_change_numbers_set(pp, n)
-    project_ty	    *pp;
-    int		    n;
+project_reuse_change_numbers_set(project_ty *pp, int n)
 {
     change_ty	    *cp;
 
@@ -1916,8 +1829,7 @@ project_reuse_change_numbers_set(pp, n)
 
 
 long
-project_minimum_branch_number_get(pp)
-    project_ty	    *pp;
+project_minimum_branch_number_get(project_ty *pp)
 {
     change_ty	    *cp;
 
@@ -1927,9 +1839,7 @@ project_minimum_branch_number_get(pp)
 
 
 void
-project_minimum_branch_number_set(pp, n)
-    project_ty	    *pp;
-    long	    n;
+project_minimum_branch_number_set(project_ty *pp, long n)
 {
     change_ty	    *cp;
 
@@ -1939,8 +1849,7 @@ project_minimum_branch_number_set(pp, n)
 
 
 int
-project_skip_unlucky_get(pp)
-    project_ty	    *pp;
+project_skip_unlucky_get(project_ty *pp)
 {
     change_ty	    *cp;
 
@@ -1950,9 +1859,7 @@ project_skip_unlucky_get(pp)
 
 
 void
-project_skip_unlucky_set(pp, n)
-    project_ty	    *pp;
-    int		    n;
+project_skip_unlucky_set(project_ty *pp, int n)
 {
     change_ty	    *cp;
 
@@ -1962,8 +1869,7 @@ project_skip_unlucky_set(pp, n)
 
 
 int
-project_name_ok(s)
-    string_ty	    *s;
+project_name_ok(string_ty *s)
 {
     char	    *sp;
 

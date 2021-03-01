@@ -29,48 +29,46 @@
 
 
 void
-project_pattr_edit(dp, et)
-	pattr		*dp;
-	edit_ty		et;
+project_pattr_edit(pattr *dp, edit_ty et)
 {
-	sub_context_ty	*scp;
-	pattr		d;
-	string_ty	*filename;
-	string_ty	*msg;
+    sub_context_ty  *scp;
+    pattr	    d;
+    string_ty       *filename;
+    string_ty       *msg;
 
-	/*
-	 * write attributes to temporary file
-	 */
-	d = *dp;
-	assert(d);
-	filename = os_edit_filename(1);
-	os_become_orig();
-	pattr_write_file(filename, d, 0);
-	pattr_type.free(d);
+    /*
+     * write attributes to temporary file
+     */
+    d = *dp;
+    assert(d);
+    filename = os_edit_filename(1);
+    os_become_orig();
+    pattr_write_file(filename, d, 0);
+    pattr_type.free(d);
 
-	/*
-	 * error message to issue if anything goes wrong
-	 */
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", filename);
-	msg = subst_intl(scp, i18n("attributes in $filename"));
-	sub_context_delete(scp);
-	undo_message(msg);
-	str_free(msg);
-	os_become_undo();
+    /*
+     * error message to issue if anything goes wrong
+     */
+    scp = sub_context_new();
+    sub_var_set_string(scp, "File_Name", filename);
+    msg = subst_intl(scp, i18n("attributes in $filename"));
+    sub_context_delete(scp);
+    undo_message(msg);
+    str_free(msg);
+    os_become_undo();
 
-	/*
-	 * edit the file
-	 */
-	os_edit(filename, et);
+    /*
+     * edit the file
+     */
+    os_edit(filename, et);
 
-	/*
-	 * read it in again
-	 */
-	os_become_orig();
-	d = pattr_read_file(filename);
-	commit_unlink_errok(filename);
-	os_become_undo();
-	str_free(filename);
-	*dp = d;
+    /*
+     * read it in again
+     */
+    os_become_orig();
+    d = pattr_read_file(filename);
+    commit_unlink_errok(filename);
+    os_become_undo();
+    str_free(filename);
+    *dp = d;
 }

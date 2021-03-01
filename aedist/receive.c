@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * MANIFEST: functions to receive change sets
  */
+
+#include <ac/stdlib.h>
 
 #include <arglex3.h>
 #include <cattr.h>
@@ -46,12 +48,21 @@
 #include <user.h>
 
 
-static long number_of_files _((string_ty *, long));
+static long
+to_long(string_ty *s)
+{
+    char            *end;
+    long            result;
+
+    result = strtol(s->str_text, &end, 10);
+    if (*end)
+	result = 0;;
+    return result;
+}
+
 
 static long
-number_of_files(project_name, change_number)
-    string_ty       *project_name;
-    long            change_number;
+number_of_files(string_ty *project_name, long change_number)
 {
     project_ty      *pp;
     change_ty       *cp;
@@ -69,8 +80,7 @@ number_of_files(project_name, change_number)
 
 
 void
-receive_main(usage)
-    void            (*usage) _((void));
+receive_main(void (*usage)(void))
 {
     int		    use_patch;
     string_ty       *project_name;
@@ -94,15 +104,15 @@ receive_main(usage)
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;
     int             need_to_test;
-    string_ty       *s2;
     int             could_have_a_trojan;
     int             config_seen;
     int             uncopy;
     int             trojan;
-    string_list_ty  wl;
     string_ty       *dot;
     const char      *delta;
     string_ty       *devdir;
+    int             exec_mode;
+    int             non_exec_mode;
 
     project_name = 0;
     change_number = 0;
@@ -286,6 +296,58 @@ receive_main(usage)
     project_bind_existing(pp);
 
     /*
+     * Read the change number form the archive, if it's there.  Use that
+     * number (a) if the user didn't specify one on the command line,
+     * and (b) that number is available.
+     */
+    os_become_orig();
+    archive_name = 0;
+    ifp = input_cpio_child(cpio_p, &archive_name);
+    if (!ifp)
+	input_fatal_error(cpio_p, "missing file");
+    assert(archive_name);
+    s = str_from_c("etc/change-number");
+    if (str_equal(archive_name, s))
+    {
+	long            proposed_change_number;
+
+	str_free(s);
+	s = input_one_line(ifp);
+	if (!s || !s->str_length)
+	    input_fatal_error(ifp, "short file");
+	proposed_change_number = to_long(s);
+	str_free(s);
+	input_delete(ifp);
+	os_become_undo();
+	str_free(archive_name);
+
+	/*
+	 * Make sure the change number is available.
+	 */
+	if
+	(
+	    !change_number
+	&&
+	    proposed_change_number > 0
+	&&
+	    !project_change_number_in_use(pp, proposed_change_number)
+	)
+	    change_number = proposed_change_number;
+
+	/*
+	 * Start the next file, so we are in the same state as when
+	 * there is no change number included.
+	 */
+	archive_name = 0;
+	os_become_orig();
+	ifp = input_cpio_child(cpio_p, &archive_name);
+	if (!ifp)
+	    input_fatal_error(cpio_p, "missing file");
+	assert(archive_name);
+    }
+    os_become_undo();
+
+    /*
      * default the change number
      */
     if (!change_number)
@@ -294,12 +356,7 @@ receive_main(usage)
     /*
      * get the change details from the input
      */
-    archive_name = 0;
     os_become_orig();
-    ifp = input_cpio_child(cpio_p, &archive_name);
-    if (!ifp)
-	input_fatal_error(cpio_p, "missing file");
-    assert(archive_name);
     s = str_from_c("etc/change-set");
     if (!str_equal(s, archive_name))
 	input_fatal_error(ifp, "wrong file");
@@ -431,9 +488,8 @@ receive_main(usage)
 
 	src_data = change_set->src->list[j];
 	assert(src_data->file_name);
-	p_src_data = project_file_find(pp, src_data->file_name);
-	if (p_src_data && p_src_data->about_to_be_created_by)
-	    p_src_data = 0;
+	p_src_data =
+	    project_file_find(pp, src_data->file_name, view_path_extreme);
 	if (!p_src_data || p_src_data->action == file_action_remove)
 	{
 	    if (src_data->action == file_action_remove)
@@ -506,24 +562,17 @@ receive_main(usage)
 	    str_free(s);
 	}
 	uncopy = 1;
-	string_list_quote_shell(&wl, &files_source);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --copy-file %S --project=%S --change=%ld --verbose%s",
-		s2,
+		"aegis --copy-file --project=%S --change=%ld --verbose%s",
 		project_name,
 		change_number,
 		(delopt ? delopt->str_text : "")
 	    );
 	if (delopt)
 	    str_free(delopt);
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -550,21 +599,14 @@ receive_main(usage)
     }
     if (files_source.nstrings)
     {
-	string_list_quote_shell(&wl, &files_source);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --remove-file %S --project=%S --change=%ld --verbose",
-		s2,
+		"aegis --remove-file --project=%S --change=%ld --verbose",
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -612,62 +654,41 @@ receive_main(usage)
 
     if (files_build.nstrings)
     {
-	string_list_quote_shell(&wl, &files_build);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --new-file %S --build --project=%S --change=%ld "
+		"aegis --new-file --build --project=%S --change=%ld "
 		    "--verbose --no-template",
-		s2,
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_build, dd);
 	str_free(s);
     }
     if (files_test_auto.nstrings)
     {
-	string_list_quote_shell(&wl, &files_test_auto);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --new-test %S --automatic --project=%S --change=%ld "
+		"aegis --new-test --automatic --project=%S --change=%ld "
 		    "--verbose --no-template",
-		s2,
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_test_auto, dd);
 	str_free(s);
     }
     if (files_test_manual.nstrings)
     {
-	string_list_quote_shell(&wl, &files_test_manual);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
 	s =
 	    str_format
 	    (
-		"aegis --new-test %S --manual --project=%S --change=%ld "
+		"aegis --new-test --manual --project=%S --change=%ld "
 		    "--verbose --no-template",
-		s2,
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_test_manual, dd);
 	str_free(s);
     }
     /*
@@ -676,22 +697,27 @@ receive_main(usage)
      */
     if (files_source.nstrings)
     {
-	string_list_quote_shell(&wl, &files_source);
-	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-	string_list_destructor(&wl);
+	s = str_from_c(THE_CONFIG_FILE);
+	if (string_list_member(&files_source, s))
+	{
+	    /*
+	     * The project config file must be created in the last set
+	     * of files created, so move it to the end of the list.
+	     */
+	    string_list_remove(&files_source, s);
+	    string_list_append(&files_source, s);
+	}
+	str_free(s);
+
 	s =
 	    str_format
 	    (
-		"aegis --new-file %S --project=%S --change=%ld --verbose "
+		"aegis --new-file --project=%S --change=%ld --verbose "
 		    "--no-template",
-		s2,
 		project_name,
 		change_number
 	    );
-	str_free(s2);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -780,6 +806,19 @@ receive_main(usage)
 	        str_free(orig);
 	        if (ok)
 		    need_whole_source = 0;
+		else
+		{
+		    sub_context_ty  *scp;
+
+		    scp = sub_context_new();
+		    sub_var_set_string(scp, "File_Name", src_data->file_name);
+		    error_intl
+		    (
+			scp,
+			i18n("warning: $filename patch not used")
+		    );
+		    sub_context_delete(scp);
+		}
 	    }
 	    patch_list_delete(plp);
 
@@ -804,6 +843,36 @@ receive_main(usage)
 	output_delete(ofp);
 	input_delete(ifp);
 	str_free(archive_name);
+    }
+    os_become_undo();
+
+    /*
+     * Now chmod the executable files.
+     */
+    exec_mode = 0755 & ~change_umask(cp);
+    non_exec_mode = exec_mode & ~0111;
+    os_become_orig();
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
+
+	src_data = change_set->src->list[j];
+	if
+	(
+	    src_data->action != file_action_create
+	&&
+	    src_data->action != file_action_modify
+	)
+	    continue;
+	if (src_data->usage == file_usage_build)
+	    continue;
+	assert(src_data->file_name);
+
+	os_chmod
+	(
+	    src_data->file_name,
+	    (src_data->executable ? exec_mode : non_exec_mode)
+	);
     }
     os_become_undo();
 
@@ -978,7 +1047,7 @@ receive_main(usage)
     s =
 	str_format
 	(
-	    "aegis --diff --change=%ld --project=%S --verbose",
+	    "aegis --diff --no-merge --change=%ld --project=%S --verbose",
 	    change_number,
 	    project_name
 	);

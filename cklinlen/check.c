@@ -27,20 +27,20 @@
 #include <check.h>
 #include <error.h>
 
-int     warning;
-int     limit = 80;
-static int number_of_blank_lines;
-static int number_of_errors;
-static int line_number;
-static int dos_format;
-static int binary_format;
-static FILE *fp;
+int             warning;
+int             limit = 80;
+static int      number_of_blank_lines;
+static int      number_of_errors;
+static int      line_number;
+static int      dos_format;
+static int      binary_format;
+static FILE     *fp;
 static const char *fn;
-static int isa_c_file;
-static int isa_cxx_file;
-static int isa_h_file;
-int	cxx_warning;
-static int unprintable_ok;
+static int      isa_c_file;
+static int      isa_cxx_file;
+static int      isa_h_file;
+int	        cxx_warning;
+static int      unprintable_ok;
 
 
 enum state_t
@@ -62,10 +62,8 @@ typedef enum state_t state_t;
 static state_t state;
 
 
-static void check_c_comment _((void));
-
 static void
-check_c_comment()
+check_c_comment(void)
 {
     if (isa_h_file && !isa_c_file)
     {
@@ -105,11 +103,8 @@ check_c_comment()
   * not be an issue.
   */
 
-static void run_state_machine _((int));
-
 static void
-run_state_machine(c)
-    int             c;
+run_state_machine(int c)
 {
     if (!isa_c_file && !isa_cxx_file && !isa_h_file)
 	return;
@@ -361,10 +356,8 @@ run_state_machine(c)
 }
 
 
-static int check_one_line _((void));
-
 static int
-check_one_line()
+check_one_line(void)
 {
     int             unprintable;
     int             white_space;
@@ -487,12 +480,8 @@ check_one_line()
 }
 
 
-static int begins_with _((const char *, const char *));
-
 static int
-begins_with(haystack, needle)
-    const char      *haystack;
-    const char      *needle;
+begins_with(const char *haystack, const char *needle)
 {
     size_t len1 = strlen(haystack);
     size_t len2 = strlen(needle);
@@ -500,12 +489,8 @@ begins_with(haystack, needle)
 }
 
 
-static int ends_with _((const char *, const char *));
-
 static int
-ends_with(haystack, needle)
-    const char      *haystack;
-    const char      *needle;
+ends_with(const char *haystack, const char *needle)
 {
     size_t len1 = strlen(haystack);
     size_t len2 = strlen(needle);
@@ -514,17 +499,33 @@ ends_with(haystack, needle)
 
 
 void
-check(file_name)
-    const char      *file_name;
+check(const char *file_name)
 {
+    const char      *short_file_name;
+
+    /*
+     * Skip over leading baseline symlinks.
+     */
+    short_file_name = file_name;
+    while (short_file_name[0] == 'b' && short_file_name[1] == 'l')
+	short_file_name += 2;
+    if (*short_file_name == '/')
+	++short_file_name;
+    else
+	short_file_name = file_name;
+
     isa_c_file = ends_with(file_name, ".c") || ends_with(file_name, ".C");
     isa_cxx_file =
 	ends_with(file_name, ".cc") || ends_with(file_name, ".CC") ||
 	ends_with(file_name, ".cpp") || ends_with(file_name, ".CPP");
     isa_h_file = ends_with(file_name, ".h") || ends_with(file_name, ".H");
     unprintable_ok =
-    	begins_with(file_name, "lib/") && strstr(file_name, "/LC_MESSAGES/");
-    if (begins_with(file_name, "test/") && ends_with(file_name, ".sh"))
+	(
+	    begins_with(short_file_name, "lib/")
+	&&
+	    strstr(short_file_name, "/LC_MESSAGES/")
+	);
+    if (begins_with(short_file_name, "test/") && ends_with(file_name, ".sh"))
     {
 	limit = 510;
 	unprintable_ok = 1;

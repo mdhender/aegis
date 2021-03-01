@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 /* avoid TRUNK_CHANGE_NUMBER */
 #define MAGIC_ZERO (-42)
-long magic_zero_encode _((long));
-long magic_zero_decode _((long));
+long magic_zero_encode(long);
+long magic_zero_decode(long);
 
 #endif /* AEGIS_ZERO_H */

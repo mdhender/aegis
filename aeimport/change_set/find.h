@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct format_search_list_ty; /* forward */
 
-struct change_set_list_ty *change_set_find _((struct format_search_list_ty *));
+struct change_set_list_ty *change_set_find(struct format_search_list_ty *);
 
 #endif /* AEIMPORT_CHANGE_SET_FIND_H */

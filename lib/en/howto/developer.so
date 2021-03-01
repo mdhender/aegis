@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2002 Peter Miller;
+.\"	Copyright (C) 1999-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -35,13 +35,15 @@ There are a number of pieces of software you will need to work on Aegis.
 .IP \(bu 2n
 It will probably come as no surprise that Aegis is developed using Aegis
 (never trust a skinny chef) so the first thing you need is to install
-Aegis and become familiar with using it.
+Aegis and become familiar with using it.  You will need Aegis 4.11 or later.
 .IP \(bu 2n
 You will need to install Cook,
 in order to build things.
 Version 2.8 or later, preferably you should track the latest release.
 .IP \(bu 2n
 GNU Autoconf 2.53 or later.
+.IP \(bu 2n
+GNU Automake.
 .IP \(bu 2n
 You will need to install FHist, for the history tool.
 .IP \(bu 2n
@@ -65,6 +67,8 @@ you probably don't).
 .IP \(bu 2n
 You need to install Bison, the GNU Yacc replacement.
 .IP \(bu 2n
+You will need to install Flex, the GNU replacement for Lex.
+.IP \(bu 2n
 You need to GNU Gettext (0.11.4 or later) tools installed.
 Even though Glibc 2.0 and
 later include Gettext, you need to developer tools as well.  (You need
@@ -83,6 +87,13 @@ You need a \fIctags\fP(1) command with a \f[CW]-L\fP option
 (to read file names from standard input).
 .IP \(bu 2n
 You need RCS installed for the automated tests.
+.IP \(bu 2n
+You need to install \fIsudo\fP(8).
+See \f[CW]etc/set-uid-root\fP in the distribution for how to configure
+the \fI/etc/sudoers\fP file.
+.IP \(bu 2n
+You need netpbm installed, for turning \fIaegis.png\fP into
+\fIaegis.xpm\fP because \fIrpm\fP(8) will only accept GIF or XPM icons.
 .IP \(bu 2n
 \fIProbably more things I've forgotten.\fP
 .nh 2 "Create The Aegis Project"

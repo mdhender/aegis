@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,31 +25,29 @@
 
 
 string_ty *
-project_file_directory_conflict(pp, file_name)
-	project_ty	*pp;
-	string_ty	*file_name;
+project_file_directory_conflict(project_ty *pp, string_ty *file_name)
 {
-	size_t		j;
-	fstate_src	src_data;
+    size_t          j;
+    fstate_src      src_data;
 
-	for (j = 0; ; ++j)
-	{
-		/*
-		 * include deleted files in the check,
-		 * so we can reconstruct later
-		 *
-		 * include built files in the check
-		 */
-		src_data = project_file_nth(pp, j);
-		if (!src_data)
-			break;
-		if
-		(
-			os_isa_path_prefix(file_name, src_data->file_name)
-		||
-			os_isa_path_prefix(src_data->file_name, file_name)
-		)
-			return src_data->file_name;
-	}
-	return 0;
+    for (j = 0; ; ++j)
+    {
+	/*
+	 * include deleted files in the check,
+	 * so we can reconstruct later
+	 *
+	 * include built files in the check
+	 */
+	src_data = project_file_nth(pp, j, view_path_simple);
+	if (!src_data)
+	    break;
+	if
+	(
+	    os_isa_path_prefix(file_name, src_data->file_name)
+	||
+	    os_isa_path_prefix(src_data->file_name, file_name)
+	)
+	    return src_data->file_name;
+    }
+    return 0;
 }

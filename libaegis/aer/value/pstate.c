@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -130,7 +130,7 @@ grab(this)
      * add some extra stuff
      */
     name = str_from_c("name");
-    vp1 = rpt_value_string(this->name);
+    vp1 = rpt_value_string(project_name_get(pp));
     rpt_value_struct__set(this->value, name, vp1);
     str_free(name);
     rpt_value_free(vp1);
@@ -138,6 +138,15 @@ grab(this)
     {
 	name = str_from_c("directory");
 	vp1 = rpt_value_string(change_development_directory_get(cp, 0));
+	rpt_value_struct__set(this->value, name, vp1);
+	str_free(name);
+	rpt_value_free(vp1);
+    }
+
+    if (pp->parent)
+    {
+	name = str_from_c("parent_name");
+	vp1 = rpt_value_string(project_name_get(pp->parent));
 	rpt_value_struct__set(this->value, name, vp1);
 	str_free(name);
 	rpt_value_free(vp1);

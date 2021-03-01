@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -84,14 +84,10 @@ struct shell_bash_ty
 };
 
 
-static char *copy_of _((const char *s, size_t len));
-
 static char *
-copy_of(s, len)
-    const char      *s;
-    size_t          len;
+copy_of(const char *s, size_t len)
 {
-    char    *result;
+    char            *result;
 
     result = mem_alloc(len + 1);
     memcpy(result, s, len);
@@ -100,11 +96,8 @@ copy_of(s, len)
 }
 
 
-static void destructor _((shell_ty *));
-
 static void
-destructor(sp)
-    shell_ty        *sp;
+destructor(shell_ty *sp)
 {
     shell_bash_ty   *this;
 
@@ -116,21 +109,19 @@ destructor(sp)
 }
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
-    char *prog = progname_get();
+    char            *prog;
+
+    prog = progname_get();
     fprintf(stderr, "Usage: %s <prog-name> <word> <context>\n", prog);
     exit(1);
 }
 
-static int test _((shell_ty *));
 
 static int
-test(sp)
-    shell_ty        *sp;
+test(shell_ty *sp)
 {
     shell_bash_ty   *this;
     char            *cp;
@@ -185,7 +176,7 @@ test(sp)
 	usage();
 
     /*
-     * Generate the new command line, but splitting the comp_line string
+     * Generate the new command line, by splitting the comp_line string
      * into words.
      */
     ac = 0;
@@ -303,11 +294,8 @@ test(sp)
 }
 
 
-static string_ty *command_get _((shell_ty *));
-
 static string_ty *
-command_get(sh)
-    shell_ty        *sh;
+command_get(shell_ty *sh)
 {
     shell_bash_ty   *this;
 
@@ -316,11 +304,8 @@ command_get(sh)
 }
 
 
-static string_ty *prefix_get _((shell_ty *));
-
 static string_ty *
-prefix_get(sh)
-    shell_ty        *sh;
+prefix_get(shell_ty *sh)
 {
     shell_bash_ty   *this;
 
@@ -329,12 +314,8 @@ prefix_get(sh)
 }
 
 
-static void emit _((shell_ty *, string_ty *));
-
 static void
-emit(sh, s)
-    shell_ty        *sh;
-    string_ty       *s;
+emit(shell_ty *sh, string_ty *s)
 {
     shell_bash_ty   *this;
     char            *cp;
@@ -370,7 +351,7 @@ static shell_vtbl_ty vtbl =
 
 
 shell_ty *
-shell_bash()
+shell_bash(void)
 {
     shell_ty        *sp;
     shell_bash_ty   *this;

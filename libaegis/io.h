@@ -35,11 +35,11 @@ struct output_ty; /* existence */
 #define REAL_NOT_SET 0.0
 #define TIME_NOT_SET (time_t)0
 
-void string_write _((struct output_ty *, const char *, string_ty *));
-void integer_write _((struct output_ty *, const char *, long, int));
-void real_write _((struct output_ty *, const char *, double, int));
-void time_write _((struct output_ty *, const char *, time_t, int));
-void io_comment_append _((struct sub_context_ty *, const char *));
-void io_comment_emit _((struct output_ty *));
+void string_write(struct output_ty *, const char *, string_ty *);
+void integer_write(struct output_ty *, const char *, long, int);
+void real_write(struct output_ty *, const char *, double, int);
+void time_write(struct output_ty *, const char *, time_t, int);
+void io_comment_append(struct sub_context_ty *, const char *);
+void io_comment_emit(struct output_ty *);
 
 #endif /* AEGIS_IO_H */

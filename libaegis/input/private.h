@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <input.h>
 
-input_ty *input_new _((input_vtbl_ty *));
-void input_pushback_transfer _((input_ty *, input_ty *));
+input_ty *input_new(input_vtbl_ty *);
+void input_pushback_transfer(input_ty *, input_ty *);
 
 #endif /* LIBAEGIS_INPUT_PRIVATE_H */

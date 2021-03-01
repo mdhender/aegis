@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -160,7 +160,7 @@ lw(2.5i)f(CW).
 OBJ = ../ant/main.o parse.o
 all: prog
 .sp 0.2
-prog: (OBJ)
+prog: $(OBJ)
   $(CC) -o $@ $(OBJ)
 .sp 0.2
 parse.o: parse.c parse.h
@@ -177,7 +177,7 @@ everything will work.
 .LP
 But what happens when small changes occur?
 For example,
-what would happen of the \f(CWparse.c\fP and \f(CWparse.h\fP
+what would happen if the \f(CWparse.c\fP and \f(CWparse.h\fP
 files were generated from a \f(CWparse.y\fP yacc grammar?
 This would add the following lines to the \f(CWbee/Makefile\fP:
 .TS
@@ -275,7 +275,7 @@ all:
   done
 .TE
 .LP
-This doubles then length of time it takes to perform the build.  But that
+This doubles the length of time it takes to perform the build.  But that
 is not all: there is no guarantee that two passes are enough!  The
 upper bound of the number of passes is not even proportional to the
 number of modules, it is instead proportional to the number of graph

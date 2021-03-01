@@ -38,23 +38,23 @@
 typedef struct column_ty column_ty;
 struct column_ty
 {
-	wide_output_ty	*header; /* actually wide_output_column_ty */
-	wide_output_ty	*content; /* actually wide_output_column_ty */
-	output_ty	*content_filter;
-	int		left;
-	int		right;
+    wide_output_ty  *header; /* actually wide_output_column_ty */
+    wide_output_ty  *content; /* actually wide_output_column_ty */
+    output_ty	    *content_filter;
+    int		    left;
+    int		    right;
 };
 
 typedef struct col_pretty_ty col_pretty_ty;
 struct col_pretty_ty
 {
-	col_ty		inherited;
-	wide_output_ty	*deeper;
-	int		need_to_emit_headers;
+    col_ty	    inherited;
+    wide_output_ty  *deeper;
+    int		    need_to_emit_headers;
 
-	size_t		ncolumns;
-	size_t		ncolumns_max;
-	column_ty	*column;
+    size_t	    ncolumns;
+    size_t	    ncolumns_max;
+    column_ty	    *column;
 };
 
 
@@ -70,46 +70,43 @@ struct col_pretty_ty
  *	this columnizing instance.
  */
 
-static void destructor _((col_ty *));
-
 static void
-destructor(fp)
-	col_ty		*fp;
+destructor(col_ty *fp)
 {
-	col_pretty_ty	*this;
-	size_t		j;
+    col_pretty_ty   *this;
+    size_t	    j;
 
-	trace(("col_pretty::destructor(fp = %08lX)\n{\n", (long)fp));
-	this = (col_pretty_ty *)fp;
-	trace(("ncolumns = %d\n", (int)this->ncolumns));
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		column_ty	*cp;
+    trace(("col_pretty::destructor(fp = %08lX)\n{\n", (long)fp));
+    this = (col_pretty_ty *)fp;
+    trace(("ncolumns = %d\n", (int)this->ncolumns));
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	column_ty	*cp;
 
-		/* The delcb() will do all the work. */
-		cp = &this->column[j];
-		trace(("cp = %08lX\n", (long)cp));
-		if (cp->content_filter)
-			output_delete(cp->content_filter);
-	}
-	trace(("column = %08lX\n", (long)this->column));
-	if (this->column)
-		mem_free(this->column);
-	trace(("deeper = %08lX\n", (long)this->deeper));
-	wide_output_delete(this->deeper);
-	trace(("}\n"));
+	/* The delcb() will do all the work. */
+	cp = &this->column[j];
+	trace(("cp = %08lX\n", (long)cp));
+	if (cp->content_filter)
+	    output_delete(cp->content_filter);
+    }
+    trace(("column = %08lX\n", (long)this->column));
+    if (this->column)
+	mem_free(this->column);
+    trace(("deeper = %08lX\n", (long)this->deeper));
+    wide_output_delete(this->deeper);
+    trace(("}\n"));
 }
 
 
 typedef struct emit_ty emit_ty;
 struct emit_ty
 {
-	wide_output_ty	*content;
-	int		left;
+    wide_output_ty  *content;
+    int		    left;
 };
 
 
-static void emit_header _((col_pretty_ty *)); /* forward */
+static void emit_header(col_pretty_ty *); /* forward */
 
 
 /*
@@ -126,155 +123,149 @@ static void emit_header _((col_pretty_ty *)); /* forward */
  *	for the headers and again for the content.
  */
 
-static void emit _((col_pretty_ty *, size_t, emit_ty *, int, int));
-
 static void
-emit(this, argc, argv, minlines, this_is_the_header)
-	col_pretty_ty	*this;
-	size_t		argc;
-	emit_ty		*argv;
-	int		minlines;
-	int		this_is_the_header;
+emit(col_pretty_ty *this, size_t argc, emit_ty *argv, int minlines,
+    int this_is_the_header)
 {
-	int		line;
-	int		need;
+    int		    line;
+    int		    need;
 
-	/*
-	 * Figure out how many lines of output we will produce, and ask
-	 * for a page eject if that many lines aren't left on the page.
-	 */
-	trace(("col_pretty::emit(this = %08lX)\n{\n", (long)this));
-	need = 0;
-	for (line = 0; ; ++line)
+    /*
+     * Figure out how many lines of output we will produce, and ask
+     * for a page eject if that many lines aren't left on the page.
+     */
+    trace(("col_pretty::emit(this = %08lX)\n{\n", (long)this));
+    need = 0;
+    for (line = 0; ; ++line)
+    {
+	int		there_was_something_on_this_line;
+	int		ocol;
+	int		j;
+
+	there_was_something_on_this_line = (line < minlines);
+	ocol = 0;
+	for (j = 0; j < argc; ++j)
 	{
-		int		there_was_something_on_this_line;
-		int		ocol;
-		int		j;
+	    emit_ty         *ep;
+	    column_row_ty   *crp;
 
-		there_was_something_on_this_line = (line < minlines);
-		ocol = 0;
-		for (j = 0; j < argc; ++j)
-		{
-			emit_ty		*ep;
-			column_row_ty	*crp;
-
-			ep = &argv[j];
-			if (!ep->content)
-				continue;
-			trace(("ep = %08lX;\n", (long)ep));
-			crp = wide_output_column_get(ep->content, line);
-			if (!crp)
-				continue;
-			trace(("crp = %08lX;\n", (long)crp));
-			++there_was_something_on_this_line;
-			if (!crp->length)
-				continue;
-			if (ocol > ep->left)
-			{
-				++need;
-				ocol = 0;
-			}
-			while (ocol < ep->left)
-				++ocol;
-			ocol += crp->printing_width;
-		}
-		if (!there_was_something_on_this_line)
-			break;
+	    ep = &argv[j];
+	    if (!ep->content)
+		continue;
+	    trace(("ep = %08lX;\n", (long)ep));
+	    crp = wide_output_column_get(ep->content, line);
+	    if (!crp)
+		continue;
+	    trace(("crp = %08lX;\n", (long)crp));
+	    ++there_was_something_on_this_line;
+	    if (!crp->length)
+		continue;
+	    if (ocol > ep->left)
+	    {
 		++need;
+		ocol = 0;
+	    }
+	    while (ocol < ep->left)
+		++ocol;
+	    ocol += crp->printing_width;
 	}
-	trace(("need = %d\n", need));
-	if (need <= 0)
-	{
-		trace(("}\n"));
-		return;
-	}
-	if (need <= 5)
-		wide_output_header_need(this->deeper, need);
+	if (!there_was_something_on_this_line)
+	    break;
+	++need;
+    }
+    trace(("need = %d\n", need));
+    if (need <= 0)
+    {
+	trace(("}\n"));
+	return;
+    }
+    if (need <= 5)
+	wide_output_header_need(this->deeper, need);
+
+    /*
+     * Now send the output.
+     */
+    for (line = 0; ; ++line)
+    {
+	int             there_was_something_on_this_line;
+	int		ocol;
+	int		j;
 
 	/*
-	 * Now send the output.
+	 * Emit the column contents.
 	 */
-	for (line = 0; ; ++line)
+	there_was_something_on_this_line = (line < minlines);
+	ocol = 0;
+	for (j = 0; j < argc; ++j)
 	{
-		int		there_was_something_on_this_line;
-		int		ocol;
-		int		j;
+	    emit_ty         *ep;
+	    column_row_ty   *crp;
 
-		/*
-		 * Emit the column contents.
-		 */
-		there_was_something_on_this_line = (line < minlines);
-		ocol = 0;
-		for (j = 0; j < argc; ++j)
-		{
-			emit_ty		*ep;
-			column_row_ty	*crp;
-
-			ep = &argv[j];
-			if (!ep->content)
-				continue;
-			trace(("ep = %08lX;\n", (long)ep));
-			crp = wide_output_column_get(ep->content, line);
-			if (!crp)
-				continue;
-			trace(("crp = %08lX;\n", (long)crp));
-			++there_was_something_on_this_line;
-			if (!crp->length)
-				continue;
-			if (ocol > ep->left)
-			{
-				trace(("zzzt, ping!\n"));
-				wide_output_putwc(this->deeper, '\n');
-				ocol = 0;
-			}
-
-			/*
-			 * We have found something that we are about to
-			 * output, emit column headers if necessary.
-			 * (Yes, this could happen in the middle of
-			 * multi-line output.)
-			 *
-			 * We don't do this often (hence the (ocol ==
-			 * 0) test) because it causes a flush of the
-			 * next layer down, and that generally slows
-			 * throughput.
-			 */
-			if
-			(
-				ocol == 0
-			&&
-				!this_is_the_header
-			&&
-				(
-					this->need_to_emit_headers
-				||
-		              wide_output_header_is_at_top_of_page(this->deeper)
-				)
-			)
-				emit_header(this);
-
-			/*
-			 * Scooch across the to correct column.
-			 */
-			while (ocol < ep->left)
-			{
-				wide_output_putwc(this->deeper, ' ');
-				++ocol;
-			}
-
-			/*
-			 * Write the data, and adjust the column tracking
-			 * to match.
-			 */
-			wide_output_write(this->deeper, crp->text, crp->length);
-			ocol += crp->printing_width;
-			trace(("ocol = %d\n", ocol));
-		}
-		if (!there_was_something_on_this_line)
-			break;
+	    ep = &argv[j];
+	    if (!ep->content)
+		continue;
+	    trace(("ep = %08lX;\n", (long)ep));
+	    crp = wide_output_column_get(ep->content, line);
+	    if (!crp)
+		continue;
+	    trace(("crp = %08lX;\n", (long)crp));
+	    ++there_was_something_on_this_line;
+	    if (!crp->length)
+		continue;
+	    if (ocol > ep->left)
+	    {
+		trace(("zzzt, ping!\n"));
 		wide_output_putwc(this->deeper, '\n');
+		ocol = 0;
+	    }
+
+	    /*
+	     * We have found something that we are about to
+	     * output, emit column headers if necessary.
+	     * (Yes, this could happen in the middle of
+	     * multi-line output.)
+	     *
+	     * We don't do this often (hence the (ocol ==
+	     * 0) test) because it causes a flush of the
+	     * next layer down, and that generally slows
+	     * throughput.
+	     */
+	    if
+	    (
+		ocol == 0
+	    &&
+		!this_is_the_header
+	    &&
+		(
+	    	    this->need_to_emit_headers
+		||
+		    wide_output_header_is_at_top_of_page(this->deeper)
+		)
+	    )
+		emit_header(this);
+
+	    /*
+	     * Scooch across the to correct column.
+	     */
+	    while (ocol < ep->left)
+	    {
+		wide_output_putwc(this->deeper, ' ');
+		++ocol;
+	    }
+
+	    /*
+	     * Write the data, and adjust the column tracking
+	     * to match.
+	     */
+	    wide_output_write(this->deeper, crp->text, crp->length);
+	    ocol += crp->printing_width;
+	    trace(("ocol = %d\n", ocol));
 	}
-	trace(("}\n"));
+	if (!there_was_something_on_this_line)
+	    break;
+	wide_output_putwc(this->deeper, '\n');
+    }
+    trace(("}\n"));
 }
 
 
@@ -291,27 +282,24 @@ emit(this, argc, argv, minlines, this_is_the_header)
  *	headers, too.
  */
 
-static void emit_header _((col_pretty_ty *));
-
 static void
-emit_header(this)
-	col_pretty_ty	*this;
+emit_header(col_pretty_ty *this)
 {
-	emit_ty		*argv;
-	size_t		j;
+    emit_ty	    *argv;
+    size_t	    j;
 
-	trace(("col_pretty::emit_header(this = %08lX)\n{\n", (long)this));
-	this->need_to_emit_headers = 0;
-	argv = mem_alloc(this->ncolumns * sizeof(emit_ty));
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		argv[j].content = this->column[j].header;
-		argv[j].left = this->column[j].left;
-	}
-	emit(this, this->ncolumns, argv, 0, 1);
-	mem_free(argv);
-	this->need_to_emit_headers = 0;
-	trace(("}\n"));
+    trace(("col_pretty::emit_header(this = %08lX)\n{\n", (long)this));
+    this->need_to_emit_headers = 0;
+    argv = mem_alloc(this->ncolumns * sizeof(emit_ty));
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	argv[j].content = this->column[j].header;
+	argv[j].left = this->column[j].left;
+    }
+    emit(this, this->ncolumns, argv, 0, 1);
+    mem_free(argv);
+    this->need_to_emit_headers = 0;
+    trace(("}\n"));
 }
 
 
@@ -333,47 +321,44 @@ emit_header(this)
  *	headings to be emitted, before the content.
  */
 
-static void emit_content _((col_pretty_ty *));
-
 static void
-emit_content(this)
-	col_pretty_ty	*this;
+emit_content(col_pretty_ty *this)
 {
-	emit_ty		*argv;
-	size_t		j;
+    emit_ty	    *argv;
+    size_t	    j;
 
-	/*
-	 * Flush all of the user input so that it is guaranteed to be
-	 * in the content buffers.
-	 */
-	trace(("col_pretty::emit_content(this = %08lX)\n{\n", (long)this));
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		output_ty	*w;
+    /*
+     * Flush all of the user input so that it is guaranteed to be
+     * in the content buffers.
+     */
+    trace(("col_pretty::emit_content(this = %08lX)\n{\n", (long)this));
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	output_ty	*w;
 
-		w = this->column[j].content_filter;
-		output_end_of_line(w);
-		output_flush(w);
-	}
+	w = this->column[j].content_filter;
+	output_end_of_line(w);
+	output_flush(w);
+    }
 
-	/*
-	 * emit the relevant columns
-	 */
-	argv = mem_alloc(this->ncolumns * sizeof(emit_ty));
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		argv[j].content = this->column[j].content;
-		argv[j].left = this->column[j].left;
-	}
-	emit(this, this->ncolumns, argv, 1, 0);
-	mem_free(argv);
+    /*
+     * emit the relevant columns
+     */
+    argv = mem_alloc(this->ncolumns * sizeof(emit_ty));
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	argv[j].content = this->column[j].content;
+	argv[j].left = this->column[j].left;
+    }
+    emit(this, this->ncolumns, argv, 1, 0);
+    mem_free(argv);
 
-	/*
-	 * reset the content buffers
-	 */
-	for (j = 0; j < this->ncolumns; ++j)
-		wide_output_column_reset(this->column[j].content);
-	trace(("}\n"));
+    /*
+     * reset the content buffers
+     */
+    for (j = 0; j < this->ncolumns; ++j)
+	wide_output_column_reset(this->column[j].content);
+    trace(("}\n"));
 }
 
 
@@ -391,44 +376,40 @@ emit_content(this)
  *	de-reference dangling pointers.
  */
 
-static void delcb _((output_ty *, void *));
-
 static void
-delcb(fp, arg)
-	output_ty	*fp;
-	void		*arg;
+delcb(output_ty *fp, void *arg)
 {
-	col_pretty_ty	*this;
-	size_t		j;
+    col_pretty_ty   *this;
+    size_t	    j;
 
-	/* called just before a wide output is deleted */
-	trace(("col_pretty::delcb(fp = %08lX, arg = %08lX)\n{\n",
-		(long)fp, (long)arg));
-	this = (col_pretty_ty *)arg;
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		column_ty	*cp;
+    /* called just before a wide output is deleted */
+    trace(("col_pretty::delcb(fp = %08lX, arg = %08lX)\n{\n",
+	(long)fp, (long)arg));
+    this = (col_pretty_ty *)arg;
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	column_ty       *cp;
 
-		cp = &this->column[j];
-		if (cp->content_filter != fp)
-			continue;
-		wide_output_delete(cp->header);
-		cp->header = 0;
-		cp->content = 0;
-		cp->content_filter = 0;
-		cp->left = 0;
-		cp->right = 0;
-		break;
-	}
+	cp = &this->column[j];
+	if (cp->content_filter != fp)
+	    continue;
+	wide_output_delete(cp->header);
+	cp->header = 0;
+	cp->content = 0;
+	cp->content_filter = 0;
+	cp->left = 0;
+	cp->right = 0;
+	break;
+    }
 
-	while
-	(
-		this->ncolumns > 0
-	&&
-		this->column[this->ncolumns - 1].content_filter == 0
-	)
-		this->ncolumns--;
-	trace(("}\n"));
+    while
+    (
+	this->ncolumns > 0
+    &&
+	this->column[this->ncolumns - 1].content_filter == 0
+    )
+	this->ncolumns--;
+    trace(("}\n"));
 }
 
 
@@ -456,123 +437,112 @@ delcb(fp, arg)
  *	use output_delete when you are done with it.
  */
 
-static output_ty *create _((col_ty *, int, int, const char *));
-
 static output_ty *
-create(fp, left, right, title)
-	col_ty		*fp;
-	int		left;
-	int		right;
-	const char	*title;
+create(col_ty *fp, int left, int right, const char *title)
 {
-	col_pretty_ty	*this;
-	wide_output_ty	*fp3;
-	wide_output_ty	*fp4;
-	column_ty	*cp;
-	int		paglen;
+    col_pretty_ty   *this;
+    wide_output_ty  *fp3;
+    wide_output_ty  *fp4;
+    column_ty	    *cp;
+    int		    paglen;
 
-	/*
-	 * sanity checks on arguments
-	 */
-	trace(("col_pretty::create(fp = %08lX, left = %d, right = %d, title = \"%s\")\n{\n",
-		(long)fp, left, right, (title ? title : "")));
-	this = (col_pretty_ty *)fp;
-	if (left < 0)
+    /*
+     * sanity checks on arguments
+     */
+    trace(("col_pretty::create(fp = %08lX, left = %d, right = %d, "
+	"title = \"%s\")\n{\n", (long)fp, left, right, (title ? title : "")));
+    this = (col_pretty_ty *)fp;
+    if (left < 0)
+    {
+	if (this->ncolumns > 0)
+    	    left = this->column[this->ncolumns - 1].right + 1;
+	else
+    	    left = 0;
+    }
+    if (right <= 0)
+	right = wide_output_page_width(this->deeper);
+    if (right <= left)
+	right = left + 8;
+
+    /*
+     * make sure we grok enough columns
+     */
+    if (this->ncolumns >= this->ncolumns_max)
+    {
+	size_t		nbytes;
+	int		old;
+
+	old = this->ncolumns_max;
+	this->ncolumns_max = this->ncolumns_max * 2 + 4;
+	nbytes = this->ncolumns_max * sizeof(this->column[0]);
+	this->column = mem_change_size(this->column, nbytes);
+	while (old < this->ncolumns_max)
 	{
-		if (this->ncolumns > 0)
-			left = this->column[this->ncolumns - 1].right + 1;
-		else
-			left = 0;
+	    cp = &this->column[old++];
+	    cp->header = 0;
+	    cp->content = 0;
+	    cp->content_filter = 0;
+	    cp->left = 0;
+	    cp->right = 0;
 	}
-	if (right <= 0)
-		right = wide_output_page_width(this->deeper);
-	if (right <= left)
-		right = left + 8;
+    }
+
+    /*
+     * allocate storage for the column content
+     */
+    cp = &this->column[this->ncolumns++];
+    trace(("left = %d;\n", left));
+    trace(("right = %d;\n", right));
+    trace(("width = %d;\n", right - left));
+    paglen = wide_output_page_length(this->deeper);
+    cp->content = wide_output_column_open(right - left, paglen);
+    cp->left = left;
+    cp->right = right;
+
+    /*
+     * We need to stash the column title specified.
+     */
+    cp->header = wide_output_column_open(right - left, paglen);
+    if (title && *title)
+    {
+	wide_output_ty	*fp5;
+	int		nlines;
+
+	nlines = paglen / 2;
+	if (nlines < 1)
+	    nlines = 1;
+	fp3 = wide_output_head_open(cp->header, 0, nlines);
+	fp4 = wide_output_wrap_open(fp3, 1, -1);
+	fp5 = wide_output_expand_open(fp4, 1);
+	wide_output_put_cstr(fp5, title);
+	wide_output_end_of_line(fp5);
+	wide_output_delete(fp5);
 
 	/*
-	 * make sure we grok enough columns
+	 * A new column with a header implies we need to emit
+	 * the headers again.
 	 */
-	if (this->ncolumns >= this->ncolumns_max)
-	{
-		size_t		nbytes;
-		int		old;
+	this->need_to_emit_headers = 1;
+    }
 
-		old = this->ncolumns_max;
-		this->ncolumns_max = this->ncolumns_max * 2 + 4;
-		nbytes = this->ncolumns_max * sizeof(this->column[0]);
-		this->column = mem_change_size(this->column, nbytes);
-		while (old < this->ncolumns_max)
-		{
-			cp = &this->column[old++];
-			cp->header = 0;
-			cp->content = 0;
-			cp->content_filter = 0;
-			cp->left = 0;
-			cp->right = 0;
-		}
-	}
-
-	/*
-	 * allocate storage for the column content
-	 */
-	cp = &this->column[this->ncolumns++];
-	trace(("left = %d;\n", left));
-	trace(("right = %d;\n", right));
-	trace(("width = %d;\n", right - left));
-	paglen = wide_output_page_length(this->deeper);
-	cp->content = wide_output_column_open(right - left, paglen);
-	cp->left = left;
-	cp->right = right;
-
-	/*
-	 * We need to stash the column title specified.
-	 */
-	cp->header = wide_output_column_open(right - left, paglen);
-	if (title && *title)
-	{
-		wide_output_ty	*fp5;
-		int		nlines;
-
-		nlines = paglen / 2;
-		if (nlines < 1)
-			nlines = 1;
-		fp3 = wide_output_head_open(cp->header, 0, nlines);
-		fp4 = wide_output_wrap_open(fp3, 1, -1);
-		fp5 = wide_output_expand_open(fp4, 1);
-		wide_output_put_cstr(fp5, title);
-		wide_output_end_of_line(fp5);
-		wide_output_delete(fp5);
-
-		/*
-		 * A new column with a header implies we need to emit
-		 * the headers again.
-		 */
-		this->need_to_emit_headers = 1;
-	}
-
-	/*
-	 * What the client of the interface sees is a de-tabbed and wrapped
-	 * filter into the column content.
-	 */
-	cp->content_filter =
-		output_to_wide_open
-		(
-			wide_output_expand_open
-			(
-				wide_output_wrap_open
-				(
-					cp->content,
-					1,
-					right - left
-				),
-				1
-			),
-			1
-		);
-	output_delete_callback(cp->content_filter, delcb, this);
-	trace(("return %08lX;\n", (long)cp->content_filter));
-	trace(("}\n"));
-	return cp->content_filter;
+    /*
+     * What the client of the interface sees is a de-tabbed and wrapped
+     * filter into the column content.
+     */
+    cp->content_filter =
+	output_to_wide_open
+	(
+	    wide_output_expand_open
+	    (
+		wide_output_wrap_open(cp->content, 1, right - left),
+		1
+	    ),
+	    1
+	);
+    output_delete_callback(cp->content_filter, delcb, this);
+    trace(("return %08lX;\n", (long)cp->content_filter));
+    trace(("}\n"));
+    return cp->content_filter;
 }
 
 
@@ -599,41 +569,38 @@ create(fp, left, right, title)
  *	output stream, and need not (must not) be inserted here.
  */
 
-static void eoln _((col_ty *));
-
 static void
-eoln(fp)
-	col_ty		*fp;
+eoln(col_ty *fp)
 {
-	col_pretty_ty	*this;
+    col_pretty_ty   *this;
 
-	trace(("col_pretty::eoln(fp = %08lX)\n{\n", (long)fp));
-	this = (col_pretty_ty *)fp;
+    trace(("col_pretty::eoln(fp = %08lX)\n{\n", (long)fp));
+    this = (col_pretty_ty *)fp;
 
-	/*
-	 * Headings are emitted at the top of the page, and also when
-	 * new columns are added if they have headers.
-	 *
-	 * But there is a catch 22: the automatic page headers are
-	 * emitted when the first character of the new page is written,
-	 * if we were to unconditionally emit them here, they would be
-	 * emitted twice in some cases.
-	 */
-	if
-	(
-		this->need_to_emit_headers
-	&&
-		!wide_output_header_is_at_top_of_page(this->deeper)
-	&&
-		option_page_headers_get()
-	)
-		emit_header(this);
+    /*
+     * Headings are emitted at the top of the page, and also when
+     * new columns are added if they have headers.
+     *
+     * But there is a catch 22: the automatic page headers are
+     * emitted when the first character of the new page is written,
+     * if we were to unconditionally emit them here, they would be
+     * emitted twice in some cases.
+     */
+    if
+    (
+	this->need_to_emit_headers
+    &&
+	!wide_output_header_is_at_top_of_page(this->deeper)
+    &&
+	option_page_headers_get()
+    )
+	emit_header(this);
 
-	/*
-	 * Now emit the content.
-	 */
-	emit_content(this);
-	trace(("}\n"));
+    /*
+     * Now emit the content.
+     */
+    emit_content(this);
+    trace(("}\n"));
 }
 
 
@@ -650,18 +617,15 @@ eoln(fp)
  *	do it.
  */
 
-static void eject _((col_ty *));
-
 static void
-eject(fp)
-	col_ty		*fp;
+eject(col_ty *fp)
 {
-	col_pretty_ty	*this;
+    col_pretty_ty   *this;
 
-	trace(("col_pretty::eject(fp = %08lX)\n{\n", (long)fp));
-	this = (col_pretty_ty *)fp;
-	wide_output_header_eject(this->deeper);
-	trace(("}\n"));
+    trace(("col_pretty::eject(fp = %08lX)\n{\n", (long)fp));
+    this = (col_pretty_ty *)fp;
+    wide_output_header_eject(this->deeper);
+    trace(("}\n"));
 }
 
 
@@ -678,19 +642,15 @@ eject(fp)
  *	actually do it, we let the "down stream" header filter do it.
  */
 
-static void need _((col_ty *, int));
-
 static void
-need(fp, n)
-	col_ty		*fp;
-	int		n;
+need(col_ty *fp, int n)
 {
-	col_pretty_ty	*this;
+    col_pretty_ty   *this;
 
-	trace(("col_pretty::need(fp = %08lX, n = %d)\n{\n", (long)fp, n));
-	this = (col_pretty_ty *)fp;
-	wide_output_header_need1(this->deeper, n);
-	trace(("}\n"));
+    trace(("col_pretty::need(fp = %08lX, n = %d)\n{\n", (long)fp, n));
+    this = (col_pretty_ty *)fp;
+    wide_output_header_need1(this->deeper, n);
+    trace(("}\n"));
 }
 
 
@@ -711,34 +671,29 @@ need(fp, n)
  * RETURNS
  */
 
-static void title _((col_ty *, const char *, const char *));
-
 static void
-title(fp, s1, s2)
-	col_ty		*fp;
-	const char	*s1;
-	const char	*s2;
+title(col_ty *fp, const char *s1, const char *s2)
 {
-	col_pretty_ty	*this;
+    col_pretty_ty   *this;
 
-	trace(("col_pretty::title(fp = %08lX, s1 = \"%s\", s2 = \"%s\")\n{\n",
-		(long)fp, (s1 ? s1 : ""), (s2 ? s2 : "")));
-	this = (col_pretty_ty *)fp;
-	wide_output_header_title(this->deeper, s1, s2);
-	trace(("}\n"));
+    trace(("col_pretty::title(fp = %08lX, s1 = \"%s\", s2 = \"%s\")\n{\n",
+	(long)fp, (s1 ? s1 : ""), (s2 ? s2 : "")));
+    this = (col_pretty_ty *)fp;
+    wide_output_header_title(this->deeper, s1, s2);
+    trace(("}\n"));
 }
 
 
 static col_vtbl_ty vtbl =
 {
-	sizeof(col_pretty_ty),
-	destructor,
-	create,
-	title,
-	eoln,
-	eject,
-	need,
-	"pretty",
+    sizeof(col_pretty_ty),
+    destructor,
+    create,
+    title,
+    eoln,
+    eject,
+    need,
+    "pretty",
 };
 
 
@@ -765,25 +720,22 @@ static col_vtbl_ty vtbl =
  */
 
 col_ty *
-col_pretty_open(deeper, delete_on_close)
-	wide_output_ty	*deeper;
-	int		delete_on_close;
+col_pretty_open(wide_output_ty *deeper, int delete_on_close)
 {
-	col_ty		*result;
-	col_pretty_ty	*this;
+    col_ty	    *result;
+    col_pretty_ty   *this;
 
-	trace(("col_pretty::new(deeper = %08lX)\n{\n", (long)deeper));
-	result = col_new(&vtbl);
-	this = (col_pretty_ty *)result;
-	this->deeper =
-		wide_output_unexpand_open(deeper, delete_on_close, -1);
-	if (option_page_headers_get())
-		this->deeper = wide_output_header_open(this->deeper, 1);
-	this->need_to_emit_headers = 0; /* not until one gets create()ed */
-	this->ncolumns = 0;
-	this->ncolumns_max = 0;
-	this->column = 0;
-	trace(("return %08lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    trace(("col_pretty::new(deeper = %08lX)\n{\n", (long)deeper));
+    result = col_new(&vtbl);
+    this = (col_pretty_ty *)result;
+    this->deeper = wide_output_unexpand_open(deeper, delete_on_close, -1);
+    if (option_page_headers_get())
+	this->deeper = wide_output_header_open(this->deeper, 1);
+    this->need_to_emit_headers = 0; /* not until one gets create()ed */
+    this->ncolumns = 0;
+    this->ncolumns_max = 0;
+    this->column = 0;
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

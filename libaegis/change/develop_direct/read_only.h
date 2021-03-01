@@ -27,6 +27,6 @@
 
 struct change_ty; /* forward */
 
-void change_development_directory_chmod_read_only _((struct change_ty *));
+void change_development_directory_chmod_read_only(struct change_ty *);
 
 #endif /* LIBAEGIS_CHANGE_DEVELOP_DIRECT_READ_ONLY_H */

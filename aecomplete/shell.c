@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <error.h> /* for assert */
 #include <shell.h>
 #include <shell/bash.h>
+#include <shell/zsh.h>
 #include <sub.h>
 
 
@@ -31,11 +32,12 @@ typedef shell_ty *(*funcptr)_((void));
 static funcptr table[] =
 {
     shell_bash,
+    shell_zsh,
 };
 
 
 shell_ty *
-shell_find()
+shell_find(void)
 {
     funcptr         *tp;
     shell_ty        *sp;
@@ -54,8 +56,7 @@ shell_find()
 
 
 int
-shell_test(this)
-    shell_ty        *this;
+shell_test(shell_ty *this)
 {
     assert(this);
     assert(this->vptr);
@@ -65,8 +66,7 @@ shell_test(this)
 
 
 string_ty *
-shell_command_get(this)
-    shell_ty        *this;
+shell_command_get(shell_ty *this)
 {
     assert(this);
     assert(this->vptr);
@@ -76,8 +76,7 @@ shell_command_get(this)
 
 
 string_ty *
-shell_prefix_get(this)
-    shell_ty        *this;
+shell_prefix_get(shell_ty *this)
 {
     assert(this);
     assert(this->vptr);
@@ -87,9 +86,7 @@ shell_prefix_get(this)
 
 
 void
-shell_emit(this, s)
-    shell_ty        *this;
-    string_ty       *s;
+shell_emit(shell_ty *this, string_ty *s)
 {
     assert(this);
     assert(this->vptr);

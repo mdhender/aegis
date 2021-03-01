@@ -342,8 +342,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 # make sure progress messages is not in the log
 #
 cp log $tmp.log
-if grep 'batch test' > log 2>&1; then cat log; fail; fi
-
+if grep 'batch test' $tmp.log > log 2>&1; then cat log; fail; fi
 
 #
 # Only definite negatives are possible.

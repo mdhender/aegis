@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -241,7 +241,7 @@ This implementation of tracking C include dependencies
 has several serious flaws, but the one most commonly discovered
 is that the \f(CWdependencies\fP file does not, itself,
 depend on the C include files.
-That is, it is not re-built in one of the include files changes.
+That is, it is not re-built if one of the include files changes.
 There is no edge in the DAG joining the \f(CWdependencies\fP vertex to
 any of the include file vertices.
 If an include file changes to include another file (a nested include),
@@ -366,7 +366,7 @@ lw(2.5i)f(CW).
   depend.sh `dirname $*` $(CFLAGS) $* > $@
 .TE
 Note that the \f[CW].d\fP files will be relative to the top level
-directory.  Writing them so that they can be used form any level is
+directory.  Writing them so that they can be used from any level is
 possible, but beyond the scope of this paper.
 .nh 2 "Multiplier"
 All of the inefficiencies described in this section compound together.

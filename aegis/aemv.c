@@ -44,10 +44,8 @@
 #include <str_list.h>
 
 
-static void move_file_usage _((void));
-
 static void
-move_file_usage()
+move_file_usage(void)
 {
     char	    *progname;
 
@@ -64,19 +62,15 @@ move_file_usage()
 }
 
 
-static void move_file_help _((void));
-
 static void
-move_file_help()
+move_file_help(void)
 {
     help("aemv", move_file_usage);
 }
 
 
-static void move_file_list _((void));
-
 static void
-move_file_list()
+move_file_list(void)
 {
     string_ty	    *project_name;
     long	    change_number;
@@ -133,18 +127,10 @@ move_file_list()
 }
 
 
-static void move_file_innards _((user_ty *, change_ty *, string_ty *,
-    string_ty *, string_list_ty *, string_list_ty *, string_list_ty *));
-
 static void
-move_file_innards(up, cp, old_name, new_name, wl_nf, wl_nt, wl_rm)
-    user_ty	    *up;
-    change_ty	    *cp;
-    string_ty	    *old_name;
-    string_ty	    *new_name;
-    string_list_ty  *wl_nf;
-    string_list_ty  *wl_nt;
-    string_list_ty  *wl_rm;
+move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
+    string_ty *new_name, string_list_ty *wl_nf, string_list_ty *wl_nt,
+    string_list_ty *wl_rm)
 {
     project_ty	    *pp;
     fstate_src	    p_src_data;
@@ -177,17 +163,10 @@ move_file_innards(up, cp, old_name, new_name, wl_nf, wl_nt, wl_rm)
     /*
      * the old file must be in the baseline
      */
-    p_src_data = project_file_find(pp, old_name);
-    if
-    (
-	!p_src_data
-    ||
-	p_src_data->about_to_be_created_by
-    ||
-	p_src_data->deleted_by
-    )
+    p_src_data = project_file_find(pp, old_name, view_path_extreme);
+    if (!p_src_data)
     {
-	p_src_data = project_file_find_fuzzy(pp, old_name);
+	p_src_data = project_file_find_fuzzy(pp, old_name, view_path_extreme);
 	if (p_src_data)
 	{
 	    sub_context_ty  *scp;
@@ -261,15 +240,8 @@ move_file_innards(up, cp, old_name, new_name, wl_nf, wl_nt, wl_rm)
     /*
      * the new file must not be part of the baseline
      */
-    pn_src_data = project_file_find(pp, new_name);
-    if
-    (
-	pn_src_data
-    &&
-	!pn_src_data->about_to_be_created_by
-    &&
-	!pn_src_data->deleted_by
-    )
+    pn_src_data = project_file_find(pp, new_name, view_path_extreme);
+    if (pn_src_data)
     {
 	sub_context_ty	*scp;
 
@@ -354,10 +326,8 @@ move_file_innards(up, cp, old_name, new_name, wl_nf, wl_nt, wl_rm)
 }
 
 
-static void move_file_main _((void));
-
 static void
-move_file_main()
+move_file_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *old_name;
@@ -625,7 +595,7 @@ move_file_main()
      * directory, just move it.	 All checks to see if the action is
      * valid are done in the inner function.
      */
-    project_file_directory_query(pp, old_name, &wl_in, 0);
+    project_file_directory_query(pp, old_name, &wl_in, 0, view_path_simple);
     string_list_constructor(&wl_nf);
     string_list_constructor(&wl_nt);
     string_list_constructor(&wl_rm);
@@ -731,7 +701,7 @@ move_file_main()
 
 
 void
-move_file()
+move_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

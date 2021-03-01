@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <str.h>
 
-struct format_version_ty *rcs_parse _((string_ty *, string_ty *));
+struct format_version_ty *rcs_parse(string_ty *, string_ty *);
 
 #endif /* AEIMPORT_FORMAT_RCS_GRAM_H */

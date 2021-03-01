@@ -27,6 +27,6 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_change_number _((struct project_ty *, int));
+complete_ty *complete_change_number(struct project_ty *, int);
 
 #endif /* AECOMPLETE_COMPLETE_CHANGE_NUMBER_H */

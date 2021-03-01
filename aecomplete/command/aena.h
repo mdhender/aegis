@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aena _((void));
+command_ty *command_aena(void);
 
 #endif /* AECOMPLETE_COMMAND_AENA_H */

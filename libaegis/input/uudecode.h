@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 #include <input.h>
 
-input_ty *input_uudecode _((input_ty *, int));
-int input_uudecode_recognise _((input_ty *));
+input_ty *input_uudecode(input_ty *, int);
+int input_uudecode_recognise(input_ty *);
 
 #endif /* LIBAEGIS_INPUT_UUDECODE_H */

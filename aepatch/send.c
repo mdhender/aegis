@@ -55,12 +55,8 @@
 #define NO_TIME_SET ((time_t)(-1))
 
 
-static int len_printable _((string_ty *, int));
-
 static int
-len_printable(s, max)
-    string_ty       *s;
-    int             max;
+len_printable(string_ty *s, int max)
 {
     const char      *cp;
     int             result;
@@ -77,10 +73,8 @@ len_printable(s, max)
 }
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
     char            *progname;
 
@@ -91,11 +85,8 @@ usage()
 }
 
 
-static string_ty *change_description_get _((change_ty *));
-
 static string_ty *
-change_description_get(cp)
-    change_ty       *cp;
+change_description_get(change_ty *cp)
 {
     cstate          cstate_data;
 
@@ -105,7 +96,7 @@ change_description_get(cp)
 
 
 void
-send()
+send(void)
 {
     string_ty       *original_filename = 0;
     int             original_filename_unlink;

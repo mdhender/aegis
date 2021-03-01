@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <output.h>
 
-output_ty *output_wrap_open _((output_ty *, int, int));
+output_ty *output_wrap_open(output_ty *, int, int);
 
 #endif /* LIBAEGIS_OUTPUT_WRAP_H */

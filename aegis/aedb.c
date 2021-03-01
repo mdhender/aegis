@@ -49,10 +49,8 @@
 #include <user.h>
 
 
-static void develop_begin_usage _((void));
-
 static void
-develop_begin_usage()
+develop_begin_usage(void)
 {
     char	    *progname;
 
@@ -74,19 +72,15 @@ develop_begin_usage()
 }
 
 
-static void develop_begin_help _((void));
-
 static void
-develop_begin_help()
+develop_begin_help(void)
 {
     help("aedb", develop_begin_usage);
 }
 
 
-static void develop_begin_list _((void));
-
 static void
-develop_begin_list()
+develop_begin_list(void)
 {
     string_ty	    *project_name;
 
@@ -131,10 +125,8 @@ develop_begin_list()
 }
 
 
-static void develop_begin_main _((void));
-
 static void
-develop_begin_main()
+develop_begin_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -442,7 +434,7 @@ develop_begin_main()
 
 
 void
-develop_begin()
+develop_begin(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

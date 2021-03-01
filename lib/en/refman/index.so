@@ -211,6 +211,13 @@ T}	T{
 .ad l
 aeib command
 T}
+aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aemeasure - simple file metrics
+T}
 aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
 .ad r
 
@@ -525,6 +532,20 @@ aegis -New
 T}	T{
 .ad l
 BRanch - create a new branch
+T}
+aemt(1)	\*[Page*Of*aemt(1)]	T{
+.ad r
+aegis -Make Transparent - make
+T}	T{
+.ad l
+branch file transparent
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent Undo - no longer make
+T}	T{
+.ad l
+branch file transparent
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
@@ -1429,6 +1450,13 @@ T}	T{
 .ad l
 file listing
 T}
+aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
+.ad r
+aemeasure - simple
+T}	T{
+.ad l
+file metrics
+T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
 aegis -MoVe
@@ -1484,6 +1512,20 @@ aegis -ReMove file - add
 T}	T{
 .ad l
 files to be deleted to a change
+T}
+aemt(1)	\*[Page*Of*aemt(1)]	T{
+.ad r
+aegis -Make Transparent - make branch
+T}	T{
+.ad l
+file transparent
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent Undo - no longer make branch
+T}	T{
+.ad l
+file transparent
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
@@ -1982,12 +2024,54 @@ T}	T{
 .ad l
 locks - how locking works, and which commands use them
 T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent Undo - no
+T}	T{
+.ad l
+longer make branch file transparent
+T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
 aegis -clone -
 T}	T{
 .ad l
 make an exact copy of a change
+T}
+aemt(1)	\*[Page*Of*aemt(1)]	T{
+.ad r
+aegis -Make Transparent -
+T}	T{
+.ad l
+make branch file transparent
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent Undo - no longer
+T}	T{
+.ad l
+make branch file transparent
+T}
+aemt(1)	\*[Page*Of*aemt(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+Make Transparent - make branch file transparent
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+Make Transparent Undo - no longer make branch file transparent
+T}
+aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
+.ad r
+aemeasure - simple file
+T}	T{
+.ad l
+metrics
 T}
 aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
 .ad r
@@ -2247,6 +2331,13 @@ aegis -
 T}	T{
 .ad l
 New Test Undo - remove new tests from a change
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent Undo -
+T}	T{
+.ad l
+no longer make branch file transparent
 T}
 ae_c(1)	\*[Page*Of*ae_c(1)]	T{
 .ad r
@@ -2990,6 +3081,13 @@ T}	T{
 .ad l
 sets, using TCL/TK
 T}
+aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
+.ad r
+aemeasure -
+T}	T{
+.ad l
+simple file metrics
+T}
 aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
 .ad r
 aeannotate - annotated
@@ -3235,12 +3333,47 @@ T}	T{
 .ad l
 tool for reviewing Aegis change sets, using TCL/TK
 T}
+aemt(1)	\*[Page*Of*aemt(1)]	T{
+.ad r
+aegis -Make Transparent - make branch file
+T}	T{
+.ad l
+transparent
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent Undo - no longer make branch file
+T}	T{
+.ad l
+transparent
+T}
+aemt(1)	\*[Page*Of*aemt(1)]	T{
+.ad r
+aegis -Make
+T}	T{
+.ad l
+Transparent - make branch file transparent
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make
+T}	T{
+.ad l
+Transparent Undo - no longer make branch file transparent
+T}
 aecomp(1)	\*[Page*Of*aecomp(1)]	T{
 .ad r
 aegis - compare
 T}	T{
 .ad l
 two changes
+T}
+aemtu(1)	\*[Page*Of*aemtu(1)]	T{
+.ad r
+aegis -Make Transparent
+T}	T{
+.ad l
+Undo - no longer make branch file transparent
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r

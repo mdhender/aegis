@@ -28,7 +28,7 @@
 struct sub_context_ty;
 struct wstring_list_ty;
 
-struct wstring_ty *sub_plural_forms _((struct sub_context_ty *,
-    struct wstring_list_ty *));
+struct wstring_ty *sub_plural_forms(struct sub_context_ty *,
+    struct wstring_list_ty *);
 
 #endif /* LIBAEGIS_SUB_PLURAL_FORMS_H */

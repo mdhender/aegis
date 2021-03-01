@@ -36,11 +36,11 @@ struct line_list_t
     line_t	    *item;
 };
 
-void line_list_constructor _((line_list_t *));
-void line_list_destructor _((line_list_t *));
-void line_list_clear _((line_list_t *));
-void line_list_delete _((line_list_t *, size_t, size_t));
-void line_list_insert _((line_list_t *, size_t, struct change_ty *,
-    struct string_ty *));
+void line_list_constructor(line_list_t *);
+void line_list_destructor(line_list_t *);
+void line_list_clear(line_list_t *);
+void line_list_delete(line_list_t *, size_t, size_t);
+void line_list_insert(line_list_t *, size_t, struct change_ty *,
+    struct string_ty *);
 
 #endif /* AEANNOTATE_LINE_LIST_H */

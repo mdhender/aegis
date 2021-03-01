@@ -50,8 +50,8 @@ struct stat; /* forward */
   * for its member file names, relative to the stack provided.  Members
   * present in more than one directory will only be mentioned once.
   */
-void dir_stack_readdir _((string_list_ty *stack, string_ty *path,
-    string_list_ty *result));
+void dir_stack_readdir(string_list_ty *stack, string_ty *path,
+    string_list_ty *result);
 
 /**
   * The dir_stack_walk_callback_t type is the type for the callback of
@@ -81,9 +81,9 @@ void dir_stack_readdir _((string_list_ty *stack, string_ty *path,
   * top-level symbolic link obscuring the file, the TOP_LEVEL_SYMLINK
   * bit will be set.
   */
-typedef void (*dir_stack_walk_callback_t)_((void *arg,
+typedef void (*dir_stack_walk_callback_t)(void *arg,
     dir_stack_walk_message_t msg, string_ty *relpath, struct stat *statbuf,
-    int depth, int ignore_symlinks));
+    int depth, int ignore_symlinks);
 
 /**
   * The dir_stack_walk function is used to recursively walk a directory
@@ -109,8 +109,8 @@ typedef void (*dir_stack_walk_callback_t)_((void *arg,
   * symbolic link, otherwise it will be called with information about
   * the shallowest non-symlink.
   */
-void dir_stack_walk _((string_list_ty *viewpath, string_ty *path,
-    dir_stack_walk_callback_t callback, void *arg, int ignore_symlinks));
+void dir_stack_walk(string_list_ty *viewpath, string_ty *path,
+    dir_stack_walk_callback_t callback, void *arg, int ignore_symlinks);
 
 /**
   * The dir_stack_find function is used to locate a file in the viewpath.
@@ -140,9 +140,9 @@ void dir_stack_walk _((string_list_ty *viewpath, string_ty *path,
   * was specified, and there was a top-level symbolic link obscuring
   * the file, the TOP_LEVEL_SYMLINK bit will be set.
   */
-string_ty *dir_stack_find _((string_list_ty *viewpath, size_t start_pos,
+string_ty *dir_stack_find(string_list_ty *viewpath, size_t start_pos,
 	string_ty *path, struct stat *statbuf, int *depth,
-	int ignore_symlinks));
+	int ignore_symlinks);
 
 /**
   * The dir_stack_stat function is almost identical to the dir_stat_find
@@ -170,8 +170,8 @@ string_ty *dir_stack_find _((string_list_ty *viewpath, size_t start_pos,
   * was specified, and there was a top-level symbolic link obscuring
   * the file, the TOP_LEVEL_SYMLINK bit will be set.
   */
-void dir_stack_stat _((string_list_ty *viewpath, string_ty *filename,
-	struct stat *statbuf, int *depth, int ignore_symlinks));
+void dir_stack_stat(string_list_ty *viewpath, string_ty *filename,
+	struct stat *statbuf, int *depth, int ignore_symlinks);
 
 /**
   * The dir_stack_relative function is used to scan a view path and return
@@ -184,6 +184,6 @@ void dir_stack_stat _((string_list_ty *viewpath, string_ty *filename,
   *
   * The `abspath' argument is the absolute path to be unresolved.
   */
-string_ty *dir_stack_relative _((string_list_ty *viewpath, string_ty *abspath));
+string_ty *dir_stack_relative(string_list_ty *viewpath, string_ty *abspath);
 
 #endif /* LIBAEGIS_DIR_STACK_H */

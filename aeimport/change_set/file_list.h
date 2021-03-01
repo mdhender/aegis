@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,15 +28,15 @@
 typedef struct change_set_file_list_ty change_set_file_list_ty;
 struct change_set_file_list_ty
 {
-	size_t		length;
-	size_t		maximum;
-	change_set_file_ty *item;
+    size_t          length;
+    size_t	    maximum;
+    change_set_file_ty *item;
 };
 
-void change_set_file_list_constructor _((change_set_file_list_ty *));
-void change_set_file_list_destructor _((change_set_file_list_ty *));
-void change_set_file_list_append _((change_set_file_list_ty *, string_ty *,
-	string_ty *, change_set_file_action_ty, string_list_ty *));
-void change_set_file_list_validate _((change_set_file_list_ty *));
+void change_set_file_list_constructor(change_set_file_list_ty *);
+void change_set_file_list_destructor(change_set_file_list_ty *);
+void change_set_file_list_append(change_set_file_list_ty *, string_ty *,
+    string_ty *, change_set_file_action_ty, string_list_ty *);
+void change_set_file_list_validate(change_set_file_list_ty *);
 
 #endif /* AEIMPORT_CHANGE_SET_FILE_LIST_H */

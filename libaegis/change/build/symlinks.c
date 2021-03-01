@@ -46,12 +46,8 @@ struct slink_info_ty
 static string_ty *dot;
 
 
-static void os_symlink_repair _((string_ty *, string_ty	*));
-
 static void
-os_symlink_repair(value, filename)
-    string_ty	*filename;
-    string_ty	*value;
+os_symlink_repair(string_ty *value, string_ty *filename)
 {
     string_ty   *s;
 
@@ -99,17 +95,9 @@ os_symlink_repair(value, filename)
  *		development directory (or integration directory).
  */
 
-static void maintain _((void *, dir_stack_walk_message_t, string_ty *,
-    struct stat *, int, int));
-
 static void
-maintain(p, msg, path, st, depth, ignore_symlinks)
-    void            *p;
-    dir_stack_walk_message_t msg;
-    string_ty       *path;
-    struct stat     *st;
-    int             depth;
-    int             ignore_symlinks;
+maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
+    struct stat *st, int depth, int ignore_symlinks)
 {
     slink_info_ty   *sip;
     string_ty       *dd_abs;
@@ -250,7 +238,7 @@ maintain(p, msg, path, st, depth, ignore_symlinks)
 	{
 	    trace(("minimum\n"));
 	    user_become_undo();
-	    p_src = project_file_find(sip->cp->pp, path);
+	    p_src = project_file_find(sip->cp->pp, path, view_path_simple);
 	    p_src_set = 1;
 	    user_become(sip->up);
 	    if (!p_src)
@@ -261,8 +249,6 @@ maintain(p, msg, path, st, depth, ignore_symlinks)
 	    &&
 		(
 		    p_src->action == file_action_remove
-		||
-		    p_src->about_to_be_created_by
 		||
 		    p_src->deleted_by
 		)
@@ -292,7 +278,7 @@ maintain(p, msg, path, st, depth, ignore_symlinks)
 	if (!p_src_set)
 	{
 	    user_become_undo();
-	    p_src = project_file_find(sip->cp->pp, path);
+	    p_src = project_file_find(sip->cp->pp, path, view_path_simple);
 	    user_become(sip->up);
 	    p_src_set = 1;
 	}
@@ -302,8 +288,6 @@ maintain(p, msg, path, st, depth, ignore_symlinks)
 	&&
 	    (
 		p_src->action == file_action_remove
-	    ||
-		p_src->about_to_be_created_by
 	    ||
 		p_src->deleted_by
 	    )
@@ -350,11 +334,8 @@ maintain(p, msg, path, st, depth, ignore_symlinks)
  */
 
 void
-change_create_symlinks_to_baseline(cp, pp, up, minimum)
-    change_ty       *cp;
-    project_ty      *pp;
-    user_ty         *up;
-    int             minimum;
+change_create_symlinks_to_baseline(change_ty *cp, project_ty *pp, user_ty *up,
+    int minimum)
 {
     slink_info_ty   si;
 
@@ -396,17 +377,9 @@ change_create_symlinks_to_baseline(cp, pp, up, minimum)
 }
 
 
-static void rsltbl _((void *, dir_stack_walk_message_t, string_ty *,
-    struct stat *, int, int));
-
 static void
-rsltbl(p, msg, path, st, depth, ignore_symlinks)
-    void            *p;
-    dir_stack_walk_message_t msg;
-    string_ty       *path;
-    struct stat     *st;
-    int             depth;
-    int             ignore_symlinks;
+rsltbl(void *p, dir_stack_walk_message_t msg, string_ty *path,
+    struct stat *st, int depth, int ignore_symlinks)
 {
     slink_info_ty   *sip;
     string_ty       *dest;
@@ -446,14 +419,11 @@ rsltbl(p, msg, path, st, depth, ignore_symlinks)
 
 
 void
-change_remove_symlinks_to_baseline(cp, pp, up)
-    change_ty       *cp;
-    project_ty      *pp;
-    user_ty         *up;
+change_remove_symlinks_to_baseline(change_ty *cp, project_ty *pp, user_ty *up)
 {
     slink_info_ty   si;
 
-    trace(("change_remove_symlinks_to_baseline(cp = %8.8lX)\n{\n" /*} */ ,
+    trace(("change_remove_symlinks_to_baseline(cp = %8.8lX)\n{\n",
 	(long)cp));
     assert(cp->reference_count >= 1);
     change_verbose(cp, 0, i18n("removing symbolic links to baseline"));

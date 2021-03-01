@@ -29,6 +29,6 @@ extern int cxx_warning;
 extern int warning;
 extern int limit;
 
-void check _((const char *filename));
+void check(const char *filename);
 
 #endif /* CKLINLEN_CHECK_H */

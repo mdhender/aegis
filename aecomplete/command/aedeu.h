@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aedeu _((void));
+command_ty *command_aedeu(void);
 
 #endif /* AECOMPLETE_COMMAND_AEDEU_H */

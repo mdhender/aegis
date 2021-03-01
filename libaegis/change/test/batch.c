@@ -82,7 +82,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	}
 	else
 	{
-	    src_data = project_file_find(cp->pp, fn);
+	    src_data = project_file_find(cp->pp, fn, view_path_simple);
 	    assert(src_data);
 	    fn_abs = project_file_path(cp->pp, fn);
 	}
@@ -135,7 +135,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	file_name = wlp->string[j];
 	src_data = change_file_find(cp, file_name);
 	if (!src_data)
-	    src_data = project_file_find(cp->pp, file_name);
+	    src_data = project_file_find(cp->pp, file_name, view_path_simple);
 	assert(src_data);
 	if (src_data && src_data->usage == file_usage_manual_test)
 	{
@@ -274,7 +274,13 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	/*
 	 * add result to list
 	 */
-	batch_result_list_append(result, p->file_name, p->exit_status);
+	batch_result_list_append
+	(
+	    result,
+	    p->file_name,
+	    p->exit_status,
+	    p->architecture
+	);
 
 	/*
 	 * emit verbose messages

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,141 +37,127 @@
 
 enum
 {
-	arglex_token_input,
-	arglex_token_output
+    arglex_token_input,
+    arglex_token_output
 };
 
 
 static arglex_table_ty argtab[] =
 {
-	{ "-Input", arglex_token_input, },
-	{ "-Output", arglex_token_output, },
-	{ 0 }
+    { "-Input", arglex_token_input, },
+    { "-Output", arglex_token_output, },
+    { 0 }
 };
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
-	const char	*progname;
+    const char      *progname;
 
-	progname = progname_get();
-	fprintf(stderr, "Usage: %s -o [ <infile> [ <outfile> ]]\n", progname);
-	exit(1);
+    progname = progname_get();
+    fprintf(stderr, "Usage: %s -o [ <infile> [ <outfile> ]]\n", progname);
+    exit(1);
 }
 
 
-static void test_input _((string_ty *, string_ty *));
-
 static void
-test_input(ifn, ofn)
-	string_ty	*ifn;
-	string_ty	*ofn;
+test_input(string_ty *ifn, string_ty *ofn)
 {
-	input_ty	*ifp;
-	output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
-	os_become_orig();
-	ifp = input_file_open(ifn);
-	ifp = input_gunzip(ifp);
-	ofp = output_file_binary_open(ofn);
-	input_to_output(ifp, ofp);
-	input_delete(ifp);
-	output_delete(ofp);
+    os_become_orig();
+    ifp = input_file_open(ifn);
+    ifp = input_gunzip(ifp);
+    ofp = output_file_binary_open(ofn);
+    input_to_output(ifp, ofp);
+    input_delete(ifp);
+    output_delete(ofp);
 }
 
 
-static void test_output _((string_ty *, string_ty *));
-
 static void
-test_output(ifn, ofn)
-	string_ty	*ifn;
-	string_ty	*ofn;
+test_output(string_ty *ifn, string_ty *ofn)
 {
-	input_ty	*ifp;
-	output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
-	os_become_orig();
-	ifp = input_file_open(ifn);
-	ifp = input_crlf(ifp, 1);
-	ofp = output_file_text_open(ofn);
-	ofp = output_gzip(ofp);
-	input_to_output(ifp, ofp);
-	input_delete(ifp);
-	output_delete(ofp);
+    os_become_orig();
+    ifp = input_file_open(ifn);
+    ifp = input_crlf(ifp, 1);
+    ofp = output_file_text_open(ofn);
+    ofp = output_gzip(ofp);
+    input_to_output(ifp, ofp);
+    input_delete(ifp);
+    output_delete(ofp);
 }
 
-
-int main _((int, char **));
 
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
-	string_ty	*ifn;
-	string_ty	*ofn;
-	void		(*func)_((string_ty *, string_ty *));
+    string_ty       *ifn;
+    string_ty       *ofn;
+    void            (*func)(string_ty *, string_ty *);
 
-	arglex_init(argc, argv, argtab);
-	str_initialize();
-	arglex();
-	os_become_init_mortal();
+    arglex_init(argc, argv, argtab);
+    str_initialize();
+    arglex();
+    os_become_init_mortal();
 
-	ifn = 0;
-	ofn = 0;
-	func = 0;
-	while (arglex_token != arglex_token_eoln)
+    ifn = 0;
+    ofn = 0;
+    func = 0;
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
 	{
-		switch (arglex_token)
-		{
-		default:
-			usage();
+	default:
+	    usage();
 
-		case arglex_token_stdio:
-			if (!ifn)
-				ifn = str_from_c("");
-			else if (!ofn)
-				ofn = str_from_c("");
-			else
-				usage();
-			break;
-
-		case arglex_token_string:
-			if (!ifn)
-				ifn = str_from_c(arglex_value.alv_string);
-			else if (!ofn)
-				ofn = str_from_c(arglex_value.alv_string);
-			else
-				usage();
-			break;
-
-		case arglex_token_input:
-			if (func)
-			{
-				too_many:
-				error_raw("too many test functions specified");
-				usage();
-			}
-			func = test_input;
-			break;
-
-		case arglex_token_output:
-			if (func)
-				goto too_many;
-			func = test_output;
-			break;
-		}
-		arglex();
-	}
-	if (!func)
-	{
-		error_raw("no test function specified");
+	case arglex_token_stdio:
+	    if (!ifn)
+		ifn = str_from_c("");
+	    else if (!ofn)
+		ofn = str_from_c("");
+	    else
 		usage();
+	    break;
+
+	case arglex_token_string:
+	    if (!ifn)
+		ifn = str_from_c(arglex_value.alv_string);
+	    else if (!ofn)
+		ofn = str_from_c(arglex_value.alv_string);
+	    else
+		usage();
+	    break;
+
+	case arglex_token_input:
+	    if (func)
+	    {
+		too_many:
+		error_raw("too many test functions specified");
+		usage();
+	    }
+	    func = test_input;
+	    break;
+
+	case arglex_token_output:
+	    if (func)
+		goto too_many;
+	    func = test_output;
+	    break;
 	}
-	func(ifn, ofn);
-	exit(0);
-	return 0;
+	arglex();
+    }
+    if (!func)
+    {
+	error_raw("no test function specified");
+	usage();
+    }
+    func(ifn, ofn);
+    exit(0);
+    return 0;
 }

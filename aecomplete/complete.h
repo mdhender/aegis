@@ -33,7 +33,7 @@ struct complete_ty
     struct complete_vtbl_ty *vptr;
 };
 
-void complete_perform _((complete_ty *, struct shell_ty *));
-void complete_delete _((complete_ty *));
+void complete_perform(complete_ty *, struct shell_ty *);
+void complete_delete(complete_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_H */

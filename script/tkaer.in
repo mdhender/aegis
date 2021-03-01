@@ -31,7 +31,8 @@ exec wish $0 -- ${1+"$@"}
 
 # TODO:
 # - Is it worth extracting the common code between edit_review_comments etc.
-# - split out some of the more general stuff like change details viewer into seperate file.
+# - split out some of the more general stuff like change details viewer into
+#   seperate file.
 # - a serious tidy up. (clean up some of the binding spaghetti)
 # - add more comments.
 
@@ -148,7 +149,7 @@ proc aerpass { } {
     if { $comments_edited } {
 	# Prompt before quitting.
 	set result [tk_dialog .dlg "aerpass" \
-		"Review comments were edited. Are you sure you want to pass the change?" \
+      "Review comments were edited. Are you sure you want to pass the change?" \
 		question \
 		0 "Continue" "Cancel"]
 
@@ -179,7 +180,7 @@ proc aerfail { } {
     if { !$comments_edited } {
 	# Prompt before quitting.
 	set result [tk_dialog .dlg "aerpass" \
-		"No Review comments were entered. Are you sure you want to fail the change?" \
+  "No Review comments were entered. Are you sure you want to fail the change?" \
 		question \
 		0 "Continue" "Cancel"]
 
@@ -388,9 +389,8 @@ proc process_config_file {} {
 	# defaults:
 	puts $fd "# TKAER CONFIGURATION FILE."
 	puts $fd "# -------------------------\n"
-	puts $fd "# Visual difference tool."
-	puts $fd "# This is used for comparing modified or moved files with older"
-	puts $fd "# versions."
+        puts $fd "# Visual difference tool.  This is used for comparing"
+        puts $fd "# modified or moved files with older versions."
 	if {[file exists $bindir/tkdiff]} {
 	    set cmd $bindir/tkdiff
 	} else {
@@ -406,17 +406,23 @@ proc process_config_file {} {
 	    set cmd xterm
 	}
 	puts $fd [list set pref(view_command) "$cmd -e /bin/vi -R"]
-	puts $fd "#set pref(view_command) \"/usr/bin/gnome-terminal -x /bin/vi\""
+	puts $fd \
+	    "#set pref(view_command) \"/usr/bin/gnome-terminal -x /bin/vi\""
 	puts $fd "#set pref(view_command) \"/usr/bin/emacs\""
 	puts $fd ""
 	puts $fd "# Text Viewer/Editor Font."
-	puts $fd "# Font used by the change details viewer and review comments editor."
+	puts $fd \
+	  "# Font used by the change details viewer and review comments editor."
 	puts $fd "set pref(view_edit_font) \"*-fixed-medium-r-normal-*-12-*\""
 	puts $fd "#set pref(view_edit_font) \"fixed\""
-	puts $fd "#set pref(view_edit_font) \"*-lucidatypewriter-medium-r-normal-*-12-*\""
-	puts $fd "#set pref(view_edit_font) \"*-lucidatypewriter-medium-r-normal-*-14-*\""
-	puts $fd "#set pref(view_edit_font) \"*-courier-medium-r-normal-*-12-*\""
-	puts $fd "#set pref(view_edit_font) \"*-courier-medium-r-normal-*-14-*\""
+	puts $fd \
+       "#set pref(view_edit_font) \"*-lucidatypewriter-medium-r-normal-*-12-*\""
+	puts $fd \
+       "#set pref(view_edit_font) \"*-lucidatypewriter-medium-r-normal-*-14-*\""
+	puts $fd \
+	    "#set pref(view_edit_font) \"*-courier-medium-r-normal-*-12-*\""
+	puts $fd \
+	    "#set pref(view_edit_font) \"*-courier-medium-r-normal-*-14-*\""
 
 	close $fd
     }
@@ -497,9 +503,11 @@ proc view_change_details {parent} {
 
     # catch the output from 'ael cd' for all to see
     set ael_cf_output [read_pipe \
-	    [format "|aegis -list cd -v -project=%s -change=%s -no_pager -page_length=9999 2>@stdout" \
-	    $project_name $change_number] 0]
-    set title [format "tkaer - \"%s\" - Change \"%d\" Details" $project_name $change_number]
+	[format "|aegis -list cd -v -project=%s -change=%s -no_pager \
+-page_length=9999 2>@stdout" \
+	$project_name $change_number] 0]
+    set title [format "tkaer - \"%s\" - Change \"%d\" Details" \
+	$project_name $change_number]
 
 
     set w "$parent.change_details"
@@ -510,8 +518,8 @@ proc view_change_details {parent} {
     wm geometry $w  "80x30"
     wm iconbitmap $w @$datadir/aegis.icon
 
-    text $w.text -relief sunken -bd 2 -yscrollcommand "$w.fr.scroll set" -setgrid 1 \
-	    -height 30 -font $pref(view_edit_font) -highlightthickness 0
+    text $w.text -relief sunken -bd 2 -yscrollcommand "$w.fr.scroll set" \
+	-setgrid 1 -height 30 -font $pref(view_edit_font) -highlightthickness 0
     frame $w.fr -borderwidth 0
     scrollbar $w.fr.scroll -command "$w.text yview"
     pack $w.fr.scroll -side bottom -fill y -expand 1
@@ -532,7 +540,8 @@ proc view_change_details {parent} {
     bind $w.text <5> "$w.text yview scroll 6 units"
     bind $w <q> "destroy $w"
     bind $w <Q> "destroy $w"
-    bind $w <Destroy> "set change_details_is_displayed 0; $parent.buttons.details configure -relief raised"
+    bind $w <Destroy> "set change_details_is_displayed 0; \
+$parent.buttons.details configure -relief raised"
 }
 
 proc handle_details_button  {parent} {
@@ -556,7 +565,8 @@ proc edit_review_comments {parent} {
     global comment_text
     global pref
 
-    set title [format "tkaer - \"%s\" - Change \"%d\" Details" $project_name $change_number]
+    set title [format "tkaer - \"%s\" - Change \"%d\" Details" \
+	$project_name $change_number]
 
     set w "$parent.review_comments"
 
@@ -567,8 +577,8 @@ proc edit_review_comments {parent} {
     wm iconbitmap $w @$datadir/aegis.icon
 
     frame $w.menubar -relief raised -bd 2
-    text $w.text -relief sunken -bd 2 -yscrollcommand "$w.fr.scroll set" -setgrid 1 \
-	    -height 30 -font $pref(view_edit_font) -highlightthickness 0
+    text $w.text -relief sunken -bd 2 -yscrollcommand "$w.fr.scroll set" \
+	-setgrid 1 -height 30 -font $pref(view_edit_font) -highlightthickness 0
     frame $w.fr -borderwidth 0
     scrollbar $w.fr.scroll -command "$w.text yview"
     pack $w.fr.scroll -side bottom -fill y -expand 1
@@ -577,9 +587,8 @@ proc edit_review_comments {parent} {
     menubutton $w.menubar.file -text File -menu $w.menubar.file.menu
     menu $w.menubar.file.menu -tearoff 0
     $w.menubar.file.menu add command -label "Quit & Save" -command \
-	    "set comments_edited 1;set comment_text \[$w.text get 0.0 end\];destroy $w"
-    $w.menubar.file.menu add command -label Quit -command \
-	    "destroy $w"
+     "set comments_edited 1;set comment_text \[$w.text get 0.0 end\];destroy $w"
+    $w.menubar.file.menu add command -label Quit -command "destroy $w"
     pack $w.menubar.file -side left
     pack $w.text -expand 1 -fill both
     $w.text insert 0.0 $comment_text
@@ -592,7 +601,8 @@ proc edit_review_comments {parent} {
     bind $w <End> "$w.text see end"
     bind $w.text <4> "$w.text yview scroll -6 units"
     bind $w.text <5> "$w.text yview scroll 6 units"
-    bind $w <Destroy> "set review_comments_is_displayed 0; $parent.buttons.comments configure -relief raised"
+    bind $w <Destroy> "set review_comments_is_displayed 0; \
+$parent.buttons.comments configure -relief raised"
 }
 
 proc handle_comments_button  {parent} {
@@ -754,7 +764,8 @@ set review_comments_is_displayed 0
 frame $w.buttons
 button $w.buttons.finished -text "Finished" -command $finished_command
 
-button $w.buttons.comments -text "Comments" -command { handle_comments_button $w}
+button $w.buttons.comments -text "Comments" \
+    -command { handle_comments_button $w}
 
 button $w.buttons.details -text "Details" -command {handle_details_button $w}
 

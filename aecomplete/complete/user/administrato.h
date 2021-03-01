@@ -27,7 +27,7 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_user_administrator _((struct project_ty *));
-complete_ty *complete_user_administrator_not _((struct project_ty *));
+complete_ty *complete_user_administrator(struct project_ty *);
+complete_ty *complete_user_administrator_not(struct project_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_USER_ADMINISTRATO_H */

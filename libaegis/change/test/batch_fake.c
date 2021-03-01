@@ -131,7 +131,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	}
 	else
 	{
-	    src_data = project_file_find(cp->pp, fn);
+	    src_data = project_file_find(cp->pp, fn, view_path_simple);
 	    assert(src_data);
 	    fn_abs = project_file_path(cp->pp, fn);
 	}
@@ -150,7 +150,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	/*
 	 * remember what happened
 	 */
-	batch_result_list_append(result, fn, exit_status);
+	batch_result_list_append(result, fn, exit_status, 0);
 
 	/*
 	 * verbose progress message

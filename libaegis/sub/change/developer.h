@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 struct sub_context_ty; /* forward */
 struct wstring_list_ty; /* forward */
 
-struct wstring_ty *sub_developer _((struct sub_context_ty *,
-	struct wstring_list_ty *arg));
+struct wstring_ty *sub_developer(struct sub_context_ty *,
+	struct wstring_list_ty *arg);
 
 #endif /* LIBAEGIS_SUB_CHANGE_DEVELOPER_H */

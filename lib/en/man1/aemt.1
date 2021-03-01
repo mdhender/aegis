@@ -1,0 +1,121 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aemt command.
+.\"
+.so z_name.so
+.TH "\*(n) -Make_Transparent" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) -Make_Transparent \- make branch file transparent
+.XX "aemt(1)" "make branch file transparent"
+.SH SYNOPSIS
+.B \*(n)
+.B \-Make_Transparent
+[
+.IR option \&...
+]
+.IR filename \&...
+.br
+.B \*(n)
+.B -List
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n) -Make_Transparent"
+command is used to
+add a file to the change which will result in the named file being made
+transparent in the branch when the change is integrated.
+The version of the project file from the deeper branch will then show through.
+.PP
+You may name a directory to make all files
+in that directory tree transparent.
+It is an error if there are no relevant files.
+.SS Branch \fIvs\fP Change
+The \fIaecpu\fP(1) command may only be applied to a change.  If you
+wish to perform the same operation on a branch, use the \fIaemt\fP(1)
+command, through the agency of a change.
+.so z_intuit.so
+.SS Process Side Effects
+This command will cancel any build or test registrations,
+because changing the change file list logically invalidates them.
+.\" If the project
+.\" .I config
+.\" file was made transparent,
+.\" any diff registration will also be canceled.
+.\" .SS Notification
+.\" The \fIcopy_file_undo_command\fP in the project \fIconfig\fP file is
+.\" run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
+.\" and if there has been an integration recently.  See \fIaepconf\fP(5)
+.\" for more information.
+.SH OPTIONS
+The following options are understood:
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aemt '\*(n) -mt \e!* -v'
+sh$	aemt(){\*(n) -mt "$@" -v}
+.fi
+.PP
+This command is dedicated to my wife, Mary-Therese.  When I was trying
+to explain what this command did, she said "I had one of those on my
+bicycle when I was young, but it fell off".
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if the file is not present in the immediate branch.
+.br
+It is an error if the file is present in the immediate branch, but is
+not also present in a deeper branch.
+.br
+It is an error if the file is only present in the trunk branch.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecpu (1)
+uncopy copy files from a change
+.TP 8n
+.IR aemtu (1)
+cease making branch files transparent
+.so z_cr.so

@@ -25,6 +25,6 @@
 
 #include <complete.h>
 
-complete_ty *complete_filename _((int));
+complete_ty *complete_filename(int);
 
 #endif /* AECOMPLETE_COMPLETE_FILENAME_H */

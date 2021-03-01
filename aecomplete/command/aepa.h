@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aepa _((void));
+command_ty *command_aepa(void);
 
 #endif /* AECOMPLETE_COMMAND_AEPA_H */

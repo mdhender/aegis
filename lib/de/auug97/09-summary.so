@@ -1,0 +1,158 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Zusammenfassung"
+Dieser Artikel erl\*:autert einige miteinander in Beziehung
+stehende Probleme und zeigt, dass es sich nicht, wie
+allgemein angenommen, um Make anhaftende
+Unzul\*:anglichkeiten handelt, sondern dass sie eine Folge
+davon sind, dass Make falsche Informationen eingegben
+wurden. Hier arbeitet das alte "Garbage in, Garbage
+out"-Prinzip (wo M\*:ull hineinkommt, kommt M\*:ull
+heraus). Der Fehler besteht darin, dass man das \f[CW]Makefile\fP
+in unvollst\*:andige Teilst\*:ucke zerlegt, denn Make kann nur
+mit einem vollst\*:andigen DAG fehlerfrei arbeiten.
+.LP
+Das erfordert ein Umdenken. In Verzeichnisb\*:aume werden
+lediglich Dateien gespeichert, in \f[CW]Makefiles\fP hingegen
+werden Hinweise auf die Informationen \*:uber die
+Beziehungen der Dateien untereinander
+gespeichert. Bringen Sie das nicht durcheinander, denn
+es ist genauso wichtig die Beziehungen zwischen Dateien
+in verschiedenen Verzeichnissen wiederzugeben, wie die
+Beziehungen zwischen Dateien im gleichen
+Verzeichniss. Daraus folgt, dass es genau ein \f[CW]Makefile\fP
+f\*:ur ein Projekt geben sollte, aber der Gro\(ssteil der
+Beschreibung kann man durch Verwendung von
+Make-Include-Dateien in den einzelnen Verzeichnissen,
+die die Teilmenge der Projektdateien in den jeweiligen
+Verzeichnissen beschreiben, handhaben. Dieses Vorgehen
+ist genauso modular, als w\*:are ein \f[CW]Makefile\fP in jedem
+Verzeichnis.
+.LP
+Es wurde gezeigt, dass bei Verwendung des
+Ganzprojekt-Make eine Entwicklungsproduktion und eine
+Vollproduktion gleich kurze Laufzeiten haben. Angesichts
+der gleichen Laufzeiten wiegen die durch die genaueren
+Abh\*:angigkeiten erzielten Vorteile umso schwerer und
+bewirken, dass dieser Prozess tats\*:achlich schneller und
+genauer l\*:auft, als wenn das rekursive Make angewendet
+w\*:urde.
+.nh 2 "Projekt\*:ubergreifende Abh\*:angigkeiten"
+In Unternehmen mit einer starken Neigung zur
+Mehrfachverwendung kann die Verwirklichung eines
+Ganzprojekt-Makes eine Herausforderung darstellen. Sich
+dieser Herausforderung zu stellen, mag erfordern, dass
+man sich einen Gesamteindruck der Situation verschafft.
+.IP \(bu 2n
+Es kann sein, dass ein Modul von zwei Programmen
+gemeinsam verwendet wird, weil die Programme nahe
+verwandt sind. Nat\*:urlich geh\*:oren die zwei Programme und
+das gemeinsam genutzte Modul zu demselben Projekt (das
+Modul kann auch unabh\*:angig sein, die Programme jedoch
+nicht). Die Abh\*:angigkeiten m\*:ussen ausdr\*:ucklich angegeben
+werden und \*:Anderungen des Moduls ziehen nach sich, dass
+beide Programme entsprechend neu \*:ubersetzt und neu
+gebunden werden m\*:ussen. Vereinigt man sie alle in einem
+einzigen Projekt, kann das Ganzprojekt-Make dies
+leisten.
+.IP \(bu 2n
+Es ist m\*:oglich, dass ein Modul von zwei Projekten
+gemeinsam genutzt wird, weil ihr Wirkungsbereich
+ineinander greift. M\*:oglicherweise ist Ihr Projekt
+gr\*:o\(sser, als Ihre gegenw\*:artige Verzeichnisstuktur
+aufnehmen kann. Die Abh\*:angigkeiten m\*:ussen ausdr\*:ucklich
+angegeben werden und \*:Anderungen am Modul ziehen nach
+sich, dass beide Pojekte entsprechend neu \*:ubersetzt und
+neu gebunden werden m\*:ussen. Vereinigt man sie alle in
+einem einzigen Projekt, kann das Ganzprojekt-Make dies
+leisten.
+.IP \(bu 2n
+Es ist normal, die Kanten zwischen Ihrem Projekt und
+ihrem Betriebssystem oder dritten installierten
+Werkzeugen wegzulassen. Das ist so normal, dass sie in
+den \f[CW]Makefiles\fP in diesem Artikel und bei den
+vordefinierten Regeln im Make-Programm ignoriert
+werden. Module, die von mehreren Projekten gemeinsam
+genutzt werden, k\*:onnten in diese Kategorie
+fallen. Werden sie ge\*:andert, bauen Sie Ihre Projekte
+extra neu oder beziehen die \*:Anderungen stillschweigend
+bei der n\*:achsten Produktion mit ein. In beiden F\*:allen
+geben Sie die Abh\*:angigkeiten nicht ausdr\*:ucklich an und
+das Ganzprojekt-Make findet keine Anwendung.
+.IP \(bu 2n
+Es ist der Wiederverwendung m\*:oglicherweise dienlich,
+wenn das Modul als Schablone verwendet und Abweichnungen
+zwischen den Projekten als normal angesehen
+werden. Kopiert man des Modul f\*:ur jedes Projekt, k\*:onnte
+man die Abh\*:angigkeiten ausdr\*:ucklich angeben. Es hat
+jedoch einen zus\*:atzlichen Aufwand zur Folge, wenn an dem
+gemeinsamen Teil \*:Anderungen erforderlich werden.
+.LP
+In einer von Mehrfachverwendung stark gepr\*:agten Umgebung
+wird das Strukturieren von Abh\*:angigkeiten zu einer \*:Ubung
+in Risikomanagement. Welche Gefahr besteht, dass
+fehlende St\*:ucke des DAGs Ihr Pojekt sch\*:adigen?  Wie
+wichtig ist es, neu zu bauen, wenn ein Modul sich
+ver\*:andert? Welches sind die Folgen, wenn es nicht
+automatisch neu produziert wird? Woher wissen Sie , wann
+ein Neubau notwendig ist, wenn Abh\*:angigkeiten nicht
+ausdr\*:ucklich genannt sind? Welches sind die
+Konsequenzen, wenn man vergisst, neu zu bauen? ...
+.nh 2 "Die Rendite"
+Einige der Techniken, die in diesem Artikel beschrieben
+wurden, beschleunigen ihren Buildvorgang sogar dann,
+wenn Sie rekursives Make beibehalten. Aber das ist nicht
+das Anliegen dieses Artikels, eher ein n\*:utzlicher
+Umweg. Die Hauptaussage ist, dass Sie korrektere
+Produktionen Ihres Projekts erhalten, wenn Sie das
+Ganzprojekt-Make anstatt des rekursiven Makes anwenden.
+.IP \(bu 2n
+Make bedarf nicht mehr und oft sogar weniger Zeit, um
+herauszufinden, das es nichts zu tun braucht.
+.IP \(bu 2n
+Die gesamte Eingabe f\*:ur Make ist nicht umfangreicher und
+komplexer, oft sogar weniger umfangreich und weniger
+komplex.
+.IP \(bu 2n
+Im Ganzen sind die Eingabedaten f\*:ur Make nicht weniger
+modular, als bei Anwendung des rekursiven Makes.
+.IP \(bu 2n
+Die Pflege des \f[CW]Makefiles\fP ist nicht aufwendiger, oft
+sogar geringer.
+.LP
+Die angeblichen Nachteile der Anwendung eines
+Ganzprojekt-Makes gegen\*:uber dem rekursiven Make sind oft
+nicht \*:uberpr\*:uft. Wieviel Zeit wird damit verbracht,
+herauszufinden, warum Make etwas Unerwartetes getan hat?
+Wieviel Zeit wird damit verbracht, an dem Build-Prozess
+herumzubasteln? Diese T\*:atigkeiten werden oft als
+normaler Entwicklungsaufwand angesehen.
+.LP
+Die Projektproduktion ist eine wesentliche
+T\*:atigkeit. Wenn sie schlecht funktioniert, werden auch
+die Entwicklung, die Fehlerbehebung und das Testen in
+Mitleidenschaft gezogen. Die Projektproduktion sollte so
+einfach sein, dass sie der neuste Mitarbeiter - ohne eine
+noch so kurze schriftliche Anleitung - sofort
+durchf\*:uhren kann. Sie sollte so einfach sein, dass sie
+so gut wie keinen Entwicklungsaufwand erfordert. Ist Ihr
+Produktionsprozess so einfach?

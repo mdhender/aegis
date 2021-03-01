@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,10 @@
 struct symtab_ty;
 struct string_ty;
 
-rpt_value_ty *rpt_value_struct _((struct symtab_ty *));
-struct symtab_ty *rpt_value_struct_query _((rpt_value_ty *));
-rpt_value_ty *rpt_value_struct_lookup _((rpt_value_ty *, struct string_ty *));
-void rpt_value_struct__set _((rpt_value_ty *, struct string_ty *,
-	rpt_value_ty *));
+rpt_value_ty *rpt_value_struct(struct symtab_ty *);
+struct symtab_ty *rpt_value_struct_query(rpt_value_ty *);
+rpt_value_ty *rpt_value_struct_lookup(rpt_value_ty *, struct string_ty *);
+void rpt_value_struct__set(rpt_value_ty *, struct string_ty *,
+	rpt_value_ty *);
 
 #endif /* AEGIS_AER_VALUE_STRUCT_H */

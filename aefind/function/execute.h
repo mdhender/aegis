@@ -27,6 +27,6 @@
 
 struct tree_list_ty;
 
-struct tree_ty *function_execute _((struct tree_list_ty *));
+struct tree_ty *function_execute(struct tree_list_ty *);
 
 #endif /* AEFIND_FUNCTION_EXECUTE_H */

@@ -41,7 +41,7 @@ Branching generalizes this change model,
 by allowing the baseline to be treated as a change,
 or the ability to treat a change as a baseline.
 .PS
-line from (0,0) to (2.5,0) "" "Baseline"
+line from (0,0) to (2.5,0) "" "Trunk Baseline"
 L1: line from (0.25,0) to (0.375,0.125) to (2.125,0.125) to (2.25,0)
 "Branch 1" above at (0.5,0.125)
 L2: line from (0.875,0.125) to (1,0.25) to (1.25,0.25) to (1.375,0.125)
@@ -50,21 +50,41 @@ L3: line from (1.5,0.125) to (1.625,0.25) to (1.875,0.25) to (2,0.125)
 "1.2" above at (1.75,0.25)
 .PE
 .LP
+Since branchs are sometimes considered as a changes it is useful to
+expand on the differences. A branch, or trunk, baseline may have
+children which are either
+.I changes
+or deeper
+.I branches.
+From this perspective the difference is that nothing may be modified
+directly in a branch. A branch is an integrated baseline with all the
+associated protection. To modify a branch one must open a change
+under that branch.
+.LP
+Looking upward from a change under a branch, its
+.I parent
+is the branch baseline, and its
+.I grand parent
+is the
+.I parent
+of the branch. We will see this used later when we talk
+about ending a branch.
+.LP
 A significant feature of Aegis branches is that, because they are
 an extension of the
 .I change
-concept,
-they are expected to end,
-and be integrated back into
+concept, they are expected to end, and be integrated back into
 .I their
-baseline in time.
+baseline, or
+.I parent
+,in time.
 .LP
-The commonest case of this is in project releases.
+The most common case of this is in project releases.
 .LP
 A branch in the
 .I "being developed"
 state may have changes made to it,
-deeper branches.
+and/or deeper branches.
 This may recurse to any level.
 Once a branch is complete,
 no further deeper branches may be created from that branch.
@@ -112,6 +132,22 @@ T};foo
 .TE
 The last is a special case, to enable a project to be created with no
 default branches (it's also hard to get the empty string past the alias).
+.LP
+To add branching and release level management to an existing project
+on uses the \fIaenbr\fP(1) command at any level.
+Say we already have \fCfoo.1.0\fP, which represents version 1.0 of our
+software. One method of release level management would be to integrate
+\fIfoo.1.0\fP into its
+.I parent
+\fIfoo.1\fP and then do \fIaenbr -p foo.1\fP would create
+\fIfoo.1.1\fP representing version 1.1.
+Eventually we might want to make a major version release and would
+integrate \fIfoo.1\fP into its
+.I parent
+\fIfoo\fP and then do \fIaenbr -p foo\fP, which would create \fIfoo.2\fP.
+Then if we do \fIaenbr -p foo.2\fP we create \fIfoo.2.0\fP, for
+development of version 2.0 of our software.
+
 .nh 2 "Transition Using aenrls"
 .LP
 To convert a project from the old-style to the new branching style,

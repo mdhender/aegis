@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -63,10 +63,8 @@ static gonzo_ty **gonzo;
 static int	done_tail;
 
 
-static user_ty *gonzo_user _((void));
-
 static user_ty *
-gonzo_user()
+gonzo_user(void)
 {
     static user_ty  *u;
 
@@ -110,19 +108,15 @@ gonzo_user()
 }
 
 
-static int is_temporary _((string_ty *));
-
 static int
-is_temporary(s)
-    string_ty	    *s;
+is_temporary(string_ty *s)
 {
     return !!strstr(s->str_text, "/tmp/");
 }
 
 
 void
-gonzo_library_append(s)
-    char	    *s;
+gonzo_library_append(const char *s)
 {
     gonzo_ty	    *gp;
     string_ty	    *tmp;
@@ -163,11 +157,8 @@ gonzo_library_append(s)
 }
 
 
-static void lock_sync _((gonzo_ty *));
-
 static void
-lock_sync(gp)
-    gonzo_ty	    *gp;
+lock_sync(gonzo_ty *gp)
 {
     long	    n;
 
@@ -188,11 +179,8 @@ lock_sync(gp)
 }
 
 
-static gstate gonzo_gstate_get _((gonzo_ty *));
-
 static gstate
-gonzo_gstate_get(gp)
-    gonzo_ty	    *gp;
+gonzo_gstate_get(gonzo_ty *gp)
 {
     trace(("gonzo_gstate_get(gp = %08lX)\n{\n", (long)gp));
     lock_sync(gp);
@@ -257,11 +245,8 @@ gonzo_gstate_get(gp)
  *	foreign "root" users to the "unknown" user instead.
  */
 
-static void construct_library_directory _((gonzo_ty *));
-
 static void
-construct_library_directory(gp)
-    gonzo_ty	    *gp;
+construct_library_directory(gonzo_ty *gp)
 {
     int		    exists;
     string_ty	    *above;
@@ -328,11 +313,8 @@ construct_library_directory(gp)
 }
 
 
-static void gonzo_gstate_write_sub _((gonzo_ty *));
-
 static void
-gonzo_gstate_write_sub(gp)
-    gonzo_ty	    *gp;
+gonzo_gstate_write_sub(gonzo_ty *gp)
 {
     string_ty	    *filename_new;
     string_ty	    *filename_old;
@@ -373,10 +355,8 @@ gonzo_gstate_write_sub(gp)
 }
 
 
-static void do_tail _((void));
-
 static void
-do_tail()
+do_tail(void)
 {
     string_ty	    *s1;
     string_ty	    *s2;
@@ -487,11 +467,8 @@ do_tail()
 }
 
 
-static gonzo_ty *gonzo_nth _((size_t));
-
 static gonzo_ty *
-gonzo_nth(j)
-    size_t	    j;
+gonzo_nth(size_t j)
 {
     gonzo_ty	    *result;
 
@@ -508,7 +485,7 @@ gonzo_nth(j)
 
 
 void
-gonzo_gstate_write()
+gonzo_gstate_write(void)
 {
     size_t	    j;
     gonzo_ty	    *gp;
@@ -525,12 +502,8 @@ gonzo_gstate_write()
 }
 
 
-static string_ty *gonzo_project_home_path_sub _((gonzo_ty *, string_ty *));
-
 static string_ty *
-gonzo_project_home_path_sub(gp, name)
-    gonzo_ty	    *gp;
-    string_ty	    *name;
+gonzo_project_home_path_sub(gonzo_ty *gp, string_ty *name)
 {
     gstate	    gstate_data;
     size_t	    j;
@@ -563,8 +536,7 @@ gonzo_project_home_path_sub(gp, name)
 
 
 string_ty *
-gonzo_project_home_path_from_name(name)
-    string_ty	    *name;
+gonzo_project_home_path_from_name(string_ty *name)
 {
     gonzo_ty	    *gp;
     size_t	    j;
@@ -595,12 +567,8 @@ gonzo_project_home_path_from_name(name)
 }
 
 
-static string_ty *gonzo_alias_to_actual_sub _((gonzo_ty *, string_ty *));
-
 static string_ty *
-gonzo_alias_to_actual_sub(gp, name)
-    gonzo_ty	    *gp;
-    string_ty	    *name;
+gonzo_alias_to_actual_sub(gonzo_ty *gp, string_ty *name)
 {
     gstate	    gstate_data;
     size_t	    j;
@@ -634,8 +602,7 @@ gonzo_alias_to_actual_sub(gp, name)
 
 
 string_ty *
-gonzo_alias_to_actual(name)
-    string_ty	    *name;
+gonzo_alias_to_actual(string_ty *name)
 {
     gonzo_ty	    *gp;
     size_t	    j;
@@ -666,8 +633,7 @@ gonzo_alias_to_actual(name)
 
 
 void
-gonzo_project_list(result)
-    string_list_ty  *result;
+gonzo_project_list(string_list_ty *result)
 {
     size_t	    n;
     size_t	    j;
@@ -706,8 +672,7 @@ gonzo_project_list(result)
 
 
 void
-gonzo_alias_list(result)
-    string_list_ty  *result;
+gonzo_alias_list(string_list_ty *result)
 {
     size_t	    n;
     size_t	    j;
@@ -746,9 +711,7 @@ gonzo_alias_list(result)
 
 
 void
-gonzo_project_list_user(uname, result)
-    string_ty	    *uname;
-    string_list_ty  *result;
+gonzo_project_list_user(string_ty *uname, string_list_ty *result)
 {
     size_t	    n;
     size_t	    j;
@@ -805,8 +768,7 @@ gonzo_project_list_user(uname, result)
 
 
 void
-gonzo_project_add(pp)
-    project_ty	    *pp;
+gonzo_project_add(project_ty *pp)
 {
     gstate	    gstate_data;
     gstate_where    *addr_p;
@@ -830,9 +792,7 @@ gonzo_project_add(pp)
 
 
 void
-gonzo_alias_add(pp, name)
-    project_ty	    *pp;
-    string_ty	    *name;
+gonzo_alias_add(project_ty *pp, string_ty *name)
 {
     gstate	    gstate_data;
     gstate_where    *addr_p;
@@ -855,12 +815,8 @@ gonzo_alias_add(pp, name)
 }
 
 
-static int gonzo_project_delete_sub _((gonzo_ty *, project_ty *));
-
 static int
-gonzo_project_delete_sub(gp, pp)
-    gonzo_ty	    *gp;
-    project_ty	    *pp;
+gonzo_project_delete_sub(gonzo_ty *gp, project_ty *pp)
 {
     gstate	    gstate_data;
     size_t	    j;
@@ -910,12 +866,8 @@ gonzo_project_delete_sub(gp, pp)
 }
 
 
-static int is_leading_prefix _((string_ty *, string_ty *));
-
 static int
-is_leading_prefix(s1, s2)
-    string_ty	    *s1;
-    string_ty	    *s2;
+is_leading_prefix(string_ty *s1, string_ty *s2)
 {
     if (str_equal(s1, s2))
 	return 1;
@@ -930,12 +882,8 @@ is_leading_prefix(s1, s2)
 }
 
 
-static void gonzo_alias_delete_destination_sub _((gonzo_ty *, string_ty *));
-
 static void
-gonzo_alias_delete_destination_sub(gp, name)
-    gonzo_ty	    *gp;
-    string_ty	    *name;
+gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
 {
     gstate	    gstate_data;
     size_t	    j;
@@ -982,8 +930,7 @@ gonzo_alias_delete_destination_sub(gp, name)
 
 
 void
-gonzo_project_delete(pp)
-    project_ty	    *pp;
+gonzo_project_delete(project_ty *pp)
 {
     gonzo_ty	    *gp;
     long	    j;
@@ -1002,12 +949,8 @@ gonzo_project_delete(pp)
 }
 
 
-static int gonzo_alias_delete_sub _((gonzo_ty *, string_ty *));
-
 static int
-gonzo_alias_delete_sub(gp, name)
-    gonzo_ty	    *gp;
-    string_ty	    *name;
+gonzo_alias_delete_sub(gonzo_ty *gp, string_ty *name)
 {
     gstate	    gstate_data;
     size_t	    j;
@@ -1058,8 +1001,7 @@ gonzo_alias_delete_sub(gp, name)
 
 
 void
-gonzo_alias_delete(name)
-    string_ty	    *name;
+gonzo_alias_delete(string_ty *name)
 {
     gonzo_ty	    *gp;
     long	    j;
@@ -1078,11 +1020,8 @@ gonzo_alias_delete(name)
 }
 
 
-static void waiting_callback _((void *));
-
 static void
-waiting_callback(p)
-    void	    *p;
+waiting_callback(void *p)
 {
     if (user_lock_wait(0))
 	error_intl(0, i18n("waiting for global state lock"));
@@ -1092,7 +1031,7 @@ waiting_callback(p)
 
 
 void
-gonzo_gstate_lock_prepare_new()
+gonzo_gstate_lock_prepare_new(void)
 {
     trace(("gonzo_gstate_lock_prepare_new()\n{\n"));
     lock_prepare_gstate(waiting_callback, 0);
@@ -1101,7 +1040,7 @@ gonzo_gstate_lock_prepare_new()
 
 
 string_ty *
-gonzo_lockpath_get()
+gonzo_lockpath_get(void)
 {
     static string_ty *path;
     gonzo_ty	    *gp;
@@ -1120,12 +1059,8 @@ gonzo_lockpath_get()
 }
 
 
-static int gonzo_ustate_path_sub _((gonzo_ty *, string_ty *));
-
 static int
-gonzo_ustate_path_sub(gp, project_name)
-    gonzo_ty	    *gp;
-    string_ty	    *project_name;
+gonzo_ustate_path_sub(gonzo_ty *gp, string_ty *project_name)
 {
     gstate	    gstate_data;
     size_t	    j;
@@ -1158,9 +1093,7 @@ gonzo_ustate_path_sub(gp, project_name)
 
 
 string_ty *
-gonzo_ustate_path(project_name, login_name)
-    string_ty	    *project_name;
-    string_ty	    *login_name;
+gonzo_ustate_path(string_ty *project_name, string_ty *login_name)
 {
     gonzo_ty	    *gp;
     size_t	    j;
@@ -1212,7 +1145,7 @@ gonzo_ustate_path(project_name, login_name)
 
 
 void
-gonzo_become()
+gonzo_become(void)
 {
     trace(("gonzo_become()\n{\n"));
     user_become(gonzo_user());
@@ -1221,7 +1154,7 @@ gonzo_become()
 
 
 void
-gonzo_become_undo()
+gonzo_become_undo(void)
 {
     trace(("gonzo_become_undo()\n{\n"));
     user_become_undo();
@@ -1230,8 +1163,7 @@ gonzo_become_undo()
 
 
 void
-gonzo_report_path(p)
-    string_list_ty  *p;
+gonzo_report_path(string_list_ty *p)
 {
     long	    j;
     gonzo_ty	    *gp;
@@ -1253,8 +1185,7 @@ gonzo_report_path(p)
 
 
 int
-gonzo_alias_acceptable(name)
-    string_ty	    *name;
+gonzo_alias_acceptable(string_ty *name)
 {
     char	    *cp;
 

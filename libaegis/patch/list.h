@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 #include <patch.h>
 
-patch_list_ty *patch_list_new _((void));
-void patch_list_delete _((patch_list_ty *));
-void patch_list_append _((patch_list_ty *, patch_ty *));
+patch_list_ty *patch_list_new(void);
+void patch_list_delete(patch_list_ty *);
+void patch_list_append(patch_list_ty *, patch_ty *);
 
 #endif /* LIBAEGIS_PATCH_LIST_H */

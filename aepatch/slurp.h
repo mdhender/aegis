@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <patch.h>
 
-patch_list_ty *patch_slurp _((string_ty *filename));
+patch_list_ty *patch_slurp(string_ty *filename);
 
 #endif /* AEPATCH_SLURP_H */

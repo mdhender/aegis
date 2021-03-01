@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 #include <main.h>
 
-FILE *fopen_with_stale_nfs_retry _((const char *, const char *));
+FILE *fopen_with_stale_nfs_retry(const char *, const char *);
 
 #endif /* LIBAEGIS_FOPEN_NFS_H */

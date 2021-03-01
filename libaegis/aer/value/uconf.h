@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <aer/value.h>
 
-rpt_value_ty *rpt_value_uconf _((void));
+rpt_value_ty *rpt_value_uconf(void);
 
 #endif /* LIBAEGIS_AER_VALUE_UCONF_H */

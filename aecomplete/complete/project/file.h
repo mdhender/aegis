@@ -27,6 +27,6 @@
 
 struct change_ty; /* forward */
 
-complete_ty *complete_project_file _((struct change_ty *, int, int));
+complete_ty *complete_project_file(struct change_ty *, int, int);
 
 #endif /* AECOMPLETE_COMPLETE_PROJECT_FILE_H */

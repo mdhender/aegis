@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,65 +27,49 @@
 #include <option.h>
 
 
-static int page_width_valid _((rpt_expr_ty *));
-
 static int
-page_width_valid(ep)
-	rpt_expr_ty	*ep;
+page_width_valid(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 0);
+    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *page_width_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-page_width_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+page_width_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	assert(argc == 0);
-	return rpt_value_integer(option_page_width_get(-1));
+    assert(argc == 0);
+    return rpt_value_integer(option_page_width_get(-1));
 }
 
 
 rpt_func_ty rpt_func_page_width =
 {
-	"page_width",
-	0, /* not constant */
-	page_width_valid,
-	page_width_run,
+    "page_width",
+    0, /* not constant */
+    page_width_valid,
+    page_width_run,
 };
 
 
-static int page_length_valid _((rpt_expr_ty *));
-
 static int
-page_length_valid(ep)
-	rpt_expr_ty	*ep;
+page_length_valid(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 0);
+    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *page_length_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-page_length_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+page_length_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	assert(argc == 0);
-	return rpt_value_integer(option_page_length_get(-1));
+    assert(argc == 0);
+    return rpt_value_integer(option_page_length_get(-1));
 }
 
 
 rpt_func_ty rpt_func_page_length =
 {
-	"page_length",
-	0, /* not constant */
-	page_length_valid,
-	page_length_run,
+    "page_length",
+    0, /* not constant */
+    page_length_valid,
+    page_length_run,
 };

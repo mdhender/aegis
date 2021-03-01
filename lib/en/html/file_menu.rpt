@@ -420,9 +420,16 @@ if (change_number_set())
     href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
 	## "+change@" ## cn ;
     print("<a href=\"" ## href ## "\">Change Menu</a> |");
+    href = script_name ## "?file@chan_files+project@" ## quote_url(pn)
+	## "+change@" ## cn ;
+    print("<a href=\"" ## href ## "\">File List</a>");
+
 }
-href = script_name ## "?file@proj_files+project@" ## quote_url(pn);
-print("<a href=\"" ## href ## "\">File List</a>");
+else
+{
+	href = script_name ## "?file@proj_files+project@" ## quote_url(pn);
+	print("<a href=\"" ## href ## "\">File List</a>");
+}
 print("]</p>");
 
 print("<hr>");

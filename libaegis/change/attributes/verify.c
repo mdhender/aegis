@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2001 Peter Miller;
+ *	Copyright (C) 2000-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,30 +26,28 @@
 
 
 void
-change_attributes_verify(fn, d)
-	string_ty	*fn;
-	cattr		d;
+change_attributes_verify(string_ty *fn, cattr d)
 {
-	if (!d->brief_description)
-	{
-		sub_context_ty	*scp;
+    if (!d->brief_description)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		sub_var_set_charstar(scp, "FieLD_Name", "brief_description");
-		fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
-	if (!(d->mask & cattr_cause_mask))
-	{
-		sub_context_ty	*scp;
+	scp = sub_context_new();
+	sub_var_set_string(scp, "File_Name", fn);
+	sub_var_set_charstar(scp, "FieLD_Name", "brief_description");
+	fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
+	/* NOTREACHED */
+	sub_context_delete(scp);
+    }
+    if (!(d->mask & cattr_cause_mask))
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		sub_var_set_charstar(scp, "FieLD_Name", "cause");
-		fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+	scp = sub_context_new();
+	sub_var_set_string(scp, "File_Name", fn);
+	sub_var_set_charstar(scp, "FieLD_Name", "cause");
+	fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
+	/* NOTREACHED */
+	sub_context_delete(scp);
+    }
 }

@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void annotate _((void));
+void annotate(void);
 
 #endif /* AEANNOTATE_ANNOTATE_H */

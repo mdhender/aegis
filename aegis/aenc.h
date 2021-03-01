@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1998 Peter Miller;
+ *	Copyright (C) 1991-1993, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,10 @@
 
 #include <main.h>
 
-void new_change _((void));
+void new_change(void);
 
 struct project_ty; /* existence */
 struct user_ty; /* existence */
-void new_change_check_permission _((struct project_ty *, struct user_ty *));
+void new_change_check_permission(struct project_ty *, struct user_ty *);
 
 #endif /* AEGIS_AENC_H */

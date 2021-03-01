@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aerrv _((void));
+command_ty *command_aerrv(void);
 
 #endif /* AECOMPLETE_COMMAND_AERRV_H */

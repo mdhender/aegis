@@ -30,20 +30,17 @@
 typedef struct input_tar_child_ty input_tar_child_ty;
 struct input_tar_child_ty
 {
-	input_ty	inherited;
-	input_ty	*deeper;
-	string_ty	*archive_name;
-	string_ty	*filename;
-	long		pos;
-	long		length;
+    input_ty	    inherited;
+    input_ty	    *deeper;
+    string_ty	    *archive_name;
+    string_ty	    *filename;
+    long	    pos;
+    long	    length;
 };
 
 
-static void padding _((input_ty *));
-
 static void
-padding(ip)
-    input_ty	    *ip;
+padding(input_ty *ip)
 {
     int		    n;
 
@@ -54,11 +51,8 @@ padding(ip)
 }
 
 
-static void input_tar_child_destructor _((input_ty *));
-
 static void
-input_tar_child_destructor(fp)
-    input_ty	    *fp;
+input_tar_child_destructor(input_ty *fp)
 {
     input_tar_child_ty *this;
 
@@ -87,13 +81,8 @@ input_tar_child_destructor(fp)
 }
 
 
-static long input_tar_child_read _((input_ty *, void *, size_t));
-
 static long
-input_tar_child_read(fp, data, len)
-    input_ty	    *fp;
-    void	    *data;
-    size_t	    len;
+input_tar_child_read(input_ty *fp, void *data, size_t len)
 {
     input_tar_child_ty *this;
 
@@ -111,11 +100,8 @@ input_tar_child_read(fp, data, len)
 }
 
 
-static long input_tar_child_ftell _((input_ty *));
-
 static long
-input_tar_child_ftell(fp)
-    input_ty	    *fp;
+input_tar_child_ftell(input_ty *fp)
 {
     input_tar_child_ty *this;
 
@@ -124,11 +110,8 @@ input_tar_child_ftell(fp)
 }
 
 
-static string_ty *input_tar_child_name _((input_ty *));
-
 static string_ty *
-input_tar_child_name(fp)
-    input_ty	    *fp;
+input_tar_child_name(input_ty *fp)
 {
     input_tar_child_ty *this;
 
@@ -137,11 +120,8 @@ input_tar_child_name(fp)
 }
 
 
-static long input_tar_child_length _((input_ty *));
-
 static long
-input_tar_child_length(fp)
-    input_ty	    *fp;
+input_tar_child_length(input_ty *fp)
 {
     input_tar_child_ty *this;
 
@@ -161,12 +141,8 @@ static input_vtbl_ty vtbl =
 };
 
 
-static string_ty *read_data_as_string _((input_ty *, size_t));
-
 static string_ty *
-read_data_as_string(ip, size)
-    input_ty	    *ip;
-    size_t	    size;
+read_data_as_string(input_ty *ip, size_t size)
 {
     static char	    *buffer;
     static size_t   maximum;
@@ -182,12 +158,8 @@ read_data_as_string(ip, size)
 }
 
 
-static int all_zero _((const char *buf, size_t));
-
 static int
-all_zero(buf, len)
-    const char	    *buf;
-    size_t	    len;
+all_zero(const char *buf, size_t len)
 {
     while (len-- > 0)
     {
@@ -199,9 +171,7 @@ all_zero(buf, len)
 
 
 input_ty *
-input_tar_child_open(deeper, archive_name_p)
-    input_ty	    *deeper;
-    string_ty	    **archive_name_p;
+input_tar_child_open(input_ty *deeper, string_ty **archive_name_p)
 {
     string_ty	    *longname;
 

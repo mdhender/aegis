@@ -1354,7 +1354,8 @@ aecomplete/shell.$(OBJEXT): aecomplete/shell.c common/error.h \
 		common/main.h aecomplete/shell.h common/str.h \
 		common/ac/stddef.h common/config.h common/config.messy.h \
 		common/ac/stdarg.h aecomplete/shell/bash.h \
-		aecomplete/shell/private.h libaegis/sub.h
+		aecomplete/shell/private.h aecomplete/shell/zsh.h \
+		libaegis/sub.h
 	$(CC) $(CFLAGS) -Iaecomplete -Ilibaegis -Icommon -c aecomplete/shell.c
 	mv shell.$(OBJEXT) $@
 
@@ -1385,6 +1386,17 @@ aecomplete/shell/private.$(OBJEXT): aecomplete/shell/private.c \
 	$(CC) $(CFLAGS) -Iaecomplete -Ilibaegis -Icommon -c \
 		aecomplete/shell/private.c
 	mv private.$(OBJEXT) $@
+
+aecomplete/shell/zsh.$(OBJEXT): aecomplete/shell/zsh.c common/ac/ctype.h \
+		common/config.h common/config.messy.h common/ac/stdio.h \
+		common/ac/stdlib.h common/ac/string.h common/arglex.h \
+		common/main.h common/error.h common/mem.h \
+		common/ac/stddef.h common/progname.h \
+		aecomplete/shell/zsh.h aecomplete/shell.h common/str.h \
+		common/ac/stdarg.h aecomplete/shell/private.h
+	$(CC) $(CFLAGS) -Iaecomplete -Ilibaegis -Icommon -c \
+		aecomplete/shell/zsh.c
+	mv zsh.$(OBJEXT) $@
 
 aedist/arglex3.$(OBJEXT): aedist/arglex3.c aedist/arglex3.h \
 		libaegis/arglex2.h common/arglex.h common/main.h
@@ -1471,13 +1483,13 @@ aedist/output/cpio_child2.$(OBJEXT): aedist/output/cpio_child2.c \
 		aedist/output/cpio_child2.c
 	mv cpio_child2.$(OBJEXT) $@
 
-aedist/receive.$(OBJEXT): aedist/receive.c aedist/arglex3.h \
+aedist/receive.$(OBJEXT): aedist/receive.c common/ac/stdlib.h \
+		common/config.h common/config.messy.h aedist/arglex3.h \
 		libaegis/arglex2.h common/arglex.h common/main.h \
 		libaegis/cattr.h libaegis/type.h common/ac/stddef.h \
-		common/config.h common/config.messy.h common/str.h \
-		common/ac/stdarg.h libaegis/parse.h libaegis/change.h \
-		libaegis/cstate.h common/ac/time.h libaegis/fstate.h \
-		libaegis/pconf.h libaegis/zero.h \
+		common/str.h common/ac/stdarg.h libaegis/parse.h \
+		libaegis/change.h libaegis/cstate.h common/ac/time.h \
+		libaegis/fstate.h libaegis/pconf.h libaegis/zero.h \
 		libaegis/change/attributes.h libaegis/change/file.h \
 		common/error.h libaegis/help.h aedist/input/cpio.h \
 		libaegis/input.h aedist/open.h libaegis/os.h \
@@ -2040,13 +2052,13 @@ aegis/aede.$(OBJEXT): aegis/aede.c common/ac/stdio.h common/config.h \
 		libaegis/fstate.h libaegis/pconf.h libaegis/zero.h \
 		libaegis/change/develop_direct/read_only.h \
 		libaegis/change/file.h libaegis/col.h libaegis/commit.h \
-		libaegis/common.h common/error.h libaegis/help.h \
-		libaegis/lock.h common/progname.h libaegis/os.h \
-		libaegis/project.h libaegis/pstate.h libaegis/pattr.h \
-		libaegis/project/active.h libaegis/project/file.h \
-		libaegis/project/history.h libaegis/sub.h common/trace.h \
-		libaegis/undo.h libaegis/user.h libaegis/ustate.h \
-		libaegis/uconf.h
+		libaegis/common.h common/error.h libaegis/file.h \
+		libaegis/help.h libaegis/lock.h common/progname.h \
+		libaegis/os.h libaegis/project.h libaegis/pstate.h \
+		libaegis/pattr.h libaegis/project/active.h \
+		libaegis/project/file.h libaegis/project/history.h \
+		libaegis/sub.h common/trace.h libaegis/undo.h \
+		libaegis/user.h libaegis/ustate.h libaegis/uconf.h
 	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/aede.c
 	mv aede.$(OBJEXT) $@
 
@@ -2132,11 +2144,12 @@ aegis/aeif.$(OBJEXT): aegis/aeif.c common/ac/stdio.h common/config.h \
 		libaegis/ael/change/by_state.h libaegis/arglex2.h \
 		common/arglex.h libaegis/commit.h common/str.h \
 		common/ac/stddef.h common/ac/stdarg.h \
-		libaegis/change/develop_direct/read_write.h \
-		libaegis/change/file.h libaegis/change.h \
+		libaegis/change/branch.h libaegis/change.h \
 		libaegis/cstate.h common/ac/time.h libaegis/type.h \
 		libaegis/parse.h libaegis/fstate.h libaegis/pconf.h \
-		libaegis/zero.h common/error.h libaegis/file.h \
+		libaegis/zero.h \
+		libaegis/change/develop_direct/read_write.h \
+		libaegis/change/file.h common/error.h libaegis/file.h \
 		libaegis/help.h libaegis/lock.h libaegis/log.h \
 		common/progname.h libaegis/os.h libaegis/project.h \
 		libaegis/pstate.h libaegis/pattr.h \
@@ -2199,6 +2212,41 @@ aegis/ael.$(OBJEXT): aegis/ael.c common/ac/stdio.h common/config.h \
 		libaegis/sub.h common/trace.h libaegis/zero.h
 	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/ael.c
 	mv ael.$(OBJEXT) $@
+
+aegis/aemt.$(OBJEXT): aegis/aemt.c common/ac/stdio.h common/config.h \
+		common/config.messy.h libaegis/ael/project/files.h \
+		common/main.h aegis/aemt.h libaegis/arglex2.h \
+		common/arglex.h libaegis/change.h libaegis/cstate.h \
+		common/ac/time.h libaegis/type.h common/ac/stddef.h \
+		common/str.h common/ac/stdarg.h libaegis/parse.h \
+		libaegis/fstate.h libaegis/pconf.h libaegis/zero.h \
+		libaegis/change/branch.h libaegis/change/file.h \
+		libaegis/commit.h common/error.h libaegis/file.h \
+		libaegis/help.h libaegis/lock.h libaegis/log.h \
+		libaegis/os.h common/progname.h libaegis/project.h \
+		libaegis/pstate.h libaegis/pattr.h \
+		libaegis/project/file.h common/str_list.h libaegis/sub.h \
+		common/trace.h libaegis/user.h libaegis/ustate.h \
+		libaegis/uconf.h
+	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/aemt.c
+	mv aemt.$(OBJEXT) $@
+
+aegis/aemtu.$(OBJEXT): aegis/aemtu.c common/ac/stdio.h common/config.h \
+		common/config.messy.h libaegis/ael/change/files.h \
+		common/main.h aegis/aemtu.h libaegis/arglex2.h \
+		common/arglex.h libaegis/change/branch.h \
+		libaegis/change.h libaegis/cstate.h common/ac/time.h \
+		libaegis/type.h common/ac/stddef.h common/str.h \
+		common/ac/stdarg.h libaegis/parse.h libaegis/fstate.h \
+		libaegis/pconf.h libaegis/zero.h libaegis/change/file.h \
+		libaegis/commit.h common/error.h libaegis/help.h \
+		libaegis/lock.h libaegis/log.h libaegis/os.h \
+		common/progname.h libaegis/project/file.h \
+		libaegis/project.h libaegis/pstate.h libaegis/pattr.h \
+		common/str_list.h libaegis/sub.h common/trace.h \
+		libaegis/user.h libaegis/ustate.h libaegis/uconf.h
+	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/aemtu.c
+	mv aemtu.$(OBJEXT) $@
 
 aegis/aemv.$(OBJEXT): aegis/aemv.c common/ac/stdio.h common/config.h \
 		common/config.messy.h libaegis/ael/project/files.h \
@@ -2514,8 +2562,9 @@ aegis/aepa.$(OBJEXT): aegis/aepa.c common/ac/stdio.h common/config.h \
 		libaegis/pstate.h libaegis/project/pattr/edit.h \
 		libaegis/project/pattr/get.h \
 		libaegis/project/pattr/set.h libaegis/project/history.h \
-		libaegis/sub.h common/trace.h libaegis/undo.h \
-		libaegis/user.h libaegis/ustate.h libaegis/uconf.h
+		libaegis/sub.h common/str_list.h common/trace.h \
+		libaegis/undo.h libaegis/user.h libaegis/ustate.h \
+		libaegis/uconf.h
 	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/aepa.c
 	mv aepa.$(OBJEXT) $@
 
@@ -2601,12 +2650,13 @@ aegis/aerf.$(OBJEXT): aegis/aerf.c common/ac/stdio.h common/config.h \
 		common/config.messy.h common/ac/stdlib.h \
 		libaegis/ael/change/by_state.h common/main.h \
 		aegis/aerf.h libaegis/arglex2.h common/arglex.h \
-		libaegis/change/develop_direct/read_write.h \
-		libaegis/change/file.h libaegis/change.h \
+		libaegis/change/branch.h libaegis/change.h \
 		libaegis/cstate.h common/ac/time.h libaegis/type.h \
 		common/ac/stddef.h common/str.h common/ac/stdarg.h \
 		libaegis/parse.h libaegis/fstate.h libaegis/pconf.h \
-		libaegis/zero.h libaegis/commit.h common/error.h \
+		libaegis/zero.h \
+		libaegis/change/develop_direct/read_write.h \
+		libaegis/change/file.h libaegis/commit.h common/error.h \
 		libaegis/file.h libaegis/help.h libaegis/lock.h \
 		common/mem.h libaegis/os.h libaegis/pattr.h \
 		common/progname.h libaegis/project.h libaegis/pstate.h \
@@ -2691,7 +2741,8 @@ aegis/aerp.$(OBJEXT): aegis/aerp.c common/ac/stdio.h common/config.h \
 		libaegis/change.h libaegis/cstate.h common/ac/time.h \
 		libaegis/type.h common/ac/stddef.h common/str.h \
 		common/ac/stdarg.h libaegis/parse.h libaegis/fstate.h \
-		libaegis/pconf.h libaegis/zero.h libaegis/change/file.h \
+		libaegis/pconf.h libaegis/zero.h \
+		libaegis/change/branch.h libaegis/change/file.h \
 		libaegis/commit.h libaegis/dir.h common/error.h \
 		libaegis/file.h libaegis/help.h libaegis/lock.h \
 		common/mem.h libaegis/os.h libaegis/pattr.h \
@@ -2779,6 +2830,14 @@ aegis/aev.$(OBJEXT): aegis/aev.c common/ac/stdio.h common/config.h \
 	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/aev.c
 	mv aev.$(OBJEXT) $@
 
+aegis/configured.$(OBJEXT): aegis/configured.c common/ac/stdio.h \
+		common/config.h common/config.messy.h aegis/configured.h \
+		common/main.h common/libdir.h common/str.h \
+		common/ac/stddef.h common/ac/stdarg.h \
+		common/version_stmp.h
+	$(CC) $(CFLAGS) -Iaegis -Ilibaegis -Icommon -c aegis/configured.c
+	mv configured.$(OBJEXT) $@
+
 aegis/main.$(OBJEXT): aegis/main.c common/ac/stdio.h common/config.h \
 		common/config.messy.h common/ac/stdlib.h \
 		common/ac/unistd.h common/ac/signal.h aegis/aeb.h \
@@ -2789,16 +2848,17 @@ aegis/main.$(OBJEXT): aegis/main.c common/ac/stdio.h common/config.h \
 		aegis/aecp.h aegis/aecpu.h aegis/aed.h aegis/aedb.h \
 		aegis/aedbu.h aegis/aede.h aegis/aedeu.h aegis/aedn.h \
 		aegis/aeib.h aegis/aeibu.h aegis/aeif.h aegis/aeip.h \
-		aegis/ael.h aegis/aemv.h aegis/aemvu.h aegis/aena.h \
-		aegis/aenbr.h aegis/aenbru.h aegis/aenc.h aegis/aencu.h \
-		aegis/aend.h aegis/aenf.h aegis/aenfu.h aegis/aeni.h \
-		aegis/aenpa.h aegis/aenpr.h aegis/aenrls.h aegis/aenrv.h \
-		aegis/aent.h aegis/aentu.h aegis/aepa.h aegis/aer.h \
-		aegis/aera.h aegis/aerb.h aegis/aerbu.h aegis/aerd.h \
-		aegis/aerf.h aegis/aeri.h aegis/aerm.h aegis/aermpr.h \
-		aegis/aermu.h aegis/aerp.h aegis/aerpa.h aegis/aerpu.h \
-		aegis/aerrv.h aegis/aet.h aegis/aev.h libaegis/arglex2.h \
-		common/arglex.h common/env.h common/error.h \
+		aegis/ael.h aegis/aemt.h aegis/aemtu.h aegis/aemv.h \
+		aegis/aemvu.h aegis/aena.h aegis/aenbr.h aegis/aenbru.h \
+		aegis/aenc.h aegis/aencu.h aegis/aend.h aegis/aenf.h \
+		aegis/aenfu.h aegis/aeni.h aegis/aenpa.h aegis/aenpr.h \
+		aegis/aenrls.h aegis/aenrv.h aegis/aent.h aegis/aentu.h \
+		aegis/aepa.h aegis/aer.h aegis/aera.h aegis/aerb.h \
+		aegis/aerbu.h aegis/aerd.h aegis/aerf.h aegis/aeri.h \
+		aegis/aerm.h aegis/aermpr.h aegis/aermu.h aegis/aerp.h \
+		aegis/aerpa.h aegis/aerpu.h aegis/aerrv.h aegis/aet.h \
+		aegis/aev.h libaegis/arglex2.h common/arglex.h \
+		aegis/configured.h common/env.h common/error.h \
 		libaegis/help.h common/language.h libaegis/log.h \
 		libaegis/os.h common/ac/time.h common/progname.h \
 		common/r250.h common/trace.h libaegis/undo.h
@@ -3080,15 +3140,11 @@ aeimport/reconstruct.$(OBJEXT): aeimport/reconstruct.c libaegis/change.h \
 		common/ac/stddef.h common/str.h common/ac/stdarg.h \
 		libaegis/parse.h libaegis/fstate.h libaegis/pconf.h \
 		libaegis/zero.h libaegis/change/file.h libaegis/commit.h \
-		common/error.h aeimport/format.h libaegis/lock.h \
-		aeimport/change_set/list.h aeimport/change_set.h \
-		common/str_list.h aeimport/change_set/file_list.h \
-		aeimport/change_set/file.h libaegis/os.h \
-		libaegis/project.h libaegis/pstate.h libaegis/pattr.h \
+		libaegis/lock.h libaegis/os.h libaegis/project.h \
+		libaegis/pstate.h libaegis/pattr.h \
 		libaegis/project/file.h libaegis/project/history.h \
-		aeimport/reconstruct.h libaegis/sub.h common/symtab.h \
-		common/trace.h libaegis/user.h libaegis/ustate.h \
-		libaegis/uconf.h
+		aeimport/reconstruct.h libaegis/sub.h common/trace.h \
+		libaegis/user.h libaegis/ustate.h libaegis/uconf.h
 	$(CC) $(CFLAGS) -Iaeimport -Ilibaegis -Icommon -c \
 		aeimport/reconstruct.c
 	mv reconstruct.$(OBJEXT) $@
@@ -3154,6 +3210,20 @@ aels/stack.$(OBJEXT): aels/stack.c libaegis/change.h common/main.h \
 		libaegis/sub.h
 	$(CC) $(CFLAGS) -Iaels -Ilibaegis -Icommon -c aels/stack.c
 	mv stack.$(OBJEXT) $@
+
+aemeasure/count.$(OBJEXT): aemeasure/count.c common/ac/stdio.h \
+		common/config.h common/config.messy.h common/ac/string.h \
+		aemeasure/count.h common/error.h common/main.h
+	$(CC) $(CFLAGS) -Iaemeasure -Ilibaegis -Icommon -c aemeasure/count.c
+	mv count.$(OBJEXT) $@
+
+aemeasure/main.$(OBJEXT): aemeasure/main.c common/ac/stdio.h \
+		common/config.h common/config.messy.h common/ac/stdlib.h \
+		common/arglex.h common/main.h aemeasure/count.h \
+		common/error.h common/progname.h common/str.h \
+		common/ac/stddef.h common/ac/stdarg.h
+	$(CC) $(CFLAGS) -Iaemeasure -Ilibaegis -Icommon -c aemeasure/main.c
+	mv main.$(OBJEXT) $@
 
 aepatch/arglex3.$(OBJEXT): aepatch/arglex3.c aepatch/arglex3.h \
 		libaegis/arglex2.h common/arglex.h common/main.h
@@ -3598,9 +3668,9 @@ common/gmatch.$(OBJEXT): common/gmatch.c common/ac/string.h \
 	$(CC) $(CFLAGS) -Icommon -Ilibaegis -Icommon -c common/gmatch.c
 	mv gmatch.$(OBJEXT) $@
 
-common/itab.$(OBJEXT): common/itab.c common/itab.h common/main.h \
-		common/mem.h common/ac/stddef.h common/config.h \
-		common/config.messy.h common/trace.h
+common/itab.$(OBJEXT): common/itab.c common/error.h common/main.h \
+		common/itab.h common/mem.h common/ac/stddef.h \
+		common/config.h common/config.messy.h common/trace.h
 	$(CC) $(CFLAGS) -Icommon -Ilibaegis -Icommon -c common/itab.c
 	mv itab.$(OBJEXT) $@
 
@@ -3608,7 +3678,7 @@ common/language.$(OBJEXT): common/language.c common/ac/locale.h \
 		common/config.h common/config.messy.h \
 		common/ac/libintl.h common/main.h common/ac/stdlib.h \
 		common/env.h common/error.h common/language.h \
-		common/libdir.h common/progname.h
+		common/libdir.h
 	$(CC) $(CFLAGS) -Icommon -Ilibaegis -Icommon -c common/language.c
 	mv language.$(OBJEXT) $@
 
@@ -4050,115 +4120,14 @@ $(RPM_BUILD_ROOT)$(datadir)/de.inews.sh: lib/de.inews.sh \
 $(RPM_BUILD_ROOT)$(datadir)/de.sh: lib/de.sh lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/de.sh $@
 
-lib/de/LC_MESSAGES/aedist.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aedist.po \
-		lib/de/LC_MESSAGES/libaegis.po
+lib/de/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aegis.po
 	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aedist.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aedist.mo: \
-		lib/de/LC_MESSAGES/aedist.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aedist.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aefind.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aefind.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aefind.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aefind.mo: \
-		lib/de/LC_MESSAGES/aefind.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aefind.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aegis.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aegis.po \
-		lib/de/LC_MESSAGES/libaegis.po
+		--output=$@ lib/de/LC_MESSAGES/aegis.po
 
 $(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aegis.mo: \
 		lib/de/LC_MESSAGES/aegis.mo \
 		lib/de/LC_MESSAGES/.mkdir.libdir
 	$(INSTALL_DATA) lib/de/LC_MESSAGES/aegis.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aeimport.mo: etc/msgfmt.sh \
-		lib/de/LC_MESSAGES/aeimport.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aeimport.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aeimport.mo: \
-		lib/de/LC_MESSAGES/aeimport.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aeimport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aepatch.mo: etc/msgfmt.sh \
-		lib/de/LC_MESSAGES/aepatch.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aepatch.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aepatch.mo: \
-		lib/de/LC_MESSAGES/aepatch.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aepatch.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aerect.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aerect.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aerect.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aerect.mo: \
-		lib/de/LC_MESSAGES/aerect.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aerect.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aereport.mo: etc/msgfmt.sh \
-		lib/de/LC_MESSAGES/aereport.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aereport.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aereport.mo: \
-		lib/de/LC_MESSAGES/aereport.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aereport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aesub.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aesub.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aesub.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aesub.mo: \
-		lib/de/LC_MESSAGES/aesub.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aesub.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/de/LC_MESSAGES/aetar.mo: etc/msgfmt.sh lib/de/LC_MESSAGES/aetar.po \
-		lib/de/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/de/LC_MESSAGES/aetar.po \
-		lib/de/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aetar.mo: \
-		lib/de/LC_MESSAGES/aetar.mo \
-		lib/de/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/de/LC_MESSAGES/aetar.mo $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 $(RPM_BUILD_ROOT)$(datadir)/de/LC_MESSAGES/glossary: \
@@ -4167,6 +4136,63 @@ $(RPM_BUILD_ROOT)$(datadir)/de/LC_MESSAGES/glossary: \
 	$(INSTALL_DATA) lib/de/LC_MESSAGES/glossary $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
+lib/de/auug97.ps: lib/de/auug97/main.ms lib/de/auug97/01-intro.so \
+		lib/de/auug97/01.figure1.so lib/de/auug97/02-problem.so \
+		lib/de/auug97/03-analysis.so lib/de/auug97/03.figure2.so \
+		lib/de/auug97/03.figure3.so lib/de/auug97/03.figure4.so \
+		lib/de/auug97/03.figure5.so lib/de/auug97/03.figure6.so \
+		lib/de/auug97/03.figure7.so lib/de/auug97/04-cure.so \
+		lib/de/auug97/05-makefile.so lib/de/auug97/06-vpath.so \
+		lib/de/auug97/06.figure1.so lib/de/auug97/07-synthesi.so \
+		lib/de/auug97/07.figure1.so lib/de/auug97/07.figure2.so \
+		lib/de/auug97/08-books.so lib/de/auug97/09-summary.so \
+		lib/de/auug97/10-ref.so
+	$(SOELIM) -Ilib/de/auug97 -Ietc -Ilib/de/man1 -Ilib/de/man5 \
+		-Ilib/de/readme lib/de/auug97/main.ms | $(GROFF) -R -t \
+		-p $(MS) -mpic -mpspic > $@
+
+$(RPM_BUILD_ROOT)$(datadir)/de/auug97.ps: lib/de/auug97.ps \
+		lib/de/.mkdir.datadir
+	$(INSTALL_DATA) lib/de/auug97.ps $@
+
+lib/de/auug97.dvi: lib/de/auug97/main.ms lib/de/auug97/01-intro.so \
+		lib/de/auug97/01.figure1.so lib/de/auug97/02-problem.so \
+		lib/de/auug97/03-analysis.so lib/de/auug97/03.figure2.so \
+		lib/de/auug97/03.figure3.so lib/de/auug97/03.figure4.so \
+		lib/de/auug97/03.figure5.so lib/de/auug97/03.figure6.so \
+		lib/de/auug97/03.figure7.so lib/de/auug97/04-cure.so \
+		lib/de/auug97/05-makefile.so lib/de/auug97/06-vpath.so \
+		lib/de/auug97/06.figure1.so lib/de/auug97/07-synthesi.so \
+		lib/de/auug97/07.figure1.so lib/de/auug97/07.figure2.so \
+		lib/de/auug97/08-books.so lib/de/auug97/09-summary.so \
+		lib/de/auug97/10-ref.so
+	$(SOELIM) -Ilib/de/auug97 -Ietc -Ilib/de/man1 -Ilib/de/man5 \
+		-Ilib/de/readme lib/de/auug97/main.ms | $(GROFF) -Tdvi \
+		-R -t -p $(MS) -mpic > $@
+
+$(RPM_BUILD_ROOT)$(datadir)/de/auug97.dvi: lib/de/auug97.dvi \
+		lib/de/.mkdir.datadir
+	$(INSTALL_DATA) lib/de/auug97.dvi $@
+
+lib/de/auug97.txt: lib/de/auug97/main.ms lib/de/auug97/01-intro.so \
+		lib/de/auug97/01.figure1.so lib/de/auug97/02-problem.so \
+		lib/de/auug97/03-analysis.so lib/de/auug97/03.figure2.so \
+		lib/de/auug97/03.figure3.so lib/de/auug97/03.figure4.so \
+		lib/de/auug97/03.figure5.so lib/de/auug97/03.figure6.so \
+		lib/de/auug97/03.figure7.so lib/de/auug97/04-cure.so \
+		lib/de/auug97/05-makefile.so lib/de/auug97/06-vpath.so \
+		lib/de/auug97/06.figure1.so lib/de/auug97/07-synthesi.so \
+		lib/de/auug97/07.figure1.so lib/de/auug97/07.figure2.so \
+		lib/de/auug97/08-books.so lib/de/auug97/09-summary.so \
+		lib/de/auug97/10-ref.so
+	-$(SOELIM) -Ilib/de/auug97 -Ietc -Ilib/de/man1 -Ilib/de/man5 \
+		-Ilib/de/readme lib/de/auug97/main.ms | $(GROFF) -Tascii \
+		-R -t -p $(MS) -mpic > $@
+
+$(RPM_BUILD_ROOT)$(datadir)/de/auug97.txt: lib/de/auug97.txt \
+		lib/de/.mkdir.datadir
+	$(INSTALL_DATA) lib/de/auug97.txt $@
+
 $(RPM_BUILD_ROOT)$(datadir)/deu.inews.sh: lib/deu.inews.sh \
 		lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/deu.inews.sh $@
@@ -4174,153 +4200,14 @@ $(RPM_BUILD_ROOT)$(datadir)/deu.inews.sh: lib/deu.inews.sh \
 $(RPM_BUILD_ROOT)$(datadir)/deu.sh: lib/deu.sh lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/deu.sh $@
 
-lib/en/LC_MESSAGES/aeannotate.mo: etc/msgfmt.sh \
-		lib/en/LC_MESSAGES/aeannotate.po \
-		lib/en/LC_MESSAGES/libaegis.po
+lib/en/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aegis.po
 	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aeannotate.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aeannotate.mo: \
-		lib/en/LC_MESSAGES/aeannotate.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aeannotate.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aecomplete.mo: etc/msgfmt.sh \
-		lib/en/LC_MESSAGES/aecomplete.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aecomplete.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aecomplete.mo: \
-		lib/en/LC_MESSAGES/aecomplete.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aecomplete.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aedist.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aedist.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aedist.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aedist.mo: \
-		lib/en/LC_MESSAGES/aedist.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aedist.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aefind.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aefind.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aefind.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aefind.mo: \
-		lib/en/LC_MESSAGES/aefind.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aefind.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aegis.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aegis.po \
-		lib/en/LC_MESSAGES/libaegis.po
+		--output=$@ lib/en/LC_MESSAGES/aegis.po
 
 $(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aegis.mo: \
 		lib/en/LC_MESSAGES/aegis.mo \
 		lib/en/LC_MESSAGES/.mkdir.libdir
 	$(INSTALL_DATA) lib/en/LC_MESSAGES/aegis.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aeimport.mo: etc/msgfmt.sh \
-		lib/en/LC_MESSAGES/aeimport.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aeimport.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aeimport.mo: \
-		lib/en/LC_MESSAGES/aeimport.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aeimport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aels.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aels.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aels.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aels.mo: \
-		lib/en/LC_MESSAGES/aels.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aels.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aepatch.mo: etc/msgfmt.sh \
-		lib/en/LC_MESSAGES/aepatch.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aepatch.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aepatch.mo: \
-		lib/en/LC_MESSAGES/aepatch.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aepatch.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aerect.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aerect.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aerect.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aerect.mo: \
-		lib/en/LC_MESSAGES/aerect.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aerect.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aereport.mo: etc/msgfmt.sh \
-		lib/en/LC_MESSAGES/aereport.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aereport.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aereport.mo: \
-		lib/en/LC_MESSAGES/aereport.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aereport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aesub.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aesub.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aesub.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aesub.mo: \
-		lib/en/LC_MESSAGES/aesub.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aesub.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/en/LC_MESSAGES/aetar.mo: etc/msgfmt.sh lib/en/LC_MESSAGES/aetar.po \
-		lib/en/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/en/LC_MESSAGES/aetar.po \
-		lib/en/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aetar.mo: \
-		lib/en/LC_MESSAGES/aetar.mo \
-		lib/en/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/en/LC_MESSAGES/aetar.mo $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 lib/en/aoss4.ps: lib/en/aoss4/main.mm etc/version.so
@@ -5659,6 +5546,84 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aels.1: lib/en/man1/aels.1 \
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 	@rm -f $${TMPDIR-/tmp}/aegis.tmp
 
+$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemeasure.1: lib/en/man1/aemeasure.1 \
+		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
+		lib/en/man1/z_metrics.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
+	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aemeasure.1 | sed \
+		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
+	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+	@rm -f $${TMPDIR-/tmp}/aegis.tmp
+
+$(RPM_BUILD_ROOT)$(mandir)/man1/aemeasure.1: lib/en/man1/aemeasure.1 \
+		lib/en/man1/z_name.so lib/en/man1/z_metrics.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
+	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aemeasure.1 | sed \
+		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
+	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+	@rm -f $${TMPDIR-/tmp}/aegis.tmp
+
+$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemt.1: lib/en/man1/aemt.1 \
+		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
+		lib/en/man1/z_intuit.so lib/en/man1/o_baserel.so \
+		lib/en/man1/o_change.so lib/en/man1/o_help.so \
+		lib/en/man1/o_list.so lib/en/man1/o_project.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
+	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aemt.1 | sed \
+		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
+	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+	@rm -f $${TMPDIR-/tmp}/aegis.tmp
+
+$(RPM_BUILD_ROOT)$(mandir)/man1/aemt.1: lib/en/man1/aemt.1 \
+		lib/en/man1/z_name.so lib/en/man1/z_intuit.so \
+		lib/en/man1/o_baserel.so lib/en/man1/o_change.so \
+		lib/en/man1/o_help.so lib/en/man1/o_list.so \
+		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
+	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aemt.1 | sed \
+		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
+	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+	@rm -f $${TMPDIR-/tmp}/aegis.tmp
+
+$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemtu.1: lib/en/man1/aemtu.1 \
+		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
+		lib/en/man1/z_intuit.so lib/en/man1/o_baserel.so \
+		lib/en/man1/o_change.so lib/en/man1/o_help.so \
+		lib/en/man1/o_interact.so lib/en/man1/o_keep.so \
+		lib/en/man1/o_list.so lib/en/man1/o_project.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
+	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aemtu.1 | sed \
+		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
+	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+	@rm -f $${TMPDIR-/tmp}/aegis.tmp
+
+$(RPM_BUILD_ROOT)$(mandir)/man1/aemtu.1: lib/en/man1/aemtu.1 \
+		lib/en/man1/z_name.so lib/en/man1/z_intuit.so \
+		lib/en/man1/o_baserel.so lib/en/man1/o_change.so \
+		lib/en/man1/o_help.so lib/en/man1/o_interact.so \
+		lib/en/man1/o_keep.so lib/en/man1/o_list.so \
+		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
+	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aemtu.1 | sed \
+		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
+	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+	@rm -f $${TMPDIR-/tmp}/aegis.tmp
+
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aemv.1: lib/en/man1/aemv.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/z_intuit.so lib/en/man1/z_whiteout.so \
@@ -5722,10 +5687,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aemvu.1: lib/en/man1/aemvu.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aena.1: lib/en/man1/aena.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aena.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -5735,10 +5700,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aena.1: lib/en/man1/aena.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aena.1: lib/en/man1/aena.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aena.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -5846,10 +5811,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aencu.1: lib/en/man1/aencu.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aend.1: lib/en/man1/aend.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aend.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -5859,10 +5824,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aend.1: lib/en/man1/aend.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aend.1: lib/en/man1/aend.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aend.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -5936,10 +5901,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aenfu.1: lib/en/man1/aenfu.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aeni.1: lib/en/man1/aeni.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aeni.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -5949,10 +5914,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aeni.1: lib/en/man1/aeni.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aeni.1: lib/en/man1/aeni.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aeni.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6044,10 +6009,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aenrls.1: lib/en/man1/aenrls.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aenrv.1: lib/en/man1/aenrv.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aenrv.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6057,10 +6022,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aenrv.1: lib/en/man1/aenrv.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aenrv.1: lib/en/man1/aenrv.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aenrv.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6141,10 +6106,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aepa.1: lib/en/man1/aepa.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_edit.so lib/en/man1/o_file.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aepa.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6155,10 +6120,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aepa.1: lib/en/man1/aepa.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_edit.so \
 		lib/en/man1/o_file.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aepa.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6222,10 +6187,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aer.1: lib/en/man1/aer.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aera.1: lib/en/man1/aera.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aera.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6235,10 +6200,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aera.1: lib/en/man1/aera.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aera.1: lib/en/man1/aera.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aera.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6300,10 +6265,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aerbu.1: lib/en/man1/aerbu.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aerd.1: lib/en/man1/aerd.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aerd.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6313,10 +6278,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aerd.1: lib/en/man1/aerd.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aerd.1: lib/en/man1/aerd.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aerd.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6378,10 +6343,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aerfail.1: lib/en/man1/aerfail.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aeri.1: lib/en/man1/aeri.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aeri.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6391,10 +6356,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aeri.1: lib/en/man1/aeri.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aeri.1: lib/en/man1/aeri.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aeri.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6570,10 +6535,10 @@ $(RPM_BUILD_ROOT)$(mandir)/man1/aerpu.1: lib/en/man1/aerpu.1 \
 $(RPM_BUILD_ROOT)$(datadir)/en/man1/aerrv.1: lib/en/man1/aerrv.1 \
 		lib/en/man1/.mkdir.datadir lib/en/man1/z_name.so \
 		lib/en/man1/o_help.so lib/en/man1/o_list.so \
-		lib/en/man1/o_project.so lib/en/man1/o_terse.so \
-		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
-		lib/en/man1/z_cr.so etc/version.so
+		lib/en/man1/o_project.so lib/en/man1/o_recurse.so \
+		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
+		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aerrv.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -6583,10 +6548,10 @@ $(RPM_BUILD_ROOT)$(datadir)/en/man1/aerrv.1: lib/en/man1/aerrv.1 \
 $(RPM_BUILD_ROOT)$(mandir)/man1/aerrv.1: lib/en/man1/aerrv.1 \
 		lib/en/man1/z_name.so lib/en/man1/o_help.so \
 		lib/en/man1/o_list.so lib/en/man1/o_project.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_wait.so lib/en/man1/o__rules.so \
-		lib/en/man1/z_exit.so lib/en/man1/z_cr.so etc/version.so \
-		.man1dir
+		lib/en/man1/o_recurse.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_wait.so \
+		lib/en/man1/o__rules.so lib/en/man1/z_exit.so \
+		lib/en/man1/z_cr.so etc/version.so .man1dir
 	$(SOELIM) -Ilib/en/man1 -Ietc lib/en/man1/aerrv.1 | sed \
 		'/^\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp
 	$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@
@@ -7117,6 +7082,7 @@ $(RPM_BUILD_ROOT)$(datadir)/en/notes/locale.man: lib/en/notes/locale.man \
 
 lib/en/readme.ps: lib/en/readme/main.man etc/version.so \
 		lib/en/readme/windows.so lib/en/readme/new.so \
+		lib/en/readme/new.4.11.so lib/en/readme/new.4.10.so \
 		lib/en/readme/new.4.9.so lib/en/readme/new.4.8.so \
 		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
 		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
@@ -7148,6 +7114,7 @@ $(RPM_BUILD_ROOT)$(datadir)/en/readme.ps: lib/en/readme.ps \
 
 lib/en/readme.dvi: lib/en/readme/main.man etc/version.so \
 		lib/en/readme/windows.so lib/en/readme/new.so \
+		lib/en/readme/new.4.11.so lib/en/readme/new.4.10.so \
 		lib/en/readme/new.4.9.so lib/en/readme/new.4.8.so \
 		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
 		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
@@ -7179,6 +7146,7 @@ $(RPM_BUILD_ROOT)$(datadir)/en/readme.dvi: lib/en/readme.dvi \
 
 lib/en/readme.txt: lib/en/readme/main.man etc/version.so \
 		lib/en/readme/windows.so lib/en/readme/new.so \
+		lib/en/readme/new.4.11.so lib/en/readme/new.4.10.so \
 		lib/en/readme/new.4.9.so lib/en/readme/new.4.8.so \
 		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
 		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
@@ -7210,7 +7178,8 @@ $(RPM_BUILD_ROOT)$(datadir)/en/readme.txt: lib/en/readme.txt \
 
 lib/en/refman.ps: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/readme/main.man lib/en/readme/windows.so \
-		lib/en/readme/new.so lib/en/readme/new.4.9.so \
+		lib/en/readme/new.so lib/en/readme/new.4.11.so \
+		lib/en/readme/new.4.10.so lib/en/readme/new.4.9.so \
 		lib/en/readme/new.4.8.so lib/en/readme/new.4.7.so \
 		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
 		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
@@ -7271,8 +7240,10 @@ lib/en/refman.ps: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/man1/aeimport.1 lib/en/man1/aeintegratq.1 \
 		lib/en/man1/aeipass.1 lib/en/man1/ael.1 \
 		lib/en/man1/aelic.1 lib/en/man1/aels.1 \
-		lib/en/man1/aemv.1 lib/en/man1/aemvu.1 \
-		lib/en/man1/aena.1 lib/en/man1/aenbr.1 \
+		lib/en/man1/aemeasure.1 lib/en/man1/aemt.1 \
+		lib/en/man1/aemtu.1 lib/en/man1/aemv.1 \
+		lib/en/man1/aemvu.1 lib/en/man1/aena.1 \
+		lib/en/man1/o_recurse.so lib/en/man1/aenbr.1 \
 		lib/en/man1/aenbru.1 lib/en/man1/aenc.1 \
 		lib/en/man1/aencu.1 lib/en/man1/aend.1 \
 		lib/en/man1/aenf.1 lib/en/man1/z_template.so \
@@ -7317,7 +7288,8 @@ $(RPM_BUILD_ROOT)$(datadir)/en/refman.ps: lib/en/refman.ps \
 
 lib/en/refman.dvi: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/readme/main.man lib/en/readme/windows.so \
-		lib/en/readme/new.so lib/en/readme/new.4.9.so \
+		lib/en/readme/new.so lib/en/readme/new.4.11.so \
+		lib/en/readme/new.4.10.so lib/en/readme/new.4.9.so \
 		lib/en/readme/new.4.8.so lib/en/readme/new.4.7.so \
 		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
 		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
@@ -7378,8 +7350,10 @@ lib/en/refman.dvi: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/man1/aeimport.1 lib/en/man1/aeintegratq.1 \
 		lib/en/man1/aeipass.1 lib/en/man1/ael.1 \
 		lib/en/man1/aelic.1 lib/en/man1/aels.1 \
-		lib/en/man1/aemv.1 lib/en/man1/aemvu.1 \
-		lib/en/man1/aena.1 lib/en/man1/aenbr.1 \
+		lib/en/man1/aemeasure.1 lib/en/man1/aemt.1 \
+		lib/en/man1/aemtu.1 lib/en/man1/aemv.1 \
+		lib/en/man1/aemvu.1 lib/en/man1/aena.1 \
+		lib/en/man1/o_recurse.so lib/en/man1/aenbr.1 \
 		lib/en/man1/aenbru.1 lib/en/man1/aenc.1 \
 		lib/en/man1/aencu.1 lib/en/man1/aend.1 \
 		lib/en/man1/aenf.1 lib/en/man1/z_template.so \
@@ -7424,7 +7398,8 @@ $(RPM_BUILD_ROOT)$(datadir)/en/refman.dvi: lib/en/refman.dvi \
 
 lib/en/refman.txt: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/readme/main.man lib/en/readme/windows.so \
-		lib/en/readme/new.so lib/en/readme/new.4.9.so \
+		lib/en/readme/new.so lib/en/readme/new.4.11.so \
+		lib/en/readme/new.4.10.so lib/en/readme/new.4.9.so \
 		lib/en/readme/new.4.8.so lib/en/readme/new.4.7.so \
 		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
 		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
@@ -7485,8 +7460,10 @@ lib/en/refman.txt: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/man1/aeimport.1 lib/en/man1/aeintegratq.1 \
 		lib/en/man1/aeipass.1 lib/en/man1/ael.1 \
 		lib/en/man1/aelic.1 lib/en/man1/aels.1 \
-		lib/en/man1/aemv.1 lib/en/man1/aemvu.1 \
-		lib/en/man1/aena.1 lib/en/man1/aenbr.1 \
+		lib/en/man1/aemeasure.1 lib/en/man1/aemt.1 \
+		lib/en/man1/aemtu.1 lib/en/man1/aemv.1 \
+		lib/en/man1/aemvu.1 lib/en/man1/aena.1 \
+		lib/en/man1/o_recurse.so lib/en/man1/aenbr.1 \
 		lib/en/man1/aenbru.1 lib/en/man1/aenc.1 \
 		lib/en/man1/aencu.1 lib/en/man1/aend.1 \
 		lib/en/man1/aenf.1 lib/en/man1/z_template.so \
@@ -7670,127 +7647,24 @@ $(RPM_BUILD_ROOT)$(datadir)/en/user-guide.txt: lib/en/user-guide.txt \
 		lib/en/.mkdir.datadir
 	$(INSTALL_DATA) lib/en/user-guide.txt $@
 
-lib/fr/LC_MESSAGES/aedist.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aedist.po \
-		lib/fr/LC_MESSAGES/libaegis.po
+lib/es/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/es/LC_MESSAGES/aegis.po
 	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aedist.po \
-		lib/fr/LC_MESSAGES/libaegis.po
+		--output=$@ lib/es/LC_MESSAGES/aegis.po
 
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aedist.mo: \
-		lib/fr/LC_MESSAGES/aedist.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aedist.mo $@
+$(RPM_BUILD_ROOT)$(NLSDIR)/es/LC_MESSAGES/aegis.mo: \
+		lib/es/LC_MESSAGES/aegis.mo \
+		lib/es/LC_MESSAGES/.mkdir.libdir
+	$(INSTALL_DATA) lib/es/LC_MESSAGES/aegis.mo $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
-lib/fr/LC_MESSAGES/aefind.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aefind.po \
-		lib/fr/LC_MESSAGES/libaegis.po
+lib/fr/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aegis.po
 	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aefind.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aefind.mo: \
-		lib/fr/LC_MESSAGES/aefind.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aefind.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aegis.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aegis.po \
-		lib/fr/LC_MESSAGES/libaegis.po
+		--output=$@ lib/fr/LC_MESSAGES/aegis.po
 
 $(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aegis.mo: \
 		lib/fr/LC_MESSAGES/aegis.mo \
 		lib/fr/LC_MESSAGES/.mkdir.libdir
 	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aegis.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aeimport.mo: etc/msgfmt.sh \
-		lib/fr/LC_MESSAGES/aeimport.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aeimport.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aeimport.mo: \
-		lib/fr/LC_MESSAGES/aeimport.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aeimport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aels.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aels.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aels.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aels.mo: \
-		lib/fr/LC_MESSAGES/aels.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aels.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aepatch.mo: etc/msgfmt.sh \
-		lib/fr/LC_MESSAGES/aepatch.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aepatch.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aepatch.mo: \
-		lib/fr/LC_MESSAGES/aepatch.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aepatch.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aerect.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aerect.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aerect.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aerect.mo: \
-		lib/fr/LC_MESSAGES/aerect.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aerect.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aereport.mo: etc/msgfmt.sh \
-		lib/fr/LC_MESSAGES/aereport.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aereport.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aereport.mo: \
-		lib/fr/LC_MESSAGES/aereport.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aereport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aesub.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aesub.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aesub.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aesub.mo: \
-		lib/fr/LC_MESSAGES/aesub.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aesub.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/fr/LC_MESSAGES/aetar.mo: etc/msgfmt.sh lib/fr/LC_MESSAGES/aetar.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/fr/LC_MESSAGES/aetar.po \
-		lib/fr/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aetar.mo: \
-		lib/fr/LC_MESSAGES/aetar.mo \
-		lib/fr/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/fr/LC_MESSAGES/aetar.mo $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 $(RPM_BUILD_ROOT)$(datadir)/fr/LC_MESSAGES/glossaire: \
@@ -7805,6 +7679,16 @@ lib/icon/aegis.gif: lib/icon/aegis.gif.uue
 $(RPM_BUILD_ROOT)$(IconRoot)/icon/aegis.gif: lib/icon/aegis.gif \
 		lib/icon/.mkdir.script
 	$(INSTALL_DATA) lib/icon/aegis.gif.uue $@
+
+$(RPM_BUILD_ROOT)$(datadir)/icon2/64x64.png.uue: lib/icon2/64x64.png.uue \
+		lib/icon2/.mkdir.datadir
+	$(INSTALL_DATA) lib/icon2/64x64.png.uue $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+
+$(RPM_BUILD_ROOT)$(datadir)/icon2/bigger.png.uue: \
+		lib/icon2/bigger.png.uue lib/icon2/.mkdir.datadir
+	$(INSTALL_DATA) lib/icon2/bigger.png.uue $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 $(RPM_BUILD_ROOT)$(datadir)/if.inews.sh: lib/if.inews.sh \
 		lib/.mkdir.datadir
@@ -7830,89 +7714,14 @@ $(RPM_BUILD_ROOT)$(datadir)/man1/en/ae_p.1: lib/man1/en/ae_p.1 \
 	$(INSTALL_DATA) lib/man1/en/ae_p.1 $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
-lib/nl/LC_MESSAGES/aedist.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aedist.po \
-		lib/nl/LC_MESSAGES/libaegis.po
+lib/nl/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aegis.po
 	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aedist.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aedist.mo: \
-		lib/nl/LC_MESSAGES/aedist.mo \
-		lib/nl/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aedist.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/nl/LC_MESSAGES/aefind.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aefind.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aefind.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aefind.mo: \
-		lib/nl/LC_MESSAGES/aefind.mo \
-		lib/nl/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aefind.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/nl/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aegis.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aegis.po \
-		lib/nl/LC_MESSAGES/libaegis.po
+		--output=$@ lib/nl/LC_MESSAGES/aegis.po
 
 $(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aegis.mo: \
 		lib/nl/LC_MESSAGES/aegis.mo \
 		lib/nl/LC_MESSAGES/.mkdir.libdir
 	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aegis.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/nl/LC_MESSAGES/aerect.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aerect.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aerect.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aerect.mo: \
-		lib/nl/LC_MESSAGES/aerect.mo \
-		lib/nl/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aerect.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/nl/LC_MESSAGES/aereport.mo: etc/msgfmt.sh \
-		lib/nl/LC_MESSAGES/aereport.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aereport.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aereport.mo: \
-		lib/nl/LC_MESSAGES/aereport.mo \
-		lib/nl/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aereport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/nl/LC_MESSAGES/aesub.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aesub.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aesub.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aesub.mo: \
-		lib/nl/LC_MESSAGES/aesub.mo \
-		lib/nl/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aesub.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/nl/LC_MESSAGES/aetar.mo: etc/msgfmt.sh lib/nl/LC_MESSAGES/aetar.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/nl/LC_MESSAGES/aetar.po \
-		lib/nl/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aetar.mo: \
-		lib/nl/LC_MESSAGES/aetar.mo \
-		lib/nl/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/nl/LC_MESSAGES/aetar.mo $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 $(RPM_BUILD_ROOT)$(datadir)/profile: lib/profile lib/.mkdir.datadir
@@ -8004,6 +7813,11 @@ $(RPM_BUILD_ROOT)$(datadir)/report/proj_admin.rpt: \
 	$(INSTALL_DATA) lib/report/proj_admin.rpt $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
+$(RPM_BUILD_ROOT)$(datadir)/report/proj_ances.rpt: \
+		lib/report/proj_ances.rpt lib/report/.mkdir.datadir
+	$(INSTALL_DATA) lib/report/proj_ances.rpt $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+
 $(RPM_BUILD_ROOT)$(datadir)/report/proj_bran.rpt: \
 		lib/report/proj_bran.rpt lib/report/.mkdir.datadir
 	$(INSTALL_DATA) lib/report/proj_bran.rpt $@
@@ -8071,6 +7885,16 @@ $(RPM_BUILD_ROOT)$(datadir)/rf.inews.sh: lib/rf.inews.sh \
 $(RPM_BUILD_ROOT)$(datadir)/rf.sh: lib/rf.sh lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/rf.sh $@
 
+lib/ro/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/ro/LC_MESSAGES/aegis.po
+	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
+		--output=$@ lib/ro/LC_MESSAGES/aegis.po
+
+$(RPM_BUILD_ROOT)$(NLSDIR)/ro/LC_MESSAGES/aegis.mo: \
+		lib/ro/LC_MESSAGES/aegis.mo \
+		lib/ro/LC_MESSAGES/.mkdir.libdir
+	$(INSTALL_DATA) lib/ro/LC_MESSAGES/aegis.mo $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
+
 $(RPM_BUILD_ROOT)$(datadir)/rp.inews.sh: lib/rp.inews.sh \
 		lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/rp.inews.sh $@
@@ -8085,140 +7909,14 @@ $(RPM_BUILD_ROOT)$(datadir)/rpu.inews.sh: lib/rpu.inews.sh \
 $(RPM_BUILD_ROOT)$(datadir)/rpu.sh: lib/rpu.sh lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/rpu.sh $@
 
-lib/ru/LC_MESSAGES/aecomplete.mo: etc/msgfmt.sh \
-		lib/ru/LC_MESSAGES/aecomplete.po \
-		lib/ru/LC_MESSAGES/libaegis.po
+lib/ru/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aegis.po
 	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aecomplete.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aecomplete.mo: \
-		lib/ru/LC_MESSAGES/aecomplete.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aecomplete.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aedist.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aedist.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aedist.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aedist.mo: \
-		lib/ru/LC_MESSAGES/aedist.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aedist.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aefind.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aefind.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aefind.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aefind.mo: \
-		lib/ru/LC_MESSAGES/aefind.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aefind.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aegis.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aegis.po \
-		lib/ru/LC_MESSAGES/libaegis.po
+		--output=$@ lib/ru/LC_MESSAGES/aegis.po
 
 $(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aegis.mo: \
 		lib/ru/LC_MESSAGES/aegis.mo \
 		lib/ru/LC_MESSAGES/.mkdir.libdir
 	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aegis.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aeimport.mo: etc/msgfmt.sh \
-		lib/ru/LC_MESSAGES/aeimport.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aeimport.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aeimport.mo: \
-		lib/ru/LC_MESSAGES/aeimport.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aeimport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aels.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aels.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aels.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aels.mo: \
-		lib/ru/LC_MESSAGES/aels.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aels.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aepatch.mo: etc/msgfmt.sh \
-		lib/ru/LC_MESSAGES/aepatch.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aepatch.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aepatch.mo: \
-		lib/ru/LC_MESSAGES/aepatch.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aepatch.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aerect.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aerect.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aerect.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aerect.mo: \
-		lib/ru/LC_MESSAGES/aerect.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aerect.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aereport.mo: etc/msgfmt.sh \
-		lib/ru/LC_MESSAGES/aereport.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aereport.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aereport.mo: \
-		lib/ru/LC_MESSAGES/aereport.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aereport.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aesub.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aesub.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aesub.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aesub.mo: \
-		lib/ru/LC_MESSAGES/aesub.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aesub.mo $@
-	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
-
-lib/ru/LC_MESSAGES/aetar.mo: etc/msgfmt.sh lib/ru/LC_MESSAGES/aetar.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
-		--output=$@ lib/ru/LC_MESSAGES/aetar.po \
-		lib/ru/LC_MESSAGES/libaegis.po
-
-$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aetar.mo: \
-		lib/ru/LC_MESSAGES/aetar.mo \
-		lib/ru/LC_MESSAGES/.mkdir.libdir
-	$(INSTALL_DATA) lib/ru/LC_MESSAGES/aetar.mo $@
 	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 $(RPM_BUILD_ROOT)$(datadir)/wish/aebuffy.rpt: lib/wish/aebuffy.rpt \
@@ -12426,6 +12124,17 @@ libaegis/change/test/batch_result.$(OBJEXT): \
 		libaegis/change/test/batch_result.c
 	mv batch_result.$(OBJEXT) $@
 
+libaegis/change/test/fce_reg_expt.$(OBJEXT): \
+		libaegis/change/test/fce_reg_expt.c libaegis/change.h \
+		common/main.h libaegis/cstate.h common/ac/time.h \
+		common/config.h common/config.messy.h libaegis/type.h \
+		common/ac/stddef.h common/str.h common/ac/stdarg.h \
+		libaegis/parse.h libaegis/fstate.h libaegis/pconf.h \
+		libaegis/zero.h common/error.h
+	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
+		libaegis/change/test/fce_reg_expt.c
+	mv fce_reg_expt.$(OBJEXT) $@
+
 libaegis/change/test/new_file_get.$(OBJEXT): \
 		libaegis/change/test/new_file_get.c libaegis/change.h \
 		common/main.h libaegis/cstate.h common/ac/time.h \
@@ -13783,6 +13492,13 @@ libaegis/os/waitpid_st.$(OBJEXT): libaegis/os/waitpid_st.c \
 		libaegis/os/waitpid_st.c
 	mv waitpid_st.$(OBJEXT) $@
 
+libaegis/os/xargs.$(OBJEXT): libaegis/os/xargs.c libaegis/os.h \
+		common/ac/time.h common/config.h common/config.messy.h \
+		common/main.h common/str.h common/ac/stddef.h \
+		common/ac/stdarg.h common/str_list.h
+	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/os/xargs.c
+	mv xargs.$(OBJEXT) $@
+
 libaegis/output.$(OBJEXT): libaegis/output.c common/ac/string.h \
 		common/config.h common/config.messy.h common/error.h \
 		common/main.h common/mem.h common/ac/stddef.h \
@@ -14241,9 +13957,10 @@ libaegis/project/file/directory/query.$(OBJEXT): \
 		common/config.messy.h libaegis/type.h common/ac/stddef.h \
 		common/str.h common/ac/stdarg.h libaegis/parse.h \
 		libaegis/fstate.h libaegis/pconf.h libaegis/zero.h \
-		common/error.h libaegis/project/file.h \
-		libaegis/project.h libaegis/pstate.h libaegis/pattr.h \
-		common/str_list.h common/trace.h
+		common/error.h libaegis/os/isa/path_prefix.h \
+		libaegis/project/file.h libaegis/project.h \
+		libaegis/pstate.h libaegis/pattr.h common/str_list.h \
+		common/trace.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/project/file/directory/query.c
 	mv query.$(OBJEXT) $@
@@ -14668,13 +14385,13 @@ libaegis/sub.$(OBJEXT): libaegis/sub.c common/ac/ctype.h common/config.h \
 		libaegis/pattr.h libaegis/project/file.h \
 		libaegis/project/history.h common/str_list.h \
 		libaegis/sub.h libaegis/sub/addpathsuffi.h \
-		libaegis/sub/architecture.h libaegis/sub/basename.h \
-		libaegis/sub/base_relativ.h libaegis/sub/binary_direc.h \
+		libaegis/sub/architecture.h libaegis/sub/base_relativ.h \
+		libaegis/sub/basename.h libaegis/sub/binary_direc.h \
 		libaegis/sub/capitalize.h libaegis/sub/change/delta.h \
-		libaegis/sub/change/developer.h \
 		libaegis/sub/change/develo_direc.h \
-		libaegis/sub/change/integrator.h \
+		libaegis/sub/change/developer.h \
 		libaegis/sub/change/integr_direc.h \
+		libaegis/sub/change/integrator.h \
 		libaegis/sub/change/number.h \
 		libaegis/sub/change/reviewer.h \
 		libaegis/sub/change/state.h \
@@ -14693,15 +14410,17 @@ libaegis/sub.$(OBJEXT): libaegis/sub.c common/ac/ctype.h common/config.h \
 		libaegis/sub/project/baseline.h \
 		libaegis/sub/project/develop_list.h \
 		libaegis/sub/project/integra_list.h \
-		libaegis/sub/project/specific.h \
-		libaegis/sub/project/reviewe_list.h libaegis/sub/quote.h \
+		libaegis/sub/project/reviewe_list.h \
+		libaegis/sub/project/specific.h libaegis/sub/quote.h \
 		libaegis/sub/read_file.h libaegis/sub/right.h \
 		libaegis/sub/search_path.h libaegis/sub/shell.h \
-		libaegis/sub/source.h libaegis/sub/substitute.h \
+		libaegis/sub/source.h libaegis/sub/split.h \
+		libaegis/sub/substitute.h libaegis/sub/substr.h \
 		libaegis/sub/switch.h libaegis/sub/trim_directo.h \
-		libaegis/sub/trim_extensi.h libaegis/sub/upcase.h \
-		libaegis/sub/user.h libaegis/sub/zero_pad.h \
-		common/trace.h common/wstr_list.h common/wstr.h
+		libaegis/sub/trim_extensi.h libaegis/sub/unsplit.h \
+		libaegis/sub/upcase.h libaegis/sub/user.h \
+		libaegis/sub/zero_pad.h common/trace.h \
+		common/wstr_list.h common/wstr.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/sub.c
 	mv sub.$(OBJEXT) $@
 
@@ -14757,9 +14476,9 @@ libaegis/sub/basename.$(OBJEXT): libaegis/sub/basename.c \
 	mv basename.$(OBJEXT) $@
 
 libaegis/sub/binary_direc.$(OBJEXT): libaegis/sub/binary_direc.c \
-		common/libdir.h common/main.h libaegis/sub.h \
-		common/str.h common/ac/stddef.h common/config.h \
-		common/config.messy.h common/ac/stdarg.h \
+		common/libdir.h libaegis/sub.h common/str.h \
+		common/ac/stddef.h common/config.h common/config.messy.h \
+		common/ac/stdarg.h common/main.h \
 		libaegis/sub/binary_direc.h common/wstr_list.h \
 		common/wstr.h common/ac/stdlib.h common/trace.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
@@ -14906,9 +14625,9 @@ libaegis/sub/comment.$(OBJEXT): libaegis/sub/comment.c \
 	mv comment.$(OBJEXT) $@
 
 libaegis/sub/common_direc.$(OBJEXT): libaegis/sub/common_direc.c \
-		common/libdir.h common/main.h libaegis/sub.h \
-		common/str.h common/ac/stddef.h common/config.h \
-		common/config.messy.h common/ac/stdarg.h \
+		common/libdir.h libaegis/sub.h common/str.h \
+		common/ac/stddef.h common/config.h common/config.messy.h \
+		common/ac/stdarg.h common/main.h \
 		libaegis/sub/common_direc.h common/trace.h \
 		common/wstr_list.h common/wstr.h common/ac/stdlib.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
@@ -14931,9 +14650,9 @@ libaegis/sub/copyri_years.$(OBJEXT): libaegis/sub/copyri_years.c \
 	mv copyri_years.$(OBJEXT) $@
 
 libaegis/sub/data_directo.$(OBJEXT): libaegis/sub/data_directo.c \
-		common/libdir.h common/main.h libaegis/sub.h \
-		common/str.h common/ac/stddef.h common/config.h \
-		common/config.messy.h common/ac/stdarg.h \
+		common/libdir.h libaegis/sub.h common/str.h \
+		common/ac/stddef.h common/config.h common/config.messy.h \
+		common/ac/stdarg.h common/main.h \
 		libaegis/sub/data_directo.h common/trace.h \
 		common/wstr_list.h common/wstr.h common/ac/stdlib.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
@@ -15072,9 +14791,9 @@ libaegis/sub/length.$(OBJEXT): libaegis/sub/length.c libaegis/sub.h \
 	mv length.$(OBJEXT) $@
 
 libaegis/sub/librar_direc.$(OBJEXT): libaegis/sub/librar_direc.c \
-		common/libdir.h common/main.h libaegis/sub.h \
-		common/str.h common/ac/stddef.h common/config.h \
-		common/config.messy.h common/ac/stdarg.h \
+		common/libdir.h libaegis/sub.h common/str.h \
+		common/ac/stddef.h common/config.h common/config.messy.h \
+		common/ac/stdarg.h common/main.h \
 		libaegis/sub/librar_direc.h common/trace.h \
 		common/wstr_list.h common/wstr.h common/ac/stdlib.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
@@ -15309,6 +15028,14 @@ libaegis/sub/source.$(OBJEXT): libaegis/sub/source.c common/arglex.h \
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/sub/source.c
 	mv source.$(OBJEXT) $@
 
+libaegis/sub/split.$(OBJEXT): libaegis/sub/split.c common/str_list.h \
+		common/str.h common/ac/stddef.h common/config.h \
+		common/config.messy.h common/ac/stdarg.h common/main.h \
+		libaegis/sub.h libaegis/sub/split.h common/trace.h \
+		common/wstr_list.h common/wstr.h common/ac/stdlib.h
+	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/sub/split.c
+	mv split.$(OBJEXT) $@
+
 libaegis/sub/substitute.$(OBJEXT): libaegis/sub/substitute.c \
 		libaegis/sub.h common/str.h common/ac/stddef.h \
 		common/config.h common/config.messy.h common/ac/stdarg.h \
@@ -15317,6 +15044,14 @@ libaegis/sub/substitute.$(OBJEXT): libaegis/sub/substitute.c \
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/sub/substitute.c
 	mv substitute.$(OBJEXT) $@
+
+libaegis/sub/substr.$(OBJEXT): libaegis/sub/substr.c libaegis/sub.h \
+		common/str.h common/ac/stddef.h common/config.h \
+		common/config.messy.h common/ac/stdarg.h common/main.h \
+		libaegis/sub/substr.h common/trace.h common/wstr_list.h \
+		common/wstr.h common/ac/stdlib.h
+	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/sub/substr.c
+	mv substr.$(OBJEXT) $@
 
 libaegis/sub/switch.$(OBJEXT): libaegis/sub/switch.c common/str.h \
 		common/ac/stddef.h common/config.h common/config.messy.h \
@@ -15346,6 +15081,15 @@ libaegis/sub/trim_extensi.$(OBJEXT): libaegis/sub/trim_extensi.c \
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/sub/trim_extensi.c
 	mv trim_extensi.$(OBJEXT) $@
+
+libaegis/sub/unsplit.$(OBJEXT): libaegis/sub/unsplit.c common/str_list.h \
+		common/str.h common/ac/stddef.h common/config.h \
+		common/config.messy.h common/ac/stdarg.h common/main.h \
+		libaegis/sub.h libaegis/sub/unsplit.h common/trace.h \
+		common/wstr_list.h common/wstr.h common/ac/stdlib.h
+	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
+		libaegis/sub/unsplit.c
+	mv unsplit.$(OBJEXT) $@
 
 libaegis/sub/upcase.$(OBJEXT): libaegis/sub/upcase.c common/mem.h \
 		common/ac/stddef.h common/config.h common/config.messy.h \
@@ -15597,22 +15341,6 @@ libaegis/zero.$(OBJEXT): libaegis/zero.c common/error.h common/main.h \
 		libaegis/zero.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/zero.c
 	mv zero.$(OBJEXT) $@
-
-simp_file_stat/count.$(OBJEXT): simp_file_stat/count.c common/ac/stdio.h \
-		common/config.h common/config.messy.h common/ac/string.h \
-		simp_file_stat/count.h common/error.h common/main.h
-	$(CC) $(CFLAGS) -Isimp_file_stat -Ilibaegis -Icommon -c \
-		simp_file_stat/count.c
-	mv count.$(OBJEXT) $@
-
-simp_file_stat/main.$(OBJEXT): simp_file_stat/main.c common/ac/stdio.h \
-		common/config.h common/config.messy.h common/ac/stdlib.h \
-		common/arglex.h common/main.h simp_file_stat/count.h \
-		common/error.h common/progname.h common/str.h \
-		common/ac/stddef.h common/ac/stdarg.h
-	$(CC) $(CFLAGS) -Isimp_file_stat -Ilibaegis -Icommon -c \
-		simp_file_stat/main.c
-	mv main.$(OBJEXT) $@
 
 test/00/t0001a.ES: test/00/t0001a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/00/t0001a.sh \
@@ -16114,6 +15842,10 @@ test/01/t0125a.ES: test/01/t0125a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0125a.sh \
 		test/01/t0125a.ES
 
+test/01/t0126a.ES: test/01/t0126a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0126a.sh \
+		test/01/t0126a.ES
+
 test/01/t0127a.ES: test/01/t0127a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0127a.sh \
 		test/01/t0127a.ES
@@ -16142,6 +15874,10 @@ test/01/t0133a.ES: test/01/t0133a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0133a.sh \
 		test/01/t0133a.ES
 
+test/01/t0134a.ES: test/01/t0134a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0134a.sh \
+		test/01/t0134a.ES
+
 test/01/t0135a.ES: test/01/t0135a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0135a.sh \
 		test/01/t0135a.ES
@@ -16161,6 +15897,18 @@ test/01/t0138a.ES: test/01/t0138a.sh all-bin etc/test.sh
 test/01/t0139a.ES: test/01/t0139a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0139a.sh \
 		test/01/t0139a.ES
+
+test/01/t0140a.ES: test/01/t0140a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0140a.sh \
+		test/01/t0140a.ES
+
+test/01/t0144a.ES: test/01/t0144a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0144a.sh \
+		test/01/t0144a.ES
+
+test/01/t0145a.ES: test/01/t0145a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0145a.sh \
+		test/01/t0145a.ES
 
 test/01/t0150a.ES: test/01/t0150a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0150a.sh \
@@ -16237,6 +15985,30 @@ test/01/t0169a.ES: test/01/t0169a.sh all-bin etc/test.sh
 test/01/t0170a.ES: test/01/t0170a.sh all-bin etc/test.sh
 	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0170a.sh \
 		test/01/t0170a.ES
+
+test/01/t0171a.ES: test/01/t0171a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0171a.sh \
+		test/01/t0171a.ES
+
+test/01/t0172a.ES: test/01/t0172a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0172a.sh \
+		test/01/t0172a.ES
+
+test/01/t0173a.ES: test/01/t0173a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0173a.sh \
+		test/01/t0173a.ES
+
+test/01/t0175a.ES: test/01/t0175a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0175a.sh \
+		test/01/t0175a.ES
+
+test/01/t0176a.ES: test/01/t0176a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0176a.sh \
+		test/01/t0176a.ES
+
+test/01/t0177a.ES: test/01/t0177a.sh all-bin etc/test.sh
+	CC="$(CC)" $(SH) etc/test.sh -shell $(SH) -run test/01/t0177a.sh \
+		test/01/t0177a.ES
 
 test_base64/main.$(OBJEXT): test_base64/main.c common/ac/stdio.h \
 		common/config.h common/config.messy.h common/ac/stdlib.h \
@@ -16366,6 +16138,21 @@ lib/en/notes/.mkdir.datadir: lib/en/.mkdir.datadir
 	-@touch $@
 	@sleep 1
 
+lib/es/LC_MESSAGES/.mkdir.libdir: lib/es/.mkdir.libdir
+	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(NLSDIR)/es/LC_MESSAGES
+	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(NLSDIR)/es/LC_MESSAGES && \
+		chgrp $(AEGIS_GID) \
+		$(RPM_BUILD_ROOT)$(NLSDIR)/es/LC_MESSAGES
+	-@touch $@
+	@sleep 1
+
+lib/es/.mkdir.libdir: lib/.mkdir.libdir
+	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(NLSDIR)/es
+	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(NLSDIR)/es && chgrp \
+		$(AEGIS_GID) $(RPM_BUILD_ROOT)$(NLSDIR)/es
+	-@touch $@
+	@sleep 1
+
 lib/fr/LC_MESSAGES/.mkdir.libdir: lib/fr/.mkdir.libdir
 	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES
 	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES && \
@@ -16439,6 +16226,21 @@ lib/report/.mkdir.datadir: lib/.mkdir.datadir
 	-@touch $@
 	@sleep 1
 
+lib/ro/LC_MESSAGES/.mkdir.libdir: lib/ro/.mkdir.libdir
+	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(NLSDIR)/ro/LC_MESSAGES
+	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(NLSDIR)/ro/LC_MESSAGES && \
+		chgrp $(AEGIS_GID) \
+		$(RPM_BUILD_ROOT)$(NLSDIR)/ro/LC_MESSAGES
+	-@touch $@
+	@sleep 1
+
+lib/ro/.mkdir.libdir: lib/.mkdir.libdir
+	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(NLSDIR)/ro
+	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(NLSDIR)/ro && chgrp \
+		$(AEGIS_GID) $(RPM_BUILD_ROOT)$(NLSDIR)/ro
+	-@touch $@
+	@sleep 1
+
 lib/ru/LC_MESSAGES/.mkdir.libdir: lib/ru/.mkdir.libdir
 	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES
 	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES && \
@@ -16465,17 +16267,17 @@ all-bin: bin/aeannotate$(EXEEXT) bin/aecomplete$(EXEEXT) \
 		bin/aedist$(EXEEXT) bin/aefind$(EXEEXT) \
 		bin/aefp$(EXEEXT) bin/aegis$(EXEEXT) \
 		bin/aeimport$(EXEEXT) bin/aels$(EXEEXT) \
-		bin/aepatch$(EXEEXT) bin/aerect$(EXEEXT) \
-		bin/aereport$(EXEEXT) bin/aesub$(EXEEXT) \
-		bin/aetar$(EXEEXT) bin/cklinlen$(EXEEXT) \
-		bin/find_sizes$(EXEEXT) bin/fmtgen$(EXEEXT) \
-		bin/ae-sccs-put$(EXEEXT) bin/ae_diff2htm$(EXEEXT) \
-		bin/aebuffy$(EXEEXT) bin/aecomp$(EXEEXT) \
-		bin/aegis.cgi.i$(EXEEXT) bin/aegis.cgi$(EXEEXT) \
-		bin/aeintegratq$(EXEEXT) bin/tkaeca$(EXEEXT) \
-		bin/tkaegis$(EXEEXT) bin/tkaenc$(EXEEXT) \
-		bin/tkaepa$(EXEEXT) bin/tkaer$(EXEEXT) \
-		bin/xaegis$(EXEEXT) bin/simp_file_stat$(EXEEXT) \
+		bin/aemeasure$(EXEEXT) bin/aepatch$(EXEEXT) \
+		bin/aerect$(EXEEXT) bin/aereport$(EXEEXT) \
+		bin/aesub$(EXEEXT) bin/aetar$(EXEEXT) \
+		bin/cklinlen$(EXEEXT) bin/find_sizes$(EXEEXT) \
+		bin/fmtgen$(EXEEXT) bin/ae-sccs-put$(EXEEXT) \
+		bin/ae_diff2htm$(EXEEXT) bin/aebuffy$(EXEEXT) \
+		bin/aecomp$(EXEEXT) bin/aegis.cgi.i$(EXEEXT) \
+		bin/aegis.cgi$(EXEEXT) bin/aeintegratq$(EXEEXT) \
+		bin/tkaeca$(EXEEXT) bin/tkaegis$(EXEEXT) \
+		bin/tkaenc$(EXEEXT) bin/tkaepa$(EXEEXT) \
+		bin/tkaer$(EXEEXT) bin/xaegis$(EXEEXT) \
 		bin/test_base64$(EXEEXT) bin/test_zlib$(EXEEXT)
 
 aeannotate_files = aeannotate/annotate.$(OBJEXT) \
@@ -16563,7 +16365,8 @@ aecomplete_files = aecomplete/command.$(OBJEXT) \
 		aecomplete/main.$(OBJEXT) aecomplete/shell.$(OBJEXT) \
 		aecomplete/shell/bash.$(OBJEXT) \
 		aecomplete/shell/emitfilelist.$(OBJEXT) \
-		aecomplete/shell/private.$(OBJEXT)
+		aecomplete/shell/private.$(OBJEXT) \
+		aecomplete/shell/zsh.$(OBJEXT)
 
 bin/aecomplete$(EXEEXT): $(aecomplete_files) libaegis/libaegis.$(LIBEXT) \
 		.bin
@@ -16646,7 +16449,8 @@ aegis_files = aegis/aeb.$(OBJEXT) aegis/aeca.$(OBJEXT) \
 		aegis/aedeu.$(OBJEXT) aegis/aedn.$(OBJEXT) \
 		aegis/aeib.$(OBJEXT) aegis/aeibu.$(OBJEXT) \
 		aegis/aeif.$(OBJEXT) aegis/aeip.$(OBJEXT) \
-		aegis/ael.$(OBJEXT) aegis/aemv.$(OBJEXT) \
+		aegis/ael.$(OBJEXT) aegis/aemt.$(OBJEXT) \
+		aegis/aemtu.$(OBJEXT) aegis/aemv.$(OBJEXT) \
 		aegis/aemvu.$(OBJEXT) aegis/aena.$(OBJEXT) \
 		aegis/aenbr.$(OBJEXT) aegis/aenbru.$(OBJEXT) \
 		aegis/aenc.$(OBJEXT) aegis/aencu.$(OBJEXT) \
@@ -16663,7 +16467,8 @@ aegis_files = aegis/aeb.$(OBJEXT) aegis/aeca.$(OBJEXT) \
 		aegis/aermu.$(OBJEXT) aegis/aerp.$(OBJEXT) \
 		aegis/aerpa.$(OBJEXT) aegis/aerpu.$(OBJEXT) \
 		aegis/aerrv.$(OBJEXT) aegis/aet.$(OBJEXT) \
-		aegis/aev.$(OBJEXT) aegis/main.$(OBJEXT)
+		aegis/aev.$(OBJEXT) aegis/configured.$(OBJEXT) \
+		aegis/main.$(OBJEXT)
 
 bin/aegis$(EXEEXT): $(aegis_files) libaegis/libaegis.$(LIBEXT) .bin
 	@sleep 1
@@ -16725,6 +16530,19 @@ bin/aels$(EXEEXT): $(aels_files) libaegis/libaegis.$(LIBEXT) .bin
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aels$(PROGRAM_SUFFIX)$(EXEEXT): \
 		bin/aels$(EXEEXT) .bindir
 	$(INSTALL_PROGRAM) bin/aels$(EXEEXT) $@
+
+aemeasure_files = aemeasure/count.$(OBJEXT) aemeasure/main.$(OBJEXT)
+
+bin/aemeasure$(EXEEXT): $(aemeasure_files) libaegis/libaegis.$(LIBEXT) \
+		.bin
+	@sleep 1
+	$(CC) $(LDFLAGS) -o $@ $(aemeasure_files) \
+		libaegis/libaegis.$(LIBEXT) $(LIBS)
+	@sleep 1
+
+$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aemeasure$(PROGRAM_SUFFIX)$(EXEEXT): \
+		bin/aemeasure$(EXEEXT) .bindir
+	$(INSTALL_PROGRAM) bin/aemeasure$(EXEEXT) $@
 
 aepatch_files = aepatch/arglex3.$(OBJEXT) aepatch/list.$(OBJEXT) \
 		aepatch/main.$(OBJEXT) aepatch/receive.$(OBJEXT) \
@@ -16853,20 +16671,6 @@ bin/fmtgen$(EXEEXT): $(fmtgen_files) .bin
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)fmtgen$(PROGRAM_SUFFIX)$(EXEEXT): \
 		bin/fmtgen$(EXEEXT) .bindir
 	$(INSTALL_PROGRAM) bin/fmtgen$(EXEEXT) $@
-
-simp_file_stat_files = simp_file_stat/count.$(OBJEXT) \
-		simp_file_stat/main.$(OBJEXT)
-
-bin/simp_file_stat$(EXEEXT): $(simp_file_stat_files) \
-		common/common.$(LIBEXT) .bin
-	@sleep 1
-	$(CC) $(LDFLAGS) -o $@ $(simp_file_stat_files) \
-		common/common.$(LIBEXT) $(LIBS)
-	@sleep 1
-
-$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)simp_file_stat$(PROGRAM_SUFFIX)$(EXEEXT): \
-		bin/simp_file_stat$(EXEEXT) .bindir
-	$(INSTALL_PROGRAM) bin/simp_file_stat$(EXEEXT) $@
 
 test_base64_files = test_base64/main.$(OBJEXT)
 
@@ -17398,6 +17202,7 @@ LibAegisFiles = libaegis/ael/change/by_state.$(OBJEXT) \
 		libaegis/change/test/batch.$(OBJEXT) \
 		libaegis/change/test/batch_fake.$(OBJEXT) \
 		libaegis/change/test/batch_result.$(OBJEXT) \
+		libaegis/change/test/fce_reg_expt.$(OBJEXT) \
 		libaegis/change/test/new_file_get.$(OBJEXT) \
 		libaegis/change/test/reg_time_set.$(OBJEXT) \
 		libaegis/change/test/rescin_exemp.$(OBJEXT) \
@@ -17523,7 +17328,7 @@ LibAegisFiles = libaegis/ael/change/by_state.$(OBJEXT) \
 		libaegis/os/unlink/unlink.$(OBJEXT) \
 		libaegis/os/waitpid.$(OBJEXT) \
 		libaegis/os/waitpid_st.$(OBJEXT) \
-		libaegis/output.$(OBJEXT) \
+		libaegis/os/xargs.$(OBJEXT) libaegis/output.$(OBJEXT) \
 		libaegis/output/base64.$(OBJEXT) \
 		libaegis/output/bit_bucket.$(OBJEXT) \
 		libaegis/output/conten_encod.$(OBJEXT) \
@@ -17645,10 +17450,13 @@ LibAegisFiles = libaegis/ael/change/by_state.$(OBJEXT) \
 		libaegis/sub/search_path.$(OBJEXT) \
 		libaegis/sub/shell.$(OBJEXT) \
 		libaegis/sub/source.$(OBJEXT) \
+		libaegis/sub/split.$(OBJEXT) \
 		libaegis/sub/substitute.$(OBJEXT) \
+		libaegis/sub/substr.$(OBJEXT) \
 		libaegis/sub/switch.$(OBJEXT) \
 		libaegis/sub/trim_directo.$(OBJEXT) \
 		libaegis/sub/trim_extensi.$(OBJEXT) \
+		libaegis/sub/unsplit.$(OBJEXT) \
 		libaegis/sub/upcase.$(OBJEXT) \
 		libaegis/sub/user.$(OBJEXT) \
 		libaegis/sub/zero_pad.$(OBJEXT) \
@@ -17780,6 +17588,7 @@ DataFiles = $(RPM_BUILD_ROOT)/etc/profile.d/aegis.sh \
 		$(RPM_BUILD_ROOT)$(datadir)/report/file_hstry.rpt \
 		$(RPM_BUILD_ROOT)$(datadir)/report/proj_activ.rpt \
 		$(RPM_BUILD_ROOT)$(datadir)/report/proj_admin.rpt \
+		$(RPM_BUILD_ROOT)$(datadir)/report/proj_ances.rpt \
 		$(RPM_BUILD_ROOT)$(datadir)/report/proj_bran.rpt \
 		$(RPM_BUILD_ROOT)$(datadir)/report/proj_brana.rpt \
 		$(RPM_BUILD_ROOT)$(datadir)/report/proj_detai.rpt \
@@ -17843,6 +17652,9 @@ install-man-yes: $(RPM_BUILD_ROOT)$(mandir)/man1/ae-sccs-put.1 \
 		$(RPM_BUILD_ROOT)$(mandir)/man1/ael.1 \
 		$(RPM_BUILD_ROOT)$(mandir)/man1/aelic.1 \
 		$(RPM_BUILD_ROOT)$(mandir)/man1/aels.1 \
+		$(RPM_BUILD_ROOT)$(mandir)/man1/aemeasure.1 \
+		$(RPM_BUILD_ROOT)$(mandir)/man1/aemt.1 \
+		$(RPM_BUILD_ROOT)$(mandir)/man1/aemtu.1 \
 		$(RPM_BUILD_ROOT)$(mandir)/man1/aemv.1 \
 		$(RPM_BUILD_ROOT)$(mandir)/man1/aemvu.1 \
 		$(RPM_BUILD_ROOT)$(mandir)/man1/aena.1 \
@@ -17906,98 +17718,25 @@ install-man-yes: $(RPM_BUILD_ROOT)$(mandir)/man1/ae-sccs-put.1 \
 
 install-man-no:
 
-po_files_yes: lib/de/LC_MESSAGES/aedist.mo lib/de/LC_MESSAGES/aefind.mo \
-		lib/de/LC_MESSAGES/aegis.mo \
-		lib/de/LC_MESSAGES/aeimport.mo \
-		lib/de/LC_MESSAGES/aepatch.mo \
-		lib/de/LC_MESSAGES/aerect.mo \
-		lib/de/LC_MESSAGES/aereport.mo \
-		lib/de/LC_MESSAGES/aesub.mo lib/de/LC_MESSAGES/aetar.mo \
-		lib/en/LC_MESSAGES/aeannotate.mo \
-		lib/en/LC_MESSAGES/aecomplete.mo \
-		lib/en/LC_MESSAGES/aedist.mo \
-		lib/en/LC_MESSAGES/aefind.mo lib/en/LC_MESSAGES/aegis.mo \
-		lib/en/LC_MESSAGES/aeimport.mo \
-		lib/en/LC_MESSAGES/aels.mo lib/en/LC_MESSAGES/aepatch.mo \
-		lib/en/LC_MESSAGES/aerect.mo \
-		lib/en/LC_MESSAGES/aereport.mo \
-		lib/en/LC_MESSAGES/aesub.mo lib/en/LC_MESSAGES/aetar.mo \
-		lib/fr/LC_MESSAGES/aedist.mo \
-		lib/fr/LC_MESSAGES/aefind.mo lib/fr/LC_MESSAGES/aegis.mo \
-		lib/fr/LC_MESSAGES/aeimport.mo \
-		lib/fr/LC_MESSAGES/aels.mo lib/fr/LC_MESSAGES/aepatch.mo \
-		lib/fr/LC_MESSAGES/aerect.mo \
-		lib/fr/LC_MESSAGES/aereport.mo \
-		lib/fr/LC_MESSAGES/aesub.mo lib/fr/LC_MESSAGES/aetar.mo \
-		lib/nl/LC_MESSAGES/aedist.mo \
-		lib/nl/LC_MESSAGES/aefind.mo lib/nl/LC_MESSAGES/aegis.mo \
-		lib/nl/LC_MESSAGES/aerect.mo \
-		lib/nl/LC_MESSAGES/aereport.mo \
-		lib/nl/LC_MESSAGES/aesub.mo lib/nl/LC_MESSAGES/aetar.mo \
-		lib/ru/LC_MESSAGES/aecomplete.mo \
-		lib/ru/LC_MESSAGES/aedist.mo \
-		lib/ru/LC_MESSAGES/aefind.mo lib/ru/LC_MESSAGES/aegis.mo \
-		lib/ru/LC_MESSAGES/aeimport.mo \
-		lib/ru/LC_MESSAGES/aels.mo lib/ru/LC_MESSAGES/aepatch.mo \
-		lib/ru/LC_MESSAGES/aerect.mo \
-		lib/ru/LC_MESSAGES/aereport.mo \
-		lib/ru/LC_MESSAGES/aesub.mo lib/ru/LC_MESSAGES/aetar.mo
+po_files_yes: lib/de/LC_MESSAGES/aegis.mo lib/en/LC_MESSAGES/aegis.mo \
+		lib/es/LC_MESSAGES/aegis.mo lib/fr/LC_MESSAGES/aegis.mo \
+		lib/nl/LC_MESSAGES/aegis.mo lib/ro/LC_MESSAGES/aegis.mo \
+		lib/ru/LC_MESSAGES/aegis.mo
 
 po_files_no:
 
-install-po-yes: $(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aedist.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aefind.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aegis.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aeimport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aepatch.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aerect.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aereport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aesub.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aetar.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aeannotate.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aecomplete.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aedist.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aefind.mo \
+install-po-yes: $(RPM_BUILD_ROOT)$(NLSDIR)/de/LC_MESSAGES/aegis.mo \
 		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aegis.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aeimport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aels.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aepatch.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aerect.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aereport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aesub.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/en/LC_MESSAGES/aetar.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aedist.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aefind.mo \
+		$(RPM_BUILD_ROOT)$(NLSDIR)/es/LC_MESSAGES/aegis.mo \
 		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aegis.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aeimport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aels.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aepatch.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aerect.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aereport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aesub.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/fr/LC_MESSAGES/aetar.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aedist.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aefind.mo \
 		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aegis.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aerect.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aereport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aesub.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/nl/LC_MESSAGES/aetar.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aecomplete.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aedist.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aefind.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aegis.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aeimport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aels.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aepatch.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aerect.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aereport.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aesub.mo \
-		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aetar.mo
+		$(RPM_BUILD_ROOT)$(NLSDIR)/ro/LC_MESSAGES/aegis.mo \
+		$(RPM_BUILD_ROOT)$(NLSDIR)/ru/LC_MESSAGES/aegis.mo
 
 install-po-no:
 
-doc_files_yes: lib/en/aoss4.ps lib/en/aoss4.dvi lib/en/aoss4.txt \
+doc_files_yes: lib/de/auug97.ps lib/de/auug97.dvi lib/de/auug97.txt \
+		lib/en/aoss4.ps lib/en/aoss4.dvi lib/en/aoss4.txt \
 		lib/en/auug93.ps lib/en/auug93.dvi lib/en/auug93.txt \
 		lib/en/auug96.ps lib/en/auug96.dvi lib/en/auug96.txt \
 		lib/en/auug97.ps lib/en/auug97.dvi lib/en/auug97.txt \
@@ -18015,7 +17754,10 @@ doc_files_yes: lib/en/aoss4.ps lib/en/aoss4.dvi lib/en/aoss4.txt \
 
 doc_files_no:
 
-install-doc-yes: $(RPM_BUILD_ROOT)$(datadir)/en/aoss4.ps \
+install-doc-yes: $(RPM_BUILD_ROOT)$(datadir)/de/auug97.ps \
+		$(RPM_BUILD_ROOT)$(datadir)/de/auug97.dvi \
+		$(RPM_BUILD_ROOT)$(datadir)/de/auug97.txt \
+		$(RPM_BUILD_ROOT)$(datadir)/en/aoss4.ps \
 		$(RPM_BUILD_ROOT)$(datadir)/en/aoss4.dvi \
 		$(RPM_BUILD_ROOT)$(datadir)/en/aoss4.txt \
 		$(RPM_BUILD_ROOT)$(datadir)/en/auug93.ps \
@@ -18077,6 +17819,9 @@ install-doc-yes: $(RPM_BUILD_ROOT)$(datadir)/en/aoss4.ps \
 		$(RPM_BUILD_ROOT)$(datadir)/en/man1/ael.1 \
 		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aelic.1 \
 		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aels.1 \
+		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemeasure.1 \
+		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemt.1 \
+		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemtu.1 \
 		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemv.1 \
 		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aemvu.1 \
 		$(RPM_BUILD_ROOT)$(datadir)/en/man1/aena.1 \
@@ -18193,17 +17938,21 @@ TestFiles = test/00/t0001a.ES test/00/t0002a.ES test/00/t0003a.ES \
 		test/01/t0115a.ES test/01/t0116a.ES test/01/t0117a.ES \
 		test/01/t0118a.ES test/01/t0119a.ES test/01/t0120a.ES \
 		test/01/t0121a.ES test/01/t0122a.ES test/01/t0123a.ES \
-		test/01/t0124a.ES test/01/t0125a.ES test/01/t0127a.ES \
-		test/01/t0128a.ES test/01/t0129a.ES test/01/t0130a.ES \
-		test/01/t0131a.ES test/01/t0132a.ES test/01/t0133a.ES \
-		test/01/t0135a.ES test/01/t0136a.ES test/01/t0137a.ES \
-		test/01/t0138a.ES test/01/t0139a.ES test/01/t0150a.ES \
-		test/01/t0151a.ES test/01/t0152a.ES test/01/t0153a.ES \
-		test/01/t0155a.ES test/01/t0156a.ES test/01/t0157a.ES \
-		test/01/t0158a.ES test/01/t0159a.ES test/01/t0160a.ES \
-		test/01/t0161a.ES test/01/t0162a.ES test/01/t0163a.ES \
-		test/01/t0165a.ES test/01/t0166a.ES test/01/t0167a.ES \
-		test/01/t0168a.ES test/01/t0169a.ES test/01/t0170a.ES
+		test/01/t0124a.ES test/01/t0125a.ES test/01/t0126a.ES \
+		test/01/t0127a.ES test/01/t0128a.ES test/01/t0129a.ES \
+		test/01/t0130a.ES test/01/t0131a.ES test/01/t0132a.ES \
+		test/01/t0133a.ES test/01/t0134a.ES test/01/t0135a.ES \
+		test/01/t0136a.ES test/01/t0137a.ES test/01/t0138a.ES \
+		test/01/t0139a.ES test/01/t0140a.ES test/01/t0144a.ES \
+		test/01/t0145a.ES test/01/t0150a.ES test/01/t0151a.ES \
+		test/01/t0152a.ES test/01/t0153a.ES test/01/t0155a.ES \
+		test/01/t0156a.ES test/01/t0157a.ES test/01/t0158a.ES \
+		test/01/t0159a.ES test/01/t0160a.ES test/01/t0161a.ES \
+		test/01/t0162a.ES test/01/t0163a.ES test/01/t0165a.ES \
+		test/01/t0166a.ES test/01/t0167a.ES test/01/t0168a.ES \
+		test/01/t0169a.ES test/01/t0170a.ES test/01/t0171a.ES \
+		test/01/t0172a.ES test/01/t0173a.ES test/01/t0175a.ES \
+		test/01/t0176a.ES test/01/t0177a.ES
 
 clean-obj:
 	rm -f core bin/find_sizes$(EXEEXT) bin/fmtgen$(EXEEXT)
@@ -18282,7 +18031,8 @@ clean-obj:
 	rm -f aecomplete/shell/bash.$(OBJEXT)
 	rm -f aecomplete/shell/emitfilelist.$(OBJEXT)
 	rm -f aecomplete/shell/private.$(OBJEXT)
-	rm -f aedist/arglex3.$(OBJEXT) aedist/input/cpio.$(OBJEXT)
+	rm -f aecomplete/shell/zsh.$(OBJEXT) aedist/arglex3.$(OBJEXT)
+	rm -f aedist/input/cpio.$(OBJEXT)
 	rm -f aedist/input/cpio_child.$(OBJEXT) aedist/list.$(OBJEXT)
 	rm -f aedist/main.$(OBJEXT) aedist/open.$(OBJEXT)
 	rm -f aedist/output/cpio.$(OBJEXT)
@@ -18319,6 +18069,7 @@ clean-obj:
 	rm -f aegis/aedn.$(OBJEXT) aegis/aeib.$(OBJEXT)
 	rm -f aegis/aeibu.$(OBJEXT) aegis/aeif.$(OBJEXT)
 	rm -f aegis/aeip.$(OBJEXT) aegis/ael.$(OBJEXT)
+	rm -f aegis/aemt.$(OBJEXT) aegis/aemtu.$(OBJEXT)
 	rm -f aegis/aemv.$(OBJEXT) aegis/aemvu.$(OBJEXT)
 	rm -f aegis/aena.$(OBJEXT) aegis/aenbr.$(OBJEXT)
 	rm -f aegis/aenbru.$(OBJEXT) aegis/aenc.$(OBJEXT)
@@ -18336,8 +18087,8 @@ clean-obj:
 	rm -f aegis/aerp.$(OBJEXT) aegis/aerpa.$(OBJEXT)
 	rm -f aegis/aerpu.$(OBJEXT) aegis/aerrv.$(OBJEXT)
 	rm -f aegis/aet.$(OBJEXT) aegis/aev.$(OBJEXT)
-	rm -f aegis/main.$(OBJEXT) aeimport/arglex3.$(OBJEXT)
-	rm -f aeimport/change_set.$(OBJEXT)
+	rm -f aegis/configured.$(OBJEXT) aegis/main.$(OBJEXT)
+	rm -f aeimport/arglex3.$(OBJEXT) aeimport/change_set.$(OBJEXT)
 	rm -f aeimport/change_set/file.$(OBJEXT)
 	rm -f aeimport/change_set/file_list.$(OBJEXT)
 	rm -f aeimport/change_set/find.$(OBJEXT)
@@ -18363,6 +18114,7 @@ clean-obj:
 	rm -f aeimport/reconstruct.$(OBJEXT)
 	rm -f aeimport/synthesize.$(OBJEXT) aels/list.$(OBJEXT)
 	rm -f aels/main.$(OBJEXT) aels/stack.$(OBJEXT)
+	rm -f aemeasure/count.$(OBJEXT) aemeasure/main.$(OBJEXT)
 	rm -f aepatch/arglex3.$(OBJEXT) aepatch/list.$(OBJEXT)
 	rm -f aepatch/main.$(OBJEXT) aepatch/receive.$(OBJEXT)
 	rm -f aepatch/send.$(OBJEXT) aepatch/slurp.$(OBJEXT)
@@ -18421,7 +18173,8 @@ clean-obj:
 	rm -f lib/.mkdir.datadir lib/config.example/.mkdir.datadir
 	rm -f lib/de/LC_MESSAGES/.mkdir.libdir lib/de/.mkdir.libdir
 	rm -f lib/.mkdir.libdir lib/de/LC_MESSAGES/.mkdir.datadir
-	rm -f lib/de/.mkdir.datadir lib/en/LC_MESSAGES/.mkdir.libdir
+	rm -f lib/de/.mkdir.datadir lib/de/auug97.ps lib/de/auug97.dvi
+	rm -f lib/de/auug97.txt lib/en/LC_MESSAGES/.mkdir.libdir
 	rm -f lib/en/.mkdir.libdir lib/en/aoss4.ps lib/en/aoss4.dvi
 	rm -f lib/en/aoss4.txt lib/en/.mkdir.datadir lib/en/auug93.ps
 	rm -f lib/en/auug93.dvi lib/en/auug93.txt lib/en/auug96.ps
@@ -18438,12 +18191,14 @@ clean-obj:
 	rm -f lib/en/refman.ps lib/en/refman.dvi lib/en/refman.txt
 	rm -f lib/en/release.ps lib/en/release.dvi lib/en/release.txt
 	rm -f lib/en/user-guide.ps lib/en/user-guide.dvi
-	rm -f lib/en/user-guide.txt lib/fr/LC_MESSAGES/.mkdir.libdir
+	rm -f lib/en/user-guide.txt lib/es/LC_MESSAGES/.mkdir.libdir
+	rm -f lib/es/.mkdir.libdir lib/fr/LC_MESSAGES/.mkdir.libdir
 	rm -f lib/fr/.mkdir.libdir lib/fr/LC_MESSAGES/.mkdir.datadir
 	rm -f lib/fr/.mkdir.datadir lib/man1/en/.mkdir.datadir
 	rm -f lib/man1/.mkdir.datadir lib/nl/LC_MESSAGES/.mkdir.libdir
 	rm -f lib/nl/.mkdir.libdir lib/remind/.mkdir.datadir
-	rm -f lib/report/.mkdir.datadir lib/ru/LC_MESSAGES/.mkdir.libdir
+	rm -f lib/report/.mkdir.datadir lib/ro/LC_MESSAGES/.mkdir.libdir
+	rm -f lib/ro/.mkdir.libdir lib/ru/LC_MESSAGES/.mkdir.libdir
 	rm -f lib/ru/.mkdir.libdir lib/wish/.mkdir.datadir
 	rm -f libaegis/ael/change/by_state.$(OBJEXT)
 	rm -f libaegis/ael/change/changes.$(OBJEXT)
@@ -18778,6 +18533,7 @@ clean-obj:
 	rm -f libaegis/change/test/batch.$(OBJEXT)
 	rm -f libaegis/change/test/batch_fake.$(OBJEXT)
 	rm -f libaegis/change/test/batch_result.$(OBJEXT)
+	rm -f libaegis/change/test/fce_reg_expt.$(OBJEXT)
 	rm -f libaegis/change/test/new_file_get.$(OBJEXT)
 	rm -f libaegis/change/test/reg_time_set.$(OBJEXT)
 	rm -f libaegis/change/test/rescin_exemp.$(OBJEXT)
@@ -18905,7 +18661,8 @@ clean-obj:
 	rm -f libaegis/os/unlink/errok.$(OBJEXT)
 	rm -f libaegis/os/unlink/unlink.$(OBJEXT)
 	rm -f libaegis/os/waitpid.$(OBJEXT)
-	rm -f libaegis/os/waitpid_st.$(OBJEXT) libaegis/output.$(OBJEXT)
+	rm -f libaegis/os/waitpid_st.$(OBJEXT)
+	rm -f libaegis/os/xargs.$(OBJEXT) libaegis/output.$(OBJEXT)
 	rm -f libaegis/output/base64.$(OBJEXT)
 	rm -f libaegis/output/bit_bucket.$(OBJEXT)
 	rm -f libaegis/output/conten_encod.$(OBJEXT)
@@ -19028,10 +18785,13 @@ clean-obj:
 	rm -f libaegis/sub/right.$(OBJEXT)
 	rm -f libaegis/sub/search_path.$(OBJEXT)
 	rm -f libaegis/sub/shell.$(OBJEXT) libaegis/sub/source.$(OBJEXT)
+	rm -f libaegis/sub/split.$(OBJEXT)
 	rm -f libaegis/sub/substitute.$(OBJEXT)
+	rm -f libaegis/sub/substr.$(OBJEXT)
 	rm -f libaegis/sub/switch.$(OBJEXT)
 	rm -f libaegis/sub/trim_directo.$(OBJEXT)
 	rm -f libaegis/sub/trim_extensi.$(OBJEXT)
+	rm -f libaegis/sub/unsplit.$(OBJEXT)
 	rm -f libaegis/sub/upcase.$(OBJEXT) libaegis/sub/user.$(OBJEXT)
 	rm -f libaegis/sub/zero_pad.$(OBJEXT) libaegis/tstrslt.$(OBJEXT)
 	rm -f libaegis/tstrslt.c libaegis/tstrslt.h
@@ -19050,8 +18810,7 @@ clean-obj:
 	rm -f libaegis/wide_output/truncate.$(OBJEXT)
 	rm -f libaegis/wide_output/unexpand.$(OBJEXT)
 	rm -f libaegis/wide_output/wrap.$(OBJEXT)
-	rm -f libaegis/zero.$(OBJEXT) simp_file_stat/count.$(OBJEXT)
-	rm -f simp_file_stat/main.$(OBJEXT) test/00/t0001a.ES
+	rm -f libaegis/zero.$(OBJEXT) test/00/t0001a.ES
 	rm -f test/00/t0002a.ES test/00/t0003a.ES test/00/t0004a.ES
 	rm -f test/00/t0005a.ES test/00/t0006a.ES test/00/t0007a.ES
 	rm -f test/00/t0008a.ES test/00/t0009a.ES test/00/t0010a.ES
@@ -19093,35 +18852,39 @@ clean-obj:
 	rm -f test/01/t0116a.ES test/01/t0117a.ES test/01/t0118a.ES
 	rm -f test/01/t0119a.ES test/01/t0120a.ES test/01/t0121a.ES
 	rm -f test/01/t0122a.ES test/01/t0123a.ES test/01/t0124a.ES
-	rm -f test/01/t0125a.ES test/01/t0127a.ES test/01/t0128a.ES
-	rm -f test/01/t0129a.ES test/01/t0130a.ES test/01/t0131a.ES
-	rm -f test/01/t0132a.ES test/01/t0133a.ES test/01/t0135a.ES
-	rm -f test/01/t0136a.ES test/01/t0137a.ES test/01/t0138a.ES
-	rm -f test/01/t0139a.ES test/01/t0150a.ES test/01/t0151a.ES
-	rm -f test/01/t0152a.ES test/01/t0153a.ES test/01/t0155a.ES
-	rm -f test/01/t0156a.ES test/01/t0157a.ES test/01/t0158a.ES
-	rm -f test/01/t0159a.ES test/01/t0160a.ES test/01/t0161a.ES
-	rm -f test/01/t0162a.ES test/01/t0163a.ES test/01/t0165a.ES
-	rm -f test/01/t0166a.ES test/01/t0167a.ES test/01/t0168a.ES
-	rm -f test/01/t0169a.ES test/01/t0170a.ES
-	rm -f test_base64/main.$(OBJEXT) test_zlib/main.$(OBJEXT)
+	rm -f test/01/t0125a.ES test/01/t0126a.ES test/01/t0127a.ES
+	rm -f test/01/t0128a.ES test/01/t0129a.ES test/01/t0130a.ES
+	rm -f test/01/t0131a.ES test/01/t0132a.ES test/01/t0133a.ES
+	rm -f test/01/t0134a.ES test/01/t0135a.ES test/01/t0136a.ES
+	rm -f test/01/t0137a.ES test/01/t0138a.ES test/01/t0139a.ES
+	rm -f test/01/t0140a.ES test/01/t0144a.ES test/01/t0145a.ES
+	rm -f test/01/t0150a.ES test/01/t0151a.ES test/01/t0152a.ES
+	rm -f test/01/t0153a.ES test/01/t0155a.ES test/01/t0156a.ES
+	rm -f test/01/t0157a.ES test/01/t0158a.ES test/01/t0159a.ES
+	rm -f test/01/t0160a.ES test/01/t0161a.ES test/01/t0162a.ES
+	rm -f test/01/t0163a.ES test/01/t0165a.ES test/01/t0166a.ES
+	rm -f test/01/t0167a.ES test/01/t0168a.ES test/01/t0169a.ES
+	rm -f test/01/t0170a.ES test/01/t0171a.ES test/01/t0172a.ES
+	rm -f test/01/t0173a.ES test/01/t0175a.ES test/01/t0176a.ES
+	rm -f test/01/t0177a.ES test_base64/main.$(OBJEXT)
+	rm -f test_zlib/main.$(OBJEXT)
 
 clean: clean-obj
 	rm -f bin/aeannotate$(EXEEXT) bin/aecomplete$(EXEEXT) \
 		bin/aedist$(EXEEXT) bin/aefind$(EXEEXT) \
 		bin/aefp$(EXEEXT) bin/aegis$(EXEEXT) \
 		bin/aeimport$(EXEEXT) bin/aels$(EXEEXT) \
-		bin/aepatch$(EXEEXT) bin/aerect$(EXEEXT) \
-		bin/aereport$(EXEEXT) bin/aesub$(EXEEXT) \
-		bin/aetar$(EXEEXT) bin/cklinlen$(EXEEXT) \
-		bin/find_sizes$(EXEEXT) bin/fmtgen$(EXEEXT) \
-		bin/ae-sccs-put$(EXEEXT) bin/ae_diff2htm$(EXEEXT) \
-		bin/aebuffy$(EXEEXT) bin/aecomp$(EXEEXT) \
-		bin/aegis.cgi.i$(EXEEXT) bin/aegis.cgi$(EXEEXT) \
-		bin/aeintegratq$(EXEEXT) bin/tkaeca$(EXEEXT) \
-		bin/tkaegis$(EXEEXT) bin/tkaenc$(EXEEXT) \
-		bin/tkaepa$(EXEEXT) bin/tkaer$(EXEEXT) \
-		bin/xaegis$(EXEEXT) bin/simp_file_stat$(EXEEXT) \
+		bin/aemeasure$(EXEEXT) bin/aepatch$(EXEEXT) \
+		bin/aerect$(EXEEXT) bin/aereport$(EXEEXT) \
+		bin/aesub$(EXEEXT) bin/aetar$(EXEEXT) \
+		bin/cklinlen$(EXEEXT) bin/find_sizes$(EXEEXT) \
+		bin/fmtgen$(EXEEXT) bin/ae-sccs-put$(EXEEXT) \
+		bin/ae_diff2htm$(EXEEXT) bin/aebuffy$(EXEEXT) \
+		bin/aecomp$(EXEEXT) bin/aegis.cgi.i$(EXEEXT) \
+		bin/aegis.cgi$(EXEEXT) bin/aeintegratq$(EXEEXT) \
+		bin/tkaeca$(EXEEXT) bin/tkaegis$(EXEEXT) \
+		bin/tkaenc$(EXEEXT) bin/tkaepa$(EXEEXT) \
+		bin/tkaer$(EXEEXT) bin/xaegis$(EXEEXT) \
 		bin/test_base64$(EXEEXT) bin/test_zlib$(EXEEXT) \
 		bin/xaegis
 
@@ -19133,6 +18896,7 @@ $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aefind$(PROGRAM_SUFFIX)$(EXEEXT) \
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aegis$(PROGRAM_SUFFIX)$(EXEEXT) \
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aeimport$(PROGRAM_SUFFIX)$(EXEEXT) \
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aels$(PROGRAM_SUFFIX)$(EXEEXT) \
+$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aemeasure$(PROGRAM_SUFFIX)$(EXEEXT) \
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aepatch$(PROGRAM_SUFFIX)$(EXEEXT) \
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aerect$(PROGRAM_SUFFIX)$(EXEEXT) \
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aereport$(PROGRAM_SUFFIX)$(EXEEXT) \

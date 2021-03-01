@@ -28,12 +28,12 @@
 typedef struct command_vtbl_ty command_vtbl_ty;
 struct command_vtbl_ty
 {
-    void (*destructor)_((command_ty *));
-    struct complete_ty *(*completion_get)_((command_ty *));
+    void (*destructor)(command_ty *);
+    struct complete_ty *(*completion_get)(command_ty *);
     int size;
     char *name;
 };
 
-command_ty *command_new _((command_vtbl_ty *));
+command_ty *command_new(command_vtbl_ty *);
 
 #endif /* AECOMPLETE_COMMAND_PRIVATE_H */

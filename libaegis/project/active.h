@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 struct project_ty; /* existence */
 struct change_ty; /* existence */
 
-int project_active _((struct project_ty *, int));
-void project_active_check _((struct project_ty *, int));
-void project_active_check_branch _((struct change_ty *, int));
+int project_active(struct project_ty *, int);
+void project_active_check(struct project_ty *, int);
+void project_active_check_branch(struct change_ty *, int);
 
 #endif /* LIBAEGIS_PROJECT_ACTIVE_H */

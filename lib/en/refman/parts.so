@@ -33,6 +33,9 @@
 .so ../man1/ael.1
 .so ../man1/aelic.1
 .so ../man1/aels.1
+.so ../man1/aemeasure.1
+.so ../man1/aemt.1
+.so ../man1/aemtu.1
 .so ../man1/aemv.1
 .so ../man1/aemvu.1
 .so ../man1/aena.1

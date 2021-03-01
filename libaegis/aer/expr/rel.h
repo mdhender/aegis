@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,13 @@
 
 #include <aer/expr.h>
 
-rpt_expr_ty *rpt_expr_lt _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_gt _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_le _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_ge _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_eq _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_ne _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_match _((rpt_expr_ty *, rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_nmatch _((rpt_expr_ty *, rpt_expr_ty *));
+rpt_expr_ty *rpt_expr_lt(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_gt(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_le(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_ge(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_eq(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_ne(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_match(rpt_expr_ty *, rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_nmatch(rpt_expr_ty *, rpt_expr_ty *);
 
 #endif /* AEGIS_AER_EXPR_REL_H */

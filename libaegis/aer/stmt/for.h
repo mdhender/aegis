@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,11 +27,11 @@
 
 struct rpt_expr_ty;
 
-rpt_stmt_ty *rpt_stmt_for _((struct rpt_expr_ty *, struct rpt_expr_ty *,
-	struct rpt_expr_ty *, rpt_stmt_ty *));
-rpt_stmt_ty *rpt_stmt_foreach _((struct rpt_expr_ty *, struct rpt_expr_ty *,
-	rpt_stmt_ty *));
-rpt_stmt_ty *rpt_stmt_break _((void));
-rpt_stmt_ty *rpt_stmt_continue _((void));
+rpt_stmt_ty *rpt_stmt_for(struct rpt_expr_ty *, struct rpt_expr_ty *,
+	struct rpt_expr_ty *, rpt_stmt_ty *);
+rpt_stmt_ty *rpt_stmt_foreach(struct rpt_expr_ty *, struct rpt_expr_ty *,
+	rpt_stmt_ty *);
+rpt_stmt_ty *rpt_stmt_break(void);
+rpt_stmt_ty *rpt_stmt_continue(void);
 
 #endif /* AEGIS_AER_STMT_FOR_H */

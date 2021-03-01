@@ -25,6 +25,6 @@
 
 #include <complete.h>
 
-complete_ty *generic_argument_complete _((void));
+complete_ty *generic_argument_complete(void);
 
 #endif /* AECOMPLETE_COMMAND_GENERIC_H */

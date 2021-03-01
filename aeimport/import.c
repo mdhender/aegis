@@ -551,7 +551,7 @@ import_main(void)
      * and produce a diff file to go with it.
      */
     trace(("mark\n"));
-    reconstruct(project_name, cslp);
+    reconstruct(project_name);
     trace(("}\n"));
 }
 

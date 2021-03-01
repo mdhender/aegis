@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,74 +26,68 @@
 
 
 format_search_list_ty *
-format_search_list_new()
+format_search_list_new(void)
 {
-	format_search_list_ty *fslp;
+    format_search_list_ty *fslp;
 
-	fslp = mem_alloc(sizeof(format_search_list_ty));
-	fslp->item = 0;
-	fslp->length = 0;
-	fslp->maximum = 0;
-	return fslp;
+    fslp = mem_alloc(sizeof(format_search_list_ty));
+    fslp->item = 0;
+    fslp->length = 0;
+    fslp->maximum = 0;
+    return fslp;
 }
 
 
 void
-format_search_list_delete(fslp)
-	format_search_list_ty *fslp;
+format_search_list_delete(format_search_list_ty *fslp)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < fslp->length; ++j)
-		format_search_delete(fslp->item[j]);
-	if (fslp->item)
-		mem_free(fslp->item);
-	fslp->item = 0;
-	fslp->length = 0;
-	fslp->maximum = 0;
-	mem_free(fslp);
+    for (j = 0; j < fslp->length; ++j)
+	format_search_delete(fslp->item[j]);
+    if (fslp->item)
+	mem_free(fslp->item);
+    fslp->item = 0;
+    fslp->length = 0;
+    fslp->maximum = 0;
+    mem_free(fslp);
 }
 
 
 void
-format_search_list_append(fslp, fsp)
-	format_search_list_ty *fslp;
-	format_search_ty *fsp;
+format_search_list_append(format_search_list_ty *fslp, format_search_ty *fsp)
 {
-	if (fslp->length >= fslp->maximum)
-	{
-		size_t		nbytes;
+    if (fslp->length >= fslp->maximum)
+    {
+	size_t		nbytes;
 
-		fslp->maximum = fslp->maximum * 2 + 8;
-		nbytes = fslp->maximum * sizeof(fslp->item[0]);
-		fslp->item = mem_change_size(fslp->item, nbytes);
-	}
-	fslp->item[fslp->length++] = fsp;
+	fslp->maximum = fslp->maximum * 2 + 8;
+	nbytes = fslp->maximum * sizeof(fslp->item[0]);
+	fslp->item = mem_change_size(fslp->item, nbytes);
+    }
+    fslp->item[fslp->length++] = fsp;
 }
 
 
 void
-format_search_list_staff(fslp, slp)
-	format_search_list_ty *fslp;
-	string_list_ty	*slp;
+format_search_list_staff(format_search_list_ty *fslp, string_list_ty *slp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < fslp->length; ++j)
-		format_search_staff(fslp->item[j], slp);
+    for (j = 0; j < fslp->length; ++j)
+	format_search_staff(fslp->item[j], slp);
 }
 
 
 #ifdef DEBUG
 
 void
-format_search_list_validate(fslp)
-	format_search_list_ty *fslp;
+format_search_list_validate(format_search_list_ty *fslp)
 {
-	size_t		j;
+    size_t	    j;
 
-	for (j = 0; j < fslp->length; ++j)
-		format_search_validate(fslp->item[j]);
+    for (j = 0; j < fslp->length; ++j)
+	format_search_validate(fslp->item[j]);
 }
 
 #endif

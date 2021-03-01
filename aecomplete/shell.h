@@ -42,19 +42,19 @@ struct string_list_ty; /* forward */
   * a fatal error.  This function will only return if the shell can
   * be determined.
   */
-shell_ty *shell_find _((void));
+shell_ty *shell_find(void);
 
 /**
   * The shell_command_get function is used to get the name of the command
   * being completed.
   */
-string_ty *shell_command_get _((shell_ty *));
+string_ty *shell_command_get(shell_ty *);
 
 /**
   * The shell_prefix_get function is used to fetch the incomplete word
   * (prefix) to be completed.
   */
-string_ty *shell_prefix_get _((shell_ty *));
+string_ty *shell_prefix_get(shell_ty *);
 
 /**
   * The shell_test function is used to determine whether the environment
@@ -64,26 +64,26 @@ string_ty *shell_prefix_get _((shell_ty *));
   * Success is messier.  It parses the command line, and then re-creates
   * the command line being completed, before returning non-zero.
   */
-int shell_test _((shell_ty *));
+int shell_test(shell_ty *);
 
 /**
   * The shell_delete function is used when you have finished wioth
   * a shell,  It is important to call it, so that any shell-specific
   * wrap-up can be performed.
   */
-void shell_delete _((shell_ty *));
+void shell_delete(shell_ty *);
 
 /**
   * The shell_emit function is used to emit a completion candidate in
   * the format required by the given shell.
   */
-void shell_emit _((shell_ty *, string_ty *));
+void shell_emit(shell_ty *, string_ty *);
 
 /**
   * The shell_emit_file_list function is used to emit a list of files
   * names.  It will be carefully culled to only print names up to the
   * slash following the longest common prefix.
   */
-void shell_emit_file_list _((shell_ty *, struct string_list_ty *));
+void shell_emit_file_list(shell_ty *, struct string_list_ty *);
 
 #endif /* AECOMPLETE_SHELL_H */

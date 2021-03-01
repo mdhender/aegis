@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,10 @@
 
 #include <str.h>
 
-void copy_whole_file _((string_ty *from, string_ty *to, int cmt));
-string_ty *read_whole_file _((string_ty *));
-int files_are_different _((string_ty *, string_ty *));
-void file_from_string _((string_ty *, string_ty *, int));
-void cat_string_to_stdout _((string_ty *));
+void copy_whole_file(string_ty *from, string_ty *to, int cmt);
+string_ty *read_whole_file(string_ty *);
+int files_are_different(string_ty *, string_ty *);
+void file_from_string(string_ty *, string_ty *, int);
+void cat_string_to_stdout(string_ty *);
 
 #endif /* FILE_H */

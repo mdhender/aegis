@@ -27,6 +27,6 @@
 
 struct project_ty; /* forward */
 
-complete_ty *complete_project_administrator _((struct project_ty *));
+complete_ty *complete_project_administrator(struct project_ty *);
 
 #endif /* AECOMPLETE_COMPLETE_PROJECT_ADMINISTRATO_H */

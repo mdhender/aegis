@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct string_ty; /* existence */
 
-struct tree_ty *shorthand_path _((struct string_ty *));
+struct tree_ty *shorthand_path(struct string_ty *);
 
 #endif /* AEFIND_SHORTHAND_PATH_H */

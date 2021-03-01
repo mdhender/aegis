@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,9 +38,9 @@ typedef enum dir_walk_message_ty dir_walk_message_ty;
 
 struct stat;
 
-typedef void (*dir_walk_callback_ty)_((void *arg, dir_walk_message_ty,
-	string_ty *, struct stat *));
+typedef void (*dir_walk_callback_ty)(void *arg, dir_walk_message_ty,
+	string_ty *, struct stat *);
 
-void dir_walk _((string_ty *, dir_walk_callback_ty, void *arg));
+void dir_walk(string_ty *, dir_walk_callback_ty, void *arg);
 
 #endif /* DIR_H */

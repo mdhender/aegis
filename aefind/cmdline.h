@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 
 #include <main.h>
 
-void cmdline_grammar _((int, char **));
+void cmdline_grammar(int, char **);
 
-struct string_ty *stack_relative _((struct string_ty *));
-struct string_ty *stack_nth _((int));
+struct string_ty *stack_relative(struct string_ty *);
+struct string_ty *stack_nth(int);
 
 #endif /* AEFIND_CMDLINE_H */

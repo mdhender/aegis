@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,5 +36,12 @@ test_result =
 		 * The exit status of running the test file.
 		 */
 		exit_status = integer;
+
+		/*
+		 * The architecture name to which the result applies.
+		 * If not set, defaults to the architecture of the
+		 * executing system.
+		 */
+		architecture = string;
 	}
 ];

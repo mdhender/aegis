@@ -28,7 +28,7 @@
 struct sub_context_ty;
 struct wstring_list_ty;
 
-struct wstring_ty *sub_version _((struct sub_context_ty *,
-    struct wstring_list_ty *arg));
+struct wstring_ty *sub_version(struct sub_context_ty *,
+    struct wstring_list_ty *arg);
 
 #endif /* LIBAEGIS_SUB_CHANGE_VERSION_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,59 +29,62 @@
 
 
 string_ty *
-change_architecture_name(cp, with_arch)
-	change_ty	*cp;
-	int		with_arch;
+change_architecture_name(change_ty *cp, int with_arch)
 {
-	trace(("change_architecture_name(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
-	assert(cp->reference_count >= 1);
-	if (!cp->architecture_name)
+    trace(("change_architecture_name(cp = %8.8lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    if (!cp->architecture_name)
+    {
+	pconf		pconf_data;
+	long		j;
+	string_ty	*result;
+	string_ty	*un;
+
+	pconf_data = change_pconf_get(cp, 0);
+	assert(pconf_data->architecture);
+	un = uname_variant_get();
+	result = 0;
+	for (j = 0; j < pconf_data->architecture->length; ++j)
 	{
-		pconf		pconf_data;
-		long		j;
-		string_ty	*result;
-		string_ty	*un;
+	    pconf_architecture ap;
 
-		pconf_data = change_pconf_get(cp, 0);
-		assert(pconf_data->architecture);
-		un = uname_variant_get();
-		result = 0;
-		for (j = 0; j < pconf_data->architecture->length; ++j)
+	    ap = pconf_data->architecture->list[j];
+	    assert(ap->name);
+	    assert(ap->pattern);
+	    if (gmatch(ap->pattern->str_text, un->str_text))
+	    {
+		if (ap->mode == pconf_architecture_mode_forbidden)
 		{
-			pconf_architecture ap;
+		    sub_context_ty	*scp;
 
-			ap = pconf_data->architecture->list[j];
-			assert(ap->name);
-			assert(ap->pattern);
-			if (gmatch(ap->pattern->str_text, un->str_text))
-			{
-				if (ap->mode == pconf_architecture_mode_forbidden)
-				{
-					sub_context_ty	*scp;
-
-					scp = sub_context_new();
-					sub_var_set_string(scp, "Name", un);
-					change_fatal(cp, scp, i18n("architecture \"$name\" forbidden"));
-					/* NOTREACHED */
-					sub_context_delete(scp);
-				}
-				result = ap->name;
-				break;
-			}
+		    scp = sub_context_new();
+		    sub_var_set_string(scp, "Name", un);
+		    change_fatal
+		    (
+			cp,
+			scp,
+			i18n("architecture \"$name\" forbidden")
+		    );
+		    /* NOTREACHED */
+		    sub_context_delete(scp);
 		}
-		if (!result && with_arch)
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", un);
-			change_fatal(cp, scp, i18n("architecture \"$name\" unknown"));
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
-		cp->architecture_name = result;
+		result = ap->name;
+		break;
+	    }
 	}
-	trace_string(cp->architecture_name ? cp->architecture_name->str_text : "");
-	trace((/*{*/"}\n"));
-	return cp->architecture_name;
+	if (!result && with_arch)
+	{
+	    sub_context_ty	*scp;
+
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", un);
+	    change_fatal(cp, scp, i18n("architecture \"$name\" unknown"));
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
+	}
+	cp->architecture_name = result;
+    }
+    trace_string(cp->architecture_name ? cp->architecture_name->str_text : "");
+    trace(("}\n"));
+    return cp->architecture_name;
 }

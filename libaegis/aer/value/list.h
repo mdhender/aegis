@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 
 #include <aer/value.h>
 
-rpt_value_ty *rpt_value_list _((void));
-void rpt_value_list_append _((rpt_value_ty *, rpt_value_ty *));
-long rpt_value_list_length _((rpt_value_ty *));
-rpt_value_ty *rpt_value_list_nth _((rpt_value_ty *, long));
+rpt_value_ty *rpt_value_list(void);
+void rpt_value_list_append(rpt_value_ty *, rpt_value_ty *);
+long rpt_value_list_length(rpt_value_ty *);
+rpt_value_ty *rpt_value_list_nth(rpt_value_ty *, long);
 
 #endif /* AEGIS_AER_VALUE_LIST_H */

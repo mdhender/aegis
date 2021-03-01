@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994-1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,36 +33,36 @@ struct rpt_value_ty;
 typedef struct rpt_expr_method_ty rpt_expr_method_ty;
 struct rpt_expr_method_ty
 {
-	size_t		size;
-	char		*name;
-	void (*construct)_((struct rpt_expr_ty *));
-	void (*destruct)_((struct rpt_expr_ty *));
-	struct rpt_value_ty *(*evaluate)_((struct rpt_expr_ty *));
-	int (*lvalue)_((struct rpt_expr_ty *));
+    size_t	    size;
+    char	    *name;
+    void	    (*construct)(struct rpt_expr_ty *);
+    void	    (*destruct)(struct rpt_expr_ty *);
+    struct rpt_value_ty *(*evaluate)(struct rpt_expr_ty *);
+    int	    (*lvalue)(struct rpt_expr_ty *);
 };
 
 #define RPT_EXPR				\
-	rpt_expr_method_ty *method;		\
-	long		reference_count;	\
-	struct rpt_pos_ty *pos;			\
-	rpt_expr_ty	**child;		\
-	size_t		nchild;			\
-	size_t		nchild_max;
+    rpt_expr_method_ty *method;			\
+    long	    reference_count;		\
+    struct rpt_pos_ty *pos;			\
+    rpt_expr_ty     **child;			\
+    size_t	    nchild;			\
+    size_t	    nchild_max;
 
 typedef struct rpt_expr_ty rpt_expr_ty;
 struct rpt_expr_ty
 {
-	RPT_EXPR
+    RPT_EXPR
 };
 
-rpt_expr_ty *rpt_expr_alloc _((rpt_expr_method_ty *));
-void rpt_expr_free _((rpt_expr_ty *));
-rpt_expr_ty *rpt_expr_copy _((rpt_expr_ty *));
-void rpt_expr_parse_error _((rpt_expr_ty *, char *));
-void rpt_expr_append _((rpt_expr_ty *parent, rpt_expr_ty *child));
-void rpt_expr_prepend _((rpt_expr_ty *parent, rpt_expr_ty *child));
+rpt_expr_ty *rpt_expr_alloc(rpt_expr_method_ty *);
+void rpt_expr_free(rpt_expr_ty *);
+rpt_expr_ty *rpt_expr_copy(rpt_expr_ty *);
+void rpt_expr_parse_error(rpt_expr_ty *, char *);
+void rpt_expr_append(rpt_expr_ty *parent, rpt_expr_ty *child);
+void rpt_expr_prepend(rpt_expr_ty *parent, rpt_expr_ty *child);
 
-struct rpt_value_ty *rpt_expr_evaluate _((rpt_expr_ty *ep, int resolve_deferred));
-int rpt_expr_lvalue _((rpt_expr_ty *));
+struct rpt_value_ty *rpt_expr_evaluate(rpt_expr_ty *ep, int resolve_deferred);
+int rpt_expr_lvalue(rpt_expr_ty *);
 
 #endif /* AEGIS_AER_EXPR_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct wide_output_ty; /* existence */
 
-col_ty *col_unformatted_open _((struct wide_output_ty *, int));
+col_ty *col_unformatted_open(struct wide_output_ty *, int);
 
 #endif /* LIBAEGIS_COL_UNFORMATTED_H */

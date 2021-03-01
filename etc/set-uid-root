@@ -1,0 +1,47 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2002, 2003 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: set-uid-root
+#
+# You can have sudo(8) run this script in the build if you add the
+# following lines to the /etc/sudoers file.
+#
+#	Cmnd_Alias AEGIS_SUID = \
+#	    /<root-of-proj-dir>/baseline/etc/set-uid-root , \
+#	    /<root-of-proj-dir>/delta*/etc/set-uid-root , \
+#	    /<root-of-proj-dir>/branch.*/baseline/etc/set-uid-root , \
+#	    /<root-of-proj-dir>/branch.*/delta*/etc/set-uid-root , \
+#	    /<root-of-proj-dir>/branch.*/branch.*/baseline/etc/set-uid-root , \
+#	    /<root-of-proj-dir>/branch.*/branch.*/delta*/etc/set-uid-root
+#
+#	<your-login> ALL=(root) AEGIS_SUID
+#	<project-owner> ALL=(root) NOPASSWD: AEGIS_SUID
+#
+# NOTE: you should not configure /etc/sudoers to run this script when
+# it is in a user's development directory for dire security reasons.
+#
+arch=$1
+shift
+set -e
+for f in $@
+do
+    chown root $arch/bin/$f
+    chmod u+s $arch/bin/$f
+done
+exit 0

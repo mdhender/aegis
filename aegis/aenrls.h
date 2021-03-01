@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void new_release _((void));
+void new_release(void);
 
 #endif /* AEGIS_AENRLS_H */

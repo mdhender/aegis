@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct change_ty; /* existence */
 
-void change_lock_sync _((struct change_ty *));
+void change_lock_sync(struct change_ty *);
 
 #endif /* LIBAEGIS_CHANGE_LOCK_SYNC_H */

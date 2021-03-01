@@ -25,6 +25,6 @@
 
 #include <command.h>
 
-command_ty *command_aeifail _((void));
+command_ty *command_aeifail(void);
 
 #endif /* AECOMPLETE_COMMAND_AEIFAIL_H */

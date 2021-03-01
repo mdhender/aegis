@@ -38,7 +38,8 @@ command is used to manage the integrations of one or more changes in
 one or more projects.  Normally run via \fIcron\fP(1) or \fIat\fP(1)
 with the name of a single project, \*(n) will manage all operations
 for integration even when \fB\-Build\fP and \fB\-Test\fP are required
-on multiple architectures.
+on multiple architectures. If a change review is revoked after the queue
+is running \*(n) will notice the bad state and just move on.
 Additional options allow the integrator full control over most aspects
 of queue management such as the order of integration of multiple changes.
 .SH OPTIONS
@@ -53,6 +54,9 @@ Help, show usage plus all helpful comment information.
 .TP 8n
 \fB\-a\fP
 run on Any machine (normally only IntegrationHost)
+.TP 8n
+\fB\-s\fP
+run remote operations via ssh (default rsh)
 .TP 8n
 \fB\-n\fP
 No action, just tell what would be done.

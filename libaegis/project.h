@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1992-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ struct project_ty
 	int		uid, gid;
 	project_ty	*parent;
 	long		parent_bn;
-	struct string_list_ty *file_list;
+	struct string_list_ty *file_list[3];
 	/*
 	 * if you add anything to this structure,
 	 * make sure you fix project_free in project.c
@@ -59,71 +59,73 @@ struct project_ty
 	 */
 };
 
-project_ty *project_alloc _((string_ty *name));
-void project_bind_existing _((project_ty *));
-project_ty *project_bind_branch _((project_ty *ppp, struct change_ty *bp));
-void project_bind_new _((project_ty *));
-void project_list_get _((struct string_list_ty *));
-project_ty *project_find_branch _((project_ty *, char *));
-void project_free _((project_ty *));
-string_ty *project_name_get _((project_ty *));
-project_ty *project_copy _((project_ty *));
-struct change_ty *project_change_get _((project_ty *));
-string_ty *project_home_path_get _((project_ty *));
-string_ty *project_Home_path_get _((project_ty *));
-string_ty *project_top_path_get _((project_ty *, int));
-void project_home_path_set _((project_ty *, string_ty *));
-string_ty *project_baseline_path_get _((project_ty *, int));
-string_ty *project_history_path_get _((project_ty *));
-string_ty *project_info_path_get _((project_ty *));
-string_ty *project_changes_path_get _((project_ty *));
-string_ty *project_change_path_get _((project_ty *, long));
-string_ty *project_pstate_path_get _((project_ty *));
-pstate project_pstate_get _((project_ty *));
-void project_pstate_write _((project_ty *));
-void project_pstate_write_top _((project_ty *));
-void project_pstate_lock_prepare _((project_ty *));
-void project_pstate_lock_prepare_top _((project_ty *));
-void project_baseline_read_lock_prepare _((project_ty *));
-void project_baseline_write_lock_prepare _((project_ty *));
-void project_history_lock_prepare _((project_ty *));
-void project_error _((project_ty *, struct sub_context_ty *, char *));
-void project_fatal _((project_ty *, struct sub_context_ty *, char *));
-void project_verbose _((project_ty *, struct sub_context_ty *, char *));
-void project_change_append _((project_ty *, long, int));
-void project_change_delete _((project_ty *, long));
-int project_change_number_in_use _((project_ty *, long));
-string_ty *project_version_short_get _((project_ty *));
-string_ty *project_version_get _((project_ty *));
-int project_uid_get _((project_ty *));
-int project_gid_get _((project_ty *));
-struct user_ty *project_user _((project_ty *));
-void project_become _((project_ty *));
-void project_become_undo _((void));
-long project_next_test_number_get _((project_ty *));
-int project_is_readable _((project_ty *));
-long project_minimum_change_number_get _((project_ty *));
-void project_minimum_change_number_set _((project_ty *, long));
-int project_reuse_change_numbers_get _((project_ty *));
-void project_reuse_change_numbers_set _((project_ty *, int));
-long project_minimum_branch_number_get _((project_ty *));
-void project_minimum_branch_number_set _((project_ty *, long));
-int project_skip_unlucky_get _((project_ty *));
-void project_skip_unlucky_set _((project_ty *, int));
-int project_compress_database_get _((project_ty *));
-void project_compress_database_set _((project_ty *, int));
-int project_develop_end_action_get _((project_ty *));
-void project_develop_end_action_set _((project_ty *, int));
-int project_protect_development_directory_get _((project_ty *));
-void project_protect_development_directory_set _((project_ty *, int));
+project_ty *project_alloc(string_ty *name);
+void project_bind_existing(project_ty *);
+project_ty *project_bind_branch(project_ty *ppp, struct change_ty *bp);
+void project_bind_new(project_ty *);
+void project_list_get(struct string_list_ty *);
+void project_list_inner(struct string_list_ty *, project_ty *);
+project_ty *project_find_branch(project_ty *, char *);
+void project_free(project_ty *);
+string_ty *project_name_get(project_ty *);
+project_ty *project_copy(project_ty *);
+struct change_ty *project_change_get(project_ty *);
+string_ty *project_home_path_get(project_ty *);
+string_ty *project_Home_path_get(project_ty *);
+string_ty *project_top_path_get(project_ty *, int);
+void project_home_path_set(project_ty *, string_ty *);
+string_ty *project_baseline_path_get(project_ty *, int);
+string_ty *project_history_path_get(project_ty *);
+string_ty *project_info_path_get(project_ty *);
+string_ty *project_changes_path_get(project_ty *);
+string_ty *project_change_path_get(project_ty *, long);
+string_ty *project_pstate_path_get(project_ty *);
+pstate project_pstate_get(project_ty *);
+void project_pstate_write(project_ty *);
+void project_pstate_write_top(project_ty *);
+void project_pstate_lock_prepare(project_ty *);
+void project_pstate_lock_prepare_top(project_ty *);
+void project_baseline_read_lock_prepare(project_ty *);
+void project_baseline_write_lock_prepare(project_ty *);
+void project_history_lock_prepare(project_ty *);
+void project_error(project_ty *, struct sub_context_ty *, char *);
+void project_fatal(project_ty *, struct sub_context_ty *, char *);
+void project_verbose(project_ty *, struct sub_context_ty *, char *);
+void project_change_append(project_ty *, long, int);
+void project_change_delete(project_ty *, long);
+int project_change_number_in_use(project_ty *, long);
+string_ty *project_version_short_get(project_ty *);
+string_ty *project_version_get(project_ty *);
+int project_uid_get(project_ty *);
+int project_gid_get(project_ty *);
+struct user_ty *project_user(project_ty *);
+void project_become(project_ty *);
+void project_become_undo(void);
+long project_next_test_number_get(project_ty *);
+int project_is_readable(project_ty *);
+long project_minimum_change_number_get(project_ty *);
+void project_minimum_change_number_set(project_ty *, long);
+int project_reuse_change_numbers_get(project_ty *);
+void project_reuse_change_numbers_set(project_ty *, int);
+long project_minimum_branch_number_get(project_ty *);
+void project_minimum_branch_number_set(project_ty *, long);
+int project_skip_unlucky_get(project_ty *);
+void project_skip_unlucky_set(project_ty *, int);
+int project_compress_database_get(project_ty *);
+void project_compress_database_set(project_ty *, int);
+int project_develop_end_action_get(project_ty *);
+void project_develop_end_action_set(project_ty *, int);
+int project_protect_development_directory_get(project_ty *);
+void project_protect_development_directory_set(project_ty *, int);
 
-int break_up_version_string _((char *, long *, int, int *, int));
-void extract_version_from_project_name _((string_ty **, long *, int, int *));
-int project_name_ok _((string_ty *));
+int break_up_version_string(char *, long *, int, int *, int);
+void extract_version_from_project_name(string_ty **, long *, int, int *);
+int project_name_ok(string_ty *);
 
-struct pconf *project_pconf_get _((project_ty *));
+struct pconf *project_pconf_get(project_ty *);
 
-project_ty *project_new_branch _((project_ty *, struct user_ty *, long,
-	string_ty *));
+project_ty *project_new_branch(project_ty *, struct user_ty *, long,
+	string_ty *);
+void project_file_list_invalidate(project_ty *);
 
 #endif /* PROJECT_H */

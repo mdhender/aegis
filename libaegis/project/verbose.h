@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 struct project_ty; /* forward */
 struct string_ty; /* forward */
 
-void project_verbose_new_project_complete _((struct project_ty *));
-void project_verbose_new_branch_complete _((struct project_ty *));
-void project_verbose_directory _((struct project_ty *, struct string_ty *));
+void project_verbose_new_project_complete(struct project_ty *);
+void project_verbose_new_branch_complete(struct project_ty *);
+void project_verbose_directory(struct project_ty *, struct string_ty *);
 
 #endif /* LIBAEGIS_PROJECT_VERBOSE_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,10 +50,8 @@
 #include <str_list.h>
 
 
-static void copy_file_usage _((void));
-
 static void
-copy_file_usage()
+copy_file_usage(void)
 {
     char            *progname;
 
@@ -76,19 +74,15 @@ copy_file_usage()
 }
 
 
-static void copy_file_help _((void));
-
 static void
-copy_file_help()
+copy_file_help(void)
 {
     help("aecp", copy_file_usage);
 }
 
 
-static void copy_file_list _((void));
-
 static void
-copy_file_list()
+copy_file_list(void)
 {
     string_ty       *project_name;
     long            change_number;
@@ -148,10 +142,8 @@ copy_file_list()
 #define NO_TIME_SET ((time_t)(-1))
 
 
-static void copy_file_independent _((void));
-
 static void
-copy_file_independent()
+copy_file_independent(void)
 {
     string_ty       *dd;
     string_list_ty  wl;
@@ -558,7 +550,14 @@ copy_file_independent()
 	    ++number_of_errors;
 	    continue;
 	}
-	project_file_directory_query(pp2, s2, &wl_in, &wl_out);
+	project_file_directory_query
+	(
+	    pp2,
+	    s2,
+	    &wl_in,
+	    &wl_out,
+	    view_path_simple
+	);
 	if (delta_date != NO_TIME_SET)
 	    string_list_append_list(&wl_in, &wl_out);
 	if (wl_in.nstrings)
@@ -600,12 +599,10 @@ copy_file_independent()
 	fstate_src      src_data;
 
 	s1 = wl.string[j];
-	src_data = project_file_find(pp2, s1);
+	src_data = project_file_find(pp2, s1, view_path_simple);
 	if
 	(
 	    !src_data
-	||
-	    src_data->about_to_be_created_by
 	||
 	    (delta_date == NO_TIME_SET && src_data->deleted_by)
 	)
@@ -613,7 +610,7 @@ copy_file_independent()
 	    sub_context_ty *scp;
 
 	    scp = sub_context_new();
-	    src_data = project_file_find_fuzzy(pp2, s1);
+	    src_data = project_file_find_fuzzy(pp2, s1, view_path_extreme);
 	    sub_var_set_string(scp, "File_Name", s1);
 	    if (src_data)
 	    {
@@ -735,10 +732,8 @@ copy_file_independent()
 	{
 	    fstate_src      old_src;
 
-	    old_src = project_file_find(pp2, s1);
+	    old_src = project_file_find(pp2, s1, view_path_extreme);
 	    if (!old_src)
-		continue;
-	    if (old_src->action == file_action_remove)
 		continue;
 
 	    from = project_file_path(pp2, s1);
@@ -795,10 +790,35 @@ copy_file_independent()
 }
 
 
-static void copy_file_main _((void));
+static fstate_src
+fake_removed_file(project_ty *pp, string_ty *filename)
+{
+    fstate_src p_src_data;
+    fstate_src old_src;
+
+    p_src_data = project_file_find(pp, filename, view_path_simple);
+    assert(p_src_data);
+    old_src = fstate_src_type.alloc();
+    old_src->action = file_action_remove;
+    if (p_src_data && p_src_data->edit)
+    {
+	old_src->usage = p_src_data->usage;
+	assert(p_src_data->edit);
+	old_src->edit = history_version_copy(p_src_data->edit);
+    }
+    else
+    {
+	/* Should never happen.  Yeah, right. */
+	old_src->usage = file_usage_source;
+	old_src->edit = history_version_type.alloc();
+	old_src->edit->revision = str_from_c("1.1");
+    }
+    return old_src;
+}
+
 
 static void
-copy_file_main()
+copy_file_main(void)
 {
     string_ty       *dd;
     string_list_ty  wl;
@@ -1342,7 +1362,14 @@ copy_file_main()
 	    ++number_of_errors;
 	    continue;
 	}
-	project_file_directory_query(pp2, s2, &wl_in, &wl_out);
+	project_file_directory_query
+	(
+	    pp2,
+	    s2,
+	    &wl_in,
+	    &wl_out,
+	    view_path_simple
+	);
 	if (delta_date != NO_TIME_SET)
 	    string_list_append_list(&wl_in, &wl_out);
 	if (wl_in.nstrings)
@@ -1463,18 +1490,16 @@ copy_file_main()
 	    if (c_src_data && c_src_data->action == file_action_create)
 		continue;
 	}
-	src_data = project_file_find(pp2, s1);
+	src_data = project_file_find(pp2, s1, view_path_simple);
 	if
 	(
 	    !src_data
-	||
-	    src_data->about_to_be_created_by
 	||
 	    (delta_date == NO_TIME_SET && src_data->deleted_by)
 	)
 	{
 	    scp = sub_context_new();
-	    src_data = project_file_find_fuzzy(pp2, s1);
+	    src_data = project_file_find_fuzzy(pp2, s1, view_path_extreme);
 	    sub_var_set_string(scp, "File_Name", s1);
 	    if (src_data)
 	    {
@@ -1528,6 +1553,7 @@ copy_file_main()
 	fstate_src      older_src = 0;
 
 	s1 = wl.string[j];
+	trace(("s1 = \"%s\";\n", s1->str_text));
 	if (delta_date != NO_TIME_SET)
 	{
 	    file_event_ty   *fep;
@@ -1536,8 +1562,6 @@ copy_file_main()
 	    fep = project_file_roll_forward_get_last(s1);
 	    if (!fep)
 	    {
-		fstate_src      p_src_data;
-
 		/*
 		 * This file had not yet been created at
 		 * the time of the delta.  Arrange for
@@ -1548,23 +1572,7 @@ copy_file_main()
 		 *
 		 * This is a memory leak.
 		 */
-		p_src_data = project_file_find(pp2, s1);
-		assert(p_src_data);
-		old_src = fstate_src_type.alloc();
-		old_src->action = file_action_remove;
-		if (p_src_data && p_src_data->edit)
-		{
-		    old_src->usage = p_src_data->usage;
-		    assert(p_src_data->edit);
-		    old_src->edit = history_version_copy(p_src_data->edit);
-		}
-		else
-		{
-		    /* Should never happen.  Yeah, right. */
-		    old_src->usage = file_usage_source;
-		    old_src->edit = history_version_type.alloc();
-		    old_src->edit->revision = str_from_c("1.1");
-		}
+		old_src = fake_removed_file(pp2, s1);
 		older_src = old_src;
 	    }
 	    else
@@ -1573,21 +1581,32 @@ copy_file_main()
 		if (rescind)
 		{
 		    fep = project_file_roll_forward_get_older(s1);
-		    older_src = change_file_find(fep->cp, s1);
+		    trace(("fep = %lX\n", (long)fep));
+		    if (fep)
+			older_src = change_file_find(fep->cp, s1);
+		    else
+		    {
+			/* This is a memory leak. */
+			older_src = fake_removed_file(pp2, s1);
+		    }
 		}
 		else
 		    older_src = old_src;
 	    }
 	    assert(old_src);
+	    trace(("old_src = %lX\n", (long)old_src));
 	    assert(older_src);
+	    trace(("older_src = %lX\n", (long)older_src));
 	    if (older_src->action == file_action_remove)
 	    {
+		/* Shouldn't we use whiteout like aerm? */
 		from = str_from_c("/dev/null");
 	    }
 	    else
 	    {
 		from = project_file_version_path(pp2, older_src, &from_unlink);
 	    }
+	    trace(("from = \"%s\";\n", from->str_text));
 
 	    /*
 	     * figure where to send it
@@ -1653,7 +1672,7 @@ copy_file_main()
 	    /*
 	     * We need the file information for the execuable bit.
 	     */
-	    old_src = project_file_find(pp2, s1);
+	    old_src = project_file_find(pp2, s1, view_path_simple);
 	    assert(old_src);
 	    older_src = old_src;
 
@@ -1694,7 +1713,9 @@ copy_file_main()
 	    fstate_src      p_src_data;
 
 	    assert(!old_src == !older_src);
-	    p_src_data = older_src ? older_src : project_file_find(pp2, s1);
+	    p_src_data = older_src;
+	    if (!p_src_data)
+		p_src_data = project_file_find(pp2, s1, view_path_simple);
 	    assert(p_src_data);
 	    assert(p_src_data->edit);
 	    assert(p_src_data->edit->revision);
@@ -1717,6 +1738,9 @@ copy_file_main()
 		 */
 		if (!read_only)
 		{
+		    int             f_idx;
+		    int             more_tests;
+
 		    switch (c_src_data->usage)
 		    {
 		    case file_usage_test:
@@ -1729,6 +1753,35 @@ copy_file_main()
 			 * is still viable.)
 			 */
 			change_rescind_test_exemption(cp);
+
+			/*
+		         * If there are no more tests, then the change
+		         *  must be made regression test exempt
+		         */
+			more_tests = 0;
+			for (f_idx = 0; ; ++f_idx)
+			{
+			    fstate_src      p_src_data_proj;
+
+			    p_src_data_proj =
+				project_file_nth(pp2, f_idx, view_path_simple);
+			    if (!p_src_data_proj)
+				break;
+			    switch (p_src_data_proj->usage)
+			    {
+			    case file_usage_test:
+			    case file_usage_manual_test:
+				more_tests = 1;
+				break;
+
+			    case file_usage_source:
+			    case file_usage_build:
+				continue;
+			    }
+			    break;
+			}
+			if (more_tests)
+			    change_force_regression_test_exemption(cp);
 			break;
 
 		    case file_usage_source:
@@ -1863,7 +1916,7 @@ copy_file_main()
 
 
 void
-copy_file()
+copy_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

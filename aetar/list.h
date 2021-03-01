@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void list _((void));
+void list(void);
 
 #endif /* AETAR_LIST_H */

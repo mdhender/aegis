@@ -3,8 +3,8 @@ Build(Aegis)					     Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,
-	1998, 1999, 2000, 2001,	2002 Peter Miller; All rights
-	reserved.
+	1998, 1999, 2000, 2001,	2002, 2003 Peter Miller; All
+	rights reserved.
 
 	The aegis program is distributed under the terms of the
 	GNU General Public License.  See the LICENSE section,
@@ -28,6 +28,16 @@ SITE CONFIGURATION
 	files.	It also	creates	a shell	script config.status that
 	you can	run in the future to recreate the current
 	configuration.
+
+   Upgrading
+	The ./configure	script will look for an	existing install
+	of Aegis and use the existing configuration settings.
+	This works best	if the version you are upgrading is 4.11
+	or later.
+
+	To disable looking for an existing installation	(maybe
+	because	you want to change the prefix),	use the
+	./configure --with-no-aegis-configured option.
 
    Before You Start
 	Before you start configuring, it is worth reading the
@@ -206,6 +216,14 @@ SITE CONFIGURATION
 	prefix if you are using	something other	than the default
 	/usr/local prefix.  Watch the output...	it should now
 	find your installed packages correctly.
+
+   AIX Command Line Lengths
+	For some reason, AIX has a very	short command line length
+	limit by default.  You can extend this by using	the
+	command
+		$ systune ncargs 0x8000	$
+	You will need to do this to build Aegis.  It has some
+	very long link lines.
 
    PRIVILEGES
 	There are a number of items in the generated Makefile and
@@ -683,7 +701,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version 4.9
+		aegis version 4.11
 		...
 		%
 	command.  Please run this command to get the exact
@@ -920,7 +938,7 @@ WINDOWS-NT
 	habit of
 		turning	all of the newlines into CRLFs.	 This
 		will confuse lots of utilities,	especially GNU
-		Groff.	Use the	``tar xzf aegis-4.9.tar.gz''
+		Groff.	Use the	``tar xzf aegis-4.11.tar.gz''
 		command	from within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,14 +26,12 @@
 
 
 void
-project_verbose_directory(pp, home)
-	project_ty	*pp;
-	string_ty	*home;
+project_verbose_directory(project_ty *pp, string_ty *home)
 {
-	sub_context_ty	*scp;
+    sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", home);
-	project_verbose(pp, scp, i18n("proj dir $filename"));
-	sub_context_delete(scp);
+    scp = sub_context_new();
+    sub_var_set_string(scp, "File_Name", home);
+    project_verbose(pp, scp, i18n("proj dir $filename"));
+    sub_context_delete(scp);
 }
