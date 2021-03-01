@@ -79,7 +79,7 @@ Percent (\fB%\fP) followed by anything else is illegal.
 $#...\en
 This is a comment, usually found in template files
 read in using the ${read_file} substitution.
-It consumes all characters up to and including the next newline. 
+It consumes all characters up to and including the next newline.
 (See also ${comment}, below.)
 .PP
 As another example,
@@ -167,6 +167,13 @@ This is similar to the
 .IR basename (1)
 command.
 .TP 8n
+BAse_RElative
+This substitution takes at least one pathname.  The value of the
+substitution is the base-relative filenames, with any change-specific or
+project baseline specific leading path removed.  The file does not have
+to be a project source file.
+(This is almost the inverse of the \fP$source\fP substitution, below.)
+.TP 8n
 BINary_DIRectory
 .br
 The absolute path of Aegis' architecture-specific binary (executables)
@@ -177,8 +184,8 @@ programs are installed.
 .TP 8n
 CAPitalize
 .br
-This substitution takes one argument.  The value of the substitution
-will be the argument with the first letter of each word forced to upper
+This substitution takes at least one argument.  The value of the substitution
+will be the arguments with the first letter of each word forced to upper
 case and the rest forced to lower case.
 .TP 8n
 Change
@@ -187,12 +194,43 @@ Change
 This substitution provides various information about the change,
 based on the argument it is given.
 .TP 8n
+cause
+This returns the cause of the change.
+.TP 8n
+date \fIformat\fP
+This returns the completion date of the change.
+See \fIDATE\fP section for additional arguments.
+.TP 8n
+delta
+This returns the delta number of the change.
+.TP 8n
+description
+This returns the brief description of the change.
+.TP 8n
+developer
+This returns the name of the developer of the change.
+.TP 8n
+development_directory
+This returns the development directory of the change.
+.TP 8n
+integrator
+This returns the name of the integrator of the change.
+.TP 8n
+integration_directory
+This returns the integration directory of the change.
+.TP 8n
 number
 This returns the number of the change.
 (This is the default if no argument is given.)
 .TP 8n
-description
-This returns the brief description of the change.
+reviewer
+This returns the name of the reviewer of the change.
+.TP 8n
+state
+This returns the state of the change.
+.TP 8n
+version
+This returns the version of the change.
 .RE
 .TP 8n
 COMment
@@ -270,7 +308,7 @@ state.
 .TP 8n
 Dirname
 .br
-This substitution takes one argument,
+This substitution takes at least one argument,
 a pathname.
 The value of the substitution will be everything but
 the last element of the pathname.
@@ -280,7 +318,7 @@ command.
 .TP 8n
 Dirname_RELative
 .br
-This substitution takes one argument,
+This substitution takes at least one argument,
 a pathname.
 The value of the substitution will be everything but
 the last element of the pathname.
@@ -291,14 +329,14 @@ returns dot (``.'').
 .TP 8n
 DownCase
 .br
-This substitution takes one argument.
+This substitution takes at least one argument.
 The value of the substitution will be the argument with
 any upper case letters mapped to lower case.
 .\" -------------------- E --------------------
 .TP 8n
 ENVironment
 .br
-This substitution takes one argument.
+This substitution takes at least one argument.
 The value of the substitution is the value of the corresponding
 environment variable, or empty of undefined.
 .TP 8n
@@ -331,7 +369,7 @@ project.
 .TP 8n
 IDentifier
 .br
-This substitution takes one argument.
+This substitution takes at least one argument.
 The value of the substitution will be the argument with
 all characters but alpha numerics mapped into an underscore (_),
 so as to form a legal C identifier.
@@ -392,7 +430,7 @@ when Aegis was built.
 Name_Maximum
 This substitution is used to get the maximum file name length
 within a file system.
-It takes one argument:
+It takes at least one argument:
 the name of a directory within the file system.
 Frequently used with ${left} to crop filenames
 to the file system maximum.
@@ -520,6 +558,7 @@ Relative will attempt to provide a development-directory-relative pathname
 whenever possible,
 absolute will always result in an absolute path.
 The default is "Relative".
+(For the inverse mapping, see \fI${BAse_RElative}\fP, above.)
 .TP 8n
 STate
 .br
@@ -560,7 +599,7 @@ filename section of the argument.
 .TP 8n
 UpCase
 .br
-This substitution takes one argument.
+This substitution takes at least one argument.
 The value of the substitution will be the argument with
 any lower case letters mapped to upper case.
 .TP 8n

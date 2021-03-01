@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2000 Peter Miller;
+ *	Copyright (C) 1999, 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ void
 change_free(cp)
 	change_ty	*cp;
 {
-	trace(("change_free(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_free(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	cp->reference_count--;
 	if (cp->reference_count <= 0)
@@ -69,5 +69,5 @@ change_free(cp)
 			pconf_type.free(cp->pconf_data);
 		mem_free((char *)cp);
 	}
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

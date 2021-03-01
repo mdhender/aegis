@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,11 @@
  * MANIFEST: interface definition for aegis/aet.c
  */
 
-#ifndef TEST_H
-#define TEST_H
+#ifndef AEGIS_AET_H
+#define AEGIS_AET_H
 
 #include <main.h>
 
 void test _((void));
 
-#endif /* TEST_H */
-
+#endif /* AEGIS_AET_H */

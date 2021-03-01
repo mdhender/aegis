@@ -28,34 +28,34 @@
 typedef struct symtab_row_ty symtab_row_ty;
 struct symtab_row_ty
 {
-	string_ty	*key;
-	void		*data;
-	symtab_row_ty	*overflow;
+    string_ty	    *key;
+    void	    *data;
+    symtab_row_ty   *overflow;
 };
 
 typedef struct symtab_ty symtab_ty;
 struct symtab_ty
 {
-	symtab_ty	*chain;
-	void		(*reap)_((void *));
-	symtab_row_ty	**hash_table;
-	str_hash_ty	hash_modulus;
-	str_hash_ty	hash_cutover;
-	str_hash_ty	hash_cutover_mask;
-	str_hash_ty	hash_cutover_split_mask;
-	str_hash_ty	hash_split;
-	str_hash_ty	hash_load;
+    symtab_ty	    *chain;
+    void	   (*reap)(void *);
+    symtab_row_ty   **hash_table;
+    str_hash_ty	    hash_modulus;
+    str_hash_ty	    hash_cutover;
+    str_hash_ty	    hash_cutover_mask;
+    str_hash_ty	    hash_cutover_split_mask;
+    str_hash_ty	    hash_split;
+    str_hash_ty	    hash_load;
 };
 
-symtab_ty *symtab_alloc _((int));
-void symtab_free _((symtab_ty *));
-void *symtab_query _((symtab_ty *, string_ty *));
-string_ty *symtab_query_fuzzy _((symtab_ty *, string_ty *));
-void symtab_assign _((symtab_ty *, string_ty *, void *));
-void symtab_assign_push _((symtab_ty *, string_ty *, void *));
-void symtab_delete _((symtab_ty *, string_ty *));
-void symtab_dump _((symtab_ty *, char *));
-void symtab_walk _((symtab_ty *stp, void (*func)_((symtab_ty *stp,
-	string_ty *key, void *data, void *arg)), void *arg));
+symtab_ty *symtab_alloc(int);
+void symtab_free(symtab_ty *);
+void *symtab_query(symtab_ty *, string_ty *);
+string_ty *symtab_query_fuzzy(symtab_ty *, string_ty *);
+void symtab_assign(symtab_ty *, string_ty *, void *);
+void symtab_assign_push(symtab_ty *, string_ty *, void *);
+void symtab_delete(symtab_ty *, string_ty *);
+void symtab_dump(symtab_ty *, char *);
+void symtab_walk(symtab_ty *stp, void (*func)_((symtab_ty *stp,
+    string_ty *key, void *data, void *arg)), void *arg);
 
 #endif /* FMTGEN_SYMTAB_H */

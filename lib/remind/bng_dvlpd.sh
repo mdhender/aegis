@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997 Peter Miller;
+#	Copyright (C) 1997, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ The following changes are assigned to you.  Please complete them at
 your earliest possible convenience, so that changes may pass through
 the system at the fastest possible rate.
 fubar
-	cat /tmp/$$.intro /tmp/$$ | /usr/lib/sendmail $addr
+	cat /tmp/$$.intro /tmp/$$ | /usr/lib/sendmail -t
 	rm /tmp/$$.intro
 fi
 rm /tmp/$$

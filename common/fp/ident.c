@@ -31,119 +31,100 @@
 typedef struct ident_ty ident_ty;
 struct ident_ty
 {
-	FINGERPRINT_BASE_CLASS
-	fingerprint_ty	*combined;
-	fingerprint_ty	*crc32;
+    FINGERPRINT_BASE_CLASS
+    fingerprint_ty  *combined;
+    fingerprint_ty  *crc32;
 };
 
 
-static void ident_constructor _((fingerprint_ty *));
-
 static void
-ident_constructor(p)
-	fingerprint_ty	*p;
+ident_constructor(fingerprint_ty *p)
 {
-	ident_ty	*f;
+    ident_ty        *f;
 
-	f = (ident_ty *)p;
-	f->combined = fingerprint_new(&fp_combined);
-	f->crc32 = fingerprint_new(&fp_crc32);
+    f = (ident_ty *)p;
+    f->combined = fingerprint_new(&fp_combined);
+    f->crc32 = fingerprint_new(&fp_crc32);
 }
 
 
-static void ident_destructor _((fingerprint_ty *));
-
 static void
-ident_destructor(p)
-	fingerprint_ty	*p;
+ident_destructor(fingerprint_ty *p)
 {
-	ident_ty	*f;
+    ident_ty	    *f;
 
-	f = (ident_ty *)p;
-	fingerprint_delete(f->combined);
-	fingerprint_delete(f->crc32);
+    f = (ident_ty *)p;
+    fingerprint_delete(f->combined);
+    fingerprint_delete(f->crc32);
 }
 
 
-static void ident_addn _((fingerprint_ty *, unsigned char *, int));
-
 static void
-ident_addn(p, s, n)
-	fingerprint_ty	*p;
-	unsigned char	*s;
-	int		n;
+ident_addn(fingerprint_ty *p, unsigned char *s, int n)
 {
-	ident_ty	*f;
+    ident_ty	*f;
 
-	f = (ident_ty *)p;
-	fingerprint_addn(f->combined, s, n);
+    f = (ident_ty *)p;
+    fingerprint_addn(f->combined, s, n);
 }
 
-
-static int ident_hash _((fingerprint_ty *, unsigned char *));
 
 static int
-ident_hash(p, h)
-	fingerprint_ty	*p;
-	unsigned char	*h;
+ident_hash(fingerprint_ty *p, unsigned char *h)
 {
-	ident_ty	*f;
-	int		nbytes;
-	unsigned char	t[1024];
+    ident_ty	    *f;
+    int		    nbytes;
+    unsigned char   t[1024];
 
-	f = (ident_ty *)p;
-	nbytes = fingerprint_hash(f->combined, t);
-	fingerprint_addn(f->crc32, t, nbytes);
-	nbytes = fingerprint_hash(f->crc32, h);
-	return(nbytes);
+    f = (ident_ty *)p;
+    nbytes = fingerprint_hash(f->combined, t);
+    fingerprint_addn(f->crc32, t, nbytes);
+    nbytes = fingerprint_hash(f->crc32, h);
+    return(nbytes);
 }
 
 
-static void ident_sum _((fingerprint_ty *, char *));
-
 static void
-ident_sum(p, s)
-	fingerprint_ty	*p;
-	char		*s;
+ident_sum(fingerprint_ty *p, char *s)
 {
-	unsigned char	h[1024];
-	unsigned long	x;
-	int		nbytes;
-	static char	digits[] = "0123456789";
-	char		*cp;
+    unsigned char   h[1024];
+    unsigned long   x;
+    int		    nbytes;
+    static char	digits[] = "0123456789";
+    char	    *cp;
 
-	nbytes = ident_hash(p, h);
-	assert(nbytes == 4);
+    nbytes = ident_hash(p, h);
+    assert(nbytes == 4);
 
-	x = h[0] | (h[1] << 8) | (h[2] << 16) | (h[3] << 24);
-	sprintf(s, "%8.8lx", x);
+    x = h[0] | (h[1] << 8) | (h[2] << 16) | (h[3] << 24);
+    sprintf(s, "%8.8lx", x);
 
-	/*
-	 * some older stdio implementations don't grok the above format
-	 * string, so hunt down and kill and spaces.
-	 */
-	for (cp = s; *cp; ++cp)
-		if (*cp == ' ')
-			*cp = '0';
+    /*
+     * some older stdio implementations don't grok the above format
+     * string, so hunt down and kill and spaces.
+     */
+    for (cp = s; *cp; ++cp)
+	if (*cp == ' ')
+    	    *cp = '0';
 
-	/*
-	 * This forces the first character to be a letter, so
-	 * the result is a valid identifier in most computer
-	 * languages. The strchr makes it not ASCII specific.
-	 */
-	cp = strchr(digits, *s);
-	if (cp)
-		*s = "ghijklmnop"[cp - digits];
+    /*
+     * This forces the first character to be a letter, so
+     * the result is a valid identifier in most computer
+     * languages. The strchr makes it not ASCII specific.
+     */
+    cp = strchr(digits, *s);
+    if (cp)
+	*s = "ghijklmnop"[cp - digits];
 }
 
 
 fingerprint_methods_ty fp_ident =
 {
-	sizeof(ident_ty),
-	"identifier",
-	ident_constructor,
-	ident_destructor,
-	ident_addn,
-	ident_hash,
-	ident_sum
+    sizeof(ident_ty),
+    "identifier",
+    ident_constructor,
+    ident_destructor,
+    ident_addn,
+    ident_hash,
+    ident_sum
 };

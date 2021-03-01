@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -212,5 +212,18 @@ src =
 		 * build, and are transferred at aeipass.
 		 */
 		metrics = metric;
+
+		/*
+		 * This field tracks whether this incarnation of the file
+		 * was executable at `develop end' time.  This mode
+		 * is restored (taking the project umask into account)
+		 * when the file is copied.
+		 *
+		 * This field is only meaningful for changes in the
+		 * "completed" state, becuase this field is only set
+		 * by aeip.  Until then, the mode if the file itself is
+		 * the authority.
+		 */
+		executable = boolean hide_if_default;
 	}
 ];

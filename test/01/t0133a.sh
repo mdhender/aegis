@@ -176,7 +176,7 @@ with respect to change descriptions.";
 cause = internal_bug;
 end
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 1 -f ca -project foo -lib $worklib 
+$bin/aegis -nc 1 -f ca -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 activity="develop begin 178"
@@ -402,7 +402,7 @@ brief_description = "This change is used to stomp on file contents.";
 cause = internal_bug;
 end
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 2 -f ca -project foo -lib $worklib 
+$bin/aegis -nc 2 -f ca -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 activity="develop begin 404"
@@ -533,7 +533,7 @@ brief_description = "This change is used to decode old history versions.";
 cause = internal_bug;
 end
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 3 -f ca -project foo -lib $worklib 
+$bin/aegis -nc 3 -f ca -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 activity="develop begin 535"

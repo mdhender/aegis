@@ -25,7 +25,7 @@
 .LP
 This chapter describes the difference commands in the
 project configuration file.
-Usually these commands are used by the 
+Usually these commands are used by the
 .I "aegis -DIFFerence"
 command when differencing files,
 but they may be used to accomplish some other things.
@@ -45,8 +45,8 @@ Aegis doesn't particularly care whether your files are binary or text.
 However, your difference and merge tools certainly will.
 In general, you need format-specific difference and merge tools for each
 of the file formats used in your project.
-Unfortunately, most vendors of software wich makes use of proprietary file 
-formats do not supply difference and erge tools.
+Unfortunately, most vendors of software which make use of proprietary file
+formats do not supply difference and merge tools.
 .LP
 The simplest compromise is to treat all files as text, with manual
 repairs for binary files.

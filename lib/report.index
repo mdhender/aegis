@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,8 @@ style of output.";
 	},
 	{
 		name = "Change_Recursive_Debug";
-		description = "Recursive descent of change information, mind-bogglingly verbose";
+		description = "Recursive descent of change information, \
+mind-bogglingly verbose";
 		filename = "report/chan_recur.rpt";
 	},
 	{
@@ -128,7 +129,8 @@ This can sometimes be slow to generate.";
 	},
 	{
 		name = "Project_Recursive_Debug";
-		description = "Recursive descent of project information, mind-bogglingly verbose";
+		description = "Recursive descent of project information, \
+mind-bogglingly verbose";
 		filename = "report/proj_recur.rpt";
 	},
 	{

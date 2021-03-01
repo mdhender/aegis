@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991-1998, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -253,7 +253,7 @@ pass()
 trap "fail" 1 2 3 15
 
 ./foo
-if test $? -ne 0 
+if test $? -ne 0
 then
 	fail
 fi
@@ -396,7 +396,7 @@ trap "fail" 1 2 3 15
 test $? -eq 0 || fail
 
 ./foo ickky
-if test $? -ne 1 
+if test $? -ne 1
 then
 	fail
 fi

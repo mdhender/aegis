@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1996, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1993, 1996, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
  * MANIFEST: project attributes file contents definition
  *
  * If you add a new project attribute, you must edit all of these files...
- *	libaegis/project/new_branch.c		Where it is copied
- *	libaegis/project/pattr/set.c		Where it is copied
- *	libaegis/project/pattr/get.c		Where it is copied
+ *	libaegis/project/new_branch.c	Where it is copied
+ *	libaegis/project/pattr/set.c	Where it is copied
+ *	libaegis/project/pattr/get.c	Where it is copied
  *	aegis/aenpr.c		Where it is defaulted (if not zero)
  *	aegis/aenrls.c		Where it is defaulted (if not zero)
  *	lib/en/man5/aecstate.5	Where it is documented
@@ -34,6 +34,9 @@
  *	libaegis/pattr.def	Where it is defined
  *	libaegis/project/*.c	Where it is set&get
  *	libaegis/project.h	Where it is in a prototype
+ *	script/tkaepa.in	Where it is edited.
+ *	lib/wish/proj_attr.rpt	Where it is read
+ * You will also have to fix a while bunch of tests.
  */
 
 #include <common.def>
@@ -304,3 +307,16 @@ compress_database = boolean;
  */
 develop_end_action = (goto_being_reviewed, goto_awaiting_review,
 	goto_awaiting_integration);
+
+/*
+ * This field may be used to protect the development directory after
+ * the "being developed" state.  It does this by making it read-only at
+ * develop end time.  Should the change ever be returned to the "being
+ * developed" state, it will be made writble again.
+ *
+ * The default is false, meaning to leave the development directory
+ * writable while is being reviewed and integrated.  Aegis' normal
+ * tampering detection will notice if files are changed, but there is
+ * no reminder to the developer that the change should be left alone.
+ */
+protect_development_directory = boolean;

@@ -40,7 +40,7 @@ takes the rules and determines how to build the given target.
 Once it has determined how to construct the target, it proceeds to do so.
 .LP
 .I Make
-determines how to build the target by constructing a 
+determines how to build the target by constructing a
 .I "directed acyclic graph,"
 the DAG familiar to many Computer Science students.
 The vertices of this graph are the files in the system,
@@ -214,14 +214,15 @@ recompiled, because \f(CWbee/parse.h\fP has not yet been regenerated and thus
 does not yet indicate that \f(CWmain.o\fP is out-of-date.  It is not until
 \f(CWbee\fP is visited by the recursive
 .I make
-that \f(CWparse.c\fP and \f(CWparse.h\fP are reconstructed, followed by \f(CWparse.o\fP.
+that \f(CWparse.c\fP and \f(CWparse.h\fP are reconstructed, followed
+by \f(CWparse.o\fP.
 When the program is linked \f(CWmain.o\fP and \f(CWparse.o\fP are
 non-trivially incompatible.  That is, the program is
 .I wrong.
 .nh 2 "Traditional Solutions"
 There are three traditional fixes for the above ``glitch.''
 .nh 3 "Reshuffle"
-The first is to manually tweak the order 
+The first is to manually tweak the order
 of the modules in the top-level \f(CWMakefile\fP.
 But why is this tweak required at all?
 Isn't

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,17 @@
  */
 #define SIZEOF(a) (sizeof(a) / sizeof(a[0]))
 #define ENDOF(a) ((a) + SIZEOF(a))
+
+/*
+ * Function attributes.
+ */
+#ifdef __GNUC__
+#define ATTR_PRINTF(x, y) __attribute__((format(printf, x, y)))
+#define NORETURN __attribute__((noreturn))
+#else
+#define ATTR_PRINTF(x, y)
+#define NORETURN
+#endif
 
 /*
  * Take the define out of comments to

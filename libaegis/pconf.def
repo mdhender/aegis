@@ -31,6 +31,25 @@
 #include <common.def>
 
 /*
+ * The configuration_directory field names a directory which will
+ * be searched for additional configuration files.  (This directive is
+ * only leagal or meaningful in the master project "config" file.)
+ *
+ * All source files (change source files and project source files)
+ * present in this directory will be read in as if they were added to
+ * the end of the project "config" file.
+ *
+ * The usual priority of files (development directory, branch baseline,
+ * etc, project trunk baseline) is observed then these files are read.
+ *
+ * Please note that the physical directies are never searched, only
+ * Aegis concept of the change and project files is consulted.
+ * Placing additional files in the physical directories will have
+ * no effect.
+ */
+configuration_directory = string;
+
+/*
  * how to build the project
  *	(actually, how to do an integration build)
  * mandatory
@@ -514,7 +533,7 @@ history_put_trashes_file = (fatal, warn, ignore);
  * either quoted printable for MIME64, whichever is smaller, before
  * being given to the history tool.  This encoding is transparent,
  * the file in the baseline is unchanged.
- * 
+ *
  * On extract (the history_get_command) the encoding is reversed, using
  * information attached to the change file information.  This is because
  * each put could use a different encoding (although in practice, file
@@ -527,7 +546,7 @@ history_content_limitation = (ascii_text, international_text, binary_capable);
  * The history_label_command is executed at integration pass, and
  * when executing aedn(1) to label the file version in history with a
  * particular label.
- * 
+ *
  * All of the substitutions described in aesub(5) are available.
  * In addition:
  *
@@ -634,7 +653,41 @@ merge_command = string;
 /*
  * The difference of 2 files, to send around as a patch.  (This isn't the
  * same as diff_command, because it's aimed at GNU Patch, not at humans.)
- * Defaults to "set +e; diff -c $original $input > $output; text $? -le 1"
+ *
+ * Defaults to "set +e; diff -c -L $index -L $index $original $input >
+ * $output; text $? -le 1" if not set.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${ORiginal}
+ *	absolute path of file in baseline (usually)
+ *
+ * ${Input}
+ *	absolute path of file in development directory (usually)
+ *
+ * ${Output}
+ *	Absolute path of output file
+ *
+ * ${INDex}
+ *	Project relative name of the file, for use in index lines,
+ *	such as GNU diff's -L option.  Optional.
+ *
+ * Executed as: the executing user.
+ * Current directory: the development directory for change in progress,
+ *	the integration doirectory for change bein integrated, the
+ *	baseline for changes which are completed.
+ * Exit status: zero indicates succes, all non-zero exits indicate failure
+ *	(the aed will fail).
+ */
+patch_diff_command = string;
+
+/*
+ * The difference of 2 files, to fiure out the differences between version
+ * for the aeannotate listing.  (This isn't the same as diff_command,
+ * because it's aimed at aeannotate, not at humans.)
+ *
+ * Defaults to "set +e; diff $option $original $input > $output; text $? -le 1"
  * if not set.
  *
  * All of the substitutions described in aesub(5) are available.
@@ -649,6 +702,14 @@ merge_command = string;
  * ${Output}
  *	Absolute path of output file
  *
+ * ${INDex}
+ *	Project relative name of the file, for use in index lines,
+ *	such as GNU diff's -L option.  Optional.
+ *
+ * ${OPTion}
+ *	Extra options to be passed to the diff command, as set by the
+ *	aeannotate -diff-option command line option.  Use with care.
+ *
  * Executed as: the executing user.
  * Current directory: the development directory for change in progress,
  *	the integration doirectory for change bein integrated, the
@@ -656,7 +717,7 @@ merge_command = string;
  * Exit status: zero indicates succes, all non-zero exits indicate failure
  *	(the aed will fail).
  */
-patch_diff_command = string;
+annotate_diff_command = string;
 
 /*
  * This field is used to set the command to be executed by 'aegis -test'.
@@ -879,9 +940,9 @@ filename_pattern_reject = [ string ];
  * All of the substitutions defined in aesub(5) are available.  The
  * following 3 substitutions are also available:
  *
- * Hundred	The test number divided by 100, zero padded to 2 digits 
+ * Hundred	The test number divided by 100, zero padded to 2 digits
  *			(Optional)
- * Number	The test number, zero padded to 4 digits 
+ * Number	The test number, zero padded to 4 digits
  *			(Mandatory)
  * Type		The test type (a = automatic, m = manual)
  *			(Optional)
@@ -943,3 +1004,38 @@ project_specific =
 		value = string;
 	}
 ];
+
+/*
+ * This field controls the adjustment of file modification times at the
+ * end of integrate-pass.  File times are adjusted so that development
+ * directories are, in the main, out of date with respect to the baseline.
+ * The idea is that, at the very least, programs need to be relinked so
+ * that aet -reg does not give false negatives.
+ *
+ * Combining this with the project_file_command (above) can alleviate the
+ * vast majority of file mo time inconsistencies experienced as a result
+ * of a project integration and the subsequent changes in the baseline's
+ * mod times.
+ *
+ * Unless you are a masochist, do not set this field.  Leave it as the default.
+ *
+ * adjust_and_sleep
+ *	Causes the file times to be adjusted, and if the file times
+ *	would extend into the future, aeipass will sleep until that time
+ *	has passed.  This is the default.
+ *
+ * adjust_only
+ *	Causes the file times to be adjusted.  If the file time extend
+ *	into the future, a warning is issued.
+ *
+ * dont_adjust
+ *	File modification times are not adjusted.  This is a really bad
+ *	idea.  Really.	Make sure that, at the very minimum,
+ *	project_file_command touches all of the change's files,
+ * 	otherwise the build problems which ensue are going to take you
+ * 	weeks to track down and lose you mucho productivity.
+ * 	You have been warned.
+ *
+ * See also the build_time_adjust_notify_command field.
+ */
+build_time_adjust = (adjust_and_sleep, adjust_only, dont_adjust);

@@ -39,20 +39,20 @@ struct fingerprint_ty
 typedef struct fingerprint_methods_ty fingerprint_methods_ty;
 struct fingerprint_methods_ty
 {
-	long		size;
-	char		*name;
-	void (*constructor)_((fingerprint_ty *));
-	void (*destructor)_((fingerprint_ty *));
-	void (*addn)_((fingerprint_ty *, unsigned char *, int));
-	int (*hash)_((fingerprint_ty *, unsigned char *));
-	void (*sum)_((fingerprint_ty *, char *));
+    long	    size;
+    char	    *name;
+    void	    (*constructor)(fingerprint_ty *);
+    void	    (*destructor)(fingerprint_ty *);
+    void	    (*addn)(fingerprint_ty *, unsigned char *, int);
+    int		    (*hash)(fingerprint_ty *, unsigned char *);
+    void	    (*sum)(fingerprint_ty *, char *);
 };
 
-fingerprint_ty *fingerprint_new _((fingerprint_methods_ty *));
-void fingerprint_delete _((fingerprint_ty *));
-void fingerprint_add _((fingerprint_ty *, int));
-int fingerprint_file_hash _((fingerprint_ty *, char *, unsigned char *));
-int fingerprint_file_sum _((fingerprint_ty *, char *, char *));
+fingerprint_ty *fingerprint_new(fingerprint_methods_ty *);
+void fingerprint_delete(fingerprint_ty *);
+void fingerprint_add(fingerprint_ty *, int);
+int fingerprint_file_hash(fingerprint_ty *, char *, unsigned char *);
+int fingerprint_file_sum(fingerprint_ty *, char *, char *);
 
 #define fingerprint_addn(p, s, n) \
 	(p)->method->addn((p), (s), (n))

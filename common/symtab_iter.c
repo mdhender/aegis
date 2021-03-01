@@ -26,90 +26,81 @@
 
 
 void
-symtab_iterator_constructor(stip, stp)
-	symtab_iterator *stip;
-	symtab_ty	*stp;
+symtab_iterator_constructor(symtab_iterator *stip, symtab_ty *stp)
 {
-	assert(stip);
-	stip->stp = stp;
-	stip->pos = 0;
-	stip->rp = 0;
+    assert(stip);
+    stip->stp = stp;
+    stip->pos = 0;
+    stip->rp = 0;
 }
 
 
 symtab_iterator *
-symtab_iterator_new(stp)
-	symtab_ty	*stp;
+symtab_iterator_new(symtab_ty *stp)
 {
-	symtab_iterator *stip;
+    symtab_iterator *stip;
 
-	assert(stp);
-	stip = mem_alloc(sizeof(symtab_iterator));
-	symtab_iterator_constructor(stip, stp);
-	return stip;
+    assert(stp);
+    stip = mem_alloc(sizeof(symtab_iterator));
+    symtab_iterator_constructor(stip, stp);
+    return stip;
 }
 
 
 void
-symtab_iterator_destructor(stip)
-	symtab_iterator	*stip;
+symtab_iterator_destructor(symtab_iterator *stip)
 {
-	assert(stip);
-	assert(stip->stp);
-	stip->stp = 0;
-	stip->pos = 0;
-	stip->rp = 0;
+    assert(stip);
+    assert(stip->stp);
+    stip->stp = 0;
+    stip->pos = 0;
+    stip->rp = 0;
 }
 
 
 void
-symtab_iterator_delete(stip)
-	symtab_iterator *stip;
+symtab_iterator_delete(symtab_iterator *stip)
 {
-	assert(stip);
-	assert(stip->stp);
-	symtab_iterator_destructor(stip);
-	mem_free(stip);
+    assert(stip);
+    assert(stip->stp);
+    symtab_iterator_destructor(stip);
+    mem_free(stip);
 }
 
 
 void
-symtab_iterator_reset(stip)
-	symtab_iterator *stip;
+symtab_iterator_reset(symtab_iterator *stip)
 {
-	assert(stip);
-	assert(stip->stp);
-	stip->pos = 0;
-	stip->rp = 0;
+    assert(stip);
+    assert(stip->stp);
+    stip->pos = 0;
+    stip->rp = 0;
 }
 
 
 int
-symtab_iterator_next(stip, key, data)
-	symtab_iterator *stip;
-	string_ty	**key;
-	void		**data;
+symtab_iterator_next(symtab_iterator *stip, string_ty **key, void **data)
 {
-	symtab_ty	*stp;
-	symtab_row_ty	*rp;
+    symtab_ty	    *stp;
+    symtab_row_ty   *rp;
 
-	assert(stip);
-	assert(key);
-	assert(data);
-	stp = stip->stp;
-	assert(stp);
-	while (stip->rp == 0)
-	{
-		if (stip->pos >= stp->hash_modulus)
-			return 0;
-		stip->rp = stp->hash_table[stip->pos];
-		stip->pos++;
-	}
-	rp = stip->rp;
-	*key = rp->key;
-	assert(*key);
-	*data = rp->data;
-	assert(*data);
-	stip->rp = rp->overflow;
-	return 1;
+    assert(stip);
+    assert(key);
+    assert(data);
+    stp = stip->stp;
+    assert(stp);
+    while (stip->rp == 0)
+    {
+	if (stip->pos >= stp->hash_modulus)
+    	    return 0;
+	stip->rp = stp->hash_table[stip->pos];
+	stip->pos++;
+    }
+    rp = stip->rp;
+    *key = rp->key;
+    assert(*key);
+    *data = rp->data;
+    assert(*data);
+    stip->rp = rp->overflow;
+    return 1;
 }

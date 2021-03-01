@@ -245,7 +245,8 @@ T3: spline -> from 1/3<S4.nw,S4.sw> then left 1 then up 2.25-1/12 \
 "" "" " develop" ljust " end" ljust " undo" ljust at T3.c - (1,0)
 T4: spline -> from S5.w then left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
 " integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.75,0)
-T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 then up 1 then to 1/3<S2.se,S2.ne>
+T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 \
+	then up 1 then to 1/3<S2.se,S2.ne>
 "review " rjust "fail " rjust at T5.c + (0.5,0)
 T6: spline -> from S4.e then right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
 "review " rjust "pass " rjust "undo " rjust at T6.c + (0.5,0)
@@ -501,7 +502,9 @@ move right down
 E1: ellipse "integrator"
 arrow "integrate " rjust "begin " rjust
 B3: box "integration" "directory"
-S1: spline -> from B3.s then down then right 1.25 then up then to B1.n right 1.25 then to B1.n up right 1.25 then to B1.n up then to B1.n
+S1: spline -> from B3.s then down then right 1.25 then up \
+	then to B1.n right 1.25 then to B1.n up right 1.25 \
+	then to B1.n up then to B1.n
 "integrate " rjust "pass " rjust at S1.c+(1.25,-0.75)
 arrow from B2.s to E1.nw
 arrow from 1/3<B1.sw,B1.se> to B2.n

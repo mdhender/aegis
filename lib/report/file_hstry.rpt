@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996-1997, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,14 +23,14 @@
 title("The File History Report", sprintf("Project \"%s\"", project_name()));
 columns
 (
-	{ name = "File Name\n-----------"; right = 0; },
-	{ name = ""; left = 2; width = 6; },
-	{ name = ""; width = 6; },
-	{ name = "Delta\n-----"; width = 5; },
-	{ name = "Time and Date\n-------------"; width = 13; },
-	{ name = "Change\n------"; width = 6; },
-	{ name = "Edit\n------"; width = 6; },
-	{ name = "Description\n-------------"; right = 0; }
+    { name = "File Name\n-----------"; right = 0; },
+    { name = ""; left = 2; width = 6; },
+    { name = ""; width = 6; },
+    { name = "Delta\n-----"; width = 5; },
+    { name = "Time and Date\n-------------"; width = 13; },
+    { name = "Change\n------"; width = 6; },
+    { name = "Edit\n------"; width = 6; },
+    { name = "Description\n-------------"; right = 0; }
 );
 auto ps;
 ps = project[project_name()].state;
@@ -42,8 +42,8 @@ ps = project[project_name()].state;
 auto file;
 if (count(arg) == 0)
 {
-	for (file in ps.src)
-		arg ##= file.file_name;
+    for (file in ps.src)
+       	arg ##= file.file_name;
 }
 
 /*
@@ -51,7 +51,7 @@ if (count(arg) == 0)
  */
 auto hist;
 for (file in arg)
-	hist[file] = [];
+    hist[file] = [];
 
 /*
  * scan all completed changes
@@ -60,25 +60,25 @@ for (file in arg)
 auto ph, cs, cf;
 for (ph in ps.branch.history)
 {
-	cs = ps.branch.change[ph.change_number];
-	for (cf in cs.src)
+    cs = ps.branch.change[ph.change_number];
+    for (cf in cs.src)
+    {
+	if (cf.file_name in arg)
 	{
-		if (cf.file_name in arg)
+	    if (cf.usage == build && cf.action == modify)
+		continue;
+	    hist[cf.file_name] ##=
 		{
-			if (cf.usage == build && cf.action == modify)
-				continue;
-			hist[cf.file_name] ##=
-				{
-					usage = cf.usage;
-					action = cf.action;
-					edit = cf.edit.revision;
-					delta = ph.delta_number;
-					when = cs.history[count(cs.history) - 1].when;
-					change = ph.change_number;
-					description = cs.brief_description;
-				};
-		}
+		    usage = cf.usage;
+		    action = cf.action;
+		    edit = cf.edit.revision;
+		    delta = ph.delta_number;
+		    when = cs.history[count(cs.history) - 1].when;
+		    change = ph.change_number;
+		    description = cs.brief_description;
+		};
 	}
+    }
 }
 
 /*
@@ -87,24 +87,24 @@ for (ph in ps.branch.history)
 auto fh, actions, usages;
 for (file in sort(keys(hist)))
 {
-	need(4);
-	print(file);
-	actions = "BS";
-	usages = "BS";
-	for (fh in hist[file])
-	{
-		print
-		(
-			"",
-			(fh.usage == usages ? "" : fh.usage),
-			(fh.action == actions ? "" : fh.action),
-			sprintf("%4d", fh.delta),
-			fh.when,
-			sprintf("%4d", fh.change),
-			sprintf("%4s", fh.edit),
-			fh.description
-		);
-		actions = fh.action;
-		usages = fh.usage;
-	}
+    need(4);
+    print(file);
+    actions = "BS";
+    usages = "BS";
+    for (fh in hist[file])
+    {
+	print
+	(
+	    "",
+	    (fh.usage == usages ? "" : fh.usage),
+	    (fh.action == actions ? "" : fh.action),
+	    sprintf("%4d", fh.delta),
+	    fh.when,
+	    sprintf("%4d", fh.change),
+	    sprintf("%4s", fh.edit),
+	    fh.description
+	);
+	actions = fh.action;
+	usages = fh.usage;
+    }
 }

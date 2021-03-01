@@ -33,12 +33,12 @@ struct stracc_t
 	char	*buffer;
 };
 
-void stracc_constructor _((stracc_t *));
-void stracc_destructor _((stracc_t *));
-void stracc_open _((stracc_t *));
-string_ty *stracc_close _((const stracc_t *));
-void stracc_char _((stracc_t *, int));
-void stracc_chars _((stracc_t *, const char *, size_t));
+void stracc_constructor(stracc_t *);
+void stracc_destructor(stracc_t *);
+void stracc_open(stracc_t *);
+string_ty *stracc_close(const stracc_t *);
+void stracc_char(stracc_t *, int);
+void stracc_chars(stracc_t *, const char *, size_t);
 
 /*
  * The stracc_char function shows up in the profiles as occupying 10%
@@ -48,10 +48,14 @@ void stracc_chars _((stracc_t *, const char *, size_t));
  * Despite looking recursive, it isn't.  Ansi C macros do not recurse,
  * so it winds up calling the real function in the "buffer needs to
  * grow" case.
+ *
+ * (Sun's compiler is broken, use GCC if you have a choice.)
  */
+#ifndef __SUNPRO_C
 #define stracc_char(sap, c) \
 	((sap)->length < (sap)->maximum ? \
 	(void)((sap)->buffer[(sap)->length++] = (c)) : \
 	stracc_char((sap), (c)))
+#endif
 
 #endif /* COMMON_STRACC_H */

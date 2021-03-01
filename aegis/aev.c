@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -141,7 +141,6 @@ version_main()
 			sub_var_set_string(scp, "Name_List", s1);
 			fatal_intl(scp, i18n("info $name ambig ($name_list)"));
 			/* NOTREACHED */
-			
 		}
 		arglex();
 		func = hit[0]->func;

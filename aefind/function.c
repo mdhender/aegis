@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <function.h>
 #include <function/basename.h>
+#include <function/execute.h>
 #include <function/print.h>
 #include <function/stat.h>
 #include <lex.h>
@@ -47,6 +48,7 @@ static table_ty table[] =
 	{ "basename",	function_basename,	},
 	{ "change_time", function_ctime,	},
 	{ "ctime",	function_ctime,		},
+	{ "execute",	function_execute,	},
 	{ "gid",	function_gid,		},
 	{ "group_id",	function_gid,		},
 	{ "ino",	function_ino,		},

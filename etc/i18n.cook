@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,15 @@
  *
  * MANIFEST: instructions to cook(1), how to build internationalization files
  */
+
+/*
+ * Only build the internationalization  targets if you can find the msgcat
+ * command.  Earlier versions of GNU gettext (or worse, Solaris gettext)
+ * that don't have this command, have a version of msgfmt that doesn't
+ * grok the --compendium option.
+ */
+if [find_command msgcat] then
+    all += internationalization ;
 
 /*
  * Figure out the supported languages, by looking at where the message
@@ -44,7 +53,7 @@ i18n_commands = [filter_out test_% [commands]];
 
 
 /*
- * Translate the locatization files into their binary form.  This will
+ * Translate the localization files into their binary form.  This will
  * be different for each architecture and operating system (in theory,
  * if not in practice).
  */
@@ -56,6 +65,46 @@ internationalization:
 		[match_mask lib/%0%.po [source_files]]]
 	LICENSE
 	i18n-tmp/libaegis.ok
+
+	/*
+	 * This next file is for the benefit of the Translation Project
+	 * robot.  (Yes, that's right, a bloody robot.)
+	 *
+	 * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
+	 * for more information.
+	 *
+	 * I particularly dislike this approach, because it is incredibly
+	 * short sighted.  This approach fails to take into account that
+	 * you may want to have translations of manual pages and other
+	 * documentation, AS WELL AS translations of error messages.
+	 *
+	 * Would it make sense to ask authors to catenate all of
+	 * ther man pages together, and have a po/PACKAGE.man file?
+	 * No, of course not.  Would it make sense to ask authors to
+	 * catenate all of their other documentation together, and
+	 * have a po/PACKAGE.latex file?  No, of course not.  Well then,
+	 * why on Earth does it make sense to catenate together all of
+	 * the messages into a po/PACKAGE.pot file?  Betch.
+	 *
+	 * And then, to add insult to injury, it wastes space in the tarball.
+	 *
+	 * My project uses a directory tree
+	 * 	lib/
+	 *	    <LL>/
+	 *		LC_MESSAGES/
+	 *		    all of the various .po files go here
+	 *		man<N>/
+	 *		    all of the man<N> pages go here
+	 *		user-guide/
+	 *		    all of the files which make the
+	 *		    user guide go here.
+	 *		<other-docs>/
+	 *		    and so on...
+	 *
+	 * As you can see, this can accomodate translated .po files,
+	 * AND ALSO any other documentation, once it is translated.
+	 */
+	po/[project_short].pot
 	;
 
 all,I =
@@ -87,12 +136,12 @@ i18n-tmp/libaegis.extra: [prepost "i18n-tmp/" ",I" [i18n_commands]]
 		-o [target]
 		[prepost "--dir=" "" [search_list]]
 		/* no need to resolve, --dir will do it */
-		[need]; 
+		[need];
 }
 
 msgmerge = msgmerge;
 
-lib/%0%.merge: lib/%0%.po i18n-tmp/%,I
+lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/%,I
 {
 	[msgmerge]
 		--indent
@@ -102,27 +151,58 @@ lib/%0%.merge: lib/%0%.po i18n-tmp/%,I
 		--no-location
 		--force-po
 		-o [target]
-		[resolve lib/%0%.po i18n-tmp/%,I]
+		[resolve lib/%1/LC_MESSAGES/%.po i18n-tmp/%,I]
+		[addprefix "--compendium="
+		    [resolve
+			[stringset
+			    [match_mask
+				lib/%1/LC_MESSAGES/%%.po
+				[source_files]
+			    ]
+			-
+			    lib/%1/LC_MESSAGES/%.po
+			]
+		    ]
+		]
+		['if' [not [in %1 en]] 'then'
+		    [addprefix "--compendium="
+			[resolve
+			    [match_mask
+				lib/en/LC_MESSAGES/%%.po
+				[source_files]
+			    ]
+			]
+		    ]
+		]
 		;
 
 	/*
 	 * There should be no differences.
 	 * If there are, this next command will show them.
 	 */
-	diff -u [resolve lib/%0%.po] [target];
+	diff -b -u [resolve lib/%1/LC_MESSAGES/%.po] [target];
+
+	/*
+	 * Only need the timestamp.
+	 */
+	> [target];
 }
 
 
-msgfmt = msgfmt;
-
 [arch]/lib/%0%.mo: lib/%0%.po lib/%0libaegis.po
+	etc/msgfmt.sh
 	set ['if' [not [defined baseline]] 'then' shallow]
 {
 	/*
 	 * This only works for GNU gettext (and Solaris).
 	 * The SunOS msgfmt program does not grok the -o option.
 	 */
-	[msgfmt] -o [target] [resolve [need]];
+	sh [resolve etc/msgfmt.sh]
+	    --msgfmt\=[msgfmt]
+	    --msgcat\=[msgcat]
+	    --output\=[target]
+	    [resolve lib/%0%.po lib/%0libaegis.po]
+	    ;
 }
 
 
@@ -134,8 +214,8 @@ xgettext = xgettext;
  * omissions.
  */
 
-i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [i18n_commands]]
-		etc/i18n.clean.sh
+i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po"
+	[i18n_commands]] etc/i18n.clean.sh
 {
 	/*
 	 * The author only speaks English, so the master translation is
@@ -147,7 +227,8 @@ i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [i18n_command
 		--add-location
 		-o [target]
 		[prepost "--dir=" "" [search_list]]
-		[prepost "--exclude-file=lib/en/LC_MESSAGES/" ".po" [i18n_commands]]
+		[prepost "--exclude-file=lib/en/LC_MESSAGES/" ".po"
+		    [i18n_commands]]
 		--language\=PO
 		/* no need to resolve, --dir will do it */
 		[all,I];
@@ -204,4 +285,67 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 		--keyword\=input_error_fatal
 		[prepost "--dir=" "" [search_list]]
 		%0%.c;
+}
+
+
+/*
+ * This next file is for the benefit of the Translation Project
+ * robot.  (Yes, that's right, a bloody robot.)
+ *
+ * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
+ * for more information.
+ *
+ * I particularly dislike this approach, because it is incredibly
+ * short sighted.  This approach fails to take into account that
+ * you may want to have translations of manual pages and other
+ * documentation, AS WELL AS translations of error messages.
+ *
+ * Would it make sense to ask authors to catenate all of
+ * ther man pages together, and have a po/PACKAGE.man file?
+ * No, of course not.  Would it make sense to ask authors to
+ * catenate all of their other documentation together, and
+ * have a po/PACKAGE.latex file?  No, of course not.  Well then,
+ * why on Earth does it make sense to catenate together all of
+ * the messages into a po/PACKAGE.pot file?  Betch.
+ *
+ * And then, to add insult to injury, it wastes space in the tarball.
+ *
+ * My project uses a directory tree
+ * 	lib/
+ *	    <LL>/
+ *		LC_MESSAGES/
+ *		    all of the various .po files go here
+ *		man<N>/
+ *		    all of the man<N> pages go here
+ *		user-guide/
+ *		    all of the files which make the
+ *		    user guide go here.
+ *		<other-docs>/
+ *		    and so on...
+ *
+ * As you can see, this can accomodate translated .po files,
+ * AND ALSO any other documentation, once it is translated.
+ */
+
+po/[project_short].pot: [match_mask lib/en/LC_MESSAGES/%.po [source_files]]
+{
+	msgcat
+		--use-first
+		--indent
+		--sort-output
+		--width\=75
+		-o [target]
+		[resolve
+		    /*
+		     * Put libaegis.po at the start, it has an informative
+		     * comment at the beginning (which gets bound to
+		     * "", and is subject a the --use-first clause).
+		     */
+		    lib/en/LC_MESSAGES/libaegis.po
+		    [stringset
+			[need]
+		    -
+			lib/en/LC_MESSAGES/libaegis.po
+		    ]
+		];
 }

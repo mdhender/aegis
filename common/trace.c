@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,464 +37,432 @@
 typedef struct known_ty known_ty;
 struct known_ty
 {
-	string_ty	*filename;
-	int		flag;
-	int		*flag_p;
-	known_ty	*next;
+    string_ty       *filename;
+    int             flag;
+    int             *flag_p;
+    known_ty        *next;
 };
 
-static	string_ty	*file_name;
-static	int		line_number;
-static	int		page_width;
-static	known_ty	*known;
-static	int		depth;
+static string_ty *file_name;
+static int      line_number;
+static int      page_width;
+static known_ty	*known;
+static int      depth;
 
-
-static string_ty *base_name _((const char *));
 
 static string_ty *
-base_name(file)
-	const char	*file;
+base_name(const char *file)
 {
-	const char	*cp1;
-	const char	*cp2;
+    const char      *cp1;
+    const char      *cp2;
 
-	cp1 = strrchr(file, '/');
-	if (cp1)
-		++cp1;
-	else
-		cp1 = file;
-	cp2 = strrchr(cp1, '.');
-	if (!cp2)
-		cp2 = cp1 + strlen(cp1);
-	if (cp2 > cp1 + 6)
-		return str_n_from_c(cp1, 6);
-	return str_n_from_c(cp1, cp2 - cp1);
+    cp1 = strrchr(file, '/');
+    if (cp1)
+	++cp1;
+    else
+	cp1 = file;
+    cp2 = strrchr(cp1, '.');
+    if (!cp2)
+	cp2 = cp1 + strlen(cp1);
+    if (cp2 > cp1 + 6)
+	return str_n_from_c(cp1, 6);
+    return str_n_from_c(cp1, cp2 - cp1);
 }
 
 
 int
-trace_pretest(file, result)
-	const char	*file;
-	int		*result;
+trace_pretest(const char *file, int *result)
 {
-	string_ty	*s;
-	known_ty	*kp;
+    string_ty	    *s;
+    known_ty	    *kp;
 
-	s = base_name(file);
-	for (kp = known; kp; kp = kp->next)
+    s = base_name(file);
+    for (kp = known; kp; kp = kp->next)
+    {
+	if (str_equal(s, kp->filename))
 	{
-		if (str_equal(s, kp->filename))
-		{
-			str_free(s);
-			break;
-		}
+	    str_free(s);
+	    break;
 	}
-	if (!kp)
-	{
-		kp = (known_ty *)mem_alloc(sizeof(known_ty));
-		kp->filename = s;
-		kp->next = known;
-		kp->flag = 2; /* disabled */
-		known = kp;
-	}
-	kp->flag_p = result;
-	*result = kp->flag;
-	return *result;
+    }
+    if (!kp)
+    {
+	kp = (known_ty *)mem_alloc(sizeof(known_ty));
+	kp->filename = s;
+	kp->next = known;
+	kp->flag = 2; /* disabled */
+	known = kp;
+    }
+    kp->flag_p = result;
+    *result = kp->flag;
+    return *result;
 }
 
 
 void
-trace_where(file, line)
-	const char	*file;
-	int		line;
+trace_where(const char *file, int line)
 {
-	string_ty	*s;
+    string_ty	    *s;
 
-	/*
-	 * take new name fist, because will probably be same as last
-	 * thus saving a free and a malloc (which are slow)
-	 */
-	s = base_name(file);
-	if (file_name)
-		str_free(file_name);
-	file_name = s;
-	line_number = line;
+    /*
+     * take new name fist, because will probably be same as last
+     * thus saving a free and a malloc (which are slow)
+     */
+    s = base_name(file);
+    if (file_name)
+	str_free(file_name);
+    file_name = s;
+    line_number = line;
 }
 
-
-static void trace_putchar _((int));
 
 static void
-trace_putchar(c)
-	int		c;
+trace_putchar(int c)
 {
-	static char	buffer[200];
-	static char	*cp;
-	static int	in_col;
-	static int	out_col;
+    static char     buffer[200];
+    static char     *cp;
+    static int      in_col;
+    static int      out_col;
 
-	if (!page_width)
+    if (!page_width)
+    {
+	/* don't use last column, many terminals are dumb */
+	page_width = 79;
+	/* allow for progname, filename and line number (8 each) */
+	page_width -= 24;
+	if (page_width < 16)
+	    page_width = 16;
+    }
+    if (!cp)
+    {
+	strcpy(buffer, progname_get());
+	cp = buffer + strlen(buffer);
+	if (cp > buffer + 6)
+	    cp = buffer + 6;
+	*cp++ = ':';
+	*cp++ = '\t';
+	strcpy(cp, file_name->str_text);
+	cp += file_name->str_length;
+	*cp++ = ':';
+	*cp++ = '\t';
+	sprintf(cp, "%d:\t", line_number);
+	cp += strlen(cp);
+	in_col = 0;
+	out_col = 0;
+    }
+    switch (c)
+    {
+    case '\n':
+	*cp++ = '\n';
+	*cp = 0;
+	fflush(stdout);
+	fputs(buffer, stderr);
+	fflush(stderr);
+	if (ferror(stderr))
+	    nfatal("(stderr)");
+	cp = 0;
+	break;
+
+    case ' ':
+	if (out_col)
+	    ++in_col;
+	break;
+
+    case '\t':
+	if (out_col)
+	    in_col = (in_col/INDENT + 1) * INDENT;
+	break;
+
+    case '}':
+    case ')':
+    case ']':
+	if (depth > 0)
+	    --depth;
+	/* fall through */
+
+    default:
+	if (!out_col)
 	{
-		/* don't use last column, many terminals are dumb */
-		page_width = 79;
-		/* allow for progname, filename and line number (8 each) */
-		page_width -= 24;
-		if (page_width < 16)
-			page_width = 16;
+	    if (c != '#')
+	       	/* modulo so never too long */
+	       	in_col = (INDENT * depth) % page_width;
+	    else
+	       	in_col = 0;
 	}
-	if (!cp)
+	if (in_col >= page_width)
 	{
-		strcpy(buffer, progname_get());
-		cp = buffer + strlen(buffer);
-		if (cp > buffer + 6)
-			cp = buffer + 6;
-		*cp++ = ':';
-		*cp++ = '\t';
-		strcpy(cp, file_name->str_text);
-		cp += file_name->str_length;
-		*cp++ = ':';
-		*cp++ = '\t';
-		sprintf(cp, "%d:\t", line_number);
-		cp += strlen(cp);
-		in_col = 0;
-		out_col = 0;
+	    trace_putchar('\n');
+	    trace_putchar(c);
+	    return;
 	}
-	switch (c)
+	while (((out_col + 8) & -8) <= in_col && out_col + 1 < in_col)
 	{
-	case '\n':
-		*cp++ = '\n';
-		*cp = 0;
-		fflush(stdout);
-		fputs(buffer, stderr);
-		fflush(stderr);
-		if (ferror(stderr))
-			nfatal("(stderr)");
-		cp = 0;
-		break;
-
-	case ' ':
-		if (out_col)
-			++in_col;
-		break;
-
-	case '\t':
-		if (out_col)
-			in_col = (in_col/INDENT + 1) * INDENT;
-		break;
-
-	case /*{*/'}':
-	case /*(*/')':
-	case /*[*/']':
-		if (depth > 0)
-			--depth;
-		/* fall through */
-
-	default:
-		if (!out_col)
-		{
-			if (c != '#')
-				/* modulo so never too long */
-				in_col = (INDENT * depth) % page_width;
-			else
-				in_col = 0;
-		}
-		if (in_col >= page_width)
-		{
-			trace_putchar('\n');
-			trace_putchar(c);
-			return;
-		}
-		while (((out_col + 8) & -8) <= in_col && out_col + 1 < in_col)
-		{
-			*cp++ = '\t';
-			out_col = (out_col + 8) & -8;
-		}
-		while (out_col < in_col)
-		{
-			*cp++ = ' ';
-			++out_col;
-		}
-		if (c == '{'/*}*/ || c == '('/*)*/ || c == '['/*]*/)
-			++depth;
-		*cp++ = c;
-		in_col++;
-		out_col++;
-		break;
+	    *cp++ = '\t';
+	    out_col = (out_col + 8) & -8;
 	}
+	while (out_col < in_col)
+	{
+	    *cp++ = ' ';
+	    ++out_col;
+	}
+	if (c == '{' || c == '(' || c == '[')
+	    ++depth;
+	*cp++ = c;
+	in_col++;
+	out_col++;
+	break;
+    }
 }
 
 
 void
-trace_printf(s sva_last)
-	const char	*s;
-	sva_last_decl
+trace_printf(const char *s, ...)
 {
-	va_list		ap;
-	char		buffer[3000];
+    va_list         ap;
+    char	    buffer[3000];
 
-	sva_init(ap, s);
-	vsprintf(buffer, s, ap);
-	va_end(ap);
-	for (s = buffer; *s; ++s)
-		trace_putchar(*s);
+    va_start(ap, s);
+    vsprintf(buffer, s, ap);
+    va_end(ap);
+    for (s = buffer; *s; ++s)
+	trace_putchar(*s);
 }
 
 
 void
-trace_enable(file)
-	const char	*file;
+trace_enable(const char *file)
 {
-	string_ty	*s;
-	known_ty	*kp;
+    string_ty	    *s;
+    known_ty	    *kp;
 
-	s = base_name(file);
-	for (kp = known; kp; kp = kp->next)
+    s = base_name(file);
+    for (kp = known; kp; kp = kp->next)
+    {
+	if (str_equal(s, kp->filename))
 	{
-		if (str_equal(s, kp->filename))
-		{
-			str_free(s);
-			break;
-		}
+	    str_free(s);
+	    break;
 	}
-	if (!kp)
-	{
-		kp = (known_ty *)mem_alloc(sizeof(known_ty));
-		kp->filename = s;
-		kp->flag_p = 0;
-		kp->next = known;
-		known = kp;
-	}
-	kp->flag = 3; /* enabled */
-	if (kp->flag_p)
-		*kp->flag_p = kp->flag;
+    }
+    if (!kp)
+    {
+	kp = (known_ty *)mem_alloc(sizeof(known_ty));
+	kp->filename = s;
+	kp->flag_p = 0;
+	kp->next = known;
+	known = kp;
+    }
+    kp->flag = 3; /* enabled */
+    if (kp->flag_p)
+	*kp->flag_p = kp->flag;
 
-	/*
-	 * this silences a warning...
-	 */
+    /*
+     * this silences a warning...
+     */
 #ifdef DEBUG
-	trace_pretest_result = 1;
+    trace_pretest_result = 1;
 #endif
 }
 
 
 void
-trace_char_real(name, vp)
-	const char	*name;
-	const char	*vp;
+trace_char_real(const char *name, const char *vp)
 {
-	trace_printf("%s = '", name);
-	if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
-	{
-		char	*s;
+    trace_printf("%s = '", name);
+    if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
+    {
+	char            *s;
 
-		s = strchr("\bb\nn\tt\rr\ff", *vp);
-		if (s)
-		{
-			trace_putchar('\\');
-			trace_putchar(s[1]);
-		}
-		else
-			trace_printf("\\%03o", (unsigned char)*vp);
+	s = strchr("\bb\nn\tt\rr\ff", *vp);
+	if (s)
+	{
+	    trace_putchar('\\');
+	    trace_putchar(s[1]);
 	}
 	else
-	{
-		if (strchr("'\\", *vp))
-			trace_putchar('\\');
-		trace_putchar(*vp);
-	}
-	trace_printf("'; /* 0x%02X, %d */\n", (unsigned char)*vp, *vp);
+	    trace_printf("\\%03o", (unsigned char)*vp);
+    }
+    else
+    {
+	    if (strchr("'\\", *vp))
+		    trace_putchar('\\');
+	    trace_putchar(*vp);
+    }
+    trace_printf("'; /* 0x%02X, %d */\n", (unsigned char)*vp, *vp);
 }
 
 
 void
-trace_char_unsigned_real(name, vp)
-	const char	*name;
-	const unsigned char *vp;
+trace_char_unsigned_real(const char *name, const unsigned char *vp)
 {
-	trace_printf("%s = '", name);
-	if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
-	{
-		char	*s;
+    trace_printf("%s = '", name);
+    if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
+    {
+	char	*s;
 
-		s = strchr("\bb\nn\tt\rr\ff", *vp);
-		if (s)
-		{
-			trace_putchar('\\');
-			trace_putchar(s[1]);
-		}
-		else
-			trace_printf("\\%03o", *vp);
+	s = strchr("\bb\nn\tt\rr\ff", *vp);
+	if (s)
+	{
+    	    trace_putchar('\\');
+    	    trace_putchar(s[1]);
 	}
 	else
+    	    trace_printf("\\%03o", *vp);
+    }
+    else
+    {
+	if (strchr("'\\", *vp))
+    	    trace_putchar('\\');
+	trace_putchar(*vp);
+    }
+    trace_printf("'; /* 0x%02X, %d */\n", *vp, *vp);
+}
+
+
+void
+trace_int_real(const char *name, const int *vp)
+{
+    trace_printf("%s = %d;\n", name, *vp);
+}
+
+
+void
+trace_int_unsigned_real(const char *name, const unsigned int *vp)
+{
+    trace_printf("%s = %u;\n", name, *vp);
+}
+
+
+void
+trace_long_real(const char *name, const long *vp)
+{
+    trace_printf("%s = %ld;\n", name, *vp);
+}
+
+
+void
+trace_long_unsigned_real(const char *name, const unsigned long *vp)
+{
+    trace_printf("%s = %lu;\n", name, *vp);
+}
+
+
+void
+trace_pointer_real(const char *name, const void *vptrptr)
+{
+    const void *const *ptr_ptr;
+    const void *ptr;
+
+    ptr_ptr = vptrptr;
+    ptr = *ptr_ptr;
+    if (!ptr)
+	trace_printf("%s = NULL;\n", name);
+    else
+	trace_printf("%s = 0x%08lX;\n", name, (long)ptr);
+}
+
+
+void
+trace_short_real(const char *name, const short *vp)
+{
+    trace_printf("%s = %hd;\n", name, *vp);
+}
+
+
+void
+trace_short_unsigned_real(const char *name, const unsigned short *vp)
+{
+    trace_printf("%s = %hu;\n", name, *vp);
+}
+
+
+void
+trace_string_real(const char *name, const char *vp)
+{
+    const char	    *s;
+    long	    count;
+
+    trace_printf("%s = ", name);
+    if (!vp)
+    {
+	trace_printf("NULL;\n");
+	return;
+    }
+    trace_printf("\"");
+    count = 0;
+    for (s = vp; *s; ++s)
+    {
+	switch (*s)
 	{
-		if (strchr("'\\", *vp))
-			trace_putchar('\\');
-		trace_putchar(*vp);
+	case '(':
+	case '[':
+	case '{':
+	    ++count;
+	    break;
+
+	case ')':
+	case ']':
+	case '}':
+	    --count;
+	    break;
 	}
-	trace_printf("'; /* 0x%02X, %d */\n", *vp, *vp);
-}
-
-
-void
-trace_int_real(name, vp)
-	const char	*name;
-	const int	*vp;
-{
-	trace_printf("%s = %d;\n", name, *vp);
-}
-
-
-void
-trace_int_unsigned_real(name, vp)
-	const char	*name;
-	const unsigned int *vp;
-{
-	trace_printf("%s = %u;\n", name, *vp);
-}
-
-
-void
-trace_long_real(name, vp)
-	const char	*name;
-	const long	*vp;
-{
-	trace_printf("%s = %ld;\n", name, *vp);
-}
-
-
-void
-trace_long_unsigned_real(name, vp)
-	const char	*name;
-	const unsigned long *vp;
-{
-	trace_printf("%s = %lu;\n", name, *vp);
-}
-
-
-void
-trace_pointer_real(name, vptrptr)
-	const char	*name;
-	const void	*vptrptr;
-{
-	const void	*const *ptr_ptr = vptrptr;
-	const void	*ptr;
-
-	ptr = *ptr_ptr;
-	if (!ptr)
-		trace_printf("%s = NULL;\n", name);
-	else
-		trace_printf("%s = 0x%08lX;\n", name, ptr);
-}
-
-
-void
-trace_short_real(name, vp)
-	const char	*name;
-	const short	*vp;
-{
-	trace_printf("%s = %hd;\n", name, *vp);
-}
-
-
-void
-trace_short_unsigned_real(name, vp)
-	const char	*name;
-	const unsigned short *vp;
-{
-	trace_printf("%s = %hu;\n", name, *vp);
-}
-
-
-void
-trace_string_real(name, vp)
-	const char	*name;
-	const char	*vp;
-{
-	const char	*s;
-	long		count;
-
-	trace_printf("%s = ", name);
-	if (!vp)
-	{
-		trace_printf("NULL;\n");
-		return;
-	}
-	trace_printf("\"");
+    }
+    if (count > 0)
+	count = -count;
+    else
 	count = 0;
-	for (s = vp; *s; ++s)
-	{
-		switch (*s)
-		{
-		case '('/*)*/:
-		case '['/*]*/:
-		case '{'/*}*/:
-			++count;
-			break;
+    for (s = vp; *s; ++s)
+    {
+	int             c;
 
-		case /*(*/')':
-		case /*[*/']':
-		case /*{*/'}':
-			--count;
-			break;
-		}
+	c = *s;
+	if (c < ' ' || c > '~')
+	{
+	    char            *cp;
+
+	    cp = strchr("\bb\ff\nn\rr\tt", c);
+	    if (cp)
+		trace_printf("\\%c", cp[1]);
+	    else
+	    {
+		escape:
+		trace_printf("\\%03o", (unsigned char)c);
+	    }
 	}
-	if (count > 0)
-		count = -count;
 	else
-		count = 0;
-	for (s = vp; *s; ++s)
 	{
-		int	c;
+	    switch (c)
+	    {
+	    case '(':
+	    case '[':
+	    case '{':
+		++count;
+		if (count <= 0)
+	    	    goto escape;
+		break;
 
-		c = *s;
-		if (c < ' ' || c > '~')
-		{
-			char	*cp;
+	    case ')':
+	    case ']':
+	    case '}':
+		--count;
+		if (count < 0)
+	    	    goto escape;
+		break;
 
-			cp = strchr("\bb\ff\nn\rr\tt", c);
-			if (cp)
-				trace_printf("\\%c", cp[1]);
-			else
-			{
-				escape:
-				trace_printf("\\%03o", (unsigned char)c);
-			}
-		}
-		else
-		{
-			switch (c)
-			{
-			case '('/*)*/:
-			case '['/*]*/:
-			case '{'/*}*/:
-				++count;
-				if (count <= 0)
-					goto escape;
-				break;
-	
-			case /*(*/')':
-			case /*[*/']':
-			case /*{*/'}':
-				--count;
-				if (count < 0)
-					goto escape;
-				break;
-
-			case '\\':
-			case '"':
-				trace_printf("\\");
-				break;
-			}
-			trace_printf("%c", c);
-		}
+	    case '\\':
+	    case '"':
+		trace_printf("\\");
+		break;
+	    }
+	    trace_printf("%c", c);
 	}
-	trace_printf("\";\n");
+    }
+    trace_printf("\";\n");
 }
 
 
 void
 trace_indent_reset()
 {
-	depth = 0;
+    depth = 0;
 }

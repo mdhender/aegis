@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1997-1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <cmdline.gen.h>
 #include <lex.h>
 #include <progname.h>
+#include <trace.h>
 #include <sub.h>
 
 static arglex_table_ty argtab[] =
@@ -47,6 +48,7 @@ static arglex_table_ty argtab[] =
 	{ "-And",		arglex_token_and,	},
 	{ "-Change_Time",	arglex_token_ctime,	},
 	{ "-Debug",		arglex_token_debug,	},
+	{ "-EXecute",		arglex_token_execute,	},
 	{ "-Equals",		arglex_token_eq,	},
 	{ "-Greater_Than",	arglex_token_gt,	},
 	{ "-Greater_than_or_Equal", arglex_token_ge,	},
@@ -61,6 +63,7 @@ static arglex_table_ty argtab[] =
 	{ "-PAth",		arglex_token_path,	},
 	{ "-PRInt",		arglex_token_print,	},
 	{ "-Resolve",		arglex_token_resolve,	},
+	{ "-Not_Resolve",	arglex_token_resolve_not, },
 	{ "-Size",		arglex_token_size,	},
 	{ "-Type",		arglex_token_type,	},
 	{ ".EQ.",		arglex_token_eq,	},
@@ -70,6 +73,7 @@ static arglex_table_ty argtab[] =
 	{ ".LT.",		arglex_token_lt,	},
 	{ ".NE.",		arglex_token_ne,	},
 	{ "/",			arglex_token_div,	},
+	{ ";",			arglex_token_semicolon,	},
 	{ "<",			arglex_token_lt,	},
 	{ "<<",			arglex_token_shift_left, },
 	{ "<=",			arglex_token_le,	},
@@ -109,73 +113,236 @@ cmdline_lex()
 	switch (arglex())
 	{
 	case arglex_token_eoln:
+		trace(("arglex_token_eoln\n"));
 		return 0;
 
 	case arglex_token_number:
+		trace(("arglex_token_number\n"));
 		cmdline_lval.lv_number = arglex_value.alv_number;
 		return NUMBER;
 
 #if 0
 	case arglex_token_double:
+		trace(("arglex_token_double\n"));
 		cmdline_lval.lv_real = arglex_value.alv_double;
 		return REAL;
 #endif
 
 	case arglex_token_string:
+		trace(("arglex_token_string\n"));
 		cmdline_lval.lv_string = str_from_c(arglex_value.alv_string);
 		return STRING;
 
-	case arglex_token_and:		return ANDAND;
-	case arglex_token_atime:	return ATIME;
-	case arglex_token_baseline:	return BASELINE;
-	case arglex_token_base_relative: return BASE_REL;
-	case arglex_token_bit_and:	return BIT_AND;
-	case arglex_token_bit_or:	return BIT_OR;
-	case arglex_token_bit_xor:	return BIT_XOR;
-	case arglex_token_branch:	return BRANCH;
-	case arglex_token_change:	return CHANGE;
-	case arglex_token_comma:	return COMMA;
-	case arglex_token_ctime:	return CTIME;
-	case arglex_token_current_relative: return CUR_REL;
-	case arglex_token_debug:	return DEBUG_keyword;
-	case arglex_token_div:		return DIV;
-	case arglex_token_eq:		return EQ;
-	case arglex_token_false:	return FALSE_keyword;
-	case arglex_token_ge:		return GE;
-	case arglex_token_grandparent:	return GRANDPARENT;
-	case arglex_token_gt:		return GT;
-	case arglex_token_stringize:	return STRINGIZE;
-	case arglex_token_join:		return JOIN;
-	case arglex_token_le:		return LE;
-	case arglex_token_left_paren:	return LPAREN;
-	case arglex_token_library:	return LIBRARY;
-	case arglex_token_lt:		return LT;
-	case arglex_token_mod:		return MOD;
-	case arglex_token_mtime:	return MTIME;
-	case arglex_token_mul:		return MUL;
-	case arglex_token_namekw:	return NAME;
-	case arglex_token_ne:		return NE;
-	case arglex_token_newer:	return NEWER;
-	case arglex_token_not:		return NOT;
-	case arglex_token_now:		return NOW;
-	case arglex_token_or:		return OROR;
-	case arglex_token_path:		return PATH;
-	case arglex_token_plus:		return PLUS;
-	case arglex_token_print:	return PRINT;
-	case arglex_token_project:	return PROJECT;
-	case arglex_token_resolve:	return RESOLVE;
-	case arglex_token_right_paren:	return RPAREN;
-	case arglex_token_size:		return SSIZE;
-	case arglex_token_stdio:	return MINUS;
-	case arglex_token_this:		return THIS;
-	case arglex_token_tilde:	return TILDE;
-	case arglex_token_trace:	return TRACE;
-	case arglex_token_true:		return TRUE_keyword;
-	case arglex_token_trunk:	return TRUNK;
-	case arglex_token_type:		return TYPE;
-	case arglex_token_verbose:	return DEBUG_keyword;
+	case arglex_token_and:
+		trace(("arglex_token_and\n"));
+    		return ANDAND;
+
+	case arglex_token_atime:
+		trace(("arglex_token_atime\n"));
+		return ATIME;
+
+	case arglex_token_baseline:
+		trace(("arglex_token_baseline\n"));
+    		return BASELINE;
+
+	case arglex_token_base_relative:
+		trace(("arglex_token_base_relative\n"));
+		return BASE_REL;
+
+	case arglex_token_bit_and:
+		trace(("arglex_token_bit_and\n"));
+		return BIT_AND;
+
+	case arglex_token_bit_or:
+		trace(("arglex_token_bit_or\n"));
+		return BIT_OR;
+
+	case arglex_token_bit_xor:
+		trace(("arglex_token_bit_xor\n"));
+		return BIT_XOR;
+
+	case arglex_token_branch:
+		trace(("arglex_token_branch\n"));
+		return BRANCH;
+
+	case arglex_token_change:
+		trace(("arglex_token_change\n"));
+		return CHANGE;
+
+	case arglex_token_comma:
+		trace(("arglex_token_comma\n"));
+		return COMMA;
+
+	case arglex_token_ctime:
+		trace(("arglex_token_ctime\n"));
+		return CTIME;
+
+	case arglex_token_current_relative:
+		trace(("arglex_token_current_relative\n"));
+		return CUR_REL;
+
+	case arglex_token_debug:
+		trace(("arglex_token_debug\n"));
+		return DEBUG_keyword;
+
+	case arglex_token_div:
+		trace(("arglex_token_div\n"));
+		return DIV;
+
+	case arglex_token_eq:
+		trace(("arglex_token_eq\n"));
+		return EQ;
+
+	case arglex_token_execute:
+		trace(("arglex_token_execute\n"));
+		return EXECUTE;
+
+	case arglex_token_false:
+		trace(("arglex_token_false\n"));
+		return FALSE_keyword;
+
+	case arglex_token_ge:
+		trace(("arglex_token_ge\n"));
+		return GE;
+
+	case arglex_token_grandparent:
+		trace(("arglex_token_grandparent\n"));
+		return GRANDPARENT;
+
+	case arglex_token_gt:
+		trace(("arglex_token_gt\n"));
+		return GT;
+
+	case arglex_token_stringize:
+		trace(("arglex_token_stringize\n"));
+		return STRINGIZE;
+
+	case arglex_token_join:
+		trace(("arglex_token_join\n"));
+		return JOIN;
+
+	case arglex_token_le:
+		trace(("arglex_token_le\n"));
+		return LE;
+
+	case arglex_token_left_paren:
+		trace(("arglex_token_left_paren\n"));
+		return LPAREN;
+
+	case arglex_token_library:
+		trace(("arglex_token_library\n"));
+		return LIBRARY;
+
+	case arglex_token_lt:
+		trace(("arglex_token_lt\n"));
+		return LT;
+
+	case arglex_token_mod:
+		trace(("arglex_token_mod\n"));
+		return MOD;
+
+	case arglex_token_mtime:
+		trace(("arglex_token_mtime\n"));
+		return MTIME;
+
+	case arglex_token_mul:
+		trace(("arglex_token_mul\n"));
+		return MUL;
+
+	case arglex_token_namekw:
+		trace(("arglex_token_namekw\n"));
+		return NAME;
+
+	case arglex_token_ne:
+		trace(("arglex_token_ne\n"));
+		return NE;
+
+	case arglex_token_newer:
+		trace(("arglex_token_newer\n"));
+		return NEWER;
+
+	case arglex_token_not:
+		trace(("arglex_token_not\n"));
+		return NOT;
+
+	case arglex_token_now:
+		trace(("arglex_token_now\n"));
+		return NOW;
+
+	case arglex_token_or:
+		trace(("arglex_token_or\n"));
+		return OROR;
+
+	case arglex_token_path:
+		trace(("arglex_token_path\n"));
+		return PATH;
+
+	case arglex_token_plus:
+		trace(("arglex_token_plus\n"));
+		return PLUS;
+
+	case arglex_token_print:
+		trace(("arglex_token_print\n"));
+		return PRINT;
+
+	case arglex_token_project:
+		trace(("arglex_token_project\n"));
+		return PROJECT;
+
+	case arglex_token_resolve:
+		trace(("arglex_token_resolve\n"));
+		return RESOLVE;
+
+	case arglex_token_resolve_not:
+		trace(("arglex_token_resolve_not\n"));
+		return RESOLVE_NOT;
+
+	case arglex_token_right_paren:
+		trace(("arglex_token_right_paren\n"));
+		return RPAREN;
+
+	case arglex_token_semicolon:
+		trace(("arglex_token_semicolon\n"));
+		return SEMICOLON;
+
+	case arglex_token_size:
+		trace(("arglex_token_size\n"));
+		return SSIZE;
+
+	case arglex_token_stdio:
+		trace(("arglex_token_stdio\n"));
+		return MINUS;
+
+	case arglex_token_this:
+		trace(("arglex_token_this\n"));
+		return THIS;
+
+	case arglex_token_tilde:
+		trace(("arglex_token_tilde\n"));
+		return TILDE;
+
+	case arglex_token_trace:
+		trace(("arglex_token_trace\n"));
+		return TRACE;
+
+	case arglex_token_true:
+		trace(("arglex_token_true\n"));
+		return TRUE_keyword;
+
+	case arglex_token_trunk:
+		trace(("arglex_token_trunk\n"));
+		return TRUNK;
+
+	case arglex_token_type:
+		trace(("arglex_token_type\n"));
+		return TYPE;
+
+	case arglex_token_verbose:
+		trace(("arglex_token_verbose\n"));
+		return DEBUG_keyword;
 
 	default:
+		trace(("JUNK\n"));
 		return JUNK;
 	}
 }

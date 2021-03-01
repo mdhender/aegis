@@ -58,9 +58,15 @@ If the file already exists,
 it will not be altered.
 .PP
 If you name a directory on the command line, the entire directory tree
-will be search for new files.  (Note: absolutely everything will be added,
+will be searched for new files.  (Note: absolutely everything will be added,
 including dot files and binary files, so you will need to clean out any
 junk first.)
+.PP
+If you want a new source file to be executable (shell scripts, for
+example) then you simply use the normal \fIchmod\fP(1) command.  If any
+of the file's executable bits are set at \fIaede\fP(1) time the file is
+remembered as executable and all execute bits (minus the project's umask)
+will be set by subsequent \fIaecp\fP(1) commands.
 .so z_template.so
 .so z_filesize.so
 .so z_intuit.so

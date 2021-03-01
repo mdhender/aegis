@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,11 +65,11 @@ print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("Project Progress Histogram");
-print("</title><head><body><h1><center>");
+print("</title><head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 print("Progress Histogram<br>");
 print(year);
-print("</center></h1>");
+print("</h1>");
 
 /* **********  Scan the Changes in this Branch  ************************* */
 
@@ -94,7 +94,7 @@ for (ph in ps.branch.history)
 		bucket.total[month]++;
 	}
 }
-	
+
 max = 1;
 for (month = 1; month <= 12; ++month)
 {
@@ -106,12 +106,12 @@ max = 400. / max;
 
 /* **********  Print the Histogram  ************************************* */
 
-print("<center><table>");
+print("<table align=center>");
 print("<tr><th>Month</th><th>Count</th></tr>");
 for (month = 1; month <= 12; ++month)
 {
-	auto t; 
-	for 
+	auto t;
+	for
 	(
 		t = mktime("1-Jan-" ## year ## " 00:00:00");
 		strftime("%m", t) + 0 != month;
@@ -123,9 +123,13 @@ for (month = 1; month <= 12; ++month)
 	print("<tr><td align=right>");
 	if (n > 0)
 	{
+		/*
+		 * Note: don't use first of the month here,
+		 * time zones can have unexpected side effects.
+		 */
 		href = script_name ## "?file@proj_prgr3";
 		href ##= "+project@" ## quote_url(project_name());
-		href ##=  "+" ## strftime("1-%b-%Y", t);
+		href ##=  "+" ## strftime("2-%b-%Y", t);
 		print("<a href=\"" ## href ## "\">");
 	}
 	print(strftime("%B", t));
@@ -149,12 +153,13 @@ for (month = 1; month <= 12; ++month)
 				n = 3;
 			href = script_name ## "?file@rect+" ## n
 				## "+12+color+"## clr;
-			print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+			print("<img src=\"" ## href ## "\" width=" ## n
+				##" height=12>");
 		}
 	}
 	print("</td></tr>");
 }
-print("</table></center>");
+print("</table>");
 
 print("<p>");
 print("Please note: if the number of <tt>review_fail</tt>s is zero,");

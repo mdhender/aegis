@@ -49,34 +49,34 @@ static	int	initialized;
  */
 
 void
-env_initialize()
+env_initialize(void)
 {
-	size_t		j;
-	char		**old;
+    size_t	    j;
+    char	    **old;
 
-	if (initialized)
-		return;
-	++initialized;
+    if (initialized)
+	    return;
+    ++initialized;
 
-	trace(("env_initialize()\n{\n"/*}*/));
-	nenvirons = 0;
-	for (j = 0; environ[j]; ++j)
-		++nenvirons;
-	old = environ;
-	environ = (char **)mem_alloc((nenvirons + 1) * sizeof(char *));
-	for (j = 0; j < nenvirons; ++j)
-	{
-		char	*cp;
-		char	*was;
+    trace(("env_initialize()\n{\n"));
+    nenvirons = 0;
+    for (j = 0; environ[j]; ++j)
+	++nenvirons;
+    old = environ;
+    environ = (char **)mem_alloc((nenvirons + 1) * sizeof(char *));
+    for (j = 0; j < nenvirons; ++j)
+    {
+	char		*cp;
+	char		*was;
 
-		was = old[j];
-		cp = mem_alloc(strlen(was) + 1);
-		strcpy(cp, was);
-		environ[j] = cp;
-	}
-	environ[nenvirons] = 0;
-	env_set("SHELL", CONF_SHELL);
-	trace((/*{*/"}\n"));
+	was = old[j];
+	cp = mem_alloc(strlen(was) + 1);
+	strcpy(cp, was);
+	environ[j] = cp;
+    }
+    environ[nenvirons] = 0;
+    env_set("SHELL", CONF_SHELL);
+    trace((/*{*/"}\n"));
 }
 
 
@@ -96,56 +96,48 @@ env_initialize()
  */
 
 void
-env_set(name, value)
-	char		*name;
-	char		*value;
+env_set(char *name, char *value)
 {
-	size_t		name_len;
-	size_t		j;
-	char		*cp;
-	size_t		nbytes;
+    size_t	    name_len;
+    size_t	    j;
+    char	    *cp;
+    size_t	    nbytes;
 
-	trace(("env_set(name = \"%s\", value = \"%s\")\n{\n"/*}*/,
-		name, value));
-	if (!initialized)
-		env_initialize();
-	cp = 0;
-	name_len = strlen(name);
-	nbytes = name_len + strlen(value) + 2;
-	for (j = 0; j < nenvirons; ++j)
-	{
-		cp = environ[j];
-		assert(cp);
-		if
-		(
-			!memcmp(cp, name, name_len)
-		&&
-			(cp[name_len] == '=' || !cp[name_len])
-		)
-			break;
-	}
-	if (j < nenvirons)
-	{
-		environ[j] = mem_change_size(environ[j], nbytes);
-		cp = environ[j];
-	}
-	else
-	{
-		environ =
-			mem_change_size
-			(
-				environ,
-				(nenvirons + 2) * sizeof(char *)
-			);
-		environ[nenvirons] = mem_alloc(nbytes);
-		cp = environ[nenvirons];
-		++nenvirons;
-		environ[nenvirons] = 0;
-	}
-	memcpy(cp, name, name_len);
-	cp[name_len] = '=';
-	strcpy(cp + name_len + 1, value);
-	trace((/*{*/"}\n"));
+    trace(("env_set(name = \"%s\", value = \"%s\")\n{\n", name, value));
+    if (!initialized)
+	env_initialize();
+    cp = 0;
+    name_len = strlen(name);
+    nbytes = name_len + strlen(value) + 2;
+    for (j = 0; j < nenvirons; ++j)
+    {
+	cp = environ[j];
+	assert(cp);
+	if
+	(
+    	    !memcmp(cp, name, name_len)
+	&&
+    	    (cp[name_len] == '=' || !cp[name_len])
+	)
+    	    break;
+    }
+    if (j < nenvirons)
+    {
+	environ[j] = mem_change_size(environ[j], nbytes);
+	cp = environ[j];
+    }
+    else
+    {
+	environ = mem_change_size(environ, (nenvirons + 2) * sizeof(char *));
+	environ[nenvirons] = mem_alloc(nbytes);
+	cp = environ[nenvirons];
+	++nenvirons;
+	environ[nenvirons] = 0;
+    }
+    memcpy(cp, name, name_len);
+    cp[name_len] = '=';
+    strcpy(cp + name_len + 1, value);
+    trace(("}\n"));
 }
 
 
@@ -168,37 +160,36 @@ env_set(name, value)
  */
 
 void
-env_unset(name)
-	char		*name;
+env_unset(char *name)
 {
-	size_t		name_len;
-	size_t		j;
-	char		*cp;
+    size_t	    name_len;
+    size_t	    j;
+    char	    *cp;
 
-	trace(("env_unset(name = \"%s\")\n{\n"/*}*/, name));
-	if (!initialized)
-		env_initialize();
-	name_len = strlen(name);
-	cp = 0;
-	for (j = 0; j < nenvirons; ++j)
-	{
-		cp = environ[j];
-		assert(cp);
-		if
-		(
-			!memcmp(cp, name, name_len)
-		&&
-			(cp[name_len] == '=' || !cp[name_len])
-		)
-			break;
-	}
-	if (!environ[j])
-		return;
-	environ[j] = 0;
-	if (cp)
-		mem_free(cp);
-	--nenvirons;
-	for ( ; j < nenvirons; ++j)
-		environ[j] = environ[j + 1];
-	trace((/*{*/"}\n"));
+    trace(("env_unset(name = \"%s\")\n{\n", name));
+    if (!initialized)
+	env_initialize();
+    name_len = strlen(name);
+    cp = 0;
+    for (j = 0; j < nenvirons; ++j)
+    {
+	cp = environ[j];
+	assert(cp);
+	if
+	(
+    	    !memcmp(cp, name, name_len)
+	&&
+    	    (cp[name_len] == '=' || !cp[name_len])
+	)
+    	    break;
+    }
+    if (!environ[j])
+	return;
+    environ[j] = 0;
+    if (cp)
+	mem_free(cp);
+    --nenvirons;
+    for ( ; j < nenvirons; ++j)
+	environ[j] = environ[j + 1];
+    trace(("}\n"));
 }

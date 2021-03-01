@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000 Peter Miller and Pieter Nagel;
+.\"	Copyright (C) 2000, 2002 Peter Miller and Pieter Nagel;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ This section describes how to use Aegis to supervise the development of
 Python programs.  Some of the remarks in this section may also be helpful
 to people who use Aegis to supervise development in other non-compiled
 languages.
-.LP 
+.LP
 This section is contributed courtesy of Tangible Business Software,
 \f[CW]www.tbs.co.za\fP.  Python-specific questions relating to this
 section may be sent to Pieter Nagel at \f[CW]<pnagel@tbs.co.za>\fP.
@@ -63,11 +63,11 @@ Use Aegis version 3.23 or later, and set the following in the project
 \fIconfig\fP file:
 .E(
 create_symlinks_before_build
-	= true; 
+	= true;
 remove_symlinks_after_integration_build
 	= false;
 .E)
-The second directive is not available in earlier versions of Aegis. 
+The second directive is not available in earlier versions of Aegis.
 .LP
 If you keep your Python files in a subdirectory of your project, such as
 \fIsrc/python\fP, you will need that directory's relative in your

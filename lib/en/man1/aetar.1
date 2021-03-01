@@ -1,0 +1,190 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aetar command.
+.\"
+.so z_name.so
+.ds n) aetar
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aetar \- remotely distribute a change via tar
+.XX "aetar(1)" "remotely distribute a change via tar"
+.SH SYNOPSIS
+.B \*(n)
+.B -Send
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Receive
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -List
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to send and receive change sets via \fItar\fP(1) to
+facilitate geographically distributed development.
+.PP
+The basic function is to reproduce a change, so a command like
+.RS
+\f(CWaetar -send | aetar -receive\fP
+.RE
+may be used to clone a change, though less efficiently than \fIaeclone\fP(1).
+The file format used is an ordinary \fIgzip\fP(1) compressed \fItar\fP(1)
+archive.
+.SH SEND
+The send variant takes a specified change, or baseline, and constructs
+a distribution package containing all of the source file contents.
+No change meta-data is included.
+.PP
+It is not necessary for the recipient to have the \fIaetar\fP(1) command.
+It is possible to use the regular \fItar xzf\fP command to extract the
+files from the archive.
+.SS Options
+The following options are understood by the send variant:
+.TP 8n
+\fB\-BaseLine\fP
+This option may be used to specify the source of a project,
+rather than a change.
+.so o_change.so
+.TP 8n
+\fB\-COmpress
+This option may be used to specify that the output is to be compressed.
+This is the default.
+.TP 8n
+\fB\-No_COmpress
+This option may be used to specify that the output is not to be compressed.
+.so o_delta.so
+.TP 8n
+\fB\-Entire_Source\fP
+This option may be used to send the entire source of the project,
+as well as the change source files.
+This is the default.
+.TP 8n
+\fB\-Partial_Source\fP
+This option may be used to send only source files of a change.
+.so o_output.so
+.so o_project.so
+.SH RECEIVE
+The receive variant takes a tarball and creates an Aegis change (see
+\fIaenc\fP(1)) to implement the change within.  Files are added to the
+change (see \fIaenf\fP(1), \fIaecp\fP(1), \fIaerm\fP(1), \fIaent\fP(1))
+and then the file contents are unpackaged into the development directory.
+.PP
+It is not necessary for the sender to have the \fIaetar\fP(1) command.
+It is possible to use the regular \fItar czf\fP command to create the
+the tarball.  You may want to use the \fItardy\fP(1) command to manipulate
+the filenames before extraction.
+.SS Notification
+The \fI\*(n)\fP command invokes various other Aegis commands.
+The usual notifications that these commands would issue are issued.
+.SS Options
+The following options are understood by the receive variant:
+.TP 8n
+\fB\-Change\fP \fInumber\fP
+This option may be used to choose the change number to be used,
+otherwise one will be chosen automatically.
+.TP 8n
+\fB\-DELta\fP \fInumber\fP
+.br
+This option may be used to specify a particular
+delta in the project's history to copy the file from,
+just as for the \fIaecp\fP(1) command.
+You may also use a delta name instead of a delta number.
+.so o_dir.so
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+Read the change set from the specified file.
+The default is to read it from the standard input.
+The filename `-' is understood to mean the standard input.
+.so o_project.so
+.SS Security
+Downloading a tarball and automatically committing it to the
+baseline without checking it would be a recipe for disaster.
+A number of safeguards are provided:
+.TP 2n
+\(bu
+The file sare unpacked into a new change.
+You need to edit the change description.
+You need to uncopy unchanged files.
+You need to difference the change.
+You need to build and test the change.
+This ensures that a local reviewer validates the change before it is
+committed, preventing accidental or malicious damage.
+.TP 2n
+\(bu
+The use of authentication and encryption systems, such as PGP and
+GPG, are encouraged.  However, it is expected that this processing will
+occur after \&\fIaetar --send\fP has constructed the package and before
+\&\fIaetar --receive\fP examines and acts on the package.
+Verification of the sender is the surest defense against trojan horses.
+.TP 2n
+\(bu
+Automatic sending and receiving of packages is supported, but not
+implemented within the \*(n) command.  It is expected that the \*(n)
+command will be used within shell scripts customized for your site and
+its unique security requirements.
+See the Aegis User Guide for several different ways to do this.
+.TP 2n
+\(bu
+The more you use Aegis' test management facilities (see \&\fIaent\fP(1)
+and \&\fIaet\fP(1)) the harder it is for an inadequate change to get into
+the baseline.
+.SH LIST
+The list variant can be used to list the contents of a tarball without
+actually unpacking it first.
+.SS Options
+The following options are understood by the list variant:
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+Read the change set from the specified file.
+The default is to read it from the standard input.
+.so o_output.so
+Only useful with the \-List option.
+.SH OPTIONS
+The following options to this command haven't been mentioned yet:
+.so o_help.so
+.so o__rules.so
+.SH FILE FORMAT
+The file format re-uses existing formats, rather than introduce anything
+new.  This means it is possible to extract the contents of a package
+even when \*(n) is unavailable.
+.TP 2n
+\(bu
+The source files and other information is stored as a \fItar\fP(1) archive.
+.TP 2n
+\(bu
+The archive is compressed using the GNU gzip format.  Typically primary
+source files are ASCII text, resulting in significant compression.
+.so z_exit.so
+.so z_cr.so

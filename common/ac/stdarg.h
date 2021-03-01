@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1996 Peter Miller;
+ *	Copyright (C) 1992-1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * MANIFEST: insulate against <varargs.h> vs <stdarg.h> differences
  */
 
-#ifndef S_V_ARG_H
-#define S_V_ARG_H
+#ifndef COMMON_AC_STDARG_H
+#define COMMON_AC_STDARG_H
 
 /*
  * This file contains insulation from whether <varargs.h> is being used
@@ -40,23 +40,6 @@
  */
 
 #include <config.h>
-
-#ifndef HAVE_STDARG_H
-
-#include <varargs.h>
-
-#define sva_last ,va_alist
-#define sva_last_decl va_dcl
-#define sva_init(ap, nth) va_start(ap)
-
-#else
-
 #include <stdarg.h>
 
-#define sva_last
-#define	sva_last_decl
-#define	sva_init(ap, nth) va_start(ap, nth)
-
-#endif
-
-#endif /* S_V_ARG_H */
+#endif /* COMMON_AC_STDARG_H */

@@ -67,7 +67,7 @@ The \fB\-c\fP option says to produce a context diff.  You may choose
 to use the \fB\-u\fP option, to produce uni-diffs, if your \fIdiff\fP
 command supports it.
 .LP
-You may also whishg to consider ignoring white space in comparisons,
+You may also wish to consider ignoring white space in comparisons,
 as these tend to be cosmetic changes and not very interesting to code
 reviewers.  The \fB\-b\fP option of GNU Diff will ignore changes to
 the amount of white space, and the \fB\-w\fP option will ignore white

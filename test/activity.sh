@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996 Peter Miller;
+#	Copyright (C) 1996, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@ if test ! -r $awkfile; then
 		awkfile=bl/$awkfile
 		if test ! -r $awkfile; then
 			awkfile=bl/$awkfile
-		fi 
-	fi 
-fi 
+		fi
+	fi
+fi
 for f in test/*/*.sh
 do
 	echo $f...

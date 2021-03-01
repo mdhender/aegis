@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ change_development_directory_get(cp, resolve)
 {
 	string_ty	*result;
 
-	trace(("change_development_directory_get(cp = %8.8lX)\n{\n", cp));
+	trace(("change_development_directory_get(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	if (!resolve)
 	{

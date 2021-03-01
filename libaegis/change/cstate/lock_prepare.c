@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ void
 change_cstate_lock_prepare(cp)
 	change_ty	*cp;
 {
-	trace(("change_cstate_lock_prepare(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_cstate_lock_prepare(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	lock_prepare_cstate
 	(
@@ -58,5 +58,5 @@ change_cstate_lock_prepare(cp)
 		waiting_callback,
 		(void *)cp
 	);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

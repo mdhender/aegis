@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1997, 1998 Peter Miller;
+#	Copyright (C) 1994, 1995, 1997, 1998, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -89,7 +89,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp -checksum < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -100,7 +100,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp -md < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -111,7 +111,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp -snefru < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -155,7 +155,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -166,7 +166,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp -checksum < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -177,7 +177,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp -md < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
@@ -188,7 +188,7 @@ if test $? -ne 0 ; then no_result; fi
 
 $bin/aefp -snefru < test.in > test.out
 if test $? -ne 0 ; then fail; fi
- 
+
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 

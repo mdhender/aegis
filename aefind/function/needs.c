@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ function_needs_one(name, args)
 		i18n("function $name requires one argument")
 	);
 	sub_context_delete(scp);
-	
+
 	if (args->length < 1)
 	{
 		tree_ty		*tp;
@@ -76,7 +76,7 @@ function_needs_two(name, args)
 		i18n("function $name requires two arguments")
 	);
 	sub_context_delete(scp);
-	
+
 	while (args->length < 2)
 	{
 		tree_ty		*tp;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991-1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <commit.h>
 #include <dir.h>
+#include <interrupt.h>
 #include <mem.h>
 #include <os.h>
 #include <trace.h>
@@ -46,29 +47,29 @@
 
 enum what_ty
 {
-	what_rename,
-	what_unlink_errok,
-	what_rmdir_errok,
-	what_rmdir_tree_bg,
-	what_rmdir_tree_errok
+    what_rename,
+    what_unlink_errok,
+    what_rmdir_errok,
+    what_rmdir_tree_bg,
+    what_rmdir_tree_errok
 };
 typedef enum what_ty what_ty;
 
 typedef struct action_ty action_ty;
 struct action_ty
 {
-	what_ty		what;
-	string_ty	*path1;
-	string_ty	*path2;
-	action_ty	*next;
-	int		uid;
-	int		gid;
-	int		umask;
+    what_ty         what;
+    string_ty       *path1;
+    string_ty       *path2;
+    action_ty       *next;
+    int             uid;
+    int             gid;
+    int             umask;
 };
 
-static	action_ty	*head1;
-static	action_ty	*tail1;
-static	action_ty	*head2;
+static action_ty *head1;
+static action_ty *tail1;
+static action_ty *head2;
 
 
 /*
@@ -92,30 +93,31 @@ static void link1 _((what_ty, string_ty *, string_ty *));
 
 static void
 link1(what, path1, path2)
-	what_ty		what;
-	string_ty	*path1;
-	string_ty	*path2;
+    what_ty         what;
+    string_ty       *path1;
+    string_ty       *path2;
 {
-	action_ty	*new;
+    action_ty       *new;
 
-	trace(("commit::link1(what = %d, path1 = %08lX, path2 = %08lX)\n{\n"/*}*/, what, path1, path2));
-	new = (action_ty *)mem_alloc(sizeof(action_ty));
-	new->what = what;
-	os_become_query(&new->uid, &new->gid, &new->umask);
-	new->path1 = str_copy(path1);
-	if (path2)
-		new->path2 = str_copy(path2);
-	else
-		new->path2 = 0;
-	new->next = 0;
-	if (head1)
-	{
-		tail1->next = new;
-		tail1 = new;
-	}
-	else
-		head1 = tail1 = new;
-	trace((/*{*/"}\n"));
+    trace(("commit::link1(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
+	what, (long)path1, (long)path2));
+    new = (action_ty *) mem_alloc(sizeof(action_ty));
+    new->what = what;
+    os_become_query(&new->uid, &new->gid, &new->umask);
+    new->path1 = str_copy(path1);
+    if (path2)
+	new->path2 = str_copy(path2);
+    else
+	new->path2 = 0;
+    new->next = 0;
+    if (head1)
+    {
+	tail1->next = new;
+	tail1 = new;
+    }
+    else
+	head1 = tail1 = new;
+    trace(("}\n"));
 }
 
 
@@ -140,24 +142,25 @@ static void link2 _((what_ty, string_ty *, string_ty *));
 
 static void
 link2(what, path1, path2)
-	what_ty		what;
-	string_ty	*path1;
-	string_ty	*path2;
+    what_ty         what;
+    string_ty      *path1;
+    string_ty      *path2;
 {
-	action_ty	*new;
+    action_ty      *new;
 
-	trace(("commit::link2(what = %d, path1 = %08lX, path2 = %08lX)\n{\n"/*}*/, what, path1, path2));
-	new = (action_ty *)mem_alloc(sizeof(action_ty));
-	new->what = what;
-	os_become_query(&new->uid, &new->gid, &new->umask);
-	new->path1 = str_copy(path1);
-	if (path2)
-		new->path2 = str_copy(path2);
-	else
-		new->path2 = 0;
-	new->next = head2;
-	head2 = new;
-	trace((/*{*/"}\n"));
+    trace(("commit::link2(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
+	what, (long)path1, (long)path2));
+    new = (action_ty *) mem_alloc(sizeof(action_ty));
+    new->what = what;
+    os_become_query(&new->uid, &new->gid, &new->umask);
+    new->path1 = str_copy(path1);
+    if (path2)
+	new->path2 = str_copy(path2);
+    else
+	new->path2 = 0;
+    new->next = head2;
+    head2 = new;
+    trace(("}\n"));
 }
 
 
@@ -179,14 +182,15 @@ link2(what, path1, path2)
 
 void
 commit_rename(from, to)
-	string_ty	*from;
-	string_ty	*to;
+    string_ty      *from;
+    string_ty      *to;
 {
-	trace(("commit_rename(from = %08lX, to = %08lX)\n{\n"/*}*/, from, to));
-	trace_string(from->str_text);
-	trace_string(to->str_text);
-	link1(what_rename, from, to);
-	trace((/*{*/"}\n"));
+    trace(("commit_rename(from = %08lX, to = %08lX)\n{\n", (long)from,
+	(long)to));
+    trace_string(from->str_text);
+    trace_string(to->str_text);
+    link1(what_rename, from, to);
+    trace(("}\n"));
 }
 
 
@@ -207,12 +211,12 @@ commit_rename(from, to)
 
 void
 commit_unlink_errok(path)
-	string_ty	*path;
+    string_ty      *path;
 {
-	trace(("commit_unlink_errok(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	link2(what_unlink_errok, path, (string_ty *)0);
-	trace((/*{*/"}\n"));
+    trace(("commit_unlink_errok(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    link2(what_unlink_errok, path, (string_ty *) 0);
+    trace(("}\n"));
 }
 
 
@@ -235,12 +239,12 @@ commit_unlink_errok(path)
 
 void
 commit_rmdir_errok(path)
-	string_ty	*path;
+    string_ty      *path;
 {
-	trace(("commit_rmdir_errok(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	link2(what_rmdir_errok, path, (string_ty *)0);
-	trace((/*{*/"}\n"));
+    trace(("commit_rmdir_errok(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    link2(what_rmdir_errok, path, (string_ty *) 0);
+    trace(("}\n"));
 }
 
 
@@ -263,12 +267,12 @@ commit_rmdir_errok(path)
 
 void
 commit_rmdir_tree_bg(path)
-	string_ty	*path;
+    string_ty      *path;
 {
-	trace(("commit_rmdir_tree_bg(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	link2(what_rmdir_tree_bg, path, (string_ty *)0);
-	trace((/*{*/"}\n"));
+    trace(("commit_rmdir_tree_bg(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    link2(what_rmdir_tree_bg, path, (string_ty *) 0);
+    trace(("}\n"));
 }
 
 
@@ -291,12 +295,12 @@ commit_rmdir_tree_bg(path)
 
 void
 commit_rmdir_tree_errok(path)
-	string_ty	*path;
+    string_ty      *path;
 {
-	trace(("commit_rmdir_tree_errok(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	link2(what_rmdir_tree_errok, path, (string_ty *)0);
-	trace((/*{*/"}\n"));
+    trace(("commit_rmdir_tree_errok(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    link2(what_rmdir_tree_errok, path, (string_ty *) 0);
+    trace(("}\n"));
 }
 
 
@@ -328,35 +332,35 @@ commit_rmdir_tree_errok(path)
  */
 
 static void rmdir_tree_callback _((void *, dir_walk_message_ty,
-	string_ty *path, struct stat *));
+	string_ty * path, struct stat *));
 
 static void
 rmdir_tree_callback(arg, message, path, stat)
-	void		*arg;
-	dir_walk_message_ty message;
-	string_ty	*path;
-	struct stat	*stat;
+    void           *arg;
+    dir_walk_message_ty message;
+    string_ty      *path;
+    struct stat    *stat;
 {
-	trace(("rmdir_tree_callback(message = %d, path = %08lX, \
-stat = %08lX)\n{\n"/*}*/, message, path, stat));
-	trace_string(path->str_text);
-	switch (message)
-	{
-	case dir_walk_dir_before:
-		commit_rmdir_errok(path);
-		os_chmod_errok(path, 0750);
-		break;
+    trace(("rmdir_tree_callback(message = %d, path = %08lX, stat = %08lX)\n{\n",
+	message, (long)path, (long)stat));
+    trace_string(path->str_text);
+    switch (message)
+    {
+    case dir_walk_dir_before:
+	commit_rmdir_errok(path);
+	os_chmod_errok(path, 0750);
+	break;
 
-	case dir_walk_dir_after:
-		break;
+    case dir_walk_dir_after:
+	break;
 
-	case dir_walk_file:
-	case dir_walk_special:
-	case dir_walk_symlink:
-		commit_unlink_errok(path);
-		break;
-	}
-	trace((/*{*/"}\n"));
+    case dir_walk_file:
+    case dir_walk_special:
+    case dir_walk_symlink:
+	commit_unlink_errok(path);
+	break;
+    }
+    trace(("}\n"));
 }
 
 
@@ -381,70 +385,86 @@ stat = %08lX)\n{\n"/*}*/, message, path, stat));
 void
 commit()
 {
-	trace(("commit()\n{\n"/*}*/));
-	while (head1 || head2)
+    /*
+     * Disable interrupts (such as ^C) for the duration.  Note that
+     * commit cosists solely of file renames and removes.  No long
+     * writes are perfomed at this time.  Sometimes there is a lot
+     * to do.
+     */
+    trace(("commit()\n{\n"));
+    interrupt_disable();
+
+    /*
+     * Perform the queued actions.
+     */
+    while (head1 || head2)
+    {
+	action_ty      *action;
+
+	/*
+	 * Take the first item off the list.
+	 * Note that actions may append more items to the list.
+	 */
+	if (head1)
 	{
-		action_ty	*action;
-
-		/*
-		 * Take the first item off the list.
-		 * Note that actions may append more items to the list.
-		 */
-		if (head1)
-		{
-			action = head1;
-			head1 = action->next;
-			if (!head1)
-				tail1 = 0;
-		}
-		else
-		{
-			action = head2;
-			head2 = action->next;
-		}
-
-		/*
-		 * Do the action.
-		 */
-		os_become(action->uid, action->gid, action->umask);
-		switch (action->what)
-		{
-		case what_rename:
-			os_rename(action->path1, action->path2);
-			undo_rename(action->path2, action->path1);
-			break;
-	
-		case what_unlink_errok:
-			os_unlink_errok(action->path1);
-			break;
-
-		case what_rmdir_errok:
-			os_rmdir_errok(action->path1);
-			break;
-
-		case what_rmdir_tree_bg:
-			os_rmdir_bg(action->path1);
-			break;
-	
-		case what_rmdir_tree_errok:
-			if (os_exists(action->path1))
-				dir_walk(action->path1, rmdir_tree_callback, 0);
-			break;
-		}
-		os_become_undo();
-
-		/*
-		 * Free the list element.
-		 */
-		str_free(action->path1);
-		if (action->path2)
-			str_free(action->path2);
-		mem_free((char *)action);
+	    action = head1;
+	    head1 = action->next;
+	    if (!head1)
+		tail1 = 0;
+	}
+	else
+	{
+	    action = head2;
+	    head2 = action->next;
 	}
 
 	/*
-	 * it's all committed, nothing left to undo.
+	 * Do the action.
 	 */
-	undo_cancel();
-	trace((/*{*/"}\n"));
+	os_become(action->uid, action->gid, action->umask);
+	switch (action->what)
+	{
+	case what_rename:
+	    os_rename(action->path1, action->path2);
+	    undo_rename(action->path2, action->path1);
+	    break;
+
+	case what_unlink_errok:
+	    os_unlink_errok(action->path1);
+	    break;
+
+	case what_rmdir_errok:
+	    os_rmdir_errok(action->path1);
+	    break;
+
+	case what_rmdir_tree_bg:
+	    os_rmdir_bg(action->path1);
+	    break;
+
+	case what_rmdir_tree_errok:
+	    if (os_exists(action->path1))
+		dir_walk(action->path1, rmdir_tree_callback, 0);
+	    break;
+	}
+	os_become_undo();
+
+	/*
+	 * Free the list element.
+	 */
+	str_free(action->path1);
+	if (action->path2)
+	    str_free(action->path2);
+	mem_free((char *)action);
+    }
+
+    /*
+     * it's all committed, nothing left to undo.
+     */
+    undo_cancel();
+
+    /*
+     * Enable interrupts once more.
+     */
+    interrupt_enable();
+    trace(("}\n"));
 }

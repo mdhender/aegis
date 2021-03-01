@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-void progname_set _((char *));
-char *progname_get _((void));
+void progname_set(char *);
+char *progname_get(void);
 
 #endif /* COMMON_PROGNAME_H */

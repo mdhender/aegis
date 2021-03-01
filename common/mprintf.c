@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,9 +42,9 @@
 /*
  * the buffer for storing results
  */
-static size_t	tmplen;
-static size_t	length;
-static char	*tmp;
+static size_t   tmplen;
+static size_t   length;
+static char    *tmp;
 
 
 /*
@@ -66,26 +66,24 @@ static char	*tmp;
  *	The existing buffer is still valid after failure.
  */
 
-static int bigger _((void));
-
 static int
-bigger()
+bigger(void)
 {
-	char	*hold;
-	size_t	nbytes;
+    char            *hold;
+    size_t          nbytes;
 
-	nbytes = tmplen + QUANTUM;
-	errno = 0;
-	hold = realloc(tmp, nbytes);
-	if (!hold)
-	{
-		if (!errno)
-			errno = ENOMEM;
-		return 0;
-	}
-	tmplen = nbytes;
-	tmp = hold;
-	return 1;
+    nbytes = tmplen + QUANTUM;
+    errno = 0;
+    hold = realloc(tmp, nbytes);
+    if (!hold)
+    {
+	if (!errno)
+	    errno = ENOMEM;
+	return 0;
+    }
+    tmplen = nbytes;
+    tmp = hold;
+    return 1;
 }
 
 
@@ -111,36 +109,28 @@ bigger()
  *	spec	- the formatting specifier specified
  */
 
-static void build_fake _((char *fake, int flag, int width, int precision,
-	int qualifier, int specifier));
-
 static void
-build_fake(fake, flag, width, precision, qualifier, specifier)
-	char		*fake;
-	int		flag;
-	int		width;
-	int		precision;
-	int		qualifier;
-	int		specifier;
+build_fake(char *fake, int flag, int width, int precision, int qualifier,
+    int specifier)
 {
-	char		*fp;
+    char            *fp;
 
-	fp = fake;
-	*fp++ = '%';
-	if (flag)
-		*fp++ = flag;
-	if (width > 0)
-	{
-		sprintf(fp, "%d", width);
-		fp += strlen(fp);
-	}
-	*fp++ = '.';
-	sprintf(fp, "%d", precision);
+    fp = fake;
+    *fp++ = '%';
+    if (flag)
+	*fp++ = flag;
+    if (width > 0)
+    {
+	sprintf(fp, "%d", width);
 	fp += strlen(fp);
-	if (qualifier)
-		*fp++ = qualifier;
-	*fp++ = specifier;
-	*fp = 0;
+    }
+    *fp++ = '.';
+    sprintf(fp, "%d", precision);
+    fp += strlen(fp);
+    if (qualifier)
+	*fp++ = qualifier;
+    *fp++ = specifier;
+    *fp = 0;
 }
 
 
@@ -173,467 +163,495 @@ build_fake(fake, flag, width, precision, qualifier, specifier)
  */
 
 char *
-vmprintf_errok(fmt, ap)
-	const char	*fmt;
-	va_list		ap;
+vmprintf_errok(const char *fmt, va_list ap)
 {
-	int		width;
-	int		width_set;
-	int		prec;
-	int		prec_set;
-	int		c;
-	const char	*s;
-	int		qualifier;
-	int		flag;
-	char		fake[QUANTUM - 1];
+    int             width;
+    int             width_set;
+    int             prec;
+    int             prec_set;
+    int             c;
+    const char      *s;
+    int             qualifier;
+    int             flag;
+    char            fake[QUANTUM - 1];
 
-	/*
-	 * Build the result string in a temporary buffer.
-	 * Grow the temporary buffer as necessary.
-	 *
-	 * It is important to only make one pass across the variable argument
-	 * list.  Behaviour is undefined for more than one pass.
-	 */
-	if (!tmplen)
+    /*
+     * Build the result string in a temporary buffer.
+     * Grow the temporary buffer as necessary.
+     *
+     * It is important to only make one pass across the variable argument
+     * list.  Behaviour is undefined for more than one pass.
+     */
+    if (!tmplen)
+    {
+	tmplen = 500;
+	errno = 0;
+	tmp = malloc(tmplen);
+	if (!tmp)
 	{
-		tmplen = 500;
-		errno = 0;
-		tmp = malloc(tmplen);
-		if (!tmp)
-		{
-			if (!errno)
-				errno = ENOMEM;
-			return 0;
-		}
+	    if (!errno)
+		errno = ENOMEM;
+	    return 0;
 	}
+    }
 
-	length = 0;
-	s = fmt;
-	while (*s)
+    length = 0;
+    s = fmt;
+    while (*s)
+    {
+	c = *s++;
+	if (c != '%')
 	{
-		c = *s++;
-		if (c != '%')
-		{
-			normal:
-			if (length >= tmplen && !bigger())
-				return 0;
-			tmp[length++] = c;
-			continue;
-		}
-		c = *s++;
-
-		/*
-		 * get optional flag
-		 */
-		switch (c)
-		{
-		case '+':
-		case '-':
-		case '#':
-		case '0':
-		case ' ':
-			flag = c;
-			c = *s++;
-			break;
-
-		default:
-			flag = 0;
-			break;
-		}
-
-		/*
-		 * get optional width
-		 */
-		width = 0;
-		width_set = 0;
-		switch (c)
-		{
-		case '*':
-			width = va_arg(ap, int);
-			if (width < 0)
-			{
-				flag = '-';
-				width = -width;
-			}
-			c = *s++;
-			width_set = 1;
-			break;
-		
-		case '0': case '1': case '2': case '3': case '4':
-		case '5': case '6': case '7': case '8': case '9':
-			for (;;)
-			{
-				width = width * 10 + c - '0';
-				c = *s++;
-				switch (c)
-				{
-				default:
-					break;
-
-				case '0': case '1': case '2': case '3':
-				case '4': case '5': case '6': case '7':
-				case '8': case '9':
-					continue;
-				}
-				break;
-			}
-			width_set = 1;
-			break;
-
-		default:
-			break;
-		}
-
-		/*
-		 * get optional precision
-		 */
-		prec = 0;
-		prec_set = 0;
-		if (c == '.')
-		{
-			c = *s++;
-			switch (c)
-			{
-			default:
-				prec_set = 1;
-				break;
-
-			case '*':
-				c = *s++;
-				prec = va_arg(ap, int);
-				if (prec < 0)
-				{
-					prec = 0;
-					break;
-				}
-				prec_set = 1;
-				break;
-
-			case '0': case '1': case '2': case '3': case '4':
-			case '5': case '6': case '7': case '8': case '9':
-				for (;;)
-				{
-					prec = prec * 10 + c - '0';
-					c = *s++;
-					switch (c)
-					{
-					default:
-						break;
-
-					case '0': case '1': case '2': case '3':
-					case '4': case '5': case '6': case '7':
-					case '8': case '9':
-						continue;
-					}
-					break;
-				}
-				prec_set = 1;
-				break;
-			}
-		}
-
-		/*
-		 * get the optional qualifier
-		 */
-		switch (c)
-		{
-		default:
-			qualifier = 0;
-			break;
-
-		case 'l':
-		case 'h':
-		case 'L':
-			qualifier = c;
-			c = *s++;
-			break;
-		}
-
-		/*
-		 * get conversion specifier
-		 */
-		switch (c)
-		{
-		default:
-			errno = EINVAL;
-			return 0;
-
-		case '%':
-			goto normal;
-
-		case 'c':
-			{
-				int	a;
-				char	num[MAX_WIDTH + 1];
-				size_t	len;
-
-				a = (unsigned char)va_arg(ap, int);
-				if (!prec_set)
-					prec = 1;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 0, c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				assert(len < QUANTUM);
-				if (length + len > tmplen && !bigger())
-					return 0;
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 'd':
-		case 'i':
-			{
-				long	a;
-				char	num[MAX_WIDTH + 1];
-				size_t	len;
-
-				switch (qualifier)
-				{
-				case 'l':
-					a = va_arg(ap, long);
-					break;
-
-				case 'h':
-					a = (short)va_arg(ap, int);
-					break;
-
-				default:
-					a = va_arg(ap, int);
-					break;
-				}
-				if (!prec_set)
-					prec = 1;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 'l', c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				assert(len < QUANTUM);
-				if (length + len > tmplen && !bigger())
-					return 0;
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 'e':
-		case 'f':
-		case 'g':
-		case 'E':
-		case 'F':
-		case 'G':
-			{
-				double	a;
-				char	num[MAX_WIDTH + 1];
-				size_t	len;
-
-				/*
-				 * Ignore "long double" for now,
-				 * traditional implementations no grok.
-				 */
-				a = va_arg(ap, double);
-				if (!prec_set)
-					prec = 6;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 0, c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				assert(len < QUANTUM);
-				if (length + len > tmplen && !bigger())
-					return 0;
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 'n':
-			switch (qualifier)
-			{
-			case 'l':
-				{
-					long	*a;
-
-					a = va_arg(ap, long *);
-					*a = length;
-				}
-				break;
-
-			case 'h':
-				{
-					short	*a;
-
-					a = va_arg(ap, short *);
-					*a = length;
-				}
-				break;
-
-			default:
-				{
-					int	*a;
-
-					a = va_arg(ap, int *);
-					*a = length;
-				}
-				break;
-			}
-			break;
-
-		case 'u':
-		case 'o':
-		case 'x':
-		case 'X':
-			{
-				unsigned long	a;
-				char		num[MAX_WIDTH + 1];
-				size_t		len;
-
-				switch (qualifier)
-				{
-				case 'l':
-					a = va_arg(ap, unsigned long);
-					break;
-
-				case 'h':
-					a = (unsigned short)va_arg(ap, unsigned int);
-					break;
-
-				default:
-					a = va_arg(ap, unsigned int);
-					break;
-				}
-				if (!prec_set)
-					prec = 1;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 'l', c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				assert(len < QUANTUM);
-				if (length + len > tmplen && !bigger())
-					return 0;
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 's':
-			{
-				char	*a;
-				size_t	len;
-
-				a = va_arg(ap, char *);
-				if (prec_set)
-				{
-					char	*ep;
-
-					ep = (char *)memchr(a, 0, prec);
-					if (ep)
-						len = ep - a;
-					else
-						len = prec;
-				}
-				else
-					len = strlen(a);
-				if (!prec_set || len < prec)
-					prec = len;
-				if (!width_set || width < prec)
-					width = prec;
-				len = width;
-				while (length + len > tmplen)
-				{
-					if (!bigger())
-						return 0;
-				}
-				if (flag != '-')
-				{
-					while (width > prec)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-				memcpy(tmp + length, a, prec);
-				length += prec;
-				width -= prec;
-				if (flag == '-')
-				{
-					while (width > 0)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-			}
-			break;
-
-		case 'S':
-			{
-				string_ty	*a;
-				size_t		len;
-
-				a = va_arg(ap, string_ty *);
-				len = a->str_length;
-				if (!prec_set)
-					prec = len;
-				if (len < prec)
-					prec = len;
-				if (!width_set)
-					width = prec;
-				if (width < prec)
-					width = prec;
-				len = width;
-				while (length + len > tmplen)
-				{
-					if (!bigger())
-						return 0;
-				}
-				if (flag != '-')
-				{
-					while (width > prec)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-				memcpy(tmp + length, a->str_text, prec);
-				length += prec;
-				width -= prec;
-				if (flag == '-')
-				{
-					while (width > 0)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-			}
-			break;
-		}
-	}
-
-	/*
-	 * append a trailing NUL
-	 */
-	if (length >= tmplen && !bigger())
+	    normal:
+	    if (length >= tmplen && !bigger())
 		return 0;
-	tmp[length] = 0;
+	    tmp[length++] = c;
+	    continue;
+	}
+	c = *s++;
 
 	/*
-	 * return the temporary string
+	 * get optional flag
 	 */
-	return tmp;
+	switch (c)
+	{
+	case '+':
+	case '-':
+	case '#':
+	case '0':
+	case ' ':
+	    flag = c;
+	    c = *s++;
+	    break;
+
+	default:
+	    flag = 0;
+	    break;
+	}
+
+	/*
+	 * get optional width
+	 */
+	width = 0;
+	width_set = 0;
+	switch (c)
+	{
+	case '*':
+	    width = va_arg(ap, int);
+	    if (width < 0)
+	    {
+		flag = '-';
+		width = -width;
+	    }
+	    c = *s++;
+	    width_set = 1;
+	    break;
+
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	    for (;;)
+	    {
+		width = width * 10 + c - '0';
+		c = *s++;
+		switch (c)
+		{
+		default:
+		    break;
+
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		    continue;
+		}
+		break;
+	    }
+	    width_set = 1;
+	    break;
+
+	default:
+	    break;
+	}
+
+	/*
+	 * get optional precision
+	 */
+	prec = 0;
+	prec_set = 0;
+	if (c == '.')
+	{
+	    c = *s++;
+	    switch (c)
+	    {
+	    default:
+		prec_set = 1;
+		break;
+
+	    case '*':
+		c = *s++;
+		prec = va_arg(ap, int);
+		if (prec < 0)
+		{
+		    prec = 0;
+		    break;
+		}
+		prec_set = 1;
+		break;
+
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+	    case '9':
+		for (;;)
+		{
+		    prec = prec * 10 + c - '0';
+		    c = *s++;
+		    switch (c)
+		    {
+		    default:
+			break;
+
+		    case '0':
+		    case '1':
+		    case '2':
+		    case '3':
+		    case '4':
+		    case '5':
+		    case '6':
+		    case '7':
+		    case '8':
+		    case '9':
+			continue;
+		    }
+		    break;
+		}
+		prec_set = 1;
+		break;
+	    }
+	}
+
+	/*
+	 * get the optional qualifier
+	 */
+	switch (c)
+	{
+	default:
+	    qualifier = 0;
+	    break;
+
+	case 'l':
+	case 'h':
+	case 'L':
+	    qualifier = c;
+	    c = *s++;
+	    break;
+	}
+
+	/*
+	 * get conversion specifier
+	 */
+	switch (c)
+	{
+	default:
+	    errno = EINVAL;
+	    return 0;
+
+	case '%':
+	    goto normal;
+
+	case 'c':
+	    {
+		int             a;
+		char            num[MAX_WIDTH + 1];
+		size_t          len;
+
+		a = (unsigned char)va_arg(ap, int);
+		if (!prec_set)
+		    prec = 1;
+		if (width > MAX_WIDTH)
+		    width = MAX_WIDTH;
+		if (prec > MAX_WIDTH)
+		    prec = MAX_WIDTH;
+		build_fake(fake, flag, width, prec, 0, c);
+		sprintf(num, fake, a);
+		len = strlen(num);
+		assert(len < QUANTUM);
+		if (length + len > tmplen && !bigger())
+		    return 0;
+		memcpy(tmp + length, num, len);
+		length += len;
+	    }
+	    break;
+
+	case 'd':
+	case 'i':
+	    {
+		long            a;
+		char            num[MAX_WIDTH + 1];
+		size_t          len;
+
+		switch (qualifier)
+		{
+		case 'l':
+		    a = va_arg(ap, long);
+		    break;
+
+		case 'h':
+		    a = (short)va_arg(ap, int);
+		    break;
+
+		default:
+		    a = va_arg(ap, int);
+		    break;
+		}
+		if (!prec_set)
+		    prec = 1;
+		if (width > MAX_WIDTH)
+		    width = MAX_WIDTH;
+		if (prec > MAX_WIDTH)
+		    prec = MAX_WIDTH;
+		build_fake(fake, flag, width, prec, 'l', c);
+		sprintf(num, fake, a);
+		len = strlen(num);
+		assert(len < QUANTUM);
+		if (length + len > tmplen && !bigger())
+		    return 0;
+		memcpy(tmp + length, num, len);
+		length += len;
+	    }
+	    break;
+
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'E':
+	case 'F':
+	case 'G':
+	    {
+		double          a;
+		char            num[MAX_WIDTH + 1];
+		size_t          len;
+
+		/*
+	         * Ignore "long double" for now,
+	         * traditional implementations no grok.
+	         */
+		a = va_arg(ap, double);
+		if (!prec_set)
+		    prec = 6;
+		if (width > MAX_WIDTH)
+		    width = MAX_WIDTH;
+		if (prec > MAX_WIDTH)
+		    prec = MAX_WIDTH;
+		build_fake(fake, flag, width, prec, 0, c);
+		sprintf(num, fake, a);
+		len = strlen(num);
+		assert(len < QUANTUM);
+		if (length + len > tmplen && !bigger())
+		    return 0;
+		memcpy(tmp + length, num, len);
+		length += len;
+	    }
+	    break;
+
+	case 'n':
+	    switch (qualifier)
+	    {
+	    case 'l':
+		{
+		    long            *a;
+
+		    a = va_arg(ap, long *);
+		    *a = length;
+		}
+		break;
+
+	    case 'h':
+		{
+		    short           *a;
+
+		    a = va_arg(ap, short *);
+		    *a = length;
+		}
+		break;
+
+	    default:
+		{
+		    int             *a;
+
+		    a = va_arg(ap, int *);
+		    *a = length;
+		}
+		break;
+	    }
+	    break;
+
+	case 'u':
+	case 'o':
+	case 'x':
+	case 'X':
+	    {
+		unsigned long   a;
+		char            num[MAX_WIDTH + 1];
+		size_t          len;
+
+		switch (qualifier)
+		{
+		case 'l':
+		    a = va_arg(ap, unsigned long);
+		    break;
+
+		case 'h':
+		    a = (unsigned short)va_arg(ap, unsigned int);
+		    break;
+
+		default:
+		    a = va_arg(ap, unsigned int);
+		    break;
+		}
+		if (!prec_set)
+		    prec = 1;
+		if (prec > MAX_WIDTH)
+		    prec = MAX_WIDTH;
+		if (width > MAX_WIDTH)
+		    width = MAX_WIDTH;
+		build_fake(fake, flag, width, prec, 'l', c);
+		sprintf(num, fake, a);
+		len = strlen(num);
+		assert(len < QUANTUM);
+		if (length + len > tmplen && !bigger())
+		    return 0;
+		memcpy(tmp + length, num, len);
+		length += len;
+	    }
+	    break;
+
+	case 's':
+	    {
+		char            *a;
+		size_t          len;
+
+		a = va_arg(ap, char *);
+		if (prec_set)
+		{
+		    char            *ep;
+
+		    ep = (char *)memchr(a, 0, prec);
+		    if (ep)
+			len = ep - a;
+		    else
+			len = prec;
+		}
+		else
+		    len = strlen(a);
+		if (!prec_set || len < prec)
+		    prec = len;
+		if (!width_set || width < prec)
+		    width = prec;
+		len = width;
+		while (length + len > tmplen)
+		{
+		    if (!bigger())
+			return 0;
+		}
+		if (flag != '-')
+		{
+		    while (width > prec)
+		    {
+			tmp[length++] = ' ';
+			width--;
+		    }
+		}
+		memcpy(tmp + length, a, prec);
+		length += prec;
+		width -= prec;
+		if (flag == '-')
+		{
+		    while (width > 0)
+		    {
+			tmp[length++] = ' ';
+			width--;
+		    }
+		}
+	    }
+	    break;
+
+	case 'S':
+	    {
+		string_ty       *a;
+		size_t          len;
+
+		a = va_arg(ap, string_ty *);
+		len = a->str_length;
+		if (!prec_set)
+		    prec = len;
+		if (len < prec)
+		    prec = len;
+		if (!width_set)
+		    width = prec;
+		if (width < prec)
+		    width = prec;
+		len = width;
+		while (length + len > tmplen)
+		{
+		    if (!bigger())
+			return 0;
+		}
+		if (flag != '-')
+		{
+		    while (width > prec)
+		    {
+			tmp[length++] = ' ';
+			width--;
+		    }
+		}
+		memcpy(tmp + length, a->str_text, prec);
+		length += prec;
+		width -= prec;
+		if (flag == '-')
+		{
+		    while (width > 0)
+		    {
+			tmp[length++] = ' ';
+			width--;
+		    }
+		}
+	    }
+	    break;
+	}
+    }
+
+    /*
+     * append a trailing NUL
+     */
+    if (length >= tmplen && !bigger())
+	return 0;
+    tmp[length] = 0;
+
+    /*
+     * return the temporary string
+     */
+    return tmp;
 }
 
 
@@ -666,17 +684,15 @@ vmprintf_errok(fmt, ap)
  */
 
 char *
-mprintf_errok(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+mprintf_errok(const char *fmt, ...)
 {
-	char		*result;
-	va_list		ap;
+    char            *result;
+    va_list         ap;
 
-	sva_init(ap, fmt);
-	result = vmprintf_errok(fmt, ap);
-	va_end(ap);
-	return result;
+    va_start(ap, fmt);
+    result = vmprintf_errok(fmt, ap);
+    va_end(ap);
+    return result;
 }
 
 
@@ -708,16 +724,14 @@ mprintf_errok(fmt sva_last)
  */
 
 char *
-vmprintf(fmt, ap)
-	const char	*fmt;
-	va_list		ap;
+vmprintf(const char *fmt, va_list ap)
 {
-	char		*result;
+    char            *result;
 
-	result = vmprintf_errok(fmt, ap);
-	if (!result)
-		nfatal("mprintf \"%s\"", fmt);
-	return result;
+    result = vmprintf_errok(fmt, ap);
+    if (!result)
+	nfatal("mprintf \"%s\"", fmt);
+    return result;
 }
 
 
@@ -749,17 +763,15 @@ vmprintf(fmt, ap)
  */
 
 char *
-mprintf(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+mprintf(const char *fmt, ...)
 {
-	char		*result;
-	va_list		ap;
+    char            *result;
+    va_list         ap;
 
-	sva_init(ap, fmt);
-	result = vmprintf(fmt, ap);
-	va_end(ap);
-	return result;
+    va_start(ap, fmt);
+    result = vmprintf(fmt, ap);
+    va_end(ap);
+    return result;
 }
 
 
@@ -790,11 +802,9 @@ mprintf(fmt sva_last)
  */
 
 string_ty *
-vmprintf_str(fmt, ap)
-	const char	*fmt;
-	va_list		ap;
+vmprintf_str(const char *fmt, va_list ap)
 {
-	if (!vmprintf_errok(fmt, ap))
-		nfatal("mprintf \"%s\"", fmt);
-	return str_n_from_c(tmp, length);
+    if (!vmprintf_errok(fmt, ap))
+	nfatal("mprintf \"%s\"", fmt);
+    return str_n_from_c(tmp, length);
 }

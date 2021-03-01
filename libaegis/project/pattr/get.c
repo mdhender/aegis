@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <pattr.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <project/pattr/get.h>
 
 
@@ -72,7 +72,7 @@ project_pattr_get(pp, a)
 	if (!(a->mask & pattr_develop_end_action_mask))
 		a->develop_end_action =
 			project_develop_end_action_get(pp);
-	
+
 	if (!a->forced_develop_begin_notify_command)
 	{
 		s = project_forced_develop_begin_notify_command_get(pp);
@@ -154,4 +154,7 @@ project_pattr_get(pp, a)
 	if (!a->minimum_branch_number)
 		a->minimum_branch_number =
 			project_minimum_branch_number_get(pp);
+	if (!(a->mask & pattr_protect_development_directory_mask))
+		a->protect_development_directory =
+			project_protect_development_directory_get(pp);
 }

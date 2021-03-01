@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,15 +72,15 @@ history_create_command =
 .\" a copy is to be checked-in even if there are no changes.
 The "\f(CWci -u\fP" option is used to specify that
 an unlocked copy will remain in the baseline.
-The "\f(CWci -d\fP" option is used to specify that 
+The "\f(CWci -d\fP" option is used to specify that
 the file time rather than the current time is to be used for the new revision.
-The "\f(CWci -M\fP" option is used to specify that 
+The "\f(CWci -M\fP" option is used to specify that
 the mode date on the original file is not to be altered.
-The "\f(CWci -t\fP" option is used to specify that 
+The "\f(CWci -t\fP" option is used to specify that
 there is to be no description text for the new RCS file.
-The "\f(CWci -m\fP" option is used to specify that 
+The "\f(CWci -m\fP" option is used to specify that
 the change number is to be stored in the file log
-if this is actually an update (typically from 
+if this is actually an update (typically from
 .I aenf
 after
 .I aerm
@@ -150,16 +150,20 @@ change numbers to which each revision of the file corresponds.
 .\" a copy is to be checked-in even if there are no changes.
 The "\f(CWci -u\fP" option is used to specify that
 an unlocked copy will remain in the baseline.
-The "\f(CWci -d\fP" option is used to specify that 
+The "\f(CWci -d\fP" option is used to specify that
 the file time rather than the current time is to be used for the new revision.
-The "\f(CWci -M\fP" option is used to specify that 
+The "\f(CWci -M\fP" option is used to specify that
 the mode date on the original file is not to be altered.
-The "\f(CWci -m\fP" option is used to specify that 
+The "\f(CWci -m\fP" option is used to specify that
 the change number is to be stored in the file log,
 which allows
 .I rlog
 to be used to find the change numbers to which
 each revision of the file corresponds.
+You might want to use \f(CW-m$p,$c\fP instead which stores both the
+project name and the change number.  Or \f(CW-m$version\fP, which will
+be composed of the branch and the delta.  These make it much easier to
+track changes across branches.
 .LP
 It is essential that the \fIhistory_\%create_\%command\fP and the
 \fIhistory_\%put_\%command\fP are identical.  It is a historical accident
@@ -247,6 +251,7 @@ the diff tool used by RCS \fImerge\fP(1) is determined at compile time.
 This means that you need to build and install GNU diff package
 \fIbefore\fP you build and install GNU RCS package.
 .nh 3 "Referential Integrity"
+.LP
 Many history tools (including RCS) can modify the contents of the file
 when it is committed.  While there are usually options to turn this
 off, they are seldom used.  The problem is: if the commit changes the
@@ -283,6 +288,7 @@ description}}\fP'' inserts the version number and the brief description
 into the file's log.  This means that using the \fIrlog\fP(1) command
 will provide quite useful summaries.
 .nh 3 "Binary Files"
+.LP
 RCS (version 5.6 and later) is able to cope with binary files.
 It does so by saving a whole copy of the file at each check-in.
 .PP
@@ -297,6 +303,7 @@ history_content_limitation = binary_capable;
 .E)
 so that Aegis knows that no encoding is desired.
 .nh 3 "history_put_trashes_files"
+.LP
 If you use RCS keywords, such as $\f[CW]id\fP$ or $\f[CW]log\fP$,
 this will result in the file in the baseline being changed by RCS at
 integrate pass.  This is \fIafter\fP the build.  The result is that the

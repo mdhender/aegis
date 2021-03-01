@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000 Peter Miller;
+.\"	Copyright (C) 2000, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -154,9 +154,8 @@ Procedure:
 \f[CW]aed\fP \(->
 \f[CW]aeipass\fP
 .LP
-There is a script distributed with Aegis to do this procedure
-automatically: it may be found at \fI\*(D)/integrate_q.sh\fP if it has
-been installed inthe standard place.
+There is an \fIaeintegratq\fP(1) script distributed with Aegis to do
+this procedure automatically.
 .IP "\f[CW]aeib[u]\fP"
 Integrate begin [undo].
 .IP "\f[CW]aeipass\fP"

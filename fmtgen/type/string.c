@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,20 +40,21 @@ gen_include_declarator(type, name, is_a_list)
 }
 
 
-static void gen_code_declarator _((type_ty *, string_ty *, int));
+static void gen_code_declarator _((type_ty *, string_ty *, int, int));
 
 static void
-gen_code_declarator(this, name, is_a_list)
+gen_code_declarator(this, name, is_a_list, show)
 	type_ty		*this;
 	string_ty	*name;
 	int		is_a_list;
+	int		show;
 {
-	indent_printf("string_write(fp, "/*)*/);
+	indent_printf("string_write(fp, ");
 	if (is_a_list)
 		indent_printf("(char *)0");
 	else
 		indent_printf("\"%s\"", name->str_text);
-	indent_printf(/*(*/", this->%s);\n", name->str_text);
+	indent_printf(", this->%s);\n", name->str_text);
 }
 
 

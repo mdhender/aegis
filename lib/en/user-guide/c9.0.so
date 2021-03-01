@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998, 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1995, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -74,11 +74,12 @@ To access a project branch,
 the project name has the branch appended,
 separated by a dot or a hyphen.
 For example:
-branch 1 of project "aegis" is referred to a "aegis.1".
+branch 1 of project "aegis" is referred to as "aegis.1".
 To reference changes on this branch,
 use this compound project name wherever you would normally use a project name.
 .LP
-Traditional 2-level project release names are obtained by using a further level of branching.
+Traditional 2-level project release names are obtained by using a further
+level of branching.
 For example:
 by creating branch 0 of project "aegis.1",
 there would be a branch accessed as project "aegis.1.0".
@@ -129,7 +130,7 @@ If the new project name already exists, and is a new-style project,
 the \fIaenrls\fP(1) command will attempt to make the appropriate numbered
 branches.
 If the new project already exists and is an old-style project,
-or it exists and then branch number(s) are already in use,
+or it exists and the branch number(s) are already in use,
 \fIaenrls\fP(1) will emit an error and fail.
 The \fIaenrls\fP(1) command only works on old-style projects,
 and always converts them to new style projects.

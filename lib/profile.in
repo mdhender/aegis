@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -85,251 +85,255 @@ export AEGIS_AUTOMOUNT_POINTS
 # because the size of the common code portion usually greatly exceeds
 # the size of the unique portions.)
 #
-function aeb()
+# Note: while Bash uses the "function" keyword to define functions, the
+# original Bourne shell does not.  Bash understands the form with out he
+# "fucntion" keyword, so it is omitted.
+#
+aeb()
 {
 	aegis -b "$@" -v
 }
-function aeca()
+aeca()
 {
 	aegis -ca "$@" -v
 }
-function aecd()
+aecd()
 {
 	cd `aegis -cd "$@" -v`
 }
-function aechown()
+aechown()
 {
 	aegis -chown "$@" -v
 }
-function aeclean()
+aeclean()
 {
 	aegis -clean "$@" -v
 }
-function aeclone()
+aeclone()
 {
 	aegis -clone "$@" -v
 }
-function aecp()
+aecp()
 {
 	aegis -cp "$@" -v
 }
-function aecpu()
+aecpu()
 {
 	aegis -cpu "$@" -v
 }
-function aed()
+aed()
 {
 	aegis -diff "$@" -v
 }
-function aedb()
+aedb()
 {
 	aegis -db "$@" -v
 }
-function aedbu()
+aedbu()
 {
 	aegis -dbu "$@" -v
 }
-function aede()
+aede()
 {
 	aegis -de "$@" -v
 }
-function aedeu()
+aedeu()
 {
 	aegis -deu "$@" -v
 }
-function aedless()
+aedless()
 {
 	less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
-function aedmore()
+aedmore()
 {
 	more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
-function aedn()
+aedn()
 {
 	aegis -dn "$@" -v
 }
-function aeib()
+aeib()
 {
 	aegis -ib "$@" -v
 }
-function aeibu()
+aeibu()
 {
 	aegis -ibu "$@" -v
 }
-function aeifail()
+aeifail()
 {
 	aegis -ifail "$@" -v
 }
-function aeipass()
+aeipass()
 {
 	aegis -ipass "$@" -v
 }
-function ael()
+ael()
 {
 	aegis -l "$@" -v
 }
-function aem()
+aem()
 {
 	aegis -diff -only_merge "$@" -v
 }
-function aemv()
+aemv()
 {
 	aegis -mv "$@" -v
 }
-function aemvu()
+aemvu()
 {
 	aegis -mvu "$@" -v
 }
-function aena()
+aena()
 {
 	aegis -na "$@" -v
 }
-function aenbr()
+aenbr()
 {
 	aegis -nbr "$@" -v
 }
-function aenbru()
+aenbru()
 {
 	aegis -nbru "$@" -v
 }
-function aenc()
+aenc()
 {
 	aegis -nc "$@" -v
 }
-function aencu()
+aencu()
 {
 	aegis -ncu "$@" -v
 }
-function aend()
+aend()
 {
 	aegis -nd "$@" -v
 }
-function aenf()
+aenf()
 {
 	aegis -nf "$@" -v
 }
-function aenfu()
+aenfu()
 {
 	aegis -nfu "$@" -v
 }
-function aeni()
+aeni()
 {
 	aegis -ni "$@" -v
 }
-function aenpa()
+aenpa()
 {
 	aegis -new-project-alias "$@" -v
 }
-function aenpr()
+aenpr()
 {
 	aegis -npr "$@" -v
 }
-function aenrls()
+aenrls()
 {
 	aegis -nrls "$@" -v
 }
-function aenrv()
+aenrv()
 {
 	aegis -nrv "$@" -v
 }
-function aent()
+aent()
 {
 	aegis -nt "$@" -v
 }
-function aentu()
+aentu()
 {
 	aegis -ntu "$@" -v
 }
-function aepa()
+aepa()
 {
 	aegis -pa "$@" -v
 }
-function aepwd()
+aepwd()
 {
 	aegis -Change_Directory "$@" -terse
 }
-function aeq()
+aeq()
 {
 	aegis -q "$@" -v
 }
-function aer()
+aer()
 {
 	aereport "$@" -v
 }
-function aera()
+aera()
 {
 	aegis -ra "$@" -v
 }
-function aerb()
+aerb()
 {
 	aegis -rb "$@" -v
 }
-function aerbu()
+aerbu()
 {
 	aegis -rbu "$@" -v
 }
-function aerd()
+aerd()
 {
 	aegis -rd "$@" -v
 }
-function aerfail()
+aerfail()
 {
 	aegis -rfail "$@" -v
 }
-function aeri()
+aeri()
 {
 	aegis -ri "$@" -v
 }
-function aerm()
+aerm()
 {
 	aegis -rm "$@" -v
 }
-function aermu()
+aermu()
 {
 	aegis -rmu "$@" -v
 }
-function aerpass()
+aerpass()
 {
 	aegis -rpass "$@" -v
 }
-function aerpa()
+aerpa()
 {
 	aegis -remove-project-alias "$@" -v
 }
-function aerpu()
+aerpu()
 {
 	aegis -rpu "$@" -v
 }
-function aermpr()
+aermpr()
 {
 	aegis -rmpr "$@" -v
 }
-function aerrv()
+aerrv()
 {
 	aegis -rrv "$@" -v
 }
-function aet()
+aet()
 {
 	aegis -t "$@" -v
 }
-function aev()
+aev()
 {
 	aegis -VERSion "$@" -v
 }
 
-function ae_c()
+ae_c()
 {
 	AEGIS_CHANGE="$1"
 	export AEGIS_CHANGE
 }
-function ae_p()
+ae_p()
 {
 	AEGIS_PROJECT="$1"
 	export AEGIS_PROJECT
 }
 
-function aefinish()
+aefinish()
 {
 	unset -f aeb
 	unset -f ae_c
@@ -394,3 +398,58 @@ function aefinish()
 	unset AEGIS_PATH
 	unset AEGIS_AUTOMOUNT_POINTS
 }
+
+#
+# Command completion is gradually being implemented for a wide range of
+# arguments for many Aegis commands.
+#
+if [ -n "$PS1" ]
+then
+    case "$BASH_VERSION" in
+
+    2.0[4-9]* | 2.[1-9]* | [3-9].* | [1-9][0-9].*)
+	complete -C aecomplete \
+	    aeb \
+	    ae_c \
+	    aeca \
+	    aecd \
+	    aechown \
+	    aeclean \
+	    aecp \
+	    aecpu \
+	    aed \
+	    aedb \
+	    aedbu \
+	    aede \
+	    aedeu \
+	    aedn \
+	    aegis \
+	    aeib \
+	    aeibu \
+	    aeifail \
+	    aeipass \
+	    aena \
+	    aencu \
+	    aend \
+	    aenf \
+	    aenfu \
+	    aeni \
+	    aenrv \
+	    aentu \
+	    ae_p \
+	    aepa \
+	    aera \
+	    aerb \
+	    aerbu \
+	    aerd \
+	    aerfail \
+	    aeri \
+	    aerm \
+	    aermu \
+	    aerpass \
+	    aerpu \
+	    aerrv \
+	    aet
+	;;
+    esac
+fi

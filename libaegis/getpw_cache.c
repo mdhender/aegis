@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ passwd_null()
 	 */
 	memset(result, 0, sizeof(*result));
 
+#ifndef SOURCE_FORGE_HACK
 	result->pw_name = 0;
 	result->pw_passwd = 0;
 	result->pw_uid = -1;
@@ -58,6 +59,23 @@ passwd_null()
 #endif
 	result->pw_dir = 0;
 	result->pw_shell = 0;
+#else
+	/*
+	 * This is used to fake a user account, because on SourceForge.net
+	 * the Apache servers don't have access to /etc/passwd.  The fake
+	 * information will be further taylored below.
+	 */
+	result->pw_name = "nobody";
+	result->pw_passwd = "x";
+	result->pw_uid = AEGIS_MIN_UID;
+	result->pw_gid = AEGIS_MIN_GID;
+	result->pw_gecos = "nobody";
+#ifdef HAVE_pw_comment
+	result->pw_comment = 0;
+#endif
+	result->pw_dir = "/home/nobody";
+	result->pw_shell = "/bin/sh";
+#endif
 
 	/*
 	 * All done.
@@ -85,7 +103,8 @@ passwd_copy(pw)
 	result->pw_gid = pw->pw_gid;
 	result->pw_gecos = mem_copy_string(pw->pw_gecos);
 #ifdef HAVE_pw_comment
-	result->pw_comment = mem_copy_string(pw->pw_comment);
+	result->pw_comment =
+	    pw->pw_comment ? mem_copy_string(pw->pw_comment) : 0;
 #endif
 	result->pw_dir = mem_copy_string(pw->pw_dir);
 	result->pw_shell = mem_copy_string(pw->pw_shell);
@@ -131,7 +150,13 @@ getpwnam_cached(name)
 			itab_assign(uid_table, data->pw_uid, data);
 		}
 		else
+		{
 			data = passwd_null();
+#ifdef SOURCE_FORGE_HACK
+			data->pw_name = mem_copy_string(name->str_text);
+			data->pw_gecos = data->pw_name;
+#endif
+		}
 		symtab_assign(login_table, name, data);
 	}
 
@@ -188,7 +213,12 @@ getpwuid_cached(uid)
 			str_free(name);
 		}
 		else
+		{
 			data = passwd_null();
+#ifdef SOURCE_FORGE_HACK
+			data->pw_uid = uid;
+#endif
+		}
 		itab_assign(uid_table, uid, data);
 	}
 

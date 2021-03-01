@@ -24,18 +24,16 @@
 
 
 void
-string_list_quote_shell(to, from)
-	string_list_ty	*to;
-	string_list_ty	*from;
+string_list_quote_shell(string_list_ty *to, string_list_ty *from)
 {
-	size_t		j;
-	string_ty	*s;
+    size_t		j;
+    string_ty	*s;
 
-	string_list_constructor(to);
-	for (j = 0; j < from->nstrings; ++j)
-	{
-		s = str_quote_shell(from->string[j]);
-		string_list_append(to, s);
-		str_free(s);
-	}
+    string_list_constructor(to);
+    for (j = 0; j < from->nstrings; ++j)
+    {
+	s = str_quote_shell(from->string[j]);
+	string_list_append(to, s);
+	str_free(s);
+    }
 }

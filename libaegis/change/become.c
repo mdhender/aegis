@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,23 +24,48 @@
 #include <error.h> /* for assert */
 #include <project.h>
 #include <trace.h>
+#include <user.h>
 
 
 void
 change_become(cp)
 	change_ty	*cp;
 {
-	trace(("change_become(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_become(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	project_become(cp->pp);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
 void
 change_become_undo()
 {
-	trace(("change_become_undo()\n{\n"/*}*/));
+	trace(("change_become_undo()\n{\n"));
 	project_become_undo();
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
+}
+
+
+void
+change_developer_become(cp)
+	change_ty       *cp;
+{
+	string_ty       *name;
+	user_ty         *up;
+
+	trace(("change_become(cp = %08lX)\n{\n", (long)cp));
+	name = change_developer_name(cp);
+	up = user_symbolic(cp->pp, name);
+	user_become(up);
+	trace(("}\n"));
+}
+
+
+void
+change_developer_become_undo()
+{
+	trace(("change_become_undo()\n{\n"));
+	user_become_undo();
+	trace(("}\n"));
 }

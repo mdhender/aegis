@@ -37,11 +37,11 @@ struct symtab_iterator
 	size_t		pos;
 };
 
-void symtab_iterator_constructor _((symtab_iterator *, symtab_ty *));
-symtab_iterator *symtab_iterator_new _((symtab_ty *));
-void symtab_iterator_destructor _((symtab_iterator *));
-void symtab_iterator_delete _((symtab_iterator *));
-void symtab_iterator_reset _((symtab_iterator *));
-int symtab_iterator_next _((symtab_iterator *, string_ty **key, void **data));
+void symtab_iterator_constructor(symtab_iterator *, symtab_ty *);
+symtab_iterator *symtab_iterator_new(symtab_ty *);
+void symtab_iterator_destructor(symtab_iterator *);
+void symtab_iterator_delete(symtab_iterator *);
+void symtab_iterator_reset(symtab_iterator *);
+int symtab_iterator_next(symtab_iterator *, string_ty **key, void **data);
 
 #endif /* COMMON_SYMTAB_ITER_H */

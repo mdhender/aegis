@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1994-1996, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -195,7 +195,7 @@ one per \fI.c\fP file.
   | sed 's/^\e(.*\e).o :/\e1.o \e1.d :/' \e
   > $*.d
 .E)
-These dependency files are then included into the 
+These dependency files are then included into the
 .I Makefile
 to inform GNU Make of the dependencies.
 .E(
@@ -214,9 +214,7 @@ This method is occasionally quirky about absent include files
 which you have yet to write,
 or which are generated and don't yet exist,
 but this is usually easily corrected,
-though you do need to watch out for things which will stall an integration
-(because the integrator will not have write permission on 
-the integration directory).
+though you do need to watch out for things which will stall an integration.
 .LP
 The \fI-MM\fP option to the $(CC) command
 means that this rule requires the \fIgcc\fP program
@@ -395,7 +393,8 @@ The version numbers track the GNU Make version numbers.
 .LP
 For a description of the VPATH problem, and how this patch addresses it,
 see the README file referenced.
-.nh 3 "GNU Make's VAPTH+"
+.nh 3 "GNU Make's VPATH+"
+.LP
 In theory, using GNU Make 3.76 or later (or a suitable patched earlier
 version) is similar to using Cook.
 The project

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ struct patch_list_ty
 };
 
 struct input_ty; /* forward */
-patch_list_ty *patch_read _((struct input_ty *));
-void patch_apply _((patch_ty *, string_ty *, string_ty *));
+patch_list_ty *patch_read _((struct input_ty *, int));
+int patch_apply _((patch_ty *, string_ty *, string_ty *));
 
 #endif /* LIBAEGIS_PATCH_H */

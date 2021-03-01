@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-long skip_unlucky _((long));
+long skip_unlucky(long);
 
 #endif /* COMMON_SKIP_UNLUCKY_H */

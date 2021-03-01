@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ users and permissions (sourced from the same network register of users)
 on both Unix and Windows NT, making the mapping almost impossible even
 if the security models did actually correspond.
 .PP
-Most sites using Aegis and Windows NT together do so by running 
+Most sites using Aegis and Windows NT together do so by running
 Aegis on the Unix systems, but building and testing on the NT
 systems.  The work areas and repository are accessed via Samba or
 NFS.

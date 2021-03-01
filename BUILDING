@@ -90,6 +90,11 @@ SITE CONFIGURATION
 	because	the code optimization breaks the fingerprints.
 	If test	32 fails (see below) this is probably the reason.
 
+	There is a known problem with IRIX builds.  You	need to
+	use the	following configuration
+		# systune ncargs 0x8000
+	to increase the	length of command lines.
+
 	By default, configure will arrange for the make	install
 	command	to install the aegis package's files in
 	/usr/local/bin,	/usr/local/com/aegis,
@@ -391,6 +396,9 @@ OTHER USEFUL SOFTWARE
 		(CFLAGS), and /usr/local/lib for library files
 		(LDFLAGS).  Otherwise the not been installed.
 
+		GNU Gettext version 0.11.1 or later is
+		recommended.
+
 	GNU Groff
 		This GNU software replaces the documentation
 		tools which (sometimes)	come with UNIX.	 They
@@ -602,14 +610,30 @@ USER CONFIGURATION
 	under the /usr/local/com/aegis directory, this directory
 	only contains pointers.
 
-	If you have a Web server, and the aegis.cgi was
-	installed, you can set its AEGIS_PATH environment
-	variable, if you want it to be able to see more	projects
-	than just the global projects.	You do this by creating	a
-	/usr/local/lib/aegis.cgi.conf file (there isn't	one, by
-	default) and setting the AEGIS_PATH environment	variable
-	in it.	This is	a fragment of Bourne shell script, not
-	just the name.
+   Web Interface
+	If you have a Web server, you may like to install the
+	Aegis web interface.  You do this by copying the
+	aegis.cgi script from /usr/local/bin/aegis.cgi into your
+	web server's cgi-bin directory.	 There is a aegis.cgi.i
+	helper script, if you don't know where your web	server's
+	cgi-bin	directory is.
+
+	You may	prefer to use a	symbolic link, as this will be
+	more stable across Aegis upgrades.  However, this
+	requires a corresponding follow-symlinks setting in your
+	web server's configuration file.  (Use the aegis.cgi.i -s
+	option.)
+
+	Within the aegis.cgi script, can set the AEGIS_PATH
+	environment variable, if you want it to	be able	to see
+	more projects than just	the global projects.  You do this
+	by creating a /usr/local/lib/aegis.cgi.conf file (there
+	isn't one, by default) and setting the AEGIS_PATH
+	environment variable in	it.  This is a fragment	of Bourne
+	shell script, not just the name.
+
+	The files mentioned here may be	in a different place, if
+	you specified a	--prefix option.
 
 PRINTED	MANUALS
 	This distribution contains the sources to all of the
@@ -646,7 +670,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version 4.2
+		aegis version 4.7
 		...
 		%
 	command.  Please run this command to get the exact
@@ -883,7 +907,7 @@ WINDOWS-NT
 	habit of
 		turning	all of the newlines into CRLFs.	 This
 		will confuse lots of utilities,	especially GNU
-		Groff.	Use the	``tar xzf aegis-4.2.tar.gz''
+		Groff.	Use the	``tar xzf aegis-4.7.tar.gz''
 		command	from within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or

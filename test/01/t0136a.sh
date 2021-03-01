@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -347,55 +347,55 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build a distribution set
 #
-$bin/aepatch -send -c 2 -o test.out -naa -nocomp
-if test $? -ne 0 ; then fail; fi
+$bin/aepatch -send -c 2 -o test.out -naa -nocomp > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # compare the patch with expected
 #
-cat > test.ok << 'end'
-MIME-Version: 1.0
-Content-Type: application/aegis-patch
-Subject: foo - The second change
-Content-Name: foo.C002.patch
-Content-Disposition: attachment; filename=foo.C002.patch
-X-Aegis-Project-Name: foo
-X-Aegis-Change-Number: 2
-
-#	
-#	The second change
-#	
-Index: main.c
-*** main.c
---- main.c
-***************
-*** 1,8 ****
---- 1,15 ----
-+ #include <stdio.h>
-+ 
-  int
-  main(argc, argv)
-  	int	argc;
-  	char	**argv;
-  {
-+ 	if (argc != 1)
-+ 	{
-+ 		fprintf(stderr, "usage: %s\n", argv[0]);
-+ 		exit(1);
-+ 	}
-  	test();
-  	exit(0);
-  	return 0;
-Index: nothingmuch
-*** nothingmuch
---- nothingmuch
-***************
-*** 1,4 ****
-- these lines
-- are the ones
-- to be
-- deleted
---- 0 ----
+sed 's/X$//' > test.ok << 'end'
+MIME-Version: 1.0X
+Content-Type: application/aegis-patchX
+Subject: foo - The second changeX
+Content-Name: foo.C002.patchX
+Content-Disposition: attachment; filename=foo.C002.patchX
+X-Aegis-Project-Name: fooX
+X-Aegis-Change-Number: 2X
+X
+#	X
+#	The second changeX
+#	X
+Index: main.cX
+*** main.cX
+--- main.cX
+***************X
+*** 1,8 ****X
+--- 1,15 ----X
++ #include <stdio.h>X
++ X
+  intX
+  main(argc, argv)X
+  	int	argc;X
+  	char	**argv;X
+  {X
++ 	if (argc != 1)X
++ 	{X
++ 		fprintf(stderr, "usage: %s\n", argv[0]);X
++ 		exit(1);X
++ 	}X
+  	test();X
+  	exit(0);X
+  	return 0;X
+Index: nothingmuchX
+*** nothingmuchX
+--- nothingmuchX
+***************X
+*** 1,4 ****X
+- these linesX
+- are the onesX
+- to beX
+- deletedX
+--- 0 ----X
 end
 if test $? -ne 0 ; then no_result; fi
 

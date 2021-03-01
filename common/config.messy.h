@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,8 @@
  * of Aegis.  It is mostly used for testing, but also for Windows NT,
  * as the security there is stuffed.
  */
-#if defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(__NUTC__)
+#if defined(SOURCE_FORGE_HACK) ||  defined(__CYGWIN__) || \
+	defined(__CYGWIN32__) || defined(__NUTC__)
 #define SINGLE_USER
 #endif
 

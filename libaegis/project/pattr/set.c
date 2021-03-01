@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <pattr.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <project/pattr/set.h>
 #include <sub.h>
 
@@ -70,7 +70,7 @@ project_pattr_set(pp, pattr_data)
 
 	if (pattr_data->mask & pattr_umask_mask)
 		project_umask_set(pp, pattr_data->umask);
-	
+
 	if (pattr_data->mask & pattr_default_test_exemption_mask)
 	{
 		project_default_test_exemption_set
@@ -252,6 +252,14 @@ project_pattr_set(pp, pattr_data)
 		(
 			pp,
 			pattr_data->minimum_branch_number
+		);
+	}
+	if (pattr_data->mask & pattr_protect_development_directory_mask)
+	{
+		project_protect_development_directory_set
+		(
+			pp,
+			pattr_data->protect_development_directory
 		);
 	}
 }

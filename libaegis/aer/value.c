@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -207,7 +207,7 @@ rpt_value_undefer(vp)
 	else
 		result = rpt_value_copy(vp);
 	assert(result->method->type != rpt_value_type_deferred);
-	trace(("result = \"%s\";\n", result));
+	trace(("result = %08lX;\n", (long)result));
 	trace((/*{*/"}\n"));
 	return result;
 }

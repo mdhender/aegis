@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1995, 1997-1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,8 @@ Subject: \\*[hd*mark]
 .nf
 Subject: Aegis Frequently Asked Questions (FAQ)
 From: Peter Miller <millerp@canb.auug.org.au>
-Newsgroups: comp.software-eng,comp.software.config-mgmt,comp.software.testing,comp.sources.d,alt.sources.d
+Newsgroups: comp.software-eng,comp.software.config-mgmt,
+	comp.software.testing,comp.sources.d,alt.sources.d
 .sp
 Submitted-by: Peter Miller <millerp@canb.auug.org.au>
 Archive-name: aegis.\*(v)/FAQ
@@ -125,7 +126,7 @@ users and permissions (sourced from the same network register of users)
 on both Unix and Windows NT, making the mapping almost impossible even
 if the security models did actually correspond.
 .sp
-Most sites using Aegis and Windows NT together do so by running 
+Most sites using Aegis and Windows NT together do so by running
 Aegis on the Unix systems, but building and testing on the NT
 systems.  The work areas and repository are accessed via Samba or
 NFS.
@@ -357,7 +358,7 @@ you will need to manually test the device drivers, because the tests
 will probably not exercise them.
 .sp
 The author has worked in an environment like this,
-and Aegis is definitely intended to be useful in this situation. 
+and Aegis is definitely intended to be useful in this situation.
 .H 2 "Do I really need to test my software?"
 No, you do not.
 There are alternatives, as this quote demonstrates:
@@ -412,15 +413,16 @@ That is "ee" as in "tree",
 a "j" as in "job",
 and "iz" as in "prism".
 .H 2 "How do I automate the integration queue?"
-There is a shell script in the aegis library directory (usually
-/usr/local/lib/aegis/integrate_q.sh)
+There is a Perl script distributed with Aegis called \fIaeintegratq\fP(1)
 which can be run from \fIcron\fP(1) daily, or whatever.
-This shell script is a good starting point
+This Perl script is a good starting point
 for customizing automatic integrations.
 .sp
 Please note that the integration phase also serves to answer the question
 ``who reviews the reviewers?''
 Monitoring review quality is essential to maintain product quality.
+Automating the integration queue potentially denies you this quality
+opportunity.
 .H 2 "How do I enforce coding standards?"
 The ``diff_command'' field of the project config file
 need not only difference the file,

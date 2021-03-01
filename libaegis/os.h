@@ -31,6 +31,7 @@
 #define OS_EXEC_FLAG_NO_INPUT 0
 #define OS_EXEC_FLAG_INPUT 1
 #define OS_EXEC_FLAG_ERROK 2
+#define OS_EXEC_FLAG_SILENT 4
 
 int os_exists _((string_ty *));
 void os_mkdir _((string_ty *path, int mode));
@@ -49,6 +50,7 @@ string_ty *os_pathname _((string_ty *, int));
 string_ty *os_dirname _((string_ty *));
 string_ty *os_dirname_relative _((string_ty *));
 string_ty *os_entryname _((string_ty *));
+string_ty *os_entryname_relative _((string_ty *));
 string_ty *os_below_dir _((string_ty *, string_ty *));
 void os_chdir _((string_ty *));
 void os_setuid _((int));
@@ -85,6 +87,7 @@ void os_become_must_not_be_active_gizzards _((char *, int));
 
 int os_background _((void));
 int os_readable _((string_ty *));
+int os_executable _((string_ty *));
 int os_waitpid _((int child, int *status));
 int os_waitpid_status _((int child, char *cmd));
 

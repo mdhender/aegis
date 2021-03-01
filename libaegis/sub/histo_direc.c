@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@
  *
  * DESCRIPTION
  *	The sub_history_directory function implements the
- *	history_directory substitution.  The history_directory
+ *	history_directory substitution.	 The history_directory
  *	substitution is used to insert the absolute path of the project
  *	history directory.
  *
@@ -50,31 +50,31 @@
 
 wstring_ty *
 sub_history_directory(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	wstring_ty	*result;
-	project_ty	*pp;
+    wstring_ty	    *result;
+    project_ty	    *pp;
 
-	trace(("sub_history_directory()\n{\n"));
-	if (arg->nitems != 1)
-	{
-		sub_context_error_set(scp, i18n("requires zero arguments"));
-		result = 0;
-		goto done;
-	}
-	pp = sub_context_project_get(scp);
-	if (!pp)
-	{
-		sub_context_error_set(scp, i18n("not valid in current context"));
-		result = 0;
-		goto done;
-	}
+    trace(("sub_history_directory()\n{\n"));
+    if (arg->nitems != 1)
+    {
+	sub_context_error_set(scp, i18n("requires zero arguments"));
+	result = 0;
+	goto done;
+    }
+    pp = sub_context_project_get(scp);
+    if (!pp)
+    {
+	sub_context_error_set(scp, i18n("not valid in current context"));
+	result = 0;
+	goto done;
+    }
 
-	result = str_to_wstr(project_history_path_get(pp));
+    result = str_to_wstr(project_history_path_get(pp));
 
-	done:
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    done:
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

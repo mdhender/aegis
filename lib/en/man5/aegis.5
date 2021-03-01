@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1995, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -33,11 +33,18 @@ and some are created an maintained by \*(n) itself.
 The various manual entries say which is which.
 .SH LEXICAL CONSIDERATIONS
 Names are any C identifier.
-Comments are C-style comments.
+Comments are C-style comments (or C++ or shell).
 Numbers are decimal, octal or hexadecimal, as for C constants.
-Strings are C-style strings.
 Whitespace (spaces, tabs and newlines) are ignored
 except in strings or as they serve to separate tokens.
+.PP
+Strings are C-style strings, and similar to C, sequential string constants
+are silently catenated together.
+.PP
+In addition, there is a style of \f[CW]@string@\fP which use at-signs (@)
+for quoting.  Unlike the C style of string, newlines are allowed within
+these strings.  To get an at-sign in such a string, double the at-sign.
+There is no other escape mechanism available.
 .SH GRAMMAR
 The format of all \*(n) files is described by a
 .I yacc (1)

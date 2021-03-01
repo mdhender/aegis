@@ -26,63 +26,62 @@
 #include <progname.h>
 
 
-static	char	*progname;
+static char     *progname;
 
 
 void
-progname_set(s)
-	char		*s;
+progname_set(char *s)
 {
+    /*
+     * do NOT put tracing in this function
+     * do NOT put asserts in this function
+     *	they both depend on progname, which is not yet set
+     */
+    for (;;)
+    {
+	progname = strrchr(s, '/');
+
 	/*
-	 * do NOT put tracing in this function
-	 * do NOT put asserts in this function
-	 *	they both depend on progname, which is not yet set
+	 * we were invoked as
+	 *	progname -args
 	 */
-	for (;;)
+	if (!progname)
 	{
-		progname = strrchr(s, '/');
-
-		/*
-		 * we were invoked as
-		 *	progname -args
-		 */
-		if (!progname)
-		{
-			/*
-			 * Nuke any ugly progname suffix
-			 * if it has one.
-			 */
-			int n = exeext(s);
-			if (n > 0)
-				s[n] = 0;
-			progname = s;
-			break;
-		}
-
-		/*
-		 * we were invoked as
-		 *	/usr/local/progname -args
-		 */
-		if (progname[1])
-		{
-			++progname;
-			break;
-		}
-
-		/*
-		 * this is real nasty:
-		 * it is possible to invoke us as
-		 *	/usr//local///bin////progname///// -args
-		 * and it is legal!!
-		 */
-		*progname = 0;
+	    /*
+	     * Nuke any ugly progname suffix
+	     * if it has one.
+	     */
+	    int n = exeext(s);
+	    if (n > 0)
+		s[n] = 0;
+	    progname = s;
+	    break;
 	}
+
+	/*
+	 * we were invoked as
+	 *	/usr/local/progname -args
+	 */
+	if (progname[1])
+	{
+	    ++progname;
+	    break;
+	}
+
+	/*
+	 * this is real nasty:
+	 * it is possible to invoke us as
+	 *	/usr//local///bin////progname///// -args
+	 * and it is legal!!
+	 */
+	*progname = 0;
+    }
 }
 
 
 char *
-progname_get()
+progname_get(void)
 {
-	/* do NOT put tracing in this function */
-	return (progname ? progname : "");
+    /* do NOT put tracing in this function */
+    return (progname ? progname : "");
 }

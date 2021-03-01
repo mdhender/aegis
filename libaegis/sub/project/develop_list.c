@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate develop_lists
  */
 
-#include <project_hist.h>
+#include <project/history.h>
 #include <str_list.h>
 #include <sub.h>
 #include <sub/project/develop_list.h>
@@ -83,7 +83,7 @@ sub_developer_list(scp, arg)
 		sub_context_error_set(scp, i18n("requires one argument"));
 		result = 0;
 		goto done;
-	
+
 	case 1:
 		break;
 

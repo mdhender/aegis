@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2001 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,17 +23,21 @@
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+auto parent_href;
+parent_href = script_name ## "?file@proj_menu+project@" ## project_name();
 
 columns({width = 1000;});
 print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
-print("Project History Report");
-print("</title></head><body><h1><center>");
-print("Project ``" ## quote_html(project_name()) ## "'',");
+print("Project " ## quote_html(project_name()) ## " History Report");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
+print("Project <a href=\"" ## parent_href ## "\">");
+print("``" ## quote_html(project_name()) ## "''</a>,");
 print("<br>History");
-print("</center></h1>");
+print("</h1>");
 
 auto ps;
 ps = project[project_name()].state;
@@ -42,42 +46,70 @@ ps = project[project_name()].state;
  * scan all completed changes
  * for any of the named files
  */
-print("<center><table><tr><th>Delta</th><th>When</th>");
-print("<th>Change</th><th>Description</th><th></th></tr>");
-auto ph;
+print("<table align=center><tr bgcolor=\"#CCCCCC\"><th>Delta</th>");
+print("<th>When</th><th>Change</th><th>Description</th><th>Download</th></tr>");
+auto ph, rownum;
+rownum = 0;
 for (ph in ps.branch.history)
 {
-	print("<tr><td valign=top align=right>");
-	print(ph.delta_number);
-	print("</td><td valign=top>");
-	auto cs;
-	cs = ps.branch.change[ph.change_number];
-	print(cs.history[count(cs.history) - 1].when);
-	print("</td><td valign=top align=right>");
-	auto href;
-	href = script_name ## "?file@chan_menu";
-	href ##= "+project@" ## quote_url(project_name());
-	href ##= "+change@" ## ph.change_number;
-	print("<a href=\"" ## href ## "\">");
-	print(ph.change_number ## "</a>");
-	print("</td><td valign=top>");
-	auto part;
-	for (part in wrap_html(quote_html(cs.brief_description), 80))
-		print(part);
-	print("</td><td valign=top>");
-	href = script_name ## "/" ## quote_url(project_name());
-	href ##= ".C" ## ph.change_number ## ".ae?file@aedist";
-	href ##= "+project@" ## quote_url(project_name());
-	href ##= "+change@" ## ph.change_number;
-	print("<a href=\"" ## href ## "\"><i>Download</i></a>");
-	print("</td></tr>");
+    if (rownum++ % 6 < 3)
+	print("<tr>");
+    else
+	print("<tr bgcolor=\"#CCCCCC\">");
+    print("<td valign=top align=right>");
+    print(ph.delta_number);
+    print("</td><td valign=top>");
+    auto cs;
+    cs = ps.branch.change[ph.change_number];
+    print(cs.history[count(cs.history) - 1].when);
+    print("</td><td valign=top align=right>");
+    auto href;
+    href = script_name ## "?file@chan_menu";
+    href ##= "+project@" ## quote_url(project_name());
+    href ##= "+change@" ## ph.change_number;
+    print("<a href=\"" ## href ## "\">");
+    print(ph.change_number ## "</a>");
+    print("</td><td valign=top>");
+    auto part;
+    for (part in wrap_html(quote_html(cs.brief_description), 80))
+       	print(part);
+
+    /*
+     * The download column.
+     */
+    print("</td><td valign=top>");
+    href = script_name ## "/" ## quote_url(project_name());
+    href ##= ".C" ## ph.change_number ## ".ae?file@aedist";
+    href ##= "+project@" ## quote_url(project_name());
+    href ##= "+change@" ## ph.change_number;
+    print("<a href=\"" ## href ## "\"><i>aedist</i></a>,");
+
+    href = script_name ## "/" ## quote_url(project_name());
+    href ##= ".C" ## ph.change_number ## ".patch?file@aepatch";
+    href ##= "+project@" ## quote_url(project_name());
+    href ##= "+change@" ## ph.change_number;
+    print("<a href=\"" ## href ## "\"><i>patch</i></a>,");
+    print("</td></tr>");
 }
-print("</table></center>");
-print("Listed " ## count(ps.branch.history) ## " integrations.");
+print("</table>");
+print("Listed " ## count(ps.branch.history) ## " completed changes.<br />");
+print("<a href=\"" ## parent_href ## "\">project menu</a>");
 print("<hr>");
 print("A similar report may be obtained from the command line, with one of");
 print("<blockquote><pre>ael proj_history -p " ## quote_html(project_name()));
-print("aer proj_history -p " ## quote_html(project_name()) ## "</pre></blockquote>");
+print("aer proj_history -p " ## quote_html(project_name()) ##
+    "</pre></blockquote>");
+print("<hr>");
+print("If you download via the <i>aedist</i> links, you will need");
+print("<i>aedist</i>(1) from Aegis 4.3 or later to apply the");
+print("change sets.");
+print("<p>");
+print("If you downlaod via the <i>patch</i> links, they can be applied");
+print("with <i>aepatch</i>(1) from Aegis 3.28 or later.");
+print("To apply them manually, you must first MIME64 decode and gunzip,");
+print("before using the normal <i>patch</i>(1) program.");
+print("Depending on your browser, it may or may not have done the MIME64");
+print("and/or gunzip steps for you automagically.");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

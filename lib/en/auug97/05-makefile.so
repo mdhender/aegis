@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -245,7 +245,8 @@ That is, it is not re-built in one of the include files changes.
 There is no edge in the DAG joining the \f(CWdependencies\fP vertex to
 any of the include file vertices.
 If an include file changes to include another file (a nested include),
-the dependencies will not be recalculated, and potentially the C file will not be recompiled,
+the dependencies will not be recalculated, and potentially the C file
+will not be recompiled,
 and thus the program will not be re-built correctly.
 .LP
 A classic build-too-little problem, caused by giving \fImake\fP

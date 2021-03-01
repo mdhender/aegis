@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1998 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,15 +52,16 @@ type_gen_include(type)
 
 
 void
-type_gen_code_declarator(type, name, is_a_list)
+type_gen_code_declarator(type, name, is_a_list, show)
 	type_ty		*type;
 	string_ty	*name;
 	int		is_a_list;
+	int		show;
 {
 	trace(("type_gen_code_declarator(type = %08lX, name = \"%s\", \
 is_a_list = %d)\n{\n"/*}*/, (long)type, name->str_text, is_a_list));
 	if (type->method->gen_code_declarator)
-		type->method->gen_code_declarator(type, name, is_a_list);
+		type->method->gen_code_declarator(type, name, is_a_list, show);
 	trace((/*{*/"}\n"));
 }
 
@@ -91,17 +92,25 @@ is_a_list = %d)\n{\n"/*}*/, (long)type, name->str_text, is_a_list));
 
 
 void
-type_member_add(type, member_name, member_type)
-	type_ty		*type;
-	string_ty	*member_name;
-	type_ty		*member_type;
+type_member_add(type, member_name, member_type, show_or_not)
+    type_ty	    *type;
+    string_ty	    *member_name;
+    type_ty	    *member_type;
+    int		    show_or_not;
 {
-	trace(("type_member_add(type = %08lX, member_name = %08lX, member_type \
-= %08lX)\n{\n"/*}*/, (long)type, (long)member_name, (long)member_type));
-	assert(type->method->member_add);
-	if (type->method->member_add)
-		type->method->member_add(type, member_name, member_type);
-	trace((/*{*/"}\n"));
+    trace(
+    (
+	"type_member_add(type = %08lX, member_name = %08lX, "
+	"member_type = %08lX, show_or_not = %d)\n{\n",
+	(long)type,
+	(long)member_name,
+	(long)member_type,
+	show_or_not
+    ));
+    assert(type->method->member_add);
+    if (type->method->member_add)
+	type->method->member_add(type, member_name, member_type, show_or_not);
+    trace(("}\n"));
 }
 
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -61,42 +61,42 @@
 
 col_ty *
 col_open(filename)
-	string_ty	*filename;
+    string_ty	    *filename;
 {
-	col_ty		*result;
-	output_ty	*narrow_fp;
-	wide_output_ty	*wide_fp;
+    col_ty	    *result;
+    output_ty	    *narrow_fp;
+    wide_output_ty  *wide_fp;
 
-	/*
-	 * open a suitable output
-	 */
-	trace(("col_open(filename = %08lX)\n{\n", filename));
-	os_become_must_not_be_active();
+    /*
+     * open a suitable output
+     */
+    trace(("col_open(filename = %08lX)\n{\n", (long)filename));
+    os_become_must_not_be_active();
+    if (filename && filename->str_length)
+    {
 	trace_string(filename->str_text);
-	if (filename && filename->str_length)
-	{
-		os_become_orig();
-		narrow_fp = output_file_text_open(filename);
-		os_become_undo();
-	}
-	else
-		narrow_fp = output_pager_open();
-	wide_fp = wide_output_to_narrow_open(narrow_fp, 1);
+	os_become_orig();
+	narrow_fp = output_file_text_open(filename);
+	os_become_undo();
+    }
+    else
+	narrow_fp = output_pager_open();
+    wide_fp = wide_output_to_narrow_open(narrow_fp, 1);
 
-	/*
-	 * pick a formatting option
-	 */
-	if (option_unformatted_get())
-		result = col_unformatted_open(wide_fp, 1);
-	else
-		result = col_pretty_open(wide_fp, 1);
+    /*
+     * pick a formatting option
+     */
+    if (option_unformatted_get())
+	result = col_unformatted_open(wide_fp, 1);
+    else
+	result = col_pretty_open(wide_fp, 1);
 
-	/*
-	 * all done
-	 */
-	trace(("return %08lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    /*
+     * all done
+     */
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }
 
 
@@ -124,18 +124,16 @@ col_open(filename)
 
 void
 col_close(fp)
-	col_ty		*fp;
+    col_ty	    *fp;
 {
-	trace(("col_close(fp = %08lX)\n{\n", (long)fp));
-	if (fp->vptr->destructor)
-	{
-		trace(("mark\n"));
-		fp->vptr->destructor(fp);
-		trace(("mark\n"));
-	}
-	fp->vptr = 0;
-	mem_free(fp);
-	trace(("}\n"));
+    trace(("col_close(fp = %08lX)\n{\n", (long)fp));
+    if (fp->vptr->destructor)
+    {
+	fp->vptr->destructor(fp);
+    }
+    fp->vptr = 0;
+    mem_free(fp);
+    trace(("}\n"));
 }
 
 
@@ -168,22 +166,22 @@ col_close(fp)
  *	into this column.  Use output_delete when you are done with the column.
  */
 
-output_ty * 
+output_ty *
 col_create(fp, min, max, title)
-	col_ty		*fp;
-	int		min;
-	int		max;
-	const char	*title;
+    col_ty	    *fp;
+    int		    min;
+    int		    max;
+    const char	    *title;
 {
-	output_ty	*result;
+    output_ty	    *result;
 
-	trace(("col_create(fp = %08lX, left = %d, right = %d, title = %08lX)\n{\n",
-		(long)fp, min, max, (long)title));
-	assert(fp->vptr->create);
-	result = fp->vptr->create(fp, min, max, title);
-	trace(("return %08lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    trace(("col_create(fp = %08lX, left = %d, right = %d, title = %08lX)\n{\n",
+	(long)fp, min, max, (long)title));
+    assert(fp->vptr->create);
+    result = fp->vptr->create(fp, min, max, title);
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }
 
 
@@ -209,12 +207,12 @@ col_create(fp, min, max, title)
 
 void
 col_eoln(fp)
-	col_ty		*fp;
+    col_ty	    *fp;
 {
-	trace(("col_eoln(fp = %08lX)\n{\n", (long)fp));
-	assert(fp->vptr->eoln);
-	fp->vptr->eoln(fp);
-	trace(("}\n"));
+    trace(("col_eoln(fp = %08lX)\n{\n", (long)fp));
+    assert(fp->vptr->eoln);
+    fp->vptr->eoln(fp);
+    trace(("}\n"));
 }
 
 
@@ -236,15 +234,15 @@ col_eoln(fp)
 
 void
 col_title(fp, s1, s2)
-	col_ty		*fp;
-	const char	*s1;
-	const char	*s2;
+    col_ty	    *fp;
+    const char	    *s1;
+    const char	    *s2;
 {
-	trace(("col_title(fp = %08lX, s1 = %08lX, s2 = %08lX)\n{\n",
-		(long)fp, (long)s1, (long)s2));
-	assert(fp->vptr->title);
-	fp->vptr->title(fp, s1, s2);
-	trace(("}\n"));
+    trace(("col_title(fp = %08lX, s1 = %08lX, s2 = %08lX)\n{\n",
+	(long)fp, (long)s1, (long)s2));
+    assert(fp->vptr->title);
+    fp->vptr->title(fp, s1, s2);
+    trace(("}\n"));
 }
 
 
@@ -262,12 +260,12 @@ col_title(fp, s1, s2)
 
 void
 col_eject(fp)
-	col_ty		*fp;
+    col_ty	    *fp;
 {
-	trace(("col_eject(fp = %08lX)\n{\n", (long)fp));
-	assert(fp->vptr->eject);
-	fp->vptr->eject(fp);
-	trace(("}\n"));
+    trace(("col_eject(fp = %08lX)\n{\n", (long)fp));
+    assert(fp->vptr->eject);
+    fp->vptr->eject(fp);
+    trace(("}\n"));
 }
 
 
@@ -291,11 +289,11 @@ col_eject(fp)
 
 void
 col_need(fp, n)
-	col_ty		*fp;
-	int		n;
+    col_ty	    *fp;
+    int		    n;
 {
-	trace(("col_need(fp = %08lX, n = %d)\n{\n", (long)fp, n));
-	assert(fp->vptr->need);
-	fp->vptr->need(fp, n);
-	trace(("}\n"));
+    trace(("col_need(fp = %08lX, n = %d)\n{\n", (long)fp, n));
+    assert(fp->vptr->need);
+    fp->vptr->need(fp, n);
+    trace(("}\n"));
 }

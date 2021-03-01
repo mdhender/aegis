@@ -1,7 +1,7 @@
 /*
  *	aegis - project change supervisor
  *	Copyright (C) 2002 John Darrington
- *	
+ *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
@@ -42,7 +42,7 @@ change_run_history_label_command(cp, src, label)
     sub_context_ty  *scp;
 
     /*
-     * Label the history.  
+     * Label the history.
      * Current directory will be set to the
      * base of the history tree.  All of the substitutions described
      * in aesub(5) are avaliable.  In addition:
@@ -54,9 +54,9 @@ change_run_history_label_command(cp, src, label)
      * ${Label}
      *      label
      */
-    trace(("change_run_history_label_command(cp = %8.8lX, filename = \"%s\",
-	label = \"%s\",delta = %ld)\n{\n", (long)cp, src->file_name->str_text,
-	label->str_text, delta));
+    trace(("change_run_history_label_command(cp = %8.8lX, filename = \"%s\", "
+	"label = \"%s\")\n{\n", (long)cp, src->file_name->str_text,
+	label->str_text));
     assert(cp->reference_count >= 1);
 
     pconf_data = change_pconf_get(cp, 0);

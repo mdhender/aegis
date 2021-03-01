@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,217 +52,209 @@
  *	Line length is assumed to be 80 characters.
  */
 
-static void wrap _((const char *));
-
 static void
-wrap(s)
-	const char	*s;
+wrap(const char *s)
 {
-	char		*progname;
-	static char	escapes[] = "\rr\nn\ff\bb\tt";
-	int		page_width;
-	char		tmp[200];
-	int		first_line;
-	char		*tp;
+    char	    *progname;
+    static char     escapes[] = "\rr\nn\ff\bb\tt";
+    int		    page_width;
+    char	    tmp[200];
+    int		    first_line;
+    char	    *tp;
 
-	if (fflush(stdout) || ferror(stdout))
-		nfatal("(stdout)");
-	/* don't use last column, many terminals are dumb */
-	page_width = 79;
-	progname = progname_get();
-	first_line = 1;
-	while (*s)
+    if (fflush(stdout) || ferror(stdout))
+	nfatal("(stdout)");
+    /* don't use last column, many terminals are dumb */
+    page_width = 79;
+    progname = progname_get();
+    first_line = 1;
+    while (*s)
+    {
+	const char	*ep;
+	int		ocol;
+
+	/*
+	 * Work out how many characters fit on the line.
+	 */
+	if (first_line)
+	    ocol = strlen(progname) + 2;
+	else
+	    ocol = 8;
+	for (ep = s; *ep; ++ep)
 	{
-		const char	*ep;
-		int		ocol;
+	    int		    cw;
+	    unsigned char   c;
 
-		/*
-		 * Work out how many characters fit on the line.
-		 */
-		if (first_line)
-			ocol = strlen(progname) + 2;
-		else
-			ocol = 8;
-		for (ep = s; *ep; ++ep)
-		{
-			int		cw;
-			unsigned char	c;
-
-			c = *ep;
-			if (isprint(c))
-				cw = 1 + (c == '\\');
-			else
-				cw = (strchr(escapes, c) ? 2 : 4);
-			if (ocol + cw > page_width)
-				break;
-			ocol += cw;
-		}
-
-		/*
-		 * see if there is a better place to break the line
-		 */
-		if (*ep && *ep != ' ')
-		{
-			const char	*mp;
-			const char	*bp_space;
-			const char	*bp_slash;
-
-			bp_space = 0;
-			for (mp = ep; mp > s; --mp)
-			{
-				if (mp[-1] == ' ')
-				{
-					bp_space = mp;
-					break;
-				}
-			}
-
-			bp_slash = 0;
-			for (mp = ep; mp > s; --mp)
-			{
-				if (strchr("\\/", mp[-1]))
-				{
-					bp_slash = mp;
-					break;
-				}
-			}
-
-			/*
-			 * We could break it at the space, and only use
-			 * the slash if there are no spaces on the line.
-			 * This can lead to large amounts of wasted
-			 * space, particularly for link commands.  So, if
-			 * both breaks are possible, and the space break
-			 * is before the slash break, and the space
-			 * break is in the left half of the line, use
-			 * the slash break.
-			 */
-			if
-			(
-				bp_space
-			&&
-				bp_slash
-			&&
-				bp_space < bp_slash
-			&&
-				bp_space < s + 30
-			)
-				bp_space = 0;
-
-			/*
-			 * use the break if available
-			 */
-			if (bp_space)	
-				ep = bp_space;
-			else if (bp_slash)
-				ep = bp_slash;
-		}
-
-		/*
-		 * ignore trailing blanks
-		 */
-		while (ep > s && ep[-1] == ' ')
-			ep--;
-
-		/*
-		 * print the line
-		 */
-		if (first_line)
-			sprintf(tmp, "%s: ", progname);
-		else
-			strcpy(tmp, "\t");
-		tp = tmp + strlen(tmp);
-		while (s < ep)
-		{
-			unsigned char c = *s++;
-			if (isprint(c))
-			{
-				if (c == '\\')
-					*tp++ = '\\';
-				*tp++ = c;
-			}
-			else
-			{
-				const char	*esc;
-
-				esc = strchr(escapes, c);
-				if (esc)
-				{
-					*tp++ = '\\';
-					*tp++ = esc[1];
-				}
-				else
-				{
-					sprintf(tp, "\\%3.3o", c);
-					tp += strlen(tp);
-				}
-			}
-		}
-		*tp++ = '\n';
-		*tp = 0;
-		fputs(tmp, stderr);
-		if (ferror(stderr))
-			break;
-
-		/*
-		 * skip leading spaces for subsequent lines
-		 */
-		while (*s == ' ')
-			s++;
-		first_line = 0;
+	    c = *ep;
+	    if (isprint(c))
+		cw = 1 + (c == '\\');
+	    else
+		cw = (strchr(escapes, c) ? 2 : 4);
+	    if (ocol + cw > page_width)
+		break;
+	    ocol += cw;
 	}
-	if (fflush(stderr) || ferror(stderr))
+
+	/*
+	 * see if there is a better place to break the line
+	 */
+	if (*ep && *ep != ' ')
 	{
-		static int disaster_count;
+	    const char	    *mp;
+	    const char	    *bp_space;
+	    const char	    *bp_slash;
 
-		/*
-		 * If there is a problem with stderr, it is usually
-		 * because the tee command went away.  Try to cope, so
-		 * that we can finish cleaning up, but don't try too hard.
-		 */
-		if (disaster_count++ || !freopen("/dev/null", "w", stderr))
-			exit(1);
-		quit(1);
+	    bp_space = 0;
+	    for (mp = ep; mp > s; --mp)
+	    {
+		if (mp[-1] == ' ')
+		{
+	    	    bp_space = mp;
+	    	    break;
+		}
+	    }
+
+	    bp_slash = 0;
+	    for (mp = ep; mp > s; --mp)
+	    {
+		if (strchr("\\/", mp[-1]))
+		{
+	    	    bp_slash = mp;
+	    	    break;
+		}
+	    }
+
+	    /*
+	     * We could break it at the space, and only use
+	     * the slash if there are no spaces on the line.
+	     * This can lead to large amounts of wasted
+	     * space, particularly for link commands.  So, if
+	     * both breaks are possible, and the space break
+	     * is before the slash break, and the space
+	     * break is in the left half of the line, use
+	     * the slash break.
+	     */
+	    if
+	    (
+		bp_space
+	    &&
+		bp_slash
+	    &&
+		bp_space < bp_slash
+	    &&
+		bp_space < s + 30
+	    )
+		bp_space = 0;
+
+	    /*
+	     * use the break if available
+	     */
+	    if (bp_space)
+		ep = bp_space;
+	    else if (bp_slash)
+		ep = bp_slash;
 	}
-}
 
+	/*
+	 * ignore trailing blanks
+	 */
+	while (ep > s && ep[-1] == ' ')
+	    ep--;
 
-static void double_jeopardy _((void));
+	/*
+	 * print the line
+	 */
+	if (first_line)
+	    sprintf(tmp, "%s: ", progname);
+	else
+	    strcpy(tmp, "\t");
+	tp = tmp + strlen(tmp);
+	while (s < ep)
+	{
+	    unsigned char c = *s++;
+	    if (isprint(c))
+	    {
+		if (c == '\\')
+	    	    *tp++ = '\\';
+		*tp++ = c;
+	    }
+	    else
+	    {
+		const char	*esc;
 
-static void
-double_jeopardy()
-{
-	char	buffer[200];
+		esc = strchr(escapes, c);
+		if (esc)
+		{
+	    	    *tp++ = '\\';
+	    	    *tp++ = esc[1];
+		}
+		else
+		{
+	    	    sprintf(tp, "\\%3.3o", c);
+	    	    tp += strlen(tp);
+		}
+	    }
+	}
+	*tp++ = '\n';
+	*tp = 0;
+	fputs(tmp, stderr);
+	if (ferror(stderr))
+	    break;
 
-	sprintf
-	(
-		buffer,
-		"while attempting to construct an error message: %s (fatal)",
-		strerror(errno)
-	);
-	wrap(buffer);
+	/*
+	 * skip leading spaces for subsequent lines
+	 */
+	while (*s == ' ')
+	    s++;
+	first_line = 0;
+    }
+    if (fflush(stderr) || ferror(stderr))
+    {
+	static int disaster_count;
+
+	/*
+	 * If there is a problem with stderr, it is usually
+	 * because the tee command went away.  Try to cope, so
+	 * that we can finish cleaning up, but don't try too hard.
+	 */
+	if (disaster_count++ || !freopen("/dev/null", "w", stderr))
+	    exit(1);
 	quit(1);
+    }
 }
 
 
-static char *copy_string _((const char *));
+static void
+double_jeopardy(void)
+{
+    char	    buffer[200];
+
+    sprintf
+    (
+	buffer,
+	"while attempting to construct an error message: %s (fatal)",
+	strerror(errno)
+    );
+    wrap(buffer);
+    quit(1);
+}
+
 
 static char *
-copy_string(s)
-	const char	*s;
+copy_string(const char *s)
 {
-	char		*cp;
+    char	    *cp;
 
-	errno = 0;
-	cp = malloc(strlen(s) + 1);
-	if (!cp)
-	{
-		if (!errno)
-			errno = ENOMEM;
-		double_jeopardy();
-	}
-	strcpy(cp, s);
-	return cp;
+    errno = 0;
+    cp = malloc(strlen(s) + 1);
+    if (!cp)
+    {
+	if (!errno)
+    	    errno = ENOMEM;
+	double_jeopardy();
+    }
+    strcpy(cp, s);
+    return cp;
 }
 
 
@@ -286,19 +278,17 @@ copy_string(s)
  */
 
 void
-error_raw(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+error_raw(const char *fmt, ...)
 {
-	va_list		ap;
-	char		*buffer;
+    va_list	    ap;
+    char	    *buffer;
 
-	sva_init(ap, fmt);
-	buffer = vmprintf_errok(fmt, ap);
-	va_end(ap);
-	if (!buffer)
-		double_jeopardy();
-	wrap(buffer);
+    va_start(ap, fmt);
+    buffer = vmprintf_errok(fmt, ap);
+    va_end(ap);
+    if (!buffer)
+	double_jeopardy();
+    wrap(buffer);
 }
 
 
@@ -323,23 +313,21 @@ error_raw(fmt sva_last)
  */
 
 void
-nerror(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+nerror(const char *fmt, ...)
 {
-	char		*s1;
-	va_list		ap;
-	int		n;
+    char	    *s1;
+    va_list	    ap;
+    int		    n;
 
-	n = errno;
-	sva_init(ap, fmt);
-	s1 = vmprintf_errok(fmt, ap);
-	va_end(ap);
-	if (!s1)
-		double_jeopardy();
-	s1 = copy_string(s1);
-	error_raw("%s: %s", s1, strerror(n));
-	free(s1);
+    n = errno;
+    va_start(ap, fmt);
+    s1 = vmprintf_errok(fmt, ap);
+    va_end(ap);
+    if (!s1)
+	double_jeopardy();
+    s1 = copy_string(s1);
+    error_raw("%s: %s", s1, strerror(n));
+    free(s1);
 }
 
 
@@ -365,25 +353,22 @@ nerror(fmt sva_last)
  *	This function does NOT return.
  */
 
-/*VARARGS1*/
 void
-nfatal(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+nfatal(const char *fmt, ...)
 {
-	char		*s1;
-	va_list		ap;
-	int		n;
+    char	    *s1;
+    va_list	    ap;
+    int		    n;
 
-	n = errno;
-	sva_init(ap, fmt);
-	s1 = vmprintf_errok(fmt, ap);
-	va_end(ap);
-	if (!s1)
-		double_jeopardy();
-	s1 = copy_string(s1);
+    n = errno;
+    va_start(ap, fmt);
+    s1 = vmprintf_errok(fmt, ap);
+    va_end(ap);
+    if (!s1)
+	double_jeopardy();
+    s1 = copy_string(s1);
 
-	fatal_raw("%s: %s", s1, strerror(n));
+    fatal_raw("%s: %s", s1, strerror(n));
 }
 
 
@@ -409,20 +394,18 @@ nfatal(fmt sva_last)
  */
 
 void
-fatal_raw(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+fatal_raw(const char *fmt, ...)
 {
-	va_list		ap;
-	char		*buffer;
+    va_list	    ap;
+    char	    *buffer;
 
-	sva_init(ap, fmt);
-	buffer = vmprintf_errok(fmt, ap);
-	va_end(ap);
-	if (!buffer)
-		double_jeopardy();
-	wrap(buffer);
-	quit(1);
+    va_start(ap, fmt);
+    buffer = vmprintf_errok(fmt, ap);
+    va_end(ap);
+    if (!buffer)
+	double_jeopardy();
+    wrap(buffer);
+    quit(1);
 }
 
 
@@ -448,14 +431,11 @@ fatal_raw(fmt sva_last)
  */
 
 int
-assert_failed(s, file, line)
-	const char	*s;
-	const char	*file;
-	int		line;
+assert_failed(const char *s, const char *file, int line)
 {
-	error_raw("%s: %d: assertion \"%s\" failed (bug)", file, line, s);
-	abort();
-	exit(1); /* incase abort() comes back */
+    error_raw("%s: %d: assertion \"%s\" failed (bug)", file, line, s);
+    abort();
+    exit(1); /* incase abort() comes back */
 }
 
 
@@ -465,38 +445,36 @@ static	int	quitting;
 
 
 void
-quit_register(func)
-	quit_ty	func;
+quit_register(quit_ty func)
 {
-	int	j;
+    int		    j;
 
-	if (quitting)
-		return;
-	assert(quit_list_len < SIZEOF(quit_list));
-	assert(func);
-	for (j = 0; j < quit_list_len; ++j)
-		if (quit_list[j] == func)
-			return;
-	quit_list[quit_list_len++] = func;
+    if (quitting)
+	return;
+    assert(quit_list_len < SIZEOF(quit_list));
+    assert(func);
+    for (j = 0; j < quit_list_len; ++j)
+	if (quit_list[j] == func)
+    	    return;
+    quit_list[quit_list_len++] = func;
 }
 
 
 void
-quit(n)
-	int		n;
+quit(int n)
 {
-	if (quitting > 4)
-	{
-		fprintf
-		(
-			stderr,
-			"%s: incorrectly handled error while quitting (bug)\n",
-			progname_get()
-		);
-		exit(1);
-	}
-	++quitting;
-	while (quit_list_len > 0)
-		quit_list[--quit_list_len](n);
-	exit(n);
+    if (quitting > 4)
+    {
+	fprintf
+	(
+    	    stderr,
+    	    "%s: incorrectly handled error while quitting (bug)\n",
+    	    progname_get()
+	);
+	exit(1);
+    }
+    ++quitting;
+    while (quit_list_len > 0)
+	quit_list[--quit_list_len](n);
+    exit(n);
 }

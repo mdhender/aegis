@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2001 Peter Miller;
+.\"	Copyright (C) 1992-1995, 1997-2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -113,7 +113,7 @@ not available.)
 Normally,
 you just
 .I cd
-to the directory containing 
+to the directory containing
 .IR aegis "'"
 source code and type
 .RS
@@ -169,6 +169,15 @@ You will need to set \f(CWCFLAGS = -O\fP in the generated Makefile.
 (The configure script sets it to \f(CWCFLAGS = -O2\fP.)
 This is because the code optimization breaks the fingerprints.
 If test 32 fails (see below) this is probably the reason.
+.PP
+.\" Jerry Pendergraft <jerry@endocardial.com> 26-Feb-2002
+There is a known problem with IRIX builds.
+You need to use the following configuration
+.RS
+# systune ncargs 0x8000
+.RE
+to increase the length of command lines.
+.\" And be thankful it isn't Windows.
 .PP
 By default,
 .I configure
@@ -338,7 +347,7 @@ AEGIS_USER_UID
 This is the owner of files used by
 .I aegis
 to record pointers to your projects.
-It is 
+It is
 .I not
 used to own projects (i.e. it must be less than AEGIS_MIN_UID).
 If possible, the
@@ -356,7 +365,7 @@ AEGIS_USER_GID
 This is the group of files used by
 .I aegis
 to record pointers to your projects.
-It is 
+It is
 .I not
 used as the group for projects (i.e. it must be less than AEGIS_MIN_GID).
 If possible, the
@@ -614,6 +623,8 @@ told to also look in \fI/usr/local/include\fP for include files (CFLAGS),
 and \fI/usr/local/lib\fP for library files (LDFLAGS).  Otherwise the
 \fI./configure\fP script will incorrecly conclude that GNU Gettext has
 not been installed.
+.PP
+GNU Gettext version 0.11.1 or later is recommended.
 .RE
 .TP 8n
 GNU Groff
@@ -631,7 +642,7 @@ bison
 This GNU software is a replacement for
 .IR yacc (1).
 Some systems have very sick yaccs,
-and 
+and
 .I bison
 may be necessary if your system include files
 disagree strongly with your system's yacc.
@@ -994,13 +1005,27 @@ They are not kept under the
 .I /usr/local/com/aegis
 directory,
 this directory only contains pointers.
+.SS Web Interface
+If you have a Web server, you may like to install the Aegis web interface.
+You do this by copying the \fIaegis.cgi\fP script from
+\fI/usr/local/bin/aegis.cgi\fP into your web server's \fIcgi-bin\fP directory.
+There is a \fIaegis.cgi.i\fP helper script,
+if you don't know where your web server's \fIcgi-bin\fP directory is.
 .PP
-If you have a Web server, and the \f(CWaegis.cgi\fP was installed, you
-can set its \fIAEGIS_PATH\fP environment variable, if you want it to be
-able to see more projects than just the global projects.  You do this by
-creating a \fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one,
-by default) and setting the \fIAEGIS_PATH\fP environment variable in it.
-This is a fragment of Bourne shell script, not just the name.
+You may prefer to use a symbolic link, as this will be more stable
+across Aegis upgrades.  However, this requires a corresponding
+\fIfollow-symlinks\fP setting in your web server's configuration file.
+(Use the \fIaegis.cgi.i \-s\fP option.)
+.PP
+Within the \f(CWaegis.cgi\fP script, can set the \fIAEGIS_PATH\fP
+environment variable, if you want it to be able to see more
+projects than just the global projects.  You do this by creating a
+\fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one, by default)
+and setting the \fIAEGIS_PATH\fP environment variable in it.  This is
+a fragment of Bourne shell script, not just the name.
+.PP
+The files mentioned here may be in a different place,
+if you specified a --prefix option.
 .br
 .ne 1i
 .SH PRINTED MANUALS

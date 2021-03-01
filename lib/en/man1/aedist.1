@@ -102,6 +102,8 @@ This is the default.
 .TP 8n
 \fB\-No_COmpress
 This option may be used to specify that the output is not to be compressed.
+.so o_cte.so
+.so o_delta.so
 .TP 8n
 \fB\-Description_Header\fP
 This option may be used to add an RFC 822 style header to the change
@@ -115,12 +117,19 @@ This option suppresses the description header.
 This option may be used to send the entire source of the project,
 as well as the change source files.
 .TP 8n
-\fB\-Not_Entire_Source\fP
+\fB\-Partial_Source\fP
 This option may be used to send only source files of a change.
 This is the default, except for the \fI\-BaseLine\fP option.
-.so o_cte.so
-.so o_delta.so
 .so o_output.so
+.TP 8n
+\fB\-PATch\fP
+This option may be used to add patches for modified files to the output,
+in addition to complete files sources.
+This is the deafult.
+.TP 8n
+\fB\-No_PATch\fP
+This option may be used to omit patches for modified files to the output.
+The result will contain only complete files sources.
 .so o_project.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
@@ -156,6 +165,15 @@ You may also use a delta name instead of a delta number.
 Read the change set from the specified file.
 The default is to read it from the standard input.
 The filename `-' is understood to mean the standard input.
+.TP 8n
+\fB\-PATch\fP
+This option may be used to apply patches from the input, if available.
+This generally results in fewer merge problems, but it requires the two
+repositories to be well synchnonised.
+This is the deafult.
+.TP 8n
+\fB\-No_PATch\fP
+This option may be used to ignore patches in the input, if any are present.
 .TP 8n
 \fB\-Project\fP \fIname\fP
 This option may be used to set the project name.
@@ -218,7 +236,7 @@ The more you use Aegis' test management facilities (see \&\fIaent\fP(1)
 and \&\fIaet\fP(1)) the harder it is for an inadequate change to get into
 the baseline.
 .SS "Duplicate Storms"
-In a distributed development environment, it is common for 
+In a distributed development environment, it is common for
 change sets to eventually be propagated back to the originator.
 There are situations (particularly in some star topologies)
 where several copies of the package will return to the originator.

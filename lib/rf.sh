@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999, 2000, 2001 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,10 @@ quit()
 #
 # build the notice to be mailed
 #
-cat > $tmp << 'TheEnd'
+cat > $tmp << TheEnd
+Subject: Project $project: Change $change: failed review
+To: $developer, $reviewer
+
 The change described below has failed review.
 It has been returned to the developer for further work.
 
@@ -66,7 +69,7 @@ if [ $? -ne 0 ]; then quit; fi
 #
 # mail it to the developer and the reviewer
 #
-mail -s "Project $project: Change $change: failed review" $developer $reviewer < $tmp
+/usr/lib/sendmail -t < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

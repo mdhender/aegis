@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
-#include <signal.h>
+#include <ac/signal.h>
 
 #include <arglex3.h>
 #include <env.h>
@@ -42,7 +42,7 @@ static void
 usage()
 {
 	char		*progname;
-	
+
 	progname = progname_get();
 	fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s --receive [ <option>... ]\n", progname);
@@ -73,7 +73,7 @@ main(argc, argv)
 	signal(SIGCLD, SIG_DFL);
 #endif
 
-	arglex3_init(argc, argv); 
+	arglex3_init(argc, argv);
 	str_initialize();
 	env_initialize();
 	language_init();

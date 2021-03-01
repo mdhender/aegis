@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,20 +51,26 @@
 
 wstring_ty *
 sub_capitalize(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	wstring_ty	*result;
+    wstring_ty	    *result;
 
-	trace(("sub_capitalize()\n{\n"/*}*/));
-	if (arg->nitems != 2)
-	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		result = 0;
-	}
-	else
-		result = wstr_capitalize(arg->item[1]);
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("sub_capitalize()\n{\n"/*}*/));
+    if (arg->nitems < 2)
+    {
+	sub_context_error_set(scp, i18n("requires one argument"));
+	result = 0;
+    }
+    else
+    {
+	wstring_ty	*ws;
+
+	ws = wstring_list_to_wstring(arg, 1, arg->nitems, 0);
+	result = wstr_capitalize(ws);
+	wstr_free(ws);
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace((/*{*/"}\n"));
+    return result;
 }

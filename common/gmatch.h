@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-int gmatch _((const char *, const char *));
+int gmatch(const char *, const char *);
 
 #endif /* COMMON_GMATCH_H */

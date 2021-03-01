@@ -21,7 +21,7 @@ typedef unsigned long wchar_t;
 #ifndef TYPEDEF_WINT_T
 #define TYPEDEF_WINT_T
 typedef unsigned long wint_t;
-#endif 
+#endif
 
 #ifndef NULL
 #define NULL 0

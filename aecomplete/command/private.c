@@ -1,0 +1,55 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: functions to manipulate privates
+ */
+
+#include <command/private.h>
+#include <error.h> /* for assert */
+#include <mem.h>
+
+
+command_ty *
+command_new(vptr)
+    command_vtbl_ty *vptr;
+{
+    command_ty      *this;
+
+    assert(vptr);
+    assert(vptr->size >= sizeof(command_ty));
+    this = mem_alloc(vptr->size);
+    this->vptr = vptr;
+    return this;
+}
+
+
+void
+command_delete(this)
+    command_ty      *this;
+{
+    assert(this);
+    if (this)
+    {
+	assert(this->vptr);
+	if (this->vptr && this->vptr->destructor)
+	    this->vptr->destructor(this);
+	this->vptr = 0;
+	mem_free(this);
+    }
+}

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,89 +25,87 @@
 #include <error.h>
 #include <pconf.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <trace.h>
 
 
 void
 change_attributes_default(a, pp, pc)
-	cattr		a;
-	project_ty	*pp;
-	pconf		pc;
+    cattr	    a;
+    project_ty	    *pp;
+    pconf	    pc;
 {
-	trace(("change_attributes_defaults(a = %08lX, pp = %08lX, pc = %08lX)\n{\n",
-		(long)a, (long)pp, (long)pc));
-	if
-	(
-		a->cause == change_cause_internal_improvement
-	||
-		a->cause == change_cause_external_improvement
-	)
-	{
-		if (!(a->mask & cattr_test_exempt_mask))
-		{
-			a->test_exempt = 1;
-			a->mask |= cattr_test_exempt_mask;
-		}
-		if (!(a->mask & cattr_test_baseline_exempt_mask))
-		{
-			a->test_baseline_exempt = 1;
-			a->mask |= cattr_test_baseline_exempt_mask;
-		}
-		if (!(a->mask & cattr_regression_test_exempt_mask))
-		{
-			a->regression_test_exempt = 0;
-			a->mask |= cattr_regression_test_exempt_mask;
-		}
-	}
-	else
-	{
-		if (!(a->mask & cattr_regression_test_exempt_mask))
-		{
-			a->regression_test_exempt = 1;
-			a->mask |= cattr_regression_test_exempt_mask;
-		}
-	}
+    trace(("change_attributes_defaults(a = %08lX, pp = %08lX, pc = %08lX)\n{\n",
+	(long)a, (long)pp, (long)pc));
+    if
+    (
+	a->cause == change_cause_internal_improvement
+    ||
+	a->cause == change_cause_external_improvement
+    )
+    {
 	if (!(a->mask & cattr_test_exempt_mask))
 	{
-		a->test_exempt = project_default_test_exemption_get(pp);
-		a->mask |= cattr_test_exempt_mask;
+	    a->test_exempt = 1;
+	    a->mask |= cattr_test_exempt_mask;
 	}
 	if (!(a->mask & cattr_test_baseline_exempt_mask))
 	{
-		a->test_baseline_exempt =
-			project_default_test_exemption_get(pp);
-		a->mask |= cattr_test_baseline_exempt_mask;
+	    a->test_baseline_exempt = 1;
+	    a->mask |= cattr_test_baseline_exempt_mask;
 	}
-
-	if (!a->architecture)
-		a->architecture =
-			(cattr_architecture_list)
-			cattr_architecture_list_type.alloc();
-	assert(pc->architecture);
-	assert(pc->architecture->length);
-	if (!a->architecture->length)
+	if (!(a->mask & cattr_regression_test_exempt_mask))
 	{
-		long		j;
-
-		for (j = 0; j < pc->architecture->length; ++j)
-		{
-			type_ty		*type_p;
-			string_ty	**str_p;
-			pconf_architecture pca;
-
-			pca = pc->architecture->list[j];
-			if (pca->mode != pconf_architecture_mode_required)
-				continue;
-			str_p =
-				cattr_architecture_list_type.list_parse
-				(
-					a->architecture,
-					&type_p
-				);
-			assert(type_p == &string_type);
-			*str_p = str_copy(pca->name);
-		}
+	    a->regression_test_exempt = 0;
+	    a->mask |= cattr_regression_test_exempt_mask;
 	}
-	trace(("}\n"));
+    }
+    else
+    {
+	if (!(a->mask & cattr_regression_test_exempt_mask))
+	{
+	    a->regression_test_exempt = 1;
+	    a->mask |= cattr_regression_test_exempt_mask;
+	}
+    }
+    if (!(a->mask & cattr_test_exempt_mask))
+    {
+	a->test_exempt = project_default_test_exemption_get(pp);
+	a->mask |= cattr_test_exempt_mask;
+    }
+    if (!(a->mask & cattr_test_baseline_exempt_mask))
+    {
+	a->test_baseline_exempt = project_default_test_exemption_get(pp);
+	a->mask |= cattr_test_baseline_exempt_mask;
+    }
+
+    if (!a->architecture)
+	a->architecture =
+	    (cattr_architecture_list)cattr_architecture_list_type.alloc();
+    assert(pc->architecture);
+    assert(pc->architecture->length);
+    if (!a->architecture->length)
+    {
+	long		j;
+
+	for (j = 0; j < pc->architecture->length; ++j)
+	{
+	    type_ty	    *type_p;
+	    string_ty	    **str_p;
+	    pconf_architecture pca;
+
+	    pca = pc->architecture->list[j];
+	    if (pca->mode != pconf_architecture_mode_required)
+		continue;
+	    str_p =
+		cattr_architecture_list_type.list_parse
+		(
+		    a->architecture,
+		    &type_p
+		);
+	    assert(type_p==&string_type);
+	    *str_p = str_copy(pca->name);
+	}
+    }
+    trace(("}\n"));
 }

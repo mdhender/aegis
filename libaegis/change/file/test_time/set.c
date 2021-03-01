@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ change_file_test_time_set(cp, src_data, when)
 	 * Find the appropriate architecture record;
 	 * create a new one if necessary.
 	 */
-	trace(("change_file_test_time_set(cp = %08lX)\n{\n"/*}*/, cp));
+	trace(("change_file_test_time_set(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	variant = change_architecture_name(cp, 1);
 	if (!src_data->architecture_times)
 		src_data->architecture_times =
@@ -73,7 +73,7 @@ change_file_test_time_set(cp, src_data, when)
 		atp = fstate_src_architecture_times_type.alloc();
 		*addr = atp;
 		atp->variant = str_copy(variant);
-	} 
+	}
 
 	/*
 	 * Remember the test time.

@@ -1,0 +1,120 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: functions to manipulate emitfilelists
+ */
+
+#include <shell.h>
+#include <str_list.h>
+#include <symtab.h>
+
+
+static size_t how_much_in_common _((string_ty *, string_ty *));
+
+static size_t
+how_much_in_common(s1, s2)
+    string_ty       *s1;
+    string_ty       *s2;
+{
+    size_t          n;
+    const char      *cp1;
+    const char      *cp2;
+
+    for
+    (
+	cp1 = s1->str_text, cp2 = s2->str_text, n = 0;
+	*cp1 && *cp2;
+	++n, ++cp1, ++cp2
+    )
+    {
+	if (*cp1 != *cp2)
+	    return n;
+    }
+    return n;
+}
+
+
+static string_ty *following_slash _((string_ty *, size_t));
+
+static string_ty *
+following_slash(s, len)
+    string_ty       *s;
+    size_t          len;
+{
+    for (;;)
+    {
+	if (s->str_length <= len)
+	    return str_copy(s);
+	if (s->str_text[len] == '/')
+	    return str_n_from_c(s->str_text, len + 1);
+	++len;
+    }
+}
+
+
+void
+shell_emit_file_list(sh, slp)
+    shell_ty        *sh;
+    string_list_ty  *slp;
+{
+    symtab_ty       *stp;
+    size_t          j;
+    size_t          longest;
+
+    /*
+     * Give up if nothing matches.
+     */
+    if (slp->nstrings == 0)
+	return;
+
+    /*
+     * Look for longest common prefix.
+     */
+    longest = slp->string[0]->str_length;
+    for (j = 1; j < slp->nstrings; ++j)
+    {
+	size_t          n;
+
+	n = how_much_in_common(slp->string[0], slp->string[j]);
+	if (n < longest)
+	    longest = n;
+    }
+
+    /*
+     * Rewrite the file names to only use from the longest common prefix
+     * to the following slash (or end of string if no slash).
+     * Use the symtab to make it an O(n) operation.
+     */
+    stp = symtab_alloc(slp->nstrings);
+    for (j = 0; j < slp->nstrings; ++j)
+    {
+	string_ty       *s;
+
+	s = following_slash(slp->string[j], longest);
+	if (symtab_query(stp, s))
+	{
+	    str_free(s);
+	    continue;
+	}
+	shell_emit(sh, s);
+	symtab_assign(stp, s, s);
+	str_free(s);
+    }
+    symtab_free(stp);
+}

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -170,7 +170,6 @@ that it may contain NUL characters.  It is essential that you have
 consistent presence or absence of the \-binary option for each file
 when combined with the \-CReate, \-Update, \-Conditional_\%Update and
 \-Extract options.  Failure to do so will produce inconsistent results.
-is unable to cope with binary files.
 .PP
 This means that you have to \fIalways\fP use the \-binary option in the
 \fIhistory_create_command\fP and \fIhistory_put_command\fP fields.  You
@@ -182,7 +181,7 @@ history_content_limitation = binary_capable;
 .E)
 .PP
 However, Aegis
-will transparently encode all such files, if you leave the
+would transparently encode all such files, if you leave the
 \fIhistory_\%content_\%limitation\fP field set for international text.
-In some cases, Aegis' encoding will be more efficient that fhist's.
+In some cases, Aegis' encoding will be more efficient than fhist's.
 And you have the advantage of being able to change your mind later.

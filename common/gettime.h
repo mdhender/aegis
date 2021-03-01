@@ -26,7 +26,7 @@
 #include <ac/time.h>
 #include <main.h>
 
-time_t date_scan _((char *));
-char *date_string _((time_t));
+time_t date_scan(char *);
+char *date_string(time_t);
 
 #endif /* COMMON_GETTIME_H */

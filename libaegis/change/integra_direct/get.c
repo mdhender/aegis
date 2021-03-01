@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ change_integration_directory_get(cp, resolve)
 	 * and any comparison of paths is done on this "system idea"
 	 * of the pathname.
 	 */
-	trace(("change_integration_directory_get(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_integration_directory_get(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	if (!cp->integration_directory_unresolved)
 	{
@@ -78,7 +78,7 @@ change_integration_directory_get(cp, resolve)
 		}
 		result = cp->integration_directory_resolved;
 	}
-	trace(("result = \"%s\"\n", result));
-	trace((/*{*/"}\n"));
+	trace(("result = \"%s\"\n", result->str_text));
+	trace(("}\n"));
 	return result;
 }

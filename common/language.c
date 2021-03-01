@@ -35,9 +35,9 @@
 
 enum state_ty
 {
-	state_uninitialized,
-	state_C,
-	state_human
+    state_uninitialized,
+    state_C,
+    state_human
 };
 typedef enum state_ty state_ty;
 
@@ -59,45 +59,45 @@ static state_ty state;
  */
 
 void
-language_init()
+language_init(void)
 {
-	char	*lib;
+    char	    *lib;
 
-	/*
-	 * Protect against multiple invokation.
-	 */
+    /*
+     * Protect against multiple invokation.
+     */
 #ifdef DEBUG
-	if (state != state_uninitialized)
-		fatal_raw("language_init() called more than once (bug)");
-	state = state_C;
+    if (state != state_uninitialized)
+	fatal_raw("language_init() called more than once (bug)");
+    state = state_C;
 #endif
 
-	/*
-	 * Default the error message language to English if not set.
-	 * Since we expect to be using GNU Gettext, only set the LANGUAGE
-	 * environment variable.
-	 */
-	if (!getenv("LANGUAGE") && !getenv("LANG"))
-		env_set("LANGUAGE", "en");
+    /*
+     * Default the error message language to English if not set.
+     * Since we expect to be using GNU Gettext, only set the LANGUAGE
+     * environment variable.
+     */
+    if (!getenv("LANGUAGE") && !getenv("LANG"))
+	env_set("LANGUAGE", "en");
 
-	/*
-	 * Set the locale to the default (as defined by the environment
-	 * variables) and set the message domain information.
-	 */
-	lib = getenv("AEGIS_MESSAGE_LIBRARY");
-	if (!lib || !*lib)
-		lib = configured_nlsdir();
+    /*
+     * Set the locale to the default (as defined by the environment
+     * variables) and set the message domain information.
+     */
+    lib = getenv("AEGIS_MESSAGE_LIBRARY");
+    if (!lib || !*lib)
+	lib = configured_nlsdir();
 #ifdef HAVE_SETLOCALE
 #ifdef HAVE_GETTEXT
-	setlocale(LC_ALL, "");
-	bindtextdomain(progname_get(), lib);
-	textdomain(progname_get());
+    setlocale(LC_ALL, "");
+    bindtextdomain(progname_get(), lib);
+    textdomain(progname_get());
 #endif /* HAVE_GETTEXT */
 
-	/*
-	 * set the main body of the program use use the C locale
-	 */
-	setlocale(LC_ALL, "C");
+    /*
+     * set the main body of the program use use the C locale
+     */
+    setlocale(LC_ALL, "C");
 #endif /* HAVE_SETLOCALE */
 }
 
@@ -118,29 +118,29 @@ language_init()
  */
 
 void
-language_human()
+language_human(void)
 {
 #ifdef DEBUG
-	switch (state)
-	{
-	case state_uninitialized:
-		fatal_raw("you must call language_init() in main (bug)");
+    switch (state)
+    {
+    case state_uninitialized:
+	fatal_raw("you must call language_init() in main (bug)");
 
-	case state_human:
-		fatal_raw("unbalanced language_human() call (bug)");
+    case state_human:
+	fatal_raw("unbalanced language_human() call (bug)");
 
-	case state_C:
-		break;
-	}
-	state = state_human;
+    case state_C:
+	break;
+    }
+    state = state_human;
 #endif
 #ifdef HAVE_SETLOCALE
 #ifdef HAVE_GETTEXT
-	/*
-	 * only need to flap the locale about like this
-	 * if we are using the gettext function
-	 */
-	setlocale(LC_ALL, "");
+    /*
+     * only need to flap the locale about like this
+     * if we are using the gettext function
+     */
+    setlocale(LC_ALL, "");
 #endif /* HAVE_GETTEXT */
 #endif /* HAVE_SETLOCALE */
 }
@@ -161,29 +161,29 @@ language_human()
  */
 
 void
-language_C()
+language_C(void)
 {
 #ifdef DEBUG
-	switch (state)
-	{
-	case state_uninitialized:
-		fatal_raw("you must call language_init() in main (bug)");
+    switch (state)
+    {
+    case state_uninitialized:
+	fatal_raw("you must call language_init() in main (bug)");
 
-	case state_C:
-		fatal_raw("unbalanced language_C() call (bug)");
+    case state_C:
+	fatal_raw("unbalanced language_C() call (bug)");
 
-	case state_human:
-		break;
-	}
-	state = state_C;
+    case state_human:
+	break;
+    }
+    state = state_C;
 #endif
 #ifdef HAVE_SETLOCALE
 #ifdef HAVE_GETTEXT
-	/*
-	 * only need to flap the locale about like this
-	 * if we are using the gettext function
-	 */
-	setlocale(LC_ALL, "C");
+    /*
+     * only need to flap the locale about like this
+     * if we are using the gettext function
+     */
+    setlocale(LC_ALL, "C");
 #endif /* HAVE_GETTEXT */
 #endif /* HAVE_SETLOCALE */
 }

@@ -24,32 +24,33 @@
 
 
 long
-skip_unlucky(n)
-	long		n;
+skip_unlucky(long n)
 {
-	long		mult;
+    long	    mult;
 
-	/*
-	 * Celtic tradition, I think.  Anyone know its origin?
-	 */
-	if (n == 13)
-		++n;
+    /*
+     * Celtic tradition, I think.  Anyone know its origin?
+     */
+    if (n == 13)
+	++n;
 
-	/*
-	 * Christian tradition: the number of the devil.
-	 */
-	if (n == 666)
-		++n;
+    /*
+     * Christian tradition: the number of the devil.
+     */
+    if (n == 666)
+	++n;
 
-	/*
-	 * Eastern tradition: the number ``4'' can sound like ``death''
-	 * if slightly mis-pronounced.
-	 */
-	for (mult = 1; mult < n; mult *= 10)
-	{
-		long fudge = n / mult;
-		if ((fudge % 10) == 4)
-			n = (fudge + 1) * mult;
-	}
-	return n;
+    /*
+     * Eastern tradition: the number ``4'' can sound like ``death''
+     * if slightly mis-pronounced.
+     */
+    for (mult = 1; mult < n; mult *= 10)
+    {
+	long            fudge;
+
+	fudge = n / mult;
+	if ((fudge % 10) == 4)
+    	    n = (fudge + 1) * mult;
+    }
+    return n;
 }

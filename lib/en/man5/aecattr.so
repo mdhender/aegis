@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1991-1994, 2002 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,11 @@
 .TP 8n
 description = string;
 .br
-This field contains a detailed description of the change. 
+This field contains a detailed description of the change.
 .TP 8n
 brief_description = string;
 .br
-This field contains a brief description of the change. 
+This field contains a brief description of the change.
 .TP 8n
 cause = ( ... );
 .br

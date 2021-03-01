@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2000, 2001 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2000-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,25 +23,25 @@
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
 
 columns({width = 1000;});
 print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("File Activity");
-print("</title></head><body><h1><center>");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 if (change_number_set())
 {
-	print("Project ``" ## quote_html(project_name()) ##
-		"'', Change " ## change_number() ## ",<br>");
+    print("Project ``" ## quote_html(project_name()) ##
+       	"'', Change " ## change_number() ## ",<br>");
 }
 else
 {
-	print("Project ``" ## quote_html(project_name()) ## "'',<br>");
+    print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 }
 print("File Activity");
-print("</center></h1>");
+print("</h1>");
 
 /*
  * get the project state
@@ -57,16 +57,16 @@ ps = ps_nobr.branch;
 auto file;
 if (count(arg) == 0)
 {
-	if (change_number_set())
-	{
-		for (file in ps.change[change_number()].src)
-			arg ##= file.file_name;
-	}
-	else
-	{
-		for (file in ps_nobr.src)
-			arg ##= file.file_name;
-	}
+    if (change_number_set())
+    {
+       	for (file in ps.change[change_number()].src)
+	    arg ##= file.file_name;
+    }
+    else
+    {
+       	for (file in ps_nobr.src)
+	    arg ##= file.file_name;
+    }
 }
 
 /*
@@ -77,59 +77,63 @@ auto active;
 active = {};
 for (cn in  keys(ps.change))
 {
-	cs = ps.change[cn];
-	if (cs.state < being_developed || cs.state >= completed)
-		continue;
-	for (file in cs.src)
-	{
-		if (!(file.file_name in arg))
-			continue;
-		if (file.usage == build && file.action == modify)
-			continue;
-		if (!(file.file_name in keys(active)))
-			active[file.file_name] = [];
-		auto developer, integrator;
-		developer = "";
-		integrator = "";
-		for (ch in cs.history)
-		{
-			if (ch.what == develop_begin)
-				developer = ch.who;
-			else if (ch.what == integrate_begin)
-				integrator = ch.who;
-			else if (ch.what == integrate_begin_undo)
-				integrator = "";
-			else if (ch.what == integrate_fail)
-				integrator = "";
-		}
-		active[file.file_name] ##=
-			{
-				usage = file.usage;
-				action = file.action;
-
-				edit =
-					(
-						file.edit_number_origin != ""
-					?
-						(
-							file.edit_number != ""
-						?
-			(file.edit_number_origin ## " -> " ## file.edit_number)
-						:
-							file.edit_number_origin
-						)
-					:
-						file.edit_number
-					);
-
-				who = (cs.state == being_developed ? developer
-					: cs.state == being_integrated
-					? integrator : "");
-				change = cn;
-				state = cs.state;
-				description = cs.brief_description;
-			};
+    cs = ps.change[cn];
+    if (cs.state < being_developed || cs.state >= completed)
+       	continue;
+    for (file in cs.src)
+    {
+       	if (!(file.file_name in arg))
+	    continue;
+       	if (file.usage == build && file.action == modify)
+	    continue;
+       	if (!(file.file_name in keys(active)))
+	    active[file.file_name] = [];
+	auto developer, integrator;
+       	developer = "";
+       	integrator = "";
+       	for (ch in cs.history)
+       	{
+	    if (ch.what == develop_begin)
+	     	developer = ch.who;
+	    else if (ch.what == integrate_begin)
+	     	integrator = ch.who;
+	    else if (ch.what == integrate_begin_undo)
+	     	integrator = "";
+	    else if (ch.what == integrate_fail)
+	     	integrator = "";
 	}
+       	active[file.file_name] ##=
+	    {
+		usage = file.usage;
+	     	action = file.action;
+	     	edit =
+		    (
+	    		file.edit_origin.revision != ""
+		    ?
+	    		(
+	       		    file.edit.revision != ""
+	    		?
+			    (file.edit_origin.revision ## " -> " ##
+				file.edit.revision)
+	    		:
+	       		    file.edit_origin.revision
+	    		)
+		    :
+	    		file.edit.revision
+		    );
+	     	who =
+		    (
+			cs.state == being_developed
+		    ?
+			developer
+		    :
+			(cs.state == being_integrated ? integrator : "")
+		    );
+	     	change = cn;
+	     	state = cs.state;
+	     	description = cs.brief_description;
+	    };
+    }
 }
 
 /*
@@ -137,78 +141,76 @@ for (cn in  keys(ps.change))
  */
 auto fn, num_active, email, long_name;
 num_active = 0;
-print("<dl>");
+print("<table align=center>");
 for (fn in sort(keys(active)))
 {
-	if (count(active[fn]) < 1)
-		continue;
+    if (count(active[fn]) < 1)
+       	continue;
 
-	print("<p><dt>");
-	auto href;
-	href = script_name ## "?file@file_menu+" ## quote_url(fn);
-	href ##= "+project@" ## quote_url(project_name());
-	print("<a href=\"" ## href ## "\">");
-	print("<tt>" ## quote_html(fn) ## "</tt></a>");
-	print("<dd>");
+    print("<tr><td colspan=8><br><p>");
+    auto href;
+    href = script_name ## "?file@file_menu+" ## quote_url(fn);
+    href ##= "+project@" ## quote_url(project_name());
+    print("<a href=\"" ## href ## "\">");
+    print("<tt>" ## quote_html(fn) ## "</tt></a>");
+    print("</td></tr>");
 
-	print("<table>");
-	print("<tr><th>Action</th><th>Type</th><th>Edit</th>");
-	print("<th>Change</th><th>State</th><th>Description</th></tr>");
+    print("<tr><th></th><th>Action</th><th>Type</th><th>Edit</th>");
+    print("<th>Change</th><th>State</th><th>Description</th></tr>");
 
-	++num_active;
-	auto actions, usages;
-	actions = "BS";
-	usages = "BS";
-	for (file in active[fn])
-	{
-		print("<tr><td valign=top>");
-		if (file.usage != usages)
-			print(file.usage);
-		print("</td><td valign=top>");
-		if (file.action != actions)
-			print(file.action);
-		print("</td><td valign=top align=right>");
-		print(file.edit);
-		print("</td><td valign=top align=right>");
-		href = script_name ## "?file@chan_menu";
-		href ##= "+project@" ## quote_url(project_name());
-		href ##= "+change@" ## file.change;
-		print("<a href=\"" ## href ## "\">");
-		print(file.change ## "</a>");
-		print("</td><td valign=top>");
-		print(file.state);
-		if (file.who != "")
-		{
-			email = file.who;
-			try { email = user[file.who].email_address; }
-			catch (email) { email = ""; }
-			if (email == "")
-				email = file.who;
-			print("<br><a href=\"mailto:" ## email ## "\"><i>");
-			long_name = file.who;
-			try { long_name = passwd[file.who].pw_comment; }
-			catch (long_name) { long_name = file.who; }
-			print(quote_html(long_name) ## "</i></a>");
-		}
-		print("</td><td valign=top>");
-		print(quote_html(file.description));
-		print("</td></tr>");
-		actions = file.action;
-		usages = file.usage;
-	}
-	print("</table>");
+    ++num_active;
+    auto actions, usages;
+    actions = "BS";
+    usages = "BS";
+    for (file in active[fn])
+    {
+       	print("<tr><td>&nbsp;&nbsp;</td><td valign=top>");
+       	if (file.usage != usages)
+	    print(file.usage);
+       	print("</td><td valign=top>");
+       	if (file.action != actions)
+	    print(file.action);
+       	print("</td><td valign=top align=right>");
+       	print(file.edit);
+       	print("</td><td valign=top align=right>");
+       	href = script_name ## "?file@chan_menu";
+       	href ##= "+project@" ## quote_url(project_name());
+       	href ##= "+change@" ## file.change;
+       	print("<a href=\"" ## href ## "\">");
+       	print(file.change ## "</a>");
+       	print("</td><td valign=top>");
+       	print(file.state);
+       	if (file.who != "")
+       	{
+	    email = file.who;
+	    try { email = user[file.who].email_address; }
+	    catch (email) { email = ""; }
+	    if (email == "")
+	     	email = file.who;
+	    print("<br><a href=\"mailto:" ## email ## "\"><i>");
+	    long_name = file.who;
+	    try { long_name = passwd[file.who].pw_comment; }
+	    catch (long_name) { long_name = file.who; }
+	    print(quote_html(long_name) ## "</i></a>");
+       	}
+       	print("</td><td valign=top>");
+       	print(quote_html(file.description));
+       	print("</td></tr>");
+       	actions = file.action;
+       	usages = file.usage;
+    }
 }
-print("</dl>");
+print("</table>");
 if (num_active == 1)
-	print("Listed one active file.");
+    print("Listed one active file.");
 else if (num_active)
-	print("Listed " ## num_active ## " active files.");
+    print("Listed " ## num_active ## " active files.");
 else
-	print("There are no active files in this project.");
+    print("There are no active files in this project.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with");
 print("<blockquote><tt>aer file_activ -p " ## quote_html(project_name()) ##
-	"</tt></blockquote>");
+    "</tt></blockquote>");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1999 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,10 @@
 This chapter has given an overview of what using Aegis feels like.
 As a next step in getting to know Aegis,
 it would be a good idea if you created a project and
-went through this same exercise;
-you could use this exact example,
+went through this same exercise.
+You could use this exact example,
 or you could use a similar small project.
-This idea simply to run through many of the same steps as in the example.
+The idea is simply to run through many of the same steps as in the example.
 Typos and other natural events will ensure that you come across
 a number of situations not directly covered by this chapter.
 .LP

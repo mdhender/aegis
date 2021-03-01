@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,341 +30,342 @@
 
 enum what_ty
 {
-	what_rename,
-	what_chmod,
-	what_chmod_errok,
-	what_unlink_errok,
-	what_rmdir_bg,
-	what_rmdir_errok,
-	what_message
+    what_rename,
+    what_chmod,
+    what_chmod_errok,
+    what_unlink_errok,
+    what_rmdir_bg,
+    what_rmdir_errok,
+    what_message
 };
 typedef enum what_ty what_ty;
 
 typedef struct action_ty action_ty;
 struct action_ty
 {
-	what_ty		what;
-	string_ty	*path1;
-	string_ty	*path2;
-	int		arg1;
-	int		arg2;
-	action_ty	*next;
-	int		uid;
-	int		gid;
-	int		umask;
+    what_ty	    what;
+    string_ty	    *path1;
+    string_ty	    *path2;
+    int		    arg1;
+    int		    arg2;
+    action_ty	    *next;
+    int		    uid;
+    int		    gid;
+    int		    umask;
 };
 
-static	action_ty	*head;
+static action_ty *head;
 
 
 static action_ty *newlink _((what_ty));
 
 static action_ty *
 newlink(what)
-	what_ty		what;
+    what_ty	    what;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	trace(("undo::newlink(what = %d)\n{\n"/*}*/, what));
-	new = (action_ty *)mem_alloc(sizeof(action_ty));
-	new->what = what;
-	new->next = head;
-	new->path1 = 0;
-	new->path2 = 0;
-	new->arg1 = 0;
-	new->arg2 = 0;
-	os_become_query(&new->uid, &new->gid, &new->umask);
-	head = new;
-	trace(("return %08lX;\n", new));
-	trace((/*{*/"}\n"));
-	return new;
+    trace(("undo::newlink(what = %d)\n{\n", what));
+    new = (action_ty *)mem_alloc(sizeof(action_ty));
+    new->what = what;
+    new->next = head;
+    new->path1 = 0;
+    new->path2 = 0;
+    new->arg1 = 0;
+    new->arg2 = 0;
+    os_become_query(&new->uid, &new->gid, &new->umask);
+    head = new;
+    trace(("return %08lX;\n", (long)new));
+    trace(("}\n"));
+    return new;
 }
 
 
 void
 undo_rename(from, to)
-	string_ty	*from;
-	string_ty	*to;
+    string_ty	    *from;
+    string_ty	    *to;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	trace(("undo_rename(from = %08lX, to = %08lX)\n{\n"/*}*/, from, to));
-	trace_string(from->str_text);
-	trace_string(to->str_text);
-	new = newlink(what_rename);
-	new->path1 = str_copy(from);
-	new->path2 = str_copy(to);
-	os_interrupt_cope();
-	trace((/*{*/"}\n"));
+    trace(("undo_rename(from = %08lX, to = %08lX)\n{\n", (long)from, (long)to));
+    trace_string(from->str_text);
+    trace_string(to->str_text);
+    new = newlink(what_rename);
+    new->path1 = str_copy(from);
+    new->path2 = str_copy(to);
+    os_interrupt_cope();
+    trace(("}\n"));
 }
 
 
 void
 undo_chmod(path, mode)
-	string_ty	*path;
-	int		mode;
+    string_ty	    *path;
+    int		    mode;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	mode &= 07777;
-	trace(("undo_chmod(path = %08lX, mode = %05o)\n{\n"/*}*/, path, mode));
-	trace_string(path->str_text);
-	new = newlink(what_chmod);
-	new->path1 = str_copy(path);
-	new->arg1 = mode;
-	os_interrupt_cope();
-	trace((/*{*/"}\n"));
+    mode &= 07777;
+    trace(("undo_chmod(path = %08lX, mode = %05o)\n{\n", (long)path, mode));
+    trace_string(path->str_text);
+    new = newlink(what_chmod);
+    new->path1 = str_copy(path);
+    new->arg1 = mode;
+    os_interrupt_cope();
+    trace(("}\n"));
 }
 
 
 void
 undo_chmod_errok(path, mode)
-	string_ty	*path;
-	int		mode;
+    string_ty	    *path;
+    int		    mode;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	mode &= 07777;
-	trace(("undo_chmod_errok(path = %08lX, mode = %05o)\n{\n"/*}*/, path, mode));
-	trace_string(path->str_text);
-	new = newlink(what_chmod_errok);
-	new->path1 = str_copy(path);
-	new->arg1 = mode;
-	os_interrupt_cope();
-	trace((/*{*/"}\n"));
+    mode &= 07777;
+    trace(("undo_chmod_errok(path = %08lX, mode = %05o)\n{\n", (long)path,
+	mode));
+    trace_string(path->str_text);
+    new = newlink(what_chmod_errok);
+    new->path1 = str_copy(path);
+    new->arg1 = mode;
+    os_interrupt_cope();
+    trace(("}\n"));
 }
 
 
 void
 undo_unlink_errok(path)
-	string_ty	*path;
+    string_ty	    *path;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	trace(("undo_unlink_errok(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	new = newlink(what_unlink_errok);
-	new->path1 = str_copy(path);
-	os_interrupt_cope();
-	trace((/*{*/"}\n"));
+    trace(("undo_unlink_errok(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    new = newlink(what_unlink_errok);
+    new->path1 = str_copy(path);
+    os_interrupt_cope();
+    trace(("}\n"));
 }
 
 
 void
 undo_message(path)
-	string_ty	*path;
+    string_ty	    *path;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	trace(("undo_message(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	new = newlink(what_message);
-	new->path1 = str_copy(path);
-	trace((/*{*/"}\n"));
+    trace(("undo_message(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    new = newlink(what_message);
+    new->path1 = str_copy(path);
+    trace(("}\n"));
 }
 
 
 void
 undo_rmdir_bg(path)
-	string_ty	*path;
+    string_ty	    *path;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	trace(("undo_rmdir_bg(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	new = newlink(what_rmdir_bg);
-	new->path1 = str_copy(path);
-	os_interrupt_cope();
-	trace((/*{*/"}\n"));
+    trace(("undo_rmdir_bg(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    new = newlink(what_rmdir_bg);
+    new->path1 = str_copy(path);
+    os_interrupt_cope();
+    trace(("}\n"));
 }
 
 
 void
 undo_rmdir_errok(path)
-	string_ty	*path;
+    string_ty	    *path;
 {
-	action_ty	*new;
+    action_ty	    *new;
 
-	trace(("undo_rmdir_errok(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	new = newlink(what_rmdir_errok);
-	new->path1 = str_copy(path);
-	os_interrupt_cope();
-	trace((/*{*/"}\n"));
+    trace(("undo_rmdir_errok(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    new = newlink(what_rmdir_errok);
+    new->path1 = str_copy(path);
+    os_interrupt_cope();
+    trace(("}\n"));
 }
 
 
 void
 undo()
 {
-	sub_context_ty	*scp;
-	static int	count;
-	action_ty	*ap;
+    sub_context_ty  *scp;
+    static int	    count;
+    action_ty	    *ap;
 
-	trace(("undo()\n{\n"/*}*/));
-	++count;
-	switch (count)
+    trace(("undo()\n{\n"));
+    ++count;
+    switch (count)
+    {
+    case 1:
+	while (os_become_active())
+	    os_become_undo();
+	while (head)
 	{
-	case 1:
-		while (os_become_active())
-			os_become_undo();
-		while (head)
-		{
-			/*
-			 * Take the first item off the list.
-			 */
-			ap = head;
-			head = ap->next;
-	
-			/*
-			 * Do the action
-			 */
-			trace(("ap = %08lX;\n", ap));
-			os_become(ap->uid, ap->gid, ap->umask);
-			switch (ap->what)
-			{
-			case what_rename:
-				os_rename(ap->path1, ap->path2);
-				break;
+	    /*
+	     * Take the first item off the list.
+	     */
+	    ap = head;
+	    head = ap->next;
 
-			case what_chmod:
-				os_chmod(ap->path1, ap->arg1);
-				break;
-
-			case what_chmod_errok:
-				os_chmod_errok(ap->path1, ap->arg1);
-				break;
-
-			case what_unlink_errok:
-				os_unlink_errok(ap->path1);
-				break;
-	
-			case what_rmdir_bg:
-				os_rmdir_bg(ap->path1);
-				break;
-	
-			case what_rmdir_errok:
-				os_rmdir_errok(ap->path1);
-				break;
-	
-			case what_message:
-				scp = sub_context_new();
-				sub_var_set_string(scp, "Message", ap->path1);
-				error_intl(scp, i18n("$message"));
-				sub_context_delete(scp);
-				break;
-			}
-			os_become_undo();
-	
-			/*
-			 * Free the list element.
-			 */
-			str_free(ap->path1);
-			if (ap->path2)
-				str_free(ap->path2);
-			mem_free((char *)ap);
-		}
+	    /*
+	     * Do the action
+	     */
+	    trace(("ap = %08lX;\n", (long)ap));
+	    os_become(ap->uid, ap->gid, ap->umask);
+	    switch (ap->what)
+	    {
+	    case what_rename:
+		os_rename(ap->path1, ap->path2);
 		break;
 
-	case 2:
+	    case what_chmod:
+		os_chmod(ap->path1, ap->arg1);
+		break;
+
+	    case what_chmod_errok:
+		os_chmod_errok(ap->path1, ap->arg1);
+		break;
+
+	    case what_unlink_errok:
+		os_unlink_errok(ap->path1);
+		break;
+
+	    case what_rmdir_bg:
+		os_rmdir_bg(ap->path1);
+		break;
+
+	    case what_rmdir_errok:
+		os_rmdir_errok(ap->path1);
+		break;
+
+	    case what_message:
 		scp = sub_context_new();
-		error_intl(scp, i18n("fatal error during fatal error recovery"));
+		sub_var_set_string(scp, "Message", ap->path1);
+		error_intl(scp, i18n("$message"));
 		sub_context_delete(scp);
-		while (head)
-		{
-			ap = head;
-			head = ap->next;
-			switch (ap->what)
-			{
-			case what_rename:
-				scp = sub_context_new();
-				sub_var_set_string(scp, "File_Name1", ap->path1);
-				sub_var_set_string(scp, "File_Name2", ap->path2);
-				error_intl(scp, i18n("unfinished: mv $filename1 $filename2"));
-				sub_context_delete(scp);
-				break;
-
-			case what_chmod:
-			case what_chmod_errok:
-				scp = sub_context_new();
-				sub_var_set_format(scp, "Argument", "%05o", ap->arg1);
-				sub_var_set_string(scp, "File_Name", ap->path1);
-				error_intl(scp, i18n("unfinished: chmod $arg $filename"));
-				sub_context_delete(scp);
-				break;
-
-			case what_unlink_errok:
-				scp = sub_context_new();
-				sub_var_set_string(scp, "File_Name", ap->path1);
-				error_intl(scp, i18n("unfinished: rm $filename"));
-				sub_context_delete(scp);
-				break;
-
-			case what_rmdir_bg:
-			case what_rmdir_errok:
-				scp = sub_context_new();
-				sub_var_set_string(scp, "File_Name", ap->path1);
-				error_intl(scp, i18n("unfinished: rmdir $filename"));
-				sub_context_delete(scp);
-				break;
-
-			case what_message:
-				scp = sub_context_new();
-				sub_var_set_string(scp, "Message", ap->path1);
-				error_intl(scp, i18n("$message"));
-				sub_context_delete(scp);
-				break;
-			}
-	
-			/*
-			 * Free the list element.
-			 */
-			str_free(ap->path1);
-			if (ap->path2)
-				str_free(ap->path2);
-			mem_free((char *)ap);
-		}
 		break;
+	    }
+	    os_become_undo();
 
-	default:
-		/* probably an error writing stderr */
-		break;
+	    /*
+	     * Free the list element.
+	     */
+	    str_free(ap->path1);
+	    if (ap->path2)
+		str_free(ap->path2);
+	    mem_free((char *)ap);
 	}
-	--count;
-	trace((/*{*/"}\n"));
+	break;
+
+    case 2:
+	scp = sub_context_new();
+	error_intl(scp, i18n("fatal error during fatal error recovery"));
+	sub_context_delete(scp);
+	while (head)
+	{
+	    ap = head;
+	    head = ap->next;
+	    switch (ap->what)
+	    {
+	    case what_rename:
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name1", ap->path1);
+		sub_var_set_string(scp, "File_Name2", ap->path2);
+		error_intl(scp, i18n("unfinished: mv $filename1 $filename2"));
+		sub_context_delete(scp);
+		break;
+
+	    case what_chmod:
+	    case what_chmod_errok:
+		scp = sub_context_new();
+		sub_var_set_format(scp, "Argument", "%05o", ap->arg1);
+		sub_var_set_string(scp, "File_Name", ap->path1);
+		error_intl(scp, i18n("unfinished: chmod $arg $filename"));
+		sub_context_delete(scp);
+		break;
+
+	    case what_unlink_errok:
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", ap->path1);
+		error_intl(scp, i18n("unfinished: rm $filename"));
+		sub_context_delete(scp);
+		break;
+
+	    case what_rmdir_bg:
+	    case what_rmdir_errok:
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", ap->path1);
+		error_intl(scp, i18n("unfinished: rmdir $filename"));
+		sub_context_delete(scp);
+		break;
+
+	    case what_message:
+		scp = sub_context_new();
+		sub_var_set_string(scp, "Message", ap->path1);
+		error_intl(scp, i18n("$message"));
+		sub_context_delete(scp);
+		break;
+	    }
+
+	    /*
+	     * Free the list element.
+	     */
+	    str_free(ap->path1);
+	    if (ap->path2)
+		str_free(ap->path2);
+	    mem_free((char *)ap);
+	}
+	break;
+
+    default:
+	/* probably an error writing stderr */
+	break;
+    }
+    --count;
+    trace(("}\n"));
 }
 
 
 void
 undo_quitter(n)
-	int	n;
+    int		    n;
 {
-	if (n)
-		undo();
+    if (n)
+	undo();
 }
 
 
 void
 undo_cancel()
 {
-	action_ty	*ap;
+    action_ty	    *ap;
 
-	trace(("undo_cancel()\n{\n"/*}*/));
-	while (head)
-	{
-		/*
-		 * Take the first item off the list.
-		 */
-		ap = head;
-		head = ap->next;
+    trace(("undo_cancel()\n{\n"));
+    while (head)
+    {
+	/*
+	 * Take the first item off the list.
+	 */
+	ap = head;
+	head = ap->next;
 
-		/*
-		 * Free the list element.
-		 */
-		str_free(ap->path1);
-		if (ap->path2)
-			str_free(ap->path2);
-		mem_free((char *)ap);
-	}
-	trace((/*{*/"}\n"));
+	/*
+	 * Free the list element.
+	 */
+	str_free(ap->path1);
+	if (ap->path2)
+	    str_free(ap->path2);
+	mem_free((char *)ap);
+    }
+    trace(("}\n"));
 }

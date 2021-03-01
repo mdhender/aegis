@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991-1998, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -234,7 +234,7 @@ cc_include_flags = [prepost "-I" "" [search_list]];
 	[cc] [cc_include_flags] [cc_flags]
 		-c [resolve %.c];
 }
-	
+
 /*
  * How to use yacc sources.
  */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,35 +25,17 @@
 #include <str.h>
 
 
-/*
- * NAME
- *	str_bool - get boolean value
- *
- * SYNOPSIS
- *	int str_bool(string_ty *s);
- *
- * DESCRIPTION
- *	The str_bool function is used to determine the boolean value of the
- *	given string.  A "false" result is if the string is empty or
- *	0 or blank, and "true" otherwise.
- *
- * RETURNS
- *	int: zero to indicate a "false" result, nonzero to indicate a "true"
- *	result.
- */
-
 int
-str_bool(s)
-	string_ty	*s;
+str_bool(string_ty *s)
 {
-	char		*cp;
+    char		*cp;
 
-	cp = s->str_text;
-	while (*cp)
-	{
-		if (!isspace((unsigned char)*cp) && *cp != '0')
-			return 1;
-		++cp;
-	}
-	return 0;
+    cp = s->str_text;
+    while (*cp)
+    {
+	if (!isspace((unsigned char)*cp) && *cp != '0')
+    	    return 1;
+	++cp;
+    }
+    return 0;
 }

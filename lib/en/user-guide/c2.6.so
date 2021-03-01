@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -82,7 +82,7 @@ you have much less merging to do at the end of your change set.  Each
 integration will typically be be modest, but the cumulative effect could
 be substantial, and add a huge unexpected (and un-budgeted for) time penalty.
 .LP
-However, it also means that if there are integration problems between
+It also means that if there are integration problems between
 your work and the changes which were integrated before yours, or if
 your work shows up a bug in their work, the project find this out late, rather
 than early.  The literature, based on industrial experience, indicates
@@ -117,7 +117,7 @@ you are implementing.
 .LP
 Because Aegis insists on atomic change sets which are known to build
 and test successfully, such a partial check-in is not allowed - because
-Aegis can't know for certain.
+Aegis can't know for certain that it works.
 .LP
 Instead, you are able to \fIclone\fP a change (see \fIaeclone\fP(1) for
 more information).  This gives you a new change, and a second development

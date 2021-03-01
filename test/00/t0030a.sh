@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995-2001 Peter Miller;
+#	Copyright (C) 1995-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -312,6 +312,7 @@ branch =
 		"USER",
 	];
 	reuse_change_numbers = true;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi

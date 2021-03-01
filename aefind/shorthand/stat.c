@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,7 @@ shorthand_atime(cmp, n, units)
 	vp7 = rpt_value_integer(n);
 	tp7 = tree_constant_new(vp7);
 	rpt_value_free(vp7);
-	
+
 	/* (now - atime({})) / units == n */
 	result = cmp(tp6, tp7);
 	tree_delete(tp6);
@@ -143,7 +143,7 @@ shorthand_ctime(cmp, n, units)
 	vp7 = rpt_value_integer(n);
 	tp7 = tree_constant_new(vp7);
 	rpt_value_free(vp7);
-	
+
 	/* (now - ctime({})) / units == n */
 	result = cmp(tp6, tp7);
 	tree_delete(tp6);
@@ -178,7 +178,7 @@ shorthand_gid(cmp, n)
 	vp3 = rpt_value_integer(n);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* gid({}) == n */
 	result = cmp(tp2, tp3);
 	tree_delete(tp2);
@@ -213,7 +213,7 @@ shorthand_ino(cmp, n)
 	vp3 = rpt_value_integer(n);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* ino({}) == n */
 	result = cmp(tp2, tp3);
 	tree_delete(tp2);
@@ -247,7 +247,7 @@ shorthand_mode(n)
 	vp3 = rpt_value_integer(n);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* mode({}) == n */
 	result = tree_eq_new(tp2, tp3);
 	tree_delete(tp2);
@@ -306,7 +306,7 @@ shorthand_mtime(cmp, n, units)
 	vp7 = rpt_value_integer(n);
 	tp7 = tree_constant_new(vp7);
 	rpt_value_free(vp7);
-	
+
 	/* (now - mtime({})) / units == n */
 	result = cmp(tp6, tp7);
 	tree_delete(tp6);
@@ -384,7 +384,7 @@ shorthand_nlink(cmp, n)
 	vp3 = rpt_value_integer(n);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* nlink({}) == n */
 	result = cmp(tp2, tp3);
 	tree_delete(tp2);
@@ -419,7 +419,7 @@ shorthand_size(cmp, n)
 	vp3 = rpt_value_integer(n);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* size({}) == n */
 	result = cmp(tp2, tp3);
 	tree_delete(tp2);
@@ -454,7 +454,7 @@ shorthand_uid(cmp, n)
 	vp3 = rpt_value_integer(n);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* uid({}) == n */
 	result = cmp(tp2, tp3);
 	tree_delete(tp2);
@@ -538,7 +538,7 @@ shorthand_type(abbrev)
 	str_free(name);
 	tp3 = tree_constant_new(vp3);
 	rpt_value_free(vp3);
-	
+
 	/* type({}) == name */
 	result = tree_eq_new(tp2, tp3);
 	tree_delete(tp2);

@@ -1,5 +1,5 @@
 /*
- *	aegis cgi script 
+ *	aegis cgi script
  *	Copyright (C) 2002 John Darrington
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- *  print a command which when executed shows the  differerences between 
- *  2 deltas
+ * MANIFEST: print a command which when executed shows the differerences
+ *	between two deltas
  */
 
 /* one column 1000 chars wide */
@@ -32,7 +32,6 @@ delta2 = arg[1];
 src = arg[2];
 dst1 = arg[3];
 dst2 = arg[4];
-
 
 /* If delta1 and delta2 are non numeric, truncate them to 1 char long */
 delta1 = subst("[^0-9]+", substr(delta1, 0, 1), delta1);
@@ -83,16 +82,16 @@ if (delta1 == "c" || delta2 == "c")
 auto cmd;
 
 if (delta1 == "c")
-    cmd = "ln -s " ## devdir ## "/" ## src ## " " ## dst1 ;
+    cmd = "ln -s " ## devdir ## "/" ## src ## " " ## dst1;
 else
     cmd = "$bindir/aegis -cp -ind -baserel -p " ## project_name() ## " " ##
-	first ## " " ## src ## " -o " ## dst1 ;
+	first ## " " ## src ## " -o " ## dst1;
 cmd ##= " && ";
 if (delta2 == "c")
-	cmd ##= "ln -s " ## devdir ## "/" ## src ## " " ## dst2 ;
+	cmd ##= "ln -s " ## devdir ## "/" ## src ## " " ## dst2;
 else
 	cmd ##= "$bindir/aegis -cp -ind -baserel -p " ## project_name() ## " "
-	    ## second ## " " ## src ## " -o " ## dst2 ;
-cmd ##= " && diff " ## dst1 ## " " ## dst2 ## "; ";
-cmd ##= "rm -f " ## dst1 ## " " ## dst2  ;
+	    ## second ## " " ## src ## " -o " ## dst2;
+cmd ##= " && ae_diff2htm " ## dst1 ## " " ## dst2 ## "; ";
+cmd ##= "rm -f " ## dst1 ## " " ## dst2;
 print(cmd);

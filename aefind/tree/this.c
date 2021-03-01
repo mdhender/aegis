@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include <aer/value/string.h>
 #include <error.h> /* for assert */
 #include <str.h>
+#include <trace.h>
 #include <tree/this.h>
 #include <tree/private.h>
 
@@ -33,8 +34,9 @@ static void destructor _((tree_ty *));
 
 static void
 destructor(tp)
-	tree_ty		*tp;
+    tree_ty	    *tp;
 {
+    trace(("tree::this::destructor\n"));
 }
 
 
@@ -42,9 +44,10 @@ static void print _((tree_ty *));
 
 static void
 print(tp)
-	tree_ty		*tp;
+    tree_ty	    *tp;
 {
-	printf("{}");
+    trace(("tree::this::destructor\n"));
+    printf("{}");
 }
 
 
@@ -52,12 +55,13 @@ static rpt_value_ty *evaluate _((tree_ty *, string_ty *, struct stat *));
 
 static rpt_value_ty *
 evaluate(tp, path, st)
-	tree_ty		*tp;
-	string_ty	*path;
-	struct stat	*st;
+    tree_ty	    *tp;
+    string_ty	    *path;
+    struct stat     *st;
 {
-	assert(path);
-	return rpt_value_string(path);
+    assert(path);
+    trace(("tree::this::evaluate\n"));
+    return rpt_value_string(path);
 }
 
 
@@ -65,9 +69,10 @@ static int useful _((tree_ty *));
 
 static int
 useful(tp)
-	tree_ty		*tp;
+    tree_ty	    *tp;
 {
-	return 0;
+    trace(("tree::this::useful\n"));
+    return 0;
 }
 
 
@@ -75,27 +80,28 @@ static int constant _((tree_ty *));
 
 static int
 constant(tp)
-	tree_ty		*tp;
+    tree_ty	    *tp;
 {
-	return 0;
+    trace(("tree::this::constant\n"));
+    return 0;
 }
 
 
 static tree_method_ty method =
 {
-	sizeof(tree_ty),
-	"this",
-	destructor,
-	print,
-	evaluate,
-	useful,
-	constant,
-	0, /* optimize */
+    sizeof(tree_ty),
+    "this",
+    destructor,
+    print,
+    evaluate,
+    useful,
+    constant,
+    0, /* optimize */
 };
 
 
 tree_ty *
 tree_this_new()
 {
-	return tree_new(&method);
+    return tree_new(&method);
 }

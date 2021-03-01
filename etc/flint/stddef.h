@@ -1,6 +1,6 @@
-//
-// Minimum correct ANSI C header.
-//
+/*
+ * Minimum correct ANSI C header.
+ */
 #ifndef ETC_FLINT_STDDEF_H
 #define ETC_FLINT_STDDEF_H
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <change/env_set.h>
 #include <error.h> /* for assert */
 #include <os.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -44,7 +44,7 @@ change_run_project_file_command(cp, up)
 	/*
 	 * make sure are sync'ed with project
 	 */
-	trace(("change_run_project_file_command(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_run_project_file_command(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	cstate_data = change_cstate_get(cp);
 	if
@@ -90,5 +90,5 @@ change_run_project_file_command(cp, up)
 	 * here for all exits
 	 */
 	done:
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

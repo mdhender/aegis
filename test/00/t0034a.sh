@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998, 2000 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -143,7 +143,7 @@ brief_description = "one";
 cause = internal_bug;
 end
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -new_change 1 -f $tmp -project foo -lib $worklib 
+$bin/aegis -new_change 1 -f $tmp -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #

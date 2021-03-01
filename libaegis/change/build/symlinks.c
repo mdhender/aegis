@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,37 @@ struct slink_info_ty
 static string_ty *dot;
 
 
+static void os_symlink_repair _((string_ty *, string_ty	*));
+
+static void
+os_symlink_repair(value, filename)
+    string_ty	*filename;
+    string_ty	*value;
+{
+    string_ty   *s;
+
+    /*
+     * Most of the time, this results in one system call, because the
+     * symlinks already exist.
+     *
+     * Only rarely will it result in 3 system calls.
+     *
+     * The case for creating new links takes a different code path, and
+     * never enters this function.  It, too, only uses one system call.
+     */
+    s = os_readlink(filename);
+    trace(("readlink \"%s\" -> \"%s\"\n", filename->str_text, s->str_text));
+    if (!str_equal(s, value))
+    {
+	trace(("rm \"%s\"\n", filename->str_text));
+	os_unlink(filename);
+	trace(("ln -s \"%s\" \"%s\"\n", value->str_text, filename->str_text));
+	os_symlink(value, filename);
+    }
+    str_free(s);
+}
+
+
 /*
  * NAME
  *	maintain
@@ -69,26 +100,32 @@ static string_ty *dot;
  */
 
 static void maintain _((void *, dir_stack_walk_message_t, string_ty *,
-    struct stat *, int));
+    struct stat *, int, int));
 
 static void
-maintain(p, msg, path, st, depth)
-    void             *p;
+maintain(p, msg, path, st, depth, ignore_symlinks)
+    void            *p;
     dir_stack_walk_message_t msg;
-    string_ty        *path;
-    struct stat      *st;
-    int              depth;
+    string_ty       *path;
+    struct stat     *st;
+    int             depth;
+    int             ignore_symlinks;
 {
-    slink_info_ty    *sip;
-    string_ty        *dd_abs;
-    long             j;
+    slink_info_ty   *sip;
+    string_ty       *dd_abs;
+    long            j;
     pconf_symlink_exceptions_list lp;
-    fstate_src       c_src;
-    fstate_src       p_src;
-    int              p_src_set;
-    string_ty        *s;
+    fstate_src      p_src;
+    int             p_src_set;
+    string_ty       *s;
+    string_ty       *s2;
+    int             top_level_symlink;
 
-    trace(("maintain(path = \"%s\")\n{\n", path->str_text));
+    trace(("maintain(path = \"%s\", depth = %d)\n{\n", path->str_text,
+	depth & ~TOP_LEVEL_SYMLINK));
+    top_level_symlink = !!(depth & TOP_LEVEL_SYMLINK);
+    trace(("top_level_symlink = %d\n", top_level_symlink));
+    depth &= ~TOP_LEVEL_SYMLINK;
     sip = p;
     dd_abs = os_path_cat(sip->stack.string[0], path);
     p_src = 0;
@@ -96,21 +133,53 @@ maintain(p, msg, path, st, depth)
     switch (msg)
     {
     case dir_stack_walk_dir_before:
+	trace(("dir before\n"));
 	if (depth)
+	{
+	    /*
+	     * Create a top level directory to hold symlinks.
+	     */
+	    if (top_level_symlink)
+		os_unlink(dd_abs);
 	    os_mkdir(dd_abs, 02755);
+	}
 	break;
 
     case dir_stack_walk_dir_after:
+	trace(("dir after\n"));
 	break;
 
     case dir_stack_walk_symlink:
 	/*
-	 * Ignore symlinks that aren't in the development
-	 * directory.  They can't be source files, so the build
-	 * created them, and we will let it create them again.
+	 * We were invoked with the argument specifying that symbolic
+	 * links were to be ignored.  In order to get to here, there
+	 * is a symlink in the viewpath no non-symlink file of the same
+	 * name ANYWHERE in the view path.
+	 *
+	 * Also, it will be the first symlink encountered.  Usually in the
+	 * development directory.  Further investigation isn't very useful.
 	 */
-	if (depth)
+	assert(ignore_symlinks);
+
+	/*
+	 * Leave unique top-level symlinks alone.
+	 */
+	trace(("symlink\n"));
+	if (!depth)
+	{
+	    trace(("no attention required\n"));
 	    break;
+	}
+
+	/*
+	 * Don't make symlinks for files which are (supposed to
+	 * be) in the change.
+	 */
+	if (change_file_find(sip->cp, path))
+	{
+	    trace(("mark\n"));
+	    break;
+	}
 
 	/*
 	 * The minimum option says to only maintain links to
@@ -118,93 +187,37 @@ maintain(p, msg, path, st, depth)
 	 * project source file, so don't maintain it.
 	 */
 	if (sip->minimum)
-	    break;
-
-	/*
-	 * Remove the symlink if the file has been removed.
-	 */
-	user_become_undo();
-	c_src = change_file_find(sip->cp, path);
-	user_become(sip->up);
-	if (c_src && (c_src->deleted_by || c_src->about_to_be_created_by))
 	{
-	    os_unlink(dd_abs);
-	    break;
-	}
-	user_become_undo();
-	p_src = project_file_find(sip->cp->pp, path);
-	p_src_set = 1;
-	user_become(sip->up);
-	if
-	(
-	    p_src
-	&&
-	    (
-	        p_src->action == file_action_remove
-	    ||
-	        p_src->deleted_by
-	    ||
-		p_src->about_to_be_created_by
-	    )
-	)
-	{
-	    os_unlink(dd_abs);
+	    trace(("minimum\n"));
 	    break;
 	}
 
 	/*
-	 * Read the link, and make sure it points to the right
-	 * place.  We only maintain source files.  Derived files
-	 * will need to fixed by the build system.
+	 * avoid the symlink exceptions
 	 */
-	if (!c_src && p_src)
+	trace(("mark\n"));
+	lp = sip->pconf_data->symlink_exceptions;
+	assert(lp);
+	for (j = 0; j < lp->length; ++j)
 	{
-	    string_ty *dest_wanted;
-	    string_ty *dest_actual;
-
-	    dest_wanted = project_file_path(sip->cp->pp, path);
-	    dest_actual = os_readlink(dd_abs);
-	    if (!str_equal(dest_wanted, dest_actual))
-	    {
-		os_unlink(dd_abs);
-		trace(("os_symlink(\"%s\", \"%s\")\n", dest_wanted->str_text,
-		    dd_abs->str_text));
-		os_symlink(dest_wanted, dd_abs);
-	    }
-	    str_free(dest_wanted);
-	    str_free(dest_actual);
+	    if (gmatch(lp->list[j]->str_text, path->str_text))
+		break;
+	}
+	if (j < lp->length)
+	{
+	    trace(("mark\n"));
 	    break;
 	}
 
 	/*
-	 * Read the non-source link and make sure it points to
-	 * the right place.
+	 * Read the deeper symlink and reproduce it in the top level
+	 * directory.
 	 */
-	if (!sip->minimum && !c_src && !p_src)
-	{
-	    string_ty       *dest_actual;
-	    string_ty       *rel_dest;
-
-	    dest_actual = os_readlink(dd_abs);
-	    rel_dest = dir_stack_relative(&sip->stack, dest_actual);
-	    if (rel_dest)
-	    {
-		string_ty       *dest_wanted;
-
-		dest_wanted = dir_stack_find(&sip->stack, 1, rel_dest, 0, 0);
-		if (dest_wanted)
-		{
-		    if (!str_equal(dest_wanted, dest_actual))
-		    {
-			os_unlink(dd_abs);
-			os_symlink(dest_wanted, dd_abs);
-		    }
-		    str_free(dest_wanted);
-		}
-		str_free(rel_dest);
-	    }
-	    str_free(dest_actual);
-	}
+	s2 = os_path_cat(sip->stack.string[depth], path);
+	s = os_readlink(s2);
+	str_free(s2);
+	os_symlink(s, dd_abs);
+	str_free(s);
 	break;
 
     case dir_stack_walk_special:
@@ -214,14 +227,20 @@ maintain(p, msg, path, st, depth)
 	 * attention.
 	 */
 	if (!depth)
+	{
+	    trace(("dev dir already\n"));
 	    break;
+	}
 
 	/*
 	 * Don't make symlinks for files which are (supposed to
 	 * be) in the change.
 	 */
 	if (change_file_find(sip->cp, path))
+	{
+	    trace(("change file\n"));
 	    break;
+	}
 
 	/*
 	 * The minimum option says to only link project source
@@ -229,10 +248,13 @@ maintain(p, msg, path, st, depth)
 	 */
 	if (sip->minimum)
 	{
+	    trace(("minimum\n"));
 	    user_become_undo();
 	    p_src = project_file_find(sip->cp->pp, path);
 	    p_src_set = 1;
 	    user_become(sip->up);
+	    if (!p_src)
+		break;
 	    if
 	    (
 		p_src
@@ -259,7 +281,10 @@ maintain(p, msg, path, st, depth)
 		break;
 	}
 	if (j < lp->length)
+	{
+	    trace(("is a symlink exception\n"));
 	    break;
+	}
 
 	/*
 	 * avoid removed files
@@ -283,14 +308,24 @@ maintain(p, msg, path, st, depth)
 		p_src->deleted_by
 	    )
 	)
+	{
+	    trace(("is a removed file\n"));
 	    break;
+	}
 
 	/*
 	 * make the symbolic link
 	 */
-	s = str_format("%S/%S", sip->stack.string[depth], path);
-	trace(("os_symlink(\"%s\", \"%s\")\n", s->str_text, dd_abs->str_text));
-	os_symlink(s, dd_abs);
+	trace(("maintain the link\n"));
+	s = os_path_cat(sip->stack.string[depth], path);
+	if (top_level_symlink)
+	    os_symlink_repair(s, dd_abs);
+	else
+	{
+	    trace(("ln -s \"%s\" \"%s\")\n", s->str_text, dd_abs->str_text));
+	    os_symlink(s, dd_abs);
+	}
+	str_free(s);
 	break;
     }
     str_free(dd_abs);
@@ -324,7 +359,7 @@ change_create_symlinks_to_baseline(cp, pp, up, minimum)
     slink_info_ty   si;
 
     trace(("change_create_symlinks_to_baseline(cp = %8.8lX)\n{\n" /*} */ ,
-	(long)cp));
+	    (long)cp));
     assert(cp->reference_count >= 1);
     change_verbose(cp, 0, i18n("creating symbolic links to baseline"));
 
@@ -333,6 +368,14 @@ change_create_symlinks_to_baseline(cp, pp, up, minimum)
      */
     string_list_constructor(&si.stack);
     change_search_path_get(cp, &si.stack, 0);
+#ifdef DEBUG
+    {
+	size_t          k;
+	for (k = 0; k < si.stack.nstrings; ++k)
+	    trace(("si.stack.string[%ld] = \"%s\"\n", (long)k,
+		    si.stack.string[k]->str_text));
+    }
+#endif
 
     /*
      * For each ancestor, create symlinks from the development
@@ -346,7 +389,7 @@ change_create_symlinks_to_baseline(cp, pp, up, minimum)
     if (!dot)
 	dot = str_from_c(".");
     user_become(up);
-    dir_stack_walk(&si.stack, dot, maintain, &si);
+    dir_stack_walk(&si.stack, dot, maintain, &si, 1);
     user_become_undo();
     string_list_destructor(&si.stack);
     trace(("}\n"));
@@ -354,15 +397,16 @@ change_create_symlinks_to_baseline(cp, pp, up, minimum)
 
 
 static void rsltbl _((void *, dir_stack_walk_message_t, string_ty *,
-    struct stat *, int));
+    struct stat *, int, int));
 
 static void
-rsltbl(p, msg, path, st, depth)
+rsltbl(p, msg, path, st, depth, ignore_symlinks)
     void            *p;
     dir_stack_walk_message_t msg;
     string_ty       *path;
     struct stat     *st;
     int             depth;
+    int             ignore_symlinks;
 {
     slink_info_ty   *sip;
     string_ty       *dest;
@@ -386,7 +430,7 @@ rsltbl(p, msg, path, st, depth)
 	return;
     }
     sip = p;
-    path_abs = str_format("%S/%S", sip->stack.string[0], path);
+    path_abs = os_path_cat(sip->stack.string[0], path);
     dest = os_readlink(path_abs);
     dest_rel = dir_stack_relative(&sip->stack, dest);
     str_free(dest);
@@ -428,7 +472,7 @@ change_remove_symlinks_to_baseline(cp, pp, up)
     user_become(up);
     if (!dot)
 	dot = str_from_c(".");
-    dir_stack_walk(&si.stack, dot, rsltbl, &si);
+    dir_stack_walk(&si.stack, dot, rsltbl, &si, 0);
     user_become_undo();
     string_list_destructor(&si.stack);
     trace(("}\n"));

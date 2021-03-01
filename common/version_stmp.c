@@ -25,14 +25,14 @@
 
 
 char *
-version_stamp()
+version_stamp(void)
 {
-	return PATCHLEVEL;
+    return PATCHLEVEL;
 }
 
 
 char *
-copyright_years()
+copyright_years(void)
 {
-	return COPYRIGHT_YEARS;
+    return COPYRIGHT_YEARS;
 }

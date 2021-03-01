@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1994, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,6 @@
 .SH SYNOPSIS
 .B \*(n)
 .B -DELta_NAme
-.I delta_number
 [
 .IR option \&...
 ]
@@ -50,7 +49,8 @@ using the
 .IR aecp (1)
 command.
 .PP
-The number on the command line is a delta number of the project.
+The \fB\-DELta\fP \fInumber\fP option on the command line specifies a
+delta number of the project.
 That is, it is the delta number assigned to an integration.
 Delta names may only be applied to project baselines.
 If no delta number is given on the command line,
@@ -67,6 +67,21 @@ to the requested delta.
 .SH OPTIONS
 The following options are understood:
 .so o_help.so
+.TP 8n
+\fB-DELta\fP \fInumber\fP
+.br
+This option may be used to specify a particular
+delta in the project's history to name.
+.TP 8n
+\fB-DELta_DAte\fP \fIstring\fP
+.br
+This option may be used to specify a particular date and time in the
+project's history.
+.TP 8n
+\fB-Delta_From_Change\fP \fInumber\fP
+.br
+This option may be used to specify a particular delta in the project's
+history, based on when the given change was successfully integrated.
 .so o_list.so
 .so o_overw.so
 .so o_project.so

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,18 +27,18 @@ auto ph, when, n, max, href;
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
 
 auto cmap;
 cmap =
 {
-	chain			= "255+0+0";
-	internal_bug		= "255+255+0";
-	internal_enhancement	= "0+255+0";
-	internal_improvement	= "0+255+255";
-	external_bug		= "192+192+0";
-	external_enhancement	= "0+192+0";
-	external_improvement	= "0+192+192";
+    chain			= "255+0+0";
+    internal_bug		= "255+255+0";
+    internal_enhancement	= "0+255+0";
+    internal_improvement	= "0+255+255";
+    external_bug		= "192+192+0";
+    external_enhancement	= "0+192+0";
+    external_improvement	= "0+192+192";
 };
 
 columns({width = 1000;});
@@ -46,10 +46,10 @@ print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("Project Change Cause Histogram");
-print("</title><head><body><h1><center>");
+print("</title><head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 print("Change Cause Histogram");
-print("</center></h1>");
+print("</h1>");
 
 auto earliest_year, latest_year;
 earliest_year = 0;
@@ -58,77 +58,77 @@ auto bucket, year;
 bucket = {};
 for (ph in ps.branch.history)
 {
-	cs = ps.branch.change[ph.change_number];
-	when = cs.history[count(cs.history) - 1].when;
-	year = 0 + strftime("%Y", when);
-	if (typeof(bucket[year]) == "nul")
-		bucket[year] = {};
-	bucket[year][cs.cause]++;
-	bucket[year].Total++;
-	if (earliest_year == 0 || earliest_year > year)
-		earliest_year = year;
-	if (latest_year < year)
-		latest_year = year;
+    cs = ps.branch.change[ph.change_number];
+    when = cs.history[count(cs.history) - 1].when;
+    year = 0 + strftime("%Y", when);
+    if (typeof(bucket[year]) == "nul")
+       	bucket[year] = {};
+    bucket[year][cs.cause]++;
+    bucket[year].Total++;
+    if (earliest_year == 0 || earliest_year > year)
+       	earliest_year = year;
+    if (latest_year < year)
+       	latest_year = year;
 }
 
 max = 1;
 for (year in keys(bucket))
 {
-	n = 0 + bucket[year].Total;
-	if (n > max)
-		max = n;
+    n = 0 + bucket[year].Total;
+    if (n > max)
+       	max = n;
 }
 max = 400. / max;
 
 auto clr;
-print("<center><table>");
+print("<table align=center>");
 print("<tr><th>Year</th><th>Count</th></tr>");
 for (year = earliest_year; year <= latest_year; ++year)
 {
-	n = 0 + bucket[year].Total;
-	print("<tr><td valign=top align=right>");
-	if (n > 0)
+    n = 0 + bucket[year].Total;
+    print("<tr><td valign=top align=right>");
+    if (n > 0)
+    {
+       	href = script_name ## "?file@proj_cch2";
+       	href ##= "+project@" ## quote_url(project_name());
+       	href ##=  "+" ## year;
+       	print("<a href=\"" ## href ## "\">");
+    }
+    print(year);
+    if (n > 0)
+       	print("</a>");
+    print("</td><td valign=top align=right>");
+    print(n);
+    print("</td><td valign=top>");
+    auto cause;
+    for (cause in [chain,
+       	internal_bug, internal_enhancement, internal_improvement,
+       	external_bug, external_enhancement, external_improvement])
+    {
+       	n = 0 + bucket[year][cause];
+       	if (n > 0)
 	{
-		href = script_name ## "?file@proj_cch2";
-		href ##= "+project@" ## quote_url(project_name());
-		href ##=  "+" ## year;
-		print("<a href=\"" ## href ## "\">");
-	}
-	print(year);
-	if (n > 0)
-		print("</a>");
-	print("</td><td valign=top align=right>");
-	print(n);
-	print("</td><td valign=top>");
-	auto cause;
-	for (cause in [chain,
-		internal_bug, internal_enhancement, internal_improvement,
-		external_bug, external_enhancement, external_improvement])
-	{
-		n = 0 + bucket[year][cause];
-		if (n > 0)
-		{
-			clr = cmap[cause];
-			if (clr == "")
-				clr = "255+0+255";
-			n = round(n * max);
-			if (n < 3)
-				n = 3;
-			href = script_name ## "?file@rect+" ## n ## "+12";
-			href ##= "+color+" ## clr;
-			print("<img src=\"" ## href ## "\" width="##n##" height=12>");
-		}
-	}
-	print("</td></tr>");
+	    clr = cmap[cause];
+	    if (clr == "")
+	     	clr = "255+0+255";
+	    n = round(n * max);
+	    if (n < 3)
+	     	n = 3;
+	    href = script_name ## "?file@rect+" ## n ## "+12";
+	    href ##= "+color+" ## clr;
+	    print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+       	}
+    }
+    print("</td></tr>");
 }
-print("</table></center>");
+print("</table>");
 print("<hr>");
 
-print("<h2><center>Legend</center></h2>");
+print("<h2 align=center>Legend</h2>");
 print("This table associates each color in the above graph with");
 print("a change cause.  A brief description of each cause is");
 print("also given.");
-print("<center><table>");
+print("<table align=center>");
 print("<tr><th>Color</th><th>Cause</th><th>Description</th></tr>");
 
 clr = cmap[chain];
@@ -210,6 +210,6 @@ print("(e.g. performance) requested by the customer, or a source outside");
 print("the development development organization.");
 print("</td></tr>");
 
-print("</table></center><hr>");
+print("</table><hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

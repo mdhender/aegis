@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -100,8 +100,10 @@ alias	aedb	'aegis -db \!* -v'
 alias	aedbu	'aegis -dbu \!* -v'
 alias	aede	'aegis -de \!* -v'
 alias	aedeu	'aegis -deu \!* -v'
-alias	aedless	'less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`'
-alias	aedmore	'more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`'
+alias aedless \
+    'less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`'
+alias aedmore	\
+    'more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`'
 alias	aedn	'aegis -dn \!* -v'
 alias	aeib	'aegis -ib \!* -v'
 alias	aeibu	'aegis -ibu \!* -v'

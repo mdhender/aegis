@@ -1,48 +1,48 @@
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1995-2001 Peter Miller;
-#	All rights reserved.
+# 	aegis - project change supervisor
+# 	Copyright (C) 1995-2002 Peter Miller;
+# 	All rights reserved.
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
-#	(at your option) any later version.
+# 	This program is free software; you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation; either version 2 of the License, or
+# 	(at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# 	This program is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+# 	You should have received a copy of the GNU General Public License
+# 	along with this program; if not, write to the Free Software
+# 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: English localization
 #
 # Just A Few Notes...
 #
-#	When translating these error messages, all of the substitutions
-#	described in aesub(5) are also available.  Substitution variable
-#	names and function names may be abbreviated, in the same way
-#	that command line options are abbreviated, but abbreviation
-#	should probably be avoided.
+# 	When translating these error messages, all of the substitutions
+# 	described in aesub(5) are also available.  Substitution variable
+# 	names and function names may be abbreviated, in the same way
+# 	that command line options are abbreviated, but abbreviation
+# 	should probably be avoided.
 #
-#	While Aegis was written by an English speaker, this English
-#	localization file is necessary, to translate the ``terse
-#	programmer'' style error messages into something more user
-#	friendly.
+# 	While Aegis was written by an English speaker, this English
+# 	localization file is necessary, to translate the ``terse
+# 	programmer'' style error messages into something more user
+# 	friendly.
 #
-#	Messages which include state names need to leave the state names
-#	untranslated, because they will probably never be translated.
+# 	Messages which include state names need to leave the state names
+# 	untranslated, because they will probably never be translated.
 #
-#	Messages which include command line options need to leave them
-#	untranslated, because they are not yet internationalized, though
-#	they will be one day.
+# 	Messages which include command line options need to leave them
+# 	untranslated, because they are not yet internationalized, though
+# 	they will be one day.
 #
-#	The list names (known to ael) have not been internationalized (yet).
+# 	The list names (known to ael) have not been internationalized (yet).
 #
-#	Substitution names will Never be internationalized.
-#	Otherwise the substitutions will stop working, Catch-22.
+# 	Substitution names will Never be internationalized.
+# 	Otherwise the substitutions will stop working, Catch-22.
 #
 # -------------------------------------------------------------------------
 #
@@ -58,7 +58,7 @@ msgstr	"MIME-Version: 1.0\n"
 # these states must be left strictly alone, or Aegis will assume that
 # the developer is trying to subvert the process.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename altered"
 msgstr	"file \"$filename\" has been altered"
@@ -67,7 +67,7 @@ msgstr	"file \"$filename\" has been altered"
 # This error message is issued when aenf is invoked on a file which is
 # not a normal file and not a directory.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename bad nf type"
 msgstr	"The \"$filename\" file is a inappropriate type of file.  You may "
@@ -78,7 +78,7 @@ msgstr	"The \"$filename\" file is a inappropriate type of file.  You may "
 # This error message is issued when a request is made to run a specific
 # test file, but the file specified is being removed not created or modified.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename being removed"
 msgstr	"file \"$filename\" is being removed"
@@ -87,9 +87,9 @@ msgstr	"file \"$filename\" is being removed"
 # This error message is issued when aede finds a file which has been
 # modified since it was last built.
 #
-#	$File_Name	The name of the offending file.
-#	$Outstanding	A list of outstanding architectures to be built,
-#			or empty if all are outstanding.  (Optional)
+# 	$File_Name	The name of the offending file.
+# 	$Outstanding	A list of outstanding architectures to be built,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"$filename changed after build"
 msgstr	"the \"$filename\" file was modified after the last build, this "
@@ -101,7 +101,7 @@ msgstr	"the \"$filename\" file was modified after the last build, this "
 # modified since it was last differenced.  Can occur in both the 'being
 # developed' and 'being integrated' states.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename changed after diff"
 msgstr	"the \"$filename\" file was modified after the last difference, "
@@ -122,7 +122,7 @@ msgstr	"file \"$filename\" was out of date, see \"$filename,D\" for "
 # change.  Please note: this is NOT the same as files added to the
 # change, which are to be removed BY the change.
 #
-#	$File_Name	Name of the file removed from the change.
+# 	$File_Name	Name of the file removed from the change.
 #
 msgid	"$filename gone"
 msgstr	"file \"$filename\" no longer in change"
@@ -132,7 +132,7 @@ msgstr	"file \"$filename\" no longer in change"
 # which contains a new file which has been added to the baseline
 # by another change.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename in baseline"
 msgstr	"file \"$filename\" already exists in the project"
@@ -141,7 +141,7 @@ msgstr	"file \"$filename\" already exists in the project"
 # This error message is issued when an attempt is made to copy a file
 # marked as "built" (created by aenf -b) into a change.
 #
-#	$File_Name	The offending file name.
+# 	$File_Name	The offending file name.
 #
 msgid	"$filename is built"
 msgstr	"file \"$filename\" is built, it may not be copied into a change"
@@ -170,7 +170,7 @@ msgstr	"file \"$filename\" was out of date and has been merged with the "
 # development directory corresponding to a file listed as part of the
 # change.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename not found"
 msgstr	"file \"$filename\" not found"
@@ -179,7 +179,7 @@ msgstr	"file \"$filename\" not found"
 # This error message is issued when a request is made to run a specific
 # test file, but the file specified is not a test.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename not test"
 msgstr	"file \"$filename\" is not a test"
@@ -189,8 +189,8 @@ msgstr	"file \"$filename\" is not a test"
 # small positive integer as its argument, and has been given a negative
 # number or zero.
 #
-#	$Name		The name of the offending option.
-#	$Number		The value given to the option.
+# 	$Name		The name of the offending option.
+# 	$Number		The value given to the option.
 #
 msgid	"$name $number must be pos"
 msgstr	"the $name $number option is out of range, the $name option "
@@ -201,8 +201,8 @@ msgstr	"the $name $number option is out of range, the $name option "
 # non-negative integer as its argument, and has been given a negative
 # number.
 #
-#	$Name		The name of the offending option.
-#	$Number		The value given to the option.
+# 	$Name		The name of the offending option.
+# 	$Number		The value given to the option.
 #
 msgid	"$name $number must not be neg"
 msgstr	"the $name $number option is out of range, the $name option "
@@ -212,7 +212,7 @@ msgstr	"the $name $number option is out of range, the $name option "
 # This error message is issued when aena is asked to add an
 # administrator to a project, but the user is already an administrator.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"$name already administrator"
 msgstr	"user \"$name\" is already an administrator"
@@ -221,7 +221,7 @@ msgstr	"user \"$name\" is already an administrator"
 # This error message is issued when aena is asked to add a
 # developer to a project, but the user is already an developer.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"$name already developer"
 msgstr	"user \"$name\" is already a developer"
@@ -230,7 +230,7 @@ msgstr	"user \"$name\" is already a developer"
 # This error message is issued when aena is asked to add an
 # integrator to a project, but the user is already an integrator.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"$name already integrator"
 msgstr	"user \"$name\" is already an integrator"
@@ -239,7 +239,7 @@ msgstr	"user \"$name\" is already an integrator"
 # This error message is issued when aena is asked to add a
 # reviewer to a project, but the user is already an reviewer.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"$name already reviewer"
 msgstr	"user \"$name\" is already a reviewer"
@@ -248,7 +248,7 @@ msgstr	"user \"$name\" is already a reviewer"
 # This error message is given when a command line option is not
 # meaningful, but could be at other times.
 #
-#	$Name		The offending command line option.
+# 	$Name		The offending command line option.
 #
 msgid	"$name option not meaningful"
 msgstr	"the ``$name'' option is not meaningful in this context"
@@ -257,7 +257,7 @@ msgstr	"the ``$name'' option is not meaningful in this context"
 # This error message is issued when an aechown command attempts to
 # change the ownership of a change to a user who is not a developer.
 #
-#	$Target		The login name of the non-developer.
+# 	$Target		The login name of the non-developer.
 #
 msgid	"$target not developer"
 msgstr	"user \"$target\" is not a developer"
@@ -265,7 +265,7 @@ msgstr	"user \"$target\" is not a developer"
 #
 # This text is used to describe change 1 of a new release.
 #
-#	$Name		The name of the old project.
+# 	$Name		The name of the old project.
 #
 msgid	"New release derived from $name."
 msgstr	"New release derived from $name."
@@ -275,7 +275,7 @@ msgstr	"New release derived from $name."
 # or listing.  Usually in the C locale, so avoid non-ascii characters if
 # at all possible.
 #
-#	$Name		The name of a project.
+# 	$Name		The name of a project.
 #
 msgid	"Project $name"
 msgstr	"Project \"$name\""
@@ -285,8 +285,8 @@ msgstr	"Project \"$name\""
 # at the top of a file or listing.  Usually in the C locale, so avoid
 # non-ascii characters if at all possible.
 #
-#	$Name		The name of a project.
-#	$Number		The number of a change.
+# 	$Name		The name of a project.
+# 	$Number		The number of a change.
 #
 msgid	"Project $name, Change $number"
 msgstr	"Project \"$name\", Change $number"
@@ -350,7 +350,7 @@ msgstr	"attributes modified"
 # which contains unprintable characters or spaces, or looks like a
 # branch specifier.
 #
-#	$Name		The offending project alias.
+# 	$Name		The offending project alias.
 #
 msgid	"bad alias $name"
 msgstr	"project alias \"$name\" is invalid"
@@ -489,7 +489,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aecpu command is used
 # on a file which is not suitable.  (also used by aed -ant)
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"bad cp undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
@@ -516,7 +516,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # change is copied into it again.  This is an error unless the
 # -OverWriting option is specified.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"bad cp, file $filename dup"
 msgstr	"file \"$filename\" is already in the change, it will not be "
@@ -608,8 +608,8 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aeipass finds a file which has not been
 # built.
 #
-#	$Outstanding	A list of outstanding architectures to be built,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be built,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, build required"
 msgstr	"this change must successfully complete an 'aegis -Build' "
@@ -619,30 +619,30 @@ msgstr	"this change must successfully complete an 'aegis -Build' "
 # This error message is issued when aeipass finds a file which has not been
 # tested against the baseline.
 #
-#	$Outstanding	A list of outstanding architectures to be tested,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be tested,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test -bl required"
-msgstr	"this change must successfully complete an 'aegis -Test "
-	"-BaseLine' $outstanding before it can pass integration"
+msgstr	"this change must successfully complete an 'aegis -Test -"
+	"BaseLine' $outstanding before it can pass integration"
 
 #
 # This error message is issued when aeipass finds a file which has not been
 # regression tested.
 #
-#	$Outstanding	A list of outstanding architectures to be tested,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be tested,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test -reg required"
-msgstr	"this change must successfully complete an 'aegis -Test "
-	"-REGression' $outstanding before it can pass integration"
+msgstr	"this change must successfully complete an 'aegis -Test -"
+	"REGression' $outstanding before it can pass integration"
 
 #
 # This error message is issued when aede finds a file which has not been
 # tested.
 #
-#	$Outstanding	A list of outstanding architectures to be tested,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be tested,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test required"
 msgstr	"this change must successfully complete an 'aegis -Test' "
@@ -660,7 +660,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aemvu command is used
 # on a file which is not suitable.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"bad mv undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
@@ -695,7 +695,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aenfu command is used
 # on a file which is not suitable.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"bad nf undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
@@ -741,7 +741,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aentu command is used
 # on a file which is not suitable.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"bad nt undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
@@ -791,7 +791,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aermu command is used
 # on a file which is not suitable.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"bad rm undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
@@ -829,17 +829,35 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aede finds a file which has been
 # modified in the baseline since it was last differenced.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"baseline $filename changed"
 msgstr	"file \"$filename\" in the baseline has changed since the last "
 	"'aegis -DIFFerence' command, you need to do a merge"
 
 #
+# This error message is issued when aede finds a file which has been
+# modified in a branch's parent baseline.  It will be necessary to
+# create a new change in the branch, and do a cross branch merge with
+# the grand parent.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"baseline $filename changed, merge in new change"
+msgstr	"File \"$filename\" in this branch's parent baseline has changed "
+	"since it was modified by this branch.  In order to resolve this, "
+	"you will need to create a new change in this branch, copy the "
+	"file into it (aecp $filename) and do a cross branch merge with "
+	"the grandparent (aed -merge -grandparent $filename).  Once this "
+	"is integrated, the file will be up-to-date with the branch's "
+	"parent's baseline.  See the Branching chapter of the Aegis User "
+	"Guide for more information."
+
+#
 # This error message is issued when an absurd branch number is given.
 # This is different to an unknown but valid branch number.
 #
-#	$Number		The offending branch number.
+# 	$Number		The offending branch number.
 #
 msgid	"branch $number out of range"
 msgstr	"branch $number out of range, it must be a small positive number"
@@ -849,7 +867,7 @@ msgstr	"branch $number out of range, it must be a small positive number"
 # number, but that number has already been used as branch number or as
 # a change number.
 #
-#	$Number		The offending branch number.
+# 	$Number		The offending branch number.
 #
 msgid	"branch $number used"
 msgstr	"branch number $number has already been used, please choose "
@@ -868,8 +886,8 @@ msgstr	"you may only create changes and branches on branches which are "
 # This error message is issued when aede finds a file which has not been
 # built.
 #
-#	$Outstanding	A list of outstanding architectures to be built,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be built,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"build required"
 msgstr	"this change must successfully complete an 'aegis -Build' "
@@ -881,7 +899,7 @@ msgstr	"this change must successfully complete an 'aegis -Build' "
 # a source file.  This often occurs when a source files becomes a
 # generated file.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"build trashed $filename"
 msgstr	"The build appears to have modified the \"$filename\" source "
@@ -895,7 +913,7 @@ msgstr	"The build appears to have modified the \"$filename\" source "
 # number, but that number has already been used as change number or as
 # a change number.
 #
-#	$Number		The offending change number.
+# 	$Number		The offending change number.
 #
 msgid	"change $number used"
 msgstr	"change number $number has already been used, please choose "
@@ -905,7 +923,7 @@ msgstr	"change number $number has already been used, please choose "
 #
 # This message is issued when an aecd command is successfully completed.
 #
-#	$File_Name	The absolute path of the directory changed to.
+# 	$File_Name	The absolute path of the directory changed to.
 #
 msgid	"change directory $filename complete"
 msgstr	"$filename"
@@ -913,8 +931,8 @@ msgstr	"$filename"
 #
 # This message is issued when an aechown command completes successfully.
 #
-#	$ORiginal	The login name of the original owner.  (Optional)
-#	$Target		The login name of the new owner.  (Optional)
+# 	$ORiginal	The login name of the original owner.  (Optional)
+# 	$Target		The login name of the new owner.  (Optional)
 #
 msgid	"chown complete"
 msgstr	"ownership changed from user \"$original\" to user \"$target\""
@@ -928,7 +946,7 @@ msgstr	"clean completed"
 #
 # This message is issued when an aeclone command completes successfully.
 #
-#	$ORiginal	The login the original change.  (Optional)
+# 	$ORiginal	The login the original change.  (Optional)
 #
 msgid	"clone complete"
 msgstr	"copy of change $original completed"
@@ -965,8 +983,8 @@ msgstr	"copying change source files"
 # This success message is issued when aecp has finished copying files
 # into a change.
 #
-#	$Number		The number of files copied.
-#			(Optional)
+# 	$Number		The number of files copied.
+# 			(Optional)
 #
 msgid	"copy file complete"
 msgstr	"copied $number ${plural $number files file}"
@@ -976,50 +994,32 @@ msgstr	"copied $number ${plural $number files file}"
 # is already an integration in progress.  Only one integration may be
 # performed at a time.
 #
-#	$Number		The change number of the current integration.
+# 	$Number		The change number of the current integration.
 #
 msgid	"currently integrating $number"
 msgstr	"change $number is the currently active integration, only one "
 	"integration may be performed at a time"
 
 #
-# This warning message is issued when aecp -delta-date is given a time
-# which is in the future.  Unlike times in the past, the answer could
-# change at a later date.  This is Damon Poole's "time safe" property.
-#
-msgid	"date in the future"
-msgstr	"Warning: The delta date specified is in the future.  This same "
-	"command may yield different results when re-run in the future."
-
-#
 # This error message is issued when an attempt is made to reuse an
 # existing delta name, without the -OverWriting option.
 #
-#	$Name		The offending delta name.
-#	$Number		The delta number the user wants to associate
-#			with the delta name.  (Optional)
-#	$Other		The delta number already associated with the
-#			delta name.
+# 	$Name		The offending delta name.
+# 	$Number		The delta number the user wants to associate
+# 			with the delta name.  (Optional)
+# 	$Other		The delta number already associated with the
+# 			delta name.
 #
 msgid	"delta $name in use"
 msgstr	"the delta name \"$name\" is already assigned to delta $other; to "
-	"reassign this name to delta $number you must use the "
-	"-OverWriting option"
-
-#
-# This error message is issued when an absurd delta number is given.
-# This is different to an unknown but valid delta number.
-#
-#	$Number		The offending delta number.
-#
-msgid	"delta $number out of range"
-msgstr	"delta $number out of range, it must be a small positive number"
+	"reassign this name to delta $number you must use the -"
+	"OverWriting option"
 
 #
 # This progress message is issued when aedn completes successfully.
 #
-#	$Name		The name of the delta.  (Optional)
-#	$Number		The number of the delta.  (Optional)
+# 	$Name		The name of the delta.  (Optional)
+# 	$Number		The number of the delta.  (Optional)
 #
 msgid	"delta name complete"
 msgstr	"delta $number may now be referred to as delta \"$name\""
@@ -1088,8 +1088,8 @@ msgstr	"development completed"
 # generates a development directory, to inform the user of the action
 # taken.
 #
-#	$File_Name	The absolute path of the generated development
-#			directory.
+# 	$File_Name	The absolute path of the generated development
+# 			directory.
 #
 msgid	"development directory \"$filename\""
 msgstr	"development directory \"$filename\""
@@ -1098,8 +1098,8 @@ msgstr	"development directory \"$filename\""
 # This error message is issued when an aed command found errors in the
 # specified list of files.
 #
-#	$Number		The number of errors found.
-#			(Optional)
+# 	$Number		The number of errors found.
+# 			(Optional)
 #
 msgid	"diff fail"
 msgstr	"found $number error${plural $number s}, no files were differenced"
@@ -1131,9 +1131,9 @@ msgstr	"directory must be relative (must not start with /)"
 # command line, and it has been examined for files.  While a file or files
 # were found, none of them are suitable.
 #
-#	$File_Name	The name of the offending directory
-#	$Number		The number of files found in the directory
-#			(Optional)
+# 	$File_Name	The name of the offending directory
+# 	$Number		The number of files found in the directory
+# 			(Optional)
 #
 msgid	"directory $filename contains no relevant files"
 msgstr	"directory \"$filename\" contains $number likely ${plural $number "
@@ -1160,7 +1160,7 @@ msgstr	"the -MAJor and -MINOr options are incompatible with the -VERSion "
 #
 # This error message is issued when aet completes unsuccessfully.
 #
-#	$Number		The number of tests which failed.
+# 	$Number		The number of tests which failed.
 #
 msgid	"failed $number tests"
 msgstr	"failed $number test${plural $number s}"
@@ -1169,8 +1169,8 @@ msgstr	"failed $number test${plural $number s}"
 # This warning message is issued when aet has been asked to suggest a
 # number of tests, and there are too few candidate tests.
 #
-#	$Number1	The number of tests available.
-#	$Number2	The number of tests requested by the user.
+# 	$Number1	The number of tests available.
+# 	$Number2	The number of tests requested by the user.
 #
 msgid	"few candidate tests"
 msgstr	"warning: there are only $number1 suitable tests, however you "
@@ -1181,7 +1181,7 @@ msgstr	"warning: there are only $number1 suitable tests, however you "
 # This error message is issued when aeclean discovers that a change
 # source file does not exist.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file \"$filename\" does not exist"
 msgstr	"file \"$filename\" does not exist, and yet is a change source "
@@ -1192,8 +1192,8 @@ msgstr	"file \"$filename\" does not exist, and yet is a change source "
 # locked.  The user should try again later, after the file has been
 # integrated.
 #
-#	$File_Name	The name of the offending file.
-#	$Number		The change number of the change which locked the file.
+# 	$File_Name	The name of the offending file.
+# 	$Number		The change number of the change which locked the file.
 #
 msgid	"file \"$filename\" locked for change $number"
 msgstr	"file \"$filename\" locked for change $number, try again later"
@@ -1202,8 +1202,8 @@ msgstr	"file \"$filename\" locked for change $number, try again later"
 # This fatal error message is issued when aenf or aent detects a directory
 # name conflict with a proposed new file name.
 #
-#	$File_Name	The name of the offending file.
-#	$File_Name2	The name of the conflicting file.  (Optional)
+# 	$File_Name	The name of the offending file.
+# 	$File_Name2	The name of the conflicting file.  (Optional)
 #
 msgid	"file $filename directory name conflict"
 msgstr	"file \"$filename\" is illegal, because it would result in a "
@@ -1213,7 +1213,7 @@ msgstr	"file \"$filename\" is illegal, because it would result in a "
 # This error message is issued when a command attempts to add a new file
 # to a change, but the file is already part of the change.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file $filename dup"
 msgstr	"file \"$filename\" already in change"
@@ -1230,8 +1230,8 @@ msgstr	"this change requires tests before this command may be used"
 # This error message is issued when an ambiguous information name is given
 # to the aev command.
 #
-#	$Name		The offending info name.
-#	$Name_List	The list of possible alternatives.
+# 	$Name		The offending info name.
+# 	$Name_List	The list of possible alternatives.
 #
 msgid	"info $name ambig ($name_list)"
 msgstr	"version information name \"$name\" ambiguous ($name_list)"
@@ -1285,7 +1285,7 @@ msgstr	"integrate pass"
 # This error message is issued when aeipass fails.  Errors tend to
 # happen together, to aeipass finds as many as possible before aborting.
 #
-#	$Number		Number of fatal errors found.
+# 	$Number		Number of fatal errors found.
 #
 msgid	"integrate pass fail"
 msgstr	"found $number error${plural $number s}, this change remains in "
@@ -1340,8 +1340,8 @@ msgstr	"linking baseline to integration directory"
 #
 # This error message is issued when ael is given an ambiguous list name.
 #
-#	$Name		The offending list name.
-#	$Name_List	A list of possible interpretations.  (Optional)
+# 	$Name		The offending list name.
+# 	$Name_List	A list of possible interpretations.  (Optional)
 #
 msgid	"list $name ambiguous"
 msgstr	"list name \"$name\" is ambiguous ($name_list)"
@@ -1352,7 +1352,7 @@ msgstr	"list name \"$name\" is ambiguous ($name_list)"
 # available to Aegis at all times, and thus must be an ordinary source
 # file.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"may not build $filename"
 msgstr	"the \"$filename\" file must be an ordinary source file, it may "
@@ -1363,7 +1363,7 @@ msgstr	"the \"$filename\" file must be an ordinary source file, it may "
 # command to remove the project config file.  There may be other files
 # in the future, hence the variable.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"may not remove $filename"
 msgstr	"file \"$filename\" may not be removed"
@@ -1373,7 +1373,7 @@ msgstr	"file \"$filename\" may not be removed"
 # command to create the project config file as a test.  There may be
 # other files in the future, hence the variable.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"may not test $filename"
 msgstr	"file \"$filename\" may not be a test"
@@ -1381,8 +1381,8 @@ msgstr	"file \"$filename\" may not be a test"
 #
 # This progress message is issued when aed successfully completes a merge.
 #
-#	$Number		The number of files merged.
-#			(Optional)
+# 	$Number		The number of files merged.
+# 			(Optional)
 #
 msgid	"merge complete"
 msgstr	"merged $number file${plural $number s}, new 'aegis -Build' "
@@ -1391,8 +1391,8 @@ msgstr	"merged $number file${plural $number s}, new 'aegis -Build' "
 #
 # This progress message is issued when aemv completes successfully.
 #
-#	$File_Name1	The name of the original file.
-#	$File_Name2	The name of the destination file.
+# 	$File_Name1	The name of the original file.
+# 	$File_Name2	The name of the destination file.
 #
 msgid	"move $filename1 to $filename2 complete"
 msgstr	"file \"$filename1\" moved to \"$filename2\""
@@ -1412,7 +1412,7 @@ msgstr	" \n"
 #
 # This progress message is issued when aena completes successfully.
 #
-#	$Name		The user name of the new administrator.
+# 	$Name		The user name of the new administrator.
 #
 msgid	"new administrator $name complete"
 msgstr	"user \"$name\" is now an administrator"
@@ -1438,7 +1438,7 @@ msgstr	"removed"
 #
 # This progress message is issued when aend completes successfully.
 #
-#	$Name		The user name of the new developer.
+# 	$Name		The user name of the new developer.
 #
 msgid	"new developer $name complete"
 msgstr	"user \"$name\" is now a developer"
@@ -1452,7 +1452,7 @@ msgstr	"file \"$filename\" added"
 #
 # This progress message is issued when aenfu completes successfully.
 #
-#	$File_Name	The name of a removed file.
+# 	$File_Name	The name of a removed file.
 #
 msgid	"new file undo $filename complete"
 msgstr	"new file \"$filename\" removed"
@@ -1463,8 +1463,8 @@ msgstr	"new file \"$filename\" removed"
 # so the aenfu command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"new file undo fail"
 msgstr	"found $number fatal error${plural $number s}, no files were "
@@ -1473,7 +1473,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 #
 # This progress message is issued when aeni completes successfully.
 #
-#	$Name		The user name of the new integrator.
+# 	$Name		The user name of the new integrator.
 #
 msgid	"new integrator $name complete"
 msgstr	"user \"$name\" is now an integrator"
@@ -1487,7 +1487,7 @@ msgstr	"created"
 #
 # This progress message is issued when aenrv completes successfully.
 #
-#	$Name		The user name of the new reviewer.
+# 	$Name		The user name of the new reviewer.
 #
 msgid	"new reviewer $name complete"
 msgstr	"user \"$name\" is now a reviewer"
@@ -1504,8 +1504,8 @@ msgstr	"file \"$filename\" new test"
 # so the aent command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"new test failed"
 msgstr	"found $number fatal error${plural $number s}, no new tests were "
@@ -1514,7 +1514,7 @@ msgstr	"found $number fatal error${plural $number s}, no new tests were "
 #
 # This progress message is issued when aentu completes successfully.
 #
-#	$File_Name	The name of the test removed.
+# 	$File_Name	The name of the test removed.
 #
 msgid	"new test undo $filename complete"
 msgstr	"file \"$filename\" new test undo"
@@ -1525,8 +1525,8 @@ msgstr	"file \"$filename\" new test undo"
 # so the aentu command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"new test undo fail"
 msgstr	"found $number fatal error${plural $number s}, no tests were "
@@ -1537,27 +1537,17 @@ msgstr	"found $number fatal error${plural $number s}, no tests were "
 # source and destination files the same.  Use aecp if you don't want to
 # change the name of the file.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"nil move $filename"
 msgstr	"you may not move the \"$filename\" file on top of itself"
-
-#
-# This error message is issued when the named file cannot be found in a
-# change or project (context will tell which) and no best guess is
-# available.  This is used by many commands.
-#
-#	$File_Name	The offending file name.
-#
-msgid	"no $filename"
-msgstr	"file \"$filename\" is unknown"
 
 #
 # This error message is issued when an aed is performed on a change
 # which contains a copied file which has been removed from the baseline
 # by another change.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"no $filename in baseline"
 msgstr	"file \"$filename\" no longer in baseline"
@@ -1567,9 +1557,9 @@ msgstr	"file \"$filename\" no longer in baseline"
 # change or project (context will tell which).  This is used by many
 # commands.
 #
-#	$File_Name	The offending file name.
-#	$Guess		The best guess as to the most possible filename
-#			the user may have meant.
+# 	$File_Name	The offending file name.
+# 	$Guess		The best guess as to the most possible filename
+# 			the user may have meant.
 #
 msgid	"no $filename, closest is $guess"
 msgstr	"file \"$filename\" is unknown, closest is the \"$guess\" file"
@@ -1578,7 +1568,7 @@ msgstr	"file \"$filename\" is unknown, closest is the \"$guess\" file"
 # This error message is issued when ael is given a list name it does not
 # understand.
 #
-#	$Name		The offending list name.
+# 	$Name		The offending list name.
 #
 msgid	"no $name list"
 msgstr	"list name \"$name\" unknown"
@@ -1602,7 +1592,7 @@ msgstr	"you may not perform a cross branch merge on a change in the "
 #
 # This error message is issued when an unknown delta number is given.
 #
-#	$Number		The offending delta number.
+# 	$Number		The offending delta number.
 #
 msgid	"no delta $number"
 msgstr	"delta $number unknown"
@@ -1629,23 +1619,16 @@ msgstr	"no integrations have been completed, so it is not yet possible "
 # directory name in combination with the -Output option of aecp.  Only
 # single source file may be specified with the -Output option.
 #
-#	$Name		The name of the -Output option.
+# 	$Name		The name of the -Output option.
 #
 msgid	"no dir with $name"
 msgstr	"may not name directories and use the $name option"
 
 #
-# This error message is issued when a command which requires file names
-# on the command line is not given any.
-#
-msgid	"no file names"
-msgstr	"no file names were specified on the command line"
-
-#
 # This error message is issued when an attempt is made to specify a
 # file name in combination with a conflicting option.
 #
-#	$Name		The name of the conflicting option.
+# 	$Name		The name of the conflicting option.
 #
 msgid	"no file with $name"
 msgstr	"may not name files and use the $name option"
@@ -1664,8 +1647,8 @@ msgstr	"this change has no files, you must add some before you may "
 # so the aecp command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"no files copied"
 msgstr	"found $number fatal error${plural $number s}, no files copied"
@@ -1676,8 +1659,8 @@ msgstr	"found $number fatal error${plural $number s}, no files copied"
 # so the aecpu command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"no files uncopied"
 msgstr	"found $number fatal error${plural $number s}, no files were "
@@ -1687,7 +1670,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 # This error message is issued when an unknown information name is given
 # to the aev command.
 #
-#	$Name		The offending info name.
+# 	$Name		The offending info name.
 #
 msgid	"no info $name"
 msgstr	"version information name \"$name\" unknown"
@@ -1717,7 +1700,7 @@ msgstr	"you may not specify a merge option with -ANticipate"
 # This error message is issued when aemv is asked to move the project
 # 'config' file.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"no move $filename"
 msgstr	"may not rename the \"$filename\" file"
@@ -1728,8 +1711,8 @@ msgstr	"may not rename the \"$filename\" file"
 # so the aenf command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"no new files"
 msgstr	"found $number fatal error${plural $number s}, no new files added"
@@ -1738,7 +1721,7 @@ msgstr	"found $number fatal error${plural $number s}, no new files added"
 # This error message is issued when aet completes unsuccessfully because
 # one or more tests returned a ``no result'' exit code.
 #
-#	$Number		The number of tests which failed.
+# 	$Number		The number of tests which failed.
 #
 msgid	"no result $number tests"
 msgstr	"there ${plural $number were was} $number test${plural $number s} "
@@ -1845,7 +1828,7 @@ msgstr	"partial build started ${date %%H:%%M}"
 # This progress message is issued when aet completes, both successfully
 # or unsuccessfully.
 #
-#	$Number		The number of tests which passed.
+# 	$Number		The number of tests which passed.
 #
 msgid	"passed $number tests"
 msgstr	"passed $number test${plural $number s}"
@@ -1854,7 +1837,7 @@ msgstr	"passed $number test${plural $number s}"
 # This string is used to format the various "file unacceptable" error messages
 # to indicate that they refer to project files, not change files. (***)
 #
-#	$Message	The message to be supplemented.
+# 	$Message	The message to be supplemented.
 #
 msgid	"project $message"
 msgstr	"project $message"
@@ -1863,7 +1846,7 @@ msgstr	"project $message"
 # This error message is issued when a user attempts to remove a
 # non-existent project alias.
 #
-#	$Name		The offending project alias.
+# 	$Name		The offending project alias.
 #
 msgid	"project alias $name exists not"
 msgstr	"the name \"$name\" is not a project alias"
@@ -1881,14 +1864,14 @@ msgstr	"attributes changed"
 # from wasting their time.
 #
 msgid	"remember to use the aerb command"
-msgstr	"If you are going to review this change, please use the ``aegis "
-	"-review-begin'' command as soon as possible.  This ensures that "
+msgstr	"If you are going to review this change, please use the ``aegis -"
+	"review-begin'' command as soon as possible.  This ensures that "
 	"other reviewers don't waste any of their valuable time."
 
 #
 # This progress message is issued when aera completes successfully.
 #
-#	$Name		The name of the removed user.
+# 	$Name		The name of the removed user.
 #
 msgid	"remove administrator $name complete"
 msgstr	"user \"$name\" is no longer an administrator"
@@ -1896,7 +1879,7 @@ msgstr	"user \"$name\" is no longer an administrator"
 #
 # This progress message is issued when aerd completes successfully.
 #
-#	$Name		The name of the removed user.
+# 	$Name		The name of the removed user.
 #
 msgid	"remove developer $name complete"
 msgstr	"user \"$name\" is no longer a developer"
@@ -1911,7 +1894,7 @@ msgstr	"removing development directory"
 #
 # This progress message is issued when aerm completes successfully.
 #
-#	$File_Name	The name of the file to be removed.
+# 	$File_Name	The name of the file to be removed.
 #
 msgid	"remove file $filename complete"
 msgstr	"file \"$filename\" being removed by this change"
@@ -1922,8 +1905,8 @@ msgstr	"file \"$filename\" being removed by this change"
 # so the aerm command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"remove file fail"
 msgstr	"found $number fatal error${plural $number s}, no files were "
@@ -1932,7 +1915,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 #
 # This progress message is issued when aerm completes successfully.
 #
-#	$File_Name	The name of the file to be removed.
+# 	$File_Name	The name of the file to be removed.
 #
 msgid	"remove file undo $filename complete"
 msgstr	"file \"$filename\" no longer being removed by this change"
@@ -1943,8 +1926,8 @@ msgstr	"file \"$filename\" no longer being removed by this change"
 # so the aermu command finds as many as possible before aborting.  This
 # error is emitted when it aborts.
 #
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"remove file undo fail"
 msgstr	"found $number fatal error${plural $number s}, no files were "
@@ -1960,7 +1943,7 @@ msgstr	"removing integration directory"
 #
 # This progress message is issued when aeri completes successfully.
 #
-#	$Name		The name of the removed user.
+# 	$Name		The name of the removed user.
 #
 msgid	"remove integrator $name complete"
 msgstr	"user \"$name\" is no longer an integrator"
@@ -1994,7 +1977,7 @@ msgstr	"removing project directory"
 #
 # This progress message is issued when aerrv completes successfully.
 #
-#	$Name		The user name of the removed reviewer.
+# 	$Name		The user name of the removed reviewer.
 #
 msgid	"remove reviewer $name complete"
 msgstr	"user \"$name\" is no longer a reviewer"
@@ -2007,8 +1990,8 @@ msgstr	"user \"$name\" is no longer a reviewer"
 #
 msgid	"restart integration after upgrade"
 msgstr	"no change should be in the $state state when Aegis is upgraded "
-	"because some file state is not available, please use ``aegis "
-	"-ibu'' and then ``aegis -ib'' on this change to restart the "
+	"because some file state is not available, please use ``aegis -"
+	"ibu'' and then ``aegis -ib'' on this change to restart the "
 	"integration"
 
 #
@@ -2060,8 +2043,8 @@ msgstr	"removing the integration directory"
 # This error message is issued when too many or too few source file
 # names are given to the aecp -Output command.
 #
-#	$Number		The number of files actually given.
-#			(Optional)
+# 	$Number		The number of files actually given.
+# 			(Optional)
 #
 msgid	"single file with -Output"
 msgstr	"exactly one source file may be specified when the -Output option "
@@ -2087,30 +2070,30 @@ msgstr	"$number $filename"
 # This error message is issued when aede finds a file which has not been
 # tested against the baseline.
 #
-#	$Outstanding	A list of outstanding architectures to be tested,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be tested,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"test -bl required"
-msgstr	"this change must successfully complete an 'aegis -Test "
-	"-BaseLine' $outstanding before it can end development"
+msgstr	"this change must successfully complete an 'aegis -Test -"
+	"BaseLine' $outstanding before it can end development"
 
 #
 # This error message is issued when aede finds a file which has not been
 # regression tested.
 #
-#	$Outstanding	A list of outstanding architectures to be tested,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be tested,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"test -reg required"
-msgstr	"this change must successfully complete an 'aegis -Test "
-	"-REGression' $outstanding before it can end development"
+msgstr	"this change must successfully complete an 'aegis -Test -"
+	"REGression' $outstanding before it can end development"
 
 #
 # This error message is issued when aede finds a file which has not been
 # tested.
 #
-#	$Outstanding	A list of outstanding architectures to be tested,
-#			or empty if all are outstanding.  (Optional)
+# 	$Outstanding	A list of outstanding architectures to be tested,
+# 			or empty if all are outstanding.  (Optional)
 #
 msgid	"test required"
 msgstr	"this change must successfully complete an 'aegis -Test' "
@@ -2127,7 +2110,7 @@ msgstr	"too few files named"
 # This error message is issued when a file is named more than one in a
 # list of file names on the command line.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"too many $filename"
 msgstr	"file \"$filename\" named more than once"
@@ -2138,13 +2121,6 @@ msgstr	"file \"$filename\" named more than once"
 #
 msgid	"too many delta names"
 msgstr	"too many delta names specified"
-
-#
-# This error message is issued when too many delta numbers are given on
-# the command line.
-#
-msgid	"too many delta numbers"
-msgstr	"too many delta numbers specified"
 
 #
 # This error message is issued when a command which expects one
@@ -2177,7 +2153,7 @@ msgstr	"too many project names specified"
 #
 # This error message is issued when aena is given a user name more than once.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"too many user $name"
 msgstr	"user \"$name\" named more than once"
@@ -2201,7 +2177,7 @@ msgstr	"use the `aegis -nbru' command instead"
 # developer from a project, and the user named is not a
 # developer.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"user \"$name\" is not a developer"
 msgstr	"user \"$name\" is not a developer"
@@ -2210,7 +2186,7 @@ msgstr	"user \"$name\" is not a developer"
 # This error message is issued when a request is made to remove a
 # reviewer from a project, and the user named is not a reviewer.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"user \"$name\" is not a reviewer"
 msgstr	"user \"$name\" is not a reviewer"
@@ -2220,7 +2196,7 @@ msgstr	"user \"$name\" is not a reviewer"
 # administrator from a project, and the user named is not an
 # administrator.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"user \"$name\" is not an administrator"
 msgstr	"user \"$name\" is not an administrator"
@@ -2230,7 +2206,7 @@ msgstr	"user \"$name\" is not an administrator"
 # integrator from a project, and the user named is not an
 # integrator.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"user \"$name\" is not an integrator"
 msgstr	"user \"$name\" is not an integrator"
@@ -2241,7 +2217,7 @@ msgstr	"user \"$name\" is not an integrator"
 # create the same file, and the second change is differenced after the
 # first change is integrated.
 #
-#	$File_Name	The name of the affected file.
+# 	$File_Name	The name of the affected file.
 #
 msgid	"warning: $filename in baseline, copying"
 msgstr	"warning: file \"$filename\" already exists in the project, "
@@ -2250,8 +2226,8 @@ msgstr	"warning: file \"$filename\" already exists in the project, "
 #
 # This warning is issued when an obsolete option is used.
 #
-#	$Name1		The name of the obsolete option.
-#	$Name2		The name of the preferred option.
+# 	$Name1		The name of the obsolete option.
+# 	$Name2		The name of the preferred option.
 #
 msgid	"warning: $name1 obsolete, use $name2 option"
 msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
@@ -2262,8 +2238,8 @@ msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
 # merging, but has been (explicitly or implicitly) requested no to
 # perform any merges.
 #
-#	$Number		The number of files requiring merging.
-#			(Optional)
+# 	$Number		The number of files requiring merging.
+# 			(Optional)
 #
 msgid	"warning: diffable files"
 msgstr	"warning: there ${plural $number 'are $number files which need' "
@@ -2273,7 +2249,7 @@ msgstr	"warning: there ${plural $number 'are $number files which need' "
 # This warning message is issued when aeclean notices that a file needs
 # to be differenced.
 #
-#	$FileName	The name of the offending file.
+# 	$FileName	The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs diff"
 msgstr	"warning: file \"$filename\" needs to be differenced"
@@ -2282,7 +2258,7 @@ msgstr	"warning: file \"$filename\" needs to be differenced"
 # This warning message is issued when aeclean notices that a file needs
 # to be merged.
 #
-#	$FileName	The name of the offending file.
+# 	$FileName	The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs merge"
 msgstr	"warning: file \"$filename\" needs to be merged"
@@ -2292,8 +2268,8 @@ msgstr	"warning: file \"$filename\" needs to be merged"
 # times, and finds that one or more file have modification times a few
 # seconds into the future.
 #
-#	$Number		The number of seconds into the future.
-#			(Optional)
+# 	$Number		The number of seconds into the future.
+# 			(Optional)
 #
 msgid	"warning: file times in future"
 msgstr	"warning: file modification times extend $number second${plural "
@@ -2304,8 +2280,8 @@ msgstr	"warning: file modification times extend $number second${plural "
 # merging, but has been (explicitly or implicitly) requested no to
 # perform any merges.
 #
-#	$Number		The number of files requiring merging.
-#			(Optional)
+# 	$Number		The number of files requiring merging.
+# 			(Optional)
 #
 msgid	"warning: mergable files"
 msgstr	"warning: there ${plural $number 'are $number files which need' "
@@ -2317,7 +2293,7 @@ msgstr	"warning: there ${plural $number 'are $number files which need' "
 # act on the same file, one to remove it and another to modify it, and
 # the second change is differenced after the first change is integrated.
 #
-#	$File_Name	The name of the affected file.
+# 	$File_Name	The name of the affected file.
 #
 msgid	"warning: no $filename in baseline, creating"
 msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
@@ -2327,8 +2303,8 @@ msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
 # This warning message is issued when a non-intuitive default is
 # taken by the program.
 #
-#	$Name1		The name of a command line option.
-#	$Name2		The name of a command line option.
+# 	$Name1		The name of a command line option.
+# 	$Name2		The name of a command line option.
 #
 msgid	"warning: no $name1, assuming $name2"
 msgstr	"warning: no $name1 specified, assuming $name2 desired"
@@ -2347,8 +2323,8 @@ msgstr	"warning: no need to change owner, already being developed by "
 # and -File is given a file name without the -File option.  This usage
 # is being phased out, so that -Edit can become the default.
 #
-#	$Name		The name of the -File option,
-#			assuming option names will be internationalized RSN
+# 	$Name		The name of the -File option,
+# 			assuming option names will be internationalized RSN
 #
 msgid	"warning: use $name option"
 msgstr	"warning: please use the $name option when specifying an "

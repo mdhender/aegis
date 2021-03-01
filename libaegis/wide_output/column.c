@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -123,7 +123,7 @@ wide_output_column_write(fp, buf, buflen)
 		 */
 		if (wc == '\n')
 			this->nrows++;
-	
+
 		/*
 		 * Make sure we have a row structure to park the
 		 * character in.
@@ -146,7 +146,7 @@ wide_output_column_write(fp, buf, buflen)
 
 		if (wc == '\n')
 			continue;
-	
+
 		/*
 		 * Make sure we have text space enough to park the character.
 		 */
@@ -316,7 +316,7 @@ wide_output_column_get(fp, n)
 			return 0;
 		}
 	}
-	trace(("return %08lX;\n", rp));
+	trace(("return %08lX;\n", (long)rp));
 	trace(("}\n"));
 	return rp;
 }

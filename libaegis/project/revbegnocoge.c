@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <change.h>
 #include <change/branch.h>
-#include <project_hist.h>
+#include <project/history.h>
 
 
 string_ty *

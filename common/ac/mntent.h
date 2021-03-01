@@ -39,9 +39,9 @@ struct mntent
 };
 
 
-FILE *setmntent _((const char *, const char *));
-struct mntent *getmntent _((FILE *));
-int endmntent _((FILE *));
+FILE *setmntent(const char *, const char *);
+struct mntent *getmntent(FILE *);
+int endmntent(FILE *);
 
 #endif /* !HAVE_MNTENT_H */
 

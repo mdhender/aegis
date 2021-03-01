@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ gen_include(type)
 	indent_printf("#ifndef %s_DEF\n", this->name->str_text);
 	indent_printf("#define %s_DEF\n", this->name->str_text);
 	indent_printf("enum %s_ty\n", this->name->str_text);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	for (j = 0; j < this->nelements; ++j)
 	{
 		indent_printf
@@ -96,7 +96,7 @@ gen_include(type)
 			indent_putchar(',');
 		indent_putchar('\n');
 	}
-	indent_printf(/*{*/"};\n");
+	indent_printf("};\n");
 	indent_printf("#ifdef CONF_enum_is_int\n");
 	indent_printf
 	(
@@ -115,7 +115,7 @@ gen_include(type)
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write _((struct output_ty *, const char *, %s_ty));\n",
+	   "void %s_write _((struct output_ty *, const char *, %s_ty, int));\n",
 		this->name->str_text,
 		this->name->str_text
 	);
@@ -159,10 +159,10 @@ gen_code(type)
 	this = (type_enum_ty *)type;
 	indent_putchar('\n');
 	indent_printf("static char *%s_s[] =\n", this->name->str_text);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	for (j = 0; j < this->nelements; ++j)
 		indent_printf("\"%s\",\n", this->element[j]->str_text);
-	indent_printf(/*{*/"};\n");
+	indent_printf("};\n");
 	indent_printf
 	(
 		"%s\1*%s_f[SIZEOF(%s_s)];\n",
@@ -177,7 +177,7 @@ gen_code(type)
 	indent_more();
 	indent_printf("%s_ty\1this;\n", this->name->str_text);
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("static char\1buffer[20];\n\n");
 	indent_printf("if ((int)this >= 0 && (int)this < %d)\n", this->nelements);
 	indent_more();
@@ -185,26 +185,30 @@ gen_code(type)
 	indent_less();
 	indent_printf("sprintf(buffer, \"%%d\", (int)this);\n");
 	indent_printf("return buffer;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s_write(fp, name, this)\n", this->name->str_text);
+	indent_printf("%s_write(fp, name, this, show)\n", this->name->str_text);
 	indent_more();
 	indent_printf("%s\1*fp;\n", "output_ty");
 	indent_printf("%s\1*name;\n", "const char");
 	indent_printf("%s_ty\1this;\n", this->name->str_text);
+	indent_printf("int\1show;\n");
 	indent_less();
-	indent_printf("{\n"/*}*/);
-	indent_printf("if (name)\n");
-	indent_printf("{\n"/*}*/);
-	indent_printf("if (this == 0 && type_enum_option_query())\n");
+	indent_printf("{\n");
+	indent_printf("if (this == 0)\n");
+	indent_printf("{\n");
+	indent_printf("if (!show || type_enum_option_query())\n");
 	indent_more();
 	indent_printf("return;\n");
 	indent_less();
+	indent_printf("}\n");
+	indent_printf("if (name)\n");
+	indent_printf("{\n");
 	indent_printf("output_fputs(fp, name);\n");
 	indent_printf("output_fputs(fp, \" = \");\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 	indent_printf
 	(
 		"output_fputs(fp, %s_s[this]);\n",
@@ -214,7 +218,7 @@ gen_code(type)
 	indent_more();
 	indent_printf("output_fputs(fp, \";\\n\");\n");
 	indent_less();
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -229,7 +233,7 @@ gen_code(type)
 	indent_more();
 	indent_printf("%s\1*name;\n", "string_ty");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("%s\1j;\n", "int");
 	indent_putchar('\n');
 	indent_printf
@@ -251,7 +255,7 @@ gen_code(type)
 	indent_less();
 	indent_printf("}\n");
 	indent_printf("return -1;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -266,17 +270,17 @@ gen_code(type)
 	indent_more();
 	indent_printf("%s\1*name;\n", "string_ty");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("return\n");
 	indent_more();
 	indent_printf("generic_enum_fuzzy\n");
-	indent_printf("(\n"/*)*/);
+	indent_printf("(\n");
 	indent_printf("name,\n");
 	indent_printf("%s_f,\n", this->name->str_text);
 	indent_printf("SIZEOF(%s_f)\n", this->name->str_text);
-	indent_printf(/*(*/");\n");
+	indent_printf(");\n");
 	indent_less();
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	s = str_format
 	(
@@ -300,7 +304,7 @@ gen_code(type)
 	indent_more();
 	indent_printf("%s\1*this;\n", "void");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("if (!%s_f[0])\n", this->name->str_text);
 	indent_more();
 	indent_printf
@@ -314,17 +318,17 @@ gen_code(type)
 	indent_printf("return\n");
 	indent_more();
 	indent_printf("generic_enum_convert\n");
-	indent_printf("(\n"/*)*/);
+	indent_printf("(\n");
 	indent_printf("this,\n");
 	indent_printf("%s_f,\n", this->name->str_text);
 	indent_printf("SIZEOF(%s_f)\n", this->name->str_text);
-	indent_printf(/*(*/");\n");
+	indent_printf(");\n");
 	indent_less();
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf("type_ty %s_type =\n", this->name->str_text);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("\"%s\",\n", this->name->str_text);
 	indent_printf("0, /* alloc */\n");
 	indent_printf("0, /* free */\n");
@@ -334,24 +338,32 @@ gen_code(type)
 	indent_printf("%s_fuzzy,\n", this->name->str_text);
 	indent_printf("%s_convert,\n", this->name->str_text);
 	indent_printf("generic_enum_is_set,\n");
-	indent_printf(/*{*/"};\n");
+	indent_printf("};\n");
 }
 
 
-static void gen_code_declarator _((type_ty *, string_ty *, int));
+static void gen_code_declarator _((type_ty *, string_ty *, int, int));
 
 static void
-gen_code_declarator(type, variable_name, is_a_list)
+gen_code_declarator(type, variable_name, is_a_list, show)
 	type_ty		*type;
 	string_ty	*variable_name;
 	int		is_a_list;
+	int		show;
 {
-	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
+	indent_printf("%s_write(fp, ", type->name->str_text);
 	if (is_a_list)
+	{
 		indent_printf("(char *)0");
+		show = 1;
+	}
 	else
+	{
 		indent_printf("\"%s\"", variable_name->str_text);
-	indent_printf(/*(*/", this->%s);\n", variable_name->str_text);
+		if (show < 0)
+			show = 1;
+	}
+	indent_printf(", this->%s, %d);\n", variable_name->str_text, show);
 }
 
 
@@ -368,13 +380,14 @@ gen_free_declarator(type, variable_name, is_a_list)
 }
 
 
-static void member_add _((type_ty *, string_ty *, type_ty *));
+static void member_add _((type_ty *, string_ty *, type_ty *, int));
 
 static void
-member_add(type, member_name, member_type)
+member_add(type, member_name, member_type, show)
 	type_ty		*type;
 	string_ty	*member_name;
 	type_ty		*member_type;
+	int		show;
 {
 	type_enum_ty	*this;
 	size_t		nbytes;

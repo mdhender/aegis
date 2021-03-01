@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ administrator  ---  Administrator
 alias          ---  Alias
 anticipate     ---  antizipieren ???
 assignable     ---  zuweisbar
- 
+
 background     ---  Hintergrund
 baseline       ---  Baseline
 branch         ---  Branch (an aegis change branch of a project)
@@ -62,7 +62,7 @@ environment variable    ---  Umgebungsvariable
 escape                  ---  Ersatzdarstellung (lt. K&R II)
 exit status             ---  exit-Status
 expression              ---  Ausdruck
- 
+
 fail                    ---  fehlschlagen (Test)
 fatal                   ---  fatal (error)
 file                    ---  Datei
@@ -136,7 +136,8 @@ source file    ---  Source-Datei  -> Quelldatei?
 specify, to ~  ---  angeben
 standard input ---  Standardeingabe
 standard output ---  Standardausgabe
-state          ---  Status Change Status (being_developed, awaiting_integration usw)
+state          ---  Status Change Status (being_developed,
+			awaiting_integration usw)
 state lock     ---  Status-Lock
 statement      ---  Anweisung (if-, else-,...)
 string         ---  Text (char string)

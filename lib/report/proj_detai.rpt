@@ -1,0 +1,402 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/proj_detai.rpt
+ */
+
+columns( { left = 0; right = 0; }, { left = 8; right = 0; });
+auto need_to_eject;
+need_to_eject = false;
+
+auto stack, stack_depth;
+stack[0] = { project = project_name(); change = "none"; };
+stack_depth = 1;
+
+while (stack_depth > 0)
+{
+    auto ptr;
+    --stack_depth;
+    ptr = stack[stack_depth];
+
+    auto ps;
+    ps = project[ptr.project].state;
+    auto cs;
+    if (ptr.change == "none")
+	cs = ps;
+    else
+	cs = ps.branch.change[ptr.change];
+
+    if (ptr.change == "none")
+    {
+	title
+	(
+	    sprintf("Project \"%s\"", ptr.project),
+	    "Details"
+	);
+    }
+    else
+    {
+	title
+	(
+	    sprintf("Project \"%s\", Change %d", ptr.project, ptr.change),
+	    "Change Details"
+	);
+    }
+
+    columns( { left = 0; right = 0; }, { left = 8; right = 0; });
+    if (need_to_eject)
+    	eject();
+
+    print("NAME");
+    if (ptr.change == "none")
+    {
+	print
+	(
+	    "",
+	    sprintf("Project \"%s\".", ptr.project)
+	);
+    }
+    else if (cs.delta_number > 0)
+    {
+	print
+	(
+	    "",
+	    sprintf("Project \"%s\", Delta %d, Change %d.",
+		ptr.project, cs.delta_number, ptr.change)
+	);
+    }
+    else
+    {
+	print
+	(
+	    "",
+	    sprintf("Project \"%s\", Change %d.",
+		ptr.project, ptr.change)
+	);
+    }
+
+    need(5);
+    print("SUMMARY");
+    print("", cs.brief_description);
+
+    need(5);
+    print("DESCRIPTION");
+    print("", cs.description);
+    auto desc2;
+    desc2 = "";
+    if (cs.test_exempt || cs.test_baseline_exempt)
+    {
+	if (!cs.regression_test_exempt)
+		desc2 ##= "This change must pass a full regression test.  ";
+	if (cs.test_exempt)
+		desc2 ##=
+        "This change is exempt from testing against the development directory.";
+    }
+    else
+    {
+	if (cs.test_baseline_exempt)
+	    desc2 = "This change is exempt from testing against the baseline.";
+    }
+    if (desc2 != "")
+    {
+	need(2);
+	print("", desc2);
+    }
+
+    if (count(cs.branch) > 0)
+    {
+	need(5);
+	print("BRANCH CONTENTS");
+	auto tmp;
+	tmp = sort(keys(cs.branch.change));
+	auto t, cn;
+	auto cs2;
+
+	for (t = count(tmp) - 1; t >= 0; t = t - 1)
+	{
+	    cn = tmp[t];
+
+	    if (ptr.change == "none")
+	    {
+		stack[stack_depth] =
+		    { project = ptr.project; change = cn; };
+	    }
+	    else
+	    {
+		stack[stack_depth] =
+		    {
+			project = ptr.project ## "." ## ptr.change;
+			change = cn;
+		    };
+	    }
+	    stack_depth++;
+	}
+
+	columns({ name = "Change\n-------"; width = 7; left = 8; },
+		{ name = "State\n-------"; width = 15; },
+		{ name = "Description\n-----------"; right = 0; });
+	for (t = 0; t < count(tmp); ++t)
+	{
+	    cn = tmp[t];
+	    if (ptr.change == "none")
+		cs2 = project[ptr.project].state.branch.change[cn];
+	    else
+		cs2 = project[ptr.project ## "." ## ptr.change].
+		    state.branch.change[cn];
+	    print(cn, cs2.state, cs2.brief_description);
+	}
+    }
+
+    columns( { left = 0; right = 0; }, { left = 8; right = 0; });
+    need(7);
+    print("ARCHITECTURES");
+    auto arch_blurb, arch_name;
+    arch_blurb = "This change must be developed on the";
+    for (arch_name in cs.architecture)
+    	arch_blurb ##= " " ## arch_name;
+    arch_blurb ##= " architectures.";
+    print("", arch_blurb);
+    if (cs.state == being_developed || cs.state == being_integrated)
+    {
+    need(4);
+    columns
+    (
+    	{ width = 8; name = "arch.\n--------"; left = 8; },
+    	{ width = 8; name = "host\n--------"; },
+    	{ width = 11; name = "aeb\n---------"; },
+    	{ width = 11; name = "aet\n---------"; },
+    	{ width = 11; name = "aet -bl\n---------"; },
+    	{ width = 11; name = "aet -reg\n---------"; }
+    );
+    auto tp;
+    for (arch_name in cs.architecture)
+    {
+	auto found;
+	found = { variant = arch_name; };
+	for (tp in cs.architecture_times)
+	{
+	    if (tp.variant == arch_name)
+	    {
+		    found = tp;
+	    }
+	}
+	tp = found;
+    	print
+	(
+	    tp.variant,
+	    tp.node,
+	    tp.build_time ? tp.build_time : "required",
+	    tp.test_time ? tp.test_time
+	    	: (cs.test_exempt ? "exempt" : "required"),
+	    tp.test_baseline_time ?  tp.test_baseline_time
+	    	: (cs.test_baseline_exempt ? "exempt" : "required"),
+	    tp.regression_test_exempt ? tp.regression_test_exempt
+	    	: (cs.regression_test_exempt ? "exempt" : "required")
+	);
+    }
+    if (count(cs.architecture) > 1)
+    {
+    	print
+	(
+	    "",
+	    "",
+	    "--------\n" ## (cs.build_time ? cs.build_time : "required"),
+	    "--------\n" ## (cs.test_time ? cs.test_time :
+	    	(cs.test_exempt ? "exempt" : "required")),
+	    "--------\n" ## (cs.test_baseline_time ? cs.test_baseline_time :
+	    	(cs.test_baseline_exempt ? "exempt" : "required")),
+	    "--------\n" ## (cs.regression_test_time ? cs.regression_test_time :
+	    	(cs.regression_test_exempt ? "exempt" : "required"))
+	);
+    }
+    }
+
+    columns( { left = 0; right = 0; }, { left = 8; right = 0; });
+    need(5);
+    print("CAUSE");
+    print("", "This change was caused by " ## cs.cause ## ".");
+
+    need(5);
+    print("FILES");
+	columns
+	(
+		{ name = "Type\n------"; width = 7; left = 8; },
+		{ name = "Action\n------"; width = 8; },
+		{ name = "Edit\n------"; width = 12; },
+		{ name = "File Name\n------"; right = 0; },
+		{ left = 38; right = 0; },
+		{ left = 38; right = 0; },
+		{ left = 38; right = 0; },
+		{ left = 38; right = 0; },
+		{ left = 38; right = 0; }
+	);
+	auto src;
+	for (src in cs.src)
+	{
+		auto en;
+
+		if (src.edit_origin.revision != "" && src.edit.revision != "")
+		{
+			if (src.edit_origin.revision == src.edit.revision)
+				en = src.edit.revision;
+			else
+			{
+				en =
+					sprintf
+					(
+						"%s -> %s",
+						src.edit_origin.revision,
+						src.edit.revision
+					);
+			}
+		}
+		else if (src.edit_origin.revision != "")
+			en = src.edit_origin.revision;
+		else if (src.edit.revision != "")
+			en = src.edit.revision;
+		/* if (verbose() */
+		{
+			auto psrc, tmp2;
+
+			psrc = {};
+			for (tmp2 in ps.src)
+			{
+				if (tmp2.file_name == src.file_name);
+				{
+					psrc = tmp2;
+					break;
+				}
+			}
+			tmp2 = psrc.edit.revision;
+			if (tmp2 != "" && tmp2 != src.edit_origin.revision)
+				en ##= " (" ## tmp2 ## ")";
+			tmp2 = psrc.edit_origin.revision;
+			if
+			(
+				src.edit_origin_new.revision != ""
+			&&
+				src.edit_origin_new.revision != tmp2
+			)
+				en ##= "\n{cross " ##
+					src.edit_origin_new.revision ## "}";
+		}
+
+		print
+		(
+			src.usage,
+			src.action,
+			en,
+			src.file_name,
+			(
+				src.deleted_by
+			?
+				sprintf("Deleted by change %d.", src.deleted_by)
+			:
+				""
+			),
+			(
+				src.about_to_be_created_by
+			?
+				sprintf
+				(
+					"About to be created by change %d.",
+					src.about_to_be_created_by
+				)
+			:
+				""
+			),
+			(
+				src.locked_by
+			?
+				sprintf("Locked by change %d.", src.locked_by)
+			:
+				""
+			),
+			(
+				src.about_to_be_copied_by
+			?
+				sprintf
+				(
+					"About to be copied by change %d.",
+					src.about_to_be_copied_by
+				)
+			:
+				""
+			),
+			(
+				src.move != ""
+			?
+				sprintf
+				(
+					"Moved %s %s",
+					(src.action == create ? "from" : "to"),
+					src.move
+				)
+			:
+				""
+			)
+		);
+	}
+
+    columns( { left = 0; right = 0; }, { left = 8; right = 0; });
+    need(5);
+    print("HISTORY");
+
+    columns
+    (
+	{ width = 15; name = "What\n------"; left = 8; },
+	{ width = 15; name = "When\n------"; },
+	{ width = 8; name = "Who\n-----"; },
+	{ right = 0; name = "Comment\n---------"; },
+	{ left = 16; right = 0; }
+    );
+
+
+	auto h_idx;
+	for (h_idx in keys(cs.history))
+	{
+		auto h, why1, why2, elapsed;
+		h = cs.history[h_idx];
+		why1 = h.why;
+		why2 = "";
+		if (length(h.why) > 80)
+		{
+			why2 = why1;
+			why1 = "";
+		}
+		if (h_idx + 1 >= count(keys(cs.history)))
+			elapsed = working_days(h.when, now());
+		else
+		{
+			elapsed =
+			    working_days(h.when, cs.history[h_idx + 1].when);
+		}
+		if (elapsed > 0.1)
+		{
+			if (why1 != "")
+				why1 ##= "\n";
+			why1 ##= sprintf("Elapsed time: %.3f", elapsed);
+		}
+		print(h.what, h.when, h.who, why1);
+		if (why2 != "")
+			print("", "", "", "", why2);
+	}
+
+	need_to_eject = true;
+}

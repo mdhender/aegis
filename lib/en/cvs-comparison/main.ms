@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 .\"
 .\" MANIFEST: document compaing Aegis and CVS
 .\"
-.\" Format this file with 
+.\" Format this file with
 .\"	roffpp main.ms | pic | tbl | troff -t -ms | lpr -t
 .\" from the directory this file appears in.
 .\" Roffpp is part of "cook" available from the same author,

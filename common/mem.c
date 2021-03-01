@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,67 +36,60 @@
  * malloc does not guarantee that the space is available in swap.
  */
 
-#include <signal.h>
+#include <ac/signal.h>
 #include <setjmp.h>
 
-static jmp_buf	aix_bungy;
+static jmp_buf  aix_bungy;
 
 
 /*
  * Catch SIGDANGER and longjmp to aix_touch.
  */
 
-static void aix_danger _((int));
-
 static void
-aix_danger(n)
-	int		n;
+aix_danger(int n)
 {
-	longjmp(aix_bungy, 1);
+    longjmp(aix_bungy, 1);
 }
 
 /*
  * Touch the pages that cover [p, p+nbytes-1].
  */
 
-static int aix_touch _((void *, size_t));
-
 static int
-aix_touch(vp, nbytes)
-	void		*vp;
-	size_t		nbytes;
+aix_touch(void *vp, size_t nbytes)
 {
-	char		*p;
-	char		*endp;
-	int		pgsize;
-	volatile char	c;
-	void		(*oldsig)_((int));
+    char            *p;
+    char            *endp;
+    int             pgsize;
+    volatile char   c;
+    void            (*oldsig)_((int));
 
-	oldsig = signal(SIGDANGER, aix_danger);
-	if (setjmp(aix_bungy))
-	{
-		signal(SIGDANGER, oldsig);
-		return -1;
-	}
-
-	/*
-	 * A load is enough to cause the
-	 * allocation of the paging space
-	 */
-	p = vp;
-	pgsize = getpagesize();
-	endp = p + nbytes;
-	while (p < endp)
-	{
-		c = *(volatile char *)p;
-		p += pgsize;
-	}
-
-	/*
-	 * restore the signal handler
-	 */
+    oldsig = signal(SIGDANGER, aix_danger);
+    if (setjmp(aix_bungy))
+    {
 	signal(SIGDANGER, oldsig);
-	return 0;
+	return -1;
+    }
+
+    /*
+     * A load is enough to cause the
+     * allocation of the paging space
+     */
+    p = vp;
+    pgsize = getpagesize();
+    endp = p + nbytes;
+    while (p < endp)
+    {
+	c = *(volatile char *)p;
+	p += pgsize;
+    }
+
+    /*
+     * restore the signal handler
+     */
+    signal(SIGDANGER, oldsig);
+    return 0;
 }
 
 #endif
@@ -119,32 +112,31 @@ aix_touch(vp, nbytes)
  */
 
 void *
-mem_alloc(n)
-	size_t		n;
+mem_alloc(size_t n)
 {
-	void		*cp;
+    void            *cp;
 
-	if (n < 1)
-		n = 1;
-	errno = 0;
-	cp = malloc(n);
-	if (!cp)
-	{
-		if (!errno)
-			errno = ENOMEM;
-		nfatal("malloc");
-	}
+    if (n < 1)
+	n = 1;
+    errno = 0;
+    cp = malloc(n);
+    if (!cp)
+    {
+	if (!errno)
+	    errno = ENOMEM;
+	nfatal("malloc");
+    }
 #ifdef _AIX
-	/*
-	 * watch out for AIX stupidity
-	 */
-	if (aix_touch(cp, n))
-	{
-		errno = ENOMEM;
-		nfatal("malloc");
-	}
+    /*
+     * watch out for AIX stupidity
+     */
+    if (aix_touch(cp, n))
+    {
+	errno = ENOMEM;
+	nfatal("malloc");
+    }
 #endif
-	return cp;
+    return cp;
 }
 
 
@@ -156,9 +148,9 @@ mem_alloc(n)
  *	char *mem_alloc_clear(size_t n);
  *
  *  DESCRIPTION
- *	mem_alloc_clear uses malloc to allocate the required sized chunk of memory.
- *	If any error is returned from malloc() an fatal diagnostic is issued.
- *	The memory is zeroed befor it is returned.
+ *	mem_alloc_clear uses malloc to allocate the required sized chunk
+ *	of memory.  If any error is returned from malloc() an fatal
+ *	diagnostic is issued.  The memory is zeroed befor it is returned.
  *
  *  CAVEAT
  *	It is the responsibility of the caller to ensure that the space is
@@ -166,54 +158,57 @@ mem_alloc(n)
  */
 
 void *
-mem_alloc_clear(n)
-	size_t		n;
+mem_alloc_clear(size_t n)
 {
-	void		*cp;
+    void            *cp;
 
-	cp = mem_alloc(n);
-	memset(cp, 0, n);
-	return cp;
+    cp = mem_alloc(n);
+    memset(cp, 0, n);
+    return cp;
 }
 
 
 void *
-mem_change_size(cp, n)
-	void		*cp;
-	size_t		n;
+mem_change_size(void *cp, size_t n)
 {
-	if (n < 1)
-		n = 1;
-	errno = 0;
-	if (!cp)
-		cp = malloc(n);
-	else
-		cp = realloc(cp, n);
-	if (!cp)
-	{
-		if (!errno)
-			errno = ENOMEM;
-		nfatal("realloc");
-	}
-	return cp;
+    if (n < 1)
+	n = 1;
+    errno = 0;
+    if (!cp)
+	cp = malloc(n);
+    else
+	cp = realloc(cp, n);
+    if (!cp)
+    {
+	if (!errno)
+	    errno = ENOMEM;
+	nfatal("realloc");
+    }
+    return cp;
 }
 
 
 void
-mem_free(cp)
-	void		*cp;
+mem_free(void *cp)
 {
-	free(cp);
+    free(cp);
 }
 
 
 char *
-mem_copy_string(s)
-	const char	*s;
+mem_copy_string(const char *s)
 {
-	char		*cp;
+    char            *cp;
 
+    if (s)
+    {
 	cp = mem_alloc(strlen(s) + 1);
 	strcpy(cp, s);
-	return cp;
+    }
+    else
+    {
+	cp = mem_alloc(1);
+	*cp = 0;
+    }
+    return cp;
 }

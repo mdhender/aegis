@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,13 +19,13 @@
 .\"
 .\" MANIFEST: document describing new.3.3.so
 .\"
-.PP     
-.if n * 
+.PP
+.if n *
 .if t \(bu
 There is a new ``aegis -clone'' command, used to replicate changes
 across branches.  See \fIaeclone\fP(1) for more information.
-.PP     
-.if n * 
+.PP
+.if n *
 .if t \(bu
 There is a new ``-No-Wait'' command line option, which asks for a fatal
 error if a lock cannot be obtained immediately; this applies to all

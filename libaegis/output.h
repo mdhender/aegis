@@ -95,10 +95,15 @@ void output_delete_callback _((output_ty *, output_delete_callback_ty,
 	void *));
 
 /*
- * Thos looks recursive, but ANSI C macros are not allowed to recurse,
- * so the second one goes to the actual function.
+ * Despite looking recursive, it isn't.  Ansi C macros do not recurse,
+ * so it winds up calling the real function in the "buffer needs to
+ * grow" case.
+ *
+ * (Sun's compiler is defective, use GCC if you have a choice.)
  */
+#ifndef __SUNPRO_C
 #define output_fputc(fp, c) ((fp)->buffer_position < (fp)->buffer_end ? \
 	(void)(*((fp)->buffer_position)++ = (c)) : output_fputc((fp), (c)))
+#endif
 
 #endif /* LIBAEGIS_OUTPUT_H */

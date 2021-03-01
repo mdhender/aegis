@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-double fstrcmp _((char *, char *));
+double fstrcmp(char *, char *);
 
 #endif /* COMMON_FSTRCMP_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,14 +43,14 @@
 #include <wstr.h>
 
 
-static	wstring_ty	**hash_table;
-static	wstr_hash_ty	hash_modulus;
-static	wstr_hash_ty	hash_cutover;
-static	wstr_hash_ty	hash_cutover_mask;
-static	wstr_hash_ty	hash_cutover_split_mask;
-static	wstr_hash_ty	hash_split;
-static	wstr_hash_ty	hash_load;
-static	int		changed;
+static wstring_ty **hash_table;
+static wstr_hash_ty hash_modulus;
+static wstr_hash_ty hash_cutover;
+static wstr_hash_ty hash_cutover_mask;
+static wstr_hash_ty hash_cutover_split_mask;
+static wstr_hash_ty hash_split;
+static wstr_hash_ty hash_load;
+static int      changed;
 
 #define MAX_HASH_LEN 20
 
@@ -73,28 +73,24 @@ static	int		changed;
  *	It is important that wstr_hash_ty be unsigned (int or long).
  */
 
-static wstr_hash_ty hash_generate _((const wchar_t *, size_t));
-
 static wstr_hash_ty
-hash_generate(s, n)
-	const wchar_t	*s;
-	size_t		n;
+hash_generate(const wchar_t *s, size_t n)
 {
-	wstr_hash_ty	retval;
+    wstr_hash_ty    retval;
 
-	if (n > MAX_HASH_LEN)
-	{
-		s += n - MAX_HASH_LEN;
-		n = MAX_HASH_LEN;
-	}
+    if (n > MAX_HASH_LEN)
+    {
+	s += n - MAX_HASH_LEN;
+	n = MAX_HASH_LEN;
+    }
 
-	retval = 0;
-	while (n > 0)
-	{
-		retval = (retval + (retval << 1)) ^ *s++;
-		--n;
-	}
-	return retval;
+    retval = 0;
+    while (n > 0)
+    {
+	retval = (retval + (retval << 1)) ^ *s++;
+	--n;
+    }
+    return retval;
 }
 
 
@@ -116,24 +112,22 @@ hash_generate(s, n)
  *	This function must be called before any other defined in this file.
  */
 
-static void wstr_initialize _((void));
-
 static void
-wstr_initialize()
+wstr_initialize(void)
 {
-	wstr_hash_ty	j;
+    wstr_hash_ty    j;
 
-	if (hash_modulus)
-		return;
-	hash_modulus = 1<<8; /* MUST be a power of 2 */
-	hash_cutover = hash_modulus;
-	hash_split = hash_modulus - hash_cutover;
-	hash_cutover_mask = hash_cutover - 1;
-	hash_cutover_split_mask = (hash_cutover * 2) - 1;
-	hash_load = 0;
-	hash_table = (wstring_ty **)mem_alloc(hash_modulus * sizeof(wstring_ty *));
-	for (j = 0; j < hash_modulus; ++j)
-		hash_table[j] = 0;
+    if (hash_modulus)
+	return;
+    hash_modulus = 1 << 8;	/* MUST be a power of 2 */
+    hash_cutover = hash_modulus;
+    hash_split = hash_modulus - hash_cutover;
+    hash_cutover_mask = hash_cutover - 1;
+    hash_cutover_split_mask = (hash_cutover * 2) - 1;
+    hash_load = 0;
+    hash_table = (wstring_ty **)mem_alloc(hash_modulus * sizeof(wstring_ty *));
+    for (j = 0; j < hash_modulus; ++j)
+	hash_table[j] = 0;
 }
 
 
@@ -154,51 +148,49 @@ wstr_initialize()
  *	A load factor of about 80% is suggested.
  */
 
-static void split _((void));
-
 static void
-split()
+split(void)
 {
-	wstring_ty	*p;
-	wstring_ty	*p2;
-	wstr_hash_ty	idx;
+    wstring_ty      *p;
+    wstring_ty      *p2;
+    wstr_hash_ty    idx;
 
-	/*
-	 * get the list to be split across buckets
-	 */
-	p = hash_table[hash_split];
-	hash_table[hash_split] = 0;
+    /*
+     * get the list to be split across buckets
+     */
+    p = hash_table[hash_split];
+    hash_table[hash_split] = 0;
 
-	/*
-	 * increase the modulus by one
-	 */
-	hash_modulus++;
-	hash_table =
-		mem_change_size(hash_table, hash_modulus * sizeof(wstring_ty *));
-	hash_table[hash_modulus - 1] = 0;
-	hash_split = hash_modulus - hash_cutover;
-	if (hash_split >= hash_cutover)
-	{
-		hash_cutover = hash_modulus;
-		hash_split = 0;
-		hash_cutover_mask = hash_cutover - 1;
-		hash_cutover_split_mask = (hash_cutover * 2) - 1;
-	}
+    /*
+     * increase the modulus by one
+     */
+    hash_modulus++;
+    hash_table =
+	mem_change_size(hash_table, hash_modulus * sizeof(wstring_ty *));
+    hash_table[hash_modulus - 1] = 0;
+    hash_split = hash_modulus - hash_cutover;
+    if (hash_split >= hash_cutover)
+    {
+	hash_cutover = hash_modulus;
+	hash_split = 0;
+	hash_cutover_mask = hash_cutover - 1;
+	hash_cutover_split_mask = (hash_cutover * 2) - 1;
+    }
 
-	/*
-	 * now redistribute the list elements
-	 */
-	while (p)
-	{
-		p2 = p;
-		p = p->wstr_next;
+    /*
+     * now redistribute the list elements
+     */
+    while (p)
+    {
+	p2 = p;
+	p = p->wstr_next;
 
-		idx = p2->wstr_hash & hash_cutover_mask;
-		if (idx < hash_split)
-			idx = p2->wstr_hash & hash_cutover_split_mask;
-		p2->wstr_next = hash_table[idx];
-		hash_table[idx] = p2;
-	}
+	idx = p2->wstr_hash & hash_cutover_mask;
+	if (idx < hash_split)
+	    idx = p2->wstr_hash & hash_cutover_split_mask;
+	p2->wstr_next = hash_table[idx];
+	hash_table[idx] = p2;
+    }
 }
 
 
@@ -223,10 +215,9 @@ split()
  */
 
 wstring_ty *
-wstr_from_c(s)
-	const char	*s;
+wstr_from_c(const char *s)
 {
-	return wstr_n_from_c(s, strlen(s));
+    return wstr_n_from_c(s, strlen(s));
 }
 
 
@@ -250,10 +241,9 @@ wstr_from_c(s)
  */
 
 wstring_ty *
-wstr_from_wc(ws)
-	const wchar_t	*ws;
+wstr_from_wc(const wchar_t *ws)
 {
-	return wstr_n_from_wc(ws, wcslen(ws));
+    return wstr_n_from_wc(ws, wcslen(ws));
 }
 
 
@@ -279,108 +269,106 @@ wstr_from_wc(ws)
  */
 
 wstring_ty *
-wstr_n_from_c(s, length)
-	const char	*s;
-	size_t		length;
+wstr_n_from_c(const char *s, size_t length)
 {
 #if __STDC__ >= 1
-	static char	escapes[] = "\aa\bb\ff\nn\rr\tt\vv";
+    static char     escapes[] = "\aa\bb\ff\nn\rr\tt\vv";
 #else
-	static char	escapes[] = "\bb\ff\nn\rr\tt";
+    static char     escapes[] = "\bb\ff\nn\rr\tt";
 #endif
-	static wchar_t	*buf;
-	static size_t	bufmax;
-	size_t		remainder;
-	const char	*ip;
-	wchar_t		*op;
+    static wchar_t  *buf;
+    static size_t   bufmax;
+    size_t          remainder;
+    const char      *ip;
+    wchar_t         *op;
 
-	/*
-	 * Do the conversion "long hand".  This is because some
-	 * implementations of the mbstowcs function barf when they see
-	 * invalid multi byte character sequences.  This function
-	 * renders them as C escape sequences and keeps going.
-	 */
-	if (bufmax < length)
+    /*
+     * Do the conversion "long hand".  This is because some
+     * implementations of the mbstowcs function barf when they see
+     * invalid multi byte character sequences.  This function
+     * renders them as C escape sequences and keeps going.
+     */
+    if (bufmax < length)
+    {
+	bufmax = length;
+	/* the 4 is the longest escape sequence */
+	buf = mem_change_size(buf, bufmax * sizeof(wchar_t) * 4);
+    }
+
+    /*
+     * change the locale to the native language default
+     */
+    language_human();
+
+    /*
+     * Reset the mbtowc internal state.
+     */
+    mbtowc((wchar_t *)0, (char *)0, 0);				 /*lint !e418 */
+
+    /*
+     * scan the string and extract the wide characters
+     */
+    ip = s;
+    op = buf;
+    remainder = length;
+    while (remainder > 0)
+    {
+	int             n;
+
+	n = mbtowc(op, ip, remainder);
+	if (n == 0)
+	    break;
+	if (n < 0)
 	{
-		bufmax = length;
-		/* the 4 is the longest escape sequence */
-		buf = mem_change_size(buf, bufmax * sizeof(wchar_t) * 4);
+	    char           *esc;
+
+	    /*
+	     * Invalid multi byte sequence, replace the
+	     * first character with a C escape sequence.
+	     */
+	    esc = strchr(escapes, *ip);
+	    if (esc)
+	    {
+		*op++ = '\\';
+		*op++ = esc[1];
+	    }
+	    else
+	    {
+		*op++ = '\\';
+		*op++ = '0' + ((*ip >> 6) & 7);
+		*op++ = '0' + ((*ip >> 3) & 7);
+		*op++ = '0' + (*ip & 7);
+	    }
+	    ++ip;
+	    --remainder;
+
+	    /*
+	     * The mbtowc function's internal state will now
+	     * be "error" or broken, or otherwise useless.
+	     * Reset it so that we can keep going.
+	     */
+	    mbtowc((wchar_t *)0, (char *)0, 0);	/*lint !e418 */
 	}
-
-	/*
-	 * change the locale to the native language default
-	 */
-	language_human();
-
-	/*
-	 * Reset the mbtowc internal state.
-	 */
-	mbtowc((wchar_t *)0, (char *)0, 0);			/*lint !e418 */
-
-	/*
-	 * scan the string and extract the wide characters
-	 */
-	ip = s;
-	op = buf;
-	remainder = length;
-	while (remainder > 0)
+	else
 	{
-		int		n;
-
-		n = mbtowc(op, ip, remainder);
-		if (n == 0)
-			break;
-		if (n < 0)
-		{
-			char	*esc;
-
-			/*
-			 * Invalid multi byte sequence, replace the
-			 * first character with a C escape sequence.
-			 */
-			esc = strchr(escapes, *ip);
-			if (esc)
-			{
-				*op++ = '\\';
-				*op++ = esc[1];
-			}
-			else
-			{
-				*op++ = '\\';
-				*op++ = '0' + ((*ip >> 6) & 7);
-				*op++ = '0' + ((*ip >> 3) & 7);
-				*op++ = '0' + ( *ip       & 7);
-			}
-			++ip;
-			--remainder;
-
-			/*
-			 * The mbtowc function's internal state will now
-			 * be "error" or broken, or otherwise useless.
-			 * Reset it so that we can keep going.
-			 */
-			mbtowc((wchar_t *)0, (char *)0, 0);	/*lint !e418 */
-		}
-		else
-		{
-			/*
-			 * the one wchar_t used n chars
-			 */
-			ip += n;
-			remainder -= n;
-			++op;
-		}
+	    /*
+	     * the one wchar_t used n chars
+	     */
+	    ip += n;
+	    remainder -= n;
+	    ++op;
 	}
+    }
 
-	/*
-	 * change the locale back to the C locale
-	 */
-	language_C();
+    /*
+     * change the locale back to the C locale
+     */
+    language_C();
 
-	/*
-	 * build the result from the image in ``buf''
-	 */
-	return wstr_n_from_wc(buf, op - buf);
+    /*
+     * build the result from the image in ``buf''
+     */
+    return wstr_n_from_wc(buf, op - buf);
 }
 
 
@@ -403,116 +391,113 @@ wstr_n_from_c(s, length)
  */
 
 void
-wstr_to_mbs(s, result_p, result_length_p)
-	const wstring_ty *s;
-	char		**result_p;
-	size_t		*result_length_p;
+wstr_to_mbs(const wstring_ty *s, char **result_p, size_t *result_length_p)
 {
-	static char	*buf;
-	static size_t	bufmax;
-	int		n;
-	const wchar_t	*ip;
-	size_t		remainder;
-	char		*op;
-	size_t		buflen;
+    static char     *buf;
+    static size_t   bufmax;
+    int             n;
+    const wchar_t   *ip;
+    size_t          remainder;
+    char            *op;
+    size_t          buflen;
 
-	/*
-	 * For reasons I don't understand, the MB_CUR_MAX symbol (wich is
-	 * defined as a reference to __mb_cur_max) does not get resolved
-	 * at link time, despite being present in libc.  It's easier to
-	 * just dodge the question.
-	 */
+    /*
+     * For reasons I don't understand, the MB_CUR_MAX symbol (wich is
+     * defined as a reference to __mb_cur_max) does not get resolved
+     * at link time, despite being present in libc.  It's easier to
+     * just dodge the question.
+     */
 #ifdef __CYGWIN__
 #undef MB_CUR_MAX
 #define MB_CUR_MAX 8
 #endif
 
+    /*
+     * Do the conversion "long hand".  This is because the wcstombs
+     * function barfs when it sees an invalid wchar_t.  This
+     * function treats them literally and keeps going.
+     */
+    buflen = (s->wstr_length + 1) * MB_CUR_MAX;
+    if (buflen < s->wstr_length + 1)
+    {
 	/*
-	 * Do the conversion "long hand".  This is because the wcstombs
-	 * function barfs when it sees an invalid wchar_t.  This
-	 * function treats them literally and keeps going.
+	 * There are some wonderfully brain-dead implementatiosn
+	 * out there.  The more stupid ones manage to make
+	 * MB_CUR_MAX be zero!
 	 */
-	buflen = (s->wstr_length + 1) * MB_CUR_MAX;
-	if (buflen < s->wstr_length + 1)
-	{
-		/*
-		 * There are some wonderfully brain-dead implementatiosn
-		 * out there.  The more stupid ones manage to make
-		 * MB_CUR_MAX be zero!
-		 */
-		buflen = s->wstr_length + 1;
-	}
-	if (buflen > bufmax)
-	{
-		bufmax = buflen;
-		buf = mem_change_size(buf, bufmax);
-	}
+	buflen = s->wstr_length + 1;
+    }
+    if (buflen > bufmax)
+    {
+	bufmax = buflen;
+	buf = mem_change_size(buf, bufmax);
+    }
 
-	/*
-	 * perform the conversion in the native language default
-	 */
-	language_human();
+    /*
+     * perform the conversion in the native language default
+     */
+    language_human();
 
-	/*
-	 * The wctomb function has internal state.  It needs to be reset.
-	 */
-	wctomb((char *)0, 0);					/*lint !e418 */
+    /*
+     * The wctomb function has internal state.  It needs to be reset.
+     */
+    wctomb((char *)0, 0);					 /*lint !e418 */
 
-	ip = s->wstr_text;
-	remainder = s->wstr_length;
-	op = buf;
-	while (remainder > 0)
-	{
-		n = wctomb(op, *ip);
-		if (n <= 0)
-		{
-			/*
-			 * Copy the character literally.
-			 * Throw away anything that will not fit.
-			 */
-			*op++ = *ip++;
-			if (!op[-1])
-				op[-1] = '?';
-			--remainder;
-
-			/*
-			 * The wctomb function's internal state will now
-			 * be "error" or broken, or otherwise useless.
-			 * Reset it so that we can keep going.
-			 */
-			wctomb((char *)0, 0);			/*lint !e418 */
-		}
-		else
-		{
-			op += n;
-			++ip;
-			--remainder;
-		}
-	}
-
-	/*
-	 * The final NUL could require shift state end characters,
-	 * meaning that n could be more than 1.
-	 */
-	n = wctomb(op, (wchar_t)0);
+    ip = s->wstr_text;
+    remainder = s->wstr_length;
+    op = buf;
+    while (remainder > 0)
+    {
+	n = wctomb(op, *ip);
 	if (n <= 0)
-		*op = 0;
+	{
+	    /*
+	     * Copy the character literally.
+	     * Throw away anything that will not fit.
+	     */
+	    *op++ = *ip++;
+	    if (!op[-1])
+		op[-1] = '?';
+	    --remainder;
+
+	    /*
+	     * The wctomb function's internal state will now
+	     * be "error" or broken, or otherwise useless.
+	     * Reset it so that we can keep going.
+	     */
+	    wctomb((char *)0, 0);				 /*lint !e418 */
+	}
 	else
 	{
-		op += n - 1;
-		assert(*op == 0);
+	    op += n;
+	    ++ip;
+	    --remainder;
 	}
+    }
 
-	/*
-	 * restore the locale to the C locale
-	 */
-	language_C();
+    /*
+     * The final NUL could require shift state end characters,
+     * meaning that n could be more than 1.
+     */
+    n = wctomb(op, (wchar_t)0);
+    if (n <= 0)
+	*op = 0;
+    else
+    {
+	op += n - 1;
+	assert(*op == 0);
+    }
 
-	/*
-	 * set the output side effects
-	 */
-	*result_p = buf;
-	*result_length_p = op - buf;
+    /*
+     * restore the locale to the C locale
+     */
+    language_C();
+
+    /*
+     * set the output side effects
+     */
+    *result_p = buf;
+    *result_length_p = op - buf;
 }
 
 
@@ -536,52 +521,50 @@ wstr_to_mbs(s, result_p, result_length_p)
  */
 
 wstring_ty *
-wstr_n_from_wc(s, length)
-	const wchar_t	*s;
-	size_t		length;
+wstr_n_from_wc(const wchar_t *s, size_t length)
 {
-	wstr_hash_ty	hash;
-	wstr_hash_ty	idx;
-	wstring_ty	*p;
+    wstr_hash_ty    hash;
+    wstr_hash_ty    idx;
+    wstring_ty      *p;
 
-	if (!hash_modulus)
-		wstr_initialize();
-	hash = hash_generate(s, length);
+    if (!hash_modulus)
+	wstr_initialize();
+    hash = hash_generate(s, length);
 
-	idx = hash & hash_cutover_mask;
-	if (idx < hash_split)
-		idx = hash & hash_cutover_split_mask;
+    idx = hash & hash_cutover_mask;
+    if (idx < hash_split)
+	idx = hash & hash_cutover_split_mask;
 
-	for (p = hash_table[idx]; p; p = p->wstr_next)
+    for (p = hash_table[idx]; p; p = p->wstr_next)
+    {
+	if
+	(
+	    p->wstr_hash == hash
+	&&
+	    p->wstr_length == length
+	&&
+	    !memcmp(p->wstr_text, s, length * sizeof(wchar_t))
+	)
 	{
-		if
-		(
-			p->wstr_hash == hash
-		&&
-			p->wstr_length == length
-		&&
-			!memcmp(p->wstr_text, s, length * sizeof(wchar_t))
-		)
-		{
-			p->wstr_references++;
-			return p;
-		}
+	    p->wstr_references++;
+	    return p;
 	}
+    }
 
-	p = (wstring_ty *)mem_alloc(sizeof(wstring_ty) + length * sizeof(wchar_t));
-	p->wstr_hash = hash;
-	p->wstr_length = length;
-	p->wstr_references = 1;
-	p->wstr_next = hash_table[idx];
-	hash_table[idx] = p;
-	memcpy(p->wstr_text, s, length * sizeof(wchar_t));
-	p->wstr_text[length] = 0;
+    p = (wstring_ty *)mem_alloc(sizeof(wstring_ty) + length * sizeof(wchar_t));
+    p->wstr_hash = hash;
+    p->wstr_length = length;
+    p->wstr_references = 1;
+    p->wstr_next = hash_table[idx];
+    hash_table[idx] = p;
+    memcpy(p->wstr_text, s, length * sizeof(wchar_t));
+    p->wstr_text[length] = 0;
 
-	hash_load++;
-	while (hash_load * 10 > hash_modulus * 8)
-		split();
-	++changed;
-	return p;
+    hash_load++;
+    while (hash_load * 10 > hash_modulus * 8)
+	split();
+    ++changed;
+    return p;
 }
 
 
@@ -596,19 +579,18 @@ wstr_n_from_wc(s, length)
  *	The wstr_copy function is used to make a copy of a string.
  *
  * RETURNS
- *	wstring_ty* - a pointer to a string in dynamic memory.  Use wstr_free when
- *	finished with.
+ *	wstring_ty* - a pointer to a string in dynamic memory.
+ *	Use wstr_free when finished with.
  *
  * CAVEAT
  *	The contents of the structure pointed to MUST NOT be altered.
  */
 
 wstring_ty *
-wstr_copy(s)
-	wstring_ty	*s;
+wstr_copy(wstring_ty *s)
 {
-	s->wstr_references++;
-	return s;
+    s->wstr_references++;
+    return s;
 }
 
 
@@ -631,43 +613,42 @@ wstr_copy(s)
  */
 
 void
-wstr_free(s)
-	wstring_ty	*s;
+wstr_free(wstring_ty *s)
 {
-	wstr_hash_ty	idx;
-	wstring_ty	**spp;
+    wstr_hash_ty    idx;
+    wstring_ty      **spp;
 
-	if (!s)
-		return;
-	if (s->wstr_references > 1)
+    if (!s)
+	return;
+    if (s->wstr_references > 1)
+    {
+	s->wstr_references--;
+	return;
+    }
+    ++changed;
+
+    /*
+     * find the hash bucket it was in,
+     * and remove it
+     */
+    idx = s->wstr_hash & hash_cutover_mask;
+    if (idx < hash_split)
+	idx = s->wstr_hash & hash_cutover_split_mask;
+    for (spp = &hash_table[idx]; *spp; spp = &(*spp)->wstr_next)
+    {
+	if (*spp == s)
 	{
-		s->wstr_references--;
-		return;
+	    *spp = s->wstr_next;
+	    free(s);
+	    --hash_load;
+	    return;
 	}
-	++changed;
+    }
 
-	/*
-	 * find the hash bucket it was in,
-	 * and remove it
-	 */
-	idx = s->wstr_hash & hash_cutover_mask;
-	if (idx < hash_split)
-		idx = s->wstr_hash & hash_cutover_split_mask;
-	for (spp = &hash_table[idx]; *spp; spp = &(*spp)->wstr_next)
-	{
-		if (*spp == s)
-		{
-			*spp = s->wstr_next;
-			free(s);
-			--hash_load;
-			return;
-		}
-	}
-
-	/*
-	 * should never reach here!
-	 */
-	fatal_raw("attempted to free non-existent wstring (bug)");
+    /*
+     * should never reach here!
+     */
+    fatal_raw("attempted to free non-existent wstring (bug)");
 }
 
 
@@ -683,33 +664,36 @@ wstr_free(s)
  *	new string.
  *
  * RETURNS
- *	wstring_ty* - a pointer to a string in dynamic memory.  Use wstr_free when
- *	finished with.
+ *	wstring_ty* - a pointer to a string in dynamic memory.
+ *	Use wstr_free when finished with.
  *
  * CAVEAT
  *	The contents of the structure pointed to MUST NOT be altered.
  */
 
 wstring_ty *
-wstr_catenate(s1, s2)
-	const wstring_ty *s1;
-	const wstring_ty *s2;
+wstr_catenate(const wstring_ty *s1, const wstring_ty *s2)
 {
-	static wchar_t	*tmp;
-	static size_t	tmplen;
-	wstring_ty	*s;
-	size_t		length;
+    static wchar_t  *tmp;
+    static size_t   tmplen;
+    wstring_ty      *s;
+    size_t          length;
 
-	length = s1->wstr_length + s2->wstr_length;
-	if (length > tmplen)
-	{
-		tmplen = length;
-		tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
-	}
-	memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
-	memcpy(tmp + s1->wstr_length, s2->wstr_text, s2->wstr_length * sizeof(wchar_t));
-	s = wstr_n_from_wc(tmp, length);
-	return s;
+    length = s1->wstr_length + s2->wstr_length;
+    if (length > tmplen)
+    {
+	tmplen = length;
+	tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
+    }
+    memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
+    memcpy
+    (
+	tmp + s1->wstr_length,
+	s2->wstr_text,
+	s2->wstr_length * sizeof(wchar_t)
+    );
+    s = wstr_n_from_wc(tmp, length);
+    return s;
 }
 
 
@@ -725,175 +709,168 @@ wstr_catenate(s1, s2)
  *	a new string.
  *
  * RETURNS
- *	wstring_ty* - a pointer to a string in dynamic memory.  Use wstr_free when
- *	finished with.
+ *	wstring_ty* - a pointer to a string in dynamic memory.
+ *	Use wstr_free when finished with.
  *
  * CAVEAT
  *	The contents of the structure pointed to MUST NOT be altered.
  */
 
 wstring_ty *
-wstr_cat_three(s1, s2, s3)
-	const wstring_ty *s1;
-	const wstring_ty *s2;
-	const wstring_ty *s3;
+wstr_cat_three(const wstring_ty *s1, const wstring_ty *s2, const wstring_ty *s3)
 {
-	static wchar_t	*tmp;
-	static size_t	tmplen;
-	wstring_ty	*s;
-	size_t		length;
+    static wchar_t  *tmp;
+    static size_t   tmplen;
+    wstring_ty      *s;
+    size_t          length;
 
-	length = s1->wstr_length + s2->wstr_length + s3->wstr_length;
-	if (tmplen < length)
-	{
-		tmplen = length;
-		tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
-	}
-	memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
-	memcpy
-	(
-		tmp + s1->wstr_length,
-		s2->wstr_text,
-		s2->wstr_length * sizeof(wchar_t)
-	);
-	memcpy
-	(
-		tmp + s1->wstr_length + s2->wstr_length,
-		s3->wstr_text,
-		s3->wstr_length * sizeof(wchar_t)
-	);
-	s = wstr_n_from_wc(tmp, length);
-	return s;
+    length = s1->wstr_length + s2->wstr_length + s3->wstr_length;
+    if (tmplen < length)
+    {
+	tmplen = length;
+	tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
+    }
+    memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
+    memcpy
+    (
+	tmp + s1->wstr_length,
+	s2->wstr_text,
+	s2->wstr_length * sizeof(wchar_t)
+    );
+    memcpy
+    (
+	tmp + s1->wstr_length + s2->wstr_length,
+	s3->wstr_text,
+	s3->wstr_length * sizeof(wchar_t)
+    );
+    s = wstr_n_from_wc(tmp, length);
+    return s;
 }
 
 
 wstring_ty *
-wstr_capitalize(ws)
-	const wstring_ty *ws;
+wstr_capitalize(const wstring_ty *ws)
 {
-	static wchar_t	*buffer;
-	static size_t	buflen;
-	size_t		j;
-	int		prev_was_alpha;
+    static wchar_t  *buffer;
+    static size_t   buflen;
+    size_t          j;
+    int             prev_was_alpha;
 
-	if (ws->wstr_length > buflen)
-	{
-		buflen = ws->wstr_length;
-		buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
-	}
-	language_human();
-	prev_was_alpha = 0;
-	for (j = 0; j < ws->wstr_length; ++j)
-	{
-		wchar_t		c;
+    if (ws->wstr_length > buflen)
+    {
+	buflen = ws->wstr_length;
+	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+    }
+    language_human();
+    prev_was_alpha = 0;
+    for (j = 0; j < ws->wstr_length; ++j)
+    {
+	wchar_t         c;
 
-		c = ws->wstr_text[j];
-		if (iswlower(c))
-		{
-			if (!prev_was_alpha)
-				c = towupper(c);
-			prev_was_alpha = 1;
-		}
-		else if (iswupper(c))
-		{
-			if (prev_was_alpha)
-				c = towlower(c);
-			prev_was_alpha = 1;
-		}
-		else
-			prev_was_alpha = 0;
-		buffer[j] = c;
+	c = ws->wstr_text[j];
+	if (iswlower(c))
+	{
+	    if (!prev_was_alpha)
+		c = towupper(c);
+	    prev_was_alpha = 1;
 	}
-	language_C();
-	return wstr_n_from_wc(buffer, ws->wstr_length);
+	else if (iswupper(c))
+	{
+	    if (prev_was_alpha)
+		c = towlower(c);
+	    prev_was_alpha = 1;
+	}
+	else
+	    prev_was_alpha = 0;
+	buffer[j] = c;
+    }
+    language_C();
+    return wstr_n_from_wc(buffer, ws->wstr_length);
 }
 
 
 wstring_ty *
-wstr_to_upper(ws)
-	const wstring_ty *ws;
+wstr_to_upper(const wstring_ty *ws)
 {
-	static wchar_t	*buffer;
-	static size_t	buflen;
-	size_t		j;
+    static wchar_t  *buffer;
+    static size_t   buflen;
+    size_t          j;
 
-	if (ws->wstr_length > buflen)
-	{
-		buflen = ws->wstr_length;
-		buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
-	}
-	language_human();
-	for (j = 0; j < ws->wstr_length; ++j)
-	{
-		wchar_t		c;
+    if (ws->wstr_length > buflen)
+    {
+	buflen = ws->wstr_length;
+	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+    }
+    language_human();
+    for (j = 0; j < ws->wstr_length; ++j)
+    {
+	wchar_t         c;
 
-		c = ws->wstr_text[j];
-		if (iswlower(c))
-			c = towupper(c);
-		buffer[j] = c;
-	}
-	language_C();
-	return wstr_n_from_wc(buffer, ws->wstr_length);
+	c = ws->wstr_text[j];
+	if (iswlower(c))
+	    c = towupper(c);
+	buffer[j] = c;
+    }
+    language_C();
+    return wstr_n_from_wc(buffer, ws->wstr_length);
 }
 
 
 wstring_ty *
-wstr_to_lower(ws)
-	const wstring_ty *ws;
+wstr_to_lower(const wstring_ty *ws)
 {
-	static wchar_t	*buffer;
-	static size_t	buflen;
-	size_t		j;
+    static wchar_t  *buffer;
+    static size_t   buflen;
+    size_t          j;
 
-	if (ws->wstr_length > buflen)
-	{
-		buflen = ws->wstr_length;
-		buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
-	}
-	language_human();
-	for (j = 0; j < ws->wstr_length; ++j)
-	{
-		wchar_t		c;
+    if (ws->wstr_length > buflen)
+    {
+	buflen = ws->wstr_length;
+	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+    }
+    language_human();
+    for (j = 0; j < ws->wstr_length; ++j)
+    {
+	wchar_t         c;
 
-		c = ws->wstr_text[j];
-		if (iswupper(c))
-			c = towlower(c);
-		buffer[j] = c;
-	}
-	language_C();
-	return wstr_n_from_wc(buffer, ws->wstr_length);
+	c = ws->wstr_text[j];
+	if (iswupper(c))
+	    c = towlower(c);
+	buffer[j] = c;
+    }
+    language_C();
+    return wstr_n_from_wc(buffer, ws->wstr_length);
 }
 
 
 wstring_ty *
-wstr_to_ident(ws)
-	const wstring_ty *ws;
+wstr_to_ident(const wstring_ty *ws)
 {
-	static wchar_t	*buffer;
-	static size_t	buflen;
-	size_t		j;
+    static wchar_t  *buffer;
+    static size_t   buflen;
+    size_t          j;
 
-	if (ws->wstr_length == 0)
-		return wstr_from_c("_");
-	if (ws->wstr_length > buflen)
-	{
-		buflen = ws->wstr_length;
-		buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
-	}
-	language_human();
-	for (j = 0; j < ws->wstr_length; ++j)
-	{
-		wchar_t		c;
+    if (ws->wstr_length == 0)
+	return wstr_from_c("_");
+    if (ws->wstr_length > buflen)
+    {
+	buflen = ws->wstr_length;
+	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+    }
+    language_human();
+    for (j = 0; j < ws->wstr_length; ++j)
+    {
+	wchar_t         c;
 
-		c = ws->wstr_text[j];
-		if (!iswalnum(c))
-			c = '_';
-		buffer[j] = c;
-	}
-	if (iswdigit(buffer[0]))
-		buffer[0] = '_';
-	language_C();
-	return wstr_n_from_wc(buffer, ws->wstr_length);
+	c = ws->wstr_text[j];
+	if (!iswalnum(c))
+	    c = '_';
+	buffer[j] = c;
+    }
+    if (iswdigit(buffer[0]))
+	buffer[0] = '_';
+    language_C();
+    return wstr_n_from_wc(buffer, ws->wstr_length);
 }
 
 
@@ -918,31 +895,27 @@ wstr_to_ident(ws)
 #ifndef wstr_equal
 
 int
-wstr_equal(s1, s2)
-	const wstring_ty *s1;
-	const wstring_ty *s2;
+wstr_equal(const wstring_ty *s1, const wstring_ty *s2)
 {
-	return (s1 == s2);
+    return (s1 == s2);
 }
 
 #endif
 
 
 wstring_ty *
-str_to_wstr(s)
-	const string_ty	*s;
+str_to_wstr(const string_ty *s)
 {
-	return wstr_n_from_c(s->str_text, s->str_length);
+    return wstr_n_from_c(s->str_text, s->str_length);
 }
 
 
 string_ty *
-wstr_to_str(ws)
-	const wstring_ty *ws;
+wstr_to_str(const wstring_ty *ws)
 {
-	char		*text;
-	size_t		length;
+    char            *text;
+    size_t          length;
 
-	wstr_to_mbs(ws, &text, &length);
-	return str_n_from_c(text, length);
+    wstr_to_mbs(ws, &text, &length);
+    return str_n_from_c(text, length);
 }

@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-char *version_stamp _((void));
-char *copyright_years _((void));
+char *version_stamp(void);
+char *copyright_years(void);
 
 #endif /* COMMON_VERSION_STMP_H */

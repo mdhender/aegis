@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998 Peter Miller;
+#	Copyright (C) 1998, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,9 @@ if test "$1" = "-r"; then
 	sortflag=r
 	shift
 fi
-echo $* | tr ' ' '\12' | sort -t. +1n$sortflag -2 +2n$sortflag -3 +3n$sortflag -5 |
+echo $* |
+tr ' ' '\12' |
+sort -t. +1n$sortflag -2 +2n$sortflag -3 +3n$sortflag -5 |
 while read f
 do
 	echo ".br"

@@ -24,31 +24,5 @@ msgstr	"PO-Revision-Date: 2001-02-18 23:59CET\n"
 	"Last-Translator: Jelle Boomstra <nietsch@dds.nl>\n"
 	"Language-Team: Nederlands <nl@li.org>\n"
 	"MIME-Version: 1.0\n"
-	"Content-Type: text/plain; charset=latin1\n"
+	"Content-Type: text/plain; charset=iso-8859-1\n"
 	"Content-Transfer-Encoding: 8bit\n"
-
-# --------------------------------------------------------------------------
-#
-# This fatal error message is issued when a file ches size while the
-# archive is being constructed.
-#
-#	$File_Name	The name of the offending file.
-#
-msgid	"archive member $filename changed size"
-msgstr	"archief bestand $filename veranderde van grootte tijdens "
-	"verwerking, resultaat niet betrouwbaar"
-
-#
-# This fatal error message is issued when there would be no files in
-# the distributed change set.
-#
-msgid	"bad send no files"
-msgstr	"er zijn geen bestanden om te distribueren"
-
-#
-# This fatal error message is issued when a change is not in a suitable
-# state from which to make a distribution change set.
-#
-msgid	"bad send state"
-msgstr	"Deze wijziging heeft de status $state; hij moet een latere "
-	"status hebben om verzonden te worden"

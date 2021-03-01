@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999, 2000, 2001 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,8 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: command used to notify by email that a change review passed is rescinded
+# MANIFEST: command used to notify by email that a change review passed
+#	is rescinded
 #
 # Suggested project attribute:
 # review_pass_undo_notify_command = "$datadir/de.inews.sh $p $c $developer"
@@ -55,11 +56,15 @@ then
 	reviewers=`$aegis -list administrators -project $project -terse`
 	if [ $? -ne 0 ]; then quit; fi
 fi
+reviewers=`echo $reviewers | sed 's/ /,/g'`
 
 #
 # build the notice to be mailed
 #
-cat > $tmp << 'TheEnd'
+cat > $tmp << TheEnd
+Subject: Project $project: Change $change: review pass undo
+To: $developer, $reviewers
+
 The change described below has had its review
 pass rescinded, pending further review.
 
@@ -76,7 +81,7 @@ if [ $? -ne 0 ]; then quit; fi
 #
 # mail it to the developer and all reviewers
 #
-mail -s "project $project: Change $change: review pass undo" $developer $reviewers < $tmp
+/usr/lib/sendmail -t < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

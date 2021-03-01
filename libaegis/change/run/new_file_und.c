@@ -42,7 +42,7 @@ change_run_new_file_undo_command(cp, wlp, up)
 	string_ty	*the_files;
 	string_ty	*dd;
 
-	trace(("change_run_change_file_command(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_run_change_file_command(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	pconf_data = change_pconf_get(cp, 0);
 	the_command = pconf_data->new_file_undo_command;
@@ -64,5 +64,5 @@ change_run_new_file_undo_command(cp, wlp, up)
 	user_become_undo();
 	str_free(the_command);
 	ret:
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

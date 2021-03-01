@@ -1,0 +1,383 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: functions to manipulate bashs
+ *
+ *
+ *	The following is abstracted from the bash(1) man page:
+ *
+ * Programmable Completion
+ *	When word completion is attempted for an argument to a command for
+ *	which a completion specification (a compspec) has been defined
+ *	using the complete builtin (see SHELL BUILTIN COMMANDS below),
+ *	the programmable completion facilities are invoked.
+ *
+ *	First, the command name is identified. If a compspec has been
+ *	defined for that command, the compspec is used to generate the
+ *	list of possible completions for the word.  If the command word
+ *	is a full pathname, a compspec for the full pathname is searched
+ *	for first. If no compspec is found for the full pathname, an
+ *	attempt is made to find a compspec for the portion following
+ *	the final slash.
+ *
+ *	To use the aecomplete command, use a compspec of the form
+ *		complete -C aecomplete <command>
+ *	The list of commands that are viable depends on how much of
+ *	aecomplete has been finished.
+ *
+ *	Any command specified with the -C option is invoked in
+ *	an environment equivalent to command substitution. It should
+ *	print a list of completions, one per line, to the standard
+ *	output. Backslash may be used to escape a newline, if necessary.
+ *
+ *	When the command is invoked, the COMP_LINE and COMP_POINT
+ *	variables are assigned values as described below.  When the
+ *	command is invoked, the first argument is the name of the command
+ *	whose arguments are being completed, the second argument is
+ *	the word being completed, and the third argument is the word
+ *	preceding the word being completed on the current command line.
+ *
+ * COMP_LINE
+ *	The current command line.
+ *
+ * COMP_POINT
+ *	The index of the current cursor position relative to the beginning
+ *	of the current command.
+ */
+
+#include <ac/ctype.h>
+#include <ac/stdio.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+
+#include <arglex.h>
+#include <error.h>
+#include <mem.h>
+#include <progname.h>
+#include <shell/bash.h>
+#include <shell/private.h>
+#include <str.h>
+
+
+typedef struct shell_bash_ty shell_bash_ty;
+struct shell_bash_ty
+{
+    shell_ty        inherited;
+    string_ty       *command;
+    string_ty       *prefix;
+};
+
+
+static char *copy_of _((const char *s, size_t len));
+
+static char *
+copy_of(s, len)
+    const char      *s;
+    size_t          len;
+{
+    char    *result;
+
+    result = mem_alloc(len + 1);
+    memcpy(result, s, len);
+    result[len] = 0;
+    return result;
+}
+
+
+static void destructor _((shell_ty *));
+
+static void
+destructor(sp)
+    shell_ty        *sp;
+{
+    shell_bash_ty   *this;
+
+    this = (shell_bash_ty *)sp;
+    if (this->command)
+	str_free(this->command);
+    if (this->prefix)
+	str_free(this->prefix);
+}
+
+
+static void usage _((void));
+
+static void
+usage()
+{
+    char *prog = progname_get();
+    fprintf(stderr, "Usage: %s <prog-name> <word> <context>\n", prog);
+    exit(1);
+}
+
+static int test _((shell_ty *));
+
+static int
+test(sp)
+    shell_ty        *sp;
+{
+    shell_bash_ty   *this;
+    char            *cp;
+    char            *end;
+    unsigned long   n;
+    char            *comp_line;
+    unsigned long   comp_point;
+    int             ac;
+    int             ac_max;
+    char            **av;
+    int             inco_ac;
+
+    this = (shell_bash_ty *)sp;
+
+    /*
+     * The COMP_LINE environment variable must be set and valid.
+     */
+    comp_line = getenv("COMP_LINE");
+    if (!comp_line || !*comp_line)
+    	return 0;
+
+    /*
+     * The COMP_POINT environment variable must be set and valid.
+     */
+    cp = getenv("COMP_POINT");
+    if (!cp)
+	return 0;
+    n = strtoul(cp, &end, 10);
+    if (end == cp || *end)
+	return 0;
+    comp_point = n;
+    if (comp_point > strlen(comp_line))
+	return 0;
+
+    /*
+     * There should be exactly 3 command line arguments:
+     * 1. the name of the command being completed
+     * 2. the word to be completed
+     * 3. the word before the word being completed
+     */
+    if (arglex_get_string() != arglex_token_string)
+	usage();
+    this->command = str_from_c(arglex_value.alv_string);
+
+    if (arglex_get_string() != arglex_token_string)
+	usage();
+    this->prefix = str_from_c(arglex_value.alv_string);
+
+    if (arglex_get_string() != arglex_token_string)
+	usage();
+    if (arglex_get_string() != arglex_token_eoln)
+	usage();
+
+    /*
+     * Generate the new command line, but splitting the comp_line string
+     * into words.
+     */
+    ac = 0;
+    ac_max = 0;
+    av = 0;
+    inco_ac = -1;
+    for (cp = comp_line; ; )
+    {
+	/*
+	 * If the completion point is in the middle of white space,
+	 * or at the start of another word, insert an empty argument to
+	 * serve as the imcomplete argument in need of attention.
+	 */
+	if (cp - comp_line == comp_point)
+	{
+	    /*
+	     * insert the empty string as the incomplete argument.
+	     */
+	    if (ac >= ac_max)
+	    {
+		size_t          nbytes;
+
+		ac_max = ac_max * 2 + 8;
+		nbytes = ac_max * sizeof(av[0]);
+		av = mem_change_size(av, nbytes);
+	    }
+	    inco_ac = ac;
+	    av[ac++] = copy_of(cp, 0);
+	    comp_point = -1;
+	}
+
+	/*
+	 * end of the line
+	 */
+	if (!*cp)
+	{
+	    break;
+	}
+
+	/*
+	 * Skip white space around words.
+	 */
+	if (isspace((unsigned char)*cp))
+	{
+	    ++cp;
+	    continue;
+	}
+
+	/*
+	 * Collect one word.
+	 *
+	 * Note that the completion point also terminates the word,
+	 * even if there is no white space present.
+	 */
+	end = cp;
+	while
+	(
+	    *end
+	&&
+	    !isspace((unsigned char)*end)
+	&&
+	    end != comp_line + comp_point
+	)
+	{
+	    ++end;
+	}
+
+	/*
+	 * Insert word into the list.
+	 */
+	if (ac >= ac_max)
+	{
+	    size_t          nbytes;
+
+	    ac_max = ac_max * 2 + 8;
+	    nbytes = ac_max * sizeof(av[0]);
+	    av = mem_change_size(av, nbytes);
+	}
+	if (cp - comp_line < comp_point && comp_point <= end - comp_line)
+	{
+	    inco_ac = ac;
+	    comp_point = -1;
+	}
+	av[ac++] = copy_of(cp, end - cp);
+
+	/*
+	 * Move past the word.
+	 */
+	cp = end;
+    }
+    assert(inco_ac >= 0);
+
+    /*
+     * NULL terminate the list opf word pointers.
+     */
+    if (ac >= ac_max)
+    {
+	size_t          nbytes;
+
+	ac_max = ac_max * 2 + 8;
+	nbytes = ac_max * sizeof(av[0]);
+	av = mem_change_size(av, nbytes);
+    }
+    av[ac] = 0;
+
+    /*
+     * Insert our fake command line into the command line processor.
+     */
+    arglex_synthetic(ac, av, inco_ac);
+
+    /*
+     * Report success.
+     */
+    return 1;
+}
+
+
+static string_ty *command_get _((shell_ty *));
+
+static string_ty *
+command_get(sh)
+    shell_ty        *sh;
+{
+    shell_bash_ty   *this;
+
+    this = (shell_bash_ty *)sh;
+    return this->command;
+}
+
+
+static string_ty *prefix_get _((shell_ty *));
+
+static string_ty *
+prefix_get(sh)
+    shell_ty        *sh;
+{
+    shell_bash_ty   *this;
+
+    this = (shell_bash_ty *)sh;
+    return this->prefix;
+}
+
+
+static void emit _((shell_ty *, string_ty *));
+
+static void
+emit(sh, s)
+    shell_ty        *sh;
+    string_ty       *s;
+{
+    shell_bash_ty   *this;
+    char            *cp;
+
+    this = (shell_bash_ty *)sh;
+    for (cp = s->str_text; *cp; ++cp)
+    {
+	switch (*cp)
+	{
+	case '\\':
+	case '\n':
+	    putchar('\\');
+	    /* fall through... */
+
+	default:
+	    putchar(*cp);
+	}
+    }
+    putchar('\n');
+}
+
+
+static shell_vtbl_ty vtbl =
+{
+    destructor,
+    test,
+    command_get,
+    prefix_get,
+    emit,
+    sizeof(shell_bash_ty),
+    "bash",
+};
+
+
+shell_ty *
+shell_bash()
+{
+    shell_ty        *sp;
+    shell_bash_ty   *this;
+
+    sp = shell_new(&vtbl);
+    this = (shell_bash_ty *)sp;
+    this->command = 0;
+    this->prefix = 0;
+    return sp;
+}

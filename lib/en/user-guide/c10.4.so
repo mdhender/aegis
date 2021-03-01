@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@ These include...
 .IP \(bu 2n
 Changing the project \fIconfig\fP file.
 This file contains the build command and the difference commands,
-both of which would be run before a reviewer saw them to confirm they
+both of which would be run before a reviewer had a chance to confirm they
 were acceptable.
 .IP \(bu 2n
 Changing any of the files named in the \fItrojan_horse_suspect\fP field
@@ -72,6 +72,9 @@ horse suspect\fP list up-to-date.  (It accepts patterns, so it's not
 too onerous.)  For better protection, you need to validate the sender
 and the message.
 .nh 3 "PGP"
+.LP
+PGP can be used to validate that the source of a change set distribution
+is really someone you trust.
 .LP
 \fIanyone want to advise me what to put here?\fP
 .nh 3 "Sorcerer's Apprentice"
@@ -105,7 +108,7 @@ is nothing left, the change is abandoned, because you already have it.
 When a change set is sent, an RFC 822 style header is added to the
 description.  This includes From and Date.  When a change set is received,
 a Received line is added.  Too many Received lines causes the change set
-to be dropped \- for for a star topology the maximum is 2.
+to be dropped \- for a star topology the maximum is 2.
 (This doesn't always work, because the description could be edited to rip
 it off again.)
 (This doesn't always work, because the maintainer may edit it in some

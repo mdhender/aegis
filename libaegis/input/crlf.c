@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -138,15 +138,16 @@ input_crlf_read(ip, data, len)
 			}
 			*cp++ = '\\';
 			continue;
-		
+
 		case -1:
 			break;
-		
+
 		case 0:
 			/*
 			 * For plain ASCII text, the conditions reads
 			 *
-			 *	if (!isprint(c) && !isspace(c))
+			 *	if (!isprint((unsigned char)c) &&
+			 *		!isspace((unsigned char)c))
 			 *
 			 * However, for international text, just about
 			 * anything is acceptable.  But not NUL.
@@ -158,10 +159,12 @@ input_crlf_read(ip, data, len)
 			continue;
 
 		default:
-			/* The default should be enough, but these are
-			to force the use of a lookup table instead of
-			an if-then-else chain in the code generated for
-			the switch. */
+			/*
+			 * The default should be enough, but these are
+			 * to force the use of a lookup table instead of
+			 * an if-then-else chain in the code generated for
+			 * the switch.
+			 */
 		case '!': case '"': case '#': case '$': case '%': case '&':
 		case '\'': case '(': case ')': case '*': case '+': case ',':
 		case '-': case '.': case '/': case '0': case '1': case '2':

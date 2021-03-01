@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -169,8 +169,8 @@ descend(path, resolve, callback, arg)
 	string_ty	*s;
 	string_ty	*resolved_path;
 
-	trace(("descend(path = %08lX, callback = %08lX, \
-arg = %08lX)\n{\n"/*}*/, path, callback, arg));
+	trace(("descend(path = %08lX, callback = %08lX, "
+	    "arg = %08lX)\n{\n", (long)path, (long)callback, (long)arg));
 	trace_string(path->str_text);
 	resolved_path = stat_stack(path, &st);
 	if ((st.st_mode & S_IFMT) == S_IFDIR)
@@ -209,5 +209,5 @@ arg = %08lX)\n{\n"/*}*/, path, callback, arg));
 		);
 	}
 	str_free(resolved_path);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 .\"
 .nh 2 "Hierarchy of Projects"
 .LP
-It would be nice if there was some way to use 
+It would be nice if there was some way to use
 one project as a sort of "super change" to a "super project",
 so that large teams (say 1000 people)
 could work as lots of small teams (say 100 people).

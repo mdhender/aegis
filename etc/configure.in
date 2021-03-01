@@ -62,16 +62,18 @@ AC_CHECK_FUNC(gettext, ,
 AC_CHECK_FUNC(setsockopt, ,
 	unset ac_cv_func_setsockopt
 	AC_CHECK_LIB(socket, setsockopt))
-AC_HAVE_LIBRARY(m)
-AC_HAVE_LIBRARY(rx)
-AC_HAVE_LIBRARY(z)
+AC_CHECK_LIB(m, main)
+AC_CHECK_LIB(rx, main)
+AC_CHECK_LIB(z, main)
 dnl The -lclu library is for OSF/1 clustering
 AC_HAVE_LIBRARY(clu)
-AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt)
+AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt, msgfmt)
+AC_CHECK_PROGS(MSGCAT, gmsgcat msgcat)
 AC_CHECK_PROGS(GROFF, groff roff)
 AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
 AC_CHECK_PROGS(AWK, gawk nawk awk, awk)
 AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
+AC_PATH_PROG(PERL, perl, /usr/local/bin/perl)
 
 dnl
 dnl	Test if groff takes -ms or -mgs for the macro package.
@@ -177,27 +179,20 @@ AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(clu_info getpgrp gettext iswctype mbrtowc pathconf regcomp \
-	seteuid setlocale setresuid setreuid strcasecmp strerror strftime \
-	strsignal strtoul tcgetpgrp wcrtomb wcslen wcwidth)
+	seteuid setlocale setresuid setreuid sighold sigprocmask strcasecmp \
+	strncasecmp strerror strftime strsignal strtoul tcgetpgrp wcrtomb \
+	wcslen wcwidth)
 
 dnl
 dnl	Check to see if wint_t is defined.
+dnl	The ANSI C standard states that this symbol shall be defined
+dnl	by <wchar.h> and <wctype.h>.  The GNU people also define it in
+dnl	<stddef.h>, but this is incorrect.
 dnl
 AC_MSG_CHECKING([for wint_t])
 AC_TRY_COMPILE([
-#include <ctype.h>
-#ifdef HAVE_STDDEF_H
-#include <stddef.h>
-#endif
-/* Solaris bug 1250837: include wchar.h before widec.h */
 #ifdef HAVE_WCHAR_H
 #include <wchar.h>
-#endif
-#ifdef HAVE_WIDEC_H
-#include <widec.h>
-#endif
-#ifdef HAVE_WCTYPE_H
-#include <wctype.h>
 #endif
 ],
 [ wint_t x; ],
@@ -421,80 +416,6 @@ AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
 dnl
-dnl	Look for the httpd config files, so that we can find where to
-dnl	put the CGI script, and other HTML files.
-dnl
-AC_MSG_CHECKING([for httpd server config])
-AC_CACHE_VAL(_cv_web, [
-_cv_web=no
-for ac_dir in \
-	/etc/apache \
-	/etc/httpd \
-	/opt/apache \
-	/opt/httpd \
-	/usr/apache \
-	/usr/httpd \
-	/usr/local/apache \
-	/usr/local/apache/etc \
-	/usr/local/httpd \
-	/usr/local/httpd/etc \
-	/var/apache \
-	/var/httpd \
-	/var/lib/apache \
-	/var/lib/httpd
-do
-	if test -r $ac_dir/conf/httpd.conf -o -r $ac_dir/httpd.conf
-	then
-		_cv_web=yes
-		_cv_httpd=$ac_dir
-		break
-	fi
-done
-])
-if test "$_cv_web" = "yes"
-then
-	AC_MSG_RESULT([$_cv_httpd])
-
-	AC_CACHE_CHECK([for httpd document root],_cv_DocumentRoot, [
-	_cv_DocumentRoot=no
-	for f in $_cv_httpd/conf/srm.conf $_cv_httpd/conf/httpd.conf \
-		 $_cv_httpd/srm.conf $_cv_httpd/httpd.conf
-	do
-		if test -r $f
-		then
-			tmp=`$AWK '/^DocumentRoot/{print $2}' $f | head -1`
-			test "x$tmp" != "x" && _cv_DocumentRoot="$tmp"
-		fi
-	done
-	test "$_cv_DocumentRoot" = "no" && _cv_web=no
-	])
-
-	AC_CACHE_CHECK([for httpd script root],_cv_ScriptRoot, [
-	_cv_ScriptRoot=no
-	for f in $_cv_httpd/conf/srm.conf $_cv_httpd/conf/httpd.conf \
-		 $_cv_httpd/srm.conf $_cv_httpd/httpd.conf
-	do
-		if test -r $f
-		then
-			tmp=`$AWK '/^ScriptAlias.*cgi-bin/{dir=$3; sub(/\/*$/, "", dir); print dir}' $f | head -1`
-			test "x$tmp" != "x" && _cv_ScriptRoot="$tmp"
-		fi
-	done
-	test "$_cv_ScriptRoot" = "no" && _cv_web=no
-	])
-else
-	AC_MSG_RESULT([no])
-	_cv_DocumentRoot=no
-	ScriptRoot=no
-fi
-web=$_cv_web
-AC_SUBST(web)
-DocumentRoot=$_cv_DocumentRoot
-AC_SUBST(DocumentRoot)
-ScriptRoot=$_cv_ScriptRoot
-AC_SUBST(ScriptRoot)
-
-dnl
 dnl	If the libz.h is not present, Aegis will fail to compile.
 dnl	If the -lz is not present, Aegis will fail to link.
 dnl
@@ -518,8 +439,9 @@ then
 else
   po_files=no
   AC_MSG_RESULT([])
-  AC_MSG_RESULT([	Aegis will emit much more useful error messages if you install])
-  AC_MSG_RESULT([	GNU \`\`gettext'' and then re-run this ./configure script.])
+  AC_MSG_RESULT([	Aegis will emit much more useful error messages if])
+  AC_MSG_RESULT([	you install GNU \`\`gettext'' and then re-run this])
+  AC_MSG_RESULT([	./configure script.])
   AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
   AC_MSG_RESULT([])
 fi
@@ -569,4 +491,5 @@ PROGRAM_SUFFIX=${program_suffix}
 fi
 AC_SUBST(PROGRAM_SUFFIX)
 
-AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so lib/aegis.cgi common/libdir.c etc/compat.2.3)
+AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so
+	common/libdir.c etc/compat.2.3)

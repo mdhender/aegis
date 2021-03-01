@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,8 @@ This set of options describes where to look for files,
 just as VPATH tells \fImake\fP where to look for files.
 .LP
 By using VPATH, it is possible to ``stack'' the sand-box \fIon top of\fP
-the project master source, so that files in the sand-box take precedence, but it is
+the project master source, so that files in the sand-box take precedence,
+but it is
 the union of all the files which \fImake\fP uses to perform the build.
 .so 06.figure1.so
 .LP

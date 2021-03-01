@@ -46,7 +46,7 @@
  * otherwise, provide a prototype and nothing else
  */
 #include <main.h>
-char *gettext _((const char *));
+char *gettext(const char *);
 #endif /* !HAVE_LIBGETTEXT_H */
 #endif /* !HAVE_LIBINTL_H */
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -149,7 +149,7 @@ gen_code(type)
 	indent_printf("for (j = 0; j < this->length; ++j)\n");
 	indent_printf("{\n"/*}*/);
 	s = str_from_c("list[j]");
-	type_gen_code_declarator(this->subtype, s, 1);
+	type_gen_code_declarator(this->subtype, s, 1, 1);
 	str_free(s);
 	indent_printf("output_fputs(fp, \",\\n\");\n");
 	indent_printf(/*{*/"}\n");
@@ -338,13 +338,14 @@ gen_code(type)
 }
 
 
-static void gen_code_declarator _((type_ty *, string_ty *, int));
+static void gen_code_declarator _((type_ty *, string_ty *, int, int));
 
 static void
-gen_code_declarator(type, variable_name, is_a_list)
+gen_code_declarator(type, variable_name, is_a_list, show)
 	type_ty		*type;
 	string_ty	*variable_name;
 	int		is_a_list;
+	int		show;
 {
 	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
 	if (is_a_list)
@@ -384,13 +385,14 @@ gen_free_declarator(type, variable_name, is_a_list)
 }
 
 
-static void member_add _((type_ty *, string_ty *, type_ty *));
+static void member_add _((type_ty *, string_ty *, type_ty *, int));
 
 static void
-member_add(type, member_name, member_type)
+member_add(type, member_name, member_type, show)
 	type_ty		*type;
 	string_ty	*member_name;
 	type_ty		*member_type;
+	int		show;
 {
 	type_list_ty	*this;
 

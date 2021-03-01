@@ -25,28 +25,3 @@ msgstr	"PO-Revision-Date: 29-Jan-2002\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=KOI8-R\n"
 	"Content-Transfer-Encoding: 8bit\n"
-
-# --------------------------------------------------------------------------
-#
-# This fatal error message is issued when a file ches size while the
-# archive is being constructed.
-#
-#	$File_Name	The name of the offending file.
-#
-msgid	"archive member $filename changed size"
-msgstr	"файл $filename изменил размер во время работы, архив испорчен"
-
-#
-# This fatal error message is issued when there would be no files in
-# the distributed change set.
-#
-msgid	"bad send no files"
-msgstr	"отсутствуют файлы для пересылки"
-
-#
-# This fatal error message is issued when a change is not in a suitable
-# state from which to make a distribution change set.
-#
-msgid	"bad send state"
-msgstr	"этот блок изменений находится в стадии $state; для пересылки он "
-	"должен быть в одной из более поздних стадий"

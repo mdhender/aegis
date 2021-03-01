@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 #include <ac/string.h>
-#include <signal.h>
+#include <ac/signal.h>
 
 
 /*
@@ -50,19 +50,18 @@
 #ifndef HAVE_STRERROR
 
 char *
-strerror(n)
-	int		n;
+strerror(int n)
 {
-	extern int	sys_nerr;
-	extern char	*sys_errlist[];
-	static char	buffer[16];
+    extern int	sys_nerr;
+    extern char	*sys_errlist[];
+    static char	buffer[16];
 
-	if (n < 1 || n > sys_nerr)
-	{
-		sprintf(buffer, "Error %d", n);
-		return buffer;
-	}
-	return sys_errlist[n];
+    if (n < 1 || n > sys_nerr)
+    {
+	sprintf(buffer, "Error %d", n);
+	return buffer;
+    }
+    return sys_errlist[n];
 }
 
 #endif /* !HAVE_STRERROR */
@@ -71,151 +70,191 @@ strerror(n)
 #ifndef HAVE_STRCASECMP
 
 int
-strcasecmp(s1, s2)
-	const char	*s1;
-	const char	*s2;
+strcasecmp(const char *s1, const char *s2)
 {
-	unsigned char	c1;
-	unsigned char	c2;
+    unsigned char   c1;
+    unsigned char   c2;
 
-	for (;;)
+    for (;;)
+    {
+	c1 = *s1++;
+	if (isupper(c1))
+	    c1 = tolower(c1);
+	c2 = *s2++;
+	if (isupper(c2))
+	    c2 = tolower(c2);
+	if (c1 != c2)
 	{
-		c1 = *s1++;
-		if (islower(c1))
-			c1 = toupper(c1);
-		c2 = *s2++;
-		if (islower(c2))
-			c2 = toupper(c2);
-		if (c1 != c2)
-		{
-			/*
-			 * if s1 is a leading substring of s2, must
-			 * return -1, even if the next character of s2
-			 * is negative.
-			 */
-			if (!c1)
-				return -1;
-			if (c1 < c2)
-				return -1;
-			return 1;
-		}
-		if (!c1)
-			return 0;
+	    /*
+	     * if s1 is a leading substring of s2, must
+	     * return -1, even if the next character of s2
+	     * is negative.
+	     */
+	    if (!c1)
+		return -1;
+	    if (!c2)
+		return 1;
+	    if (c1 < c2)
+		return -1;
+	    return 1;
 	}
+	if (!c1)
+	    return 0;
+    }
 }
 
 #endif /* !HAVE_STRCASECMP */
 
 
+#ifndef HAVE_STRNCASECMP
+
+int
+strncasecmp(const char *s1, const char *s2)
+    size_t	    len;
+{
+    unsigned char   c1;
+    unsigned char   c2;
+
+    while (len-- > 0)
+    {
+	c1 = *s1++;
+	if (isupper(c1))
+		c1 = tolower(c1);
+	c2 = *s2++;
+	if (isupper(c2))
+	    c2 = tolower(c2);
+	if (c1 != c2)
+	{
+	    /*
+	     * if s1 is a leading substring of s2, must
+	     * return -1, even if the next character of s2
+	     * is negative.
+	     */
+	    if (!c1)
+		return -1;
+	    if (!c2)
+		return 1;
+	    if (c1 < c2)
+		return -1;
+	    return 1;
+	}
+	if (!c1)
+	    return 0;
+    }
+    return 0;
+}
+
+#endif /* !HAVE_STRNCASECMP */
+
+
 #ifndef HAVE_STRSIGNAL
 
 char *
-strsignal(n)
-	int	n;
+strsignal(int n)
 {
-	static char buffer[16];
+    static char     buffer[16];
 
-	switch (n)
-	{
+    switch (n)
+    {
 #ifdef SIGHUP
-	case SIGHUP:
-		return "hang up [SIGHUP]";
+    case SIGHUP:
+	return "hang up [SIGHUP]";
 #endif /* SIGHUP */
 
 #ifdef SIGINT
-	case SIGINT:
-		return "user interrupt [SIGINT]";
+    case SIGINT:
+	return "user interrupt [SIGINT]";
 #endif /* SIGINT */
 
 #ifdef SIGQUIT
-	case SIGQUIT:
-		return "user quit [SIGQUIT]";
+    case SIGQUIT:
+	return "user quit [SIGQUIT]";
 #endif /* SIGQUIT */
 
 #ifdef SIGILL
-	case SIGILL:
-		return "illegal instruction [SIGILL]";
+    case SIGILL:
+	return "illegal instruction [SIGILL]";
 #endif /* SIGILL */
 
 #ifdef SIGTRAP
-	case SIGTRAP:
-		return "trace trap [SIGTRAP]";
+    case SIGTRAP:
+	return "trace trap [SIGTRAP]";
 #endif /* SIGTRAP */
 
 #ifdef SIGIOT
-	case SIGIOT:
-		return "abort [SIGIOT]";
+    case SIGIOT:
+	return "abort [SIGIOT]";
 #endif /* SIGIOT */
 
 #ifdef SIGEMT
-	case SIGEMT:
-		return "EMT instruction [SIGEMT]";
+    case SIGEMT:
+	return "EMT instruction [SIGEMT]";
 #endif /* SIGEMT */
 
 #ifdef SIGFPE
-	case SIGFPE:
-		return "floating point exception [SIGFPE]";
+    case SIGFPE:
+	return "floating point exception [SIGFPE]";
 #endif /* SIGFPE */
 
 #ifdef SIGKILL
-	case SIGKILL:
-		return "kill [SIGKILL]";
+    case SIGKILL:
+	return "kill [SIGKILL]";
 #endif /* SIGKILL */
 
 #ifdef SIGBUS
-	case SIGBUS:
-		return "bus error [SIGBUS]";
+    case SIGBUS:
+	return "bus error [SIGBUS]";
 #endif /* SIGBUS */
 
 #ifdef SIGSEGV
-	case SIGSEGV:
-		return "segmentation violation [SIGSEGV]";
+    case SIGSEGV:
+	return "segmentation violation [SIGSEGV]";
 #endif /* SIGSEGV */
 
 #ifdef SIGSYS
-	case SIGSYS:
-		return "bad argument to system call [SIGSYS]";
+    case SIGSYS:
+	return "bad argument to system call [SIGSYS]";
 #endif /* SIGSYS */
 
 #ifdef SIGPIPE
-	case SIGPIPE:
-		return "write on a pipe with no one to read it [SIGPIPE]";
+    case SIGPIPE:
+	return "write on a pipe with no one to read it [SIGPIPE]";
 #endif /* SIGPIPE */
 
 #ifdef SIGALRM
-	case SIGALRM:
-		return "alarm clock [SIGALRM]";
+    case SIGALRM:
+	return "alarm clock [SIGALRM]";
 #endif /* SIGALRM */
 
 #ifdef SIGTERM
-	case SIGTERM:
-		return "software termination [SIGTERM]";
+    case SIGTERM:
+	return "software termination [SIGTERM]";
 #endif /* SIGTERM */
 
 #ifdef SIGUSR1
-	case SIGUSR1:
-		return "user defined signal one [SIGUSR1]";
+    case SIGUSR1:
+	return "user defined signal one [SIGUSR1]";
 #endif /* SIGUSR1 */
 
 #ifdef SIGUSR2
-	case SIGUSR2:
-		return "user defined signal two [SIGUSR2]";
+    case SIGUSR2:
+	return "user defined signal two [SIGUSR2]";
 #endif /* SIGUSR2 */
 
 #ifdef SIGCLD
-	case SIGCLD:
-		return "death of child [SIGCLD]";
+    case SIGCLD:
+	return "death of child [SIGCLD]";
 #endif /* SIGCLD */
 
 #ifdef SIGPWR
-	case SIGPWR:
-		return "power failure [SIGPWR]";
+    case SIGPWR:
+	return "power failure [SIGPWR]";
 #endif /* SIGPWR */
 
-	default:
-		sprintf(buffer, "signal %d", n);
-		return buffer;
-	}
+    default:
+	sprintf(buffer, "signal %d", n);
+	return buffer;
+    }
 }
 
 #endif /* !HAVE_STRSIGNAL */

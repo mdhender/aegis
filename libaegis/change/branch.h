@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1999, 2001 Peter Miller;
+ *	Copyright (C) 1995-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,12 @@ int change_was_a_branch _((change_ty *));
 void change_branch_new _((change_ty *));
 int change_history_delta_validate _((change_ty *, long));
 time_t change_history_delta_to_timestamp _((struct project_ty *, long));
+long change_history_timestamp_to_delta _((struct project_ty *, time_t));
 long change_history_delta_latest _((change_ty *));
 long change_history_delta_by_name _((change_ty *, string_ty *, int));
+long change_history_change_by_name _((change_ty *, string_ty *, int));
+long change_history_change_by_delta _((change_ty *, long));
+long change_history_change_by_timestamp _((struct project_ty *, time_t));
 void change_history_delta_name_delete _((change_ty *, string_ty *));
 void change_history_delta_name_add _((change_ty *, long, string_ty *));
 long change_history_last_change_integrated _((change_ty *));
@@ -86,7 +90,8 @@ void change_branch_developers_may_create_changes_set _((change_ty *, int));
 int change_branch_developers_may_create_changes_get _((change_ty *));
 void change_branch_forced_develop_begin_notify_command_set _((change_ty *,
 	string_ty *));
-string_ty *change_branch_forced_develop_begin_notify_command_get _((change_ty *));
+string_ty *change_branch_forced_develop_begin_notify_command_get
+    _((change_ty *));
 void change_branch_develop_end_notify_command_set _((change_ty *, string_ty *));
 string_ty *change_branch_develop_end_notify_command_get _((change_ty *));
 void change_branch_develop_end_undo_notify_command_set _((change_ty *,
@@ -129,5 +134,8 @@ void change_branch_compress_database_set _((change_ty *, int));
 string_ty *change_version_get _((change_ty *));
 int change_branch_develop_end_action_get _((change_ty *));
 void change_branch_develop_end_action_set _((change_ty *, int));
+int change_branch_protect_development_directory_get _((change_ty *));
+void change_branch_protect_development_directory_set _((change_ty *, int));
+time_t change_completion_timestamp _((change_ty *));
 
 #endif /* AEGIS_CHANGE_BRAN_H */

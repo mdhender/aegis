@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2001 Peter Miller;
+ *	Copyright (C) 1997-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,106 +20,134 @@
  * MANIFEST: report the changes being developed
  */
 
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
+auto pn;
+pn = project_name();
+auto href;
+href = script_name ## "?" ## "file@proj_menu+project@" ## quote_url(pn);
+
 columns({width = 1000; });
 print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
-auto pn;
-pn = project_name();
-print("Project " ## quote_html(pn) ## " Changes"); 
-print("</title></head><body><h1><center>");
-print("Project ``" ## quote_html(pn) ## "'',<br>");
+print("Project " ## quote_html(pn) ## " Changes");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
+print("Project ``<a href=\"" ## href ## "\">" ## quote_html(pn) ##
+	"</a>'',<br>");
 print("List of Changes<br>");
-print("Being Developed"); 
-print("</center></h1>");
-print("<center><table>");
+print("Being Developed");
+print("</h1>");
+print("<table align=center>");
 
-print("<tr><th>Change</th><th>State</th><th>Description</th></tr>");
-
-auto script_name;
-script_name = getenv("SCRIPT_NAME");
-if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+print("<tr bgcolor=\"#CCCCCC\"><th>Change</th><th>State</th>" ##
+	"<th>Description</th><th>Download</th></tr>");
 
 auto ps, cn, total;
 ps = project[pn].state.branch;
 total = 0;
 for (cn in sort(keys(ps.change)))
 {
-	auto cs;
-	cs = ps.change[cn];
-	if (cs.state != being_developed)
-		continue;
-	++total;
-	print("<tr><td valign=top align=right>");
-	auto href, junk;
-	href = "file@chan_menu+project@" ## quote_url(pn) ## "+change@" ## cn;
-	try
-	{
-		if (count(keys(cs.branch)))
-			href = "file@proj_menu+project@" ## quote_url(pn) ## "." ## cn;
-	}
-	catch (junk)
-		;
-	href = script_name ## "?" ## href;
-	print("<a href=\"" ## href ## "\">" ## cn ## "</a>");
-	print("</td><td valign=top>");
-	print(cs.state);
-	if (count(keys(cs.branch)))
-	{
-		href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
-			## ".ae?file@aedist+project@" ## quote_url(pn)
-			## "+change@" ## cn;
-		print("<br><a href=\"" ## href ## "\"><i>(Download)</i></a>");
-	}
-	if
-	(
-		(cs.state == being_developed || cs.state == being_integrated)
-	&&
-		!count(keys(cs.branch))
-	)
-	{
-		auto who, hi, h, email, long_name;
-		for (hi = count(cs.history) - 1; hi >= 0; --hi)
-		{
-			h = cs.history[hi];
-			if
-			(
-				h.what == develop_begin
-			||
-				h.what == develop_end
-			||
-				h.what == integrate_begin
-			||
-				h.what == integrate_pass
-			)
-			{
-				who = h.who;
-				email = who;
-				try { email = user[who].email_address; }
-				catch (email) { email = ""; }
-				if (email == "")
-					email = who;
-				href = "mailto:" ## email;
-				long_name = who;
-				try { long_name = passwd[who].pw_comment; }
-				catch (long_name) { long_name = who; }
-				print("<br><a href=\"" ## href ## "\"><i>" ##
-					quote_html(long_name) ## "</i></a>");
-				break;
-			}
-		}
-	}
-	print("</td><td valign=top>");
-	auto part;
-	for (part in wrap_html(quote_html(cs.brief_description), 80))
-		print(part);
-	print("</td></tr>");
+    auto cs;
+    cs = ps.change[cn];
+    if (cs.state != being_developed)
+       	continue;
+    if (total++ % 6 < 3)
+	print("<tr>");
+    else
+	print("<tr bgcolor=\"#CCCCCC\">");
+    print("<td valign=top align=right>");
+    auto junk;
+    href = "file@chan_menu+project@" ## quote_url(pn) ## "+change@" ## cn;
+    try
+    {
+       	if (count(keys(cs.branch)))
+	    href = "file@proj_menu+project@" ## quote_url(pn) ## "." ## cn;
+    }
+    catch (junk)
+       	;
+    href = script_name ## "?" ## href;
+    print("<a href=\"" ## href ## "\">" ## cn ## "</a>");
+    print("</td><td valign=top>");
+    print(cs.state);
+    if
+    (
+       	(cs.state == being_developed || cs.state == being_integrated)
+    &&
+       	!count(keys(cs.branch))
+    )
+    {
+       	auto who, hi, h, email, long_name;
+       	for (hi = count(cs.history) - 1; hi >= 0; --hi)
+       	{
+	    h = cs.history[hi];
+	    if
+	    (
+	     	h.what == develop_begin
+	    ||
+	     	h.what == develop_end
+	    ||
+	     	h.what == integrate_begin
+	    ||
+	     	h.what == integrate_pass
+	    )
+	    {
+	     	who = h.who;
+	     	email = who;
+	     	try { email = user[who].email_address; }
+	     	catch (email) { email = ""; }
+	     	if (email == "")
+		    email = who;
+	     	href = "mailto:" ## email;
+	     	long_name = who;
+	     	try { long_name = passwd[who].pw_comment; }
+	     	catch (long_name) { long_name = who; }
+	     	print("<br><a href=\"" ## href ## "\"><i>" ##
+		    quote_html(long_name) ## "</i></a>");
+	     	break;
+	    }
+       	}
+    }
+    print("</td><td valign=top>");
+    auto part;
+    for (part in wrap_html(quote_html(cs.brief_description), 80))
+       	print(part);
+
+    /*
+     * The download column.
+     */
+    print("</td><td valign=top>");
+    href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
+	## ".ae?file@aedist+project@" ## quote_url(pn)
+	## "+change@" ## cn;
+    print("<a href=\"" ## href ## "\"><i>aedist</i></a>,");
+
+    if (!count(keys(cs.branch)))
+    {
+	href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
+	    ## ".patch?file@aepatch+project@" ## quote_url(pn)
+	    ## "+change@" ## cn;
+	print("<a href=\"" ## href ## "\"><i>patch</i></a>");
+    }
+    print("</td></tr>");
 }
-print("</table></center>");
+print("</table>");
 print("Listed " ## total ## " changes.");
 print("<hr>A similar report may be obtained from the command line, with");
 print("<blockquote><tt>aede -l -p " ## quote_html(pn) ## "</tt></blockquote>");
+print("<hr>");
+print("If you download via the <i>aedist</i> links, you will need");
+print("<i>aedist</i>(1) from Aegis 4.3 or later to apply the");
+print("change sets.");
+print("<p>");
+print("If you download via the <i>patch</i> links, they can be applied");
+print("with <i>aepatch</i>(1) from Aegis 3.28 or later.");
+print("To apply them manually, you must first MIME64 decode and gunzip,");
+print("before using the normal <i>patch</i>(1) program.");
+print("Depending on your browser, it may or may not have done the MIME64");
+print("and/or gunzip steps for you automagically.");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

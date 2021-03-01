@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991-1993, 2002 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,6 @@
 .TP 8n
 .B -TERse
 .br
-This option may be used to cause listings to 
+This option may be used to cause listings to
 produce the bare minimum of information.
 It is usually useful for shell scripts.

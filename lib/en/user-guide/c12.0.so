@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ relevant to some aspect of Aegis or using Aegis.  These references should
 not be taken as endorements.
 .LP
 If I've missed a good reference, it isn't personal, but I can't and
-haven't read everything out there.  AEmail me the information and I'll
+haven't read everything out there.  Email me the information and I'll
 add it to this chapter (no advertising, please).
 .nh 2 "Software Configuration Management"
 .LP

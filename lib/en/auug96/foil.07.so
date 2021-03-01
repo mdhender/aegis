@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1996, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,9 @@ move right 0.8 down
 E1: ellipse wid boxwid ht boxht "integrator"
 arrow "integrate " rjust "begin " rjust
 B3: box "integration" "directory"
-S1: spline -> from B3.s then down then right 1.75 then up then to B1.n right 1.75 then to B1.n up right 1.75 then to B1.n up then to B1.n
+S1: spline -> from B3.s then down then right 1.75 then up \
+	then to B1.n right 1.75 then to B1.n up right 1.75 \
+	then to B1.n up then to B1.n
 "integrate " rjust "pass " rjust at S1.c+(1.7,-0.75)
 arrow from B2.s to E1.nw
 arrow from 1/3<B1.sw,B1.se> to B2.n

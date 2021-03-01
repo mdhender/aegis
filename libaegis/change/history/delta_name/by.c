@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,14 +74,14 @@ change_history_delta_by_name(cp, delta_name, errok)
 		return 0;
 	if (best)
 	{
-		sub_context_ty	*scp;
+	    sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "Name", delta_name);
-		sub_var_set_string(scp, "Guess", best);
-		change_fatal(cp, scp, i18n("no delta $name, closest is $guess"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", delta_name);
+	    sub_var_set_string(scp, "Guess", best);
+	    change_fatal(cp, scp, i18n("no delta $name, closest is $guess"));
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
 	}
 	else
 	{

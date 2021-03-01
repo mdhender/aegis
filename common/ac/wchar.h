@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1997, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1996-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,13 +52,13 @@ typedef int mbstate_t;
 #ifndef WEOF
 #define WEOF (wchar_t)(-1);
 #endif
-int mbsinit _((const mbstate_t *));
-size_t wcslen _((const wchar_t *));
-size_t mbrlen _((const char *, size_t, mbstate_t *));
-size_t mbrtowc _((wchar_t *, const char *, size_t, mbstate_t *));
-size_t wcrtomb _((char *, wchar_t, mbstate_t *));
-size_t mbsrtowcs _((wchar_t *, const char **, size_t, mbstate_t *));
-size_t wcsrtombs _((char *, const wchar_t **, size_t, mbstate_t *));
+int mbsinit(const mbstate_t *);
+size_t wcslen(const wchar_t *);
+size_t mbrlen(const char *, size_t, mbstate_t *);
+size_t mbrtowc(wchar_t *, const char *, size_t, mbstate_t *);
+size_t wcrtomb(char *, wchar_t, mbstate_t *);
+size_t mbsrtowcs(wchar_t *, const char **, size_t, mbstate_t *);
+size_t wcsrtombs(char *, const wchar_t **, size_t, mbstate_t *);
 
 #endif
 
@@ -115,5 +115,15 @@ size_t wcsrtombs _((char *, const wchar_t **, size_t, mbstate_t *));
 #endif
 
 #endif /* !HAVE_ISWPRINT */
+
+/*
+ * The ANSI C standard states that wint_t symbol shall be defined by
+ * <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
+ * but this is incorrect.
+ */
+#ifndef HAVE_WINT_T
+#define HAVE_WINT_T
+typedef wchar_t wint_t;
+#endif
 
 #endif /* COMMON_AC_WCHAR_H */

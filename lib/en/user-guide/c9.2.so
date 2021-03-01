@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,7 @@ the files in the change).
 One of the stated benefits of using a branch is the insulating effects
 which branches can provide.  However, when you have multiple simultaneous
 active branches, that insulation will inevitably lead to out-of-date
-branch files.  Now that \fIhow\fP to merge them has been describes,
+branch files.  Now that \fIhow\fP to merge them has been described,
 \fIwhen\fP should you merge?
 .LP
 In a simple change's development directory, there are times when an
@@ -110,7 +110,8 @@ branch development, sometimes with a quite visible schedule impact.
 .nh 4 "Project Insulated Against Branch"
 .LP
 If you created a branch to insulate the project from work
-being done in the branch, it follows that you would do a cross branch immediately.
+being done in the branch, it follows that you would do a cross branch
+immediately.
 .LP
 This action amortizes the labour of merging across the life of the branch,
 often with a number of small delays and less schedule impact.

@@ -280,7 +280,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # run a simple find
 #
-$bin/aefind $work/chan -print -lib $work/lib > test.out 2> log
+$bin/aefind $work/chan -print -lib $work/lib -noresolve > test.out 2> log
 if test $? -ne 0 ; then cat log; fail; fi
 
 cat > test.ok << 'fubar'

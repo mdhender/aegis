@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1994, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -90,7 +90,7 @@ and if the invoking user is on the developer access control list.
 Become the invoking user,
 but set the default group to the project group,
 and make a development directory.
-Become the project again,
+Become the project owner again,
 and update the change state file to say who
 is developing it and where.
 .IP "build (aeb):"
@@ -117,7 +117,7 @@ and copy the file from the baseline into the development directory.
 Become the project owner,
 and update the change state file to remember that
 the file is included in the change.
-.IP "integrate pass (aeipass):"
+.IP "integrate fail (aeifail):"
 become the project owner to read the project and change state files.
 Check that in invoking user is the integrator of the change,
 and that the change is in the
@@ -130,6 +130,19 @@ Then become the project owner to write the change state file,
 to remember that the change is back in the
 .I "being developed"
 state.
+.IP "integrate pass (aeipass):"
+become the project owner to read the project and change state files.
+Check that in invoking user is the integrator of the change,
+and that the change is in the
+.I "being integrated"
+state.
+Make the integration directory the new baseline directory
+and remove the old baseline directory.
+Write the change and project states to reflect the new baseline
+and the change is in the
+.I "completed"
+state.
+Then become the developer to remove the development directory.
 .LP
 All the mucking about with default groups is to ensure that the reviewers,
 other members of the same group,
@@ -204,7 +217,7 @@ with some degree of confidence.
 System calls should be confined to the
 .I aegis/log.c ,
 .I aegis/pager.c ,
-.I aegis/os.c 
+.I aegis/os.c
 and
 .I aegis/glue.c
 files.

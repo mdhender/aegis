@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,163 +30,161 @@ static void fimprove _((fstate, string_ty *, change_ty *));
 
 static void
 fimprove(fstate_data, filename, cp)
-	fstate		fstate_data;
-	string_ty	*filename;
-	change_ty	*cp;
+    fstate	    fstate_data;
+    string_ty	    *filename;
+    change_ty	    *cp;
 {
-	size_t		j;
+    size_t	    j;
 
-	if (!fstate_data->src)
-		fstate_data->src = fstate_src_list_type.alloc();
+    if (!fstate_data->src)
+	fstate_data->src = fstate_src_list_type.alloc();
+
+    /*
+     * Migrate file state information.
+     */
+    for (j = 0; j < fstate_data->src->length; ++j)
+    {
+	fstate_src	src;
+
+	src = fstate_data->src->list[j];
 
 	/*
-	 * Migrate file state information.
+	 * Historical 2.3 -> 3.0 transition.
+	 *
+	 * This covers a transitional glitch in the edit number
+	 * semantics.  Very few installed sites will ever
+	 * need this.
 	 */
-	for (j = 0; j < fstate_data->src->length; ++j)
+	if (src->edit_number && !src->edit_number_origin)
+	    src->edit_number_origin = str_copy(src->edit_number);
+
+	/*
+	 * Historical 3.24 to 3.25 transition.
+	 *
+	 * This was when history file contents encoding was added,
+	 * so that we could cope with binary files transparently,
+	 * even for ascii-only history tools.
+	 */
+	if (src->edit_number)
 	{
-		fstate_src	src;
-
-		src = fstate_data->src->list[j];
-		/*
-		 * Historical 2.3 -> 3.0 transition.
-		 *
-		 * This covers a transitional glitch in the edit number
-		 * semantics.  Very few installed sites will ever
-		 * need this.
-		 */
-		if (src->edit_number && !src->edit_number_origin)
-			src->edit_number_origin = str_copy(src->edit_number);
-
-		/*
-		 * Historical 3.24 to 3.25 transition.
-		 *
-		 * This was when history file contents encoding was added,
-		 * so that we could cope with binary files transparently,
-		 * even for ascii-only history tools.
-		 */
-		if (src->edit_number)
-		{
-			src->edit = history_version_type.alloc();
-			src->edit->revision = src->edit_number;
-			src->edit->encoding = history_version_encoding_none;
-			src->edit_number = 0;
-		}
-		if (src->edit_number_origin)
-		{
-			src->edit_origin = history_version_type.alloc();
-			src->edit_origin->revision = src->edit_number_origin;
-			src->edit_origin->encoding =
-				history_version_encoding_none;
-			src->edit_number_origin = 0;
-		}
-		if (src->edit_number_origin_new)
-		{
-			src->edit_origin_new = history_version_type.alloc();
-			src->edit_origin_new->revision =
-				src->edit_number_origin_new;
-			src->edit_origin_new->encoding =
-				history_version_encoding_none;
-			src->edit_number_origin_new = 0;
-		}
-
-		/*
-		 * Make sure things are where they are meant to be.
-		 */
-		if (src->edit && !src->edit->revision)
-		{
-			sub_context_ty  *scp;
-
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", filename);
-			sub_var_set_charstar(scp, "FieLD_Name", "edit.revision");
-			change_fatal
-			(
-				cp,
-				scp,
-			    i18n("$filename: contains no \"$field_name\" field")
-			);
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
-		if (src->edit_origin && !src->edit_origin->revision)
-		{
-			sub_context_ty  *scp;
-
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", filename);
-			sub_var_set_charstar(scp, "FieLD_Name", "edit_origin.revision");
-			change_fatal
-			(
-				cp,
-				scp,
-			    i18n("$filename: contains no \"$field_name\" field")
-			);
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
-		if (src->edit_origin_new && !src->edit_origin_new->revision)
-		{
-			sub_context_ty  *scp;
-
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", filename);
-			sub_var_set_charstar(scp, "FieLD_Name", "edit_origin_new.revision");
-			change_fatal
-			(
-				cp,
-				scp,
-			    i18n("$filename: contains no \"$field_name\" field")
-			);
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
+	    src->edit = history_version_type.alloc();
+	    src->edit->revision = src->edit_number;
+	    src->edit->encoding = history_version_encoding_none;
+	    src->edit_number = 0;
 	}
+	if (src->edit_number_origin)
+	{
+	    src->edit_origin = history_version_type.alloc();
+	    src->edit_origin->revision = src->edit_number_origin;
+	    src->edit_origin->encoding = history_version_encoding_none;
+	    src->edit_number_origin = 0;
+	}
+	if (src->edit_number_origin_new)
+	{
+	    src->edit_origin_new = history_version_type.alloc();
+	    src->edit_origin_new->revision = src->edit_number_origin_new;
+	    src->edit_origin_new->encoding = history_version_encoding_none;
+	    src->edit_number_origin_new = 0;
+	}
+
+	/*
+	 * Make sure things are where they are meant to be.
+	 */
+	if (src->edit && !src->edit->revision)
+	{
+	    sub_context_ty  *scp;
+
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "File_Name", filename);
+	    sub_var_set_charstar(scp, "FieLD_Name", "edit.revision");
+	    change_fatal
+	    (
+		cp,
+		scp,
+		i18n("$filename: contains no \"$field_name\" field")
+	    );
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
+	}
+	if (src->edit_origin && !src->edit_origin->revision)
+	{
+	    sub_context_ty  *scp;
+
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "File_Name", filename);
+	    sub_var_set_charstar(scp, "FieLD_Name", "edit_origin.revision");
+	    change_fatal
+	    (
+		cp,
+		scp,
+		i18n("$filename: contains no \"$field_name\" field")
+	    );
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
+	}
+	if (src->edit_origin_new && !src->edit_origin_new->revision)
+	{
+	    sub_context_ty  *scp;
+
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "File_Name", filename);
+	    sub_var_set_charstar(scp, "FieLD_Name", "edit_origin_new.revision");
+	    change_fatal
+	    (
+		cp,
+		scp,
+		i18n("$filename: contains no \"$field_name\" field")
+	    );
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
+	}
+    }
 }
 
 
 fstate
 change_fstate_get(cp)
-	change_ty	*cp;
+    change_ty	    *cp;
 {
-	cstate		cstate_data;
-	string_ty	*fn;
-	size_t		j;
+    cstate	    cstate_data;
+    string_ty	    *fn;
+    size_t	    j;
 
-	/*
-	 * make sure the change state has been read in,
-	 * in case its src field needed to be converted.
-	 * (also to ensure lock_sync has been called for both)
-	 */
-	trace(("change_fstate_get(cp = %08lX)\n{\n"/*}*/, cp));
-	cstate_data = change_cstate_get(cp);
+    /*
+     * make sure the change state has been read in,
+     * in case its src field needed to be converted.
+     * (also to ensure lock_sync has been called for both)
+     */
+    trace(("change_fstate_get(cp = %08lX)\n{\n", (long)cp));
+    cstate_data = change_cstate_get(cp);
 
-	if (!cp->fstate_data)
+    if (!cp->fstate_data)
+    {
+	fn = change_fstate_filename_get(cp);
+	change_become(cp);
+	cp->fstate_data = fstate_read_file(fn);
+	change_become_undo();
+	fimprove(cp->fstate_data, fn, cp);
+    }
+    if (!cp->fstate_data->src)
+	cp->fstate_data->src = fstate_src_list_type.alloc();
+
+    /*
+     * Create an O(1) index.
+     * This speeds up just about everything.
+     */
+    if (!cp->fstate_stp)
+    {
+	cp->fstate_stp = symtab_alloc(cp->fstate_data->src->length);
+	for (j = 0; j < cp->fstate_data->src->length; ++j)
 	{
-		fn = change_fstate_filename_get(cp);
-		change_become(cp);
-		cp->fstate_data = fstate_read_file(fn);
-		change_become_undo();
-		fimprove(cp->fstate_data, fn, cp);
-	}
-	if (!cp->fstate_data->src)
-		cp->fstate_data->src = fstate_src_list_type.alloc();
+	    fstate_src	    p;
 
-	/*
-	 * Create an O(1) index.
-	 * This speeds up just about everything.
-	 */
-	if (!cp->fstate_stp)
-	{
-		cp->fstate_stp = symtab_alloc(cp->fstate_data->src->length);
-		for (j = 0; j < cp->fstate_data->src->length; ++j)
-		{
-			fstate_src	p;
-
-			p = cp->fstate_data->src->list[j];
-			symtab_assign(cp->fstate_stp, p->file_name, p);
-		}
+	    p = cp->fstate_data->src->list[j];
+	    symtab_assign(cp->fstate_stp, p->file_name, p);
 	}
-	trace(("return %08lX;\n", cp->fstate_data));
-	trace((/*{*/"}\n"));
-	return cp->fstate_data;
+    }
+    trace(("return %08lX;\n", (long)cp->fstate_data));
+    trace(("}\n"));
+    return cp->fstate_data;
 }

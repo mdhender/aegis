@@ -21,6 +21,7 @@
 # MANIFEST: shell script to generate the Makefile.in file
 #
 aefp_files=
+cklinlen_files=
 aegis_files=
 clean_files="core bin/find_sizes\$(EXEEXT) bin/fmtgen\$(EXEEXT)		\
 	libaegis/libaegis.\$(LIBEXT) common/common.\$(LIBEXT) .bin	\
@@ -74,7 +75,6 @@ install_po_files=
 doc_files=
 install_doc_file=
 test_files=
-install_web=
 commands=
 commands_bin=
 commands_install=
@@ -98,17 +98,20 @@ recursive_mkdir()
 	dir_suffix=$3
 	while :
 	do
-		dirvar=`echo mkdir.$src_dir.$dir_suffix | sed 's|[^a-zA-Z0-9]|_|g'`
+		dirvar=`echo mkdir.$src_dir.$dir_suffix |
+			sed 's|[^a-zA-Z0-9]|_|g'`
 		dotdot=`dirname $src_dir`
 		if eval "test \${${dirvar}-no} != yes" ; then
 			echo ""
 			if test "$dotdot" != "."; then
-				echo "$src_dir/.mkdir.${dir_suffix}: $dotdot/.mkdir.${dir_suffix}"
+				echo "$src_dir/.mkdir.${dir_suffix}: \
+$dotdot/.mkdir.${dir_suffix}"
 			else
 				echo "$src_dir/.mkdir.${dir_suffix}:"
 			fi
 			echo "	-\$(INSTALL) -m 0755 -d $dst_dir"
-			echo "	-chown \$(AEGIS_UID) $dst_dir && chgrp \$(AEGIS_GID) $dst_dir"
+			echo "	-chown \$(AEGIS_UID) $dst_dir && chgrp \
+\$(AEGIS_GID) $dst_dir"
 			echo "	-@touch \$@"
 			echo "	@sleep 1"
 			eval "${dirvar}=yes"
@@ -137,7 +140,8 @@ do
 		name=`echo $file | sed -e 's|.*/||' -e 's|\.in$||'`
 		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
 		scripts="$scripts $name"
-		commands_install="$commands_install \$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
+		commands_install="$commands_install \$(RPM_BUILD_ROOT)\
+\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
 		;;
 	*/main.c)
 		name=`echo $file | sed 's|/.*||'`
@@ -145,12 +149,13 @@ do
 		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
 
 		case $name in
-		aefp | fmtgen | find_sizes )
+		aefp | fmtgen | find_sizes | cklinlen )
 			;;
 		test_*)
 			;;
 		*)
-			commands_install="$commands_install \$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
+			commands_install="$commands_install \$(RPM_BUILD_ROOT)\
+\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
 			;;
 		esac
 		;;
@@ -171,7 +176,8 @@ do
 		dir=`echo $file | sed 's|/.*||'`
 		stem=`echo $file | sed 's/\.def$//'`
 		eval "${dir}_files=\"\$${dir}_files ${stem}.\\\$(OBJEXT)\""
-		clean_files="$clean_files ${stem}.\$(OBJEXT) ${stem}.c ${stem}.h"
+		clean_files="$clean_files ${stem}.\$(OBJEXT) \
+${stem}.c ${stem}.h"
 		;;
 
 	*/*.y)
@@ -206,7 +212,8 @@ do
 
 	lib/*/man[1-9]/*.[1-9])
 		stem=`echo $file | sed 's|^lib/\(.*\)|\1|'`
-		install_doc_files="$install_doc_files \$(RPM_BUILD_ROOT)\$(datadir)/$stem"
+		install_doc_files="$install_doc_files \
+\$(RPM_BUILD_ROOT)\$(datadir)/$stem"
 		src=$file
 		dst="\$(RPM_BUILD_ROOT)\$(datadir)/$stem"
 		recursive_mkdir `dirname $src` `dirname $dst` datadir
@@ -217,18 +224,14 @@ do
 	lib/*/*/main.*)
 		stem=`echo $file | sed 's|^lib/\(.*\)/main.*$|\1|'`
 		doc_files="$doc_files lib/$stem.ps lib/$stem.dvi lib/$stem.txt"
-		clean_files="$clean_files lib/$stem.ps lib/$stem.dvi lib/$stem.txt"
-		install_doc_files="$install_doc_files \$(RPM_BUILD_ROOT)\$(datadir)/$stem.ps \$(RPM_BUILD_ROOT)\$(datadir)/$stem.dvi \$(RPM_BUILD_ROOT)\$(datadir)/$stem.txt"
+		clean_files="$clean_files lib/$stem.ps lib/$stem.dvi \
+lib/$stem.txt"
+		install_doc_files="$install_doc_files \
+\$(RPM_BUILD_ROOT)\$(datadir)/$stem.ps \
+\$(RPM_BUILD_ROOT)\$(datadir)/$stem.dvi \$(RPM_BUILD_ROOT)\$(datadir)/$stem.txt"
 		src=lib/$stem.ps
 		dst="\$(RPM_BUILD_ROOT)\$(datadir)/$stem.ps"
 		recursive_mkdir `dirname $src` `dirname $dst` datadir
-		;;
-
-	lib/*.cgi)
-		rest=`echo $file | sed 's|^lib/||'`
-		dst="\$(RPM_BUILD_ROOT)\$(ScriptRoot)/$rest"
-		install_web="$install_web $dst"
-		recursive_mkdir `dirname lib/$rest` `dirname $dst` script
 		;;
 
 	lib/*)
@@ -268,16 +271,20 @@ do
 		;;
 
 	aefp)
-		echo "bin/$name\$(EXEEXT): \$(${name}_files) common/common.\$(LIBEXT) .bin"
+		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
+common/common.\$(LIBEXT) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) common/common.\$(LIBEXT) \$(LIBS)"
+		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) \
+common/common.\$(LIBEXT) \$(LIBS)"
 		echo '	@sleep 1'
 		;;
 
 	*)
-		echo "bin/$name\$(EXEEXT): \$(${name}_files) libaegis/libaegis.\$(LIBEXT) .bin"
+		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
+libaegis/libaegis.\$(LIBEXT) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) libaegis/libaegis.\$(LIBEXT) \$(LIBS)"
+		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) \
+libaegis/libaegis.\$(LIBEXT) \$(LIBS)"
 		case $name in
 		aegis | aeimport)
 			echo '	-chown root $@ && chmod 4755 $@'
@@ -288,7 +295,8 @@ do
 	esac
 
 	echo ''
-	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
+	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\
+\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
 	echo "	\$(INSTALL_PROGRAM) bin/$name\$(EXEEXT) \$@"
 	case $name in
 	aegis | aeimport)
@@ -302,12 +310,14 @@ do
 	echo ''
 	echo "bin/$name\$(EXEEXT): script/${name}.in .bin"
 	echo '	@sleep 1'
-	echo "	CONFIG_FILES=\$@:script/${name}.in CONFIG_HEADERS= \$(SH) ./config.status"
+	echo "	CONFIG_FILES=\$@:script/${name}.in CONFIG_HEADERS= \$(SH) \
+./config.status"
 	echo '	chmod a+rx $@'
 	echo '	@sleep 1'
 
 	echo ''
-	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
+	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\
+\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
 	echo "	\$(INSTALL_SCRIPT) bin/$name\$(EXEEXT) \$@"
 done
 
@@ -339,10 +349,6 @@ echo ''
 echo "install-doc-yes:" $install_doc_files
 echo ''
 echo "install-doc-no:"
-echo ''
-echo "install-web-yes:" $install_web
-echo ''
-echo "install-web-no:"
 echo ''
 echo "TestFiles =" $test_files
 
@@ -449,9 +455,7 @@ install-man: install-man-$(HAVE_GROFF)
 
 install-doc: install-doc-$(HAVE_GROFF)
 
-install-web: install-web-$(HAVE_WEB)
-
-install: install-bin install-lib install-po install-web \
+install: install-bin install-lib install-po \
 	install-man install-doc
 fubar
 exit 0

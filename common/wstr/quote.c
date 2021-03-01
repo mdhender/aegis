@@ -25,14 +25,13 @@
 
 
 wstring_ty *
-wstr_quote_shell(ws)
-	wstring_ty	*ws;
+wstr_quote_shell(wstring_ty *ws)
 {
-	string_ty	*s;
+    string_ty       *s;
 
-	s = wstr_to_str(ws);
-	s = str_quote_shell(s);
-	ws = str_to_wstr(s);
-	str_free(s);
-	return ws;
+    s = wstr_to_str(ws);
+    s = str_quote_shell(s);
+    ws = str_to_wstr(s);
+    str_free(s);
+    return ws;
 }

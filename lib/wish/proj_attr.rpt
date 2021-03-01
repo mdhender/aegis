@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: write tcl assignments for project attributes 
+ * MANIFEST: write tcl assignments for project attributes
  */
 columns({ width = 1000; });
 auto ps;
@@ -75,7 +75,8 @@ ps = ps.branch;
 print("set proj_developer_may_review " ## (0 + ps.developer_may_review));
 print("set proj_developer_may_integrate " ## (0 + ps.developer_may_integrate));
 print("set proj_reviewer_may_integrate " ## (0 + ps.reviewer_may_integrate));
-print("set proj_developers_may_create_changes " ## (0 + ps.developers_may_create_changes));
+print("set proj_developers_may_create_changes " ##
+    (0 + ps.developers_may_create_changes));
 print("set proj_umask " ## (0 + ps.umask));
 print("set proj_minimum_change_number " ## (0 + ps.minimum_change_number));
 print("set proj_reuse_change_numbers " ## (0 + ps.reuse_change_numbers));
@@ -84,3 +85,5 @@ print("set proj_skip_unlucky " ## (0 + ps.skip_unlucky));
 print("set proj_compress_database " ## (0 + ps.compress_database));
 print("set proj_default_test_required " ## (ps.default_test_exemption ? 0 : 1));
 print("set proj_develop_end_action \"" ## ps.develop_end_action ## "\"");
+print("set proj_protect_development_directory " ##
+    (0 + ps.protect_development_directory));

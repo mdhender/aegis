@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ change_file_find(cp, file_name)
 	change_fstate_get(cp);
 	assert(cp->fstate_stp);
 	result = symtab_query(cp->fstate_stp, file_name);
-	trace(("return %08lX;\n", result));
+	trace(("return %08lX;\n", (long)result));
 	trace((/*{*/"}\n"));
 	return result;
 }

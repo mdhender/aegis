@@ -27,33 +27,33 @@
 
 long
 change_branch_next_delta_number(cp)
-	change_ty	*cp;
+    change_ty	    *cp;
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
-	long		result;
-	size_t		j;
+    cstate	    cstate_data;
+    cstate_branch   bp;
+    long	    result;
+    size_t	    j;
 
-	trace(("change_delta_number_get(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (!bp || !bp->history || !bp->history->length)
-	{
-		trace(("return 1;\n"));
-		trace((/*{*/"}\n"));
-		return 1;
-	}
-	result = bp->history->length + 1;
-	for (j = 0; j < bp->history->length; ++j)
-	{
-		cstate_branch_history hp;
+    trace(("change_branch_next_delta_number(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (!bp || !bp->history || !bp->history->length)
+    {
+       	trace(("return 1;\n"));
+       	trace((/*{*/"}\n"));
+       	return 1;
+    }
+    result = bp->history->length + 1;
+    for (j = 0; j < bp->history->length; ++j)
+    {
+       	cstate_branch_history hp;
 
-		hp = bp->history->list[j];
-		if (hp->delta_number >= result)
-			result = hp->delta_number + 1;
-	}
-	trace(("return %ld;\n", result));
-	trace((/*{*/"}\n"));
-	return result;
+       	hp = bp->history->list[j];
+       	if (hp->delta_number >= result)
+	    result = hp->delta_number + 1;
+    }
+    trace(("return %ld;\n", result));
+    trace((/*{*/"}\n"));
+    return result;
 }

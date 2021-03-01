@@ -21,6 +21,7 @@
 .\"
 .\" @configure_input@
 .\"
+.ds B) @bindir@
 .ds L) @libdir@
 .ds D) @datadir@
 .ds S) @sharedstatedir@

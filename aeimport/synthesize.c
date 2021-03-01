@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include <fstate.h>
 #include <lock.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <project/file.h>
 #include <sub.h>
 #include <synthesize.h>
@@ -84,7 +84,7 @@ change_history_fake(cp, who, when)
 	cstate_history  *history_data_p;
 	type_ty         *type_p;
 
-	trace(("change_history_fale(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_history_fale(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	cstate_data = change_cstate_get(cp);
 	assert(cstate_data->history);
@@ -99,8 +99,8 @@ change_history_fake(cp, who, when)
 	*history_data_p = history_data;
 	history_data->when = when;
 	history_data->who = str_copy(who);
-	trace(("return %8.8lX;\n", history_data));
-	trace((/*{*/"}\n"));
+	trace(("return %8.8lX;\n", (long)history_data));
+	trace(("}\n"));
 	return history_data;
 }
 

@@ -26,8 +26,7 @@
 
 
 int
-wstr_column_width(ws)
-	wstring_ty	*ws;
+wstr_column_width(wstring_ty *ws)
 {
-	return wcswidth(ws->wstr_text, ws->wstr_length);
+    return wcswidth(ws->wstr_text, ws->wstr_length);
 }

@@ -1,21 +1,21 @@
 #
-#	aegis - project change supervisor
-#	Copyright (C) 1997, 2001 Peter Miller;
-#	All rights reserved.
+# 	aegis - project change supervisor
+# 	Copyright (C) 1997, 2001, 2002 Peter Miller;
+# 	All rights reserved.
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
-#	(at your option) any later version.
+# 	This program is free software; you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation; either version 2 of the License, or
+# 	(at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# 	This program is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+# 	You should have received a copy of the GNU General Public License
+# 	along with this program; if not, write to the Free Software
+# 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: English localization
 #
@@ -37,7 +37,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when a ternary "if" expression (e1 ? e2 :
 # e3) expression is not given a boolean expression as for first argument (e1).
 #
-#	$name	The name of the type of e1.
+# 	$name	The name of the type of e1.
 #
 msgid	"boolean value required for if (was given $name)"
 msgstr	"boolean value required for ?: expression (was given $name)"
@@ -46,7 +46,7 @@ msgstr	"boolean value required for ?: expression (was given $name)"
 # This error message is issued when an unknown file type name is given
 # to the -type command line option.
 #
-#	$name	The offending type name.
+# 	$name	The offending type name.
 #
 msgid	"file type $name unknown"
 msgstr	"file type ``$name'' unknown"
@@ -55,7 +55,7 @@ msgstr	"file type ``$name'' unknown"
 # This error message is issued when a function which requires exactly
 # one argument has been given none, or too many.
 #
-#	$name	The function name.
+# 	$name	The function name.
 #
 msgid	"function $name requires one argument"
 msgstr	"the \"$name\" function requires exactly one argument"
@@ -64,7 +64,7 @@ msgstr	"the \"$name\" function requires exactly one argument"
 # This error message is issued when a function which requires exactly
 # two arguments has been given too few, or too many.
 #
-#	$name	The function name.
+# 	$name	The function name.
 #
 msgid	"function $name requires two arguments"
 msgstr	"the \"$name\" function requires exactly two arguments"
@@ -73,8 +73,8 @@ msgstr	"the \"$name\" function requires exactly two arguments"
 # This error message is issued when one or more of the arguments to the
 # match operator are inappropriate types.
 #
-#	$name1	The name of the type of argument 1
-#	$name2	The name of the type of argument 2
+# 	$name1	The name of the type of argument 1
+# 	$name2	The name of the type of argument 2
 #
 msgid	"illegal match ($name1 ~ $name2)"
 msgstr	"illegal match ($name1 ~ $name2)"
@@ -83,7 +83,7 @@ msgstr	"illegal match ($name1 ~ $name2)"
 # This error message is issued when your search expression doesn't
 # do anything.
 #
-msgid	"warning: expression has no side effects, assuming you meant "
-	"-PRint"
-msgstr	"warning: expression has no side effects, assuming you meant to "
-	"-PRint files matching the given expression"
+msgid	"warning: expression has no side effects, assuming you meant -"
+	"PRint"
+msgstr	"warning: expression has no side effects, assuming you meant to -"
+	"PRint files matching the given expression"

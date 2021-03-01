@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@
 	double		lv_real;
 }
 
-%type <lv_string> NAME STRING
+%type <lv_string> NAME STRING string
 %type <lv_integer> INTEGER integer
 %type <lv_real> REAL real
 
@@ -96,7 +96,7 @@ value
 		{
 			sem_real($1);
 		}
-	| STRING
+	| string
 		{
 			sem_string($1);
 		}
@@ -117,6 +117,17 @@ real
 		{ $$ = $1; }
 	| '-' REAL
 		{ $$ = -$2; }
+	;
+
+string
+	: STRING
+		{ $$ = $1; }
+	| string STRING
+		{
+			$$ = str_catenate($1, $2);
+			str_free($1);
+			str_free($2);
+		}
 	;
 
 structure

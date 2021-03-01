@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include <patch/context.h>
 #include <patch/file.h>
 #include <patch/format/context.h>
+#include <patch/format/diff.h>
 #include <patch/format/uni.h>
 #include <patch/list.h>
 #include <trace.h>
@@ -37,11 +38,13 @@ static patch_format_ty *format[] =
 {
 	&patch_format_context,
 	&patch_format_uni,
+	&patch_format_diff,
 };
 
 patch_list_ty *
-patch_read(input)
+patch_read(input, required)
 	input_ty	*input;
+	int		required;
 {
 	patch_list_ty	*result;
 	patch_context_ty *context;
@@ -120,6 +123,7 @@ patch_read(input)
 			php = fp->hunk(context);
 			if (!php)
 				break;
+			trace(("got hunk\n"));
 			patch_append(pp, php);
 		}
 
@@ -157,13 +161,15 @@ patch_read(input)
 		pp->usage = file_usage_source;
 		if
 		(
+			pp->name.nstrings
+		&&
 			strstr(pp->name.string[0]->str_text, "test/")
 		&&
 			strstr(pp->name.string[0]->str_text, ".sh")
 		)
 			pp->usage = file_usage_test;
 	}
-	if (result->length == 0)
+	if (required && result->length == 0)
 		input_fatal_error(input, "no patch found");
 
 	/*

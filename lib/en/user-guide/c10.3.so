@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ to receive and unpack the change sets.
 \fIwrite this section\fP
 .LP
 You have a CGI script which invokes \fIaedist\fP(1).
-There is no need to the base64 in this case, so use the appropriate option.
+There is no need to encode base64 in this case, so use the appropriate option.
 .nh 3 "Browser"
 .LP
 \fIwrite this section\fP

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,11 @@
  * MANIFEST: interface definition for aegis/aerm.c
  */
 
-#ifndef REM_FILE_H
-#define REM_FILE_H
+#ifndef AEGIS_AERM_H
+#define AEGIS_AERM_H
 
 #include <main.h>
 
 void remove_file _((void));
 
-#endif /* REM_FILE_H */
-
+#endif /* AEGIS_AERM_H */

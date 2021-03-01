@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-2001 Peter Miller;
+#	Copyright (C) 1991-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -214,6 +214,7 @@ branch =
 		"USER",
 	];
 	reuse_change_numbers = true;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -247,6 +248,7 @@ minimum_branch_number = 1;
 skip_unlucky = false;
 compress_database = false;
 develop_end_action = goto_being_reviewed;
+protect_development_directory = false;
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it test.out ok
@@ -274,7 +276,7 @@ end
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -newcha -list -pro foo -lib $worklib > test.out
 if test $? -ne 0 ; then fail; fi
-$bin/aegis -new_change -f $tmp -project foo -lib $worklib 
+$bin/aegis -new_change -f $tmp -project foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -826,6 +828,7 @@ $bin/aegis -list -list -lib $worklib > test.out
 if test $? -ne 0 ; then fail; fi
 $bin/aegis -list chahist -c 1 -p foo -lib $worklib > test.out
 if test $? -ne 0 ; then cat test.out; fail; fi
+activity="check 832"
 cat > ok << 'fubar'
 brief_description = "This change is used to test the aegis functionality with respect to change descriptions.";
 description = "This change is used to test the aegis functionality with respect to change descriptions.";
@@ -911,6 +914,7 @@ history =
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/change/0/001 ok
+activity="check 918"
 cat > ok << 'fubar'
 src =
 [
@@ -947,7 +951,9 @@ src =
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
+activity="list 953"
 check_it $workproj/info/change/0/001.fs ok
+activity="check 956"
 cat > ok << 'fubar'
 brief_description = "A bogus project created to test things.";
 description = "The \"foo\" program.";
@@ -1030,6 +1036,7 @@ branch =
 	];
 	minimum_change_number = 1;
 	reuse_change_numbers = true;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -1412,6 +1419,7 @@ branch =
 	];
 	minimum_change_number = 1;
 	reuse_change_numbers = true;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi

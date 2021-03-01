@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2000, 2001 Peter Miller;
+.\"	Copyright (C) 1999-2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ the tests save work down the track.
 All of the "extra work" of writing tests is a long-term win,
 where old problems never again reappear.
 All of the "extra work" of reviewing changes means that another pair of eyes
-sights the code and finds potential problems before they manifest
+sees the code and finds potential problems before they manifest
 themselves in shipped product.
 All of the "extra work" of integration ensures that the baseline always works,
 and is always self-consistent.
@@ -65,7 +65,7 @@ As an example,
 you could be writing a
 .I sed (1)
 look-alike,
-a public domain clone of the 
+a public domain clone of the
 .UX
 sed utility.
 You could write tests which exercise every feature (insertion, deletion, etc.)
@@ -104,7 +104,7 @@ Using these emulators,
 it is possible to test the user interface,
 and test via the user interface.
 As yet,
-the author knows on no freely available emulators suitable for
+the author knows of no freely available emulators suitable for
 testing via Aegis.
 If you find one,
 please let me know.
@@ -158,6 +158,7 @@ than to wait while the computer thinks of mindless things to ask you to do.
 This is human nature:
 if it can be automated, it is more likely to happen.
 .nh 4 "Unit Tests"
+.LP
 Many folks think of testing as taking the final product and testing it.
 It is also possible to build specialized unit tests, which exercise
 specific portions of the code.  These tests can then be administrated
@@ -232,7 +233,7 @@ Those that do write firmware usually have the download capabilities,
 and some kind of remote operation facility.
 .LP
 However, this omits the possibility of not only cross compiling your
-code for the target system, but also compiling your code to run on
+code for the target system, but also compiling your code to run
 natively on the build system.  The firmware (in the host incarnation)
 then falls into one of the categories above, and may be readily tested.
 This does not relieve you of also testing the firmware, but it increases

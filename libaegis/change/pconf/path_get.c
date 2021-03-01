@@ -30,60 +30,60 @@
 
 string_ty *
 change_pconf_path_get(cp)
-	change_ty	*cp;
+    change_ty	    *cp;
 {
-	static string_ty *file_name;
+    static string_ty *file_name;
 
-	trace(("change_pconf_path_get(cp = %8.8lX)\n{\n"/*}*/, cp));
-	assert(cp->reference_count >= 1);
+    trace(("change_pconf_path_get(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    if (!cp->pconf_path)
+    {
+	if (!file_name)
+	    file_name = str_from_c(THE_CONFIG_FILE);
+	cp->pconf_path = change_file_source(cp, file_name);
 	if (!cp->pconf_path)
 	{
-		if (!file_name)
-			file_name = str_from_c(THE_CONFIG_FILE);
-		cp->pconf_path = change_file_source(cp, file_name);
-		if (!cp->pconf_path)
+	    cstate	    cstate_data;
+	    string_ty	    *dir;
+
+	    /*
+	     * The file does not yet exist in either the
+	     * change or the project.  Fake it.
+	     */
+	    cstate_data = change_cstate_get(cp);
+	    switch (cstate_data->state)
+	    {
+	    case cstate_state_being_developed:
+	    case cstate_state_awaiting_review:
+	    case cstate_state_being_reviewed:
+	    case cstate_state_awaiting_integration:
+		dir = change_development_directory_get(cp, 0);
+		if (!dir)
 		{
-			cstate		cstate_data;
-			string_ty	*dir;
-
-			/*
-			 * The file does not yet exist in either the
-			 * change or the project.  Fake it.
-			 */
-			cstate_data = change_cstate_get(cp);
-			switch (cstate_data->state)
-			{
-			case cstate_state_being_developed:
-			case cstate_state_awaiting_review:
-			case cstate_state_being_reviewed:
-			case cstate_state_awaiting_integration:
-				dir = change_development_directory_get(cp, 0);
-				if (!dir)
-				{
-					/*
-					 * Development directory may not
-					 * be set yet, particularly if
-					 * called by aeib.  Use the
-					 * baseline instead.
-					 */
-					dir = project_baseline_path_get(cp->pp, 0);
-				}
-				break;
-
-			case cstate_state_being_integrated:
-				dir = change_integration_directory_get(cp, 0);
-				break;
-
-			default:
-				dir = project_baseline_path_get(cp->pp, 0);
-				break;
-			}
-			trace(("dir = \"%s\"\n", (dir ? dir->str_text : "")));
-			cp->pconf_path = os_path_cat(dir, file_name);
-			trace(("cp->pconf_path = \"%s\"\n", cp->pconf_path->str_text));
+		    /*
+		     * Development directory may not
+		     * be set yet, particularly if
+		     * called by aeib.	Use the
+		     * baseline instead.
+		     */
+		    dir = project_baseline_path_get(cp->pp, 0);
 		}
+		break;
+
+	    case cstate_state_being_integrated:
+		dir = change_integration_directory_get(cp, 0);
+		break;
+
+	    default:
+		dir = project_baseline_path_get(cp->pp, 0);
+		break;
+	    }
+	    trace(("dir = \"%s\"\n", (dir ? dir->str_text : "")));
+	    cp->pconf_path = os_path_cat(dir, file_name);
+	    trace(("cp->pconf_path = \"%s\"\n", cp->pconf_path->str_text));
 	}
-	trace(("return \"%s\";\n", cp->pconf_path->str_text));
-	trace((/*{*/"}\n"));
-	return cp->pconf_path;
+    }
+    trace(("return \"%s\";\n", cp->pconf_path->str_text));
+    trace(("}\n"));
+    return cp->pconf_path;
 }

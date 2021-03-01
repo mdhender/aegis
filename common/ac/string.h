@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,28 +25,16 @@
 
 #include <config.h>
 
-/*
- * We could have used __USE_BSD, but that defines prototypes for the
- * index, rindex, bcmp, bzero and bcopy functions, and we don't want
- * them.  This prototype does not conflict, however.
- */
-#if !defined(HAVE_STRCASECMP) || defined(__linux__)
-# if __STDC__ >= 1
-#  ifdef __USE_BSD
-#   undef __USE_BSD
-#  endif
-   int strcasecmp(const char *, const char *);
-# endif
+#if !defined(HAVE_STRCASECMP)
+int strcasecmp(const char *, const char *);
 #endif
 
-/*
- * We could have used __USE_GNU, but that defines prototypes for
- * too many other things.  This prototype does not conflict, however.
- */
-#if !defined(HAVE_STRSIGNAL) || defined(__linux__)
-# if __STDC__ >= 1
-   char *strsignal(int);
-# endif
+#if !defined(HAVE_STRNCASECMP)
+int strncasecmp(const char *, const char *, size_t);
+#endif
+
+#if !defined(HAVE_STRSIGNAL)
+char *strsignal(int);
 #endif
 
 #if STDC_HEADERS || HAVE_STRING_H

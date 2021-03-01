@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -69,49 +69,49 @@ static string_ty *os_curdir_sub _((void));
 static string_ty *
 os_curdir_sub()
 {
-	static string_ty	*s;
+    static string_ty *s;
 
-	os_become_must_be_active();
-	if (!s)
+    os_become_must_be_active();
+    if (!s)
+    {
+	char            buffer[2000];
+	char            *pwd;
+
+	pwd = getenv("PWD");
+	if (pwd && *pwd == '/')
 	{
-		char	buffer[2000];
-		char	*pwd;
+	    struct stat     st1;
+	    struct stat     st2;
 
-		pwd = getenv("PWD");
-		if (pwd && *pwd == '/')
-		{
-			struct stat st1;
-			struct stat st2;
-
-			if
-			(
-				glue_stat(".", &st1) == 0
-			&&
-				glue_stat(pwd, &st2) == 0
-			&&
-				st1.st_dev == st2.st_dev
-			&&
-				st1.st_ino == st2.st_ino
-			)
-			{
-				s = str_from_c(pwd);
-				return s;
-			}
-		}
-
-		if (!glue_getcwd(buffer, sizeof(buffer)))
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_errno_set(scp);
-			fatal_intl(scp, i18n("getcwd: $errno"));
-			/* NOTREACHED */
-		}
-		assert(buffer[0] == '/');
-		s = str_from_c(buffer);
+	    if
+	    (
+		glue_stat(".", &st1) == 0
+	    &&
+		glue_stat(pwd, &st2) == 0
+	    &&
+		st1.st_dev == st2.st_dev
+	    &&
+		st1.st_ino == st2.st_ino
+	    )
+	    {
+		s = str_from_c(pwd);
+		return s;
+	    }
 	}
-	return s;
+
+	if (!glue_getcwd(buffer, sizeof(buffer)))
+	{
+	    sub_context_ty  *scp;
+
+	    scp = sub_context_new();
+	    sub_errno_set(scp);
+	    fatal_intl(scp, i18n("getcwd: $errno"));
+	    /* NOTREACHED */
+	}
+	assert(buffer[0] == '/');
+	s = str_from_c(buffer);
+    }
+    return s;
 }
 
 
@@ -137,18 +137,18 @@ os_curdir_sub()
 string_ty *
 os_curdir()
 {
-	static string_ty	*result;
+    static string_ty *result;
 
-	os_become_must_be_active();
-	if (!result)
-	{
-		string_ty	*dot;
-		
-		dot = str_from_c(".");
-		result = os_pathname(dot, 1);
-		str_free(dot);
-	}
-	return str_copy(result);
+    os_become_must_be_active();
+    if (!result)
+    {
+	string_ty       *dot;
+
+	dot = str_from_c(".");
+	result = os_pathname(dot, 1);
+	str_free(dot);
+    }
+    return str_copy(result);
 }
 
 
@@ -172,28 +172,28 @@ static string_ty *has_prefix _((string_ty *, string_ty *));
 
 static string_ty *
 has_prefix(pfx, path)
-	string_ty	*pfx;
-	string_ty	*path;
+    string_ty       *pfx;
+    string_ty       *path;
 {
-	if (str_equal(pfx, path))
-		return str_copy(path);
-	if
-	(
-		pfx->str_length < path->str_length
-	&&
-		path->str_text[pfx->str_length] == '/'
-	&&
-		0 == memcmp(pfx->str_text, path->str_text, pfx->str_length)
-	)
-	{
-		return
-			str_n_from_c
-			(
-				path->str_text + pfx->str_length,
-				path->str_length - pfx->str_length
-			);
-	}
-	return 0;
+    if (str_equal(pfx, path))
+	return str_copy(path);
+    if
+    (
+	pfx->str_length < path->str_length
+    &&
+	path->str_text[pfx->str_length] == '/'
+    &&
+	0 == memcmp(pfx->str_text, path->str_text, pfx->str_length)
+    )
+    {
+	return
+	    str_n_from_c
+	    (
+		path->str_text + pfx->str_length,
+		path->str_length - pfx->str_length
+	    );
+    }
+    return 0;
 }
 
 
@@ -217,19 +217,19 @@ static string_ty *has_a_prefix _((string_list_ty *, string_ty *));
 
 static string_ty *
 has_a_prefix(pfx, path)
-	string_list_ty	*pfx;
-	string_ty	*path;
+    string_list_ty  *pfx;
+    string_ty       *path;
 {
-	size_t		j;
-	string_ty	*result;
+    size_t          j;
+    string_ty       *result;
 
-	for (j = 0; j < pfx->nstrings; ++j)
-	{
-		result = has_prefix(pfx->string[j], path);
-		if (result)
-			return result;
-	}
-	return 0;
+    for (j = 0; j < pfx->nstrings; ++j)
+    {
+	result = has_prefix(pfx->string[j], path);
+	if (result)
+	    return result;
+    }
+    return 0;
 }
 
 
@@ -258,57 +258,57 @@ static string_list_ty *get_prefix_list _((void));
 static string_list_ty *
 get_prefix_list()
 {
-	static string_list_ty *prefix;
-	char		*cp;
-	string_list_ty	tmp;
-	string_ty	*s;
-	size_t		j;
+    static string_list_ty *prefix;
+    char            *cp;
+    string_list_ty  tmp;
+    string_ty       *s;
+    size_t          j;
 
-	if (prefix)
-		return prefix;
-
-	/*
-	 * Pull the value out of the relevant environment
-	 * variable, and break it into pieces (it's colon
-	 * separated).
-	 */
-	prefix = string_list_new();
-	cp = getenv("AEGIS_AUTOMOUNT_POINTS");
-	if (!cp)
-		cp = "/tmp_mnt:/a:/.automount";
-	s = str_from_c(cp);
-	string_list_constructor(&tmp);
-	str2wl(&tmp, s, ":", 0);
-	str_free(s);
-	
-	/*
-	 * Rip off any trailing slashes.
-	 */
-	for (j = 0; j < tmp.nstrings; ++j)
-	{
-		size_t		max;
-
-		s = tmp.string[j];
-		if (s->str_text[0] != '/')
-			continue;
-		max = s->str_length;
-		while (max > 0 && s->str_text[max - 1] == '/')
-			--max;
-		if (max != s->str_length)
-		{
-			if (max > 0)
-			{
-				s = str_n_from_c(s->str_text, max);
-				string_list_append_unique(prefix, s);
-				str_free(s);
-			}
-		}
-		else
-			string_list_append_unique(prefix, s);
-	}
-	string_list_destructor(&tmp);
-
+    if (prefix)
 	return prefix;
+
+    /*
+     * Pull the value out of the relevant environment
+     * variable, and break it into pieces (it's colon
+     * separated).
+     */
+    prefix = string_list_new();
+    cp = getenv("AEGIS_AUTOMOUNT_POINTS");
+    if (!cp)
+	cp = "/tmp_mnt:/a:/.automount";
+    s = str_from_c(cp);
+    string_list_constructor(&tmp);
+    str2wl(&tmp, s, ":", 0);
+    str_free(s);
+
+    /*
+     * Rip off any trailing slashes.
+     */
+    for (j = 0; j < tmp.nstrings; ++j)
+    {
+	size_t          max;
+
+	s = tmp.string[j];
+	if (s->str_text[0] != '/')
+	    continue;
+	max = s->str_length;
+	while (max > 0 && s->str_text[max - 1] == '/')
+	    --max;
+	if (max != s->str_length)
+	{
+	    if (max > 0)
+	    {
+		s = str_n_from_c(s->str_text, max);
+		string_list_append_unique(prefix, s);
+		str_free(s);
+	    }
+	}
+	else
+	    string_list_append_unique(prefix, s);
+    }
+    string_list_destructor(&tmp);
+
+    return prefix;
 }
 
 
@@ -339,120 +339,115 @@ static string_list_ty *get_auto_mount_dirs _((string_list_ty *));
 
 static string_list_ty *
 get_auto_mount_dirs(prefix)
-	string_list_ty	*prefix;
+    string_list_ty  *prefix;
 {
-	FILE		*fp;
-	static string_list_ty *dirs;
-	static struct stat mntent_st;
-	static string_ty *slash;
-	int		err;
-	struct stat	st;
-	string_ty	*p1;
-	struct stat	st1;
-	string_ty	*p2;
-	struct stat	st2;
+    FILE            *fp;
+    static string_list_ty *dirs;
+    static struct stat mntent_st;
+    static string_ty *slash;
+    int             err;
+    struct stat     st;
+    string_ty       *p1;
+    struct stat     st1;
+    string_ty       *p2;
+    struct stat     st2;
 
-	fp = setmntent(MOUNTED, "r");
-	if (!fp)
+    fp = setmntent(MOUNTED, "r");
+    if (!fp)
+    {
+	if (dirs && dirs->nstrings)
 	{
-		if (dirs && dirs->nstrings)
-		{
-			string_list_delete(dirs);
-			dirs = string_list_new();
-		}
-		return dirs;
+	    string_list_delete(dirs);
+	    dirs = string_list_new();
+	}
+	return dirs;
+    }
+
+    /*
+     * The ``fp'' variable is probably not a real FILE*, so don't
+     * use it like one!  E.g. Cygwin cast it to FILE*, but there's
+     * actually a whole 'nother data structure behind there, and it
+     * GPFs if you try to access it as if it were a FILE*.
+     */
+    err = stat(MOUNTED, &st);
+    if (err)
+	memset(&st, 0, sizeof(st));
+    if (dirs && mntent_st.st_mtime == st.st_mtime)
+    {
+	endmntent(fp);
+	return dirs;
+    }
+    mntent_st = st;
+
+    if (!slash)
+	slash = str_from_c("/");
+    if (dirs)
+	string_list_delete(dirs);
+    dirs = string_list_new();
+    for (;;)
+    {
+	struct mntent   *mep;
+	string_ty       *dir;
+	string_ty       *tmp;
+
+	mep = getmntent(fp);
+	if (!mep)
+	    break;
+	dir = str_from_c(mep->mnt_dir);
+
+	/*
+	 * Ignore ``/'' because everything is below it.
+	 */
+	if (str_equal(dir, slash))
+	{
+	  the_next_one:
+	    str_free(dir);
+	    continue;
 	}
 
 	/*
-	 * The ``fp'' variable is probably not a real FILE*, so don't
-	 * use it like one!  E.g. Cygwin cast it to FILE*, but there's
-	 * actually a whole 'nother data structure behind there, and it
-	 * GPFs if you try to access it as if it were a FILE*.
+	 * If the mount point doesn't have an automount
+	 * point prefix, skip this mount point.
+	 *
+	 * We are called by os_pathname, which has just
+	 * exersized all of the symbolic links and automount
+	 * thingies.  So, they will all be in the mount table.
+	 * (Except for really weird cases of symlinks between
+	 * NFS file systems, with some servers fast and some
+	 * really really slow, but don't worry about that.)
 	 */
-	err = stat(MOUNTED, &st);
+	tmp = has_a_prefix(prefix, dir);
+	if (!tmp)
+	    goto the_next_one;
+
+	/*
+	 * Simply fiddling with the path is a security
+	 * hole.  We must make sure that the auto-mounted
+	 * and un-auto-mounted paths give the same answer.
+	 */
+	p1 = str_format("%S/.", dir);
+	err = lstat(p1->str_text, &st1);
+	str_free(p1);
 	if (err)
-		memset(&st, 0, sizeof(st));
-	if (dirs && mntent_st.st_mtime == st.st_mtime)
-	{
-		endmntent(fp);
-		return dirs;
-	}
-	mntent_st = st;
+	    goto the_next_one;
+	p2 = str_format("%S/.", tmp);
+	str_free(tmp);
+	err = lstat(p2->str_text, &st2);
+	str_free(p2);
+	if (err)
+	    goto the_next_one;
+	if (st1.st_ino != st2.st_ino || st1.st_dev != st2.st_dev) /*lint !e81 */
+	    goto the_next_one;
 
-	if (!slash)
-		slash = str_from_c("/");
-	if (dirs)
-		string_list_delete(dirs);
-	dirs = string_list_new();
-	for (;;)
-	{
-		struct mntent	*mep;
-		string_ty	*dir;
-		string_ty	*tmp;
-
-		mep = getmntent(fp);
-		if (!mep)
-			break;
-		dir = str_from_c(mep->mnt_dir);
-
-		/*
-		 * Ignore ``/'' because everything is below it.
-		 */
-		if (str_equal(dir, slash))
-		{
-			the_next_one:
-			str_free(dir);
-			continue;
-		}
-
-		/*
-		 * If the mount point doesn't have an automount
-		 * point prefix, skip this mount point.
-		 *
-		 * We are called by os_pathname, which has just
-		 * exersized all of the symbolic links and automount
-		 * thingies.  So, they will all be in the mount table.
-		 * (Except for really weird cases of symlinks between
-		 * NFS file systems, with some servers fast and some
-		 * really really slow, but don't worry about that.)
-		 */
-		tmp = has_a_prefix(prefix, dir);
-		if (!tmp)
-			goto the_next_one;
-
-		/*
-		 * Simply fiddling with the path is a security
-		 * hole.  We must make sure that the auto-mounted
-		 * and un-auto-mounted paths give the same answer.
-		 */
-		p1 = str_format("%S/.", dir);
-		err = lstat(p1->str_text, &st1);
-		str_free(p1);
-		if (err)
-			goto the_next_one;
-		p2 = str_format("%S/.", tmp);
-		str_free(tmp);
-		err = lstat(p2->str_text, &st2);
-		str_free(p2);
-		if (err)
-			goto the_next_one;
-		if
-		(
-			st1.st_ino != st2.st_ino
-		||
-			st1.st_dev != st2.st_dev
-		)						/*lint !e81*/
-			goto the_next_one;
-
-		/*
-		 * Everything checks out,
-		 * remember this one.
-		 */
-		string_list_append(dirs, dir);
-		str_free(dir);
-	}
-	endmntent(fp);
-	return dirs;
+	/*
+	 * Everything checks out,
+	 * remember this one.
+	 */
+	string_list_append(dirs, dir);
+	str_free(dir);
+    }
+    endmntent(fp);
+    return dirs;
 }
 
 
@@ -481,56 +476,56 @@ static string_ty *remove_automounter_prefix _((string_ty *));
 
 static string_ty *
 remove_automounter_prefix(path)
-	string_ty	*path;
+    string_ty      *path;
 {
-	string_list_ty	*prefix;
-	string_list_ty	*amdl;
-	string_ty	*result;
+    string_list_ty *prefix;
+    string_list_ty *amdl;
+    string_ty      *result;
+
+    /*
+     * Get the list of possible automount prefixes.
+     */
+    prefix = get_prefix_list();
+
+    /*
+     * Get the list of automounted mount points.
+     * It's cached, so it usually doesn't take long.
+     */
+    amdl = get_auto_mount_dirs(prefix);
+
+    /*
+     * Look for leading path prefixes.
+     */
+    result = has_a_prefix(prefix, path);
+    if (result)
+    {
+	string_ty       *tmp;
 
 	/*
-	 * Get the list of possible automount prefixes.
+	 * Now see if the path (known to have an auto mount
+	 * prefix) is below an automounted mount point (also
+	 * known to have an auto mount prefix).
 	 */
-	prefix = get_prefix_list();
-
-	/*
-	 * Get the list of automounted mount points.
-	 * It's cached, so it usually doesn't take long.
-	 */
-	amdl = get_auto_mount_dirs(prefix);
-
-	/*
-	 * Look for leading path prefixes.
-	 */
-	result = has_a_prefix(prefix, path);
-	if (result)
+	tmp = has_a_prefix(amdl, path);
+	if (tmp)
 	{
-		string_ty	*tmp;
-
-		/*
-		 * Now see if the path (known to have an auto mount
-		 * prefix) is below an automounted mount point (also
-		 * known to have an auto mount prefix).
-		 */
-		tmp = has_a_prefix(amdl, path);
-		if (tmp)
-		{
-			str_free(tmp);
-			return result;
-		}
-
-		/*
-		 * The path is below an auto mount directory, but
-		 * not in the mount table, so it's bogus in some way.
-		 * Ignore it, in case it is an attempt to subvert Aegis
-		 * into a security breach.
-		 */
-		str_free(result);
+	    str_free(tmp);
+	    return result;
 	}
 
 	/*
-	 * No match, return the original.
+	 * The path is below an auto mount directory, but
+	 * not in the mount table, so it's bogus in some way.
+	 * Ignore it, in case it is an attempt to subvert Aegis
+	 * into a security breach.
 	 */
-	return str_copy(path);
+	str_free(result);
+    }
+
+    /*
+     * No match, return the original.
+     */
+    return str_copy(path);
 }
 
 
@@ -556,23 +551,23 @@ static string_ty *memb _((void));
 static string_ty *
 memb()
 {
-	static string_ty *result;
-	if (!result)
-	{
-		char name[MAXHOSTNAMELEN];
-		memberid_t my_id;
+    static string_ty *result;
+    if (!result)
+    {
+	char            name[MAXHOSTNAMELEN];
+	memberid_t      my_id;
 
-		if
-		(
-			clu_info(CLU_INFO_MY_ID, &my_id) < 0
-		||
-			clu_info(CLU_INFO_NODENAME_BY_ID, my_id, name, sizeof(name)) < 0
-		)
-			result = str_from_c("member0");
-		else
-			result = str_from_c(name);
-	}
-	return result;
+	if
+	(
+	    clu_info(CLU_INFO_MY_ID, &my_id) < 0
+	||
+	    clu_info(CLU_INFO_NODENAME_BY_ID, my_id, name, sizeof(name)) < 0
+	)
+	    result = str_from_c("member0");
+	else
+	    result = str_from_c(name);
+    }
+    return result;
 }
 
 
@@ -596,39 +591,41 @@ static string_ty *magic_memb_replace _((string_ty *));
 
 static string_ty *
 magic_memb_replace(s)
-	string_ty	*s;
+    string_ty       *s;
 {
-	static stracc_t	sa;
-	char		*cp;
-	char		*end;
-	char		*ep;
+    static stracc_t sa;
+    char            *cp;
+    char            *end;
+    char            *ep;
 
-	stracc_open(&sa);
-	cp = s->str_text;
-	end = s->str_text + s->str_length;
-	while (cp < end)
+    stracc_open(&sa);
+    cp = s->str_text;
+    end = s->str_text + s->str_length;
+    while (cp < end)
+    {
+	ep = memchr(cp, '{', end - cp);
+	if (!ep)
 	{
-		ep = memchr(cp, '{', end - cp);
-		if (!ep)
-		{
-			stracc_chars(&sa, cp, end - cp);
-			break;
-		}
-		if (ep > cp)
-		{
-			stracc_chars(&sa, cp, ep - cp);
-			cp = ep;
-		}
-		if (cp + 6 <= end && 0 == memcmp(cp, "{memb}", 6))
-		{
-			string_ty *name = memb();
-			stracc_chars(&sa, name->str_text, name->str_length);
-			cp += 6;
-		}
-		else
-			stracc_char(&sa, *cp++);
+	    stracc_chars(&sa, cp, end - cp);
+	    break;
 	}
-	return stracc_close(&sa);
+	if (ep > cp)
+	{
+	    stracc_chars(&sa, cp, ep - cp);
+	    cp = ep;
+	}
+	if (cp + 6 <= end && 0 == memcmp(cp, "{memb}", 6))
+	{
+	    string_ty       *name;
+
+	    name = memb();
+	    stracc_chars(&sa, name->str_text, name->str_length);
+	    cp += 6;
+	}
+	else
+	    stracc_char(&sa, *cp++);
+    }
+    return stracc_close(&sa);
 }
 
 #endif
@@ -658,259 +655,279 @@ magic_memb_replace(s)
 
 string_ty *
 os_pathname(path, resolve)
-	string_ty	*path;
-	int		resolve;
+    string_ty       *path;
+    int             resolve;
 {
-	static char	*tmp;
-	static size_t	tmplen;
-	static size_t	ipos;
-	static size_t	opos;
-	int		c;
-	int		found;
+    static char     *tmp;
+    static size_t   tmplen;
+    static size_t   ipos;
+    static size_t   opos;
+    int             c;
+    int             found;
 #ifdef S_IFLNK
-	int		loop;
+    int             loop;
 #endif
-	string_ty	*result;
+    string_ty       *result;
 
+    /*
+     * Change relative pathnames to absolute
+     */
+    trace(("os_pathname(path = %08lX)\n{\n", (long)path));
+    if (!path)
+	path = os_curdir();
+    if (resolve)
+	os_become_must_be_active();
+    trace_string(path->str_text);
+    if (path->str_text[0] != '/')
+	path = str_format("%S/%S", os_curdir_sub(), path);
+    else
+	path = str_copy(path);
+
+    /*
+     * Take kinks out of the pathname
+     */
+    ipos = 0;
+    opos = 0;
+    found = 0;
+#ifdef S_IFLNK
+    loop = 0;
+#endif
+    while (!found)
+    {
 	/*
-	 * Change relative pathnames to absolute
+	 * get the next character
 	 */
-	trace(("os_pathname(path = %08lX)\n{\n"/*}*/, path));
-	if (!path)
-		path = os_curdir();
-	if (resolve)
-		os_become_must_be_active();
-	trace_string(path->str_text);
-	if (path->str_text[0] != '/')
-		path = str_format("%S/%S", os_curdir_sub(), path);
+	c = path->str_text[ipos];
+	if (c)
+	    ipos++;
 	else
-		path = str_copy(path);
+	{
+	    found = 1;
+	    c = '/';
+	}
 
 	/*
-	 * Take kinks out of the pathname
+	 * remember the normal characters
+	 * until get to slash
 	 */
-	ipos = 0;
-	opos = 0;
-	found = 0;
-#ifdef S_IFLNK
-	loop = 0;
-#endif
-	while (!found)
+	if (c != '/')
+	    goto remember;
+
+	/*
+	 * leave root alone
+	 */
+	if (!opos)
+	    goto remember;
+
+	/*
+	 * "/.." -> "/"
+	 */
+	if (opos == 3 && tmp[1] == '.' && tmp[2] == '.')
 	{
-		/*
-		 * get the next character
-		 */
-		c = path->str_text[ipos];
-		if (c)
-			ipos++;
-		else
-		{
-			found = 1;
-			c = '/';
-		}
+	    opos = 1;
+	    continue;
+	}
 
-		/*
-		 * remember the normal characters
-		 * until get to slash
-		 */
-		if (c != '/')
-			goto remember;
+	/*
+	 * "a//" -> "a/"
+	 */
+	if (tmp[opos - 1] == '/')
+	    continue;
 
-		/*
-		 * leave root alone
-		 */
-		if (!opos)
-			goto remember;
+	/*
+	 * "a/./" -> "a/"
+	 */
+	if (opos >= 2 && tmp[opos - 1] == '.' && tmp[opos - 2] == '/')
+	{
+	    opos--;
+	    continue;
+	}
 
-		/*
-		 * "/.." -> "/"
-		 */
-		if (opos == 3 && tmp[1] == '.' && tmp[2] == '.')
-		{
-			opos = 1;
-			continue;
-		}
+	/*
+	 * "a/b/../" -> "a/"
+	 */
+	if
+	(
+	    opos > 3
+	&&
+	    tmp[opos - 1] == '.'
+	&&
+	    tmp[opos - 2] == '.'
+	&&
+	    tmp[opos - 3] == '/'
+	)
+	{
+	    opos -= 4;
+	    assert(opos > 0);
+	    while (tmp[opos - 1] != '/')
+		opos--;
+	    continue;
+	}
 
-		/*
-		 * "a//" -> "a/"
-		 */
-		if (tmp[opos - 1] == '/')
-			continue;
+	/*
+	 * see if the path so far is a symbolic link
+	 */
+#ifdef S_IFLNK
+	if (resolve)
+	{
+	    char            pointer[2000];
+	    int             nbytes;
+	    string_ty       *s;
 
+	    s = str_n_from_c(tmp, opos);
+	    nbytes = glue_readlink(s->str_text, pointer, sizeof(pointer) - 1);
+	    if (nbytes < 0)
+	    {
 		/*
-		 * "a/./" -> "a/"
-		 */
-		if (opos >= 2 && tmp[opos - 1] == '.' && tmp[opos - 2] == '/')
-		{
-			opos--;
-			continue;
-		}
-
-		/*
-		 * "a/b/../" -> "a/"
+		 * probably not a symbolic link
 		 */
 		if
 		(
-			opos > 3
+		    /*
+		     * Some broken Unixes say this when they should
+		     * say EINVAL.
+		     */
+		    errno != ENXIO
 		&&
-			tmp[opos - 1] == '.'
+		    /*
+		     * The file definitely isn't a symbolic link.
+		     */
+		    errno != EINVAL
 		&&
-			tmp[opos - 2] == '.'
+		    /*
+		     * The file doesn't exist.
+		     */
+		    errno != ENOENT
 		&&
-			tmp[opos - 3] == '/'
+		    /*
+		     * One of the path elements isn't a directory.
+		     */
+		    errno != ENOTDIR
+		&&
+		    /*
+		     * If we can't read the link (or more likely, one
+		     * of the directories above it wont let us search)
+		     * assume it isn't a link.
+		     */
+		    errno != EACCES
 		)
 		{
-			opos -= 4;
-			assert(opos > 0);
-			while (tmp[opos - 1] != '/')
-				opos--;
-			continue;
+		    sub_context_ty  *scp;
+
+		    scp = sub_context_new();
+		    sub_errno_set(scp);
+		    sub_var_set_string(scp, "File_Name", s);
+		    fatal_intl(scp, i18n("readlink $filename: $errno"));
+		    /* NOTREACHED */
 		}
+		str_free(s);
+	    }
+	    else
+	    {
+		string_ty       *newpath;
+		string_ty       *link1;
 
-		/*
-		 * see if the path so far is a symbolic link
-		 */
-#ifdef S_IFLNK
-		if (resolve)
+		if (nbytes == 0)
 		{
-			char		pointer[2000];
-			int		nbytes;
-			string_ty	*s;
+		    pointer[0] = '.';
+		    nbytes = 1;
+		}
+		if (++loop > 1000)
+		{
+		    sub_context_ty  *scp;
 
-			s = str_n_from_c(tmp, opos);
-			nbytes = glue_readlink(s->str_text, pointer, sizeof(pointer) - 1);
-			if (nbytes < 0)
-			{
-				/*
-				 * probably not a symbolic link
-				 */
-				if
-				(
-					errno != ENXIO
-				&&
-					errno != EINVAL
-				&& 
-					errno != ENOENT
-				&& 
-					errno != ENOTDIR
-				)
-				{
-					sub_context_ty	*scp;
-
-					scp = sub_context_new();
-					sub_errno_set(scp);
-					sub_var_set_string(scp, "File_Name", s);
-					fatal_intl(scp, i18n("readlink $filename: $errno"));
-					/* NOTREACHED */
-				}
-				str_free(s);
-			}
-			else
-			{
-				string_ty	*newpath;
-				string_ty	*link1;
-	
-				if (nbytes == 0)
-				{
-					pointer[0] = '.';
-					nbytes = 1;
-				}
-				if (++loop > 1000)
-				{
-					sub_context_ty	*scp;
-
-					scp = sub_context_new();
-					sub_errno_setx(scp, ELOOP);
-					sub_var_set_string(scp, "File_Name", s);
-					fatal_intl(scp, i18n("readlink $filename: $errno"));
-					/* NOTREACHED */
-				}
-				link1 = str_n_from_c(pointer, nbytes);
+		    scp = sub_context_new();
+		    sub_errno_setx(scp, ELOOP);
+		    sub_var_set_string(scp, "File_Name", s);
+		    fatal_intl(scp, i18n("readlink $filename: $errno"));
+		    /* NOTREACHED */
+		}
+		link1 = str_n_from_c(pointer, nbytes);
 #ifdef HAVE_CLU_INFO
-				{
-					string_ty	*link2;
-
-					/*
-					 * OSF/1 has magic symlinks,
-					 * where the string "{memb}"
-					 * is replaced by the cluster
-					 * member name.
-					 *
-					 * This is like the DG/UX "elink"
-					 * concept, where environment
-					 * variables can be substituted
-					 * into symlinks.
-					 */
-					link2 = magic_memb_replace(link1);
-					str_free(link1);
-					link1 = link2;
-				}
-#endif
-				str_free(s);
-				if (link1->str_text[0] == '/')
-				{
-					newpath =
-						str_format
-						(
-							"%s/%s",
-							link1->str_text,
-							path->str_text + ipos
-						);
-				}
-				else
-				{
-					while (tmp[opos - 1] != '/')
-						opos--;
-					tmp[opos] = 0;
-
-					newpath =
-						str_format
-						(
-							"%s/%s/%s",
-							tmp,
-							link1->str_text,
-							path->str_text + ipos
-						);
-				}
-				str_free(link1);
-				str_free(path);
-				path = newpath;
-				ipos = 0;
-				opos = 0;
-				found = 0;
-				continue;
-			}
-		}
-#endif
-	
-		/*
-		 * keep the slash
-		 */
-		remember:
-		if (opos >= tmplen)
 		{
-			tmplen = tmplen * 2 + 8;
-			tmp = mem_change_size(tmp, tmplen);
+		    string_ty       *link2;
+
+		    /*
+		     * OSF/1 has magic symlinks,
+		     * where the string "{memb}"
+		     * is replaced by the cluster
+		     * member name.
+		     *
+		     * This is like the DG/UX "elink"
+		     * concept, where environment
+		     * variables can be substituted
+		     * into symlinks.
+		     */
+		    link2 = magic_memb_replace(link1);
+		    str_free(link1);
+		    link1 = link2;
 		}
-		tmp[opos++] = c;
+#endif
+		str_free(s);
+		if (link1->str_text[0] == '/')
+		{
+		    newpath =
+			str_format
+			(
+			    "%s/%s",
+			    link1->str_text,
+			    path->str_text + ipos
+			);
+		}
+		else
+		{
+		    while (tmp[opos - 1] != '/')
+			opos--;
+		    tmp[opos] = 0;
+
+		    newpath =
+			str_format
+			(
+			    "%s/%s/%s",
+			    tmp,
+			    link1->str_text,
+			    path->str_text + ipos
+			);
+		}
+		str_free(link1);
+		str_free(path);
+		path = newpath;
+		ipos = 0;
+		opos = 0;
+		found = 0;
+		continue;
+	    }
 	}
-	str_free(path);
-	assert(opos >= 1);
-	assert(tmp[0] == '/');
-	assert(tmp[opos - 1] == '/');
-	if (opos >= 2)
-		opos--;
-	path = str_n_from_c(tmp, opos);
-	trace_string(path->str_text);
+#endif
 
 	/*
-	 * Check for automounter prefixes, and remove them if you
-	 * find them.  The user needs to use this sparingly, because
-	 * extreme chaos can result.
+	 * keep the slash
 	 */
-	result = remove_automounter_prefix(path);
-	str_free(path);
-	trace_string(result->str_text);
-	trace((/*{*/"}\n"));
-	return result;
+        remember:
+	if (opos >= tmplen)
+	{
+	    tmplen = tmplen * 2 + 8;
+	    tmp = mem_change_size(tmp, tmplen);
+	}
+	tmp[opos++] = c;
+    }
+    str_free(path);
+    assert(opos >= 1);
+    assert(tmp[0] == '/');
+    assert(tmp[opos - 1] == '/');
+    if (opos >= 2)
+	opos--;
+    path = str_n_from_c(tmp, opos);
+    trace_string(path->str_text);
+
+    /*
+     * Check for automounter prefixes, and remove them if you
+     * find them.  The user needs to use this sparingly, because
+     * extreme chaos can result.
+     */
+    result = remove_automounter_prefix(path);
+    str_free(path);
+    trace_string(result->str_text);
+    trace(("}\n"));
+    return result;
 }

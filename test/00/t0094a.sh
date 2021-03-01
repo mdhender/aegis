@@ -2,7 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2002 John Darrington
-#       
+#
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
 #	the Free Software Foundation; either version 2 of the License, or
@@ -73,7 +73,7 @@ fail()
 no_result()
 {
 	set +x
-	
+
 	echo 'NO RESULT when testing the history_label_command functionality' 1>&2
 	echo $activity
 	cd $here

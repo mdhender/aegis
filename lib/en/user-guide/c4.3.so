@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1998 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ file:
 link_integration_directory = true;
 .E)
 .LP
-The files must be removed first, otherwise the baseline would
+The links must be removed first, otherwise the baseline would
 cease to be self-consistent.
 .LP
 Another field to be set in this file is
@@ -98,7 +98,7 @@ so that cake can determine what needs to be compiled and linked.
 .E(
 #define project_files \e
   [[aegis -l pf -terse -p PROJECT \e
-   -c CHANGE]];
+    -c CHANGE]];
 #define change_files \e
   [[aegis -l cf -terse -p PROJECT \e
    -c CHANGE]];
@@ -162,7 +162,7 @@ The rule now becomes
   rm -f %.o
   CC CFLAGS -c %.c
 .E)
-This rule is a little quirky about include files which do not yet exists,
+This rule is a little quirky about include files which do not yet exist,
 but must be constructed by some other rule.
 You may want to use \fIgcc -MM\fP instead,
 which is almost as quirky when used with cake.

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@ enum
 	arglex_token_debug,
 	arglex_token_div,
 	arglex_token_eq,
+	arglex_token_execute,
 	arglex_token_false,
 	arglex_token_ge,
 	arglex_token_gt,
@@ -57,7 +58,9 @@ enum
 	arglex_token_plus,
 	arglex_token_print,
 	arglex_token_resolve,
+	arglex_token_resolve_not,
 	arglex_token_right_paren,
+	arglex_token_semicolon,
 	arglex_token_shift_left,
 	arglex_token_shift_right,
 	arglex_token_size,

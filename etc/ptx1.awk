@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997 Peter Miller;
+#	Copyright (C) 1997, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -112,4 +112,4 @@ BEGIN {
 		gsub(/\\/, "")		# Kill all backslashes
 		print th_name "(" th_section ")	" $0
 	}
-}  
+}

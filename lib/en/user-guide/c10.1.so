@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: User Guide, Geographically Distributed Development, Manual Operation
+.\" MANIFEST: User Guide, Geographically Distributed Development, Manual Operati
 .\"
 .nh 2 "Manual Operation"
 .LP
@@ -49,7 +49,7 @@ the version of the file which was committed is sent.  If necessary, the
 history files will be consulted to reconstruct this information.  See the
 \&``\fIAutomatic Send\fP'' section, below, for more discussion of this.
 .LP
-There are many options for customizing the e-mail message set to
+There are many options for customizing the e-mail message sent to
 \&\f(CWjoe.blow@example.com\fP, see \fIaedist\fP(1) for more information.
 .nh 3 "Sending Baselines"
 .LP
@@ -156,7 +156,7 @@ executable commands \fIthat will be executed\fP.  Caveat emptor.
 Make sure you trust the source.
 .nh 2 "Sneaker Net"
 .LP
-Another common method of transporting data, sometimes quite large amount
+Another common method of transporting data, sometimes a quite large amount
 of it, is to write it onto transportable media and carry it.
 .LP
 To write a change set onto a floppy, you would use commands such as

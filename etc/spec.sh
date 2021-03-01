@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999-2001 Peter Miller;
+#	Copyright (C) 1997, 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -144,7 +144,7 @@ do
 	case $file in
 
 	aefp/* | etc/* | common/* | find_sizes/* | fmtgen/* | \
-	fstrcmp/* | libaegis/* | test/* | test_*)
+	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* )
 		;;
 
 	*/main.c)
@@ -191,11 +191,6 @@ do
 			remember_dir `dirname $dst`
 			;;
 		esac
-		;;
-
-	lib/*.cgi)
-		stem=`echo $file | sed 's|^lib/||'`
-		files_rx="$files_rx /home/httpd/cgi-bin/$stem"
 		;;
 
 	lib/*/*/main.*)

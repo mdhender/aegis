@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1997, 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1993-1997, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -79,12 +79,12 @@ escape the binary characters of the file content.
 base64
 The MIME Base 64 encoding (see RFC 1521) has been used to encode the
 file content.
-.RE
 .PP
 The \fIhistory_content_limitation\fP field of the project \fIconfig\fP
 file is used to determine which files need encoding.  The size of the
 encoded file is compared to determine which of quoted printable and base
 64 encodings is used; the smaller is chosen.
+.RE
 .RE
 .TP 8n
 edit_number = string;
@@ -250,7 +250,7 @@ for some reason.
 .TP 8n
 deleted_by = integer;
 The change which last deleted this file.
-We never throw them away, because 
+We never throw them away, because
 (a) it may be created again, and more important
 (b) we need it to recreate earlier deltas.
 .RE
@@ -261,6 +261,17 @@ This is used by
 .IR aet (1)
 to suggest suitable tests.
 .so aemetrics.so
+.TP 8n
+executable = boolean;
+.RS
+This field is used to remember whether the source file had any executable
+permission sbits set at `develop end' time.  This mode will be restored
+(taking the project umask into account) when the file is copied.
+.PP
+This field is only meaningful for changes in the "completed" state,
+because this field is only set by \fIaeip\fP(1).  Until then, the mode
+if the file itself is the authority.
+.RE
 .SH WRITING REPORT SCRIPTS
 When attempting to access these fields from within the report generator,
 you need a code fragment similar to the following:

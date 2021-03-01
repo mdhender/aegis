@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,8 +46,8 @@ dir_walk(path, callback, arg)
 	char		*data;
 	long		data_len;
 
-	trace(("dir_walk(path = %08lX, callback = %08lX, \
-arg = %08lX)\n{\n"/*}*/, path, callback, arg));
+	trace(("dir_walk(path = %08lX, callback = %08lX, "
+	    "arg = %08lX)\n{\n", (long)path, (long)callback, (long)arg));
 	trace_string(path->str_text);
 #if defined(S_IFLNK) || defined(S_ISLNK)
 	if (glue_lstat(path->str_text, &st))

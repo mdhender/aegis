@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1990-1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,54 +27,52 @@
 
 
 symtab_ty *
-symtab_alloc(size)
-	int		size;
+symtab_alloc(int size)
 {
-	symtab_ty	*stp;
-	str_hash_ty	j;
+    symtab_ty	*stp;
+    str_hash_ty	j;
 
-	stp = mem_alloc(sizeof(symtab_ty));
-	stp->chain = 0;
-	stp->reap = 0;
-	stp->hash_modulus = 1 << 2; /* MUST be a power of 2 */
-	while (stp->hash_modulus < size)
-		stp->hash_modulus <<= 1;
-	stp->hash_cutover = stp->hash_modulus;
-	stp->hash_split = stp->hash_modulus - stp->hash_cutover;
-	stp->hash_cutover_mask = stp->hash_cutover - 1;
-	stp->hash_cutover_split_mask = (stp->hash_cutover * 2) - 1;
-	stp->hash_load = 0;
-	stp->hash_table =
-		mem_alloc(stp->hash_modulus * sizeof(symtab_row_ty *));
-	for (j = 0; j < stp->hash_modulus; ++j)
-		stp->hash_table[j] = 0;
-	return stp;
+    stp = mem_alloc(sizeof(symtab_ty));
+    stp->chain = 0;
+    stp->reap = 0;
+    stp->hash_modulus = 1 << 2; /* MUST be a power of 2 */
+    while (stp->hash_modulus < size)
+	stp->hash_modulus <<= 1;
+    stp->hash_cutover = stp->hash_modulus;
+    stp->hash_split = stp->hash_modulus - stp->hash_cutover;
+    stp->hash_cutover_mask = stp->hash_cutover - 1;
+    stp->hash_cutover_split_mask = (stp->hash_cutover * 2) - 1;
+    stp->hash_load = 0;
+    stp->hash_table =
+	mem_alloc(stp->hash_modulus * sizeof(symtab_row_ty *));
+    for (j = 0; j < stp->hash_modulus; ++j)
+	stp->hash_table[j] = 0;
+    return stp;
 }
 
 
 void
-symtab_free(stp)
-	symtab_ty	*stp;
+symtab_free(symtab_ty *stp)
 {
-	str_hash_ty	j;
+    str_hash_ty     j;
 
-	for (j = 0; j < stp->hash_modulus; ++j)
+    for (j = 0; j < stp->hash_modulus; ++j)
+    {
+	symtab_row_ty	**rpp;
+
+	rpp = &stp->hash_table[j];
+	while (*rpp)
 	{
-		symtab_row_ty	**rpp;
+	    symtab_row_ty   *rp;
 
-		rpp = &stp->hash_table[j];
-		while (*rpp)
-		{
-			symtab_row_ty	*rp;
-
-			rp = *rpp; 
-			*rpp = rp->overflow;
-			if (stp->reap)
-				stp->reap(rp->data);
-			str_free(rp->key);
-			mem_free(rp);
-		}
+	    rp = *rpp;
+	    *rpp = rp->overflow;
+	    if (stp->reap)
+		stp->reap(rp->data);
+	    str_free(rp->key);
+	    mem_free(rp);
 	}
+    }
 }
 
 
@@ -95,75 +93,67 @@ symtab_free(stp)
  *	reasonable threshold.  A threshold of 80% is suggested.
  */
 
-static void split _((symtab_ty *));
+static void split(symtab_ty *);
 
 static void
-split(stp)
-	symtab_ty	*stp;
+split(symtab_ty *stp)
 {
-	symtab_row_ty	*p;
-	symtab_row_ty	**ipp;
-	symtab_row_ty	*p2;
-	str_hash_ty	index;
+    symtab_row_ty   *p;
+    symtab_row_ty   **ipp;
+    symtab_row_ty   *p2;
+    str_hash_ty     index;
 
-	/*
-	 * get the list to be split across buckets 
-	 */
-	p = stp->hash_table[stp->hash_split];
-	stp->hash_table[stp->hash_split] = 0;
+    /*
+     * get the list to be split across buckets
+     */
+    p = stp->hash_table[stp->hash_split];
+    stp->hash_table[stp->hash_split] = 0;
 
-	/*
-	 * increase the modulus by one
-	 */
-	stp->hash_modulus++;
-	stp->hash_table =
-		mem_change_size
-		(
-			stp->hash_table,
-			stp->hash_modulus * sizeof(symtab_row_ty *)
-		);
-	stp->hash_table[stp->hash_modulus - 1] = 0;
-	stp->hash_split = stp->hash_modulus - stp->hash_cutover;
-	if (stp->hash_split >= stp->hash_cutover)
-	{
-		stp->hash_cutover = stp->hash_modulus;
-		stp->hash_split = 0;
-		stp->hash_cutover_mask = stp->hash_cutover - 1;
-		stp->hash_cutover_split_mask = (stp->hash_cutover * 2) - 1;
-	}
+    /*
+     * increase the modulus by one
+     */
+    stp->hash_modulus++;
+    stp->hash_table =
+	mem_change_size
+	(
+    	    stp->hash_table,
+    	    stp->hash_modulus * sizeof(symtab_row_ty *)
+	);
+    stp->hash_table[stp->hash_modulus - 1] = 0;
+    stp->hash_split = stp->hash_modulus - stp->hash_cutover;
+    if (stp->hash_split >= stp->hash_cutover)
+    {
+	stp->hash_cutover = stp->hash_modulus;
+	stp->hash_split = 0;
+	stp->hash_cutover_mask = stp->hash_cutover - 1;
+	stp->hash_cutover_split_mask = (stp->hash_cutover * 2) - 1;
+    }
 
-	/*
-	 * now redistribute the list elements
-	 *
-	 * It is important to preserve the order of the links because
-	 * they can be push-down stacks, and to simply add them to the
-	 * head of the list will reverse the order of the stack!
-	 */
-	while (p)
-	{
-		p2 = p;
-		p = p2->overflow;
-		p2->overflow = 0;
+    /*
+     * now redistribute the list elements
+     *
+     * It is important to preserve the order of the links because
+     * they can be push-down stacks, and to simply add them to the
+     * head of the list will reverse the order of the stack!
+     */
+    while (p)
+    {
+	p2 = p;
+	p = p2->overflow;
+	p2->overflow = 0;
 
-		index = p2->key->str_hash & stp->hash_cutover_mask;
-		if (index < stp->hash_split)
-		{
-			index =
-				(
-					p2->key->str_hash
-				&
-					stp->hash_cutover_split_mask
-				);
-		}
-		for
-		(
-			ipp = &stp->hash_table[index];
-			*ipp;
-			ipp = &(*ipp)->overflow
-		)
-			;
-		*ipp = p2;
-	}
+	index = p2->key->str_hash & stp->hash_cutover_mask;
+	if (index < stp->hash_split)
+    	    index = (p2->key->str_hash & stp->hash_cutover_split_mask);
+	for
+	(
+    	    ipp = &stp->hash_table[index];
+    	    *ipp;
+    	    ipp = &(*ipp)->overflow
+	)
+    	    ;
+	*ipp = p2;
+    }
 }
 
 
@@ -185,26 +175,24 @@ split(stp)
  */
 
 void *
-symtab_query(stp, key)
-	symtab_ty	*stp;
-	string_ty	*key;
+symtab_query(symtab_ty *stp, string_ty *key)
 {
-	str_hash_ty	index;
-	symtab_row_ty	*p;
+    str_hash_ty     index;
+    symtab_row_ty   *p;
 
-	while (stp)
+    while (stp)
+    {
+	index = key->str_hash & stp->hash_cutover_mask;
+	if (index < stp->hash_split)
+	    index = key->str_hash & stp->hash_cutover_split_mask;
+	for (p = stp->hash_table[index]; p; p = p->overflow)
 	{
-		index = key->str_hash & stp->hash_cutover_mask;
-		if (index < stp->hash_split)
-			index = key->str_hash & stp->hash_cutover_split_mask;
-		for (p = stp->hash_table[index]; p; p = p->overflow)
-		{
-			if (str_equal(key, p->key))
-				return p->data;
-		}
-		stp = stp->chain;
+	    if (str_equal(key, p->key))
+	       	return p->data;
 	}
-	return 0;
+	stp = stp->chain;
+    }
+    return 0;
 }
 
 
@@ -224,37 +212,30 @@ symtab_query(stp, key)
  */
 
 string_ty *
-symtab_query_fuzzy(stp, key)
-	symtab_ty	*stp;
-	string_ty	*key;
+symtab_query_fuzzy(symtab_ty *stp, string_ty *key)
 {
-	str_hash_ty	index;
-	symtab_row_ty	*p;
-	string_ty	*best_name;
-	double		best_weight;
-	double		weight;
+    str_hash_ty     index;
+    symtab_row_ty   *p;
+    string_ty	    *best_name;
+    double	    best_weight;
+    double	    weight;
 
-	best_name = 0;
-	best_weight = 0.6;
-	while (stp)
+    best_name = 0;
+    best_weight = 0.6;
+    while (stp)
+    {
+	for (index = 0; index < stp->hash_modulus; ++index)
 	{
-		for (index = 0; index < stp->hash_modulus; ++index)
-		{
-			for (p = stp->hash_table[index]; p; p = p->overflow)
-			{
-				weight =
-					fstrcmp
-					(
-						key->str_text,
-						p->key->str_text
-					);
-				if (weight > best_weight)
-					best_name = p->key;
-			}
-		}
-		stp = stp->chain;
+	    for (p = stp->hash_table[index]; p; p = p->overflow)
+	    {
+		weight = fstrcmp(key->str_text, p->key->str_text);
+		if (weight > best_weight)
+		    best_name = p->key;
+	    }
 	}
-	return best_name;
+	stp = stp->chain;
+    }
+    return best_name;
 }
 
 
@@ -274,38 +255,35 @@ symtab_query_fuzzy(stp, key)
  */
 
 void
-symtab_assign(stp, key, data)
-	symtab_ty	*stp;
-	string_ty	*key;
-	void		*data;
+symtab_assign(symtab_ty *stp, string_ty *key, void *data)
 {
-	str_hash_ty	index;
-	symtab_row_ty	*p;
+    str_hash_ty     index;
+    symtab_row_ty   *p;
 
-	index = key->str_hash & stp->hash_cutover_mask;
-	if (index < stp->hash_split)
-		index = key->str_hash & stp->hash_cutover_split_mask;
+    index = key->str_hash & stp->hash_cutover_mask;
+    if (index < stp->hash_split)
+	index = key->str_hash & stp->hash_cutover_split_mask;
 
-	for (p = stp->hash_table[index]; p; p = p->overflow)
+    for (p = stp->hash_table[index]; p; p = p->overflow)
+    {
+	if (str_equal(key, p->key))
 	{
-		if (str_equal(key, p->key))
-		{
-			if (stp->reap)
-				stp->reap(p->data);
-			p->data = data;
-			return;
-		}
+    	    if (stp->reap)
+       		stp->reap(p->data);
+    	    p->data = data;
+    	    return;
 	}
+    }
 
-	p = mem_alloc(sizeof(symtab_row_ty));
-	p->key = str_copy(key);
-	p->overflow = stp->hash_table[index];
-	p->data = data;
-	stp->hash_table[index] = p;
+    p = mem_alloc(sizeof(symtab_row_ty));
+    p->key = str_copy(key);
+    p->overflow = stp->hash_table[index];
+    p->data = data;
+    stp->hash_table[index] = p;
 
-	stp->hash_load++;
-	while (stp->hash_load * 10 >= stp->hash_modulus * 8)
-		split(stp);
+    stp->hash_load++;
+    while (stp->hash_load * 10 >= stp->hash_modulus * 8)
+	split(stp);
 }
 
 
@@ -327,135 +305,22 @@ symtab_assign(stp, key, data)
  */
 
 void
-symtab_assign_push(stp, key, data)
-	symtab_ty	*stp;
-	string_ty	*key;
-	void		*data;
+symtab_assign_push(symtab_ty *stp, string_ty *key, void *data)
 {
-	str_hash_ty	index;
-	symtab_row_ty	*p;
+    str_hash_ty     index;
+    symtab_row_ty   *p;
 
-	index = key->str_hash & stp->hash_cutover_mask;
-	if (index < stp->hash_split)
-		index = key->str_hash & stp->hash_cutover_split_mask;
+    index = key->str_hash & stp->hash_cutover_mask;
+    if (index < stp->hash_split)
+	index = key->str_hash & stp->hash_cutover_split_mask;
 
-	p = mem_alloc(sizeof(symtab_row_ty));
-	p->key = str_copy(key);
-	p->overflow = stp->hash_table[index];
-	p->data = data;
-	stp->hash_table[index] = p;
+    p = mem_alloc(sizeof(symtab_row_ty));
+    p->key = str_copy(key);
+    p->overflow = stp->hash_table[index];
+    p->data = data;
+    stp->hash_table[index] = p;
 
-	stp->hash_load++;
-	while (stp->hash_load * 10 >= stp->hash_modulus * 8)
-		split(stp);
-}
-
-
-/*
- * NAME
- *	symtab_delete - delete a variable
- *
- * SYNOPSIS
- *	void symtab_delete(string_ty *name, symtab_class_ty class);
- *
- * DESCRIPTION
- *	The symtab_delete function is used to delete variables.
- *
- * CAVEAT
- *	The name is freed, the data is reaped.
- *	(By default, reap does nothing.)
- */
-
-void
-symtab_delete(stp, key)
-	symtab_ty	*stp;
-	string_ty	*key;
-{
-	str_hash_ty	index;
-	symtab_row_ty	**pp;
-
-	index = key->str_hash & stp->hash_cutover_mask;
-	if (index < stp->hash_split)
-		index = key->str_hash & stp->hash_cutover_split_mask;
-
-	pp = &stp->hash_table[index];
-	for (;;)
-	{
-		symtab_row_ty	*p;
-
-		p = *pp;
-		if (!p)
-			break;
-		if (str_equal(key, p->key))
-		{
-			if (stp->reap)
-				stp->reap(p->data);
-			str_free(p->key);
-			*pp = p->overflow;
-			mem_free(p);
-			stp->hash_load--;
-			break;
-		}
-		pp = &p->overflow;
-	}
-}
-
-
-/*
- * NAME
- *	symtab_dump - dump id table
- *
- * SYNOPSIS
- *	void symtab_dump(symtab_ty *stp, char *caption);
- *
- * DESCRIPTION
- *	The symtab_dump function is used to dump the contents of the
- *	symbol table.  The caption will be used to indicate why the
- *	symbol table was dumped.
- *
- * CAVEAT
- *	This function is only available when symbol DEBUG is defined.
- */
-
-#ifdef DEBUG
-
-void
-symtab_dump(stp, caption)
-	symtab_ty	*stp;
-	char		*caption;
-{
-	int		j;
-	symtab_row_ty	*p;
-
-	error_raw("symbol table %s = {", caption);
-	for (j = 0; j < stp->hash_modulus; ++j)
-	{
-		for (p = stp->hash_table[j]; p; p = p->overflow)
-		{
-			error_raw
-			(
-				"key = \"%s\", data = %08lX",
-				p->key->str_text,
-				(long)p->data
-			);
-		}
-	}
-	error_raw("}");
-}
-
-#endif
-
-
-void
-symtab_walk(stp, func, arg)
-	symtab_ty	*stp;
-	void		(*func)_((symtab_ty *, string_ty *, void *, void *));
-	void		*arg;
-{
-	long		j;
-	symtab_row_ty	*rp;
-
-	for (j = 0; j < stp->hash_modulus; ++j)
-		for (rp = stp->hash_table[j]; rp; rp = rp->overflow)
-			func(stp, rp->key, rp->data, arg);
+    stp->hash_load++;
+    while (stp->hash_load * 10 >= stp->hash_modulus * 8)
+	split(stp);
 }

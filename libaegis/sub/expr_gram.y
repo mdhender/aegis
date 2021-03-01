@@ -136,18 +136,13 @@ yyerror(s)
  */
 #define fprintf trace_where_, yydebugger
 
-void yydebugger _((void *, char *, ...));
-
 void
-yydebugger(junk, fmt sva_last)
-	void		*junk;
-	char		*fmt;
-	sva_last_decl
+yydebugger(void *junk, const char *fmt, ...)
 {
 	va_list		ap;
 	string_ty	*s;
 
-	sva_init(ap, fmt);
+	va_start(ap, fmt);
 	s = str_vformat(fmt, ap);
 	va_end(ap);
 	trace_printf("%s", s->str_text);
@@ -198,5 +193,4 @@ expr
 	| NOT expr
 		%prec UNARY
 		{ $$ = (!$2); trace(("$$ = %ld;\n", $$)); }
-	;	
-
+	;

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -120,7 +120,8 @@ and you may return to the
 One of the people you nominated as a developer
 will have to use the
 .I aedb
-command to commence development of change 1.
+command to commence development of the first change.
+.\" say first since it will likely be change 10
 The
 .I aecd
 command can be used to change directory into the
@@ -186,9 +187,10 @@ Once the change builds, differences and tests cleanly,
 use the
 .I aede
 command to end development.
-At this point,
-the mode of the files will be changed to read only,
-preventing accidental modification of the files.
+.\" At this point,
+.\" the mode of the files will be changed to read only,
+.\" preventing accidental modification of the files.
+.\" Only true if protect_development_directory has been set to true.
 .nh 2 "Review The Change"
 .LP
 One of the people nominated as reviewers will have to run the
@@ -199,9 +201,10 @@ The aegis program does not mandate any particular review mechanism:
 you could use a single peer to do the review,
 you could use a panel,
 you could set the project so that developers may review their own work
-and effectively eliminating the review step.
+effectively eliminating the review step.
 In projects with as few as two people,
 it is always beneficial for someone other than the developer to review changes.
+It is even beneficial for the developer herself to review the next day.
 .LP
 Should a reviewer actually want to \fIsee\fP the change,
 the
@@ -261,7 +264,7 @@ such as a unique environment variable setting.
 The re-build also ensures that all of the files in the baseline,
 remembering that this includes source files and all other intermediate files
 required by the build process,
-ensures that all of these files are consistent with each other,
+remain consistent with each other,
 that the baseline is self-consistent.
 The definition of the baseline is that it passes its own tests,
 so the tests are run on the baseline.
@@ -300,7 +303,7 @@ This can be a very time-consuming step
 for projects with a long history,
 and thus a large collection of tests.
 The
-.I aet
+.I "aet -suggest"
 command can also be used to run "representative" sets of existing tests,
 but a full regression test run is recommended before a major release,
 or, say, weekly if it will complete over the weekend.
@@ -314,7 +317,7 @@ a reason must be supplied, and should include relevant excerpts from the build
 log in the case of a build failure (not the \fIwhole\fP log!),
 or a list of the tests which failed for test failures.
 .LP
-The 
+The
 .I aeipass
 command may be used to pass an integration.
 When the change passes,
@@ -369,7 +372,7 @@ building successfully.)
 All of the "extra work" of writing tests is a long-term win,
 where old problems never again reappear.
 All of the "extra work" of reviewing changes means that another pair of eyes
-sights the code and finds potential problems before they manifest
+sees the code and finds potential problems before they manifest
 themselves in shipped product.
 All of the "extra work" of integration ensures that the baseline always works,
 and is always self-consistent.

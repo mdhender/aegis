@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-int exeext _((const char *));
+int exeext(const char *);
 
 #endif /* COMMON_EXEEXT_H */

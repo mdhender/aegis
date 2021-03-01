@@ -26,10 +26,10 @@
 #include <ac/stddef.h>
 #include <main.h>
 
-void *mem_alloc _((size_t));
-void *mem_alloc_clear _((size_t));
-void *mem_change_size _((void *, size_t));
-void mem_free _((void *));
-char *mem_copy_string _((const char *));
+void *mem_alloc(size_t);
+void *mem_alloc_clear(size_t);
+void *mem_change_size(void *, size_t);
+void mem_free(void *);
+char *mem_copy_string(const char *);
 
 #endif /* MEM_H */

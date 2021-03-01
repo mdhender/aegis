@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1998, 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1995, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,10 @@
 .br
 .B \*(n)
 .B -Change_Attributes
+.B -Fix_Attributes
+.br
+.B \*(n)
+.B -Change_Attributes
 .B -List
 [
 .IR option ...
@@ -73,6 +77,12 @@ the subject of this command.  It will be presented as plain text, without
 any of the quotes or escapes present when this command is not used.
 .so o_edit.so
 .so o_file.so
+.TP 8n
+\-Fix_Architecture
+This option may be used to replace change change's architecture list with
+all of the mandatory architectures from the project \fIconfig\fP file,
+plus any of the optional architectures that match the current machine.
+May not be used with \-file or \-edit options.
 .so o_help.so
 .so o_list.so
 .so o_project.so

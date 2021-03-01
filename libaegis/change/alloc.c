@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2000 Peter Miller;
+ *	Copyright (C) 1999, 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,8 @@ change_alloc(pp, number)
 {
 	change_ty	*cp;
 
-	trace(("change_alloc(pp = %8.8lX, number = %ld)\n{\n"/*}*/, pp, number));
+	trace(("change_alloc(pp = %08lX, number = %ld)\n{\n"/*}*/, (long)pp,
+	    number));
 	assert(number >= 1 || number == MAGIC_ZERO);
 	cp = (change_ty *)mem_alloc(sizeof(change_ty));
 	cp->reference_count = 1;
@@ -61,7 +62,7 @@ change_alloc(pp, number)
 	cp->logfile = 0;
 	cp->pconf_data = 0;
 	cp->pconf_path = 0;
-	trace(("return %8.8lX;\n", cp));
+	trace(("return %08lX;\n", (long)cp));
 	trace((/*{*/"}\n"));
 	return cp;
 }

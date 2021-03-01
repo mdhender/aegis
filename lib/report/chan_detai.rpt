@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -80,11 +80,14 @@ while (stack_depth > 0)
     desc2 = "";
     if (cs.test_exempt || cs.test_baseline_exempt)
     {
-	if (cs.regression_test_exempt)
+	if (!cs.regression_test_exempt)
 		desc2 ##= "This change must pass a full regression test.  ";
 	if (cs.test_exempt)
 		desc2 ##=
-        "This change is exempt from testing against the development directory.";
+      "This change is exempt from testing against the development directory.  ";
+	if (cs.test_baseline_exempt)
+		desc2 ##=
+		    "This change is exempt from testing against the baseline.";
     }
     else
     {
@@ -121,7 +124,8 @@ while (stack_depth > 0)
 	for (t = 0; t < count(tmp); ++t)
 	{
 	    cn = tmp[t];
-	    cs2 = project[ptr.project ## "." ## ptr.change].state.branch.change[cn];
+	    cs2 = project[ptr.project ## "." ## ptr.change].
+		    state.branch.change[cn];
 	    print(cn, cs2.state, cs2.brief_description);
 	}
     }
@@ -346,7 +350,10 @@ while (stack_depth > 0)
 		if (h_idx + 1 >= count(keys(cs.history)))
 			elapsed = working_days(h.when, now());
 		else
-			elapsed = working_days(h.when, cs.history[h_idx + 1].when);
+		{
+			elapsed =
+			    working_days(h.when, cs.history[h_idx + 1].when);
+		}
 		if (elapsed > 0.1)
 		{
 			if (why1 != "")

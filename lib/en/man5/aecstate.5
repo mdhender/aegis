@@ -33,7 +33,7 @@ These files should not be edited by humans.
 These files is owned by the project owner and group.
 .PP
 The change number is at least 3 digits, zero padded if necessary.
-(More digits will be used if a project has a 
+(More digits will be used if a project has a
 thousand or more changes in any one release,
 although this is rare.)
 The files are spread across a directory tree,
@@ -93,6 +93,16 @@ the
 or
 .I completed
 states.
+.TP 8n
+minimum_integration = boolean;
+.br
+This field records whether the change was placed into the
+.I being_integrated
+state using the -minimum option (or that option was
+implicitly set due to a file being removed).  It is
+only present if the change is in the
+.I being_integrated
+state.
 .TP 8n
 project_file_command_sync = integer;
 .br

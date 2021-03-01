@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1995, 1996, 1998, 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -284,7 +284,7 @@ if no change number is specified.
 This allows the low-numbered change numbers to be
 used for branches later in the project.
 .TP 8n
-reuse_change_numbers = boolean; 
+reuse_change_numbers = boolean;
 This controls whether the automatically selected
 .IR aenc (1)
 change numbers ``fill in'' any gaps.
@@ -341,6 +341,21 @@ the \fIdeveloper_\%may_\%review\fP field.  If developers may not review
 their own work, then their changes may not goto directly to the \fIbeing
 integrated\fP state (as this means much the same thing).
 A contradictory setting will be replaced with \fIgoto_\%being_\%reviewed\fP.
+.RE
+.TP 8n
+protect_development_directory = boolean;
+.RS
+This field may be used to protect the development directory after
+the \fIbeing developed\fP state.  It does this by making it read-only at
+develop end time.  Should the change ever be returned to the \fIbeing
+developed\fP state, it will be made writble again.
+.PP
+The default is false, meaning to leave the development directory
+writable while is being reviewed and integrated.  Aegis' normal
+tampering detection will notice if files are changed, but there is
+no reminder to the developer that the change should be left alone.
+.PP
+This field defaults to false, because it can sometimes be slow.
 .RE
 .SH SEE ALSO
 .TP 8n

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1993, 1994, 2002 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ diff_command =
 The
 .B -w
 option produces an output of the entire file,
-with insertions an deletions marked by "change bars" in the left margin.
+with insertions and deletions marked by "change bars" in the left margin.
 This is superior to context difference,
 as it shows the entire file as context.
 .LP

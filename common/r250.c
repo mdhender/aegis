@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1992-1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,63 +38,62 @@ static	unsigned long	*pos;
 
 
 void
-r250_init()
+r250_init(void)
 {
-	unsigned long	bit;
-	unsigned long	*bp;
+    unsigned long   bit;
+    unsigned long   *bp;
 
-	/*
-	 * initialize crummy linear congruential
-	 */
-	srand(time((time_t *)0) + getpid());
+    /*
+     * initialize crummy linear congruential
+     */
+    srand(time((time_t *)0) + getpid());
 
-	/*
-	 * position to start of array
-	 */
-	pos = buf;
+    /*
+     * position to start of array
+     */
+    pos = buf;
 
-	/*
-	 * initialise contents of array
-	 */
-	for (bp = buf; bp < ENDOF(buf); ++bp)
-	{
-		*bp =
-			(
-				((unsigned long)rand8() << 24)
-			|
-				((unsigned long)rand8() << 16)
-			|
-				((unsigned long)rand8() << 8)
-			|
-				(unsigned long)rand8()
-			);
-	}
+    /*
+     * initialise contents of array
+     */
+    for (bp = buf; bp < ENDOF(buf); ++bp)
+    {
+	*bp =
+	    (
+		((unsigned long)rand8() << 24)
+	    |
+		((unsigned long)rand8() << 16)
+	    |
+		((unsigned long)rand8() << 8)
+	    |
+		(unsigned long)rand8()
+	    );
+    }
 
-	/*
-	 * make sure the bits are linearly independent
-	 */
-	for (bit = 1, bp = buf + 3; bit; bp += 11, bit <<= 1)
-	{
-		if (bp >= ENDOF(buf))
-			bp -= SIZEOF(buf);
-		*bp = (*bp & ~(bit - 1)) | bit;
-	}
+    /*
+     * make sure the bits are linearly independent
+     */
+    for (bit = 1, bp = buf + 3; bit; bp += 11, bit <<= 1)
+    {
+	if (bp >= ENDOF(buf))
+    	    bp -= SIZEOF(buf);
+	*bp = (*bp & ~(bit - 1)) | bit;
+    }
 }
 
 
 unsigned long
-r250()
+r250(void)
 {
-	unsigned long	result;
-	unsigned long	*other;
+    unsigned long   result;
+    unsigned long   *other;
 
-	other = pos + 103;
-	if (other >= ENDOF(buf))
-		other -= SIZEOF(buf);
-	*pos ^= *other;
-	result = *pos++;
-	if (pos >= ENDOF(buf))
-		pos = buf;
-	return result;
+    other = pos + 103;
+    if (other >= ENDOF(buf))
+	other -= SIZEOF(buf);
+    *pos ^= *other;
+    result = *pos++;
+    if (pos >= ENDOF(buf))
+	pos = buf;
+    return result;
 }
-

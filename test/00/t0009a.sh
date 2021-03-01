@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-2001 Peter Miller;
+#	Copyright (C) 1991-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -250,13 +250,13 @@ trap "no_result" 1 2 3 15
 q=$?
 
 # check for signals
-if test $q -ge 128 
+if test $q -ge 128
 then
 	no_result
 fi
 
 # should not complain
-if test $q -ne 0 
+if test $q -ne 0
 then
 	fail
 fi
@@ -527,6 +527,7 @@ branch =
 	minimum_change_number = 10;
 	reuse_change_numbers = true;
 	minimum_branch_number = 1;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -695,6 +696,7 @@ branch =
 	minimum_change_number = 10;
 	reuse_change_numbers = true;
 	minimum_branch_number = 1;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -782,6 +784,7 @@ branch =
 	minimum_change_number = 10;
 	reuse_change_numbers = true;
 	minimum_branch_number = 1;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -953,6 +956,7 @@ branch =
 	minimum_change_number = 10;
 	reuse_change_numbers = true;
 	minimum_branch_number = 1;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi

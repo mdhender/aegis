@@ -28,12 +28,13 @@
 #include <change/file.h>
 #include <commit.h>
 #include <error.h>
+#include <gettime.h>
 #include <help.h>
 #include <lock.h>
 #include <pconf.h>
 #include <progname.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <project/file.h>
 #include <project/file/roll_forward.h>
 #include <sub.h>
@@ -144,19 +145,25 @@ delta_name_main()
 {
     sub_context_ty  *scp;
     string_ty       *project_name;
+    long            change_number;
     long            delta_number;
-    string_ty       *delta_name;
+    string_ty       *delta_name1;
+    string_ty       *delta_name2;
     int             stomp;
     project_ty      *pp;
     user_ty         *up;
     pconf           pconf_data;
+    time_t          delta_date;
 
     trace(("delta_name_main()\n{\n"));
     arglex();
     project_name = 0;
     delta_number = 0;
-    delta_name = 0;
+    delta_name1 = 0;
+    delta_name2 = 0;
+    change_number = 0;
     stomp = 0;
+    delta_date = (time_t)(-1);
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -172,29 +179,104 @@ delta_name_main()
 	    break;
 
 	case arglex_token_string:
-	    if (delta_name)
+	    if (delta_name2)
 	    {
 		error_intl(0, i18n("too many delta names"));
 		delta_name_usage();
 	    }
-	    delta_name = str_from_c(arglex_value.alv_string);
+	    delta_name2 = str_from_c(arglex_value.alv_string);
+	    break;
+
+	case arglex_token_delta:
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_number(arglex_token_delta, delta_name_usage);
+		/*NOTREACHED*/
+
+	    case arglex_token_string:
+		if (delta_name1 || delta_number)
+		{
+		    duplicate_option_by_name
+		    (
+			arglex_token_delta,
+			delta_name_usage
+		    );
+		    /*NOTREACHED*/
+		}
+		delta_name1 = str_from_c(arglex_value.alv_string);
+		break;
+
+	    case arglex_token_number:
+		process_delta_number:
+		if (delta_name1 || delta_number)
+		{
+		    duplicate_option_by_name
+		    (
+			arglex_token_delta,
+			delta_name_usage
+		    );
+		    /*NOTREACHED*/
+		}
+		delta_number = arglex_value.alv_number;
+		if (delta_number < 1)
+		{
+		    scp = sub_context_new();
+		    sub_var_set_long(scp, "Number", delta_number);
+		    fatal_intl(scp, i18n("delta $number out of range"));
+		    /* NOTREACHED */
+		    sub_context_delete(scp);
+		}
+		break;
+	    }
 	    break;
 
 	case arglex_token_number:
-	    if (delta_number)
+	    goto process_delta_number;
+
+	case arglex_token_change:
+	case arglex_token_delta_from_change:
+	    if (arglex() != arglex_token_number)
 	    {
-		error_intl(0, i18n("too many delta numbers"));
-		delta_name_usage();
+		option_needs_number
+		(
+		    arglex_token_delta_from_change,
+		    delta_name_usage
+		);
+		/*NOTREACHED*/
 	    }
-	    delta_number = arglex_value.alv_number;
-	    if (delta_number < 1)
+	    if (change_number)
+	    {
+		duplicate_option_by_name
+		(
+		    arglex_token_delta_from_change,
+		    delta_name_usage
+		);
+	    }
+	    change_number = arglex_value.alv_number;
+	    if (change_number == 0)
+		change_number = MAGIC_ZERO;
+	    else if (change_number < 1)
 	    {
 		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", delta_number);
-		fatal_intl(scp, i18n("delta $number out of range"));
+		sub_var_set_long(scp, "Number", change_number);
+		fatal_intl(scp, i18n("change $number out of range"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
 	    }
+	    break;
+
+	case arglex_token_delta_date:
+	    if (delta_date != (time_t)-1)
+		duplicate_option(delta_name_usage);
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_delta_date, delta_name_usage);
+		/*NOTREACHED*/
+	    }
+	    delta_date = date_scan(arglex_value.alv_string);
+	    if (delta_date == (time_t)-1)
+		fatal_date_unknown(arglex_value.alv_string);
 	    break;
 
 	case arglex_token_project:
@@ -212,7 +294,28 @@ delta_name_main()
 	}
 	arglex();
     }
-    if (!delta_name)
+    if
+    (
+	(
+	    (delta_name1 || delta_number > 0)
+	+
+	    !!change_number
+	+
+	    (delta_date != (time_t)-1)
+	)
+    >
+	1
+    )
+    {
+	mutually_exclusive_options3
+	(
+	    arglex_token_delta,
+	    arglex_token_delta_date,
+	    arglex_token_delta_from_change,
+	    delta_name_usage
+	);
+    }
+    if (!delta_name2)
     {
 	error_intl(0, i18n("no delta name"));
 	delta_name_usage();
@@ -245,6 +348,26 @@ delta_name_main()
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     /*
+     * Convert change to delta, if necessary.
+     */
+    if (!delta_number && delta_name1)
+	delta_number = project_history_delta_by_name(pp, delta_name1, 0);
+    if (!delta_number && delta_date != (time_t)(-1))
+    {
+	delta_number = project_history_timestamp_to_delta(pp, delta_date);
+	if (delta_number == 0)
+	{
+	    scp = sub_context_new();
+	    sub_var_set_format(scp, "Number", "%.24s", ctime(&delta_date));
+	    project_fatal(pp, scp, i18n("no delta $number"));
+	    /* NOTREACHED */
+	    sub_context_delete(scp);
+	}
+    }
+    if (!delta_number && change_number)
+	delta_number = project_change_number_to_delta_number(pp, change_number);
+
+    /*
      * it is an error if the delta does not exist
      */
     if (delta_number)
@@ -269,11 +392,11 @@ delta_name_main()
     {
 	long            other;
 
-	other = project_history_delta_by_name(pp, delta_name, 1);
+	other = project_history_delta_by_name(pp, delta_name2, 1);
 	if (other && other != delta_number)
 	{
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", delta_name);
+	    sub_var_set_string(scp, "Name", delta_name2);
 	    sub_var_set_long(scp, "Number", delta_number);
 	    sub_var_optional(scp, "Number");
 	    sub_var_set_long(scp, "Other", other);
@@ -283,12 +406,12 @@ delta_name_main()
 	    sub_context_delete(scp);
 	}
     }
-    project_history_delta_name_delete(pp, delta_name);
+    project_history_delta_name_delete(pp, delta_name2);
 
     /*
      * add the name to the selected history entry
      */
-    project_history_delta_name_add(pp, delta_number, delta_name);
+    project_history_delta_name_add(pp, delta_number, delta_name2);
 
     /*
      * If the history label command is defined,
@@ -297,7 +420,6 @@ delta_name_main()
     pconf_data = project_pconf_get(pp);
     if (pconf_data->history_label_command)
     {
-	time_t          delta_date;
 	size_t          j;
 
 	delta_date = project_history_delta_to_timestamp(pp, delta_number);
@@ -334,7 +456,7 @@ delta_name_main()
 	    /*
 	     * Label everything else.
 	     */
-	    change_run_history_label_command(fep->cp, src, delta_name);
+	    change_run_history_label_command(fep->cp, src, delta_name2);
 	}
     }
 
@@ -349,7 +471,7 @@ delta_name_main()
      * verbose success message
      */
     scp = sub_context_new();
-    sub_var_set_string(scp, "Name", delta_name);
+    sub_var_set_string(scp, "Name", delta_name2);
     sub_var_optional(scp, "Name");
     sub_var_set_long(scp, "Number", delta_number);
     sub_var_optional(scp, "Number");
@@ -357,7 +479,7 @@ delta_name_main()
     sub_context_delete(scp);
     project_free(pp);
     user_free(up);
-    str_free(delta_name);
+    str_free(delta_name2);
     trace(("}\n"));
 }
 

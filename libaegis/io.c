@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,12 +31,13 @@
 
 
 void
-integer_write(fp, name, this)
+integer_write(fp, name, this, show)
 	output_ty	*fp;
 	const char	*name;
 	long		this;
+	int		show;
 {
-	if (this == INTEGER_NOT_SET && name)
+	if (this == INTEGER_NOT_SET && !show)
 		return;
 	if (name)
 		output_fprintf(fp, "%s = ", name);
@@ -55,12 +56,13 @@ integer_write(fp, name, this)
 
 
 void
-real_write(fp, name, this)
+real_write(fp, name, this, show)
 	output_ty	*fp;
 	const char	*name;
 	double		this;
+	int		show;
 {
-	if (this == REAL_NOT_SET && name)
+	if (this == REAL_NOT_SET && !show)
 		return;
 	if (name)
 		output_fprintf(fp, "%s = ", name);
@@ -71,12 +73,13 @@ real_write(fp, name, this)
 
 
 void
-time_write(fp, name, this)
+time_write(fp, name, this, show)
 	output_ty	*fp;
 	const char	*name;
 	time_t		this;
+	int		show;
 {
-	if (this == TIME_NOT_SET && name)
+	if (this == TIME_NOT_SET && !show)
 		return;
 	if (name)
 		output_fprintf(fp, "%s = ", name);
@@ -118,7 +121,7 @@ string_write(fp, name, this)
 			case '{'/*}*/:
 				++count;
 				break;
-	
+
 			case /*(*/')':
 			case /*[*/']':
 			case /*{*/'}':
@@ -137,7 +140,7 @@ string_write(fp, name, this)
 			if (!isprint(c))
 			{
 				char	*cp;
-	
+
 				cp = strchr("\bb\ff\nn\rr\tt", c);
 				if (cp)
 				{
@@ -181,7 +184,7 @@ string_write(fp, name, this)
 					if (count <= 0)
 						goto escape;
 					break;
-		
+
 				case /*(*/')':
 				case /*[*/']':
 				case /*{*/'}':
@@ -189,7 +192,7 @@ string_write(fp, name, this)
 					if (count < 0)
 						goto escape;
 					break;
-	
+
 				case '\\':
 				case '"':
 					output_fputc(fp, '\\');

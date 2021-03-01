@@ -12,7 +12,7 @@
  * make, etc), would not be universally applicable.  "Plain vanilla" make
  * (with no transitive closure, no pattern rules, no functions) is not
  * sufficiently capable to satisfy the demands placed on it by aegis.
- * 
+ *
  * As mentioned in the Dependency Maintenance Tool chapter of the User Guide,
  * make is not really sufficient, because it lacks dynamic include dependencies.
  * However, GNU Make has a form of dynamic include dependencies, and it has a

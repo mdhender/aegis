@@ -58,6 +58,7 @@ enum
 	arglex_token_edit,
 	arglex_token_edit_bg,
 	arglex_token_file,
+	arglex_token_fix_architecture,
 	arglex_token_force,
 	arglex_token_grandparent,
 	arglex_token_independent,
@@ -149,5 +150,7 @@ enum
 
 void arglex2_init _((int, char **));
 void arglex2_init3 _((int, char **, arglex_table_ty *));
+
+void arglex2_retable _((arglex_table_ty *));
 
 #endif /* ARGLEX2_H */

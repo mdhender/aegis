@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,30 +23,10 @@
 #include <str.h>
 
 
-/*
- * NAME
- *	str_equal - test equality of strings
- *
- * SYNOPSIS
- *	int str_equal(string_ty *, string_ty *);
- *
- * DESCRIPTION
- *	The str_equal function is used to test if two strings are equal.
- *
- * RETURNS
- *	int; zero if the strings are not equal, nonzero if the strings are
- *	equal.
- *
- * CAVEAT
- *	This function is implemented as a macro in strings.h
- */
-
 #undef str_equal
 
 int
-str_equal(s1, s2)
-	string_ty	*s1;
-	string_ty	*s2;
+str_equal(string_ty *s1, string_ty *s2)
 {
-	return (s1 == s2);
+    return (s1 == s2);
 }

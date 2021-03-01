@@ -25,8 +25,8 @@
 
 #include <main.h>
 
-struct string_ty *abbreviate_filename _((struct string_ty *, int));
-struct string_ty *abbreviate_dirname _((struct string_ty *, int));
-struct string_ty *abbreviate_8dos3 _((struct string_ty *));
+struct string_ty *abbreviate_filename(struct string_ty *, int);
+struct string_ty *abbreviate_dirname(struct string_ty *, int);
+struct string_ty *abbreviate_8dos3(struct string_ty *);
 
 #endif /* COMMON_ABBREVIATE_H */

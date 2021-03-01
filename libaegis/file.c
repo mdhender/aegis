@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -61,50 +61,51 @@
 
 void
 copy_whole_file(from, to, cmt)
-	string_ty	*from;
-	string_ty	*to;
-	int		cmt;
+    string_ty	    *from;
+    string_ty	    *to;
+    int		    cmt;
 {
-	trace(("copy_whole_file(from = %08lX, to = %08lX)\n{\n"/*}*/, from, to));
-	os_become_must_be_active();
-	trace_string(from->str_text);
-	trace_string(to->str_text);
-	if (to->str_length)
+    trace(("copy_whole_file(from = %08lX, to = %08lX)\n{\n",
+	(long)from, (long)to));
+    os_become_must_be_active();
+    trace_string(from->str_text);
+    trace_string(to->str_text);
+    if (to->str_length)
+    {
+	if (glue_copyfile(from->str_text, to->str_text))
 	{
-		if (glue_copyfile(from->str_text, to->str_text))
-		{
-			sub_context_ty	*scp;
+	    sub_context_ty  *scp;
 
-			scp = sub_context_new();
-			sub_errno_set(scp);
-			sub_var_set_string(scp, "File_Name1", from);
-			sub_var_set_string(scp, "File_Name2", to);
-			fatal_intl(scp, i18n("cp $filename1 $filename2: $errno"));
-			/* NOTREACHED */
-		}
+	    scp = sub_context_new();
+	    sub_errno_set(scp);
+	    sub_var_set_string(scp, "File_Name1", from);
+	    sub_var_set_string(scp, "File_Name2", to);
+	    fatal_intl(scp, i18n("cp $filename1 $filename2: $errno"));
+	    /* NOTREACHED */
 	}
-	else
+    }
+    else
+    {
+	if (glue_catfile(from->str_text))
 	{
-		if (glue_catfile(from->str_text))
-		{
-			sub_context_ty	*scp;
+	    sub_context_ty  *scp;
 
-			scp = sub_context_new();
-			sub_errno_set(scp);
-			sub_var_set_string(scp, "File_Name", from);
-			fatal_intl(scp, i18n("cat $filename: $errno"));
-			/* NOTREACHED */
-		}
+	    scp = sub_context_new();
+	    sub_errno_set(scp);
+	    sub_var_set_string(scp, "File_Name", from);
+	    fatal_intl(scp, i18n("cat $filename: $errno"));
+	    /* NOTREACHED */
 	}
+    }
 
-	/*
-	 * copy last-time-modified of the file
-	 */
-	if (cmt && to->str_length)
-	{
-		os_mtime_set(to, os_mtime_actual(from));
-	}
-	trace((/*{*/"}\n"));
+    /*
+     * copy last-time-modified of the file
+     */
+    if (cmt && to->str_length)
+    {
+	os_mtime_set(to, os_mtime_actual(from));
+    }
+    trace(( /*{*/"}\n"));
 }
 
 
@@ -132,38 +133,38 @@ copy_whole_file(from, to, cmt)
 
 string_ty *
 read_whole_file(fn)
-	string_ty	*fn;
+    string_ty	    *fn;
 {
-	size_t		length_max;
-	size_t		length;
-	char		*text;
-	string_ty	*s;
-	int		c;
-	input_ty	*fp;
+    size_t	    length_max;
+    size_t	    length;
+    char	    *text;
+    string_ty	    *s;
+    int		    c;
+    input_ty	    *fp;
 
-	os_become_must_be_active();
-	length_max = 1000;
-	length = 0;
-	text = mem_alloc(length_max);
-	fp = input_file_text_open(fn);
-	for (;;)
+    os_become_must_be_active();
+    length_max = 1000;
+    length = 0;
+    text = mem_alloc(length_max);
+    fp = input_file_text_open(fn);
+    for (;;)
+    {
+	c = input_getc(fp);
+	if (c == EOF)
+	    break;
+	if (length >= length_max)
 	{
-		c = input_getc(fp);
-		if (c == EOF)
-			break;
-		if (length >= length_max)
-		{
-			length_max = length_max * 2 + 16;
-			text = mem_change_size(text, length_max);
-		}
-		text[length++] = c;
+	    length_max = length_max * 2 + 16;
+	    text = mem_change_size(text, length_max);
 	}
-	while (length > 0 && isspace((unsigned char)text[length - 1]))
-		--length;
-	input_delete(fp);
-	s = str_n_from_c(text, length);
-	mem_free(text);
-	return s;
+	text[length++] = c;
+    }
+    while (length > 0 && isspace((unsigned char)text[length - 1]))
+	--length;
+    input_delete(fp);
+    s = str_n_from_c(text, length);
+    mem_free(text);
+    return s;
 }
 
 
@@ -176,8 +177,8 @@ read_whole_file(fn)
  *
  * DESCRIPTION
  *	The files_are_different function is used to compare the
- *	contents of two files.  The files to compare are given by the
- *	two arguments.  It is assumed that os_become is active.
+ *	contents of two files.	The files to compare are given by the
+ *	two arguments.	It is assumed that os_become is active.
  *
  * RETURNS
  *	int;	zero if the files are the same
@@ -186,22 +187,23 @@ read_whole_file(fn)
 
 int
 files_are_different(s1, s2)
-	string_ty	*s1;
-	string_ty	*s2;
+    string_ty	    *s1;
+    string_ty	    *s2;
 {
-	int		result;
-	os_become_must_be_active();
-	result = glue_file_compare(s1->str_text, s2->str_text);
-	if (result < 0)
-	{
-		sub_context_ty	*scp;
+    int		    result;
 
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set_string(scp, "File_Name1", s1);
-		sub_var_set_string(scp, "File_Name2", s2);
-		fatal_intl(scp, i18n("cmp $filename1 $filename2: $errno"));
-		/* NOTREACHED */
-	}
-	return result;
+    os_become_must_be_active();
+    result = glue_file_compare(s1->str_text, s2->str_text);
+    if (result < 0)
+    {
+	sub_context_ty	*scp;
+
+	scp = sub_context_new();
+	sub_errno_set(scp);
+	sub_var_set_string(scp, "File_Name1", s1);
+	sub_var_set_string(scp, "File_Name2", s2);
+	fatal_intl(scp, i18n("cmp $filename1 $filename2: $errno"));
+	/* NOTREACHED */
+    }
+    return result;
 }

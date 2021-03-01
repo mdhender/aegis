@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,31 +50,31 @@
 
 wstring_ty *
 sub_baseline(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	wstring_ty	*result;
-	project_ty	*pp;
+    wstring_ty	    *result;
+    project_ty	    *pp;
 
-	trace(("sub_baseline()\n{\n"));
-	if (arg->nitems != 1)
-	{
-		sub_context_error_set(scp, i18n("requires zero arguments"));
-		result = 0;
-		goto done;
-	}
-	pp = sub_context_project_get(scp);
-	if (!pp)
-	{
-		sub_context_error_set(scp, i18n("not valid in current context"));
-		result = 0;
-		goto done;
-	}
+    trace(("sub_baseline()\n{\n"));
+    if (arg->nitems != 1)
+    {
+	sub_context_error_set(scp, i18n("requires zero arguments"));
+	result = 0;
+	goto done;
+    }
+    pp = sub_context_project_get(scp);
+    if (!pp)
+    {
+	sub_context_error_set(scp, i18n("not valid in current context"));
+	result = 0;
+	goto done;
+    }
 
-	result = str_to_wstr(project_baseline_path_get(pp, 0));
+    result = str_to_wstr(project_baseline_path_get(pp, 0));
 
-	done:
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    done:
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

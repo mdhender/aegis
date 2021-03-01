@@ -26,37 +26,36 @@
 
 
 const char *
-z_error(err)
-	int		err;
+z_error(int err)
 {
-	switch (err)
-	{
-	case Z_OK:
-		return "no error";
+    switch (err)
+    {
+    case Z_OK:
+	return "no error";
 
-	case Z_STREAM_END:
-		return "stream end";
+    case Z_STREAM_END:
+	return "stream end";
 
-	case Z_NEED_DICT:
-		return "need dict";
+    case Z_NEED_DICT:
+	return "need dict";
 
-	case Z_ERRNO:
-		return strerror(errno);
+    case Z_ERRNO:
+	return strerror(errno);
 
-	case Z_STREAM_ERROR:
-		return "stream error";
+    case Z_STREAM_ERROR:
+	return "stream error";
 
-	case Z_DATA_ERROR:
-		return "data error";
+    case Z_DATA_ERROR:
+	return "data error";
 
-	case Z_MEM_ERROR:
-		return "memory error";
+    case Z_MEM_ERROR:
+	return "memory error";
 
-	case Z_BUF_ERROR:
-		return "buffer error";
+    case Z_BUF_ERROR:
+	return "buffer error";
 
-	case Z_VERSION_ERROR:
-		return "version error";
-	}
-	return "unknown zlib error";
+    case Z_VERSION_ERROR:
+	return "version error";
+    }
+    return "unknown zlib error";
 }

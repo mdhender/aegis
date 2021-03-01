@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999, 2000, 2001 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -54,11 +54,15 @@ then
 	reviewers=`$aegis -list administrators -project $project -terse`
 	if [ $? -ne 0 ]; then quit; fi
 fi
+reviewers=`echo $reviewers | sed 's/ /,/g'`
 
 #
 # build the notice to be mailed
 #
-cat > $tmp << 'TheEnd'
+cat > $tmp << TheEnd
+Subject: Project $project: Change $change: Awaiting Review
+To: $reviewers
+
 Development of the following change has been
 completed and it is now ready for review.
 
@@ -75,7 +79,7 @@ if [ $? -ne 0 ]; then quit; fi
 #
 # mail it to all reviewers
 #
-mail -s "Project $project: Change $change: ready for review" $reviewers < $tmp
+/usr/lib/sendmail -t < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

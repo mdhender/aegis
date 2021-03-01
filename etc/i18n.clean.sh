@@ -22,6 +22,7 @@
 #
 set -e
 tmp=/tmp/$$.tmp
-sed -e 's/POT-Creation-Date:[^"]*//' $1 > $tmp
+sed -e 's/charset=CHARSET/charset=iso-8859-1/' \
+    -e 's/POT-Creation-Date:[^"]*//' $1 > $tmp
 mv $tmp $1
 exit 0

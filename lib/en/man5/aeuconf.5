@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,21 @@
 aeuconf - user configuration file
 .XX "aeuconf(5)" "user configuration file format"
 .SH SYNOPSIS
-\fI$HOME\f(CW/.\*(n)rc\fR
+\fI$AEGIS_FLAGS\fR
+.br
+\fI$HOME\f(CW/.aegisrc\fR
+.br
+\fI\*(D)/aegisrc\fR
+.br
+\fI\*(L)/aegisrc\fR
 .SH DESCRIPTION
 A user configuration file
 is used to hold user defaults.
 This file is created and edited by the user.
 This file is only ever read by \*(n), it is never written.
+.PP
+The sources of user preferences are scanned in the order given above.
+Earlier sources have higher priority.
 .SS AEGIS_FLAGS
 This environment variable has the same format.
 It is read first, and over-rides the
@@ -38,6 +47,13 @@ It is read first, and over-rides the
 file contents.
 This is intended to be used within the tests distributed with aegis,
 but can also be of use within some shell scripts.
+It contains session specific preferences.
+.SS \fI$HOME\f(CW/.aegisrc\fR
+This file contains user specific preferences.
+.SS \fI\*(D)/aegisrc\fR
+This file contains architecture-neutral preferences.
+.SS \fI\*(L)/aegisrc\fR
+This file contains architecture-specific preferences.
 .SH CONTENTS
 The file contains the following fields:
 .TP 8n
@@ -124,7 +140,7 @@ foreground and the standard output is directed at a terminal.
 foreground
 The standard output will be piped through the command given in the
 \f(CWPAGER\fP environment variable (or \fImore\fP if not set).
-.TP 8n 
+.TP 8n
 never
 The standard output will not be redirected.
 .PP
@@ -249,6 +265,24 @@ All of the commands which cause a change to remove files will consult
 this field to determine if the file should be have a dummy "whiteout"
 file put in the development directory.  Defaults to ``always''
 if not set.
+.TP 8n
+editor_command = string;
+This command is used to edit a file,
+if the editing is being done in the background.
+Defaults to the EDITOR environment variable if not set,
+or "ed" if not set.
+.TP 8n
+visual_command = string;
+This command is used to edit a file,
+if the editing is being done in the foreground.
+Defaults to the VISUAL environment variable if not set,
+or to the EDITOR environment variable if not set,
+or "vi" if not set.
+.TP 8n
+pager_command = string;
+This is the command used to paginate report and listing output.
+Defaults to the PAGER environment variable if not set,
+or to "more" if not set.
 .SH SEE ALSO
 .TP 8n
 .IR aegis (5)

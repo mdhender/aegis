@@ -88,10 +88,10 @@ extern int *_errno(void);
 #define	ELIBACC		79	/* Can not access a needed shared library */
 #define	ELIBBAD		80	/* Accessing a corrupted shared library */
 #define	ELIBSCN		81	/* .lib section in a.out corrupted */
-#define	ELIBMAX		82	/* Attempting to link in too many shared libraries */
+#define	ELIBMAX		82	/* Attempting to link in too many shared libs */
 #define	ELIBEXEC	83	/* Cannot exec a shared library directly */
 #define	EILSEQ		84	/* Illegal byte sequence */
-#define	ERESTART	85	/* Interrupted system call should be restarted */
+#define	ERESTART	85	/* Interrupted system call should be restartd */
 #define	ESTRPIPE	86	/* Streams pipe error */
 #define	EUSERS		87	/* Too many users */
 #define	ENOTSOCK	88	/* Socket operation on non-socket */
@@ -101,20 +101,20 @@ extern int *_errno(void);
 #define	ENOPROTOOPT	92	/* Protocol not available */
 #define	EPROTONOSUPPORT	93	/* Protocol not supported */
 #define	ESOCKTNOSUPPORT	94	/* Socket type not supported */
-#define	EOPNOTSUPP	95	/* Operation not supported on transport endpoint */
+#define	EOPNOTSUPP	95	/* Operation not supported on transport endpt */
 #define	EPFNOSUPPORT	96	/* Protocol family not supported */
 #define	EAFNOSUPPORT	97	/* Address family not supported by protocol */
 #define	EADDRINUSE	98	/* Address already in use */
 #define	EADDRNOTAVAIL	99	/* Cannot assign requested address */
 #define	ENETDOWN	100	/* Network is down */
 #define	ENETUNREACH	101	/* Network is unreachable */
-#define	ENETRESET	102	/* Network dropped connection because of reset */
+#define	ENETRESET	102	/* Network dropped connection becaus of reset */
 #define	ECONNABORTED	103	/* Software caused connection abort */
 #define	ECONNRESET	104	/* Connection reset by peer */
 #define	ENOBUFS		105	/* No buffer space available */
 #define	EISCONN		106	/* Transport endpoint is already connected */
 #define	ENOTCONN	107	/* Transport endpoint is not connected */
-#define	ESHUTDOWN	108	/* Cannot send after transport endpoint shutdown */
+#define	ESHUTDOWN	108	/* Cannot send after transport endpoint shtdn */
 #define	ETOOMANYREFS	109	/* Too many references: cannot splice */
 #define	ETIMEDOUT	110	/* Connection timed out */
 #define	ECONNREFUSED	111	/* Connection refused */

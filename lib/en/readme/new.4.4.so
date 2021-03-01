@@ -1,0 +1,81 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 4.4 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 51
+It is now possible to set pager and editor preferences in your
+\fI\.aegisrc\fP file.  See \fIaeuconf\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 50
+A bug in \fIaepatch \-receive\fP has been fixed, where it would sometimes
+misapply a patch. The search used to determine the patch position (when
+it needs to be offset) has been improved.
+.PP
+.if n *
+.if t \(bu
+.\" change 37
+The \fIaedist\fP(1) and \fIaepatch\fP(1) commands now accept \-delta
+and \-delta-date options.
+.PP
+.if n *
+.if t \(bu
+.\" change 35, 53
+The \fIintegrate_q.sh\fP shell script has been replaced by the
+\fIaeintegratq\fP(1) Perl script.  It can now lots more useful things.
+See \fIaeintegratq\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+A bug has been fixed in the date parsing code (used by the \-delta-date option).
+There was the potential to mis-calculate dates after February 2000.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+A bug has been fixed in \fIaepatch \-receive\fP, where it sometimes
+complain of "no uudecode data in file", for files which did not require
+uudecoding.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+There are more change-specific substitutions available.
+See \fI${change ...} \fP within \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+The \fIaepatch\fP(1) command now understands ordinary diff listings,
+in addition to the context and unified differences it already understood.
+.PP
+.if n *
+.if t \(bu
+.\" change 15, 16, 18, 19, 21, 22, 23, 27, 28
+There is a new \fIaeannotate\fP(1) command, used to produce annotated
+source file listings.  See \fIaeannotate\fP(1) for more information.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.4

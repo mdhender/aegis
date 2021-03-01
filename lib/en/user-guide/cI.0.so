@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998 Peter Miller;
+.\"	Copyright (C) 1995, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ The substitution mechanism is the same one as is used for
 the various commands in the project \fIconfig\fP file,
 and so all of the substitutions described in \fIaesub\fP(5)
 are available to the translator.
-Of frequent use is the \fIplural\fP substitution,
+Note frequent use of the \fIplural\fP substitution,
 which allows grammatically correct error messages to be issued
 when faced with the singular/plural dichotomy.
 Other substitutions include the login name of the executing user,
@@ -62,12 +62,12 @@ names of projects, number and state of changes, etc.
 Ideally, the task for a translator is to take the \fI.po\fP files
 and translate the \f(CWmsgstr\fP lines into the appropriate language.
 The job will, of course, not be that simple
-and so references into the code has been included,
+and so references into the code have been included,
 so that you can read the code should context be necessary to
 correctly translate the message.
 .nh 2 "Checking the Code"
 .LP
-There are a number of keywords you need to have the \fIxgettext\fP program
+There are a number of keywords you need to have for the \fIxgettext\fP program
 when extracting message strings.
 The \f(CWgettext\fP keyword is not used directly,
 because of the substitution mechanism wrapped around it.
@@ -123,8 +123,8 @@ about this process.
 If you want to test your translations, you need to "compile" the
 text into the binary form used by the \f[CW]gettext()\fP system
 call.  This is done using the \fImsgfmt\fP(1) program from the GNU
-Gettext package.  To see you new translations in action, you create a
-\f[CW]\*(L)/\fP\fIxx\fP\f[CW]/LC_MESSAGES\fP directory and arrange for
+Gettext package.  To see your new translations in action, you create a
+\f(CW\*(L)/\fP\fIxx\fP\f(CW/LC_MESSAGES\fP directory and arrange for
 the \fImsgfmt\fP(1) output to be placed in it.  Some of the messages
 are hard to trigger, don't expect complete test coverage.
 .LP
@@ -132,6 +132,6 @@ There are almost 600 error messages.
 If you average 1 message every 2 minutes, this is approximately 20 hours work.
 The German translation, for example, required around 12 hours.
 .LP
-When you are done translating, email the results to 
+When you are done translating, email the results to
 Peter Miller <millerp@canb.auug.org.au>
 and they will be included in the next release of Aegis.

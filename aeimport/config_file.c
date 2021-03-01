@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #include <lock.h>
 #include <pconf.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <project/file.h>
 #include <sub.h>
 #include <trace.h>
@@ -240,7 +240,7 @@ config_file(project_name, format)
 	/*
 	 * Set build times.
 	 *
-	 * A more through job will be done later, when the head revisions
+	 * A more thorough job will be done later, when the head revisions
 	 * of the files are checkout into the baseline, once all the
 	 * change sets are in place.
 	 */

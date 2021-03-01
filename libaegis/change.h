@@ -82,9 +82,11 @@ void change_free _((change_ty *));
 change_ty *change_copy _((change_ty *));
 void change_bind_existing _((change_ty *));
 void change_bind_new _((change_ty *));
+change_ty *change_bogus _((struct project_ty *));
 cstate change_cstate_get _((change_ty *));
 void change_cstate_write _((change_ty *));
 cstate_history change_history_new _((change_ty *, struct user_ty *));
+string_ty *change_creator_name _((change_ty *));
 string_ty *change_developer_name _((change_ty *));
 string_ty *change_reviewer_name _((change_ty *));
 string_ty *change_integrator_name _((change_ty *));
@@ -139,7 +141,8 @@ string_ty *change_run_history_query_command _((change_ty *cp,
 	string_ty *file_name));
 void change_run_history_label_command _((change_ty *cp, fstate_src,
 	string_ty *label));
-void change_history_trashed_fingerprints _((change_ty *, struct string_list_ty *));
+void change_history_trashed_fingerprints _((change_ty *,
+    struct string_list_ty *));
 void change_run_diff_command _((change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *input, string_ty *output));
 void change_run_diff3_command _((change_ty *cp, struct user_ty *up,
@@ -151,6 +154,9 @@ void change_run_merge_command _((change_ty *cp, struct user_ty *up,
 void change_run_patch_diff_command _((change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *input, string_ty *output,
 	string_ty *index_name));
+void change_run_annotate_diff_command _((change_ty *cp, struct user_ty *up,
+	string_ty *original, string_ty *input, string_ty *output,
+	string_ty *index_name, char *diff_option));
 int change_has_merge_command _((change_ty *));
 void change_run_integrate_begin_command _((change_ty *));
 void change_run_integrate_begin_undo_command _((change_ty *));
@@ -168,6 +174,8 @@ string_ty *change_file_whiteout _((change_ty *, string_ty *));
 void change_file_whiteout_write _((change_ty *, string_ty *, struct user_ty *));
 void change_become _((change_ty *));
 void change_become_undo _((void));
+void change_developer_become _((change_ty *));
+void change_developer_become_undo _((void));
 int change_umask _((change_ty *));
 void change_development_directory_clear _((change_ty *));
 void change_integration_directory_clear _((change_ty *));
@@ -193,8 +201,10 @@ char *change_outstanding_tests_regression _((change_ty *, time_t));
 int change_pathconf_name_max _((change_ty *));
 string_ty *change_filename_check _((change_ty *, string_ty *, int));
 
-void change_create_symlinks_to_baseline _((change_ty *, struct project_ty *, struct user_ty *, int));
-void change_remove_symlinks_to_baseline _((change_ty *, struct project_ty *, struct user_ty *));
+void change_create_symlinks_to_baseline _((change_ty *, struct project_ty *,
+    struct user_ty *, int));
+void change_remove_symlinks_to_baseline _((change_ty *, struct project_ty *,
+    struct user_ty *));
 
 void change_rescind_test_exemption _((change_ty *));
 string_ty *change_cstate_filename_get _((change_ty *));

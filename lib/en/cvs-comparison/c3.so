@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,8 @@ setup required first.
 It is usual to have a separate account which "owns" an Aegis project.
 This means that accidental file writes while browsing sources can't happen,
 among other reasons.  Whether you have a separate account per project,
-or a hold-all source account doesn't bother Aegis (the more security conscious among you,
+or a hold-all source account doesn't bother Aegis (the more security
+conscious among you,
 however, will want one account per project).
 If you have one account per project, name it after the project (there's
 less to remember that way).

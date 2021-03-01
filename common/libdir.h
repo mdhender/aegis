@@ -25,14 +25,14 @@
 
 #include <main.h>
 
-char *configured_bindir _((void));
-char *configured_comdir _((void));
-char *configured_datadir _((void));
-char *configured_libdir _((void));
-char *configured_nlsdir _((void));
-char *configured_mandir _((void));
-int configured_aegis_uid _((void));
-int configured_aegis_gid _((void));
-char *configured_exeext _((void));
+char *configured_bindir(void);
+char *configured_comdir(void);
+char *configured_datadir(void);
+char *configured_libdir(void);
+char *configured_nlsdir(void);
+char *configured_mandir(void);
+int configured_aegis_uid(void);
+int configured_aegis_gid(void);
+char *configured_exeext(void);
 
 #endif /* COMMON_LIBDIR_H */

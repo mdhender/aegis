@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,19 +33,21 @@
 
 static arglex_table_ty table[] =
 {
-	{ "-",			arglex_token_stdio,		},
-	{ "-Help",		arglex_token_help,		},
-	{ "-VERSion",		arglex_token_version,		},
-	{ "-TRAce",		arglex_token_trace,		},
+    { "-",        arglex_token_stdio,   },
+    { "-Help",    arglex_token_help,    },
+    { "-VERSion", arglex_token_version, },
+    { "-TRAce",   arglex_token_trace,   },
 };
 
-static	int		argc;
-static	char		**argv;
-	arglex_value_ty	arglex_value;
-	int		arglex_token;
-static	arglex_table_ty	*utable;
-static	const char	*partial;
-static	int		strings_only_mode;
+static int      argc;
+static char   **argv;
+arglex_value_ty arglex_value;
+int             arglex_token;
+static arglex_table_ty *utable;
+static const char *partial;
+static int      strings_only_mode;
+static int      incomplete = -1;
+static int      is_synthetic;
 
 
 /*
@@ -69,15 +71,12 @@ static	int		strings_only_mode;
  */
 
 void
-arglex_init(ac, av, tp)
-	int		ac;
-	char		**av;
-	arglex_table_ty	*tp;
+arglex_init(int ac, char **av, arglex_table_ty *tp)
 {
-	progname_set(av[0]);
-	argc = ac - 1;
-	argv = av + 1;
-	utable = tp;
+    progname_set(av[0]);
+    argc = ac - 1;
+    argv = av + 1;
+    utable = tp;
 }
 
 
@@ -131,112 +130,150 @@ arglex_init(ac, av, tp)
  */
 
 int
-arglex_compare(formal, actual)
-	const char	*formal;
-	const char	*actual;
+arglex_compare(const char *formal, const char *actual)
 {
-	unsigned char	fc;
-	unsigned char	ac;
-	int		result;
+    unsigned char   fc;
+    unsigned char   ac;
+    int             result;
 
-	trace(("arglex_compare(formal = \"%s\", actual = \"%s\")\n{\n",
-		formal, actual));
-	for (;;)
+    trace(("arglex_compare(formal = \"%s\", actual = \"%s\")\n{\n",
+	    formal, actual));
+    for (;;)
+    {
+	trace_string(formal);
+	trace_string(actual);
+	ac = *actual++;
+	if (isupper(ac))
+	    ac = tolower(ac);
+	fc = *formal++;
+	switch (fc)
 	{
-		trace_string(formal);
-		trace_string(actual);
-		ac = *actual++;
-		if (isupper(ac))
-			ac = tolower(ac);
-		fc = *formal++;
-		switch (fc)
-		{
-		case 0:
-			result = !ac;
-			goto done;
-			
-		case '_':
-			if (ac == '-')
-				break;
-			/* fall through... */
+	case 0:
+	    result = !ac;
+	    goto done;
 
-		case 'a': case 'b': case 'c': case 'd': case 'e':
-		case 'f': case 'g': case 'h': case 'i': case 'j':
-		case 'k': case 'l': case 'm': case 'n': case 'o':
-		case 'p': case 'q': case 'r': case 's': case 't':
-		case 'u': case 'v': case 'w': case 'x': case 'y':
-		case 'z': 
-			/*
-			 * optional characters
-			 */
-			if (ac == fc && arglex_compare(formal, actual))
-			{
-				result = 1;
-				goto done;
-			}
+	case '_':
+	    if (ac == '-')
+		break;
+	    /* fall through... */
 
-			/*
-			 * skip forward to next
-			 * mandatory character, or after '_'
-			 */
-			while (islower(*formal))
-				++formal;
-			if (*formal == '_')
-			{
-				++formal;
-				if (ac == '_' || ac == '-')
-					++actual;
-			}
-			--actual;
-			break;
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':
+	    /*
+	     * optional characters
+	     */
+	    if (ac == fc && arglex_compare(formal, actual))
+	    {
+		result = 1;
+		goto done;
+	    }
 
-		case '*':
-			/*
-			 * This is a hack, it should really 
-			 * check for a match match the stuff after
-			 * the '*', too, a la glob.
-			 */
-			if (!ac)
-			{
-				result = 0;
-				goto done;
-			}
-			partial = actual - 1;
-			result = 1;
-			goto done;
+	    /*
+	     * skip forward to next
+	     * mandatory character, or after '_'
+	     */
+	    while (islower((unsigned char)*formal))
+		++formal;
+	    if (*formal == '_')
+	    {
+		++formal;
+		if (ac == '_' || ac == '-')
+		    ++actual;
+	    }
+	    --actual;
+	    break;
 
-		case '\\':
-			if (actual[-1] != *formal++)
-			{
-				result = 0;
-				goto done;
-			}
-			break;
+	case '*':
+	    /*
+	     * This is a hack, it should really
+	     * check for a match match the stuff after
+	     * the '*', too, a la glob.
+	     */
+	    if (!ac)
+	    {
+		result = 0;
+		goto done;
+	    }
+	    partial = actual - 1;
+	    result = 1;
+	    goto done;
 
-		case 'A': case 'B': case 'C': case 'D': case 'E':
-		case 'F': case 'G': case 'H': case 'I': case 'J':
-		case 'K': case 'L': case 'M': case 'N': case 'O':
-		case 'P': case 'Q': case 'R': case 'S': case 'T':
-		case 'U': case 'V': case 'W': case 'X': case 'Y':
-		case 'Z': 
-			fc = tolower(fc);
-			/* fall through... */
+	case '\\':
+	    if (actual[-1] != *formal++)
+	    {
+		result = 0;
+		goto done;
+	    }
+	    break;
 
-		default:
-			/*
-			 * mandatory characters
-			 */
-			if (fc != ac)
-			{
-				result = 0;
-				goto done;
-			}
-			break;
-		}
+	case 'A':
+	case 'B':
+	case 'C':
+	case 'D':
+	case 'E':
+	case 'F':
+	case 'G':
+	case 'H':
+	case 'I':
+	case 'J':
+	case 'K':
+	case 'L':
+	case 'M':
+	case 'N':
+	case 'O':
+	case 'P':
+	case 'Q':
+	case 'R':
+	case 'S':
+	case 'T':
+	case 'U':
+	case 'V':
+	case 'W':
+	case 'X':
+	case 'Y':
+	case 'Z':
+	    fc = tolower(fc);
+	    /* fall through... */
+
+	default:
+	    /*
+	     * mandatory characters
+	     */
+	    if (fc != ac)
+	    {
+		result = 0;
+		goto done;
+	    }
+	    break;
 	}
-	done:
-	trace(("return %d;\n}\n", result));
-	return result;
+    }
+  done:
+    trace(("return %d;\n}\n", result));
+    return result;
 }
 
 
@@ -269,100 +306,132 @@ arglex_compare(formal, actual)
  *		non-zero if is a number.
  */
 
-static int is_a_number _((char *));
-
 static int
-is_a_number(s)
-	char	*s;
+is_a_number(char *s)
 {
-	long	n;
-	int	sign;
+    long            n;
+    int             sign;
 
-	n = 0;
-	switch (*s)
+    n = 0;
+    switch (*s)
+    {
+    case '-':
+	++s;
+	sign = -1;
+	break;
+
+    case '+':
+	++s;
+	sign = 1;
+	break;
+
+    default:
+	sign = 1;
+	break;
+    }
+    switch (*s)
+    {
+    case '0':
+	if ((s[1] == 'x' || s[1] == 'X') && s[2])
 	{
-	case '-':
-		++s;
-		sign = -1;
-		break;
+	    s += 2;
+	    for (;;)
+	    {
+		switch (*s)
+		{
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		    n = n * 16 + *s++ - '0';
+		    continue;
 
-	case '+':
-		++s;
-		sign = 1;
-		break;
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+		    n = n * 16 + *s++ - 'A' + 10;
+		    continue;
 
-	default:
-		sign = 1;
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		    n = n * 16 + *s++ - 'a' + 10;
+		    continue;
+		}
 		break;
+	    }
 	}
-	switch (*s)
+	else
 	{
-	case '0':
-		if ((s[1] == 'x' || s[1] == 'X') && s[2])
+	    for (;;)
+	    {
+		switch (*s)
 		{
-			s += 2;
-			for (;;)
-			{
-				switch (*s)
-				{
-				case '0': case '1': case '2': case '3':
-				case '4': case '5': case '6': case '7':
-				case '8': case '9':
-					n = n * 16 + *s++ - '0';
-					continue;
-
-				case 'A': case 'B': case 'C':
-				case 'D': case 'E': case 'F':
-					n = n * 16 + *s++ - 'A' + 10;
-					continue;
-
-				case 'a': case 'b': case 'c':
-				case 'd': case 'e': case 'f':
-					n = n * 16 + *s++ - 'a' + 10;
-					continue;
-				}
-				break;
-			}
-		}
-		else
-		{
-			for (;;)
-			{
-				switch (*s)
-				{
-				case '0': case '1': case '2': case '3':
-				case '4': case '5': case '6': case '7':
-					n = n * 8 + *s++ - '0';
-					continue;
-				}
-				break;
-			}
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		    n = n * 8 + *s++ - '0';
+		    continue;
 		}
 		break;
-
-	case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9':
-		for (;;)
-		{
-			switch (*s)
-			{
-			case '0': case '1': case '2': case '3':
-			case '4': case '5': case '6': case '7':
-			case '8': case '9':
-				n = n * 10 + *s++ - '0';
-				continue;
-			}
-			break;
-		}
-		break;
-
-	default:
-		return 0;
+	    }
 	}
-	if (*s)
-		return 0;
-	arglex_value.alv_number = n * sign;
-	return 1;
+	break;
+
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+	for (;;)
+	{
+	    switch (*s)
+	    {
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+	    case '9':
+		n = n * 10 + *s++ - '0';
+		continue;
+	    }
+	    break;
+	}
+	break;
+
+    default:
+	return 0;
+    }
+    if (*s)
+	return 0;
+    arglex_value.alv_number = n * sign;
+    return 1;
 }
 
 
@@ -390,179 +459,209 @@ is_a_number(s)
  */
 
 int
-arglex()
+arglex(void)
 {
-	arglex_table_ty	*tp;
-	int		j;
-	arglex_table_ty	*hit[20];
-	int		nhit;
-	static char	*pushback;
-	char		*arg;
-	string_ty	*s1;
-	string_ty	*s2;
+    arglex_table_ty *tp;
+    int             j;
+    arglex_table_ty *hit[20];
+    int             nhit;
+    static char     *pushback;
+    char            *arg;
+    string_ty       *s1;
+    string_ty       *s2;
+    int             is_inco;
 
-	trace(("arglex()\n{\n"));
-	if (pushback)
+    trace(("arglex()\n{\n"));
+    if (pushback)
+    {
+	/*
+	 * the second half of a "-foo=bar" style argument.
+	 */
+	arg = pushback;
+	is_inco = (incomplete == 0);
+	pushback = 0;
+    }
+    else
+    {
+        get_another:
+	if (argc <= 0)
 	{
-		/*
-		 * the second half of a "-foo=bar" style argument.
-		 */
-		arg = pushback;
-		pushback = 0;
+	    arglex_token = arglex_token_eoln;
+	    arg = "";
+	    goto done;
 	}
-	else
+	arg = argv[0];
+	is_inco = (incomplete == 0);
+	argc--;
+	argv++;
+	incomplete--;
+
+	/*
+	 * The ``--'' option means the rest of the arguments on
+	 * the command line are only strings.
+	 */
+	if (strings_only_mode)
 	{
-		get_another:
-		if (argc <= 0)
-		{
-			arglex_token = arglex_token_eoln;
-			arg = "";
-			goto done;
-		}
-		arg = argv[0];
-		argc--;
-		argv++;
-
-		/*
-		 * The ``--'' option means the rest of the arguments on
-		 * the command line are only strings.
-		 */
-		if (strings_only_mode)
-		{
-			arglex_token = arglex_token_string;
-			goto done;
-		}
-		if (arg[0] == '-' && arg[1] == '-' && !arg[2])
-		{
-			strings_only_mode = 1;
-			goto get_another;
-		}
-
-		/*
-		 * See if it looks like a GNU "-foo=bar" option.
-		 * Split it at the '=' to make it something the
-		 * rest of the code understands.
-		 */
-		if (arg[0] == '-' && arg[1] != '=')
-		{
-			char	*eqp;
-
-			eqp = strchr(arg, '=');
-			if (eqp)
-			{
-				pushback = eqp + 1;
-				*eqp = 0;
-			}
-		}
-
-		/*
-		 * Turn the GNU-style leading "--"
-		 * into "-" if necessary.
-		 */
-		if
+	    arglex_token =
 		(
-			arg[0] == '-'
-		&&
-			arg[1] == '-'
-		&&
-			arg[2]
-		&&
-			!is_a_number(arg + 1)
-		)
-			++arg;
+		    is_inco
+		?
+		    arglex_token_string_incomplete
+		:
+		    arglex_token_string
+		);
+	    goto done;
 	}
-
-	/*
-	 * see if it is a number
-	 */
-	if (is_a_number(arg))
+	if (arg[0] == '-' && arg[1] == '-' && !arg[2])
 	{
-		arglex_token = arglex_token_number;
-		goto done;
+	    strings_only_mode = 1;
+	    goto get_another;
 	}
 
 	/*
-	 * scan the tables to see what it matches
+	 * See if it looks like a GNU "-foo=bar" option.
+	 * Split it at the '=' to make it something the
+	 * rest of the code understands.
 	 */
-	nhit = 0;
-	partial = 0;
+	if (arg[0] == '-' && arg[1] != '=')
+	{
+	    char           *eqp;
+
+	    eqp = strchr(arg, '=');
+	    if (eqp)
+	    {
+		pushback = eqp + 1;
+		if (is_inco)
+		{
+		    incomplete = 0;
+		    is_inco = 0;
+		}
+		*eqp = 0;
+	    }
+	}
+
+	/*
+	 * Turn the GNU-style leading "--"
+	 * into "-" if necessary.
+	 */
+	if (arg[0] == '-' && arg[1] == '-' && arg[2] && !is_a_number(arg + 1))
+	    ++arg;
+    }
+
+    /*
+     * see if it is a number
+     */
+    if (is_a_number(arg))
+    {
+	arglex_token =
+	    (is_inco ? arglex_token_number_incomplete : arglex_token_number);
+	goto done;
+    }
+
+    /*
+     * scan the tables to see what it matches
+     */
+    nhit = 0;
+    partial = 0;
+    if (!is_inco)
+    {
 	for (tp = table; tp < ENDOF(table); tp++)
 	{
-		if (arglex_compare(tp->t_name, arg))
-			hit[nhit++] = tp;
+	    if (arglex_compare(tp->t_name, arg))
+		hit[nhit++] = tp;
 	}
 	if (utable)
 	{
-		for (tp = utable; tp->t_name; tp++)
-		{
-			if (arglex_compare(tp->t_name, arg))
-				hit[nhit++] = tp;
-		}
+	    for (tp = utable; tp->t_name; tp++)
+	    {
+		if (arglex_compare(tp->t_name, arg))
+		    hit[nhit++] = tp;
+	    }
 	}
+    }
 
+    /*
+     * deal with unknown or ambiguous options
+     */
+    switch (nhit)
+    {
+    case 0:
 	/*
-	 * deal with unknown or ambiguous options
+	 * not found in the tables
 	 */
-	switch (nhit)
+	if (*arg == '-')
 	{
-	case 0:
-		/*
-		 * not found in the tables
-		 */
-		if (*arg == '-')
-			arglex_token = arglex_token_option;
-		else
-			arglex_token = arglex_token_string;
-		break;
-
-	case 1:
-		one:
-		arglex_token = hit[0]->t_token;
-		if (partial)
-			arg = (char *)partial; /* const-ness hack */
-		else
-			arg = hit[0]->t_name;
-		break;
-
-	default:
-		/*
-		 * not an error if they are all the same
-		 * e.g. due to cultural spelling differences
-		 * with the same abbreviation.
-		 */
-		for (j = 1; j < nhit; ++j)
-			if (hit[0]->t_token != hit[j]->t_token)
-				break;
-		if (j >= nhit)
-			goto one;
-
-		/*
-		 * build a list of the names
-		 * and complain that it is ambiguous
-		 */
-		s1 = str_from_c(hit[0]->t_name);
-		for (j = 1; j < nhit; ++j)
-		{
-			s2 = str_format("%S, %s", s1, hit[j]->t_name);
-			str_free(s1);
-			s1 = s2;
-		}
-		fatal_raw
+	    arglex_token =
 		(
-			"option \"%s\" ambiguous (%s)",
-			arg,
-			s1->str_text
+		    is_inco
+		?
+		    arglex_token_option_incomplete
+		:
+		    arglex_token_option
 		);
 	}
+	else
+	{
+	    arglex_token =
+		(
+		    is_inco
+		?
+		    arglex_token_string_incomplete
+		:
+		    arglex_token_string
+		);
+	}
+	break;
+
+    case 1:
+        one:
+	arglex_token = hit[0]->t_token;
+	if (partial)
+	    arg = (char *)partial;	/* const-ness hack */
+	else
+	    arg = hit[0]->t_name;
+	break;
+
+    default:
+	/*
+	 * not an error if they are all the same
+	 * e.g. due to cultural spelling differences
+	 * with the same abbreviation.
+	 */
+	for (j = 1; j < nhit; ++j)
+	    if (hit[0]->t_token != hit[j]->t_token)
+		break;
+	if (j >= nhit)
+	    goto one;
+
+	if (is_synthetic)
+	{
+	    arglex_token = arglex_token_option;
+	    goto done;
+	}
 
 	/*
-	 * here for all exits
+	 * build a list of the names
+	 * and complain that it is ambiguous
 	 */
-	done:
-	arglex_value.alv_string = arg;
-	trace(("return %d; /* %s */\n", arglex_token, arglex_value.alv_string));
-	trace(("}\n"));
-	return arglex_token;
+	s1 = str_from_c(hit[0]->t_name);
+	for (j = 1; j < nhit; ++j)
+	{
+	    s2 = str_format("%S, %s", s1, hit[j]->t_name);
+	    str_free(s1);
+	    s1 = s2;
+	}
+	fatal_raw("option \"%s\" ambiguous (%s)", arg, s1->str_text);
+    }
+
+    /*
+     * here for all exits
+     */
+    done:
+    arglex_value.alv_string = arg;
+    trace(("return %d; /* %s */\n", arglex_token, arglex_value.alv_string));
+    trace(("}\n"));
+    return arglex_token;
 }
 
 
@@ -576,7 +675,7 @@ arglex()
  * DESCRIPTION
  *	The arglex_prefetch function is used to perfom lexical analysis
  *	on the command line arguments, much like the arglex function.
- *	However, it is given a list of token to look for on the command
+ *	However, it is given a list of tokens to look for on the command
  *	line, and such arguments are matched and extracted, which may
  *	be used to relax command line argument ordering restrictions.
  *
@@ -589,154 +688,157 @@ arglex()
  */
 
 int
-arglex_prefetch(list, list_len)
-	arglex_token_ty	*list;
-	int		list_len;
+arglex_prefetch(arglex_token_ty *list, int list_len)
 {
-	int		j;
+    int             j;
 
-	trace(("arglex_prefetch()\n{\n"));
-	if (strings_only_mode)
-		goto fail;
+    trace(("arglex_prefetch()\n{\n"));
+    if (strings_only_mode)
+	goto fail;
 
-	for (j = 0; j < argc; ++j)
+    for (j = 0; j < argc; ++j)
+    {
+	char            *actual;
+	int             k;
+
+	if (j == incomplete)
+	    continue;
+
+	/*
+	 * The ``--'' option means the rest of the arguments on
+	 * the command line are only strings.
+	 */
+	actual = argv[j];
+	if (actual[0] == '-' && actual[1] == '-' && !actual[2])
+	    goto fail;
+
+	/*
+	 * see if it is a number
+	 */
+	if (is_a_number(actual))
+	    continue;
+
+	/*
+	 * Turn the GNU-style leading "--"
+	 * into "-" if necessary.
+	 */
+	if
+	(
+	    actual[0] == '-'
+	&&
+	    actual[1] == '-'
+	&&
+	    actual[2]
+	&&
+	    !is_a_number(actual + 1)
+	)
+	    ++actual;
+
+	for (k = 0; k < list_len; ++k)
 	{
-		char		*actual;
-		int		k;
+	    int             token;
+	    char            *formal;
+
+	    token = list[k];
+	    formal = arglex_token_name(token);
+	    if (arglex_compare(formal, actual))
+	    {
+		int             m;
 
 		/*
-		 * The ``--'' option means the rest of the arguments on
-		 * the command line are only strings.
+		 * Shuffle everything down to fill in
+		 * the hole.
 		 */
-		actual = argv[j];
-		if (actual[0] == '-' && actual[1] == '-' && !actual[2])
-			goto fail;
-	
+		for (m = j + 1; m < argc; ++m)
+		    argv[m - 1] = argv[m];
+		--argc;
+		if (j < incomplete)
+		    --incomplete;
+
 		/*
-		 * see if it is a number
+		 * Fill in the answer as it would be
+		 * returned form arglex()
 		 */
-		if (is_a_number(actual))
-			continue;
-	
-		/*
-		 * Turn the GNU-style leading "--"
-		 * into "-" if necessary.
-		 */
-		if
-		(
-			actual[0] == '-'
-		&&
-			actual[1] == '-'
-		&&
-			actual[2]
-		&&
-			!is_a_number(actual + 1)
-		)
-			++actual;
-
-		for (k = 0; k < list_len; ++k)
-		{
-			int token = list[k];
-			char *formal = arglex_token_name(token);
-			if (arglex_compare(formal, actual))
-			{
-				int		m;
-
-				/*
-				 * Shuffle everything down to fill in
-				 * the hole.
-				 */
-				for (m = j + 1; m < argc; ++m)
-					argv[m - 1] = argv[m];
-				--argc;
-
-				/*
-				 * Fill in the answer as it would be
-				 * returned form arglex()
-				 */
-				arglex_value.alv_string = actual;
-				arglex_token = token;
-				trace(("return %d; /* %s */\n", arglex_token,
-					arglex_value.alv_string));
-				trace(("}\n"));
-				return arglex_token;
-			}
-		}
+		arglex_value.alv_string = actual;
+		arglex_token = token;
+		trace(("return %d; /* %s */\n", arglex_token,
+			arglex_value.alv_string));
+		trace(("}\n"));
+		return arglex_token;
+	    }
 	}
+    }
 
-	fail:
-	trace(("return FAIL;\n"));
-	trace(("}\n"));
-	return ARGLEX_PREFETCH_FAIL;
+  fail:
+    trace(("return FAIL;\n"));
+    trace(("}\n"));
+    return ARGLEX_PREFETCH_FAIL;
 }
 
 
 char *
-arglex_token_name(n)
-	arglex_token_ty	n;
+arglex_token_name(arglex_token_ty n)
 {
-	arglex_table_ty	*tp;
+    arglex_table_ty *tp;
 
-	switch (n)
+    switch (n)
+    {
+    case arglex_token_eoln:
+	return "end of command line";
+
+    case arglex_token_number:
+	return "number";
+
+    case arglex_token_option:
+	return "option";
+
+    case arglex_token_stdio:
+	return "standard input or output";
+
+    case arglex_token_string:
+	return "string";
+
+    default:
+	break;
+    }
+    for (tp = table; tp < ENDOF(table); tp++)
+    {
+	if (tp->t_token == n)
+	    return tp->t_name;
+    }
+    if (utable)
+    {
+	for (tp = utable; tp->t_name; tp++)
 	{
-	case arglex_token_eoln:
-		return "end of command line";
-
-	case arglex_token_number:
-		return "number";
-
-	case arglex_token_option:
-		return "option";
-
-	case arglex_token_stdio:
-		return "standard input or output";
-
-	case arglex_token_string:
-		return "string";
-
-	default:
-		break;
+	    if (tp->t_token == n)
+		return tp->t_name;
 	}
-	for (tp = table; tp < ENDOF(table); tp++)
-	{
-		if (tp->t_token == n)
-			return tp->t_name;
-	}
-	if (utable)
-	{
-		for (tp = utable; tp->t_name; tp++)
-		{
-			if (tp->t_token == n)
-				return tp->t_name;
-		}
-	}
+    }
 
-	assert(0);
-	return "unknown command line token";
+    assert(0);
+    return "unknown command line token";
 }
 
 
 arglex_table_ty *
-arglex_table_catenate(tp1, tp2)
-	arglex_table_ty	*tp1;
-	arglex_table_ty	*tp2;
+arglex_table_catenate(arglex_table_ty *tp1, arglex_table_ty *tp2)
 {
-	size_t		len1;
-	size_t		len2;
-	size_t		len;
-	arglex_table_ty	*tp;
-	static arglex_table_ty zero = ARGLEX_END_MARKER;
+    size_t          len1;
+    size_t          len2;
+    size_t          len;
+    arglex_table_ty *tp;
+    static arglex_table_ty zero = ARGLEX_END_MARKER;
 
-	for (len1 = 0; tp1[len1].t_name; ++len1)
-		;
-	for (len2 = 0; tp2[len2].t_name; ++len2)
-		;
-	len = len1 + len2;
-	tp = mem_alloc((len + 1) * sizeof(arglex_table_ty));
-	memcpy(tp, tp1, len1 * sizeof(arglex_table_ty));
-	memcpy(tp + len1, tp2, len2 * sizeof(arglex_table_ty));
-	tp[len] = zero;
-	return tp;
+    for (len1 = 0; tp1[len1].t_name; ++len1)
+	;
+    for (len2 = 0; tp2[len2].t_name; ++len2)
+	;
+    len = len1 + len2;
+    tp = mem_alloc((len + 1) * sizeof(arglex_table_ty));
+    memcpy(tp, tp1, len1 * sizeof(arglex_table_ty));
+    memcpy(tp + len1, tp2, len2 * sizeof(arglex_table_ty));
+    tp[len] = zero;
+    return tp;
 }
 
 
@@ -754,46 +856,76 @@ arglex_table_catenate(tp1, tp2)
  */
 
 void
-arglex_dispatch(choices, choices_len, the_default)
-	arglex_dispatch_ty *choices;
-	int		choices_len;
-	void		(*the_default)_((void));
+arglex_dispatch(arglex_dispatch_ty *choices, int choices_len,
+    void (*the_default)(void))
 {
-	int		j;
-	int		*tmp;
-	int		tmp_len;
-	int		tok;
-	int		priority;
+    int             j;
+    int             *tmp;
+    int             tmp_len;
+    int             tok;
+    int             priority;
 
-	trace(("arglex_dispatch()\n{\n"));
-	tmp = mem_alloc(choices_len * sizeof(int));
-	for (priority = 0; ; ++priority)
+    trace(("arglex_dispatch()\n{\n"));
+    tmp = mem_alloc(choices_len * sizeof(int));
+    for (priority = 0;; ++priority)
+    {
+	tmp_len = 0;
+	for (j = 0; j < choices_len; ++j)
 	{
-		tmp_len = 0;
-		for (j = 0; j < choices_len; ++j)
-		{
-			arglex_dispatch_ty *cp = choices + j;
-			if (cp->priority == priority)
-				tmp[tmp_len++] = cp->token;
-		}
-		if (tmp_len == 0)
-			break;
-		tok = arglex_prefetch(tmp, tmp_len);
-		for (j = 0; j < choices_len; ++j)
-		{
-			arglex_dispatch_ty *cp = choices + j;
-			if (tok == cp->token)
-			{
-				mem_free(tmp);
-				if (cp->func)
-					cp->func();
-				trace(("}\n"));
-				return;
-			}
-		}
+	    arglex_dispatch_ty *cp = choices + j;
+	    if (cp->priority == priority)
+		tmp[tmp_len++] = cp->token;
 	}
-	mem_free(tmp);
-	if (the_default)
-		the_default();
-	trace(("}\n"));
+	if (tmp_len == 0)
+	    break;
+	tok = arglex_prefetch(tmp, tmp_len);
+	for (j = 0; j < choices_len; ++j)
+	{
+	    arglex_dispatch_ty *cp = choices + j;
+	    if (tok == cp->token)
+	    {
+		mem_free(tmp);
+		if (cp->func)
+		    cp->func();
+		trace(("}\n"));
+		return;
+	    }
+	}
+    }
+    mem_free(tmp);
+    if (the_default)
+	the_default();
+    trace(("}\n"));
+}
+
+
+
+void
+arglex_synthetic(int ac, char **av, int inco)
+{
+    argc = ac - 1;
+    argv = av + 1;
+    is_synthetic = 1;
+    incomplete = inco - 1;
+}
+
+
+void
+arglex_retable(arglex_table_ty *tp)
+{
+    utable = tp;
+}
+
+
+int
+arglex_get_string(void)
+{
+    int             result;
+    int             hold;
+
+    hold = strings_only_mode;
+    strings_only_mode = 1;
+    result = arglex();
+    strings_only_mode = hold;
+    return result;
 }

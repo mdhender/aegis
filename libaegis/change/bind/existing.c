@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ change_bind_existing(cp)
 	/*
 	 * verify the change number given on the command line
 	 */
-	trace(("change_bind_existing(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_bind_existing(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	assert(cp->reference_count >= 1);
 	if (cp->number == TRUNK_CHANGE_NUMBER)
 	{

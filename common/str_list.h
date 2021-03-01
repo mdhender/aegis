@@ -33,28 +33,28 @@ struct string_list_ty
 	string_ty	**string;
 };
 
-int string_list_member _((string_list_ty *, string_ty *));
-string_ty *wl2str _((string_list_ty *, int, int, char *));
-void str2wl _((string_list_ty *, string_ty *, char *, int));
-void string_list_prepend _((string_list_ty *, string_ty *));
-void string_list_append _((string_list_ty *, string_ty *));
-void string_list_append_list _((string_list_ty *, string_list_ty *));
-void string_list_append_unique _((string_list_ty *, string_ty *));
-void string_list_append_list_unique _((string_list_ty *, string_list_ty *));
-void string_list_copy _((string_list_ty *, string_list_ty *));
-void string_list_remove _((string_list_ty *, string_ty *));
-void string_list_remove_list _((string_list_ty *, string_list_ty *));
-void string_list_destructor _((string_list_ty *));
-void string_list_delete _((string_list_ty *));
-void string_list_constructor _((string_list_ty *));
-string_list_ty *string_list_new _((void));
+int string_list_member(string_list_ty *, string_ty *);
+string_ty *wl2str(string_list_ty *, int, int, char *);
+void str2wl(string_list_ty *, string_ty *, char *, int);
+void string_list_prepend(string_list_ty *, string_ty *);
+void string_list_append(string_list_ty *, string_ty *);
+void string_list_append_list(string_list_ty *, string_list_ty *);
+void string_list_append_unique(string_list_ty *, string_ty *);
+void string_list_append_list_unique(string_list_ty *, string_list_ty *);
+void string_list_copy(string_list_ty *, string_list_ty *);
+void string_list_remove(string_list_ty *, string_ty *);
+void string_list_remove_list(string_list_ty *, string_list_ty *);
+void string_list_destructor(string_list_ty *);
+void string_list_delete(string_list_ty *);
+void string_list_constructor(string_list_ty *);
+string_list_ty *string_list_new(void);
 
-int string_list_equal _((string_list_ty *, string_list_ty *));
-int string_list_subset _((string_list_ty *, string_list_ty *));
-void string_list_sort _((string_list_ty *));
+int string_list_equal(string_list_ty *, string_list_ty *);
+int string_list_subset(string_list_ty *, string_list_ty *);
+void string_list_sort(string_list_ty *);
 
-void string_list_quote_shell _((string_list_ty *, string_list_ty *));
+void string_list_quote_shell(string_list_ty *, string_list_ty *);
 
-int string_list_validate _((string_list_ty *));
+int string_list_validate(string_list_ty *);
 
 #endif /* COMMON_STR_LIST_H */

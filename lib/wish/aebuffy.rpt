@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,18 +65,18 @@ chwid = 6;
 
 while (project_pos < count(project_list))
 {
-t = now();
-sfx = project_list[project_pos];
-pfx = "";
-if (sfx != "")
-{
-    pfx = sfx ## ".";
-    sfx = "." ## sfx;
-}
-ps = project[project_name() ## sfx].state.branch;
-project_pos = project_pos + 1;
-for (cn in sort(keys(ps.change)))
-{
+    t = now();
+    sfx = project_list[project_pos];
+    pfx = "";
+    if (sfx != "")
+    {
+	pfx = sfx ## ".";
+	sfx = "." ## sfx;
+    }
+    ps = project[project_name() ## sfx].state.branch;
+    project_pos = project_pos + 1;
+    for (cn in sort(keys(ps.change)))
+    {
 	cs = ps.change[cn];
 	state = cs.state;
 	if (count(cs.branch))
@@ -86,21 +86,21 @@ for (cn in sort(keys(ps.change)))
 	}
 	denom = maxine[state];
 	if (denom + 0 == 0)
-		continue;
+	    continue;
 	if (state == being_developed || state == being_integrated)
 	{
-		auto who;
-		who = cs.history[count(cs.history)-1].who;
-		if (who != whoami)
-		    continue;
+	    auto who;
+	    who = cs.history[count(cs.history)-1].who;
+	    if (who != whoami)
+		continue;
 	}
 	if (state == awaiting_development && !(whoami in ps.developer))
-		continue;
+	    continue;
 	if ((state == awaiting_review || state == being_reviewed)
 			&& !(whoami in ps.reviewer))
-		continue;
+	    continue;
 	if (state == awaiting_integration && !(whoami in ps.integrator))
-		continue;
+	    continue;
 	elapsed = working_days(cs.history[count(cs.history)-1].when, t);
 	weight = 1-elapsed/denom;
 	if (denom < 1 && weight > 0.5) weight = 0.5;
@@ -108,8 +108,9 @@ for (cn in sort(keys(ps.change)))
 	if (weight > 1) weight = 1;
 	prio = sprintf("%8.3f %4d", weight, cn);
 	if (length(pfx ## cn) > chwid)
-		chwid = length(pfx ## cn);
-	queue[prio] = {
+	    chwid = length(pfx ## cn);
+	queue[prio] =
+	    {
 		q_change = pfx ## cn;
 		q_state = state;
 		q_elapsed = elapsed;
@@ -117,45 +118,53 @@ for (cn in sort(keys(ps.change)))
 		q_weight = weight;
 		q_proj_branch = project_name() ## sfx;
 		q_cn = cn;
-		};
-}
-
-print("catch { .frame.blurb delete 1.0 end } { }");
-print(sprintf(".frame.blurb insert end \"%-*s  St.   Days  Description\\n\"", chwid, "Change"));
-print(sprintf(".frame.blurb insert end \"%-*s  ----  ----  -------------\\n\"", chwid, "------"));
-auto k, q, clr, line;
-line = 3;
-for (k in sort(keys(queue)))
-{
-    clr = green;
-    q = queue[k];
-    weight = q.q_weight;
-    if (weight < 0.5)
-    {
-	weight = weight * 2.0;
-	for (t = 0; t < 3; t = t + 1)
-	clr[t] = red[t] * (1 - weight) + yellow[t] * weight;
+	    };
     }
-    else
+
+    print("catch { .frame.blurb delete 1.0 end } { }");
+    print(sprintf(
+	".frame.blurb insert end \"%-*s  St.   Days  Description\\n\"",
+	chwid, "Change"));
+    print(sprintf(
+	".frame.blurb insert end \"%-*s  ----  ----  -------------\\n\"",
+	chwid, "------"));
+    auto k, q, clr, line;
+    line = 3;
+    for (k in sort(keys(queue)))
     {
-	weight = (weight - 0.5) * 2.0;
-	for (t = 0; t < 3; t = t + 1)
-	clr[t] = yellow[t] * (1 - weight) + green[t] * weight;
-    }
-    print(sprintf(".frame.blurb insert end \"%*s  \"", chwid, q.q_change));
-    print(sprintf(".frame.blurb insert end \"%-4.4s\"",
-	abbrev[q.q_state] != "" ? abbrev[q.q_state] : q.q_state));
-    print(sprintf(".frame.blurb insert end \"%6.2f  \"", q.q_elapsed));
-    print(".frame.blurb insert end \"" ## split(q.q_description, "\n")[0] ## "\\n\"");
+	clr = green;
+	q = queue[k];
+	weight = q.q_weight;
+	if (weight < 0.5)
+	{
+	    weight = weight * 2.0;
+	    for (t = 0; t < 3; t = t + 1)
+	    clr[t] = red[t] * (1 - weight) + yellow[t] * weight;
+	}
+	else
+	{
+	    weight = (weight - 0.5) * 2.0;
+	    for (t = 0; t < 3; t = t + 1)
+		clr[t] = yellow[t] * (1 - weight) + green[t] * weight;
+	}
+	print(sprintf(".frame.blurb insert end \"%*s  \"", chwid, q.q_change));
+	print(sprintf(".frame.blurb insert end \"%-4.4s\"",
+	    abbrev[q.q_state] != "" ? abbrev[q.q_state] : q.q_state));
+	print(sprintf(".frame.blurb insert end \"%6.2f  \"", q.q_elapsed));
+	print(".frame.blurb insert end \"" ## split(q.q_description, "\n")[0]
+	    ## "\\n\"");
 
-    /* Set the background color of the change number only */
-    t = sprintf("\"#%2.2X%2.2X%2.2X\"", clr[0], clr[1], clr[2]),
-    print(sprintf(".frame.blurb tag add line%d %d.0 %d.%d", line, line, line, chwid + 1));
-    print(sprintf(".frame.blurb tag configure line%d -background %s\n", line, t));
+	/* Set the background color of the change number only */
+	t = sprintf("\"#%2.2X%2.2X%2.2X\"", clr[0], clr[1], clr[2]),
+	print(sprintf(".frame.blurb tag add line%d %d.0 %d.%d",
+	    line, line, line, chwid + 1));
+	print(sprintf(".frame.blurb tag configure line%d -background %s\n",
+	    line, t));
 
-    /* Bind the double click (of mouse button 1) to the coloured part */
-    print(sprintf(".frame.blurb tag bind line%d <Double-Button-1> {doubleClick %s %s %s}\n",
+	/* Bind the double click (of mouse button 1) to the coloured part */
+	print(sprintf(
+      ".frame.blurb tag bind line%d <Double-Button-1> {doubleClick %s %s %s}\n",
 		  line, q.q_state, q.q_proj_branch, q.q_cn));
-    line = line + 1;
-}
+	line = line + 1;
+    }
 }

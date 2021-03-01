@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ who rode expensive horses and saw sunlight most days of the week.
 This is where new software is written,
 and bugs are fixed.
 This example shows only the addition of new functionality,
-but usually as modifications of existing code,
+but usually a change will include modifications of existing code,
 similar to bug-fixing activity.
 .nh 3 "Before You Start"
 .LP
@@ -554,7 +554,7 @@ such as
 .E(
 pat% \f(CBaeb && aet ; vi aegis.log\fP
 \&.\&.\&.
-pat% \f(CB!!\fP
+pat% \f(CB!aeb\fP
 \&.\&.\&.
 pat%
 .E)
@@ -992,7 +992,7 @@ like this:
 sam% \f(CBaedb -l\fP
 Project "example.1.0"
 List of Changes
- 
+
 Change  State           Description
 ------- -------         -------------
   12    awaiting_       add powers
@@ -1228,7 +1228,7 @@ aegis: project "example": change 3: development build complete
 sam%
 .E)
 .LP
-Notice how the yacc run produces a 
+Notice how the yacc run produces a
 .I gram.h
 which logically invalidates the
 .I lex.o
@@ -1298,7 +1298,8 @@ aegis: project "example.1.0": change 12: passed 2 tests
 sam%
 .E)
 .LP
-A this point Sam has just enough time to get to the lunchtime aerobics class in the staff common room.
+A this point Sam has just enough time to get to the lunchtime aerobics
+class in the staff common room.
 .LP
 Earlier the same day,
 Pat arrived for work a little after Sam,
@@ -1307,7 +1308,7 @@ and also looked for a change to work on.
 pat% \f(CBaedb -l\fP
 Project "example.1.0"
 List of Changes
- 
+
 Change  State           Description
 ------- -------         -------------
   13    awaiting_       add variables
@@ -1318,7 +1319,7 @@ pat%
 With such a wide choice,
 Pat selected change 13.
 .E(
-pat% \f(CBaedb 4\fP
+pat% \f(CBaedb 13\fP
 aegis: project "example.1.0": change 13: development directory "/u/
         pat/example.1.0.C013"
 aegis: project "example.1.0": change 13: user "pat" has begun
@@ -1450,7 +1451,8 @@ aegis: project "example.1.0": change 13: development build complete
 pat%
 .E)
 .LP
-A new test for the new functionality is required.
+A new test for the new functionality is required and
+Pat creates one like this.
 .E(
 :
 here=`pwd`
@@ -1813,7 +1815,7 @@ aegis: set +e; diff /projects/example/baseline/gram.y /u/pat/
 aegis: project "example.1.0": change 12: difference complete
 sam%
 .E)
-This time everything will run smoothly, 
+This time everything will run smoothly,
 .E(
 sam% \f(CBaede\fP
 aegis: project "example.1.0": change 12: development completed

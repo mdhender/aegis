@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ struct element_ty
 {
 	string_ty	*name;
 	type_ty		*type;
+	int		show;
 };
 
 typedef struct type_struct_ty type_struct_ty;
@@ -118,7 +119,7 @@ gen_include(type)
 		this->name->str_text
 	);
 	indent_printf("struct %s\n", this->name->str_text);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("%s\1reference_count;\n", "long");
 	indent_printf("%s\1mask;\n", "unsigned long");
 	for (j = 0; j < this->nelements; ++j)
@@ -128,7 +129,7 @@ gen_include(type)
 		ep = &this->element[j];
 		type_gen_include_declarator(ep->type, ep->name, 0);
 	}
-	indent_printf(/*{*/"};\n");
+	indent_printf("};\n");
 	indent_printf("#endif /* %s_DEF */\n", this->name->str_text);
 
 	indent_putchar('\n');
@@ -199,14 +200,20 @@ gen_code(type)
 	if (this->toplevel)
 		indent_printf("%s_write(fp, this)\n", this->name->str_text);
 	else
-		indent_printf("%s_write(fp, name, this)\n", this->name->str_text);
+	{
+		indent_printf
+		(
+		    "%s_write(fp, name, this)\n",
+		    this->name->str_text
+		);
+	}
 	indent_more();
 	indent_printf("%s\1*fp;\n", "output_ty");
 	if (!this->toplevel)
 		indent_printf("%s\1*name;\n", "char");
 	indent_printf("%s\1this;\n", this->name->str_text);
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("if (!this)\n");
 	indent_more();
 	indent_printf("return;\n");
@@ -215,7 +222,7 @@ gen_code(type)
 	{
 		indent_printf
 		(
-		    "trace((\"%s_write(this = %%08lX)\\n{\\n\"/*}*/, this));\n",
+	      "trace((\"%s_write(this = %%08lX)\\n{\\n\"/*}*/, (long)this));\n",
 			this->name->str_text
 		);
 	}
@@ -235,16 +242,16 @@ gen_code(type)
 	);
 	indent_printf
 	(
-		"trace((\"rc = %%d;\\n\", ((%s)this)->reference_count));\n",
+		"trace((\"rc = %%ld;\\n\", ((%s)this)->reference_count));\n",
 		this->name->str_text
 	);
 	if (!this->toplevel)
 	{
 		indent_printf("if (name)\n");
-		indent_printf("{\n"/*}*/);
+		indent_printf("{\n");
 		indent_printf("output_fputs(fp, name);\n");
 		indent_printf("output_fputs(fp, \" =\\n\");\n");
-		indent_printf(/*{*/"}\n");
+		indent_printf("}\n");
 		indent_printf("output_fputs(fp, \"{\\n\"/*}*/);\n");
 	}
 	for (j = 0; j < this->nelements; ++j)
@@ -252,7 +259,7 @@ gen_code(type)
 		element_ty	*ep;
 
 		ep = &this->element[j];
-		type_gen_code_declarator(ep->type, ep->name, 0);
+		type_gen_code_declarator(ep->type, ep->name, 0, ep->show);
 	}
 	if (!this->toplevel)
 	{
@@ -263,7 +270,7 @@ gen_code(type)
 		indent_less();
 	}
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -275,7 +282,7 @@ gen_code(type)
 	indent_putchar('\n');
 	indent_printf("static void *\n");
 	indent_printf("%s_alloc()\n", this->name->str_text);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("%s\1this;\n", this->name->str_text);
 	indent_putchar('\n');
 	indent_printf
@@ -300,7 +307,7 @@ gen_code(type)
 	indent_printf("trace((\"return %%08lX;\\n\", (long)this));\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf("return this;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf("%s\n", this->name->str_text);
@@ -308,7 +315,7 @@ gen_code(type)
 	indent_more();
 	indent_printf("%s\1this;\n", this->name->str_text);
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf
 	(
 		"trace((\"%s_copy()\\n{\\n\"/*}*/));\n",
@@ -321,7 +328,7 @@ gen_code(type)
 	indent_printf("trace((\"return %%08lX;\\n\", (long)this));\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf("return this;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -336,7 +343,7 @@ gen_code(type)
 	indent_more();
 	indent_printf("%s\1*that;\n", "void");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf
 	(
 		"%s\1this = that;\n",
@@ -367,7 +374,7 @@ gen_code(type)
 	}
 	indent_printf("mem_free(this);\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -375,13 +382,13 @@ gen_code(type)
 		"%s\1%s_table[] =\n", "static type_table_ty",
 		this->name->str_text
 	);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	for (j = 0; j < this->nelements; ++j)
 	{
 		element_ty	*ep;
 
 		ep = &this->element[j];
-		indent_printf("{\n"/*}*/);
+		indent_printf("{\n");
 		indent_printf("\"%s\",\n", ep->name->str_text);
 		indent_printf
 		(
@@ -396,11 +403,11 @@ gen_code(type)
 			this->name->str_text,
 			ep->name->str_text
 		);
-		indent_printf(/*{*/"},\n");
+		indent_printf("},\n");
 	}
 	if (!this->nelements)
 		indent_printf("{ \"\", },\n");
-	indent_printf(/*{*/"};\n");
+	indent_printf("};\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -423,7 +430,7 @@ unsigned long *));\n",
 	indent_printf("%s\1**type_pp;\n", "type_ty");
 	indent_printf("%s\1*mask_p;\n", "unsigned long");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("%s\1*addr;\n", "void");
 	indent_putchar('\n');
 	indent_printf
@@ -444,18 +451,18 @@ unsigned long *));\n",
 	);
 	indent_printf("addr =\n");
 	indent_more();
-	indent_printf("generic_struct_parse\n(\n"/*)*/);
+	indent_printf("generic_struct_parse\n(\n");
 	indent_printf("this,\n");
 	indent_printf("name,\n");
 	indent_printf("type_pp,\n");
 	indent_printf("mask_p,\n");
 	indent_printf("%s_table,\n", this->name->str_text);
 	indent_printf("SIZEOF(%s_table)\n", this->name->str_text);
-	indent_printf(/*(*/");\n");
+	indent_printf(");\n");
 	indent_less();
 	indent_printf("trace((/*{*/\"return %%08lX;\\n}\\n\", (long)addr));\n");
 	indent_printf("return addr;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -470,7 +477,7 @@ unsigned long *));\n",
 	indent_more();
 	indent_printf("%s\1*name;\n", "string_ty");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("%s\1*result;\n", "string_ty");
 	indent_putchar('\n');
 	indent_printf
@@ -480,16 +487,16 @@ unsigned long *));\n",
 	);
 	indent_printf("result =\n");
 	indent_more();
-	indent_printf("generic_struct_fuzzy\n(\n"/*)*/);
+	indent_printf("generic_struct_fuzzy\n(\n");
 	indent_printf("name,\n");
 	indent_printf("%s_table,\n", this->name->str_text);
 	indent_printf("SIZEOF(%s_table)\n", this->name->str_text);
-	indent_printf(/*(*/");\n");
+	indent_printf(");\n");
 	indent_less();
 	indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf("return result;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf
@@ -504,7 +511,7 @@ unsigned long *));\n",
 	indent_more();
 	indent_printf("%s\1*this;\n", "void");
 	indent_less();
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("%s\1*result;\n", "struct rpt_value_ty");
 	indent_putchar('\n');
 	indent_printf
@@ -519,20 +526,20 @@ unsigned long *));\n",
 	);
 	indent_printf("result =\n");
 	indent_more();
-	indent_printf("generic_struct_convert\n(\n"/*)*/);
+	indent_printf("generic_struct_convert\n(\n");
 	indent_printf("this,\n");
 	indent_printf("%s_table,\n", this->name->str_text);
 	indent_printf("SIZEOF(%s_table)\n", this->name->str_text);
-	indent_printf(/*(*/");\n");
+	indent_printf(");\n");
 	indent_less();
 	indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf("return result;\n");
-	indent_printf(/*{*/"}\n");
+	indent_printf("}\n");
 
 	indent_putchar('\n');
 	indent_printf("type_ty %s_type =\n", this->name->str_text);
-	indent_printf("{\n"/*}*/);
+	indent_printf("{\n");
 	indent_printf("\"%s\",\n", this->name->str_text);
 	indent_printf("%s_alloc,\n", this->name->str_text);
 	indent_printf("%s_free,\n", this->name->str_text);
@@ -542,24 +549,25 @@ unsigned long *));\n",
 	indent_printf("%s_fuzzy,\n", this->name->str_text);
 	indent_printf("%s_convert,\n", this->name->str_text);
 	indent_printf("generic_struct_is_set,\n");
-	indent_printf(/*{*/"};\n");
+	indent_printf("};\n");
 }
 
 
-static void gen_code_declarator _((type_ty *, string_ty *, int));
+static void gen_code_declarator _((type_ty *, string_ty *, int, int));
 
 static void
-gen_code_declarator(type, name, is_a_list)
+gen_code_declarator(type, name, is_a_list, show)
 	type_ty		*type;
 	string_ty	*name;
 	int		is_a_list;
+	int		show;
 {
-	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
+	indent_printf("%s_write(fp, ", type->name->str_text);
 	if (is_a_list)
 		indent_printf("(char *)0");
 	else
 		indent_printf("\"%s\"", name->str_text);
-	indent_printf(/*(*/", this->%s);\n", name->str_text);
+	indent_printf(", this->%s);\n", name->str_text);
 }
 
 
@@ -592,13 +600,14 @@ gen_free_declarator(type, name, is_a_list)
 }
 
 
-static void member_add _((type_ty *, string_ty *, type_ty *));
+static void member_add _((type_ty *, string_ty *, type_ty *, int));
 
 static void
-member_add(type, member_name, member_type)
+member_add(type, member_name, member_type, show)
 	type_ty		*type;
 	string_ty	*member_name;
 	type_ty		*member_type;
+	int		show;
 {
 	type_struct_ty	*this;
 	element_ty	*ep;
@@ -615,6 +624,7 @@ member_add(type, member_name, member_type)
 	ep = &this->element[this->nelements++];
 	ep->type = member_type;
 	ep->name = str_copy(member_name);
+	ep->show = show;
 }
 
 

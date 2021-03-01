@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1996, 1997, 1999 Peter Miller;
+.\"	Copyright (C) 1995-1997, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ Aegis now has a feature known in the literature as long transactions,
 also known as branches.  This allows appropriately created changes to be
 treated as if they were projects, and thus to have changes made to them.
 This allows a hierachy of changes within changes, to any desired depth.
-See the 
+See the
 .I Branching
 chapter of the
 .I "Aegis User Guide"
@@ -107,7 +107,7 @@ The
 command can now suggest tests to be run.  This is done by correlating
 the source files and test files from each change.  See
 .IR aet (1)
-for more information. 
+for more information.
 .PP
 .if n *
 .if t \(bu
@@ -117,7 +117,8 @@ allowing the report generator to be used in places where more trust is required.
 .PP
 .if n *
 .if t \(bu
-There is an intranet Web interface, which is installed automaticly when the install script discovers a web server.
+There is an intranet Web interface, which is installed automaticly when
+the install script discovers a web server.
 This interface allows browsing of much of the Aegis meta-data,
 of all publicly accessible projects.
 .PP
@@ -148,7 +149,7 @@ There is now a -No_PErsevere option to
 .IR aet (1),
 allowing you to request that
 .IR aet (1)
-stop after the first test failure. 
+stop after the first test failure.
 There is also a user preference to set this permanently if desired,
 and a -PErsever option to override it.
 See

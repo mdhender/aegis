@@ -1,0 +1,133 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aeannotate command.
+.\"
+.so z_name.so
+.ds n) aeannotate
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aeannotate \- annotated source file listing
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+.IR filename
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to
+produce an annotated listing of the named source file.
+.PP
+The columns specified by the user (see the \fB\--column\fP option, below)
+are used of the left hand side of the output.  Two additional columns
+are alwats added: the line number and the source code.
+.PP
+If no columns are specfied, the default columns are
+.TS
+center,tab(;);
+l l l l.
+\-column;'${change date %Y-%m}';Date;7
+\-column;'$version';Version;9
+\-column;'${change developer}';Who;8
+.TE
+The \fI$version\fP string always contains enough information to reproduce
+the entiure project baseline at the time of the delta.  The first portion
+is the project branch, and the second portion (following the `D') is
+the delta number; use these to form the -branch and -delta optoons for
+an \fIaecp\fP(1) command.
+.PP
+At the end of the listing, accumulated statistics are presented,
+correlated to the unique columns values see in the listing.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+.B \-COLumn \fIformula \fP [ \fIheading\fP ][ \fIwidth\fP ]
+This option may be used to
+specify columns you wish to see in the output.
+The formula is in the for of an \fIaesub\fP(5) string.
+The heading is a string to be used as the column heading;
+defaults to the formula if not specified.
+The width is the width of the columns;
+defaults to 7 if not specified.
+.TP 8n
+.B \-File_Statistics
+This option causes file statistics to be appended.  This lists the number
+of lines in the file were changed at the same time as another file.
+For example, this allows you to see tests associated with source files,
+and \fIvice versa\fP.
+.so o_help.so
+.TP 8n
+\fB\-Diff_Option\fP \fIstring\fP
+This option may be used to pass addition arguments to the diff commands
+that is run between each delta of the file.  Use with caustion: poor
+choice of options can render aeannotate inoperable, or yeild meaningless
+results.  Probably the best use of thsi option is to pass the \fB\-b\fP
+option, to ignore white space changes, because this ignores the vast
+majority of cosmetic formatting changes, showing you the content changes
+instead.  The \fB\-i\fP option, to ignore case, can also be useful for
+case-insensitive languages.
+.so o_output.so
+.so o_project.so
+.so o__rules.so
+.so z_exit.so
+.SH EXAMPLES
+If you wanted to list only the year against the lines of the file,
+use this column specification:
+.TS
+center,tab(;);
+l l l l.
+\-column;'${change date %Y}';Year;4
+.TE
+.PP
+If you wanted to list the developer and the reviewer against the lines
+of the file (commonly called a ``blame'' listing) use this column
+specification:
+.TS
+center,tab(;);
+l l l l.
+\-column;'${change developer}';Develop.;8
+\-column;'${change reviewer}';Reviewer;8
+.TE
+.PP
+If you wanted to see the change cause of each line,
+use this column specification:
+.TS
+center,tab(;);
+l l l l.
+\-column;'$version';Version;9
+\-column;'${change cause}';Cause;20
+.TE
+.PP
+All of the \fIaesub\fP(5) substitutions are available, however
+only the \fI${change ...}\fP variants are particularly useful.
+.PP
+To see only content changes, and ignore changes in indentation (assuming
+you are using GNU diff), use this command:
+.RS
+aeannotate -diff-opt -b \fIfilename\fP
+.RE
+.so z_cr.so

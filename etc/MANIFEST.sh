@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1994, 1998 Peter Miller;
+#	Copyright (C) 1992-1994, 1998, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,8 @@ echo
 echo
 for f in $*
 do
-	ff=`echo $f | sed -e 's|^bl/||' -e 's|^blbl/||' -e 's|^blblbl/||' -e 's|^blblblbl/||'`
+	ff=`echo $f | sed -e 's|^bl/||' -e 's|^blbl/||' -e 's|^blblbl/||' \
+		-e 's|^blblblbl/||'`
 	case $ff in
 	MANIFEST)
 		info="This file"

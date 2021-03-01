@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ usage()
 	char	*progname;
 
 	progname = progname_get();
-	fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
+	fprintf(stderr, "Usage: %s --list [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s --help\n", progname);
 	exit(1);
 }

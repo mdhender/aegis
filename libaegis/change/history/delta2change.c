@@ -1,0 +1,62 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: functions to manipulate delta2changes
+ */
+
+#include <change/branch.h>
+#include <fstrcmp.h>
+#include <sub.h>
+
+
+long
+change_history_change_by_delta(cp, delta_number)
+    change_ty       *cp;
+    long            delta_number;
+{
+    cstate	    cstate_data;
+    cstate_branch_history_list h;
+    size_t	    j;
+    sub_context_ty  *scp;
+
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->branch)
+	    goto useless;
+    h = cstate_data->branch->history;
+    if (!h)
+	goto useless;
+    if (!h->length)
+	goto useless;
+    for (j = 0; j < h->length; ++j)
+    {
+	cstate_branch_history he;
+
+	he = h->list[j];
+	if (he->delta_number == delta_number)
+	    return he->change_number;
+    }
+
+    useless:
+    scp = sub_context_new();
+    sub_var_set_long(scp, "Number", delta_number);
+    change_fatal(cp, scp, i18n("no delta $number"));
+    /* NOTREACHED */
+    sub_context_delete(scp);
+    return 0;
+}

@@ -1,0 +1,128 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 4.6 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 52
+The \fIaefind\fP(1) command now has \-resolve as the default.  To get
+the previous behaviour, use the \-NoResolve\fP option.
+.PP
+.if n *
+.if t \(bu
+.\" change 50
+In the \fIaeca -e\fP and \fIaepa -e\fP commands, it is now possible to
+quote strings with at-signs (@) instead of double quotes.  This type of
+string allows newlines within the string.  See \fIaegis\fP(5) for more
+information.
+.PP
+.if n *
+.if t \(bu
+.\" change 39
+For the benefit of Aegis developers, there is now HTML documentation
+genaretd by Doxygen (if you have Doxygen installed).  When developing
+an Aegis change, in your development directory, point your browser at
+\f[CW]doxygen-html/\%index.html\fP.  The \f[CW]common/\%str.h\fP file
+is an example of the style desired, should you wish to contribute to
+the effort to get all of the header files suitably annotated.
+.\" Change 11
+Also, the removal of the K&R C support has started, see the files in
+\f[CW]common/*.[ch]\fP for examples.
+.\" Change 55
+Also <varargs.h> is not longer used anywhere.
+.PP
+.if n *
+.if t \(bu
+.\" change 37
+The \fIaedist\fP(1) command has two new options, \-patch and \-nopatch,
+which may be used to control how and when \fIaedist\fP uses patches.
+See \fIaepatch\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+A bug has been fixed inthe \fIstrncasecmp\fP function.  This only affected
+you if your system did not have a native version of this function.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+The \fIaeca\fP(1) command now accepts a \-fix-architecture option.
+This option may be used to correct the architecture list
+of a change automatically.
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+The \fIaedist -receive\fP command now runs the \fIaeca -fixarch\fP command
+when a change set arrives which modified the project \fIconfig\fP file.
+This should fix many of the "architecture not in project config file"
+problems when seeding new projects.
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+Some deficiencies on the ``How to Become a Developer'' instructions have
+been addressed.
+.\" change 30
+The native Aegis build (but not the Makefile.in) now builds the "tags"
+and "TAGS" files so that it easier to navigate the sources.
+.PP
+.if n *
+.if t \(bu
+.\" change 26, 28, 29
+There is a new \fIaetar\fP(1) command.  It may be used to send and
+receive tarballs as Aegis change sets.  See \fIaetar\fP(1) for more
+information.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+Missing documentation on the \fIaepconf\fP(5) man page about the fine
+grained file change notification commands has been added.
+.PP
+.if n *
+.if t \(bu
+.\" change 18, 22, 25
+Some changes have been made to the Aegis web interface, with more back links.
+Also uses \fIhtml2diff\fP(1) if available.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+It is now possible for reviewers to use the \fIaet\fP(1) command to run
+tests against the changes they are reviewing.
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+The command completion for the \fIaet\fP(1) command now works better;
+it now completes project test names as well as change test names.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+The \fIaepatch\fP(1) and \fIaedist\fP(1) commands now cope with a wider
+range of input vagueries, including some weird things done by MTAs and
+more content transfer encoding synonyms.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.6

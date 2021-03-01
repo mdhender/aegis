@@ -25,8 +25,8 @@
 
 #include <main.h>
 
-void env_initialize _((void));
-void env_set _((char *name, char *value));
-void env_unset _((char *name));
+void env_initialize(void);
+void env_set(char *name, char *value);
+void env_unset(char *name);
 
 #endif /* COMMON_ENV_H */

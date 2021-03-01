@@ -108,14 +108,14 @@ sub_expr_gram_lex()
 
 		case '%':
 			return MOD;
-			
+
 		case '>':
 			c = lex_getc();
 			if (c == '=')
 				return GE;
 			lex_getc_undo(c);
 			return GT;
-			
+
 		case '=':
 			c = lex_getc();
 			if (c == '=')

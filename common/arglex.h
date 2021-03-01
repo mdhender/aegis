@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,12 @@ enum arglex_token_ty
 	arglex_token_eoln = -20,
 	arglex_token_help,
 	arglex_token_number,
+	arglex_token_number_incomplete,
 	arglex_token_option,
+	arglex_token_option_incomplete,
 	arglex_token_stdio,
 	arglex_token_string,
+	arglex_token_string_incomplete,
 	arglex_token_trace,
 	arglex_token_version
 };
@@ -58,25 +61,28 @@ struct arglex_value_ty
 extern int		arglex_token;
 extern arglex_value_ty	arglex_value;
 
-void arglex_init _((int, char **, arglex_table_ty *));
-int arglex _((void));
-int arglex_prefetch _((int *, int));
-int arglex_compare _((const char *formal, const char *actual));
-char *arglex_token_name _((arglex_token_ty));
+void arglex_init(int, char **, arglex_table_ty *);
+int arglex(void);
+int arglex_prefetch(int *, int);
+int arglex_compare(const char *formal, const char *actual);
+char *arglex_token_name(arglex_token_ty);
 
-arglex_table_ty *arglex_table_catenate _((arglex_table_ty *,
-	arglex_table_ty *));
+arglex_table_ty *arglex_table_catenate(arglex_table_ty *, arglex_table_ty *);
 
 
 typedef struct arglex_dispatch_ty arglex_dispatch_ty;
 struct arglex_dispatch_ty
 {
 	int	token;
-	void	(*func)_((void));
+	void	(*func)(void);
 	int	priority;
 };
 
-void arglex_dispatch _((arglex_dispatch_ty *table, int table_len,
-	void (*usage)(void)));
+void arglex_dispatch(arglex_dispatch_ty *table, int table_len,
+	void (*usage)(void));
+
+void arglex_synthetic(int, char **, int);
+void arglex_retable(arglex_table_ty *);
+int arglex_get_string(void);
 
 #endif /* ARGLEX_H */

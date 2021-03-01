@@ -1,0 +1,74 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/user-guide/c4.5s
+.\"
+.nh 2 "Building Executable Scripts"
+.LP
+Aegis treats source files as, well, source files.
+This means that it forgets any executable bits (and any other mode bits)
+you may set on the file.
+Usually, this isn't a problem - except for scripts.
+.LP
+So, just how \fIdo\fP you get Aegis to give you an executable script?
+Well, you add a build rule.
+However, since it can't depend on itself, it needs to depend on something else.
+.LP
+Using a Cook example, we could write
+.E(
+bin/%: script/%.sh
+{
+    /* copy the script */
+    cp script/%.sh bin/%;
+    /* make it executable */
+    chmod a+rx bin/%;
+    /* syntax check */
+    bash -n bin/%;
+}
+.E)
+There is a small amout of value-added here: we did a syntax check along
+the way, which catches all sorts of problems.
+.LP
+.\" Chuck Eaker <ceaker@nycap.rr.com>
+The same technique also works for Perl
+.E(
+bin/%: script/%.pl
+{
+    cp script/%.pl bin/%;
+    chmod a+rx bin/%;
+    perl -cw bin/%;
+}
+.E)
+.LP
+.\" Ralf Fassel <ralf@akutech.de>
+The same technique also works for TCL
+.E(
+bin/%: script/%.tcl
+{
+    cp script/%.rcl bin/%;
+    chmod a+rx bin/%;
+    procheck -nologo bin/%;
+}
+.E)
+The \fIprocheck\fP(1) command ios part of the TclPro package.
+.LP
+Many tools have a similar options.
+.LP
+You can also combine this with GNU Autoconf to produce
+architecture specific shell scripts from architecture neutral sources.

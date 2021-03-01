@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999, 2001 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999, 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -18,10 +18,12 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: command used to notify by usenet that a change review passed is rescinded
+# MANIFEST: command used to notify by usenet that a change review passed
+#	is rescinded
 #
 # Suggested project attribute:
-# review_pass_undonotify_command = "$datadir/rpu.inews.sh $p $c a.local.newsgroup";
+# review_pass_undonotify_command =
+#	"$datadir/rpu.inews.sh $p $c a.local.newsgroup";
 #
 aegis=aegis
 case $# in

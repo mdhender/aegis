@@ -22,7 +22,7 @@
 
 #include <change.h>
 #include <error.h> /* for assert */
-#include <project_hist.h>
+#include <project/history.h>
 #include <sub.h>
 
 

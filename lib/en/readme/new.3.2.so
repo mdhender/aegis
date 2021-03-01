@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,25 +19,25 @@
 .\"
 .\" MANIFEST: document describing new 3.2 features
 .\"
-.PP     
+.PP
 This release is a bug fix release,
 and mostly install and portability bug, at that.
 .PP
-.if n * 
+.if n *
 .if t \(bu
 The problem with \fIerrno\fP defines messing up \fIglue.c\fP has been fixed.
 .PP
-.if n * 
+.if n *
 .if t \(bu
 Numerous fixes to the wide character support, to cope with the vagueries
 of wide character support on many platforms.
 .PP
-.if n * 
+.if n *
 .if t \(bu
 The problem with the LINES and COLS environment variables messing up
 testing have been fixed.  Some tests gave false negatives because of this.
 .PP
-.if n * 
+.if n *
 .if t \(bu
 There is a new \fIaeb -minimum\fP option, for use with symbolic links,
 only, which has a minimal set of source file links, rather than everything

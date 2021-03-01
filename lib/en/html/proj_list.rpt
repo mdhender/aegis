@@ -25,21 +25,34 @@ print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("Project List");
-print("</title></head><body><h1><center>");
+print("</title></head><body bgcolor=\"#ffffff\"><h1 align=center>");
 print("Project List");
-print("</center></h1><center><table>");
+print("</h1><table align=center>");
 
-print("<tr><th>Project</th><th>Description</th></tr>");
+auto colors;
+colors[0] = '#CCCCCC';
+colors[1] = '#FFFFFF';
+print("<tr bgcolor=\"" ## colors[0] ##
+	"\"><th>Project</th><th>Description</th></tr>");
 
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
 	script_name = "http://localhost/cgi-bin/aegis.cgi";
 
-auto name, p;
+auto name, p, prev_proj, color, odd;
+prev_proj = "";
+color = 0;
 for (name in sort(keys(project)))
 {
 	p = project[name];
+	auto a;
+	a = split(name, ".");
+	if (a[0] != prev_proj)
+	{
+		color = (color + 1) % 2;
+		prev_proj = a[0];
+	}
 
 	/*
 	 * Reading the p.state value (it is deferred) may result
@@ -56,7 +69,7 @@ for (name in sort(keys(project)))
 		description = "<i>" ## quote_html(description) ## "</i>";
 		ok = false;
 	}
-	print("<tr><td valign=top>");
+	print("<tr bgcolor=\"" ## colors[color] ##"\"><td valign=top>");
 	if (ok)
 	{
 		auto href;
@@ -78,7 +91,7 @@ for (name in sort(keys(project)))
 	print("</i></td></tr>");
 }
 
-print("</table></center>");
+print("</table>");
 print("Listed " ## count(keys(project)) ## " projects.");
 print("<hr>A similar report may be obtained from the command line, with");
 print("<blockquote><tt>ael p</tt></blockquote>");

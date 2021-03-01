@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -116,7 +116,7 @@ These are two ends of a continuum, and it is possible and common for a
 mix-and-match approach to be taken.
 .LP
 There are also many ways of arranging how distribution is accomplished,
-and many of the distribution arrangements (common called topologies,
+and many of the distribution arrangements (commonly called topologies,
 when you draw the graphs) are supported by Aegis and \fIaedist\fP:
 .IP \(bu 2n
 The star topology has a central master repository, surrounded by
@@ -144,6 +144,7 @@ the above reasons, and the rest of this chapter describes a number of
 different ways of doing this:
 .IP \(sq 3n
 The second section will
+.\" second? how about xrefs?
 describe how to perform these actions manually, both send and receive,
 as this demonstrates the method efficiently, and represents a majority
 of the use made of the mechanism.

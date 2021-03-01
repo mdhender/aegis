@@ -83,6 +83,13 @@ all of the source files in the project below that directory are copied,
 except any which are already in the change.
 It is an error if none of the files implicitly named
 by the directory can be used.
+.PP
+If you want to change a copied source file to be executable (shell
+scripts, for example) then you simply use the normal \fIchmod\fP(1)
+command; the reverse to make it not executable.  If any of the file's
+executable bits are set at \fIaede\fP(1) time the file is remembered as
+executable and all execute bits (minus the project's umask) will be set
+by subsequent \fIaecp\fP(1) commands.
 .so z_intuit.so
 .SS Process Side Effects
 This command will cancel any build or test registrations,

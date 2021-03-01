@@ -96,12 +96,17 @@ void wide_output_delete_callback _((wide_output_ty *, wide_output_callback_ty,
 	void *));
 
 /*
- * This looks recursive, but ANSI C macros are not allowed to recurse,
- * so the second one goes to the actual function.
+ * Despite looking recursive, it isn't.  Ansi C macros do not recurse,
+ * so it winds up calling the real function in the "buffer needs to
+ * grow" case.
+ *
+ * (Sun's compiler is broken, use GCC if you have a choice.)
  */
+#ifndef __SUNPRO_C
 #define wide_output_putwc(fp, wc)					\
 	(((fp)->buffer_position < (fp)->buffer_end)			\
 	? (void)(*((fp)->buffer_position)++ = (wc))			\
 	: wide_output_putwc((fp), (wc)))
+#endif
 
 #endif /* LIBAEGIS_WIDE_OUTPUT_H */

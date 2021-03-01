@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -160,7 +160,7 @@ end
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -newcha -list -pro foo -lib $worklib > test.out
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -new_change -f $tmp -project foo -lib $worklib 
+$bin/aegis -new_change -f $tmp -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #

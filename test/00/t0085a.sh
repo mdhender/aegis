@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000 Peter Miller;
+#	Copyright (C) 1999, 2000, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -190,4 +190,3 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # the things tested in this test, worked
 #
 pass
-

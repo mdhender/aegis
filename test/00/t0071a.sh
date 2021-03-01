@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997-2001 Peter Miller;
+#	Copyright (C) 1997-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -283,7 +283,7 @@ activity="clone"
 $bin/aegis -clone 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change file state 304"
+activity="check change file state 286"
 cat > ok << 'fubar'
 src =
 [
@@ -302,7 +302,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/change/0/012.fs
 
-activity="check change state 304"
+activity="check change state 305"
 cat > ok << 'fubar'
 brief_description = "two (clone of .D002)";
 description = "two";
@@ -338,7 +338,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/change/0/012
 
-activity="check project state 304"
+activity="check project state 342"
 cat > ok << 'fubar'
 brief_description = "The \"test\" program.";
 description = "The \"test\" program.";
@@ -424,6 +424,7 @@ branch =
 	];
 	minimum_change_number = 10;
 	reuse_change_numbers = true;
+	protect_development_directory = false;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,8 +36,8 @@ os_mkdir_between(top, extn, mode)
 	string_ty	*s1;
 	string_ty	*s2;
 
-	trace(("os_mkdir_between(top = %08lX, extn = %08lX, \
-mode = 0%o)\n{\n", top, extn, mode));
+	trace(("os_mkdir_between(top = %08lX, extn = %08lX, "
+	    "mode = 0%o)\n{\n", (long)top, (long)extn, mode));
 	trace_string(top->str_text);
 	trace_string(extn->str_text);
 	assert(top->str_text[0] == '/');

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,57 +30,57 @@
 
 wstring_ty *
 sub_add_path_suffix(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	string_ty	*s;
-	wstring_ty	*result;
-	size_t		j;
-	string_list_ty	sl;
-	string_ty	*suffix;
+    string_ty	    *s;
+    wstring_ty	    *result;
+    size_t	    j;
+    string_list_ty  sl;
+    string_ty	    *suffix;
 
-	/*
-	 * Make sure we have sufficient arguments.
-	 */
-	trace(("sub_add_path_suffix()\n{\n"/*}*/));
-	if (arg->nitems < 2)
-	{
-		sub_context_error_set(scp, i18n("requires at least one argument"));
-		trace(("return NULL;\n"));
-		trace((/*{*/"}\n"));
-		return 0;
-	}
+    /*
+     * Make sure we have sufficient arguments.
+     */
+    trace(("sub_add_path_suffix()\n{\n"));
+    if (arg->nitems < 2)
+    {
+	sub_context_error_set(scp, i18n("requires at least one argument"));
+	trace(("return NULL;\n"));
+	trace(( /*{*/"}\n"));
+	return 0;
+    }
 
-	/*
-	 * add the suffix to each of the paths in each of the arguments
-	 */
-	suffix = wstr_to_str(arg->item[1]);
-	string_list_constructor(&sl);
-	for (j = 2; j < arg->nitems; ++j)
-	{
-		size_t		k;
-		string_list_ty	tmp;
+    /*
+     * add the suffix to each of the paths in each of the arguments
+     */
+    suffix = wstr_to_str(arg->item[1]);
+    string_list_constructor(&sl);
+    for (j = 2; j < arg->nitems; ++j)
+    {
+	size_t		k;
+	string_list_ty	tmp;
 
-		s = wstr_to_str(arg->item[j]);
-		str2wl(&tmp, s, ":", 0);
-		str_free(s);
-		for (k = 0; k < tmp.nstrings; ++k)
-		{
-			s = os_path_cat(tmp.string[k], suffix);
-			string_list_append(&sl, s);
-			str_free(s);
-		}
-		string_list_destructor(&tmp);
-	}
-	str_free(suffix);
-	s = wl2str(&sl, 0, sl.nstrings, ":");
-	result = str_to_wstr(s);
+	s = wstr_to_str(arg->item[j]);
+	str2wl(&tmp, s, ":", 0);
 	str_free(s);
+	for (k = 0; k < tmp.nstrings; ++k)
+	{
+	    s = os_path_cat(tmp.string[k], suffix);
+	    string_list_append(&sl, s);
+	    str_free(s);
+	}
+	string_list_destructor(&tmp);
+    }
+    str_free(suffix);
+    s = wl2str(&sl, 0, sl.nstrings, ":");
+    result = str_to_wstr(s);
+    str_free(s);
 
-	/*
-	 * success
-	 */
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    /*
+     * success
+     */
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

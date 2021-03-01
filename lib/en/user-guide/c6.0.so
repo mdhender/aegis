@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ This insulates you from a number of nasty Catch-22 situations
 in writing the dependency maintenance tool's rules file.
 .nh 2 "Symbolic Links"
 .LP
-If you are on a flavor of 
+If you are on a flavor of
 .UX
 which has symbolic links,
 it is often useful to create a symbolic link from the development directory
@@ -119,7 +119,7 @@ to the
 .I \&.cshrc
 file in the user's home directory.
 .LP
-These days, many systems also provide an \fI/etc/profile.d\fP firectory,
+These days, many systems also provide an \fI/etc/profile.d\fP directory,
 which has symbolic links to the start-up scripts for various packages.
 These are run automatically for all users.
 If your system has such a thing, arrange for symbolic links

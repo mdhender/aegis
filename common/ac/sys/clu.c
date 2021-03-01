@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,7 @@
 #ifndef HAVE_CLU_INFO
 
 int
-clu_info(n sva_last)
-	int		n;
-	sva_last_decl
+clu_info(int n, ...)
 {
 	va_list		ap;
 
@@ -41,7 +39,7 @@ clu_info(n sva_last)
 	 * know where on the stack the return address can be found.
 	 * That's why there is a va_end() macro defined in the standard.
 	 */
-	sva_init(ap, n);
+	va_start(ap, n);
 	switch (n)
 	{
 	case CLU_INFO_MY_ID:

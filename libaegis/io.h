@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1991-1996, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,9 +36,9 @@ struct output_ty; /* existence */
 #define TIME_NOT_SET (time_t)0
 
 void string_write _((struct output_ty *, const char *, string_ty *));
-void integer_write _((struct output_ty *, const char *, long));
-void real_write _((struct output_ty *, const char *, double));
-void time_write _((struct output_ty *, const char *, time_t));
+void integer_write _((struct output_ty *, const char *, long, int));
+void real_write _((struct output_ty *, const char *, double, int));
+void time_write _((struct output_ty *, const char *, time_t, int));
 void io_comment_append _((struct sub_context_ty *, const char *));
 void io_comment_emit _((struct output_ty *));
 

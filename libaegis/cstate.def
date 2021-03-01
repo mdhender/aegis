@@ -21,6 +21,10 @@
  *
  * if you cange this file, don't forget to change
  *	man5/aecstate.5
+ *
+ * If you change this file, remmeber to make top-level enums
+ * hide_if_default whenever possible, or you will break older versions of
+ * aedist for receive.
  */
 
 #include <cattr.def>
@@ -77,6 +81,14 @@ state =
  * the 'being_integrated' or 'completed' states.
  */
 delta_number = integer;
+
+/*
+ * This field records whether the change was placed into the
+ * 'being_integrated'  state using the -minimum option (or that option was
+ * implicitly set due to a file being removed).  It is
+ * only present if the change is in the 'being_integrated' state.
+ */
+minimum_integration = boolean hide_if_default;
 
 /*
  * This field records the last change integrated into the project.
@@ -551,6 +563,21 @@ branch =
 	 * specified.  Defaults to 1 if not set.
 	 */
 	minimum_branch_number = integer;
+
+	/*
+	 * This field may be used to protect the development directory
+	 * after the "being developed" state.  It does this by making
+	 * it read-only at develop end time.  Should the change ever
+	 * be returned to the "being developed" state, it will be made
+	 * writble again.
+	 *
+	 * The default is false, meaning to leave the development
+	 * directory writable while is being reviewed and integrated.
+	 * Aegis' normal tampering detection will notice if files are
+	 * changed, but there is no reminder to the developer that the
+	 * change should be left alone.
+	 */
+	protect_development_directory = boolean;
 };
 
 /************************ OBSOLETE FIELDS ************************/

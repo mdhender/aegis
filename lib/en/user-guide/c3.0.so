@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ You may even wish to write your own.
 .LP
 The intention of this is that you may use a history mechanism which
 suits your special needs,
-or the one that comes free with your flavour of 
+or the one that comes free with your flavour of
 .UX
 operating system.
 .LP
@@ -67,7 +67,7 @@ Substitutions available for the command string are:
 .IP ${History}
 absolute path of history file
 .IP ${Edit}
-edit number, as given by the history_\%get_\%command.
+edit number, as given by the history_\%query_\%command.
 .IP ${Output}
 absolute path of destination file
 .LP
@@ -94,6 +94,7 @@ absolute path of history file
 .LP
 In addition, all substitutions described in \fIaesub\fP(5) are available.
 .nh 3 "history_content_limitation"
+.LP
 This field describes the content style which the history tool is
 capable of working with.
 .IP ascii_text
@@ -120,6 +121,7 @@ because each put could use a different encoding (although in practice,
 file contents rarely change that dramatically, and the same encoding is
 likely to be deduced every time).
 .nh 3 "history_tool_trashes_file"
+.LP
 Many history tools (e.g. RCS) can modify the contents of the file
 when it is committed.  While there are usually options to turn this
 off, they are seldom used.  The problem is: if the commit changes the

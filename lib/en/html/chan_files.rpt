@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,84 +30,76 @@ print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("Change Files");
-print("</title></head><body><h1><center>");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 auto pn, cn;
 pn = project_name();
 cn = change_number();
 print("Project ``" ## quote_html(pn) ## "'', Change " ## cn ## ",");
 print("<br>List of Files");
-print("</center></h1>");
+print("</h1>");
 auto ps;
 ps = project[pn].state.branch;
 auto cs;
 cs = ps.change[cn];
-auto src;
-auto viz;
-viz = (cs.state >= being_developed && cs.state <= being_integrated);
-print("<center><table>");
+auto src, rownum;
+print("<table align=center>");
 print("<tr><th>Type</th><th>Action</th><th>Edit</th><th>File Name</th></tr>");
+rownum = 0;
 for (src in cs.src)
 {
-	print("<tr><td valign=top>");
-	print(src.usage);
-	print("</td><td valign=top>");
-	print(src.action);
-	print("</td><td valign=top align=right>");
+    if (rownum++ % 6 < 3)
+	print("<tr>");
+    else
+	print("<tr bgcolor=\"#F0F0F0\">");
+    print("<td valign=top>");
+    print(src.usage);
+    print("</td><td valign=top>");
+    print(src.action);
+    print("</td><td valign=top align=right>");
 
-	if (src.edit_number_origin != "" && src.edit_number != "")
-	{
-		if (src.edit_number_origin == src.edit_number)
-			print(src.edit_number);
-		else
-			print(src.edit_number_origin ## " -> "
-				## src.edit_number);
-	}
-	else if (src.edit_number_origin != "")
-		print(src.edit_number_origin);
-	else if (src.edit_number != "")
-		print(src.edit_number);
-	if (src.edit_number_origin_new != "")
-		print("<br>{cross " ## src.edit_number_origin_new ## "}");
+    if (src.edit_origin.revision != "" && src.edit.revision != "")
+    {
+       	if (src.edit_origin.revision == src.edit.revision)
+	    print(src.edit.revision);
+       	else
+	    print(src.edit_origin.revision ## " -> " ## src.edit.revision);
+    }
+    else if (src.edit_origin.revision != "")
+       	print(src.edit_origin.revision);
+    else if (src.edit.revision != "")
+       	print(src.edit.revision);
+    if (src.edit_origin_new.revision != "")
+       	print("<br>{cross " ## src.edit_origin_new.revision ## "}");
 
-	print("</td><td valign=top>");
-	auto href;
-	if (viz)
-	{
-		href = script_name ## "?file@pre+" ## quote_url(src.file_name);
-		href = href ## "+project@" ## quote_url(pn);
-		href = href ## "+change@" ## cn;
-		print("<a href=\"" ## href ## "\">");
-	}
-	print("<tt>" ## quote_html(src.file_name) ## "</tt>");
-	if (viz)
-		print("</a>");
-	if (src.deleted_by)
-		print("<br>Deleted by change " ## src.deleted_by ## ".");
-	if (src.about_to_be_created_by)
-		print("<br>About to be created by change " ##
-			src.about_to_be_created_by ## ".");
-	if (src.locked_by)
-		print("<br>Locked by change " ## src.locked_by ## ".");
-	if (src.about_to_be_copied_by)
-		print("<br>About to be copied by change " ##
-			src.about_to_be_copied_by ## ".");
-	if (src.move != "")
-	{
-		print("<br>Moved " ## (src.action == create ? "from" : "to"));
-		href = script_name ## "?file@file_menu+" ## quote_url(src.move);
-		href = href ## "+project@" ## quote_url(pn);
-		print("<a href=\"" ## href ## "\">");
-		print("<tt>" ## src.move ## "</tt></a>");
-	}
-	print("</td><td valign=top>");
-	href = script_name ## "?file@file_menu+" ## quote_url(src.file_name);
-	href = href ## "+project@" ## quote_url(pn);
-	href = href ## "+change@" ## cn;
-	print("<a href=\"" ## href ## "\">");
-	print("<i>fm</i></a>");
-	print("</td></tr>");
+    print("</td><td valign=top>");
+    auto href;
+    href = script_name ## "?file@file_menu+" ## quote_url(src.file_name);
+    href = href ## "+project@" ## quote_url(pn);
+    href = href ## "+change@" ## cn;
+    print("<a href=\"" ## href ## "\">");
+    print("<tt>" ## quote_html(src.file_name) ## "</tt>");
+    print("</a>");
+    if (src.deleted_by)
+	    print("<br>Deleted by change " ## src.deleted_by ## ".");
+    if (src.about_to_be_created_by)
+	    print("<br>About to be created by change " ##
+		src.about_to_be_created_by ## ".");
+    if (src.locked_by)
+	print("<br>Locked by change " ## src.locked_by ## ".");
+    if (src.about_to_be_copied_by)
+       	print("<br>About to be copied by change " ##
+	    src.about_to_be_copied_by ## ".");
+    if (src.move != "")
+    {
+       	print("<br>Moved " ## (src.action == create ? "from" : "to"));
+       	href = script_name ## "?file@file_menu+" ## quote_url(src.move);
+       	href = href ## "+project@" ## quote_url(pn);
+       	print("<a href=\"" ## href ## "\">");
+       	print("<tt>" ## src.move ## "</tt></a>");
+    }
+    print("</td></tr>");
 }
-print("</table></center>");
+print("</table>");
 print("Listed " ## count(keys(cs.src)) ## " files.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with one of");

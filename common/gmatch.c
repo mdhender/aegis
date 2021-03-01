@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1997-1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,227 +57,207 @@
  */
 
 int
-gmatch(formal, actual)
-	const char	*formal;
-	const char	*actual;
+gmatch(const char *formal, const char *actual)
 {
-	const char	*cp;
-	int		 result;
+    const char      *cp;
+    int		    result;
 
-	trace(("gmatch(formal = %8.8lX, actual = %8.8lX)\n{\n"/*}*/,
-		formal, actual));
-	while (*formal)
+    trace(("gmatch(formal = %8.8lX, actual = %8.8lX)\n{\n", (long)formal,
+	(long)actual));
+    while (*formal)
+    {
+	trace(("formal == \"%s\";\n", formal));
+	trace(("actual = \"%s\";\n", actual));
+	switch (*formal)
 	{
-		trace(("formal == \"%s\";\n", formal));
-		trace(("actual = \"%s\";\n", actual));
+	default:
+	    if (*actual++ != *formal++)
+	    {
+		result = 0;
+		goto ret;
+	    }
+	    break;
+
+	case '?':
+	    if (!*actual++)
+	    {
+		result = 0;
+		goto ret;
+	    }
+	    ++formal;
+	    break;
+
+	case '*':
+	    for (;;)
+	    {
+		++formal;
 		switch (*formal)
 		{
-		default:
-			if (*actual++ != *formal++)
-			{
-				result = 0;
-				goto ret;
-			}
-			break;
-
-		case '?':
-			if (!*actual++)
-			{
-				result = 0;
-				goto ret;
-			}
-			++formal;
-			break;
+		case 0:
+		    result = 1;
+		    goto ret;
 
 		case '*':
-			for (;;)
-			{
-				++formal;
-				switch (*formal)
-				{
-				case 0:
-					result = 1;
-					goto ret;
-				
-				case '*':
-					continue;
+		    continue;
 
-				case '?':
-					if (!*actual++)
-					{
-						result = 0;
-						goto ret;
-					}
-					continue;
+		case '?':
+		    if (!*actual++)
+		    {
+		       	result = 0;
+		       	goto ret;
+		    }
+		    continue;
 
-				default:
-					break;
-				}
-				break;
-			}
-			cp = actual + strlen(actual);
-			for (;;)
+		default:
+		    break;
+		}
+		break;
+	    }
+	    cp = actual + strlen(actual);
+	    for (;;)
+	    {
+		result = gmatch(formal, cp);
+		if (result)
+		{
+		    result = 1;
+		    break;
+		}
+		--cp;
+		if (cp < actual)
+		{
+		    result = 0;
+		    break;
+		}
+	    }
+	    goto ret;
+
+    case '['/*]*/:
+	    ++formal;
+	    if (*formal == '^')
+	    {
+		++formal;
+		for (;;)
+		{
+		    if (!*formal)
+		    {
+		       	no_close:
+		       	result = -1;
+		       	goto ret;
+		    }
+
+		    /*
+		     * note: this allows leading close
+		     * square bracket elegantly
+		     */
+		    if
+		    (
+			formal[1] == '-'
+		    &&
+			formal[2]
+		    &&
+			formal[2] != /*[*/']'
+		    &&
+			formal[3]
+		    )
+		    {
+			char            c1;
+			char            c2;
+
+			c1 = formal[0];
+			c2 = formal[2];
+			formal += 3;
+			if
+			(
+			    c1 <= c2
+			?
+			    (c1 <= *actual && *actual <= c2)
+			:
+			    (c2 <= *actual && *actual <= c1)
+			)
 			{
-				result = gmatch(formal, cp);
-				if (result)
-				{
-					result = 1;
-					break;
-				}
-				--cp;
-				if (cp < actual)
-				{
-					result = 0;
-					break;
-				}
+			    result = 0;
+			    goto ret;
 			}
+		    }
+		    else if (*actual == *formal++)
+		    {
+			result = 0;
 			goto ret;
-
-		case '['/*]*/:
-			++formal;
-			if (*formal == '^')
-			{
-				++formal;
-				for (;;)
-				{
-					if (!*formal)
-					{
-						no_close:
-						result = -1;
-						goto ret;
-					}
-
-					/*
-					 * note: this allows leading close
-					 * square bracket elegantly
-					 */
-					if
-					(
-						formal[1] == '-'
-					&&
-						formal[2]
-					&&
-						formal[2] != /*[*/']'
-					&&
-						formal[3]
-					)
-					{
-						char	c1;
-						char	c2;
-
-						c1 = formal[0];
-						c2 = formal[2];
-						formal += 3;
-						if
-						(
-							c1 <= c2
-						?
-							(
-								c1 <= *actual
-							&&
-								*actual <= c2
-							)
-						:
-							(
-								c2 <= *actual
-							&&
-								*actual <= c1
-							)
-						)
-						{
-							result = 0;
-							goto ret;
-						}
-					}
-					else
-					if (*actual == *formal++)
-					{
-						result = 0;
-						goto ret;
-					}
-					if (*formal == /*[*/']')
-						break;
-				}
-				++formal;
-			}
-			else
-			{
-				for (;;)
-				{
-					if (!*formal)
-						goto no_close;
-
-					/*
-					 * note: this allows leading close
-					 * square bracket elegantly
-					 */
-					trace(("formal == \"%s\";\n", formal));
-					trace(("actual = \"%s\";\n", actual));
-					if
-					(
-						formal[1] == '-'
-					&&
-						formal[2]
-					&&
-						formal[2] != /*[*/']'
-					&&
-						formal[3]
-					)
-					{
-						char	c1;
-						char	c2;
-
-						c1 = formal[0];
-						c2 = formal[2];
-						formal += 3;
-						if
-						(
-							c1 <= c2
-						?
-							(
-								c1 <= *actual
-							&&
-								*actual <= c2
-							)
-						:
-							(
-								c2 <= *actual
-							&&
-								*actual <= c1
-							)
-						)
-							break;
-					}
-					else
-					if (*actual == *formal++)
-						break;
-					if (*formal == /*[*/']')
-					{
-						result = 0;
-						goto ret;
-					}
-				}
-				for (;;)
-				{
-					if (!*formal)
-						goto no_close;
-					trace(("formal == \"%s\";\n", formal));
-					trace(("actual = \"%s\";\n", actual));
-					if (*formal++ == /*[*/']')
-						break;
-				}
-			}
-			++actual;
+		    }
+		    if (*formal == /*[*/']')
 			break;
 		}
-	}
-	result = (*actual == 0);
+		++formal;
+	    }
+	    else
+	    {
+		for (;;)
+		{
+		    if (!*formal)
+			goto no_close;
 
-	/*
-	 * here for all exits
-	 */
-	ret:
-	trace(("return %d;\n", result));
-	trace((/*{*/"}\n"));
-	return result;
+		    /*
+		     * note: this allows leading close
+		     * square bracket elegantly
+		     */
+		    trace(("formal == \"%s\";\n", formal));
+		    trace(("actual = \"%s\";\n", actual));
+		    if
+		    (
+			formal[1] == '-'
+		    &&
+			formal[2]
+		    &&
+			formal[2] != /*[*/']'
+		    &&
+			formal[3]
+		    )
+		    {
+			char            c1;
+			char            c2;
+
+			c1 = formal[0];
+			c2 = formal[2];
+			formal += 3;
+			if
+			(
+			    c1 <= c2
+			?
+			    (c1 <= *actual && *actual <= c2)
+			:
+			    (c2 <= *actual && *actual <= c1)
+			)
+			    break;
+		    }
+		    else if (*actual == *formal++)
+			break;
+		    if (*formal == /*[*/']')
+		    {
+			result = 0;
+			goto ret;
+		    }
+		}
+		for (;;)
+		{
+		    if (!*formal)
+		       	goto no_close;
+		    trace(("formal == \"%s\";\n", formal));
+		    trace(("actual = \"%s\";\n", actual));
+		    if (*formal++ == /*[*/']')
+		       	break;
+		}
+	    }
+	    ++actual;
+	    break;
+	}
+    }
+    result = (*actual == 0);
+
+    /*
+     * here for all exits
+     */
+    ret:
+    trace(("return %d;\n", result));
+    trace(("}\n"));
+    return result;
 }

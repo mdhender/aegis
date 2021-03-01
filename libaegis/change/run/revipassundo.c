@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <change/env_set.h>
 #include <error.h> /* for assert */
 #include <os.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <sub.h>
 #include <trace.h>
 
@@ -41,8 +41,8 @@ change_run_review_pass_undo_notify_command(cp)
 	/*
 	 * make sure there is one
 	 */
-	trace(("change_run_review_pass_undo_notify_command(cp = %8.8lX)\n{\n"
-		/*}*/, cp));
+	trace(("change_run_review_pass_undo_notify_command(cp = %08lX)\n{\n",
+		(long)cp));
 	assert(cp->reference_count >= 1);
 	notify = project_review_pass_undo_notify_command_get(cp->pp);
 	if (!notify)
@@ -80,5 +80,5 @@ change_run_review_pass_undo_notify_command(cp)
 	 * here for all exits
 	 */
 	done:
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -201,3 +201,41 @@ Most Aegis commands also have a
 .I \-List
 option,
 which usually lists interesting context sensitive information.
+.nh 3 "Minimum Integrations"
+.\" My thanks to Jerry Pendergraft for this section.
+.LP
+The \fBaegis --integrate-begin\fP command
+provides a \fB--minimum\fP option which may be
+used for various reasons.  The term \fBminimum\fP may be a bit counter
+intuitive.  One might think it means to the \fBminimum\fP amount of
+work, however it actually means use a \fBminimum\fP of files from the
+baseline in populating the \fIdelta\fP directory.  This normally leads
+to actually building everything in the project from sources and, as
+such, might be considered the most robust of builds.
+.LP
+Note that any change which removes a file, whether by \fIaerm\fP or
+\fIaemv\fP, results in an implicit \fBminimum\fP integration.  This is
+intended to ensure nothing in the project references the removed file.
+.LP
+A project may adopt a policy that a product release should be based on
+a minimum integration.  Such a policy may be a reflection of local
+confidence, or lack therof, in the projects DMT (Dependency
+Maintenance Tool) or build system.  Or it may be based on a validation
+process wishing to make a simple statement on how the released package
+was produced.
+.LP
+Another, more transient, reason a to require a minimum integration
+might be when upgrading a third party library, compiler or maybe even
+OS level.  Any of these events would signal the need for a minimum
+integration to ensure everything is rebuilt using the new resources.
+.LP
+The cost of a \fBminimum\fP integration varies according to type and
+size of the project.  For very large projects, especially those
+building large numbers of binaries, the cost can be large.  However
+large projects also require significant time to fully populate the
+delta directory.  A minimum integration only copies those files
+under aegis control, skipping all ``produced'' files.  In the case
+where a file upon which everything depends is changed, everything will
+be built anyway so the copy of the already built files is a waste of
+time.  This means that sometimes a minimum can be as cheap as a normal
+integration.

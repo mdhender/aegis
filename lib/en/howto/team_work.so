@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -214,7 +214,8 @@ rather than double handle (or worse) every change set.
 .nh 3 "Telecommuting"
 .LP
 One of the most desired cases is that of telecommuting.
-How do remote worker, who may never make it into the office, develop projects using Aegis?
+How do remote worker, who may never make it into the office, develop
+projects using Aegis?
 .LP
 There are many way to do this, but the simplest is to have a central cite
 ("the office") with satellite developers.
@@ -240,7 +241,7 @@ It is unlikely (though possible) that you would have a web server on
 the developer's machine - usually you aren't connected, to the office
 pulling changes sets back is probably not viable.
 .LP
-The simplest mechanism is for the satellite developer to 
+The simplest mechanism is for the satellite developer to
 configure their Aegis project so that the trunk tracks the office version.
 Once a week (or more often if you get notified something significant has
 happened) pull down the latest version of "the office" as a change set

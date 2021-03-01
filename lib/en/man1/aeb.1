@@ -52,7 +52,7 @@ build a project.
 The project configuration file is consulted for the
 appropriate build command,
 and that command is executed
-(see 
+(see
 the \fIbuild_\% command\fP
 and \fIintegration_\%build_\%command\fP
 fields in
@@ -129,6 +129,12 @@ when the \fIcreate_symlinks_to_baseline\fP functions are being used.
 This is useful if you want to simulate something like \fIaeib -minimum\fP
 in the development directory.  This option is not meaningful if symbolic
 links are not being used.
+If the change is in the
+.I "being integrated"
+state, and the developer specified \fB\-MINImum\fP when issuing the
+.I \*(n)
+.I -Integrate_Begin
+command, then this option is set by default.
 .so o_nolog.so
 .so o_project.so
 .TP 8n

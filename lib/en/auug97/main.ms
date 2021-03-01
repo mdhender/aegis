@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1997, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ Recursive Make Considered Harmful
 .\" For many years now,
 .\" we have been developing software on UNIX using
 .\" .I make.
-.\" As projects grow to a size which requires 
+.\" As projects grow to a size which requires
 .\" subdivision into separate modules,
 .\" we usually separate them into separate directories,
 .\" and we give each directory its own \f(CWMakefile\fP.

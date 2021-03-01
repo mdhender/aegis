@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,11 @@
  * MANIFEST: interface definition for aegis/diff.c
  */
 
-#ifndef DIFF_H
-#define DIFF_H
+#ifndef AEGIS_AED_H
+#define AEGIS_AED_H
 
 #include <main.h>
 
 void difference _((void));
 
-#endif /* DIFF_H */
-
+#endif /* AEGIS_AED_H */

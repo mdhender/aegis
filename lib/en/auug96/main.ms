@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1997 Peter Miller;
+.\"	Copyright (C) 1996, 1997, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -152,7 +152,7 @@ and will not be described in depth here.
 .LP
 The design of the Unix \fInamed\fP(8),
 the program which serves the DNS protocol,
-is intriguing, mostly because of the 
+is intriguing, mostly because of the
 almost-but-not-quite redundancy in most of the configurations files.
 This revolves around the fact that DNS has both
 .I forward
@@ -232,7 +232,8 @@ This is not done with
 \fIawk\fP(1)
 for a few reasons
 .IP \(bu
-The SRRF input format used by \fInamed\fP(8) makes for very hard to read awk scripts if
+The SRRF input format used by \fInamed\fP(8) makes for very hard to read
+awk scripts if
 you are determined to use the full input language.
 .IP \(bu
 We use include files to describe our various buildings and other
@@ -311,7 +312,8 @@ though it does not in the Web case, below.
 The integrator can also serve as an editor, or a second reviewer if necessary.
 It answers the perennial ``who will watch the watchers'' question.
 .LP
-Aegis' notification facility, used at most transition to send email or news articles,
+Aegis' notification facility, used at most transition to send email or
+news articles,
 is also used at the end of integration to notify DNS and NIS+ to re-read the
 relevant files.
 .nh 2 "Observable Results"
@@ -323,7 +325,8 @@ At present, we are averaging 3.5 DNS changes per week,
 a figure not previously available.
 .LP
 The other thing which has changed is that there are no unexplained changes.
-You no longer hear they cry ``Who the smeg did that?'' echoing down the corridor.
+You no longer hear they cry ``Who the smeg did that?'' echoing down
+the corridor.
 There is never the silent anonymous untrackable
 duel between two administrators undoing and redoing
 each others changes.
@@ -397,7 +400,8 @@ and then generates a list of output files from that.
 In this way, there is no need to add a new file to a list in a \fIMakefile\fP
 of some sort.
 .nh 2 "File Templates"
-To add a new page to the Web, a user initiates a Web change and then creates a new file via Aegis.
+To add a new page to the Web, a user initiates a Web change and then
+creates a new file via Aegis.
 The new file will be created according to a pre-configured file template.
 This will give them the common headers and footers automatically,
 all that is required is to fill in the text in the middle.
@@ -432,12 +436,14 @@ In this way, it is only necessary to copy the pages you actually need to edit.
 All other pages are obtained from the baseline.
 This often represents a large saving in working disk storage.
 .LP
-We have a set of layout guidelines which are available internally for our Web developers to read.
+We have a set of layout guidelines which are available internally for
+our Web developers to read.
 Reviewers (theoretically) review against these guidelines,
 and developers are encouraged to have a quick look at the guidelines
 before completing the development of their changes.
 .nh 2 "Integration"
-The integration stage is not particularly different from the integration stage for DNS.
+The integration stage is not particularly different from the integration
+stage for DNS.
 However, some of the more time consuming tasks,
 which are not of great interest to developers are done at this time:
 mostly generating or updating the various indexes for our Web
@@ -450,7 +456,8 @@ and to merge file contents.
 .LP
 The chances of having Web pages in common are fairly low,
 however it happens fairly regularly.
-The use of separate development directories means that this can be ignore for as long
+The use of separate development directories means that this can be ignore
+for as long
 as the author wants to.
 When it is time to complete development of a Web change,
 the versions of the files are checked by Aegis.  If any are out-of-date,
@@ -513,7 +520,7 @@ Aegis User Guide
 .ft R
 \f(CWhttp:\%//www.canb.auug.org.au/\%~millerp/\%aegis.html\fP,
 .IP [3]
-Mockapetris, P., 
+Mockapetris, P.,
 .ft I
 ``Domain Names - Concepts and Facilities'',
 .ft P

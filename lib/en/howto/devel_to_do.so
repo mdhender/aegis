@@ -55,7 +55,8 @@ the `ci'.  We check it out again using `co', this time with the
 `-ko' option to avoid keyword expansion.
 .\"
 .\"	history_create_command =
-.\"		"ci -f -d -M -m$c -t/dev/null '$i' '$h,v'; rcs -U '$h,v'; co -ko -u '$i' '$h,v'";
+.\"		"ci -f -d -M -m$c -t/dev/null '$i' '$h,v'; rcs -U '$h,v';\
+.\"             co -ko -u '$i' '$h,v'";
 .\"	history_put_command =
 .\"		"ci -f -d -M -m$c '$i' '$h,v'; co -ko -u '$i' '$h,v'";
 .\"	history_get_command =
@@ -79,7 +80,8 @@ Submitted: PMiller, 28-jun-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 in the branching chapter, have a section about using sub-branches
-to turn build_command off (or to ignore exit status), and inregrate lots of teeny tiny bug fixes,
+to turn build_command off (or to ignore exit status), and inregrate lots
+of teeny tiny bug fixes,
 and then turn it on again.
 In the front, reference the branching chapter in ``how to extend the
 Aegis process''  Can mention extra review steps there, too.
@@ -178,12 +180,6 @@ will retrieve the historical version.
 Submitted: Anoop Kulkarni <anoop@sasi.com>, 22 Dec 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-When you download a \f[CW].ae\fP file via aegis.cgi, it uses a stupid
-name as the save file.  Is there a HTML header we can set to suggest a
-much better name?
-Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
-.\" ------------------------------------------------------------------------
-.IP \(bu 2n
 Add a user_change report (just like ``ael user_changes'')
 which takes a user name, so you can get a list of changes by user.
 Make aegis.cgi do this, too.
@@ -256,7 +252,7 @@ might not be enough to stop all processes (process groups?).
 Submitted: Ralf Fassel <ralf@akutech.de>, 24-Jan-2001
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Problem with aepa that doesn't specify the default values for all the test 
+Problem with aepa that doesn't specify the default values for all the test
 features in aeca (there are three types in aeca and only one in aepa).
 Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
 .\" ------------------------------------------------------------------------
@@ -379,12 +375,6 @@ list locks - need to spot the case where *all* of a set are taken (all 64k)
 and report sensably (not 64K lines)
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-integrate_q.sh needs work
-1. needs to diff
-2. needs to see if there is a current integration
-3. subjects in emails?
-.\" ------------------------------------------------------------------------
-.IP \(bu 2n
 aemv does not correctly check the -to- filename.
 (specific example = file name length)
 .\" ------------------------------------------------------------------------
@@ -465,7 +455,7 @@ tells you about the file
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 How about "include" support for the config file?
-That way one could also cover architecture specific things by 
+That way one could also cover architecture specific things by
 ``include ${libdir}/${project}.defs'' in the config file.
 Submitted: Jerry Pendergraft <jerry.pendergraft@endocardial.com>, 7 Sep 2001
 .\" ------------------------------------------------------------------------
@@ -478,6 +468,11 @@ Submitted: 2001
 Have the ``aeclean -list'' option say what aeclean would do, rather than
 list the change source files.
 Submitted: 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Have aed (aem) *remember* the previous state when it finds a problem
+(much like aet does, now).
+Submitted: Ralf Fassel <ralf@akutech.de> 3-Mar-2002
 .\" ========================================================================
 .nh 4 "More O(1) Scalability"
 .IP \(bu 2n
@@ -557,15 +552,6 @@ The BUILDING file needs to mention that you should
 install zlib with --prefix=/usr
 because many systems think /usr/local/lib "insecure directory".
 Submitted: Fabien Campagne <campagne@Inka.MSSM.EDU>, 26 Mar 1999
-.\" ------------------------------------------------------------------------
-.IP \(bu 2n
-I suggest to move aegis.cgi in a different package (aegis-www ?) that
-requires apache.
-	Requires: apache
-Also need to note that zlib is required (or does it work this out itself?)
-	Requires: zlib
-(I don't see a way to say BuildRequires: zlib-devel)
-Submitted: Walter Franzini <walter@sys-net.it>, 18 Mar 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 add piece to BUILDING file saying to get Apache first.

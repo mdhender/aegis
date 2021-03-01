@@ -28,18 +28,16 @@
 #ifdef HAVE_SETRESUID
 
 int
-seteuid(x)
-	int	x;
+seteuid(int x)
 {
-	return setresuid(-1, x, -1);
+    return setresuid(-1, x, -1);
 }
 
 
 int
-setegid(x)
-	int	x;
+setegid(int x)
 {
-	return setresgid(-1, x, -1);
+    return setresgid(-1, x, -1);
 }
 
 
@@ -48,18 +46,16 @@ setegid(x)
 
 
 int
-seteuid(x)
-	int	x;
+seteuid(int x)
 {
-	return setreuid(-1, x);
+    return setreuid(-1, x);
 }
 
 
 int
-setegid(x)
-	int	x;
+setegid(int x)
 {
-	return setregid(-1, x);
+    return setregid(-1, x);
 }
 
 

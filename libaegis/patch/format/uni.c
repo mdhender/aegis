@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -112,7 +112,7 @@ uni_diff_header(context)
 	}
 
 	/*
-	 * Look for the optional before line. 
+	 * Look for the optional before line.
 	 */
 	line = patch_context_getline(context, idx);
 	if (!line)
@@ -126,7 +126,7 @@ uni_diff_header(context)
 	}
 
 	/*
-	 * Look for the optional after line. 
+	 * Look for the optional after line.
 	 */
 	line = patch_context_getline(context, idx);
 	if (!line)
@@ -172,14 +172,14 @@ getnum(cp, np)
 	int		*np;
 {
 	int		n;
-	
+
 	switch (*cp)
 	{
 	default:
 		return 0;
 
 	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9': 
+	case '5': case '6': case '7': case '8': case '9':
 		break;
 	}
 	n = 0;
@@ -192,7 +192,7 @@ getnum(cp, np)
 			break;
 
 		case '0': case '1': case '2': case '3': case '4':
-		case '5': case '6': case '7': case '8': case '9': 
+		case '5': case '6': case '7': case '8': case '9':
 			continue;
 		}
 		break;

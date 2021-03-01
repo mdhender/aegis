@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,23 +23,23 @@
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
 
-columns({width = 1000;});
+columns({ width = 1000; });
 print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("File History Report");
-print("</title></head><body><h1><center>");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 print("Project ``" ## quote_html(project_name()) ## "'',");
 if (change_number_set())
-	print("Change " ## change_number() ## ",");
+    print("Change " ## change_number() ## ",");
 if (count(arg) == 1)
-	print("File ``" ## quote_html(arg[0]) ## "'',");
+    print("File ``" ## quote_html(arg[0]) ## "'',");
 print("<br>File History");
-print("</center></h1>");
+print("</h1>");
 
-print("<dl>");
+print("<table>");
 
 auto ps;
 ps = project[project_name()].state;
@@ -51,17 +51,17 @@ ps = project[project_name()].state;
 auto file, cs;
 if (count(arg) == 0)
 {
-	if (change_number_set())
-	{
-		cs = ps.branch.change[change_number()];
-		for (file in cs.src)
-			arg ##= file.file_name;
-	}
-	else
-	{
-		for (file in ps.src)
-			arg ##= file.file_name;
-	}
+    if (change_number_set())
+    {
+	cs = ps.branch.change[change_number()];
+	for (file in cs.src)
+	    arg ##= file.file_name;
+    }
+    else
+    {
+	for (file in ps.src)
+	    arg ##= file.file_name;
+    }
 }
 
 /*
@@ -69,7 +69,7 @@ if (count(arg) == 0)
  */
 auto hist;
 for (file in arg)
-	hist[file] = [];
+    hist[file] = [];
 
 /*
  * scan all completed changes
@@ -78,26 +78,26 @@ for (file in arg)
 auto ph, cf;
 for (ph in ps.branch.history)
 {
-	cs = ps.branch.change[ph.change_number];
-	for (cf in cs.src)
+    cs = ps.branch.change[ph.change_number];
+    for (cf in cs.src)
+    {
+	if (cf.file_name in arg)
 	{
-		if (cf.file_name in arg)
+	    if (cf.usage == build && cf.action == modify)
+		continue;
+	    hist[cf.file_name] ##=
 		{
-			if (cf.usage == build && cf.action == modify)
-				continue;
-			hist[cf.file_name] ##=
-				{
-					usage = cf.usage;
-					action = cf.action;
-					edit = cf.edit_number;
-					delta = ph.delta_number;
-					when = cs.history[count(cs.history) - 1].when;
-					change = ph.change_number;
-					description = cs.brief_description;
-					move = cf.move;
-				};
-		}
+		    usage = cf.usage;
+		    action = cf.action;
+		    edit = cf.edit.revision;
+		    delta = ph.delta_number;
+		    when = cs.history[count(cs.history) - 1].when;
+		    change = ph.change_number;
+		    description = cs.brief_description;
+		    move = cf.move;
+		};
 	}
+    }
 }
 
 /*
@@ -106,70 +106,69 @@ for (ph in ps.branch.history)
 auto fh, actions, usages;
 for (file in sort(keys(hist)))
 {
-	auto href;
-	href = script_name ## "?file@file_menu+" ## quote_url(file);
+    auto href;
+    href = script_name ## "?file@file_menu+" ## quote_url(file);
+    href ##= "+project@" ## quote_url(project_name());
+
+    print("<tr><td colspan=8><br><p>");
+    print("<a href=\"" ## href ## "\">");
+    print("<tt>" ## quote_html(file) ## "</tt></a>");
+    print("</td></tr>");
+
+    print("<tr><th></th><th>Type</th><th>Action</th><th>Delta</th>");
+    print("<th>When</th>");
+    print("<th>Change</th><th>Edit</th><th>Description</th></tr>");
+
+    actions = "BS";
+    usages = "BS";
+    for (fh in hist[file])
+    {
+	print("<tr><td>&nbsp;&nbsp;</td><td valign=top>");
+	if (fh.usage != usages)
+	    print(fh.usage);
+	print("</td><td valign=top>");
+	if (fh.action != actions)
+	    print(fh.action);
+	print("</td><td valign=top align=right>");
+	print(fh.delta);
+	print("</td><td valign=top>");
+	print(fh.when);
+	print("</td><td valign=top align=right>");
+	href = script_name ## "?file@chan_menu";
 	href ##= "+project@" ## quote_url(project_name());
-
-	print("<dt>");
+	href ##= "+change@" ## fh.change;
 	print("<a href=\"" ## href ## "\">");
-	print("<tt>" ## quote_html(file) ## "</tt></a>");
-	print("<dd>");
-
-	print("<table>");
-	print("<tr><th>Type</th><th>Action</th><th>Delta</th><th>When</th>");
-	print("<th>Change</th><th>Edit</th><th>Description</th></tr>");
-
-	actions = "BS";
-	usages = "BS";
-	for (fh in hist[file])
+	print(fh.change ## "</a>");
+	print("</td><td valign=top align=right>");
+	print(fh.edit);
+	print("</td><td valign=top>");
+	auto part;
+	for (part in wrap_html(quote_html(fh.description), 80))
+	    print(part);
+	if (fh.move != "")
 	{
-		print("<tr><td valign=top>");
-		if (fh.usage != usages)
-			print(fh.usage);
-		print("</td><td valign=top>");
-		if (fh.action != actions)
-			print(fh.action);
-		print("</td><td valign=top align=right>");
-		print(fh.delta);
-		print("</td><td valign=top>");
-		print(fh.when);
-		print("</td><td valign=top align=right>");
-		href = script_name ## "?file@chan_menu";
-		href ##= "+project@" ## quote_url(project_name());
-		href ##= "+change@" ## fh.change;
-		print("<a href=\"" ## href ## "\">");
-		print(fh.change ## "</a>");
-		print("</td><td valign=top align=right>");
-		print(fh.edit);
-		print("</td><td valign=top>");
-		auto part;
-		for (part in wrap_html(quote_html(fh.description), 80))
-			print(part);
-		if (fh.move != "")
-		{
-			href = script_name ## "?file@file_menu+" ## quote_url(fh.move);
-			href ##= "+project@" ## quote_url(project_name());
+	    href = script_name ## "?file@file_menu+" ## quote_url(fh.move);
+	    href ##= "+project@" ## quote_url(project_name());
 
-			print("<br>Moved");
-			if (fh.action == create)
-				print("from");
-			else
-				print("to");
-			print("<a href=\"" ## href ## "\">");
-			print("<tt>" ## quote_html(fh.move) ## "</tt></a>");
-		}
-		print("</td></tr>");
-		actions = fh.action;
-		usages = fh.usage;
+	    print("<br>Moved");
+	    if (fh.action == create)
+		print("from");
+	    else
+		print("to");
+	    print("<a href=\"" ## href ## "\">");
+	    print("<tt>" ## quote_html(fh.move) ## "</tt></a>");
 	}
-	print("</table>");
+	print("</td></tr>");
+	actions = fh.action;
+	usages = fh.usage;
+    }
 }
-print("</dl>");
+print("</table>");
 print("Listed " ## count(keys(hist)) ## " files.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with");
 print("<blockquote><tt>aer file_history [ <i>filename</i> ] -p " ##
-	quote_html(project_name()) ## "</tt></blockquote>");
+    quote_html(project_name()) ## "</tt></blockquote>");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

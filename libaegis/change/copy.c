@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,10 @@ change_ty *
 change_copy(cp)
 	change_ty	*cp;
 {
-	trace(("change_copy(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_copy(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	assert(cp->reference_count >= 1);
 	cp->reference_count++;
-	trace(("return %8.8lX;\n", cp));
+	trace(("return %08lX;\n", (long)cp));
 	trace((/*{*/"}\n"));
 	return cp;
 }

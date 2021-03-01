@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,11 +60,11 @@
 static int trace_pretest_result;
 #endif
 
-int trace_pretest _((const char *file, int *result));
-void trace_where _((const char *file, int line));
-void trace_printf _((const char *, ...));
-void trace_enable _((const char *));
-void trace_indent_reset _((void));
+int trace_pretest(const char *file, int *result);
+void trace_where(const char *file, int line);
+void trace_printf(const char *, ...) ATTR_PRINTF(1, 2);
+void trace_enable(const char *);
+void trace_indent_reset(void);
 
 
 #if defined(__STDC__) || defined(__stdc__)
@@ -73,16 +73,16 @@ void trace_indent_reset _((void));
 #define trace_stringize(x) "x"
 #endif
 
-void trace_char_real _((const char *, const char *));
-void trace_char_unsigned_real _((const char *, const unsigned char *));
-void trace_int_real _((const char *, const int *));
-void trace_int_unsigned_real _((const char *, const unsigned *));
-void trace_long_real _((const char *, const long *));
-void trace_long_unsigned_real _((const char *, const unsigned long *));
-void trace_pointer_real _((const char *, const void *));
-void trace_short_real _((const char *, const short *));
-void trace_short_unsigned_real _((const char *, const unsigned short *));
-void trace_string_real _((const char *, const char *));
+void trace_char_real(const char *, const char *);
+void trace_char_unsigned_real(const char *, const unsigned char *);
+void trace_int_real(const char *, const int *);
+void trace_int_unsigned_real(const char *, const unsigned *);
+void trace_long_real(const char *, const long *);
+void trace_long_unsigned_real(const char *, const unsigned long *);
+void trace_pointer_real(const char *, const void *);
+void trace_short_real(const char *, const short *);
+void trace_short_unsigned_real(const char *, const unsigned short *);
+void trace_string_real(const char *, const char *);
 
 #ifdef DEBUG
 

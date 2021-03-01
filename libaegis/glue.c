@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993-1995, 1997-1999, 2001 Peter Miller;
+ *	Copyright (C) 1993-1995, 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/errno.h>
-#include <signal.h>
+#include <ac/signal.h>
 
 #include <sys/types.h>
 #include <ac/fcntl.h>
@@ -183,7 +183,7 @@ put_int(fp, n)
 	unsigned char	*ptr;
 
 	trace(("put_int(%d)\n{\n"/*}*/, n));
-	ptr = (unsigned char *)&n; 
+	ptr = (unsigned char *)&n;
 	for (j = 0; j < sizeof(int); ++j)
 		fputc(ptr[j], fp);
 	if (ferror(fp))
@@ -213,7 +213,11 @@ get_int(fp)
 		{
 			if (ferror(fp))
 				nfatal("reading pipe");
-			fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+			fatal_raw
+			(
+			    "reading pipe: proxy protocol error (%d)",
+			    getpid()
+			);
 		}
 		ptr[j] = c;
 	}
@@ -234,7 +238,7 @@ put_long(fp, n)
 	unsigned char	*ptr;
 
 	trace(("put_long(%ld)\n{\n"/*}*/, n));
-	ptr = (unsigned char *)&n; 
+	ptr = (unsigned char *)&n;
 	for (j = 0; j < sizeof(long); ++j)
 		fputc(ptr[j], fp);
 	if (ferror(fp))
@@ -264,7 +268,11 @@ get_long(fp)
 		{
 			if (ferror(fp))
 				nfatal("reading pipe");
-			fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+			fatal_raw
+			(
+			    "reading pipe: proxy protocol error (%d)",
+			    getpid()
+			);
 		}
 		ptr[j] = c;
 	}
@@ -282,7 +290,7 @@ put_binary(fp, ptr, len)
 	const void	*ptr;
 	size_t		len;
 {
-	trace(("put_binary(%ld)\n{\n"/*}*/, len));
+	trace(("put_binary(%ld)\n{\n"/*}*/, (long)len));
 	fwrite(ptr, 1, len, fp);
 	if (ferror(fp))
 		nfatal("writing pipe");
@@ -300,7 +308,7 @@ get_binary(fp, ptr, len)
 {
 	long		n;
 
-	trace(("get_binary(%ld)\n{\n"/*}*/, len));
+	trace(("get_binary(%ld)\n{\n"/*}*/, (long)len));
 	n = fread(ptr, 1, len, fp);
 	if (n != len)
 	{
@@ -360,7 +368,11 @@ get_string(fp)
 		{
 			if (ferror(fp))
 				nfatal("reading pipe");
-			fatal_raw("reading pipe: proxy protocol error (%d)", getpid());
+			fatal_raw
+			(
+			    "reading pipe: proxy protocol error (%d)",
+			    getpid()
+			);
 		}
 		if (pos >= result_max)
 		{
@@ -803,7 +815,8 @@ proxy_close()
 			p = proxy_table[j];
 			if (!p)
 				break;
-			trace(("p->pid %d; uid %d; gid %d\n", p->pid, p->uid, p->gid));
+			trace(("p->pid %d; uid %d; gid %d\n",
+				p->pid, p->uid, p->gid));
 			proxy_table[j] = p->next;
 			fclose(p->command);
 			fclose(p->reply);
@@ -1589,7 +1602,7 @@ glue_fclose(fp)
 	 */
 	mem_free(gfp->path);
 	mem_free((char *)gfp);
-	
+
 	/*
 	 * set errno and get out of here
 	 */
@@ -1951,7 +1964,7 @@ glue_fwrite(buf, len1, len2, fp)
 		{
 			long	nbytes;
 			long	nbytes2;
-	
+
 			fputc(command_write, pp->command);
 			put_int(pp->command, gfp->fd);
 			nbytes = gfp->buffer_pos - gfp->buffer;
@@ -1974,7 +1987,7 @@ glue_fwrite(buf, len1, len2, fp)
 			gfp->buffer_pos = gfp->buffer;
 			gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
 		}
-	
+
 		/*
 		 * stash the character
 		 */

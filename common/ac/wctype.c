@@ -32,16 +32,15 @@
 #endif
 
 int
-iswprint(c)
-	wint_t		c;
+iswprint(wint_t c)
 {
-	/*
-	 * Assume characters over 256 are printable.  Assume characters
-	 * under 256 are either ASCII or Latin-1.  These are dumb
-	 * assumptions, but real i18n support will provide a real
-	 * iswprint function.
-	 */
-	return (c >= 256 || (c >= 0 && isprint((unsigned char)c)));
+    /*
+     * Assume characters over 256 are printable.  Assume characters
+     * under 256 are either ASCII or Latin-1.  These are dumb
+     * assumptions, but real i18n support will provide a real
+     * iswprint function.
+     */
+    return (c >= 256 || (c >= 0 && isprint((unsigned char)c)));
 }
 
 
@@ -50,16 +49,15 @@ iswprint(c)
 #endif
 
 int
-iswspace(c)
-	wint_t		c;
+iswspace(wint_t c)
 {
-	/*
-	 * Assume characters over 256 are letters.  Assume characters
-	 * under 256 are either ASCII or Latin-1.  These are dumb
-	 * assumptions, but real i18n support will provide a real
-	 * iswspace function.
-	 */
-	return (c >= 0 && c < 256 && isspace((unsigned char)c));
+    /*
+     * Assume characters over 256 are letters.  Assume characters
+     * under 256 are either ASCII or Latin-1.  These are dumb
+     * assumptions, but real i18n support will provide a real
+     * iswspace function.
+     */
+    return (c >= 0 && c < 256 && isspace((unsigned char)c));
 }
 
 
@@ -68,16 +66,15 @@ iswspace(c)
 #endif
 
 int
-iswpunct(c)
-	wint_t		c;
+iswpunct(wint_t c)
 {
-	/*
-	 * Assume characters over 256 are letters.  Assume characters
-	 * under 256 are either ASCII or Latin-1.  These are dumb
-	 * assumptions, but real i18n support will provide a real
-	 * iswpunct function.
-	 */
-	return (c >= 0 && c < 256 && ispunct((unsigned char)c));
+    /*
+     * Assume characters over 256 are letters.  Assume characters
+     * under 256 are either ASCII or Latin-1.  These are dumb
+     * assumptions, but real i18n support will provide a real
+     * iswpunct function.
+     */
+    return (c >= 0 && c < 256 && ispunct((unsigned char)c));
 }
 
 
@@ -86,10 +83,9 @@ iswpunct(c)
 #endif
 
 int
-iswupper(c)
-	wint_t		c;
+iswupper(wint_t c)
 {
-	return (c >= 0 && c < 256 && isupper((unsigned char)c));
+    return (c >= 0 && c < 256 && isupper((unsigned char)c));
 }
 
 
@@ -98,10 +94,9 @@ iswupper(c)
 #endif
 
 int
-iswlower(c)
-	wint_t		c;
+iswlower(wint_t c)
 {
-	return (c >= 0 && c < 256 && islower((unsigned char)c));
+    return (c >= 0 && c < 256 && islower((unsigned char)c));
 }
 
 
@@ -110,10 +105,9 @@ iswlower(c)
 #endif
 
 int
-iswdigit(c)
-	wint_t		c;
+iswdigit(wint_t c)
 {
-	return (c >= 0 && c < 256 && isdigit((unsigned char)c));
+    return (c >= 0 && c < 256 && isdigit((unsigned char)c));
 }
 
 
@@ -122,10 +116,9 @@ iswdigit(c)
 #endif
 
 int
-iswalnum(c)
-	wint_t		c;
+iswalnum(wint_t c)
 {
-	return (c >= 0 && c < 256 && isalnum((unsigned char)c));
+    return (c >= 0 && c < 256 && isalnum((unsigned char)c));
 }
 
 
@@ -134,12 +127,11 @@ iswalnum(c)
 #endif
 
 wint_t
-towupper(c)
-	wint_t		c;
+towupper(wint_t c)
 {
-	if (c >= 0 && c < 256 && islower((unsigned char)c))
-		return toupper((unsigned char)c);
-	return c;
+    if (c >= 0 && c < 256 && islower((unsigned char)c))
+       	return toupper((unsigned char)c);
+    return c;
 }
 
 
@@ -148,12 +140,11 @@ towupper(c)
 #endif
 
 wint_t
-towlower(c)
-	wint_t		c;
+towlower(wint_t c)
 {
-	if (c >= 0 && c < 256 && isupper((unsigned char)c))
-		return tolower((unsigned char)c);
-	return c;
+    if (c >= 0 && c < 256 && isupper((unsigned char)c))
+       	return tolower((unsigned char)c);
+    return c;
 }
 
 #endif /* !HAVE_ISWPRINT */

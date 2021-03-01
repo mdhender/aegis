@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,60 +26,33 @@
 #include <str.h>
 
 
-/*
- * NAME
- *	str_cat_three - join three strings
- *
- * SYNOPSIS
- *	string_ty *str_cat_three(string_ty *, string_ty *, string_ty *);
- *
- * DESCRIPTION
- *	The str_cat_three function is used to concatenate three strings to form
- *	a new string.
- *
- * RETURNS
- *	string_ty* - a pointer to a string in dynamic memory.  Use str_free when
- *	finished with.
- *
- * CAVEAT
- *	The contents of the structure pointed to MUST NOT be altered.
- */
-
 string_ty *
-str_cat_three(s1, s2, s3)
-	string_ty	*s1;
-	string_ty	*s2;
-	string_ty	*s3;
+str_cat_three(string_ty *s1, string_ty *s2, string_ty *s3)
 {
-	static char	*tmp;
-	static size_t	tmplen;
-	string_ty	*s;
-	size_t		length;
+    static char	*tmp;
+    static size_t	tmplen;
+    string_ty	*s;
+    size_t		length;
 
-	length = s1->str_length + s2->str_length + s3->str_length;
-	if (!tmp)
+    length = s1->str_length + s2->str_length + s3->str_length;
+    if (!tmp)
+    {
+	tmplen = length;
+	if (tmplen < 16)
+    	    tmplen = 16;
+	tmp = mem_alloc(tmplen);
+    }
+    else
+    {
+	if (tmplen < length)
 	{
-		tmplen = length;
-		if (tmplen < 16)
-			tmplen = 16;
-		tmp = mem_alloc(tmplen);
+    	    tmplen = length;
+    	    tmp = mem_change_size(tmp, tmplen);
 	}
-	else
-	{
-		if (tmplen < length)
-		{
-			tmplen = length;
-			tmp = mem_change_size(tmp, tmplen);
-		}
-	}
-	memcpy(tmp, s1->str_text, s1->str_length);
-	memcpy(tmp + s1->str_length, s2->str_text, s2->str_length);
-	memcpy
-	(
-		tmp + s1->str_length + s2->str_length,
-		s3->str_text,
-		s3->str_length
-	);
-	s = str_n_from_c(tmp, length);
-	return s;
+    }
+    memcpy(tmp, s1->str_text, s1->str_length);
+    memcpy(tmp + s1->str_length, s2->str_text, s2->str_length);
+    memcpy(tmp + s1->str_length + s2->str_length, s3->str_text, s3->str_length);
+    s = str_n_from_c(tmp, length);
+    return s;
 }

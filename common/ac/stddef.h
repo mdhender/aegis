@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996, 1998 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,14 +31,6 @@
 
 #ifndef offsetof
 #define offsetof(a, b)	((size_t)((char *)&((a *)0)->b - (char *)0))
-#endif
-
-#ifndef HAVE_WINT_T
-#define HAVE_WINT_T
-#ifndef _WINT_T
-#define _WINT_T
-typedef wchar_t wint_t;
-#endif
 #endif
 
 #endif /* COMMON_AC_STDDEF_H */

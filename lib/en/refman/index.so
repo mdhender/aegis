@@ -92,6 +92,13 @@ T}	T{
 .ad l
 administrator to a project
 T}
+aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aeannotate - annotated source file listing
+T}
 aecattr(5)	\*[Page*Of*aecattr(5)]	T{
 .ad r
 
@@ -112,6 +119,13 @@ aegis - GUI interface for
 T}	T{
 .ad l
 aeca, using TCL/TK
+T}
+aecomplete(1)	\*[Page*Of*aecomplete(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aecomplete - command completion
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
@@ -175,6 +189,13 @@ aegis - GUI interface for
 T}	T{
 .ad l
 Aegis, using TCL/TK
+T}
+aegis.cgi(1)	\*[Page*Of*aegis.cgi(1)]	T{
+.ad r
+aegis.cgi -
+T}	T{
+.ad l
+Aegis web interface script
 T}
 aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 .ad r
@@ -267,6 +288,13 @@ T}	T{
 .ad l
 aesub - substitute and echo strings
 T}
+aetar(1)	\*[Page*Of*aetar(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aetar - remotely distribute a change via tar
+T}
 aetest(5)	\*[Page*Of*aetest(5)]	T{
 .ad r
 
@@ -329,6 +357,13 @@ aegis -
 T}	T{
 .ad l
 annotated directory listinbg
+T}
+aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
+.ad r
+aeannotate -
+T}	T{
+.ad l
+annotated source file listing
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
@@ -518,6 +553,13 @@ aegis -
 T}	T{
 .ad l
 calculate file fingerprint
+T}
+aegis.cgi(1)	\*[Page*Of*aegis.cgi(1)]	T{
+.ad r
+aegis.
+T}	T{
+.ad l
+cgi - Aegis web interface script
 T}
 aedist(1)	\*[Page*Of*aedist(1)]	T{
 .ad r
@@ -785,6 +827,13 @@ T}	T{
 .ad l
 change sets, using TCL/TK
 T}
+aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
+.ad r
+aegis - integrate
+T}	T{
+.ad l
+changes into projects
+T}
 aecstate(5)	\*[Page*Of*aecstate(5)]	T{
 .ad r
 aecstate - aegis
@@ -812,6 +861,13 @@ aegis -New
 T}	T{
 .ad l
 Change Undo - remove a new change from a project
+T}
+aetar(1)	\*[Page*Of*aetar(1)]	T{
+.ad r
+aetar - remotely distribute a
+T}	T{
+.ad l
+change via tar
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
@@ -841,6 +897,13 @@ T}	T{
 .ad l
 command
 T}
+aecomplete(1)	\*[Page*Of*aecomplete(1)]	T{
+.ad r
+aecomplete -
+T}	T{
+.ad l
+command completion
+T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
 aesub - available
@@ -868,6 +931,13 @@ aegis -Develop End -
 T}	T{
 .ad l
 complete development of a change
+T}
+aecomplete(1)	\*[Page*Of*aecomplete(1)]	T{
+.ad r
+aecomplete - command
+T}	T{
+.ad l
+completion
 T}
 aepconf(5)	\*[Page*Of*aepconf(5)]	T{
 .ad r
@@ -1135,6 +1205,13 @@ T}	T{
 .ad l
 distribute a change
 T}
+aetar(1)	\*[Page*Of*aetar(1)]	T{
+.ad r
+aetar - remotely
+T}	T{
+.ad l
+distribute a change via tar
+T}
 aerect(1)	\*[Page*Of*aerect(1)]	T{
 .ad r
 aerect -
@@ -1344,6 +1421,13 @@ aegis -CoPy file - copy a
 T}	T{
 .ad l
 file into a change
+T}
+aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
+.ad r
+aeannotate - annotated source
+T}	T{
+.ad l
+file listing
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
@@ -1716,6 +1800,13 @@ T}	T{
 .ad l
 Integrate Begin Undo - reverse the aeib command
 T}
+aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+integrate changes into projects
+T}
 aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
 aegis -
@@ -1814,6 +1905,13 @@ T}	T{
 .ad l
 interface for aenc, using TCL/TK
 T}
+aegis.cgi(1)	\*[Page*Of*aegis.cgi(1)]	T{
+.ad r
+aegis.cgi - Aegis web
+T}	T{
+.ad l
+interface script
+T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
 aegis - import foreign repository
@@ -1828,6 +1926,13 @@ T}	T{
 .ad l
 into a change
 T}
+aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
+.ad r
+aegis - integrate changes
+T}	T{
+.ad l
+into projects
+T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
 aer - report script
@@ -1841,6 +1946,13 @@ aegis - annotated directory
 T}	T{
 .ad l
 listinbg
+T}
+aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
+.ad r
+aeannotate - annotated source file
+T}	T{
+.ad l
+listing
 T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
@@ -2423,6 +2535,13 @@ T}	T{
 .ad l
 PRoject - remove project
 T}
+aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
+.ad r
+aegis - integrate changes into
+T}	T{
+.ad l
+projects
+T}
 aepstate(5)	\*[Page*Of*aepstate(5)]	T{
 .ad r
 aepstate -
@@ -2478,6 +2597,13 @@ aedist -
 T}	T{
 .ad l
 remotely distribute a change
+T}
+aetar(1)	\*[Page*Of*aetar(1)]	T{
+.ad r
+aetar -
+T}	T{
+.ad l
+remotely distribute a change via tar
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
@@ -2808,6 +2934,13 @@ T}	T{
 .ad l
 sccs version
 T}
+aegis.cgi(1)	\*[Page*Of*aegis.cgi(1)]	T{
+.ad r
+aegis.cgi - Aegis web interface
+T}	T{
+.ad l
+script
+T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
 aer - report
@@ -2856,6 +2989,13 @@ aegis - GUI tool for reviewing Aegis change
 T}	T{
 .ad l
 sets, using TCL/TK
+T}
+aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
+.ad r
+aeannotate - annotated
+T}	T{
+.ad l
+source file listing
 T}
 aecstate(5)	\*[Page*Of*aecstate(5)]	T{
 .ad r
@@ -2947,6 +3087,13 @@ aegis -DELta NAme - assign a
 T}	T{
 .ad l
 symbolic name to a project delta
+T}
+aetar(1)	\*[Page*Of*aetar(1)]	T{
+.ad r
+aetar - remotely distribute a change via
+T}	T{
+.ad l
+tar
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
@@ -3277,12 +3424,26 @@ T}	T{
 .ad l
 version information
 T}
+aetar(1)	\*[Page*Of*aetar(1)]	T{
+.ad r
+aetar - remotely distribute a change
+T}	T{
+.ad l
+via tar
+T}
 aebuffy(1)	\*[Page*Of*aebuffy(1)]	T{
 .ad r
 aegis -
 T}	T{
 .ad l
 watch for changes
+T}
+aegis.cgi(1)	\*[Page*Of*aegis.cgi(1)]	T{
+.ad r
+aegis.cgi - Aegis
+T}	T{
+.ad l
+web interface script
 T}
 aelock(5)	\*[Page*Of*aelock(5)]	T{
 .ad r

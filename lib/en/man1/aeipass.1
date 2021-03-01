@@ -82,9 +82,15 @@ one of these history commands should fail, \fIe.g.\fP by running out of disk
 space.  If this should happen, the change will remain in the
 .I "being integrated"
 state, and the integration directory is unaltered.
-.SH History Tools Modify Files
+.PP
+Once the history has been updated, the integration directory is renamed
+as the baseline directory, and the old baseline directory is deleted.
+.PP
+Once integrate pass is complete
+the change is no longer assigned to the current user.
+.SS History Tools Modify Files
 Many history tools (\fIe.g.\fP RCS and SCCS) can modify the contents of
-the file when it is committed.  This usually requies the use of specific
+the file when it is committed.  This usually requires the use of specific
 \&``keyword'' strings, and there are usually options to turn this behavior
 off, but users familiar with version control tools (as opposed to
 configuration management systems) will often use these features.
@@ -99,9 +105,7 @@ ignored completely; see the
 field of
 .IR aepconf (5)
 for more information.
-.PP
-Once the history has been updated, the integration directory is renamed
-as the baseline directory, and the old baseline directory is deleted.
+.SS File Modification Times
 The modification times of all files modified since the beginning of
 integration (see
 .IR aeib (1)
@@ -111,8 +115,53 @@ time range will be compressed to the greatest extent possible.  This
 ensures that subsequent development builds will notice that baseline
 files have changed.
 .PP
-Once integrate pass is complete
-the change is no longer assigned to the current user.
+Note that if there are many new files with all different timestamps in
+the integration directory, and if the number of files with different
+timestamps exceeds the number of seconds since the start of the
+integrate-pass command, Aegis may have to set file modification times
+into the future.
+.PP
+The \fIbuild_\%time_\%adjust\fP field of the project \fIconfig\fP file
+controls Aegis' behavior in this case.
+(See \fIaepconf\fP(5) for more information.)
+There are three settings:
+.TP 8n
+adjust_and_sleep
+This setting, which is the default, causes Aegis to sleep until the file
+modification times would no longer be in the future.
+This avoids both development build problems and integration build problems,
+both of which which can arise as a result "interesting" file modification times.
+.TP 8n
+adjust_only
+Aegis will issue a warning that the file modification times extend
+into the future, but will not sleep.  This may cause integration
+build problems, particularly if you are using \fIaeintegratq\fP(1).
+Development builds may perform redundant builds, however \fIaet -reg\fP
+should not produce false negatives.
+.TP 8n
+dont_adjust
+This is highly inadvisable.
+It is provided solely for some very rare circumstances.
+This setting causes Aegis not to adjust the file modification times at all.
+This can have very unhappy side-effects, especially of the integration
+build was \fIbefore\fP one or more development builds; the commonest
+symptom being that development builds do not always cause a relink of
+the necessary executables, and \fIaet -reg\fP may give false negatives.
+It is \fBstrongly\fP recommended that you do not use this setting.
+.PP
+If you use \fIcook\fP(1), see the \fItime-adjust-back\fP flag for how
+to compress the time range even further.  This usually makes the sleep (or the
+warning period) significantly shorter.
+.SS Notification
+On successful completion of this command, the
+\fIintegration_\%pass_\%notify_\%command\fP field of the project
+attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
+for more information.
+.PP
+Other commands run by this command include the
+\fIhistory_\%create_\%command\fP, \fIhistory_\%put_\%command\fP and
+\fIhistory_\%query_\%command\fP fields of the project \fIconfig\fP file.
+See \fIaepconf\fP(5) for more information.
 .so z_bl_lock.so
 .SS The History Lock
 Where a project has a number of branches active simultaneously, it is
@@ -125,16 +174,6 @@ updating the file history at a time,
 thus preventing history file corruption.
 .so z_test_corr.so
 .so z_metrics.so
-.SS Notification
-On successful completion of this command, the
-\fIintegration_\%pass_\%notify_\%command\fP field of the project
-attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
-for more information.
-.PP
-Other commands run by this command include the
-\fIhistory_\%create_\%command\fP, \fIhistory_\%put_\%command\fP and
-\fIhistory_\%query_\%command\fP fields of the project \fIconfig\fP file.
-See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so

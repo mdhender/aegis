@@ -68,12 +68,12 @@ T4: spline -> from S5.w then left 0.5 then up 1 then to S4.w
 .\" ------------------------------------------------------------------------
 .PP
 A (logical) copy of the baseline is created in an
-.IR "integration directory" 
+.IR "integration directory"
 and the the files of the change are added to the integration directory.
 The time stamps of files copied from the baseline are preserved,
 time stamps on the files copied from the development directory
-are all set to the time of the beginning of the integration. 
-The 
+are all set to the time of the beginning of the integration.
+The
 .I "'\*(n) -Change_Directory'"
 command may be used to locate the integration directory.
 The change will be assigned to the current user.
@@ -135,6 +135,42 @@ and named for the delta number.
 On successful completion of this command, the
 \fIintegration_\%begin_\%command\fP field of the project \fIconfig\fP
 file is run, if set.  See \fIaepconf\fP(5) for more information.
+.SH Minimum Integrations
+.\" My thanks to Jerry Pendergraft for this section.
+\*(N) provides a \fBminimum\fP integration capability which may be
+used for various reasons.  The term \fBminimum\fP may be a bit counter
+intuitive.  One might think it means to the \fBminimum\fP amount of
+work, however it actually means use a \fBminimum\fP of files from the
+baseline in populating the \fIdelta\fP directory.  This normally leads
+to actually building everything in the project from sources and, as
+such, might be considered the most robust of builds.
+.PP
+Note that any change which removes a file, whether by \fIaerm\fP or
+\fIaemv\fP, results in an implicit \fBminimum\fP integration.  This is
+intended to ensure nothing in the project references the removed file.
+.PP
+A project may adopt a policy that a product release should be based on
+a minimum integration.  Such a policy may be a reflection of local
+confidence, or lack therof, in the projects DMT (Dependency
+Maintenance Tool) or build system.  Or it may be based on a validation
+process wishing to make a simple statement on how the released package
+was produced.
+.PP
+Another, more transient, reason a to require a minimum integration
+might be when upgrading a third party library, compiler or maybe even
+OS level.  Any of these events would signal the need for a minimum
+integration to ensure everything is rebuilt using the new resources.
+.PP
+The cost of a \fBminimum\fP integration varies according to type and
+size of the project.  For very large projects, especially those
+building large numbers of binaries, the cost can be large.  However
+large projects also require significant time to fully populate the
+delta directory.  A minimum integration only copies those files
+under \*(N) control, skipping all ``produced'' files.  In the case
+where a file upon which everything depends is changed, everything will
+be built anyway so the copy of the already built files is a waste of
+time.  This means that sometimes a minimum can be as cheap as a normal
+integration.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -188,6 +224,9 @@ reverse the aeib command
 .TP 8n
 .IR aeifail (1)
 fail integration of a change
+.TP 8n
+.IR aeintegratq (1)
+Automate the integration queue.
 .TP 8n
 .IR aeipass (1)
 pass integration of a change

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@ os_dirname(path)
 	string_ty	*s;
 	char		*cp;
 
-	trace(("os_dirname(path = %08lX)\n{\n"/*}*/, path));
+	trace(("os_dirname(path = %08lX)\n{\n", (long)path));
 	trace_string(path->str_text);
 	s = os_pathname(path, 1);
 	cp = strrchr(s->str_text, '/');

@@ -35,10 +35,11 @@
 #include <gonzo.h>
 #include <help.h>
 #include <lock.h>
+#include <libdir.h>
 #include <mem.h>
 #include <os.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <stracc.h>
 #include <sub.h>
 #include <trace.h>
@@ -50,8 +51,8 @@
 #include <change.h>
 
 
-static size_t   nusers;
-static user_ty **user;
+static size_t	nusers;
+static user_ty	**user;
 
 
 /*
@@ -63,7 +64,7 @@ static user_ty **user;
  *
  * DESCRIPTION
  *	The user_set_project is used to set the project associated
- *	with each user.  Should only be called for uses without a project
+ *	with each user.	 Should only be called for uses without a project
  *	associated.
  *
  * CAVEATS
@@ -76,29 +77,29 @@ static void user_set_project _((user_ty *, project_ty *));
 
 static void
 user_set_project(up, pp)
-    user_ty        *up;
-    project_ty     *pp;
+    user_ty	    *up;
+    project_ty	    *pp;
 {
-    struct group   *gr;
+    struct group    *gr;
 
     /*
      * set the project
      */
     trace(("user_set_project(up = %08lX, pp = %08lX)\n{\n",
-	    (long)up, (long)pp));
+	(long)up, (long)pp));
     assert(up);
     assert(pp);
     up->pp = project_copy(pp);
 
     /*
      * set the group from the project
-     *      (cannonical name is first in /etc/group file)
+     *	    (cannonical name is first in /etc/group file)
      */
     up->gid = project_gid_get(pp);
     gr = getgrgid_cached(up->gid);
     if (!gr)
     {
-	sub_context_ty *scp;
+	sub_context_ty	*scp;
 
 	scp = sub_context_new();
 	sub_var_set_long(scp, "Number", up->gid);
@@ -145,21 +146,21 @@ user_set_project(up, pp)
 
 user_ty *
 user_numeric(pp, uid)
-    project_ty     *pp;
-    int             uid;
+    project_ty	    *pp;
+    int		    uid;
 {
-    size_t          j;
-    user_ty         *up;
+    size_t	    j;
+    user_ty	    *up;
     struct passwd   *pw;
     struct group    *gr;
-    size_t          nbytes;
-    char            *full_name;
-    char            *comma;
+    size_t	    nbytes;
+    char	    *full_name;
+    char	    *comma;
 
     /*
      * see if we already know her
      */
-    trace(("user_numeric(pp = %08lX, uid = %d)\n{\n", pp, uid));
+    trace(("user_numeric(pp = %08lX, uid = %d)\n{\n", (long)pp, uid));
     for (j = 0; j < nusers; ++j)
     {
 	up = user[j];
@@ -174,7 +175,7 @@ user_numeric(pp, uid)
 
     /*
      * first time we have met her
-     *      group always binds to the project
+     *	    group always binds to the project
      *
      * Always use the number as the primary reference:
      * system treats the first entry as cannonical, so do we.
@@ -182,7 +183,7 @@ user_numeric(pp, uid)
     pw = getpwuid_cached(uid);
     if (!pw)
     {
-	sub_context_ty *scp;
+	sub_context_ty	*scp;
 
 	scp = sub_context_new();
 	sub_var_set_long(scp, "Number", uid);
@@ -220,7 +221,7 @@ user_numeric(pp, uid)
     gr = getgrgid_cached(up->gid);
     if (!gr)
     {
-	sub_context_ty *scp;
+	sub_context_ty	*scp;
 
 	scp = sub_context_new();
 	sub_var_set_long(scp, "Number", up->gid);
@@ -251,7 +252,7 @@ user_numeric(pp, uid)
      * here for all exits
      */
     ret:
-    trace(("return %08lX;\n", up));
+    trace(("return %08lX;\n", (long)up));
     trace(("}\n"));
     return up;
 }
@@ -286,13 +287,13 @@ user_numeric(pp, uid)
 
 user_ty *
 user_numeric2(uid, gid)
-    int             uid;
-    int             gid;
+    int		    uid;
+    int		    gid;
 {
-    user_ty         *up;
+    user_ty	    *up;
     struct passwd   *pw;
     struct group    *gr;
-    size_t          nbytes;
+    size_t	    nbytes;
 
     /*
      * craete the user structure
@@ -307,7 +308,7 @@ user_numeric2(uid, gid)
 
     /*
      * try the passwd file,
-     *      otherwise default to something sensable
+     *	    otherwise default to something sensable
      */
     pw = getpwuid_cached(uid);
     if (pw)
@@ -324,7 +325,7 @@ user_numeric2(uid, gid)
 
     /*
      * try the group file,
-     *      otherwise default to something sensable
+     *	    otherwise default to something sensable
      */
     gr = getgrgid_cached(up->gid);
     if (!gr)
@@ -342,7 +343,7 @@ user_numeric2(uid, gid)
     /*
      * here for all exits
      */
-    trace(("return %08lX;\n", up));
+    trace(("return %08lX;\n", (long)up));
     trace(("}\n"));
     return up;
 }
@@ -377,20 +378,20 @@ user_numeric2(uid, gid)
 
 user_ty *
 user_symbolic(pp, name)
-    project_ty      *pp;
-    string_ty       *name;
+    project_ty	    *pp;
+    string_ty	    *name;
 {
     struct passwd   *pw;
-    user_ty         *result;
+    user_ty	    *result;
 
-    trace(("user_symbolic(pp = %08lX, name = \"%s\")\n{\n", pp,
-	    name->str_text));
+    trace(("user_symbolic(pp = %08lX, name = \"%s\")\n{\n", (long)pp,
+	name->str_text));
     pw = getpwnam_cached(name);
     if (!pw)
     {
-	string_ty      *best;
-	double          best_weight;
-	double          weight;
+	string_ty	*best;
+	double		best_weight;
+	double		weight;
 
 	best = 0;
 	best_weight = 0.6;
@@ -411,7 +412,7 @@ user_symbolic(pp, name)
 	}
 	if (best)
 	{
-	    sub_context_ty *scp;
+	    sub_context_ty  *scp;
 
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "Name", name);
@@ -422,7 +423,7 @@ user_symbolic(pp, name)
 	}
 	else
 	{
-	    sub_context_ty *scp;
+	    sub_context_ty  *scp;
 
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "Name", name);
@@ -432,7 +433,7 @@ user_symbolic(pp, name)
 	}
     }
     result = user_numeric(pp, pw->pw_uid);
-    trace(("return %08lX;\n", result));
+    trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
 }
@@ -462,16 +463,16 @@ user_symbolic(pp, name)
 
 user_ty *
 user_executing(pp)
-    project_ty      *pp;
+    project_ty	    *pp;
 {
-    user_ty         *result;
-    int             uid;
-    int             gid;
+    user_ty	    *result;
+    int		    uid;
+    int		    gid;
 
-    trace(("user_executing(pp = %08lX)\n{\n", pp));
+    trace(("user_executing(pp = %08lX)\n{\n", (long)pp));
     os_become_orig_query(&uid, &gid, (int *)0);
     result = user_numeric(pp, uid);
-    trace(("return %08lX;\n", result));
+    trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
 }
@@ -494,13 +495,13 @@ user_executing(pp)
 
 void
 user_free(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_free(up = %08lX)\n{\n", up));
+    trace(("user_free(up = %08lX)\n{\n", (long)up));
     up->reference_count--;
     if (up->reference_count <= 0)
     {
-	size_t          j;
+	size_t		j;
 
 	/*
 	 * remove from cache
@@ -560,11 +561,11 @@ user_free(up)
 
 user_ty *
 user_copy(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_copy(up = %08lX)\n{\n", up));
+    trace(("user_copy(up = %08lX)\n{\n", (long)up));
     up->reference_count++;
-    trace(("return %08lX;\n", up));
+    trace(("return %08lX;\n", (long)up));
     trace(("}\n"));
     return up;
 }
@@ -590,9 +591,9 @@ user_copy(up)
 
 string_ty *
 user_name(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_name(up = %08lX)\n{\n", up));
+    trace(("user_name(up = %08lX)\n{\n", (long)up));
     trace(("return \"%s\";\n", up->name->str_text));
     trace(("}\n"));
     return up->name;
@@ -601,9 +602,9 @@ user_name(up)
 
 string_ty *
 user_name2(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_name2(up = %08lX)\n{\n", up));
+    trace(("user_name2(up = %08lX)\n{\n", (long)up));
     trace(("return \"%s\";\n", up->name->str_text));
     trace(("}\n"));
     return up->full_name;
@@ -630,9 +631,9 @@ user_name2(up)
 
 int
 user_id(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_id(up = %08lX)\n{\n", up));
+    trace(("user_id(up = %08lX)\n{\n", (long)up));
     trace(("return %d;\n", up->uid));
     trace(("}\n"));
     return up->uid;
@@ -659,9 +660,9 @@ user_id(up)
 
 string_ty *
 user_group(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_group(up = %08lX)\n{\n", up));
+    trace(("user_group(up = %08lX)\n{\n", (long)up));
     trace(("return \"%s\";\n", up->group->str_text));
     trace(("}\n"));
     return up->group;
@@ -688,9 +689,9 @@ user_group(up)
 
 int
 user_gid(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_gid(up = %08lX)\n{\n", up));
+    trace(("user_gid(up = %08lX)\n{\n", (long)up));
     trace(("return %d;\n", up->gid));
     trace(("}\n"));
     return up->gid;
@@ -717,9 +718,9 @@ user_gid(up)
 
 int
 user_umask(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_umask(up = %08lX)\n{\n", up));
+    trace(("user_umask(up = %08lX)\n{\n", (long)up));
     trace(("return %05o;\n", up->umask));
     trace(("}\n"));
     return up->umask;
@@ -746,11 +747,11 @@ static void lock_sync _((user_ty *));
 
 static void
 lock_sync(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    long            n;
+    long	    n;
 
-    trace(("lock_sync(up = %08lX)\n{\n", up));
+    trace(("lock_sync(up = %08lX)\n{\n", (long)up));
     n = lock_magic();
     if (up->lock_magic != n)
     {
@@ -788,13 +789,13 @@ static ustate user_ustate_get _((user_ty *));
 
 static ustate
 user_ustate_get(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_ustate_get(up = %08lX)\n{\n", up));
+    trace(("user_ustate_get(up = %08lX)\n{\n", (long)up));
     lock_sync(up);
     if (!up->ustate_path)
     {
-	project_ty     *ppp;
+	project_ty	*ppp;
 
 	for (ppp = up->pp; ppp->parent; ppp = ppp->parent)
 	    ;
@@ -817,7 +818,7 @@ user_ustate_get(up)
 	    up->ustate_data->own =
 		(ustate_own_list)ustate_own_list_type.alloc();
     }
-    trace(("return %08lX;\n", up->ustate_data));
+    trace(("return %08lX;\n", (long)up->ustate_data));
     trace(("}\n"));
     return up->ustate_data;
 }
@@ -827,7 +828,7 @@ static void fix_default_change _((uconf));
 
 static void
 fix_default_change(uconf_data)
-    uconf           uconf_data;
+    uconf	    uconf_data;
 {
     if
     (
@@ -841,10 +842,165 @@ fix_default_change(uconf_data)
 
 /*
  * NAME
+ *	merge_uconf
+ *
+ * SYNOPSIS
+ *	void merge_uconf(curdata, defdata);
+ *
+ * DESCRIPTION
+ *	The merge_uconf function is used internally by
+ *	user_uconf_get to merge two sets of user
+ *	configuration parameters.
+ *
+ * ARGUMENTS
+ *	curdata -data set that is operated on
+ *	defdata -default data set. used if some fields
+ *		 in curdata is not filled.
+ * RETURNS
+ *	nothing
+ *
+ */
+
+static void merge_uconf _((uconf, uconf));
+
+static void
+merge_uconf(data, tmp)
+    uconf	    data;
+    uconf	    tmp;
+{
+    if (!data->default_project_name && tmp->default_project_name)
+    {
+	data->default_project_name = str_copy(tmp->default_project_name);
+    }
+    if (!data->default_change_number && tmp->default_change_number)
+    {
+	data->default_change_number = tmp->default_change_number;
+    }
+    if
+    (
+	!data->default_development_directory
+    &&
+	tmp->default_development_directory
+    )
+    {
+	data->default_development_directory =
+	    str_copy(tmp->default_development_directory);
+    }
+    if (!data->default_project_directory && tmp->default_project_directory)
+    {
+	data->default_project_directory =
+	    str_copy(tmp->default_project_directory);
+    }
+    if
+    (
+	!(data->mask & uconf_delete_file_preference_mask)
+    &&
+	(tmp->mask & uconf_delete_file_preference_mask)
+    )
+    {
+	data->delete_file_preference = tmp->delete_file_preference;
+	data->mask |= uconf_delete_file_preference_mask;
+    }
+    if
+    (
+	!(data->mask & uconf_pager_preference_mask)
+    &&
+	(tmp->mask & uconf_pager_preference_mask)
+    )
+    {
+	data->pager_preference = tmp->pager_preference;
+	data->mask |= uconf_pager_preference_mask;
+    }
+    if
+    (
+	!(data->mask & uconf_persevere_preference_mask)
+    &&
+	(tmp->mask & uconf_persevere_preference_mask)
+    )
+    {
+	data->persevere_preference = tmp->persevere_preference;
+	data->mask |= uconf_persevere_preference_mask;
+    }
+    if
+    (
+	!(data->mask & uconf_log_file_preference_mask)
+    &&
+	(tmp->mask & uconf_log_file_preference_mask)
+    )
+    {
+	data->log_file_preference = tmp->log_file_preference;
+	data->mask |= uconf_log_file_preference_mask;
+    }
+    if
+    (
+	!(data->mask & uconf_lock_wait_preference_mask)
+    &&
+	(tmp->mask & uconf_lock_wait_preference_mask)
+    )
+    {
+	data->lock_wait_preference = tmp->lock_wait_preference;
+	data->mask |= uconf_lock_wait_preference_mask;
+    }
+    if (!data->email_address && tmp->email_address)
+    {
+	data->email_address = str_copy(tmp->email_address);
+    }
+    if
+    (
+	!(data->mask & uconf_whiteout_preference_mask)
+    &&
+	(tmp->mask & uconf_whiteout_preference_mask)
+    )
+    {
+	data->whiteout_preference = tmp->whiteout_preference;
+	data->mask |= uconf_whiteout_preference_mask;
+    }
+    if (!data->editor_command && tmp->editor_command)
+    {
+	data->editor_command = str_copy(tmp->editor_command);
+    }
+    if (!data->visual_command && tmp->visual_command)
+    {
+	data->visual_command = str_copy(tmp->visual_command);
+    }
+    if (!data->pager_command && tmp->pager_command)
+    {
+	data->pager_command = str_copy(tmp->pager_command);
+    }
+}
+
+
+static void read_and_merge _((uconf, string_ty *));
+
+static void
+read_and_merge(data, filename)
+    uconf	    data;
+    string_ty	    *filename;
+{
+    uconf	    uconf_new;
+
+    /*
+     * Read the file.
+     */
+    if (os_exists(filename))
+	uconf_new = uconf_read_file(filename);
+    else
+	uconf_new = uconf_type.alloc();
+
+    /*
+     * Merge the two.
+     */
+    merge_uconf(data, uconf_new);
+    uconf_type.free(uconf_new);
+}
+
+
+/*
+ * NAME
  *	user_uconf_get
  *
  * SYNOPSIS
- *	void user_uconf_get(void);
+ *	uconf user_uconf_get(user_ty *up);
  *
  * DESCRIPTION
  *	The user_uconf_get function is used to
@@ -858,115 +1014,60 @@ fix_default_change(uconf_data)
  *	pointer to uconf structure in dynamic memory
  */
 
-static uconf user_uconf_get _((user_ty * up));
+static uconf user_uconf_get _((user_ty *up));
 
 static uconf
 user_uconf_get(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_uconf_get(up = %08lX)\n{\n", up));
+    trace(("user_uconf_get(up = %08lX)\n{\n", (long)up));
     lock_sync(up);
     if (!up->uconf_path)
 	up->uconf_path = str_format("%S/.aegisrc", up->home);
+
+    /*
+     * Read in the user preferences.  There are several sources of
+     * preferences, in the following priority order:
+     *
+     * $AEGIS_FLAGS
+     * $HOME/.aegisrc
+     * $(datadir)/aegisrc
+     * $(libdir)/aegisrc
+     */
     if (!up->uconf_data)
     {
-	uconf           data;
-	uconf           tmp;
+	static string_ty *libdir_aegisrc;
+	static string_ty *datadir_aegisrc;
 
 	/*
 	 * read the environment variable
 	 */
-	data = parse_env("AEGIS_FLAGS", &uconf_type);
-	fix_default_change(data);
-	up->uconf_data = data;
+	up->uconf_data = parse_env("AEGIS_FLAGS", &uconf_type);
 
 	/*
-	 * read the file
+	 * Read the user's $HOME/.aegisrc file.
 	 */
 	user_become(up);
-	if (os_exists(up->uconf_path))
-	{
-	    tmp = uconf_read_file(up->uconf_path);
-	    fix_default_change(tmp);
-	}
-	else
-	    tmp = (uconf)uconf_type.alloc();
-	user_become_undo();
+	read_and_merge(up->uconf_data, up->uconf_path);
 
 	/*
-	 * merge the two
+	 * read system architecture-neutral file
 	 */
-	if (!data->default_project_name && tmp->default_project_name)
-	    data->default_project_name = str_copy(tmp->default_project_name);
-	if (!data->default_change_number && tmp->default_change_number)
-	    data->default_change_number = tmp->default_change_number;
-	if
-	(
-	    !data->default_development_directory
-	&&
-	    tmp->default_development_directory
-	)
-	    data->default_development_directory =
-		str_copy(tmp->default_development_directory);
-	if (!data->default_project_directory && tmp->default_project_directory)
-	    data->default_project_directory =
-		str_copy(tmp->default_project_directory);
-	if
-	(
-	    !(data->mask & uconf_delete_file_preference_mask)
-	&&
-	    (tmp->mask & uconf_delete_file_preference_mask)
-	)
-	    data->delete_file_preference = tmp->delete_file_preference;
-	if
-	(
-	    !(data->mask & uconf_pager_preference_mask)
-	&&
-	    (tmp->mask & uconf_pager_preference_mask)
-	)
-	    data->pager_preference = tmp->pager_preference;
-	if
-	(
-	    !(data->mask & uconf_persevere_preference_mask)
-	&&
-	    (tmp->mask & uconf_persevere_preference_mask)
-	)
-	    data->persevere_preference = tmp->persevere_preference;
-	if
-	(
-	    !(data->mask & uconf_log_file_preference_mask)
-	&&
-	    (tmp->mask & uconf_log_file_preference_mask)
-	)
-	{
-	    data->log_file_preference = tmp->log_file_preference;
-	    data->mask |= uconf_log_file_preference_mask;
-	}
-	if
-	(
-	    !(data->mask & uconf_lock_wait_preference_mask)
-	&&
-	    (tmp->mask & uconf_lock_wait_preference_mask)
-	)
-	{
-	    data->lock_wait_preference = tmp->lock_wait_preference;
-	    data->mask |= uconf_lock_wait_preference_mask;
-	}
-	if (!data->email_address && tmp->email_address)
-	    data->email_address = str_copy(tmp->email_address);
-	if
-	(
-	    !(data->mask & uconf_whiteout_preference_mask)
-	&&
-	    (tmp->mask & uconf_whiteout_preference_mask)
-	)
-	{
-	    data->whiteout_preference = tmp->whiteout_preference;
-	    data->mask |= uconf_whiteout_preference_mask;
-	}
-	uconf_type.free(tmp);
+	if (!datadir_aegisrc)
+	    datadir_aegisrc = str_format("%s/aegisrc", configured_datadir());
+	read_and_merge(up->uconf_data, datadir_aegisrc);
+
+	/*
+	 * read system architecture-specific file
+	 */
+	if (!libdir_aegisrc)
+	    libdir_aegisrc = str_format("%s/aegisrc", configured_libdir());
+	read_and_merge(up->uconf_data, libdir_aegisrc);
+	user_become_undo();
+
+	fix_default_change(up->uconf_data);
     }
-    trace(("return %08lX;\n", up->uconf_data));
+    trace(("return %08lX;\n", (long)up->uconf_data));
     trace(("}\n"));
     return up->uconf_data;
 }
@@ -996,9 +1097,9 @@ user_uconf_get(up)
 
 string_ty *
 user_home(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_home(up = %08lX)\n{\n", up));
+    trace(("user_home(up = %08lX)\n{\n", (long)up));
     assert(up->home);
     trace(("return \"%s\";\n", up->home->str_text));
     trace(("}\n"));
@@ -1031,12 +1132,12 @@ user_home(up)
 
 char *
 user_full_name(name)
-    string_ty       *name;
+    string_ty	    *name;
 {
     struct passwd   *pw;
-    char            *result;
-    char            *comma;
-    static char     *trimmed;
+    char	    *result;
+    char	    *comma;
+    static char	    *trimmed;
     static size_t   trimmed_max;
 
     trace(("user_full_name(name = \"%s\")\n{\n", name->str_text));
@@ -1059,7 +1160,7 @@ user_full_name(name)
     comma = strchr(result, ',');
     if (comma)
     {
-	size_t          len;
+	size_t		len;
 
 	len = comma - result;
 	if (len + 1 > trimmed_max)
@@ -1094,13 +1195,13 @@ user_full_name(name)
 
 void
 user_ustate_write(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    string_ty       *filename_new;
-    string_ty       *filename_old;
-    static int      count;
+    string_ty	    *filename_new;
+    string_ty	    *filename_old;
+    static int	    count;
 
-    trace(("user_ustate_write(up = %08lX)\n{\n", up));
+    trace(("user_ustate_write(up = %08lX)\n{\n", (long)up));
     assert(up->ustate_data);
     assert(up->ustate_path);
     if (!up->ustate_modified)
@@ -1160,16 +1261,16 @@ user_ustate_write(up)
 
 void
 user_own_add(up, project_name, change_number)
-    user_ty         *up;
-    string_ty       *project_name;
-    long            change_number;
+    user_ty	    *up;
+    string_ty	    *project_name;
+    long	    change_number;
 {
-    ustate          ustate_data;
-    int             j;
-    ustate_own      own_data = 0;
-    ustate_own      *own_data_p;
-    long            *change_p;
-    type_ty         *type_p;
+    ustate	    ustate_data;
+    int		    j;
+    ustate_own	    own_data =	    0;
+    ustate_own	    *own_data_p;
+    long	    *change_p;
+    type_ty	    *type_p;
 
     trace(("user_own_add(up = %8.8lX, project_name = \"%s\", "
 	"change_number = %ld)\n{\n", (long)up, project_name->str_text,
@@ -1223,7 +1324,8 @@ user_own_add(up, project_name, change_number)
  *	user_own_nth
  *
  * SYNOPSIS
- *	int user_own_nth(user_ty *up, long n, long *change_number);
+ *	int user_own_nth(user_ty *up, string_ty *project_name, long n,
+ *		long *change_number);
  *
  * DESCRIPTION
  *	The user_own_nth function is used to fetch the n'th
@@ -1240,36 +1342,39 @@ user_own_add(up, project_name, change_number)
  */
 
 int
-user_own_nth(up, n, change_number)
-    user_ty         *up;
-    long            n;
-    long            *change_number;
+user_own_nth(up, project_name, n, change_number)
+    user_ty	    *up;
+    string_ty	    *project_name;
+    long	    n;
+    long	    *change_number;
 {
-    ustate          ustate_data;
-    int             j;
-    int             result;
+    ustate	    ustate_data;
+    int		    j;
+    int		    result;
 
-    trace(("user_own_nth(up = %08lX, n = %ld)\n{\n", (long)up, n));
+    trace(("user_own_nth(up = %08lX, project_name = \"%s\", n = %ld)\n{\n",
+	(long)up, project_name->str_text, n));
     result = 0;
     assert(n >= 0);
-    assert(up->pp);
-    if (n < 0 || !up->pp)
+    if (n < 0)
 	goto done;
     ustate_data = user_ustate_get(up);
     assert(ustate_data->own);
+    if (!ustate_data->own)
+	goto done;
 
     /*
      * find the relevant project
-     *      and extract the n'th change
+     *	    and extract the n'th change
      */
     for (j = 0; j < ustate_data->own->length; ++j)
     {
-	ustate_own      own_data;
+	ustate_own	own_data;
 
 	own_data = ustate_data->own->list[j];
-	if (str_equal(project_name_get(up->pp), own_data->project_name))
+	if (str_equal(project_name, own_data->project_name))
 	{
-	    if (n < own_data->changes->length)
+	    if (own_data->changes && n < own_data->changes->length)
 	    {
 		*change_number = own_data->changes->list[n];
 		result = 1;
@@ -1281,7 +1386,7 @@ user_own_nth(up, n, change_number)
     /*
      * here for all exits
      */
-  done:
+    done:
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
@@ -1311,13 +1416,14 @@ user_own_nth(up, n, change_number)
 
 void
 user_own_remove(up, project_name, change_number)
-    user_ty         *up;
-    string_ty       *project_name;
-    long            change_number;
+    user_ty	    *up;
+    string_ty	    *project_name;
+    long	    change_number;
 {
-    ustate          ustate_data;
-    int             j, k;
-    ustate_own      own_data;
+    ustate	    ustate_data;
+    int		    j;
+    int		    k;
+    ustate_own	    own_data;
 
     trace(("usate_own_remove()\n{\n"));
     ustate_data = user_ustate_get(up);
@@ -1387,12 +1493,12 @@ static void user_error _((user_ty *, sub_context_ty *, char *));
 
 static void
 user_error(up, scp, fmt)
-    user_ty         *up;
+    user_ty	    *up;
     sub_context_ty  *scp;
-    char            *fmt;
+    char	    *fmt;
 {
-    string_ty       *s;
-    int             need_to_delete;
+    string_ty	    *s;
+    int		    need_to_delete;
 
     if (!scp)
     {
@@ -1419,12 +1525,12 @@ static void user_fatal _((user_ty *, sub_context_ty *, char *));
 
 static void
 user_fatal(up, scp, fmt)
-    user_ty         *up;
+    user_ty	    *up;
     sub_context_ty  *scp;
-    char            *fmt;
+    char	    *fmt;
 {
-    string_ty       *s;
-    int             need_to_delete;
+    string_ty	    *s;
+    int		    need_to_delete;
 
     if (!scp)
     {
@@ -1451,9 +1557,9 @@ static void waiting_for_lock _((void *));
 
 static void
 waiting_for_lock(p)
-    void            *p;
+    void	    *p;
 {
-    user_ty         *up;
+    user_ty	    *up;
 
     up = p;
     if (user_lock_wait((user_ty *)0))
@@ -1480,9 +1586,9 @@ waiting_for_lock(p)
 
 void
 user_ustate_lock_prepare(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_ustate_lock_prepare(up = %08lX)\n{\n", up));
+    trace(("user_ustate_lock_prepare(up = %08lX)\n{\n", (long)up));
     lock_prepare_ustate(up->uid, waiting_for_lock, up);
     trace(("}\n"));
 }
@@ -1497,7 +1603,7 @@ user_ustate_lock_prepare(up)
  *
  * DESCRIPTION
  *	The user_default_change function is used to
- *	find the default change number.  The project is taken from the
+ *	find the default change number.	 The project is taken from the
  *	user structure's notion of the set project.
  *
  * ARGUMENTS
@@ -1514,9 +1620,9 @@ static long is_a_change_number _((char *));
 
 static long
 is_a_change_number(s)
-    char            *s;
+    char	    *s;
 {
-    long            n;
+    long	    n;
 
     while (isspace((unsigned char)*s))
 	++s;
@@ -1541,10 +1647,10 @@ static long project_dot_change _((string_ty *, string_ty *));
 
 static long
 project_dot_change(s, p)
-    string_ty       *s;
-    string_ty       *p;
+    string_ty	    *s;
+    string_ty	    *p;
 {
-    char            *suffix;
+    char	    *suffix;
 
     if
     (
@@ -1566,8 +1672,8 @@ static int is_below _((string_ty *, string_ty *));
 
 static int
 is_below(hi, lo)
-    string_ty       *hi;
-    string_ty       *lo;
+    string_ty	    *hi;
+    string_ty	    *lo;
 {
     if (str_equal(hi, lo))
 	return 1;
@@ -1584,12 +1690,12 @@ is_below(hi, lo)
 
 long
 user_default_change(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    long            change_number;
-    char            *cp;
+    long	    change_number;
+    char	    *cp;
 
-    trace(("user_default_change(up = %08lX)\n{\n", up));
+    trace(("user_default_change(up = %08lX)\n{\n", (long)up));
     change_number = 0;
 
     /*
@@ -1601,7 +1707,7 @@ user_default_change(up)
 	change_number = is_a_change_number(cp);
 	if (!change_number)
 	{
-	    sub_context_ty *scp;
+	    sub_context_ty  *scp;
 
 	    scp = sub_context_new();
 	    sub_var_set_charstar(scp, "Name", "AEGIS_CHANGE");
@@ -1616,7 +1722,7 @@ user_default_change(up)
      */
     if (!change_number)
     {
-	uconf           uconf_data;
+	uconf		uconf_data;
 
 	uconf_data = user_uconf_get(up);
 	if (uconf_data->mask & uconf_default_change_number_mask)
@@ -1630,15 +1736,15 @@ user_default_change(up)
      */
     if (!change_number)
     {
-	ustate          ustate_data;
-	int             j;
+	ustate		ustate_data;
+	int		j;
 
 	ustate_data = user_ustate_get(up);
 	assert(ustate_data->own);
 	for (j = 0; j < ustate_data->own->length; ++j)
 	{
-	    ustate_own      own_data;
-	    string_ty      *project_name;
+	    ustate_own	    own_data;
+	    string_ty	    *project_name;
 
 	    own_data = ustate_data->own->list[j];
 	    project_name = project_name_get(up->pp);
@@ -1661,9 +1767,9 @@ user_default_change(up)
      */
     if (!change_number)
     {
-	string_ty       *cwd;
-	string_list_ty  part;
-	long            j;
+	string_ty	*cwd;
+	string_list_ty	part;
+	long		j;
 
 	/*
 	 * get the current directory
@@ -1697,11 +1803,11 @@ user_default_change(up)
      */
     if (!change_number)
     {
-	string_ty       *cwd;
-	string_ty       *d;
-	long            j;
-	change_ty       *cp2;
-	cstate          cstate_data;
+	string_ty	*cwd;
+	string_ty	*d;
+	long		j;
+	change_ty	*cp2;
+	cstate		cstate_data;
 
 	/*
 	 * get the current directory
@@ -1713,7 +1819,7 @@ user_default_change(up)
 
 	for (j = 0;; ++j)
 	{
-	    long            cn;
+	    long	    cn;
 
 	    if (!project_change_nth(up->pp, j, &cn))
 		break;
@@ -1758,7 +1864,7 @@ user_default_change(up)
      */
     if (!change_number)
 	project_fatal(up->pp, 0, i18n("no change number"));
-    trace(("return %d;\n", change_number));
+    trace(("return %ld;\n", change_number));
     trace(("}\n"));
     return change_number;
 }
@@ -1785,9 +1891,9 @@ user_default_change(up)
 string_ty *
 user_default_project()
 {
-    string_ty       *result;
-    user_ty         *up;
-    char            *cp;
+    string_ty	    *result;
+    user_ty	    *up;
+    char	    *cp;
 
     /*
      * build a temporary user
@@ -1808,7 +1914,7 @@ user_default_project()
      */
     if (!result)
     {
-	uconf           uconf_data;
+	uconf		uconf_data;
 
 	uconf_data = user_uconf_get(up);
 	if (uconf_data->default_project_name)
@@ -1826,17 +1932,17 @@ user_default_project()
      */
     if (!result)
     {
-	string_list_ty  name;
+	string_list_ty	name;
 
 	gonzo_project_list_user(up->name, &name);
 	if (name.nstrings == 1)
 	    result = str_copy(name.string[0]);
 	else
 	{
-	    string_ty       *cwd;
+	    string_ty	    *cwd;
 	    string_list_ty  part;
-	    long            j;
-	    long            k;
+	    long	    j;
+	    long	    k;
 
 	    /*
 	     * get pathname of the current directory
@@ -1877,13 +1983,13 @@ user_default_project()
 	 */
 	if (!result)
 	{
-	    string_ty       *cwd;
-	    string_ty       *d;
-	    long            j;
-	    long            k;
-	    project_ty      *pp;
-	    change_ty       *cp3;
-	    cstate          cstate_data;
+	    string_ty	    *cwd;
+	    string_ty	    *d;
+	    long	    j;
+	    long	    k;
+	    project_ty	    *pp;
+	    change_ty	    *cp3;
+	    cstate	    cstate_data;
 
 	    /*
 	     * get pathname of the current directory
@@ -1914,7 +2020,7 @@ user_default_project()
 		 */
 		for (k = 0;; ++k)
 		{
-		    long            change_number;
+		    long	    change_number;
 
 		    if (!project_change_nth(pp, k, &change_number))
 			break;
@@ -2001,10 +2107,10 @@ user_default_project()
 
 string_ty *
 user_default_development_directory(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    uconf           uconf_data;
-    string_ty       *path;
+    uconf	    uconf_data;
+    string_ty	    *path;
 
     /*
      * To cope with automounters, directories are stored as given,
@@ -2057,10 +2163,10 @@ user_default_development_directory(up)
 
 string_ty *
 user_default_project_directory(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    uconf           uconf_data;
-    string_ty       *path;
+    uconf	    uconf_data;
+    string_ty	    *path;
 
     /*
      * To cope with automounters, directories are stored as given,
@@ -2069,7 +2175,7 @@ user_default_project_directory(up)
      * and any comparison of paths is done on this "system idea"
      * of the pathname.
      */
-    trace(("user_default_project_directory(up = %08lX)\n{\n", up));
+    trace(("user_default_project_directory(up = %08lX)\n{\n", (long)up));
     uconf_data = user_uconf_get(up);
     path = uconf_data->default_project_directory;
     if (path)
@@ -2112,14 +2218,14 @@ user_default_project_directory(up)
 
 int
 user_uid_check(name)
-    string_ty       *name;
+    string_ty	    *name;
 {
     struct passwd   *pw;
 
     pw = getpwnam_cached(name);
     if (!pw)
     {
-	sub_context_ty *scp;
+	sub_context_ty	*scp;
 
 	scp = sub_context_new();
 	sub_var_set_string(scp, "Name", name);
@@ -2156,14 +2262,14 @@ user_uid_check(name)
 
 int
 user_gid_check(name)
-    string_ty       *name;
+    string_ty	    *name;
 {
     struct group    *gr;
 
     gr = getgrnam_cached(name);
     if (!gr)
     {
-	sub_context_ty *scp;
+	sub_context_ty	*scp;
 
 	scp = sub_context_new();
 	sub_var_set_string(scp, "Name", name);
@@ -2195,12 +2301,13 @@ user_gid_check(name)
 
 void
 user_become(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    trace(("user_become(up = %08lX)\n{\n", up));
+    trace(("user_become(up = %08lX)\n{\n", (long)up));
     os_become(up->uid, up->gid, up->umask);
     trace(("}\n"));
 }
+
 
 void
 user_become_undo()
@@ -2225,7 +2332,7 @@ static del_pref cmd_line_pref = del_pref_unset;
 
 void
 user_delete_file_argument(usage)
-    void            (*usage)_((void));
+    void	    (*usage)_((void));
 {
     if (cmd_line_pref != del_pref_unset)
     {
@@ -2257,19 +2364,19 @@ user_delete_file_argument(usage)
 }
 
 
-static int ask  _((string_ty *, int));
+static int ask _((string_ty *, int));
 
 static int
 ask(filename, isdir)
-    string_ty       *filename;
-    int             isdir;
+    string_ty	    *filename;
+    int		    isdir;
 {
     typedef struct table_ty table_ty;
     struct table_ty
     {
-	char            *name;
-	del_pref        set;
-	int             result;
+	char		*name;
+	del_pref	set;
+	int		result;
     };
 
     /*
@@ -2280,21 +2387,19 @@ ask(filename, isdir)
      */
     static table_ty table[] =
     {
-	{"No", del_pref_unset, 0,},
-	{"False", del_pref_unset, 0,},
-	{"Never", del_pref_keep, 0,},
-	{"None", del_pref_keep, 0,},
-
-	{"Yes", del_pref_unset, 1,},
-	{"True", del_pref_unset, 1,},
-	{"All", del_pref_no_keep, 1,},
-	{"Always", del_pref_no_keep, 1,},
+	{"No", del_pref_unset, 0, },
+	{"False", del_pref_unset, 0, },
+	{"Never", del_pref_keep, 0, },
+	{"None", del_pref_keep, 0, },
+	{"Yes", del_pref_unset, 1, },
+	{"True", del_pref_unset, 1, },
+	{"All", del_pref_no_keep, 1, },
+	{"Always", del_pref_no_keep, 1, },
     };
-
-    table_ty        *tp;
-    char            buffer[100];
-    char            *bp;
-    int             c;
+    table_ty	    *tp;
+    char	    buffer[100];
+    char	    *bp;
+    int		    c;
 
     for (;;)
     {
@@ -2333,11 +2438,11 @@ ask(filename, isdir)
 
 int
 user_delete_file_query(up, filename, isdir)
-    user_ty         *up;
-    string_ty       *filename;
-    int             isdir;
+    user_ty	    *up;
+    string_ty	    *filename;
+    int		    isdir;
 {
-    int             result;
+    int		    result;
 
     /*
      * if the preference was not set on the command line,
@@ -2346,7 +2451,7 @@ user_delete_file_query(up, filename, isdir)
     trace(("user_delete_file_query()\n{\n"));
     if (cmd_line_pref == del_pref_unset)
     {
-	uconf           uconf_data;
+	uconf		uconf_data;
 
 	uconf_data = user_uconf_get(up);
 	switch (uconf_data->delete_file_preference)
@@ -2402,9 +2507,9 @@ user_delete_file_query(up, filename, isdir)
 
 int
 user_diff_preference(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    uconf           uconf_data;
+    uconf	    uconf_data;
 
     uconf_data = user_uconf_get(up);
     if (!(uconf_data->mask & uconf_diff_preference_mask))
@@ -2415,21 +2520,21 @@ user_diff_preference(up)
 
 int
 user_pager_preference(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    uconf           uconf_data;
+    uconf	    uconf_data;
 
     uconf_data = user_uconf_get(up);
     return (uconf_data->pager_preference == uconf_pager_preference_foreground);
 }
 
 
-static int uconf_persevere_option = -1;
+static int	uconf_persevere_option = -1;
 
 
 void
 user_persevere_argument(usage)
-    void            (*usage)_((void));
+    void	    (*usage)_((void));
 {
     if (uconf_persevere_option >= 0)
 	duplicate_option(usage);
@@ -2452,10 +2557,10 @@ user_persevere_argument(usage)
 
 int
 user_persevere_preference(up, dflt)
-    user_ty         *up;
-    int             dflt;
+    user_ty	    *up;
+    int		    dflt;
 {
-    uconf           uconf_data;
+    uconf	    uconf_data;
 
     if (uconf_persevere_option >= 0)
 	return uconf_persevere_option;
@@ -2476,10 +2581,10 @@ user_persevere_preference(up, dflt)
 
 uconf_log_file_preference_ty
 user_log_file_preference(up, dflt)
-    user_ty         *up;
+    user_ty	    *up;
     uconf_log_file_preference_ty dflt;
 {
-    uconf           uconf_data;
+    uconf	    uconf_data;
 
     uconf_data = user_uconf_get(up);
     if (uconf_data->mask & uconf_log_file_preference_mask)
@@ -2488,12 +2593,12 @@ user_log_file_preference(up, dflt)
 }
 
 
-static int uconf_lock_wait_option = -1;
+static int	uconf_lock_wait_option = -1;
 
 
 void
 user_lock_wait_argument(usage)
-    void            (*usage)_((void));
+    void	    (*usage)_((void));
 {
     if (uconf_lock_wait_option >= 0)
 	duplicate_option(usage);
@@ -2516,11 +2621,11 @@ user_lock_wait_argument(usage)
 
 int
 user_lock_wait(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
     if (uconf_lock_wait_option < 0)
     {
-	uconf           uconf_data;
+	uconf		uconf_data;
 	uconf_lock_wait_preference_ty result;
 
 	if (!up)
@@ -2544,12 +2649,12 @@ user_lock_wait(up)
 }
 
 
-static int uconf_whiteout_option = -1;
+static int	uconf_whiteout_option = -1;
 
 
 void
 user_whiteout_argument(usage)
-    void            (*usage)_((void));
+    void	    (*usage)_((void));
 {
     if (uconf_whiteout_option >= 0)
 	duplicate_option(usage);
@@ -2572,11 +2677,11 @@ user_whiteout_argument(usage)
 
 int
 user_whiteout(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
     if (uconf_whiteout_option < 0)
     {
-	uconf           uconf_data;
+	uconf		uconf_data;
 	uconf_whiteout_preference_ty result;
 
 	if (!up)
@@ -2589,12 +2694,12 @@ user_whiteout(up)
 }
 
 
-static int uconf_symlink_pref_option = -1;
+static int	uconf_symlink_pref_option = -1;
 
 
 void
 user_symlink_pref_argument(usage)
-    void            (*usage)_((void));
+    void	    (*usage)_((void));
 {
     if (uconf_symlink_pref_option >= 0)
 	duplicate_option(usage);
@@ -2617,8 +2722,8 @@ user_symlink_pref_argument(usage)
 
 int
 user_symlink_pref(up, proj_files_changed)
-    user_ty         *up;
-    int             proj_files_changed;
+    user_ty	    *up;
+    int		    proj_files_changed;
 {
     if (uconf_symlink_pref_option < 0)
     {
@@ -2628,7 +2733,7 @@ user_symlink_pref(up, proj_files_changed)
 	}
 	else
 	{
-	    uconf           uconf_data;
+	    uconf	    uconf_data;
 	    uconf_symbolic_link_preference_ty result;
 
 	    if (!up)
@@ -2643,12 +2748,12 @@ user_symlink_pref(up, proj_files_changed)
 }
 
 
-static int user_relative_filename_preference_option = -1;
+static int	user_relative_filename_preference_option = -1;
 
 
 void
 user_relative_filename_preference_argument(usage)
-    void            (*usage)_((void));
+    void	    (*usage)_((void));
 {
     if (user_relative_filename_preference_option >= 0)
 	duplicate_option(usage);
@@ -2673,12 +2778,12 @@ user_relative_filename_preference_argument(usage)
 
 uconf_relative_filename_preference_ty
 user_relative_filename_preference(up, dflt)
-    user_ty         *up;
+    user_ty	    *up;
     uconf_relative_filename_preference_ty dflt;
 {
     if (user_relative_filename_preference_option < 0)
     {
-	uconf           uconf_data;
+	uconf		uconf_data;
 
 	if (!up)
 	    up = user_executing((project_ty *)0);
@@ -2711,11 +2816,11 @@ static string_ty *clean_up _((string_ty *));
 
 static string_ty *
 clean_up(s)
-    string_ty       *s;
+    string_ty	    *s;
 {
-    stracc_t        buf;
-    const char      *cp;
-    string_ty       *result;
+    stracc_t	    buf;
+    const char	    *cp;
+    string_ty	    *result;
     unsigned char   prev;
 
     stracc_constructor(&buf);
@@ -2723,7 +2828,9 @@ clean_up(s)
     prev = ' ';
     for (cp = s->str_text; *cp; ++cp)
     {
-	unsigned char   c = *cp;
+	unsigned char	c;
+
+	c = *cp;
 	if (isspace(c) || strchr("@,<>()[]{}'\"", c) || !isprint(c))
 	    c = ' ';
 	if (c != ' ' || prev != ' ')
@@ -2756,10 +2863,10 @@ clean_up(s)
 
 string_ty *
 user_email_address(up)
-    user_ty         *up;
+    user_ty	    *up;
 {
-    uconf           uconf_data;
-    string_ty       *full_name;
+    uconf	    uconf_data;
+    string_ty	    *full_name;
 
     uconf_data = user_uconf_get(up);
     if (!uconf_data->email_address)
@@ -2776,4 +2883,144 @@ user_email_address(up)
 	str_free(full_name);
     }
     return uconf_data->email_address;
+}
+
+
+/*
+ * NAME
+ *	user_editor_command
+ *
+ * SYNOPSIS
+ *	string_ty *user_editor_command(user_ty *);
+ *
+ * DESCRIPTION
+ *	The user_editor_command is used to read the user's preferences
+ *	for editor to use with aegis. Defaults to EDITOR environment
+ *	variable.
+ *
+ * RETURNS
+ *	string_ty *; DO NOT use str_free when finished
+ */
+
+string_ty *
+user_editor_command(up)
+    user_ty	    *up;
+{
+    uconf	    uconf_data;
+    char	    *editor;
+
+    trace(("user_editor_command()\n{\n"));
+    if (!up)
+	up = user_executing((project_ty *)0);
+
+    assert(!os_become_active());
+    uconf_data = user_uconf_get(up);
+
+    if (!uconf_data->editor_command)
+    {
+	editor = getenv("EDITOR");
+	if (!editor || !*editor)
+	{
+	    sub_context_ty  *scp;
+
+	    scp = sub_context_new();
+	    sub_var_set_charstar(scp, "Name", "EDITOR");
+	    fatal_intl(scp, i18n("environment variable $name not set"));
+	    /* NOTREACHED */
+	}
+	uconf_data->editor_command = str_from_c(editor);
+    }
+    trace(("return \"%s\";\n", uconf_data->editor_command->str_text));
+    trace(("}\n"));
+    return uconf_data->editor_command;
+}
+
+
+/*
+ * NAME
+ *	user_visual_command
+ *
+ * SYNOPSIS
+ *	string_ty *user_visual_command(user_ty *);
+ *
+ * DESCRIPTION
+ *	The user_visual_command is used to read the user's preferences
+ *	for editor to use with aegis for foreground editing.
+ *	If 'editor_command' is not set VISUAL environment variable is
+ *	used. If $VISUAL is not set then EDITOR environment variable is
+ *	used. If EDITOR is not set then "vi" is used.
+ *
+ * RETURNS
+ *	string_ty *; DO NOT use str_free when finished
+ */
+
+string_ty *
+user_visual_command(up)
+    user_ty	    *up;
+{
+    uconf	    uconf_data;
+    char	    *editor;
+
+    trace(("user_visual_command()\n{\n"));
+    if (!up)
+	up = user_executing((project_ty *)0);
+
+    assert(!os_become_active());
+    uconf_data = user_uconf_get(up);
+
+    if (!uconf_data->visual_command)
+    {
+	editor = getenv("VISUAL");
+	if (!editor || !*editor)
+	    editor = getenv("EDITOR");
+	if (!editor || !*editor)
+	    editor = "vi";
+	uconf_data->visual_command = str_from_c(editor);
+    }
+    trace(("return \"%s\";\n", uconf_data->visual_command->str_text));
+    trace(("}\n"));
+    return uconf_data->visual_command;
+}
+
+
+/*
+ * NAME
+ *	user_pager_command
+ *
+ * SYNOPSIS
+ *	string_ty *user_pager_command(user_ty *);
+ *
+ * DESCRIPTION
+ *	The user_pager_command is used to read the user's preferences
+ *	for pager to use with aegis. Defaults to PAGER environment variable
+ *	If $PAGER is not set then "more" is used.
+ *
+ * RETURNS
+ *	string_ty *; DO NOT use str_free when finished
+ */
+
+string_ty *
+user_pager_command(up)
+    user_ty	    *up;
+{
+    uconf	    uconf_data;
+
+    trace(("user_pager_command()\n{\n"));
+    if (!up)
+	up = user_executing((project_ty *)0);
+    assert(!os_become_active());
+    uconf_data = user_uconf_get(up);
+
+    if (!uconf_data->pager_command)
+    {
+	char		*pager;
+
+	pager = getenv("PAGER");
+	if (!pager || !*pager)
+	    pager = "more";
+	uconf_data->pager_command = str_from_c(pager);
+    }
+    trace(("return \"%s\";\n", uconf_data->pager_command->str_text));
+    trace(("}\n"));
+    return uconf_data->pager_command;
 }

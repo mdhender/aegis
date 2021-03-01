@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,22 +33,22 @@ c = p.change[cn];
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
 
 print("<html><head><title>");
 print("Project " ## quote_html(pn) ## ", Change " ## cn);
-print("</title></head><body><h1><center>");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 print("Project ``" ## quote_html(pn) ## "'', Change " ## cn);
-print("</center></h1>");
+print("</h1>");
 
 print("<h2>Brief Description</h2>");
 auto part;
 for (part in wrap_html(quote_html(c.brief_description), 80))
-	print(part);
+    print(part);
 
 print("<h2>Description</h2>");
 for (part in wrap_html(quote_html(c.description), 80))
-	print(part);
+    print(part);
 
 print("<h2>Information Available</h2>");
 print("<dl>");
@@ -58,66 +58,116 @@ auto ok;
 try { ok = count(keys(c.branch)); }
 catch(ok) { ok = 0; }
 
+print("<dt>State<dd>This change is in the <i>" ## c.state ## "</i> state.");
+
 if (ok)
 {
-	href = script_name ## "?file@proj_menu+project@" ## quote_url(pn) ## "." ## cn;
-	print("<dt><a href=\"" ## href ## "\">");
-	print("Branch");
-	print("</a><dd>");
-	print("This change is a branch of the ``" ## quote_html(pn) ## "'' project.");
-	print("This item takes you to a project menu for the");
-	print("``" ## quote_html(pn) ## "." ## cn ## " branch.");
+    print("<p>");
+    href = script_name ## "?file@proj_menu+project@" ## quote_url(pn) ## "." ##
+	cn;
+    print("<dt><a href=\"" ## href ## "\">");
+    print("Branch");
+    print("</a><dd>");
+    print("This change is a branch of the ``" ## quote_html(pn) ##
+	"'' project.");
+    print("This item takes you to a project menu for the");
+    print("``" ## quote_html(pn) ## "." ## cn ## "'' branch.");
 }
 
 if (c.state >= being_developed)
 {
-href = script_name ## "?file@chan_files+project@" ## quote_url(pn) ## "+change@" ## cn;
-print("<dt><a href=\"" ## href ## "\">");
-print("Files");
-print("</a><dd>");
-print("This item will provide you with a listing of files which are");
-print("being created, modified or deleted by this change.");
+    print("<p>");
+    href = script_name ## "?file@chan_files+project@" ## quote_url(pn) ##
+	"+change@" ## cn;
+    print("<dt><a href=\"" ## href ## "\">");
+    print("Files");
+    print("</a><dd>");
+    print("This item will provide you with a listing of files which are");
+    print("being created, modified or deleted by this change.");
 }
 
 if (c.state >= being_developed && c.state <= being_integrated)
 {
-href = script_name ## "?file@file_activ+project@" ## quote_url(pn) ## "+change@" ## cn;
-print("<dt><a href=\"" ## href ## "\">");
-print("File Activity");
-print("</a><dd>");
-print("This item will provide you with a listing of files which are");
-print("being modified in this change <i>and also</i> in other changes.");
-print("The list includes who is working on the changes, and a brief");
-print("description of each change.");
+    print("<p>");
+    href = script_name ## "?file@file_activ+project@" ## quote_url(pn) ##
+	"+change@" ## cn;
+    print("<dt><a href=\"" ## href ## "\">");
+    print("File Activity");
+    print("</a><dd>");
+    print("This item will provide you with a listing of files which are");
+    print("being modified in this change <i>and also</i> in other changes.");
+    print("The list includes who is working on the changes, and a brief");
+    print("description of each change.");
 
-print("<dt>");
-href = script_name ## "?file@file_cflct";
-href ##= "+project@" ## quote_url(pn);
-href ##= "+change@" ## cn;
-print("<a href=\"" ## href ## "\">File Conflict</a>");
-print("<dd>");
-print("This item will provide you with a list of changes which are");
-print("actively modifying files in common with this change <b>if</b> more");
-print("than <i>one</i> change is modifying the file at the same time.");
+    print("<p>");
+    print("<dt>");
+    href = script_name ## "?file@file_cflct";
+    href ##= "+project@" ## quote_url(pn);
+    href ##= "+change@" ## cn;
+    print("<a href=\"" ## href ## "\">File Conflict</a>");
+    print("<dd>");
+    print("This item will provide you with a list of changes which are");
+    print("actively modifying files in common with this change <b>if</b> more");
+    print("than <i>one</i> change is modifying the file at the same time.");
 }
 
 if (c.state >= being_developed)
 {
-href = script_name ## "?file@file_hstry+project@" ## quote_url(pn) ## "+change@" ## cn;
-print("<dt><a href=\"" ## href ## "\">");
-print("File History");
-print("</a><dd>");
-print("This item will provide you with a listing of all completed");
-print("changes which affected the files in this change.  This report");
-print("can take a long time to generate.");
+    print("<p>");
+    href = script_name ## "?file@file_hstry+project@" ## quote_url(pn) ##
+	"+change@" ## cn;
+    print("<dt><a href=\"" ## href ## "\">");
+    print("File History");
+    print("</a><dd>");
+    print("This item will provide you with a listing of all completed");
+    print("changes which affected the files in this change.  This report");
+    print("can take a long time to generate.");
 }
 
-href = script_name ## "?file@chan_hstry+project@" ## quote_url(pn) ## "+change@" ## cn;
+print("<p>");
+href = script_name ## "?file@chan_hstry+project@" ## quote_url(pn) ##
+    "+change@" ## cn;
 print("<dt><a href=\"" ## href ## "\">");
 print("History");
 print("</a><dd>");
 print("This item will provide you with a listing of the state transitions");
 print("of this change, when they were performed, and who performed them.");
+
+if (c.state >= being_developed)
+{
+    print("<p>");
+    print("<dt>Download<dd>");
+    print("There are two ways to download this change.");
+    print("<br><table align=center>");
+    print("<tr><td valign=top>");
+    href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
+	## ".ae?file@aedist+project@" ## quote_url(pn)
+	## "+change@" ## cn;
+    print("<a href=\"" ## href ## "\"><i>aedist</i></a>,");
+    print("</td><td valign=top>");
+    print("The <i>aedist</i>(1) program packages changes so that they may");
+    print("be reproduced exactly on the remote site.  Changes packaged in");
+    print("this way require the <i>aedist</i>(1) program from Aegis 4.23");
+    print("or later to apply them.");
+    print("</td></tr>");
+
+    print("<tr><td valign=top>");
+    href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
+	## ".patch?file@aepatch+project@" ## quote_url(pn)
+	## "+change@" ## cn;
+    print("<a href=\"" ## href ## "\"><i>aepatch</i></a>");
+    print("</td><td valign=top>");
+    print("The <i>aepatch</i>(1) program packages changes in a manner");
+    print("familiar to Open Source developers.  Unlike <i>aedist</i>(1),");
+    print("change sets are not able to be reproduced identically, however");
+    print("the patches are able be applied manually.  You can apply these");
+    print("patches (or, indeed, other patches not procuced by <i>aepatch</i>)");
+    print("with the <i>aepatch</i>(1) program from Aegis 3.28 or later.");
+    print("To apply this patch manually, you must first MIME64 decode and");
+    print("gunzip, before using the normal <i>patch</i>(1) program.");
+    print("</td></tr>");
+    print("</table>");
+}
 
 print("</dl><hr>");
 print("This page was generated " ## now() ## ".");

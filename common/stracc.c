@@ -27,72 +27,63 @@
 
 
 void
-stracc_constructor(sap)
-	stracc_t	*sap;
+stracc_constructor(stracc_t *sap)
 {
-	sap->length = 0;
-	sap->maximum = 0;
-	sap->buffer = 0;
+    sap->length = 0;
+    sap->maximum = 0;
+    sap->buffer = 0;
 }
 
 
 void
-stracc_destructor(sap)
-	stracc_t	*sap;
+stracc_destructor(stracc_t *sap)
 {
-	if (sap->buffer)
-		mem_free(sap->buffer);
-	sap->length = 0;
-	sap->maximum = 0;
-	sap->buffer = 0;
+    if (sap->buffer)
+	mem_free(sap->buffer);
+    sap->length = 0;
+    sap->maximum = 0;
+    sap->buffer = 0;
 }
 
 
 void
-stracc_open(sap)
-	stracc_t	*sap;
+stracc_open(stracc_t *sap)
 {
-	sap->length = 0;
+    sap->length = 0;
 }
 
 
 string_ty *
-stracc_close(sap)
-	const stracc_t	*sap;
+stracc_close(const stracc_t *sap)
 {
-	return str_n_from_c(sap->buffer, sap->length);
+    return str_n_from_c(sap->buffer, sap->length);
 }
 
 
 #undef stracc_char
 
 void
-stracc_char(sap, c)
-	stracc_t	*sap;
-	int		c;
+stracc_char(stracc_t *sap, int c)
 {
-	if (sap->length >= sap->maximum)
-	{
-		sap->maximum = sap->maximum * 2 + 16;
-		sap->buffer = mem_change_size(sap->buffer, sap->maximum);
-	}
-	sap->buffer[sap->length++] = c;
+    if (sap->length >= sap->maximum)
+    {
+	sap->maximum = sap->maximum * 2 + 16;
+	sap->buffer = mem_change_size(sap->buffer, sap->maximum);
+    }
+    sap->buffer[sap->length++] = c;
 }
 
 
 void
-stracc_chars(sap, cp, n)
-	stracc_t	*sap;
-	const char	*cp;
-	size_t		n;
+stracc_chars(stracc_t *sap, const char *cp, size_t n)
 {
-	if (!n)
-		return;
-	while (sap->length + n > sap->maximum)
-	{
-		sap->maximum = sap->maximum * 2 + 16;
-		sap->buffer = mem_change_size(sap->buffer, sap->maximum);
-	}
-	memcpy(sap->buffer + sap->length, cp, n);
-	sap->length += n;
+    if (!n)
+	return;
+    while (sap->length + n > sap->maximum)
+    {
+	sap->maximum = sap->maximum * 2 + 16;
+	sap->buffer = mem_change_size(sap->buffer, sap->maximum);
+    }
+    memcpy(sap->buffer + sap->length, cp, n);
+    sap->length += n;
 }

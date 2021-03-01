@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1998 Peter Miller;
+ *	Copyright (C) 1996, 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,11 +35,8 @@
  */
 #include <ac/stddef.h>
 
-
 /* Solaris bug 1250837: include wchar.h before widec.h */
-#ifdef HAVE_WCHAR_H
-#include <wchar.h>
-#endif
+#include <ac/wchar.h>
 
 /*
  * Silicon Graphics
@@ -52,27 +49,28 @@
 #include <wctype.h>
 #endif
 
+/*
+ * The ANSI C standard states that wint_t symbol shall be defined by
+ * <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
+ * but this is incorrect.
+ */
 #ifndef HAVE_WINT_T
 #define HAVE_WINT_T
-#ifndef _WINT_T
-#define _WINT_T
 typedef wchar_t wint_t;
-#endif
 #endif
 
 #ifndef HAVE_WCTYPE_H
 #include <main.h>
-int iswalnum _((wint_t));
-int iswdigit _((wint_t));
-int iswlower _((wint_t));
-int iswprint _((wint_t));
-int iswpunct _((wint_t));
-int iswspace _((wint_t));
-int iswupper _((wint_t));
-wint_t towlower _((wint_t));
-wint_t towupper _((wint_t));
+int iswalnum(wint_t);
+int iswdigit(wint_t);
+int iswlower(wint_t);
+int iswprint(wint_t);
+int iswpunct(wint_t);
+int iswspace(wint_t);
+int iswupper(wint_t);
+wint_t towlower(wint_t);
+wint_t towupper(wint_t);
 #endif
-
 
 /*
  * HAVE_ISWPRINT is only set if (a) there is a have_iswprint function,

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999, 2000, 2001 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -56,11 +56,15 @@ then
 	integrators=`$aegis -list administrators -project $project -terse`
 	if [ $? -ne 0 ]; then quit; fi
 fi
+integrators=`echo $integrators | sed 's/ /,/g'`
 
 #
 # build the notice to be mailed
 #
-cat > $tmp << 'TheEnd'
+cat > $tmp << TheEnd
+Subject: Project $project: Change $change: passed review
+To: $developer, $integrators
+
 The change described below has passed review.
 It is now awaiting integration.
 
@@ -77,7 +81,7 @@ if [ $? -ne 0 ]; then quit; fi
 #
 # mail it to the developer and all integrators
 #
-mail -s "Project $project: Change $change: passed review" $developer $integrators < $tmp
+/usr/lib/sendmail -t < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

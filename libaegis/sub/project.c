@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <sub.h>
 #include <sub/project.h>
 #include <symtab.h>
@@ -34,8 +34,8 @@ typedef string_ty *(*func_ptr)_((project_ty *));
 typedef struct table_ty table_ty;
 struct table_ty
 {
-	char		*name;
-	func_ptr	func;
+    char	    *name;
+    func_ptr	    func;
 };
 
 
@@ -43,11 +43,11 @@ static string_ty *trunk_name_get _((project_ty *));
 
 static string_ty *
 trunk_name_get(pp)
-	project_ty	*pp;
+    project_ty	    *pp;
 {
-	while (pp->parent)
-		pp = pp->parent;
-	return project_name_get(pp);
+    while (pp->parent)
+	pp = pp->parent;
+    return project_name_get(pp);
 }
 
 
@@ -55,20 +55,20 @@ static string_ty *trunk_description_get _((project_ty *));
 
 static string_ty *
 trunk_description_get(pp)
-	project_ty	*pp;
+    project_ty	    *pp;
 {
-	while (pp->parent)
-		pp = pp->parent;
-	return project_description_get(pp);
+    while (pp->parent)
+	pp = pp->parent;
+    return project_description_get(pp);
 }
 
 
 static table_ty table[] =
 {
-	{ "name", project_name_get, },
-	{ "description", project_description_get, },
-	{ "trunk_name", trunk_name_get, },
-	{ "trunk_description", trunk_description_get, },
+    {"name", project_name_get, },
+    {"description", project_description_get, },
+    {"trunk_name", trunk_name_get, },
+    {"trunk_description", trunk_description_get, },
 };
 
 static symtab_ty *stp;
@@ -78,38 +78,38 @@ static func_ptr find_func _((string_ty *));
 
 static func_ptr
 find_func(name)
-	string_ty	*name;
+    string_ty	    *name;
 {
-	table_ty	*tp;
-	string_ty	*s;
-	func_ptr	result;
-	sub_context_ty	*scp;
+    table_ty	    *tp;
+    string_ty	    *s;
+    func_ptr	    result;
+    sub_context_ty  *scp;
 
-	if (!stp)
+    if (!stp)
+    {
+	stp = symtab_alloc(SIZEOF(table));
+	for (tp = table; tp < ENDOF(table); ++tp)
 	{
-		stp = symtab_alloc(SIZEOF(table));
-		for (tp = table; tp < ENDOF(table); ++tp)
-		{
-			s = str_from_c(tp->name);
-			symtab_assign(stp, s, tp->func);
-			str_free(s);
-		}
+	    s = str_from_c(tp->name);
+	    symtab_assign(stp, s, tp->func);
+	    str_free(s);
 	}
-	result = symtab_query(stp, name);
-	if (!result)
+    }
+    result = (func_ptr)symtab_query(stp, name);
+    if (!result)
+    {
+	s = symtab_query_fuzzy(stp, name);
+	if (s)
 	{
-		s = symtab_query_fuzzy(stp, name);
-		if (s)
-		{
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", name);
-			sub_var_set_string(scp, "Guess", s);
-			error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
-			sub_context_delete(scp);
-		}
-		return 0;
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", name);
+	    sub_var_set_string(scp, "Guess", s);
+	    error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
+	    sub_context_delete(scp);
 	}
-	return result;
+	return 0;
+    }
+    return result;
 }
 
 
@@ -134,42 +134,42 @@ find_func(name)
 
 wstring_ty *
 sub_project(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	string_ty	*s;
-	wstring_ty	*result;
-	func_ptr	func;
-	project_ty	*pp;
+    string_ty	    *s;
+    wstring_ty	    *result;
+    func_ptr	    func;
+    project_ty	    *pp;
 
-	trace(("sub_project()\n{\n"/*}*/));
-	pp = sub_context_project_get(scp);
-	if (!pp)
+    trace(("sub_project()\n{\n" /*}*/));
+    pp = sub_context_project_get(scp);
+    if (!pp)
+    {
+	sub_context_error_set(scp, i18n("not valid in current context"));
+	result = 0;
+    }
+    else if (arg->nitems == 1)
+	result = str_to_wstr(project_name_get(pp));
+    else if (arg->nitems == 2)
+    {
+	s = wstr_to_str(arg->item[1]);
+	func = find_func(s);
+	str_free(s);
+	if (!func)
 	{
-		sub_context_error_set(scp, i18n("not valid in current context"));
-		result = 0;
-	}
-	else if (arg->nitems == 1)
-		result = str_to_wstr(project_name_get(pp));
-	else if (arg->nitems == 2)
-	{
-		s = wstr_to_str(arg->item[1]);
-		func = find_func(s);
-		str_free(s);
-		if (!func)
-		{
-			sub_context_error_set(scp, i18n("unknown substitution variant"));
-			result = 0;
-		}
-		else
-			result = str_to_wstr(func(pp));
+	    sub_context_error_set(scp, i18n("unknown substitution variant"));
+	    result = 0;
 	}
 	else
-	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		result = 0;
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+	    result = str_to_wstr(func(pp));
+    }
+    else
+    {
+	sub_context_error_set(scp, i18n("requires one argument"));
+	result = 0;
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace(( /*{*/"}\n"));
+    return result;
 }

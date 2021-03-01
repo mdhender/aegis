@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -62,8 +62,12 @@ The following options are understood:
 .TP 8n
 .B \-Resolve
 This option may be used to request that filenames be absolute paths,
-referring to the fully resolved file name.  By default, relative file
-names are used, relative to the root of the ``stacked'' directory tree.
+referring to the fully resolved file name.
+This is the default.
+.TP 8n
+.B \-No_Resolve
+This option may be used to request that filenames be base relative names,
+relative to the root of the ``stacked'' directory tree.
 .TP 8n
 .B \-Verbose
 This option may be used to request that the expression be printed
@@ -128,7 +132,7 @@ Is is an error if the argument cannot be coerced to a boolean.
 Synonym: \fB\-Not\fP
 .TP 8n
 \fB~\fP \fIexpr\fP
-Bitwise not of the argument. 
+Bitwise not of the argument.
 Is is an error if the argument cannot be coerced to an integer.
 .TP 8n
 \fIexpr1\fP \fB*\fP \fIexpr2\fP
@@ -317,6 +321,15 @@ This function may be used to
 determine the last-change-time of an inode.
 It takes one argument.
 .TP 8n
+execute
+This function may be used to execute a command.  The arguiments are
+assembled into the command to be executed.  Use the special ``{}''
+argument to insert the name of the current file.  The function returns
+true of the command's exist status is zero.  All following arguments to
+find are taken to  be  arguments  to  the command until an argument
+consisting of `;' is encountered.  The command  is  executed in the
+starting directory.
+.TP 8n
 gid
 This function may be used to
 determine the gid of a file.
@@ -458,5 +471,9 @@ This will print the full file name on the standard output,
 followed by a newline.
 The \fB-Resolve\fP option will affect what is printed.
 This is short-hand for the ``print ( {} )'' expression.
+.TP 8n
+\fB\-execute\fP \fIstring\fP... \fB;\fP
+The may be used to execute a command.
+This is short-hand for the ``execute ( \fIstring\fP \fB:\fP ... )'' expression.
 .so z_exit.so
 .so z_cr.so

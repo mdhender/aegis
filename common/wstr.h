@@ -32,38 +32,38 @@ typedef unsigned long wstr_hash_ty;
 typedef struct wstring_ty wstring_ty;
 struct wstring_ty
 {
-	wstr_hash_ty	wstr_hash;
-	wstring_ty	*wstr_next;
-	long		wstr_references;
-	size_t		wstr_length;
-	wchar_t		wstr_text[1];
+    wstr_hash_ty    wstr_hash;
+    wstring_ty	    *wstr_next;
+    long	    wstr_references;
+    size_t	    wstr_length;
+    wchar_t	    wstr_text[1];
 };
 
-wstring_ty *wstr_from_c _((const char *));
-wstring_ty *wstr_from_wc _((const wchar_t *));
-wstring_ty *wstr_n_from_c _((const char *, size_t));
-wstring_ty *wstr_n_from_wc _((const wchar_t *, size_t));
-wstring_ty *wstr_copy _((wstring_ty *));
-void wstr_free _((wstring_ty *));
-wstring_ty *wstr_catenate _((const wstring_ty *, const wstring_ty *));
-wstring_ty *wstr_cat_three _((const wstring_ty *, const wstring_ty *,
-	const wstring_ty *));
-wstring_ty *wstr_to_upper _((const wstring_ty *));
-wstring_ty *wstr_to_lower _((const wstring_ty *));
-wstring_ty *wstr_capitalize _((const wstring_ty *));
-wstring_ty *wstr_to_ident _((const wstring_ty *));
-void wstr_to_mbs _((const wstring_ty *, char **, size_t *));
-int wstr_equal _((const wstring_ty *, const wstring_ty *));
+wstring_ty *wstr_from_c(const char *);
+wstring_ty *wstr_from_wc(const wchar_t *);
+wstring_ty *wstr_n_from_c(const char *, size_t);
+wstring_ty *wstr_n_from_wc(const wchar_t *, size_t);
+wstring_ty *wstr_copy(wstring_ty *);
+void wstr_free(wstring_ty *);
+wstring_ty *wstr_catenate(const wstring_ty *, const wstring_ty *);
+wstring_ty *wstr_cat_three(const wstring_ty *, const wstring_ty *,
+    const wstring_ty *);
+wstring_ty *wstr_to_upper(const wstring_ty *);
+wstring_ty *wstr_to_lower(const wstring_ty *);
+wstring_ty *wstr_capitalize(const wstring_ty *);
+wstring_ty *wstr_to_ident(const wstring_ty *);
+void wstr_to_mbs(const wstring_ty *, char **, size_t *);
+int wstr_equal(const wstring_ty *, const wstring_ty *);
 
 #ifndef DEBUG
 #define wstr_equal(s1, s2) ((s1) == (s2))
 #endif
 
 struct string_ty;
-struct string_ty *wstr_to_str _((const wstring_ty *));
-wstring_ty *str_to_wstr _((const struct string_ty *));
+struct string_ty *wstr_to_str(const wstring_ty *);
+wstring_ty *str_to_wstr(const struct string_ty *);
 
-wstring_ty *wstr_quote_shell _((wstring_ty *));
-int wstr_column_width _((wstring_ty *));
+wstring_ty *wstr_quote_shell(wstring_ty *);
+int wstr_column_width(wstring_ty *);
 
 #endif /* COMMON_WSTR_H */

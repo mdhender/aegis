@@ -36,6 +36,8 @@ enum
 	arglex_token_description_header_not,
 	arglex_token_entire_source,
 	arglex_token_entire_source_not,
+	arglex_token_patch,
+	arglex_token_patch_not,
 	arglex_token_receive,
 	arglex_token_send,
 	arglex_token_trojan,

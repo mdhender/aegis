@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ All file names are stored within \*(n) projects as relative to
 the root of the baseline directory tree.
 The development directory and the integration directory are shadows of
 this baseline directory, and so these relative names apply here, too.
-Files named on the command line 
+Files named on the command line
 are first converted to absolute paths if necessary.
 They are then compared with the baseline path,
 the development directory path,

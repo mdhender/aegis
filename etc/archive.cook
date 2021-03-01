@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2001 Peter Miller;
+ *	Copyright (C) 1997-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: instructions to cook(1), how to build archive directory
  */
 
-integration-build-targets:
+integration-build-targets =
 	/* archive/Part.01.gz */
 	/* archive/[project_minus].patch.gz */
 	archive/[project_minus].README
@@ -28,20 +28,34 @@ integration-build-targets:
 	archive/[project_minus].faq
 	archive/[project_minus].lsm
 	archive/[project_minus].spec
-	archive/[project_minus].tar.gz
 	html-targets
+	lib/en/release/release.txt
 	;
+if [find_command tardy] then
+{
+    integration-build-targets +=
+	archive/[project_minus].tar.gz
+	;
+
+    if [find_command rpm] then
+    if [matches %1.D%2 [version]] then
+    if [in [fromto %1.D%2 %2 [version]] 001 002] then
+    if [matches linux%1 [arch]] then
+	integration-build-targets += RPM;
+}
+integration-build-targets: [integration-build-targets];
 
 html-targets: [html-targets];
 
 html-sources = [match_mask etc/%.html [source_files]];
 
 html-targets =
-	archive/[project_short].gif
 	[fromto etc/%.html archive/%.html
 		[html-sources]
 	]
 	;
+if [find_command uudecode] then
+	html-targets += archive/[project_short].gif;
 
 if [count [html-sources]] then
 cascade [html-sources] = etc/version.so;
@@ -106,7 +120,8 @@ archive/[project_minus].README: lib/en/readme/readme.txt
 
 source_file_order =
 	README
-	[project_short].spec /* to RPM can build without separate spec file */
+	[project_short].spec /* so RPM can build without separate spec file */
+	[project_short].gif
 	[sort
 		[stringset
 			[source_files]
@@ -120,9 +135,8 @@ source_file_order =
 			common/config.h.in
 			common/patchlevel.h
 			configure
-			etc/CHANGES.3
-			etc/CHANGES.4
-			[fromto 
+			etc/CHANGES
+			[fromto
 				lib/%1/faq/main.%2 lib/%1/faq/toc.so
 				[match_mask lib/%1/faq/main.%2 [source_files]]
 			]
@@ -138,11 +152,53 @@ source_file_order =
 				lib/icon/%.uue lib/icon/%
 				[match_mask lib/icon/%.uue [source_files]]
 			]
-			[project_short].gif
 		-
 			README
 		]
 	]
+	;
+
+if [find_command msgcat] then
+    source_file_order +=
+	/*
+	 * This next file is for the benefit of the Translation Project
+	 * robot.  (Yes, that's right, a bloody robot.)
+	 *
+	 * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
+	 * for more information.
+	 *
+	 * I particularly dislike this approach, because it is incredibly
+	 * short sighted.  This approach fails to take into account that
+	 * you may want to have translations of manual pages and other
+	 * documentation, AS WELL AS translations of error messages.
+	 *
+	 * Would it make sense to ask authors to catenate all of
+	 * ther man pages together, and have a po/PACKAGE.man file?
+	 * No, of course not.  Would it make sense to ask authors to
+	 * catenate all of their other documentation together, and
+	 * have a po/PACKAGE.latex file?  No, of course not.  Well then,
+	 * why on Earth does it make sense to catenate together all of
+	 * the messages into a po/PACKAGE.pot file?  Betch.
+	 *
+	 * And then, to add insult to injury, it wastes space in the tarball.
+	 *
+	 * My project uses a directory tree
+	 * 	lib/
+	 *	    <LL>/
+	 *		LC_MESSAGES/
+	 *		    all of the various .po files go here
+	 *		man<N>/
+	 *		    all of the man<N> pages go here
+	 *		user-guide/
+	 *		    all of the files which make the
+	 *		    user guide go here.
+	 *		<other-docs>/
+	 *		    and so on...
+	 *
+	 * As you can see, this can accomodate translated .po files,
+	 * AND ALSO any other documentation, once it is translated.
+	 */
+	po/[project_short].pot
 	;
 
 MANIFEST: etc/MANIFEST.sh [stringset [source_file_order] - MANIFEST]
@@ -251,9 +307,16 @@ archive/[project_short].gif: lib/icon/[project_short].gif
 RPM: archive/[project_minus]-1.i386.rpm;
 
 archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
-		archive/[project_minus].tar.gz etc/rpm-build.sh
+		archive/[project_minus].tar.gz
+		archive/[project_short].gif
+		etc/rpm-build.sh
 	set shallow
 {
+	/*
+	 * The book says that the icon files need to be in the SOURCES
+	 * directory.  Actually, they need to be in the same directory
+	 * as the tarball.
+	 */
 	sh [resolve etc/rpm-build.sh]
 		RPM-temporary
 		[resolve archive/[project_minus].tar.gz]

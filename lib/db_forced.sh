@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1999, 2000, 2001 Peter Miller;
+#	Copyright (C) 1994, 1995, 1999-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,8 @@
 # MANIFEST: shell script to notify 'aedb -User' events
 #
 # Suggested project attribute:
-# forced_develop_begin_notify_command = "$datadir/db_forced.sh $p $c $developer";
+# forced_develop_begin_notify_command =
+#	"$datadir/db_forced.sh $p $c $developer";
 #
 aegis=aegis
 case $# in
@@ -48,7 +49,10 @@ quit()
 #
 # build the notice to be mailed
 #
-cat > $tmp << 'TheEnd'
+cat > $tmp << TheEnd
+Subject: Project $project: Change $change: Develop Begin
+To: $developer
+
 Development of the following change has been assigned to you.
 
 TheEnd
@@ -62,9 +66,9 @@ $aegis -list change_details -project $project -change $change -verbose \
 if [ $? -ne 0 ]; then quit; fi
 
 #
-# mail it to all reviewers
+# mail it to the developer
 #
-mail -s "Project $project: Change $change: Develop Begin" $developer < $tmp
+/usr/lib/sendmail -t < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

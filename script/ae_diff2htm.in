@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2002 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: insulate against diff2html present or absence
+#
+
+#
+# Work out if there is a diff2html program on the PATH.
+# This can't be worked out by ./configure, because this happens on the
+# machine which *builds* the RPM, and not the machine on which the rpm
+# is installed.  Plus, they could run aegis.cgi in a chroot jail, and
+# not put diff2html in the jail with it.
+#
+have_diff2html=no
+IFS="${IFS=   }"
+save_ifs="$IFS"; IFS=":"
+dummy="$PATH"
+for dir in $dummy
+do
+    test -z "$dir" && ac_dir=.
+    if test -f $dir/diff2html
+    then
+	have_diff2html=yes
+	break
+    fi
+done
+IFS="$save_ifs"
+
+#
+# The command line should have two file names on it, diff them and output HTML.
+#
+if [ "$have_diff2html" == "yes" ]
+then
+    diff2html "$@"
+else
+    echo '<pre>'
+    diff -c "$@" 2>&1 | sed 's|<|\&lt;|g'
+    echo '</pre>'
+fi
+exit 0

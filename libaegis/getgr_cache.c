@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,10 +48,22 @@ group_null()
 	 */
 	memset(result, 0, sizeof(*result));
 
+#ifndef SOURCE_FORGE_HACK
 	result->gr_name = 0;
 	result->gr_passwd = 0;
 	result->gr_gid = -1;
 	result->gr_mem = 0;
+#else
+	/*
+	 * This is used to fake a group, because on SourceForge.net
+	 * the Apache servers don't have access to /etc/group.  The fake
+	 * information will be further taylored below.
+	 */
+	result->gr_name = "nogroup";
+	result->gr_passwd = "*";
+	result->gr_gid = AEGIS_MIN_GID;
+	result->gr_mem = 0;
+#endif
 
 	/*
 	 * All done.
@@ -118,7 +130,12 @@ getgrnam_cached(name)
 			itab_assign(gid_table, data->gr_gid, data);
 		}
 		else
+		{
 			data = group_null();
+#ifdef SOURCE_FORGE_HACK
+			data->gr_name = mem_copy_string(name->str_text);
+#endif
+		}
 		symtab_assign(name_table, name, data);
 	}
 
@@ -175,7 +192,12 @@ getgrgid_cached(gid)
 			str_free(name);
 		}
 		else
+		{
 			data = group_null();
+#ifdef SOURCE_FORGE_HACK
+			data->gr_gid = gid;
+#endif
+		}
 		itab_assign(gid_table, gid, data);
 	}
 

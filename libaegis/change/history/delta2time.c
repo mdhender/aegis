@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,27 +23,6 @@
 #include <change/branch.h>
 #include <error.h> /* for assert */
 #include <project.h>
-
-
-static time_t change_completion_timestamp _((change_ty *));
-
-static time_t
-change_completion_timestamp(cp)
-	change_ty	*cp;
-{
-	cstate		cstate_data;
-	cstate_history	chp;
-	cstate_history_list chlp;
-
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->state == cstate_state_completed);
-	chlp = cstate_data->history;
-	assert(chlp);
-	assert(chlp->length);
-	chp = chlp->list[chlp->length - 1];
-	assert(chp);
-	return chp->when;
-}
 
 
 time_t

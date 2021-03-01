@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1995, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@ auto p, ps;
 p = project[project_name()];
 title
 (
-	"The Project Statistics Report",
-	sprintf("Project \"%s\"", p.name)
+    "The Project Statistics Report",
+    sprintf("Project \"%s\"", p.name)
 );
 ps = p.state.branch;
 
@@ -43,80 +43,80 @@ hist_min = { garbage = 0; };
 hist_max = { garbage = 0; };
 for (cn in keys(ps.change))
 {
-	cs = ps.change[cn];
-	cause_stats[cs.cause]++;
-	cause_total++;
+    cs = ps.change[cn];
+    cause_stats[cs.cause]++;
+    cause_total++;
 
-	for (idx in cs.src)
-	{
-		file_action_stats[idx.action]++;
-		file_action_total++;
-		file_usage_stats[idx.usage]++;
-		file_usage_total++;
-	}
+    for (idx in cs.src)
+    {
+       	file_action_stats[idx.action]++;
+       	file_action_total++;
+       	file_usage_stats[idx.usage]++;
+       	file_usage_total++;
+    }
 
-	cs.history ##= [{ when = hist_now; what = integrate_pass; }];
-	hist_chan = { garbage = 0; };
-	for (idx in cs.history)
-	{
-		if (idx.what == new_change)
-		{
-			hist_time = idx.when;
-			hist_state = awaiting_development;
-			continue;
-		}
-		hist_chan[hist_state] += working_days(hist_time, idx.when);
-		hist_time = idx.when;
-		if (idx.what == new_change)
-			hist_state = awaiting_development;
-		else if (idx.what == develop_begin)
-			hist_state = being_developed;
-		else if (idx.what == develop_begin_undo)
-			hist_state = awaiting_development;
-		else if (idx.what == develop_end)
-			hist_state = being_reviewed;
-		else if (idx.what == develop_end_2ar)
-			hist_state = awaiting_review;
-		else if (idx.what == develop_end_2ai)
-			hist_state = awaiting_integration;
-		else if (idx.what == develop_end_undo)
-			hist_state = being_developed;
-		else if (idx.what == review_begin)
-			hist_state = being_reviewed;
-		else if (idx.what == review_begin_undo)
-			hist_state = awaiting_review;
-		else if (idx.what == review_fail)
-			hist_state = being_developed;
-		else if (idx.what == review_pass)
-			hist_state = awaiting_integration;
-		else if (idx.what == review_pass_undo)
-			hist_state = being_reviewed;
-		else if (idx.what == integrate_begin)
-			hist_state = being_integrated;
-		else if (idx.what == integrate_begin_undo)
-			hist_state = awaiting_integration;
-		else if (idx.what == integrate_fail)
-			hist_state = being_developed;
-		else
-			break;
-	}
+    cs.history ##= [{ when = hist_now; what = integrate_pass; }];
+    hist_chan = { garbage = 0; };
+    for (idx in cs.history)
+    {
+       	if (idx.what == new_change)
+       	{
+    	    hist_time = idx.when;
+    	    hist_state = awaiting_development;
+    	    continue;
+       	}
+       	hist_chan[hist_state] += working_days(hist_time, idx.when);
+       	hist_time = idx.when;
+       	if (idx.what == new_change)
+    	    hist_state = awaiting_development;
+       	else if (idx.what == develop_begin)
+    	    hist_state = being_developed;
+       	else if (idx.what == develop_begin_undo)
+    	    hist_state = awaiting_development;
+       	else if (idx.what == develop_end)
+    	    hist_state = being_reviewed;
+       	else if (idx.what == develop_end_2ar)
+    	    hist_state = awaiting_review;
+       	else if (idx.what == develop_end_2ai)
+    	    hist_state = awaiting_integration;
+       	else if (idx.what == develop_end_undo)
+    	    hist_state = being_developed;
+       	else if (idx.what == review_begin)
+    	    hist_state = being_reviewed;
+       	else if (idx.what == review_begin_undo)
+    	    hist_state = awaiting_review;
+       	else if (idx.what == review_fail)
+    	    hist_state = being_developed;
+       	else if (idx.what == review_pass)
+    	    hist_state = awaiting_integration;
+       	else if (idx.what == review_pass_undo)
+    	    hist_state = being_reviewed;
+       	else if (idx.what == integrate_begin)
+    	    hist_state = being_integrated;
+       	else if (idx.what == integrate_begin_undo)
+    	    hist_state = awaiting_integration;
+       	else if (idx.what == integrate_fail)
+    	    hist_state = being_developed;
+       	else
+    	    break;
+    }
 
-	for (idx in [awaiting_development, being_developed, awaiting_review,
-		being_reviewed, awaiting_integration, being_integrated])
-	{
-		j = hist_chan[idx];
-		hist_stats[idx] += j;
-		if (!hist_min[idx] || j < hist_min[idx])
-			hist_min[idx] = j;
-		if (j > hist_max[idx])
-			hist_max[idx] = j;
-	}
-	j = working_days(cs.history[0].when, hist_time);
-	hist_total += j;
-	if (!hist_total_min || j < hist_total_min)
-		hist_total_min = j;
-	if (j > hist_total_max)
-		hist_total_max = j;
+    for (idx in [awaiting_development, being_developed, awaiting_review,
+       	being_reviewed, awaiting_integration, being_integrated])
+    {
+       	j = hist_chan[idx];
+       	hist_stats[idx] += j;
+       	if (!hist_min[idx] || j < hist_min[idx])
+    	    hist_min[idx] = j;
+       	if (j > hist_max[idx])
+    	    hist_max[idx] = j;
+    }
+    j = working_days(cs.history[0].when, hist_time);
+    hist_total += j;
+    if (!hist_total_min || j < hist_total_min)
+       	hist_total_min = j;
+    if (j > hist_total_max)
+       	hist_total_max = j;
 }
 
 /*
@@ -124,47 +124,47 @@ for (cn in keys(ps.change))
  */
 columns
 (
-	{
-		name = "\nChange State\n-----------";
-		width = 21;
-	},
-	{
-		name = " Working\n  Days\n---------";
-		width = 9;
-	},
-	{
-		name = "\nMinimum\n-------";
-		width = 7;
-	},
-	{
-		name = "\nAverage\n-------";
-		width = 7;
-	},
-	{
-		name = "\nMaximum\n-------";
-		width = 7;
-	}
+    {
+	name = "\nChange State\n-----------";
+	width = 21;
+    },
+    {
+	name = " Working\n  Days\n---------";
+	width = 9;
+    },
+    {
+	name = "\nMinimum\n-------";
+	width = 7;
+    },
+    {
+	name = "\nAverage\n-------";
+	width = 7;
+    },
+    {
+	name = "\nMaximum\n-------";
+	width = 7;
+    }
 );
 for (idx in [awaiting_development, being_developed, awaiting_review,
-	being_reviewed, awaiting_integration, being_integrated])
+    being_reviewed, awaiting_integration, being_integrated])
 {
-	hist_time = hist_stats[idx];
-	print
-	(
-		idx,
-		sprintf("%8.2f", hist_time),
-		sprintf("%6.2f", hist_min[idx]),
-		sprintf("%6.2f", hist_time * 1. / cause_total),
-		sprintf("%6.2f", hist_max[idx])
-	);
+    hist_time = hist_stats[idx];
+    print
+    (
+	idx,
+	sprintf("%8.2f", hist_time),
+	sprintf("%6.2f", hist_min[idx]),
+	sprintf("%6.2f", hist_time * 1. / cause_total),
+	sprintf("%6.2f", hist_max[idx])
+    );
 }
 print
 (
-	"\nTotal",
-	sprintf("---------\n%8.2f", hist_total),
-	sprintf("-------\n%6.2f", hist_total_min),
-	sprintf("-------\n%6.2f", hist_total * 1. / cause_total),
-	sprintf("-------\n%6.2f", hist_total_max)
+    "\nTotal",
+    sprintf("---------\n%8.2f", hist_total),
+    sprintf("-------\n%6.2f", hist_total_min),
+    sprintf("-------\n%6.2f", hist_total * 1. / cause_total),
+    sprintf("-------\n%6.2f", hist_total_max)
 );
 
 /*
@@ -173,27 +173,27 @@ print
 need(13);
 columns
 (
-	{
-		name = "Change Cause\n--------------";
-		width = 23;
-	},
-	{
-		name = "Count\n------";
-		width = 7;
-	},
-	{
-		name = "Percent\n-------";
-		width = 7;
-	}
+    {
+	name = "Change Cause\n--------------";
+	width = 23;
+    },
+    {
+	name = "Count\n------";
+	width = 7;
+    },
+    {
+	name = "Percent\n-------";
+	width = 7;
+    }
 );
 for (idx in sort(keys(cause_stats)))
 {
-	print
-	(
-		idx,
-		sprintf("%5d", cause_stats[idx]),
-		sprintf("%6.2f%%", 100. * cause_stats[idx] / cause_total)
-	);
+    print
+    (
+	idx,
+	sprintf("%5d", cause_stats[idx]),
+	sprintf("%6.2f%%", 100. * cause_stats[idx] / cause_total)
+    );
 }
 print("\nTotal", sprintf("------\n%5d", cause_total));
 
@@ -203,40 +203,40 @@ print("\nTotal", sprintf("------\n%5d", cause_total));
 need(7);
 columns
 (
-	{
-		name = "Change File Action\n--------------------";
-		width = 23;
-	},
-	{
-		name = "Count\n------";
-		width = 7;
-	},
-	{
-		name = "Percent\n-------";
-		width = 7;
-	},
-	{
-		name = "Average\n-------";
-		padding = 2;
-		right = 0;
-	}
+    {
+	name = "Change File Action\n--------------------";
+	width = 23;
+    },
+    {
+	name = "Count\n------";
+	width = 7;
+    },
+    {
+	name = "Percent\n-------";
+	width = 7;
+    },
+    {
+	name = "Average\n-------";
+	padding = 2;
+	right = 0;
+    }
 );
 for (idx in sort(keys(file_action_stats)))
 {
-	print
-	(
-		idx,
-		sprintf("%5d", file_action_stats[idx]),
-		sprintf("%6.2f%%", 100. * file_action_stats[idx] / file_action_total),
-		sprintf("%6.2f", file_action_stats[idx] * 1. / cause_total)
-	);
+    print
+    (
+	idx,
+	sprintf("%5d", file_action_stats[idx]),
+	sprintf("%6.2f%%", 100. * file_action_stats[idx] / file_action_total),
+	sprintf("%6.2f", file_action_stats[idx] * 1. / cause_total)
+    );
 }
 print
 (
-	"\nTotal",
-	sprintf("------\n%5d", file_action_total),
-	"",
-	sprintf("-------\n%6.2f", file_action_total * 1. / cause_total)
+    "\nTotal",
+    sprintf("------\n%5d", file_action_total),
+    "",
+    sprintf("-------\n%6.2f", file_action_total * 1. / cause_total)
 );
 
 /*
@@ -245,38 +245,38 @@ print
 need(9);
 columns
 (
-	{
-		name = "Change File Type\n------------------";
-		width = 23;
-	},
-	{
-		name = "Count\n------";
-		width = 7;
-	},
-	{
-		name = "Percent\n-------";
-		width = 7;
-	},
-	{
-		name = "Average\n-------";
-		padding = 2;
-		right = 0;
-	}
+    {
+	name = "Change File Type\n------------------";
+	width = 23;
+    },
+    {
+	name = "Count\n------";
+	width = 7;
+    },
+    {
+	name = "Percent\n-------";
+	width = 7;
+    },
+    {
+	name = "Average\n-------";
+	padding = 2;
+	right = 0;
+    }
 );
 for (idx in sort(keys(file_usage_stats)))
 {
-	print
-	(
-		idx,
-		sprintf("%5d", file_usage_stats[idx]),
-		sprintf("%6.2f%%", 100. * file_usage_stats[idx] / file_usage_total),
-		sprintf("%6.2f", file_usage_stats[idx] * 1. / cause_total)
-	);
+    print
+    (
+	idx,
+	sprintf("%5d", file_usage_stats[idx]),
+	sprintf("%6.2f%%", 100. * file_usage_stats[idx] / file_usage_total),
+	sprintf("%6.2f", file_usage_stats[idx] * 1. / cause_total)
+    );
 }
 print
 (
-	"\nTotal",
-	sprintf("------\n%5d", file_usage_total),
-	"",
-	sprintf("-------\n%6.2f", file_usage_total * 1. / cause_total)
+    "\nTotal",
+    sprintf("------\n%5d", file_usage_total),
+    "",
+    sprintf("-------\n%6.2f", file_usage_total * 1. / cause_total)
 );

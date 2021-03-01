@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  */
 
 #include <error.h>
+#include <str_list.h>
 #include <sub/getenv.h>
 #include <sub.h>
 #include <trace.h>
@@ -51,30 +52,44 @@
 
 wstring_ty *
 sub_getenv(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	string_ty	*name;
-	char		*value;
-	wstring_ty	*result;
+    wstring_ty	    *result;
 
-	trace(("sub_getenv()\n{\n"/*}*/));
-	if (arg->nitems != 2)
+    trace(("sub_getenv()\n{\n"/*}*/));
+    if (arg->nitems < 2)
+    {
+       	sub_context_error_set(scp, i18n("requires one argument"));
+       	result = 0;
+    }
+    else
+    {
+	string_list_ty	results;
+	size_t		j;
+	string_ty	*s;
+
+	string_list_constructor(&results);
+	for (j = 1; j < arg->nitems; ++j)
 	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		result = 0;
-		goto done;
-	}
+	    string_ty	    *name;
+	    char	    *value;
 
-	name = wstr_to_str(arg->item[1]);
-	value = getenv(name->str_text);
-	str_free(name);
-	if (!value)
+	    name = wstr_to_str(arg->item[j]);
+	    value = getenv(name->str_text);
+	    str_free(name);
+	    if (!value)
 		value = "";
-	result = wstr_from_c(value);
-
-done:
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+	    s = str_from_c(value);
+	    string_list_append(&results, s);
+	    str_free(s);
+	}
+	s = wl2str(&results, 0, results.nstrings, 0);
+	string_list_destructor(&results);
+	result = str_to_wstr(s);
+	str_free(s);
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace((/*{*/"}\n"));
+    return result;
 }

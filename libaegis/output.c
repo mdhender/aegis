@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -296,14 +296,11 @@ output_page_length(fp)
 
 
 void
-output_fprintf(fp, fmt sva_last)
-	output_ty	*fp;
-	const char	*fmt;
-	sva_last_decl
+output_fprintf(output_ty *fp, const char *fmt, ...)
 {
 	va_list		ap;
 
-	sva_init(ap, fmt);
+	va_start(ap, fmt);
 	output_vfprintf(fp, fmt, ap);
 	va_end(ap);
 }

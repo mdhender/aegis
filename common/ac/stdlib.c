@@ -31,9 +31,7 @@
 #undef mblen
 
 int
-mblen(s, n)
-	const char	*s;
-	size_t		n;
+mblen(const char *s, size_t n)
 {
 	return (s && *s);
 }
@@ -42,10 +40,7 @@ mblen(s, n)
 #undef mbtowc
 
 int
-mbtowc(pwc, s, n)
-	wchar_t		*pwc;
-	const char	*s;
-	size_t		n;
+mbtowc(wchar_t *pwc, const char *s, size_t n)
 {
 	if (!s)
 		return 0;
@@ -58,9 +53,7 @@ mbtowc(pwc, s, n)
 #undef wctomb
 
 int
-wctomb(s, wc)
-	char		*s;
-	wchar_t		wc;
+wctomb(char *s, wchar_t wc)
 {
 	if (!s)
 		return 0;
@@ -73,10 +66,7 @@ wctomb(s, wc)
 #ifndef HAVE_STRTOUL
 
 unsigned long
-strtoul(nptr, endptr, base)
-	const char	*nptr;
-	char		**endptr;
-	int		base;
+strtoul(const char *nptr, char **endptr, int base)
 {
 	const char	*s;
 	int		neg;

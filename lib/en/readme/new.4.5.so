@@ -1,0 +1,65 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 4.5 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+The \fIaeipass\fP(1) command now sleeps, rather than issue the rather
+alarming ``warning: file modification times extend into the future''
+message.
+There is a new project \fIconfig\fP file field, \fIbuild_time_adjust\fP,
+which controls this behaviour, but it is strongly recommended that you
+leave it on the default setting.
+.PP
+.if n *
+.if t \(bu
+.\" change 22, 25
+There is a new \fI${base_relative}\fP substitiontion,
+almost the inverse of \fI${source}\fP.
+See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+A bug has been fixed with the \fIaeca\fP and \fIaepa \-edit\fP option.
+It was caused by the change in the previous release which added editor
+user preferences.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A few build problems have been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+A bugs has been fixed in the \fItkaepa\fP script.
+It would sometimes fail the "OK" button.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+A bug has been fixed in the "user changes" list.  It was not explicitly
+passing the project name when it accessed the list of user owned changes.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.5

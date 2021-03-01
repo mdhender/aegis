@@ -147,6 +147,7 @@ LIBS = @LIBS@
 # brain-dead, and the Solaris one is hardly better.)
 #
 MSGFMT = @MSGFMT@
+MSGCAT = @MSGCAT@
 HAVE_MSGFMT = @po_files@
 
 #
@@ -195,13 +196,6 @@ AEGIS_GID = @AEGIS_GID@
 # $(libdir)/profile files.
 #
 MANLANG = en
-
-#
-# Web Server configurartion information
-#
-HAVE_WEB = @web@
-DocumentRoot = @DocumentRoot@
-ScriptRoot = @ScriptRoot@
 
 #
 # Mess with the names of installed executables.

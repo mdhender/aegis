@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1996-1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,60 +46,54 @@
  */
 
 void
-string_list_append(wlp, w)
-	string_list_ty		*wlp;
-	string_ty	*w;
+string_list_append(string_list_ty *wlp, string_ty *w)
 {
-	size_t		nbytes;
+    size_t          nbytes;
 
-	if (wlp->nstrings >= wlp->nstrings_max)
-	{
-		/*
-		 * always 8 less than a power of 2, which is
-		 * most efficient for many memory allocators
-		 */
-		wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
-		nbytes = wlp->nstrings_max * sizeof(string_ty *);
-		wlp->string = mem_change_size(wlp->string, nbytes);
-	}
-	wlp->string[wlp->nstrings++] = str_copy(w);
+    if (wlp->nstrings >= wlp->nstrings_max)
+    {
+	/*
+	 * always 8 less than a power of 2, which is
+	 * most efficient for many memory allocators
+	 */
+	wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
+	nbytes = wlp->nstrings_max * sizeof(string_ty *);
+	wlp->string = mem_change_size(wlp->string, nbytes);
+    }
+    wlp->string[wlp->nstrings++] = str_copy(w);
 }
 
 
 void
-string_list_append_list(wlp, arg)
-	string_list_ty		*wlp;
-	string_list_ty		*arg;
+string_list_append_list(string_list_ty *wlp, string_list_ty  *arg)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < arg->nstrings; ++j)
-		string_list_append(wlp, arg->string[j]);
+    for (j = 0; j < arg->nstrings; ++j)
+	string_list_append(wlp, arg->string[j]);
 }
 
 
 void
-string_list_prepend(wlp, w)
-	string_list_ty		*wlp;
-	string_ty	*w;
+string_list_prepend(string_list_ty *wlp, string_ty *w)
 {
-	size_t		nbytes;
-	size_t		j;
+    size_t          nbytes;
+    size_t          j;
 
-	if (wlp->nstrings >= wlp->nstrings_max)
-	{
-		/*
-		 * always 8 less than a power of 2, which is
-		 * most efficient for many memory allocators
-		 */
-		wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
-		nbytes = wlp->nstrings_max * sizeof(string_ty *);
-		wlp->string = mem_change_size(wlp->string, nbytes);
-	}
-	for (j = wlp->nstrings; j > 0; --j)
-		wlp->string[j] = wlp->string[j - 1];
-	wlp->nstrings++;
-	wlp->string[0] = str_copy(w);
+    if (wlp->nstrings >= wlp->nstrings_max)
+    {
+	/*
+	 * always 8 less than a power of 2, which is
+	 * most efficient for many memory allocators
+	 */
+	wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
+	nbytes = wlp->nstrings_max * sizeof(string_ty *);
+	wlp->string = mem_change_size(wlp->string, nbytes);
+    }
+    for (j = wlp->nstrings; j > 0; --j)
+	wlp->string[j] = wlp->string[j - 1];
+    wlp->nstrings++;
+    wlp->string[0] = str_copy(w);
 }
 
 
@@ -120,18 +114,17 @@ string_list_prepend(wlp, w)
  */
 
 void
-string_list_destructor(wlp)
-	string_list_ty		*wlp;
+string_list_destructor(string_list_ty *wlp)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < wlp->nstrings; j++)
-		str_free(wlp->string[j]);
-	if (wlp->string)
-		mem_free(wlp->string);
-	wlp->nstrings = 0;
-	wlp->nstrings_max = 0;
-	wlp->string = 0;
+    for (j = 0; j < wlp->nstrings; j++)
+	str_free(wlp->string[j]);
+    if (wlp->string)
+	mem_free(wlp->string);
+    wlp->nstrings = 0;
+    wlp->nstrings_max = 0;
+    wlp->string = 0;
 }
 
 
@@ -152,16 +145,14 @@ string_list_destructor(wlp)
  */
 
 int
-string_list_member(wlp, w)
-	string_list_ty		*wlp;
-	string_ty	*w;
+string_list_member(string_list_ty *wlp, string_ty *w)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < wlp->nstrings; j++)
-		if (str_equal(wlp->string[j], w))
-			return 1;
-	return 0;
+    for (j = 0; j < wlp->nstrings; j++)
+	if (str_equal(wlp->string[j], w))
+	    return 1;
+    return 0;
 }
 
 
@@ -180,39 +171,37 @@ string_list_member(wlp, w)
  *
  * CAVEAT
  *	It is the responsibility of the caller to ensure that the
- *	new word list is freed when finished with, by a call to string_list_destructor().
+ *	new word list is freed when finished with, by a call to
+ *	string_list_destructor().
  */
 
 void
-string_list_copy(to, from)
-	string_list_ty		*to;
-	string_list_ty		*from;
+string_list_copy(string_list_ty *to, string_list_ty *from)
 {
-	size_t		j;
+    size_t          j;
 
-	string_list_constructor(to);
-	for (j = 0; j < from->nstrings; j++)
-		string_list_append(to, str_copy(from->string[j]));
+    string_list_constructor(to);
+    for (j = 0; j < from->nstrings; j++)
+	string_list_append(to, str_copy(from->string[j]));
 }
 
 
 string_list_ty *
-string_list_new()
+string_list_new(void)
 {
-	string_list_ty	*slp;
+    string_list_ty  *slp;
 
-	slp = mem_alloc(sizeof(string_list_ty));
-	string_list_constructor(slp);
-	return slp;
+    slp = mem_alloc(sizeof(string_list_ty));
+    string_list_constructor(slp);
+    return slp;
 }
 
 
 void
-string_list_delete(slp)
-	string_list_ty	*slp;
+string_list_delete(string_list_ty *slp)
 {
-	string_list_destructor(slp);
-	mem_free(slp);
+    string_list_destructor(slp);
+    mem_free(slp);
 }
 
 
@@ -234,60 +223,56 @@ string_list_delete(slp)
  *	new string is freed when finished with, by a call to free().
  */
 
-string_ty *
-wl2str(wl, start, stop, sep)
-	string_list_ty		*wl;
-	int		start;
-	int		stop;
-	char		*sep;
+string_ty      *
+wl2str(string_list_ty *wl, int start, int stop, char *sep)
 {
-	int		j;
-	static char	*tmp;
-	static size_t	tmplen;
-	size_t		length;
-	size_t		seplen;
-	char		*pos;
-	string_ty	*s;
+    int             j;
+    static char     *tmp;
+    static size_t   tmplen;
+    size_t          length;
+    size_t          seplen;
+    char            *pos;
+    string_ty       *s;
 
-	if (!sep)
-		sep = " ";
-	seplen = strlen(sep);
-	length = 0;
-	for (j = start; j <= stop && j < wl->nstrings; j++)
+    if (!sep)
+	sep = " ";
+    seplen = strlen(sep);
+    length = 0;
+    for (j = start; j <= stop && j < wl->nstrings; j++)
+    {
+	s = wl->string[j];
+	if (s->str_length)
 	{
-		s = wl->string[j];
-		if (s->str_length)
-		{
-			if (length)
-				length += seplen;
-			length += s->str_length;
-		}
+	    if (length)
+		length += seplen;
+	    length += s->str_length;
 	}
+    }
 
-	if (tmplen < length)
+    if (tmplen < length)
+    {
+	tmplen = length;
+	tmp = mem_change_size(tmp, tmplen);
+    }
+
+    pos = tmp;
+    for (j = start; j <= stop && j < wl->nstrings; j++)
+    {
+	s = wl->string[j];
+	if (s->str_length)
 	{
-		tmplen = length;
-		tmp = mem_change_size(tmp, tmplen);
+	    if (pos != tmp)
+	    {
+		memcpy(pos, sep, seplen);
+		pos += seplen;
+	    }
+	    memcpy(pos, s->str_text, s->str_length);
+	    pos += s->str_length;
 	}
+    }
 
-	pos = tmp;
-	for (j = start; j <= stop && j < wl->nstrings; j++)
-	{
-		s = wl->string[j];
-		if (s->str_length)
-		{
-			if (pos != tmp)
-			{
-				memcpy(pos, sep, seplen);
-				pos += seplen;
-			}
-			memcpy(pos, s->str_text, s->str_length);
-			pos += s->str_length;
-		}
-	}
-
-	s = str_n_from_c(tmp, length);
-	return s;
+    s = str_n_from_c(tmp, length);
+    return s;
 }
 
 
@@ -314,55 +299,51 @@ wl2str(wl, start, stop, sep)
  */
 
 void
-str2wl(slp, s, sep, ewhite)
-	string_list_ty		*slp;
-	string_ty	*s;
-	char		*sep;
-	int		ewhite;
+str2wl(string_list_ty *slp, string_ty *s, char *sep, int ewhite)
 {
-	char		*cp;
-	int		more;
+    char            *cp;
+    int             more;
 
-	if (!sep)
+    if (!sep)
+    {
+	sep = " \t\n\f\r";
+	ewhite = 1;
+    }
+    string_list_constructor(slp);
+    cp = s->str_text;
+    more = 0;
+    while (*cp || more)
+    {
+	string_ty       *w;
+	char            *cp1;
+	char            *cp2;
+
+	if (ewhite)
 	{
-		sep = " \t\n\f\r";
-		ewhite = 1;
+	    while (isspace((unsigned char)*cp))
+		cp++;
 	}
-	string_list_constructor(slp);
-	cp = s->str_text;
+	if (!*cp && !more)
+	    break;
 	more = 0;
-	while (*cp || more)
+	cp1 = cp;
+	while (*cp && !strchr(sep, *cp))
+	    cp++;
+	if (*cp)
 	{
-		string_ty	*w;
-		char		*cp1;
-		char		*cp2;
-
-		if (ewhite)
-		{
-			while (isspace((unsigned char)*cp))
-				cp++;
-		}
-		if (!*cp && !more)
-			break;
-		more = 0;
-		cp1 = cp;
-		while (*cp && !strchr(sep, *cp))
-			cp++;
-		if (*cp)
-		{
-			cp2 = cp + 1;
-			more = 1;
-		}
-		else
-			cp2 = cp;
-		if (ewhite)
-			while (cp > cp1 && isspace((unsigned char)cp[-1]))
-				cp--;
-		w = str_n_from_c(cp1, cp - cp1);
-		string_list_append(slp, w);
-		str_free(w);
-		cp = cp2;
+	    cp2 = cp + 1;
+	    more = 1;
 	}
+	else
+	    cp2 = cp;
+	if (ewhite)
+	    while (cp > cp1 && isspace((unsigned char)cp[-1]))
+		cp--;
+	w = str_n_from_c(cp1, cp - cp1);
+	string_list_append(slp, w);
+	str_free(w);
+	cp = cp2;
+    }
 }
 
 
@@ -382,28 +363,24 @@ str2wl(slp, s, sep, ewhite)
  */
 
 void
-string_list_append_unique(wlp, wp)
-	string_list_ty		*wlp;
-	string_ty	*wp;
+string_list_append_unique(string_list_ty *wlp, string_ty *wp)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < wlp->nstrings; j++)
-		if (str_equal(wlp->string[j], wp))
-			return;
-	string_list_append(wlp, wp);
+    for (j = 0; j < wlp->nstrings; j++)
+	if (str_equal(wlp->string[j], wp))
+	    return;
+    string_list_append(wlp, wp);
 }
 
 
 void
-string_list_append_list_unique(wlp, arg)
-	string_list_ty		*wlp;
-	string_list_ty		*arg;
+string_list_append_list_unique(string_list_ty *wlp, string_list_ty *arg)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < arg->nstrings; ++j)
-		string_list_append_unique(wlp, arg->string[j]);
+    for (j = 0; j < arg->nstrings; ++j)
+	string_list_append_unique(wlp, arg->string[j]);
 }
 
 
@@ -415,150 +392,130 @@ string_list_append_list_unique(wlp, arg)
  *	void string_list_remove(string_list_ty *wlp, string_ty *wp);
  *
  * DESCRIPTION
- *	The string_list_remove function is used to delete a member of a word list.
+ *	The string_list_remove function is used to delete a member of
+ *	a word list.
  *
  * RETURNS
  *	void
  */
 
 void
-string_list_remove(wlp, wp)
-	string_list_ty		*wlp;
-	string_ty	*wp;
+string_list_remove(string_list_ty *wlp, string_ty *wp)
 {
-	size_t		j;
-	size_t		k;
+    size_t          j;
+    size_t          k;
 
-	for (j = 0; j < wlp->nstrings; ++j)
+    for (j = 0; j < wlp->nstrings; ++j)
+    {
+	if (str_equal(wlp->string[j], wp))
 	{
-		if (str_equal(wlp->string[j], wp))
-		{
-			wlp->nstrings--;
-			for (k = j; k < wlp->nstrings; ++k)
-				wlp->string[k] = wlp->string[k + 1];
-			str_free(wp);
-			break;
-		}
+	    wlp->nstrings--;
+	    for (k = j; k < wlp->nstrings; ++k)
+		wlp->string[k] = wlp->string[k + 1];
+	    str_free(wp);
+	    break;
 	}
+    }
 }
 
 
 void
-string_list_remove_list(wlp, arg)
-	string_list_ty		*wlp;
-	string_list_ty		*arg;
+string_list_remove_list(string_list_ty *wlp, string_list_ty *arg)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < arg->nstrings; ++j)
-		string_list_remove(wlp, arg->string[j]);
+    for (j = 0; j < arg->nstrings; ++j)
+	string_list_remove(wlp, arg->string[j]);
 }
 
 
 void
-string_list_constructor(wlp)
-	string_list_ty		*wlp;
+string_list_constructor(string_list_ty *wlp)
 {
-	wlp->nstrings = 0;
-	wlp->nstrings_max = 0;
-	wlp->string = 0;
+    wlp->nstrings = 0;
+    wlp->nstrings_max = 0;
+    wlp->string = 0;
 }
 
 
 int
-string_list_equal(a, b)
-	string_list_ty		*a;
-	string_list_ty		*b;
+string_list_equal(string_list_ty *a, string_list_ty *b)
 {
-	size_t		j, k;
+    size_t          j, k;
 
-	for (j = 0; j < a->nstrings; ++j)
-	{
-		for (k = 0; k < b->nstrings; ++k)
-			if (str_equal(a->string[j], b->string[k]))
-				break;
-		if (k >= b->nstrings)
-			return 0;
-	}
-	for (j = 0; j < b->nstrings; ++j)
-	{
-		for (k = 0; k < a->nstrings; ++k)
-			if (str_equal(b->string[j], a->string[k]))
-				break;
-		if (k >= a->nstrings)
-			return 0;
-	}
-	return 1;
+    for (j = 0; j < a->nstrings; ++j)
+    {
+	for (k = 0; k < b->nstrings; ++k)
+	    if (str_equal(a->string[j], b->string[k]))
+		break;
+	if (k >= b->nstrings)
+	    return 0;
+    }
+    for (j = 0; j < b->nstrings; ++j)
+    {
+	for (k = 0; k < a->nstrings; ++k)
+	    if (str_equal(b->string[j], a->string[k]))
+		break;
+	if (k >= a->nstrings)
+	    return 0;
+    }
+    return 1;
 }
 
 
 int
-string_list_subset(a,b)
-	string_list_ty		*a;
-	string_list_ty		*b;
+string_list_subset(string_list_ty *a, string_list_ty *b)
 {
-	size_t		j, k;
+    size_t          j, k;
 
-	/*
-	 * test if "a is a subset of b"
-	 */
-	if (a->nstrings > b->nstrings)
-		return 0;
-	for (j = 0; j < a->nstrings; ++j)
-	{
-		for (k = 0; k < b->nstrings; ++k)
-			if (str_equal(a->string[j], b->string[k]))
-				break;
-		if (k >= b->nstrings)
-			return 0;
-	}
-	return 1;
+    /*
+     * test if "a is a subset of b"
+     */
+    if (a->nstrings > b->nstrings)
+	return 0;
+    for (j = 0; j < a->nstrings; ++j)
+    {
+	for (k = 0; k < b->nstrings; ++k)
+	    if (str_equal(a->string[j], b->string[k]))
+		break;
+	if (k >= b->nstrings)
+	    return 0;
+    }
+    return 1;
 }
 
-
-static int wl_sort_cmp _((const void *, const void *));
 
 static int
-wl_sort_cmp(va, vb)
-	const void	*va;
-	const void	*vb;
+wl_sort_cmp(const void *va, const void *vb)
 {
-	string_ty	*a;
-	string_ty	*b;
+    string_ty       *a;
+    string_ty       *b;
 
-	a = *(string_ty **)va;
-	b = *(string_ty **)vb;
-	/* C locale */
-	return strcmp(a->str_text, b->str_text);
+    a = *(string_ty **)va;
+    b = *(string_ty **)vb;
+    /* C locale */
+    return strcmp(a->str_text, b->str_text);
 }
 
 
 void
-string_list_sort(wlp)
-	string_list_ty		*wlp;
+string_list_sort(string_list_ty *wlp)
 {
-	qsort
-	(
-		wlp->string,
-		wlp->nstrings,
-		sizeof(wlp->string[0]),
-		wl_sort_cmp
-	);
+    qsort(wlp->string, wlp->nstrings, sizeof(wlp->string[0]), wl_sort_cmp);
 }
 
 
 #ifdef DEBUG
 
 int
-string_list_validate(slp)
-	string_list_ty	*slp;
+string_list_validate(string_list_ty *slp)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < slp->nstrings; ++j)
-		if (!str_validate(slp->string[j]))
-			return 0;
-	return 1;
+    for (j = 0; j < slp->nstrings; ++j)
+	if (!str_validate(slp->string[j]))
+	    return 0;
+    return 1;
 }
 
 #endif

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991-1993, 2002 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ the aegis program is protecting the  project baseline,
 and does not exist to make the developer happy.
 .LP
 \(bu
-The aegis program attempts to adhere to the 
+The aegis program attempts to adhere to the
 .UX
 minimalist philosophy.
 Least unnecessary output,
@@ -78,7 +78,7 @@ all designed to help the user.
 .nh 3 "Overlap"
 .LP
 It was very tempting while writing the aegis program
-to have it grow and cover 
+to have it grow and cover
 source control and dependency maintenance roles.
 Unfortunately,
 this would have meant that the user would have been trapped
@@ -86,7 +86,7 @@ with whatever the aegis program provided,
 and the aegis program is already plenty big.
 To add this functionality would have diverted effort,
 resulting in an inferior result.
-It would also have violated the underlying 
+It would also have violated the underlying
 .UX
 philosophy.
 .nh 3 "Design Goals"
@@ -94,7 +94,7 @@ philosophy.
 A number of specific ideas molded the shape of the aegis program.
 These include:
 .LP
-The 
+The
 .UX
 philosophy of writing small tools for specific tasks with little
 or no overlap.

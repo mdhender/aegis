@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -31,14 +31,14 @@ is in the command search PATH,
 but you may like to hard-wire the path,
 or set PATH at the start of each command.
 (It is also possible that you need to say ``delta'' instead of ``sccs delta''.
-if this is the case, these command need to be in the path.)
+if this is the case, this command needs to be in the path.)
 You should also note that the strings are always handed to
 the Bourne shell to be executed,
 and are set to exit with an error immediately a sub-command fails.
 .LP
 One further assumption is that the \fIae-sccs-put\fP(1) command, which is
-distributed with Aegis, is in the command search path.  This insultaes
-some of the weirdness the SCCS carries on with, and make sht eommands
+distributed with Aegis, is in the command search path.  This insulates
+some of the weirdness that SCCS carries on with, and makes the commands
 below comprehensible.
 .nh 3 "history_create_command"
 .LP
@@ -103,7 +103,7 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "ae-sccs-pit \e
+  "ae-sccs-put \e
     -y$version -G$input \e
     ${d $h}/s.${b $h}";
 .E)
@@ -163,6 +163,7 @@ description}}\fP'' inserts the version number and the brief description
 into the file's log.  This means that using the \fIsccs prs\fP(1) command
 will provide quite useful summaries.
 .nh 3 "Binary Files"
+.LP
 SCCS is unable to cope with binary files.  However, Aegis
 will transparently encode all such files, if you leave the
 \fIhistory_\%content_\%limitation\fP field unset.

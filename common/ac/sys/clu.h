@@ -33,7 +33,7 @@
 #define CLU_INFO_MY_ID 0
 #define CLU_INFO_NODENAME_BY_ID 1
 typedef int memberid_t;
-int clu_info _((int, ...));
+int clu_info(int, ...);
 #endif
 
 #endif /* COMMON_AC_SYS_CLU_H */

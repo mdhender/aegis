@@ -38,10 +38,9 @@
 #ifndef HAVE_GETTEXT
 
 char *
-gettext(s)
-	const char	*s;
+gettext(const char *s)
 {
-	return (char *)s;
+    return (char *)s;
 }
 
 #endif /* !HAVE_GETTEXT */

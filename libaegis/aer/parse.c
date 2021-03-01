@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1997, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1997, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -129,7 +129,7 @@ find_filename_process(name, dir, nondir, result)
 				in->name->str_text, name->str_text));
 			if (!arglex_compare(in->name->str_text, name->str_text))
 				continue;
-			
+
 			/*
 			 * If we already have this one, ignore it.
 			 * (Duplicate entries in AEGIS_PATH will cause
@@ -259,7 +259,8 @@ find_filename(name)
 	 * we are done
 	 */
 	trace(("but this bowl was just right\n"));
-	trace(("result->list[0]->filename = \"%s\";\n", result->list[0]->filename));
+	trace(("result->list[0]->filename = \"%s\";\n",
+		result->list[0]->filename->str_text));
 	tmp = str_copy(result->list[0]->filename);
 	trace(("rptidx_where_list_type.free(result);\n"));
 	rptidx_where_list_type.free(result);

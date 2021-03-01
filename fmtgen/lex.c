@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -87,6 +87,8 @@ lex_initialize()
 		{ "string", STRING, },
 		{ "time", TIME, },
 		{ "type", TYPE, },
+		{ "show_if_default", SHOW_IF_DEFAULT, },
+		{ "hide_if_default", HIDE_IF_DEFAULT, },
 	};
 	keyword_ty	*kp;
 
@@ -251,7 +253,7 @@ parse_lex()
 		case '6':
 		case '7':
 		case '8':
-		case '9': 
+		case '9':
 			parse_lval.lv_integer = 0;
 			for (;;)
 			{
@@ -276,11 +278,11 @@ parse_lex()
 		case 'i': case 'j': case 'k': case 'l': case 'm':
 		case 'n': case 'o': case 'p': case 'q': case 'r':
 		case 's': case 't': case 'u': case 'v': case 'w':
-		case 'x': case 'y': case 'z': 
+		case 'x': case 'y': case 'z':
 			{
 				string_ty	*s;
 				int		*data;
-	
+
 				cp = buffer;
 				for (;;)
 				{
@@ -290,7 +292,7 @@ parse_lex()
 					{
 					case '0': case '1': case '2': case '3':
 					case '4': case '5': case '6': case '7':
-					case '8': case '9': 
+					case '8': case '9':
 					case 'A': case 'B': case 'C': case 'D':
 					case 'E': case 'F': case 'G': case 'H':
 					case 'I': case 'J': case 'K': case 'L':
@@ -304,7 +306,7 @@ parse_lex()
 					case 'n': case 'o': case 'p': case 'q':
 					case 'r': case 's': case 't': case 'u':
 					case 'v': case 'w': case 'x': case 'y':
-					case 'z': 
+					case 'z':
 						continue;
 					}
 					lex_getc_undo(c);
@@ -407,38 +409,38 @@ parse_lex()
 			    default:
 				parse_error("unknown '\\%c' escape", c);
 				break;
-	
+
 	                    case '\n':
 	                        break;
-	
+
 	                    case EOF:
 	                        goto str_eof;
-	
+
 	                    case 'b':
 				*cp++ = '\b';
 				break;
-	
+
 	                    case 'n':
 				*cp++ = '\n';
 				break;
-	
+
 	                    case 'r':
 				*cp++ = '\r';
 				break;
-	
+
 	                    case 't':
 				*cp++ = '\t';
 				break;
-	
+
 	                    case 'f':
 				*cp++ = '\f';
 				break;
-	
+
 			    case '"':
 			    case '\\':
 				*cp++ = c;
 				break;
-	
+
 	                    case '0':
 			    case '1':
 			    case '2':
@@ -450,7 +452,7 @@ parse_lex()
 	                        {
 	                            int             n;
 	                            int             v;
-	
+
 				    v = 0;
 	                            for (n = 0; n < 3; ++n)
 	                            {
@@ -467,7 +469,7 @@ parse_lex()
 					case '6':
 					case '7':
 					    continue;
-	
+
 					default:
 					    lex_getc_undo(c);
 					    break;
@@ -494,14 +496,12 @@ parse_lex()
 
 
 void
-parse_error(s sva_last)
-	char		*s;
-	sva_last_decl
+parse_error(char *s, ...)
 {
 	va_list		ap;
 	char		buffer[1000];
 
-	sva_init(ap, s);
+	va_start(ap, s);
 	vsprintf(buffer, s, ap);
 	va_end(ap);
 	error_raw("%s: %d: %s", file->file_name, file->line_number, buffer);

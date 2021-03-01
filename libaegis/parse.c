@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,426 +31,415 @@
 #include <sub.h>
 #include <trace.h>
 
-static sem_ty *sem_root;
+static sem_ty	*sem_root;
 
 
 void *
 parse(filename, type)
-	string_ty	*filename;
-	type_ty		*type;
+    string_ty	    *filename;
+    type_ty	    *type;
 {
-	void		*addr;
+    void	    *addr;
 
-	trace(("parse(filename = \"%s\", type = %08lx)\n{\n"/*}*/,
-		filename, (long)type));
-	lex_open(filename);
-	assert(type);
-	assert(type->alloc);
-	assert(type->struct_parse);
-	addr = type->alloc();
-	sem_push(type, addr);
+    trace(("parse(filename = \"%s\", type = %08lX)\n{\n", filename->str_text,
+	(long)type));
+    lex_open(filename);
+    assert(type);
+    assert(type->alloc);
+    assert(type->struct_parse);
+    addr = type->alloc();
+    sem_push(type, addr);
 
-	trace(("gram_parse()\n{\n"/*}*/));
-	gram_parse();
-	trace((/*{*/"}\n"));
+    trace(("gram_parse()\n{\n"));
+    gram_parse();
+    trace(("}\n"));
 
-	while (sem_root)
-		sem_pop();
-	lex_close();
-	trace(("return %08lX;\n", (long)addr));
-	trace((/*{*/"}\n"));
-	return addr;
+    while (sem_root)
+	sem_pop();
+    lex_close();
+    trace(("return %08lX;\n", (long)addr));
+    trace(("}\n"));
+    return addr;
 }
 
 
 void *
 parse_env(name, type)
-	char		*name;
-	type_ty		*type;
+    char	    *name;
+    type_ty	    *type;
 {
-	void		*addr;
+    void	    *addr;
 
-	trace(("parse_env(name = \"%s\", type = %08lx)\n{\n"/*}*/,
-		name, (long)type));
-	lex_open_env(name);
-	assert(type);
-	assert(type->alloc);
-	assert(type->struct_parse);
-	addr = type->alloc();
-	sem_push(type, addr);
+    trace(("parse_env(name = \"%s\", type = %08lx)\n{\n", name, (long)type));
+    lex_open_env(name);
+    assert(type);
+    assert(type->alloc);
+    assert(type->struct_parse);
+    addr = type->alloc();
+    sem_push(type, addr);
 
-	trace(("gram_parse()\n{\n"/*}*/));
-	gram_parse();
-	trace((/*{*/"}\n"));
+    trace(("gram_parse()\n{\n"));
+    gram_parse();
+    trace(("}\n"));
 
-	while (sem_root)
-		sem_pop();
-	lex_close();
-	trace(("return %08lX;\n", (long)addr));
-	trace((/*{*/"}\n"));
-	return addr;
+    while (sem_root)
+	sem_pop();
+    lex_close();
+    trace(("return %08lX;\n", (long)addr));
+    trace(("}\n"));
+    return addr;
 }
 
 
 void *
 parse_input(ifp, type)
-	input_ty	*ifp;
-	type_ty		*type;
+    input_ty	    *ifp;
+    type_ty	    *type;
 {
-	void		*addr;
+    void	    *addr;
 
-	trace(("parse_input(ifp = %08lX, type = %08lx)\n{\n"/*}*/,
-		(long)ifp, (long)type));
-	lex_open_input(ifp);
-	assert(type);
-	assert(type->alloc);
-	assert(type->struct_parse);
-	addr = type->alloc();
-	sem_push(type, addr);
+    trace(("parse_input(ifp = %08lX, type = %08lx)\n{\n", (long)ifp,
+	(long)type));
+    lex_open_input(ifp);
+    assert(type);
+    assert(type->alloc);
+    assert(type->struct_parse);
+    addr = type->alloc();
+    sem_push(type, addr);
 
-	trace(("gram_parse()\n{\n"/*}*/));
-	gram_parse();
-	trace((/*{*/"}\n"));
+    trace(("gram_parse()\n{\n"));
+    gram_parse();
+    trace(("}\n"));
 
-	while (sem_root)
-		sem_pop();
-	lex_close();
-	trace(("return %08lX;\n", (long)addr));
-	trace((/*{*/"}\n"));
-	return addr;
+    while (sem_root)
+	sem_pop();
+    lex_close();
+    trace(("return %08lX;\n", (long)addr));
+    trace(("}\n"));
+    return addr;
 }
 
 
 void
 sem_push(type, addr)
-	type_ty		*type;
-	void		*addr;
+    type_ty	    *type;
+    void	    *addr;
 {
-	sem_ty		*sp;
+    sem_ty	    *sp;
 
-	trace(("sem_push(type = %08lX, addr = %08lX)\n{\n"/*}*/, type, addr));
-	trace(("type->name == \"%s\";\n", type ? type->name : "void"));
-	sp = mem_alloc(sizeof(sem_ty));
-	sp->type = type;
-	sp->addr = addr;
-	sp->next = sem_root;
-	sem_root = sp;
-	trace((/*{*/"}\n"));
+    trace(("sem_push(type = %08lX, addr = %08lX)\n{\n", (long)type,
+	(long)addr));
+    trace(("type->name == \"%s\";\n", type ? type->name : "void"));
+    sp = mem_alloc(sizeof(sem_ty));
+    sp->type = type;
+    sp->addr = addr;
+    sp->next = sem_root;
+    sem_root = sp;
+    trace(("}\n"));
 }
 
 
 void
 sem_pop()
 {
-	sem_ty *x;
+    sem_ty	    *x;
 
-	trace(("sem_pop()\n{\n"/*}*/));
-	x = sem_root;
-	sem_root = x->next;
-	x->type = 0;
-	x->addr = 0;
-	x->next = 0;
-	mem_free((char *)x);
-	trace((/*{*/"}\n"));
+    trace(("sem_pop()\n{\n"));
+    x = sem_root;
+    sem_root = x->next;
+    x->type = 0;
+    x->addr = 0;
+    x->next = 0;
+    mem_free((char *)x);
+    trace(("}\n"));
 }
 
 
 void
 sem_integer(n)
-	long	n;
+    long	    n;
 {
-	trace(("sem_integer(n = %ld)\n{\n"/*}*/, n));
-	if (!sem_root->type)
-		/* do nothing */;
-	else if (sem_root->type == &integer_type)
-		*(long *)sem_root->addr = n;
-	else if (sem_root->type == &real_type)
-		*(double *)sem_root->addr = n;
-	else if (sem_root->type == &time_type)
-	{
-		/*
-		 * Time is always arithmetic, never a structure.
-		 * This works on every system the author has seen,
-		 * without loss of precision.
-		 */
-		*(time_t *)sem_root->addr = n;
-		trace(("time is %s", ctime((time_t *)sem_root->addr)));
-	}
-	else
-	{
-		sub_context_ty	*scp;
+    trace(("sem_integer(n = %ld)\n{\n", n));
+    if (!sem_root->type)
+	/* do nothing */;
+    else if (sem_root->type == &integer_type)
+	*(long *)sem_root->addr = n;
+    else if (sem_root->type == &real_type)
+	*(double *)sem_root->addr = n;
+    else if (sem_root->type == &time_type)
+    {
+	/*
+	 * Time is always arithmetic, never a structure.
+	 * This works on every system the author has seen,
+	 * without loss of precision.
+	 */
+	*(time_t *)sem_root->addr = n;
+	trace(("time is %s", ctime((time_t *)sem_root->addr)));
+    }
+    else
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", sem_root->type->name);
-		lex_error(scp, i18n("value of type $name required"));
-		sub_context_delete(scp);
-	}
-	trace((/*{*/"}\n"));
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", sem_root->type->name);
+	lex_error(scp, i18n("value of type $name required"));
+	sub_context_delete(scp);
+    }
+    trace(("}\n"));
 }
 
 
 void
 sem_real(n)
-	double	n;
+    double	    n;
 {
-	trace(("sem_real(n = %g)\n{\n"/*}*/, n));
-	if (!sem_root->type)
-		/* do nothing */;
-	else if (sem_root->type == &integer_type)
-	{
-		/* Precision may be lost. */
-		*(long *)sem_root->addr = n;
-	}
-	else if (sem_root->type == &real_type)
-		*(double *)sem_root->addr = n;
-	else if (sem_root->type == &time_type)
-	{
-		/*
-		 * Time is always arithmetic, never a structure.
-		 * Precision may be lost.
-		 */
-		*(time_t *)sem_root->addr = n;
-	}
-	else
-	{
-		sub_context_ty	*scp;
+    trace(("sem_real(n = %g)\n{\n", n));
+    if (!sem_root->type)
+	/* do nothing */;
+    else if (sem_root->type == &integer_type)
+    {
+	/* Precision may be lost. */
+	*(long *)sem_root->addr = n;
+    }
+    else if (sem_root->type == &real_type)
+	*(double *)sem_root->addr = n;
+    else if (sem_root->type == &time_type)
+    {
+	/*
+	 * Time is always arithmetic, never a structure.
+	 * Precision may be lost.
+	 */
+	*(time_t *)sem_root->addr = n;
+    }
+    else
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", sem_root->type->name);
-		lex_error(scp, i18n("value of type $name required"));
-		sub_context_delete(scp);
-	}
-	trace((/*{*/"}\n"));
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", sem_root->type->name);
+	lex_error(scp, i18n("value of type $name required"));
+	sub_context_delete(scp);
+    }
+    trace(("}\n"));
 }
 
 
 void
 sem_string(s)
-	string_ty *s;
+    string_ty	    *s;
 {
-	trace(("sem_string(s = %08lX)\n{\n"/*}*/, s));
-	trace_string(s->str_text);
-	if (!sem_root->type)
-		/* do nothing */;
-	else if (sem_root->type != &string_type)
-	{
-		sub_context_ty	*scp;
+    trace(("sem_string(s = %08lX)\n{\n", (long)s));
+    trace_string(s->str_text);
+    if (!sem_root->type)
+	/* do nothing */;
+    else if (sem_root->type != &string_type)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", sem_root->type->name);
-		lex_error(scp, i18n("value of type $name required"));
-		sub_context_delete(scp);
-	}
-	else
-	{
-		trace
-		((
-			"addr = %08lX->%08lX\n",
-			sem_root->addr,
-			*(void **)sem_root->addr
-		));
-		*(string_ty **)sem_root->addr = s;
-	}
-	trace((/*{*/"}\n"));
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", sem_root->type->name);
+	lex_error(scp, i18n("value of type $name required"));
+	sub_context_delete(scp);
+    }
+    else
+    {
+	trace(("addr = %08lX->%08lX\n", (long)sem_root->addr,
+	    (long)*(void **)sem_root->addr));
+	*(string_ty **)sem_root->addr = s;
+    }
+    trace(("}\n"));
 }
 
 
 void
 sem_enum(s)
-	string_ty *s;
+    string_ty	    *s;
 {
-	trace(("sem_enum(s = %08lX)\n{\n"/*}*/, s));
-	trace_string(s->str_text);
-	if (!sem_root->type)
-		/* do nothing */;
-	else if (!sem_root->type->enum_parse)
-	{
-		sub_context_ty	*scp;
+    trace(("sem_enum(s = %08lX)\n{\n", (long)s));
+    trace_string(s->str_text);
+    if (!sem_root->type)
+	/* do nothing */;
+    else if (!sem_root->type->enum_parse)
+    {
+	sub_context_ty	*scp;
 
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", sem_root->type->name);
+	lex_error(scp, i18n("value of type $name required"));
+	sub_context_delete(scp);
+    }
+    else
+    {
+	int		n;
+
+	n = sem_root->type->enum_parse(s);
+	if (n < 0)
+	{
+	    sub_context_ty  *scp;
+	    string_ty	    *suggest;
+
+	    assert(sem_root->type->fuzzy);
+	    suggest = sem_root->type->fuzzy(s);
+	    if (suggest)
+	    {
 		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", sem_root->type->name);
-		lex_error(scp, i18n("value of type $name required"));
+		sub_var_set_string(scp, "Name", s);
+		sub_var_set_string(scp, "Guess", suggest);
+		lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
 		sub_context_delete(scp);
+		n = sem_root->type->enum_parse(suggest);
+		assert(n >= 0);
+		goto use_suggestion;
+	    }
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", s);
+	    lex_error(scp, i18n("the name \"$name\" is undefined"));
+	    sub_context_delete(scp);
 	}
 	else
 	{
-		int	n;
-
-		n = sem_root->type->enum_parse(s);
-		if (n < 0)
-		{
-			sub_context_ty	*scp;
-			string_ty	*suggest;
-
-			assert(sem_root->type->fuzzy);
-			suggest = sem_root->type->fuzzy(s);
-			if (suggest)
-			{
-				scp = sub_context_new();
-				sub_var_set_string(scp, "Name", s);
-				sub_var_set_string(scp, "Guess", suggest);
-				lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
-				sub_context_delete(scp);
-				n = sem_root->type->enum_parse(suggest);
-				assert(n >= 0);
-				goto use_suggestion;
-			}
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", s);
-			lex_error(scp, i18n("the name \"$name\" is undefined"));
-			sub_context_delete(scp);
-		}
-		else
-		{
-			/*
-			 * This is a portability problem: if the C
-			 * implementation does not always store enums in ints
-			 * this will break.
-			 */
-			use_suggestion:
-			*(int *)sem_root->addr = n;
-		}
+	    /*
+	     * This is a portability problem: if the C
+	     * implementation does not always store enums in ints
+	     * this will break.
+	     */
+	    use_suggestion:
+	    *(int *)sem_root->addr = n;
 	}
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }
 
 
 void
 sem_list()
 {
-	trace(("sem_list()\n{\n"/*}*/));
-	if (!sem_root->type)
-		sem_push(0, 0);
-	else if (!sem_root->type->list_parse)
+    trace(("sem_list()\n{\n"));
+    if (!sem_root->type)
+	sem_push(0, 0);
+    else if (!sem_root->type->list_parse)
+    {
+	sub_context_ty	*scp;
+
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", sem_root->type->name);
+	lex_error(scp, i18n("value of type $name required"));
+	sub_context_delete(scp);
+	sem_push(0, 0);
+    }
+    else
+    {
+	type_ty		*type;
+	void		*addr;
+
+	addr = sem_root->type->list_parse(sem_root->addr, &type);
+
+	/*
+	 * allocate the storage if necessary
+	 */
+	if (type->alloc)
 	{
-		sub_context_ty	*scp;
+	    void	    *contents;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", sem_root->type->name);
-		lex_error(scp, i18n("value of type $name required"));
-		sub_context_delete(scp);
-		sem_push(0, 0);
+	    contents = type->alloc();
+	    *(generic_struct_ty **)addr = contents;
+	    addr = contents;
 	}
-	else
-	{
-		type_ty		*type;
-		void		*addr;
 
-		addr = sem_root->type->list_parse(sem_root->addr, &type);
-
-		/*
-		 * allocate the storage if necessary
-		 */
-		if (type->alloc)
-		{
-			void		*contents;
-
-			contents = type->alloc();
-			*(generic_struct_ty **)addr = contents;
-			addr = contents;
-		}
-
-		sem_push(type, addr);
-	}
-	trace((/*{*/"}\n"));
+	sem_push(type, addr);
+    }
+    trace(("}\n"));
 }
 
 
 void
 sem_field(name)
-	string_ty	*name;
+    string_ty	    *name;
 {
-	trace(("sem_field(name = %08lX)\n{\n"/*}*/, name));
-	trace_string(name->str_text);
-	trace(("sem_root == %08lX;\n", sem_root));
-	trace(("sem_root->type == %08lX;\n", sem_root->type));
-	trace(("sem_root->addr == %08lX;\n", sem_root->addr));
-	if (!sem_root->type)
-		sem_push(0, 0);
-	else if (!sem_root->type->struct_parse)
-	{
-		sub_context_ty	*scp;
+    trace(("sem_field(name = %08lX)\n{\n", (long)name));
+    trace_string(name->str_text);
+    trace(("sem_root == %08lX;\n", (long)sem_root));
+    trace(("sem_root->type == %08lX;\n", (long)sem_root->type));
+    trace(("sem_root->addr == %08lX;\n", (long)sem_root->addr));
+    if (!sem_root->type)
+	sem_push(0, 0);
+    else if (!sem_root->type->struct_parse)
+    {
+	sub_context_ty	*scp;
 
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Name", sem_root->type->name);
+	lex_error(scp, i18n("value of type $name required"));
+	sub_context_delete(scp);
+	sem_push(0, 0);
+    }
+    else
+    {
+	type_ty		*type;
+	void		*addr;
+	unsigned long	mask;
+	generic_struct_ty *gsp;
+
+	gsp = sem_root->addr;
+	addr = sem_root->type->struct_parse(gsp, name, &type, &mask);
+	if (!addr)
+	{
+	    sub_context_ty  *scp;
+	    string_ty	    *suggest;
+
+	    assert(sem_root->type->fuzzy);
+	    suggest = sem_root->type->fuzzy(name);
+	    if (suggest)
+	    {
 		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", sem_root->type->name);
-		lex_error(scp, i18n("value of type $name required"));
+		sub_var_set_string(scp, "Name", name);
+		sub_var_set_string(scp, "Guess", suggest);
+		lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
 		sub_context_delete(scp);
-		sem_push(0, 0);
+		addr = sem_root->type->struct_parse(gsp, suggest, &type, &mask);
+		assert(addr);
+		goto use_suggestion;
+	    }
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", name);
+	    lex_error(scp, i18n("the name \"$name\" is undefined"));
+	    sub_context_delete(scp);
+	    sem_push(0, 0);
 	}
 	else
 	{
-		type_ty		*type;
-		void		*addr;
-		unsigned long	mask;
-		generic_struct_ty *gsp;
+	    /*
+	     * The first element of all the generated
+	     * structures is the mask field.
+	     */
+	    use_suggestion:
+	    trace(("mask = 0x%08lX;\n", mask));
+	    if (mask ? (gsp->mask & mask) : type->is_set(addr))
+	    {
+		sub_context_ty	*scp;
 
-		gsp = sem_root->addr;
-		addr = sem_root->type->struct_parse(gsp, name, &type, &mask);
-		if (!addr)
-		{
-			sub_context_ty	*scp;
-			string_ty	*suggest;
+		scp = sub_context_new();
+		sub_var_set_string(scp, "Name", name);
+		lex_error(scp, i18n("field \"$name\" redefined"));
+		sub_context_delete(scp);
+	    }
+	    gsp->mask |= mask;
+	    trace(("gsp->mask == 0x%08lX;\n", gsp->mask));
 
-			assert(sem_root->type->fuzzy);
-			suggest = sem_root->type->fuzzy(name);
-			if (suggest)
-			{
-				scp = sub_context_new();
-				sub_var_set_string(scp, "Name", name);
-				sub_var_set_string(scp, "Guess", suggest);
-				lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
-				sub_context_delete(scp);
-				addr =
-					sem_root->type->struct_parse
-					(
-						gsp,
-						suggest,
-						&type,
-						&mask
-					);
-				assert(addr);
-				goto use_suggestion;
-			}
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", name);
-			lex_error(scp, i18n("the name \"$name\" is undefined"));
-			sub_context_delete(scp);
-			sem_push(0, 0);
-		}
-		else
-		{
-			/*
-			 * The first element of all the generated
-			 * structures is the mask field.
-			 */
-			use_suggestion:
-			trace(("mask = 0x%08lX;\n", mask));
-			if (mask ? (gsp->mask & mask) : type->is_set(addr))
-			{
-				sub_context_ty	*scp;
+	    /*
+	     * allocate the storage if necessary
+	     */
+	    if (type->alloc)
+	    {
+		void		*contents;
 
-				scp = sub_context_new();
-				sub_var_set_string(scp, "Name", name);
-				lex_error(scp, i18n("field \"$name\" redefined"));
-				sub_context_delete(scp);
-			}
-			gsp->mask |= mask;
-			trace(("gsp->mask == 0x%08lX;\n", gsp->mask));
+		contents = type->alloc();
+		*(generic_struct_ty **)addr = contents;
+		addr = contents;
+	    }
 
-			/*
-			 * allocate the storage if necessary
-			 */
-			if (type->alloc)
-			{
-				void		*contents;
-
-				contents = type->alloc();
-				*(generic_struct_ty **)addr = contents;
-				addr = contents;
-			}
-
-			sem_push(type, addr);
-		}
+	    sem_push(type, addr);
 	}
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }

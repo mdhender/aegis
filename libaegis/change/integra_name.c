@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ change_integrator_name(cp)
 	cstate_history	history_data;
 	long		pos;
 
-	trace(("change_integrator_name(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_integrator_name(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	assert(cp->reference_count >= 1);
 	cstate_data = change_cstate_get(cp);
 	assert(cstate_data->history);

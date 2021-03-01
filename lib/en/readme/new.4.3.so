@@ -1,0 +1,113 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 4.3 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+It is now possible to specify system wide user preferences.
+See \fIaeuconf\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 30
+The \fIaepatch\fP(1) command now understands the quoted-printable content
+transfer encoding.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+The \fIaepatch\fP(1) is more robust when receiving patches that want to
+use a change number that has already been used.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+The Dutch error message translations have been updated.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+There was a problem with the way the install directory for
+\fIaegis.cgi\fP was being determined.  The \fIaegis.cgi\fP script is now
+installed into \f[CW]$bindir\fP by default.  There is a \fIaegis.cgi.i\fP
+helper script to find your web server's \fIcgi-bin\fP directory and copy
+\fIaegis.cgi\fP there, but this is not done automatically.
+See \fIaegis.cgi\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+Another change has been made to cope with still more Bison changes.
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+A French error message translation has been contributed.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+A problem with \fIaedist -receive\fP has been fixed, where the new
+\fIconfiguration_\%directory\fP could interact with the order of file
+creation.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+A big has been fixed in the uuencode output,
+which could occasionally miss the "begin" line.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A bug has been fiexed in the context diff parsing, where it would get the
+last hunk wrong if it was a hunk which deleted lines, due to incorrect
+end-of-file handling.  This affected both \fIaepatch -receive\fP and
+\fIaedist -receive\fP, because \fIaedist\fP(1) now includes patches for
+better merge behaviour.
+.PP
+.if n *
+.if t \(bu
+.\" change 16, 19, 21
+Numerous issues concenting the new GNU Gettext versions
+have been addressed.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+A number of Solaris build problems have been fixed, and one genuine bug
+buried in the warning messages (change completion time was wrong for
+changes not yet completed).
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+More information about the "mod times extend into the future" warning
+issued by \fIaeipass\fP(1) has been added to the man page.
+.PP
+.if n *
+.if t \(bu
+.\" change 11, 23
+Some improvements have been made to the web pages.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.3

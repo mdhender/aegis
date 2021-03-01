@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 2000 Peter Miller;
+#	Copyright (C) 1991-1998, 2000, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -254,13 +254,13 @@ trap "no_result" 1 2 3 15
 q=$?
 
 # check for signals
-if test $q -ge 128 
+if test $q -ge 128
 then
 	fail
 fi
 
 # should not complain
-if test $q -ne 0 
+if test $q -ne 0
 then
 	fail
 fi

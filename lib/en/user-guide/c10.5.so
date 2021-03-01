@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ tansportable by email with few problems.
 .nh 3 "Send"
 .LP
 If you are participating in an open source project, and using Aegis to
-manage your development, the \fIaedist \-send\fP command may be used to
+manage your development, the \fIaepatch \-send\fP command may be used to
 construct a patch to send to the other developers.
 .LP
 It is very similar in operation to the \fIaedist\fP(1) command,
@@ -42,7 +42,7 @@ simply use a command such as
   mail joe.blow@example.com
 \f(CB%\fP
 .E)
-to send you change as a patch.  Note that it will be compressed (using
+to send your change as a patch.  Note that it will be compressed (using
 GNU Zip) and encoded (using MIME base 64), which produces small files
 which are going to survive email transport.
 .nh 3 "Receive"
@@ -50,8 +50,10 @@ which are going to survive email transport.
 The simplest way of receiving a patch and turn it into a
 change set is to save it from your
 e-mail program into a file, and then
+.\" This is a bit confusing since above we said
+.\" ... intended for non-Aegis-using recipients.
 .E(
-\f(CB%\fP aedist -receive -file \fIfilename\fP
+\f(CB%\fP aepatch -receive -file \fIfilename\fP
 \&\fI...lots of information...\fP
 \f(CB%\fP
 .E)
@@ -59,7 +61,7 @@ where \fIfilename\fP is where you saved the e-mail message.
 If your e-mail program is able to write to a pipe, you can use a simpler form.
 This example uses the Rand Mail Handler's \fIshow\fP(1) command:
 .E(
-\f(CB%\fP show | aedist -receive
+\f(CB%\fP show | aepatch -receive
 \&\fI...lots of information...\fP
 \f(CB%\fP
 .E)
@@ -73,7 +75,7 @@ mirror of what it does on send.  In particular, send usually extracts
 its information from the repository, but receive \fBdoes not\fP put
 the change set directly into the repository.
 .LP
-On receipt of a change set, \fIaepatrch\fP creates a new change with
+On receipt of a change set, \fIaepatch\fP creates a new change with
 its own development directory, copies the files into it, and applies
 the patch to the files.  The receiver must be an authorized developer.
 .LP

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,43 +29,493 @@
 
 typedef unsigned long str_hash_ty;
 
+/**
+  * \struct string_ty
+  * The string_ty struct is used to remember information about strings.
+  * Users should always refer to strings as \em pointers.  The only
+  * members within the struct that should be accessed are the str_text
+  * member, which is a NUL terminated array of characters, and the
+  * str_length member, which contains the length of the string's text
+  * (not including the NUL terminator).
+  *
+  * It is guaranteed that all equal strings will not only have the same
+  * hash, but will, if fact, be exactly the same sting.  The reference
+  * count is how many strings currently exist with this value.  Thus,
+  * the commonest string test, a string equality test becomes a pointer
+  * equality test.
+  *
+  * <b>Thou shalt not</b> modify any member of a string struct, or the
+  * forces of evil shall wreak misery in thy life.
+  */
 typedef struct string_ty string_ty;
 struct string_ty
 {
-	str_hash_ty	str_hash;
-	string_ty	*str_next;
-	long		str_references;
-	size_t		str_length;
-	char		str_text[1];
+    /**
+      * The hash of the string.  Used internally by the string table,
+      * users shall never access this member.
+      */
+    str_hash_ty     str_hash;
+
+    /**
+      * The next string in a hash bucket.  Used internally by the string
+      * table, users shall never access this member.
+      */
+    string_ty	    *str_next;
+
+    /**
+      * The reference count for this string.  It is guaranteed that
+      * all equal strings will not only have the same hash, but will,
+      * if fact, be exactly the same sting.  The reference count is how
+      * many strings currently exist with this value.  Used internally
+      * by the string table, users shall never access this member.
+      */
+    long	    str_references;
+
+    /**
+      * The length of the string (not including the terminating NUL).
+      * Read-only access permitted to users.
+      */
+    size_t	    str_length;
+
+    /**
+      * The text value of the string.  It's actually longer than its
+      * declaration when the string length is more than zero.
+      * Read-only access permitted to users.
+      */
+    char	    str_text[1];
 };
 
-void str_initialize _((void));
-string_ty *str_from_c _((const char *));
-string_ty *str_n_from_c _((const char *, size_t));
-string_ty *str_copy _((string_ty *));
-void str_free _((string_ty *));
-string_ty *str_catenate _((string_ty *, string_ty *));
-string_ty *str_cat_three _((string_ty *, string_ty *, string_ty *));
-int str_bool _((string_ty *));
-string_ty *str_upcase _((string_ty *));
-string_ty *str_downcase _((string_ty *));
-void str_dump _((void));
-string_ty *str_field _((string_ty *str, int sep, int fldnum));
-void slow_to_fast _((char **, string_ty **, size_t));
-string_ty *str_format _((const char *, ...));
-string_ty *str_vformat _((const char *, va_list));
+/**
+  * \brief
+  *	start up string table
+  *
+  * The str_initialize function is used to create the hash table and
+  * initialize it to empty.
+  *
+  * This function must be called before any other defined in this file.
+  *
+  * \return
+  *	void
+  */
+void str_initialize(void);
 
-int str_equal _((string_ty *, string_ty *));
+/**
+  * \brief
+  *	make string from C string
+  *
+  * The str_from_c function is used to make a string from a null
+  * terminated C string.
+  *
+  * \param str
+  *	The C string to be copied.  Will not be modified.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_from_c(const char *str);
+
+/**
+  * \brief
+  *	make string from C string
+  *
+  * The str_n_from_c function is used to make a string from an array of
+  * characters.  No null terminator is assumed.
+  *
+  * \param str
+  *	The C string to be copied.  Will not be modified.
+  * \param len
+  *	The maximum number of characters to be used (fewer will be used
+  *	if there is an included NUL).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_n_from_c(const char *str, size_t len);
+
+/**
+  * \brief
+  *	make a copy of a string
+  *
+  * The str_copy function is used to make a copy of a string.
+  *
+  * \param str
+  *	The string to be copied.  Will not be modified.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_copy(string_ty *str);
+
+/**
+  * \brief
+  *	release a string
+  *
+  * The str_free function is used to indicate that a string hash
+  * been finished with.  This is the only way to release strings.
+  * <b>Do not</b> use the free() function.
+  *
+  * \param str
+  *	The string to be freed.
+  *
+  * \return
+  *      void
+  */
+void str_free(string_ty *str);
+
+/**
+  * \brief
+  *	join two strings together
+  *
+  * The str_catenate function is used to join two strings togther to
+  * form a new string.  The are joined in the order given.
+  *
+  * \param str1
+  *	A string to be joined.  Will not be modified.
+  * \param str2
+  *	A string to be joined.  Will not be modified.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_catenate(string_ty *str1, string_ty *str2);
+
+/**
+  * \brief
+  *	joing strings together
+  *
+  * The str_cat_three function is used to join three strings together
+  * to form a new string.  The are joined in the order given.
+  *
+  * \param str1
+  *	A string to be joined.  Will not be modified.
+  * \param str2
+  *	A string to be joined.  Will not be modified.
+  * \param str3
+  *	A string to be joined.  Will not be modified.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_cat_three(string_ty *str1, string_ty *str2, string_ty *str3);
+
+/**
+  * \brief
+  *	test a boolean
+  *
+  * The str_bool function is used to test the value of a string, as if
+  * it contained a number.  If it doesn't contain a number, it is as if
+  * the strings was "1".
+  *
+  * \param str
+  *	The string to be tested.  Will not be modified.
+  *
+  * \return
+  *	Zero if the numeric value in the strings was zero, or the empty
+  *	string.  One if the numeric value in the string was non-zero,
+  *	or the string was non-numeric.
+  */
+int str_bool(string_ty *str);
+
+/**
+  * \brief
+  *	convert to upper case
+  *
+  * The str_upcase function is used to create a new string where the
+  * lower case characters in the input string are converted to upper
+  * case.
+  *
+  * \param str
+  *	The string to be converted.  Will not be modified (the operation
+  *	is <b>not</b> performed <i>in situ</i>).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_upcase(string_ty *str);
+
+/**
+  * \brief
+  *	convert to lower case
+  *
+  * The str_downcase function is used to create a new string where the
+  * upper case characters in thwe input string are converted to lower
+  * case.
+  *
+  * \param str
+  *	The string to be converted.  Will not be modified (the operation
+  *	is <b>not</b> performed <i>in situ</i>).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_downcase(string_ty *str);
+
+/**
+  * \brief
+  *	dump the string table
+  *
+  * The str_dum function is used to dump the contents of the string
+  * table to the standard error.  Only useful for debugging.
+  *
+  * \return
+  *	void
+  */
+void str_dump(void);
+
+/**
+  * \brief
+  *	extract a field
+  *
+  * The str_field function is used to extract the \a nth field, where
+  * each field is separated by the \a sep string.
+  *
+  * \param str
+  *	The string from which the field is to be extracted.  Will not
+  *	be modified (the operation >not</b> performed <i>in situ</i>).
+  * \param sep
+  *	The string which separates each field.
+  * \param nth
+  *	The number of the field to be extracted.  Zero based.
+  *	If too high, the emtry string is returned.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_field(string_ty *str, int sep, int nth);
+
+/**
+  * \brief
+  *	convert tables of strings
+  *
+  * The slow_to_fast function is used to convert tables for normal
+  * C strings into tables of reference countest strings.  Use amlost
+  * exclusively by the fmtgen-generated sources.
+  *
+  * \return
+  *	void
+  */
+void slow_to_fast(char **, string_ty **, size_t);
+
+/**
+  * \brief
+  *	format text
+  *
+  * The str_format function is used to create a new string by interpreting
+  * the \a fmt string.  All formats understood by the ANSI C printf(3)
+  * are understodd by this function (but probably not your favorite
+  * proprietary extension).  In addition the '%S' specifier expects a <i>
+  * string_ty * </i> argument.
+  *
+  * \param fmt
+  *	The format string to be interpreted when constructing the
+  *	return value.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_format(const char *fmt, ...);
+
+/**
+  * \brief
+  *	format text
+  *
+  * The str_vformat function is used to create a new string by interpreting
+  * the \a fmt string.  All formats understood by the ANSI C printf(3)
+  * are understodd by this function (but probably not your favorite
+  * proprietary extension).  In addition the '%S' specifier expects a <i>
+  * string_ty * </i> argument.
+  *
+  * \param fmt
+  *	The format string to be interpreted when constructing the
+  *	return value.
+  * \param ap
+  *	Where to obtain additional arguments required by the \a fmt string.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_vformat(const char *fmt, va_list ap);
+
+/**
+  * \brief
+  *	test string equality
+  *
+  * The str_equal function is used to test to see if two strings are
+  * exactly the same.
+  *
+  * \param str1
+  *	A string to be compared.  Will not be modified.
+  * \param str2
+  *	A string to be compared.  Will not be modified.
+  *
+  * \note
+  *	Users shall always write code as if they did not know that a
+  *	string equality test is a pointer equality test.
+  *
+  * \return
+  *	Non-zero if the strings are equal,
+  *	zero if the strings are unequal.
+  */
+int str_equal(string_ty *str1, string_ty *str2);
+
+/**
+  * \brief
+  *	test string equality
+  * \see
+  *	str_equal()
+  *
+  * The str_equal macro is used to accellerate string equality tests.
+  * Users shall always write code as if they did not know that a string
+  * equality test is a pointer  equality test.
+  */
 #define str_equal(s1, s2) ((s1) == (s2))
 
-int str_re_match _((string_ty *, string_ty *,
-	void(*)(const char *)));
-string_ty *str_re_substitute _((string_ty *, string_ty *, string_ty *,
-	void(*)(const char *), int));
+/**
+  * \brief
+  *	regular expression match
+  *
+  * The str_re_match function is used to test for a regular expression
+  * match.
+  *
+  * \param pattern
+  *	The regular expression pattern to be matched against (excluding
+  *	the slashes).  Will not be modified.
+  * \param candidate
+  *	The string to be tested, to see if it matches the \a pattern.
+  *	Will not be modified.
+  * \param callback
+  *	A pointer to an error message function to be called if there is
+  *	something wrong with the pattern.  If this pointer is NULL,
+  *	it will not be called.
+  *
+  * \return
+  *	Positive if there is a match, zero if there is not,
+  *	negative if an error occurred (usually, a broken \a pattern string).
+  */
+int str_re_match(string_ty *pattern, string_ty *candidate,
+    void (*callback)(const char *));
 
-string_ty *str_quote_shell _((string_ty *));
-string_ty *str_trim _((string_ty *));
+/**
+  * \brief
+  *	regular expression substitute
+  *
+  * The str_re_substitute function is used to performa a regular
+  * expression match of the \a actual string against the \a lhs (the
+  * pattern) and then substitute into the \a rhs string.
+  *
+  * \param lhs
+  *	The left hand side (the regular expression).
+  *	Will not be modified.
+  * \param rhs
+  *	The right hand side (the replacement).
+  *	Will not be modified.
+  * \param actual
+  *	The string to be matched and replaced.	Will not be modified
+  *	(the operation is <b>not</b> performed <i>in situ</i>).
+  * \param callback
+  *	A pointer to an error message function to be called if there is
+  *	something wrong with the pattern.  If this pointer is NULL,
+  *	it will not be called.
+  * \param count
+  *	The maximum number of times to match the expression agains the
+  *	string (zero means infinite).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.  Returns NULL if there was an error.
+  */
+string_ty *str_re_substitute(string_ty *lhs, string_ty *rhs, string_ty *actual,
+    void (*callback)(const char *), int count);
 
-int str_validate _((string_ty *));
+/**
+  * \brief
+  *	quote shell meta-characters
+  *
+  * The str_quote_shell function is used to create a new string which
+  * quotes the shell meta-characters in the input string.
+  *
+  * \param str
+  *	The string to be converted.  Will not be modified (the operation
+  *	is <b>not</b> performed <i>in situ</i>).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_quote_shell(string_ty *str);
+
+/**
+  * \brief
+  *	remove excess white space
+  *
+  * The str_trim function is used to remove white space from the beginning
+  * and end of the string, and replace all other runs of one or more
+  * white space characters with a single space.
+  *
+  * \param str
+  *	The string to be converted.  Will not be modified (the operation
+  *	is <b>not</b> performed <i>in situ</i>).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_trim(string_ty *str);
+
+/**
+  * \brief
+  *	check is valid
+  *
+  * The str_validate function is used to confirm that the given string
+  * pointer, \a str, points to a valid string.
+  * Usually used for debugging, often in assert()s.
+  *
+  * \param str
+  *	The string to be validated.  Willnot be modified.
+  *
+  * \return
+  *	Non-zero if valid, zero if invalid.
+  */
+int str_validate(string_ty *);
+
+/**
+  * \brief
+  *	look for a leading prefix
+  *
+  * The str_leading_prefix function is used to test whether the \a needle
+  * argument is a leading prefix of the \a haystack argument.
+  *
+  * \param haystack
+  *	The large string which allegedly contains the \a needle.
+  * \param needle
+  *	The substring to be tested for.
+  *
+  * \return
+  *	Non-zero if is a leadinf prefix, zero if not.
+  */
+int str_leading_prefix(string_ty *haystack, string_ty *needle);
 
 #endif /* STR_H */

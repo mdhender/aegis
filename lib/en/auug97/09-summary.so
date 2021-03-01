@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ ignored in the built-in rules of \fImake\fP programs.
 .sp 0.5
 Modules shared between your projects may fall into a similar category:
 if they change, you will deliberately re-build to include their changes,
-or quietly include their changes whenever the next build may happen. 
+or quietly include their changes whenever the next build may happen.
 In either case, you do not explicitly state the dependencies,
 and whole-project \fImake\fP does not apply.
 .IP \(bu 2n
@@ -117,7 +117,8 @@ will not be more, and will often be less.
 The disadvantages of using whole-project \fImake\fP over recursive \fImake\fP
 are often un-measured.
 How much time is spent figuring out why \fImake\fP did something unexpected?
-How much time is spent figuring out that \fImake\fP \fBdid\fP something unexpected?
+How much time is spent figuring out that \fImake\fP \fBdid\fP something
+unexpected?
 How much time is spent tinkering with the build process?
 These activities are often thought of as ``normal'' development overheads.
 .LP

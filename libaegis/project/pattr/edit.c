@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ project_pattr_edit(dp, et)
 	pattr		d;
 	string_ty	*filename;
 	string_ty	*msg;
-	
+
 	/*
 	 * write attributes to temporary file
 	 */
@@ -57,6 +57,7 @@ project_pattr_edit(dp, et)
 	sub_context_delete(scp);
 	undo_message(msg);
 	str_free(msg);
+	os_become_undo();
 
 	/*
 	 * edit the file
@@ -66,6 +67,7 @@ project_pattr_edit(dp, et)
 	/*
 	 * read it in again
 	 */
+	os_become_orig();
 	d = pattr_read_file(filename);
 	commit_unlink_errok(filename);
 	os_become_undo();

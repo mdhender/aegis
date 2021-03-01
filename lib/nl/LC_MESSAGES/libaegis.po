@@ -1,43 +1,43 @@
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
-#	All rights reserved.
+# 	aegis - project change supervisor
+# 	Copyright (C) 2001, 2002 Peter Miller;
+# 	All rights reserved.
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
-#	(at your option) any later version.
+# 	This program is free software; you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation; either version 2 of the License, or
+# 	(at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# 	This program is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+# 	You should have received a copy of the GNU General Public License
+# 	along with this program; if not, write to the Free Software
+# 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Dutch localization
 #
 # Just A Few Notes...
 #
-#	When translating these error messages, all of the substitutions
-#	described in aesub(5) are also available.  Substitution variable
-#	names and function names may be abbreviated, in the same way
-#	that command line options are abbreviated, but abbreviation
-#	should probably be avoided.
+# 	When translating these error messages, all of the substitutions
+# 	described in aesub(5) are also available.  Substitution variable
+# 	names and function names may be abbreviated, in the same way
+# 	that command line options are abbreviated, but abbreviation
+# 	should probably be avoided.
 #
-#	Messages which include state names need to leave the state names
-#	untranslated, because they will probably never be translated.
+# 	Messages which include state names need to leave the state names
+# 	untranslated, because they will probably never be translated.
 #
-#	Messages which include command line options need to leave them
-#	untranslated, because they are not yet internationalized, though
-#	they will be one day.
+# 	Messages which include command line options need to leave them
+# 	untranslated, because they are not yet internationalized, though
+# 	they will be one day.
 #
-#	The list names (known to ael) have not been internationalized (yet).
+# 	The list names (known to ael) have not been internationalized (yet).
 #
-#	Substitution names will Never be internationalized.
-#	Otherwise the substitutions will stop working, Catch-22.
+# 	Substitution names will Never be internationalized.
+# 	Otherwise the substitutions will stop working, Catch-22.
 #
 # -------------------------------------------------------------------------
 #
@@ -46,7 +46,7 @@ msgstr	"PO-Revision-Date: 2001-02-18 23:59CET\n"
 	"Last-Translator: Jelle Boomstra <nietsch@dds.nl>\n"
 	"Language-Team: Nederlands <nl@li.org>\n"
 	"MIME-Version: 1.0\n"
-	"Content-Type: text/plain; charset=latin1\n"
+	"Content-Type: text/plain; charset=iso-8859-1\n"
 	"Content-Transfer-Encoding: 8bit\n"
 
 # -------------------------------------------------------------------------
@@ -54,7 +54,7 @@ msgstr	"PO-Revision-Date: 2001-02-18 23:59CET\n"
 # This error message is issued when an environment variable is meant to
 # be a positive integer, and it is not.
 #
-#	$Name		The name of the environment variable.
+# 	$Name		The name of the environment variable.
 #
 msgid	"$$$name must be positive"
 msgstr	"de $name omgevings variable moet een positief decimaal nummer "
@@ -67,7 +67,7 @@ msgstr	"de $name omgevings variable moet een positief decimaal nummer "
 # it is a bug fix, and failing against the baseline demonstrates that
 # the test reproduces the bug.
 #
-#	$File_Name	The name of the test file.
+# 	$File_Name	The name of the test file.
 #
 msgid	"$filename baseline fail, good"
 msgstr	"test \"$filename\" op de baseline gezakt (zoals zou moeten)"
@@ -76,7 +76,7 @@ msgstr	"test \"$filename\" op de baseline gezakt (zoals zou moeten)"
 # This error message is issued when a test run against the baseline
 # passes.  See above for why this is not good.
 #
-#	$File_Name	The name of the test file.
+# 	$File_Name	The name of the test file.
 #
 msgid	"$filename baseline pass, not good"
 msgstr	"test \"$filename\" op de baseline geslaagd (zou moeten zakken)"
@@ -84,7 +84,7 @@ msgstr	"test \"$filename\" op de baseline geslaagd (zou moeten zakken)"
 #
 # This error message is issued when a test against the change fails.
 #
-#	$File_Name	The name of the test file.
+# 	$File_Name	The name of the test file.
 #
 msgid	"$filename fail"
 msgstr	"test \"$filename\" gezakt"
@@ -94,7 +94,7 @@ msgstr	"test \"$filename\" gezakt"
 # history tool (history_put_command or history_create_command)
 # during aeipass.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename modified by history tool"
 msgstr	"de history tool heeft het \"$filename\" source bestand gewijzigd"
@@ -103,7 +103,7 @@ msgstr	"de history tool heeft het \"$filename\" source bestand gewijzigd"
 # This error message is issued when aet runs a test which returns a ``no
 # result'' exit status.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename no result"
 msgstr	"Test \"$filename\" gaf geen resultaat; een ander probleem "
@@ -112,7 +112,7 @@ msgstr	"Test \"$filename\" gaf geen resultaat; een ander probleem "
 #
 # This progress message is issued when a test against the change passes.
 #
-#	$File_Name	The name of the test file.
+# 	$File_Name	The name of the test file.
 #
 msgid	"$filename pass"
 msgstr	"Test \"$filename\" geslaagd"
@@ -121,7 +121,7 @@ msgstr	"Test \"$filename\" geslaagd"
 # This error message is issued when a file named on the command
 # cannot be related to the change being operated on.
 #
-#	$File_Name	The offending command line argument.
+# 	$File_Name	The offending command line argument.
 #
 msgid	"$filename unrelated"
 msgstr	"pad \"$filename\" is niet van belang in deze wijziging"
@@ -130,9 +130,10 @@ msgstr	"pad \"$filename\" is niet van belang in deze wijziging"
 # This warning message is issued when an obsolete percent (%)
 # substitution used.
 #
-#	$File_Name	file containing message
-#	$Line_Number	line number of message
+# 	$File_Name	file containing message
+# 	$Line_Number	line number of message
 #
+#, no-c-format
 msgid	"$filename: $linenumber: don't use %% substitutions"
 msgstr	"$filename: $linenumber: waarschuwing: procent substituties (%%) "
 	"zijn verouderd, gebruik voortaan dollar substituties ($$)"
@@ -141,8 +142,8 @@ msgstr	"$filename: $linenumber: waarschuwing: procent substituties (%%) "
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
-#	$File_Name	The filename containg the message
-#	$Line_Number	The line number of the message
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
 #
 msgid	"$filename: $linenumber: empty $${} substitution"
 msgstr	"$filename: $linenumber: lege $${} substitutie"
@@ -152,12 +153,12 @@ msgstr	"$filename: $linenumber: lege $${} substitutie"
 # are unused.  All of them are reported, and then the substitution stops
 # with this error.
 #
-#	$File_Name	Name of file containing message
-#	$Line_Number	Line number of message
-#	$Message	The *msgstr* part of the offending message.
-#			(optional)
-#	$Number		The number of unused substitution variables.
-#			(Optional)
+# 	$File_Name	Name of file containing message
+# 	$Line_Number	Line number of message
+# 	$Message	The *msgstr* part of the offending message.
+# 			(optional)
+# 	$Number		The number of unused substitution variables.
+# 			(Optional)
 #
 msgid	"$filename: $linenumber: in substitution \"$message\" found "
 	"unused variables"
@@ -169,12 +170,12 @@ msgstr	"$filename: $linenumber: in substitutie \"$message\" $number "
 # in a substitution.  In indicates some kind of incompleteness in the
 # use of the substitution.
 #
-#	$File_Name	The filename containg the message
-#	$Line_Number	The line number of the message
-#	$Message	The *msgstr* part of the offending message.
-#			(optional)
-#	$Name		The name of the unused substitution variable.
-#			(optional)
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+# 	$Message	The *msgstr* part of the offending message.
+# 			(optional)
+# 	$Name		The name of the unused substitution variable.
+# 			(optional)
 #
 msgid	"$filename: $linenumber: in substitution \"$message\" variable "
 	"\"$name\" unused"
@@ -188,10 +189,10 @@ msgstr	"$filename: $linenumber: in substitutie \"$message\" variabele "
 # helpful message, nor will it impress the users.)
 # This +++ message works with the other messages marked +++ above.
 #
-#	$File_Name	The filename containg the message
-#	$Line_Number	The line number of the message
-#	$Name		The name of the offending substitution.
-#	$Message	What was wrong with it.
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
+# 	$Name		The name of the offending substitution.
+# 	$Message	What was wrong with it.
 #
 msgid	"$filename: $linenumber: substitution $${$name} failed: $message"
 msgstr	"$filename: $linenumber: substitutie $${$name} fout: $message"
@@ -200,8 +201,8 @@ msgstr	"$filename: $linenumber: substitutie $${$name} fout: $message"
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
-#	$File_Name	The filename containg the message
-#	$Line_Number	The line number of the message
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
 #
 msgid	"$filename: $linenumber: unterminated $${} \\ sequence"
 msgstr	"$filename: $linenumber:  $${} \\ substitutie zonder einde"
@@ -210,8 +211,8 @@ msgstr	"$filename: $linenumber:  $${} \\ substitutie zonder einde"
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
-#	$File_Name	The filename containg the message
-#	$Line_Number	The line number of the message
+# 	$File_Name	The filename containg the message
+# 	$Line_Number	The line number of the message
 #
 msgid	"$filename: $linenumber: unterminated $${} quotes"
 msgstr	"$filename: $linenumber: ontbrekende $${} aanhalingstekens"
@@ -227,14 +228,15 @@ msgstr	"$filename: $linenumber:  $${} substitutie zonder einde"
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
+#, no-c-format
 msgid	"$filename: $linenumber: unterminated %%() substitution"
 msgstr	"$filename: $linenumber: %%() substitutie zonder einde"
 
 #
 # This error message is issued when a generic error in a text file is required.
 #
-#	$File_Name	The name of the file being read or parsed.
-#	$Message	The error message, formed previously.
+# 	$File_Name	The name of the file being read or parsed.
+# 	$Message	The error message, formed previously.
 #
 msgid	"$filename: $message"
 msgstr	"$filename: $message"
@@ -243,7 +245,7 @@ msgstr	"$filename: $message"
 # This error message is issued when the project config file specifies
 # architecture variants incompletely.
 #
-#	$File_Name	The name of the offending file
+# 	$File_Name	The name of the offending file
 #
 msgid	"$filename: arch needs name and pattern"
 msgstr	"$filename: architecturen moeten zowel de naam als een patroon "
@@ -253,9 +255,9 @@ msgstr	"$filename: architecturen moeten zowel de naam als een patroon "
 # This error message is issued when an Aegis database file is missing a
 # field which should be present.
 #
-#	$File_Name	The name of the offending file, usually an
-#			absolute path, but not always.
-#	$FieLD_Name	The name of the absent field.
+# 	$File_Name	The name of the offending file, usually an
+# 			absolute path, but not always.
+# 	$FieLD_Name	The name of the absent field.
 #
 msgid	"$filename: contains no \"$field_name\" field"
 msgstr	"$filename: bevat geen \"$field_name\" veld"
@@ -264,9 +266,9 @@ msgstr	"$filename: bevat geen \"$field_name\" veld"
 # This error message is issued when an Aegis database file has an
 # illegal (impossible) value in a field.
 #
-#	$File_Name	The name of the offending file, usually an
-#			absolute path, but not always.
-#	$FieLD_Name	The name of the absent field.
+# 	$File_Name	The name of the offending file, usually an
+# 			absolute path, but not always.
+# 	$FieLD_Name	The name of the absent field.
 #
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: onleesbaar \"$field_name\" veld"
@@ -286,9 +288,9 @@ msgstr	"$filename: het  groep ID ($number1) van dit bestand is te laag, "
 # This error message is issued when Aegis is checking a file's group,
 # and finds something incorrect.
 #
-#	$File_Name	The name of the offending file.
-#	$Number1	The file's gid.
-#	$Number2	What Aegis expected as the file's gid.
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The file's gid.
+# 	$Number2	What Aegis expected as the file's gid.
 #
 msgid	"$filename: group is $number1, should be $number2"
 msgstr	"$filename: groep ID is $number1, zou $number2 moeten zijn"
@@ -297,7 +299,7 @@ msgstr	"$filename: groep ID is $number1, zou $number2 moeten zijn"
 # This error message is issued when Aegis is checking a file,
 # and found 1 or more things incorrect.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"$filename: has been tampered with (fatal)"
 msgstr	"$filename: is mee gesjoemeld (fataal)"
@@ -308,9 +310,9 @@ msgstr	"$filename: is mee gesjoemeld (fataal)"
 # so as many as possible are found before aborting.  This
 # error is emitted when it aborts.
 #
-#	$File_Name	The name of the file being read or parsed.
-#	$Number		Number of fatal errors found.
-#			(Optional)
+# 	$File_Name	The name of the file being read or parsed.
+# 	$Number		Number of fatal errors found.
+# 			(Optional)
 #
 msgid	"$filename: has errors"
 msgstr	"$filename: $number fatale fout${plural $number en} gevonden"
@@ -319,9 +321,9 @@ msgstr	"$filename: $number fatale fout${plural $number en} gevonden"
 # This error message is issued when Aegis is checking a file's modes,
 # and finds something incorrect.
 #
-#	$File_Name	The name of the offending file.
-#	$Number1	The file's mode.
-#	$Number2	What Aegis expected as the file's mode.
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The file's mode.
+# 	$Number2	What Aegis expected as the file's mode.
 #
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: rechten zijn $number1, zouden $number2 moeten zijn"
@@ -330,9 +332,9 @@ msgstr	"$filename: rechten zijn $number1, zouden $number2 moeten zijn"
 # This error message is issued when Aegis is checking a file's owner,
 # and finds something incorrect.
 #
-#	$File_Name	The name of the offending file.
-#	$Number1	The file's uid.
-#	$Number2	What Aegis expected as the file's uid.
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The file's uid.
+# 	$Number2	What Aegis expected as the file's uid.
 #
 msgid	"$filename: owner is $number1, should be $number2"
 msgstr	"$filename: eigenaar is $number1, zou $number2 moeten zijn"
@@ -341,7 +343,7 @@ msgstr	"$filename: eigenaar is $number1, zou $number2 moeten zijn"
 # This error message is issued when a text file contains too many errors
 # and the parse has been aborted.
 #
-#	$File_Name	The name of the file being read or parsed.
+# 	$File_Name	The name of the file being read or parsed.
 #
 msgid	"$filename: too many errors"
 msgstr	"$filename: te veel fatale fouten, gestopt"
@@ -361,9 +363,9 @@ msgstr	"$filename: het gebruikers ID ($number1) van dit bestand is te "
 #
 # This error message is issued when a generic error in a function is required.
 #
-#	$Function	The name of the function being performed.
-#	$Number		The line number on which the error occurred.
-#	$Message	The error message, formed previously.
+# 	$Function	The name of the function being performed.
+# 	$Number		The line number on which the error occurred.
+# 	$Message	The error message, formed previously.
 #
 msgid	"$function: argument $number: $message"
 msgstr	"$function: argument $number: $message"
@@ -372,8 +374,8 @@ msgstr	"$function: argument $number: $message"
 # This error message is issued when the user requests to print a value
 # which is unprintable.  It could be a structure or a list, etc.
 #
-#	$Function	The name of the function
-#	$Number		The argument number
+# 	$Function	The name of the function
+# 	$Number		The argument number
 #
 msgid	"$function: argument $number: cannot convert string into a time"
 msgstr	"$function: argument $number: kan de string niet omzetten in een "
@@ -383,9 +385,9 @@ msgstr	"$function: argument $number: kan de string niet omzetten in een "
 # This error message is issued when the sprintf function is
 # given an argument of the wrong type, when an integer was expected.
 #
-#	$Function	The name of the function being called.
-#	$Name		The type name of the offending argument.
-#	$Number		The number of the offending argument (starts at 1).
+# 	$Function	The name of the function being called.
+# 	$Name		The type name of the offending argument.
+# 	$Number		The number of the offending argument (starts at 1).
 #
 msgid	"$function: argument $number: integer value required (was given "
 	"$name)"
@@ -395,9 +397,9 @@ msgstr	"$function: argument $number: integer waarde nodig (kreeg $name)"
 # This error message is issued when sprintf is given a precision in a
 # format specifier which is too large.
 #
-#	$Function	The name of the function being called.
-#	$Number		The number of the offending argument.
-#	$Value		The value of the offending precision.
+# 	$Function	The name of the function being called.
+# 	$Number		The number of the offending argument.
+# 	$Value		The value of the offending precision.
 #
 msgid	"$function: argument $number: precision of $value is out of range"
 msgstr	"$function: argument $number: precisie van $value is buiten bereik"
@@ -406,9 +408,9 @@ msgstr	"$function: argument $number: precisie van $value is buiten bereik"
 # This error message is issued when the sprintf function is
 # given an argument of the wrong type, when a real was expected.
 #
-#	$Function	The name of the function being called.
-#	$Name		The type name of the offending argument.
-#	$Number		The number of the offending argument (starts at 1).
+# 	$Function	The name of the function being called.
+# 	$Name		The type name of the offending argument.
+# 	$Number		The number of the offending argument (starts at 1).
 #
 msgid	"$function: argument $number: real value required (was given "
 	"$name)"
@@ -418,9 +420,9 @@ msgstr	"$function: argument $number: real waarde nodig (kreeg $name)"
 # This error message is issued when a function is
 # given an argument of the wrong type.
 #
-#	$Function	The name of the function being called.
-#	$Number		The number of the offending argument (starts at 1).
-#	$Name		The type name of the offending argument.
+# 	$Function	The name of the function being called.
+# 	$Number		The number of the offending argument (starts at 1).
+# 	$Name		The type name of the offending argument.
 #
 msgid	"$function: argument $number: string value required (was given "
 	"$name)"
@@ -430,9 +432,9 @@ msgstr	"$function: argument $number: string waarde nodig (kreeg $name)"
 # This error message is issued when a function is not
 # given a time type as an argument.
 #
-#	$Function	The name of the function being called.
-#	$Name		The type name of the offending argument.
-#	$Number		The number of the offending argument (starts at 1).
+# 	$Function	The name of the function being called.
+# 	$Name		The type name of the offending argument.
+# 	$Number		The number of the offending argument (starts at 1).
 #
 msgid	"$function: argument $number: time value required (was given "
 	"$name)"
@@ -442,9 +444,9 @@ msgstr	"$function: argument $number: tijd waarde nodig (kreeg $name)"
 # This error message is issued when the user requests to print a value
 # which is unprintable.  It could be a structure or a list, etc.
 #
-#	$Function	The name of the function
-#	$Number		The argument number
-#	$Name		The type name of the offending argument.
+# 	$Function	The name of the function
+# 	$Number		The argument number
+# 	$Name		The type name of the offending argument.
 #
 msgid	"$function: argument $number: unable to print $name value"
 msgstr	"$function: argument $number: kan $name waarde niet afdrukken"
@@ -453,9 +455,9 @@ msgstr	"$function: argument $number: kan $name waarde niet afdrukken"
 # This error message is issued when sprintf is given a print width in a
 # format specifier which is too wide.
 #
-#	$Function	The name of the function being called.
-#	$Number		The number of the offending argument.
-#	$Value		The value of the offending width.
+# 	$Function	The name of the function being called.
+# 	$Number		The number of the offending argument.
+# 	$Value		The value of the offending width.
 #
 msgid	"$function: argument $number: width $value out of range"
 msgstr	"$function: argument $number: breedte $value buiten bereik"
@@ -464,7 +466,7 @@ msgstr	"$function: argument $number: breedte $value buiten bereik"
 # This error message is issued when a function result is too large for
 # an internal buffer.
 #
-#	$Function	The name of the function being called.
+# 	$Function	The name of the function being called.
 #
 msgid	"$function: result too long"
 msgstr	"$function: resultaat te lang"
@@ -473,7 +475,7 @@ msgstr	"$function: resultaat te lang"
 # This error message is issued when a function is called with
 # too few arguments.
 #
-#	$Function	The name of the function being called.
+# 	$Function	The name of the function being called.
 #
 msgid	"$function: too few arguments"
 msgstr	"$function: te weinig argumenten"
@@ -481,9 +483,9 @@ msgstr	"$function: te weinig argumenten"
 #
 # This error message is issued when a function is given too many arguments.
 #
-#	$Function	The name of the function being called.
-#	$Number1	The number of arguments given to the function call.
-#	$Number2	The number of arguments used by the format.
+# 	$Function	The name of the function being called.
+# 	$Number1	The number of arguments given to the function call.
+# 	$Number2	The number of arguments used by the format.
 #
 msgid	"$function: too many arguments ($number1 given, only $number2 "
 	"used)"
@@ -494,8 +496,8 @@ msgstr	"$function: te veel argumenten (kreeg $number1, slechts $number2 "
 # This error message is issued when sprintf is given an unknown format
 # specifier.
 #
-#	$Function	The name of the function being called.
-#	$Name		The offending format character.
+# 	$Function	The name of the function being called.
+# 	$Name		The offending format character.
 #
 msgid	"$function: unknown format specifier '$name'"
 msgstr	"$function: onbekend formaat '$name'"
@@ -503,7 +505,7 @@ msgstr	"$function: onbekend formaat '$name'"
 #
 # This is a generic "echo me" format string.
 #
-#	$Message	The message to be issued.
+# 	$Message	The message to be issued.
 #
 msgid	"$message"
 msgstr	"$message"
@@ -518,7 +520,7 @@ msgstr	"$name slot niet beschikbaar"
 # This error message is issued when an option which should be followed
 # by a directory name, is not followed by any.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"$name needs dir"
 msgstr	"de $name optie moet worden gevolgd worden door een directory pad"
@@ -527,7 +529,7 @@ msgstr	"de $name optie moet worden gevolgd worden door een directory pad"
 # This error message is issued when an option which should be followed
 # by one file name, is not followed by any.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"$name needs file"
 msgstr	"de $name optie moet worden gevolgd door een bestandsnaam"
@@ -536,7 +538,7 @@ msgstr	"de $name optie moet worden gevolgd door een bestandsnaam"
 # This error message is issued when an option which should be followed
 # by one or more file names, is not followed by any.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"$name needs files"
 msgstr	"de $name optie moet worden gevolgd door een of meer bestandsnamen"
@@ -545,7 +547,7 @@ msgstr	"de $name optie moet worden gevolgd door een of meer bestandsnamen"
 # This error message is issued when an option which should be followed
 # by a name is not.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"$name needs name"
 msgstr	"de $name optie worden gevolgd door een naam"
@@ -554,7 +556,7 @@ msgstr	"de $name optie worden gevolgd door een naam"
 # This error message is issued when an option which should be followed
 # by a number is not.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"$name needs number"
 msgstr	"de $name optie moet worden gevolgd door een nummer"
@@ -563,7 +565,7 @@ msgstr	"de $name optie moet worden gevolgd door een nummer"
 # This error message is issued when an option which should be followed
 # by a string is not.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"$name needs string"
 msgstr	"de $name optie moet worden gevolgd door een string"
@@ -572,8 +574,8 @@ msgstr	"de $name optie moet worden gevolgd door een string"
 # This format string is used to glue together the last two items in the
 # architecture names list.
 #
-#	$Name1		a quoted architecture name
-#	$Name2		a quoted architecture name
+# 	$Name1		a quoted architecture name
+# 	$Name2		a quoted architecture name
 #
 msgid	"$name1 and $name2"
 msgstr	"$name1 en $name2"
@@ -582,8 +584,8 @@ msgstr	"$name1 en $name2"
 # This format string is used to glue together two items in the
 # architecture names list.  Not used for the last two.
 #
-#	$Name1		a quoted architecture name
-#	$Name2		a quoted architecture name
+# 	$Name1		a quoted architecture name
+# 	$Name2		a quoted architecture name
 #
 msgid	"$name1, $name2"
 msgstr	"$name1, $name2"
@@ -592,8 +594,8 @@ msgstr	"$name1, $name2"
 # This error message is issued a power returns an error.
 # The error will be EDOM or ERANGE.
 #
-#	$Value1		The value of the left operand.
-#	$Value2		The value of the right operand.
+# 	$Value1		The value of the left operand.
+# 	$Value2		The value of the right operand.
 #
 msgid	"$value1 ** $value2: $errno"
 msgstr	"$value1 ** $value2: $errno"
@@ -611,8 +613,8 @@ msgstr	"Waarschuwing: de -TRace optie werkt alleen als Aegis is "
 #
 # This error message is issued when Aegis is misconfigured.
 #
-#	$Number1	the current AEGIS_USER_GID setting
-#	$Number2	the current AEGIS_MIN_GID setting
+# 	$Number1	the current AEGIS_USER_GID setting
+# 	$Number2	the current AEGIS_MIN_GID setting
 #
 msgid	"AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) "
 	"misconfigured"
@@ -625,8 +627,8 @@ msgstr	"Dit programma is niet goed afgesteld. Het AEGIS_USER_GID "
 #
 # This error message is issued when Aegis is misconfigured.
 #
-#	$Number1	the current AEGIS_USER_UID setting
-#	$Number2	the current AEGIS_MIN_UID setting
+# 	$Number1	the current AEGIS_USER_UID setting
+# 	$Number2	the current AEGIS_MIN_UID setting
 #
 msgid	"AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) "
 	"misconfigured"
@@ -661,7 +663,7 @@ msgstr	"geen eenduidige substitutie naam"
 # This information message is issued when Aegis appends the log to an
 # existing log file.
 #
-#	$File_Name	The name of the log file.
+# 	$File_Name	The name of the log file.
 #
 msgid	"appending log to $filename"
 msgstr	"toevoegen log aan \"$filename\""
@@ -671,7 +673,7 @@ msgstr	"toevoegen log aan \"$filename\""
 # architecture it is currently running on is forbidden by the (5)
 # architecture field of the project ``config'' file.
 #
-#	$Name		The offending architecture name.
+# 	$Name		The offending architecture name.
 #
 msgid	"architecture \"$name\" forbidden"
 msgstr	"architectuur \"$name\" forbidden"
@@ -682,7 +684,7 @@ msgstr	"architectuur \"$name\" forbidden"
 # architecture does not match any of the architecture patterns specified
 # in the project ``config'' file.
 #
-#	$Name		The offending architecture name.
+# 	$Name		The offending architecture name.
 #
 msgid	"architecture \"$name\" unknown"
 msgstr	"architectuur \"$name\" onbekend"
@@ -693,16 +695,26 @@ msgstr	"architectuur \"$name\" onbekend"
 # is not present in the project's architecture list in the project
 # ``config'' file.
 #
-#	$Name		The name of the offending architecture.
+# 	$Name		The name of the offending architecture.
 #
 msgid	"architecture \"$name\" unlisted"
 msgstr	"architectuur \"$name\" komt voor in de wijzigings arrtibuten, "
 	"maar wordt niet genoemd in het project ``config'' bestand"
 
 #
+# This fatal error message is issued when a file ches size while the
+# archive is being constructed.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"archive member $filename changed size"
+msgstr	"archief bestand $filename veranderde van grootte tijdens "
+	"verwerking, resultaat niet betrouwbaar"
+
+#
 # This message is issued when an inappropriate -- is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"arithmetic type required for decrement (was given $name)"
 msgstr	"rekenkundig type nodig voor aftrekken(kreeg $name)"
@@ -710,7 +722,7 @@ msgstr	"rekenkundig type nodig voor aftrekken(kreeg $name)"
 #
 # This message is issued when an inappropriate ++ is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"rekenkundig type nodig voor optellen (kreeg $name)"
@@ -720,8 +732,8 @@ msgstr	"rekenkundig type nodig voor optellen (kreeg $name)"
 # fails, to inform the user where s/he may find the text of failed
 # attributes file.
 #
-#	$File_Name	The absolute path of the file containing the
-#			offending attributes text file.
+# 	$File_Name	The absolute path of the file containing the
+# 			offending attributes text file.
 #
 msgid	"attributes in $filename"
 msgstr	"attributen tekst staat in het \"$filename\" bestand"
@@ -737,7 +749,7 @@ msgstr	"standaard ontwikkel directory moet worden opgegeven als een "
 #
 # This error message is issued when an illegal filename pattern is specified.
 #
-#	$File_Name	The offending file name pattern.
+# 	$File_Name	The offending file name pattern.
 #
 msgid	"bad pattern $filename"
 msgstr	"bestandsnaam patroon \"$filename\" is niet toegestaan"
@@ -746,16 +758,31 @@ msgstr	"bestandsnaam patroon \"$filename\" is niet toegestaan"
 # This error message is issued when a project name is given to aenpr
 # which contains unprintable characters or spaces.
 #
-#	$Name		The offending project name.
+# 	$Name		The offending project name.
 #
 msgid	"bad project $name"
 msgstr	"project naam \"$name\" is niet geldig"
 
 #
+# This fatal error message is issued when there would be no files in
+# the distributed change set.
+#
+msgid	"bad send no files"
+msgstr	"er zijn geen bestanden om te distribueren"
+
+#
+# This fatal error message is issued when a change is not in a suitable
+# state from which to make a distribution change set.
+#
+msgid	"bad send state"
+msgstr	"Deze wijziging heeft de status $state; hij moet een latere "
+	"status hebben om verzonden te worden"
+
+#
 # This error message is issued when a version string is given to aenpr
 # which can't be broken into ``ispunct'' separated number.
 #
-#	$Number		The offending version number.
+# 	$Number		The offending version number.
 #
 msgid	"bad version $number"
 msgstr	"versie nummer \"$number\" is niet toegestaan"
@@ -775,7 +802,7 @@ msgstr	"baseline schrijf-slot niet beschikbaar"
 #
 # This message is issued when an inappropriate e?e:e is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for arithmetic if (was given $name)"
 msgstr	"booleaanse waarde nodig voor rekenkundig als (kreeg $name)"
@@ -783,7 +810,7 @@ msgstr	"booleaanse waarde nodig voor rekenkundig als (kreeg $name)"
 #
 # This message is issued when an inappropriate && is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
 msgstr	"booleaanse waarde nodig voor logisch ``en'' (kreeg $name)"
@@ -791,7 +818,7 @@ msgstr	"booleaanse waarde nodig voor logisch ``en'' (kreeg $name)"
 #
 # This message is issued when an inappropriate || is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
 msgstr	"booleaanse waarde nodig voor logisch ``of'' (kreeg $name)"
@@ -800,7 +827,7 @@ msgstr	"booleaanse waarde nodig voor logisch ``of'' (kreeg $name)"
 # This error message is issued when the control expression for an ``if''
 # statement does not evaluate to a boolean.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
 msgstr	"booleaanse waardenodig voor ``als'' statement (kreeg $name)"
@@ -811,7 +838,7 @@ msgstr	"booleaanse waardenodig voor ``als'' statement (kreeg $name)"
 # immediately available, because Aegis could have one this in a child
 # process.
 #
-#	$File_Name	The name of the source file.
+# 	$File_Name	The name of the source file.
 #
 msgid	"cat $filename: $errno"
 msgstr	"cat \"$filename\": $errno"
@@ -827,28 +854,27 @@ msgstr	"cd $filename"
 # This is the format of change messages (error, fatal and verbose).
 # Some changes are actually branches.
 #
-#	$Message"	The message to be issued.
+# 	$Message"	The message to be issued.
 #
 msgid	"change $change: $message"
 msgstr	"wijziging $change: $message"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error is issued when the --delta-from-change option is used
 # with a change which has not yet been completed.
 #
 # 	$Number		The offending change's number.
 #
 msgid	"change $number not completed"
-msgstr	"change $number is in the \"$state\" state; it must be in the "
-	"\"completed\" state to be used with the --delta-from-change "
-	"option"
+msgstr	"wijziging $number heeft niet de status \"$state\"; het met moet "
+	"de status \"completed\" hebben om gebruikt te kunnen worden met "
+	"de --delta-from-change optie"
 
 #
 # This error message is issued when an absurd change number is given.
 # This is different to an unknown but valid change number.
 #
-#	$Number		The offending change number.
+# 	$Number		The offending change number.
 #
 msgid	"change $number out of range"
 msgstr	"wijziging $number buiten bereik, moet een klein positief nummer "
@@ -865,7 +891,7 @@ msgstr	"Deze wijziging is afgebroken omdat de wijziging al in de "
 #
 # This error message is issued when a chdir fails.
 #
-#	$File_Name	The name of the directory to chdir to.
+# 	$File_Name	The name of the directory to chdir to.
 #
 msgid	"chdir $filename: $errno"
 msgstr	"chdir \"$filename\": $errno"
@@ -873,8 +899,8 @@ msgstr	"chdir \"$filename\": $errno"
 #
 # This error message is issued when a chgrp fails.
 #
-#	$File_Name	The name of the file to be changed.
-#	$Argument	The GID the file is to be set.
+# 	$File_Name	The name of the file to be changed.
+# 	$Argument	The GID the file is to be set.
 #
 msgid	"chgrp(\"$filename\", $arg): $errno"
 msgstr	"chgrp(\"$filename\", $arg): $errno"
@@ -882,8 +908,8 @@ msgstr	"chgrp(\"$filename\", $arg): $errno"
 #
 # This error message is issued when a chmod fails.
 #
-#	$File_Name	The name of the file to be changed.
-#	$Argument	The mode desired.
+# 	$File_Name	The name of the file to be changed.
+# 	$Argument	The mode desired.
 #
 msgid	"chmod(\"$filename\", $arg): $errno"
 msgstr	"chmod(\"$filename\", $arg): $errno"
@@ -891,7 +917,7 @@ msgstr	"chmod(\"$filename\", $arg): $errno"
 #
 # This error message is issued when a file close fails
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"close $filename: $errno"
 msgstr	"sluiten \"$filename\": $errno"
@@ -902,8 +928,8 @@ msgstr	"sluiten \"$filename\": $errno"
 # Exactly which file is at fault is not immediately available, because
 # Aegis could have one this in a child process.
 #
-#	$File_Name1	The name of the source file.
-#	$File_Name2	The name of the destination file.
+# 	$File_Name1	The name of the source file.
+# 	$File_Name2	The name of the destination file.
 #
 msgid	"cmp $filename1 $filename2: $errno"
 msgstr	"cmp \"$filename1\" \"$filename2\": $errno"
@@ -912,8 +938,8 @@ msgstr	"cmp \"$filename1\" \"$filename2\": $errno"
 # This error message is issued when a child process stops with a
 # non-zero exit status.
 #
-#	$Command	The offending command.
-#	$Number		The exit status of the child.
+# 	$Command	The offending command.
+# 	$Number		The exit status of the child.
 #
 msgid	"command \"$command\" exit status $number"
 msgstr	"commando \"$command\" exit status $number"
@@ -922,7 +948,7 @@ msgstr	"commando \"$command\" exit status $number"
 # This error message is issued when a child process stops.
 # Since Aegis didn't ask it to, this is treated as a fatal error.
 #
-#	$Command	The offending command.
+# 	$Command	The offending command.
 #
 msgid	"command \"$command\" stopped"
 msgstr	"commando \"$command\" gestopt"
@@ -931,8 +957,8 @@ msgstr	"commando \"$command\" gestopt"
 # This error message is issued when a child process terminates due to an
 # uncaught signal.
 #
-#	$Command	The offending command.
-#	$Signal		The name of the terminating signal.
+# 	$Command	The offending command.
+# 	$Signal		The name of the terminating signal.
 #
 msgid	"command \"$command\" terminated by $signal"
 msgstr	"commando \"$command\" afgebroken door $signal"
@@ -941,8 +967,8 @@ msgstr	"commando \"$command\" afgebroken door $signal"
 # This error message is issued when a child process stops due to an
 # uncaught signal, and also dumps core.
 #
-#	$Command	The offending command.
-#	$Signal		The name of the terminating signal.
+# 	$Command	The offending command.
+# 	$Signal		The name of the terminating signal.
 #
 msgid	"command \"$command\" terminated by $signal (core dumped)"
 msgstr	"commando \"$command\" afgebroken door $signal (core gedumpt)"
@@ -957,7 +983,7 @@ msgstr	"opdracht regel is te kort"
 # This fatal error message is issued when aedist or aepatch don't
 # recognize a content transfer encoding name.
 #
-#	$Name		The offending encoding name.
+# 	$Name		The offending encoding name.
 #
 msgid	"content transfer encoding $name unknown"
 msgstr	"content transfer encoding \"$name\" onbekend"
@@ -967,8 +993,8 @@ msgstr	"content transfer encoding \"$name\" onbekend"
 # file is at fault is not immediately available, because Aegis could
 # have one this in a child process.
 #
-#	$File_Name1	The name of the source file.
-#	$File_Name2	The name of the destination file.
+# 	$File_Name1	The name of the source file.
+# 	$File_Name2	The name of the destination file.
 #
 msgid	"cp $filename1 $filename2: $errno"
 msgstr	"cp \"$filename1\" \"$filename2\": $errno"
@@ -976,7 +1002,7 @@ msgstr	"cp \"$filename1\" \"$filename2\": $errno"
 #
 # This error message is issued when a file create fails
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"create $filename: $errno"
 msgstr	"aanmaken \"$filename\": $errno"
@@ -992,10 +1018,29 @@ msgstr	"maak symbolic links aan naar de baseline"
 # This fatal error message is issued when a user-supplied string can't
 # be interpreted as a date (time_t).
 #
-#	$Name		The offending string.
+# 	$Name		The offending string.
 #
 msgid	"date $name unknown"
 msgstr	"de string \"$name\" ziet er niet uit als een datum"
+
+#
+# This warning message is issued when aecp -delta-date is given a time
+# which is in the future.  Unlike times in the past, the answer could
+# change at a later date.
+#
+msgid	"date in the future"
+msgstr	"Waaschuwing: De opgegeven delta datum is in de toekomst.  Dit "
+	"commando kan in de toekomst andere resultaten geven dan de "
+	"huidige resultaten."
+
+#
+# This error message is issued when an absurd delta number is given.
+# This is different to an unknown but valid delta number.
+#
+# 	$Number		The offending delta number.
+#
+msgid	"delta $number out of range"
+msgstr	"delta $number buiten bereik, moet een klein positief nummer zijn"
 
 #
 # This error message is issued when a division by zero is attempted.
@@ -1007,7 +1052,7 @@ msgstr	"delen door nul"
 # This error message is issued when an option is used more than one on
 # the command line.
 #
-#	$Name		The name of the offending option.
+# 	$Name		The name of the offending option.
 #
 msgid	"duplicate $name option"
 msgstr	"meerdere $name opties, u kunt er slechts een opgeven"
@@ -1037,7 +1082,7 @@ msgstr	"einde regel middenin string"
 # This error message is issued when an environment variable has not been
 # set, it it needs to be.
 #
-#	$Name		The name of the offending environment variable.
+# 	$Name		The name of the offending environment variable.
 #
 msgid	"environment variable $name not set"
 msgstr	"omgevings variabele ``$name'' niet gezet"
@@ -1046,7 +1091,7 @@ msgstr	"omgevings variabele ``$name'' niet gezet"
 # This fatal error message is issued when the execution of a command
 # fails.  The filename may, or may not, be absolute.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"exec \"$filename\": $errno"
 msgstr	"uitvoeren \"$filename\": $errno"
@@ -1065,7 +1110,7 @@ msgstr	"A fatale fout vondt plaats bij een poging bij te herstellen van "
 # This error message is issued when Aegis fails to get file descriptor flags.
 # This message is so rare as to usually indicate a bug.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"fcntl(\"$filename\", F_GETFD): $errno"
 msgstr	"fcntl(\"$filename\", F_GETFD): $errno"
@@ -1074,8 +1119,8 @@ msgstr	"fcntl(\"$filename\", F_GETFD): $errno"
 # This error message is issued when Aegis fails to get a lock status
 # This message is so rare as to usually indicate a bug.
 #
-#	$File_Name	The name of the offending file.
-#	$Argument	The argument to the fcntl call.
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
 #
 msgid	"fcntl(\"$filename\", F_GETLK, $arg): $errno"
 msgstr	"fcntl(\"$filename\", F_GETLK, $arg): $errno"
@@ -1084,8 +1129,8 @@ msgstr	"fcntl(\"$filename\", F_GETLK, $arg): $errno"
 # This error message is issued when Aegis fails to set file descriptor flags.
 # This message is so rare as to usually indicate a bug.
 #
-#	$File_Name	The name of the offending file.
-#	$Argument	The argument to the fcntl call.
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
 #
 msgid	"fcntl(\"$filename\", F_SETFD, $arg): $errno"
 msgstr	"fcntl(\"$filename\", F_SETFD, $arg): $errno"
@@ -1094,8 +1139,8 @@ msgstr	"fcntl(\"$filename\", F_SETFD, $arg): $errno"
 # This error message is issued when Aegis fails to set a lock.
 # This message is so rare as to usually indicate a bug.
 #
-#	$File_Name	The name of the offending file.
-#	$Argument	The argument to the fcntl call.
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
 #
 msgid	"fcntl(\"$filename\", F_SETLK, $arg): $errno"
 msgstr	"fcntl(\"$filename\", F_SETLK, $arg): $errno"
@@ -1104,8 +1149,8 @@ msgstr	"fcntl(\"$filename\", F_SETLK, $arg): $errno"
 # This error message is issued when Aegis fails to set a lock.
 # This message is so rare as to usually indicate a bug.
 #
-#	$File_Name	The name of the offending file.
-#	$Argument	The argument to the fcntl call.
+# 	$File_Name	The name of the offending file.
+# 	$Argument	The argument to the fcntl call.
 #
 msgid	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
@@ -1114,7 +1159,7 @@ msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 # This error message is issued when a field in an Aegis data file or
 # configuration file is defined more than once.
 #
-#	$Name		The name of the offending field.
+# 	$Name		The name of the offending field.
 #
 msgid	"field \"$name\" redefined"
 msgstr	"veld \"$name\" opnieuw gedefineerd"
@@ -1123,7 +1168,7 @@ msgstr	"veld \"$name\" opnieuw gedefineerd"
 # This error message is issued when a change file collides with a file
 # already in the project.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file \"$filename\" already exists in project"
 msgstr	"bestand \"$filename\" bestaat al in dit project"
@@ -1132,7 +1177,7 @@ msgstr	"bestand \"$filename\" bestaat al in dit project"
 # This error message is issued when a change file name is not acceptable
 # to the filename pattern filters.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file \"$filename\" bombs filters"
 msgstr	"bestand \"$filename\" is niet acceptabel voor de bestandsnaam "
@@ -1142,7 +1187,7 @@ msgstr	"bestand \"$filename\" is niet acceptabel voor de bestandsnaam "
 # This error message is issued when a change file
 # name is the same as the log file.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file \"$filename\" is log file"
 msgstr	"bestand \"$filename\" is hetzelfde als log bestandsnaam"
@@ -1152,8 +1197,8 @@ msgstr	"bestand \"$filename\" is hetzelfde als log bestandsnaam"
 # not acceptable to the filename pattern filters.  Must be modifiable by
 # (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" bombs filters"
 msgstr	"bestand \"$filename\" pad element \"$part\" is niet acceptabel "
@@ -1163,8 +1208,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" is niet acceptabel "
 # This error message is issued when a component of a change file name
 # contains illegal characters.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" contains illegal characters"
 msgstr	"bestand \"$filename\" pad element \"$part\" bevat niet "
@@ -1174,8 +1219,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" bevat niet "
 # This error message is issued when a component of a change file name
 # contains shell special characters.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" contains shell special "
 	"characters"
@@ -1186,8 +1231,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" bevat speciale shell "
 # This error message is issued when a component of a change file
 # name is the same as the log file.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" is log file"
 msgstr	"bestand \"$filename\" pad element \"$part\" is hetzelfde als log "
@@ -1197,9 +1242,9 @@ msgstr	"bestand \"$filename\" pad element \"$part\" is hetzelfde als log "
 # This error message is issued when a component of a change file name
 # is not suitable for DOS.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
-#	$SUGgest	Suggested alternative.
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+# 	$SUGgest	Suggested alternative.
 #
 msgid	"file \"$filename\" part \"$part\" not suitable for DOS"
 msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
@@ -1209,8 +1254,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
 # This error message is issued when a component of a change file name
 # is not suitable for Windows.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" not suitable for Windows"
 msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
@@ -1220,11 +1265,11 @@ msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
 # This error message is issued when a directory component of a change file
 # name is too long.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$PArt		The directory part in question.
-#	$Number		How many characters too long, how many to remove.
-#			(Optional)
-#	$SUGgest	Suggested abbreviated filename (optional).
+# 	$File_Name	The name of the offending file.
+# 	$PArt		The directory part in question.
+# 	$Number		How many characters too long, how many to remove.
+# 			(Optional)
+# 	$SUGgest	Suggested abbreviated filename (optional).
 #
 msgid	"file \"$filename\" part \"$part\" too long, suggest \"$suggest\" "
 	"instead"
@@ -1235,10 +1280,10 @@ msgstr	"bestand \"$filename\" pad element \"$part\" te lang ($number "
 # This error message is issued when the last component of a change file
 # name is too long.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$Number		How many characters too long, how many to remove.
-#			(Optional)
-#	$SUGgest	Suggested abbreviated filename (optional).
+# 	$File_Name	The name of the offending file.
+# 	$Number		How many characters too long, how many to remove.
+# 			(Optional)
+# 	$SUGgest	Suggested abbreviated filename (optional).
 #
 msgid	"file \"$filename\" too long, suggest \"$suggest\" instead"
 msgstr	"bestand \"$filename\" te lang ($number karakters), suggestie "
@@ -1248,8 +1293,8 @@ msgstr	"bestand \"$filename\" te lang ($number karakters), suggestie "
 # This error message is issued when a change file collides with a file
 # already in the project.  Must be modifiable by (***) above.
 #
-#	$File_Name1	The name of the offending change file.
-#	$File_Name2	The name of the offending project file.
+# 	$File_Name1	The name of the offending change file.
+# 	$File_Name2	The name of the offending project file.
 #
 msgid	"file \"$filename1\" collides with file \"$filename2\" in project"
 msgstr	"bestand \"$filename1\" is in conflict met bestand \"$filename2\" "
@@ -1259,7 +1304,7 @@ msgstr	"bestand \"$filename1\" is in conflict met bestand \"$filename2\" "
 # This error message is issued when a change file name
 # contains illegal characters.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file name \"$filename\" contains illegal characters"
 msgstr	"bestandnaam \"$filename\" bevat niet toegestane karakters"
@@ -1268,7 +1313,7 @@ msgstr	"bestandnaam \"$filename\" bevat niet toegestane karakters"
 # This error message is issued when a change file name
 # contains illegal characters.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file name \"$filename\" contains shell special characters"
 msgstr	"bestandsnaam \"$filename\" bevat speciale shell karakters"
@@ -1277,8 +1322,8 @@ msgstr	"bestandsnaam \"$filename\" bevat speciale shell karakters"
 # This error message is issued when a change file name
 # is not suitable for DOS.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
-#	$SUGgest	Suggested alternative file name.
+# 	$File_Name	The name of the offending file.
+# 	$SUGgest	Suggested alternative file name.
 #
 msgid	"file name \"$filename\" not suitable for DOS"
 msgstr	"bestandsnaam \"$filename\" niet geschikt voor DOS, suggestie: "
@@ -1288,7 +1333,7 @@ msgstr	"bestandsnaam \"$filename\" niet geschikt voor DOS, suggestie: "
 # This error message is issued when a change file name
 # is not suitable for Windows.  Must be modifiable by (***) above.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"file name \"$filename\" not suitable for Windows"
 msgstr	"bestandsnaam \"$filename\" niet geschikt voor Windows "
@@ -1298,8 +1343,8 @@ msgstr	"bestandsnaam \"$filename\" niet geschikt voor Windows "
 # files are modified by the history tool (history_put_command or
 # history_create_commands) during aeipass.
 #
-#	$Number		The number of files modified.
-#			(Optional)
+# 	$Number		The number of files modified.
+# 			(Optional)
 #
 msgid	"files modified by history tool"
 msgstr	"De history tool wijzigde $number ${plural $number bestanden "
@@ -1312,7 +1357,7 @@ msgstr	"De history tool wijzigde $number ${plural $number bestanden "
 #
 # This error message is issued when a file fingerprint fails
 #
-#	$File_Name	The file to be fingerprinted
+# 	$File_Name	The file to be fingerprinted
 #
 msgid	"fingerprint $filename: $errno"
 msgstr	"fingerprint \"$filename\": $errno"
@@ -1342,9 +1387,9 @@ msgstr	"zwevend ``return'' statement"
 # This format string is used when assembling the list of outstanding
 # architectures for some other error message.
 #
-#	$Name_List	The list of names of outstanding architectures.
-#	$Number		How many architectures are outstanding.
-#			(Optional)  Use to pluralize the message.
+# 	$Name_List	The list of names of outstanding architectures.
+# 	$Number		How many architectures are outstanding.
+# 			(Optional)  Use to pluralize the message.
 #
 msgid	"for the $name_list architectures"
 msgstr	"voor de $name_list architecture${plural $number n}"
@@ -1355,8 +1400,8 @@ msgstr	"voor de $name_list architecture${plural $number n}"
 # apply to, but are not present in the project's architecture list in
 # the project ``config'' file.
 #
-#	$Number		The number of unknown architecture(s).
-#			(Optional)
+# 	$Number		The number of unknown architecture(s).
+# 			(Optional)
 #
 msgid	"found unlisted architectures"
 msgstr	"$number ongenoemde architecture${plural $number n} gevonden, "
@@ -1373,7 +1418,7 @@ msgstr	"ophalen huidige directory: $errno"
 # This error message is issued when a group from the /etc/group file, or
 # equivalent, cannot be found by number.
 #
-#	$Number		The offending group number.
+# 	$Number		The offending group number.
 #
 msgid	"gid $number unknown"
 msgstr	"groep id $number onbekend"
@@ -1388,7 +1433,7 @@ msgstr	"globaal status-slot niet beschikbaar"
 # This error message is issued when a group from the /etc/group file, or
 # equivalent, cannot be found by name.
 #
-#	$Name		The offending group name.
+# 	$Name		The offending group name.
 #
 msgid	"group \"$name\" unknown"
 msgstr	"groep \"$name\" onbekend"
@@ -1398,7 +1443,7 @@ msgstr	"groep \"$name\" onbekend"
 # administrator to a project, but the group's gid is too low (too
 # privileged).
 #
-#	$Name		The offending group name.
+# 	$Name		The offending group name.
 #
 msgid	"group $name too privileged"
 msgstr	"groep \"$name\" heeft te veel rechten"
@@ -1407,9 +1452,9 @@ msgstr	"groep \"$name\" heeft te veel rechten"
 # This fatal error message is issued when something goes wrong decompressing
 # a file using zlib.
 #
-#	$File_Name	The name of the output file
-#	$ERRNO		Overridden to contain the error string from zlib
-#			(but sometimes not, because the real errno has it)
+# 	$File_Name	The name of the output file
+# 	$ERRNO		Overridden to contain the error string from zlib
+# 			(but sometimes not, because the real errno has it)
 #
 msgid	"gunzip $filename: $errno"
 msgstr	"Tijdens het uitpakken van het \"$filename\" bestand: $errno"
@@ -1418,9 +1463,9 @@ msgstr	"Tijdens het uitpakken van het \"$filename\" bestand: $errno"
 # This fatal error message is issued when something goes wrong compressing
 # a file using zlib.
 #
-#	$File_Name	The name of the output file
-#	$ERRNO		Overridden to contain the error string from zlib
-#			(but sometimes not, because the real errno has it)
+# 	$File_Name	The name of the output file
+# 	$ERRNO		Overridden to contain the error string from zlib
+# 			(but sometimes not, because the real errno has it)
 #
 msgid	"gzip $filename: $errno"
 msgstr	"Tijdens het inpakken van het \"$filename\" bestand: $errno"
@@ -1444,7 +1489,7 @@ msgstr	"het history_query_command gaf een lege string als antwoord, dit "
 # This error message is issued when an unprintable character is seen in
 # an input file.  The character is unprintable in the C locale.
 #
-#	$Name		The offending character, as a C octal escape sequence.
+# 	$Name		The offending character, as a C octal escape sequence.
 #
 msgid	"illegal '$name' character"
 msgstr	"niet toegestaan '$name' karakter"
@@ -1452,8 +1497,8 @@ msgstr	"niet toegestaan '$name' karakter"
 #
 # This error message is issued when an illegal e+e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal addition ($name1 + $name2)"
 msgstr	"niet toegestane optelling ($name1 + $name2)"
@@ -1461,7 +1506,7 @@ msgstr	"niet toegestane optelling ($name1 + $name2)"
 #
 # This message is issued when an inappropriate ~ is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
 msgstr	"integer waarde benodigd voor bit-wise ``not'' (kreeg $name)"
@@ -1469,8 +1514,8 @@ msgstr	"integer waarde benodigd voor bit-wise ``not'' (kreeg $name)"
 #
 # This error message is issued when an illegal e!=e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 != $name2)"
 msgstr	"niet toegestane vergelijking ($name1 != $name2)"
@@ -1478,8 +1523,8 @@ msgstr	"niet toegestane vergelijking ($name1 != $name2)"
 #
 # This error message is issued when an illegal e!~e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 !~ $name2)"
 msgstr	"niet toegestane vergelijking ($name1 !~ $name2)"
@@ -1487,8 +1532,8 @@ msgstr	"niet toegestane vergelijking ($name1 !~ $name2)"
 #
 # This error message is issued when an illegal e<e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 < $name2)"
 msgstr	"niet toegestane vergelijking ($name1 < $name2)"
@@ -1496,8 +1541,8 @@ msgstr	"niet toegestane vergelijking ($name1 < $name2)"
 #
 # This error message is issued when an illegal e<=e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 <= $name2)"
 msgstr	"niet toegestane vergelijking ($name1 <= $name2)"
@@ -1505,8 +1550,8 @@ msgstr	"niet toegestane vergelijking ($name1 <= $name2)"
 #
 # This error message is issued when an illegal e==e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 == $name2)"
 msgstr	"niet toegestane vergelijking ($name1 == $name2)"
@@ -1514,8 +1559,8 @@ msgstr	"niet toegestane vergelijking ($name1 == $name2)"
 #
 # This error message is issued when an illegal e>e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 > $name2)"
 msgstr	"niet toegestane vergelijking ($name1 > $name2)"
@@ -1523,8 +1568,8 @@ msgstr	"niet toegestane vergelijking ($name1 > $name2)"
 #
 # This error message is issued when an illegal e>=e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 >= $name2)"
 msgstr	"niet toegestane vergelijking ($name1 >= $name2)"
@@ -1532,8 +1577,8 @@ msgstr	"niet toegestane vergelijking ($name1 >= $name2)"
 #
 # This error message is issued when an illegal e~~e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 ~~ $name2)"
 msgstr	"niet toegestane vergelijking ($name1 ~~ $name2)"
@@ -1542,7 +1587,7 @@ msgstr	"niet toegestane vergelijking ($name1 ~~ $name2)"
 # This error message is issued when a request to count the keys of an
 # inappropriate object is requested.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"illegal count request ($name)"
 msgstr	"niet toegestaan count request ($name)"
@@ -1550,8 +1595,8 @@ msgstr	"niet toegestaan count request ($name)"
 #
 # This error message is issued when an illegal / is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal division ($name1 / $name2)"
 msgstr	"niet toegestane deling ($name1 / $name2)"
@@ -1559,18 +1604,18 @@ msgstr	"niet toegestane deling ($name1 / $name2)"
 #
 # This error message is issued when an illegal e##e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal join ($name1 ## $name2)"
 msgstr	"niet toegestane join ($name1 ## $name2)"
 
 #
 # This error message is issued when a request for the keys of an
-# inappropriate object is requested.  (Keys can be used as the right hand side of a
-# lookup.)
+# inappropriate object is requested.  (Keys can be used as the right
+# hand side of a lookup.)
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"illegal keys request ($name)"
 msgstr	"niet toegestane sleutel opvraag ($name)"
@@ -1584,7 +1629,7 @@ msgstr	"niet toegestane linkerzijde toekenning, moet een variabele zijn"
 #
 # This message is issued when an inappropriate assignment is attempted.
 #
-#	$Name		The type name of the left hand side.
+# 	$Name		The type name of the left hand side.
 #
 msgid	"illegal left hand side of assignment (was given $name)"
 msgstr	"niet toegestane linkerzijde toekenning (kreeg $name), moet een "
@@ -1593,7 +1638,7 @@ msgstr	"niet toegestane linkerzijde toekenning (kreeg $name), moet een "
 #
 # This message is issued when an inappropriate ! is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
 msgstr	"booleanse waarde nodig voor logisch ``not'' (kreeg $name)"
@@ -1603,8 +1648,8 @@ msgstr	"booleanse waarde nodig voor logisch ``not'' (kreeg $name)"
 # This occurs both for associative arrays ``e1[e2]'', and also for
 # structures ``e1.e2'' (which are implemented as associative arrays).
 #
-#	$Name1		The type name of the first operand.
-#	$Name2		The type name of the second operand.
+# 	$Name1		The type name of the first operand.
+# 	$Name2		The type name of the second operand.
 #
 msgid	"illegal lookup ($name1[$name2])"
 msgstr	"niet toegestane zoekaktie ($name1[$name2])"
@@ -1612,17 +1657,18 @@ msgstr	"niet toegestane zoekaktie ($name1[$name2])"
 #
 # This error message is issued when an illegal % is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
+#, no-c-format
 msgid	"illegal modulo ($name1 %% $name2)"
 msgstr	"niet toegestaan modulo ($name1 %% $name2)"
 
 #
 # This error message is issued when an illegal * is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal multiplication ($name1 * $name2)"
 msgstr	"niet toegestane vermenigvuldiging ($name1 * $name2)"
@@ -1630,7 +1676,7 @@ msgstr	"niet toegestane vermenigvuldiging ($name1 * $name2)"
 #
 # This message is issued when an inappropriate -e is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"illegal negative ($name)"
 msgstr	"integer waarde nodig voor negatieve (kreeg $name)"
@@ -1638,7 +1684,7 @@ msgstr	"integer waarde nodig voor negatieve (kreeg $name)"
 #
 # This message is issued when an inappropriate +e is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"illegal positive ($name)"
 msgstr	"integer waarde nodig voor positieve (kreeg $name)"
@@ -1646,8 +1692,8 @@ msgstr	"integer waarde nodig voor positieve (kreeg $name)"
 #
 # This error message is issued when an illegal e**e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal power ($name1 ** $name2)"
 msgstr	"niet toegestane macht ($name1 ** $name2)"
@@ -1655,8 +1701,8 @@ msgstr	"niet toegestane macht ($name1 ** $name2)"
 #
 # This error message is issued when an illegal e<<e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal shift ($name1 << $name2)"
 msgstr	"niet toegestane rechtsverschuiving right shift ($name1 << $name2)"
@@ -1664,8 +1710,8 @@ msgstr	"niet toegestane rechtsverschuiving right shift ($name1 << $name2)"
 #
 # This error message is issued when an illegal e>>e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal shift ($name1 >> $name2)"
 msgstr	"niet toegestane linksverschuiving ($name1 >> $name2)"
@@ -1673,8 +1719,8 @@ msgstr	"niet toegestane linksverschuiving ($name1 >> $name2)"
 #
 # This error message is issued when an illegal e-e is attempted.
 #
-#	$Name1		The type name of the left operand.
-#	$Name2		The type name of the right operand.
+# 	$Name1		The type name of the left operand.
+# 	$Name2		The type name of the right operand.
 #
 msgid	"illegal subtraction ($name1 - $name2)"
 msgstr	"niet toegestaan aftrekken ($name1 - $name2)"
@@ -1683,7 +1729,7 @@ msgstr	"niet toegestaan aftrekken ($name1 - $name2)"
 # This error message is issued when a command is given an inappropriate
 # command line option.
 #
-#	$Name		The name of the offending command line option.
+# 	$Name		The name of the offending command line option.
 #
 msgid	"inappropriate $name option"
 msgstr	"niet passend gebruik van $name optie"
@@ -1692,7 +1738,7 @@ msgstr	"niet passend gebruik van $name optie"
 # This error message is issued when a non-integer change number is
 # supplied when fetching a cstate value.
 #
-#	$Name		The type name of the offending argument.
+# 	$Name		The type name of the offending argument.
 #
 msgid	"integer index required (was given $name)"
 msgstr	"integer index nodig (kreeg $name)"
@@ -1700,7 +1746,7 @@ msgstr	"integer index nodig (kreeg $name)"
 #
 # This message is issued when an inappropriate & is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
 msgstr	"integer waarde nodig voor bit-wise ``and'' (kreeg $name)"
@@ -1708,7 +1754,7 @@ msgstr	"integer waarde nodig voor bit-wise ``and'' (kreeg $name)"
 #
 # This message is issued when an inappropriate | is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
 msgstr	"integer waarde nodig voor bit-wise ``or'' (kreeg $name)"
@@ -1716,7 +1762,7 @@ msgstr	"integer waarde nodig voor bit-wise ``or'' (kreeg $name)"
 #
 # This message is issued when an inappropriate ^ is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
 msgstr	"integer waarde nodig voor bit-wise ``exclusief or'' (kreeg $name)"
@@ -1726,7 +1772,7 @@ msgstr	"integer waarde nodig voor bit-wise ``exclusief or'' (kreeg $name)"
 # interrupt occurred while waiting for a child process to terminate.
 # This is after the child terminated and its status has been collected.
 #
-#	$Signal		The name of the signal which interrupted us.
+# 	$Signal		The name of the signal which interrupted us.
 #
 msgid	"interrupted by $signal"
 msgstr	"ondebroken door $signal"
@@ -1740,7 +1786,7 @@ msgstr	"Deze functie aanroep heeft een fout aantal of type argumenten"
 #
 # This message is issued when a non-function is called.
 #
-#	$Name		The type name of the non-function expression.
+# 	$Name		The type name of the non-function expression.
 #
 msgid	"invalid function name ($name)"
 msgstr	"een expressie van type $name werd opgegeven terwijl een functie "
@@ -1749,8 +1795,8 @@ msgstr	"een expressie van type $name werd opgegeven terwijl een functie "
 #
 # This error message is issued when a link fails.
 #
-#	$File_Name1	The name of the source file.
-#	$File_Name1	The name of the destination file.
+# 	$File_Name1	The name of the source file.
+# 	$File_Name1	The name of the destination file.
 #
 msgid	"link(\"$filename1\", \"$filename2\"): $errno"
 msgstr	"link(\"$filename1\", \"$filename2\"): $errno"
@@ -1758,7 +1804,7 @@ msgstr	"link(\"$filename1\", \"$filename2\"): $errno"
 #
 # This message is issued when an inappropriate ``in'' is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"list value required (was given $name)"
 msgstr	"lijst waarde nodig (kreeg $name)"
@@ -1773,7 +1819,7 @@ msgstr	"slot niet beschikbaar"
 # This information message is issued when Aegis begins logging to a new
 # file, or overwrites and existing log file.
 #
-#	$File_Name	The name of the log file.
+# 	$File_Name	The name of the log file.
 #
 msgid	"logging to $filename"
 msgstr	"schrijf log naar \"$filename\""
@@ -1782,7 +1828,7 @@ msgstr	"schrijf log naar \"$filename\""
 # This message is issued when a for loop is given a control expression
 # (the middle one) which is not boolean.  Also use for while loops.
 #
-#	$Name		The type name of the offending expression.
+# 	$Name		The type name of the offending expression.
 #
 msgid	"loop condition must be boolean (not $name)"
 msgstr	"lus conditie moet booleaans zijn (kreeg $name)"
@@ -1790,10 +1836,25 @@ msgstr	"lus conditie moet booleaans zijn (kreeg $name)"
 #
 # This error message is issued when a file lstat fails
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"lstat $filename: $errno"
 msgstr	"$filename: $errno"
+
+#
+# This informational message is issued when the aede command makes the
+# development directory read only.  This remindes the developer not to
+# change anything.
+#
+msgid	"making dev dir read only"
+msgstr	"ontwikkel directory wordt alleen-lezen gemaakt"
+
+#
+# This informational message is issued when the aedeu, aerfail or aeifail
+# command make the development directory writable again.
+#
+msgid	"making dev dir writable"
+msgstr	"ontwikkel directory wordt weer beschrijfbaar gemaakt"
 
 #
 # This error message is issued when a number which looks like a floating
@@ -1813,8 +1874,8 @@ msgstr	"foute hex constante"
 # This error message is issued when an attempt is made to assign into a
 # member of a list value.
 #
-#	$Name1		The type name of the first operand.
-#	$Name2		The type name of the second operand.
+# 	$Name1		The type name of the first operand.
+# 	$Name2		The type name of the second operand.
 #
 msgid	"may not assign to a list member ($name1[$name2])"
 msgstr	"kan niet toekennen aan een lijst-onderdeel ($name1[$name2])"
@@ -1822,7 +1883,7 @@ msgstr	"kan niet toekennen aan een lijst-onderdeel ($name1[$name2])"
 #
 # This error message is used when -Edit is used when in the background.
 #
-#	$Name		The name of the -Edit option.
+# 	$Name		The name of the -Edit option.
 #
 msgid	"may not use $name in the background"
 msgstr	"kan $name niet gebruiken op de achtergrond"
@@ -1831,7 +1892,7 @@ msgstr	"kan $name niet gebruiken op de achtergrond"
 # This error message is issued when there is a known but syntactically
 # incorrect option on the command line.
 #
-#	$Name		The offending command line argument.
+# 	$Name		The offending command line argument.
 #
 msgid	"misplaced \"$name\" option"
 msgstr	"misplaatste \"$name\" optie op de opdrachtregel"
@@ -1840,7 +1901,7 @@ msgstr	"misplaatste \"$name\" optie op de opdrachtregel"
 # This error message is issued when there is an extra string on the
 # command line.  It is probably a file name.
 #
-#	$File_Name	The offending command line argument.
+# 	$File_Name	The offending command line argument.
 #
 msgid	"misplaced file name (\"$filename\")"
 msgstr	"misplaatste bestandsnaam (\"$filename\") op de opdrachtregel"
@@ -1849,7 +1910,7 @@ msgstr	"misplaatste bestandsnaam (\"$filename\") op de opdrachtregel"
 # This error message is issued when there is an extra number on the
 # command line.
 #
-#	$Number		The offending command line argument.
+# 	$Number		The offending command line argument.
 #
 msgid	"misplaced number ($number)"
 msgstr	"misplaatst nummer ($number) op de opdrachtregel"
@@ -1857,8 +1918,8 @@ msgstr	"misplaatst nummer ($number) op de opdrachtregel"
 #
 # This error message is issued when a mkdir fails.
 #
-#	$File_Name	The name of the directory to be created.
-#	$Argument	The mode the directory is to be created.
+# 	$File_Name	The name of the directory to be created.
+# 	$Argument	The mode the directory is to be created.
 #
 msgid	"mkdir(\"$filename\", $arg): $errno"
 msgstr	"mkdir(\"$filename\", $arg): $errno"
@@ -1872,7 +1933,7 @@ msgstr	"modifiable lvalue required for decrement"
 #
 # This message is issued when an inappropriate -- is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"modifiable lvalue required for decrement (was given $name)"
 msgstr	"modifiable lvalue required for decrement (was given $name), it "
@@ -1887,7 +1948,7 @@ msgstr	"modifiable lvalue required for increment"
 #
 # This message is issued when an inappropriate ++ is attempted.
 #
-#	$Name		The type name of the offending operand.
+# 	$Name		The type name of the offending operand.
 #
 msgid	"modifiable lvalue required for increment (was given $name)"
 msgstr	"aanpasbare waarde nodig voor optellen (kreeg $name), moet een "
@@ -1916,7 +1977,7 @@ msgstr	"nieuwe wijziging gemaakt"
 # body_command to create a new file, and the command fails to create
 # the file.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"new file $filename not created"
 msgstr	"het bestand \"$filename\" werd niet gemaakt"
@@ -1931,17 +1992,27 @@ msgstr	"nieuw project aangemaakt"
 # This error message is issued when an unknown name is referenced,
 # but a close match is found.
 #
-#	$Name		The undefined variable name.
-#	$Guess		The closest match found for the name.
+# 	$Name		The undefined variable name.
+# 	$Guess		The closest match found for the name.
 #
 msgid	"no \"$name\", guessing \"$guess\""
 msgstr	"de naam \"$name\" is niet gedefineerd, gok op \"$guess\" "
 
 #
+# This error message is issued when the named file cannot be found in a
+# change or project (context will tell which) and no best guess is
+# available.  This is used by many commands.
+#
+# 	$File_Name	The offending file name.
+#
+msgid	"no $filename"
+msgstr	"bestand \"$filename\" niet bekend"
+
+#
 # This error message is issued when Aegis is given a project name which
 # is not defined (along the AEGIS_PATH).
 #
-#	$Name		The offending project name.
+# 	$Name		The offending project name.
 #
 msgid	"no $name project"
 msgstr	"project \"$name\" onbekend"
@@ -1950,8 +2021,8 @@ msgstr	"project \"$name\" onbekend"
 # This error message is issued when Aegis is given a project name which
 # is not defined (along the AEGIS_PATH).
 #
-#	$Name		The offending project name.
-#	$Guess		The closest matching project name.
+# 	$Name		The offending project name.
+# 	$Guess		The closest matching project name.
 #
 msgid	"no $name project, closest is $guess"
 msgstr	"project \"$name\" onbekend, meest gelijkend is het project "
@@ -1967,7 +2038,7 @@ msgstr	"Geef expliciet het wijzigings nummer op voor dit commando"
 #
 # This error message is issued when an unknown delta name is requested.
 #
-#	$Name		The offending delta name.
+# 	$Name		The offending delta name.
 #
 msgid	"no delta $name"
 msgstr	"delta naam \"$name\" onbekend"
@@ -1975,8 +2046,8 @@ msgstr	"delta naam \"$name\" onbekend"
 #
 # This error message is issued when an unknown delta name is requested.
 #
-#	$Name		The offending delta name.
-#	$Guess		The closest matching known delta name.
+# 	$Name		The offending delta name.
+# 	$Guess		The closest matching known delta name.
 #
 msgid	"no delta $name, closest is $guess"
 msgstr	"delta name \"$name\" onbekend, meest gelijkend is \"$guess\""
@@ -1989,6 +2060,13 @@ msgstr	"delta name \"$name\" onbekend, meest gelijkend is \"$guess\""
 msgid	"no dev dir"
 msgstr	"deze wijziging heeft de status '$state', er is geen ontwikkel "
 	"directory"
+
+#
+# This error message is issued when a command which requires file names
+# on the command line is not given any.
+#
+msgid	"no file names"
+msgstr	"geen bestanden opgegeven"
 
 #
 # This error message is issued when a request is made which requires the
@@ -2017,7 +2095,7 @@ msgstr	"Geef expliciet de project naam op bij dit commando"
 #
 # This error message is issued when an unknown report name is requested.
 #
-#	$Name		The offending report name.
+# 	$Name		The offending report name.
 #
 msgid	"no report $name"
 msgstr	"rapport naam \"$name\" is onbekend"
@@ -2033,9 +2111,9 @@ msgstr	"geen rapport naam opgegeven"
 # This error message is issued when two (of 3) mutually exclusive options are
 # both specified on the command line.
 #
-#	$Name1		The name of a command line option.
-#	$Name2		The name of a command line option.
-#	$Name3		The name of a command line option.
+# 	$Name1		The name of a command line option.
+# 	$Name2		The name of a command line option.
+# 	$Name3		The name of a command line option.
 #
 msgid	"not $name1 and $name2 and $name3 together"
 msgstr	"de $name1 en $name2 en $name3 opties sluiten elkaar uit, er kan "
@@ -2045,8 +2123,8 @@ msgstr	"de $name1 en $name2 en $name3 opties sluiten elkaar uit, er kan "
 # This error message is issued when two mutually exclusive options are
 # both specified on the command line.
 #
-#	$Name1		The name of a command line option.
-#	$Name2		The name of a command line option.
+# 	$Name1		The name of a command line option.
+# 	$Name2		The name of a command line option.
 #
 msgid	"not $name1 and $name2 together"
 msgstr	"de $name1 en $name2 opties sluiten elkaar uit, er kan er maar "
@@ -2070,7 +2148,7 @@ msgstr	"niet geldig in deze context"
 #
 # This error message is issued when a file open fails
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"open $filename: $errno"
 msgstr	"open \"$filename\": $errno"
@@ -2088,7 +2166,7 @@ msgstr	"deze wijziging heeft de status '$state' "
 # end the development of a branch (kill off a branch) and there is one
 # or more outstanding changes on the branch.
 #
-#	$Number		Number of changes outstanding.  (Optional)
+# 	$Number		Number of changes outstanding.  (Optional)
 #
 msgid	"outstanding changes"
 msgstr	"er ${plural $number zijn is} $number nog openstaande ${plural "
@@ -2098,7 +2176,7 @@ msgstr	"er ${plural $number zijn is} $number nog openstaande ${plural "
 #
 # This error message is issued when the argument to -Page_Length is absurd.
 #
-#	$Number		The offending page length.
+# 	$Number		The offending page length.
 #
 msgid	"page length $number out of range"
 msgstr	"een pagina lengte van $number is buiten bereik"
@@ -2106,7 +2184,7 @@ msgstr	"een pagina lengte van $number is buiten bereik"
 #
 # This error message is issued when the argument to -Page_Width is absurd.
 #
-#	$Number		The offending page width.
+# 	$Number		The offending page width.
 #
 msgid	"page width $number out of range"
 msgstr	"pagina breedte is buiten bereik"
@@ -2134,7 +2212,7 @@ msgstr	"Niet in staat te begrijpen wat bedoeld werd, te ingewikkeld, "
 #
 # This error message is issued when a pathconf name max fails.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"pathconf(\"$filename\", {NAME_MAX}): $errno"
 msgstr	"pathconf(\"$filename\", {NAME_MAX}): $errno"
@@ -2142,7 +2220,7 @@ msgstr	"pathconf(\"$filename\", {NAME_MAX}): $errno"
 #
 # This error message is issued when a pathconf path max fails.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
@@ -2151,7 +2229,7 @@ msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 # This information message is issued when aenpr automatically allocates
 # the project home directory.
 #
-#	$File_Name	The absolute path of the project home directory.
+# 	$File_Name	The absolute path of the project home directory.
 #
 msgid	"proj dir $filename"
 msgstr	"project directory \"$filename\""
@@ -2167,7 +2245,7 @@ msgstr	"project \"$project\": $message"
 # This error message is issued when a user attempts to create a new
 # project, using a project name which already exists.
 #
-#	$Name		The offending project name.
+# 	$Name		The offending project name.
 #
 msgid	"project $name exists"
 msgstr	"project naam \"$name\" is al in gebruik"
@@ -2177,9 +2255,9 @@ msgstr	"project naam \"$name\" is al in gebruik"
 # is too long.  The only restriction on project name length is the
 # file system on which it must reside.
 #
-#	$Name		The offending project name.
-#	$Number		How many characters too long (how many to remove)
-#			(Optional)
+# 	$Name		The offending project name.
+# 	$Number		How many characters too long (how many to remove)
+# 			(Optional)
 #
 msgid	"project $name too long"
 msgstr	"project naam \"$name\" te lang ($number karakters)"
@@ -2188,7 +2266,7 @@ msgstr	"project naam \"$name\" te lang ($number karakters)"
 # This error message is issued when a user attempts to create a new
 # project alias, using a project name which already exists.
 #
-#	$Name		The offending project alias.
+# 	$Name		The offending project alias.
 #
 msgid	"project alias $name exists"
 msgstr	"project alias \"$name\" reeds in gebruik"
@@ -2197,7 +2275,7 @@ msgstr	"project alias \"$name\" reeds in gebruik"
 # This error message is issued when a file read fails.
 # Also used when a directory read fails.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"read $filename: $errno"
 msgstr	"read \"$filename\": $errno"
@@ -2206,7 +2284,7 @@ msgstr	"read \"$filename\": $errno"
 # This error message is issued when a file read fails due to the file
 # being an incorrect format.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"read $filename: format error"
 msgstr	"read \"$filename\": formaat fout"
@@ -2214,7 +2292,7 @@ msgstr	"read \"$filename\": formaat fout"
 #
 # This error message is issued when a readlink fails.
 #
-#	$File_Name	The name of the file to be readlink()ed.
+# 	$File_Name	The name of the file to be readlink()ed.
 #
 msgid	"readlink $filename: $errno"
 msgstr	"readlink \"$filename\": $errno"
@@ -2229,8 +2307,8 @@ msgstr	"verwijderen symbolische koppelingen naar de baseline"
 #
 # This error message is issued when a rename fails.
 #
-#	$File_Name1	The name of the source file or directory.
-#	$File_Name2	The name of the destination file or directory.
+# 	$File_Name1	The name of the source file or directory.
+# 	$File_Name2	The name of the destination file or directory.
 #
 msgid	"rename(\"$filename1\", \"$filename2\"): $errno"
 msgstr	"hernoemen(\"$filename1\", \"$filename2\"): $errno"
@@ -2238,9 +2316,9 @@ msgstr	"hernoemen(\"$filename1\", \"$filename2\"): $errno"
 #
 # This error message is issued when an ambiguous report name is specified.
 #
-#	$Name		The offending report name.
-#	$Name_List	A list of possible alternatives.
-#			(Optional)
+# 	$Name		The offending report name.
+# 	$Name_List	A list of possible alternatives.
+# 			(Optional)
 #
 msgid	"report $name ambig"
 msgstr	"rapport naam \"$name\" is niet eenduidig ($name_list)"
@@ -2304,7 +2382,7 @@ msgstr	"heeft geen argumenten nodig"
 #
 # This error message is issued when a rmdir fails.
 #
-#	$File_Name	The name of the directory to be removed.
+# 	$File_Name	The name of the directory to be removed.
 #
 msgid	"rmdir $filename: $errno"
 msgstr	"rmdir \"$filename\": $errno"
@@ -2319,7 +2397,7 @@ msgstr	"tweede argument moet \"Absolute\" of \"Relative\" zijn"
 #
 # This error message is issued when a setgid fails.
 #
-#	$Argument	The gid argument.
+# 	$Argument	The gid argument.
 #
 msgid	"setgid $arg: $errno"
 msgstr	"setgid $arg: $errno"
@@ -2327,7 +2405,7 @@ msgstr	"setgid $arg: $errno"
 #
 # This error message is issued when a setuid fails.
 #
-#	$Argument	The uid argument.
+# 	$Argument	The uid argument.
 #
 msgid	"setuid $arg: $errno"
 msgstr	"setuid $arg: $errno"
@@ -2336,7 +2414,7 @@ msgstr	"setuid $arg: $errno"
 # This error message is issued when an inappropriate argument is given
 # to the sort function.
 #
-#	$Name		The type name of the offending argument.
+# 	$Name		The type name of the offending argument.
 #
 msgid	"sort requires a list argument (was given $name)"
 msgstr	"sorteren heeft een lijst nodig (kreeg $name)"
@@ -2345,7 +2423,7 @@ msgstr	"sorteren heeft een lijst nodig (kreeg $name)"
 # This error message is issued when too many arguments are given to the
 # sort function.
 #
-#	$Number		The number of arguments given.
+# 	$Number		The number of arguments given.
 #
 msgid	"sort requires exactly 1 argument (was given $number)"
 msgstr	"sorteren heeft precies een argument nodig (kreeg $number)"
@@ -2374,7 +2452,7 @@ msgstr	"de standaard output"
 #
 # This error message is issued when a file stat fails
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"stat $filename: $errno"
 msgstr	"$filename: $errno"
@@ -2390,8 +2468,8 @@ msgstr	"strftime output te groot"
 #
 # This error message is issued when a symlink fails.
 #
-#	$File_Name1	The name of the source file.
-#	$File_Name1	The name of the destination file.
+# 	$File_Name1	The name of the source file.
+# 	$File_Name1	The name of the destination file.
 #
 msgid	"symlink(\"$filename1\", \"$filename2\"): $errno"
 msgstr	"symlink(\"$filename1\", \"$filename2\"): $errno"
@@ -2403,9 +2481,16 @@ msgid	"syntax error"
 msgstr	"niet in staat te begrijpen wat bedoelt werd"
 
 #
+# TRANSLATION REQUIRED
+# This error message is issued when yacc finds an error at parse time.
+#
+msgid	"syntax error: cannot back up"
+msgstr	"niet in staat te begrijpen wat bedoelt werd"
+
+#
 # This error message is issued when the argument to -Tab_Width is absurd.
 #
-#	$Number		The offending tab width.
+# 	$Number		The offending tab width.
 #
 msgid	"tab width $number out of range"
 msgstr	"een tab breedte van $number is buiten bereik"
@@ -2414,7 +2499,7 @@ msgstr	"een tab breedte van $number is buiten bereik"
 # This error message is issued when Aegis is invoked in test mode, but
 # the -LIBrary option was not used to specify the test library path.
 #
-#	$Name	The name of the -LIBrary option.
+# 	$Name	The name of the -LIBrary option.
 #
 msgid	"test mode needs $name"
 msgstr	"Geen $name optie opgegeven. Dit is verplicht in de \"test\" "
@@ -2431,7 +2516,7 @@ msgstr	"De catch variabele moet modificeerbaar zijn "
 # This message is printed when the variable named in a catch lause is
 # not a modifiable lvalue.
 #
-#	$Name		The type name of the offending expression.
+# 	$Name		The type name of the offending expression.
 #
 msgid	"the catch variable must be modifiable (not $name)"
 msgstr	"de catch variabele moet modificeerbaar zijn (kreeg $name)"
@@ -2440,7 +2525,7 @@ msgstr	"de catch variabele moet modificeerbaar zijn (kreeg $name)"
 # This message is issued when a for(a in b) loop is given a sequence expression
 # (the second one) which is not a list.
 #
-#	$Name		The type name of the offending expression.
+# 	$Name		The type name of the offending expression.
 #
 msgid	"the loop iteration value must be a list (not $name)"
 msgstr	"de lus iteratie waarde moet een lijst zijn (kreeg $name)"
@@ -2457,7 +2542,7 @@ msgstr	"de lus variabele moet een modificeerbare waarde zijn"
 # This message is issued when a for(a in b) loop is given a control expression
 # (the first one) which is not an lvalue.
 #
-#	$Name		The type name of the offending expression.
+# 	$Name		The type name of the offending expression.
 #
 msgid	"the loop variable must be modifiable (not $name)"
 msgstr	"de lus variabele moet een modificeerbare waarde zijn (kreeg "
@@ -2466,7 +2551,7 @@ msgstr	"de lus variabele moet een modificeerbare waarde zijn (kreeg "
 #
 # This message is issued when a variable name is reused.
 #
-#	$Name		The offending variable name.
+# 	$Name		The offending variable name.
 #
 msgid	"the name \"$name\" has already been used"
 msgstr	"de naam \"$name\" is al gebruikt"
@@ -2474,16 +2559,27 @@ msgstr	"de naam \"$name\" is al gebruikt"
 #
 # This error message is issued when an unknown name is referenced.
 #
-#	$Name		The undefined variable name.
+# 	$Name		The undefined variable name.
 #
 msgid	"the name \"$name\" is undefined"
 msgstr	"de naam \"$name\" is niet gedefineerd"
 
 #
+# TRANSLATION REQUIRED
+# This information message is issued when Aegis needs to delay for a
+# number fo seconds to ensure that file modification tikmes do not extend
+# into the future.  Commonest sighting is when aeipass needs to sleep.
+# Also used as a debug message, only visable when DEBUG is defined.
+#
+msgid	"throttling $number seconds"
+msgstr	"sleeping $number second${plural $number s} to allow file "
+	"modifications times to be consistent"
+
+#
 # This message is issued whrn a throw statement is evaluated, and the
 # value to be thrown is not a string.
 #
-#	$Name		The type name of the offending expression.
+# 	$Name		The type name of the offending expression.
 #
 msgid	"throw statement requires string argument (not $name)"
 msgstr	"het throw statement heeft een string argument nodig (kreeg $name)"
@@ -2499,7 +2595,7 @@ msgstr	"te veel bestanden opgegeven"
 # This format string is used when assembling a change message
 # (information, progress or fatal) for the trunk change of a project.
 #
-#	$Message	The message to be issued.
+# 	$Message	The message to be issued.
 #
 msgid	"trunk: $message"
 msgstr	"stam: $message"
@@ -2508,7 +2604,7 @@ msgstr	"stam: $message"
 # This error message is issued when a user from the /etc/passwd file, or
 # equivalent, cannot be found by number.
 #
-#	$Number		The offending user number.
+# 	$Number		The offending user number.
 #
 msgid	"uid $number unknown"
 msgstr	"gebruikers id $number onbekend"
@@ -2523,8 +2619,8 @@ msgstr	"uname: $errno"
 # This error message is issued when there is an unfinished recovery
 # action to change the mode of a file or directory.
 #
-#	$Argument	The mode, in octal, the file is to be changed to.
-#	$File_Name	The name of the file
+# 	$Argument	The mode, in octal, the file is to be changed to.
+# 	$File_Name	The name of the file
 #
 msgid	"unfinished: chmod $arg $filename"
 msgstr	"afgebroken herstel: chmod $arg $filename"
@@ -2533,8 +2629,8 @@ msgstr	"afgebroken herstel: chmod $arg $filename"
 # This error message is issued when there is an unfinished recovery
 # action to move file file or directory.
 #
-#	$File_Name1	The name of the source file
-#	$File_Name2	The name of the destination file
+# 	$File_Name1	The name of the source file
+# 	$File_Name2	The name of the destination file
 #
 msgid	"unfinished: mv $filename1 $filename2"
 msgstr	"afgebroken herstel: mv $filename1 $filename2"
@@ -2543,7 +2639,7 @@ msgstr	"afgebroken herstel: mv $filename1 $filename2"
 # This error message is issued when there is an unfinished recovery
 # action to remove a file.
 #
-#	$File_Name	The name of the file
+# 	$File_Name	The name of the file
 #
 msgid	"unfinished: rm $filename"
 msgstr	"afgebroken herstel: rm $filename"
@@ -2552,7 +2648,7 @@ msgstr	"afgebroken herstel: rm $filename"
 # This error message is issued when there is an unfinished recovery
 # action to remove a directory.
 #
-#	$File_Name	The name of the directory
+# 	$File_Name	The name of the directory
 #
 msgid	"unfinished: rmdir $filename"
 msgstr	"afgebroken herstel: rmdir $filename"
@@ -2561,7 +2657,7 @@ msgstr	"afgebroken herstel: rmdir $filename"
 # This error message is issued when there is an unknown option on the
 # command line.
 #
-#	$Name		The offending command line argument.
+# 	$Name		The offending command line argument.
 #
 msgid	"unknown \"$name\" option"
 msgstr	"onbekende \"$name\" optie op de opdrachtregel"
@@ -2569,7 +2665,7 @@ msgstr	"onbekende \"$name\" optie op de opdrachtregel"
 #
 # This error message is issued when an unknown C escape sequence is seen.
 #
-#	$Name		The offending escape sequence, including the backslash.
+# 	$Name		The offending escape sequence, including the backslash.
 #
 msgid	"unknown '$name' escape"
 msgstr	"onbekende '$name' escape seqentie"
@@ -2598,7 +2694,7 @@ msgstr	"onbekende substitutie variatie"
 #
 # This error message is issued when an unlink fails.
 #
-#	$File_Name	The name of the file to be unlinked.
+# 	$File_Name	The name of the file to be unlinked.
 #
 msgid	"unlink $filename: $errno"
 msgstr	"unlink \"$filename\": $errno"
@@ -2608,7 +2704,7 @@ msgstr	"unlink \"$filename\": $errno"
 # administrator to a project, but the user's uid is too low (too
 # privileged).
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"user $name too privileged"
 msgstr	"gebruiker \"$name\" heeft te veel rechten"
@@ -2617,7 +2713,7 @@ msgstr	"gebruiker \"$name\" heeft te veel rechten"
 # This error message is issued when a user from the /etc/passwd file, or
 # equivalent, cannot be found by name.
 #
-#	$Name		The offending user name.
+# 	$Name		The offending user name.
 #
 msgid	"user $name unknown"
 msgstr	"gebruiker \"$name\" onbekend"
@@ -2626,8 +2722,8 @@ msgstr	"gebruiker \"$name\" onbekend"
 # This error message is issued when a user is named who does not appear
 # in the /etc/passwd file, or equivalent.
 #
-#	$Name		The offending user name.
-#	$Guess		The closest match in the /etc/passwd file.
+# 	$Name		The offending user name.
+# 	$Guess		The closest match in the /etc/passwd file.
 #
 msgid	"user $name unknown, closest is $guess"
 msgstr	"gebruiker \"$name\" onbekend, beste gok is \"$guess\" "
@@ -2636,8 +2732,8 @@ msgstr	"gebruiker \"$name\" onbekend, beste gok is \"$guess\" "
 # This information message is issued when Aegis is about to execute a
 # command, to tell the user who the command will be executed as.
 #
-#	$Name1		The quoted user name.
-#	$Name2		The quoted group name.
+# 	$Name1		The quoted user name.
+# 	$Name2		The quoted group name.
 #
 msgid	"user $name1, group $name2"
 msgstr	"gebruiker $name1, groep $name2"
@@ -2651,7 +2747,7 @@ msgstr	"gebruiker \"$name\": $message"
 #
 # This error message is issued when a utime fails.
 #
-#	$File_Name	The name of the file
+# 	$File_Name	The name of the file
 #
 msgid	"utime $filename: $errno"
 msgstr	"utime \"$filename\": $errno"
@@ -2660,7 +2756,7 @@ msgstr	"utime \"$filename\": $errno"
 # This error message is issued when an inappropriate data type is
 # supplied in an Aegis data file or configuration file.
 #
-#	$Name		The type name of the *required* type.
+# 	$Name		The type name of the *required* type.
 #
 msgid	"value of type $name required"
 msgstr	"waarde van type $name nodig"
@@ -2669,7 +2765,7 @@ msgstr	"waarde van type $name nodig"
 # This fatal error message is issued when a version number handed to the
 # -BRanch option has a non-branch it in somewhere.
 #
-#	$number	The offending version number.
+# 	$number	The offending version number.
 #
 msgid	"version $number not a branch"
 msgstr	"versie ``$number'' is geen tak"
@@ -2678,7 +2774,7 @@ msgstr	"versie ``$number'' is geen tak"
 # This progress message is issued when Aegis is waiting for a lock.
 # This message is seen often.
 #
-#	$Name		The type name of the lock being waited for.
+# 	$Name		The type name of the lock being waited for.
 #
 msgid	"waiting for $name lock"
 msgstr	"wacht op $name slot"
@@ -2688,16 +2784,16 @@ msgstr	"wacht op $name slot"
 # baseline read lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline read lock"
-msgstr	"wacht op gedeelde baseline slot; Dit is omdat er een ``aegis "
-	"-Integrate_PASS'' commando bezig is "
+msgstr	"wacht op gedeelde baseline slot; Dit is omdat er een ``aegis -"
+	"Integrate_PASS'' commando bezig is "
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline write lock"
-msgstr	"wacht op exclusief baseline slot; Er zijn een of meer ``aegis "
-	"-Build'' commandos bezig"
+msgstr	"wacht op exclusief baseline slot; Er zijn een of meer ``aegis -"
+	"Build'' commandos bezig"
 
 #
 # This progress message is issued when Aegis is waiting for a global state
@@ -2726,7 +2822,7 @@ msgstr	"wacht op slot"
 # history tool (history_put_command or history_create_command)
 # during aeipass.
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"warning: $filename modified by history tool"
 msgstr	"Waarschuwing: de history tool heeft het \"$filename\" source "
@@ -2737,8 +2833,8 @@ msgstr	"Waarschuwing: de history tool heeft het \"$filename\" source "
 # This has been obsoleted, and users are encouraged to use the
 # AEGIS_PATH environment variable instead.
 #
-#	$Name1	The name of the AEGIS environment variable.
-#	$Name2	The name of the AEGIS_PATH environment variable.
+# 	$Name1	The name of the AEGIS environment variable.
+# 	$Name2	The name of the AEGIS_PATH environment variable.
 #
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
 msgstr	"Waarschuwing: de $name1 omgevings variabele is verouderd, "
@@ -2749,8 +2845,8 @@ msgstr	"Waarschuwing: de $name1 omgevings variabele is verouderd, "
 # (They are so obsolete they are undocumented, and will eventually be
 # removed.) An equivalent ${...} substitution is suggested.
 #
-#	$Name1		The offending percent (%) substitution.
-#	$Name2		The appropriate dollar ($) replacement.
+# 	$Name1		The offending percent (%) substitution.
+# 	$Name2		The appropriate dollar ($) replacement.
 #
 msgid	"warning: $name1 is obsolete, use $name2 substitution"
 msgstr	"Waarschuwing: de $name1 substitutie is verouderd en is vervangen "
@@ -2759,8 +2855,8 @@ msgstr	"Waarschuwing: de $name1 substitutie is verouderd en is vervangen "
 #
 # This warning message is issued when a chmod fails, but Aegis will continue.
 #
-#	$File_Name	The name of the file to be changed.
-#	$Argument	The mode desired.
+# 	$File_Name	The name of the file to be changed.
+# 	$Argument	The mode desired.
 #
 msgid	"warning: chmod(\"$filename\", $arg): $errno"
 msgstr	"Waarschuwing: chmod(\"$filename\", $arg): $errno"
@@ -2769,8 +2865,8 @@ msgstr	"Waarschuwing: chmod(\"$filename\", $arg): $errno"
 # This warning message is issued when a child process stops with a
 # non-zero exit status, but Aegis will continue.
 #
-#	$Command	The offending command.
-#	$Number		The exit status of the child.
+# 	$Command	The offending command.
+# 	$Number		The exit status of the child.
 #
 msgid	"warning: command \"$command\" exit status $number"
 msgstr	"waarschuwing: commando \"$command\" exit status $number"
@@ -2780,8 +2876,8 @@ msgstr	"waarschuwing: commando \"$command\" exit status $number"
 # files are modified by the history tool (history_put_command or
 # history_create_commands) during aeipass.
 #
-#	$Number		The number of files modified.
-#			(Optional)
+# 	$Number		The number of files modified.
+# 			(Optional)
 #
 msgid	"warning: files modified by history tool"
 msgstr	"waarschuwing: De history tool wijzigde $number source ${plural "
@@ -2815,7 +2911,7 @@ msgstr	"Waarschuwing: Deze wijziging bevat bestanden die een trojaans "
 #
 # This warning message is issued when a rmdir fails, but Aegis will continue.
 #
-#	$File_Name	The name of the directory to be removed.
+# 	$File_Name	The name of the directory to be removed.
 #
 msgid	"warning: rmdir $filename: $errno"
 msgstr	"waarschuwing:  rmdir \"$filename\": $errno"
@@ -2823,7 +2919,7 @@ msgstr	"waarschuwing:  rmdir \"$filename\": $errno"
 #
 # This warning message is issued when a setgid fails, but Aegis will continue.
 #
-#	$Argument	The gid argument.
+# 	$Argument	The gid argument.
 #
 msgid	"warning: setgid $arg: $errno"
 msgstr	"waarschuwing: setgid $arg: $errno"
@@ -2831,7 +2927,7 @@ msgstr	"waarschuwing: setgid $arg: $errno"
 #
 # This warning message is issued when a state fails, but Aegis will continue.
 #
-#	$File_Name	The name of the file to be stat()ed.
+# 	$File_Name	The name of the file to be stat()ed.
 #
 msgid	"warning: stat $filename: $errno"
 msgstr	"waarschuwing: stat \"$filename\": $errno"
@@ -2847,7 +2943,7 @@ msgstr	"waarschuwing: Deze versie werkt in \"test\" modus. Hij heeft "
 #
 # This warning message is issued when an unlink fails, but Aegis will continue.
 #
-#	$File_Name	The name of the file to be unlinked.
+# 	$File_Name	The name of the file to be unlinked.
 #
 msgid	"warning: unlink $filename: $errno"
 msgstr	"waarschuwing: unlink \"$filename\": $errno"
@@ -2855,7 +2951,7 @@ msgstr	"waarschuwing: unlink \"$filename\": $errno"
 #
 # This warning message is issued when a utime fails.
 #
-#	$File_Name	The name of the file
+# 	$File_Name	The name of the file
 #
 msgid	"warning: utime $filename: $errno"
 msgstr	"waarschuwing: utime \"$filename\": $errno"
@@ -2863,7 +2959,7 @@ msgstr	"waarschuwing: utime \"$filename\": $errno"
 #
 # This error message is issued when a file write fails
 #
-#	$File_Name	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"write $filename: $errno"
 msgstr	"write \"$filename\": $errno"
@@ -2880,7 +2976,7 @@ msgstr	"Niet in staat te begrijpen wat bedoeld werd, het is te "
 # This error message is issued when Aegis is unable to proceed because
 # the user has not yet created an essential change file.
 #
-#	$File_Name	The name of the offending file
+# 	$File_Name	The name of the offending file
 #
 msgid	"you must create a \"$filename\" file"
 msgstr	"U moet een \"$filename\" bestand aanmaken"

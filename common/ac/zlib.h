@@ -33,7 +33,7 @@
 
 /* there is ERR_MSG in zutil.h, but we aren't allowed to see it. */
 #include <main.h>
-const char *z_error _((int));
+const char *z_error(int);
 
 #ifndef DEF_MEM_LEVEL
 #define DEF_MEM_LEVEL 8 /* in zutil.h, but we aren't allowed to see it. */

@@ -30,30 +30,30 @@ typedef long itab_key_ty;
 typedef struct itab_row_ty itab_row_ty;
 struct itab_row_ty
 {
-	itab_key_ty	key;
-	void		*data;
-	itab_row_ty	*overflow;
+    itab_key_ty     key;
+    void	    *data;
+    itab_row_ty     *overflow;
 };
 
 typedef struct itab_ty itab_ty;
 struct itab_ty
 {
-	void		(*reap)_((void *));
-	itab_row_ty	**hash_table;
-	itab_key_ty	hash_modulus;
-	itab_key_ty	hash_cutover;
-	itab_key_ty	hash_cutover_mask;
-	itab_key_ty	hash_cutover_split_mask;
-	itab_key_ty	hash_split;
-	itab_key_ty	load;
+    void            (*reap)(void *);
+    itab_row_ty     **hash_table;
+    itab_key_ty     hash_modulus;
+    itab_key_ty     hash_cutover;
+    itab_key_ty     hash_cutover_mask;
+    itab_key_ty     hash_cutover_split_mask;
+    itab_key_ty     hash_split;
+    itab_key_ty     load;
 };
 
-itab_ty *itab_alloc _((int));
-void itab_free _((itab_ty *));
-void *itab_query _((itab_ty *, itab_key_ty));
-void itab_assign _((itab_ty *, itab_key_ty, void *));
-void itab_delete _((itab_ty *, itab_key_ty));
-void itab_walk _((itab_ty *, void (*)(itab_ty *, itab_key_ty, void *, void *),
-	void *));
+itab_ty *itab_alloc(int);
+void itab_free(itab_ty *);
+void *itab_query(itab_ty *, itab_key_ty);
+void itab_assign(itab_ty *, itab_key_ty, void *);
+void itab_delete(itab_ty *, itab_key_ty);
+void itab_walk(itab_ty *, void (*)(itab_ty *, itab_key_ty, void *, void *),
+	void *);
 
 #endif /* COMMON_ITAB_H */

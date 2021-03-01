@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,114 +27,111 @@
 #include <change/branch.h>
 #include <option.h>
 #include <project.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <trace.h>
 #include <user.h>
 
 
 void
 list_version(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+    string_ty	    *project_name;
+    long	    change_number;
 {
-	project_ty	*pp;
-	cstate		cstate_data;
-	change_ty	*cp;
-	user_ty		*up;
-	string_ty	*vs;
+    project_ty	    *pp;
+    cstate	    cstate_data;
+    change_ty	    *cp;
+    user_ty	    *up;
+    string_ty	    *vs;
 
-	/*
-	 * locate project data
-	 */
-	trace(("list_version()\n{\n"));
-	if (!project_name)
-		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
-	pp = project_alloc(project_name);
-	str_free(project_name);
-	project_bind_existing(pp);
+    /*
+     * locate project data
+     */
+    trace(("list_version()\n{\n"));
+    if (!project_name)
+	project_name = user_default_project();
+    else
+	project_name = str_copy(project_name);
+    pp = project_alloc(project_name);
+    str_free(project_name);
+    project_bind_existing(pp);
 
-	/*
-	 * locate user data
-	 */
-	up = user_executing(pp);
+    /*
+     * locate user data
+     */
+    up = user_executing(pp);
 
-	/*
-	 * locate change data
-	 */
-	if (!change_number)
-		change_number = user_default_change(up);
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
+    /*
+     * locate change data
+     */
+    if (!change_number)
+	change_number = user_default_change(up);
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
 
-	cstate_data = change_cstate_get(cp);
-	vs = project_version_short_get(pp);
-	if (option_terse_get())
+    cstate_data = change_cstate_get(cp);
+    vs = project_version_short_get(pp);
+    if (option_terse_get())
+    {
+	if (cstate_data->state == cstate_state_being_developed)
 	{
-		if (cstate_data->state == cstate_state_being_developed)
-		{
-			/* ...punctuation? */
-			printf
-			(
-				"%s.C%3.3ld\n",
-				vs->str_text,
-				magic_zero_decode(change_number)
-			);
-		}
-		else
-		{
-			/* ...punctuation? */
-			printf("%s.D%3.3ld\n", vs->str_text, cstate_data->delta_number);
-		}
+	    /* ...punctuation? */
+	    printf
+	    (
+		"%s.C%3.3ld\n",
+		vs->str_text,
+		magic_zero_decode(change_number)
+	    );
 	}
 	else
 	{
-		/*
-		 * a century should be enough
-		 * for a while, at least :-)
-		 */
-		int		cy[100];
-		int		ncy;
-		string_ty	*s;
-
-		printf("version = \"%s\";\n", vs->str_text);
-		if (cstate_data->state == cstate_state_being_developed)
-		{
-			printf
-			(
-				"change_number = %ld;\n",
-				magic_zero_decode(change_number)
-			);
-		}
-		else
-		{
-			printf
-			(
-				"delta_number = %ld;\n",
-				cstate_data->delta_number
-			);
-		}
-		s = project_version_previous_get(pp);
-		if (s)
-			printf("version_previous = \"%s\";\n", s->str_text);
-		change_copyright_years_get(cp, cy, SIZEOF(cy), &ncy);
-		if (ncy)
-		{
-			int		j;
-
-			printf("copyright_years = [");
-			for (j = 0; j < ncy; ++j)
-			{
-				if (j)
-					printf(", ");
-				printf("%d", cy[j]);
-			}
-			printf("];\n");
-		}
+	    /* ...punctuation? */
+	    printf
+	    (
+		"%s.D%3.3ld\n",
+		vs->str_text,
+		cstate_data->delta_number
+	    );
 	}
-	change_free(cp);
-	project_free(pp);
-	user_free(up);
-	trace(("}\n"));
+    }
+    else
+    {
+	/*
+	 * a century should be enough
+	 * for a while, at least :-)
+	 */
+	int		cy[100];
+	int		ncy;
+	string_ty	*s;
+
+	printf("version = \"%s\";\n", vs->str_text);
+	if (cstate_data->state == cstate_state_being_developed)
+	{
+	    printf("change_number = %ld;\n", magic_zero_decode(change_number));
+	}
+	else
+	{
+	    printf("delta_number = %ld;\n", cstate_data->delta_number);
+	}
+	s = project_version_previous_get(pp);
+	if (s)
+	    printf("version_previous = \"%s\";\n", s->str_text);
+	change_copyright_years_get(cp, cy, SIZEOF(cy), &ncy);
+	if (ncy)
+	{
+	    int		    j;
+
+	    printf("copyright_years = [");
+	    for (j = 0; j < ncy; ++j)
+	    {
+		if (j)
+		    printf(", ");
+		printf("%d", cy[j]);
+	    }
+	    printf("];\n");
+	}
+    }
+    change_free(cp);
+    project_free(pp);
+    user_free(up);
+    trace(("}\n"));
 }

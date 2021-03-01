@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2001 Peter Miller;
+.\"	Copyright (C) 2000-2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ Usually, you end development of a branch the same way you end development
 of a simple change.  In this example, branch \fIexample.1.42\fP will
 be ended:
 .E(
-% \f[CB]aede -p example 1 -c 42\fP
+% \f(CBaede -p example 1 -c 42\fP
 .ad l
 .fi
 aegis: project "example.1": change 42: file "\fIfubar\fP" in the baseline
@@ -56,7 +56,7 @@ The -GrandParent option is a special case of the -BRanch
 option.  You are actually doing a cross-branch merge, just
 up-and-down rather than sideways.
 .E(
-% \f[CB]aem -gp\fP \f[CI]fubar\fP
+% \f(CBaem -gp\fP \f(CIfubar\fP
 %
 .E)
 And manually fix any conflicts... naturally.
@@ -66,7 +66,7 @@ show you something you have never seen before - it will
 show you what it is \fIgoing to\fP set the branch's edit_number_origin
 to for each file, at \fIaeipass\fP.
 .E(
-% \f[CB]ael cf\fP
+% \f(CBael cf\fP
 Type   Action Edit        File Name
 ------ ------ -------     -----------
 source modify 1.3         \fIfubar\fP
@@ -84,10 +84,10 @@ are up-to-date.
 .LP
 In some cases, Aegis has detected a logical conflict where you, the human,
 know there is none.  Remember that the \fIaem\fP command saves the old
-version of the file with a \f[CW],B\fP suffix (`B' for backup).
+version of the file with a \f(CW,B\fP suffix (`B' for backup).
 If you have a file like this, just use
 .E(
-% \f[CB]mv\fP \f[CI]fubar\fP\f[CB],B\fP \f[CI]fubar\fP
+% \f(CBmv\fP \f(CIfubar\fP\f(CB,B\fP \f(CIfubar\fP
 %
 .E)
 to discard everything from the ancestor branch, and use the current branch.

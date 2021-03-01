@@ -1,5 +1,20 @@
 .br
 .ne 3i
+.so new.4.7.so
+.br
+.ne 3i
+.so new.4.6.so
+.br
+.ne 3i
+.so new.4.5.so
+.br
+.ne 3i
+.so new.4.4.so
+.br
+.ne 3i
+.so new.4.3.so
+.br
+.ne 3i
 .so new.4.2.so
 .br
 .ne 3i

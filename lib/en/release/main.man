@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1995, 1997-1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -151,25 +151,18 @@ Login as \f[CW]millerp\fP and change to the \f[CW]WWW/aegis\fP directory
 Use the following commands
 .e(
 % \f[CB]aecd -bl archive\fP
-% \f[CW]ftp ftp.canb.auug.org.au\fP
-user: \f[CB]millerp\fP
-ftp> \f[CB]cd WWW/aegis\fP
-ftp> \f[CB]binary\fP
-ftp> \f[CB]prompt\fP
-ftp> \f[CB]mdel \*(n)-*\fP
-ftp> \f[CB]mput \*(n)*\fP
-ftp> \f[CB]quit\fP
+% \f[CW]scp -r . aegis.sourceforge.net:aegis.web/htdocs/.\fP
 %
 .e)
 .br
 .ne 2i
 .SS Update Linux Archive
-Transfer a copy to \f[CW]sunsite.unc.edu\fP by FTP.
+Transfer a copy to \f[CW]metalab.unc.edu\fP by FTP.
 Login as \f[CW]anonymous\fP and change to the \f[CW]incoming/Linux\fP directory.
 Use the following commands
 .e(
 % \f[CB]aecd -bl archive\fP
-% \f[CW]ftp sunsite.unc.edu\fP
+% \f[CW]ftp metalab.unc.edu\fP
 user: \f[CB]anonymous\fP
 ftp> \f[CB]cd incoming/Linux\fP
 ftp> \f[CB]binary\fP
@@ -179,14 +172,38 @@ ftp> \f[CB]quit\fP
 %
 .e)
 .PP
-There is no need to send email to \fIewt@sunsite.unc.edu\fP,
+There is no need to send email to \fIewt@metalab.unc.edu\fP,
 it will be archived automatically in a day or two (or fifteen).
 .br
 .ne 2i
 .SH NOTIFICATION
 Once the archives are ready, you can let folks know its there.
+.LP
+Only send the notifications \fIafter\fP the files are actually available
+at the archive site.
+.br
+.ne 2i
+.SS Translation Project
+.\" See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
+.\" for more information.
+Send a notification to the Translation Project
+\fItranslation@iro.umontreal.ca\fP list.  It should look like this:
+.e(
+To: translation@iro.umontreal.ca
+Reply-To: millerp@canb.auug.org.au
+Subject: \*(n)-\*(v).pot
+
+I am pleased to announce that \*(N) \*(v) is now available.
+The tarball may be found at
+http://aegis.sourceforge.net/\*(n)-\*(v).tar.gz
+.e)
+Note that this is read and processed by a robot,
+so don't worry about the human-friendly language of the other notifications.
+.LP
+Only send this notification \fIafter\fP the files are actually available
+at the archive site.
 .SS Notify Mailing List
-Send a notification to the \fI\*(n)-users@canb.auug.org.au\fP list.
+Send a notification to the \fI\*(n)-users@auug.org.au\fP list.
 It should look like this:
 .e(
 To: \*(n)-users@canb.auug.org.au
@@ -208,7 +225,7 @@ http://www.canb.auug.org.au/~millerp/\*(n)/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
-For information about what new features are available in this 
+For information about what new features are available in this
 release, please see the README file available at the above site.
 .sp
 \fIput your \f[CW].sig\fI file here
@@ -240,7 +257,8 @@ Followup-To: millerp@canb.auug.org.au
 .fi
 Newsgroups:
 'in +4n
-alt.sources.d, comp.sources.d, comp.software-eng, comp.software.config-mgmt, gnu.announce
+alt.sources.d, comp.sources.d, comp.software-eng, comp.software.config-mgmt,
+gnu.announce
 .in -4n
 .sp
 I am pleased to announce that \*(N) \*(v) is now available.
@@ -257,7 +275,7 @@ http://www.canb.auug.org.au/~millerp/\*(n)/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
-For information about what new features are available in this 
+For information about what new features are available in this
 release, please see the README file available at the above site.
 .sp
 insert \fI.sig\fP file here
@@ -266,7 +284,7 @@ Please note that the \f[CW]Newsgroups:\fP line may not actually wrap,
 or have spaces around the commas.
 .br
 .ne 2i
-.SS Notify Linux Announce 
+.SS Notify Linux Announce
 Send a notification to the \fIcomp.os.linux.announce\fP list.
 It should look like this:
 .e(
@@ -289,7 +307,7 @@ http://www.canb.auug.org.au/~millerp/\*(n)/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
-For information about what new features are available in this 
+For information about what new features are available in this
 release, please see the README file available at the above site.
 .sp
 \fIput your \f[CW].sig\fI file here

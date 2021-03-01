@@ -62,3 +62,6 @@ AEGIS_GID = @AEGIS_GID@;
  */
 groff_ms_macros = -m@GROFF_MS_MACROS@;
 groff_mm_macros = -m@GROFF_MM_MACROS@;
+
+msgfmt = @MSGFMT@;
+msgcat = @MSGCAT@;

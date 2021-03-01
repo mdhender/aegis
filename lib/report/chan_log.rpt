@@ -76,7 +76,8 @@ while (stack_depth > 0)
     need(5);
     print
     (
-	sprintf("%s.D%3.3d", ptr.project, cs.delta_number) ## ", " ##
+	sprintf("%s.D%3.3d", ptr.project, cs.delta_number) ## ", C" ##
+	    ptr.change ## ", " ##
 	    developer_name ## ", " ##
 	    when ## ", " ##
 	    cs.brief_description

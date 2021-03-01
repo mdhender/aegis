@@ -25,8 +25,8 @@
 
 #include <main.h>
 
-void language_init _((void));
-void language_human _((void));
-void language_C _((void));
+void language_init(void);
+void language_human(void);
+void language_C(void);
 
 #endif /* COMMON_LANGUAGE_H */

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997 Peter Miller;
+#	Copyright (C) 1997, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -32,12 +32,14 @@ esac
 
 aegis=aegis
 addr=`$aegis -l reviewers -terse -p $project`
+addr=`echo $addr | sed 's/ /,/g'`
 $aegis -rpass -l -p $project > /tmp/$$
 if cmp /dev/null /tmp/$$ > /dev/null 2>&1 ; then
 	: do nothing
 else
 	cat > /tmp/$$.intro << fubar
 Subject: Outstanding "$project" Reviews
+To: $addr
 
 The following changes are ready to be reviewed.  Please review
 them at your earliest possible convenience, so that changes may
@@ -45,7 +47,7 @@ pass through the system at the fastest possible rate.  If you
 have received this email, you are authorised to review changes
 for the "$project" project.
 fubar
-	cat /tmp/$$.intro /tmp/$$ | mail $addr
+	cat /tmp/$$.intro /tmp/$$ | /usr/lib/sendmail -t
 	rm /tmp/$$.intro
 fi
 rm /tmp/$$

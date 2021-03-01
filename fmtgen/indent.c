@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995, 1999 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -207,16 +207,13 @@ indent_putchar(c)
  *	nothing
  */
 
-/*VARARGS1*/
 void
-indent_printf(s sva_last)
-	char		*s;
-	sva_last_decl
+indent_printf(char *s, ...)
 {
 	va_list		ap;
 	char		buffer[2000];
 
-	sva_init(ap, s);
+	va_start(ap, s);
 	vsprintf(buffer, s, ap);
 	va_end(ap);
 	for (s = buffer; *s; ++s)
@@ -228,7 +225,7 @@ void
 indent_open(s)
 	char	*s;
 {
-	trace(("indent_open(s = %08lX)\n{\n"/*}*/, s));
+	trace(("indent_open(s = %08lX)\n{\n"/*}*/, (long)s));
 	if (!s)
 	{
 		fp = stdout;

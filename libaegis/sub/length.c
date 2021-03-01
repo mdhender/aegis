@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,25 +28,39 @@
 
 wstring_ty *
 sub_length(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty	*scp;
+    wstring_list_ty	*arg;
 {
-	wstring_ty	*result;
-	string_ty	*s;
+    wstring_ty	*result;
 
-	trace(("sub_length()\n{\n"/*}*/));
-	if (arg->nitems != 2)
+    trace(("sub_length()\n{\n"/*}*/));
+    if (arg->nitems < 2)
+    {
+       	sub_context_error_set(scp, i18n("requires one argument"));
+	result = 0;
+    }
+    else
+    {
+	wstring_list_ty results;
+	size_t		j;
+
+	wstring_list_constructor(&results);
+	for (j = 1; j < arg->nitems; ++j)
 	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		trace(("return NULL;\n"));
-		trace((/*{*/"}\n"));
-		return 0;
+    	    string_ty       *s;
+    	    wstring_ty      *ws;
+
+    	    s = str_format("%ld", (long)arg->item[j]->wstr_length);
+    	    trace(("result = \"%s\";\n", s->str_text));
+    	    ws = str_to_wstr(s);
+    	    str_free(s);
+	    wstring_list_append(&results, ws);
+	    wstr_free(ws);
 	}
-	s = str_format("%ld", (long)arg->item[1]->wstr_length);
-	trace(("result = \"%s\";\n", s->str_text));
-	result = str_to_wstr(s);
-	str_free(s);
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+	result = wstring_list_to_wstring(&results, 0, results.nitems, 0);
+	wstring_list_destructor(&results);
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace((/*{*/"}\n"));
+    return result;
 }

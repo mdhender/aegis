@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,34 +47,6 @@ change_brief_description_get(cp)
 
 	cstate_data = change_cstate_get(cp);
 	return cstate_data->brief_description;
-}
-
-
-static time_t change_completion_time _((change_ty *));
-
-static time_t
-change_completion_time(cp)
-	change_ty	*cp;
-{
-	cstate		cstate_data;
-	time_t		now;
-
-	cstate_data = change_cstate_get(cp);
-	if (cstate_data->state == cstate_state_completed)
-	{
-		cstate_history_list hlp;
-		cstate_history	hp;
-
-		hlp = cstate_data->history;
-		assert(hlp);
-		assert(hlp->length);
-		assert(hlp->list);
-		hp = hlp->list[hlp->length - 1];
-		assert(hp);
-		return hp->when;
-	}
-	time(&now);
-	return now;
 }
 
 
@@ -146,7 +118,7 @@ list_change_file_history(project_name, change_number)
 	/*
 	 * Reconstruct the project file history.
 	 */
-	when = change_completion_time(cp);
+	when = change_completion_timestamp(cp);
 	project_file_roll_forward(pp, when, option_verbose_get());
 
 	/*
@@ -256,7 +228,7 @@ list_change_file_history(project_name, change_number)
 				fstate_src	src2_data;
 				file_event_ty	*fep;
 				string_ty	*s;
-	
+
 				fep = felp->item + k;
 				s = change_version_get(fep->cp);
 				output_fputs(delta_col, s->str_text);
@@ -274,7 +246,7 @@ list_change_file_history(project_name, change_number)
 						src_data->file_name
 					);
 				assert(src2_data);
-	
+
 				if (usage_track != src2_data->usage)
 				{
 					output_fputs

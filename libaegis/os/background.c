@@ -22,7 +22,7 @@
 
 #include <ac/unistd.h>
 #include <ac/termios.h>
-#include <signal.h>
+#include <ac/signal.h>
 
 #include <os.h>
 
@@ -34,22 +34,22 @@
 
 int
 tcgetpgrp(fd)
-	int		fd;
+    int             fd;
 {
-	int		result;
+    int             result;
 
 #ifdef TIOCGETPGRP
-	if (ioctl(fd, TIOCGETPGRP, &result))
-		result = -1;
+    if (ioctl(fd, TIOCGETPGRP, &result))
+	result = -1;
 #else
 #ifdef TIOCGPGRP
-        if (ioctl(fd, TIOCGPGRP, &result))
-		result = -1;
-#else
+    if (ioctl(fd, TIOCGPGRP, &result))
 	result = -1;
+#else
+    result = -1;
 #endif
 #endif
-	return result;
+    return result;
 }
 
 #endif /* !HAVE_TCGETPGRP */
@@ -79,48 +79,48 @@ tcgetpgrp(fd)
 int
 os_background()
 {
-	RETSIGTYPE	(*x)_((int));
+    RETSIGTYPE      (*x)_((int));
 
-	/*
-	 * C shell and Bash
-	 *	puts its children in a different process group.
-	 *	The process group the terminal is in is the forground.
-	 *
-	 * Only available on systems with job control.
-	 */
+    /*
+     * C shell and Bash
+     *      puts its children in a different process group.
+     *      The process group the terminal is in is the forground.
+     *
+     * Only available on systems with job control.
+     */
 #ifdef SIGSTOP
-	int stdout_process_group = tcgetpgrp(0);
-	if (stdout_process_group < 0)
-	{
-		/*
-		 * The standard input doesn't have a process group.
-		 * This means the input is coming from a pipe or a file
-		 * or something.  We aren't in the background, or if we
-		 * are it doesn't matter.
-		 */
-		return 0;
-	}
-	if (getpgrp(CONF_getpgrp_arg) != stdout_process_group)
-		return 1;
-#endif
-
+    int             stdout_process_group = tcgetpgrp(0);
+    if (stdout_process_group < 0)
+    {
 	/*
-	 * Bourne shell
-	 *	sets its children to ignore SIGINT
-	 */
-	x = signal(SIGINT, SIG_IGN);
-	if (x == SIG_IGN)
-		return 1;
-	signal(SIGINT, x);
-
-	/*
-	 * There are reports that Ksh does something else,
-	 * and this function is frequently wrong.
-	 * Anybody out there use Ksh and know what to do?
-	 */
-
-	/*
-	 * probably forground
+	 * The standard input doesn't have a process group.
+	 * This means the input is coming from a pipe or a file
+	 * or something.  We aren't in the background, or if we
+	 * are it doesn't matter.
 	 */
 	return 0;
+    }
+    if (getpgrp(CONF_getpgrp_arg) != stdout_process_group)
+	return 1;
+#endif
+
+    /*
+     * Bourne shell
+     *      sets its children to ignore SIGINT
+     */
+    x = signal(SIGINT, SIG_IGN);
+    if (x == SIG_IGN)
+	return 1;
+    signal(SIGINT, x);
+
+    /*
+     * There are reports that Ksh does something else,
+     * and this function is frequently wrong.
+     * Anybody out there use Ksh and know what to do?
+     */
+
+    /*
+     * probably forground
+     */
+    return 0;
 }

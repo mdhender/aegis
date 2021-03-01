@@ -28,29 +28,3 @@ msgstr	"PO-Revision-Date: 22-Nov-2001\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=iso-8859-1\n"
 	"Content-Transfer-Encoding: 8bit\n"
-
-# --------------------------------------------------------------------------
-#
-# This fatal error message is issued when a file ches size while the
-# archive is being constructed.
-#
-#	$File_Name	The name of the offending file.
-#
-msgid	"archive member $filename changed size"
-msgstr	"Größe der Archiv-Datei $filename veränderte sich während "
-	"Verarbeitung, Resultat unbrauchbar"
-
-#
-# This fatal error message is issued when there would be no files in
-# the distributed change set.
-#
-msgid	"bad send no files"
-msgstr	"Keine Dateien für die Distribution vorhanden"
-
-#
-# This fatal error message is issued when a change is not in a suitable
-# state from which to make a distribution change set.
-#
-msgid	"bad send state"
-msgstr	"Dieser Change ist im Status $state; er muß in einem späteren "
-	"Status sein um versendet zu werden"

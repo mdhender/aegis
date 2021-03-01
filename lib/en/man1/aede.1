@@ -132,7 +132,7 @@ arrow " develop" ljust " end" ljust down 2.5
 S12: box "awaiting" "integration"
 .PE
 .\" ------------------------------------------------------------------------
-\fBPlease Note:\fP the third alternative,m skipping reviews altogether,
+\fBPlease Note:\fP the third alternative, skipping reviews altogether,
 should only be used for single person projects.
 All self-respecting commercial enterprise will avoid this alternative.
 .PP
@@ -144,6 +144,16 @@ development of branches.  For normal changes in this situation, use the
 command.
 .PP
 The change is no longer considered assigned to the developer.
+.SS Branches
+If you get an error message telling you that you can't end a branch
+because a file needs to be merged, see the Branching chapter of the
+Aegis User Guide for more information.
+.PP
+While changes and branches are almost identical in the ways you manipulate
+them within Aegis, actual file changes must always be done in a change.
+Thus, it is necessary to create a new change on the branch and do a
+cross-branch grandparent merge before you will be able to develop-end
+a branch which is giving you this error.
 .SS Notification
 On succesful completion of the command, the the
 \fIdevelop_\%end_\%notify_\%command\fP field of the project attributes

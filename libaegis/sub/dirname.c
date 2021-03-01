@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <os.h>
 #include <str.h>
+#include <str_list.h>
 #include <sub.h>
 #include <sub/dirname.h>
 #include <trace.h>
@@ -50,31 +51,41 @@
 
 wstring_ty *
 sub_dirname(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty	*scp;
+    wstring_list_ty	*arg;
 {
-	wstring_ty	*result;
+    wstring_ty	*result;
 
-	trace(("sub_dirname()\n{\n"/*}*/));
-	if (arg->nitems != 2)
-	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		result = 0;
-	}
-	else
-	{
-		string_ty	*s1;
-		string_ty	*s2;
+    trace(("sub_dirname()\n{\n"/*}*/));
+    if (arg->nitems < 2)
+    {
+       	sub_context_error_set(scp, i18n("requires one argument"));
+       	result = 0;
+    }
+    else
+    {
+	string_list_ty	results;
+	size_t		j;
+       	string_ty	*s1;
 
-		s1 = wstr_to_str(arg->item[1]);
-		os_become_orig();
-		s2 = os_dirname(s1);
-		os_become_undo();
-		str_free(s1);
-		result = str_to_wstr(s2);
-		str_free(s2);
+	os_become_orig();
+	string_list_constructor(&results);
+	for (j = 1; j < arg->nitems; ++j)
+	{
+	    string_ty	    *s2;
+
+	    s1 = wstr_to_str(arg->item[j]);
+	    s2 = os_dirname(s1);
+	    str_free(s1);
+	    string_list_append(&results, s2);
+	    str_free(s2);
 	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+	os_become_undo();
+	s1 = wl2str(&results, 0, results.nstrings, 0);
+	result = str_to_wstr(s1);
+	str_free(s1);
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace((/*{*/"}\n"));
+    return result;
 }

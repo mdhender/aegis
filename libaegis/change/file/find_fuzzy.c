@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ change_file_find_fuzzy(cp, file_name)
 		best = 0;
 	else
 		best = symtab_query(cp->fstate_stp, best_file_name);
-	trace(("return %08lX;\n", best));
+	trace(("return %08lX;\n", (long)best));
 	trace((/*{*/"}\n"));
 	return best;
 }

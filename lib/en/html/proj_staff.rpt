@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2000, 2001 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2000-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-	script_name = "http://localhost/cgi-bin/aegis.cgi";
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
 
 auto pn;
 pn = project_name();
@@ -32,41 +32,41 @@ print("Content-Type: text/html");
 print("");
 print("<html><head><title>");
 print("Project Staff");
-print("</title></head><body><h1><center>");
+print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
 print("Project ``" ## quote_html(pn) ## "'',<br>");
 print("List of Staff");
-print("</center></h1>");
+print("</h1>");
 auto p, ps, name, staff;
 p = project[pn];
 ps = p.state.branch;
 for (name in ps.developer)
-	staff[name].developer = true;
+    staff[name].developer = true;
 for (name in ps.reviewer)
-	staff[name].reviewer = true;
+    staff[name].reviewer = true;
 for (name in ps.integrator)
-	staff[name].integrator = true;
+    staff[name].integrator = true;
 for (name in ps.administrator)
-	staff[name].administrator = true;
+    staff[name].administrator = true;
 
 auto cn, cs, h;
 for (cn in keys(ps.change))
 {
-        cs = ps.change[cn];
-        for (h in cs.history)
-        {
-        	if (h.what == new_change)
-        		staff[h.who].administrator_count++;
-        	else if (h.what == develop_begin)
-        	{
-        		staff[h.who].developer_count++;
-        		if (h.forced != "")
-        			staff[h.forced].administrator_count++;
-        	}
-        	else if (h.what == review_pass || h.what == review_fail)
-        		staff[h.who].reviewer_count++;
-        	else if (h.what == integrate_begin)
-        		staff[h.who].integrator_count++;
-        }
+    cs = ps.change[cn];
+    for (h in cs.history)
+    {
+       	if (h.what == new_change)
+	    staff[h.who].administrator_count++;
+       	else if (h.what == develop_begin)
+       	{
+	    staff[h.who].developer_count++;
+	    if (h.forced != "")
+	     	staff[h.forced].administrator_count++;
+       	}
+       	else if (h.what == review_pass || h.what == review_fail)
+	    staff[h.who].reviewer_count++;
+       	else if (h.what == integrate_begin)
+	    staff[h.who].integrator_count++;
+    }
 }
 
 auto n, s, developer_max, reviewer_max, integrator_max, administrator_max;
@@ -76,96 +76,97 @@ integrator_max = 1;
 administrator_max = 1;
 for (name in keys(staff))
 {
-	s = staff[name];
-	if (s.developer_count > developer_max)
-		developer_max = s.developer_count;
-	if (s.reviewer_count > reviewer_max)
-		reviewer_max = s.reviewer_count;
-	if (s.integrator_count > integrator_max)
-		integrator_max = s.integrator_count;
-	if (s.administrator_count > administrator_max)
-		administrator_max = s.administrator_count;
+    s = staff[name];
+    if (s.developer_count > developer_max)
+       	developer_max = s.developer_count;
+    if (s.reviewer_count > reviewer_max)
+       	reviewer_max = s.reviewer_count;
+    if (s.integrator_count > integrator_max)
+       	integrator_max = s.integrator_count;
+    if (s.administrator_count > administrator_max)
+       	administrator_max = s.administrator_count;
 }
 developer_max = 50.0 / developer_max;
 reviewer_max = 50.0 / reviewer_max;
 integrator_max = 50.0 / integrator_max;
 administrator_max = 50.0 / administrator_max;
 
-print("<center><table>");
+print("<table align=center>");
 print("<tr><th>User</th><th align=left colspan=3>Developer</th>");
-print("<th align=left colspan=3>Reviewer</th><th align=left colspan=3>Integrator</th>");
+print("<th align=left colspan=3>Reviewer</th>");
+print("<th align=left colspan=3>Integrator</th>");
 print("<th align=left colspan=3>Administrator</th></tr>");
 
 for (name in sort(keys(staff)))
 {
-	s = staff[name];
-	print("<tr><td valign=top>");
-	auto href, email, long_name;
-	email = name;
-	try { email = user[name].email_address; }
-	catch (email) { email = ""; }
-	if (email == "")
-		email = name;
-	href = "mailto:" ## email;
-	print("<a href=\"" ## href ## "\">");
-	try { long_name = passwd[name].pw_comment; }
-	catch (long_name) { long_name = name; }
-	print(quote_html(long_name) ## "</a>");
-	print("</td><td valign=top>");
-	print(s.developer ? "Yes" : "No");
-	print("</td><td valign=top align=right>");
-	print(s.developer_count + 0);
-	print("</td><td valign=top>");
-	if (s.developer_count)
-	{
-		n = round(developer_max * s.developer_count);
-		if (n < 3)
-			n = 3;
-		href = script_name ## "?file@rect+" ## n ## "+12";
-		print("<img src=\"" ## href ## "\" width="##n##" height=12>");
-	}
-	print("</td><td valign=top>");
-	print(s.reviewer ? "Yes" : "No");
-	print("</td><td valign=top align=right>");
-	print(s.reviewer_count + 0);
-	print("</td><td valign=top>");
-	if (s.reviewer_count)
-	{
-		n = round(reviewer_max * s.reviewer_count);
-		if (n < 3)
-			n = 3;
-		href = script_name ## "?file@rect+" ## n ## "+12";
-		print("<img src=\"" ## href ## "\" width="##n##" height=12>");
-	}
-	print("</td><td valign=top>");
-	print(s.integrator ? "Yes" : "No");
-	print("</td><td valign=top align=right>");
-	print(s.integrator_count + 0);
-	print("</td><td valign=top>");
-	if (s.integrator_count)
-	{
-		n = round(integrator_max * s.integrator_count);
-		if (n < 3)
-			n = 3;
-		href = script_name ## "?file@rect+" ## n ## "+12";
-		print("<img src=\"" ## href ## "\" width="##n##" height=12>");
-	}
-	print("</td><td valign=top>");
-	print(s.administrator ? "Yes" : "No");
-	print("</td><td valign=top align=right>");
-	print(s.administrator_count + 0);
-	print("</td><td valign=top>");
-	if (s.administrator_count)
-	{
-		n = round(administrator_max * s.administrator_count);
-		if (n < 3)
-			n = 3;
-		href = script_name ## "?file@rect+" ## n ## "+12";
-		print("<img src=\"" ## href ## "\" width="##n##" height=12>");
-	}
-	print("</td></tr>");
+    s = staff[name];
+    print("<tr><td valign=top>");
+    auto href, email, long_name;
+    email = name;
+    try { email = user[name].email_address; }
+    catch (email) { email = ""; }
+    if (email == "")
+       	email = name;
+    href = "mailto:" ## email;
+    print("<a href=\"" ## href ## "\">");
+    try { long_name = passwd[name].pw_comment; }
+    catch (long_name) { long_name = name; }
+    print(quote_html(long_name) ## "</a>");
+    print("</td><td valign=top>");
+    print(s.developer ? "Yes" : "No");
+    print("</td><td valign=top align=right>");
+    print(s.developer_count + 0);
+    print("</td><td valign=top>");
+    if (s.developer_count)
+    {
+       	n = round(developer_max * s.developer_count);
+       	if (n < 3)
+	    n = 3;
+       	href = script_name ## "?file@rect+" ## n ## "+12";
+       	print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+    }
+    print("</td><td valign=top>");
+    print(s.reviewer ? "Yes" : "No");
+    print("</td><td valign=top align=right>");
+    print(s.reviewer_count + 0);
+    print("</td><td valign=top>");
+    if (s.reviewer_count)
+    {
+       	n = round(reviewer_max * s.reviewer_count);
+       	if (n < 3)
+	    n = 3;
+       	href = script_name ## "?file@rect+" ## n ## "+12";
+	    print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+    }
+    print("</td><td valign=top>");
+    print(s.integrator ? "Yes" : "No");
+    print("</td><td valign=top align=right>");
+    print(s.integrator_count + 0);
+    print("</td><td valign=top>");
+    if (s.integrator_count)
+    {
+       	n = round(integrator_max * s.integrator_count);
+       	if (n < 3)
+	    n = 3;
+       	href = script_name ## "?file@rect+" ## n ## "+12";
+       	print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+    }
+    print("</td><td valign=top>");
+    print(s.administrator ? "Yes" : "No");
+    print("</td><td valign=top align=right>");
+    print(s.administrator_count + 0);
+    print("</td><td valign=top>");
+    if (s.administrator_count)
+    {
+       	n = round(administrator_max * s.administrator_count);
+       	if (n < 3)
+	    n = 3;
+       	href = script_name ## "?file@rect+" ## n ## "+12";
+       	print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+    }
+    print("</td></tr>");
 }
-print("</table></center>");
+print("</table>");
 print("Listed " ## count(keys(staff)) ## " staff.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with");

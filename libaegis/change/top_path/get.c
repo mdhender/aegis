@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ change_top_path_get(cp, resolve)
 	 * and any comparison of paths is done on this "system idea"
 	 * of the pathname.
 	 */
-	trace(("change_top_path_get(cp = %8.8lX)\n{\n", cp));
+	trace(("change_top_path_get(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
 	if (!cp->top_path_unresolved)
 	{

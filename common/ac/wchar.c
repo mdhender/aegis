@@ -28,15 +28,14 @@
 
 
 size_t
-wcslen(wcs)
-	const wchar_t	*wcs;
+wcslen(const wchar_t *wcs)
 {
-	const wchar_t	*start;
+    const wchar_t   *start;
 
-	start = wcs;
-	while (*wcs)
-		++wcs;
-	return (wcs - start);
+    start = wcs;
+    while (*wcs)
+	++wcs;
+    return (wcs - start);
 }
 
 
@@ -157,66 +156,56 @@ wcslen(wcs)
 
 
 int
-wcwidth(wc)
-	wint_t		wc;
+wcwidth(wint_t wc)
 {
 #ifdef HAVE_ISWCTYPE
 #ifdef HAVE_WCTYPE_H
-	static int	kanji_set;
-	static wctype_t	kanji;
+    static int	kanji_set;
+    static wctype_t	kanji;
 
-	if (!kanji_set)
-	{
-		kanji = wctype("kanji");
-		kanji_set = 1;
-	}
-	if (kanji && iswctype(kanji, wc))
-		return 2;
+    if (!kanji_set)
+    {
+	kanji = wctype("kanji");
+	kanji_set = 1;
+    }
+    if (kanji && iswctype(kanji, wc))
+	return 2;
 #endif
 #endif
-	return 1;
+    return 1;
 }
 
 
 int
-wcswidth(wcs, n)
-	wchar_t		*wcs;
-	size_t		n;
+wcswidth(wchar_t *wcs, size_t n)
 {
-	int		result;
+    int		    result;
 
-	result = 0;
-	while (*wcs && n > 0)
-	{
-		result += wcwidth(*wcs++);
-		--n;
-	}
-	return result;
+    result = 0;
+    while (*wcs && n > 0)
+    {
+	result += wcwidth(*wcs++);
+	--n;
+    }
+    return result;
 }
 
 #endif
 #ifndef HAVE_MBRTOWC
 
 size_t
-mbrtowc(pwc, s, n, ps)
-	wchar_t		*pwc;
-	const char	*s;
-	size_t		n;
-	mbstate_t	*ps;
+mbrtowc(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
 {
-	return mbtowc(pwc, s, n);
+    return mbtowc(pwc, s, n);
 }
 
 #endif
 #ifndef HAVE_WCRTOMB
 
 size_t
-wcrtomb(s, wc, ps)
-	char		*s;
-	wchar_t		wc;
-	mbstate_t	*ps;
+wcrtomb(char *s, wchar_t wc, mbstate_t *ps)
 {
-	return wctomb(s, wc);
+    return wctomb(s, wc);
 }
 
 #endif

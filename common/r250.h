@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-void r250_init _((void));
-unsigned long r250 _((void));
+void r250_init(void);
+unsigned long r250(void);
 
 #endif /* COMMON_R250_H */

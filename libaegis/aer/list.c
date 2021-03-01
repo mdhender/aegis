@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1997, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1997, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -162,7 +162,7 @@ report_list(usage)
 		process(path.string[j], "report.local", result);
 	}
 	string_list_destructor(&path);
-	trace(("result->length = %ld;\n", result->length));
+	trace(("result->length = %d;\n", result->length));
 	qsort(result->list, result->length, sizeof(result->list[0]), cmp);
 
 	/*

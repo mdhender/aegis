@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,24 +25,20 @@
 
 
 string_ty *
-str_format(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
+str_format(const char *fmt, ...)
 {
-	va_list		ap;
-	string_ty	*result;
+    va_list	    ap;
+    string_ty	    *result;
 
-	sva_init(ap, fmt);
-	result = vmprintf_str(fmt, ap);
-	va_end(ap);
-	return result;
+    va_start(ap, fmt);
+    result = vmprintf_str(fmt, ap);
+    va_end(ap);
+    return result;
 }
 
 
 string_ty *
-str_vformat(fmt, ap)
-	const char	*fmt;
-	va_list		ap;
+str_vformat(const char *fmt, va_list ap)
 {
-	return vmprintf_str(fmt, ap);
+    return vmprintf_str(fmt, ap);
 }

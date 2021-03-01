@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,17 +25,19 @@
 #include <change.h>
 #include <change/attributes.h>
 #include <change/file.h>
-#include <error.h> /* for assert */
+#include <error.h>	/* for assert */
 #include <help.h>
 #include <input/cpio.h>
 #include <open.h>
 #include <os.h>
+#include <output/bit_bucket.h>
 #include <output/file.h>
 #include <parse.h>
+#include <patch/list.h>
 #include <project.h>
 #include <project/file/trojan.h>
 #include <project/file.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <receive.h>
 #include <str.h>
 #include <str_list.h>
@@ -48,886 +50,1016 @@ static long number_of_files _((string_ty *, long));
 
 static long
 number_of_files(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+    string_ty       *project_name;
+    long            change_number;
 {
-	project_ty	*pp;
-	change_ty	*cp;
-	long		result;
+    project_ty      *pp;
+    change_ty       *cp;
+    long            result;
 
-	pp = project_alloc(project_name);
-	project_bind_existing(pp);
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
-	result = change_file_count(cp);
-	change_free(cp);
-	project_free(pp);
-	return result;
+    pp = project_alloc(project_name);
+    project_bind_existing(pp);
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
+    result = change_file_count(cp);
+    change_free(cp);
+    project_free(pp);
+    return result;
 }
 
 
 void
 receive_main(usage)
-	void		(*usage)_((void));
+    void            (*usage) _((void));
 {
-	string_ty	*project_name;
-	long		change_number;
-	string_ty	*ifn;
-	input_ty	*ifp;
-	input_ty	*cpio_p;
-	string_ty	*archive_name;
-	string_ty	*s;
-	project_ty	*pp;
-	change_ty	*cp;
-	string_ty	*dd;
-	cstate		change_set;
-	size_t		j;
-	cattr		cattr_data;
-	cattr		dflt;
-	pconf		pconf_data;
-	string_ty	*attribute_file_name;
-	string_list_ty	files_source;
-	string_list_ty	files_build;
-	string_list_ty	files_test_auto;
-	string_list_ty	files_test_manual;
-	int		need_to_test;
-	string_ty	*s2;
-	int		could_have_a_trojan;
-	int		config_seen;
-	string_ty	*the_config_file;
-	int		uncopy;
-	int		trojan;
-	string_list_ty	wl;
-	string_ty	*dot;
-	const char	*delta;
-	string_ty	*devdir;
+    int		    use_patch;
+    string_ty       *project_name;
+    long            change_number;
+    string_ty       *ifn;
+    input_ty        *ifp;
+    input_ty        *cpio_p;
+    string_ty       *archive_name;
+    string_ty       *s;
+    project_ty      *pp;
+    change_ty       *cp;
+    string_ty       *dd;
+    cstate          change_set;
+    size_t          j;
+    cattr           cattr_data;
+    cattr           dflt;
+    pconf           pconf_data;
+    string_ty       *attribute_file_name;
+    string_list_ty  files_source;
+    string_list_ty  files_build;
+    string_list_ty  files_test_auto;
+    string_list_ty  files_test_manual;
+    int             need_to_test;
+    string_ty       *s2;
+    int             could_have_a_trojan;
+    int             config_seen;
+    int             uncopy;
+    int             trojan;
+    string_list_ty  wl;
+    string_ty       *dot;
+    const char      *delta;
+    string_ty       *devdir;
 
-	project_name = 0;
-	change_number = 0;
-	ifn = 0;
-	trojan = -1;
-	delta = 0;
-	devdir = 0;
-	while (arglex_token != arglex_token_eoln)
+    project_name = 0;
+    change_number = 0;
+    ifn = 0;
+    trojan = -1;
+    delta = 0;
+    devdir = 0;
+    use_patch = -1;
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
 	{
-		switch (arglex_token)
-		{
-		default:
-			generic_argument(usage);
-			continue;
+	default:
+	    generic_argument(usage);
+	    continue;
 
-		case arglex_token_change:
-			if (arglex() != arglex_token_number)
-				option_needs_number(arglex_token_change, usage);
-			if (change_number)
-				duplicate_option_by_name(arglex_token_change, usage);
-			change_number = arglex_value.alv_number;
-			if (!change_number)
-				change_number = MAGIC_ZERO;
-			else if (change_number < 0)
-			{
-				sub_context_ty	*scp;
+	case arglex_token_change:
+	    if (arglex() != arglex_token_number)
+		option_needs_number(arglex_token_change, usage);
+	    if (change_number)
+		duplicate_option_by_name(arglex_token_change, usage);
+	    change_number = arglex_value.alv_number;
+	    if (!change_number)
+		change_number = MAGIC_ZERO;
+	    else if (change_number < 0)
+	    {
+		sub_context_ty  *scp;
 
-				scp = sub_context_new();
-				sub_var_set_long(scp, "Number", change_number);
-				fatal_intl(scp, i18n("change $number out of range"));
-				/* NOTREACHED */
-			}
-			break;
+		scp = sub_context_new();
+		sub_var_set_long(scp, "Number", change_number);
+		fatal_intl(scp, i18n("change $number out of range"));
+		/* NOTREACHED */
+	    }
+	    break;
 
-		 case arglex_token_project:
-			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
-			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
-			project_name = str_from_c(arglex_value.alv_string);
-			break;
+	case arglex_token_project:
+	    if (arglex() != arglex_token_string)
+		option_needs_name(arglex_token_project, usage);
+	    if (project_name)
+		duplicate_option_by_name(arglex_token_project, usage);
+	    project_name = str_from_c(arglex_value.alv_string);
+	    break;
 
-		case arglex_token_file:
-			if (ifn)
-				duplicate_option(usage);
-			switch (arglex())
-			{
-			default:
-				option_needs_file(arglex_token_file, usage);
-				/*NOTREACHED*/
+	case arglex_token_file:
+	    if (ifn)
+		duplicate_option(usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_file(arglex_token_file, usage);
+	        /*NOTREACHED*/
 
-			case arglex_token_string:
-				ifn = str_from_c(arglex_value.alv_string);
-				break;
+	    case arglex_token_string:
+		ifn = str_from_c(arglex_value.alv_string);
+		break;
 
-			case arglex_token_stdio:
-				ifn = str_from_c("");
-				break;
-			}
-			break;
+	    case arglex_token_stdio:
+		ifn = str_from_c("");
+		break;
+	    }
+	    break;
 
-		case arglex_token_trojan:
-			if (trojan > 0)
-				duplicate_option(usage);
-			if (trojan >= 0)
-			{
-				too_many_trojans:
-				mutually_exclusive_options
-				(
-					arglex_token_trojan,
-					arglex_token_trojan_not,
-					usage
-				);
-			}
-			trojan = 1;
-			break;
+	case arglex_token_trojan:
+	    if (trojan > 0)
+		duplicate_option(usage);
+	    if (trojan >= 0)
+	    {
+	        too_many_trojans:
+		mutually_exclusive_options
+		(
+		    arglex_token_trojan,
+		    arglex_token_trojan_not,
+		    usage
+		);
+	    }
+	    trojan = 1;
+	    break;
 
-		case arglex_token_trojan_not:
-			if (trojan == 0)
-				duplicate_option(usage);
-			if (trojan >= 0)
-				goto too_many_trojans;
-			trojan = 0;
-			break;
+	case arglex_token_trojan_not:
+	    if (trojan == 0)
+		duplicate_option(usage);
+	    if (trojan >= 0)
+		goto too_many_trojans;
+	    trojan = 0;
+	    break;
 
-		case arglex_token_delta:
-			if (delta)
-				duplicate_option(usage);
-			switch (arglex())
-			{
-			default:
-				option_needs_number(arglex_token_delta, usage);
-				/*NOTREACHED*/
-			
-			case arglex_token_number:
-			case arglex_token_string:
-				delta = arglex_value.alv_string;
-				break;
-			}
-			break;
+	case arglex_token_delta:
+	    if (delta)
+		duplicate_option(usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_number(arglex_token_delta, usage);
+		/*NOTREACHED*/
 
-		case arglex_token_directory:
-			if (devdir)
-			{
-				duplicate_option(usage);
-				/* NOTREACHED */
-			}
-			if (arglex() != arglex_token_string)
-			{
-				option_needs_dir(arglex_token_directory, usage);
-				/* NOTREACHED */
-			}
-			devdir =
-				str_format
-				(
-					" --directory %s",
-					arglex_value.alv_string
-				);
-			break;
-		}
-		arglex();
+	    case arglex_token_number:
+	    case arglex_token_string:
+		delta = arglex_value.alv_string;
+		break;
+	    }
+	    break;
+
+	case arglex_token_directory:
+	    if (devdir)
+	    {
+		duplicate_option(usage);
+		/* NOTREACHED */
+	    }
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_dir(arglex_token_directory, usage);
+		/* NOTREACHED */
+	    }
+	    devdir = str_format(" --directory %s", arglex_value.alv_string);
+	    break;
+
+	case arglex_token_patch:
+	    if (use_patch > 0)
+		duplicate_option(usage);
+	    if (use_patch >= 0)
+	    {
+	        too_many_patchs:
+		mutually_exclusive_options
+		(
+		    arglex_token_patch,
+		    arglex_token_patch_not,
+		    usage
+		);
+	    }
+	    use_patch = 1;
+	    break;
+
+	case arglex_token_patch_not:
+	    if (use_patch == 0)
+		duplicate_option(usage);
+	    if (use_patch >= 0)
+	        goto too_many_patchs;
+	    use_patch = 0;
+	    break;
 	}
+	arglex();
+    }
 
-	/*
-	 * Open the input file and verify the format.
-	 */
-	cpio_p = aedist_open(ifn, (string_ty **)0);
-	assert(cpio_p);
+    /*
+     * Open the input file and verify the format.
+     */
+    cpio_p = aedist_open(ifn, (string_ty **) 0);
+    assert(cpio_p);
 
-	/*
-	 * read the project name from the archive,
-	 * and use it to default the project if not given
-	 */
-	os_become_orig();
-	archive_name = 0;
-	ifp = input_cpio_child(cpio_p, &archive_name);
-	if (!ifp)
-		input_fatal_error(cpio_p, "missing file");
-	assert(archive_name);
-	s = str_from_c("etc/project-name");
-	if (!str_equal(archive_name, s))
-		input_fatal_error(ifp, "wrong file");
+    /*
+     * read the project name from the archive,
+     * and use it to default the project if not given
+     */
+    os_become_orig();
+    archive_name = 0;
+    ifp = input_cpio_child(cpio_p, &archive_name);
+    if (!ifp)
+	input_fatal_error(cpio_p, "missing file");
+    assert(archive_name);
+    s = str_from_c("etc/project-name");
+    if (!str_equal(archive_name, s))
+	input_fatal_error(ifp, "wrong file");
+    str_free(s);
+    s = input_one_line(ifp);
+    if (!s || !s->str_length)
+	input_fatal_error(ifp, "short file");
+    if (!project_name)
+	project_name = s;
+    else
 	str_free(s);
-	s = input_one_line(ifp);
-	if (!s || !s->str_length)
-		input_fatal_error(ifp, "short file");
-	if (!project_name)
-		project_name = s;
-	else
-		str_free(s);
-	input_delete(ifp);
-	os_become_undo();
-	str_free(archive_name);
+    input_delete(ifp);
+    os_become_undo();
+    str_free(archive_name);
 
-	/*
-	 * locate project data
-	 *	(Even of we don't use it, this confirms it is a valid
-	 *	project name.)
-	 */
-	pp = project_alloc(project_name);
-	project_bind_existing(pp);
+    /*
+     * locate project data
+     *      (Even of we don't use it, this confirms it is a valid
+     *      project name.)
+     */
+    pp = project_alloc(project_name);
+    project_bind_existing(pp);
 
-	/*
-	 * default the change number
-	 */
-	if (!change_number)
-		change_number = project_next_change_number(pp, 1);
+    /*
+     * default the change number
+     */
+    if (!change_number)
+	change_number = project_next_change_number(pp, 1);
 
-	/*
-	 * get the change details from the input
-	 */
-	archive_name = 0;
-	os_become_orig();
-	ifp = input_cpio_child(cpio_p, &archive_name);
-	if (!ifp)
-		input_fatal_error(cpio_p, "missing file");
-	assert(archive_name);
-	s = str_from_c("etc/change-set");
-	if (!str_equal(s, archive_name))
-		input_fatal_error(ifp, "wrong file");
-	str_free(s);
-	change_set = parse_input(ifp, &cstate_type);
-	ifp = 0; /* parse_input input_delete()ed it for us */
-	os_become_undo();
-	str_free(archive_name);
+    /*
+     * get the change details from the input
+     */
+    archive_name = 0;
+    os_become_orig();
+    ifp = input_cpio_child(cpio_p, &archive_name);
+    if (!ifp)
+	input_fatal_error(cpio_p, "missing file");
+    assert(archive_name);
+    s = str_from_c("etc/change-set");
+    if (!str_equal(s, archive_name))
+	input_fatal_error(ifp, "wrong file");
+    str_free(s);
+    change_set = parse_input(ifp, &cstate_type);
+    ifp = 0;	/* parse_input input_delete()ed it for us */
+    os_become_undo();
+    str_free(archive_name);
 
-	/*
-	 * Make sure we like the change set at a macro level.
-	 */
+    /*
+     * Make sure we like the change set at a macro level.
+     */
+    if
+    (
+	!change_set->brief_description
+    ||
+	!change_set->description
+    ||
+	!change_set->src
+    ||
+	!change_set->src->length
+    )
+	input_fatal_error(cpio_p, "bad change set");
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
+
+	src_data = change_set->src->list[j];
 	if
 	(
-		!change_set->brief_description
+	    !src_data->file_name
 	||
-		!change_set->description
+	    !src_data->file_name->str_length
 	||
-		!change_set->src
+	    !(src_data->mask & cstate_src_action_mask)
 	||
-		!change_set->src->length
+	    !(src_data->mask & cstate_src_usage_mask)
 	)
-		input_fatal_error(cpio_p, "bad change set");
-	for (j = 0; j < change_set->src->length; ++j)
+	    input_fatal_error(cpio_p, "bad change info");
+    }
+
+    /*
+     * construct change attributes from the change_set
+     *
+     * Be careful when copying across the testing exemptions, to
+     * make sure we don't ask for an exemption we can't have.
+     */
+    os_become_orig();
+    attribute_file_name = os_edit_filename(0);
+    undo_unlink_errok(attribute_file_name);
+    cattr_data = cattr_type.alloc();
+    cattr_data->brief_description = str_copy(change_set->brief_description);
+    cattr_data->description = str_copy(change_set->description);
+    cattr_data->cause = change_set->cause;
+    dflt = cattr_type.alloc();
+    dflt->cause = change_set->cause;
+    os_become_undo();
+    pconf_data = project_pconf_get(pp);
+    change_attributes_default(dflt, pp, pconf_data);
+    os_become_orig();
+    cattr_data->test_exempt = change_set->test_exempt && dflt->test_exempt;
+    cattr_data->test_baseline_exempt =
+	change_set->test_baseline_exempt && dflt->test_baseline_exempt;
+    cattr_data->regression_test_exempt =
+	change_set->regression_test_exempt && dflt->regression_test_exempt;
+    cattr_type.free(dflt);
+    cattr_write_file(attribute_file_name, cattr_data, 0);
+    cattr_type.free(cattr_data);
+    project_free(pp);
+    pp = 0;
+
+    /*
+     * create the new change
+     */
+    dot = os_curdir();
+    s =
+	str_format
+	(
+	    "aegis --new-change %ld --project=%S --file=%S --verbose",
+	    change_number,
+	    project_name,
+	    attribute_file_name
+	);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+    str_free(s);
+    os_unlink_errok(attribute_file_name);
+    str_free(attribute_file_name);
+
+    /*
+     * Begin development of the new change.
+     */
+    s =
+	str_format
+	(
+	    "aegis --develop-begin %ld --project %S --verbose%s",
+	    change_number,
+	    project_name,
+	    (devdir ? devdir->str_text : "")
+	);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+    str_free(s);
+    os_become_undo();
+
+    /*
+     * Change to the development directory, so that we can use
+     * relative filenames.  It makes things easier to read.
+     */
+    pp = project_alloc(project_name);
+    project_bind_existing(pp);
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
+    dd = change_development_directory_get(cp, 0);
+    dd = str_copy(dd);	/* will vanish when change_free(); */
+    change_free(cp);
+    cp = 0;
+
+    os_chdir(dd);
+
+    /*
+     * Adjust the file actions to reflect the current state of
+     * the project.
+     */
+    need_to_test = 0;
+    could_have_a_trojan = 0;
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
+	fstate_src      p_src_data;
+
+	src_data = change_set->src->list[j];
+	assert(src_data->file_name);
+	p_src_data = project_file_find(pp, src_data->file_name);
+	if (p_src_data && p_src_data->about_to_be_created_by)
+	    p_src_data = 0;
+	if (!p_src_data || p_src_data->action == file_action_remove)
 	{
-		cstate_src	src_data;
-
-		src_data = change_set->src->list[j];
-		if
-		(
-			!src_data->file_name
-		||
-			!src_data->file_name->str_length
-		||
-			!(src_data->mask & cstate_src_action_mask)
-		||
-			!(src_data->mask & cstate_src_usage_mask)
-		)
-			input_fatal_error(cpio_p, "bad change info");
+	    if (src_data->action == file_action_remove)
+	    {
+		/*
+		 * Removing a removed file would be an
+		 * error, so butcher the action field
+		 * and none of the selection loops will
+		 * use it.
+		 */
+		src_data->action = -1;
+	    }
+	    else
+		src_data->action = file_action_create;
 	}
+	else
+	{
+	    if (src_data->action != file_action_remove)
+		src_data->action = file_action_modify;
+	}
+	if (project_file_trojan_suspect(pp, src_data->file_name))
+	    could_have_a_trojan = 1;
+    }
+
+    /*
+     * add the modified files to the change
+     */
+    string_list_constructor(&files_source);
+    string_list_constructor(&files_build);
+    string_list_constructor(&files_test_auto);
+    string_list_constructor(&files_test_manual);
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
 
 	/*
-	 * construct change attributes from the change_set
-	 *
-         * Be careful when copying across the testing exemptions, to
-         * make sure we don't ask for an exemption we can't have.
+	 * For now, we are only copying files.
 	 */
-	os_become_orig();
-	attribute_file_name = os_edit_filename(0);
-	undo_unlink_errok(attribute_file_name);
-	cattr_data = cattr_type.alloc();
-	cattr_data->brief_description = str_copy(change_set->brief_description);
-	cattr_data->description = str_copy(change_set->description);
-	cattr_data->cause = change_set->cause;
-	dflt = cattr_type.alloc();
-	dflt->cause = change_set->cause;
-	os_become_undo();
-	pconf_data = project_pconf_get(pp);
-	change_attributes_default(dflt, pp, pconf_data);
-	os_become_orig();
-	cattr_data->test_exempt = change_set->test_exempt && dflt->test_exempt;
-	cattr_data->test_baseline_exempt =
-		change_set->test_baseline_exempt && dflt->test_baseline_exempt;
-	cattr_data->regression_test_exempt =
-	     change_set->regression_test_exempt && dflt->regression_test_exempt;
-	cattr_type.free(dflt);
-	cattr_write_file(attribute_file_name, cattr_data, 0);
-	cattr_type.free(cattr_data);
-	project_free(pp);
-	pp = 0;
+	src_data = change_set->src->list[j];
+	assert(src_data->file_name);
+	if (src_data->action != file_action_modify)
+	    continue;
+	if (src_data->usage == file_usage_build)
+	    continue;
 
 	/*
-	 * create the new change
+	 * add it to the list
 	 */
-	dot = os_curdir();
+	string_list_append_unique(&files_source, src_data->file_name);
+	if
+	(
+	    src_data->usage == file_usage_test
+	||
+	    src_data->usage == file_usage_manual_test
+	)
+	    need_to_test = 1;
+    }
+    uncopy = 0;
+    if (files_source.nstrings)
+    {
+	string_ty       *delopt;
+
+	delopt = 0;
+	if (delta)
+	{
+	    delopt = str_from_c(delta);
+	    s = str_quote_shell(delopt);
+	    str_free(delopt);
+	    delopt = str_format(" --delta=%S", s);
+	    str_free(s);
+	}
+	uncopy = 1;
+	string_list_quote_shell(&wl, &files_source);
+	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
+	string_list_destructor(&wl);
 	s =
-		str_format
-		(
-		      "aegis --new-change %ld --project=%S --file=%S --verbose",
-			change_number,
-			project_name,
-			attribute_file_name
-		);
-	os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-	str_free(s);
-	os_unlink_errok(attribute_file_name);
-	str_free(attribute_file_name);
-
-	/*
-	 * Begin development of the new change.
-	 */
-	s =
-		str_format
-		(
-			"aegis --develop-begin %ld --project %S --verbose%s",
-			change_number,
-			project_name,
-			(devdir ? devdir->str_text : "")
-		);
-	os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-	str_free(s);
-	os_become_undo();
-
-	/*
-	 * Change to the development directory, so that we can use
-	 * relative filenames.  It makes things easier to read.
-	 */
-	pp = project_alloc(project_name);
-	project_bind_existing(pp);
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
-	dd = change_development_directory_get(cp, 0);
-	dd = str_copy(dd); /* will vanish when change_free(); */
-	change_free(cp);
-	cp = 0;
-
-	os_chdir(dd);
-
-	/*
-	 * Adjust the file actions to reflect the current state of
-	 * the project.
-	 */
-	need_to_test = 0;
-	could_have_a_trojan = 0;
-	for (j = 0; j < change_set->src->length; ++j)
-	{
-		cstate_src	src_data;
-		fstate_src	p_src_data;
-
-		src_data = change_set->src->list[j];
-		assert(src_data->file_name);
-		p_src_data = project_file_find(pp, src_data->file_name);
-		if (p_src_data && p_src_data->about_to_be_created_by)
-			p_src_data = 0;
-		if (!p_src_data || p_src_data->action == file_action_remove)
-		{
-			if (src_data->action == file_action_remove)
-			{
-				/*
-				 * Removing a removed file would be an
-				 * error, so butcher the action field
-				 * and none of the selection loops will
-				 * use it.
-				 */
-				src_data->action = -1;
-			}
-			else
-				src_data->action = file_action_create;
-		}
-		else
-		{
-			if (src_data->action != file_action_remove)
-				src_data->action = file_action_modify;
-		}
-		if (project_file_trojan_suspect(pp, src_data->file_name))
-			could_have_a_trojan = 1;
-	}
-	project_free(pp);
-	pp = 0;
-
-	/*
-	 * add the modified files to the change
-	 */
-	string_list_constructor(&files_source);
-	string_list_constructor(&files_build);
-	string_list_constructor(&files_test_auto);
-	string_list_constructor(&files_test_manual);
-	for (j = 0; j < change_set->src->length; ++j)
-	{
-		cstate_src	src_data;
-
-		/*
-		 * For now, we are only copying files.
-		 */
-		src_data = change_set->src->list[j];
-		assert(src_data->file_name);
-		if (src_data->action != file_action_modify)
-			continue;
-		if (src_data->usage == file_usage_build)
-			continue;
-
-		/*
-		 * add it to the list
-		 */
-		string_list_append_unique(&files_source, src_data->file_name);
-		if
-		(
-			src_data->usage == file_usage_test
-		||
-			src_data->usage == file_usage_manual_test
-		)
-			need_to_test = 1;
-	}
-	uncopy = 0;
-	if (files_source.nstrings)
-	{
-		string_ty	*delopt;
-
-		delopt = 0;
-		if (delta)
-		{
-			delopt = str_from_c(delta);
-			s = str_quote_shell(delopt);
-			str_free(delopt);
-			delopt = str_format(" --delta=%S", s);
-			str_free(s);
-		}
-		uncopy = 1;
-		string_list_quote_shell(&wl, &files_source);
-		s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-		string_list_destructor(&wl);
-		s =
-			str_format
-			(
-		   "aegis --copy-file %S --project=%S --change=%ld --verbose%s",
-				s2,
-				project_name,
-				change_number,
-				(delopt ? delopt->str_text : "")
-			);
-		if (delopt)
-			str_free(delopt);
-		str_free(s2);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
-	string_list_destructor(&files_source);
-
-	/*
-	 * add the removed files to the change
-	 */
-	for (j = 0; j < change_set->src->length; ++j)
-	{
-		cstate_src	src_data;
-
-		/*
-		 * For now, we are only removing files.
-		 */
-		src_data = change_set->src->list[j];
-		assert(src_data->file_name);
-		if (src_data->action != file_action_remove)
-			continue;
-
-		/*
-		 * add it to the list
-		 */
-		string_list_append_unique(&files_source, src_data->file_name);
-	}
-	if (files_source.nstrings)
-	{
-		string_list_quote_shell(&wl, &files_source);
-		s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-		string_list_destructor(&wl);
-		s =
-			str_format
-			(
-		   "aegis --remove-file %S --project=%S --change=%ld --verbose",
-				s2,
-				project_name,
-				change_number
-			);
-		str_free(s2);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
-	string_list_destructor(&files_source);
-
-	/*
-	 * add the new files to the change
-	 */
-	need_to_test = 0;
-	for (j = 0; j < change_set->src->length; ++j)
-	{
-		cstate_src	src_data;
-
-		/*
-		 * for now, we are only dealing with create
-		 */
-		src_data = change_set->src->list[j];
-		assert(src_data->file_name);
-		if (src_data->action != file_action_create)
-			continue;
-
-		/*
-		 * add it to the list
-		 */
-		switch (src_data->usage)
-		{
-		case file_usage_source:
-			string_list_append_unique(&files_source, src_data->file_name);
-			break;
-
-		case file_usage_build:
-			string_list_append_unique(&files_build, src_data->file_name);
-			break;
-
-		case file_usage_test:
-			string_list_append_unique(&files_test_auto, src_data->file_name);
-			need_to_test = 1;
-			break;
-
-		case file_usage_manual_test:
-			string_list_append_unique(&files_test_manual, src_data->file_name);
-			need_to_test = 1;
-			break;
-		}
-	}
-
-	if (files_build.nstrings)
-	{
-		string_list_quote_shell(&wl, &files_build);
-		s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-		string_list_destructor(&wl);
-		s =
-			str_format
-			(
-"aegis --new-file %S --build --project=%S --change=%ld --verbose --no-template",
-				s2,
-				project_name,
-				change_number
-			);
-		str_free(s2);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
-	if (files_test_auto.nstrings)
-	{
-		string_list_quote_shell(&wl, &files_test_auto);
-		s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-		string_list_destructor(&wl);
-		s =
-			str_format
-			(
-"aegis --new-test %S --automatic --project=%S --change=%ld --verbose \
---no-template",
-				s2,
-				project_name,
-				change_number
-			);
-		str_free(s2);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
-	if (files_test_manual.nstrings)
-	{
-		string_list_quote_shell(&wl, &files_test_manual);
-		s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-		string_list_destructor(&wl);
-		s =
-			str_format
-			(
-"aegis --new-test %S --manual --project=%S --change=%ld --verbose \
---no-template",
-				s2,
-				project_name,
-				change_number
-			);
-		str_free(s2);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
-	/*
-	 * NOTE: do this one last, in case it includes the first instance
-	 * of the project config file.
-	 */
-	if (files_source.nstrings)
-	{
-		string_list_quote_shell(&wl, &files_source);
-		s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
-		string_list_destructor(&wl);
-		s =
-			str_format
-			(
-        "aegis --new-file %S --project=%S --change=%ld --verbose --no-template",
-				s2,
-				project_name,
-				change_number
-			);
-		str_free(s2);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
-	string_list_destructor(&files_source);
-	string_list_destructor(&files_build);
-	string_list_destructor(&files_test_auto);
-	string_list_destructor(&files_test_manual);
-
-	/*
-	 * now extract each file from the input
-	 */
-	config_seen = 0;
-	the_config_file = str_from_c(THE_CONFIG_FILE);
+	    str_format
+	    (
+		"aegis --copy-file %S --project=%S --change=%ld --verbose%s",
+		s2,
+		project_name,
+		change_number,
+		(delopt ? delopt->str_text : "")
+	    );
+	if (delopt)
+	    str_free(delopt);
+	str_free(s2);
 	os_become_orig();
-	for (j = 0; j < change_set->src->length; ++j)
-	{
-		cstate_src	src_data;
-		output_ty	*ofp;
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+    string_list_destructor(&files_source);
 
-		/* verbose progress message here? */
-		src_data = change_set->src->list[j];
-		if
-		(
-			src_data->action != file_action_create
-		&&
-			src_data->action != file_action_modify
-		)
-			continue;
-		if (src_data->usage == file_usage_build)
-			continue;
-		assert(src_data->file_name);
-		if (str_equal(src_data->file_name, the_config_file))
-		{
-			could_have_a_trojan = 1;
-			config_seen = 1;
-		}
-		else if
-		(
-			src_data->usage == file_usage_test
-		||
-			src_data->usage == file_usage_manual_test
-		)
-			could_have_a_trojan = 1;
-		archive_name = 0;
-		ifp = input_cpio_child(cpio_p, &archive_name);
-		if (!ifp)
-			input_fatal_error(cpio_p, "missing file");
-		assert(archive_name);
-		s = str_format("src/%S", src_data->file_name);
-		if (!str_equal(archive_name, s))
-			input_fatal_error(ifp, "wrong file");
-		str_free(s);
-		ofp = output_file_binary_open(src_data->file_name);
-		input_to_output(ifp, ofp);
-		output_delete(ofp);
-		input_delete(ifp);
-		str_free(archive_name);
-	}
-	str_free(the_config_file);
+    /*
+     * add the removed files to the change
+     */
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
 
 	/*
-	 * should be at end of input
+	 * For now, we are only removing files.
 	 */
+	src_data = change_set->src->list[j];
+	assert(src_data->file_name);
+	if (src_data->action != file_action_remove)
+	    continue;
+
+	/*
+	 * add it to the list
+	 */
+	string_list_append_unique(&files_source, src_data->file_name);
+    }
+    if (files_source.nstrings)
+    {
+	string_list_quote_shell(&wl, &files_source);
+	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
+	string_list_destructor(&wl);
+	s =
+	    str_format
+	    (
+		"aegis --remove-file %S --project=%S --change=%ld --verbose",
+		s2,
+		project_name,
+		change_number
+	    );
+	str_free(s2);
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+    string_list_destructor(&files_source);
+
+    /*
+     * add the new files to the change
+     */
+    need_to_test = 0;
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
+
+	/*
+	 * for now, we are only dealing with create
+	 */
+	src_data = change_set->src->list[j];
+	assert(src_data->file_name);
+	if (src_data->action != file_action_create)
+	    continue;
+
+	/*
+	 * add it to the list
+	 */
+	switch (src_data->usage)
+	{
+	case file_usage_source:
+	    string_list_append_unique(&files_source, src_data->file_name);
+	    break;
+
+	case file_usage_build:
+	    string_list_append_unique(&files_build, src_data->file_name);
+	    break;
+
+	case file_usage_test:
+	    string_list_append_unique(&files_test_auto, src_data->file_name);
+	    need_to_test = 1;
+	    break;
+
+	case file_usage_manual_test:
+	    string_list_append_unique(&files_test_manual, src_data->file_name);
+	    need_to_test = 1;
+	    break;
+	}
+    }
+
+    if (files_build.nstrings)
+    {
+	string_list_quote_shell(&wl, &files_build);
+	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
+	string_list_destructor(&wl);
+	s =
+	    str_format
+	    (
+		"aegis --new-file %S --build --project=%S --change=%ld "
+		    "--verbose --no-template",
+		s2,
+		project_name,
+		change_number
+	    );
+	str_free(s2);
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+    if (files_test_auto.nstrings)
+    {
+	string_list_quote_shell(&wl, &files_test_auto);
+	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
+	string_list_destructor(&wl);
+	s =
+	    str_format
+	    (
+		"aegis --new-test %S --automatic --project=%S --change=%ld "
+		    "--verbose --no-template",
+		s2,
+		project_name,
+		change_number
+	    );
+	str_free(s2);
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+    if (files_test_manual.nstrings)
+    {
+	string_list_quote_shell(&wl, &files_test_manual);
+	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
+	string_list_destructor(&wl);
+	s =
+	    str_format
+	    (
+		"aegis --new-test %S --manual --project=%S --change=%ld "
+		    "--verbose --no-template",
+		s2,
+		project_name,
+		change_number
+	    );
+	str_free(s2);
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+    /*
+     * NOTE: do this one last, in case it includes the first instance
+     * of the project config file.
+     */
+    if (files_source.nstrings)
+    {
+	string_list_quote_shell(&wl, &files_source);
+	s2 = wl2str(&wl, 0, wl.nstrings, (char *)0);
+	string_list_destructor(&wl);
+	s =
+	    str_format
+	    (
+		"aegis --new-file %S --project=%S --change=%ld --verbose "
+		    "--no-template",
+		s2,
+		project_name,
+		change_number
+	    );
+	str_free(s2);
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+    string_list_destructor(&files_source);
+    string_list_destructor(&files_build);
+    string_list_destructor(&files_test_auto);
+    string_list_destructor(&files_test_manual);
+
+    /*
+     * now extract each file from the input
+     */
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
+    os_become_orig();
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
+	output_ty       *ofp;
+	int             need_whole_source;
+
+	/* verbose progress message here? */
+	src_data = change_set->src->list[j];
+	if
+	(
+	    src_data->action != file_action_create
+	&&
+	    src_data->action != file_action_modify
+	)
+	    continue;
+	if (src_data->usage == file_usage_build)
+	    continue;
+	assert(src_data->file_name);
+	if
+	(
+	    src_data->usage == file_usage_test
+	||
+	    src_data->usage == file_usage_manual_test
+	)
+	    could_have_a_trojan = 1;
 	archive_name = 0;
 	ifp = input_cpio_child(cpio_p, &archive_name);
-	if (ifp)
-		input_fatal_error(cpio_p, "archive too long");
-	input_delete(cpio_p);
+	if (!ifp)
+	    input_fatal_error(cpio_p, "missing file");
+	assert(archive_name);
+	need_whole_source = 1;
+	s = str_format("patch/%S", src_data->file_name);
+	if (str_equal(archive_name, s))
+	{
+	    patch_list_ty   *plp;
+
+	    str_free(s);
+
+	    /*
+	     * We have a patch file, but we also know that a
+	     * complete source follows.  We can apply the patch
+	     * or discard it.  If we fail to apply it cleanly,
+	     * we can always use the complete source which follows.
+	     */
+	    plp = patch_read(ifp, 0);
+	    input_delete(ifp);
+
+	    if
+	    (
+		use_patch
+	    &&
+		src_data->action == file_action_modify
+	    &&
+		plp->length == 1
+	    )
+	    {
+		patch_ty	*p;
+		string_ty       *orig;
+		int             ok;
+
+	        /*
+	         * Apply the patch.
+	         *
+	         * The input file (to which the patch is applied) may
+	         * be found in the baseline.
+	         */
+		p = plp->item[0];
+	        os_become_undo();
+		assert(pp);
+	        orig = project_file_path(pp, src_data->file_name);
+	        os_become_orig();
+	        ok = patch_apply(p, orig, src_data->file_name);
+	        str_free(orig);
+	        if (ok)
+		    need_whole_source = 0;
+	    }
+	    patch_list_delete(plp);
+
+	    /*
+	     * The src file should be next.
+	     */
+	    archive_name = 0;
+	    ifp = input_cpio_child(cpio_p, &archive_name);
+	    if (!ifp)
+		input_fatal_error(cpio_p, "missing file");
+	    assert(archive_name);
+	}
+	s = str_format("src/%S", src_data->file_name);
+	if (!str_equal(archive_name, s))
+	    input_fatal_error(ifp, "wrong file");
+	str_free(s);
+	if (need_whole_source)
+	    ofp = output_file_binary_open(src_data->file_name);
+	else
+	    ofp = output_bit_bucket();
+	input_to_output(ifp, ofp);
+	output_delete(ofp);
+	input_delete(ifp);
+	str_free(archive_name);
+    }
+    os_become_undo();
+
+    /*
+     * Now check to see if any of them were config files.  We couldn't do
+     * it before now, in case we got an inconsistent config combination.
+     */
+    config_seen = 0;
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src      src_data;
+
+	src_data = change_set->src->list[j];
+	if
+	(
+	    src_data->action != file_action_create
+	&&
+	    src_data->action != file_action_modify
+	)
+	    continue;
+	if (src_data->usage == file_usage_build)
+	    continue;
+	assert(src_data->file_name);
+	if (change_file_is_config(cp, src_data->file_name))
+	{
+	    could_have_a_trojan = 1;
+	    config_seen = 1;
+	}
+	if
+	(
+	    src_data->usage == file_usage_test
+	||
+	    src_data->usage == file_usage_manual_test
+	)
+	    could_have_a_trojan = 1;
+    }
+    change_free(cp);
+    cp = 0;
+    project_free(pp);
+    pp = 0;
+
+    /*
+     * should be at end of input
+     */
+    os_become_orig();
+    archive_name = 0;
+    ifp = input_cpio_child(cpio_p, &archive_name);
+    if (ifp)
+	input_fatal_error(cpio_p, "archive too long");
+    input_delete(cpio_p);
+    os_become_undo();
+
+    /*
+     * Un-copy any files which did not change.
+     *
+     * The idea is, if there are no files left, there is nothing
+     * for this change to do, so cancel it.
+     */
+    if (uncopy)
+    {
+	s =
+	    str_format
+	    (
+		"aegis --copy-file-undo --unchanged --change=%ld --project=%S "
+		    "--verbose",
+		change_number,
+		project_name
+	    );
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
+	str_free(s);
 
 	/*
-	 * Un-copy any files which did not change.
-	 *
-	 * The idea is, if there are no files left, there is nothing
-	 * for this change to do, so cancel it.
+	 * If there are no files left, we already have this change.
 	 */
-	if (uncopy)
+	if (number_of_files(project_name, change_number) == 0)
 	{
-		s =
-			str_format
-			(
-       "aegis --copy-file-undo --unchanged --change=%ld --project=%S --verbose",
-				change_number,
-				project_name
-			);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	
-		/*
-		 * If there are no files left, we already have this change.
-		 */
-		if (number_of_files(project_name, change_number) == 0)
-		{
-			/*
-			 * get out of there
-			 */
-			os_chdir(dot);
+	    /*
+	     * get out of there
+	     */
+	    os_chdir(dot);
 
-			/*
-			 * stop developing the change
-			 */
-			s =
-				str_format
-				(
-	       "aegis --develop-begin-undo --change=%ld --project=%S --verbose",
-					change_number,
-					project_name
-				);
-			os_become_orig();
-			os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-			str_free(s);
-	
-			/*
-			 * cancel the change
-			 */
-			s =
-				str_format
-				(
-		  "aegis --new-change-undo --change=%ld --project=%S --verbose",
-					change_number,
-					project_name
-				);
-			os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-			os_become_undo();
-			str_free(s);
-	
-			/*
-			 * run away, run away!
-			 */
-			error_intl(0, i18n("change already present"));
-			return;
-		}
-	}
-
-	/*
-	 * If the change could have a trojan horse in it, stop here with
-	 * a warning.  The user needs to look at it and check.
-	 */
-	if (trojan > 0)
-		could_have_a_trojan = 1;
-	else if (trojan == 0)
-	{
-		error_intl
+	    /*
+	     * stop developing the change
+	     */
+	    s =
+		str_format
 		(
-			0,
-			i18n("warning: potential trojan, proceeding anyway")
+		    "aegis --develop-begin-undo --change=%ld --project=%S "
+			"--verbose",
+		    change_number,
+		    project_name
 		);
-		could_have_a_trojan = 0;
-		config_seen = 0;
-	}
+	    os_become_orig();
+	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+	    str_free(s);
 
-	/*
-	 * If the change could have a trojan horse in the project config
-	 * file, stop here with a warning.  Don't even difference the
-	 * change, because the trojan could be embedded in the diff
-	 * command.  The user needs to look at it and check.
-	 *
-	 * FIX ME: what if the aecpu got rid of it?
-	 */
-	if (config_seen)
-	{
-		error_intl
+	    /*
+	     * cancel the change
+	     */
+	    s =
+		str_format
 		(
-			0,
+		    "aegis --new-change-undo --change=%ld --project=%S "
+			"--verbose",
+		    change_number,
+		    project_name
+		);
+	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+	    os_become_undo();
+	    str_free(s);
+
+	    /*
+	     * run away, run away!
+	     */
+	    error_intl(0, i18n("change already present"));
+	    return;
+	}
+    }
+
+    /*
+     * If the change could have a trojan horse in it, stop here with
+     * a warning.  The user needs to look at it and check.
+     */
+    if (trojan > 0)
+	could_have_a_trojan = 1;
+    else if (trojan == 0)
+    {
+	error_intl(0, i18n("warning: potential trojan, proceeding anyway"));
+	could_have_a_trojan = 0;
+	config_seen = 0;
+    }
+
+    /*
+     * If the change could have a trojan horse in the project config
+     * file, stop here with a warning.  Don't even difference the
+     * change, because the trojan could be embedded in the diff
+     * command.  The user needs to look at it and check.
+     *
+     * FIX ME: what if the aecpu got rid of it?
+     */
+    if (config_seen)
+    {
+	error_intl
+	(
+	    0,
 	 i18n("warning: potential trojan, review before completing development")
-		);
-		return;
-	}
+	);
 
 	/*
-	 * now diff the change
+	 * Make sure we are using an appropriate architecture.	This is
+	 * one of the commonest problems when seeding an empty repository.
 	 */
 	s =
-		str_format
-		(
-			"aegis --diff --change=%ld --project=%S --verbose",
-			change_number,
-			project_name
-		);
+	    str_format
+	    (
+		"aegis --change-attr --fix-arch --change=%ld --project=%S",
+		change_number,
+		project_name
+	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
 	str_free(s);
+	return;
+    }
 
-	/*
-	 * If the change could have a trojan horse in it, stop here with
-	 * a warning.  The user needs to look at it and check.
-	 */
-	if (could_have_a_trojan)
-	{
-		error_intl
-		(
-			0,
+    /*
+     * now diff the change
+     */
+    s =
+	str_format
+	(
+	    "aegis --diff --change=%ld --project=%S --verbose",
+	    change_number,
+	    project_name
+	);
+    os_become_orig();
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_become_undo();
+    str_free(s);
+
+    /*
+     * If the change could have a trojan horse in it, stop here with
+     * a warning.  The user needs to look at it and check.
+     */
+    if (could_have_a_trojan)
+    {
+	error_intl
+	(
+	    0,
 	 i18n("warning: potential trojan, review before completing development")
-		);
-		return;
-	}
+	);
+	return;
+    }
 
-	/*
-	 * now build the change
-	 */
+    /*
+     * now build the change
+     */
+    s =
+	str_format
+	(
+	    "aegis --build --change=%ld --project=%S --verbose",
+	    change_number,
+	    project_name
+	);
+    os_become_orig();
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_become_undo();
+    str_free(s);
+
+    /*
+     * now test the change
+     */
+    if (need_to_test)
+    {
 	s =
-		str_format
-		(
-			"aegis --build --change=%ld --project=%S --verbose",
-			change_number,
-			project_name
-		);
+	    str_format
+	    (
+		"aegis --test --change=%ld --project=%S --verbose",
+		change_number,
+		project_name
+	    );
 	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	str_free(s);
+
+	s =
+	    str_format
+	    (
+		"aegis --test --baseline --change=%ld --project=%S --verbose",
+		change_number,
+		project_name
+	    );
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
 	str_free(s);
+    }
 
-	/*
-	 * now test the change
-	 */
-	if (need_to_test)
-	{
-		s =
-			str_format
-			(
-			     "aegis --test --change=%ld --project=%S --verbose",
-				change_number,
-				project_name
-			);
-		os_become_orig();
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		str_free(s);
+    /* always to a regession test? */
 
-		s =
-			str_format
-			(
-		  "aegis --test --baseline --change=%ld --project=%S --verbose",
-				change_number,
-				project_name
-			);
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		os_become_undo();
-		str_free(s);
-	}
+    /*
+     * end development (if we got this far!)
+     */
+    s =
+	str_format
+	(
+	    "aegis --develop-end --change=%ld --project=%S --verbose",
+	    change_number,
+	    project_name
+	);
+    os_become_orig();
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_become_undo();
+    str_free(s);
 
-	/* always to a regession test? */
-
-	/*
-	 * end development (if we got this far!)
-	 */
-	s =
-		str_format
-		(
-		      "aegis --develop-end --change=%ld --project=%S --verbose",
-			change_number,
-			project_name
-		);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
-	str_free(s);
-
-	/* verbose success message here? */
+    /* verbose success message here? */
 }

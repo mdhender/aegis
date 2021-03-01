@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <change/env_set.h>
 #include <error.h> /* for assert */
 #include <os.h>
-#include <project_hist.h>
+#include <project/history.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>

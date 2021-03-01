@@ -33,34 +33,34 @@ static string_ty *qemail _((user_ty *));
 
 static string_ty *
 qemail(up)
-	user_ty		*up;
+    user_ty	    *up;
 {
-	static string_ty *result;
-	string_ty	*s;
+    static string_ty *result;
+    string_ty	    *s;
 
-	s = user_email_address(up);
-	if (result)
-		str_free(result);
-	result = str_quote_shell(s);
-	return result;
+    s = user_email_address(up);
+    if (result)
+	str_free(result);
+    result = str_quote_shell(s);
+    return result;
 }
 
 
 typedef struct table_ty table_ty;
 struct table_ty
 {
-	const char	*name;
-	sub_user_func_ptr func;
+    const char	    *name;
+    sub_user_func_ptr func;
 };
 
 static table_ty table[] =
 {
-	{ "quoted_email", qemail, },
-	{ "email", user_email_address, },
-	{ "group", user_group, },
-	{ "home", user_home, },
-	{ "login", user_name, },
-	{ "name", user_name2, },
+    {"quoted_email", qemail, },
+    {"email", user_email_address, },
+    {"group", user_group, },
+    {"home", user_home, },
+    {"login", user_name, },
+    {"name", user_name2, },
 };
 
 static symtab_ty *stp;
@@ -68,38 +68,38 @@ static symtab_ty *stp;
 
 sub_user_func_ptr
 sub_user_func(name)
-	string_ty	*name;
+    string_ty	    *name;
 {
-	table_ty	*tp;
-	string_ty	*s;
-	sub_user_func_ptr result;
-	sub_context_ty	*scp;
+    table_ty	    *tp;
+    string_ty	    *s;
+    sub_user_func_ptr result;
+    sub_context_ty  *scp;
 
-	if (!stp)
+    if (!stp)
+    {
+	stp = symtab_alloc(SIZEOF(table));
+	for (tp = table; tp < ENDOF(table); ++tp)
 	{
-		stp = symtab_alloc(SIZEOF(table));
-		for (tp = table; tp < ENDOF(table); ++tp)
-		{
-			s = str_from_c(tp->name);
-			symtab_assign(stp, s, tp->func);
-			str_free(s);
-		}
+	    s = str_from_c(tp->name);
+	    symtab_assign(stp, s, tp->func);
+	    str_free(s);
 	}
-	result = symtab_query(stp, name);
-	if (!result)
+    }
+    result = (sub_user_func_ptr)symtab_query(stp, name);
+    if (!result)
+    {
+	s = symtab_query_fuzzy(stp, name);
+	if (s)
 	{
-		s = symtab_query_fuzzy(stp, name);
-		if (s)
-		{
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", name);
-			sub_var_set_string(scp, "Guess", s);
-			error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
-			sub_context_delete(scp);
-		}
-		return 0;
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", name);
+	    sub_var_set_string(scp, "Guess", s);
+	    error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
+	    sub_context_delete(scp);
 	}
-	return result;
+	return 0;
+    }
+    return result;
 }
 
 
@@ -125,46 +125,46 @@ sub_user_func(name)
 
 wstring_ty *
 sub_user(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	string_ty	*s;
-	wstring_ty	*result;
-	user_ty		*up;
-	sub_user_func_ptr func;
+    string_ty	    *s;
+    wstring_ty	    *result;
+    user_ty	    *up;
+    sub_user_func_ptr func;
 
-	trace(("sub_user()\n{\n"/*}*/));
-	if (arg->nitems == 1)
+    trace(("sub_user()\n{\n" /*}*/));
+    if (arg->nitems == 1)
+    {
+	up = user_executing(0);
+	result = str_to_wstr(user_name(up));
+	user_free(up);
+    }
+    else if (arg->nitems == 2)
+    {
+	s = wstr_to_str(arg->item[1]);
+	func = sub_user_func(s);
+	str_free(s);
+	if (!func)
 	{
-		up = user_executing(0);
-		result = str_to_wstr(user_name(up));
-		user_free(up);
-	}
-	else if (arg->nitems == 2)
-	{
-		s = wstr_to_str(arg->item[1]);
-		func = sub_user_func(s);
-		str_free(s);
-		if (!func)
-		{
-			sub_context_error_set(scp, i18n("unknown substitution variant"));
-			result = 0;
-		}
-		else
-		{
-			up = user_executing(0);
-			s = func(up);
-			result = str_to_wstr(s);
-			user_free(up);
-			/* do not str_free(s) */
-		}
+	    sub_context_error_set(scp, i18n("unknown substitution variant"));
+	    result = 0;
 	}
 	else
 	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		result = 0;
+	    up = user_executing(0);
+	    s = func(up);
+	    result = str_to_wstr(s);
+	    user_free(up);
+	    /* do not str_free(s) */
 	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    }
+    else
+    {
+	sub_context_error_set(scp, i18n("requires one argument"));
+	result = 0;
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace(( /*{*/"}\n"));
+    return result;
 }

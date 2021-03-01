@@ -26,28 +26,24 @@
 #ifndef HAVE_MNTENT_H
 
 FILE *
-setmntent(filename, mode)
-	const char	*filename;
-	const char	*mode;
+setmntent(const char *filename, const char *mode)
 {
-	return fopen(filename, mode);
+    return fopen(filename, mode);
 }
 
 
 struct mntent *
-getmntent(fp)
-	FILE		*fp;
+getmntent(FILE *fp)
 {
-	/* do nothing */
-	return 0;
+    /* do nothing */
+    return 0;
 }
 
 
 int
-endmntent(fp)
-	FILE		*fp;
+endmntent(FILE *fp)
 {
-	return fclose(fp);
+    return fclose(fp);
 }
 
 #endif /* HAVE_MNTENT_H */

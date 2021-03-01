@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,8 @@ extern int yydebug;
 
 %}
 
+%token	SHOW_IF_DEFAULT
+%token	HIDE_IF_DEFAULT
 %token	INCLUDE
 %token	INTEGER
 %token	INTEGER_CONSTANT
@@ -70,7 +72,7 @@ extern int yydebug;
 }
 
 %type <lv_string> NAME STRING_CONSTANT
-%type <lv_integer> INTEGER_CONSTANT
+%type <lv_integer> INTEGER_CONSTANT if_default_clause
 %type <lv_type> type structure list enumeration enum_list_begin
 
 %{
@@ -228,7 +230,7 @@ generate_include_file(include_file)
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write_file _((string_ty *filename, %s value, int comp));\n",
+	   "void %s_write_file _((string_ty *filename, %s value, int comp));\n",
 		s->str_text,
 		s->str_text
 	);
@@ -310,13 +312,17 @@ generate_code_file(code_file, include_file)
 		"result = parse(filename, &%s_type);\n",
 		s->str_text
 	);
-	indent_printf("trace((\"return %%08lX;\\n\", result));\n");
+	indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf("return result;\n");
 	indent_printf(/*{*/"}\n");
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s_write_file(filename, value, compress)\n", s->str_text);
+	indent_printf
+	(
+		"%s_write_file(filename, value, compress)\n",
+		s->str_text
+	);
 	indent_more();
 	indent_printf("%s\1*filename;\n", "string_ty");
 	indent_printf("%s\1value;\n", s->str_text);
@@ -455,13 +461,14 @@ type_name
 	;
 
 field
-	: field_name '=' type ';'
+	: field_name '=' type if_default_clause ';'
 		{
 			type_member_add
 			(
 				current->parent->type,
 				current->name_short,
-				$3
+				$3,
+				$4
 			);
 			pop_name();
 		}
@@ -553,7 +560,7 @@ list
 				list = str_from_c("list");
 			push_name(list);
 			$$ = type_new(&type_list, current->name_long);
-			type_member_add($$, (string_ty *)0, $2);
+			type_member_add($$, (string_ty *)0, $2, 1);
 			pop_name();
 		}
 	;
@@ -587,7 +594,8 @@ enum_name
 			(
 				current->parent->type,
 				current->name_short,
-				(type_ty *)0
+				(type_ty *)0,
+				1
 			);
 			pop_name();
 		}
@@ -596,4 +604,13 @@ enum_name
 optional_comma
 	: /* empty */
 	| ','
+	;
+
+if_default_clause
+	: /* empty */
+		{ $$ = -1; }
+	| SHOW_IF_DEFAULT
+		{ $$ = 1; }
+	| HIDE_IF_DEFAULT
+		{ $$ = 0; }
 	;

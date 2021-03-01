@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #define COMMON_AC_DIRENT_H
 
 #include <ac/unistd.h>
-		
+
 /* unistd.h defines _POSIX_VERSION on POSIX.1 systems.  */
 #if defined(DIRENT) || defined(_POSIX_VERSION)
 #include <dirent.h>

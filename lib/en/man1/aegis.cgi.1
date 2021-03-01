@@ -1,0 +1,64 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aegis.cgi command.
+.\"
+.so libdir.so
+.so z_name.so
+.TH "aegis.cgi" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aegis.cgi \- Aegis web interface script
+.XX "aegis.cgi(1)" "Aegis web interface script"
+.SH SYNOPSIS
+.B aegis.cgi
+.SH DESCRIPTION
+The
+.I "aegis.cgi"
+command is used to
+interface between a web server and Aegis.
+.SS Installation
+If you have a Web server, you may like to install the Aegis web interface.
+You do this by copying the \fIaegis.cgi\fP script from
+\fI\*(B)/aegis.cgi\fP into your web server's \fIcgi-bin\fP directory.
+There is an \fIaegis.cgi.i\fP helper script,
+if you don't know where your web server's \fIcgi-bin\fP directory is.
+.PP
+You may prefer to use a symbolic link, as this will be more stable
+across Aegis upgrades.  However, this requires a corresponding
+\fIfollow-symlinks\fP setting in your web server's configuration file.
+(Use the \fIaegis.cgi.i \-s\fP option.)
+.PP
+Within the \f(CWaegis.cgi\fP script, can set the \fIAEGIS_PATH\fP
+environment variable, if you want it to be able to see more
+projects than just the global projects.  You do this by creating a
+\fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one, by default)
+and setting the \fIAEGIS_PATH\fP environment variable in it.  This is
+a fragment of Bourne shell script, not just the name.
+.SS Usage
+Once installed, it should be possible to see the project list
+by following this URL:
+.RS
+http://localhost/cgi-bin/aegis.cgi?
+.RE
+You may need to replace \fIlocalhost\fP with the machine's exact name.
+.SS diff2html
+If you have the \fIdiff2html\fP(1) command installed somewhere in the
+$PATH, this will be used to generate the diff listings, otherwise a
+simple \fIdiff\fP(1) will be used.
+.so z_cr.so

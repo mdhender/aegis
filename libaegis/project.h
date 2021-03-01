@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992-1999, 2001 Peter Miller;
+ *	Copyright (C) 1992-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -114,6 +114,8 @@ int project_compress_database_get _((project_ty *));
 void project_compress_database_set _((project_ty *, int));
 int project_develop_end_action_get _((project_ty *));
 void project_develop_end_action_set _((project_ty *, int));
+int project_protect_development_directory_get _((project_ty *));
+void project_protect_development_directory_set _((project_ty *, int));
 
 int break_up_version_string _((char *, long *, int, int *, int));
 void extract_version_from_project_name _((string_ty **, long *, int, int *));

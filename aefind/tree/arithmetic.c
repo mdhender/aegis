@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -286,7 +286,8 @@ divide_evaluate(tp, path, st)
 		if (lden == 0)
 			goto div_by_zero;
 		result = rpt_value_integer(rpt_value_integer_query(v1a) / lden);
-		trace(("result = %ld integer\n", rpt_value_integer_query(result)));
+		trace(("result = %ld integer\n",
+			rpt_value_integer_query(result)));
 		break;
 
 	default:
@@ -419,7 +420,11 @@ mod_evaluate(tp, path, st)
 		den = rpt_value_real_query(v2a);
 		if (den == 0)
 			goto mod_by_zero;
-		result = rpt_value_real(fmod((double)rpt_value_integer_query(v1a), den));
+		result =
+			rpt_value_real
+			(
+				fmod((double)rpt_value_integer_query(v1a), den)
+			);
 		trace(("result = %g real\n", rpt_value_real_query(result)));
 		break;
 
@@ -428,13 +433,15 @@ mod_evaluate(tp, path, st)
 		if (lden == 0)
 			goto mod_by_zero;
 		result = rpt_value_integer(rpt_value_integer_query(v1a) % lden);
-		trace(("result = %ld integer\n", rpt_value_integer_query(result)));
+		trace(("result = %ld integer\n",
+		    rpt_value_integer_query(result)));
 		break;
 
 	default:
 		scp = sub_context_new();
 		sub_var_set_charstar(scp, "Name1", v1a->method->name);
 		sub_var_set_charstar(scp, "Name2", v2a->method->name);
+		/* xgettext:no-c-format */
 		s = subst_intl(scp, i18n("illegal modulo ($name1 %% $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(0, s);
@@ -784,7 +791,8 @@ tree_plus_new(left, right)
 }
 
 
-static rpt_value_ty *subtract_evaluate _((tree_ty *, string_ty *, struct stat *));
+static rpt_value_ty *subtract_evaluate _((tree_ty *, string_ty *,
+    struct stat *));
 
 static rpt_value_ty *
 subtract_evaluate(tp, path, st)

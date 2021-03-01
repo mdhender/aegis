@@ -26,10 +26,10 @@
 #include <ac/stdarg.h>
 #include <main.h>
 
-char *mprintf _((const char *fmt, ...));
-char *mprintf_errok _((const char *fmt, ...));
-char *vmprintf _((const char *fmt, va_list));
-char *vmprintf_errok _((const char *fmt, va_list));
-struct string_ty *vmprintf_str _((const char *fmt, va_list));
+char *mprintf(const char *fmt, ...);
+char *mprintf_errok(const char *fmt, ...);
+char *vmprintf(const char *fmt, va_list);
+char *vmprintf_errok(const char *fmt, va_list);
+struct string_ty *vmprintf_str(const char *fmt, va_list);
 
 #endif /* COMMON_MPRINTF_H */

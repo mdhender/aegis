@@ -1,0 +1,368 @@
+'\" t
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2002 Peter Miller;
+.\"     All rights reserved.
+.\"
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 2 of the License, or
+.\"     (at your option) any later version.
+.\"
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
+.\"
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program; if not, write to the Free Software
+.\"     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aeintegratq(1) command.
+.\"
+.so z_name.so
+.ds n) aeintegratq
+.TH "\*(n) 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- integrate changes into projects
+.XX "aeintegratq(1)" "integrate changes into projects"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+.IR project-name \&...
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to manage the integrations of one or more changes in
+one or more projects.  Normally run via \fIcron\fP(1) or \fIat\fP(1)
+with the name of a single project, \*(n) will manage all operations
+for integration even when \fB\-Build\fP and \fB\-Test\fP are required
+on multiple architectures.
+Additional options allow the integrator full control over most aspects
+of queue management such as the order of integration of multiple changes.
+.SH OPTIONS
+The following options are understood:
+.SS Option Summary
+.TP 8n
+\fB\-h\fP
+Help, show usage information.
+.TP 8n
+\fB\-H\fP
+Help, show usage plus all helpful comment information.
+.TP 8n
+\fB\-a\fP
+run on Any machine (normally only IntegrationHost)
+.TP 8n
+\fB\-n\fP
+No action, just tell what would be done.
+.TP 8n
+\fB\-k\fP
+Keep the scripts and report files.
+.TP 8n
+\fB\-K\fP
+Keep the temp file even if integration passes.
+.TP 8n
+\fB\-M\fP \fIlist\fP
+Minimum, run given changes \fI\-minimum\fP
+.TP 8n
+\fB\-P\fP \fIlist\fP
+Precious, do not \fBIFail\fP changes in \fIlist\fP, just stop.
+.TP 8n
+\fB\-R\fP \fIlist\fP
+Ready , specify order and subset, \fIe.g.\fP \-R 29,45
+.TP 8n
+\fB\-S\fP \fIstage\fP
+Pick up at given stage (diff|build|test|integrate)
+.TP 8n
+\fB\-c\fP \fIchange-number\fP
+specify Change to integrate at Stage
+.TP 8n
+\fB\-p\fP \fIproject-name\fP
+specify single Project name
+.PP
+NOTE: if custom options such as -P -R -S -c -p are given
+only a single project may be integrated since the
+options would be meaningless to the next project given.
+.PP
+Some options are present only for testing and investigation.
+Options are rarely required for normal operations.
+.SS Control Options
+The following options are available for special needs.
+They control the order and disposition of each change
+\fBawaiting_integration\fP in a given project.
+.TP 8n
+\fB-R\fP[eady] \fInumber1,number2...\fP
+.RS
+This option is used to specify order or subset to
+integrate.  Only those changes listed will be attempted, and in exactly
+the order given.
+.PP
+Useful if a particular change must go in before another for some
+reason.  Or if only integrating one or two changes when several are
+\fBawaiting_integration\fP in the given project.  A single change may
+also be specified with the \fB-c[hange]\fP \fInumber\fP option, which
+is common for other aegis commands.  However the \fB-R\fP option allows
+a list and if given will override any \fB-c\fP given.
+.RE
+.TP 8n
+\fB-P\fP[recious] \fInumber1,number2...\fP
+.TP 8n
+\fB-P\fP[recious] \fBall\fP
+.RS
+This option is used to specify that a particular change or subset of
+changes should be considered \fBprecious\fP.  It neither implies order
+nor limits the queue run to that subset; it only means that the
+changes should be considered \fBprecious\fP.
+Note that at least one number (or the keyword \fIall\fP) must be given.
+.PP
+The concept of \fBprecious\fP means that if the given change were to
+fail anywhere in the integration process, then the process simply
+stops and leaves the problem change in the delta directory.  The
+\fB-IFail\fP would not actually be executed.  This is sometimes useful
+to diagnose a problem which only occurs during integrations.  It is
+also useful if the failure is due to a transient problem such as
+unreliable machines on the network.  In such a case the integration can
+be resumed after fixing the problem.  See the \fIstage\fP options
+below.
+.PP
+If, on the other hand, a \fBprecious\fP change makes it through the
+integration process successfully, the option has no effect.
+.RE
+.TP 8n
+\fB-M\fP[inimum] \fInumber1,number2...\fP or \fIall\fP
+Integrate the given change[s] with the \fB\-minimum\fP option.  Such
+changes will be put on the end of the queue so that the last
+integrations of a run will be a minimum.  This feature allows
+practical use of minimum integrations without requiring
+\fB\-minimum\fP on each and every integration.  See the section below
+on \fIMinimum integrations\fP for more information.
+.SS Stage Options
+The following options allow [re]starting an integration which has
+already progressed through some stages.  This is useful to deal with
+failed (\fIprecious\fP) integrations, or to finish automatically an
+integration begun by hand.
+.TP 8n
+\fB-S\fP[tage] \fBdiff\fP
+.TP 8n
+\fB-S\fP[tage] \fBbuild\fP
+.TP 8n
+\fB-S\fP[tage] \fBtest\fP
+.TP 8n
+\fB-S\fP[tage] \fBintegrate\fP
+Pick up the integration at the given \fBstage\fP.  Requires
+\fB-c\fP[hange] \fInumber\fP option to specify the change number.
+.SH Advanced Controls
+The integrator may provide for special situations such as operations
+required after \fB\-Build\fP and before \fB\-Test\fP, or at the end of a
+queue run.  Such capabilities are provided by \fBhooks\fP and
+\fPstrategies\fP described below.
+.SS Hooks
+There are a set of \fIhooks\fP available which are run, if present, before
+and after each stage of the integration.  They can be used to help
+ensure that the integrator actually gets some sleep while managing
+large projects.
+.PP
+These hooks are searched for in the directory
+\fB$HOME/integration_hooks\fP.  None need exist; \*(n) will only
+pay attention to any that do exist.  Hooks may be any form of executable
+(script, etc) and are called with 2 arguments: \fBproject-name
+change-number\fP.  They run as the integrator on the machine from which
+\*(n) was started.  They are named using the project name along with a suffix
+according to what place in the integration process you want them to run.
+.PP
+Note that if a hook for project \fBfoo\fP exists it is also used for any
+branches under that project.  For example, if you have provided
+\fBfoo.pre_ip\fP, it will be run for foo.1 and foo.1.0 as well.
+If for some reason you want different (or no) action for project
+\fBfoo.1.0\fP, then you would provide \fBfoo.1.0.pre_ip\fP which does
+what you wish, including nothing, effectively overriding \fBfoo.pre_ip\fP.
+.PP
+Here is how to map particular places in the integration process to hook
+suffixes.
+.TS
+center,box,tab(;);
+l l.
+run at time;extension
+_
+before attempting -Integrate_Begin;.pre_ib
+after -Integrate_Begin completes;.ib
+before attempting -Diff;.pre_d
+after -Diff completes;.d
+before attempting -Build;.pre_b
+after -Build completes;.b
+before attempting -Build on <arch>;.pre_<arch>b
+after -Build on <arch> completes;.<arch>b
+before attempting -Test;.pre_t
+after -Test completes;.t
+before attempting -IPass;.pre_ip
+after -IPass completes;.ip
+before attempting -IFail;.pre_if
+after -IFail completes;.if
+.TE
+.PP
+The hook program should exit with 0 if successful or 1 if not.  A non-zero
+exit causes the change being integrated to fail immediately unless it was
+marked precious.
+.PP
+Note that in most cases anything done via an \fB.ip\fP hook should
+probably be done instead by the \fIipass_notify\fP command in the
+project attributes file (see \fIaepattr\fP(5) for more information),
+or the \fIbuild_\%time_\%adjust_\%notify_\%command\fP in the project
+config file (see \fIaepconf\fP(5) for more information), but the hook
+can provide a temporary way to keep going until the permanent solution
+can be implemented.
+.PP
+In addition two special hooks, \fBaeintegratq.end\fP and
+\fBaeintegratq.fail\fP, are recognized.  They are called when
+\fBaeintegratq\fP finishes a queue run.  They are called with 2 arguments
+like any other hook (\fBproject-name change-number\fP) although the
+change-number is given as 0.
+.PP
+The \fB.end\fP hook is called if/when the queue run is finished and was
+successful.  Note that this does not mean that no changes failed, only that no
+queue errors occurred.  This hook might be used to invoke another queue
+run on a different project/branch, or possibly even on the same project, if
+other changes may have been ended and/or reviewed while the first run was
+in progress.  These conditions arise quite often with flex time engineers.
+Another use of the \fB.end\fP hook is to automatically build a new package
+using the newly integrated project as source.
+.PP
+If queue errors were encountered, or a change failed that was marked
+\fIprecious\fP, then the \fB.fail\fP hook is called.  An obvious use of that
+hook would be an e-mailed page to the integrator.
+.SS Strategy or Oops-retry
+Sometimes a persistent build problem will plague integrations.  This
+can be very annoying if it ruins an overnight run, especially if the cure
+is simple when it happens.  Examples of this can be timeouts due to a busy
+data server or other transient errors.  Note that this applies only to
+\fB\-Build\fP related problems.
+.PP
+To deal with such problems the integrator may provide a \fIstrategy\fP
+script specific to a project.  An executable program should be found in
+\fB$HOME/strategy.<project_name>\fB.  The program will be run as the
+integrator with the \fIdelta\fP directory as current directory.  The program
+may do any commands necessary to clean up and/or diagnose the error.  If the
+script finds the problem to be transient and fix-able, it exits successfully
+(with 0 status) and \*(n) will re-launch the \fB\-Build\fP and log the
+re-try.  Otherwise it exits with a 1 and the change fails.
+.SH Multi-Architecture integrations
+For projects which build and test on multiple architectures, \*(n)
+requires \fIarch_hosts\fP be installed and have available at least
+one machine of each architecture required.  This is also true if the
+host from which \*(n) is run is of a different architecture from the
+target architecture of the project being integrated.
+.PP
+If you wish to take advantage of multiple architecture automatic
+integrations, you can install \fIarch_hosts\fP or provide a more simple
+script which will return a machine name according to architecture and
+job type.
+.SH Minimum integrations
+\*(A) provides a \fBminimum\fP integration capability which may be
+used for various reasons.  The term \fBminimum\fP may be a bit counter
+intuitive.  One might think it means to do the \fBminimum\fP amount of
+work, however it actually means use a \fBminimum\fP of files from the
+baseline in populating the \fIdelta\fP directory.  Since no constructed
+files are put in the \fIdelta\fP directory, this normally leads
+to actually building everything in the project from sources and, as
+such, might be considered the most robust of builds.
+.PP
+Note that any change which removes a file, whether by \fIaerm\fP or
+\fIaemv\fP, results in an implicit \fBminimum\fP integration.  This is
+intended to ensure nothing in the project references the removed file.
+.PP
+A project may adopt a policy that a product release should be based on
+a minimum integration.  Such a policy may be a reflection of local
+confidence, or lack therof, in the projects DMT (Dependency
+Maintenance Tool) or build system.  Or it may be based on a validation
+process wishing to make a simple statement on how the released package
+was produced.
+.PP
+Another, more transient, reason a to require a minimum integration
+might be when upgrading a third party library, compiler or maybe even
+OS level.  Any of these events would signal the need for a minimum
+integration to ensure everything is rebuilt using the new resources.
+This can be done with minimum overhead using the \fB-M\fP option as
+described above.
+.PP
+The cost of a \fBminimum\fP integration varies according to type and
+size of the project.  For very large projects, especially those
+building large numbers of binaries, the cost can be large.  However
+large projects also require significant time to fully populate the
+delta directory.  A minimum integration only copies those files
+under aegis control, skipping all ``produced'' files.  In the case
+where a file upon which everything depends is changed, everything will
+be built anyway so the copy of the already built files is a waste of
+time.  This means that sometimes a minimum can be as cheap as a normal
+integration.
+.SH Optional Support Programs
+.so libdir.so
+There are some programs which \*(n) will use if they are installed.
+.PP
+\(bu \fIarch_hosts\fP
+was mentioned previously.  It is optional only if your projects and
+your \*(A) file server are of a single architecture.
+.PP
+\(bu
+\fIaelogres\fP
+may enhance the information provided in \fI\-IFail\fP
+entries.  Normally all you get is the last 10 lines of the log file,
+which is not bad if tests fail, but can be terrible for failed builds.
+If you provide a program named \fIaelogres\fP which knows how to
+extract a better succinct report of problems, the output of that
+program will be used instead of the simple tail.
+It is called with a \fI\-i\fP option.
+.PP
+\(bu
+\fBsound_all_machines\fP,
+if available, will be called when integrations either
+pass or fail.  It can be helpful to announce the fact that an
+integration has finished.  If it passed, developers will probably want
+to do an \fBaed\fP to bring their changes up to date.  The audio
+anouncement provides another timely hint.
+.PP
+The sound files are searched for in the \*(S)/sounds directory.  They
+will have endings of \fI_pass\fP and \fI_fail\fP according to the
+results of a given attempt.  Two sound files are required:
+\fIintegration_pass\fP and \fIintegration_fail\fP.  Others will be used
+if provided to customize the sounds so that each developer may have
+one or more personal sounds.  If a file named \fI<developer>_pass\fP is
+located, it will be used.  If a set of files exist named
+\fI<developer_pass.[0-9]\fP they will be used in random sequence.  The
+same search rule applies to \fI_fail\fP sets.
+The \fIsound_all_machines\fP program may use a host list and play the
+sound file on each machine or, assuming that other audio capabilities
+exist, might do any form of announcement desired.
+.so z_exit.so
+.SH FILES
+The control files are searched for in the \fI$HOME\fP directory.  They are
+named <type>.<project>, where type may be \fBstrategy\fP or
+\fBminimum\fP.  They need not exist if no special action is necessary.
+.PP
+The hook scripts are searched for in the \fI$HOME/integration_hooks\fP
+directory.  They are named <project>.<stage>.  Also \fIaeintegratq.end\fP
+and \fIaeintegratq.fail\fP.  These hooks also need not exist if no
+special action is desired.
+.br
+.ne 2i
+.SH COPYRIGHT
+.so version.so
+\*(n) version \*(V)
+.br
+.if t .ds C) \(co
+.if n .ds C) (C)
+Copyright \*(C) 1998-2002 Endocardial Solutions, Inc.
+.br
+All rights reserved.
+.PP
+The \*(n) program comes with ABSOLUTELY NO WARRANTY;
+This is free software
+and you are welcome to redistribute it under certain conditions;
+.br
+.ne 1i
+.SH AUTHOR
+.TS
+tab(;);
+l r l.
+Jerry Pendergraft;E-Mail:;jerry@endocardial.com
+.TE

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,50 +30,50 @@
 
 wstring_ty *
 sub_expression(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+    sub_context_ty  *scp;
+    wstring_list_ty *arg;
 {
-	wstring_ty	*ws;
-	string_ty	*s1;
-	string_ty	*s2;
-	wstring_ty	*result;
+    wstring_ty	    *ws;
+    string_ty	    *s1;
+    string_ty	    *s2;
+    wstring_ty	    *result;
 
-	/*
-	 * Check the number of arguments
-	 */
-	trace(("sub_expression()\n{\n"/*}*/));
-	if (arg->nitems < 2)
-	{
-		sub_context_error_set(scp, i18n("requires at least one argument"));
-		trace(("return NULL;\n"));
-		trace((/*{*/"}\n"));
-		return 0;
-	}
+    /*
+     * Check the number of arguments
+     */
+    trace(("sub_expression()\n{\n" /*}*/));
+    if (arg->nitems < 2)
+    {
+	sub_context_error_set(scp, i18n("requires at least one argument"));
+	trace(("return NULL;\n"));
+	trace(( /*{*/"}\n"));
+	return 0;
+    }
 
-	/*
-	 * Fold all of the arguments into a single string,
-	 * and parse that string for an expression.
-	 */
-	ws = wstring_list_to_wstring(arg, 1, arg->nitems, " ");
-	s1 = wstr_to_str(ws);
-	trace(("s1 = \"%s\";\n", s1->str_text));
-	wstr_free(ws);
-	s2 = sub_expr_gram(scp, s1);
-	str_free(s1);
-	if (!s2)
-	{
-		trace(("return NULL;\n"));
-		trace((/*{*/"}\n"));
-		return 0;
-	}
+    /*
+     * Fold all of the arguments into a single string,
+     * and parse that string for an expression.
+     */
+    ws = wstring_list_to_wstring(arg, 1, arg->nitems, " ");
+    s1 = wstr_to_str(ws);
+    trace(("s1 = \"%s\";\n", s1->str_text));
+    wstr_free(ws);
+    s2 = sub_expr_gram(scp, s1);
+    str_free(s1);
+    if (!s2)
+    {
+	trace(("return NULL;\n"));
+	trace(( /*{*/"}\n"));
+	return 0;
+    }
 
-	/*
-	 * Turns the result of the parse into a wide string.
-	 */
-	trace(("result = \"%s\";\n", s2->str_text));
-	result = str_to_wstr(s2);
-	str_free(s2);
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    /*
+     * Turns the result of the parse into a wide string.
+     */
+    trace(("result = \"%s\";\n", s2->str_text));
+    result = str_to_wstr(s2);
+    str_free(s2);
+    trace(("return %8.8lX;\n", (long)result));
+    trace(( /*{*/"}\n"));
+    return result;
 }

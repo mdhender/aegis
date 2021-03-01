@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ the repository is known as the
 .I baseline
 and the units of
 .I stuff
-are 
+are
 .UX
 files.
 The Aegis program makes no distinction between
@@ -155,7 +155,9 @@ move right down
 E1: ellipse "integrator"
 arrow "integrate " rjust "begin " rjust
 B3: box "integration" "directory"
-S1: spline -> from B3.s then down then right 1.25 then up then to B1.n right 1.25 then to B1.n up right 1.25 then to B1.n up then to B1.n
+S1: spline -> from B3.s then down then right 1.25 then up \
+	then to B1.n right 1.25 then to B1.n up right 1.25 \
+	then to B1.n up then to B1.n
 "integrate " rjust "pass " rjust at S1.c+(1.25,-0.75)
 arrow from B2.s to E1.nw
 arrow from 1/3<B1.sw,B1.se> to B2.n
@@ -182,7 +184,7 @@ Tests are treated just like any other source file,
 and are subject to the same process.
 All files in the baseline are consistent with each other.
 .LP
-Thus the baseline may be considered to be the 
+Thus the baseline may be considered to be the
 .I closure
 of the source files,
 in mathematical terms.
@@ -364,7 +366,8 @@ A change is in this state after a developer has indicated that development is
 complete.
 The change is inspected,
 usually by a second party (or parties),
-to ensure that it matches the  what it is meant to be doing,
+to ensure that it matches the change description as to what it is
+meant to be doing,
 and meets other project or company standards you may have.
 .LP
 The style of review,
@@ -372,7 +375,7 @@ and who may review,
 is not dictated by the Aegis program.
 A number of alternative have been observed:
 .LP
-\(bu 
+\(bu
 You may have a single person who coordinates review panels of,
 say,
 4 peers,
@@ -631,7 +634,7 @@ or a project-wide exemption.
 The four roles described in this section may be
 assigned to,
 or removed from,
-specific 
+specific
 .UX
 logins by the project
 administrator.
@@ -685,7 +688,8 @@ T3: spline -> from 1/3<S4.nw,S4.sw> then left 1 then up 2.25-1/12 \
 "" "" " develop" ljust " end" ljust " undo" ljust at T3.c - (1,0)
 T4: spline -> from S5.w then left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
 " integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.75,0)
-T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 then up 1 then to 1/3<S2.se,S2.ne>
+T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 then up 1 \
+	then to 1/3<S2.se,S2.ne>
 "review " rjust "fail " rjust at T5.c + (0.5,0)
 T6: spline -> from S4.e then right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
 "review " rjust "pass " rjust "undo " rjust at T6.c + (0.5,0)
@@ -752,7 +756,7 @@ through various manipulations and
 translations,
 into a "finished" product is known as building.
 In
-the 
+the
 .UX
 world this usually means things like compiling and linking a
 program,
@@ -775,7 +779,7 @@ The
 third requirement is optional:
 all or some of the tests already in the
 baseline may also be run.
-Tests consist of 
+Tests consist of
 .UX
 shell scripts -
 anything that can be done in a shell script can be tested.
@@ -788,7 +792,7 @@ the change proposes to do to the baseline,
 on a file-by-file basis.
 The
 results of the difference,
-such as 
+such as
 .UX
 .I "diff -c"
 output,
@@ -796,7 +800,7 @@ is kept
 in a difference file,
 for examination by the reviewer(s).
 The benefit
-of this procedure is that reviewers may examine these file to see every
+of this procedure is that reviewers may examine these files to see every
 change the developer made,
 rather than only the obvious ones.
 The
@@ -818,9 +822,10 @@ it must have been differenced.
 .nh 4 "Develop Begin Undo"
 .LP
 It is possible to return a change from the being developed state to the
-awaiting development state if it has no source files and has no tests.
+awaiting development state.
 This is usually desired if a developer selected the wrong
 change by mistake.
+It also provides a method to start over on a change for some other reason.
 .nh 4 "Develop End"
 .LP
 When the conditions for the end of development
@@ -893,7 +898,7 @@ The reviewer of a change may rescind a
 while the change remains in the
 .I "awaiting integration"
 state.
-No reason must be supplied.
+No reason need be supplied.
 The change will be returned to the
 .I "being reviewed"
 state.
@@ -917,7 +922,7 @@ This command is used to
 commence integration of a change into the project baseline.
 .LP
 Whether a physical copy of the baseline is used,
-or a logical copy using hard links,
+or a logical copy using links,
 is controlled by the project configuration file.
 The change is then applied to this copy.
 .LP
@@ -928,7 +933,7 @@ these commands.
 .LP
 This command is used to
 return a change to the integration queue,
-with out prejudice.
+without prejudice.
 No reason need be given.
 .LP
 This is usually done when a particularly important change is in the queue,

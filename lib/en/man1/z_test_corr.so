@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1999 Peter Miller;
+.\"	Copyright (C) 1996, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ used by
 .IR aeipass (1)
 and
 .IR aet (1)
-to determine which source files are associated with which tests. 
+to determine which source files are associated with which tests.
 .SS Test Correlation Accuracy
 Assuming that the testing correlations are accurate and that the
 tests are evenly distributed across the function space, there

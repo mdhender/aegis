@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1999, 2000 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1999, 2000, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -41,9 +41,9 @@ completeness issues,
 and local standards issues.
 .LP
 To help the reviewer,
-a set of "command D" files is available
+a set of "comma D" files is available
 in the change development directory.
-Every file which is to be added to the baseline, 
+Every file which is to be added to the baseline,
 removed from the baseline,
 or changed in some way,
 has a corresponding "comma D" file.
@@ -123,7 +123,7 @@ Another useful way of finding out about a change
 is the "list change details" command, viz:
 .E(
 robyn% \f(CBael cd -p example.1.0 -c 11\fP
- 
+
 Project "example.1.0", Change 11
 Change Details
 .E)
@@ -146,7 +146,7 @@ CAUSE
 .E)
 .E(
 STATE
-        This change is in 'being_integrated' state.
+        This change is in 'being_reviewed' state.
 .E)
 .E(
 FILES

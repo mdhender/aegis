@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998, 2001 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ integrate_begin_exceptions = [ "linux-i486/bin/*" ];
  * back in sync, which in turn speeds up development builds.
  */
 build_time_adjust_notify_command =
-	"set +e; find . -name .cook.fp -print | xargs rm; cook -nl -st --fp-update";
+    "set +e; find . -name .cook.fp -print | xargs rm; cook -nl -st --fp-update";
 
 /*
  * create a new history
@@ -101,7 +101,8 @@ merge_command =
  * The project files are wiped, too, because a removed file will alter
  * the project file list.
  */
-change_file_command = "rm -f etc/cook/change_files.$version etc/cook/project_files.$version";
+change_file_command =
+    "rm -f etc/cook/change_files.$version etc/cook/project_files.$version";
 project_file_command = "rm -f etc/cook/project_files.$version";
 
 /*
@@ -157,6 +158,10 @@ file_template =
 	{
 		pattern = [ "*.so", "*.ms", "*.me" ];
 		body = "${read_file ${source etc/template/ms abs}}";
+	},
+	{
+		pattern = [ "*.po" ];
+		body = "${read_file ${source etc/template/po abs}}";
 	},
 	{
 		pattern = [ "*" ];

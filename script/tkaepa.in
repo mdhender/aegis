@@ -2,7 +2,7 @@
 #-*-tcl-*-
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ set proj_skip_unlucky 0
 set proj_compress_database 0
 set proj_default_test_required 0
 set proj_develop_end_action "goto_being_reviewed"
+set proj_protect_development_directory 0
 set i_am_admin 0
 set who_am_i ""
 
@@ -60,17 +61,17 @@ proc inform { arg } {
 }
 
 proc read_pipe { command errok } {
-	set data ""
-	set fd [open $command r]
-	if { $fd != "" } {
-		set data [read $fd]
-		set codevar ""
-		catch { close $fd } codevar
-		if { $codevar != "" && !$errok } {
-			inform [format "Command \"%s\"\nreturned \"%s\"" $command $codevar]
-		}
-	}
-	return [string trim $data]
+    set data ""
+    set fd [open $command r]
+    if { $fd != "" } {
+       	set data [read $fd]
+       	set codevar ""
+       	catch { close $fd } codevar
+       	if { $codevar != "" && !$errok } {
+	    inform [format "Command \"%s\"\nreturned \"%s\"" $command $codevar]
+       	}
+    }
+    return [string trim $data]
 }
 
 proc command_option_menu { w varName cmd firstValue args } {
@@ -148,6 +149,7 @@ proc project_name_changed { } {
 	global proj_compress_database
 	global proj_default_test_required
 	global proj_develop_end_action
+	global proj_protect_development_directory
 	global i_am_admin
 
 	#
@@ -233,15 +235,6 @@ text .bdesc.text -height 1
 pack .bdesc.text -side bottom -fill x
 pack .bdesc -fill x
 
-# frame .desc
-# label .desc.label -text "Description:"
-# pack .desc.label -side top -anchor w
-# text .desc.text -height 4 -yscrollcommand ".desc.scroll set" -wrap word -spacing3 5
-# scrollbar .desc.scroll -command ".desc.text yview"
-# pack .desc.scroll -side right -fill y
-# pack .desc.text -side bottom -fill both -expand 1
-# pack .desc -fill both -expand 1
-
 frame .bottom
 
 set test_nor 1
@@ -251,15 +244,19 @@ set test_reg 1
 frame .bottom.process
 
 # proj_developer_may_review
-checkbutton .bottom.process.dmr -text "Developer May Review" -variable proj_developer_may_review -onvalue 1 -offvalue 0 -command dev_may_rev
+checkbutton .bottom.process.dmr -text "Developer May Review" \
+    -variable proj_developer_may_review -onvalue 1 -offvalue 0 \
+    -command dev_may_rev
 pack .bottom.process.dmr -side top -anchor w
 
 # proj_developer_may_integrate
-checkbutton .bottom.process.dmi -text "Developer May Integrate" -variable proj_developer_may_integrate -onvalue 1 -offvalue 0
+checkbutton .bottom.process.dmi -text "Developer May Integrate" \
+    -variable proj_developer_may_integrate -onvalue 1 -offvalue 0
 pack .bottom.process.dmi -side top -anchor w
 
 # proj_reviewer_may_integrate
-checkbutton .bottom.process.rmi -text "Reviewer May Integrate" -variable proj_reviewer_may_integrate -onvalue 1 -offvalue 0
+checkbutton .bottom.process.rmi -text "Reviewer May Integrate" \
+    -variable proj_reviewer_may_integrate -onvalue 1 -offvalue 0
 pack .bottom.process.rmi -side top -anchor w
 
 # proj_develop_end_action
@@ -267,11 +264,15 @@ frame .bottom.process.dea -relief ridge -width 100 -borderwidth 2
 label .bottom.process.dea.label -text "Develop End goes to:"
 pack .bottom.process.dea.label -side top -anchor w
 
-radiobutton .bottom.process.dea.gar -text "Awaiting Review" -variable proj_develop_end_action -value "goto_awaiting_review"
+radiobutton .bottom.process.dea.gar -text "Awaiting Review" \
+    -variable proj_develop_end_action -value "goto_awaiting_review"
 pack .bottom.process.dea.gar -side top -anchor w
-radiobutton .bottom.process.dea.gbr -text "Being Reviewed" -variable proj_develop_end_action -value "goto_being_reviewed"
+radiobutton .bottom.process.dea.gbr -text "Being Reviewed" \
+    -variable proj_develop_end_action -value "goto_being_reviewed"
 pack .bottom.process.dea.gbr -side top -anchor w
-radiobutton .bottom.process.dea.gai -text "Awaiting Integration" -variable proj_develop_end_action -value "goto_awaiting_integration" -command "set proj_developer_may_review 1"
+radiobutton .bottom.process.dea.gai -text "Awaiting Integration" \
+    -variable proj_develop_end_action -value "goto_awaiting_integration" \
+    -command "set proj_developer_may_review 1"
 pack .bottom.process.dea.gai -side top -anchor w
 pack .bottom.process.dea.gar -side top -anchor w
 pack .bottom.process.dea -side left -padx 5 -pady 5 -anchor w
@@ -282,11 +283,13 @@ pack .bottom.process -side left -padx 5 -pady 5 -anchor nw
 frame .bottom.misc -width 100
 
 # proj_developers_may_create_changes
-checkbutton .bottom.misc.dmcc -text "Developers May Create Changes" -variable proj_developers_may_create_changes -onvalue 1 -offvalue 0
+checkbutton .bottom.misc.dmcc -text "Developers May Create Changes" \
+    -variable proj_developers_may_create_changes -onvalue 1 -offvalue 0
 pack .bottom.misc.dmcc -side top -anchor w
 
 # proj_default_test_required
-checkbutton .bottom.misc.dtr -text "Tests Required By Default" -variable proj_default_test_required -onvalue 1 -offvalue 0
+checkbutton .bottom.misc.dtr -text "Tests Required By Default" \
+    -variable proj_default_test_required -onvalue 1 -offvalue 0
 pack .bottom.misc.dtr -side top -anchor w
 
 # proj_umask
@@ -294,19 +297,28 @@ pack .bottom.misc.dtr -side top -anchor w
 # proj_minimum_branch_number
 
 # proj_reuse_change_numbers
-checkbutton .bottom.misc.rcn -text "Reuse Change Numbers" -variable proj_reuse_change_numbers -onvalue 1 -offvalue 0
+checkbutton .bottom.misc.rcn -text "Reuse Change Numbers" \
+    -variable proj_reuse_change_numbers -onvalue 1 -offvalue 0
 pack .bottom.misc.rcn -side top -anchor w
 
 # proj_skip_unlucky
-checkbutton .bottom.misc.su -text "Skip Unlucky Numbers" -variable proj_skip_unlucky -onvalue 1 -offvalue 0
+checkbutton .bottom.misc.su -text "Skip Unlucky Numbers" \
+    -variable proj_skip_unlucky -onvalue 1 -offvalue 0
 pack .bottom.misc.su -side top -anchor w
 
 # proj_compress_database
-checkbutton .bottom.misc.cdb -text "Compress Database" -variable proj_compress_database -onvalue 1 -offvalue 0
+checkbutton .bottom.misc.cdb -text "Compress Database" \
+    -variable proj_compress_database -onvalue 1 -offvalue 0
 pack .bottom.misc.cdb -side top -anchor w
 
+# proj_protect_development_directory
+checkbutton .bottom.misc.pdd -text "Protect Development Directory" \
+	-variable proj_protect_development_directory -onvalue 1 -offvalue 0
+pack .bottom.misc.pdd -side top -anchor w
+
 pack .bottom.misc -side left -padx 5 -pady 5 -anchor nw
- # -----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 
 
 frame .bottom.control
@@ -318,30 +330,12 @@ button .bottom.control.cancel -text "Cancel" -command { exit 1 } -bg "#D0BFBF"
 pack .bottom.control.cancel -fill x -pady 5
 pack .bottom.control
 pack .bottom.control -side right -padx 5
-# 
-# frame .bottom.cause -relief ridge -borderwidth 2
-# label .bottom.cause.label -text "Cause:"
-# pack .bottom.cause.label -side top -anchor w
-# radiobutton .bottom.cause.intbug -text "Internal Bug" -value "internal_bug" -variable cause -anchor w
-# pack .bottom.cause.intbug -side top -anchor w
-# radiobutton .bottom.cause.intenh -text "Internal Enhancement" -value "internal_enhancement" -variable cause -anchor w
-# pack .bottom.cause.intenh -side top -anchor w
-# radiobutton .bottom.cause.intimp -text "Internal Improvement" -value "internal_improvement" -variable cause -anchor w
-# pack .bottom.cause.intimp -side top -anchor w
-# radiobutton .bottom.cause.extbug -text "External Bug" -value "external_bug" -variable cause -anchor w
-# pack .bottom.cause.extbug -side top -anchor w
-# radiobutton .bottom.cause.extenh -text "External Enhancement" -value "external_enhancement" -variable cause -anchor w
-# pack .bottom.cause.extenh -side top -anchor w
-# radiobutton .bottom.cause.extimp -text "External Improvement" -value "external_improvement" -variable cause -anchor w
-# pack .bottom.cause.extimp -side top -anchor w
-# radiobutton .bottom.cause.chain -text "Chain Defect" -value "chain" -variable cause -anchor w
-# pack .bottom.cause.chain -side top -anchor w
-# pack .bottom.cause -side left -anchor nw -pady 5
 
 pack .bottom -fill x
 
 frame .info
-text .info.blurb -height 3 -yscrollcommand ".info.scroll set" -wrap word -borderwidth 1
+text .info.blurb -height 3 -yscrollcommand ".info.scroll set" -wrap word \
+    -borderwidth 1
 scrollbar .info.scroll -command ".info.blurb yview" -borderwidth 1
 pack .info.scroll -side right -fill y
 pack .info.blurb -side left -fill both -expand 1
@@ -385,6 +379,7 @@ proc apply { } {
 	global proj_compress_database
 	global proj_default_test_required
 	global proj_develop_end_action
+	global proj_protect_development_directory
 
 	set filename [format "/tmp/tkaepa-%d" [pid]]
 	set errcode ""
@@ -402,15 +397,52 @@ proc apply { } {
 	regsub -all \n $tmp \\n\\\n tmp
 	puts $fd [format "description = \"%s\";" $tmp]
 
-	if { $proj_developer_may_review } then { puts $fd "developer_may_review = true;" } else { puts $fd "developer_may_review = false;" }
-	if { $proj_developer_may_integrate } then { puts $fd "developer_may_integrate = true;" } else { puts $fd "developer_may_integrate = false;" }
-	if { $proj_reviewer_may_integrate } then { puts $fd "reviewer_may_integrate = true;" } else { puts $fd "reviewer_may_integrate = false;" }
-	if { $proj_developers_may_create_changes } then { puts $fd "developers_may_create_changes = true;" } else { puts $fd "developers_may_create_changes = false;" }
-	if { $proj_reuse_change_numbers } then { puts $fd "reuse_change_numbers = true;" } else { puts $fd "reuse_change_numbers = false;" }
-	if { $proj_skip_unlucky } then { puts $fd "skip_unlucky = true;" } else { puts $fd "skip_unlucky = false;" }
-	if { $proj_compress_database } then { puts $fd "compress_database = true;" } else { puts $fd "compress_database = false;" }
-	if { $proj_default_test_required } then { puts $fd "default_test_exemption = false;" } else { puts $fd "default_test_exemption = true;" }
+	if { $proj_developer_may_review } {
+	    puts $fd "developer_may_review = true;"
+	} else {
+	    puts $fd "developer_may_review = false;"
+	}
+	if { $proj_developer_may_integrate } {
+	    puts $fd "developer_may_integrate = true;"
+	} else {
+	    puts $fd "developer_may_integrate = false;"
+	}
+	if { $proj_reviewer_may_integrate } {
+	    puts $fd "reviewer_may_integrate = true;"
+	} else {
+	    puts $fd "reviewer_may_integrate = false;"
+	}
+	if { $proj_developers_may_create_changes } {
+	    puts $fd "developers_may_create_changes = true;"
+	} else {
+	    puts $fd "developers_may_create_changes = false;"
+	}
+	if { $proj_reuse_change_numbers } {
+	    puts $fd "reuse_change_numbers = true;"
+	} else {
+	    puts $fd "reuse_change_numbers = false;"
+	}
+	if { $proj_skip_unlucky } {
+	    puts $fd "skip_unlucky = true;"
+	} else {
+	    puts $fd "skip_unlucky = false;"
+	}
+	if { $proj_compress_database } {
+	    puts $fd "compress_database = true;"
+	} else {
+	    puts $fd "compress_database = false;"
+	}
+	if { $proj_default_test_required } {
+	    puts $fd "default_test_exemption = false;"
+	} else {
+	    puts $fd "default_test_exemption = true;"
+	}
 	puts $fd "develop_end_action = $proj_develop_end_action;"
+	if { $proj_protect_development_directory } {
+	    puts $fd "protect_development_directory = true;"
+	} else {
+	    puts $fd "protect_development_directory = false;"
+	}
 	close $fd
 
 	inform [format "Setting project %s attributes..." $project_name]

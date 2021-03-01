@@ -27,80 +27,71 @@
 #include <libdir.h>
 
 
-static int memcasecmp _((const char *, const char *, size_t));
-
 static int
-memcasecmp(s1, s2, n)
-	const char	*s1;
-	const char	*s2;
-	size_t		n;
+memcasecmp(const char *s1, const char *s2, size_t n)
 {
-	unsigned char	c1, c2;
+    unsigned char   c1;
+    unsigned char   c2;
 
-	while (n > 0)
-	{
-		c1 = *s1++;
-		if (isupper(c1))
-			c1 = tolower(c1);
-		c2 = *s2++;
-		if (isupper(c2))
-			c1 = tolower(c2);
-		if (c1 != c2)
-			return (c1 - c2);
-		--n;
-	}
-	return 0;
+    while (n > 0)
+    {
+	c1 = *s1++;
+	if (isupper(c1))
+	    c1 = tolower(c1);
+	c2 = *s2++;
+	if (isupper(c2))
+	    c1 = tolower(c2);
+	if (c1 != c2)
+	    return (c1 - c2);
+	--n;
+    }
+    return 0;
 }
 
 
-static int look_for_suffix _((const char *, const char *));
-
 static int
-look_for_suffix(stem, suffix)
-	const char	*stem;
-	const char	*suffix;
+look_for_suffix(const char *stem, const char *suffix)
 {
-	size_t		stem_len;
-	size_t		suffix_len;
-	size_t		idx;
+    size_t	    stem_len;
+    size_t	    suffix_len;
+    size_t	    idx;
 
-	stem_len = strlen(stem);
-	suffix_len = strlen(suffix);
-	if (stem_len < suffix_len)
-		return -1;
-	idx = stem_len - suffix_len;
-	if (0 != memcasecmp(stem + idx, suffix, suffix_len))
-		return -1;
-	return idx;
+    stem_len = strlen(stem);
+    suffix_len = strlen(suffix);
+    if (stem_len < suffix_len)
+	return -1;
+    idx = stem_len - suffix_len;
+    if (0 != memcasecmp(stem + idx, suffix, suffix_len))
+	return -1;
+    return idx;
 }
 
 
 int
-exeext(s)
-	const char	*s;
+exeext(const char *s)
 {
-	const char	*cfg;
-	int		n;
+    const char	*cfg;
+    int		n;
 
-	cfg = configured_exeext();
-	if (!*cfg)
-		return -1;
-	n = look_for_suffix(s, cfg);
-	if (n >= 0)
-		return n;
-#if defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(__NUTC__)
-	n = look_for_suffix(s, ".exe");
-	if (n >= 0)
-		return n;
-	n = look_for_suffix(s, ".bat");
-	if (n >= 0)
-		return n;
-	n = look_for_suffix(s, ".cmd");
-	if (n >= 0)
-		return n;
-	n = look_for_suffix(s, ".com");
-	if (n >= 0)
-		return n;
-#endif
+    cfg = configured_exeext();
+    if (!*cfg)
 	return -1;
+    n = look_for_suffix(s, cfg);
+    if (n >= 0)
+	return n;
+#if defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(__NUTC__)
+    n = look_for_suffix(s, ".exe");
+    if (n >= 0)
+	return n;
+    n = look_for_suffix(s, ".bat");
+    if (n >= 0)
+	return n;
+    n = look_for_suffix(s, ".cmd");
+    if (n >= 0)
+	return n;
+    n = look_for_suffix(s, ".com");
+    if (n >= 0)
+	return n;
+#endif
+    return -1;
 }

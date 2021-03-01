@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ These responsibilities include:
 The administrator adds and removes all categories of user,
 including administrators.
 This is on a per-project basis,
-and has nothing to do with 
+and has nothing to do with
 .UX
 user administration.
 This simply nominates which users may do what.
@@ -50,7 +50,7 @@ Aegis does not limit who may create projects,
 but when a project is created the user who created the project
 is set to be the administrator of that project.
 .LP
-All of these things will be examined 
+All of these things will be examined
 .nh 3 "Before You Start"
 .LP
 Have you configured your account to use Aegis?  See the \fIUser Setup\fP
@@ -181,7 +181,7 @@ aegis: project "example.1.0": change 10: created
 alex%
 .E)
 Notice that the first change number is ``10''.  This is done so that
-changes 1 to 9 could be bused as bug-fix branches at some future time.
+changes 1 to 9 could be used as bug-fix branches at some future time.
 See the \fIBranching\fP chapter for more information.
 You can over-ride this is you need to.
 .LP
@@ -226,7 +226,7 @@ and start work on it.
 .LP
 Other features are required for the calculator,
 and also for this example.
-The second change adds exponentiation to the calculator,
+The third change adds exponentiation to the calculator,
 and is described as follows:
 .E(
 brief_description = "add powers";

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -111,10 +111,10 @@ Users are trapped with the components supplied by the CASE system,
 and if you don't like one of the components (it may be too limited,
 for instance), then that is just tough.
 .LP
-In contrast, 
+In contrast,
 .UX
 provides many components of a CASE system - compilers,
-editors, dependency tools (such as make), source control (such as RCS).
+editors, dependency tools (such as make), source control (such as SCCS).
 You may substitute the tool of your choice - gcc, jove, cake,
 rcs (to name a few) if you don't like the ones supplied with the system.
 .LP

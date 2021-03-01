@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ os_file_size(path)
 	struct stat	st;
 	int		oret;
 
-	trace(("os_mtime_actual(path = %08lX)\n{\n"/*}*/, path));
+	trace(("os_mtime_actual(path = %08lX)\n{\n", (long)path));
 	os_become_must_be_active();
 	trace_string(path->str_text);
 
