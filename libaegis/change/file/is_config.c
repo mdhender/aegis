@@ -26,9 +26,7 @@
 
 
 int
-change_file_is_config(cp, file_name)
-    change_ty	    *cp;
-    string_ty	    *file_name;
+change_file_is_config(change_ty *cp, string_ty *file_name)
 {
     static string_ty *the_config_file;
     pconf	    pconf_data;

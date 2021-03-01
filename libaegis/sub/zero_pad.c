@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,7 @@
 
 
 wstring_ty *
-sub_zero_pad(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+sub_zero_pad(sub_context_ty *scp, wstring_list_ty *arg)
 {
 	wstring_ty	*result;
 	string_ty	*s;

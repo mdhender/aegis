@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,7 @@
 
 
 void
-change_search_path_get(cp, wlp, resolve)
-    change_ty       *cp;
-    string_list_ty  *wlp;
-    int             resolve;
+change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
 {
     cstate          cstate_data;
     project_ty      *ppp;

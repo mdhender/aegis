@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,13 +35,10 @@ struct rpt_value_func_ty
 };
 
 
-static rpt_value_ty *stringize _((rpt_value_ty *));
-
 static rpt_value_ty *
-stringize(vp)
-	rpt_value_ty	*vp;
+stringize(rpt_value_ty *vp)
 {
-	rpt_value_func_ty *this;
+	rpt_value_func_ty *this_thing;
 	string_ty	*s;
 	rpt_value_ty	*result;
 
@@ -49,9 +46,9 @@ stringize(vp)
 	 * stringizing a function pointer
 	 * returns the name of the function
 	 */
-	this = (rpt_value_func_ty *)vp;
-	assert(this->method->type == rpt_value_type_function);
-	s = str_from_c(this->value->name);
+	this_thing = (rpt_value_func_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_function);
+	s = str_from_c(this_thing->value->name);
 	result = rpt_value_string(s);
 	str_free(s);
 	return result;
@@ -77,24 +74,22 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_func(fp)
-	rpt_func_ty	*fp;
+rpt_value_func(rpt_func_ty *fp)
 {
-	rpt_value_func_ty *this;
+	rpt_value_func_ty *this_thing;
 
-	this = (rpt_value_func_ty *)rpt_value_alloc(&method);
-	this->value = fp;
-	return (rpt_value_ty *)this;
+	this_thing = (rpt_value_func_ty *)rpt_value_alloc(&method);
+	this_thing->value = fp;
+	return (rpt_value_ty *)this_thing;
 }
 
 
 rpt_func_ty *
-rpt_value_func_query(vp)
-	rpt_value_ty	*vp;
+rpt_value_func_query(rpt_value_ty *vp)
 {
-	rpt_value_func_ty *this;
+	rpt_value_func_ty *this_thing;
 
-	this = (rpt_value_func_ty *)vp;
-	assert(this->method == &method);
-	return this->value;
+	this_thing = (rpt_value_func_ty *)vp;
+	assert(this_thing->method == &method);
+	return this_thing->value;
 }

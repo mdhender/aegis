@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 #include <input/file_text.h>
 #include <line_list.h>
 #include <mem.h>
+#include <now.h>
 #include <os.h>
 #include <output.h>
 #include <patch.h>
@@ -76,18 +77,12 @@ struct column_list_t
 static column_list_t columns;
 static symtab_ty *file_stp;
 static int      filestat = -1;
-static char     *diff_option;
+static const char *diff_option;
 
-
-static void column_list_append(column_list_t *, string_ty *, string_ty *,
-    int);
 
 static void
-column_list_append(clp, formula, heading, width)
-    column_list_t   *clp;
-    string_ty	    *formula;
-    string_ty	    *heading;
-    int		    width;
+column_list_append(column_list_t *clp, string_ty *formula, string_ty *heading,
+    int width)
 {
     column_t	    *cp;
 
@@ -111,13 +106,8 @@ column_list_append(clp, formula, heading, width)
 }
 
 
-static void process _((project_ty *, string_ty *, line_list_t *));
-
 static void
-process(pp, filename, buffer)
-    project_ty	    *pp;
-    string_ty	    *filename;
-    line_list_t	    *buffer;
+process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 {
     time_t	    when;
     size_t	    j;
@@ -135,7 +125,7 @@ process(pp, filename, buffer)
      * FIXME: add --delta options, so that we can select a time based
      * on a delta.
      */
-    time(&when);
+    when = now();
 
     /*
      * Reconstruct the file history.
@@ -393,13 +383,8 @@ process(pp, filename, buffer)
 }
 
 
-static void incr _((symtab_ty *, string_ty *, long *));
-
 static void
-incr(stp, key, maximum_p)
-    symtab_ty	    *stp;
-    string_ty	    *key;
-    long	    *maximum_p;
+incr(symtab_ty *stp, string_ty *key, long *maximum_p)
 {
     long	    *data;
 
@@ -425,17 +410,9 @@ incr(stp, key, maximum_p)
 }
 
 
-static void emit_range _((output_ty *, output_ty *, line_t *, size_t, long *,
-    col_ty *));
-
 static void
-emit_range(line_col, source_col, line_array, line_len, linum_p, ofp)
-    output_ty	    *line_col;
-    output_ty	    *source_col;
-    line_t	    *line_array;
-    size_t	    line_len;
-    long	    *linum_p;
-    col_ty	    *ofp;
+emit_range(output_ty *line_col, output_ty *source_col, line_t *line_array,
+    size_t line_len, long *linum_p, col_ty *ofp)
 {
     size_t	    j;
 
@@ -497,14 +474,9 @@ emit_range(line_col, source_col, line_array, line_len, linum_p, ofp)
 }
 
 
-static void emit _((line_list_t *, string_ty *, string_ty *, project_ty *));
-
 static void
-emit(buffer, outfilename, filename, pp)
-    line_list_t	    *buffer;
-    string_ty	    *outfilename;
-    string_ty	    *filename;
-    project_ty	    *pp;
+emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
+    project_ty *pp)
 {
     col_ty	    *ofp;
     output_ty	    *line_col;
@@ -649,7 +621,7 @@ emit(buffer, outfilename, filename, pp)
 
 
 void
-annotate()
+annotate(void)
 {
     string_ty	    *project_name;
     string_ty	    *filename;

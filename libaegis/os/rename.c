@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,7 @@
 
 
 void
-os_rename(a, b)
-    string_ty       *a;
-    string_ty       *b;
+os_rename(string_ty *a, string_ty *b)
 {
     trace(("os_rename(a = %08lX, b = %08lX)\n{\n", (long)a, (long)b));
     os_become_must_be_active();

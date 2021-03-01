@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 
 
 static rpt_value_ty *
-simple_evaluate(rpt_expr_ty *this)
+simple_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty	*lv;
     rpt_value_ty	*rv;
@@ -47,8 +47,8 @@ simple_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("simple_assign::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv = rpt_expr_evaluate(this->child[0], 0);
+    assert(this_thing->nchild == 2);
+    lv = rpt_expr_evaluate(this_thing->child[0], 0);
     assert(lv->reference_count >= 1);
     if (lv->method->type == rpt_value_type_error)
     {
@@ -75,8 +75,8 @@ simple_evaluate(rpt_expr_ty *this)
 		i18n("illegal left hand side of assignment (was given $name)")
 	    );
 	sub_context_delete(scp);
-	assert(this->pos);
-	vp = rpt_value_error(this->child[0]->pos, s);
+	assert(this_thing->pos);
+	vp = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	rpt_value_free(lv);
 	trace(("}\n"));
@@ -86,7 +86,7 @@ simple_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv = rpt_expr_evaluate(this->child[1], 0);
+    rv = rpt_expr_evaluate(this_thing->child[1], 0);
     assert(rv->reference_count >= 1);
     if (rv->method->type == rpt_value_type_error)
     {
@@ -135,14 +135,14 @@ static rpt_expr_method_ty simple_method =
 rpt_expr_ty *
 rpt_expr_assign(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty	*this;
+    rpt_expr_ty	*this_thing;
 
-    this = rpt_expr_alloc(&simple_method);
+    this_thing = rpt_expr_alloc(&simple_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
@@ -238,12 +238,12 @@ bin_eval(rpt_expr_ty *(*op)(rpt_expr_ty *, rpt_expr_ty *), rpt_expr_ty *e)
 
 
 static rpt_value_ty *
-power_evaluate(rpt_expr_ty *this)
+power_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("power_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_power, this);
+    result = bin_eval(rpt_expr_power, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -264,24 +264,24 @@ static rpt_expr_method_ty power_method =
 rpt_expr_ty *
 rpt_expr_assign_power(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&power_method);
+    this_thing = rpt_expr_alloc(&power_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-mul_evaluate(rpt_expr_ty *this)
+mul_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("mul_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_mul, this);
+    result = bin_eval(rpt_expr_mul, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -302,24 +302,24 @@ static rpt_expr_method_ty mul_method =
 rpt_expr_ty *
 rpt_expr_assign_mul(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&mul_method);
+    this_thing = rpt_expr_alloc(&mul_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-div_evaluate(rpt_expr_ty *this)
+div_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("div_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_div, this);
+    result = bin_eval(rpt_expr_div, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -340,24 +340,24 @@ static rpt_expr_method_ty div_method =
 rpt_expr_ty *
 rpt_expr_assign_div(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&div_method);
+    this_thing = rpt_expr_alloc(&div_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-mod_evaluate(rpt_expr_ty *this)
+mod_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("mod_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_mod, this);
+    result = bin_eval(rpt_expr_mod, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -378,24 +378,24 @@ static rpt_expr_method_ty mod_method =
 rpt_expr_ty *
 rpt_expr_assign_mod(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&mod_method);
+    this_thing = rpt_expr_alloc(&mod_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-plus_evaluate(rpt_expr_ty *this)
+plus_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("plus_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_plus, this);
+    result = bin_eval(rpt_expr_plus, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -416,24 +416,24 @@ static rpt_expr_method_ty plus_method =
 rpt_expr_ty *
 rpt_expr_assign_plus(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&plus_method);
+    this_thing = rpt_expr_alloc(&plus_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-minus_evaluate(rpt_expr_ty *this)
+minus_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("minus_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_minus, this);
+    result = bin_eval(rpt_expr_minus, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -454,24 +454,24 @@ static rpt_expr_method_ty minus_method =
 rpt_expr_ty *
 rpt_expr_assign_minus(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&minus_method);
+    this_thing = rpt_expr_alloc(&minus_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-and_bit_evaluate(rpt_expr_ty *this)
+and_bit_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("and_bit_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_and_bit, this);
+    result = bin_eval(rpt_expr_and_bit, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -492,24 +492,24 @@ static rpt_expr_method_ty and_bit_method =
 rpt_expr_ty *
 rpt_expr_assign_and_bit(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&and_bit_method);
+    this_thing = rpt_expr_alloc(&and_bit_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-xor_bit_evaluate(rpt_expr_ty *this)
+xor_bit_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("xor_bit_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_xor_bit, this);
+    result = bin_eval(rpt_expr_xor_bit, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -530,24 +530,24 @@ static rpt_expr_method_ty xor_bit_method =
 rpt_expr_ty *
 rpt_expr_assign_xor_bit(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&xor_bit_method);
+    this_thing = rpt_expr_alloc(&xor_bit_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-or_bit_evaluate(rpt_expr_ty *this)
+or_bit_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("or_bit_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_or_bit, this);
+    result = bin_eval(rpt_expr_or_bit, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -568,24 +568,24 @@ static rpt_expr_method_ty or_bit_method =
 rpt_expr_ty *
 rpt_expr_assign_or_bit(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&or_bit_method);
+    this_thing = rpt_expr_alloc(&or_bit_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-shift_left_evaluate(rpt_expr_ty *this)
+shift_left_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("shift_left_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_shift_left, this);
+    result = bin_eval(rpt_expr_shift_left, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -606,24 +606,24 @@ static rpt_expr_method_ty shift_left_method =
 rpt_expr_ty *
 rpt_expr_assign_shift_left(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&shift_left_method);
+    this_thing = rpt_expr_alloc(&shift_left_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-shift_right_evaluate(rpt_expr_ty *this)
+shift_right_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("shift_right_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_shift_right, this);
+    result = bin_eval(rpt_expr_shift_right, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -644,24 +644,24 @@ static rpt_expr_method_ty shift_right_method =
 rpt_expr_ty *
 rpt_expr_assign_shift_right(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&shift_right_method);
+    this_thing = rpt_expr_alloc(&shift_right_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-join_evaluate(rpt_expr_ty *this)
+join_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *result;
 
     trace(("join_assign::evaluate()\n{\n"));
-    result = bin_eval(rpt_expr_join, this);
+    result = bin_eval(rpt_expr_join, this_thing);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -682,12 +682,12 @@ static rpt_expr_method_ty join_method =
 rpt_expr_ty *
 rpt_expr_assign_join(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&join_method);
+    this_thing = rpt_expr_alloc(&join_method);
     if (!rpt_expr_lvalue(a))
 	rpt_expr_parse_error(a, i18n("illegal left hand side of assignment"));
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }

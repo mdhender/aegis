@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,25 +41,19 @@ struct rpt_value_string_ty
 };
 
 
-static void destruct _((rpt_value_ty *));
-
 static void
-destruct(vp)
-	rpt_value_ty	*vp;
+destruct(rpt_value_ty *vp)
 {
-	rpt_value_string_ty *this;
+	rpt_value_string_ty *this_thing;
 
-	this = (rpt_value_string_ty *)vp;
-	assert(this->method->type == rpt_value_type_string);
-	str_free(this->value);
+	this_thing = (rpt_value_string_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_string);
+	str_free(this_thing->value);
 }
 
 
-static int is_blank _((char *));
-
 static int
-is_blank(s)
-	char	*s;
+is_blank(char *s)
 {
 	while (isspace((unsigned char)*s))
 		++s;
@@ -67,11 +61,8 @@ is_blank(s)
 }
 
 
-static int is_integer _((char *));
-
 static int
-is_integer(s)
-	char	*s;
+is_integer(char *s)
 {
 	char	*begin;
 
@@ -90,11 +81,8 @@ is_integer(s)
 }
 
 
-static int is_real _((char *));
-
 static int
-is_real(s)
-	char	*s;
+is_real(char *s)
 {
 	char	*begin;
 
@@ -132,39 +120,36 @@ is_real(s)
 }
 
 
-static rpt_value_ty *arithmetic _((rpt_value_ty *));
-
 static rpt_value_ty *
-arithmetic(vp)
-	rpt_value_ty	*vp;
+arithmetic(rpt_value_ty *vp)
 {
-	rpt_value_string_ty *this;
+	rpt_value_string_ty *this_thing;
 	rpt_value_ty	*result;
 
 	trace(("arithmetic(vp = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_string_ty *)vp;
-	assert(this->method->type == rpt_value_type_string);
+	this_thing = (rpt_value_string_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_string);
 
-	if (is_blank(this->value->str_text))
+	if (is_blank(this_thing->value->str_text))
 	{
 		trace(("blank\n"));
 		result = rpt_value_integer(0L);
 		trace(("result = %ld;\n", rpt_value_integer_query(result)));
 	}
-	else if (is_integer(this->value->str_text))
+	else if (is_integer(this_thing->value->str_text))
 	{
 		long		n;
 
-		n = atol(this->value->str_text);
+		n = atol(this_thing->value->str_text);
 		trace(("integer %ld\n", n));
 		result = rpt_value_integer(n);
 		trace(("result = %ld;\n", rpt_value_integer_query(result)));
 	}
-	else if (is_real(this->value->str_text))
+	else if (is_real(this_thing->value->str_text))
 	{
 		double		n;
 
-		n = atof(this->value->str_text);
+		n = atof(this_thing->value->str_text);
 		trace(("real %g\n", n));
 		result = rpt_value_real(n);
 		trace(("result = %g;\n", rpt_value_real_query(result)));
@@ -184,37 +169,34 @@ arithmetic(vp)
 }
 
 
-static rpt_value_ty *booleanize _((rpt_value_ty *));
-
 static rpt_value_ty *
-booleanize(vp)
-	rpt_value_ty	*vp;
+booleanize(rpt_value_ty *vp)
 {
-	rpt_value_string_ty *this;
+	rpt_value_string_ty *this_thing;
 	rpt_value_ty	*result;
 
 	trace(("real::booleanize(vp = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_string_ty *)vp;
-	assert(this->method->type == rpt_value_type_string);
+	this_thing = (rpt_value_string_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_string);
 
-	if (is_blank(this->value->str_text))
+	if (is_blank(this_thing->value->str_text))
 	{
 		trace(("blank\n"));
 		result = rpt_value_boolean(0);
 	}
-	else if (is_integer(this->value->str_text))
+	else if (is_integer(this_thing->value->str_text))
 	{
 		long		n;
 
-		n = atol(this->value->str_text);
+		n = atol(this_thing->value->str_text);
 		trace(("integer %ld\n", n));
 		result = rpt_value_boolean(n != 0);
 	}
-	else if (is_real(this->value->str_text))
+	else if (is_real(this_thing->value->str_text))
 	{
 		double		n;
 
-		n = atof(this->value->str_text);
+		n = atof(this_thing->value->str_text);
 		trace(("real %g\n", n));
 		result = rpt_value_boolean(n != 0);
 	}
@@ -252,24 +234,22 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_string(s)
-	string_ty	*s;
+rpt_value_string(string_ty *s)
 {
-	rpt_value_string_ty *this;
+	rpt_value_string_ty *this_thing;
 
-	this = (rpt_value_string_ty *)rpt_value_alloc(&method);
-	this->value = str_copy(s);
-	return (rpt_value_ty *)this;
+	this_thing = (rpt_value_string_ty *)rpt_value_alloc(&method);
+	this_thing->value = str_copy(s);
+	return (rpt_value_ty *)this_thing;
 }
 
 
 string_ty *
-rpt_value_string_query(vp)
-	rpt_value_ty	*vp;
+rpt_value_string_query(rpt_value_ty *vp)
 {
-	rpt_value_string_ty *this;
+	rpt_value_string_ty *this_thing;
 
-	this = (rpt_value_string_ty *)vp;
-	assert(this->method->type == rpt_value_type_string);
-	return this->value;
+	this_thing = (rpt_value_string_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_string);
+	return this_thing->value;
 }

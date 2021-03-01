@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001, 2002 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -27,15 +27,6 @@
 #
 if ( ! $?AEGIS_PATH && -d $HOME/lib/aegis/. ) then
 	setenv AEGIS_PATH $HOME/lib/aegis
-endif
-
-#
-# If the user has not set their preferred language, default it to
-# English here.  This will give behaviour consistent with previous Aegis
-# behaviour.
-#
-if ( ! $?LANGUAGE ) then
-	setenv LANGUAGE en
 endif
 
 #

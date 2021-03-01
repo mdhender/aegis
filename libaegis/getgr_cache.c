@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,14 +31,12 @@ static symtab_ty *name_table;
 static itab_ty *gid_table;
 
 
-static struct group *group_null _((void));
-
 static struct group *
-group_null()
+group_null(void)
 {
 	struct group	*result;
 
-	result = mem_alloc(sizeof(struct group));
+	result = (struct group *)mem_alloc(sizeof(struct group));
 
 	/*
 	 * This isn't portable, it assumes that NULL pointers are
@@ -51,7 +49,7 @@ group_null()
 #ifndef SOURCE_FORGE_HACK
 	result->gr_name = 0;
 	result->gr_passwd = 0;
-	result->gr_gid = -1;
+	result->gr_gid = (__gid_t)-1;
 	result->gr_mem = 0;
 #else
 	/*
@@ -72,11 +70,8 @@ group_null()
 }
 
 
-static struct group *group_copy _((struct group *));
-
 static struct group *
-group_copy(gr)
-	struct group	*gr;
+group_copy(struct group *gr)
 {
 	struct group	*result;
 
@@ -97,8 +92,7 @@ group_copy(gr)
 
 
 struct group *
-getgrnam_cached(name)
-	string_ty	*name;
+getgrnam_cached(string_ty *name)
 {
 	struct group	*data;
 
@@ -114,7 +108,7 @@ getgrnam_cached(name)
 	/*
 	 * Look for the data in the name table.
 	 */
-	data = symtab_query(name_table, name);
+	data = (struct group *)symtab_query(name_table, name);
 
 	/*
 	 * If the data isn't there, ask the system for it.
@@ -154,8 +148,7 @@ getgrnam_cached(name)
 
 
 struct group *
-getgrgid_cached(gid)
-	int		gid;
+getgrgid_cached(int gid)
 {
 	struct group	*data;
 
@@ -171,7 +164,7 @@ getgrgid_cached(gid)
 	/*
 	 * Look for the data in the name table.
 	 */
-	data = itab_query(gid_table, gid);
+	data = (struct group *)itab_query(gid_table, gid);
 
 	/*
 	 * If the data isn't there, ask the system for it.

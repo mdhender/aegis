@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,40 +36,33 @@ struct rpt_stmt_while_ty
 };
 
 
-static void while_destruct _((rpt_stmt_ty *));
-
 static void
-while_destruct(sp)
-	rpt_stmt_ty	*sp;
+while_destruct(rpt_stmt_ty *sp)
 {
-	rpt_stmt_while_ty *this;
+	rpt_stmt_while_ty *this_thing;
 
-	this = (rpt_stmt_while_ty *)sp;
-	rpt_expr_free(this->e);
+	this_thing = (rpt_stmt_while_ty *)sp;
+	rpt_expr_free(this_thing->e);
 }
 
 
-static void while_run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-while_run(sp, rp)
-	rpt_stmt_ty	*sp;
-	rpt_stmt_result_ty *rp;
+while_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
-	rpt_stmt_while_ty *this;
+	rpt_stmt_while_ty *this_thing;
 	rpt_value_ty	*vp;
 	rpt_value_ty	*vp2;
 
 	/*
 	 * loop until you drop
 	 */
-	this = (rpt_stmt_while_ty *)sp;
+	this_thing = (rpt_stmt_while_ty *)sp;
 	for (;;)
 	{
 		/*
 		 * evaluate the looping condition
 		 */
-		vp = rpt_expr_evaluate(this->e, 1);
+		vp = rpt_expr_evaluate(this_thing->e, 1);
 		if (vp->method->type == rpt_value_type_error)
 		{
 			rp->status = rpt_stmt_status_error;
@@ -99,7 +92,7 @@ while_run(sp, rp)
 				);
 			sub_context_delete(scp);
 			rp->status = rpt_stmt_status_error;
-			rp->thrown = rpt_value_error(this->e->pos, s);
+			rp->thrown = rpt_value_error(this_thing->e->pos, s);
 			return;
 		}
 
@@ -117,7 +110,7 @@ while_run(sp, rp)
 		/*
 		 * run the inner statement
 		 */
-		rpt_stmt_run(this->child[0], rp);
+		rpt_stmt_run(this_thing->child[0], rp);
 		switch (rp->status)
 		{
 		case rpt_stmt_status_normal:
@@ -149,16 +142,14 @@ static rpt_stmt_method_ty while_method =
 
 
 rpt_stmt_ty *
-rpt_stmt_while(e, sub)
-	rpt_expr_ty	*e;
-	rpt_stmt_ty	*sub;
+rpt_stmt_while(rpt_expr_ty *e, rpt_stmt_ty *sub)
 {
 	rpt_stmt_ty	*sp;
-	rpt_stmt_while_ty *this;
+	rpt_stmt_while_ty *this_thing;
 
 	sp = rpt_stmt_alloc(&while_method);
-	this = (rpt_stmt_while_ty *)sp;
-	this->e = rpt_expr_copy(e);
+	this_thing = (rpt_stmt_while_ty *)sp;
+	this_thing->e = rpt_expr_copy(e);
 	rpt_stmt_append(sp, sub);
 	return sp;
 }
@@ -172,40 +163,33 @@ struct rpt_stmt_do_ty
 };
 
 
-static void do_destruct _((rpt_stmt_ty *));
-
 static void
-do_destruct(sp)
-	rpt_stmt_ty	*sp;
+do_destruct(rpt_stmt_ty *sp)
 {
-	rpt_stmt_do_ty	*this;
+	rpt_stmt_do_ty	*this_thing;
 
-	this = (rpt_stmt_do_ty *)sp;
-	rpt_expr_free(this->e);
+	this_thing = (rpt_stmt_do_ty *)sp;
+	rpt_expr_free(this_thing->e);
 }
 
 
-static void do_run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-do_run(sp, rp)
-	rpt_stmt_ty	*sp;
-	rpt_stmt_result_ty *rp;
+do_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
-	rpt_stmt_while_ty *this;
+	rpt_stmt_while_ty *this_thing;
 	rpt_value_ty	*vp;
 	rpt_value_ty	*vp2;
 
 	/*
 	 * loop until you drop
 	 */
-	this = (rpt_stmt_while_ty *)sp;
+	this_thing = (rpt_stmt_while_ty *)sp;
 	for (;;)
 	{
 		/*
 		 * run the inner statement
 		 */
-		rpt_stmt_run(this->child[0], rp);
+		rpt_stmt_run(this_thing->child[0], rp);
 		if (rp->status == rpt_stmt_status_break)
 			break;
 		if
@@ -219,7 +203,7 @@ do_run(sp, rp)
 		/*
 		 * evaluate the looping condition
 		 */
-		vp = rpt_expr_evaluate(this->e, 1);
+		vp = rpt_expr_evaluate(this_thing->e, 1);
 		if (vp->method->type == rpt_value_type_error)
 		{
 			rp->status = rpt_stmt_status_error;
@@ -249,7 +233,7 @@ do_run(sp, rp)
 				);
 			sub_context_delete(scp);
 			rp->status = rpt_stmt_status_error;
-			rp->thrown = rpt_value_error(this->e->pos, s);
+			rp->thrown = rpt_value_error(this_thing->e->pos, s);
 			return;
 		}
 
@@ -280,16 +264,14 @@ static rpt_stmt_method_ty do_method =
 
 
 rpt_stmt_ty *
-rpt_stmt_do(e, sub)
-	rpt_expr_ty	*e;
-	rpt_stmt_ty	*sub;
+rpt_stmt_do(rpt_expr_ty *e, rpt_stmt_ty *sub)
 {
 	rpt_stmt_ty	*sp;
-	rpt_stmt_do_ty	*this;
+	rpt_stmt_do_ty	*this_thing;
 
 	sp = rpt_stmt_alloc(&do_method);
-	this = (rpt_stmt_do_ty *)sp;
-	this->e = rpt_expr_copy(e);
+	this_thing = (rpt_stmt_do_ty *)sp;
+	this_thing->e = rpt_expr_copy(e);
 	rpt_stmt_append(sp, sub);
 	return sp;
 }

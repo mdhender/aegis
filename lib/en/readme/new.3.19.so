@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -106,4 +106,4 @@ A bug with the \fB\-interactive\fP option has been fixed.
 It will actually ask you, now.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.19
+.SS Version 3.19 (4-Aug-1999)

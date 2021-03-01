@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2002 Peter Miller;
+ *	Copyright (C) 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,11 +33,8 @@
 
 
 batch_result_list_ty *
-project_test_run_list(pp, wlp, up, progress_flag)
-    project_ty	    *pp;
-    string_list_ty  *wlp;
-    user_ty	    *up;
-    int		    progress_flag;
+project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
+    int progress_flag)
 {
     change_ty	    *cp;
     batch_result_list_ty *result;
@@ -74,17 +71,9 @@ project_test_run_list(pp, wlp, up, progress_flag)
 }
 
 
-static batch_result_list_ty *change_test_run_list_inner _((change_ty *,
-    string_list_ty *, user_ty *, int, int, int));
-
 static batch_result_list_ty *
-change_test_run_list_inner(cp, wlp, up, bl, current, total)
-    change_ty	    *cp;
-    string_list_ty  *wlp;
-    user_ty	    *up;
-    int		    bl;
-    int		    current;
-    int		    total;
+change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
+    int bl, int current, int total)
 {
     pconf	    pconf_data;
     batch_result_list_ty *result;
@@ -120,12 +109,8 @@ change_test_run_list_inner(cp, wlp, up, bl, current, total)
  */
 
 batch_result_list_ty *
-change_test_run_list(cp, wlp, up, bl, progress_flag)
-    change_ty	    *cp;
-    string_list_ty  *wlp;
-    user_ty	    *up;
-    int		    bl;
-    int 	    progress_flag;
+change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
+    int progress_flag)
 {
     batch_result_list_ty *result;
     size_t	    multiple;

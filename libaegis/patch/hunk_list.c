@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,43 +25,40 @@
 
 
 void
-patch_hunk_list_constructor(this)
-	patch_hunk_list_ty *this;
+patch_hunk_list_constructor(patch_hunk_list_ty *this_thing)
 {
-	this->length = 0;
-	this->maximum = 0;
-	this->item = 0;
+	this_thing->length = 0;
+	this_thing->maximum = 0;
+	this_thing->item = 0;
 }
 
 
 void
-patch_hunk_list_destructor(this)
-	patch_hunk_list_ty *this;
+patch_hunk_list_destructor(patch_hunk_list_ty *this_thing)
 {
 	size_t		j;
 
-	for (j = 0; j < this->length; ++j)
-		patch_hunk_delete(this->item[j]);
-	if (this->item)
-		mem_free(this->item);
-	this->length = 0;
-	this->maximum = 0;
-	this->item = 0;
+	for (j = 0; j < this_thing->length; ++j)
+		patch_hunk_delete(this_thing->item[j]);
+	if (this_thing->item)
+		mem_free(this_thing->item);
+	this_thing->length = 0;
+	this_thing->maximum = 0;
+	this_thing->item = 0;
 }
 
 
 void
-patch_hunk_list_append(this, php)
-	patch_hunk_list_ty *this;
-	patch_hunk_ty	*php;
+patch_hunk_list_append(patch_hunk_list_ty *this_thing, patch_hunk_ty *php)
 {
-	if (this->length >= this->maximum)
+	if (this_thing->length >= this_thing->maximum)
 	{
 		size_t		nbytes;
 
-		this->maximum = this->maximum * 2 + 8;
-		nbytes = this->maximum * sizeof(this->item[0]);
-		this->item = mem_change_size(this->item, nbytes);
+		this_thing->maximum = this_thing->maximum * 2 + 8;
+		nbytes = this_thing->maximum * sizeof(this_thing->item[0]);
+		this_thing->item =
+                    (patch_hunk_ty **)mem_change_size(this_thing->item, nbytes);
 	}
-	this->item[this->length++] = php;
+	this_thing->item[this_thing->length++] = php;
 }

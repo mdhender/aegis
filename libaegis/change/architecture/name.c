@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,11 +38,29 @@ change_architecture_name(change_ty *cp, int with_arch)
 	pconf		pconf_data;
 	long		j;
 	string_ty	*result;
-	string_ty	*un;
+	string_ty       *un;
+	string_ty       *discriminator;
 
 	pconf_data = change_pconf_get(cp, 0);
 	assert(pconf_data->architecture);
 	un = uname_variant_get();
+
+	/*
+	 * The architecture discriminator gets added to the end of the
+	 * architecture string formed using the uname system call.
+	 */
+	discriminator = change_run_architecture_discriminator_command(cp);
+	if (discriminator)
+	{
+	    string_ty       *dash;
+
+	    dash = str_from_c("-");
+	    un = str_cat_three(un, dash, discriminator);
+	    str_free(dash);
+	}
+	else
+	    un = str_copy(un);
+
 	result = 0;
 	for (j = 0; j < pconf_data->architecture->length; ++j)
 	{
@@ -72,6 +90,7 @@ change_architecture_name(change_ty *cp, int with_arch)
 		break;
 	    }
 	}
+	str_free(un);
 	if (!result && with_arch)
 	{
 	    sub_context_ty	*scp;

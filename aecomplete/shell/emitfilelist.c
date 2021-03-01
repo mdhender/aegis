@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,8 @@
 #include <symtab.h>
 
 
-static size_t how_much_in_common _((string_ty *, string_ty *));
-
 static size_t
-how_much_in_common(s1, s2)
-    string_ty       *s1;
-    string_ty       *s2;
+how_much_in_common(string_ty *s1, string_ty *s2)
 {
     size_t          n;
     const char      *cp1;
@@ -50,12 +46,8 @@ how_much_in_common(s1, s2)
 }
 
 
-static string_ty *following_slash _((string_ty *, size_t));
-
 static string_ty *
-following_slash(s, len)
-    string_ty       *s;
-    size_t          len;
+following_slash(string_ty *s, size_t len)
 {
     for (;;)
     {
@@ -69,9 +61,7 @@ following_slash(s, len)
 
 
 void
-shell_emit_file_list(sh, slp)
-    shell_ty        *sh;
-    string_list_ty  *slp;
+shell_emit_file_list(shell_ty *sh, string_list_ty *slp)
 {
     symtab_ty       *stp;
     size_t          j;

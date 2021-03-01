@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,9 +30,7 @@
 
 
 void
-os_edit(filename, et)
-    string_ty       *filename;
-    edit_ty         et;
+os_edit(string_ty *filename, edit_ty et)
 {
     string_ty       *cmd;
     string_ty       *cwd;

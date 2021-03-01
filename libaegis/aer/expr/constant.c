@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 2002 Peter Miller.
+ *	Copyright (C) 1994, 2002, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,29 +38,30 @@ struct rpt_expr_constant_ty
 static void
 destruct(rpt_expr_ty *ep)
 {
-    rpt_expr_constant_ty *this;
+    rpt_expr_constant_ty *this_thing;
 
-    this = (rpt_expr_constant_ty *)ep;
-    rpt_value_free(this->value);
+    this_thing = (rpt_expr_constant_ty *)ep;
+    rpt_value_free(this_thing->value);
 }
 
 
 static rpt_value_ty *
 evaluate(rpt_expr_ty *ep)
 {
-    rpt_expr_constant_ty *this;
+    rpt_expr_constant_ty *this_thing;
     rpt_value_ty    *result;
 
-    trace(("expr_constant::evaluate(this = %08lX)\n{\n", (long)ep));
-    this = (rpt_expr_constant_ty *)ep;
-    assert(this->value->reference_count >= 1);
-    if (!this->lvalue && this->value->method->type == rpt_value_type_reference)
+    trace(("expr_constant::evaluate(this_thing = %08lX)\n{\n", (long)ep));
+    this_thing = (rpt_expr_constant_ty *)ep;
+    assert(this_thing->value->reference_count >= 1);
+    if (!this_thing->lvalue &&
+        this_thing->value->method->type == rpt_value_type_reference)
     {
-	result = rpt_value_reference_get(this->value);
+	result = rpt_value_reference_get(this_thing->value);
 	assert(result->method->type != rpt_value_type_reference);
     }
     else
-	result = rpt_value_copy(this->value);
+	result = rpt_value_copy(this_thing->value);
     assert(result->reference_count >= 2);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
@@ -71,11 +72,11 @@ evaluate(rpt_expr_ty *ep)
 static int
 lvalue(rpt_expr_ty *ep)
 {
-    rpt_expr_constant_ty *this;
+    rpt_expr_constant_ty *this_thing;
 
-    this = (rpt_expr_constant_ty *)ep;
-    this->lvalue = 1;
-    return (this->value->method->type == rpt_value_type_reference);
+    this_thing = (rpt_expr_constant_ty *)ep;
+    this_thing->lvalue = 1;
+    return (this_thing->value->method->type == rpt_value_type_reference);
 }
 
 
@@ -93,14 +94,14 @@ static rpt_expr_method_ty method =
 rpt_expr_ty *
 rpt_expr_constant(rpt_value_ty *value)
 {
-    rpt_expr_constant_ty *this;
+    rpt_expr_constant_ty *this_thing;
 
     trace(("rpt_expr_constant(value = %08lX)\n{\n", (long)value));
     assert(value->reference_count >= 1);
-    this = (rpt_expr_constant_ty *)rpt_expr_alloc(&method);
-    this->lvalue = 0;
-    this->value = rpt_value_copy(value);
-    trace(("return %08lX;\n", (long)this));
+    this_thing = (rpt_expr_constant_ty *)rpt_expr_alloc(&method);
+    this_thing->lvalue = 0;
+    this_thing->value = rpt_value_copy(value);
+    trace(("return %08lX;\n", (long)this_thing));
     trace(("}\n"));
-    return (rpt_expr_ty *)this;
+    return (rpt_expr_ty *)this_thing;
 }

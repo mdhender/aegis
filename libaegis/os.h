@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -84,10 +84,10 @@ void os_become_orig_query(int *uid, int *gid, int *umsk);
 int os_become_active(void);
 #define os_become_must_be_active() \
 	os_become_must_be_active_gizzards(__FILE__, __LINE__)
-void os_become_must_be_active_gizzards(char *, int);
+void os_become_must_be_active_gizzards(const char *, int);
 #define os_become_must_not_be_active() \
 	os_become_must_not_be_active_gizzards(__FILE__, __LINE__)
-void os_become_must_not_be_active_gizzards(char *, int);
+void os_become_must_not_be_active_gizzards(const char *, int);
 
 
 /**
@@ -106,9 +106,9 @@ int os_background(void);
 int os_readable(string_ty *);
 int os_executable(string_ty *);
 int os_waitpid(int child, int *status);
-int os_waitpid_status(int child, char *cmd);
+int os_waitpid_status(int child, const char *cmd);
 
-char *os_shell(void);
+const char *os_shell(void);
 
 enum edit_ty
 {

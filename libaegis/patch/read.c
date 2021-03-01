@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,9 +42,7 @@ static patch_format_ty *format[] =
 };
 
 patch_list_ty *
-patch_read(input, required)
-	input_ty	*input;
-	int		required;
+patch_read(input_ty *input, int required)
 {
 	patch_list_ty	*result;
 	patch_context_ty *context;

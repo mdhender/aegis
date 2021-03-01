@@ -37,6 +37,7 @@
 #include <help.h>
 #include <lock.h>
 #include <log.h>
+#include <now.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
@@ -53,7 +54,7 @@
 static void
 copy_file_usage(void)
 {
-    char            *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -132,7 +133,7 @@ copy_file_list(void)
 	}
 	arglex();
     }
-    list_project_files(project_name, change_number);
+    list_project_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -161,15 +162,15 @@ copy_file_independent(void)
     long            delta_number;
     long            delta_from_change;
     time_t          delta_date;
-    char            *delta_name;
+    const char      *delta_name;
     int             number_of_errors;
     string_list_ty  search_path;
-    char            *branch;
+    const char      *branch;
     int             trunk;
     change_ty       *cp_bogus;
     int             based;
     string_ty       *base;
-    char            *output;
+    const char      *output;
 
     trace(("copy_file_independent()\n{\n"));
     arglex();
@@ -440,8 +441,6 @@ copy_file_independent(void)
     }
     if (delta_date != NO_TIME_SET)
     {
-	time_t          now;
-
 	/*
 	 * If the time is in the future, you could get a different
 	 * answer for the same input at some point in the future.
@@ -449,8 +448,7 @@ copy_file_independent(void)
 	 * This is the "time safe" quality first described by
 	 * Damon Poole <damon@ede.com>
 	 */
-	time(&now);
-	if (delta_date > now)
+	if (delta_date > now())
 	    project_error(pp2, 0, i18n("date in the future"));
     }
     if (delta_from_change)
@@ -627,16 +625,6 @@ copy_file_independent(void)
 	    sub_context_delete(scp);
 	    ++number_of_errors;
 	    continue;
-	}
-	if (src_data && src_data->usage == file_usage_build)
-	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    project_error(pp, scp, i18n("$filename is built"));
-	    sub_context_delete(scp);
-	    ++number_of_errors;
 	}
     }
     if (number_of_errors)
@@ -827,7 +815,7 @@ copy_file_main(void)
     string_list_ty  wl_out;
     string_ty       *s1;
     string_ty       *s2;
-    int             stomp;
+    int             overwriting;
     cstate          cstate_data;
     int             j;
     int             k;
@@ -838,15 +826,15 @@ copy_file_main(void)
     change_ty       *cp;
     log_style_ty    log_style;
     user_ty         *up;
-    char            *output;
+    const char      *output;
     time_t          delta_date;
     long            delta_number;
-    char            *delta_name;
+    const char      *delta_name;
     long            delta_from_change;
     int             config_seen;
     int             number_of_errors;
     string_list_ty  search_path;
-    char            *branch;
+    const char      *branch;
     int             trunk;
     int             read_only;
     int             mode;
@@ -858,7 +846,7 @@ copy_file_main(void)
     trace(("copy_file_main()\n{\n"));
     arglex();
     string_list_constructor(&wl);
-    stomp = 0;
+    overwriting = 0;
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
@@ -880,9 +868,9 @@ copy_file_main(void)
 	    continue;
 
 	case arglex_token_overwriting:
-	    if (stomp)
+	    if (overwriting)
 		duplicate_option(copy_file_usage);
-	    stomp = 1;
+	    overwriting = 1;
 	    break;
 
 	case arglex_token_directory:
@@ -1164,7 +1152,7 @@ copy_file_main(void)
 	    /* NOTREACHED */
 	    sub_context_delete(scp);
 	}
-	stomp = 1;
+	overwriting = 1;
     }
 
     /*
@@ -1255,8 +1243,6 @@ copy_file_main(void)
     }
     if (delta_date != NO_TIME_SET)
     {
-	time_t          now;
-
 	/*
 	 * If the time is in the future, you could get a different
 	 * answer for the same inpout at some point in the future.
@@ -1264,8 +1250,7 @@ copy_file_main(void)
 	 * This is the "time safe" quality first described by
 	 * Damon Poole <damon@ede.com>
 	 */
-	time(&now);
-	if (delta_date > now)
+	if (delta_date > now())
 	    project_error(pp2, 0, i18n("date in the future"));
     }
     if (delta_from_change)
@@ -1400,7 +1385,7 @@ copy_file_main(void)
 		string_ty       *s3;
 
 		s3 = wl_in.string[k];
-		if (stomp || !change_file_find(cp, s3))
+		if (overwriting || !change_file_find(cp, s3))
 		{
 		    if (string_list_member(&wl2, s3))
 		    {
@@ -1469,7 +1454,7 @@ copy_file_main(void)
 	fstate_src      src_data;
 
 	s1 = wl.string[j];
-	if (change_file_find(cp, s1) && !stomp && !output)
+	if (change_file_find(cp, s1) && !overwriting && !output)
 	{
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "File_Name", s1);
@@ -1721,73 +1706,69 @@ copy_file_main(void)
 	    assert(p_src_data->edit->revision);
 	    c_src_data = change_file_find(cp, s1);
 	    if (!c_src_data)
-	    {
 		c_src_data = change_file_new(cp, s1);
-		c_src_data->action =
-		    (
-			p_src_data->action == file_action_remove
-		    ?
-			file_action_remove
-		    :
-			(read_only ? file_action_insulate : file_action_modify)
-		    );
-		c_src_data->usage = p_src_data->usage;
+	    c_src_data->action =
+		(
+		    p_src_data->action == file_action_remove
+		?
+		    file_action_remove
+		:
+		    (read_only ? file_action_insulate : file_action_modify)
+		);
+	    c_src_data->usage = p_src_data->usage;
 
-		/*
-		 * Watch out for test times.
-		 */
-		if (!read_only)
+	    /*
+	     * Watch out for test times.
+	     */
+	    if (!read_only)
+	    {
+		int             f_idx;
+		int             more_tests;
+
+		switch (c_src_data->usage)
 		{
-		    int             f_idx;
-		    int             more_tests;
+		case file_usage_test:
+		case file_usage_manual_test:
+		    /*
+		     * The change now has at least one test, so cancel
+		     * any testing exemption.
+		     * (But test_baseline_exempt is still viable.)
+		     */
+		    change_rescind_test_exemption(cp);
 
-		    switch (c_src_data->usage)
+		    /*
+		     * If there are no more tests, then the change
+		     *  must be made regression test exempt
+		     */
+		    more_tests = 0;
+		    for (f_idx = 0; ; ++f_idx)
 		    {
-		    case file_usage_test:
-		    case file_usage_manual_test:
-			/*
-			 * The change now has at
-			 * least one test, so cancel
-			 * any testing exemption.
-			 * (But test_baseline_exempt
-			 * is still viable.)
-			 */
-			change_rescind_test_exemption(cp);
+			fstate_src      p_src_data_proj;
 
-			/*
-		         * If there are no more tests, then the change
-		         *  must be made regression test exempt
-		         */
-			more_tests = 0;
-			for (f_idx = 0; ; ++f_idx)
-			{
-			    fstate_src      p_src_data_proj;
-
-			    p_src_data_proj =
-				project_file_nth(pp2, f_idx, view_path_simple);
-			    if (!p_src_data_proj)
-				break;
-			    switch (p_src_data_proj->usage)
-			    {
-			    case file_usage_test:
-			    case file_usage_manual_test:
-				more_tests = 1;
-				break;
-
-			    case file_usage_source:
-			    case file_usage_build:
-				continue;
-			    }
+			p_src_data_proj =
+			    project_file_nth(pp2, f_idx, view_path_simple);
+			if (!p_src_data_proj)
 			    break;
-			}
-			if (more_tests)
-			    change_force_regression_test_exemption(cp);
-			break;
+			switch (p_src_data_proj->usage)
+			{
+			case file_usage_test:
+			case file_usage_manual_test:
+			    more_tests = 1;
+			    break;
 
-		    case file_usage_source:
-		    case file_usage_build:
+			case file_usage_source:
+			case file_usage_build:
+			    continue;
+			}
 			break;
 		    }
+		    if (!more_tests)
+			change_force_regression_test_exemption(cp);
+		    break;
+
+		case file_usage_source:
+		case file_usage_build:
+		    break;
 		}
 	    }
 	    if (old_src != older_src)

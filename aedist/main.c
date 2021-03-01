@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,14 +34,13 @@
 #include <receive.h>
 #include <send.h>
 #include <str.h>
+#include <version.h>
 
-
-static void usage _((void));
 
 static void
-usage()
+usage(void)
 {
-	char		*progname;
+	const char      *progname;
 
 	progname = progname_get();
 	fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
@@ -52,12 +51,8 @@ usage()
 }
 
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
 	/*
 	 * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
@@ -104,6 +99,11 @@ main(argc, argv)
 		case arglex_token_receive:
 			arglex();
 			receive_main(usage);
+			break;
+
+		case arglex_token_version:
+			arglex();
+			version();
 			break;
 		}
 		break;

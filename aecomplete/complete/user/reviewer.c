@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,39 +26,29 @@
 #include <project/history.h>
 
 
-static int yes _((project_ty *, string_ty *));
-
 static int
-yes(pp, name)
-    project_ty      *pp;
-    string_ty       *name;
+yes(project_ty *pp, string_ty *name)
 {
     return project_reviewer_query(pp, name);
 }
 
 
 complete_ty *
-complete_user_reviewer(pp)
-    project_ty      *pp;
+complete_user_reviewer(project_ty *pp)
 {
     return complete_user(pp, yes);
 }
 
 
-static int no _((project_ty *, string_ty *));
-
 static int
-no(pp, name)
-    project_ty      *pp;
-    string_ty       *name;
+no(project_ty *pp, string_ty *name)
 {
     return !project_reviewer_query(pp, name);
 }
 
 
 complete_ty *
-complete_user_reviewer_not(pp)
-    project_ty      *pp;
+complete_user_reviewer_not(project_ty *pp)
 {
     return complete_user(pp, no);
 }

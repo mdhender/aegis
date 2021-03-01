@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1993, 1994, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 static void
 gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-    char	    *deref;
+    const char      *deref;
 
     deref = (is_a_list ? "*" : "");
     indent_printf("%s\1%s%s;\n", "time_t", deref, name->str_text);
@@ -41,7 +41,7 @@ gen_code_declarator(type_ty *type, string_ty *name, int is_a_list, int show)
     indent_printf("time_write(fp, ");
     if (is_a_list)
     {
-	indent_printf("(char *)0");
+	indent_printf("(const char *)0");
 	show = 1;
     }
     else
@@ -50,7 +50,23 @@ gen_code_declarator(type_ty *type, string_ty *name, int is_a_list, int show)
 	if (show < 0)
     	    show = 0;
     }
-    indent_printf(", this->%s, %d);\n", name->str_text, show);
+    indent_printf(", this_thing->%s, %d);\n", name->str_text, show);
+}
+
+
+static void
+gen_code_call_xml(type_ty *type, string_ty *form_name, string_ty *member_name,
+    int show)
+{
+    if (show < 0)
+	show = 0;
+    indent_printf
+    (
+	"time_write_xml(fp, \"%s\", this_thing->%s, %d);\n",
+	form_name->str_text,
+	member_name->str_text,
+	show
+    );
 }
 
 
@@ -73,6 +89,7 @@ type_method_ty type_time =
     gen_include_declarator,
     0, /* gen_code */
     gen_code_declarator,
+    gen_code_call_xml,
     gen_free_declarator,
     0, /* member_add */
     0, /* in_include_file */

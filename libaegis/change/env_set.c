@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,11 +29,11 @@
 
 
 void
-change_env_set(cp, with_arch)
-	change_ty	*cp;
-	int		with_arch;
+change_env_set(change_ty *cp, int with_arch)
 {
 	string_ty	*s;
+
+	env_set_page();
 
 	/*
 	 * set the AEGIS_PROJECT environment cariable
@@ -44,12 +44,7 @@ change_env_set(cp, with_arch)
 	 * set the AEGIS_CHANGE environment cariable
 	 */
 	if (!cp->bogus)
-	{
-		char		buffer[20];
-
-		sprintf(buffer, "%ld", magic_zero_decode(cp->number));
-		env_set("AEGIS_CHANGE", buffer);
-	}
+		env_setf("AEGIS_CHANGE", "%ld", magic_zero_decode(cp->number));
 	else
 		env_unset("AEGIS_CHANGE");
 

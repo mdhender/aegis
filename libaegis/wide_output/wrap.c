@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,14 +52,15 @@ struct wide_output_wrap_ty
 
 
 static void
-wrap(wide_output_wrap_ty *this)
+wrap(wide_output_wrap_ty *this_thing)
 {
     wchar_t	    *s;
     wchar_t	    *s_end;
 
-    trace(("wide_output_wrap::wrap(this = %08lX)\n{\n", (long)this));
-    s = this->buf;
-    s_end = s + this->buf_pos;
+    trace(("wide_output_wrap::wrap(this_thing = %08lX)\n{\n",
+           (long)this_thing));
+    s = this_thing->buf;
+    s_end = s + this_thing->buf_pos;
     while (s < s_end)
     {
 	wchar_t		*s_start;
@@ -90,12 +91,12 @@ wrap(wide_output_wrap_ty *this)
 	    int		    c_wid;
 
 	    c_wid = s_wid + wcwidth(*s);
-	    if (c_wid > this->width)
+	    if (c_wid > this_thing->width)
 		break;
 	    ++s;
 	    s_wid = c_wid;
 	}
-	trace(("s_wid=%d width=%d\n", s_wid, this->width));
+	trace(("s_wid=%d width=%d\n", s_wid, this_thing->width));
 
 	/*
 	 * If we reached the end of the line,
@@ -105,7 +106,7 @@ wrap(wide_output_wrap_ty *this)
 	{
 	    trace(("mark s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
 	    language_C();
-	    wide_output_write(this->deeper, s_start, s - s_start);
+	    wide_output_write(this_thing->deeper, s_start, s - s_start);
 	    break;
 	}
 
@@ -146,24 +147,24 @@ wrap(wide_output_wrap_ty *this)
 	 */
 	trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
 	language_C();
-	wide_output_write(this->deeper, s_start, s - s_start);
+	wide_output_write(this_thing->deeper, s_start, s - s_start);
 	while (s < s_end && iswspace(*s))
 	    ++s;
 	trace(("s=%08lX\n", (long)s));
 	if (s >= s_end)
 	    break;
-	wide_output_putwc(this->deeper, (wchar_t)'\n');
+	wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
     }
 
     /*
      * End the line with a newline, even if the input didn't have one.
      */
-    wide_output_putwc(this->deeper, (wchar_t)'\n');
+    wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
 
     /*
      * Reset the line, now that we've written it out.
      */
-    this->buf_pos = 0;
+    this_thing->buf_pos = 0;
     trace(("}\n"));
 }
 
@@ -171,17 +172,17 @@ wrap(wide_output_wrap_ty *this)
 static void
 wide_output_wrap_destructor(wide_output_ty *fp)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
     trace(("wide_output_wrap::destructor(fp = %08lX)\n{\n", (long)fp));
-    this = (wide_output_wrap_ty *)fp;
-    if (this->buf_pos)
-	wrap(this);
-    if (this->buf)
-	mem_free(this->buf);
-    if (this->delete_on_close)
-	wide_output_delete(this->deeper);
-    this->deeper = 0;
+    this_thing = (wide_output_wrap_ty *)fp;
+    if (this_thing->buf_pos)
+	wrap(this_thing);
+    if (this_thing->buf)
+	mem_free(this_thing->buf);
+    if (this_thing->delete_on_close)
+	wide_output_delete(this_thing->deeper);
+    this_thing->deeper = 0;
     trace(("}\n"));
 }
 
@@ -189,21 +190,21 @@ wide_output_wrap_destructor(wide_output_ty *fp)
 static string_ty *
 wide_output_wrap_filename(wide_output_ty  *fp)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
-    this = (wide_output_wrap_ty *)fp;
-    return wide_output_filename(this->deeper);
+    this_thing = (wide_output_wrap_ty *)fp;
+    return wide_output_filename(this_thing->deeper);
 }
 
 
 static void
 wide_output_wrap_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
     trace(("wide_output_wrap_write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
 	(long)fp, (long)data, (long)len));
-    this = (wide_output_wrap_ty *)fp;
+    this_thing = (wide_output_wrap_ty *)fp;
     while (len > 0)
     {
 	wchar_t		wc;
@@ -211,18 +212,18 @@ wide_output_wrap_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 	wc = *data++;
 	--len;
 	if (wc == (wchar_t)'\n')
-	    wrap(this);
+	    wrap(this_thing);
 	else
 	{
-	    if (this->buf_pos >= this->buf_max)
+	    if (this_thing->buf_pos >= this_thing->buf_max)
 	    {
 		size_t		nbytes;
 
-		this->buf_max = 16 + 2 * this->buf_max;
-		nbytes = this->buf_max * sizeof(this->buf[0]);
-		this->buf = mem_change_size(this->buf, nbytes);
+		this_thing->buf_max = 16 + 2 * this_thing->buf_max;
+		nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
+		this_thing->buf = mem_change_size(this_thing->buf, nbytes);
 	    }
-	    this->buf[this->buf_pos++] = wc;
+	    this_thing->buf[this_thing->buf_pos++] = wc;
 	}
     }
     trace(("}\n"));
@@ -232,41 +233,41 @@ wide_output_wrap_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 static void
 wide_output_wrap_flush(wide_output_ty *fp)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
-    this = (wide_output_wrap_ty *)fp;
-    wide_output_flush(this->deeper);
+    this_thing = (wide_output_wrap_ty *)fp;
+    wide_output_flush(this_thing->deeper);
 }
 
 
 static int
 wide_output_wrap_page_width(wide_output_ty *fp)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
-    this = (wide_output_wrap_ty *)fp;
-    return this->width;
+    this_thing = (wide_output_wrap_ty *)fp;
+    return this_thing->width;
 }
 
 
 static int
 wide_output_wrap_page_length(wide_output_ty *fp)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
-    this = (wide_output_wrap_ty *)fp;
-    return wide_output_page_length(this->deeper);
+    this_thing = (wide_output_wrap_ty *)fp;
+    return wide_output_page_length(this_thing->deeper);
 }
 
 
 static void
 wide_output_wrap_eoln(wide_output_ty *fp)
 {
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
     trace(("wide_output_wrap::eoln(fp = %08lX)\n{\n", (long)fp));
-    this = (wide_output_wrap_ty *)fp;
-    if (this->buf_pos > 0)
+    this_thing = (wide_output_wrap_ty *)fp;
+    if (this_thing->buf_pos > 0)
 	wide_output_putwc(fp, (wchar_t)'\n');
     trace(("}\n"));
 }
@@ -290,18 +291,18 @@ wide_output_ty *
 wide_output_wrap_open(wide_output_ty *deeper, int delete_on_close, int width)
 {
     wide_output_ty  *result;
-    wide_output_wrap_ty *this;
+    wide_output_wrap_ty *this_thing;
 
     trace(("wide_output_wrap::new(deeper = %08lX, doc = %d, width = %d)\n{\n",
 	(long)deeper, delete_on_close, width));
     result = wide_output_new(&vtbl);
-    this = (wide_output_wrap_ty *)result;
-    this->deeper = deeper;
-    this->delete_on_close = delete_on_close;
-    this->width = (width <= 0 ? wide_output_page_width(deeper) : width);
-    this->buf = 0;
-    this->buf_pos = 0;
-    this->buf_max = 0;
+    this_thing = (wide_output_wrap_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->delete_on_close = delete_on_close;
+    this_thing->width = (width <= 0 ? wide_output_page_width(deeper) : width);
+    this_thing->buf = 0;
+    this_thing->buf_pos = 0;
+    this_thing->buf_max = 0;
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;

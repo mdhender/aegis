@@ -1,0 +1,104 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#       Copyright (C) 2003 Scott Finneran
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: PlasticFS front-end script for emacs contributed by Scott Finneran.
+#
+
+usage="Usage: $0 [-p aegisProject] [-c aegisChange]"
+
+#
+# Cancel any PlasticFS that mey be in force at present.
+#
+unset LD_PRELOAD
+unset PLASTICFS
+
+bindir=@bindir@
+projNam=`$bindir/aesub '${project}' -bl 2>/dev/null`
+chanNum=`$bindir/aesub '${change}' 2>/dev/null`
+
+while getopts ":p:c:" opt
+do
+    case $opt in
+    p)
+	projNam=$OPTARG
+	;;
+    c)
+	chanNum=$OPTARG
+	;;
+    \?)
+	echo $usage
+	exit 1
+	;;
+    esac
+done
+
+if [ -z "$projNam" ]
+then
+    echo "Could not determine Aegis project" 1>&2
+    exit 1
+fi
+AEGIS_PROJECT=$projNam
+export AEGIS_PROJECT
+
+if [ -z "$chanNum" ]
+then
+    echo "Could not determine Aegis change" 1>&2
+    exit 1
+fi
+AEGIS_CHANGE=$chanNum
+export AEGIS_CHANGE
+
+# Go to the change directory.
+cd `$bindir/aegis -cd -ter`
+
+# get this list of files
+# (best to do this before LD_PRELOAD is set)
+cf=`aegis -l cf -terse`
+
+#
+# Work out if PlasticFS is installed
+#
+LD_PRELOAD=libplasticfs.so /bin/true > /dev/null 2>&1
+if [ "$?" -eq 0 ]
+then
+    #
+    # Ask Aegis where the files live.
+    #
+    vPath=`$bindir/aesub '${split : ${search_path}}'`
+    if [ "$?" -eq 0 ]
+    then
+	#
+	# Have PlasticFS present the editor with a unified view of the
+	# search path.
+	#
+	LD_PRELOAD=libplasticfs.so
+	PLASTICFS="viewpath $vPath"
+	export LD_PRELOAD
+	export PLASTICFS
+    fi
+fi
+
+#
+# Pass all filenames for this change to the editor.
+# The default editor is vi.
+#
+# Do not throw into the background, because not all editors are graphical.
+# If the user wants this, she can put & on the end of the command.
+#
+${EDITOR-vi} $cf

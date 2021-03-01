@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,7 @@
 
 
 content_encoding_t
-content_encoding_grok(name)
-	const char	*name;
+content_encoding_grok(const char *name)
 {
     typedef struct table_t table_t;
     struct table_t
@@ -72,9 +71,7 @@ content_encoding_grok(name)
 
 
 void
-content_encoding_header(ofp, name)
-    output_ty    *ofp;
-    content_encoding_t name;
+content_encoding_header(output_ty *ofp, content_encoding_t name)
 {
     switch (name)
     {
@@ -98,9 +95,7 @@ content_encoding_header(ofp, name)
 
 
 output_ty *
-output_content_encoding(ofp, name)
-    output_ty       *ofp;
-    content_encoding_t name;
+output_content_encoding(output_ty *ofp, content_encoding_t name)
 {
     switch (name)
     {

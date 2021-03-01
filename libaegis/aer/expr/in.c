@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 
 
 static rpt_value_ty *
-evaluate(rpt_expr_ty *this)
+evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *lhs;
     rpt_value_ty    *rhs;
@@ -43,11 +43,11 @@ evaluate(rpt_expr_ty *this)
     rpt_expr_ty     *e2;
     rpt_expr_ty     *e3;
 
-    lhs = rpt_expr_evaluate(this->child[0], 1);
+    lhs = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lhs->method->type == rpt_value_type_error)
 	return lhs;
 
-    rhs = rpt_expr_evaluate(this->child[1], 1);
+    rhs = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rhs->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lhs);
@@ -64,14 +64,14 @@ evaluate(rpt_expr_ty *this)
 	rpt_value_free(rhs);
 	s = subst_intl(scp, i18n("list value required (was given $name)"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[1]->pos, s);
+	result = rpt_value_error(this_thing->child[1]->pos, s);
 	str_free(s);
 	return result;
     }
 
     e1 = rpt_expr_constant(lhs);
     assert(!e1->pos);
-    e1->pos = rpt_pos_copy(this->child[0]->pos);
+    e1->pos = rpt_pos_copy(this_thing->child[0]->pos);
     n = rpt_value_list_length(rhs);
     for (j = 0; j < n; ++j)
     {
@@ -80,7 +80,7 @@ evaluate(rpt_expr_ty *this)
 	vp = rpt_value_list_nth(rhs, j);
 	e2 = rpt_expr_constant(vp);
 	assert(!e2->pos);
-	e2->pos = rpt_pos_copy(this->child[1]->pos);
+	e2->pos = rpt_pos_copy(this_thing->child[1]->pos);
 	e3 = rpt_expr_eq(e1, e2);
 	rpt_expr_free(e2);
 	result = rpt_expr_evaluate(e3, 1);

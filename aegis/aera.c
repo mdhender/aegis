@@ -43,7 +43,7 @@
 static void
 remove_administrator_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -108,7 +108,7 @@ remove_administrator_list(void)
 	}
 	arglex();
     }
-    list_administrators(project_name, 0);
+    list_administrators(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));

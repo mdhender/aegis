@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ void sem_list(void);
 void sem_field(string_ty *);
 
 void *parse(string_ty *, type_ty *);
-void *parse_env(char *, type_ty *);
+void *parse_env(const char *, type_ty *);
 struct input_ty; /* existence */
 void *parse_input(struct input_ty *, type_ty *);
 

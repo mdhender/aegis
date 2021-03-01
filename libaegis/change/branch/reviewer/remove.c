@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,7 @@
 
 
 void
-change_branch_reviewer_remove(cp, user_name)
-	change_ty	*cp;
-	string_ty	*user_name;
+change_branch_reviewer_remove(change_ty *cp, string_ty *user_name)
 {
 	cstate		cstate_data;
 	cstate_branch_reviewer_list lp;

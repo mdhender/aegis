@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,7 @@
 
 
 void
-input_skip(ip, size)
-    input_ty	    *ip;
-    size_t	    size;
+input_skip(input_ty *ip, size_t size)
 {
     char	    buffer[1024];
     size_t	    nbytes;

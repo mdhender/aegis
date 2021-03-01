@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,11 +48,7 @@
 
 
 void
-gif_line(gp, x1, y1, x2, y2, clr)
-	gif_ty		*gp;
-	int		x1, y1;
-	int		x2, y2;
-	int		clr;
+gif_line(gif_ty *gp, int x1, int y1, int x2, int y2, int clr)
 {
 	int		c1;
 	int		c2;
@@ -176,10 +172,10 @@ gif_line(gp, x1, y1, x2, y2, clr)
 	/*
 	 * round the clipped values
 	 */
-	x1 = 0.5 + dx1;
-	y1 = 0.5 + dy1;
-	x2 = 0.5 + dx2;
-	y2 = 0.5 + dy2;
+	x1 = (int)(0.5 + dx1);
+	y1 = (int)(0.5 + dy1);
+	x2 = (int)(0.5 + dx2);
+	y2 = (int)(0.5 + dy2);
 
 	/*
 	 * draw the line

@@ -79,7 +79,6 @@
 #include <aerpu.h>
 #include <aerrv.h>
 #include <aet.h>
-#include <aev.h>
 #include <arglex2.h>
 #include <configured.h>
 #include <env.h>
@@ -93,12 +92,13 @@
 #include <str.h>
 #include <trace.h>
 #include <undo.h>
+#include <version.h>
 
 
 static void
 usage(void)
 {
-    char            *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s <function> [ <option>... ]\n", progname);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ typedef struct rpt_expr_method_ty rpt_expr_method_ty;
 struct rpt_expr_method_ty
 {
     size_t	    size;
-    char	    *name;
+    const char	    *name;
     void	    (*construct)(struct rpt_expr_ty *);
     void	    (*destruct)(struct rpt_expr_ty *);
     struct rpt_value_ty *(*evaluate)(struct rpt_expr_ty *);
@@ -58,7 +58,7 @@ struct rpt_expr_ty
 rpt_expr_ty *rpt_expr_alloc(rpt_expr_method_ty *);
 void rpt_expr_free(rpt_expr_ty *);
 rpt_expr_ty *rpt_expr_copy(rpt_expr_ty *);
-void rpt_expr_parse_error(rpt_expr_ty *, char *);
+void rpt_expr_parse_error(rpt_expr_ty *, const char *);
 void rpt_expr_append(rpt_expr_ty *parent, rpt_expr_ty *child);
 void rpt_expr_prepend(rpt_expr_ty *parent, rpt_expr_ty *child);
 

@@ -27,7 +27,7 @@
 #include <sub.h>
 
 
-typedef shell_ty *(*funcptr)_((void));
+typedef shell_ty *(*funcptr)(void);
 
 static funcptr table[] =
 {
@@ -56,40 +56,40 @@ shell_find(void)
 
 
 int
-shell_test(shell_ty *this)
+shell_test(shell_ty *this_thing)
 {
-    assert(this);
-    assert(this->vptr);
-    assert(this->vptr->test);
-    return this->vptr->test(this);
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->test);
+    return this_thing->vptr->test(this_thing);
 }
 
 
 string_ty *
-shell_command_get(shell_ty *this)
+shell_command_get(shell_ty *this_thing)
 {
-    assert(this);
-    assert(this->vptr);
-    assert(this->vptr->command_get);
-    return this->vptr->command_get(this);
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->command_get);
+    return this_thing->vptr->command_get(this_thing);
 }
 
 
 string_ty *
-shell_prefix_get(shell_ty *this)
+shell_prefix_get(shell_ty *this_thing)
 {
-    assert(this);
-    assert(this->vptr);
-    assert(this->vptr->prefix_get);
-    return this->vptr->prefix_get(this);
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->prefix_get);
+    return this_thing->vptr->prefix_get(this_thing);
 }
 
 
 void
-shell_emit(shell_ty *this, string_ty *s)
+shell_emit(shell_ty *this_thing, string_ty *s)
 {
-    assert(this);
-    assert(this->vptr);
-    assert(this->vptr->emit);
-    this->vptr->emit(this, s);
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->emit);
+    this_thing->vptr->emit(this_thing, s);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,34 +38,25 @@
 #define ONE_OR_MORE (-1)
 
 
-typedef string_ty *(*func_ptr)_((change_ty *, wstring_list_ty *));
-
+typedef string_ty *(*func_ptr)(change_ty *, wstring_list_ty *);
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    char	    *name;
-    func_ptr	    func;
+    const char      *name;
+    func_ptr        func;
     int		    num_args;
 };
 
 
-static string_ty *change_number_get _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-change_number_get(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+change_number_get(change_ty *cp, wstring_list_ty *arg)
 {
     return str_format("%ld", magic_zero_decode(cp->number));
 }
 
 
-static string_ty *change_description_get _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-change_description_get(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+change_description_get(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
     string_ty	    *s;
@@ -84,12 +75,8 @@ change_description_get(cp, arg)
 }
 
 
-static string_ty *get_delta _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_delta(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_delta(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -111,12 +98,8 @@ get_delta(cp, arg)
 }
 
 
-static string_ty *get_development_directory _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_development_directory(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_development_directory(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -138,12 +121,8 @@ get_development_directory(cp, arg)
 }
 
 
-static string_ty *get_developer _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_developer(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_developer(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -165,12 +144,8 @@ get_developer(cp, arg)
 }
 
 
-static string_ty *get_integration_directory _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_integration_directory(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_integration_directory(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -181,12 +156,8 @@ get_integration_directory(cp, arg)
 }
 
 
-static string_ty *calc_date_string _((time_t, wstring_list_ty *));
-
 static string_ty *
-calc_date_string(when, arg)
-    time_t	    when;
-    wstring_list_ty *arg;
+calc_date_string(time_t when, wstring_list_ty *arg)
 {
     struct tm	    *tm;
     char	    buf[1000];
@@ -213,12 +184,8 @@ calc_date_string(when, arg)
 }
 
 
-static string_ty *get_integrate_pass_date _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_integrate_pass_date(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_integrate_pass_date(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
     time_t	    when;
@@ -232,12 +199,8 @@ get_integrate_pass_date(cp, arg)
 }
 
 
-static string_ty *get_integrator _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_integrator(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_integrator(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -259,12 +222,8 @@ get_integrator(cp, arg)
 }
 
 
-static string_ty *get_reviewer _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_reviewer(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_reviewer(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -286,12 +245,8 @@ get_reviewer(cp, arg)
 }
 
 
-static string_ty *get_state _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_state(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_state(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -300,12 +255,8 @@ get_state(cp, arg)
 }
 
 
-static string_ty *get_cause _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_cause(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_cause(change_ty *cp, wstring_list_ty *arg)
 {
     cstate	    cstate_data;
 
@@ -314,12 +265,8 @@ get_cause(cp, arg)
 }
 
 
-static string_ty *get_version _((change_ty *, wstring_list_ty *));
-
 static string_ty *
-get_version(cp, arg)
-    change_ty	    *cp;
-    wstring_list_ty *arg;
+get_version(change_ty *cp, wstring_list_ty *arg)
 {
     return str_copy(change_version_get(cp));
 }
@@ -348,11 +295,8 @@ static table_ty table[] =
 static symtab_ty *stp;
 
 
-static table_ty *find_func _((string_ty *));
-
 static table_ty *
-find_func(name)
-    string_ty	    *name;
+find_func(string_ty *name)
 {
     table_ty	    *tp;
     string_ty	    *s;
@@ -408,9 +352,7 @@ find_func(name)
  */
 
 wstring_ty *
-sub_change_number(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_change_number(sub_context_ty *scp, wstring_list_ty *arg)
 {
     change_ty	    *cp;
     wstring_ty	    *result;

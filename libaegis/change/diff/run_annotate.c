@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,15 +31,9 @@
 
 
 void
-change_run_annotate_diff_command(cp, up, original, input, output, index_name,
-	diff_option)
-    change_ty	    *cp;
-    user_ty	    *up;
-    string_ty	    *original;
-    string_ty	    *input;
-    string_ty	    *output;
-    string_ty	    *index_name;
-    char	    *diff_option;
+change_run_annotate_diff_command(change_ty *cp, user_ty *up,
+    string_ty *original, string_ty *input, string_ty *output,
+    string_ty *index_name, const char *diff_option)
 {
     sub_context_ty  *scp;
     pconf	    pconf_data;

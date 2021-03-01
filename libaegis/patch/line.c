@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,21 +24,18 @@
 
 
 void
-patch_line_constructor(this, type, value)
-	patch_line_ty	*this;
-	patch_line_type	type;
-	string_ty	*value;
+patch_line_constructor(patch_line_ty *this_thing, patch_line_type type,
+    string_ty *value)
 {
-	this->type = type;
-	this->value = str_copy(value);
+    this_thing->type = type;
+    this_thing->value = str_copy(value);
 }
 
 
 void
-patch_line_destructor(this)
-	patch_line_ty	*this;
+patch_line_destructor(patch_line_ty *this_thing)
 {
-	str_free(this->value);
-	this->type = 0;
-	this->value = 0;
+    str_free(this_thing->value);
+    this_thing->type = (patch_line_type)0;
+    this_thing->value = 0;
 }

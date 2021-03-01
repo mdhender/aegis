@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 
 
 static rpt_value_ty *
-inc_pre_evaluate(rpt_expr_ty *this)
+inc_pre_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *vp;
@@ -39,8 +39,8 @@ inc_pre_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *result;
     string_ty	    *s;
 
-    assert(this->nchild==1);
-    vp = rpt_expr_evaluate(this->child[0], 0);
+    assert(this_thing->nchild==1);
+    vp = rpt_expr_evaluate(this_thing->child[0], 0);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     if (vp->method->type != rpt_value_type_reference)
@@ -55,7 +55,7 @@ inc_pre_evaluate(rpt_expr_ty *this)
 	      i18n("modifiable lvalue required for increment (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -88,7 +88,7 @@ inc_pre_evaluate(rpt_expr_ty *this)
 		i18n("arithmetic type required for increment (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -113,10 +113,10 @@ static rpt_expr_method_ty inc_pre_method =
 rpt_expr_ty *
 rpt_expr_inc_pre(rpt_expr_ty *e)
 {
-    rpt_expr_ty	    *this;
+    rpt_expr_ty	    *this_thing;
 
-    this = rpt_expr_alloc(&inc_pre_method);
-    rpt_expr_append(this, e);
+    this_thing = rpt_expr_alloc(&inc_pre_method);
+    rpt_expr_append(this_thing, e);
     if (!rpt_expr_lvalue(e))
     {
 	rpt_expr_parse_error
@@ -125,12 +125,12 @@ rpt_expr_inc_pre(rpt_expr_ty *e)
 	    i18n("modifiable lvalue required for increment")
 	);
     }
-    return this;
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-dec_pre_evaluate(rpt_expr_ty *this)
+dec_pre_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *vp;
@@ -139,8 +139,8 @@ dec_pre_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *result;
     string_ty	    *s;
 
-    assert(this->nchild==1);
-    vp = rpt_expr_evaluate(this->child[0], 0);
+    assert(this_thing->nchild==1);
+    vp = rpt_expr_evaluate(this_thing->child[0], 0);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     if (vp->method->type != rpt_value_type_reference)
@@ -155,7 +155,7 @@ dec_pre_evaluate(rpt_expr_ty *this)
 	      i18n("modifiable lvalue required for decrement (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -188,7 +188,7 @@ dec_pre_evaluate(rpt_expr_ty *this)
 		i18n("arithmetic type required for decrement (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -213,10 +213,10 @@ static rpt_expr_method_ty dec_pre_method =
 rpt_expr_ty *
 rpt_expr_dec_pre(rpt_expr_ty *e)
 {
-    rpt_expr_ty	    *this;
+    rpt_expr_ty	    *this_thing;
 
-    this = rpt_expr_alloc(&dec_pre_method);
-    rpt_expr_append(this, e);
+    this_thing = rpt_expr_alloc(&dec_pre_method);
+    rpt_expr_append(this_thing, e);
     if (!rpt_expr_lvalue(e))
     {
 	rpt_expr_parse_error
@@ -225,12 +225,12 @@ rpt_expr_dec_pre(rpt_expr_ty *e)
 	    i18n("modifiable lvalue required for decrement")
 	);
     }
-    return this;
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-inc_post_evaluate(rpt_expr_ty *this)
+inc_post_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *vp;
@@ -239,8 +239,8 @@ inc_post_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *result;
     string_ty	    *s;
 
-    assert(this->nchild==1);
-    vp = rpt_expr_evaluate(this->child[0], 0);
+    assert(this_thing->nchild==1);
+    vp = rpt_expr_evaluate(this_thing->child[0], 0);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     if (vp->method->type != rpt_value_type_reference)
@@ -255,7 +255,7 @@ inc_post_evaluate(rpt_expr_ty *this)
 	      i18n("modifiable lvalue required for increment (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -289,7 +289,7 @@ inc_post_evaluate(rpt_expr_ty *this)
 		i18n("arithmetic type required for increment (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -314,10 +314,10 @@ static rpt_expr_method_ty inc_post_method =
 rpt_expr_ty *
 rpt_expr_inc_post(rpt_expr_ty *e)
 {
-    rpt_expr_ty	    *this;
+    rpt_expr_ty	    *this_thing;
 
-    this = rpt_expr_alloc(&inc_post_method);
-    rpt_expr_append(this, e);
+    this_thing = rpt_expr_alloc(&inc_post_method);
+    rpt_expr_append(this_thing, e);
     if (!rpt_expr_lvalue(e))
     {
 	rpt_expr_parse_error
@@ -326,12 +326,12 @@ rpt_expr_inc_post(rpt_expr_ty *e)
 	    i18n("modifiable lvalue required for increment")
 	);
     }
-    return this;
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-dec_post_evaluate(rpt_expr_ty *this)
+dec_post_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *vp;
@@ -340,8 +340,8 @@ dec_post_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *result;
     string_ty	    *s;
 
-    assert(this->nchild==1);
-    vp = rpt_expr_evaluate(this->child[0], 0);
+    assert(this_thing->nchild==1);
+    vp = rpt_expr_evaluate(this_thing->child[0], 0);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     if (vp->method->type != rpt_value_type_reference)
@@ -356,7 +356,7 @@ dec_post_evaluate(rpt_expr_ty *this)
 	      i18n("modifiable lvalue required for decrement (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -390,7 +390,7 @@ dec_post_evaluate(rpt_expr_ty *this)
 		i18n("arithmetic type required for decrement (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -415,10 +415,10 @@ static rpt_expr_method_ty dec_post_method =
 rpt_expr_ty *
 rpt_expr_dec_post(rpt_expr_ty *e)
 {
-    rpt_expr_ty	    *this;
+    rpt_expr_ty	    *this_thing;
 
-    this = rpt_expr_alloc(&dec_post_method);
-    rpt_expr_append(this, e);
+    this_thing = rpt_expr_alloc(&dec_post_method);
+    rpt_expr_append(this_thing, e);
     if (!rpt_expr_lvalue(e))
     {
 	rpt_expr_parse_error
@@ -427,5 +427,5 @@ rpt_expr_dec_post(rpt_expr_ty *e)
 	    i18n("modifiable lvalue required for decrement")
 	);
     }
-    return this;
+    return this_thing;
 }

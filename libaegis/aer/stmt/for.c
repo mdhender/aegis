@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,37 +39,30 @@ struct rpt_stmt_for_ty
 };
 
 
-static void for_destruct _((rpt_stmt_ty *));
-
 static void
-for_destruct(sp)
-    rpt_stmt_ty     *sp;
+for_destruct(rpt_stmt_ty *sp)
 {
-    rpt_stmt_for_ty *this;
+    rpt_stmt_for_ty *this_thing;
 
-    this = (rpt_stmt_for_ty *)sp;
-    rpt_expr_free(this->e[0]);
-    rpt_expr_free(this->e[1]);
-    rpt_expr_free(this->e[2]);
+    this_thing = (rpt_stmt_for_ty *)sp;
+    rpt_expr_free(this_thing->e[0]);
+    rpt_expr_free(this_thing->e[1]);
+    rpt_expr_free(this_thing->e[2]);
 }
 
 
-static void for_run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-for_run(sp, rp)
-    rpt_stmt_ty	*sp;
-    rpt_stmt_result_ty *rp;
+for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
-    rpt_stmt_for_ty	*this;
+    rpt_stmt_for_ty	*this_thing;
     rpt_value_ty	*vp;
     rpt_value_ty	*vp2;
 
     /*
 	* evaluate the initializing expression
 	*/
-    this = (rpt_stmt_for_ty *)sp;
-    vp = rpt_expr_evaluate(this->e[0], 0);
+    this_thing = (rpt_stmt_for_ty *)sp;
+    vp = rpt_expr_evaluate(this_thing->e[0], 0);
     if (vp->method->type == rpt_value_type_error)
     {
        	rp->status = rpt_stmt_status_error;
@@ -86,7 +79,7 @@ for_run(sp, rp)
 	/*
 	 * evaluate the looping condition
 	 */
-       	vp = rpt_expr_evaluate(this->e[1], 1);
+       	vp = rpt_expr_evaluate(this_thing->e[1], 1);
        	if (vp->method->type == rpt_value_type_error)
        	{
 	    rp->status = rpt_stmt_status_error;
@@ -116,7 +109,7 @@ for_run(sp, rp)
 	     	);
 	    sub_context_delete(scp);
 	    rp->status = rpt_stmt_status_error;
-	    rp->thrown = rpt_value_error(this->e[1]->pos, s);
+	    rp->thrown = rpt_value_error(this_thing->e[1]->pos, s);
 	    str_free(s);
 	    return;
        	}
@@ -135,7 +128,7 @@ for_run(sp, rp)
 	/*
 	 * run the inner statement
 	 */
-	rpt_stmt_run(this->child[0], rp);
+	rpt_stmt_run(this_thing->child[0], rp);
        	switch (rp->status)
        	{
        	case rpt_stmt_status_error:
@@ -152,7 +145,7 @@ for_run(sp, rp)
 	     * evaluate the increment expression
 	     */
 	    trace(("loop normal\n"));
-	    vp = rpt_expr_evaluate(this->e[2], 0);
+	    vp = rpt_expr_evaluate(this_thing->e[2], 0);
 	    if (vp->method->type == rpt_value_type_error)
 	    {
 	     	rp->status = rpt_stmt_status_error;
@@ -191,20 +184,19 @@ static rpt_stmt_method_ty for_method =
 
 
 rpt_stmt_ty *
-rpt_stmt_for(e0, e1, e2, sub)
-    rpt_expr_ty     *e0;
-    rpt_expr_ty     *e1;
-    rpt_expr_ty     *e2;
-    rpt_stmt_ty     *sub;
+rpt_stmt_for(rpt_expr_ty *e0,
+             rpt_expr_ty *e1,
+             rpt_expr_ty *e2,
+             rpt_stmt_ty *sub)
 {
     rpt_stmt_ty     *sp;
-    rpt_stmt_for_ty *this;
+    rpt_stmt_for_ty *this_thing;
 
     sp = rpt_stmt_alloc(&for_method);
-    this = (rpt_stmt_for_ty *)sp;
-    this->e[0] = rpt_expr_copy(e0);
-    this->e[1] = rpt_expr_copy(e1);
-    this->e[2] = rpt_expr_copy(e2);
+    this_thing = (rpt_stmt_for_ty *)sp;
+    this_thing->e[0] = rpt_expr_copy(e0);
+    this_thing->e[1] = rpt_expr_copy(e1);
+    this_thing->e[2] = rpt_expr_copy(e2);
     rpt_stmt_append(sp, sub);
     return sp;
 }
@@ -218,28 +210,21 @@ struct rpt_stmt_foreach_ty
 };
 
 
-static void foreach_destruct _((rpt_stmt_ty *));
-
 static void
-foreach_destruct(sp)
-    rpt_stmt_ty     *sp;
+foreach_destruct(rpt_stmt_ty *sp)
 {
-    rpt_stmt_foreach_ty *this;
+    rpt_stmt_foreach_ty *this_thing;
 
-    this = (rpt_stmt_foreach_ty *)sp;
-    rpt_expr_free(this->e[0]);
-    rpt_expr_free(this->e[1]);
+    this_thing = (rpt_stmt_foreach_ty *)sp;
+    rpt_expr_free(this_thing->e[0]);
+    rpt_expr_free(this_thing->e[1]);
 }
 
 
-static void foreach_run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-foreach_run(sp, rp)
-    rpt_stmt_ty     *sp;
-    rpt_stmt_result_ty *rp;
+foreach_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
-    rpt_stmt_foreach_ty *this;
+    rpt_stmt_foreach_ty *this_thing;
     rpt_value_ty    *lhs;
     rpt_value_ty    *rhs;
     size_t	    rhs_length;
@@ -250,8 +235,8 @@ foreach_run(sp, rp)
      * evaluate the initializing expression
      */
     trace(("foreach::run()\n{\n"));
-    this = (rpt_stmt_foreach_ty *)sp;
-    lhs = rpt_expr_evaluate(this->e[0], 0);
+    this_thing = (rpt_stmt_foreach_ty *)sp;
+    lhs = rpt_expr_evaluate(this_thing->e[0], 0);
     if (lhs->method->type == rpt_value_type_error)
     {
        	rp->status = rpt_stmt_status_error;
@@ -275,13 +260,13 @@ foreach_run(sp, rp)
 	    );
        	sub_context_delete(scp);
        	rp->status = rpt_stmt_status_error;
-       	rp->thrown = rpt_value_error(this->e[0]->pos, s);
+       	rp->thrown = rpt_value_error(this_thing->e[0]->pos, s);
        	str_free(s);
        	trace(("}\n"));
        	return;
     }
 
-    rhs = rpt_expr_evaluate(this->e[1], 1);
+    rhs = rpt_expr_evaluate(this_thing->e[1], 1);
     if (rhs->method->type == rpt_value_type_error)
     {
        	rpt_value_free(lhs);
@@ -320,7 +305,7 @@ foreach_run(sp, rp)
 	    );
        	sub_context_delete(scp);
        	rp->status = rpt_stmt_status_error;
-       	rp->thrown = rpt_value_error(this->e[1]->pos, s);
+       	rp->thrown = rpt_value_error(this_thing->e[1]->pos, s);
        	str_free(s);
        	trace(("}\n"));
        	return;
@@ -342,7 +327,7 @@ foreach_run(sp, rp)
        	/*
 	 * run the inner statement
 	 */
-       	rpt_stmt_run(this->child[0], rp);
+       	rpt_stmt_run(this_thing->child[0], rp);
        	switch (rp->status)
        	{
        	case rpt_stmt_status_error:
@@ -393,31 +378,24 @@ static rpt_stmt_method_ty foreach_method =
 
 
 rpt_stmt_ty *
-rpt_stmt_foreach(e0, e1, sub)
-    rpt_expr_ty     *e0;
-    rpt_expr_ty     *e1;
-    rpt_stmt_ty     *sub;
+rpt_stmt_foreach(rpt_expr_ty *e0, rpt_expr_ty *e1, rpt_stmt_ty *sub)
 {
     rpt_stmt_ty     *sp;
-    rpt_stmt_foreach_ty *this;
+    rpt_stmt_foreach_ty *this_thing;
 
     sp = rpt_stmt_alloc(&foreach_method);
-    this = (rpt_stmt_foreach_ty *)sp;
+    this_thing = (rpt_stmt_foreach_ty *)sp;
     if (!rpt_expr_lvalue(e0))
        	rpt_expr_parse_error(e0, i18n("the loop variable must be modifiable"));
-    this->e[0] = rpt_expr_copy(e0);
-    this->e[1] = rpt_expr_copy(e1);
+    this_thing->e[0] = rpt_expr_copy(e0);
+    this_thing->e[1] = rpt_expr_copy(e1);
     rpt_stmt_append(sp, sub);
     return sp;
 }
 
 
-static void break_run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-break_run(sp, rp)
-    rpt_stmt_ty     *sp;
-    rpt_stmt_result_ty *rp;
+break_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
     trace(("stmt_break::run();\n"));
     rp->status = rpt_stmt_status_break;
@@ -442,12 +420,8 @@ rpt_stmt_break()
 }
 
 
-static void continue_run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-continue_run(sp, rp)
-    rpt_stmt_ty     *sp;
-    rpt_stmt_result_ty *rp;
+continue_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
     trace(("stmt_continue::run();\n"));
     rp->status = rpt_stmt_status_continue;

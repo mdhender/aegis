@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 2002 Peter Miller.
+ *	Copyright (C) 1991-1994, 2002, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,12 +26,12 @@
 #include <main.h>
 #include <str.h>
 
-void lex_open(char *);
+void lex_open(const char *);
 void lex_close(void);
-void parse_error(char *, ...);
+void parse_error(const char *, ...)			ATTR_PRINTF(1, 2);
 int parse_lex(void);
 int lex_in_include_file(void);
 void lex_list_include_files(void);
-void lex_include_path(char *);
+void lex_include_path(const char *);
 
 #endif /* LEX_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ bigger(void)
 
     nbytes = tmplen + QUANTUM;
     errno = 0;
-    hold = realloc(tmp, nbytes);
+    hold = (char *)realloc(tmp, nbytes);
     if (!hold)
     {
 	if (!errno)
@@ -186,7 +186,7 @@ vmprintf_errok(const char *fmt, va_list ap)
     {
 	tmplen = 500;
 	errno = 0;
-	tmp = malloc(tmplen);
+	tmp = (char *)malloc(tmplen);
 	if (!tmp)
 	{
 	    if (!errno)
@@ -564,7 +564,7 @@ vmprintf_errok(const char *fmt, va_list ap)
 		}
 		else
 		    len = strlen(a);
-		if (!prec_set || len < prec)
+		if (!prec_set || len < (size_t)prec)
 		    prec = len;
 		if (!width_set || width < prec)
 		    width = prec;
@@ -605,7 +605,7 @@ vmprintf_errok(const char *fmt, va_list ap)
 		len = a->str_length;
 		if (!prec_set)
 		    prec = len;
-		if (len < prec)
+		if (len < (size_t)prec)
 		    prec = len;
 		if (!width_set)
 		    width = prec;

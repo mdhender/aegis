@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,10 +31,7 @@
 
 
 void
-os_mtime_range(path, oldest_p, newest_p)
-    string_ty       *path;
-    time_t          *oldest_p;
-    time_t          *newest_p;
+os_mtime_range(string_ty *path, time_t *oldest_p, time_t *newest_p)
 {
     struct stat     st;
     int             oret;

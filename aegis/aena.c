@@ -43,7 +43,7 @@
 static void
 new_administrator_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -108,7 +108,7 @@ new_administrator_list(void)
 	}
 	arglex();
     }
-    list_administrators(project_name, 0);
+    list_administrators(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -211,7 +211,7 @@ new_administrator_main(void)
     string_ty	    *s1;
     string_ty	    *project_name;
     project_ty	    *pp;
-    boolean_ty      recursive;
+    int             recursive;
 
     trace(("new_administrator_main()\n{\n"));
     arglex();

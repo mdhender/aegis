@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,17 +26,18 @@
 #include <ael/project/inappropriat.h>
 #include <change.h>
 #include <col.h>
+#include <error.h>
 #include <output.h>
 #include <project.h>
 #include <str_list.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
 
 
 void
-list_user_changes(project_name, change_number)
-    string_ty	    *project_name;
-    long	    change_number;
+list_user_changes(struct string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
     user_ty	    *up;
     output_ty	    *project_col;
@@ -48,6 +49,7 @@ list_user_changes(project_name, change_number)
     long	    j;
     int		    left;
     col_ty	    *colp;
+    string_ty       *login = 0;
 
     trace(("list_user_changes()\n{\n"));
     if (project_name)
@@ -62,11 +64,26 @@ list_user_changes(project_name, change_number)
     if (!name.nstrings)
 	goto done;
 
+    if (!args->nstrings)
+    {
+        /*
+	 * No user name is provided, use the current user.
+	 */
+        up = user_executing((project_ty *)0);
+    }
+    else
+    {
+        /*
+	 * Use the user name supplied by the caller.
+	 */
+        login = args->string[0];
+        up = user_symbolic((project_ty *)0, login);
+    }
+
     /*
      * open listing
      */
     colp = col_open((string_ty *)0);
-    up = user_executing((project_ty *)0);
     s = str_format("Owned by %S <%S>", up->full_name, user_name(up));
     user_free(up);
     col_title(colp, "List of Changes", s->str_text);
@@ -111,7 +128,10 @@ list_user_changes(project_name, change_number)
 	/*
 	 * bind a user to that project
 	 */
-	up = user_executing(pp);
+        if (!login)
+            up = user_executing(pp);
+        else
+            up = user_symbolic(pp, login);
 
 	/*
 	 * for each change within this project the user
@@ -162,6 +182,7 @@ list_user_changes(project_name, change_number)
 	/*
 	 * free user and project
 	 */
+        str_free(login);
 	user_free(up);
 	project_free(pp);
     }

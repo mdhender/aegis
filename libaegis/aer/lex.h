@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,9 +32,9 @@ void rpt_lex_close(void);
 
 int aer_report_lex(void);
 
-void aer_report_error(char *);
-void rpt_lex_error(rpt_pos_ty *, char *);
-void aer_lex_error(struct sub_context_ty *, rpt_pos_ty *, char *);
+void aer_report_error(const char *);
+void rpt_lex_error(rpt_pos_ty *, const char *);
+void aer_lex_error(struct sub_context_ty *, rpt_pos_ty *, const char *);
 
 rpt_pos_ty *rpt_lex_pos_get(void);
 

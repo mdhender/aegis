@@ -26,8 +26,7 @@
 
 
 string_ty *
-change_creator_name(cp)
-    change_ty	    *cp;
+change_creator_name(change_ty *cp)
 {
     cstate	    cstate_data;
     string_ty       *who;

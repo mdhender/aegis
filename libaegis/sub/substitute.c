@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,11 +30,8 @@ static string_ty *gerr;
 static sub_context_ty *gscp;
 
 
-static void err _((const char *));
-
 static void
-err(message)
-    const char	    *message;
+err(const char *message)
 {
     if (gerr)
 	str_free(gerr);
@@ -44,9 +41,7 @@ err(message)
 
 
 wstring_ty *
-sub_substitute(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_substitute(sub_context_ty *scp, wstring_list_ty *arg)
 {
     string_ty	    *s;
     string_ty	    *lhs;

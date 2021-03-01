@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ tree_list_new(void)
 {
     tree_list_ty    *tlp;
 
-    tlp = mem_alloc(sizeof(tree_list_ty));
+    tlp = (tree_list_ty *)mem_alloc(sizeof(tree_list_ty));
     tree_list_constructor(tlp);
     return tlp;
 }
@@ -77,7 +77,7 @@ tree_list_append(tree_list_ty *tlp, tree_ty *tp)
 
 	tlp->maximum = tlp->maximum * 2 + 4;
 	nbytes = tlp->maximum * sizeof(tlp->item[0]);
-	tlp->item = mem_change_size(tlp->item, nbytes);
+	tlp->item = (tree_ty **)mem_change_size(tlp->item, nbytes);
     }
     tlp->item[tlp->length++] = tree_copy(tp);
 }

@@ -24,8 +24,7 @@
 
 
 long
-change_history_delta_latest(cp)
-	change_ty	*cp;
+change_history_delta_latest(change_ty *cp)
 {
 	cstate		cstate_data;
 	cstate_branch_history_list h;

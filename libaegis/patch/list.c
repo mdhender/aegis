@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,68 +26,66 @@
 
 
 patch_list_ty *
-patch_list_new()
+patch_list_new(void)
 {
-	patch_list_ty	*this;
+	patch_list_ty	*this_thing;
 
-	this = mem_alloc(sizeof(patch_list_ty));
-	this->project_name = 0;
-	this->change_number = 0;
-	this->brief_description = 0;
-	this->description = 0;
+	this_thing = (patch_list_ty *)mem_alloc(sizeof(patch_list_ty));
+	this_thing->project_name = 0;
+	this_thing->change_number = 0;
+	this_thing->brief_description = 0;
+	this_thing->description = 0;
 
-	this->length = 0;
-	this->maximum = 0;
-	this->item = 0;
-	return this;
+	this_thing->length = 0;
+	this_thing->maximum = 0;
+	this_thing->item = 0;
+	return this_thing;
 }
 
 
 void
-patch_list_delete(this)
-	patch_list_ty	*this;
+patch_list_delete(patch_list_ty *this_thing)
 {
 	size_t		j;
 
-	if (this->project_name)
+	if (this_thing->project_name)
 	{
-		str_free(this->project_name);
-		this->project_name = 0;
+		str_free(this_thing->project_name);
+		this_thing->project_name = 0;
 	}
-	this->change_number = 0;
-	if (this->brief_description)
+	this_thing->change_number = 0;
+	if (this_thing->brief_description)
 	{
-		str_free(this->brief_description);
-		this->brief_description = 0;
+		str_free(this_thing->brief_description);
+		this_thing->brief_description = 0;
 	}
-	if (this->description)
+	if (this_thing->description)
 	{
-		str_free(this->description);
-		this->description = 0;
+		str_free(this_thing->description);
+		this_thing->description = 0;
 	}
 
-	for (j = 0; j < this->length; ++j)
-		patch_delete(this->item[j]);
-	if (this->item)
-		mem_free(this->item);
-	this->length = 0;
-	this->maximum = 0;
-	this->item = 0;
+	for (j = 0; j < this_thing->length; ++j)
+		patch_delete(this_thing->item[j]);
+	if (this_thing->item)
+		mem_free(this_thing->item);
+	this_thing->length = 0;
+	this_thing->maximum = 0;
+	this_thing->item = 0;
 }
 
 
 void
-patch_list_append(this, pp)
-	patch_list_ty	*this;
-	patch_ty	*pp;
+patch_list_append(patch_list_ty *this_thing, patch_ty *pp)
 {
-	if (this->length >= this->maximum)
+	if (this_thing->length >= this_thing->maximum)
 	{
 		size_t		nbytes;
 
-		this->maximum = this->maximum * 2 + 4;
-		nbytes = this->maximum * sizeof(this->item[0]);
-		this->item = mem_change_size(this->item, nbytes);
+		this_thing->maximum = this_thing->maximum * 2 + 4;
+		nbytes = this_thing->maximum * sizeof(this_thing->item[0]);
+		this_thing->item =
+                    (patch_ty **)mem_change_size(this_thing->item, nbytes);
 	}
-	this->item[this->length++] = pp;
+	this_thing->item[this_thing->length++] = pp;
 }

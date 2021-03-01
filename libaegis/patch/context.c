@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,65 +25,60 @@
 
 
 patch_context_ty *
-patch_context_new(ip)
-	input_ty	*ip;
+patch_context_new(input_ty *ip)
 {
-	patch_context_ty *this;
+	patch_context_ty *this_thing;
 
-	this = mem_alloc(sizeof(patch_context_ty));
-	this->input = ip;
-	string_list_constructor(&this->buffer);
-	return this;
+	this_thing = (patch_context_ty *)mem_alloc(sizeof(patch_context_ty));
+	this_thing->input = ip;
+	string_list_constructor(&this_thing->buffer);
+	return this_thing;
 }
 
 
 void
-patch_context_delete(this)
-	patch_context_ty *this;
+patch_context_delete(patch_context_ty *this_thing)
 {
-	string_list_destructor(&this->buffer);
-	this->input = 0; /* don't delete it! */
+	string_list_destructor(&this_thing->buffer);
+	this_thing->input = 0; /* don't delete it! */
 }
 
 
 string_ty *
-patch_context_getline(this, n)
-	patch_context_ty *this;
-	int		n;
+patch_context_getline(patch_context_ty *this_thing, int n)
 {
 	string_ty	*s;
 
 	if (n < 0)
 		return 0;
-	while (n >= this->buffer.nstrings)
+	while (n >= (int)this_thing->buffer.nstrings)
 	{
-		s = input_one_line(this->input);
+		s = input_one_line(this_thing->input);
 		if (!s)
 			return 0;
-		string_list_append(&this->buffer, s);
+		string_list_append(&this_thing->buffer, s);
 		str_free(s);
 	}
-	return this->buffer.string[n];
+	return this_thing->buffer.string[n];
 }
 
 
 void
-patch_context_discard(this, n)
-	patch_context_ty *this;
-	int		n;
+patch_context_discard(patch_context_ty *this_thing, int n)
 {
 	size_t		j;
 
 	if (n <= 0)
 		return;
-	for (j = 0; j < n && j < this->buffer.nstrings; ++j)
-		str_free(this->buffer.string[j]);
-	if (n >= this->buffer.nstrings)
-		this->buffer.nstrings = 0;
+	for (j = 0; j < (size_t)n && j < this_thing->buffer.nstrings; ++j)
+		str_free(this_thing->buffer.string[j]);
+	if (n >= (int)this_thing->buffer.nstrings)
+		this_thing->buffer.nstrings = 0;
 	else
 	{
-		for (j = n; j < this->buffer.nstrings; ++j)
-			this->buffer.string[j - n] = this->buffer.string[j];
-		this->buffer.nstrings -= n;
+		for (j = n; j < this_thing->buffer.nstrings; ++j)
+			this_thing->buffer.string[j - n] =
+                            this_thing->buffer.string[j];
+		this_thing->buffer.nstrings -= n;
 	}
 }

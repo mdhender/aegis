@@ -25,9 +25,7 @@
 
 
 void
-change_copyright_year_append(cp, year)
-	change_ty	*cp;
-	int		year;
+change_copyright_year_append(change_ty *cp, int year)
 {
 	cstate		cstate_data;
 	size_t		j;

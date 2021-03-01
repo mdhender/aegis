@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,121 +32,103 @@
 typedef struct input_env_ty input_env_ty;
 struct input_env_ty
 {
-	input_ty	inherited;
-	string_ty	*base;
-	size_t		pos;
-	string_ty	*name;
+    input_ty        inherited;
+    string_ty       *base;
+    size_t          pos;
+    string_ty       *name;
 };
 
 
-static void input_env_destructor _((input_ty *));
-
 static void
-input_env_destructor(p)
-	input_ty	*p;
+input_env_destructor(input_ty *p)
 {
-	input_env_ty	*this;
+    input_env_ty    *this_thing;
 
-	this = (input_env_ty *)p;
-	str_free(this->base);
-	str_free(this->name);
+    this_thing = (input_env_ty *)p;
+    str_free(this_thing->base);
+    str_free(this_thing->name);
 }
 
-
-static long input_env_read _((input_ty *, void *, size_t));
 
 static long
-input_env_read(p, data, len)
-	input_ty	*p;
-	void		*data;
-	size_t		len;
+input_env_read(input_ty *p, void *data, size_t len)
 {
-	input_env_ty	*this;
-	size_t		nbytes;
+    input_env_ty    *this_thing;
+    size_t          nbytes;
 
-	this = (input_env_ty *)p;
-	if (this->pos >= this->base->str_length)
-		return 0;
-	nbytes = this->base->str_length - this->pos;
-	if (nbytes > len)
-		nbytes = len;
-	memcpy(data, this->base->str_text + this->pos, nbytes);
-	this->pos += nbytes;
-	return nbytes;
+    this_thing = (input_env_ty *)p;
+    if (this_thing->pos >= this_thing->base->str_length)
+	return 0;
+    nbytes = this_thing->base->str_length - this_thing->pos;
+    if (nbytes > len)
+	nbytes = len;
+    memcpy(data, this_thing->base->str_text + this_thing->pos, nbytes);
+    this_thing->pos += nbytes;
+    return nbytes;
 }
 
-
-static long input_env_ftell _((input_ty *));
 
 static long
-input_env_ftell(p)
-	input_ty	*p;
+input_env_ftell(input_ty *p)
 {
-	input_env_ty	*this;
+    input_env_ty    *this_thing;
 
-	this = (input_env_ty *)p;
-	return this->pos;
+    this_thing = (input_env_ty *)p;
+    return this_thing->pos;
 }
 
-
-static string_ty *input_env_name _((input_ty *));
 
 static string_ty *
-input_env_name(p)
-	input_ty	*p;
+input_env_name(input_ty *p)
 {
-	input_env_ty	*this;
+    input_env_ty    *this_thing;
 
-	this = (input_env_ty *)p;
-	return this->name;
+    this_thing = (input_env_ty *)p;
+    return this_thing->name;
 }
 
 
-static long input_env_length _((input_ty *));
-
 static long
-input_env_length(p)
-	input_ty	*p;
+input_env_length(input_ty *p)
 {
-	input_env_ty	*this;
+    input_env_ty    *this_thing;
 
-	this = (input_env_ty *)p;
-	return this->base->str_length;
+    this_thing = (input_env_ty *)p;
+    return this_thing->base->str_length;
 }
 
 
 static input_vtbl_ty vtbl =
 {
-	sizeof(input_env_ty),
-	input_env_destructor,
-	input_env_read,
-	input_env_ftell,
-	input_env_name,
-	input_env_length,
+    sizeof(input_env_ty),
+    input_env_destructor,
+    input_env_read,
+    input_env_ftell,
+    input_env_name,
+    input_env_length,
 };
 
 
 input_ty *
-input_env_open(s)
-	const char	*s;
+input_env_open(const char *s)
 {
-	input_ty	*result;
-	input_env_ty	*this;
-	char		*cp;
+    input_ty        *result;
+    input_env_ty    *this_thing;
+    const char      *cp;
 
-	cp = getenv(s);
-	if (!cp)
-		cp = "";
+    cp = getenv(s);
+    if (!cp)
+	cp = "";
 
-	result = input_new(&vtbl);
-	this = (input_env_ty *)result;
-	this->base = str_from_c(cp);
-	this->pos = 0;
-	this->name = str_from_c(s);
+    result = input_new(&vtbl);
+    this_thing = (input_env_ty *)result;
+    this_thing->base = str_from_c(cp);
+    this_thing->pos = 0;
+    this_thing->name = str_from_c(s);
 
-	/*
-	 * You need the CRLF filter, otherwise bizzare things happen on
-	 * DOS (or DOS-like) operating systems.
-	 */
-	return input_crlf(result, 1);
+    /*
+     * You need the CRLF filter, otherwise bizzare things happen on
+     * DOS (or DOS-like) operating systems.
+     */
+    return input_crlf(result, 1);
 }

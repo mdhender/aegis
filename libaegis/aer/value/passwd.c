@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -250,8 +250,8 @@ count(rpt_value_ty *vp)
 }
 
 
-static char *
-type_of(rpt_value_ty *this)
+static const char *
+type_of(rpt_value_ty *this_thing)
 {
     return "struct";
 }

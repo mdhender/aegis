@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,8 @@
 
 auto href;
 
+auto pn;
+pn = project_name();
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
@@ -33,6 +35,7 @@ print("");
 print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
         ## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
 print("<html><head>");
+print("<meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\">");
 print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
 print("<meta http-equiv=\"Content-Type\" "
         ## "content=\"text/html; charset=ISO-8859-1\">");
@@ -48,11 +51,16 @@ print("<style type=\"text/css\"> "
  */
 print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
     ## "media=\"all\">");
-auto pn;
-pn = project_name();
-print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/"
-    ## pn ## ".css\" "
-    ## "media=\"all\">");
+auto stack, depth, n;
+depth=0;
+stack[depth] = project[pn].state.name;
+while ("" != ( n = project[stack[depth]].state.parent_name )) {
+  stack[++depth] = n;
+}
+while ( depth >= 0) {
+    print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ##
+      stack[depth--] ## ".css\" " ## "media=\"all\">");
+}
 print("<title>");
 print("Project " ## quote_html(pn) ## " File metrics");
 print("</title></head><body><h1 align=center>");

@@ -26,8 +26,7 @@
 
 
 string_ty *
-change_developer_name(cp)
-	change_ty	*cp;
+change_developer_name(change_ty *cp)
 {
 	cstate		cstate_data;
 	cstate_history	history_data;

@@ -51,12 +51,13 @@ itab_alloc(int size)
     itab_key_ty     j;
 
     trace(("itab_alloc(size = %d)\n{\n", size));
-    itp = mem_alloc(sizeof(itab_ty));
+    itp = (itab_ty *)mem_alloc(sizeof(itab_ty));
     itp->reap = 0;
     itp->hash_modulus = 1 << 5; /* MUST be a power of 2 */
     itp->hash_mask = itp->hash_modulus - 1;
     itp->load = 0;
-    itp->hash_table = mem_alloc(itp->hash_modulus * sizeof(itab_row_ty *));
+    itp->hash_table =
+        (itab_row_ty **)mem_alloc(itp->hash_modulus * sizeof(itab_row_ty *));
     for (j = 0; j < itp->hash_modulus; ++j)
 	itp->hash_table[j] = 0;
     trace(("return %08lX;\n", (long)itp));
@@ -145,7 +146,8 @@ split(itab_ty *itp)
      */
     new_hash_modulus = itp->hash_modulus * 2;
     new_hash_mask = new_hash_modulus - 1;
-    new_hash_table = mem_alloc(new_hash_modulus * sizeof(itab_row_ty *));
+    new_hash_table =
+        (itab_row_ty **)mem_alloc(new_hash_modulus * sizeof(itab_row_ty *));
 
     /*
      * now redistribute the list elements
@@ -267,7 +269,7 @@ itab_assign(itab_ty *itp, itab_key_ty key, void *data)
     }
 
     trace(("new entry\n"));
-    p = mem_alloc(sizeof(itab_row_ty));
+    p = (itab_row_ty *)mem_alloc(sizeof(itab_row_ty));
     p->key = key;
     p->overflow = itp->hash_table[index];
     p->data = data;

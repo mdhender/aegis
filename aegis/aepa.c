@@ -48,7 +48,7 @@
 static void
 project_attributes_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -187,7 +187,6 @@ change_existing_project_attributes(project_ty *pp, pattr pattr_data)
     project_verbose(pp, 0, i18n("project attributes complete"));
     user_free(up);
 }
-
 
 
 static void

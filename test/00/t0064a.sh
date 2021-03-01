@@ -374,7 +374,6 @@ src =
 		};
 		usage = source;
 		locked_by = 10;
-		about_to_be_created_by = 10;
 		about_to_be_copied_by = 10;
 		deleted_by = 10;
 	},

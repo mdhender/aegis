@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 
 
 void
-function_needs_one(char *name, tree_list_ty *args)
+function_needs_one(const char *name, tree_list_ty *args)
 {
     sub_context_ty  *scp;
 
@@ -53,7 +53,7 @@ function_needs_one(char *name, tree_list_ty *args)
 
 
 void
-function_needs_two(char *name, tree_list_ty *args)
+function_needs_two(const char *name, tree_list_ty *args)
 {
     sub_context_ty  *scp;
 

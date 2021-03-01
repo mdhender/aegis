@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,19 +28,19 @@
 
 enum rpt_stmt_status_ty
 {
-	rpt_stmt_status_normal,
-	rpt_stmt_status_break,
-	rpt_stmt_status_continue,
-	rpt_stmt_status_return,
-	rpt_stmt_status_error
+    rpt_stmt_status_normal,
+    rpt_stmt_status_break,
+    rpt_stmt_status_continue,
+    rpt_stmt_status_return,
+    rpt_stmt_status_error
 };
 typedef enum rpt_stmt_status_ty rpt_stmt_status_ty;
 
 typedef struct rpt_stmt_result_ty rpt_stmt_result_ty;
 struct rpt_stmt_result_ty
 {
-	rpt_stmt_status_ty status;
-	struct rpt_value_ty *thrown;
+    rpt_stmt_status_ty status;
+    struct rpt_value_ty *thrown;
 };
 
 
@@ -49,24 +49,24 @@ struct rpt_stmt_ty;
 typedef struct rpt_stmt_method_ty rpt_stmt_method_ty;
 struct rpt_stmt_method_ty
 {
-	size_t		size;
-	char		*name;
-	void (*construct)(struct rpt_stmt_ty *);
-	void (*destruct)(struct rpt_stmt_ty *);
-	void (*run)(struct rpt_stmt_ty *, rpt_stmt_result_ty *);
+    size_t          size;
+    const char      *name;
+    void (*construct)(struct rpt_stmt_ty *);
+    void (*destruct)(struct rpt_stmt_ty *);
+    void (*run)(struct rpt_stmt_ty *, rpt_stmt_result_ty *);
 };
 
-#define RPT_STMT				\
-	rpt_stmt_method_ty *method;		\
-	long		reference_count;	\
-	rpt_stmt_ty	**child;		\
-	size_t		nchild;			\
-	size_t		nchild_max;
+#define RPT_STMT			\
+    rpt_stmt_method_ty *method;		\
+    long            reference_count;	\
+    rpt_stmt_ty     **child;		\
+    size_t          nchild;		\
+    size_t          nchild_max;
 
 typedef struct rpt_stmt_ty rpt_stmt_ty;
 struct rpt_stmt_ty
 {
-	RPT_STMT
+    RPT_STMT
 };
 
 rpt_stmt_ty *rpt_stmt_alloc(rpt_stmt_method_ty *);

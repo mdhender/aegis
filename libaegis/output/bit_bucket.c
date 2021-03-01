@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate bit_buckets
  */
 
-#include <option.h>
+#include <page.h>
 #include <output/bit_bucket.h>
 #include <output/private.h>
 #include <str.h>
@@ -34,90 +34,67 @@ struct output_bit_bucket_ty
 };
 
 
-static void output_bit_bucket_destructor _((output_ty *));
-
 static void
-output_bit_bucket_destructor(fp)
-    output_ty       *fp;
+output_bit_bucket_destructor(output_ty *fp)
 {
-    output_bit_bucket_ty *this;
+    output_bit_bucket_ty *this_thing;
 
-    this = (output_bit_bucket_ty *)fp;
-    if (this->filename)
-	str_free(this->filename);
-    this->filename = 0;
-    this->pos = 0;
+    this_thing = (output_bit_bucket_ty *)fp;
+    if (this_thing->filename)
+	str_free(this_thing->filename);
+    this_thing->filename = 0;
+    this_thing->pos = 0;
 }
 
-
-static string_ty *output_bit_bucket_filename _((output_ty *));
 
 static string_ty *
-output_bit_bucket_filename(fp)
-    output_ty       *fp;
+output_bit_bucket_filename(output_ty *fp)
 {
-    output_bit_bucket_ty *this;
+    output_bit_bucket_ty *this_thing;
 
-    this = (output_bit_bucket_ty *)fp;
-    if (!this->filename)
-	this->filename = str_from_c("/dev/null");
-    return this->filename;
+    this_thing = (output_bit_bucket_ty *)fp;
+    if (!this_thing->filename)
+	this_thing->filename = str_from_c("/dev/null");
+    return this_thing->filename;
 }
 
-
-static long output_bit_bucket_ftell _((output_ty *));
 
 static long
-output_bit_bucket_ftell(fp)
-    output_ty       *fp;
+output_bit_bucket_ftell(output_ty *fp)
 {
-    output_bit_bucket_ty *this;
+    output_bit_bucket_ty *this_thing;
 
-    this = (output_bit_bucket_ty *)fp;
-    return this->pos;
+    this_thing = (output_bit_bucket_ty *)fp;
+    return this_thing->pos;
 }
 
-
-static void output_bit_bucket_write _((output_ty *, const void *, size_t));
 
 static void
-output_bit_bucket_write(fp, data, len)
-    output_ty       *fp;
-    const void      *data;
-    size_t          len;
+output_bit_bucket_write(output_ty *fp, const void *data, size_t len)
 {
-    output_bit_bucket_ty *this;
+    output_bit_bucket_ty *this_thing;
 
-    this = (output_bit_bucket_ty *)fp;
-    this->pos += len;
+    this_thing = (output_bit_bucket_ty *)fp;
+    this_thing->pos += len;
 }
 
-
-static int output_bit_bucket_page_width _((output_ty *));
 
 static int
-output_bit_bucket_page_width(fp)
-    output_ty      *fp;
+output_bit_bucket_page_width(output_ty *fp)
 {
-    return option_page_width_get(DEFAULT_PRINTER_WIDTH);
+    return page_width_get(DEFAULT_PRINTER_WIDTH);
 }
 
-
-static int output_bit_bucket_page_length _((output_ty *));
 
 static int
-output_bit_bucket_page_length(fp)
-    output_ty       *fp;
+output_bit_bucket_page_length(output_ty *fp)
 {
-    return option_page_length_get(DEFAULT_PRINTER_LENGTH);
+    return page_length_get(DEFAULT_PRINTER_LENGTH);
 }
 
-
-static void output_bit_bucket_eoln _((output_ty *));
 
 static void
-output_bit_bucket_eoln(fp)
-    output_ty       *fp;
+output_bit_bucket_eoln(output_ty *fp)
 {
 }
 
@@ -139,14 +116,14 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_bit_bucket()
+output_bit_bucket(void)
 {
     output_ty       *result;
-    output_bit_bucket_ty *this;
+    output_bit_bucket_ty *this_thing;
 
     result = output_new(&vtbl);
-    this = (output_bit_bucket_ty *) result;
-    this->filename = 0;
-    this->pos = 0;
+    this_thing = (output_bit_bucket_ty *) result;
+    this_thing->filename = 0;
+    this_thing->pos = 0;
     return result;
 }

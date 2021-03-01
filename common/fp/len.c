@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ typedef struct len_ty len_ty;
 struct len_ty
 {
     FINGERPRINT_BASE_CLASS
-    unsigned long   len;
+    size_t          len;
 };
 
 
@@ -50,7 +50,7 @@ len_destructor(fingerprint_ty *p)
 
 
 static void
-len_addn(fingerprint_ty *p, unsigned char *s, int n)
+len_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 {
     len_ty	    *f;
 
@@ -87,7 +87,7 @@ len_sum(fingerprint_ty *p, char *obuf)
     len_ty	    *f;
 
     f = (len_ty *)p;
-    sprintf(obuf, "%8lu", f->len);
+    sprintf(obuf, "%8lu", (unsigned long)f->len);
 }
 
 

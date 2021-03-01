@@ -30,70 +30,62 @@
 #include <sub.h>
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 1);
+    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	rpt_value_ty	*arg;
-	rpt_value_ty	*result;
-	string_ty	*subject;
-	string_ty	*s;
+    rpt_value_ty    *arg;
+    rpt_value_ty    *result;
+    string_ty       *subject;
+    string_ty       *s;
 
-	arg = argv[0];
-	assert(arg->method->type != rpt_value_type_error);
-	arg = rpt_value_stringize(arg);
-	if (arg->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
+    arg = argv[0];
+    assert(arg->method->type != rpt_value_type_error);
+    arg = rpt_value_stringize(arg);
+    if (arg->method->type != rpt_value_type_string)
+    {
+	sub_context_ty	*scp;
 
-		scp = sub_context_new();
-		rpt_value_free(arg);
-		sub_var_set_charstar(scp, "Function", "downcase");
-		sub_var_set_charstar(scp, "Number", "1");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-	subject = str_copy(rpt_value_string_query(arg));
+	scp = sub_context_new();
 	rpt_value_free(arg);
-
-	/*
-	 * build the result
-	 */
-	s = str_downcase(subject);
-	str_free(subject);
-	result = rpt_value_string(s);
+	sub_var_set_charstar(scp, "Function", "downcase");
+	sub_var_set_charstar(scp, "Number", "1");
+	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	result = rpt_value_error(ep->pos, s);
 	str_free(s);
 	return result;
+    }
+    subject = str_copy(rpt_value_string_query(arg));
+    rpt_value_free(arg);
+
+    /*
+     * build the result
+     */
+    s = str_downcase(subject);
+    str_free(subject);
+    result = rpt_value_string(s);
+    str_free(s);
+    return result;
 }
 
 
 rpt_func_ty rpt_func_downcase =
 {
-	"downcase",
-	1, /* optimizable */
-	verify,
-	run
+    "downcase",
+    1, /* optimizable */
+    verify,
+    run
 };

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,119 +43,99 @@ struct input_cpio_child_ty
 };
 
 
-static void padding _((input_cpio_child_ty *));
-
 static void
-padding(this)
-    input_cpio_child_ty *this;
+padding(input_cpio_child_ty *this_thing)
 {
     int		    n;
 
-    n = input_ftell(this->deeper);
+    n = input_ftell(this_thing->deeper);
     n %= 4;
     if (n)
-	input_skip(this->deeper, 4 - n);
+	input_skip(this_thing->deeper, 4 - n);
 }
 
 
-static void input_cpio_child_destructor _((input_ty *));
-
 static void
-input_cpio_child_destructor(fp)
-    input_ty	    *fp;
+input_cpio_child_destructor(input_ty *fp)
 {
-    input_cpio_child_ty *this;
+    input_cpio_child_ty *this_thing;
 
     /*
      * read the rest of the input,
      * it wasn't all used.
      */
-    this = (input_cpio_child_ty *)fp;
-    if (this->pos < this->length)
-	input_skip(fp, this->length - this->pos);
+    this_thing = (input_cpio_child_ty *)fp;
+    if (this_thing->pos < this_thing->length)
+	input_skip(fp, this_thing->length - this_thing->pos);
 
     /*
      * move to the next padding boundary
      */
-    padding(this);
+    padding(this_thing);
 
     /*
      * free the archive member name
      */
-    if (this->archive_name);
-	str_free(this->archive_name);
-    if (this->filename);
-	str_free(this->filename);
+    if (this_thing->archive_name);
+	str_free(this_thing->archive_name);
+    if (this_thing->filename);
+	str_free(this_thing->filename);
 
-    /* DO NOT input_delete(this->deeper); */
+    /* DO NOT input_delete(this_thing->deeper); */
 }
 
 
-static long input_cpio_child_read _((input_ty *, void *, size_t));
-
 static long
-input_cpio_child_read(fp, data, len)
-    input_ty	    *fp;
-    void	    *data;
-    size_t	    len;
+input_cpio_child_read(input_ty *fp, void *data, size_t len)
 {
-    input_cpio_child_ty *this;
+    input_cpio_child_ty *this_thing;
     long	    result;
 
-    this = (input_cpio_child_ty *)fp;
+    this_thing = (input_cpio_child_ty *)fp;
     if (len <= 0)
 	return 0;
-    if (this->pos >= this->length)
+    if (this_thing->pos >= this_thing->length)
 	return 0;
-    if (this->pos + len > this->length)
-	len = this->length - this->pos;
+    if (this_thing->pos + (long)len > this_thing->length)
+	len = this_thing->length - this_thing->pos;
     assert(len > 0);
-    result = input_read(this->deeper, data, len);
+    result = input_read(this_thing->deeper, data, len);
     if (result <= 0)
 	input_fatal_error(fp, "cpio: short file");
-    this->pos += result;
+    this_thing->pos += result;
     return result;
 }
 
 
-static long input_cpio_child_ftell _((input_ty *));
-
 static long
-input_cpio_child_ftell(fp)
-    input_ty	    *fp;
+input_cpio_child_ftell(input_ty *fp)
 {
-    input_cpio_child_ty *this;
+    input_cpio_child_ty *this_thing;
 
-    this = (input_cpio_child_ty *)fp;
-    return this->pos;
+    this_thing = (input_cpio_child_ty *)fp;
+    return this_thing->pos;
 }
 
-
-static string_ty *input_cpio_child_name _((input_ty *));
 
 static string_ty *
-input_cpio_child_name(fp)
-    input_ty	    *fp;
+input_cpio_child_name(input_ty *fp)
 {
-    input_cpio_child_ty *this;
+    input_cpio_child_ty *this_thing;
 
-    this = (input_cpio_child_ty *)fp;
-    if (this->filename)
-	return this->filename;
-    return input_name(this->deeper);
+    this_thing = (input_cpio_child_ty *)fp;
+    if (this_thing->filename)
+	return this_thing->filename;
+    return input_name(this_thing->deeper);
 }
 
 
-static long input_cpio_child_length _((input_ty *));
-
 static long
-input_cpio_child_length(fp)
-    input_ty	    *fp;
+input_cpio_child_length(input_ty *fp)
 {
-    input_cpio_child_ty *this;
+    input_cpio_child_ty *this_thing;
 
-    this = (input_cpio_child_ty *)fp;
-    return this->length;
+    this_thing = (input_cpio_child_ty *)fp;
+    return this_thing->length;
 }
 
 
@@ -170,26 +150,22 @@ static input_vtbl_ty vtbl =
 };
 
 
-static int hex_digit _((input_cpio_child_ty *, int *));
-
 static int
-hex_digit(this, first_p)
-    input_cpio_child_ty *this;
-    int		    *first_p;
+hex_digit(input_cpio_child_ty *this_thing, int *first_p)
 {
     int		    c;
 
-    c = input_getc(this->deeper);
+    c = input_getc(this_thing->deeper);
     switch (c)
     {
     default:
-	input_fatal_error((input_ty *)this, "cpio: invalid hex digit");
+	input_fatal_error((input_ty *)this_thing, "cpio: invalid hex digit");
 	/* NOTREACHED */
 
     case ' ':
 	if (*first_p)
     	    return 0;
-	input_fatal_error((input_ty *)this, "cpio: invalid hex number");
+	input_fatal_error((input_ty *)this_thing, "cpio: invalid hex number");
 	/* NOTREACHED */
 
     case '0': case '1': case '2': case '3': case '4':
@@ -208,11 +184,8 @@ hex_digit(this, first_p)
 }
 
 
-static long hex8 _((input_cpio_child_ty *));
-
 static long
-hex8(this)
-    input_cpio_child_ty *this;
+hex8(input_cpio_child_ty *this_thing)
 {
     long	    result;
     int		    j;
@@ -222,21 +195,17 @@ hex8(this)
     first = 1;
     for (j = 0; j < 8; ++j)
     {
-	int c = hex_digit(this, &first);
+	int c = hex_digit(this_thing, &first);
 	result = (result << 4) + c;
     }
     if (first)
-	input_fatal_error((input_ty *)this, "cpio: invalid hex number");
+	input_fatal_error((input_ty *)this_thing, "cpio: invalid hex number");
     return result;
 }
 
 
-static string_ty *get_name _((input_cpio_child_ty *, long));
-
 static string_ty *
-get_name(this, namlen)
-    input_cpio_child_ty *this;
-    long	    namlen;
+get_name(input_cpio_child_ty *this_thing, long namlen)
 {
     static stracc_t buffer;
     long	    j;
@@ -245,7 +214,7 @@ get_name(this, namlen)
      * make sure out buffer is big enough.
      */
     if (namlen < 2)
-	input_fatal_error((input_ty *)this, "cpio: invalid name length");
+	input_fatal_error((input_ty *)this_thing, "cpio: invalid name length");
     --namlen;
 
     /*
@@ -254,14 +223,14 @@ get_name(this, namlen)
     stracc_open(&buffer);
     for (j = 0; j < namlen; ++j)
     {
-	int c = input_getc(this->deeper);
+	int c = input_getc(this_thing->deeper);
 	if (c <= 0)
-	    input_fatal_error((input_ty *)this, "cpio: short file");
+	    input_fatal_error((input_ty *)this_thing, "cpio: short file");
 	if (isspace((unsigned char)c))
 	{
 	    input_fatal_error
 	    (
-		(input_ty *)this,
+		(input_ty *)this_thing,
 		"cpio: invalid name (white space)"
 	    );
 	}
@@ -269,7 +238,7 @@ get_name(this, namlen)
 	{
 	    input_fatal_error
 	    (
-		(input_ty *)this,
+		(input_ty *)this_thing,
 		"cpio: invalid name (unprintable)"
 	    );
 	}
@@ -279,8 +248,8 @@ get_name(this, namlen)
     /*
      * Must has a NUL on the end.
      */
-    if (input_getc(this->deeper) != 0)
-	input_fatal_error((input_ty *)this, "cpio: invalid character");
+    if (input_getc(this_thing->deeper) != 0)
+	input_fatal_error((input_ty *)this_thing, "cpio: invalid character");
 
     /*
      * Build the result and return.
@@ -290,23 +259,21 @@ get_name(this, namlen)
 
 
 input_ty *
-input_cpio_child_open(deeper, archive_name_p)
-    input_ty	    *deeper;
-    string_ty	    **archive_name_p;
+input_cpio_child_open(input_ty *deeper, string_ty **archive_name_p)
 {
     input_ty	    *result;
-    input_cpio_child_ty *this;
+    input_cpio_child_ty *this_thing;
     long	    namlen;
     static string_ty *trailer;
     const char	    *magic;
 
     result = input_new(&vtbl);
-    this = (input_cpio_child_ty *)result;
-    this->deeper = deeper;
-    this->pos = 0;
-    this->length = 0;
-    this->archive_name = 0;
-    this->filename = 0;
+    this_thing = (input_cpio_child_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->pos = 0;
+    this_thing->length = 0;
+    this_thing->archive_name = 0;
+    this_thing->filename = 0;
 
     /*
      * read the file header
@@ -315,32 +282,33 @@ input_cpio_child_open(deeper, archive_name_p)
     {
 	int c = input_getc(deeper);
 	if (c != *magic)
-    	    input_fatal_error((input_ty *)this, "cpio: wrong magic number");
+    	    input_fatal_error((input_ty *)this_thing,
+                              "cpio: wrong magic number");
     }
-    hex8(this);	/* inode */
-    hex8(this);	/* mode */
-    hex8(this);	/* uid */
-    hex8(this);	/* gid */
-    hex8(this);	/* nlinks */
-    hex8(this);	/* mtime */
-    this->length = hex8(this);
-    hex8(this);	/* dev_major */
-    hex8(this);	/* dev_minor */
-    hex8(this);	/* rdev_major */
-    hex8(this);	/* rdev_minor */
-    namlen = hex8(this);
-    hex8(this);	/* no checksum */
-    this->archive_name = get_name(this, namlen);
-    this->filename =
-	str_format("%S(%S)", input_name(deeper), this->archive_name);
-    padding(this);
+    hex8(this_thing);	/* inode */
+    hex8(this_thing);	/* mode */
+    hex8(this_thing);	/* uid */
+    hex8(this_thing);	/* gid */
+    hex8(this_thing);	/* nlinks */
+    hex8(this_thing);	/* mtime */
+    this_thing->length = hex8(this_thing);
+    hex8(this_thing);	/* dev_major */
+    hex8(this_thing);	/* dev_minor */
+    hex8(this_thing);	/* rdev_major */
+    hex8(this_thing);	/* rdev_minor */
+    namlen = hex8(this_thing);
+    hex8(this_thing);	/* no checksum */
+    this_thing->archive_name = get_name(this_thing, namlen);
+    this_thing->filename =
+	str_format("%S(%S)", input_name(deeper), this_thing->archive_name);
+    padding(this_thing);
 
     /*
      * The trailer record tells us when to stop.
      */
     if (!trailer)
 	trailer = str_from_c("TRAILER!!!");
-    if (str_equal(this->archive_name, trailer))
+    if (str_equal(this_thing->archive_name, trailer))
     {
 	input_delete(result);
 	return 0;
@@ -350,6 +318,6 @@ input_cpio_child_open(deeper, archive_name_p)
      * the child will read everything.
      */
     if (archive_name_p)
-	*archive_name_p = str_copy(this->archive_name);
+	*archive_name_p = str_copy(this_thing->archive_name);
     return result;
 }

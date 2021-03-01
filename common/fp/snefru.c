@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1560,7 +1560,7 @@ struct snefru_ty
 {
     FINGERPRINT_BASE_CLASS
     unsigned char   c[64];
-    int		    n;
+    size_t          n;
     unsigned char   len[8];
 };
 
@@ -1607,17 +1607,17 @@ snefru_destructor(fingerprint_ty *p)
 
 
 static void
-snefru_addn(fingerprint_ty *p, unsigned char *t, int len)
+snefru_addn(fingerprint_ty *p, unsigned char *t, size_t len)
 {
     snefru_ty	    *s;
-    int		    n;
-    int		    i;
-    unsigned char   newlen;
+    size_t          n;
+    size_t          i;
+    size_t          newlen;
     unsigned char   l[64];
     unsigned char   m[32];
     snefru512_word  *wm	= (snefru512_word *)&m[0];
     snefru512_word  *wl	= (snefru512_word *)&l[0];
-    unsigned char  *ctr	= (unsigned char *)&tr[0];
+    unsigned char   *ctr = (unsigned char *)&tr[0];
 
     s = (snefru_ty *)p;
     i = len;
@@ -1664,7 +1664,7 @@ snefru_hash(fingerprint_ty *p, unsigned char *h)
 {
     snefru_ty	    *s;
     int		    len[8];
-    int		    i;
+    size_t          i;
 
     s = (snefru_ty *)p;
     for (i = 0; i < 8; ++i)
@@ -1685,7 +1685,7 @@ snefru_hash(fingerprint_ty *p, unsigned char *h)
 static void
 snefru_sum(fingerprint_ty *p, char *obuf)
 {
-    int		    j;
+    size_t          j;
     char	    *cp;
     unsigned char   h[SNEFRU_HASH_LEN];
 

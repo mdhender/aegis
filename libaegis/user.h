@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992-2000, 2002 Peter Miller;
+ *	Copyright (C) 1992-2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,32 +23,33 @@
 #ifndef AEGIS_USER_H
 #define AEGIS_USER_H
 
+#include <output.h>
 #include <ustate.h>
 #include <uconf.h>
 
 typedef struct user_ty user_ty;
 struct user_ty
 {
-	long		reference_count;
-	struct project_ty *pp;
-	string_ty	*name;
-	string_ty	*full_name;
-	string_ty	*home;
-	string_ty	*group;
-	int		uid;
-	int		gid;
-	int		umask;
-	string_ty	*ustate_path;
-	ustate		ustate_data;
-	int		ustate_is_new;
-	int		ustate_modified;
-	string_ty	*uconf_path;
-	uconf		uconf_data;
-	long		lock_magic;
-	/*
-	 * if you add anything to this structure,
-	 * make sure you fix user_free in user.c
-	 */
+    long            reference_count;
+    struct project_ty *pp;
+    string_ty       *name;
+    string_ty       *full_name;
+    string_ty       *home;
+    string_ty       *group;
+    int             uid;
+    int             gid;
+    int             umask;
+    string_ty       *ustate_path;
+    ustate          ustate_data;
+    int             ustate_is_new;
+    int             ustate_modified;
+    string_ty       *uconf_path;
+    uconf           uconf_data;
+    long            lock_magic;
+    /*
+     * if you add anything to this structure,
+     * make sure you fix user_free in user.c
+     */
 };
 
 
@@ -75,7 +76,7 @@ string_ty *user_editor_command(user_ty *);
 string_ty *user_visual_command(user_ty *);
 string_ty *user_pager_command(user_ty *);
 
-char *user_full_name(string_ty *);
+const char *user_full_name(string_ty *);
 
 void user_ustate_write(user_ty *);
 
@@ -84,6 +85,7 @@ int user_own_nth(user_ty *, struct string_ty *, long, long *);
 void user_own_remove(user_ty *, struct string_ty *, long);
 
 long user_default_change(user_ty *);
+string_ty *user_default_project_by_user(user_ty *);
 string_ty *user_default_project(void);
 string_ty *user_default_development_directory(user_ty *);
 string_ty *user_default_project_directory(user_ty *);
@@ -103,7 +105,7 @@ int user_persevere_preference(user_ty *, int);
 void user_persevere_argument(void(*)(void));
 
 uconf_log_file_preference_ty user_log_file_preference(user_ty *,
-	uconf_log_file_preference_ty);
+    uconf_log_file_preference_ty);
 
 void user_lock_wait_argument(void(*)(void));
 int user_lock_wait(user_ty *);
@@ -116,6 +118,17 @@ int user_symlink_pref(user_ty *, int);
 
 void user_relative_filename_preference_argument(void(*)(void));
 uconf_relative_filename_preference_ty user_relative_filename_preference(
-	user_ty *, uconf_relative_filename_preference_ty);
+    user_ty *, uconf_relative_filename_preference_ty);
+
+struct output_ty;
+void user_uconf_write_xml(user_ty *, struct output_ty *);
+
+/**
+  * The user_uconf_get function is used to get the uconf data
+  * corresponding to the specified user.  This should be used sparingly,
+  * if at all.  It is preferable to use one of the above interfaces if
+  * at all possible.
+  */
+uconf user_uconf_get(user_ty *);
 
 #endif /* AEGIS_USER_H */

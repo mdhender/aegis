@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,49 +26,46 @@
 
 
 void
-change_error(cp, scp, s)
-	change_ty	*cp;
-	sub_context_ty	*scp;
-	char		*s;
+change_error(change_ty *cp, sub_context_ty *scp, const char *s)
 {
-	string_ty	*msg;
-	int		need_to_delete;
+    string_ty       *msg;
+    int             need_to_delete;
 
-	if (!scp)
-	{
-		scp = sub_context_new();
-		need_to_delete = 1;
-	}
-	else
-		need_to_delete = 0;
+    if (!scp)
+    {
+	scp = sub_context_new();
+	need_to_delete = 1;
+    }
+    else
+	need_to_delete = 0;
 
-	/*
-	 * asemble the message
-	 */
+    /*
+     * asemble the message
+     */
+    subst_intl_change(scp, cp);
+    msg = subst_intl(scp, s);
+
+    /*
+     * get ready to pass the message to the project error function
+     */
+    /* re-use substitution context */
+    sub_var_set_string(scp, "Message", msg);
+    str_free(msg);
+
+    /*
+     * the form of the project error message depends on what kind of
+     * change this is
+     */
+    if (cp->bogus)
+	project_error(cp->pp, scp, i18n("$message"));
+    else if (cp->number == TRUNK_CHANGE_NUMBER)
+	project_error(cp->pp, scp, i18n("trunk: $message"));
+    else
+    {
 	subst_intl_change(scp, cp);
-	msg = subst_intl(scp, s);
+	project_error(cp->pp, scp, i18n("change $change: $message"));
+    }
 
-	/*
-	 * get ready to pass the message to the project error function
-	 */
-	/* re-use substitution context */
-	sub_var_set_string(scp, "Message", msg);
-	str_free(msg);
-
-	/*
-	 * the form of the project error message depends on what kind of
-	 * change this is
-	 */
-	if (cp->bogus)
-		project_error(cp->pp, scp, i18n("$message"));
-	else if (cp->number == TRUNK_CHANGE_NUMBER)
-		project_error(cp->pp, scp, i18n("trunk: $message"));
-	else
-	{
-		subst_intl_change(scp, cp);
-		project_error(cp->pp, scp, i18n("change $change: $message"));
-	}
-
-	if (need_to_delete)
-		sub_context_delete(scp);
+    if (need_to_delete)
+	sub_context_delete(scp);
 }

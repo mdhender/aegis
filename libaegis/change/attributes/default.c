@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2002 Peter Miller;
+ *	Copyright (C) 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,7 @@
 
 
 void
-change_attributes_default(a, pp, pc)
-    cattr	    a;
-    project_ty	    *pp;
-    pconf	    pc;
+change_attributes_default(cattr a, project_ty *pp, pconf pc)
 {
     trace(("change_attributes_defaults(a = %08lX, pp = %08lX, pc = %08lX)\n{\n",
 	(long)a, (long)pp, (long)pc));

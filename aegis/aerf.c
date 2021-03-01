@@ -52,7 +52,7 @@
 static void
 review_fail_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -172,7 +172,7 @@ review_fail_main(void)
     cstate	    cstate_data;
     cstate_history  history_data;
     string_ty	    *comment =	    0;
-    char	    *reason =	    0;
+    const char      *reason =	    0;
     int		    j;
     string_ty	    *project_name;
     project_ty	    *pp;

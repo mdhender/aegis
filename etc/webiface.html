@@ -24,8 +24,13 @@
 .ad l
 .hy 0
 .so version.so
-<html>
-<head><title>Aegis Web Interface</title></head>
+<html><head>
+.br
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+.br
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+.br
+<title>Aegis Web Interface</title></head>
 <body bgcolor="#ffffff"><h1>
 <img src="aegis.png" align=left>
 <img src="aegis.png" align=right>
@@ -67,29 +72,43 @@ information about each change.
 .br
 <hr>
 <h2 align=center> SourceForge </h2>
-Is your project hosted at sourceforge?  If so, there is no need for you
-to compile Aegis to run on SourceForge, because it is already there.
-If you send email to <a href="mailto:millerp@canb.auug.org.au">Peter Miller</a>
-he will add a project pointer and your project will appear in the
-<a href="/cgi-bin/aegis.cgi?">list of projects</a>.
-<p>
+Is your project hosted at
+<a href="http://sourceforge.net"><img
+.br
+src="http://sourceforge.net/sflogo.php?group_id=224&amp;type=1"
+.br
+width="88" height="31" border="0" alt="SourceForge.net Logo" align=right>
+SourceForge</a>?
+.br
+<ol><li>
+If so, there is <b>no need</b> for you
+to compile Aegis to run on SourceForge, because <i>it is already there</i>.
+<li>
 You will need to <a href="#num7">upload your project tree</a>, as
 mentioned in the instructions below.
+<li>
+Send email to <a href="mailto:millerp@canb.auug.org.au">Peter Miller</a>
+he will add a project pointer and your project will appear in the
+<a href="/cgi-bin/aegis.cgi?">list of projects</a>.
+</ol>
 .br
 <hr>
 <h2 align=center> SourceForge Hack </h2>
 .br
 This section contains instructions for building and installing the CGI
-script that runs at <tt>sourceforge.net</tt>.  If you want an externally
-accessable server, but outside you firewall, this is how to do it.
+interface like the one that runs at <tt>sourceforge.net</tt>, but on
+your own server.  You need an externally accessable server, outside your
+firewall, to host an Internet accessable Aegis project in this way.
+<p>
 You then update the external tree using <i>rsync</i> or similar, either
 weekly or at integrate pass, or something.
 .br
 <p>
-Using the Aegis web interface on SourceForge is a little different than
+Using the Aegis web interface like the one on SourceForge is a little
+different than
 at your own site, due to the chroot jail that is used.  (Change these
 instructions to suit the name of your project.)  You wont be able to
-compile on SourceForge, so on a linux PC elsewhere
+compile on SourceForge, so do it on a Linux PC elsewhere.
 <ol>
 <li>
 Configure with <i>./configure --prefix=/home/groups/a/ae/aegis
@@ -97,6 +116,8 @@ Configure with <i>./configure --prefix=/home/groups/a/ae/aegis
 <li>
 Edit the generated Makefile, and add -DSOURCE_FORGE_HACK to the CFLAGS
 variable.
+(You may need <tt>LDFLAGS = -static</tt> if you aren't building on a
+Redhat 7.3 system, like SourceForge users.)
 <li>
 Now you can <i>make</i> as normal.
 <li>
@@ -107,6 +128,7 @@ When you <i>make install</i>, you will then need to cull the install
 tree of unneccessary files.
 You only need
 <i>bin/aedist</i>,
+<i>bin/aeget</i>,
 <i>bin/aegis</i>,
 <i>bin/aepatch</i>,
 <i>bin/aerect</i>,
@@ -119,12 +141,14 @@ The rest can be removed.
 <blockquote>
 .nf
 <pre>cd /home/groups/a/ae/aegis
+mkdir -m755 cgi-bin
+mv bin/aeget cgi-bin
 mv bin/aegis.cgi cgi-bin
 rm bin/aeannotate bin/aebuffy bin/aecomp bin/aecomplete
-rm bin/ae_diff2htm bin/aefind bin/aegis.cgi.i bin/aeimport
-rm bin/aeintegratq bin/aels bin/ae-sccs-put bin/aesub
-rm bin/aemeasure
-rm bin/tkaeca bin/tkaegis bin/tkaenc bin/tkaepa bin/tkaer bin/xaegis
+rm bin/ae_diff2htm bin/aeedit bin/aefind bin/aegis.cgi.i
+rm bin/aeimport bin/aeintegratq bin/aels bin/aemeasure
+rm bin/ae-sccs-put bin/aesub bin/aexml bin/tkaeca bin/tkaegis
+rm bin/tkaenc bin/tkaepa bin/tkaer bin/xaegis
 rm -r com lib man
 mkdir -p share-new/en
 mv share/en/html share-new/en

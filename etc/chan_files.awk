@@ -20,7 +20,11 @@
 #
 # MANIFEST: chan_files.awk
 #
+BEGIN {
+    change_files_removed = 0;
+}
 $2 == "remove" {
+	change_files_removed++
 	next
 }
 $1 == "build" {
@@ -31,6 +35,7 @@ $1 == "build" {
 	cf[$NF] = 1
 }
 END {
+	print "change_files_removed = " change_files_removed ";"
 	print "change_files ="
 	for (f in cf)
 		print "\"" f "\""

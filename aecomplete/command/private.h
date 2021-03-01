@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,10 @@
 typedef struct command_vtbl_ty command_vtbl_ty;
 struct command_vtbl_ty
 {
-    void (*destructor)(command_ty *);
+    void            (*destructor)(command_ty *);
     struct complete_ty *(*completion_get)(command_ty *);
-    int size;
-    char *name;
+    int             size;
+    const char      *name;
 };
 
 command_ty *command_new(command_vtbl_ty *);

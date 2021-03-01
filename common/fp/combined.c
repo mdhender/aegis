@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ combined_destructor(fingerprint_ty *p)
 
 
 static void
-combined_addn(fingerprint_ty *p, unsigned char *s, int n)
+combined_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 {
     combined_ty     *f;
 

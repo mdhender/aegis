@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 static void
 gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-    char	    *deref;
+    const char      *deref;
 
     deref = (is_a_list ? "*" : "");
     indent_printf("%s\1%s*%s;\n", "string_ty", deref, name->str_text);
@@ -36,21 +36,37 @@ gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 
 
 static void
-gen_code_declarator(type_ty *this, string_ty *name, int is_a_list, int show)
+gen_code_declarator(type_ty *this_thing,
+                    string_ty *name,
+                    int is_a_list,
+                    int show)
 {
     indent_printf("string_write(fp, ");
     if (is_a_list)
-       	indent_printf("(char *)0");
+       	indent_printf("(const char *)0");
     else
        	indent_printf("\"%s\"", name->str_text);
-    indent_printf(", this->%s);\n", name->str_text);
+    indent_printf(", this_thing->%s);\n", name->str_text);
+}
+
+
+static void
+gen_code_call_xml(type_ty *this_thing, string_ty *form_name,
+                  string_ty *member_name, int show)
+{
+    indent_printf
+    (
+	"string_write_xml(fp, \"%s\", this_thing->%s);\n",
+	form_name->str_text,
+	member_name->str_text
+    );
 }
 
 
 static void
 gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-    indent_printf("str_free(this->%s);\n", name->str_text);
+    indent_printf("str_free(this_thing->%s);\n", name->str_text);
 }
 
 
@@ -65,6 +81,7 @@ type_method_ty type_string =
     gen_include_declarator,
     0, /* gen_code */
     gen_code_declarator,
+    gen_code_call_xml,
     gen_free_declarator,
     0, /* member_add */
     0, /* in_include_file */

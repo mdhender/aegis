@@ -25,9 +25,7 @@
 
 
 void
-change_file_fingerprint_check(cp, src_data)
-	change_ty	*cp;
-	fstate_src	src_data;
+change_file_fingerprint_check(change_ty *cp, fstate_src src_data)
 {
 	string_ty       *path;
 	int		same;

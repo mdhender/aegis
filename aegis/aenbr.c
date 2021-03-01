@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-2002 Peter Miller;
+ *	Copyright (C) 1995-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@
 static void
 new_branch_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -New_BRanch [ <option>... ]\n", progname);
@@ -95,7 +95,7 @@ new_branch_list(void)
 	}
 	arglex();
     }
-    list_changes(project_name, 0);
+    list_changes(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -111,7 +111,7 @@ new_branch_main(void)
     long	    change_number;
     user_ty	    *up;
     string_ty	    *devdir;
-    char	    *output;
+    const char      *output;
 
     trace(("new_branch_main()\n{\n"));
     arglex();

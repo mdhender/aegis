@@ -24,9 +24,7 @@
 
 
 int
-change_history_delta_validate(cp, delta_number)
-	change_ty	*cp;
-	long		delta_number;
+change_history_delta_validate(change_ty *cp, long delta_number)
 {
 	cstate		cstate_data;
 	cstate_branch_history_list h;

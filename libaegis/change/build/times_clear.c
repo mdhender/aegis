@@ -26,8 +26,7 @@
 
 
 void
-change_build_times_clear(cp)
-	change_ty	*cp;
+change_build_times_clear(change_ty *cp)
 {
 	cstate		cstate_data;
 	size_t		j;

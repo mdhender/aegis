@@ -26,13 +26,8 @@
 #include <sub.h>
 
 
-static void metric_check _((metric, string_ty *, change_ty *));
-
 static void
-metric_check(mp, fn, cp)
-	metric		mp;
-	string_ty	*fn;
-	change_ty	*cp;
+metric_check(metric mp, string_ty *fn, change_ty *cp)
 {
 	sub_context_ty	*scp;
 
@@ -63,13 +58,8 @@ metric_check(mp, fn, cp)
 }
 
 
-static void metric_list_check _((metric_list, string_ty *, change_ty *));
-
 static void
-metric_list_check(mlp, fn, cp)
-	metric_list	mlp;
-	string_ty	*fn;
-	change_ty	*cp;
+metric_list_check(metric_list mlp, string_ty *fn, change_ty *cp)
 {
 	size_t		j;
 
@@ -78,12 +68,8 @@ metric_list_check(mlp, fn, cp)
 }
 
 
-static string_ty * change_file_metrics_filename _((change_ty *, string_ty *));
-
 static string_ty *
-change_file_metrics_filename(cp, filename)
-	change_ty	*cp;
-	string_ty	*filename;
+change_file_metrics_filename(change_ty *cp, string_ty *filename)
 {
 	string_ty	*metrics_filename_pattern;
 	sub_context_ty	*scp;
@@ -102,9 +88,7 @@ change_file_metrics_filename(cp, filename)
 
 
 metric_list
-change_file_metrics_get(cp, filename)
-	change_ty	*cp;
-	string_ty	*filename;
+change_file_metrics_get(change_ty *cp, string_ty *filename)
 {
 	string_ty	*metrics_filename;
 	metrics		mp;

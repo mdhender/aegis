@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1998, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,19 @@ type_gen_code_declarator(type_ty *type, string_ty *name, int is_a_list,
 
 
 void
+type_gen_code_call_xml(type_ty *type, string_ty *form_name,
+    string_ty *member_name, int show)
+{
+    trace(("type_gen_code_call_xml(type = %08lX, form_name = \"%s\", "
+	"member_name = \"%s\", show = %d)\n{\n", (long)type,
+       	form_name->str_text, member_name->str_text, show));
+    if (type->method->gen_code_call_xml)
+       	type->method->gen_code_call_xml(type, form_name, member_name, show);
+    trace(("}\n"));
+}
+
+
+void
 type_gen_code(type_ty *type)
 {
     trace(("type_gen_code(type = %08lX)\n{\n", (long)type));
@@ -101,7 +114,7 @@ type_new(type_method_ty *method, string_ty *name)
 
     trace(("type_new(method = %08lX, bane = %08lX)\n{\n", (long)method,
 	    (long)name));
-    type = mem_alloc(method->size);
+    type = (type_ty *)mem_alloc(method->size);
     type->method = method;
     type->name = name ? str_copy(name) : str_from_c(method->name);
     trace_string(type->name->str_text);

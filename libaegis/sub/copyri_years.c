@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,12 +31,8 @@
 #include <wstr_list.h>
 
 
-static int icmp _((const void *, const void *));
-
 static int
-icmp(va, vb)
-    const void	    *va;
-    const void	    *vb;
+icmp(const void *va, const void *vb)
 {
     const int	    *a;
     const int	    *b;
@@ -75,9 +71,7 @@ icmp(va, vb)
  */
 
 wstring_ty *
-sub_copyright_years(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_copyright_years(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
     int		    ary[100]; /* a century should be enough  :-) */

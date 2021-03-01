@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -109,8 +109,7 @@ strcasecmp(const char *s1, const char *s2)
 #ifndef HAVE_STRNCASECMP
 
 int
-strncasecmp(const char *s1, const char *s2)
-    size_t	    len;
+strncasecmp(const char *s1, const char *s2, size_t len)
 {
     unsigned char   c1;
     unsigned char   c2;

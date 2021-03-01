@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,8 +43,7 @@ static int      become_active_umask;
 
 
 void
-os_setgid(gid)
-    int             gid;
+os_setgid(int gid)
 {
     os_become_must_not_be_active();
     if (become_testing < 0)
@@ -72,11 +71,7 @@ os_setgid(gid)
 
 
 void
-os_chown_check(path, mode, uid, gid)
-    string_ty       *path;
-    int             mode;
-    int             uid;
-    int             gid;
+os_chown_check(string_ty *path, int mode, int uid, int gid)
 {
     struct stat     st;
     int             nerrs;
@@ -100,7 +95,7 @@ os_chown_check(path, mode, uid, gid)
 	fatal_intl(scp, i18n("stat $filename: $errno"));
 	/* NOTREACHED */
     }
-    if (mode > 0 && (st.st_mode & 07777) != mode)
+    if (mode > 0 && ((int)st.st_mode & 07777) != mode)
     {
 	sub_context_ty *scp;
 
@@ -142,7 +137,7 @@ os_chown_check(path, mode, uid, gid)
 	 * This is the test performed by aegis
 	 * when is set-uid-root mode.
 	 */
-	if (st.st_uid != uid)
+	if ((int)st.st_uid != uid)
 	{
 	    sub_context_ty *scp;
 
@@ -158,7 +153,7 @@ os_chown_check(path, mode, uid, gid)
 	    sub_context_delete(scp);
 	    ++nerrs;
 	}
-	if (gid >= 0 && st.st_gid != gid)
+	if (gid >= 0 && (int)st.st_gid != gid)
 	{
 	    sub_context_ty *scp;
 
@@ -197,7 +192,7 @@ os_chown_check(path, mode, uid, gid)
 
 
 void
-os_become_init()
+os_become_init(void)
 {
     assert(!become_inited);
     become_active_umask = DEFAULT_UMASK;
@@ -223,7 +218,7 @@ os_become_init()
 
 
 void
-os_become_init_mortal()
+os_become_init_mortal(void)
 {
     assert(!become_inited);
     become_active_umask = DEFAULT_UMASK;
@@ -238,7 +233,7 @@ os_become_init_mortal()
 
 
 int
-os_testing_mode()
+os_testing_mode(void)
 {
     static int      warned;
 
@@ -259,10 +254,7 @@ os_testing_mode()
 
 
 void
-os_become(uid, gid, um)
-    int             uid;
-    int             gid;
-    int             um;
+os_become(int uid, int gid, int um)
 {
     trace(("os_become(uid = %d, gid = %d, um = %03o)\n{\n", uid, gid, um));
     if (become_active)
@@ -297,7 +289,7 @@ os_become(uid, gid, um)
 
 
 void
-os_become_undo()
+os_become_undo(void)
 {
     trace(("os_become_undo()\n{\n"));
     os_become_must_be_active();
@@ -319,17 +311,14 @@ os_become_undo()
 
 
 void
-os_become_orig()
+os_become_orig(void)
 {
     os_become(become_orig_uid, become_orig_gid, become_orig_umask);
 }
 
 
 void
-os_become_query(uid, gid, umsk)
-    int             *uid;
-    int             *gid;
-    int             *umsk;
+os_become_query(int *uid, int *gid, int *umsk)
 {
     os_become_must_be_active();
     *uid = become_active_uid;
@@ -341,10 +330,7 @@ os_become_query(uid, gid, umsk)
 
 
 void
-os_become_orig_query(uid, gid, umsk)
-    int             *uid;
-    int             *gid;
-    int             *umsk;
+os_become_orig_query(int *uid, int *gid, int *umsk)
 {
     if (uid)
 	*uid = become_orig_uid;
@@ -356,16 +342,14 @@ os_become_orig_query(uid, gid, umsk)
 
 
 int
-os_become_active()
+os_become_active(void)
 {
     return become_active;
 }
 
 
 void
-os_become_must_be_active_gizzards(file, line)
-    char           *file;
-    int             line;
+os_become_must_be_active_gizzards(const char *file, int line)
 {
     if (!os_become_active())
 	fatal_raw("%s: %d: user permissions not set (bug)", file, line);
@@ -373,9 +357,7 @@ os_become_must_be_active_gizzards(file, line)
 
 
 void
-os_become_must_not_be_active_gizzards(file, line)
-    char           *file;
-    int             line;
+os_become_must_not_be_active_gizzards(const char *file, int line)
 {
     if (os_become_active())
     {

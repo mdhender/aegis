@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998-2002 Peter Miller;
+ *	Copyright (C) 1998-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@
 static void
 clone_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -CLone [ <option>... ]\n", progname);
@@ -145,15 +145,16 @@ clone_main(void)
     string_ty	    *devdir;
     size_t	    j;
     pconf	    pconf_data;
-    char	    *branch;
+    const char      *branch;
     int		    trunk;
     int		    grandparent;
     int		    mode;
-    char	    *output;
+    const char      *output;
     string_list_ty  wl_nf;
     string_list_ty  wl_nt;
     string_list_ty  wl_cp;
     string_list_ty  wl_rm;
+    string_list_ty  wl_mt;
     int             the_umask;
 
     trace(("clone_main()\n{\n"));
@@ -784,6 +785,7 @@ clone_main(void)
 	string_list_constructor(&wl_nt);
 	string_list_constructor(&wl_cp);
 	string_list_constructor(&wl_rm);
+	string_list_constructor(&wl_mt);
 	for (j = 0;; ++j)
 	{
 	    fstate_src	c_src;
@@ -814,7 +816,7 @@ clone_main(void)
 		break;
 
 	    case file_action_transparent:
-		/* FIXME: change_run_make_transparent_command */
+		string_list_append(&wl_mt, c_src->file_name);
 		break;
 
 	    case file_action_remove:
@@ -825,15 +827,18 @@ clone_main(void)
 	if (wl_nf.nstrings)
 	    change_run_new_file_command(cp, &wl_nf, up);
 	if (wl_nt.nstrings)
-	    change_run_new_test_command(cp, &wl_nf, up);
+	    change_run_new_test_command(cp, &wl_nt, up);
 	if (wl_cp.nstrings)
-	    change_run_copy_file_command(cp, &wl_nf, up);
+	    change_run_copy_file_command(cp, &wl_cp, up);
 	if (wl_rm.nstrings)
-	    change_run_remove_file_command(cp, &wl_nf, up);
+	    change_run_remove_file_command(cp, &wl_rm, up);
+	if (wl_mt.nstrings)
+	    change_run_make_transparent_command(cp, &wl_mt, up);
 	string_list_destructor(&wl_nf);
 	string_list_destructor(&wl_nt);
 	string_list_destructor(&wl_cp);
 	string_list_destructor(&wl_rm);
+	string_list_destructor(&wl_mt);
 	change_run_project_file_command(cp, up);
 
 	/*

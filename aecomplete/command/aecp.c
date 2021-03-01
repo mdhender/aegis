@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,28 +37,20 @@
 #include <zero.h>
 
 
-static void destructor _((command_ty *));
-
 static void
-destructor(this)
-    command_ty      *this;
+destructor(command_ty *this_thing)
 {
 }
 
 
-static void do_nothing _((void));
-
 static void
-do_nothing()
+do_nothing(void)
 {
 }
 
-
-static complete_ty *completion_get _((command_ty *));
 
 static complete_ty *
-completion_get(cmd)
-    command_ty      *cmd;
+completion_get(command_ty *cmd)
 {
     string_ty       *project_name;
     int             overwriting;
@@ -69,7 +61,7 @@ completion_get(cmd)
     int             incomplete_delta;
     int             incomplete_branch;
     int             change_number;
-    char            *branch;
+    const char      *branch;
     project_ty      *pp;
     user_ty         *up;
     change_ty       *cp;

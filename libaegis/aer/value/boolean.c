@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,35 +35,29 @@ struct rpt_value_boolean_ty
 };
 
 
-static rpt_value_ty *arithmetic _((rpt_value_ty *));
-
 static rpt_value_ty *
-arithmetic(vp)
-	rpt_value_ty	*vp;
+arithmetic(rpt_value_ty *vp)
 {
-	rpt_value_boolean_ty *this;
+	rpt_value_boolean_ty *this_thing;
 	rpt_value_ty	*result;
 
-	this = (rpt_value_boolean_ty *)vp;
-	assert(this->method->type == rpt_value_type_boolean);
-	result = rpt_value_integer(this->value);
+	this_thing = (rpt_value_boolean_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_boolean);
+	result = rpt_value_integer(this_thing->value);
 	return result;
 }
 
 
-static rpt_value_ty *stringize _((rpt_value_ty *));
-
 static rpt_value_ty *
-stringize(vp)
-	rpt_value_ty	*vp;
+stringize(rpt_value_ty *vp)
 {
-	rpt_value_boolean_ty *this;
+	rpt_value_boolean_ty *this_thing;
 	string_ty	*s;
 	rpt_value_ty	*result;
 
-	this = (rpt_value_boolean_ty *)vp;
-	assert(this->method->type == rpt_value_type_boolean);
-	s = str_from_c(this->value ? "true" : "false");
+	this_thing = (rpt_value_boolean_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_boolean);
+	s = str_from_c(this_thing->value ? "true" : "false");
 	result = rpt_value_string(s);
 	str_free(s);
 	return result;
@@ -88,24 +82,22 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_boolean(n)
-	int		n;
+rpt_value_boolean(int n)
 {
-	rpt_value_boolean_ty *this;
+	rpt_value_boolean_ty *this_thing;
 
-	this = (rpt_value_boolean_ty *)rpt_value_alloc(&method);
-	this->value = (n != 0);
-	return (rpt_value_ty *)this;
+	this_thing = (rpt_value_boolean_ty *)rpt_value_alloc(&method);
+	this_thing->value = (n != 0);
+	return (rpt_value_ty *)this_thing;
 }
 
 
 int
-rpt_value_boolean_query(vp)
-	rpt_value_ty	*vp;
+rpt_value_boolean_query(rpt_value_ty *vp)
 {
-	rpt_value_boolean_ty *this;
+	rpt_value_boolean_ty *this_thing;
 
-	this = (rpt_value_boolean_ty *)vp;
-	assert(this->method->type == rpt_value_type_boolean);
-	return this->value;
+	this_thing = (rpt_value_boolean_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_boolean);
+	return this_thing->value;
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,132 +36,109 @@ struct output_prefix_ty
 };
 
 
-static void output_prefix_destructor _((output_ty *));
-
 static void
-output_prefix_destructor(fp)
-	output_ty	*fp;
+output_prefix_destructor(output_ty *fp)
 {
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
-	this = (output_prefix_ty *)fp;
-	if (this->delete_on_close)
-		output_delete(this->deeper);
-	str_free(this->prefix);
-	this->prefix = 0;
-	this->deeper = 0;
+	this_thing = (output_prefix_ty *)fp;
+	if (this_thing->delete_on_close)
+		output_delete(this_thing->deeper);
+	str_free(this_thing->prefix);
+	this_thing->prefix = 0;
+	this_thing->deeper = 0;
 }
 
 
-static void output_prefix_write _((output_ty *, const void *, size_t));
-
 static void
-output_prefix_write(fp, p, len)
-	output_ty	*fp;
-	const void	*p;
-	size_t		len;
+output_prefix_write(output_ty *fp, const void *p, size_t len)
 {
 	const unsigned char *data;
 	const unsigned char *begin;
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 	int		c;
 	size_t		nbytes;
 
-	data = p;
-	this = (output_prefix_ty *)fp;
+	data = (unsigned char *)p;
+	this_thing = (output_prefix_ty *)fp;
 	begin = data;
 	while (len > 0)
 	{
 		c = *data++;
 		--len;
 
-		if (this->column == 0)
+		if (this_thing->column == 0)
 		{
-			output_put_str(this->deeper, this->prefix);
-			this->pos += this->prefix->str_length;
+			output_put_str(this_thing->deeper, this_thing->prefix);
+			this_thing->pos += this_thing->prefix->str_length;
 		}
 		if (c == '\n')
 		{
 			nbytes = data - begin;
-			output_write(this->deeper, begin, nbytes);
-			this->column = 0;
-			this->pos += nbytes;
+			output_write(this_thing->deeper, begin, nbytes);
+			this_thing->column = 0;
+			this_thing->pos += nbytes;
 			begin = data;
 		}
 		else
-			this->column++;
+			this_thing->column++;
 	}
 	if (data > begin)
 	{
 		nbytes = data - begin;
-		output_write(this->deeper, begin, nbytes);
-		this->pos += nbytes;
+		output_write(this_thing->deeper, begin, nbytes);
+		this_thing->pos += nbytes;
 	}
 }
 
 
-static string_ty *output_prefix_filename _((output_ty *));
-
 static string_ty *
-output_prefix_filename(fp)
-	output_ty	*fp;
+output_prefix_filename(output_ty *fp)
 {
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
-	this = (output_prefix_ty *)fp;
-	return output_filename(this->deeper);
+	this_thing = (output_prefix_ty *)fp;
+	return output_filename(this_thing->deeper);
 }
 
-
-static long output_prefix_ftell _((output_ty *));
 
 static long
-output_prefix_ftell(fp)
-	output_ty	*fp;
+output_prefix_ftell(output_ty *fp)
 {
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
-	this = (output_prefix_ty *)fp;
-	return this->pos;
+	this_thing = (output_prefix_ty *)fp;
+	return this_thing->pos;
 }
 
-
-static int output_prefix_page_width _((output_ty *));
 
 static int
-output_prefix_page_width(fp)
-	output_ty	*fp;
+output_prefix_page_width(output_ty *fp)
 {
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
-	this = (output_prefix_ty *)fp;
-	return output_page_width(this->deeper);
+	this_thing = (output_prefix_ty *)fp;
+	return output_page_width(this_thing->deeper);
 }
 
-
-static int output_prefix_page_length _((output_ty *));
 
 static int
-output_prefix_page_length(fp)
-	output_ty	*fp;
+output_prefix_page_length(output_ty *fp)
 {
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
-	this = (output_prefix_ty *)fp;
-	return output_page_length(this->deeper);
+	this_thing = (output_prefix_ty *)fp;
+	return output_page_length(this_thing->deeper);
 }
 
-
-static void output_prefix_eoln _((output_ty *));
 
 static void
-output_prefix_eoln(fp)
-	output_ty	*fp;
+output_prefix_eoln(output_ty *fp)
 {
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
-	this = (output_prefix_ty *)fp;
-	if (this->column != 0)
+	this_thing = (output_prefix_ty *)fp;
+	if (this_thing->column != 0)
 		output_fputc(fp, '\n');
 }
 
@@ -182,20 +159,17 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_prefix(deeper, delete_on_close, prfx)
-	output_ty	*deeper;
-	int		delete_on_close;
-	const char	*prfx;
+output_prefix(output_ty *deeper, int delete_on_close, const char *prfx)
 {
 	output_ty	*result;
-	output_prefix_ty *this;
+	output_prefix_ty *this_thing;
 
 	result = output_new(&vtbl);
-	this = (output_prefix_ty *)result;
-	this->deeper = deeper;
-	this->delete_on_close = !!delete_on_close;
-	this->prefix = str_from_c(prfx);
-	this->column = 0;
-	this->pos = 0;
+	this_thing = (output_prefix_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->delete_on_close = !!delete_on_close;
+	this_thing->prefix = str_from_c(prfx);
+	this_thing->column = 0;
+	this_thing->pos = 0;
 	return result;
 }

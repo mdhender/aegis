@@ -30,13 +30,12 @@
 
 
 void
-change_run_diff3_command(cp, up, original, most_recent, input, output)
-	change_ty	*cp;
-	user_ty		*up;
-	string_ty	*original;
-	string_ty	*most_recent;
-	string_ty	*input;
-	string_ty	*output;
+change_run_diff3_command(change_ty *cp,
+                         user_ty *up,
+                         string_ty *original,
+                         string_ty *most_recent,
+                         string_ty *input,
+                         string_ty *output)
 {
 	sub_context_ty	*scp;
 	pconf		pconf_data;

@@ -54,7 +54,7 @@
 static void
 develop_end_undo_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -Undo_Develop_End [ <option>... ]\n", progname);

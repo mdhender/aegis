@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,32 +35,25 @@ struct rpt_stmt_expr_ty
 };
 
 
-static void destruct _((rpt_stmt_ty *));
-
 static void
-destruct(sp)
-	rpt_stmt_ty	*sp;
+destruct(rpt_stmt_ty *sp)
 {
-	rpt_stmt_expr_ty *this;
+	rpt_stmt_expr_ty *this_thing;
 
-	this = (rpt_stmt_expr_ty *)sp;
-	rpt_expr_free(this->ep);
+	this_thing = (rpt_stmt_expr_ty *)sp;
+	rpt_expr_free(this_thing->ep);
 }
 
 
-static void run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-run(sp, rp)
-	rpt_stmt_ty	*sp;
-	rpt_stmt_result_ty *rp;
+run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
-	rpt_stmt_expr_ty *this;
+	rpt_stmt_expr_ty *this_thing;
 	rpt_value_ty	*vp;
 
 	trace(("stmt_expr::run()\n{\n"/*}*/));
-	this = (rpt_stmt_expr_ty *)sp;
-	vp = rpt_expr_evaluate(this->ep, 0);
+	this_thing = (rpt_stmt_expr_ty *)sp;
+	vp = rpt_expr_evaluate(this_thing->ep, 0);
 	assert(vp->reference_count >= 1);
 	if (vp->method->type == rpt_value_type_error)
 	{
@@ -88,12 +81,11 @@ static rpt_stmt_method_ty method =
 
 
 rpt_stmt_ty *
-rpt_stmt_expr(ep)
-	rpt_expr_ty	*ep;
+rpt_stmt_expr(rpt_expr_ty *ep)
 {
-	rpt_stmt_expr_ty *this;
+	rpt_stmt_expr_ty *this_thing;
 
-	this = (rpt_stmt_expr_ty *)rpt_stmt_alloc(&method);
-	this->ep = rpt_expr_copy(ep);
-	return (rpt_stmt_ty *)this;
+	this_thing = (rpt_stmt_expr_ty *)rpt_stmt_alloc(&method);
+	this_thing->ep = rpt_expr_copy(ep);
+	return (rpt_stmt_ty *)this_thing;
 }

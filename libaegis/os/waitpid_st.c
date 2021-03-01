@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,20 +31,18 @@
 
 
 int
-os_waitpid_status(child, cmd)
-    int             child;
-    char            *cmd;
+os_waitpid_status(int child, const char *cmd)
 {
     sub_context_ty  *scp;
     int             result;
-    RETSIGTYPE      (*hold)_((int));
+    RETSIGTYPE      (*hold)(int);
     int             a;
     int             b;
     int             c;
     int             status;
 
     trace(("os_waitpid_status(child = %d, cmd = \"%s\")\n{\n", child,
-	    cmd));
+	cmd));
     hold = signal(SIGINT, SIG_IGN);
     if (hold != SIG_IGN)
 	signal(SIGINT, os_interrupt);

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997-1999, 2001, 2002 Peter Miller;
+#	Copyright (C) 1997-1999, 2001-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -244,7 +244,9 @@ then
     echo "Differences in file $File" | sed 's/</&lt;/'
     echo "<br>Delta $delta1, Delta $delta2"
     echo '</h1>'
-    cat /tmp/aegis.$$.out
+    echo '<pre>'
+    sed 's|<|\&lt;|g' < /tmp/aegis.$$.out
+    echo '</pre>'
     echo '<hr>'
     echo 'This page was generated'
     date

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@
 #include <lock.h>
 #include <log.h>
 #include <mem.h>
+#include <now.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
@@ -52,7 +53,7 @@
 static void
 test_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -125,7 +126,7 @@ test_list(void)
 	}
 	arglex();
     }
-    list_change_files(project_name, change_number);
+    list_change_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -392,7 +393,7 @@ test_main(void)
     log_style_ty    log_style;
     user_ty	    *up;
     string_list_ty  search_path;
-    time_t	    now;
+    time_t	    when;
     int		    integrating;
     int             reviewing;
     int		    suggest;
@@ -654,7 +655,7 @@ test_main(void)
     trace_int(automatic_flag);
 
     os_throttle();
-    time(&now);
+    when = now();
 
     /*
      * locate project data
@@ -756,7 +757,7 @@ test_main(void)
      * If it is, we can update the relevant test time field.
      */
     if (regression_flag && !suggest)
-	change_regression_test_time_set(cp, now);
+	change_regression_test_time_set(cp, when);
 
     /*
      * Search path for resolving filenames.
@@ -1204,7 +1205,7 @@ test_main(void)
 		    (
 			cp,
 			src_data,
-			now,
+			when,
 			rp->architecture
 		    );
 		}
@@ -1217,7 +1218,7 @@ test_main(void)
 		    (
 			cp,
 			src_data,
-			now,
+			when,
 			rp->architecture
 		    );
 		}

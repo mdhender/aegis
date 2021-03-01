@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ outstanding_commentary(string_list_ty *wlp, long narch)
 }
 
 
-char *
+const char *
 change_outstanding_builds(change_ty *cp, time_t t)
 {
     cstate	    cstate_data;
@@ -98,7 +98,7 @@ change_outstanding_builds(change_ty *cp, time_t t)
 }
 
 
-char *
+const char *
 change_outstanding_tests(change_ty *cp, time_t t)
 {
     cstate	    cstate_data;
@@ -133,7 +133,7 @@ change_outstanding_tests(change_ty *cp, time_t t)
 }
 
 
-char *
+const char *
 change_outstanding_tests_baseline(change_ty *cp, time_t t)
 {
     cstate	    cstate_data;
@@ -168,7 +168,7 @@ change_outstanding_tests_baseline(change_ty *cp, time_t t)
 }
 
 
-char *
+const char *
 change_outstanding_tests_regression(change_ty *cp, time_t t)
 {
     cstate	    cstate_data;

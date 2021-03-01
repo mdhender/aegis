@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    char            *name;
+    const char      *name;
     int             num_bits;
     int             is_signed;
 };

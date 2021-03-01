@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992-1995, 2002 Peter Miller;
+ *	Copyright (C) 1992-1995, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,10 @@
  * Journal of Computational Physics, vol. 40, p. 157 (1981).
  */
 
-#include <ac/time.h>
 #include <ac/stdlib.h>
 #include <ac/unistd.h>
 
+#include <now.h>
 #include <r250.h>
 
 static	unsigned long	buf[250];
@@ -46,7 +46,7 @@ r250_init(void)
     /*
      * initialize crummy linear congruential
      */
-    srand(time((time_t *)0) + getpid());
+    srand(now() + getpid());
 
     /*
      * position to start of array

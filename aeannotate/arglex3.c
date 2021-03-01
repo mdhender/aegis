@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,14 +30,12 @@ static arglex_table_ty argtab[] =
     { "-Not_File_Statistics", arglex_token_filestat_not, },
     { "-OPTion", arglex_token_diff_option, },
     { "-Diff_Option", arglex_token_diff_option, },
-    { 0, }
+    ARGLEX_END_MARKER
 };
 
 
 void
-arglex3_init(argc, argv)
-    int		argc;
-    char		**argv;
+arglex3_init(int argc, char **argv)
 {
     arglex2_init3(argc, argv, argtab);
 }

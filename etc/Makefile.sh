@@ -48,9 +48,10 @@ fmtgen_files="\
 	common/fstrcmp.\$(OBJEXT) common/libdir.\$(OBJEXT)		\
 	common/mem.\$(OBJEXT) common/mprintf.\$(OBJEXT)			\
 	common/progname.\$(OBJEXT) common/str.\$(OBJEXT)		\
-	common/str/format.\$(OBJEXT)					\
-	common/str_list.\$(OBJEXT) common/symtab.\$(OBJEXT)		\
-	common/trace.\$(OBJEXT)"
+	common/str/format.\$(OBJEXT) common/str_list/append.\$(OBJEXT)	\
+	common/str_list/constructor.\$(OBJEXT)				\
+	common/str_list/append_uniqu.\$(OBJEXT)				\
+	common/symtab.\$(OBJEXT) common/trace.\$(OBJEXT)"
 
 #
 # bindir - in a network, these may be shared between machines of the

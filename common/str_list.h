@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1991-1994, 1996, 1997, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,9 +34,10 @@ struct string_list_ty
 };
 
 int string_list_member(string_list_ty *, string_ty *);
-string_ty *wl2str(string_list_ty *, int, int, char *);
-void str2wl(string_list_ty *, string_ty *, char *, int);
+string_ty *wl2str(string_list_ty *, int, int, const char *);
+void str2wl(string_list_ty *, string_ty *, const char *, int);
 void string_list_prepend(string_list_ty *, string_ty *);
+void string_list_prepend_list(string_list_ty *, string_list_ty *);
 void string_list_append(string_list_ty *, string_ty *);
 void string_list_append_list(string_list_ty *, string_list_ty *);
 void string_list_append_unique(string_list_ty *, string_ty *);

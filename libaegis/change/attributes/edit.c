@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000-2002 Peter Miller;
+ *	Copyright (C) 2000-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,9 +31,7 @@
 
 
 void
-change_attributes_edit(dp, et)
-	cattr		*dp;
-	int		et;
+change_attributes_edit(cattr *dp, int et)
 {
 	sub_context_ty	*scp;
 	cattr		d;

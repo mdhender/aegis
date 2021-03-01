@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 
 
 static rpt_value_ty *
-mul_evaluate(rpt_expr_ty *this)
+mul_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -48,8 +48,8 @@ mul_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("mul::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -66,7 +66,7 @@ mul_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1a);
@@ -129,7 +129,7 @@ mul_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", v2a->method->name);
 	s = subst_intl(scp, i18n("illegal multiplication ($name1 * $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -155,17 +155,17 @@ static rpt_expr_method_ty mul_method =
 rpt_expr_ty *
 rpt_expr_mul(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&mul_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&mul_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-div_evaluate(rpt_expr_ty *this)
+div_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -181,8 +181,8 @@ div_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("div::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -199,7 +199,7 @@ div_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1a);
@@ -228,7 +228,7 @@ div_evaluate(rpt_expr_ty *this)
 	    scp = sub_context_new();
 	    s = subst_intl(scp, i18n("division by zero"));
 	    sub_context_delete(scp);
-	    result = rpt_value_error(this->child[1]->pos, s);
+	    result = rpt_value_error(this_thing->child[1]->pos, s);
 	    str_free(s);
 	    break;
 	}
@@ -267,7 +267,7 @@ div_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", v2a->method->name);
 	s = subst_intl(scp, i18n("illegal division ($name1 / $name2)"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->pos, s);
+	result = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -293,17 +293,17 @@ static rpt_expr_method_ty div_method =
 rpt_expr_ty *
 rpt_expr_div(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&div_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&div_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-mod_evaluate(rpt_expr_ty *this)
+mod_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -319,8 +319,8 @@ mod_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("mod::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -337,7 +337,7 @@ mod_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1a);
@@ -366,7 +366,7 @@ mod_evaluate(rpt_expr_ty *this)
 	    scp = sub_context_new();
 	    s = subst_intl(scp, i18n("modulo by zero"));
 	    sub_context_delete(scp);
-	    result = rpt_value_error(this->child[1]->pos, s);
+	    result = rpt_value_error(this_thing->child[1]->pos, s);
 	    str_free(s);
 	    break;
 	}
@@ -409,7 +409,7 @@ mod_evaluate(rpt_expr_ty *this)
 	/* xgettext:no-c-format */
 	s = subst_intl(scp, i18n("illegal modulo ($name1 %% $name2)"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->pos, s);
+	result = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -435,10 +435,10 @@ static rpt_expr_method_ty mod_method =
 rpt_expr_ty *
 rpt_expr_mod(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&mod_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&mod_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }

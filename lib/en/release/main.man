@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997-1999, 2002 Peter Miller;
+.\"	Copyright (C) 1995, 1997-1999, 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -145,9 +145,7 @@ it will contain the appropriate version numbers for release.
 .SH ARCHIVES
 Once a viable release is ready, it is necessary to upload it to the archives.
 .SS Update Primary Archive
-Transfer a copy to \f[CW]ftp.canb.auug.org.au\fP by FTP.
-Login as \f[CW]millerp\fP and change to the \f[CW]WWW/aegis\fP directory
-(this corresponds to the \f[CW]/~millerp/aegis/\fP directory for WWW clients).
+Transfer a copy to \f[CW]aegis.sourceforge.net\fP by FTP.
 Use the following commands
 .e(
 % \f[CB]aecd -bl archive\fP
@@ -256,12 +254,15 @@ with as little disruption as possible.
 .sp
 You are invited to visit
 .ce 1
-http://www.canb.auug.org.au/~millerp/\*(n)/
+http://aegis.sourceforge.net/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
-For information about what new features are available in this
-release, please see the README file available at the above site.
+If you are upgrading, please take the time to read the release notes,
+which may be found in the README file in the sources,
+or on the web site at
+.ce 1
+http://aegis.sourceforge.net/change_log.txt
 .sp
 \fIput your \f[CW].sig\fI file here
 .e)
@@ -295,12 +296,15 @@ with as little disruption as possible.
 .sp
 You are invited to visit
 .ce 1
-http://www.canb.auug.org.au/~millerp/\*(n)/
+http://aegis.sourceforge.net/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
-For information about what new features are available in this
-release, please see the README file available at the above site.
+If you are upgrading, please take the time to read the release notes,
+which may be found in the README file in the sources,
+or on the web site at
+.ce 1
+http://aegis.sourceforge.net/change_log.txt
 .sp
 insert \fI.sig\fP file here
 .e)
@@ -327,12 +331,15 @@ with as little disruption as possible.
 .sp
 You are invited to visit
 .ce 1
-http://www.canb.auug.org.au/~millerp/\*(n)/
+http://aegis.sourceforge.net/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
-For information about what new features are available in this
-release, please see the README file available at the above site.
+If you are upgrading, please take the time to read the release notes,
+which may be found in the README file in the sources,
+or on the web site at
+.ce 1
+http://aegis.sourceforge.net/change_log.txt
 .sp
 \fIput your \f[CW].sig\fI file here
 .e)

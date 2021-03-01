@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,12 +30,8 @@
 #include <trace.h>
 
 
-static int starts_with _((string_ty *, const char *));
-
 static int
-starts_with(line, prefix)
-	string_ty	*line;
-	const char	*prefix;
+starts_with(string_ty *line, const char *prefix)
 {
 	size_t		pfxlen;
 
@@ -55,11 +51,8 @@ starts_with(line, prefix)
 }
 
 
-static string_ty *second_word _((string_ty *));
-
 static string_ty *
-second_word(line)
-	string_ty	*line;
+second_word(string_ty *line)
 {
 	const char	*cp;
 	const char	*ep;
@@ -76,11 +69,8 @@ second_word(line)
 }
 
 
-static patch_ty *uni_diff_header _((patch_context_ty *));
-
 static patch_ty *
-uni_diff_header(context)
-	patch_context_ty *context;
+uni_diff_header(patch_context_ty *context)
 {
 	string_ty	*line;
 	int		idx;
@@ -164,12 +154,8 @@ uni_diff_header(context)
 }
 
 
-static const char *getnum _((const char *, int *));
-
 static const char *
-getnum(cp, np)
-	const char	*cp;
-	int		*np;
+getnum(const char *cp, int *np)
 {
 	int		n;
 
@@ -202,15 +188,8 @@ getnum(cp, np)
 }
 
 
-static int range _((string_ty *, int *, int *, int *, int *));
-
 static int
-range(line, b1, b2, a1, a2)
-	string_ty	*line;
-	int		*b1;
-	int		*b2;
-	int		*a1;
-	int		*a2;
+range(string_ty *line, int *b1, int *b2, int *a1, int *a2)
 {
 	const char	*cp;
 
@@ -283,11 +262,8 @@ range(line, b1, b2, a1, a2)
 }
 
 
-static patch_hunk_ty *uni_diff_hunk _((patch_context_ty *));
-
 static patch_hunk_ty *
-uni_diff_hunk(context)
-	patch_context_ty *context;
+uni_diff_hunk(patch_context_ty *context)
 {
 	int		before1, num_before;
 	int		after1, num_after;

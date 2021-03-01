@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2002 Peter Miller;
+ *	Copyright (C) 1997-1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -339,6 +339,9 @@ cmdline_lex()
 	trace(("arglex_token_verbose\n"));
 	return DEBUG_keyword;
 
+    case arglex_token_version:
+	return VERSION;
+
     default:
 	trace(("JUNK\n"));
 	return JUNK;
@@ -347,7 +350,7 @@ cmdline_lex()
 
 
 void
-cmdline_lex_error(sub_context_ty *scp, char *message)
+cmdline_lex_error(sub_context_ty *scp, const char *message)
 {
     error_intl(scp, message);
     ++number_of_errors;
@@ -355,7 +358,7 @@ cmdline_lex_error(sub_context_ty *scp, char *message)
 
 
 void
-cmdline_error(char *message)
+cmdline_error(const char *message)
 {
     /* this function is for yacc */
     cmdline_lex_error(0, message);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -94,10 +94,10 @@ static rpt_expr_method_ty comma_method =
 rpt_expr_ty *
 rpt_expr_comma(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&comma_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&comma_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1995, 1998 Peter Miller;
+ *	Copyright (C) 1993-1995, 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,8 @@ static string_ty *uname_variant;
 static string_ty *uname_node;
 
 
-static void uname_init _((void));
-
 static void
-uname_init()
+uname_init(void)
 {
 	struct utsname	u;
 

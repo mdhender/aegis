@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,7 @@
 
 
 void
-change_branch_developer_may_review_set(cp, n)
-	change_ty	*cp;
-	int		n;
+change_branch_developer_may_review_set(change_ty *cp, int n)
 {
 	cstate		cstate_data;
 	cstate_branch	bp;

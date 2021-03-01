@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -79,6 +79,14 @@ The following options are understood:
 .so o_list.so
 .so o_project.so
 .so o_terse.so
+.TP 8n
+.B -UNChanged
+.br
+Examine the named files to see if they are unchanged.
+Only remove the unchanged files from the branch,
+and leave the files which have changed.
+If no files are named on the command line
+all branch files are checked.
 .so o_verbose.so
 .so o_wait.so
 .so o__rules.so

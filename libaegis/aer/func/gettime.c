@@ -31,114 +31,106 @@
 #include <sub.h>
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 1);
+    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	sub_context_ty	*scp;
-	time_t		t;
-	rpt_value_ty	*tmp;
-	string_ty       *s;
-	rpt_value_ty	*result;
+    sub_context_ty  *scp;
+    time_t          t;
+    rpt_value_ty    *tmp;
+    string_ty       *s;
+    rpt_value_ty    *result;
 
-	/*
-	 * See if it looks like a number.
-	 * Use that if so.
-	 */
-	assert(argc == 1);
-	tmp = rpt_value_integerize(argv[0]);
-	if (tmp->method->type == rpt_value_type_integer)
-	{
-		t = rpt_value_integer_query(tmp);
-		rpt_value_free(tmp);
-		result = rpt_value_time(t);
-		return result;
-	}
-	rpt_value_free(tmp);
-
-	/*
-	 * Coerce the argument to a string.
-	 * It is an error if it can't be.
-	 */
-	tmp = rpt_value_stringize(argv[0]);
-	if (tmp->method->type != rpt_value_type_string)
-	{
-		rpt_value_free(tmp);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "gettime");
-		sub_var_set_charstar(scp, "Number", "1");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	/*
-	 * Scan the string and try to make a time out of it.
-	 * It is an error if this can't be done.
-	 */
-	s = rpt_value_string_query(tmp);
-	t = date_scan(s->str_text);
-	if (t == (time_t)-1)
-	{
-		rpt_value_free(tmp);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "gettime");
-		sub_var_set_charstar(scp, "Number", "1");
-		s =
-			subst_intl
-			(
-				scp,
-	  i18n("$function: argument $number: cannot convert string into a time")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	/*
-	 * build the return value
-	 */
+    /*
+     * See if it looks like a number.
+     * Use that if so.
+     */
+    assert(argc == 1);
+    tmp = rpt_value_integerize(argv[0]);
+    if (tmp->method->type == rpt_value_type_integer)
+    {
+	t = rpt_value_integer_query(tmp);
 	rpt_value_free(tmp);
 	result = rpt_value_time(t);
 	return result;
+    }
+    rpt_value_free(tmp);
+
+    /*
+     * Coerce the argument to a string.
+     * It is an error if it can't be.
+     */
+    tmp = rpt_value_stringize(argv[0]);
+    if (tmp->method->type != rpt_value_type_string)
+    {
+	rpt_value_free(tmp);
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Function", "gettime");
+	sub_var_set_charstar(scp, "Number", "1");
+	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	result = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return result;
+    }
+
+    /*
+     * Scan the string and try to make a time out of it.
+     * It is an error if this can't be done.
+     */
+    s = rpt_value_string_query(tmp);
+    t = date_scan(s->str_text);
+    if (t == (time_t)-1)
+    {
+	rpt_value_free(tmp);
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Function", "gettime");
+	sub_var_set_charstar(scp, "Number", "1");
+	s =
+	    subst_intl
+	    (
+	       	scp,
+	  i18n("$function: argument $number: cannot convert string into a time")
+	    );
+	sub_context_delete(scp);
+	result = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return result;
+    }
+
+    /*
+     * build the return value
+     */
+    rpt_value_free(tmp);
+    result = rpt_value_time(t);
+    return result;
 }
 
 
 rpt_func_ty rpt_func_gettime =
 {
-	"gettime",
-	1, /* optimizable */
-	verify,
-	run,
+    "gettime",
+    1, /* optimizable */
+    verify,
+    run,
 };
 
 rpt_func_ty rpt_func_mktime =
 {
-	"mktime",
-	1, /* optimizable */
-	verify,
-	run,
+    "mktime",
+    1, /* optimizable */
+    verify,
+    run,
 };

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ struct shell_vtbl_ty
       * initializers are missing a new function, this will cause an compiler
       * type warning.
       */
-    char *name;
+    const char *name;
 };
 
 shell_ty *shell_new(shell_vtbl_ty *);

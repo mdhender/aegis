@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.11
+Version: 4.15
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.11.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.15.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -96,6 +96,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/aecomplete
 %attr(0755,root,bin) /usr/bin/aedist
 %attr(0755,root,bin) /usr/bin/aefind
+%attr(0755,root,bin) /usr/bin/aeget
 %attr(4755,root,bin) /usr/bin/aegis
 %attr(4755,root,bin) /usr/bin/aeimport
 %attr(0755,root,bin) /usr/bin/aels
@@ -105,6 +106,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/aereport
 %attr(0755,root,bin) /usr/bin/aesub
 %attr(0755,root,bin) /usr/bin/aetar
+%attr(0755,root,bin) /usr/bin/aexml
 %attr(0755,root,bin) /usr/share/aegis/cshrc
 %attr(0755,root,bin) /usr/share/aegis/db_forced.sh
 %attr(0755,root,bin) /usr/share/aegis/de.inews.sh
@@ -130,6 +132,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/ae_diff2htm
 %attr(0755,root,bin) /usr/bin/aebuffy
 %attr(0755,root,bin) /usr/bin/aecomp
+%attr(0755,root,bin) /usr/bin/aeedit
 %attr(0755,root,bin) /usr/bin/aegis.cgi.i
 %attr(0755,root,bin) /usr/bin/aegis.cgi
 %attr(0755,root,bin) /usr/bin/aeintegratq
@@ -154,7 +157,6 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/lib/aegis/de/LC_MESSAGES/aegis.mo
 %attr(0644,root,bin) /usr/share/aegis/de/LC_MESSAGES/glossary
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aegis.mo
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_files.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_hstry.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_menu.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/changes.rpt
@@ -164,11 +166,11 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/html/file_densi.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/file_diff.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/file_hstry.rpt
+%attr(0644,root,bin) /usr/share/aegis/en/html/file_list.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/file_menu.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_cch1.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_cch2.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_cch3.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/proj_files.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_filme.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_hstg2.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_hstg3.rpt
@@ -225,10 +227,14 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aedist.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aedn.1*
 %attr(0644,root,bin) /usr/man/man1/aedn.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aeedit.1*
+%attr(0644,root,bin) /usr/man/man1/aeedit.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aefind.1*
 %attr(0644,root,bin) /usr/man/man1/aefind.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aefp.1*
 %attr(0644,root,bin) /usr/man/man1/aefp.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aeget.1*
+%attr(0644,root,bin) /usr/man/man1/aeget.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aegis.1*
 %attr(0644,root,bin) /usr/man/man1/aegis.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aegis.cgi.1*
@@ -333,6 +339,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aetar.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aev.1*
 %attr(0644,root,bin) /usr/man/man1/aev.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aexml.1*
+%attr(0644,root,bin) /usr/man/man1/aexml.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/tkaeca.1*
 %attr(0644,root,bin) /usr/man/man1/tkaeca.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/tkaegis.1*
@@ -398,6 +406,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/report/proj_activ.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_admin.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_ances.rpt
+%attr(0644,root,bin) /usr/share/aegis/report/proj_brada.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_bran.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_brana.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_detai.rpt

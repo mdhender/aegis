@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -87,5 +87,13 @@ file_event_ty *project_file_roll_forward_get_last(string_ty *);
   * last-but-one file event, used by aecp -rescind to roll back a change.
   */
 file_event_ty *project_file_roll_forward_get_older(string_ty *);
+
+struct string_list_ty; /* forward */
+
+/**
+  * The project_file_roll_forward_keys function is used to get a list
+  * of filenames for which file event lists are available.
+  */
+void project_file_roll_forward_keys(struct string_list_ty *);
 
 #endif /* LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H */

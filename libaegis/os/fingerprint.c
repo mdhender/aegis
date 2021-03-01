@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 
 
 string_ty *
-os_fingerprint(path)
-    string_ty       *path;
+os_fingerprint(string_ty *path)
 {
     int             nbytes;
     char            buf[1000];

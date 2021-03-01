@@ -43,7 +43,7 @@
 static void
 new_reviewer_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -102,7 +102,7 @@ new_reviewer_list(void)
 	}
 	arglex();
     }
-    list_reviewers(project_name, 0);
+    list_reviewers(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -193,7 +193,6 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 	project_verbose(pp, scp, i18n("new reviewer $name complete"));
 	sub_context_delete(scp);
     }
-    project_free(pp);
     user_free(up);
 }
 
@@ -303,12 +302,8 @@ new_reviewer_main(void)
     {
 	new_reviewer_inner(pp, &wl, 1);
     }
-
     project_free(pp);
-
-
     trace(("}\n"));
-
 }
 
 

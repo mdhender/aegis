@@ -24,8 +24,7 @@
 
 
 long
-change_current_integration_get(cp)
-	change_ty	*cp;
+change_current_integration_get(change_ty *cp)
 {
 	cstate		cstate_data;
 

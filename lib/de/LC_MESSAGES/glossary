@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002 Peter Miller;
+#	Copyright (C) 2001-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ list of german translations, please keep -*- text -*- alphabetically sorted
 abort, to ~    ---  abbrechen
 administrator  ---  Administrator
 alias          ---  Alias
+ancestor       ---  Vorgänger
 anticipate     ---  antizipieren ???
 assignable     ---  zuweisbar
 
@@ -38,10 +39,12 @@ change is locked by ---  Change ist gelockt durch (???)
 closest is     ---  nächste (the closest is ...), am nächsten dran ist
 command line option ---  Kommandozeilenoption
 complete       ---  beenden
+completion (commandline ~) --- Vervollständigung (auf der Befehlszeile)
 compress       ---  komprimieren
 core dumped    ---  core dumped (abort(), SEGV etc)
 corrupted      ---  unbrauchbar (Daten, Felder)
 create         ---  erzeugen, erstellen
+create a branch/change --- einen Branch/Change anlegen
 
 data may have been corrupted   ---  Daten können unbrauchbar geworden sein
 decompress     ---  dekomprimieren

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,7 @@
 
 
 cstate_architecture_times
-change_find_architecture_variant(cp)
-	change_ty	*cp;
+change_find_architecture_variant(change_ty *cp)
 {
 	string_ty	*an;
 	cstate_architecture_times tp;

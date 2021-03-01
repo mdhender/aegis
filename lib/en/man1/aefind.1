@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,12 @@ For each file found in the directory tree, the given expression is
 evaluated from left to right, according to the rules of precedence (see
 the section on OPERATORS, below), only until the outcome is known,
 at which point \*(n) moves on to the next file name.
+.PP
+If no directory is named on the command line,
+the current directory is assumed.
+.PP
+Files which have been removed from the project, even if they somehow
+remain in the directory tree, will not be reported.
 .SH OPTIONS
 The following options are understood:
 .so o_baselin.so

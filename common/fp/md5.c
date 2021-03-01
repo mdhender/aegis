@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 1995, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -315,25 +315,21 @@ MD5Transform(unsigned long state[4], unsigned char block[64])
  */
 
 static void
-md5_addn(fingerprint_ty *p, unsigned char *input, int inputLen)
+md5_addn(fingerprint_ty *p, unsigned char *input, size_t inputLen)
 {
     md5_ty	    *context;
-    unsigned int    i;
-    unsigned int    idx;
-    unsigned int    partLen;
+    size_t          i;
+    size_t          idx;
+    size_t          partLen;
 
     context = (md5_ty *)p;
     /* Compute number of bytes mod 64 */
-    idx = (unsigned int)((context->count[0] >> 3) & 0x3F);
+    idx = (context->count[0] >> 3) & 0x3F;
     /* Update number of bits */
-    if
-    (
-	(context->count[0] += ((unsigned long)inputLen << 3))
-    <
-	((unsigned long)inputLen << 3)
-    )
+    context->count[0] += (inputLen << 3);
+    if (context->count[0] < (inputLen << 3))
 	context->count[1]++;
-    context->count[1] += ((unsigned long)inputLen >> 29);
+    context->count[1] += (inputLen >> 29);
     partLen = 64 - idx;
 
     /*
@@ -364,7 +360,7 @@ static int
 md5_hash(fingerprint_ty *p, unsigned char *digest)
 {
     md5_ty	    *context;
-    unsigned char    bits[8];
+    unsigned char   bits[8];
     unsigned int    idx;
     unsigned int    padLen;
 
@@ -407,7 +403,7 @@ static void
 md5_sum(fingerprint_ty *p, char *obuf)
 {
     md5_ty	    *context;
-    unsigned char    h[MD5_HASH_LEN];
+    unsigned char   h[MD5_HASH_LEN];
     char	    *cp;
     int		    i;
 

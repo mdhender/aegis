@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,5 +29,12 @@ void cmdline_grammar(int, char **);
 
 struct string_ty *stack_relative(struct string_ty *);
 struct string_ty *stack_nth(int);
+
+/**
+  * The stack_eliminate function takes a stack-relative file name,
+  * and returns 1 if that file name should be ignored, or 0 if it may
+  * be processed.
+  */
+int stack_eliminate(struct string_ty *);
 
 #endif /* AEFIND_CMDLINE_H */

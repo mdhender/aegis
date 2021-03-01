@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <option.h>
 #include <output/private.h>
 #include <output/stdout.h>
+#include <page.h>
 #include <sub.h>
 
 
@@ -40,10 +40,8 @@ struct output_stdout_ty
 };
 
 
-static string_ty *standard_output _((void));
-
 static string_ty *
-standard_output()
+standard_output(void)
 {
 	static string_ty *name;
 	sub_context_ty	*scp;
@@ -58,46 +56,32 @@ standard_output()
 }
 
 
-static void output_stdout_destructor _((output_ty *));
-
 static void
-output_stdout_destructor(this)
-	output_ty	*this;
+output_stdout_destructor(output_ty *this_thing)
 {
 }
 
 
-static string_ty *output_stdout_filename _((output_ty *));
-
 static string_ty *
-output_stdout_filename(this)
-	output_ty	*this;
+output_stdout_filename(output_ty *this_thing)
 {
 	return standard_output();
 }
 
 
-static long output_stdout_ftell _((output_ty *));
-
 static long
-output_stdout_ftell(fp)
-	output_ty	*fp;
+output_stdout_ftell(output_ty *fp)
 {
 	return lseek(fileno(stdout), 0L, SEEK_CUR);
 }
 
 
-static void output_stdout_write _((output_ty *, const void *, size_t));
-
 static void
-output_stdout_write(fp, data, len)
-	output_ty	*fp;
-	const void	*data;
-	size_t		len;
+output_stdout_write(output_ty *fp, const void *data, size_t len)
 {
-	output_stdout_ty *this;
+	output_stdout_ty *this_thing;
 
-	this = (output_stdout_ty *)fp;
+	this_thing = (output_stdout_ty *)fp;
 	if (write(fileno(stdout), data, len) < 0)
 	{
 		sub_context_ty	*scp;
@@ -109,48 +93,39 @@ output_stdout_write(fp, data, len)
 		/* NOTREACHED */
 	}
 	if (len > 0)
-		this->bol = (((const char *)data)[len - 1] == '\n');
+		this_thing->bol = (((const char *)data)[len - 1] == '\n');
 }
 
 
-static int output_stdout_page_width _((output_ty *));
-
 static int
-output_stdout_page_width(fp)
-	output_ty	*fp;
+output_stdout_page_width(output_ty *fp)
 {
 	struct stat	st;
 
 	if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
-		return option_page_width_get(DEFAULT_PRINTER_WIDTH);
-	return option_page_width_get(-1) - 1;
+		return page_width_get(DEFAULT_PRINTER_WIDTH);
+	return page_width_get(-1) - 1;
 }
 
 
-static int output_stdout_page_length _((output_ty *));
-
 static int
-output_stdout_page_length(fp)
-	output_ty	*fp;
+output_stdout_page_length(output_ty *fp)
 {
 	struct stat	st;
 
 	if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
-		return option_page_length_get(DEFAULT_PRINTER_LENGTH);
-	return option_page_length_get(-1);
+		return page_length_get(DEFAULT_PRINTER_LENGTH);
+	return page_length_get(-1);
 }
 
-
-static void output_stdout_eoln _((output_ty *));
 
 static void
-output_stdout_eoln(fp)
-	output_ty	*fp;
+output_stdout_eoln(output_ty *fp)
 {
-	output_stdout_ty *this;
+	output_stdout_ty *this_thing;
 
-	this = (output_stdout_ty *)fp;
-	if (!this->bol)
+	this_thing = (output_stdout_ty *)fp;
+	if (!this_thing->bol)
 		output_fputc(fp, '\n');
 }
 
@@ -171,13 +146,13 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_stdout()
+output_stdout(void)
 {
 	output_ty	*result;
-	output_stdout_ty *this;
+	output_stdout_ty *this_thing;
 
 	result = output_new(&vtbl);
-	this = (output_stdout_ty *)result;
-	this->bol = 1;
+	this_thing = (output_stdout_ty *)result;
+	this_thing->bol = 1;
 	return result;
 }

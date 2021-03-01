@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,7 @@ static int      interrupted;
 
 
 RETSIGTYPE
-os_interrupt(n)
-    int             n;
+os_interrupt(int n)
 {
     sub_context_ty  *scp;
 
@@ -50,7 +49,7 @@ os_interrupt(n)
 
 
 void
-os_interrupt_register()
+os_interrupt_register(void)
 {
     if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
 	signal(SIGHUP, os_interrupt);
@@ -64,7 +63,7 @@ os_interrupt_register()
 
 
 void
-os_interrupt_ignore()
+os_interrupt_ignore(void)
 {
     signal(SIGHUP, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
@@ -74,13 +73,13 @@ os_interrupt_ignore()
 
 
 void
-os_interrupt_cope()
+os_interrupt_cope(void)
 {
 }
 
 
 int
-os_interrupt_has_occurred()
+os_interrupt_has_occurred(void)
 {
     return (interrupted != 0);
 }

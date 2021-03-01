@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1998, 1999, 2001 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1998, 1999, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,100 +45,83 @@ struct input_file_ty
 };
 
 
-static void destruct _((input_ty *));
-
 static void
-destruct(p)
-	input_ty	*p;
+destruct(input_ty *p)
 {
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 
-	this = (input_file_ty *)p;
-	if (glue_close(this->fd))
+	this_thing = (input_file_ty *)p;
+	if (glue_close(this_thing->fd))
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set_string(scp, "File_Name", this->fn);
+		sub_var_set_string(scp, "File_Name", this_thing->fn);
 		fatal_intl(scp, i18n("close $filename: $errno"));
 		/* NOTREACHED */
 	}
-	if (this->unlink_on_close)
-		os_unlink_errok(this->fn);
-	str_free(this->fn);
-	this->fd = -1;
-	this->fn = 0;
+	if (this_thing->unlink_on_close)
+		os_unlink_errok(this_thing->fn);
+	str_free(this_thing->fn);
+	this_thing->fd = -1;
+	this_thing->fn = 0;
 }
 
 
-static long input_file_read _((input_ty *, void *, size_t));
-
 static long
-input_file_read(p, data, len)
-	input_ty	*p;
-	void		*data;
-	size_t		len;
+input_file_read(input_ty *p, void *data, size_t len)
 {
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 	long		result;
 
 	os_become_must_be_active();
 	if (len < 0)
 		return 0;
-	this = (input_file_ty *)p;
-	result = glue_read(this->fd, data, len);
+	this_thing = (input_file_ty *)p;
+	result = glue_read(this_thing->fd, data, len);
 	if (result < 0)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set_string(scp, "File_Name", this->fn);
+		sub_var_set_string(scp, "File_Name", this_thing->fn);
 		fatal_intl(scp, i18n("read $filename: $errno"));
 		/* NOTREACHED */
 	}
-	this->pos += result;
+	this_thing->pos += result;
 	return result;
 }
 
 
-static long input_file_ftell _((input_ty *));
-
 static long
-input_file_ftell(p)
-	input_ty	*p;
+input_file_ftell(input_ty *p)
 {
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 
-	this = (input_file_ty *)p;
-	return this->pos;
+	this_thing = (input_file_ty *)p;
+	return this_thing->pos;
 }
 
-
-static string_ty *input_file_name _((input_ty *));
 
 static string_ty *
-input_file_name(p)
-	input_ty	*p;
+input_file_name(input_ty *p)
 {
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 
-	this = (input_file_ty *)p;
-	return this->fn;
+	this_thing = (input_file_ty *)p;
+	return this_thing->fn;
 }
 
 
-static long input_file_length _((input_ty *));
-
 static long
-input_file_length(p)
-	input_ty	*p;
+input_file_length(input_ty *p)
 {
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 
-	this = (input_file_ty *)p;
-	return os_file_size(this->fn);
+	this_thing = (input_file_ty *)p;
+	return os_file_size(this_thing->fn);
 }
 
 
@@ -153,12 +136,8 @@ static input_vtbl_ty vtbl =
 };
 
 
-static int open_with_stale_nfs_retry _((const char *, int));
-
 static int
-open_with_stale_nfs_retry(path, mode)
-	const char	*path;
-	int		mode;
+open_with_stale_nfs_retry(const char *path, int mode)
 {
 	int		fd;
 	int		perms = 0666;
@@ -199,19 +178,18 @@ open_with_stale_nfs_retry(path, mode)
 
 
 input_ty *
-input_file_open(fn)
-	string_ty	*fn;
+input_file_open(string_ty *fn)
 {
 	input_ty	*result;
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 
 	if (!fn || !fn->str_length)
 		return input_stdin();
 	result = input_new(&vtbl);
-	this = (input_file_ty *)result;
+	this_thing = (input_file_ty *)result;
 	os_become_must_be_active();
-	this->fd = open_with_stale_nfs_retry(fn->str_text, O_RDONLY);
-	if (this->fd < 0)
+	this_thing->fd = open_with_stale_nfs_retry(fn->str_text, O_RDONLY);
+	if (this_thing->fd < 0)
 	{
 		sub_context_ty	*scp;
 
@@ -221,21 +199,20 @@ input_file_open(fn)
 		fatal_intl(scp, i18n("open $filename: $errno"));
 		/* NOTREACHED */
 	}
-	this->fn = str_copy(fn);
-	this->unlink_on_close = 0;
-	this->pos = 0;
+	this_thing->fn = str_copy(fn);
+	this_thing->unlink_on_close = 0;
+	this_thing->pos = 0;
 	return result;
 }
 
 
 void
-input_file_unlink_on_close(fp)
-	input_ty	*fp;
+input_file_unlink_on_close(input_ty *fp)
 {
-	input_file_ty	*this;
+	input_file_ty	*this_thing;
 
 	if (fp->vptr != &vtbl)
 		return;
-	this = (input_file_ty *)fp;
-	this->unlink_on_close = 1;
+	this_thing = (input_file_ty *)fp;
+	this_thing->unlink_on_close = 1;
 }

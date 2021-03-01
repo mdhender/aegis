@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <change.h>
 #include <error.h> /* for assert */
 #include <file.h>
+#include <now.h>
 #include <os.h>
 #include <project/file.h>
 #include <undo.h>
@@ -32,8 +33,8 @@
 void
 change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 {
-    string_ty	*dd;
-    string_ty	*s2;
+    string_ty       *dd;
+    string_ty       *s2;
 
     dd = change_development_directory_get(cp, 0);
 
@@ -80,7 +81,7 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 		string_ty	*s3;
 		time_t		mtime_old;
 		time_t		mtime_young;
-		time_t		now;
+		time_t		when;
 
 		/*
 		 * Make sure the whiteout file is
@@ -89,17 +90,17 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 		 * will fail) is triggered if the file
 		 * is still being referred to.
 		 */
-		time(&now);
+		when = now();
 		s3 = project_file_path(cp->pp, filename);
 		assert(s3);
 		user_become(up);
 		os_mtime_range(s3, &mtime_old, &mtime_young);
 		str_free(s3);
-		if (now <= mtime_old)
-		    now = mtime_old + 60;
-		if (now <= mtime_young)
-		    now = mtime_young + 60;
-		os_mtime_set_errok(s2, now);
+		if (when <= mtime_old)
+		    when = mtime_old + 60;
+		if (when <= mtime_young)
+		    when = mtime_young + 60;
+		os_mtime_set_errok(s2, when);
 		user_become_undo();
 	    }
 	}

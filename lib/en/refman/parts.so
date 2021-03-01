@@ -21,8 +21,10 @@
 .so ../man1/aedeu.1
 .so ../man1/aedist.1
 .so ../man1/aedn.1
+.so ../man1/aeedit.1
 .so ../man1/aefind.1
 .so ../man1/aefp.1
+.so ../man1/aeget.1
 .so ../man1/aegis.cgi.1
 .so ../man1/aeib.1
 .so ../man1/aeibu.1
@@ -74,6 +76,7 @@
 .so ../man1/aet.1
 .so ../man1/aetar.1
 .so ../man1/aev.1
+.so ../man1/aexml.1
 .so ../man1/tkaeca.1
 .so ../man1/tkaegis.1
 .so ../man1/tkaenc.1

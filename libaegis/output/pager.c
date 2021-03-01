@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992-1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1992-1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,9 +59,7 @@ static output_ty *singleton;
 
 
 void
-option_pager_set(n, usage)
-    int		    n;
-    void	    (*usage)_((void));
+option_pager_set(int n, void (*usage)(void))
 {
     if (option_pager_flag == 0 && n == 0)
 	duplicate_option_by_name(arglex_token_pager_not, usage);
@@ -80,10 +78,8 @@ option_pager_set(n, usage)
 }
 
 
-static int option_pager_get _((void));
-
 static int
-option_pager_get()
+option_pager_get(void)
 {
     user_ty	    *up;
 
@@ -97,25 +93,8 @@ option_pager_get()
 }
 
 
-static void env_set_page _((void));
-
 static void
-env_set_page()
-{
-    char	    buffer[20];
-
-    sprintf(buffer, "%d", option_page_length_get(-1));
-    env_set("LINES", buffer);
-    sprintf(buffer, "%d", option_page_width_get(-1));
-    env_set("COLS", buffer);
-}
-
-
-static void pipe_open _((output_pager_ty *));
-
-static void
-pipe_open(this)
-    output_pager_ty *this;
+pipe_open(output_pager_ty *this_thing)
 {
     sub_context_ty  *scp;
     int		    uid;
@@ -123,9 +102,10 @@ pipe_open(this)
     int		    um;
     FILE	    *fp;
     int		    fd[2];
-    char	    *cmd[4];
+    const char      *cmd[4];
     int		    pid;
 
+    env_set_page();
     fp = 0;
     os_become_orig_query(&uid, &gid, &um);
     if (pipe(fd))
@@ -133,13 +113,12 @@ pipe_open(this)
     switch (pid = fork())
     {
     case 0:
-	env_set_page();
 	undo_cancel();
 	while (os_become_active())
 	    os_become_undo();
 	cmd[0] = "sh";
 	cmd[1] = "-c";
-	cmd[2] = this->pager->str_text;
+	cmd[2] = this_thing->pager->str_text;
 	cmd[3] = 0;
 	close(fd[1]);
 	close(0);
@@ -149,11 +128,11 @@ pipe_open(this)
 	os_setgid(gid);
 	os_setuid(uid);
 	umask(um);
-	execvp(cmd[0], cmd);
+	execvp(cmd[0], (char **)cmd);
 
 	scp = sub_context_new();
 	sub_errno_set(scp);
-	sub_var_set_string(scp, "File_Name", this->pager);
+	sub_var_set_string(scp, "File_Name", this_thing->pager);
 	fatal_intl(scp, i18n("exec \"$filename\": $errno"));
 	/* NOTREACHED */
 
@@ -162,22 +141,19 @@ pipe_open(this)
 	break;
 
     default:
-	this->pid = pid;
+	this_thing->pid = pid;
 	close(fd[0]);
 	fp = fdopen(fd[1], "w");
 	if (!fp)
 	    nfatal("fdopen");
-	this->deeper = fp;
+	this_thing->deeper = fp;
 	break;
     }
 }
 
 
-static void cleanup _((int));
-
 static void
-cleanup(n)
-    int		    n;
+cleanup(int n)
 {
     trace(("output_pager::cleanup(n = %d)\n{\n", n));
     if (singleton)
@@ -192,34 +168,28 @@ cleanup(n)
 }
 
 
-static void pager_error _((output_pager_ty *));
-
 static void
-pager_error(this)
-    output_pager_ty *this;
+pager_error(output_pager_ty *this_thing)
 {
     sub_context_ty  *scp;
 
     scp = sub_context_new();
     sub_errno_set(scp);
-    sub_var_set_string(scp, "File_Name", this->pager);
+    sub_var_set_string(scp, "File_Name", this_thing->pager);
     fatal_intl(scp, i18n("write $filename: $errno"));
     /* NOTREACHED */
 }
 
 
-static void output_pager_destructor _((output_ty *));
-
 static void
-output_pager_destructor(fp)
-    output_ty	    *fp;
+output_pager_destructor(output_ty *fp)
 {
-    output_pager_ty *this;
+    output_pager_ty *this_thing;
     int		    status;
 
     trace(("output_pager::destructor(fp = %08lX)\n{\n", (long)fp));
-    this = (output_pager_ty *)fp;
-    assert(this->deeper);
+    this_thing = (output_pager_ty *)fp;
+    assert(this_thing->deeper);
 
     /*
      * nuke the singelton
@@ -230,85 +200,68 @@ output_pager_destructor(fp)
     /*
      * write the last of the output
      */
-    if (fflush(this->deeper))
-	pager_error(this);
+    if (fflush(this_thing->deeper))
+	pager_error(this_thing);
 
     /*
      * close the paginator
      */
-    fclose(this->deeper);
-    this->deeper = 0;
-    os_waitpid(this->pid, &status);
-    this->pid = 0;
+    fclose(this_thing->deeper);
+    this_thing->deeper = 0;
+    os_waitpid(this_thing->pid, &status);
+    this_thing->pid = 0;
     trace(("}\n"));
 }
 
 
-static string_ty *output_pager_filename _((output_ty *));
-
 static string_ty *
-output_pager_filename(fp)
-    output_ty	    *fp;
+output_pager_filename(output_ty *fp)
 {
-    output_pager_ty *this;
+    output_pager_ty *this_thing;
 
-    this = (output_pager_ty *)fp;
-    return this->pager;
+    this_thing = (output_pager_ty *)fp;
+    return this_thing->pager;
 }
 
 
-static long output_pager_ftell _((output_ty *));
-
 static long
-output_pager_ftell(fp)
-    output_ty	    *fp;
+output_pager_ftell(output_ty *fp)
 {
     return -1;
 }
 
 
-static void output_pager_write _((output_ty *, const void *s, size_t));
-
 static void
-output_pager_write(fp, data, len)
-    output_ty	    *fp;
-    const void	    *data;
-    size_t	    len;
+output_pager_write(output_ty *fp, const void *data, size_t len)
 {
-    output_pager_ty *this;
+    output_pager_ty *this_thing;
 
-    this = (output_pager_ty *)fp;
-    if (fwrite(data, 1, len, this->deeper) == EOF)
-	pager_error(this);
+    this_thing = (output_pager_ty *)fp;
+    if (fwrite(data, 1, len, this_thing->deeper) == EOF)
+	pager_error(this_thing);
     if (len > 0)
-	this->bol = (((const char *)data)[len - 1] == '\n');
+	this_thing->bol = (((const char *)data)[len - 1] == '\n');
 }
 
 
-static void output_pager_flush _((output_ty *));
-
 static void
-output_pager_flush(fp)
-    output_ty	    *fp;
+output_pager_flush(output_ty *fp)
 {
-    output_pager_ty *this;
+    output_pager_ty *this_thing;
 
-    this = (output_pager_ty *)fp;
-    if (fflush(this->deeper))
-	pager_error(this);
+    this_thing = (output_pager_ty *)fp;
+    if (fflush(this_thing->deeper))
+	pager_error(this_thing);
 }
 
 
-static void output_pager_eoln _((output_ty *));
-
 static void
-output_pager_eoln(fp)
-    output_ty	    *fp;
+output_pager_eoln(output_ty *fp)
 {
-    output_pager_ty *this;
+    output_pager_ty *this_thing;
 
-    this = (output_pager_ty *)fp;
-    if (!this->bol)
+    this_thing = (output_pager_ty *)fp;
+    if (!this_thing->bol)
 	output_fputc(fp, '\n');
 }
 
@@ -329,10 +282,10 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_pager_open()
+output_pager_open(void)
 {
     output_ty	    *result;
-    output_pager_ty *this;
+    output_pager_ty *this_thing;
 
     trace(("output_pager::open()\n{\n"));
     assert(!singleton);
@@ -367,15 +320,15 @@ output_pager_open()
      * open the paginator
      */
     result = output_new(&vtbl);
-    this = (output_pager_ty *)result;
-    this->deeper = 0;
-    this->pid = 0;
-    this->pager = user_pager_command((user_ty *)0);
-    this->bol = 1;
+    this_thing = (output_pager_ty *)result;
+    this_thing->deeper = 0;
+    this_thing->pid = 0;
+    this_thing->pager = user_pager_command((user_ty *)0);
+    this_thing->bol = 1;
     os_become_orig();
-    pipe_open(this);
+    pipe_open(this_thing);
     os_become_undo();
-    assert(this->deeper);
+    assert(this_thing->deeper);
 
     /*
      * We keep track of open paginators,

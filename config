@@ -191,7 +191,7 @@ architecture =
 [
 	{
 		name = "linux-i486";
-		pattern = "Linux-*-*-i[4-9]86";
+		pattern = "Linux-*-*-i?86";
 	},
 	{
 		name = "sunos-4.1-sparc";

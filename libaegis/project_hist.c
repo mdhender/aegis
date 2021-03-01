@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,9 +29,7 @@
 
 
 int
-project_history_delta_validate(pp, delta_number)
-    project_ty      *pp;
-    long            delta_number;
+project_history_delta_validate(project_ty *pp, long delta_number)
 {
     change_ty       *cp;
 
@@ -41,26 +39,21 @@ project_history_delta_validate(pp, delta_number)
 
 
 time_t
-project_history_delta_to_timestamp(pp, delnum)
-    project_ty      *pp;
-    long            delnum;
+project_history_delta_to_timestamp(project_ty *pp, long delnum)
 {
     return change_history_delta_to_timestamp(pp, delnum);
 }
 
 
 long
-project_history_timestamp_to_delta(pp, when)
-    project_ty      *pp;
-    time_t          when;
+project_history_timestamp_to_delta(project_ty *pp, time_t when)
 {
     return change_history_timestamp_to_delta(pp, when);
 }
 
 
 long
-project_history_delta_latest(pp)
-    project_ty      *pp;
+project_history_delta_latest(project_ty *pp)
 {
     change_ty       *cp;
 
@@ -70,10 +63,7 @@ project_history_delta_latest(pp)
 
 
 long
-project_history_delta_by_name(pp, delta_name, errok)
-    project_ty      *pp;
-    string_ty       *delta_name;
-    int             errok;
+project_history_delta_by_name(project_ty *pp, string_ty *delta_name, int errok)
 {
     change_ty       *cp;
 
@@ -83,10 +73,7 @@ project_history_delta_by_name(pp, delta_name, errok)
 
 
 long
-project_history_change_by_name(pp, delta_name, errok)
-    project_ty      *pp;
-    string_ty       *delta_name;
-    int             errok;
+project_history_change_by_name(project_ty *pp, string_ty *delta_name, int errok)
 {
     change_ty       *cp;
 
@@ -96,18 +83,14 @@ project_history_change_by_name(pp, delta_name, errok)
 
 
 long
-project_history_change_by_timestamp(pp, when)
-    project_ty      *pp;
-    time_t	    when;
+project_history_change_by_timestamp(project_ty *pp, time_t when)
 {
     return change_history_change_by_timestamp(pp, when);
 }
 
 
 long
-project_history_change_by_delta(pp, delta_number)
-    project_ty      *pp;
-    long	    delta_number;
+project_history_change_by_delta(project_ty *pp, long delta_number)
 {
     change_ty       *cp;
 
@@ -117,9 +100,7 @@ project_history_change_by_delta(pp, delta_number)
 
 
 void
-project_history_delta_name_delete(pp, delta_name)
-    project_ty      *pp;
-    string_ty       *delta_name;
+project_history_delta_name_delete(project_ty *pp, string_ty *delta_name)
 {
     change_ty       *cp;
 
@@ -129,10 +110,8 @@ project_history_delta_name_delete(pp, delta_name)
 
 
 void
-project_history_delta_name_add(pp, delta_number, delta_name)
-    project_ty      *pp;
-    long            delta_number;
-    string_ty       *delta_name;
+project_history_delta_name_add(project_ty *pp, long delta_number,
+    string_ty *delta_name)
 {
     change_ty       *cp;
 
@@ -142,8 +121,7 @@ project_history_delta_name_add(pp, delta_number, delta_name)
 
 
 long
-project_current_integration_get(pp)
-    project_ty      *pp;
+project_current_integration_get(project_ty *pp)
 {
     change_ty       *cp;
     long            result;
@@ -159,9 +137,7 @@ project_current_integration_get(pp)
 
 
 void
-project_current_integration_set(pp, change_number)
-    project_ty      *pp;
-    long            change_number;
+project_current_integration_set(project_ty *pp, long change_number)
 {
     change_ty       *cp;
 
@@ -175,8 +151,7 @@ project_current_integration_set(pp, change_number)
 
 
 long
-project_next_delta_number(pp)
-    project_ty      *pp;
+project_next_delta_number(project_ty *pp)
 {
     change_ty       *cp;
 
@@ -186,9 +161,7 @@ project_next_delta_number(pp)
 
 
 void
-project_copyright_years_merge(pp, cp2)
-    project_ty      *pp;
-    change_ty       *cp2;
+project_copyright_years_merge(project_ty *pp, change_ty *cp2)
 {
     change_ty       *cp1;
 
@@ -198,11 +171,8 @@ project_copyright_years_merge(pp, cp2)
 
 
 void
-project_copyright_years_get(pp, ary, ary_len_max, ary_len)
-    project_ty      *pp;
-    int             *ary;
-    int             ary_len_max;
-    int             *ary_len;
+project_copyright_years_get(project_ty *pp, int *ary, int ary_len_max,
+    int *ary_len)
 {
     change_ty       *cp;
 
@@ -216,9 +186,7 @@ project_copyright_years_get(pp, ary, ary_len_max, ary_len)
 
 
 void
-project_copyright_year_append(pp, yyyy)
-    project_ty      *pp;
-    int             yyyy;
+project_copyright_year_append(project_ty *pp, int yyyy)
 {
     change_ty       *cp;
 
@@ -228,10 +196,7 @@ project_copyright_year_append(pp, yyyy)
 
 
 void
-project_history_new(pp, delta_number, change_number)
-    project_ty      *pp;
-    long            delta_number;
-    long            change_number;
+project_history_new(project_ty *pp, long delta_number, long change_number)
 {
     change_ty       *cp;
 
@@ -244,12 +209,8 @@ project_history_new(pp, delta_number, change_number)
 
 
 int
-project_history_nth(pp, n, cnp, dnp, name)
-    project_ty      *pp;
-    long            n;
-    long            *cnp;
-    long            *dnp;
-    string_list_ty  *name;
+project_history_nth(project_ty *pp, long n, long *cnp, long *dnp,
+    string_list_ty *name)
 {
     change_ty       *cp;
     int             result;
@@ -265,9 +226,7 @@ project_history_nth(pp, n, cnp, dnp, name)
 
 
 int
-project_administrator_query(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_administrator_query(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
     int             result;
@@ -283,9 +242,7 @@ project_administrator_query(pp, user_name)
 
 
 void
-project_administrator_add(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_administrator_add(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -298,9 +255,7 @@ project_administrator_add(pp, user_name)
 
 
 void
-project_administrator_remove(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_administrator_remove(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -313,9 +268,7 @@ project_administrator_remove(pp, user_name)
 
 
 string_ty *
-project_administrator_nth(pp, n)
-    project_ty      *pp;
-    long            n;
+project_administrator_nth(project_ty *pp, long n)
 {
     change_ty       *cp;
     string_ty       *result;
@@ -331,9 +284,7 @@ project_administrator_nth(pp, n)
 
 
 int
-project_developer_query(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_developer_query(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
     int             result;
@@ -349,9 +300,7 @@ project_developer_query(pp, user_name)
 
 
 void
-project_developer_add(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_developer_add(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -364,9 +313,7 @@ project_developer_add(pp, user_name)
 
 
 void
-project_developer_remove(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_developer_remove(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -379,9 +326,7 @@ project_developer_remove(pp, user_name)
 
 
 string_ty *
-project_developer_nth(pp, n)
-    project_ty      *pp;
-    long            n;
+project_developer_nth(project_ty *pp, long n)
 {
     change_ty       *cp;
     string_ty       *result;
@@ -397,9 +342,7 @@ project_developer_nth(pp, n)
 
 
 int
-project_reviewer_query(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_reviewer_query(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
     int             result;
@@ -415,9 +358,7 @@ project_reviewer_query(pp, user_name)
 
 
 void
-project_reviewer_add(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_reviewer_add(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -430,9 +371,7 @@ project_reviewer_add(pp, user_name)
 
 
 void
-project_reviewer_remove(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_reviewer_remove(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -445,9 +384,7 @@ project_reviewer_remove(pp, user_name)
 
 
 string_ty *
-project_reviewer_nth(pp, n)
-    project_ty      *pp;
-    long            n;
+project_reviewer_nth(project_ty *pp, long n)
 {
     change_ty       *cp;
     string_ty       *result;
@@ -463,9 +400,7 @@ project_reviewer_nth(pp, n)
 
 
 int
-project_integrator_query(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_integrator_query(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
     int             result;
@@ -481,9 +416,7 @@ project_integrator_query(pp, user_name)
 
 
 void
-project_integrator_add(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_integrator_add(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -496,9 +429,7 @@ project_integrator_add(pp, user_name)
 
 
 void
-project_integrator_remove(pp, user_name)
-    project_ty      *pp;
-    string_ty       *user_name;
+project_integrator_remove(project_ty *pp, string_ty *user_name)
 {
     change_ty       *cp;
 
@@ -511,9 +442,7 @@ project_integrator_remove(pp, user_name)
 
 
 string_ty *
-project_integrator_nth(pp, n)
-    project_ty      *pp;
-    long            n;
+project_integrator_nth(project_ty *pp, long n)
 {
     change_ty       *cp;
     string_ty       *result;
@@ -529,10 +458,7 @@ project_integrator_nth(pp, n)
 
 
 void
-project_change_add(pp, change_number, is_a_branch)
-    project_ty      *pp;
-    long            change_number;
-    int             is_a_branch;
+project_change_add(project_ty *pp, long change_number, int is_a_branch)
 {
     change_ty       *cp;
 
@@ -545,9 +471,7 @@ project_change_add(pp, change_number, is_a_branch)
 
 
 void
-project_change_remove(pp, change_number)
-    project_ty      *pp;
-    long            change_number;
+project_change_remove(project_ty *pp, long change_number)
 {
     change_ty       *cp;
 
@@ -560,10 +484,7 @@ project_change_remove(pp, change_number)
 
 
 int
-project_change_nth(pp, n, cnp)
-    project_ty      *pp;
-    long            n;
-    long            *cnp;
+project_change_nth(project_ty *pp, long n, long *cnp)
 {
     change_ty       *cp;
     int             result;
@@ -578,9 +499,7 @@ project_change_nth(pp, n, cnp)
 
 
 long
-project_next_change_number(pp, skip)
-    project_ty      *pp;
-    int             skip;
+project_next_change_number(project_ty *pp, int skip)
 {
     change_ty       *cp;
     long            change_number;
@@ -595,8 +514,7 @@ project_next_change_number(pp, skip)
 
 
 long
-project_last_change_integrated(pp)
-    project_ty      *pp;
+project_last_change_integrated(project_ty *pp)
 {
     change_ty       *cp;
     long            n;
@@ -618,9 +536,7 @@ project_last_change_integrated(pp)
 
 
 void
-project_description_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_description_set(project_ty *pp, string_ty *s)
 {
     change_ty       *cp;
     cstate          cstate_data;
@@ -640,8 +556,7 @@ project_description_set(pp, s)
 
 
 string_ty *
-project_description_get(pp)
-    project_ty      *pp;
+project_description_get(project_ty *pp)
 {
     change_ty       *cp;
     cstate          cstate_data;
@@ -653,8 +568,7 @@ project_description_get(pp)
 
 
 string_ty *
-project_version_previous_get(pp)
-    project_ty      *pp;
+project_version_previous_get(project_ty *pp)
 {
     change_ty       *cp;
     cstate          cstate_data;
@@ -666,9 +580,7 @@ project_version_previous_get(pp)
 
 
 void
-project_version_previous_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_version_previous_set(project_ty *pp, string_ty *s)
 {
     change_ty       *cp;
     cstate          cstate_data;
@@ -685,85 +597,70 @@ project_version_previous_set(pp, s)
 
 
 void
-project_umask_set(pp, n)
-    project_ty      *pp;
-    int             n;
+project_umask_set(project_ty *pp, int n)
 {
     change_branch_umask_set(project_change_get(pp), n);
 }
 
 
 int
-project_umask_get(pp)
-    project_ty      *pp;
+project_umask_get(project_ty *pp)
 {
     return change_branch_umask_get(project_change_get(pp));
 }
 
 
 void
-project_developer_may_review_set(pp, n)
-    project_ty      *pp;
-    int             n;
+project_developer_may_review_set(project_ty *pp, int n)
 {
     change_branch_developer_may_review_set(project_change_get(pp), n);
 }
 
 
 int
-project_developer_may_review_get(pp)
-    project_ty      *pp;
+project_developer_may_review_get(project_ty *pp)
 {
     return change_branch_developer_may_review_get(project_change_get(pp));
 }
 
 
 void
-project_developer_may_integrate_set(pp, n)
-    project_ty      *pp;
-    int             n;
+project_developer_may_integrate_set(project_ty *pp, int n)
 {
     change_branch_developer_may_integrate_set(project_change_get(pp), n);
 }
 
 
 int
-project_developer_may_integrate_get(pp)
-    project_ty      *pp;
+project_developer_may_integrate_get(project_ty *pp)
 {
     return change_branch_developer_may_integrate_get(project_change_get(pp));
 }
 
 
 void
-project_reviewer_may_integrate_set(pp, n)
-    project_ty      *pp;
-    int             n;
+project_reviewer_may_integrate_set(project_ty *pp, int n)
 {
     change_branch_reviewer_may_integrate_set(project_change_get(pp), n);
 }
 
 
 int
-project_reviewer_may_integrate_get(pp)
-    project_ty      *pp;
+project_reviewer_may_integrate_get(project_ty *pp)
 {
     return change_branch_reviewer_may_integrate_get(project_change_get(pp));
 }
 
 
 void
-project_developers_may_create_changes_set(pp, n)
-    project_ty      *pp;
-    int             n;
+project_developers_may_create_changes_set(project_ty *pp, int n)
 {
     change_branch_developers_may_create_changes_set(project_change_get(pp), n);
 }
 
 
 int
-project_developers_may_create_changes_get(pp)
-    project_ty      *pp;
+project_developers_may_create_changes_get(project_ty *pp)
 {
     return
 	change_branch_developers_may_create_changes_get(project_change_get(pp));
@@ -771,9 +668,7 @@ project_developers_may_create_changes_get(pp)
 
 
 void
-project_forced_develop_begin_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_forced_develop_begin_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_forced_develop_begin_notify_command_set
     (
@@ -784,8 +679,7 @@ project_forced_develop_begin_notify_command_set(pp, s)
 
 
 string_ty *
-project_forced_develop_begin_notify_command_get(pp)
-    project_ty      *pp;
+project_forced_develop_begin_notify_command_get(project_ty *pp)
 {
     return
 	change_branch_forced_develop_begin_notify_command_get
@@ -796,26 +690,21 @@ project_forced_develop_begin_notify_command_get(pp)
 
 
 void
-project_develop_end_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_develop_end_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_develop_end_notify_command_set(project_change_get(pp), s);
 }
 
 
 string_ty *
-project_develop_end_notify_command_get(pp)
-    project_ty      *pp;
+project_develop_end_notify_command_get(project_ty *pp)
 {
     return change_branch_develop_end_notify_command_get(project_change_get(pp));
 }
 
 
 void
-project_develop_end_undo_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_develop_end_undo_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_develop_end_undo_notify_command_set
     (
@@ -826,8 +715,7 @@ project_develop_end_undo_notify_command_set(pp, s)
 
 
 string_ty *
-project_develop_end_undo_notify_command_get(pp)
-    project_ty      *pp;
+project_develop_end_undo_notify_command_get(project_ty *pp)
 {
     return
 	change_branch_develop_end_undo_notify_command_get
@@ -838,26 +726,21 @@ project_develop_end_undo_notify_command_get(pp)
 
 
 void
-project_review_pass_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_review_pass_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_review_pass_notify_command_set(project_change_get(pp), s);
 }
 
 
 string_ty *
-project_review_pass_notify_command_get(pp)
-    project_ty      *pp;
+project_review_pass_notify_command_get(project_ty *pp)
 {
     return change_branch_review_pass_notify_command_get(project_change_get(pp));
 }
 
 
 void
-project_review_pass_undo_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_review_pass_undo_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_review_pass_undo_notify_command_set
     (
@@ -868,8 +751,7 @@ project_review_pass_undo_notify_command_set(pp, s)
 
 
 string_ty *
-project_review_pass_undo_notify_command_get(pp)
-    project_ty      *pp;
+project_review_pass_undo_notify_command_get(project_ty *pp)
 {
     return
 	change_branch_review_pass_undo_notify_command_get
@@ -880,34 +762,28 @@ project_review_pass_undo_notify_command_get(pp)
 
 
 void
-project_review_fail_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_review_fail_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_review_fail_notify_command_set(project_change_get(pp), s);
 }
 
 
 string_ty *
-project_review_fail_notify_command_get(pp)
-    project_ty      *pp;
+project_review_fail_notify_command_get(project_ty *pp)
 {
     return change_branch_review_fail_notify_command_get(project_change_get(pp));
 }
 
 
 void
-project_integrate_pass_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_integrate_pass_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_integrate_pass_notify_command_set(project_change_get(pp), s);
 }
 
 
 string_ty *
-project_integrate_pass_notify_command_get(pp)
-    project_ty      *pp;
+project_integrate_pass_notify_command_get(project_ty *pp)
 {
     return
 	change_branch_integrate_pass_notify_command_get(project_change_get(pp));
@@ -915,17 +791,14 @@ project_integrate_pass_notify_command_get(pp)
 
 
 void
-project_integrate_fail_notify_command_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_integrate_fail_notify_command_set(project_ty *pp, string_ty *s)
 {
     change_branch_integrate_fail_notify_command_set(project_change_get(pp), s);
 }
 
 
 string_ty *
-project_integrate_fail_notify_command_get(pp)
-    project_ty      *pp;
+project_integrate_fail_notify_command_get(project_ty *pp)
 {
     return
 	change_branch_integrate_fail_notify_command_get(project_change_get(pp));
@@ -933,16 +806,13 @@ project_integrate_fail_notify_command_get(pp)
 
 
 void
-project_default_development_directory_set(pp, s)
-    project_ty      *pp;
-    string_ty       *s;
+project_default_development_directory_set(project_ty *pp, string_ty *s)
 {
     change_branch_default_development_directory_set(project_change_get(pp), s);
 }
 
 string_ty *
-project_default_development_directory_get(pp)
-    project_ty      *pp;
+project_default_development_directory_get(project_ty *pp)
 {
     return
 	change_branch_default_development_directory_get(project_change_get(pp));
@@ -950,17 +820,14 @@ project_default_development_directory_get(pp)
 
 
 void
-project_default_test_exemption_set(pp, n)
-    project_ty      *pp;
-    int             n;
+project_default_test_exemption_set(project_ty *pp, int n)
 {
     change_branch_default_test_exemption_set(project_change_get(pp), n);
 }
 
 
 int
-project_default_test_exemption_get(pp)
-    project_ty      *pp;
+project_default_test_exemption_get(project_ty *pp)
 {
     return change_branch_default_test_exemption_get(project_change_get(pp));
 }

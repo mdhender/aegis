@@ -27,8 +27,7 @@
 
 
 void
-change_file_remove_all(cp)
-	change_ty	*cp;
+change_file_remove_all(change_ty *cp)
 {
 	fstate		fstate_data;
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -184,7 +184,10 @@
  */
 #define MAX_LINE_LEN 76
 
-static char	hex[16] =	"0123456789ABCDEF";
+static char   hex[16] = {
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+};
 
 typedef struct glyph_t glyph_t;
 struct glyph_t
@@ -209,35 +212,35 @@ struct output_quoted_printable_ty
 
 
 static void
-end_of_line(output_quoted_printable_ty *this, int soft)
+end_of_line(output_quoted_printable_ty *this_thing, int soft)
 {
     glyph_t	    *cp;
     glyph_t	    *end;
     int		    c;
 
-    cp = this->glyph;
-    end = cp + this->pos;
+    cp = this_thing->glyph;
+    end = cp + this_thing->pos;
     for (; cp < end; ++cp)
     {
 	c = (unsigned char)cp->text;
 	if (cp->quote_it)
 	{
-	    output_fputc(this->deeper, '=');
-	    output_fputc(this->deeper, hex[(c >> 4) & 15]);
-	    output_fputc(this->deeper, hex[c & 15]);
+	    output_fputc(this_thing->deeper, '=');
+	    output_fputc(this_thing->deeper, hex[(c >> 4) & 15]);
+	    output_fputc(this_thing->deeper, hex[c & 15]);
 	}
 	else
-	    output_fputc(this->deeper, c);
+	    output_fputc(this_thing->deeper, c);
     }
     if (soft)
-	output_fputc(this->deeper, '=');
-    output_fputc(this->deeper, '\n');
-    this->pos = 0;
+	output_fputc(this_thing->deeper, '=');
+    output_fputc(this_thing->deeper, '\n');
+    this_thing->pos = 0;
 }
 
 
 static void
-end_of_line_partial(output_quoted_printable_ty *this)
+end_of_line_partial(output_quoted_printable_ty *this_thing)
 {
     int		    oldpos;
     int		    newpos;
@@ -250,9 +253,9 @@ end_of_line_partial(output_quoted_printable_ty *this)
      * soft line break
      * (which is why we wsay >=MAX_LINE_LEN instead of >MAX_LINE_LEN).
      */
-    oldpos = this->pos;
-    newpos = this->pos;
-    while (newpos > 0 && this->glyph[newpos].cumulative >= MAX_LINE_LEN)
+    oldpos = this_thing->pos;
+    newpos = this_thing->pos;
+    while (newpos > 0 && this_thing->glyph[newpos].cumulative >= MAX_LINE_LEN)
 	--newpos;
     newpos_max = newpos;
 
@@ -263,9 +266,9 @@ end_of_line_partial(output_quoted_printable_ty *this)
     (
 	newpos > 0
     &&
-	this->glyph[newpos - 1].text != ' '
+	this_thing->glyph[newpos - 1].text != ' '
     &&
-	this->glyph[newpos - 1].text != '\t'
+	this_thing->glyph[newpos - 1].text != '\t'
     )
 	--newpos;
     if (newpos == 0)
@@ -274,8 +277,8 @@ end_of_line_partial(output_quoted_printable_ty *this)
     /*
      * re-write the line length, and emit the partial line.
      */
-    this->pos = newpos;
-    end_of_line(this, 1);
+    this_thing->pos = newpos;
+    end_of_line(this_thing, 1);
 
     /*
      * Move everything down.
@@ -284,25 +287,25 @@ end_of_line_partial(output_quoted_printable_ty *this)
     {
 	glyph_t		*gp;
 
-	gp = this->glyph + j;
-	*gp = this->glyph[newpos + j];
+	gp = this_thing->glyph + j;
+	*gp = this_thing->glyph[newpos + j];
 	gp->cumulative = (j ? gp[-1].cumulative : 0) + gp->width;
     }
-    this->pos = oldpos - newpos;
+    this_thing->pos = oldpos - newpos;
 }
 
 
 static void
-end_of_line_hard(output_quoted_printable_ty *this)
+end_of_line_hard(output_quoted_printable_ty *this_thing)
 {
     /*
      * We are required to quote trailing spaces or tabs.
      */
-    if (this->pos)
+    if (this_thing->pos)
     {
 	glyph_t		*gp;
 
-	gp = this->glyph + this->pos - 1;
+	gp = this_thing->glyph + this_thing->pos - 1;
 	if (gp->text == ' ' || gp->text == '\t')
 	{
 	    gp->quote_it = 1;
@@ -315,41 +318,41 @@ end_of_line_hard(output_quoted_printable_ty *this)
 	     * partial line first.
 	     */
 	    if (gp->cumulative > MAX_LINE_LEN)
-		end_of_line_partial(this);
+		end_of_line_partial(this_thing);
 	}
     }
 
     /*
      * now emit the whole lot.
      */
-    end_of_line(this, 0);
+    end_of_line(this_thing, 0);
 }
 
 
 static void
 output_quoted_printable_destructor(output_ty *fp)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
-    this = (output_quoted_printable_ty *)fp;
-    while (this->pos)
-	end_of_line_partial(this);
-    if (this->delete_on_close)
-	output_delete(this->deeper);
+    this_thing = (output_quoted_printable_ty *)fp;
+    while (this_thing->pos)
+	end_of_line_partial(this_thing);
+    if (this_thing->delete_on_close)
+	output_delete(this_thing->deeper);
 }
 
 
 static void
 output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
     glyph_t	    *gp;
     int		    col1;
     int 	    col2;
     const unsigned char *data;
 
-    this = (output_quoted_printable_ty *)fp;
-    data = p;
+    this_thing = (output_quoted_printable_ty *)fp;
+    data = (unsigned char *)p;
     while (len > 0)
     {
 	unsigned char	c;
@@ -358,11 +361,11 @@ output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
 	--len;
 	if (c == '\n')
 	{
-	    end_of_line_hard(this);
+	    end_of_line_hard(this_thing);
 	    continue;
 	}
 
-	gp = this->glyph + this->pos;
+	gp = this_thing->glyph + this_thing->pos;
 	gp->text = c;
 	gp->width = 1;
 	gp->quote_it = 0;
@@ -375,7 +378,7 @@ output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
 	    break;
 
 	case '\t':
-	    col1 = (this->pos ? gp[-1].cumulative : 0);
+	    col1 = (this_thing->pos ? gp[-1].cumulative : 0);
 	    col2 = (col1 + 8) & ~7;
 	    gp->width = col2 - col1;
 	    break;
@@ -384,7 +387,8 @@ output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
 	    /* C locale */
 	    if
 	    (
-		(this->allow_international_characters ? c < ' ' : !isprint(c))
+		(this_thing->allow_international_characters ?
+                 c < ' ' : !isprint(c))
 	    &&
 		!isspace(c)
 	    )
@@ -394,11 +398,11 @@ output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
 	    }
 	    break;
 	}
-	gp->cumulative = (this->pos ? gp[-1].cumulative : 0) + gp->width;
-	this->pos++;
+	gp->cumulative = (this_thing->pos ? gp[-1].cumulative : 0) + gp->width;
+	this_thing->pos++;
 
 	if (gp->cumulative > MAX_LINE_LEN)
-	    end_of_line_partial(this);
+	    end_of_line_partial(this_thing);
     }
 }
 
@@ -406,30 +410,30 @@ output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
 static void
 output_quoted_printable_flush(output_ty *fp)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
-    this = (output_quoted_printable_ty *)fp;
-    output_flush(this->deeper);
+    this_thing = (output_quoted_printable_ty *)fp;
+    output_flush(this_thing->deeper);
 }
 
 
 static string_ty *
 output_quoted_printable_filename(output_ty *fp)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
-    this = (output_quoted_printable_ty *)fp;
-    return output_filename(this->deeper);
+    this_thing = (output_quoted_printable_ty *)fp;
+    return output_filename(this_thing->deeper);
 }
 
 
 static long
 output_quoted_printable_ftell(output_ty *fp)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
-    this = (output_quoted_printable_ty *)fp;
-    return output_ftell(this->deeper);
+    this_thing = (output_quoted_printable_ty *)fp;
+    return output_ftell(this_thing->deeper);
 }
 
 
@@ -443,21 +447,21 @@ output_quoted_printable_page_width(output_ty *fp)
 static int
 output_quoted_printable_page_length(output_ty *fp)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
-    this = (output_quoted_printable_ty *)fp;
-    return output_page_length(this->deeper);
+    this_thing = (output_quoted_printable_ty *)fp;
+    return output_page_length(this_thing->deeper);
 }
 
 
 static void
 output_quoted_printable_eoln(output_ty *fp)
 {
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
-    this = (output_quoted_printable_ty *)fp;
-    if (this->pos)
-	end_of_line_hard(this);
+    this_thing = (output_quoted_printable_ty *)fp;
+    if (this_thing->pos)
+	end_of_line_hard(this_thing);
 }
 
 
@@ -480,13 +484,13 @@ output_ty *
 output_quoted_printable(output_ty *deeper, int delete_on_close, int minimum)
 {
     output_ty	    *result;
-    output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this_thing;
 
     result = output_new(&vtbl);
-    this = (output_quoted_printable_ty *)result;
-    this->deeper = deeper;
-    this->delete_on_close = !!delete_on_close;
-    this->pos = 0;
-    this->allow_international_characters = !!minimum;
+    this_thing = (output_quoted_printable_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->delete_on_close = !!delete_on_close;
+    this_thing->pos = 0;
+    this_thing->allow_international_characters = !!minimum;
     return result;
 }

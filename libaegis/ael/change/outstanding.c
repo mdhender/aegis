@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,21 +25,22 @@
 #include <ael/change/outstanding.h>
 #include <cstate.h>
 #include <str.h>
+#include <str_list.h>
 #include <trace.h>
 
 
 void
-list_outstanding_changes(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_outstanding_changes(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
-	trace(("list_outstanding_changes()\n{\n"));
-	if (change_number)
-		list_change_inappropriate();
-	list_changes_in_state_mask
-	(
-		project_name,
-		~(1 << cstate_state_completed)
-	);
-	trace(("}\n"));
+    trace(("list_outstanding_changes()\n{\n"));
+    if (change_number)
+	list_change_inappropriate();
+    list_changes_in_state_mask_by_user
+    (
+	project_name,
+	~(1 << cstate_state_completed),
+	(args->nstrings ? args->string[0] : 0)
+    );
+    trace(("}\n"));
 }

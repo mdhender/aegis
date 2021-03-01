@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -144,4 +144,4 @@ stamps.  This means that you don't need to re-build if you don't change
 anything, after \fIaedeu\fP(1) or \fIaerfail\fP(1).
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.25
+.SS Version 3.25 (3-Apr-2001)

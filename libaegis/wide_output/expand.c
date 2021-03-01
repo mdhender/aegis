@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,61 +47,46 @@ struct wide_output_expand_ty
 };
 
 
-static void wide_output_expand_destructor _((wide_output_ty *));
-
 static void
-wide_output_expand_destructor(fp)
-	wide_output_ty	*fp;
+wide_output_expand_destructor(wide_output_ty *fp)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 
 	trace(("wide_output_expand_destructor(fp = %08lX)\n{\n", (long)fp));
-	this = (wide_output_expand_ty *)fp;
-	if (this->delete_on_close)
-		wide_output_delete(this->deeper);
-	this->deeper = 0;
+	this_thing = (wide_output_expand_ty *)fp;
+	if (this_thing->delete_on_close)
+		wide_output_delete(this_thing->deeper);
+	this_thing->deeper = 0;
 	trace(("}\n"));
 }
 
 
-static string_ty *wide_output_expand_filename _((wide_output_ty *));
-
 static string_ty *
-wide_output_expand_filename(fp)
-	wide_output_ty	*fp;
+wide_output_expand_filename(wide_output_ty *fp)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 
-	this = (wide_output_expand_ty *)fp;
-	return wide_output_filename(this->deeper);
+	this_thing = (wide_output_expand_ty *)fp;
+	return wide_output_filename(this_thing->deeper);
 }
 
 
-static void hex _((wide_output_expand_ty *, int));
-
 static void
-hex(this, n)
-	wide_output_expand_ty *this;
-	int		n;
+hex(wide_output_expand_ty *this_thing, int n)
 {
-	wide_output_putwc(this->deeper, (wchar_t)("0123456789ABCDEF"[n & 15]));
+	wide_output_putwc(this_thing->deeper,
+                          (wchar_t)("0123456789ABCDEF"[n & 15]));
 }
 
 
-static void wide_output_expand_write _((wide_output_ty *, const wchar_t *,
-	size_t));
-
 static void
-wide_output_expand_write(fp, data, len)
-	wide_output_ty	*fp;
-	const wchar_t	*data;
-	size_t		len;
+wide_output_expand_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 
 	trace(("wide_output_expand_write(fp = %08lX, data = %08lX, \
 len = %ld)\n{\n", (long)fp, (long)data, (long)len));
-	this = (wide_output_expand_ty *)fp;
+	this_thing = (wide_output_expand_ty *)fp;
 	while (len > 0)
 	{
 		wchar_t wc = *data++;
@@ -111,25 +96,26 @@ len = %ld)\n{\n", (long)fp, (long)data, (long)len));
 		{
 		case (wchar_t)'\n':
 		case (wchar_t)'\f':
-			wide_output_putwc(this->deeper, wc);
-			this->column = 0;
+			wide_output_putwc(this_thing->deeper, wc);
+			this_thing->column = 0;
 			break;
 
 		case (wchar_t)'\t':
 			/* internally, treat tabs as 8 characters wide */
 			for (;;)
 			{
-				wide_output_putwc(this->deeper, (wchar_t)' ');
-				this->column++;
-				if (!(this->column & 7))
+				wide_output_putwc(this_thing->deeper,
+                                                  (wchar_t)' ');
+				this_thing->column++;
+				if (!(this_thing->column & 7))
 					break;
 			}
 			break;
 
 		case (wchar_t)0:
 		case (wchar_t)' ':
-			wide_output_putwc(this->deeper, (wchar_t)' ');
-			this->column++;
+			wide_output_putwc(this_thing->deeper, (wchar_t)' ');
+			this_thing->column++;
 			break;
 
 		default:
@@ -137,19 +123,21 @@ len = %ld)\n{\n", (long)fp, (long)data, (long)len));
 			if (!iswprint(wc))
 			{
 				language_C();
-				wide_output_putwc(this->deeper, (wchar_t)'\\');
-				wide_output_putwc(this->deeper, (wchar_t)'x');
-				hex(this, (int)(wc >> 12));
-				hex(this, (int)(wc >>  8));
-				hex(this, (int)(wc >>  4));
-				hex(this, (int)(wc      ));
-				this->column += 6;
+				wide_output_putwc(this_thing->deeper,
+                                                  (wchar_t)'\\');
+				wide_output_putwc(this_thing->deeper,
+                                                  (wchar_t)'x');
+				hex(this_thing, (int)(wc >> 12));
+				hex(this_thing, (int)(wc >>  8));
+				hex(this_thing, (int)(wc >>  4));
+				hex(this_thing, (int)(wc      ));
+				this_thing->column += 6;
 			}
 			else
 			{
-				this->column += wcwidth(wc);
+				this_thing->column += wcwidth(wc);
 				language_C();
-				wide_output_putwc(this->deeper, wc);
+				wide_output_putwc(this_thing->deeper, wc);
 			}
 			break;
 		}
@@ -158,68 +146,56 @@ len = %ld)\n{\n", (long)fp, (long)data, (long)len));
 }
 
 
-static void wide_output_expand_flush _((wide_output_ty *));
-
 static void
-wide_output_expand_flush(fp)
-	wide_output_ty	*fp;
+wide_output_expand_flush(wide_output_ty *fp)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 
 	trace(("wide_output_expand_flush(fp = %08lX)\n{\n", (long)fp));
-	this = (wide_output_expand_ty *)fp;
-	wide_output_flush(this->deeper);
+	this_thing = (wide_output_expand_ty *)fp;
+	wide_output_flush(this_thing->deeper);
 	trace(("}\n"));
 }
 
 
-static int wide_output_expand_page_width _((wide_output_ty *));
-
 static int
-wide_output_expand_page_width(fp)
-	wide_output_ty	*fp;
+wide_output_expand_page_width(wide_output_ty *fp)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 	int		result;
 
 	trace(("wide_output_expand_page_width(fp = %08lX)\n{\n", (long)fp));
-	this = (wide_output_expand_ty *)fp;
-	result = wide_output_page_width(this->deeper);
+	this_thing = (wide_output_expand_ty *)fp;
+	result = wide_output_page_width(this_thing->deeper);
 	trace(("return %d;\n", result));
 	trace(("}\n"));
 	return result;
 }
 
 
-static int wide_output_expand_page_length _((wide_output_ty *));
-
 static int
-wide_output_expand_page_length(fp)
-	wide_output_ty	*fp;
+wide_output_expand_page_length(wide_output_ty *fp)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 	int		result;
 
 	trace(("wide_output_expand_page_length(fp = %08lX)\n{\n", (long)fp));
-	this = (wide_output_expand_ty *)fp;
-	result = wide_output_page_length(this->deeper);
+	this_thing = (wide_output_expand_ty *)fp;
+	result = wide_output_page_length(this_thing->deeper);
 	trace(("return %d;\n", result));
 	trace(("}\n"));
 	return result;
 }
 
 
-static void wide_output_expand_eoln _((wide_output_ty *));
-
 static void
-wide_output_expand_eoln(fp)
-	wide_output_ty	*fp;
+wide_output_expand_eoln(wide_output_ty *fp)
 {
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 
 	trace(("wide_output_expand_eoln(fp = %08lX)\n{\n", (long)fp));
-	this = (wide_output_expand_ty *)fp;
-	if (this->column > 0)
+	this_thing = (wide_output_expand_ty *)fp;
+	if (this_thing->column > 0)
 		wide_output_putwc(fp, (wchar_t)'\n');
 	trace(("}\n"));
 }
@@ -240,19 +216,17 @@ static wide_output_vtbl_ty vtbl =
 
 
 wide_output_ty *
-wide_output_expand_open(deeper, delete_on_close)
-	wide_output_ty	*deeper;
-	int		delete_on_close;
+wide_output_expand_open(wide_output_ty *deeper, int delete_on_close)
 {
 	wide_output_ty	*result;
-	wide_output_expand_ty *this;
+	wide_output_expand_ty *this_thing;
 
 	trace(("wide_output_expand_open(deeper = %08lX)\n{\n", (long)deeper));
 	result = wide_output_new(&vtbl);
-	this = (wide_output_expand_ty *)result;
-	this->deeper = deeper;
-	this->delete_on_close = delete_on_close;
-	this->column = 0;
+	this_thing = (wide_output_expand_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->delete_on_close = delete_on_close;
+	this_thing->column = 0;
 	trace(("return %08lX;\n", (long)result));
 	trace(("}\n"));
 	return result;

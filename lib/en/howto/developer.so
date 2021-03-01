@@ -71,7 +71,7 @@ You will need to install Flex, the GNU replacement for Lex.
 .IP \(bu 2n
 You need to GNU Gettext (0.11.4 or later) tools installed.
 Even though Glibc 2.0 and
-later include Gettext, you need to developer tools as well.  (You need
+later include Gettext, you need the developer tools as well.  (You need
 GNU Gettext even on Solaris, because the Solaris Gettext implementation
 is... well... stuffed.)
 .IP \(bu 2n
@@ -94,6 +94,11 @@ the \fI/etc/sudoers\fP file.
 .IP \(bu 2n
 You need netpbm installed, for turning \fIaegis.png\fP into
 \fIaegis.xpm\fP because \fIrpm\fP(8) will only accept GIF or XPM icons.
+.IP \(bu 2n
+The location box icon is generated using \fIpng2ico\fP but the build
+can cope if you don't have it.
+You can get it from
+http://www.winterdrache.de/freeware/png2ico/
 .IP \(bu 2n
 \fIProbably more things I've forgotten.\fP
 .nh 2 "Create The Aegis Project"

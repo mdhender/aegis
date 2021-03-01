@@ -23,6 +23,7 @@
 #include <ac/stdlib.h>
 #include <ac/unistd.h>
 
+#include <now.h>
 #include <os.h>
 #include <sub.h>
 
@@ -43,7 +44,7 @@
  */
 
 void
-os_throttle()
+os_throttle(void)
 {
     static int      nsecs;
 
@@ -77,5 +78,6 @@ os_throttle()
 	}
 #endif
 	sleep(nsecs);
+	now_clear();
     }
 }

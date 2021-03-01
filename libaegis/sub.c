@@ -44,6 +44,7 @@
 #include <mem.h>
 #include <option.h>
 #include <os.h>
+#include <page.h>
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
@@ -59,6 +60,7 @@
 #include <sub/change/delta.h>
 #include <sub/change/develo_direc.h>
 #include <sub/change/developer.h>
+#include <sub/change/files.h>
 #include <sub/change/integr_direc.h>
 #include <sub/change/integrator.h>
 #include <sub/change/number.h>
@@ -347,6 +349,7 @@ static sub_table_ty table[] =
     {"BINary_DIRectory", sub_binary_directory, },
     {"CAPitalize", sub_capitalize, },
     {"Change", sub_change_number, },
+    {"Change_Files", sub_change_files, },
     {"Copyright_Years", sub_copyright_years, },
     {"COMment", sub_comment, },
     {"COMmon_DIRectory", sub_common_directory, },
@@ -1850,28 +1853,6 @@ sub_var_set_string(sub_context_ty *scp, const char *name, string_ty *value)
 
 
 void
-sub_var_set_charstar(sub_context_ty *scp, const char *name, const char *value)
-{
-    string_ty	    *s;
-
-    s = str_from_c(value);
-    sub_var_set_string(scp, name, s);
-    str_free(s);
-}
-
-
-void
-sub_var_set_long(sub_context_ty *scp, const char *name, long value)
-{
-    string_ty	    *s;
-
-    s = str_format("%ld", value);
-    sub_var_set_string(scp, name, s);
-    str_free(s);
-}
-
-
-void
 sub_var_resubstitute(sub_context_ty *scp, const char *name)
 {
     sub_table_ty    *the_end;
@@ -1961,7 +1942,7 @@ sub_var_append_if_unused(sub_context_ty *scp, const char *name)
 static void
 wrap(const wchar_t *s)
 {
-    char	    *progname;
+    const char      *progname;
     int		    page_width;
     char	    tmp[(MAX_PAGE_WIDTH + 2) * MB_LEN_MAX];
     int		    first_line;
@@ -1981,7 +1962,7 @@ wrap(const wchar_t *s)
      * Ask the system how wide the terminal is.
      * Don't use last column, many terminals are dumb.
      */
-    page_width = option_page_width_get(-1) - 1;
+    page_width = page_width_get(-1) - 1;
     midway = (page_width + 8) / 2;
 
     /*

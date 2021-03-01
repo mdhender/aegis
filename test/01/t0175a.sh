@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002 Peter Miller;
+#	Copyright (C) 2002, 2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,7 @@ pass()
 fail()
 {
 	set +x
-	echo 'FAILED test of the aeimport functionality' 1>&2
+	echo "FAILED test of the aeimport functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -104,7 +104,8 @@ fail()
 no_result()
 {
 	set +x
-	echo 'NO RESULT when testing the aeimport functionality' 1>&2
+	echo NO RESULT when testing the aeimport functionality \
+		"($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -300,7 +301,6 @@ architecture =
 ];
 copyright_years =
 [
-	YYYY,
 	YYYY,
 ];
 state = being_developed;

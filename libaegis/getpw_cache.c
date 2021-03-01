@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,14 +31,12 @@ static symtab_ty *login_table;
 static itab_ty *uid_table;
 
 
-static struct passwd *passwd_null _((void));
-
 static struct passwd *
-passwd_null()
+passwd_null(void)
 {
 	struct passwd	*result;
 
-	result = mem_alloc(sizeof(struct passwd));
+	result = (struct passwd *)mem_alloc(sizeof(struct passwd));
 
 	/*
 	 * This isn't portable, it assumes that NULL pointers are
@@ -51,8 +49,8 @@ passwd_null()
 #ifndef SOURCE_FORGE_HACK
 	result->pw_name = 0;
 	result->pw_passwd = 0;
-	result->pw_uid = -1;
-	result->pw_gid = -1;
+	result->pw_uid = (__uid_t)-1;
+	result->pw_gid = (__gid_t)-1;
 	result->pw_gecos = 0;
 #ifdef HAVE_pw_comment
 	result->pw_comment = 0;
@@ -84,11 +82,8 @@ passwd_null()
 }
 
 
-static struct passwd *passwd_copy _((struct passwd *));
-
 static struct passwd *
-passwd_copy(pw)
-	struct passwd	*pw;
+passwd_copy(struct passwd *pw)
 {
 	struct passwd	*result;
 
@@ -117,8 +112,7 @@ passwd_copy(pw)
 
 
 struct passwd *
-getpwnam_cached(name)
-	string_ty	*name;
+getpwnam_cached(string_ty *name)
 {
 	struct passwd	*data;
 
@@ -134,7 +128,7 @@ getpwnam_cached(name)
 	/*
 	 * Look for the data in the name table.
 	 */
-	data = symtab_query(login_table, name);
+	data = (struct passwd *)symtab_query(login_table, name);
 
 	/*
 	 * If the data isn't there, ask the system for it.
@@ -175,8 +169,7 @@ getpwnam_cached(name)
 
 
 struct passwd *
-getpwuid_cached(uid)
-	int		uid;
+getpwuid_cached(int uid)
 {
 	struct passwd	*data;
 
@@ -192,7 +185,7 @@ getpwuid_cached(uid)
 	/*
 	 * Look for the data in the name table.
 	 */
-	data = itab_query(uid_table, uid);
+	data = (struct passwd *)itab_query(uid_table, uid);
 
 	/*
 	 * If the data isn't there, ask the system for it.

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,7 @@
 
 
 void
-fatal_project_alias_exists(name)
-	string_ty	*name;
+fatal_project_alias_exists(string_ty *name)
 {
 	sub_context_ty	*scp;
 

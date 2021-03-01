@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,7 @@
 
 
 void
-change_branch_minimum_branch_number_set(cp, n)
-	change_ty	*cp;
-	long		n;
+change_branch_minimum_branch_number_set(change_ty *cp, long n)
 {
 	cstate		cstate_data;
 	cstate_branch	bp;

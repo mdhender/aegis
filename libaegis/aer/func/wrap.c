@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ trim(string_ty *s)
     if (buflen < s->str_length)
     {
 	buflen = s->str_length;
-	buf = mem_change_size(buf, buflen);
+	buf = (char *)mem_change_size(buf, buflen);
     }
     bp = buf;
     sp = s->str_text;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,50 +35,42 @@ struct input_822wrap_ty
 };
 
 
-static void input_822wrap_destructor _((input_ty *));
-
 static void
-input_822wrap_destructor(fp)
-	input_ty	*fp;
+input_822wrap_destructor(input_ty *fp)
 {
-	input_822wrap_ty *this;
+	input_822wrap_ty *this_thing;
 
-	this = (input_822wrap_ty *)fp;
-	input_pushback_transfer(this->deeper, fp);
-	if (this->close_on_delete)
-		input_delete(this->deeper);
+	this_thing = (input_822wrap_ty *)fp;
+	input_pushback_transfer(this_thing->deeper, fp);
+	if (this_thing->close_on_delete)
+		input_delete(this_thing->deeper);
 }
 
 
-static long input_822wrap_read _((input_ty *, void *, size_t));
-
 static long
-input_822wrap_read(fp, data, len)
-	input_ty	*fp;
-	void		*data;
-	size_t		len;
+input_822wrap_read(input_ty *fp, void *data, size_t len)
 {
-	input_822wrap_ty *this;
+	input_822wrap_ty *this_thing;
 	int		c;
 	unsigned char	*cp;
 	unsigned char	*end;
 	size_t		nbytes;
 
-	this = (input_822wrap_ty *)fp;
-	cp = data;
+	this_thing = (input_822wrap_ty *)fp;
+	cp = (unsigned char *)data;
 	end = cp + len;
 	while (cp < end)
 	{
-		c = input_getc(this->deeper);
+		c = input_getc(this_thing->deeper);
 		if (c < 0)
 			break;
-		if (c == '\n' && this->column > 0)
+		if (c == '\n' && this_thing->column > 0)
 		{
-			c = input_getc(this->deeper);
+			c = input_getc(this_thing->deeper);
 			if (c != ' ' && c != '\t')
 			{
 				if (c >= 0)
-					input_ungetc(this->deeper, c);
+					input_ungetc(this_thing->deeper, c);
 				c = '\n';
 			}
 		}
@@ -90,48 +82,39 @@ input_822wrap_read(fp, data, len)
 			 * too far ahead of ourselves, in case the header
 			 * finishes and the binary data starts.
 			 */
-			this->column = 0;
+			this_thing->column = 0;
 			break;
 		}
-		this->column++;
+		this_thing->column++;
 	}
 	nbytes = (cp - (unsigned char *)data);
-	this->pos += nbytes;
+	this_thing->pos += nbytes;
 	return nbytes;
 }
 
 
-static long input_822wrap_ftell _((input_ty *));
-
 static long
-input_822wrap_ftell(fp)
-	input_ty	*fp;
+input_822wrap_ftell(input_ty *fp)
 {
-	input_822wrap_ty *this;
+	input_822wrap_ty *this_thing;
 
-	this = (input_822wrap_ty *)fp;
-	return this->pos;
+	this_thing = (input_822wrap_ty *)fp;
+	return this_thing->pos;
 }
 
-
-static struct string_ty *input_822wrap_name _((input_ty *));
 
 static struct string_ty *
-input_822wrap_name(fp)
-	input_ty	*fp;
+input_822wrap_name(input_ty *fp)
 {
-	input_822wrap_ty *this;
+	input_822wrap_ty *this_thing;
 
-	this = (input_822wrap_ty *)fp;
-	return input_name(this->deeper);
+	this_thing = (input_822wrap_ty *)fp;
+	return input_name(this_thing->deeper);
 }
 
 
-static long input_822wrap_length _((input_ty *));
-
 static long
-input_822wrap_length(fp)
-	input_ty	*fp;
+input_822wrap_length(input_ty *fp)
 {
 	return -1;
 }
@@ -149,18 +132,16 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_822wrap(deeper, close_on_delete)
-	input_ty	*deeper;
-	int		close_on_delete;
+input_822wrap(input_ty *deeper, int close_on_delete)
 {
 	input_ty	*result;
-	input_822wrap_ty *this;
+	input_822wrap_ty *this_thing;
 
 	result = input_new(&vtbl);
-	this = (input_822wrap_ty *)result;
-	this->deeper = deeper;
-	this->close_on_delete = close_on_delete;
-	this->pos = 0;
-	this->column = 0;
+	this_thing = (input_822wrap_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->close_on_delete = close_on_delete;
+	this_thing->pos = 0;
+	this_thing->column = 0;
 	return result;
 }

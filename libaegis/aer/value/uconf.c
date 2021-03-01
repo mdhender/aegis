@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000-2002 Peter Miller;
+ *	Copyright (C) 2000-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,14 +33,9 @@
 #include <user.h>
 
 
-static rpt_value_ty *build_result _((struct passwd *));
-
 static rpt_value_ty *
-build_result(pw)
-    struct passwd   *pw;
+build_result(struct passwd *pw)
 {
-    string_ty	    *path;
-    int		    err;
     uconf	    tmp;
     rpt_value_ty    *result;
     string_ty	    *name;
@@ -49,42 +44,24 @@ build_result(pw)
     user_ty         *up;
 
     trace(("build_struct()\n{\n"));
-    path = str_format("%s/.aegisrc", pw->pw_dir);
-
-    up = user_numeric(0, pw->pw_uid);
 
     /*
-     * Read the file if it exists and is readable,
-     * otherwise default lots of things.
+     * Use the same method as other portions of Aegis to establish
+     * the user's attributes.  It is *not* as simple as reading the
+     * $HOME/.aegisrc file.
+     *
+     * The side-effect of the aparrently-useless user_email_address()
+     * function call is to establish the tmp->email_address field
+     * correctly.
      */
-    os_become_orig();
-    err = os_readable(path);
-    if (err)
-    {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_errno_setx(scp, err);
-	sub_var_set_string(scp, "File_Name", path);
-	str_free(path);
-	s = subst_intl(scp, "stat $filename: $errno");
-	sub_context_delete(scp);
-	result = rpt_value_error((void *)0, s);
-	str_free(s);
-	os_become_undo();
-	goto done;
-    }
-    tmp = uconf_read_file(path);
-    os_become_undo();
-    if (!tmp->email_address)
-      tmp->email_address = user_email_address(up);
-    str_free(path);
+    up = user_numeric(0, pw->pw_uid);
+    user_email_address(up);
+    tmp = user_uconf_get(up);
 
     /*
      * Convert the data
      */
     result = uconf_type.convert(&tmp);
-    uconf_type.free(tmp);
 
     /*
      * Insert the user name into the result.
@@ -101,20 +78,14 @@ build_result(pw)
     /*
      * All done.
      */
-    done:
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
 }
 
 
-static rpt_value_ty *lookup _((rpt_value_ty *, rpt_value_ty *, int));
-
 static rpt_value_ty *
-lookup(lhs, rhs, lvalue)
-    rpt_value_ty    *lhs;
-    rpt_value_ty    *rhs;
-    int		    lvalue;
+lookup(rpt_value_ty *lhs, rpt_value_ty *rhs, int lvalue)
 {
     rpt_value_ty    *rhs2;
     rpt_value_ty    *result;
@@ -187,31 +158,33 @@ lookup(lhs, rhs, lvalue)
 }
 
 
-static rpt_value_ty *keys _((rpt_value_ty *));
-
 static rpt_value_ty *
-keys(vp)
-    rpt_value_ty    *vp;
+keys(rpt_value_ty *vp)
 {
     rpt_value_ty    *result;
 
-    /*
-     * We always return the empty list.	 I suppose we could read the
-     * passwd file and return that as the list.	 Or worse, I could
-     * go through looking for .aegisrc files in each home directory,
-     * and return that as the list.  There doesn't seem to be a real
-     * need, so only implement something if folks yelp.
-     */
     result = rpt_value_list();
+    for (;;)
+    {
+	struct passwd   *pw;
+	string_ty       *s;
+	rpt_value_ty    *ep;
+
+	pw = getpwent();
+	if (!pw)
+    	    break;
+	s = str_from_c(pw->pw_name);
+	ep = rpt_value_string(s);
+	str_free(s);
+	rpt_value_list_append(result, ep);
+	rpt_value_free(ep);
+    }
     return result;
 }
 
 
-static rpt_value_ty *count _((rpt_value_ty *));
-
 static rpt_value_ty *
-count(vp)
-    rpt_value_ty    *vp;
+count(rpt_value_ty *vp)
 {
     /*
      * See rpt_value_uconf::keys comment.
@@ -221,11 +194,8 @@ count(vp)
 }
 
 
-static char *type_of _((rpt_value_ty *));
-
-static char *
-type_of(this)
-    rpt_value_ty    *this;
+static const char *
+type_of(rpt_value_ty *this_thing)
 {
     return "struct";
 }

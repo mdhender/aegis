@@ -29,8 +29,7 @@
 
 
 string_ty *
-change_pconf_path_get(cp)
-    change_ty	    *cp;
+change_pconf_path_get(change_ty *cp)
 {
     static string_ty *file_name;
 

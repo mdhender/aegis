@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,23 +30,15 @@
 #include <sub.h>
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 3);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	rpt_value_ty	*arg;
 	rpt_value_ty	*result;
@@ -142,9 +134,9 @@ run(ep, argc, argv)
 		start = 0;
 	if (end < 0)
 		end = 0;
-	if (start > subject->str_length)
+	if (start > (long)subject->str_length)
 		start = subject->str_length;
-	if (end > subject->str_length)
+	if (end > (long)subject->str_length)
 		end = subject->str_length;
 	if (end < start)
 	{

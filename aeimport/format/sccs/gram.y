@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -148,7 +148,7 @@ walker(itab_ty *itp2, itab_key_ty key, void *data, void *aux)
 format_version_ty *
 sccs_parse(string_ty *physical, string_ty *logical)
 {
-    extern int yyparse _((void));
+    extern int yyparse(void);
     format_version_ty *result;
 
     itp = itab_alloc(5);

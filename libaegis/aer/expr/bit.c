@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 
 
 static rpt_value_ty *
-and_evaluate(rpt_expr_ty *this)
+and_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v1i;
@@ -37,8 +37,8 @@ and_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *v2i;
     rpt_value_ty    *result;
 
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
@@ -58,14 +58,14 @@ and_evaluate(rpt_expr_ty *this)
 		i18n("integer value required for bit and (was given $name)")
 	    );
 	sub_context_delete(scp);
-	assert(this->child[0]->pos);
-	result = rpt_value_error(this->child[0]->pos, s);
+	assert(this_thing->child[0]->pos);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
     rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1i);
@@ -88,7 +88,7 @@ and_evaluate(rpt_expr_ty *this)
 		i18n("integer value required for bit and (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[1]->pos, s);
+	result = rpt_value_error(this_thing->child[1]->pos, s);
 	str_free(s);
 	rpt_value_free(v2);
 	return result;
@@ -120,17 +120,17 @@ static rpt_expr_method_ty and_method =
 rpt_expr_ty *
 rpt_expr_and_bit(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&and_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&and_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-xor_evaluate(rpt_expr_ty *this)
+xor_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v1i;
@@ -138,8 +138,8 @@ xor_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *v2i;
     rpt_value_ty    *result;
 
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
@@ -159,13 +159,13 @@ xor_evaluate(rpt_expr_ty *this)
 		i18n("integer value required for bit xor (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
     rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1i);
@@ -189,7 +189,7 @@ xor_evaluate(rpt_expr_ty *this)
 		i18n("integer value required for bit xor (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[1]->pos, s);
+	result = rpt_value_error(this_thing->child[1]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -220,17 +220,17 @@ static rpt_expr_method_ty xor_method =
 rpt_expr_ty *
 rpt_expr_xor_bit(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&xor_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&xor_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-or_evaluate(rpt_expr_ty *this)
+or_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v1i;
@@ -238,8 +238,8 @@ or_evaluate(rpt_expr_ty *this)
     rpt_value_ty    *v2i;
     rpt_value_ty    *result;
 
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
@@ -259,13 +259,13 @@ or_evaluate(rpt_expr_ty *this)
 		i18n("integer value required for bit or (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
     rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1i);
@@ -289,7 +289,7 @@ or_evaluate(rpt_expr_ty *this)
 		i18n("integer value required for bit or (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[1]->pos, s);
+	result = rpt_value_error(this_thing->child[1]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -320,17 +320,17 @@ static rpt_expr_method_ty or_method =
 rpt_expr_ty *
 rpt_expr_or_bit(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&or_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&or_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-not_evaluate(rpt_expr_ty *this)
+not_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v2;
@@ -340,8 +340,8 @@ not_evaluate(rpt_expr_ty *this)
      * evaluate the argument
      */
     trace(("not::evaluate()\n{\n"));
-    assert(this->nchild == 1);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 1);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -370,7 +370,7 @@ not_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name", v2->method->name);
 	s = subst_intl(scp, i18n("illegal bit not ($name)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->child[0]->pos, s);
+	vp = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
     }
     rpt_value_free(v2);
@@ -394,9 +394,9 @@ static rpt_expr_method_ty not_method =
 rpt_expr_ty *
 rpt_expr_not_bit(rpt_expr_ty *a)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&not_method);
-    rpt_expr_append(this, a);
-    return this;
+    this_thing = rpt_expr_alloc(&not_method);
+    rpt_expr_append(this_thing, a);
+    return this_thing;
 }

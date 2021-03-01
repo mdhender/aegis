@@ -28,8 +28,7 @@
 
 
 string_ty *
-change_logfile_get(cp)
-	change_ty	*cp;
+change_logfile_get(change_ty *cp)
 {
 	string_ty	*s1;
 	cstate		cstate_data;

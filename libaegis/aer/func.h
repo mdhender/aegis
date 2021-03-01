@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 2002 Peter Miller.
+ *	Copyright (C) 1994, 2002, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,11 +33,11 @@ struct symtab_ty;
 typedef struct rpt_func_ty rpt_func_ty;
 struct rpt_func_ty
 {
-	char		*name;
-	int		optimizable;
-	int (*verify)(struct rpt_expr_ty *ep);
-	struct rpt_value_ty *(*run)(struct rpt_expr_ty *, size_t argc,
-		struct rpt_value_ty **argv);
+    const char      *name;
+    int             optimizable;
+    int             (*verify)(struct rpt_expr_ty *ep);
+    struct rpt_value_ty *(*run)(struct rpt_expr_ty *, size_t argc,
+			struct rpt_value_ty **argv);
 };
 
 void rpt_func_init(struct symtab_ty *);

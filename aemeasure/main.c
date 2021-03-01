@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ enum
 static arglex_table_ty argtab[] =
 {
     { "-LANGuage", arglex_token_language, },
-    { 0, 0, } /* end marker */
+    ARGLEX_END_MARKER
 };
 
 

@@ -24,8 +24,7 @@
 
 
 long
-change_history_last_change_integrated(cp)
-	change_ty	*cp;
+change_history_last_change_integrated(change_ty *cp)
 {
 	cstate		cstate_data;
 	cstate_branch	bp;

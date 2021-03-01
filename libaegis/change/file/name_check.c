@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,11 +34,8 @@
 #include <trace.h>
 
 
-static int change_maximum_filename_length _((change_ty *));
-
 static int
-change_maximum_filename_length(cp)
-    change_ty       *cp;
+change_maximum_filename_length(change_ty *cp)
 {
     pconf           pconf_data;
 
@@ -49,13 +46,10 @@ change_maximum_filename_length(cp)
 }
 
 
-static int contains_moronic_ms_restrictions _((string_ty *));
-
 static int
-contains_moronic_ms_restrictions(fn)
-    string_ty       *fn;
+contains_moronic_ms_restrictions(string_ty *fn)
 {
-    static char *moronic[] =
+    static const char *const moronic[] =
     {
 	"[aA][uU][xX]",
 	"[aA][uU][xX].*",
@@ -66,7 +60,7 @@ contains_moronic_ms_restrictions(fn)
 	"[nN][uU][lL]",
 	"[nN][uU][lL].*",
     };
-    char          **cpp;
+    const char      *const *cpp;
 
     for (cpp = moronic; cpp < ENDOF(moronic); ++cpp)
 	if (gmatch(*cpp, fn->str_text))
@@ -75,12 +69,8 @@ contains_moronic_ms_restrictions(fn)
 }
 
 
-static int is_a_dos_filename _((change_ty *, string_ty *));
-
 static int
-is_a_dos_filename(cp, fn)
-    change_ty       *cp;
-    string_ty       *fn;
+is_a_dos_filename(change_ty *cp, string_ty *fn)
 {
     pconf           pconf_data;
     string_list_ty  wl;
@@ -141,12 +131,8 @@ is_a_dos_filename(cp, fn)
 }
 
 
-static int is_a_windows_filename _((change_ty *, string_ty *));
-
 static int
-is_a_windows_filename(cp, fn)
-    change_ty       *cp;
-    string_ty       *fn;
+is_a_windows_filename(change_ty *cp, string_ty *fn)
 {
     pconf           pconf_data;
     char            *s;
@@ -177,12 +163,8 @@ is_a_windows_filename(cp, fn)
 }
 
 
-static int filename_pattern_test _((change_ty *, string_ty *));
-
 static int
-filename_pattern_test(cp, fn)
-    change_ty       *cp;
-    string_ty       *fn;
+filename_pattern_test(change_ty *cp, string_ty *fn)
 {
     pconf           pconf_data;
     size_t          j;
@@ -225,12 +207,8 @@ filename_pattern_test(cp, fn)
 }
 
 
-static int change_filename_in_charset _((change_ty *, string_ty *));
-
 static int
-change_filename_in_charset(cp, fn)
-    change_ty       *cp;
-    string_ty       *fn;
+change_filename_in_charset(change_ty *cp, string_ty *fn)
 {
     pconf           pconf_data;
     char            *s;
@@ -339,12 +317,8 @@ change_filename_in_charset(cp, fn)
 }
 
 
-static int change_filename_shell_safe _((change_ty *, string_ty *));
-
 static int
-change_filename_shell_safe(cp, fn)
-    change_ty       *cp;
-    string_ty       *fn;
+change_filename_shell_safe(change_ty *cp, string_ty *fn)
 {
     pconf           pconf_data;
     char            *s;
@@ -441,10 +415,7 @@ change_filename_shell_safe(cp, fn)
  */
 
 string_ty *
-change_filename_check(cp, filename, nodup)
-    change_ty       *cp;
-    string_ty       *filename;
-    int             nodup;
+change_filename_check(change_ty *cp, string_ty *filename)
 {
     int             name_max1;
     int             name_max2;
@@ -461,8 +432,8 @@ change_filename_check(cp, filename, nodup)
      * The margin of 2 on the end is for ",D" suffixes,
      * and for ",v" in RCS, "s." in SCCS, etc.
      */
-    trace(("change_filename_check(cp = %08lX, filename = \"%s\", "
-	"nodup = %d)\n{\n", (long)cp, filename->str_text, nodup));
+    trace(("change_filename_check(cp = %08lX, filename = \"%s\")\n{\n",
+	(long)cp, filename->str_text));
     assert(cp->reference_count >= 1);
     name_max1 = change_maximum_filename_length(cp);
     name_max2 = change_pathconf_name_max(cp);
@@ -481,52 +452,6 @@ change_filename_check(cp, filename, nodup)
     for (k = 0; k < part.nstrings; ++k)
     {
 	int             max;
-
-	/*
-	 * check for collision
-	 */
-	if (nodup)
-	{
-	    fstate_src      src_data;
-
-	    s2 = wl2str(&part, 0, k, "/");
-	    src_data = project_file_find(cp->pp, s2, view_path_extreme);
-	    if (src_data)
-	    {
-		if (part.nstrings == 1 || str_equal(s2, filename))
-		{
-		    sub_context_ty  *scp;
-
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", filename);
-		    result =
-			subst_intl
-			(
-			    scp,
-			    i18n("file \"$filename\" already exists in project")
-			);
-		    sub_context_delete(scp);
-		}
-		else
-		{
-		    sub_context_ty  *scp;
-
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name1", filename);
-		    sub_var_set_string(scp, "File_Name2", s2);
-		    result =
-			subst_intl
-			(
-			    scp,
-	i18n("file \"$filename1\" collides with file \"$filename2\" in project")
-			);
-		    sub_context_delete(scp);
-		}
-		str_free(s2);
-		goto done;
-	    }
-	    str_free(s2);
-	}
 
 	/*
 	 * check DOS-full-ness

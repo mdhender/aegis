@@ -91,6 +91,7 @@ AC_CHECK_FUNC(setsockopt, ,
 AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(rx, main)
 AC_CHECK_LIB(z, main)
+AC_CHECK_LIB(magic, magic_file)
 dnl The -lclu library is for OSF/1 clustering
 AC_CHECK_LIB(clu, main)
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt, msgfmt)
@@ -221,18 +222,20 @@ AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
 AC_CHECK_HEADERS(fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
-	memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h string.h \
-	unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h sys/ioctl.h)
+	magic.h memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h \
+	string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h \
+	sys/ioctl.h)
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
-AC_CHECK_FUNCS(clu_info getpgrp gettext iswctype mbrtowc pathconf regcomp \
-	seteuid setlocale setresuid setreuid sighold sigprocmask snprintf \
-	strcasecmp strncasecmp strerror strftime strsignal strtoul tcgetpgrp \
-	vsnprintf wcrtomb wcslen wcwidth)
+AC_CHECK_FUNCS(clu_info getpgrp gettext gettimeofday iswctype magic_file \
+	mbrtowc pathconf regcomp seteuid setlocale setresuid setreuid \
+	sighold sigprocmask snprintf strcasecmp strncasecmp strerror \
+	strftime strsignal strtoul tcgetpgrp vsnprintf wcrtomb wcslen \
+	wcwidth)
 
 dnl
 dnl	Check to see if wint_t is defined.

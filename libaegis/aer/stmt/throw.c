@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1999 Peter Miller;
+ *	Copyright (C) 1996, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,20 +36,16 @@ struct rpt_stmt_throw_ty
 };
 
 
-static void run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-run(that, rp)
-	rpt_stmt_ty	*that;
-	rpt_stmt_result_ty *rp;
+run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
 {
-	rpt_stmt_throw_ty *this;
+	rpt_stmt_throw_ty *this_thing;
 	rpt_value_ty	*vp;
 	rpt_value_ty	*vp2;
 
 	trace(("throw::run()\n{\n"/*}*/));
-	this = (rpt_stmt_throw_ty *)that;
-	vp = rpt_expr_evaluate(this->e, 0);
+	this_thing = (rpt_stmt_throw_ty *)that;
+	vp = rpt_expr_evaluate(this_thing->e, 0);
 	if (vp->method->type == rpt_value_type_error)
 	{
 		rp->status = rpt_stmt_status_error;
@@ -76,14 +72,15 @@ run(that, rp)
 			);
 		sub_context_delete(scp);
 		rp->status = rpt_stmt_status_error;
-		rp->thrown = rpt_value_error(this->e->pos, s);
+		rp->thrown = rpt_value_error(this_thing->e->pos, s);
 		str_free(s);
 		trace((/*{*/"}\n"));
 		return;
 	}
 
 	rp->status = rpt_stmt_status_error;
-	rp->thrown = rpt_value_error(this->e->pos, rpt_value_string_query(vp2));
+	rp->thrown = rpt_value_error(this_thing->e->pos,
+                                     rpt_value_string_query(vp2));
 	rpt_value_free(vp2);
 	trace((/*{*/"}\n"));
 }
@@ -100,14 +97,13 @@ static rpt_stmt_method_ty method =
 
 
 rpt_stmt_ty *
-rpt_stmt_throw(e)
-	rpt_expr_ty	*e;
+rpt_stmt_throw(rpt_expr_ty *e)
 {
 	rpt_stmt_ty	*that;
-	rpt_stmt_throw_ty *this;
+	rpt_stmt_throw_ty *this_thing;
 
 	that = rpt_stmt_alloc(&method);
-	this = (rpt_stmt_throw_ty *)that;
-	this->e = rpt_expr_copy(e);
+	this_thing = (rpt_stmt_throw_ty *)that;
+	this_thing->e = rpt_expr_copy(e);
 	return that;
 }

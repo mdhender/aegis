@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,57 +25,60 @@
 #include <ael/change/default.h>
 #include <ael/change/inappropriat.h>
 #include <project.h>
+#include <str_list.h>
 #include <trace.h>
 #include <user.h>
 #include <zero.h>
 
 
 void
-list_default_change(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_default_change(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
-	project_ty	*pp;
-	user_ty		*up;
+    project_ty      *pp;
+    user_ty	    *up;
 
-	/*
-	 * check for silly arguments
-	 */
-	trace(("list_default_change()\n{\n"));
-	if (change_number)
-		list_change_inappropriate();
+    /*
+     * check for silly arguments
+     */
+    trace(("list_default_change()\n{\n"));
+    if (change_number)
+	list_change_inappropriate();
 
-	/*
-	 * resolve the project name
-	 */
-	if (!project_name)
-		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
-	pp = project_alloc(project_name);
-	str_free(project_name);
-	project_bind_existing(pp);
+    /*
+     * resolve the project name
+     */
+    if (!project_name)
+	project_name = user_default_project();
+    else
+	project_name = str_copy(project_name);
+    pp = project_alloc(project_name);
+    str_free(project_name);
+    project_bind_existing(pp);
 
-	/*
-	 * locate user data
-	 */
+    /*
+     * locate user data
+     */
+    if (!args->nstrings)
 	up = user_executing(pp);
+    else
+	up = user_symbolic(pp, args->string[0]);
 
-	/*
-	 * Find default change number;
-	 * will generate fatal error if no default.
-	 */
-	change_number = user_default_change(up);
+    /*
+     * Find default change number;
+     * will generate fatal error if no default.
+     */
+    change_number = user_default_change(up);
 
-	/*
-	 * print it out
-	 */
-	printf("%ld\n", magic_zero_decode(change_number));
+    /*
+     * print it out
+     */
+    printf("%ld\n", magic_zero_decode(change_number));
 
-	/*
-	 * clean up and go home
-	 */
-	project_free(pp);
-	user_free(up);
-	trace(("}\n"));
+    /*
+     * clean up and go home
+     */
+    project_free(pp);
+    user_free(up);
+    trace(("}\n"));
 }

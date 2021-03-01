@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,12 +34,13 @@
 #include <receive.h>
 #include <send.h>
 #include <str.h>
+#include <version.h>
 
 
 static void
 usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
@@ -66,6 +67,7 @@ main(int argc, char **argv)
 	{ arglex_token_list, list, },
 	{ arglex_token_receive, receive, },
 	{ arglex_token_help, main_help, },
+	{ arglex_token_version, version, },
     };
 
     /*

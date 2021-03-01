@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ rpt_expr_struct__symtab_push(symtab_ty *stp)
 
 	ntab_max = ntab_max * 2 + 4;
 	nbytes = ntab_max * sizeof(symtab_ty *);
-	tab = mem_change_size(tab, nbytes);
+	tab = (symtab_ty **)mem_change_size(tab, nbytes);
     }
     tab[ntab++] = stp;
 }
@@ -67,7 +67,7 @@ reap(void *p)
 {
     rpt_value_ty    *vp;
 
-    vp = p;
+    vp = (rpt_value_ty *)p;
     rpt_value_free(vp);
 }
 

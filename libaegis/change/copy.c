@@ -26,8 +26,7 @@
 
 
 change_ty *
-change_copy(cp)
-	change_ty	*cp;
+change_copy(change_ty *cp)
 {
 	trace(("change_copy(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	assert(cp->reference_count >= 1);

@@ -30,9 +30,7 @@
 
 
 string_ty *
-change_file_path(cp, file_name)
-	change_ty	*cp;
-	string_ty	*file_name;
+change_file_path(change_ty *cp, string_ty *file_name)
 {
 	cstate		cstate_data;
 	fstate_src	src_data;

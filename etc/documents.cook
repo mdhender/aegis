@@ -58,7 +58,7 @@ lib/%3/cat%1/%2.%1: lib/%3/man%1/%2.%1
 		[prepost -I /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%3/man%1/%2.%1]
-	| groff -Tascii -P-h -t -man
+	| groff -Tascii -P-ch -t -man
 	> [target];
 }
 
@@ -159,7 +159,7 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.roff: etc/ssp.awk
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%1/%2/main.roff]
-	| groff -Tascii -t -P-hub
+	| groff -Tascii -t -P-bchu
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
 }
@@ -272,7 +272,7 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%1/%2/main.man]
-	| groff -Tascii -t -P-hub -man
+	| groff -Tascii -t -P-bchu -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
 }

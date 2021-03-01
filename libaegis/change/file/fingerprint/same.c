@@ -45,10 +45,7 @@
  */
 
 int
-change_fingerprint_same(fp, path, check_always)
-	fingerprint	fp;
-	string_ty	*path;
-	int		check_always;
+change_fingerprint_same(fingerprint fp, string_ty *path, int check_always)
 {
 	time_t		oldest;
 	time_t		newest;

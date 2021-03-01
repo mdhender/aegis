@@ -29,9 +29,7 @@
 
 
 string_ty *
-change_integration_directory_get(cp, resolve)
-	change_ty	*cp;
-	int		resolve;
+change_integration_directory_get(change_ty *cp, int resolve)
 {
 	string_ty	*result;
 

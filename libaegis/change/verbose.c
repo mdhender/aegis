@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,7 @@
 
 
 void
-change_verbose(cp, scp, s)
-	change_ty	*cp;
-	sub_context_ty	*scp;
-	char		*s;
+change_verbose(change_ty *cp, sub_context_ty *scp, const char *s)
 {
 	string_ty	*msg;
 	int		need_to_delete;

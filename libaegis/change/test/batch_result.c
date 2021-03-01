@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2002 Peter Miller;
+ *	Copyright (C) 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ batch_result_list_new(void)
 {
     batch_result_list_ty *p;
 
-    p = mem_alloc(sizeof(batch_result_list_ty));
+    p = (batch_result_list_ty *)mem_alloc(sizeof(batch_result_list_ty));
     p->length = 0;
     p->length_max = 0;
     p->item = 0;
@@ -73,7 +73,7 @@ batch_result_list_append(batch_result_list_ty *p, string_ty *file_name,
 
 	p->length_max = p->length_max * 2 + 4;
 	nbytes = p->length_max * sizeof(p->item[0]);
-	p->item = mem_change_size(p->item, nbytes);
+	p->item = (batch_result_ty *)mem_change_size(p->item, nbytes);
     }
     brp = p->item + p->length++;
     brp->file_name = str_copy(file_name);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@
 #include <ael/change/file_history.h>
 #include <ael/change/history.h>
 #include <ael/change/inappropriat.h>
+#include <ael/change/incomplete.h>
 #include <ael/change/outstanding.h>
 #include <ael/change/outstand_all.h>
 #include <ael/change/user.h>
@@ -58,20 +59,22 @@
 #include <help.h>
 #include <option.h>
 #include <progname.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <zero.h>
 
 
-static void list_list_list(string_ty *, long); /* forward */
+static void list_list_list(string_ty *, long, string_list_ty *); /* forward */
 
 
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    char	    *name;
-    char	    *description;
-    void	    (*func)(string_ty *, long);
+    const char      *name;
+    const char      *description;
+    void	    (*func)(string_ty *, long, string_list_ty *);
+    int             number_allowed_args;
 };
 
 
@@ -81,111 +84,139 @@ static table_ty table[] =
 	"Administrators",
 	"List the administrators of a project",
 	list_administrators,
+        0,
     },
     {
 	"Change_Details",
 	"List all information about a change in large layout form.",
 	list_change_details,
+        0,
     },
     {
 	"Change_Files",
 	"List all files in a change",
 	list_change_files,
+        0,
     },
     {
 	"Change_File_History",
 	"List the history of all files in a change.",
 	list_change_file_history,
+        0,
     },
     {
 	"Change_History",
 	"List the history of a change",
 	list_change_history,
+        0,
     },
     {
 	"Changes",
 	"List the changes of a project",
 	list_changes,
+        0,
     },
     {
 	"Default_Change",
 	"List the default change for the current user",
 	list_default_change,
+        1,
     },
     {
 	"Default_Project",
-	"List the default project for the current user",
+	"List the default project for a (the current) user",
 	list_default_project,
+        1,
     },
     {
 	"Developers",
 	"List the developers of a project",
 	list_developers,
+        0,
+    },
+    {
+	"INComplete",
+	"List the incomplete changes (for a user)",
+	list_incomplete_changes,
+        0,
     },
     {
 	"Integrators",
 	"List the integrators of a project",
 	list_integrators,
+        0,
     },
     {
 	"List_List",
 	"List all lists available",
 	list_list_list,
+        0,
     },
     {
 	"Locks",
 	"List the active locks",
 	list_locks,
+        0,
     },
     {
 	"Outstanding_Changes",
-	"List the outstanding changes",
+	"List the outstanding changes (for a user)",
 	list_outstanding_changes,
+        1,
     },
     {
 	"All_Outstanding_Changes",
 	"List the outstanding changes for all projects",
 	list_outstanding_changes_all,
+        0,
     },
     {
 	"Project_Files",
 	"List all files in the baseline of a project",
 	list_project_files,
+        0,
     },
     {
 	"Project_History",
 	"List the integration history of a project",
 	list_project_history,
+        0,
     },
     {
 	"Projects",
 	"List all projects",
 	list_projects,
+        0,
     },
     {
 	"Project_Aliases",
-	"List all project aliases",
+	"List all project aliases (the -Project option limits results)",
 	list_project_aliases,
+        0,
     },
     {
 	"Reviewers",
 	"List the reviewers of a project",
 	list_reviewers,
+        0,
     },
     {
 	"State_File_Name",
 	"List the full path name of the change's state file.",
 	list_state_file_name,
+        0,
     },
     {
 	"Users_Changes",
-	"List of changes owned by the current user",
+	"List of changes owned by a (the current) user",
 	list_user_changes,
+        1,
     },
     {
 	"Version",
 	"List version of a project or change",
 	list_version,
+        0,
     },
 };
 
@@ -193,7 +224,7 @@ static table_ty table[] =
 static void
 list_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -List [ <option>... ] <listname>\n", progname);
@@ -217,8 +248,27 @@ list_list(void)
     arglex();
     while (arglex_token != arglex_token_eoln)
 	generic_argument(list_usage);
-    list_list_list(0, 0);
+    list_list_list(0, 0, 0);
     trace(("}\n"));
+}
+
+
+static int
+max_num_table_args(void)
+{
+    int             i;
+    int             max_num_args = 0;
+    trace(("max_num_table_args()\n{\n"));
+    for (i = 0; i < SIZEOF(table); i++)
+    {
+        if (table[i].number_allowed_args > max_num_args)
+        {
+            max_num_args = table[i].number_allowed_args;
+        }
+    }
+    trace(("\tmax_num_args = %d\n", max_num_args));
+    trace(("}\n"));
+    return max_num_args;
 }
 
 
@@ -226,7 +276,7 @@ static void
 list_main(void)
 {
     sub_context_ty  *scp;
-    char	    *listname;
+    const char      *listname;
     table_ty	    *tp;
     int		    j;
     table_ty	    *hit[SIZEOF(table)];
@@ -235,12 +285,14 @@ list_main(void)
     string_ty	    *s2;
     string_ty	    *project_name;
     long	    change_number;
+    string_list_ty  args_list;
 
     trace(("list_main()\n{\n"));
     arglex();
     listname = 0;
     project_name = 0;
     change_number = 0;
+    string_list_constructor(&args_list);
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -250,11 +302,23 @@ list_main(void)
 	    continue;
 
 	case arglex_token_string:
-	    if (listname)
+            if (listname)
 	    {
-		fatal_intl(0, i18n("too many lists"));
+		string_ty       *s;
+
+		s = str_from_c(arglex_value.alv_string);
+		string_list_append(&args_list, s);
+		str_free(s);
+
+                if (args_list.nstrings > max_num_table_args())
+                {
+                    fatal_intl(0, i18n("too many lists"));
+                }
 	    }
-	    listname = arglex_value.alv_string;
+	    else
+            {
+                listname = arglex_value.alv_string;
+            }
 	    break;
 
 	case arglex_token_change:
@@ -307,7 +371,7 @@ list_main(void)
 	sub_context_delete(scp);
 
     case 1:
-	hit[0]->func(project_name, change_number);
+	hit[0]->func(project_name, change_number, &args_list);
 	break;
 
     default:
@@ -330,6 +394,7 @@ list_main(void)
     }
     if (project_name)
 	str_free(project_name);
+    string_list_destructor(&args_list);
     trace(("}\n"));
 }
 
@@ -350,7 +415,8 @@ list(void)
 
 
 static void
-list_list_list(string_ty *project_name, long change_number)
+list_list_list(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
     output_ty	    *name_col =	    0;
     output_ty	    *desc_col =	    0;

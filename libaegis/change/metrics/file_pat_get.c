@@ -25,8 +25,7 @@
 
 
 string_ty *
-change_metrics_filename_pattern_get(cp)
-	change_ty	*cp;
+change_metrics_filename_pattern_get(change_ty *cp)
 {
 	pconf		pconf_data;
 

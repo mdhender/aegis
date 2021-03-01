@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,9 +31,7 @@
 
 
 void
-os_chmod_errok(path, mode)
-    string_ty       *path;
-    int             mode;
+os_chmod_errok(string_ty *path, int mode)
 {
     trace(("os_chmod_errok(path = \"%s\", mode = 0%o)\n{\n",
 	path->str_text, mode));

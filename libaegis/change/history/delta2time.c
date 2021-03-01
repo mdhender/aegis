@@ -26,9 +26,7 @@
 
 
 time_t
-change_history_delta_to_timestamp(pp, delta_number)
-	project_ty	*pp;
-	long		delta_number;
+change_history_delta_to_timestamp(project_ty *pp, long delta_number)
 {
 	cstate		cstate_data;
 	cstate_branch_history_list hl;

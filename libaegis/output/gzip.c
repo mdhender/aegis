@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,19 +52,17 @@ struct output_gzip_ty
 };
 
 
-static void drop_dead _((output_gzip_ty *, int));
-
 static void
-drop_dead(this, err)
-	output_gzip_ty	*this;
-	int		err;
+drop_dead(output_gzip_ty *this_thing, int err)
 {
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
 	sub_var_set_charstar(scp, "ERRNO", z_error(err));
 	sub_var_override(scp, "ERRNO");
-	sub_var_set_string(scp, "File_Name", output_filename(this->deeper));
+	sub_var_set_string(scp,
+                           "File_Name",
+                           output_filename(this_thing->deeper));
 	fatal_intl(scp,  i18n("gzip $filename: $errno"));
 }
 
@@ -74,12 +72,8 @@ drop_dead(this, err)
  *	(little endian)
  */
 
-static void output_long_le _((output_ty *, uLong));
-
 static void
-output_long_le(fp, x)
-	output_ty	*fp;
-	uLong		x;
+output_long_le(output_ty *fp, uLong x)
 {
 	int		n;
 
@@ -91,155 +85,134 @@ output_long_le(fp, x)
 }
 
 
-static void output_gzip_destructor _((output_ty *));
-
 static void
-output_gzip_destructor(fp)
-	output_ty	*fp;
+output_gzip_destructor(output_ty *fp)
 {
-	output_gzip_ty	*this;
+	output_gzip_ty	*this_thing;
 	int		err;
 	uInt		len;
 
 	/*
 	 * finish sending the compressed stream
 	 */
-	this = (output_gzip_ty *)fp;
-	this->stream.avail_in = 0; /* should be zero already anyway */
-	if (this->stream.avail_out == 0)
+	this_thing = (output_gzip_ty *)fp;
+	this_thing->stream.avail_in = 0; /* should be zero already anyway */
+	if (this_thing->stream.avail_out == 0)
 	{
-		output_write(this->deeper, this->outbuf, Z_BUFSIZE);
-		this->stream.next_out = this->outbuf;
-		this->stream.avail_out = Z_BUFSIZE;
+		output_write(this_thing->deeper, this_thing->outbuf, Z_BUFSIZE);
+		this_thing->stream.next_out = this_thing->outbuf;
+		this_thing->stream.avail_out = Z_BUFSIZE;
 	}
 	for (;;)
 	{
-		err = deflate(&this->stream, Z_FINISH);
+		err = deflate(&this_thing->stream, Z_FINISH);
 		if (err < 0)
-			drop_dead(this, err);
-		len = Z_BUFSIZE - this->stream.avail_out;
+			drop_dead(this_thing, err);
+		len = Z_BUFSIZE - this_thing->stream.avail_out;
 		if (!len)
 			break;
-		output_write(this->deeper, this->outbuf, len);
-		this->stream.next_out = this->outbuf;
-		this->stream.avail_out = Z_BUFSIZE;
+		output_write(this_thing->deeper, this_thing->outbuf, len);
+		this_thing->stream.next_out = this_thing->outbuf;
+		this_thing->stream.avail_out = Z_BUFSIZE;
 	}
 
 	/*
 	 * and the trailer
 	 */
-        output_long_le(this->deeper, this->crc);
-        output_long_le(this->deeper, this->stream.total_in);
+        output_long_le(this_thing->deeper, this_thing->crc);
+        output_long_le(this_thing->deeper, this_thing->stream.total_in);
 
 	/*
 	 * Clean up any resources we were using.
 	 */
-	if (this->stream.state != NULL)
-		deflateEnd(&this->stream);
-	mem_free(this->outbuf);
+	if (this_thing->stream.state != NULL)
+		deflateEnd(&this_thing->stream);
+	mem_free(this_thing->outbuf);
 
 	/*
 	 * Finish the deeper stream.
 	 */
-	output_delete(this->deeper);
+	output_delete(this_thing->deeper);
 }
 
-
-static string_ty *output_gzip_filename _((output_ty *));
 
 static string_ty *
-output_gzip_filename(fp)
-	output_ty	*fp;
+output_gzip_filename(output_ty *fp)
 {
-	output_gzip_ty	*this;
+	output_gzip_ty	*this_thing;
 
-	this = (output_gzip_ty *)fp;
-	return output_filename(this->deeper);
+	this_thing = (output_gzip_ty *)fp;
+	return output_filename(this_thing->deeper);
 }
 
-
-static long output_gzip_ftell _((output_ty *));
 
 static long
-output_gzip_ftell(fp)
-	output_ty	*fp;
+output_gzip_ftell(output_ty *fp)
 {
-	output_gzip_ty	*this;
+	output_gzip_ty	*this_thing;
 
-	this = (output_gzip_ty *)fp;
-	return this->pos;
+	this_thing = (output_gzip_ty *)fp;
+	return this_thing->pos;
 }
 
 
-static void output_gzip_write _((output_ty *, const void *, size_t));
-
 static void
-output_gzip_write(fp, buf, len)
-	output_ty	*fp;
-	const void	*buf;
-	size_t		len;
+output_gzip_write(output_ty *fp, const void *buf, size_t len)
 {
-	output_gzip_ty	*this;
+	output_gzip_ty	*this_thing;
 	int		err;
 
-	this = (output_gzip_ty *)fp;
+	this_thing = (output_gzip_ty *)fp;
 	if (len > 0)
-		this->bol = (((const char *)buf)[len - 1] == '\n');
-	this->stream.next_in = (Bytef *)buf;
-	this->stream.avail_in = len;
-	while (this->stream.avail_in != 0)
+		this_thing->bol = (((const char *)buf)[len - 1] == '\n');
+	this_thing->stream.next_in = (Bytef *)buf;
+	this_thing->stream.avail_in = len;
+	while (this_thing->stream.avail_in != 0)
 	{
-		if (this->stream.avail_out == 0)
+		if (this_thing->stream.avail_out == 0)
 		{
-			output_write(this->deeper, this->outbuf, Z_BUFSIZE);
-			this->stream.next_out = this->outbuf;
-			this->stream.avail_out = Z_BUFSIZE;
+			output_write(this_thing->deeper,
+                                     this_thing->outbuf,
+                                     Z_BUFSIZE);
+			this_thing->stream.next_out = this_thing->outbuf;
+			this_thing->stream.avail_out = Z_BUFSIZE;
 		}
-		err = deflate(&this->stream, Z_NO_FLUSH);
+		err = deflate(&this_thing->stream, Z_NO_FLUSH);
 		if (err != Z_OK)
-			drop_dead(this, err);
+			drop_dead(this_thing, err);
 	}
-	this->crc = crc32(this->crc, (Bytef *)buf, len);
-	this->pos += len;
+	this_thing->crc = crc32(this_thing->crc, (Bytef *)buf, len);
+	this_thing->pos += len;
 }
 
-
-static int output_gzip_page_width _((output_ty *));
 
 static int
-output_gzip_page_width(fp)
-	output_ty	*fp;
+output_gzip_page_width(output_ty *fp)
 {
-	output_gzip_ty *this;
+	output_gzip_ty *this_thing;
 
-	this = (output_gzip_ty *)fp;
-	return output_page_width(this->deeper);
+	this_thing = (output_gzip_ty *)fp;
+	return output_page_width(this_thing->deeper);
 }
 
-
-static int output_gzip_page_length _((output_ty *));
 
 static int
-output_gzip_page_length(fp)
-	output_ty	*fp;
+output_gzip_page_length(output_ty *fp)
 {
-	output_gzip_ty *this;
+	output_gzip_ty *this_thing;
 
-	this = (output_gzip_ty *)fp;
-	return output_page_length(this->deeper);
+	this_thing = (output_gzip_ty *)fp;
+	return output_page_length(this_thing->deeper);
 }
 
-
-static void output_gzip_eoln _((output_ty *));
 
 static void
-output_gzip_eoln(fp)
-	output_ty	*fp;
+output_gzip_eoln(output_ty *fp)
 {
-	output_gzip_ty *this;
+	output_gzip_ty *this_thing;
 
-	this = (output_gzip_ty *)fp;
-	if (!this->bol)
+	this_thing = (output_gzip_ty *)fp;
+	if (!this_thing->bol)
 		output_fputc(fp, '\n');
 }
 
@@ -260,27 +233,26 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_gzip(deeper)
-	output_ty	*deeper;
+output_gzip(output_ty *deeper)
 {
 	output_ty	*result;
-	output_gzip_ty	*this;
+	output_gzip_ty	*this_thing;
 	int		err;
 
 	result = output_new(&vtbl);
-	this = (output_gzip_ty *)result;
-	this->deeper = deeper;
-	this->pos = 0;
+	this_thing = (output_gzip_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->pos = 0;
 
-	this->crc = crc32(0L, Z_NULL, 0);
-	this->outbuf = Z_NULL;
-	this->stream.avail_in = 0;
-	this->stream.avail_out = 0;
-	this->stream.next_in = NULL;
-	this->stream.next_out = NULL;
-	this->stream.opaque = (voidpf)0;
-	this->stream.zalloc = (alloc_func)0;
-	this->stream.zfree = (free_func)0;
+	this_thing->crc = crc32(0L, Z_NULL, 0);
+	this_thing->outbuf = Z_NULL;
+	this_thing->stream.avail_in = 0;
+	this_thing->stream.avail_out = 0;
+	this_thing->stream.next_in = NULL;
+	this_thing->stream.next_out = NULL;
+	this_thing->stream.opaque = (voidpf)0;
+	this_thing->stream.zalloc = (alloc_func)0;
+	this_thing->stream.zfree = (free_func)0;
 
 	/*
 	 * Set the parameters for the compression.
@@ -289,7 +261,7 @@ output_gzip(deeper)
 	err =
 		deflateInit2
 		(
-			&this->stream,
+			&this_thing->stream,
 			Z_BEST_COMPRESSION,	/* level */
 			Z_DEFLATED,		/* method */
 			-MAX_WBITS,		/* windowBits */
@@ -297,12 +269,12 @@ output_gzip(deeper)
 			Z_DEFAULT_STRATEGY	/* strategy */
 		);
 	if (err != Z_OK)
-		drop_dead(this, err);
+		drop_dead(this_thing, err);
 
-	this->outbuf = mem_alloc(Z_BUFSIZE);
-	this->stream.next_out = this->outbuf;
-	this->stream.avail_out = Z_BUFSIZE;
-	this->bol = 1;
+	this_thing->outbuf = (Byte *)mem_alloc(Z_BUFSIZE);
+	this_thing->stream.next_out = this_thing->outbuf;
+	this_thing->stream.avail_out = Z_BUFSIZE;
+	this_thing->bol = 1;
 
 	/*
 	 * Write a very simple .gz header:

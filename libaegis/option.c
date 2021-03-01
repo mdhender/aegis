@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,14 @@
  * MANIFEST: functions to manipulate command line options
  */
 
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
-#include <ac/sys/ioctl.h>
-#include <ac/termios.h>
-
 #include <arglex2.h>
 #include <error.h>	/* for assert */
 #include <help.h>
 #include <option.h>
+#include <page.h>
 #include <sub.h>
 #include <trace.h>
 
-
-#define MIN_PAGE_WIDTH 40
-/* #define MAX_PAGE_WIDTH in option.h */
-#define DEFAULT_PAGE_WIDTH 80
-#define MIN_PAGE_LENGTH 10
-#define MAX_PAGE_LENGTH 30000
-#define DEFAULT_PAGE_LENGTH 24
 
 #define DEFAULT_TAB_WIDTH 8
 
@@ -47,22 +36,14 @@
 #define LEVEL_UNSET 3
 #define LEVEL_VERBOSE 4
 
-static int      page_length;
-static int      terminal_length;
 static int      verbose_flag = LEVEL_UNSET;
-static int      page_width;
-static int      terminal_width;
 static int      tab_width;
-static int      default_terminal_sizes_done;
 static int      page_headers = -1;
 
 
 
-static void too_many _((void (*usage)(void)));
-
 static void
-too_many(usage)
-    void            (*usage)_((void));
+too_many(void (*usage)(void))
 {
     mutually_exclusive_options3
     (
@@ -75,8 +56,7 @@ too_many(usage)
 
 
 void
-option_verbose_set(usage)
-    void            (*usage)_((void));
+option_verbose_set(void (*usage)(void))
 {
     trace(("option_set_werbose()\n{\n"));
     if (verbose_flag == LEVEL_VERBOSE)
@@ -89,15 +69,14 @@ option_verbose_set(usage)
 
 
 int
-option_verbose_get()
+option_verbose_get(void)
 {
     return (verbose_flag == LEVEL_VERBOSE);
 }
 
 
 void
-option_terse_set(usage)
-    void            (*usage)_((void));
+option_terse_set(void (*usage)(void))
 {
     trace(("option_set_terse()\n{\n"));
     if (verbose_flag == LEVEL_TERSE)
@@ -110,15 +89,14 @@ option_terse_set(usage)
 
 
 int
-option_terse_get()
+option_terse_get(void)
 {
     return (verbose_flag == LEVEL_TERSE);
 }
 
 
 void
-option_unformatted_set(usage)
-    void            (*usage)_((void));
+option_unformatted_set(void (*usage)(void))
 {
     trace(("option_set_unformatted()\n{\n"));
     if (verbose_flag == LEVEL_UNFORMATTED)
@@ -131,218 +109,58 @@ option_unformatted_set(usage)
 
 
 int
-option_unformatted_get()
+option_unformatted_get(void)
 {
     return (verbose_flag == LEVEL_TERSE || verbose_flag == LEVEL_UNFORMATTED);
 }
 
 
-static void default_terminal_sizes _((void));
-
-static void
-default_terminal_sizes()
-{
-    if (default_terminal_sizes_done)
-	return;
-    default_terminal_sizes_done = 1;
-
-    /*
-     * Use the command line arguments, if given.
-     */
-    if (!terminal_width)
-	terminal_width = page_width;
-    if (!terminal_length)
-	terminal_length = page_length;
-
-    /*
-     * Use environment variables, if given.
-     */
-    if (!terminal_width)
-    {
-	char            *cp;
-
-	cp = getenv("COLS");
-	if (cp)
-	{
-	    int             n;
-
-	    n = atoi(cp);
-	    if (n > 0)
-	    {
-		if (n < MIN_PAGE_WIDTH)
-		    n = MIN_PAGE_WIDTH;
-		if (n > MAX_PAGE_WIDTH)
-		    n = MAX_PAGE_WIDTH;
-		terminal_width = n;
-	    }
-	}
-    }
-    if (!terminal_length)
-    {
-	char            *cp;
-
-	cp = getenv("LINES");
-	if (cp)
-	{
-	    int             n;
-
-	    n = atoi(cp);
-	    if (n > 0)
-	    {
-		if (n < MIN_PAGE_LENGTH)
-		    n = MIN_PAGE_LENGTH;
-		if (n > MAX_PAGE_LENGTH)
-		    n = MAX_PAGE_LENGTH;
-		terminal_length = n;
-	    }
-	}
-    }
-
-    /*
-     * Use stdout attributes, if available.
-     */
-#ifdef TIOCGWINSZ
-    if (!terminal_width || !terminal_length)
-    {
-	struct winsize  ws;
-
-	if (ioctl(0, TIOCGWINSZ, &ws) == 0)
-	{
-	    if (!terminal_width && ws.ws_col > 0)
-	    {
-		terminal_width = ws.ws_col;
-		if (terminal_width < MIN_PAGE_WIDTH)
-		    terminal_width = MIN_PAGE_WIDTH;
-		if (terminal_width > MAX_PAGE_WIDTH)
-		    terminal_width = MAX_PAGE_WIDTH;
-	    }
-	    if (!terminal_length && ws.ws_row > 0)
-	    {
-		terminal_length = ws.ws_row;
-		if (terminal_length < MIN_PAGE_LENGTH)
-		    terminal_length = MIN_PAGE_LENGTH;
-		if (terminal_length > MAX_PAGE_LENGTH)
-		    terminal_length = MAX_PAGE_LENGTH;
-	    }
-	}
-    }
-#endif
-
-    /*
-     * Use defaults if all else fails.
-     */
-    if (!terminal_width)
-	terminal_width = DEFAULT_PAGE_WIDTH;
-    if (!terminal_length)
-	terminal_length = DEFAULT_PAGE_LENGTH;
-
-    /*
-     * Make sure that it is possible to figure out which page header
-     * style to use.  The variables are to avoid a compiler warning;
-     */
-#ifdef DEBUG
-    {
-	int a = DEFAULT_PAGE_LENGTH;
-	int b = DEFAULT_PRINTER_LENGTH;
-	assert(a < b / 2);
-    }
-#endif
-}
-
-
 void
-option_page_width_set(n, usage)
-    int             n;
-    void            (*usage)_((void));
+option_page_width_set(int n, void (*usage)(void))
 {
-    if (page_width)
-	duplicate_option_by_name(arglex_token_page_width, usage);
-    if (n < MIN_PAGE_WIDTH || n > MAX_PAGE_WIDTH)
-    {
-	sub_context_ty *scp;
+    sub_context_ty  *scp;
 
+    switch (page_width_set(n))
+    {
+    case PAGE_SET_ERROR_DUPLICATE:
+	duplicate_option_by_name(arglex_token_page_width, usage);
+	/* NOTREACHED */
+
+    case PAGE_SET_ERROR_RANGE:
 	scp = sub_context_new();
 	sub_var_set_long(scp, "Number", n);
 	error_intl(scp, i18n("page width $number out of range"));
 	sub_context_delete(scp);
 	usage();
+	/* NOTREACHED */
     }
-    page_width = n;
-}
-
-
-int
-option_page_width_get(dflt)
-    int             dflt;
-{
-    /*
-     * must not generate a fatal error in this function,
-     * as it is used by 'error.c' when reporting fatal errors.
-     *
-     * must not put tracing in this function,
-     * because 'trace.c' uses it to determine the width.
-     */
-    if (dflt > 0)
-    {
-	/*
-	 * At the moment, everything except output to files gives
-	 * a dflt argument of -1, meaning "to the terminal".
-	 * The default_terminal_sizes() function is for the
-	 * terminal *only*, so don't use if if we are given a
-	 * positive argument, meaning output to a file.
-	 */
-	return (page_width > 0 ? page_width : dflt);
-    }
-    default_terminal_sizes();
-    return terminal_width;
 }
 
 
 void
-option_page_length_set(n, usage)
-    int             n;
-    void            (*usage)_((void));
+option_page_length_set(int n, void (*usage)(void))
 {
-    if (page_length)
-	duplicate_option_by_name(arglex_token_page_length, usage);
-    if (n < MIN_PAGE_LENGTH || n > MAX_PAGE_LENGTH)
-    {
-	sub_context_ty *scp;
+    sub_context_ty  *scp;
 
+    switch (page_length_set(n))
+    {
+    case PAGE_SET_ERROR_DUPLICATE:
+    	duplicate_option_by_name(arglex_token_page_length, usage);
+	/* NOTREACHED */
+
+    case PAGE_SET_ERROR_RANGE:
 	scp = sub_context_new();
 	sub_var_set_long(scp, "Number", n);
 	error_intl(scp, i18n("page length $number out of range"));
 	sub_context_delete(scp);
 	usage();
+	/* NOTREACHED */
     }
-    page_length = n;
-}
-
-
-int
-option_page_length_get(dflt)
-    int             dflt;
-{
-    if (dflt > 0)
-    {
-	/*
-	 * At the moment, everything except output to files gives
-	 * a dflt argument of -1, meaning "to the terminal".
-	 * The default_terminal_sizes() function is for the
-	 * terminal *only*, so don't use if if we are given a
-	 * positive argument, meaning output to a file.
-	 */
-	return (page_length > 0 ? page_length : dflt);
-    }
-    default_terminal_sizes();
-    return terminal_length;
 }
 
 
 void
-option_tab_width_set(n, usage)
-    int             n;
-    void            (*usage)_((void));
+option_tab_width_set(int n, void (*usage)(void))
 {
     if (tab_width)
 	duplicate_option_by_name(arglex_token_tab_width, usage);
@@ -364,7 +182,7 @@ option_tab_width_set(n, usage)
 
 
 int
-option_tab_width_get()
+option_tab_width_get(void)
 {
     if (!tab_width)
 	tab_width = DEFAULT_TAB_WIDTH;
@@ -373,9 +191,7 @@ option_tab_width_get()
 
 
 void
-option_page_headers_set(n, usage)
-    int             n;
-    void            (*usage)_((void));
+option_page_headers_set(int n, void (*usage)(void))
 {
     switch (page_headers)
     {
@@ -419,7 +235,7 @@ option_page_headers_set(n, usage)
 
 
 int
-option_page_headers_get()
+option_page_headers_get(void)
 {
     if (page_headers < 0)
 	page_headers = 1;

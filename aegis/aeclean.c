@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998-2002 Peter Miller;
+ *	Copyright (C) 1998-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@
 #include <help.h>
 #include <lock.h>
 #include <log.h>
+#include <now.h>
 #include <os.h>
 #include <progname.h>
 #include <project/file.h>
@@ -50,7 +51,7 @@
 static void
 clean_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -CLEan [ <option>... ]\n", progname);
@@ -119,7 +120,7 @@ clean_list(void)
 	arglex();
     }
 
-    list_change_files(project_name, change_number);
+    list_change_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -134,6 +135,7 @@ struct clean_info_ty
     int		    minimum;
     user_ty	    *up;
     int		    verbose;
+    int             touch;
 };
 
 
@@ -144,6 +146,7 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
     clean_info_ty   *sip;
     string_ty	    *s1;
     int		    delete_me;
+    int             touch_me;
 
     sip = p;
     switch (msg)
@@ -229,9 +232,13 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	 * don't delete change files
 	 */
 	delete_me = 1;
+	touch_me = 0;
 	user_become_undo();
 	if (change_file_find(sip->cp, s1))
+	{
 	    delete_me = 0;
+	    touch_me = sip->touch;
+	}
 
 	/*
 	 * The minimum option says to leave regular files
@@ -262,6 +269,8 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	 */
 	if (delete_me)
 	    os_unlink_errok(path);
+	else if (touch_me)
+	    os_mtime_set_errok(path, now());
 	str_free(s1);
 	break;
     }
@@ -287,11 +296,13 @@ clean_main(void)
     string_list_ty  wl_nt;
     string_list_ty  wl_cp;
     string_list_ty  wl_rm;
+    string_list_ty  wl_mt;
     fstate_src	    p_src_data;
     fstate_src	    c_src_data;
     pconf	    pconf_data;
     int		    minimum;
     clean_info_ty   info;
+    int             touch;
 
     trace(("clean_main()\n{\n"));
     arglex();
@@ -299,6 +310,7 @@ clean_main(void)
     change_number = 0;
     log_style = log_style_snuggle_default;
     minimum = 0;
+    touch = -1;
     info.verbose = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -361,6 +373,18 @@ clean_main(void)
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
 	    user_delete_file_argument(clean_usage);
+	    break;
+
+	case arglex_token_touch:
+	    if (touch >= 0)
+		duplicate_option(clean_usage);
+	    touch = 1;
+	    break;
+
+	case arglex_token_touch_not:
+	    if (touch >= 0)
+		duplicate_option(clean_usage);
+	    touch = 0;
 	    break;
 	}
 	arglex();
@@ -586,6 +610,7 @@ clean_main(void)
      */
     info.cp = cp;
     info.minimum = minimum;
+    info.touch = (touch != 0);
     info.up = up;
     info.dd = change_development_directory_get(cp, 1);
     user_become(up);
@@ -613,6 +638,7 @@ clean_main(void)
     string_list_constructor(&wl_nt);
     string_list_constructor(&wl_cp);
     string_list_constructor(&wl_rm);
+    string_list_constructor(&wl_mt);
     for (j = 0;; ++j)
     {
 	c_src_data = change_file_nth(cp, j);
@@ -641,7 +667,7 @@ clean_main(void)
 	    break;
 
 	case file_action_transparent:
-	    /* FIXME: change_run_make_transparent_command */
+	    string_list_append(&wl_mt, c_src_data->file_name);
 	    break;
 
 	case file_action_remove:
@@ -652,15 +678,18 @@ clean_main(void)
     if (wl_nf.nstrings)
 	change_run_new_file_command(cp, &wl_nf, up);
     if (wl_nt.nstrings)
-	change_run_new_test_command(cp, &wl_nf, up);
+	change_run_new_test_command(cp, &wl_nt, up);
     if (wl_cp.nstrings)
-	change_run_copy_file_command(cp, &wl_nf, up);
+	change_run_copy_file_command(cp, &wl_cp, up);
     if (wl_rm.nstrings)
-	change_run_remove_file_command(cp, &wl_nf, up);
+	change_run_remove_file_command(cp, &wl_rm, up);
+    if (wl_mt.nstrings)
+	change_run_make_transparent_command(cp, &wl_mt, up);
     string_list_destructor(&wl_nf);
     string_list_destructor(&wl_nt);
     string_list_destructor(&wl_cp);
     string_list_destructor(&wl_rm);
+    string_list_destructor(&wl_mt);
     cstate_data->project_file_command_sync = 0;
     change_run_project_file_command(cp, up);
 

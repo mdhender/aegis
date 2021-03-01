@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,17 +34,17 @@
 
 
 static rpt_value_ty *
-evaluate(rpt_expr_ty *this)
+evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *lhs;
     rpt_value_ty    *rhs;
     int		    lvalue;
     rpt_value_ty    *result;
 
-    trace(("expr_lookup::evaluate(this = %08lX)\n{\n", (long)this));
-    assert(this->nchild == 2);
+    trace(("expr_lookup::evaluate(this_thing = %08lX)\n{\n", (long)this_thing));
+    assert(this_thing->nchild == 2);
     trace(("evaluate lhs\n"));
-    lhs = rpt_expr_evaluate(this->child[0], 1);
+    lhs = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lhs->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -52,7 +52,7 @@ evaluate(rpt_expr_ty *this)
     }
     assert(lhs->reference_count >= 1);
     trace(("evaluate rhs\n"));
-    rhs = rpt_expr_evaluate(this->child[1], 1);
+    rhs = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rhs->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lhs);
@@ -88,8 +88,8 @@ evaluate(rpt_expr_ty *this)
     result = rpt_value_lookup(lhs, rhs, lvalue);
     if (result->method->type == rpt_value_type_error)
     {
-	assert(this->pos);
-	rpt_value_error_setpos(result, this->pos);
+	assert(this_thing->pos);
+	rpt_value_error_setpos(result, this_thing->pos);
     }
 
     /*
@@ -127,12 +127,12 @@ static rpt_expr_method_ty method =
 rpt_expr_ty *
 rpt_expr_lookup(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 

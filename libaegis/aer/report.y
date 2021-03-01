@@ -68,10 +68,8 @@
 #define YYDEBUG 1
 #endif
 
-static void turn_on_debug _((void));
-
 static void
-turn_on_debug()
+turn_on_debug(void)
 {
 #ifdef DEBUG
 	extern int yydebug;
@@ -85,7 +83,7 @@ static rpt_stmt_ty *result;
 
 
 void
-report_interpret()
+report_interpret(void)
 {
 	sub_context_ty	*scp;
 	rpt_stmt_result_ty ok;

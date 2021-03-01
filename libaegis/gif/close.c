@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,13 +51,8 @@ enum state_ty
 typedef enum state_ty state_ty;
 
 
-static void gif_putc _((FILE *, char *, int));
-
 static void
-gif_putc(fp, fn, c)
-    FILE	    *fp;
-    char	    *fn;
-    int		    c;
+gif_putc(FILE *fp, const char *fn, int c)
 {
     putc(c, fp);
     if (ferror(fp))
@@ -73,25 +68,16 @@ gif_putc(fp, fn, c)
 }
 
 
-static void put_le_short _((FILE *, char *, int));
-
 static void
-put_le_short(fp, fn, n)
-    FILE	    *fp;
-    char	    *fn;
-    int		    n;
+put_le_short(FILE *fp, const char *fn, int n)
 {
     gif_putc(fp, fn, n & 0xFF);
     gif_putc(fp, fn, (n >> 8) & 0xFF);
 }
 
 
-static void oof_flush _((FILE *, char *));
-
 static void
-oof_flush(fp, fn)
-    FILE	    *fp;
-    char	    *fn;
+oof_flush(FILE *fp, const char *fn)
 {
     int		    j;
 
@@ -104,13 +90,8 @@ oof_flush(fp, fn)
 }
 
 
-static void oof _((FILE *, char *, int));
-
 static void
-oof(fp, fn, c)
-    FILE	    *fp;
-    char	    *fn;
-    int		    c;
+oof(FILE *fp, const char *fn, int c)
 {
     if (block_len >= 255)
 	oof_flush(fp, fn);
@@ -118,14 +99,8 @@ oof(fp, fn, c)
 }
 
 
-static void output _((FILE *fp, char *fn, int code, int code_size));
-
 static void
-output(fp, fn, code, code_size)
-    FILE	    *fp;
-    char	    *fn;
-    int		    code;
-    int		    code_size;
+output(FILE *fp, const char *fn, int code, int code_size)
 {
     trace(("output(fp = %08lX, fn = %08lX, code = 0x%.*X, code_size = %d)",
 	(long)fp, (long)fn, (code_size + 3) / 4, code, code_size));
@@ -149,16 +124,9 @@ output(fp, fn, code, code_size)
 #define IMPOSSIBLE 0xFFFF
 
 
-static void write_image _((FILE *, char *, unsigned char *, int, int, int));
-
 static void
-write_image(fp, fn, data, width, height, init_bits)
-    FILE	    *fp;
-    char	    *fn;
-    unsigned char   *data;
-    int		    width;
-    int		    height;
-    int		    init_bits;
+write_image(FILE *fp, const char *fn, unsigned char *data, int width,
+    int height, int init_bits)
 {
     int		    clear_cmd;
     int		    code_cur =	    0;	/* position in chain being built */
@@ -419,14 +387,11 @@ write_image(fp, fn, data, width, height, init_bits)
 }
 
 
-static void flush _((gif_ty *));
-
 static void
-flush(gp)
-    gif_ty	    *gp;
+flush(gif_ty *gp)
 {
     FILE	    *fp;
-    char	    *fn;
+    const char	    *fn;
     int		    color_resolution;
     int		    bits_per_pixel;
     unsigned char   *cp;
@@ -542,8 +507,7 @@ flush(gp)
 
 
 void
-gif_close(gp)
-    gif_ty	    *gp;
+gif_close(gif_ty *gp)
 {
     if (gp->mode == gif_mode_rdwr)
 	flush(gp);

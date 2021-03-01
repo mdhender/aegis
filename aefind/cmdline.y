@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -135,6 +135,7 @@
 %token TRUE_keyword
 %token TRUNK
 %token TYPE
+%token VERSION
 
 %union
 {
@@ -144,7 +145,7 @@
     struct tree_list_ty *lv_tree_list;
     long	    lv_number;
     double	    lv_real;
-    struct tree_ty  *(*comparator)_((struct tree_ty *, struct tree_ty *));
+    struct tree_ty  *(*comparator)(struct tree_ty *, struct tree_ty *);
 }
 
 %type <comparator>  comparator
@@ -152,7 +153,7 @@
 %type <lv_real>	    REAL
 %type <lv_string>   STRING
 %type <lv_string>   number_or_string
-%type <lv_string_list> strings
+%type <lv_string_list> strings strings_or_dot
 %type <lv_tree>	    tree1 tree2 tree3 tree4 tree5 tree6 tree7
 %type <lv_tree>	    tree8 tree9 tree10 tree11 tree12 tree13 tree14
 %type <lv_tree_list> list
@@ -285,10 +286,20 @@ stack_nth(int n)
 }
 
 
+int
+stack_eliminate(string_ty *filename)
+{
+    fstate_src      src;
+
+    src = project_file_find(pp, filename, view_path_simple);
+    return (src && src->action == file_action_remove);
+}
+
+
 void
 cmdline_grammar(int argc, char **argv)
 {
-    extern int yyparse _((void));
+    extern int yyparse(void);
     size_t	    j;
     user_ty	    *up;
     cstate	    cstate_data;
@@ -532,12 +543,28 @@ find
     ;
 
 op
-    : strings tree14
+    : strings_or_dot tree14
        	{
 	    path = $1;
 	    tp = make_sure_has_side_effects($2);
 	    tree_delete($2);
        	}
+    ;
+
+strings_or_dot
+    : strings
+    | /* empty */
+	{
+	    string_ty       *dot;
+
+	    /*
+	     * Default the path list to "." (the current directory).
+	     */
+	    $$ = string_list_new();
+	    dot = str_from_c(".");
+	    string_list_append($$, dot);
+	    str_free(dot);
+	}
     ;
 
 strings
@@ -1083,6 +1110,11 @@ generic_option
 	    error_intl(0, i18n("-TRace needs DEBUG"));
 #endif
        	}
+    | VERSION
+	{
+	    version();
+	    quit(0);
+	}
     ;
 
 trace_strings

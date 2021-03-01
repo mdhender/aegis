@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,7 @@
 
 
 int
-os_executable(path)
-    string_ty       *path;
+os_executable(string_ty *path)
 {
     struct stat     st;
     int             oret;

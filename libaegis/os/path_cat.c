@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,45 +23,91 @@
 #include <os.h>
 
 
-string_ty *
-os_path_cat(s1, s2)
-	string_ty	*s1;
-	string_ty	*s2;
+static string_ty *
+stripdot(string_ty *s, int strip_left_slash)
 {
-	static string_ty *dot;
-	size_t		s1len;
-	char		*cp2;
-	size_t		cp2len;
+    const char      *cp;
+    size_t          len;
 
-	if (!dot)
-		dot = str_from_c(".");
-	if (!s1->str_length)
-		s1 = dot;
-	if (!s2->str_length)
-		s2 = dot;
-	if (str_equal(s1, dot))
-		return str_copy(s2);
-	if (str_equal(s2, dot))
-		return str_copy(s1);
-	for
-	(
-		s1len = s1->str_length;
-		s1len > 0 && s1->str_text[s1len - 1] == '/';
-		--s1len
-	)
-		;
-	cp2 = s2->str_text;
-	cp2len = s2->str_length;
-	while (cp2len > 0 && *cp2 == '/')
-		cp2++, cp2len--;
-	return str_format("%.*S/%.*s", (int)s1len, s1, (int)cp2len, cp2);
+    cp = s->str_text;
+    len = s->str_length;
+    for (;;)
+    {
+	if (len > 1 && cp[len - 1] == '/')
+	{
+	    --len;
+	    continue;
+	}
+	if (len >= 2 && cp[len - 2] == '/' && cp[len - 1] == '.')
+	{
+	    --len;
+	    continue;
+	}
+	if (len > 2 && cp[0] == '.' && cp[1] == '/')
+	{
+	    cp += 2;
+	    len -= 2;
+	    while (*cp == '/')
+	    {
+		++cp;
+		--len;
+	    }
+	}
+	if (strip_left_slash && len >= 1 && cp[0] == '/')
+	{
+	    ++cp;
+	    --len;
+	}
+	break;
+    }
+    if (len == 0)
+	return str_from_c(".");
+    return str_n_from_c(cp, len);
 }
 
 
 string_ty *
-os_path_rel2abs(root, path)
-	string_ty	*root;
-	string_ty	*path;
+os_path_cat(string_ty *s1, string_ty *s2)
+{
+    static string_ty *dot;
+    static string_ty *slash;
+    string_ty       *ss1;
+    string_ty       *ss2;
+    string_ty       *result;
+
+    if (!dot)
+	dot = str_from_c(".");
+    if (!s1->str_length)
+	s1 = dot;
+    if (!s2->str_length)
+	s2 = dot;
+    ss1 = stripdot(s1, 0);
+    ss2 = stripdot(s2, 1);
+    if (str_equal(ss1, dot))
+    {
+	str_free(ss1);
+	return ss2;
+    }
+    if (str_equal(ss2, dot))
+    {
+	str_free(ss2);
+	return ss1;
+    }
+
+    if (!slash)
+	slash = str_from_c("/");
+    if (str_equal(ss1, slash))
+	result = str_catenate(ss1, ss2);
+    else
+	result = str_cat_three(ss1, slash, ss2);
+    str_free(ss1);
+    str_free(ss2);
+    return result;
+}
+
+
+string_ty *
+os_path_rel2abs(string_ty *root, string_ty *path)
 {
 	if (path->str_text[0] == '/')
 		return str_copy(path);

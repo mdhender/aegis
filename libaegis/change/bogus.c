@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 
 
 change_ty *
-change_bogus(pp)
-    project_ty      *pp;
+change_bogus(project_ty *pp)
 {
     change_ty       *cp;
 

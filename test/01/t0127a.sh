@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002 Peter Miller;
+#	Copyright (C) 2001-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -227,7 +227,6 @@ architecture =
 ];
 copyright_years =
 [
-	YYYY,
 	YYYY,
 ];
 state = being_developed;

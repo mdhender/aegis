@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,27 +40,20 @@ struct complete_change_file_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_change_file_ty *this;
+    complete_change_file_ty *this_thing;
 
-    this = (complete_change_file_ty *)cp;
-    change_free(this->cp);
+    this_thing = (complete_change_file_ty *)cp;
+    change_free(this_thing->cp);
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cop, sh)
-    complete_ty     *cop;
-    shell_ty        *sh;
+perform(complete_ty *cop, shell_ty *sh)
 {
-    complete_change_file_ty *this;
+    complete_change_file_ty *this_thing;
     string_ty       *base = 0;
     string_list_ty  candidate;
     string_ty       *prefix;
@@ -69,10 +62,10 @@ perform(cop, sh)
     /*
      * We need to figure the base of the file names, in case the user
      * is completing their project file name from within a directory,
-     * and we mustr give answers strictly in that context.
+     * and we must give answers strictly in that context.
      */
-    this = (complete_change_file_ty *)cop;
-    if (this->baserel)
+    this_thing = (complete_change_file_ty *)cop;
+    if (this_thing->baserel)
 	base = str_from_c("");
     else
     {
@@ -80,7 +73,7 @@ perform(cop, sh)
 	string_ty       *cwd;
 	string_ty       *tmp;
 
-	change_search_path_get(this->cp, &search_path, 1);
+	change_search_path_get(this_thing->cp, &search_path, 1);
 
 	os_become_orig();
 	cwd = os_curdir();
@@ -112,7 +105,7 @@ perform(cop, sh)
     }
 
     /*
-     * Troll the complete list of project files.
+     * Troll the complete list of change files.
      */
     string_list_constructor(&candidate);
     prefix = str_catenate(base, shell_prefix_get(sh));
@@ -121,16 +114,16 @@ perform(cop, sh)
 	fstate_src      src;
 	string_ty       *relfn;
 
-	src = change_file_nth(this->cp, j);
+	src = change_file_nth(this_thing->cp, j);
 	if (!src)
 	    break;
 
 	/*
 	 * Ignore files that aren't appropriate.
 	 */
-	if (!(this->action_mask & (1 << src->action)))
+	if (!(this_thing->action_mask & (1 << src->action)))
 	    continue;
-	if (!(this->usage_mask & (1 << src->usage)))
+	if (!(this_thing->usage_mask & (1 << src->usage)))
 	    continue;
 
 	/*
@@ -171,20 +164,17 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_change_file(cp, baserel, usage_mask, action_mask)
-    change_ty        *cp;
-    int              baserel;
-    int              usage_mask;
-    int              action_mask;
+complete_change_file(change_ty *cp, int baserel, int usage_mask,
+    int action_mask)
 {
     complete_ty     *result;
-    complete_change_file_ty *this;
+    complete_change_file_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_change_file_ty *)result;
-    this->cp = cp;
-    this->baserel = !!baserel;
-    this->usage_mask = usage_mask ? usage_mask : ~0;
-    this->action_mask = action_mask ? action_mask : ~0;
+    this_thing = (complete_change_file_ty *)result;
+    this_thing->cp = cp;
+    this_thing->baserel = !!baserel;
+    this_thing->usage_mask = usage_mask ? usage_mask : ~0;
+    this_thing->action_mask = action_mask ? action_mask : ~0;
     return result;
 }

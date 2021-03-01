@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,171 +29,147 @@
 typedef struct rpt_value_fstate_ty rpt_value_fstate_ty;
 struct rpt_value_fstate_ty
 {
-	RPT_VALUE
-	change_ty	*cp;
-	rpt_value_ty	*converted;
+    RPT_VALUE
+    change_ty       *cp;
+    rpt_value_ty    *converted;
 };
 
 
-static void destruct _((rpt_value_ty *));
+static void
+destruct(rpt_value_ty *vp)
+{
+    rpt_value_fstate_ty *this_thing;
+
+    trace(("rpt_value_fstate::destruct(vp = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_fstate_ty *)vp;
+    change_free(this_thing->cp);
+    if (this_thing->converted)
+	rpt_value_free(this_thing->converted);
+    trace(("}\n"));
+}
+
 
 static void
-destruct(vp)
-	rpt_value_ty	*vp;
+convert(rpt_value_fstate_ty *this_thing)
 {
-	rpt_value_fstate_ty *this;
+    fstate          fstate_data;
 
-	trace(("rpt_value_fstate::destruct(vp = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_fstate_ty *)vp;
-	change_free(this->cp);
-	if (this->converted)
-		rpt_value_free(this->converted);
-	trace((/*{*/"}\n"));
+    assert(!this_thing->converted);
+    fstate_data = change_fstate_get(this_thing->cp);
+    this_thing->converted = fstate_src_list_type.convert(&fstate_data->src);
 }
 
-
-static void convert _((rpt_value_fstate_ty *));
-
-static void
-convert(this)
-	rpt_value_fstate_ty *this;
-{
-	fstate		fstate_data;
-
-	assert(!this->converted);
-	fstate_data = change_fstate_get(this->cp);
-	this->converted = fstate_src_list_type.convert(&fstate_data->src);
-}
-
-
-static rpt_value_ty *lookup _((rpt_value_ty *, rpt_value_ty *, int));
 
 static rpt_value_ty *
-lookup(vp, rhs, lval)
-	rpt_value_ty	*vp;
-	rpt_value_ty	*rhs;
-	int		lval;
+lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
 {
-	rpt_value_fstate_ty *this;
-	rpt_value_ty	*result;
+    rpt_value_fstate_ty *this_thing;
+    rpt_value_ty    *result;
 
-	trace(("rpt_value_fstate::lookup(this = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_fstate_ty *)vp;
-	if (!this->converted)
-		convert(this);
-	result = rpt_value_lookup(this->converted, rhs, lval);
-	trace(("return %08lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("rpt_value_fstate::lookup(this = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_fstate_ty *)vp;
+    if (!this_thing->converted)
+	convert(this_thing);
+    result = rpt_value_lookup(this_thing->converted, rhs, lval);
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }
 
-
-static rpt_value_ty *keys _((rpt_value_ty *));
 
 static rpt_value_ty *
-keys(vp)
-	rpt_value_ty	*vp;
+keys(rpt_value_ty *vp)
 {
-	rpt_value_fstate_ty *this;
-	rpt_value_ty	*result;
+    rpt_value_fstate_ty *this_thing;
+    rpt_value_ty    *result;
 
-	trace(("rpt_value_fstate::keys(this = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_fstate_ty *)vp;
-	if (!this->converted)
-		convert(this);
-	result = rpt_value_keys(this->converted);
-	trace(("return %08lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("rpt_value_fstate::keys(this = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_fstate_ty *)vp;
+    if (!this_thing->converted)
+	convert(this_thing);
+    result = rpt_value_keys(this_thing->converted);
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }
 
-
-static rpt_value_ty *count _((rpt_value_ty *));
 
 static rpt_value_ty *
-count(vp)
-	rpt_value_ty	*vp;
+count(rpt_value_ty *vp)
 {
-	rpt_value_fstate_ty *this;
-	rpt_value_ty	*result;
+    rpt_value_fstate_ty *this_thing;
+    rpt_value_ty    *result;
 
-	trace(("rpt_value_fstate::count(this = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_fstate_ty *)vp;
-	if (!this->converted)
-		convert(this);
-	result = rpt_value_count(this->converted);
-	trace(("return %08lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("rpt_value_fstate::count(this = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_fstate_ty *)vp;
+    if (!this_thing->converted)
+	    convert(this_thing);
+    result = rpt_value_count(this_thing->converted);
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }
 
 
-static char *type_of _((rpt_value_ty *));
-
-static char *
-type_of(vp)
-	rpt_value_ty	*vp;
+static const char *
+type_of(rpt_value_ty *vp)
 {
-	rpt_value_fstate_ty *this;
-	char		*result;
+    rpt_value_fstate_ty *this_thing;
+    const char      *result;
 
-	trace(("rpt_value_fstate::type_of(this = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_fstate_ty *)vp;
-	if (!this->converted)
-		convert(this);
-	result = rpt_value_typeof(this->converted);
-	trace(("return \"%s\";\n", result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("rpt_value_fstate::type_of(this = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_fstate_ty *)vp;
+    if (!this_thing->converted)
+	    convert(this_thing);
+    result = rpt_value_typeof(this_thing->converted);
+    trace(("return \"%s\";\n", result));
+    trace(("}\n"));
+    return result;
 }
 
-
-static rpt_value_ty *undefer _((rpt_value_ty *));
 
 static rpt_value_ty *
-undefer(vp)
-	rpt_value_ty	*vp;
+undefer(rpt_value_ty *vp)
 {
-	rpt_value_fstate_ty *this;
-	rpt_value_ty	*result;
+    rpt_value_fstate_ty *this_thing;
+    rpt_value_ty    *result;
 
-	trace(("rpt_value_fstate::undefer(this = %08lX)\n{\n"/*}*/, (long)vp));
-	this = (rpt_value_fstate_ty *)vp;
-	if (!this->converted)
-		convert(this);
-	result = rpt_value_copy(this->converted);
-	trace(("return %08lX\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("rpt_value_fstate::undefer(this = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_fstate_ty *)vp;
+    if (!this_thing->converted)
+	    convert(this_thing);
+    result = rpt_value_copy(this_thing->converted);
+    trace(("return %08lX\n", (long)result));
+    trace(("}\n"));
+    return result;
 }
 
 
 static rpt_value_method_ty method =
 {
-	sizeof(rpt_value_fstate_ty),
-	"fstate",
-	rpt_value_type_deferred,
-	0, /* construct */
-	destruct,
-	0, /* arithmetic */
-	0, /* stringize */
-	0, /* booleanize */
-	lookup,
-	keys,
-	count,
-	type_of,
-	undefer,
+    sizeof(rpt_value_fstate_ty),
+    "fstate",
+    rpt_value_type_deferred,
+    0, /* construct */
+    destruct,
+    0, /* arithmetic */
+    0, /* stringize */
+    0, /* booleanize */
+    lookup,
+    keys,
+    count,
+    type_of,
+    undefer,
 };
 
 
 rpt_value_ty *
-rpt_value_fstate(cp)
-	change_ty	*cp;
+rpt_value_fstate(change_ty *cp)
 {
-	rpt_value_fstate_ty *this;
+    rpt_value_fstate_ty *this_thing;
 
-	this = (rpt_value_fstate_ty *)rpt_value_alloc(&method);
-	this->cp = change_copy(cp);
-	this->converted = 0;
-	return (rpt_value_ty *)this;
+    this_thing = (rpt_value_fstate_ty *)rpt_value_alloc(&method);
+    this_thing->cp = change_copy(cp);
+    this_thing->converted = 0;
+    return (rpt_value_ty *)this_thing;
 }

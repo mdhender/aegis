@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,17 +43,17 @@ struct complete_project_file_ty
 static void
 destructor(complete_ty *cp)
 {
-    complete_project_file_ty *this;
+    complete_project_file_ty *this_thing;
 
-    this = (complete_project_file_ty *)cp;
-    change_free(this->cp);
+    this_thing = (complete_project_file_ty *)cp;
+    change_free(this_thing->cp);
 }
 
 
 static void
 perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_project_file_ty *this;
+    complete_project_file_ty *this_thing;
     string_ty       *prefix;
     size_t          j;
     string_list_ty  candidate;
@@ -64,8 +64,8 @@ perform(complete_ty *cp, shell_ty *sh)
      * is completing their project file name from within a directory,
      * and we mustr give answers strictly in that context.
      */
-    this = (complete_project_file_ty *)cp;
-    if (this->baserel)
+    this_thing = (complete_project_file_ty *)cp;
+    if (this_thing->baserel)
 	base = str_from_c("");
     else
     {
@@ -73,7 +73,7 @@ perform(complete_ty *cp, shell_ty *sh)
 	string_ty       *cwd;
 	string_ty       *tmp;
 
-	change_search_path_get(this->cp, &search_path, 1);
+	change_search_path_get(this_thing->cp, &search_path, 1);
 
 	os_become_orig();
 	cwd = os_curdir();
@@ -114,7 +114,7 @@ perform(complete_ty *cp, shell_ty *sh)
 	fstate_src      src;
 	string_ty       *relfn;
 
-	src = project_file_nth(this->cp->pp, j, view_path_simple);
+	src = project_file_nth(this_thing->cp->pp, j, view_path_simple);
 	if (!src)
 	    break;
 
@@ -130,11 +130,11 @@ perform(complete_ty *cp, shell_ty *sh)
 	 * The curly bit is when the user gives the -overwriting option,
 	 * so we complete change files we are modifying or insulating.
 	 */
-	if (this->overwriting)
+	if (this_thing->overwriting)
 	{
 	    fstate_src      csrc;
 
-	    csrc = change_file_find(this->cp, src->file_name);
+	    csrc = change_file_find(this_thing->cp, src->file_name);
 	    if (csrc)
 	    {
 		switch (csrc->action)
@@ -150,7 +150,7 @@ perform(complete_ty *cp, shell_ty *sh)
 		}
 	    }
 	}
-	else if (change_file_find(this->cp, src->file_name))
+	else if (change_file_find(this_thing->cp, src->file_name))
 	    continue;
 
 	/*
@@ -188,12 +188,12 @@ complete_ty *
 complete_project_file(change_ty *cp, int baserel, int overwriting)
 {
     complete_ty     *result;
-    complete_project_file_ty *this;
+    complete_project_file_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_project_file_ty *)result;
-    this->cp = cp;
-    this->baserel = !!baserel;
-    this->overwriting = !!overwriting;
+    this_thing = (complete_project_file_ty *)result;
+    this_thing->cp = cp;
+    this_thing->baserel = !!baserel;
+    this_thing->overwriting = !!overwriting;
     return result;
 }

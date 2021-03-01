@@ -29,8 +29,7 @@
 
 
 void
-change_free(cp)
-	change_ty	*cp;
+change_free(change_ty *cp)
 {
 	trace(("change_free(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);

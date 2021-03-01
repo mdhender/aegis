@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -97,7 +97,7 @@ careful_strlen(char *s, size_t n)
 static void
 string_field_set(char *to_buf, size_t to_len, string_ty *from)
 {
-    int from_len = from->str_length;
+    size_t from_len = (size_t)from->str_length;
     const char *from_buf = from->str_text;
     if (from_len > to_len - 1)
 	from_len = to_len - 1;

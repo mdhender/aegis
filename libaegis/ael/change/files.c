@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,12 +31,15 @@
 #include <output.h>
 #include <project.h>
 #include <project/file.h>
+#include <str_list.h>
 #include <trace.h>
 #include <user.h>
 
 
 void
-list_change_files(string_ty *project_name, long change_number)
+list_change_files(string_ty *project_name,
+                  long change_number,
+                  string_list_ty *args)
 {
     cstate	    cstate_data;
     project_ty	    *pp;
@@ -77,7 +80,6 @@ list_change_files(string_ty *project_name, long change_number)
     change_bind_existing(cp);
 
     cstate_data = change_cstate_get(cp);
-    assert(change_file_nth(cp, 0));
 
     /*
      * create the columns

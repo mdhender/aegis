@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ struct output_cpio_child_ty
 {
 	output_ty	inheroted;
 	output_ty	*deeper;
-	output_ty	*this;
+	output_ty	*this_thing;
 	string_ty	*name;
 	long		length;
 	long		pos;
@@ -40,11 +40,8 @@ struct output_cpio_child_ty
 };
 
 
-static void changed_size _((output_cpio_child_ty *));
-
 static void
-changed_size(this)
-	output_cpio_child_ty *this;
+changed_size(output_cpio_child_ty *this_thing)
 {
 	sub_context_ty	*scp;
 
@@ -54,45 +51,35 @@ changed_size(this)
 		scp,
 		"File_Name",
 		"%S(%S)",
-		output_filename(this->deeper),
-		this->name
+		output_filename(this_thing->deeper),
+		this_thing->name
 	);
 	fatal_intl(scp, i18n("archive member $filename changed size"));
 }
 
 
-static void padding _((output_cpio_child_ty *));
-
 static void
-padding(this)
-	output_cpio_child_ty *this;
+padding(output_cpio_child_ty *this_thing)
 {
 	int		n;
 
-	n = output_ftell(this->deeper) % 4;
+	n = output_ftell(this_thing->deeper) % 4;
 	if (n == 0)
 		return;
 	while (n++ < 4)
-		output_fputc(this->deeper, '\n');
+		output_fputc(this_thing->deeper, '\n');
 }
 
 
-static void output_hex8 _((output_ty *, long));
-
 static void
-output_hex8(fp, n)
-	output_ty	*fp;
-	long		n;
+output_hex8(output_ty *fp, long n)
 {
 	output_fprintf(fp, "%08lx", n);
 }
 
 
-static void header _((output_cpio_child_ty *));
-
 static void
-header(this)
-	output_cpio_child_ty *this;
+header(output_cpio_child_ty *this_thing)
 {
 	static string_ty *trailer;
 	static int	ino;
@@ -100,112 +87,97 @@ header(this)
 
 	if (!trailer)
 		trailer = str_from_c("TRAILER!!!");
-	if (str_equal(trailer, this->name))
+	if (str_equal(trailer, this_thing->name))
 		inode = 0;
 	else
 		inode = ++ino;
 
-	output_fputs(this->deeper, "070701");	/* magic number */
-	output_hex8(this->deeper, inode);	/* inode */
-	output_hex8(this->deeper, 0100644);	/* mode */
-	output_hex8(this->deeper, 0);		/* uid */
-	output_hex8(this->deeper, 0);		/* gid */
-	output_hex8(this->deeper, 1);		/* nlinks */
-	output_hex8(this->deeper, 0);		/* mtime */
-	output_hex8(this->deeper, this->length); /* size */
-	output_hex8(this->deeper, 0);		/* dev_major */
-	output_hex8(this->deeper, 0);		/* dev_minor */
-	output_hex8(this->deeper, 0);		/* rdev_major */
-	output_hex8(this->deeper, 0);		/* rdev_minor */
-	output_hex8(this->deeper, this->name->str_length + 1);
-	output_hex8(this->deeper, 0);		/* no checksum */
+	output_fputs(this_thing->deeper, "070701");	/* magic number */
+	output_hex8(this_thing->deeper, inode);	/* inode */
+	output_hex8(this_thing->deeper, 0100644);	/* mode */
+	output_hex8(this_thing->deeper, 0);		/* uid */
+	output_hex8(this_thing->deeper, 0);		/* gid */
+	output_hex8(this_thing->deeper, 1);		/* nlinks */
+	output_hex8(this_thing->deeper, 0);		/* mtime */
+	output_hex8(this_thing->deeper, this_thing->length); /* size */
+	output_hex8(this_thing->deeper, 0);		/* dev_major */
+	output_hex8(this_thing->deeper, 0);		/* dev_minor */
+	output_hex8(this_thing->deeper, 0);		/* rdev_major */
+	output_hex8(this_thing->deeper, 0);		/* rdev_minor */
+	output_hex8(this_thing->deeper, this_thing->name->str_length + 1);
+	output_hex8(this_thing->deeper, 0);		/* no checksum */
 	output_write
 	(
-	    this->deeper,
-	    this->name->str_text, this->name->str_length + 1
+	    this_thing->deeper,
+	    this_thing->name->str_text, this_thing->name->str_length + 1
 	);
-	padding(this);
+	padding(this_thing);
 }
 
 
-static void output_cpio_child_destructor _((output_ty *));
-
 static void
-output_cpio_child_destructor(fp)
-	output_ty	*fp;
+output_cpio_child_destructor(output_ty *fp)
 {
-	output_cpio_child_ty *this;
+	output_cpio_child_ty *this_thing;
 
-	this = (output_cpio_child_ty *)fp;
-	if (this->pos != this->length)
+	this_thing = (output_cpio_child_ty *)fp;
+	if (this_thing->pos != this_thing->length)
 	{
-error_raw("%s: %d: this->pos = %ld", __FILE__, __LINE__, this->pos);
-error_raw("%s: %d: this->length = %ld", __FILE__, __LINE__, this->length);
-		changed_size(this);
+error_raw("%s: %d: this_thing->pos = %ld", __FILE__, __LINE__,
+          this_thing->pos);
+error_raw("%s: %d: this_thing->length = %ld", __FILE__, __LINE__,
+          this_thing->length);
+		changed_size(this_thing);
 	}
-	padding(this);
-	str_free(this->name);
+	padding(this_thing);
+	str_free(this_thing->name);
 	/*
-	 * DO NOT output_delete(this->deeper);
+	 * DO NOT output_delete(this_thing->deeper);
 	 * this is output_cpio::destructor's job.
 	 */
 }
 
 
-static string_ty *output_cpio_child_filename _((output_ty *));
-
 static string_ty *
-output_cpio_child_filename(fp)
-	output_ty	*fp;
+output_cpio_child_filename(output_ty *fp)
 {
-	output_cpio_child_ty *this;
+	output_cpio_child_ty *this_thing;
 
-	this = (output_cpio_child_ty *)fp;
-	return output_filename(this->deeper);
+	this_thing = (output_cpio_child_ty *)fp;
+	return output_filename(this_thing->deeper);
 }
 
-
-static long output_cpio_child_ftell _((output_ty *));
 
 static long
-output_cpio_child_ftell(fp)
-	output_ty	*fp;
+output_cpio_child_ftell(output_ty *fp)
 {
-	output_cpio_child_ty *this;
+	output_cpio_child_ty *this_thing;
 
-	this = (output_cpio_child_ty *)fp;
-	return this->pos;
+	this_thing = (output_cpio_child_ty *)fp;
+	return this_thing->pos;
 }
 
 
-static void output_cpio_child_write _((output_ty *, const void *, size_t));
-
 static void
-output_cpio_child_write(fp, data, len)
-	output_ty	*fp;
-	const void	*data;
-	size_t		len;
+output_cpio_child_write(output_ty *fp, const void *data, size_t len)
 {
-	output_cpio_child_ty *this;
+	output_cpio_child_ty *this_thing;
 
-	this = (output_cpio_child_ty *)fp;
-	output_write(this->deeper, data, len);
-	this->pos += len;
+	this_thing = (output_cpio_child_ty *)fp;
+	output_write(this_thing->deeper, data, len);
+	this_thing->pos += len;
 	if (len > 0)
-		this->bol = (((const char *)data)[len - 1] == '\n');
+		this_thing->bol = (((const char *)data)[len - 1] == '\n');
 }
 
 
-static void output_cpio_child_eoln _((output_ty *));
-
 static void
-output_cpio_child_eoln(fp)
-	output_ty	*fp;
+output_cpio_child_eoln(output_ty *fp)
 {
-	output_cpio_child_ty *this;
+	output_cpio_child_ty *this_thing;
 
-	this = (output_cpio_child_ty *)fp;
-	if (!this->bol)
+	this_thing = (output_cpio_child_ty *)fp;
+	if (!this_thing->bol)
 		output_fputc(fp, '\n');
 }
 
@@ -226,22 +198,19 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_cpio_child_open(deeper, name, length)
-	output_ty	*deeper;
-	string_ty	*name;
-	long		length;
+output_cpio_child_open(output_ty *deeper, string_ty *name, long length)
 {
 	output_ty	*result;
-	output_cpio_child_ty *this;
+	output_cpio_child_ty *this_thing;
 
 	/* assert(length >= 0); */
 	result = output_new(&vtbl);
-	this = (output_cpio_child_ty *)result;
-	this->deeper = deeper;
-	this->name = str_copy(name);
-	this->length = length;
-	this->pos = 0;
-	this->bol = 1;
-	header(this);
+	this_thing = (output_cpio_child_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->name = str_copy(name);
+	this_thing->length = length;
+	this_thing->pos = 0;
+	this_thing->bol = 1;
+	header(this_thing);
 	return result;
 }

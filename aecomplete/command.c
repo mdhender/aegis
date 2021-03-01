@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,8 @@
 #include <command/aeibu.h>
 #include <command/aeifail.h>
 #include <command/aeipass.h>
+#include <command/aemt.h>
+#include <command/aemtu.h>
 #include <command/aena.h>
 #include <command/aencu.h>
 #include <command/aend.h>
@@ -71,7 +73,7 @@
 #include <symtab.h>
 
 
-typedef command_ty *(*funcptr)_((void));
+typedef command_ty *(*funcptr)(void);
 
 static funcptr table[] =
 {
@@ -92,6 +94,8 @@ static funcptr table[] =
     command_aegis,
     command_aeib,
     command_aeibu,
+    command_aemt,
+    command_aemtu,
     command_aena,
     command_aencu,
     command_aend,
@@ -120,8 +124,7 @@ static symtab_ty *stp;
 
 
 command_ty *
-command_find(name)
-    string_ty       *name;
+command_find(string_ty *name)
 {
     command_ty      *cp;
     funcptr         *tp;
@@ -140,7 +143,7 @@ command_find(name)
 	    str_free(s);
 	}
     }
-    cp = symtab_query(stp, name);
+    cp = (command_ty *)symtab_query(stp, name);
     if (cp)
 	return cp;
     return command_unknown();
@@ -148,21 +151,19 @@ command_find(name)
 
 
 const char *
-command_name(this)
-    command_ty      *this;
+command_name(command_ty *this_thing)
 {
-    assert(this);
-    assert(this->vptr);
-    return this->vptr->name;
+    assert(this_thing);
+    assert(this_thing->vptr);
+    return this_thing->vptr->name;
 }
 
 
 complete_ty *
-command_completion_get(this)
-    command_ty      *this;
+command_completion_get(command_ty *this_thing)
 {
-    assert(this);
-    assert(this->vptr);
-    assert(this->vptr->completion_get);
-    return this->vptr->completion_get(this);
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->completion_get);
+    return this_thing->vptr->completion_get(this_thing);
 }

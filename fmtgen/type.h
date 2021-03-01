@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1998, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ typedef struct type_method_ty type_method_ty;
 struct type_method_ty
 {
     long            size;
-    char            *name;
+    const char      *name;
     int             has_a_mask;
     void            (*constructor)(type_ty *);
     void            (*destructor)(type_ty *);
@@ -51,6 +51,8 @@ struct type_method_ty
     void            (*gen_include_declarator)(type_ty *, string_ty *, int);
     void            (*gen_code)(type_ty *);
     void            (*gen_code_declarator)(type_ty *, string_ty *, int, int);
+    void            (*gen_code_call_xml)(type_ty *type, string_ty *form_name,
+			string_ty *member_name, int show);
     void            (*gen_free_declarator)(type_ty *, string_ty *, int);
     void            (*member_add)(type_ty *, string_ty *, type_ty *, int);
     void            (*in_include_file)(type_ty *);
@@ -60,6 +62,8 @@ void type_gen_include(type_ty *);
 void type_gen_include_declarator(type_ty *, string_ty *, int);
 void type_gen_code(type_ty *);
 void type_gen_code_declarator(type_ty *, string_ty *, int, int);
+void type_gen_code_call_xml(type_ty *type, string_ty *form_name,
+    string_ty *member_name, int show);
 void type_gen_free_declarator(type_ty *, string_ty *, int);
 void type_member_add(type_ty *, string_ty *, type_ty *, int);
 void type_in_include_file(type_ty *);

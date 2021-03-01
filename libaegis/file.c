@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,10 +60,7 @@
  */
 
 void
-copy_whole_file(from, to, cmt)
-    string_ty	    *from;
-    string_ty	    *to;
-    int		    cmt;
+copy_whole_file(string_ty *from, string_ty *to, int cmt)
 {
     trace(("copy_whole_file(from = %08lX, to = %08lX)\n{\n",
 	(long)from, (long)to));
@@ -132,8 +129,7 @@ copy_whole_file(from, to, cmt)
  */
 
 string_ty *
-read_whole_file(fn)
-    string_ty	    *fn;
+read_whole_file(string_ty *fn)
 {
     size_t	    length_max;
     size_t	    length;
@@ -145,7 +141,7 @@ read_whole_file(fn)
     os_become_must_be_active();
     length_max = 1000;
     length = 0;
-    text = mem_alloc(length_max);
+    text = (char *)mem_alloc(length_max);
     fp = input_file_text_open(fn);
     for (;;)
     {
@@ -155,7 +151,7 @@ read_whole_file(fn)
 	if (length >= length_max)
 	{
 	    length_max = length_max * 2 + 16;
-	    text = mem_change_size(text, length_max);
+	    text = (char *)mem_change_size(text, length_max);
 	}
 	text[length++] = c;
     }
@@ -186,9 +182,7 @@ read_whole_file(fn)
  */
 
 int
-files_are_different(s1, s2)
-    string_ty	    *s1;
-    string_ty	    *s2;
+files_are_different(string_ty *s1, string_ty *s2)
 {
     int		    result;
 

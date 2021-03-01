@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,7 @@
 
 
 string_ty *
-change_new_test_filename_get(cp, n, is_auto)
-	change_ty	*cp;
-	long		n;
-	int		is_auto;
+change_new_test_filename_get(change_ty *cp, long n, int is_auto)
 {
 	sub_context_ty	*scp;
 	pconf		pconf_data;

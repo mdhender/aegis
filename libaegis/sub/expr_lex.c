@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 2002 Peter Miller;
+ *	Copyright (C) 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,7 @@ static size_t	pos;
 
 
 void
-sub_expr_lex_open(s)
-	string_ty	*s;
+sub_expr_lex_open(string_ty *s)
 {
 	text = s;
 	pos = 0;
@@ -39,17 +38,15 @@ sub_expr_lex_open(s)
 
 
 void
-sub_expr_lex_close()
+sub_expr_lex_close(void)
 {
 	text = 0;
 	pos = 0;
 }
 
 
-static int lex_getc _((void));
-
 static int
-lex_getc()
+lex_getc(void)
 {
 	int		c;
 
@@ -62,11 +59,8 @@ lex_getc()
 }
 
 
-static void lex_getc_undo _((int));
-
 static void
-lex_getc_undo(c)
-	int		c;
+lex_getc_undo(int c)
 {
 	if (pos > 0)
 		--pos;
@@ -75,7 +69,7 @@ lex_getc_undo(c)
 
 
 int
-sub_expr_gram_lex()
+sub_expr_gram_lex(void)
 {
 	int		c;
 	long		n;

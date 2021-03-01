@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 
 
 int
-change_umask(cp)
-	change_ty	*cp;
+change_umask(change_ty *cp)
 {
 	assert(cp->reference_count >= 1);
 	return project_umask_get(cp->pp);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,16 +26,18 @@
 
 
 string_ty *
-os_tmpdir()
+os_tmpdir(void)
 {
-	static string_ty *tmpdir;
+    static string_ty *tmpdir;
 
-	if (!tmpdir)
-	{
-		char *cp = getenv("TMPDIR");
-		if (!cp || *cp != '/')
-			cp = "/tmp";
-		tmpdir = str_from_c(cp);
-	}
-	return tmpdir;
+    if (!tmpdir)
+    {
+	const char      *cp;
+
+	cp = getenv("TMPDIR");
+	if (!cp || *cp != '/')
+	    cp = "/tmp";
+	tmpdir = str_from_c(cp);
+    }
+    return tmpdir;
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,7 @@
 
 
 void
-line_constructor(lp, cp, text)
-    line_t	    *lp;
-    change_ty	    *cp;
-    string_ty	    *text;
+line_constructor(line_t *lp, change_ty *cp, string_ty *text)
 {
     lp->cp = cp;
     lp->text = str_copy(text);
@@ -36,8 +33,7 @@ line_constructor(lp, cp, text)
 
 
 void
-line_destructor(lp)
-    line_t	    *lp;
+line_destructor(line_t *lp)
 {
     lp->cp = 0;
     str_free(lp->text);

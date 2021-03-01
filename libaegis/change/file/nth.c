@@ -25,9 +25,7 @@
 
 
 fstate_src
-change_file_nth(cp, n)
-	change_ty	*cp;
-	size_t		n;
+change_file_nth(change_ty *cp, size_t n)
 {
 	fstate		fstate_data;
 

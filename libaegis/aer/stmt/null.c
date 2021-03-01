@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,8 @@
 #include <aer/stmt/null.h>
 
 
-static void run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-run(sp, rp)
-	rpt_stmt_ty	*sp;
-	rpt_stmt_result_ty *rp;
+run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 {
 	rp->status = rpt_stmt_status_normal;
 	rp->thrown = 0;

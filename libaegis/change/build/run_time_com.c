@@ -29,8 +29,7 @@
 
 
 void
-change_run_build_time_adjust_notify_command(cp)
-	change_ty	*cp;
+change_run_build_time_adjust_notify_command(change_ty *cp)
 {
 	sub_context_ty	*scp;
 	pconf		pconf_data;

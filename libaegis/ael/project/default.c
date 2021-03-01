@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,33 +25,50 @@
 #include <ael/project/default.h>
 #include <ael/change/inappropriat.h>
 #include <ael/project/inappropriat.h>
+#include <project.h>
+#include <str_list.h>
 #include <trace.h>
 #include <user.h>
 
 
 void
-list_default_project(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_default_project(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
-	/*
-	 * check for silly arguments
-	 */
-	trace(("list_default_project()\n{\n"/*}*/));
-	if (project_name)
-		list_project_inappropriate();
-	if (change_number)
-		list_change_inappropriate();
+    /*
+     * check for silly arguments
+     */
+    trace(("list_default_project()\n{\n"/*}*/));
+    if (project_name)
+	list_project_inappropriate();
+    if (change_number)
+	list_change_inappropriate();
 
-	/*
-	 * Find default project name;
-	 * will generate fatal error if no default.
-	 */
+    /*
+     * Find default project name;
+     * will generate fatal error if no default.
+     */
+    if (!args->nstrings)
+    {
 	project_name = user_default_project();
+    }
+    else
+    {
+	string_ty        *login;
+	user_ty          *up;
 
 	/*
-	 * print it out
+	 * Use the user name supplied by the caller.
 	 */
-	printf("%s\n", project_name->str_text);
-	trace((/*{*/"}\n"));
+	login = args->string[0];
+	up = user_symbolic((project_ty *)0, login);
+	project_name = user_default_project_by_user(up);
+	user_free(up);
+    }
+
+    /*
+     * print it out
+     */
+    printf("%s\n", project_name->str_text);
+    trace((/*{*/"}\n"));
 }

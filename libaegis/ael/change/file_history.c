@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@
 #include <project/file.h>
 #include <project/file/roll_forward.h>
 #include <project.h>
+#include <str_list.h>
 #include <trace.h>
 #include <user.h>
 
@@ -47,21 +48,13 @@ change_brief_description_get(change_ty *cp)
 }
 
 
-static int
-change_is_completed(change_ty *cp)
-{
-    cstate	    cstate_data;
-
-    cstate_data = change_cstate_get(cp);
-    return (cstate_data->state == cstate_state_completed);
-}
-
-
 #define VERSION_WIDTH 10
 
 
 void
-list_change_file_history(string_ty *project_name, long change_number)
+list_change_file_history(string_ty *project_name,
+                         long change_number,
+                         string_list_ty *args)
 {
     cstate	    cstate_data;
     project_ty	    *pp;

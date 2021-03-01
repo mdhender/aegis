@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -64,10 +64,8 @@
  *	DO NOT use str_free() on the value returned.
  */
 
-static string_ty *os_curdir_sub _((void));
-
 static string_ty *
-os_curdir_sub()
+os_curdir_sub(void)
 {
     static string_ty *s;
 
@@ -135,7 +133,7 @@ os_curdir_sub()
  */
 
 string_ty *
-os_curdir()
+os_curdir(void)
 {
     static string_ty *result;
 
@@ -168,12 +166,8 @@ os_curdir()
  *	On failure: NULL.
  */
 
-static string_ty *has_prefix _((string_ty *, string_ty *));
-
 static string_ty *
-has_prefix(pfx, path)
-    string_ty       *pfx;
-    string_ty       *path;
+has_prefix(string_ty *pfx, string_ty *path)
 {
     if (str_equal(pfx, path))
 	return str_copy(path);
@@ -213,12 +207,8 @@ has_prefix(pfx, path)
  *	On failure: NULL.
  */
 
-static string_ty *has_a_prefix _((string_list_ty *, string_ty *));
-
 static string_ty *
-has_a_prefix(pfx, path)
-    string_list_ty  *pfx;
-    string_ty       *path;
+has_a_prefix(string_list_ty *pfx, string_ty *path)
 {
     size_t          j;
     string_ty       *result;
@@ -253,13 +243,11 @@ has_a_prefix(pfx, path)
  *	DO NOT string_list_delete is *ever* because it is cached.
  */
 
-static string_list_ty *get_prefix_list _((void));
-
 static string_list_ty *
-get_prefix_list()
+get_prefix_list(void)
 {
     static string_list_ty *prefix;
-    char            *cp;
+    const char      *cp;
     string_list_ty  tmp;
     string_ty       *s;
     size_t          j;
@@ -335,11 +323,8 @@ get_prefix_list()
  *	DO NOT string_list_delete is *ever* because it is cached.
  */
 
-static string_list_ty *get_auto_mount_dirs _((string_list_ty *));
-
 static string_list_ty *
-get_auto_mount_dirs(prefix)
-    string_list_ty  *prefix;
+get_auto_mount_dirs(string_list_ty *prefix)
 {
     FILE            *fp;
     static string_list_ty *dirs;
@@ -472,11 +457,8 @@ get_auto_mount_dirs(prefix)
  *	This function is dangerous.  Use with extreme care.
  */
 
-static string_ty *remove_automounter_prefix _((string_ty *));
-
 static string_ty *
-remove_automounter_prefix(path)
-    string_ty      *path;
+remove_automounter_prefix(string_ty *path)
 {
     string_list_ty *prefix;
     string_list_ty *amdl;
@@ -546,10 +528,8 @@ remove_automounter_prefix(path)
 
 #ifdef HAVE_CLU_INFO
 
-static string_ty *memb _((void));
-
 static string_ty *
-memb()
+memb(void)
 {
     static string_ty *result;
     if (!result)
@@ -587,11 +567,8 @@ memb()
  *	This is only meaningful on OSF/1
  */
 
-static string_ty *magic_memb_replace _((string_ty *));
-
 static string_ty *
-magic_memb_replace(s)
-    string_ty       *s;
+magic_memb_replace(string_ty *s)
 {
     static stracc_t sa;
     char            *cp;
@@ -654,9 +631,7 @@ magic_memb_replace(s)
  */
 
 string_ty *
-os_pathname(path, resolve)
-    string_ty       *path;
-    int             resolve;
+os_pathname(string_ty *path, int resolve)
 {
     static char     *tmp;
     static size_t   tmplen;
@@ -907,7 +882,7 @@ os_pathname(path, resolve)
 	if (opos >= tmplen)
 	{
 	    tmplen = tmplen * 2 + 8;
-	    tmp = mem_change_size(tmp, tmplen);
+	    tmp = (char *)mem_change_size(tmp, tmplen);
 	}
 	tmp[opos++] = c;
     }

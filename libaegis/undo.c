@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,11 +57,8 @@ struct action_ty
 static action_ty *head;
 
 
-static action_ty *newlink _((what_ty));
-
 static action_ty *
-newlink(what)
-    what_ty	    what;
+newlink(what_ty what)
 {
     action_ty	    *new;
 
@@ -82,9 +79,7 @@ newlink(what)
 
 
 void
-undo_rename(from, to)
-    string_ty	    *from;
-    string_ty	    *to;
+undo_rename(string_ty *from, string_ty *to)
 {
     action_ty	    *new;
 
@@ -100,9 +95,7 @@ undo_rename(from, to)
 
 
 void
-undo_chmod(path, mode)
-    string_ty	    *path;
-    int		    mode;
+undo_chmod(string_ty *path, int mode)
 {
     action_ty	    *new;
 
@@ -118,9 +111,7 @@ undo_chmod(path, mode)
 
 
 void
-undo_chmod_errok(path, mode)
-    string_ty	    *path;
-    int		    mode;
+undo_chmod_errok(string_ty *path, int mode)
 {
     action_ty	    *new;
 
@@ -137,8 +128,7 @@ undo_chmod_errok(path, mode)
 
 
 void
-undo_unlink_errok(path)
-    string_ty	    *path;
+undo_unlink_errok(string_ty *path)
 {
     action_ty	    *new;
 
@@ -152,8 +142,7 @@ undo_unlink_errok(path)
 
 
 void
-undo_message(path)
-    string_ty	    *path;
+undo_message(string_ty *path)
 {
     action_ty	    *new;
 
@@ -166,8 +155,7 @@ undo_message(path)
 
 
 void
-undo_rmdir_bg(path)
-    string_ty	    *path;
+undo_rmdir_bg(string_ty *path)
 {
     action_ty	    *new;
 
@@ -181,8 +169,7 @@ undo_rmdir_bg(path)
 
 
 void
-undo_rmdir_errok(path)
-    string_ty	    *path;
+undo_rmdir_errok(string_ty *path)
 {
     action_ty	    *new;
 
@@ -337,8 +324,7 @@ undo()
 
 
 void
-undo_quitter(n)
-    int		    n;
+undo_quitter(int n)
 {
     if (n)
 	undo();

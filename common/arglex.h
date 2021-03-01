@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 
 #include <main.h>
 
-#define ARGLEX_END_MARKER { (char *)0, (arglex_token_ty)0, }
+#define ARGLEX_END_MARKER { (const char *)0, 0, }
 
-enum arglex_token_ty
+enum
 {
     ARGLEX_PREFETCH_FAIL = -99,
     arglex_token_eoln = -20,
@@ -36,25 +36,26 @@ enum arglex_token_ty
     arglex_token_number_incomplete,
     arglex_token_option,
     arglex_token_option_incomplete,
+    arglex_token_page_length,
+    arglex_token_page_width,
     arglex_token_stdio,
     arglex_token_string,
     arglex_token_string_incomplete,
     arglex_token_trace,
     arglex_token_version
 };
-typedef enum arglex_token_ty arglex_token_ty;
 
 typedef struct arglex_table_ty arglex_table_ty;
 struct arglex_table_ty
 {
-    char            *t_name;
+    const char      *t_name;
     int             t_token;
 };
 
 typedef struct arglex_value_ty arglex_value_ty;
 struct arglex_value_ty
 {
-    char            *alv_string;
+    const char      *alv_string;
     long            alv_number;
 };
 
@@ -63,9 +64,9 @@ extern arglex_value_ty arglex_value;
 
 void arglex_init(int, char **, arglex_table_ty *);
 int arglex(void);
-arglex_token_ty arglex_prefetch(arglex_token_ty *, int);
+int arglex_prefetch(int *, int);
 int arglex_compare(const char *formal, const char *actual);
-char *arglex_token_name(arglex_token_ty);
+const char *arglex_token_name(int);
 
 arglex_table_ty *arglex_table_catenate(arglex_table_ty *, arglex_table_ty *);
 
@@ -73,7 +74,7 @@ arglex_table_ty *arglex_table_catenate(arglex_table_ty *, arglex_table_ty *);
 typedef struct arglex_dispatch_ty arglex_dispatch_ty;
 struct arglex_dispatch_ty
 {
-    arglex_token_ty token;
+    int             token;
     void            (*func)(void);
     int             priority;
 };

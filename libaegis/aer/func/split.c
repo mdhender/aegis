@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,135 +31,127 @@
 #include <sub.h>
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 2);
+    return (ep->nchild == 2);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	rpt_value_ty	*a1;
-	rpt_value_ty	*a2;
-	rpt_value_ty	*result;
-	rpt_value_ty	*tmp;
-	char		*sp;
-	char		*sep;
+    rpt_value_ty    *a1;
+    rpt_value_ty    *a2;
+    rpt_value_ty    *result;
+    rpt_value_ty    *tmp;
+    char            *sp;
+    const char      *sep;
 
-	a1 = argv[0];
-	assert(a1->method->type != rpt_value_type_error);
-	a1 = rpt_value_stringize(a1);
-	if (a1->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
+    a1 = argv[0];
+    assert(a1->method->type != rpt_value_type_error);
+    a1 = rpt_value_stringize(a1);
+    if (a1->method->type != rpt_value_type_string)
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
 
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "split");
-		sub_var_set_charstar(scp, "Number", "1");
-		sub_var_set_charstar(scp, "Name", a1->method->name);
-		rpt_value_free(a1);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
-	}
-
-	a2 = argv[1];
-	assert(a2->method->type != rpt_value_type_error);
-	a2 = rpt_value_stringize(a2);
-	if (a2->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		rpt_value_free(a1);
-		sub_var_set_charstar(scp, "Function", "split");
-		sub_var_set_charstar(scp, "Number", "2");
-		sub_var_set_charstar(scp, "Name", a2->method->name);
-		rpt_value_free(a2);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		tmp = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return tmp;
-	}
-
-	sp = rpt_value_string_query(a1)->str_text;
-	sep = rpt_value_string_query(a2)->str_text;
-	if (!*sep)
-		sep = " \n\r\t\f\b";
-
-	/*
-	 * the result is a list
-	 * create an empty one so we can start filling it
-	 */
-	result = rpt_value_list();
-
-	while (*sp)
-	{
-		char		*end_p;
-		string_ty	*os;
-
-		/*
-		 * find where the line ends
-		 */
-		end_p = sp;
-		while (*end_p && !strchr(sep, *end_p))
-			++end_p;
-
-		/*
-		 * append the line to the result
-		 */
-		os = str_n_from_c(sp, end_p - sp);
-		tmp = rpt_value_string(os);
-		str_free(os);
-		rpt_value_list_append(result, tmp);
-		rpt_value_free(tmp);
-
-		/*
-		 * skip the separator
-		 */
-		sp = end_p;
-		if (*sp)
-			++sp;
-	}
-
-	/*
-	 * clean up and go home
-	 */
+	scp = sub_context_new();
+	sub_var_set_charstar(scp, "Function", "split");
+	sub_var_set_charstar(scp, "Number", "1");
+	sub_var_set_charstar(scp, "Name", a1->method->name);
 	rpt_value_free(a1);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+
+    a2 = argv[1];
+    assert(a2->method->type != rpt_value_type_error);
+    a2 = rpt_value_stringize(a2);
+    if (a2->method->type != rpt_value_type_string)
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
+
+	scp = sub_context_new();
+	rpt_value_free(a1);
+	sub_var_set_charstar(scp, "Function", "split");
+	sub_var_set_charstar(scp, "Number", "2");
+	sub_var_set_charstar(scp, "Name", a2->method->name);
 	rpt_value_free(a2);
-	return result;
+	s =
+	    subst_intl
+	    (
+	       	scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	tmp = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return tmp;
+    }
+
+    sp = rpt_value_string_query(a1)->str_text;
+    sep = rpt_value_string_query(a2)->str_text;
+    if (!*sep)
+	sep = " \n\r\t\f\b";
+
+    /*
+     * the result is a list
+     * create an empty one so we can start filling it
+     */
+    result = rpt_value_list();
+
+    while (*sp)
+    {
+	char		*end_p;
+	string_ty	*os;
+
+	/*
+	 * find where the line ends
+	 */
+	end_p = sp;
+	while (*end_p && !strchr(sep, *end_p))
+	    ++end_p;
+
+	/*
+	 * append the line to the result
+	 */
+	os = str_n_from_c(sp, end_p - sp);
+	tmp = rpt_value_string(os);
+	str_free(os);
+	rpt_value_list_append(result, tmp);
+	rpt_value_free(tmp);
+
+	/*
+	 * skip the separator
+	 */
+	sp = end_p;
+	if (*sp)
+	    ++sp;
+    }
+
+    /*
+     * clean up and go home
+     */
+    rpt_value_free(a1);
+    rpt_value_free(a2);
+    return result;
 }
 
 
 rpt_func_ty rpt_func_split =
 {
-	"split",
-	1, /* optimizable */
-	verify,
-	run
+    "split",
+    1, /* optimizable */
+    verify,
+    run
 };

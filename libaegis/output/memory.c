@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,27 +40,21 @@ struct output_memory_ty
 };
 
 
-static void output_memory_destructor _((output_ty *));
-
 static void
-output_memory_destructor(fp)
-    output_ty       *fp;
+output_memory_destructor(output_ty *fp)
 {
-    output_memory_ty *this;
+    output_memory_ty *this_thing;
 
     trace(("output_memory_destructor(fp = %08lX)\n{\n", (long)fp));
-    this = (output_memory_ty *)fp;
-    if (this->buffer)
-	mem_free(this->buffer);
+    this_thing = (output_memory_ty *)fp;
+    if (this_thing->buffer)
+	mem_free(this_thing->buffer);
     trace(("}\n"));
 }
 
 
-static string_ty *output_memory_filename _((output_ty *));
-
 static string_ty *
-output_memory_filename(fp)
-    output_ty       *fp;
+output_memory_filename(output_ty *fp)
 {
     static string_ty *s;
 
@@ -70,54 +64,44 @@ output_memory_filename(fp)
 }
 
 
-static long output_memory_ftell _((output_ty *));
-
 static long
-output_memory_ftell(fp)
-    output_ty       *fp;
+output_memory_ftell(output_ty *fp)
 {
-    output_memory_ty *this;
+    output_memory_ty *this_thing;
 
-    this = (output_memory_ty *)fp;
-    return this->size;
+    this_thing = (output_memory_ty *)fp;
+    return this_thing->size;
 }
 
 
-static void output_memory_write _((output_ty *, const void *, size_t));
-
 static void
-output_memory_write(fp, data, len)
-    output_ty       *fp;
-    const void      *data;
-    size_t          len;
+output_memory_write(output_ty *fp, const void *data, size_t len)
 {
-    output_memory_ty *this;
+    output_memory_ty *this_thing;
 
     trace(("output_memory_write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
 	(long)fp, (long)data, (long)len));
-    this = (output_memory_ty *)fp;
-    while (this->size + len > this->maximum)
+    this_thing = (output_memory_ty *)fp;
+    while (this_thing->size + len > this_thing->maximum)
     {
-	this->maximum = 2 * this->maximum + 32;
-	this->buffer = mem_change_size(this->buffer, this->maximum);
+	this_thing->maximum = 2 * this_thing->maximum + 32;
+	this_thing->buffer = (unsigned char *)mem_change_size(
+            this_thing->buffer, this_thing->maximum);
     }
-    memcpy(this->buffer + this->size, data, len);
-    this->size += len;
+    memcpy(this_thing->buffer + this_thing->size, data, len);
+    this_thing->size += len;
     trace(("}\n"));
 }
 
 
-static void output_memory_eoln _((output_ty *));
-
 static void
-output_memory_eoln(fp)
-    output_ty       *fp;
+output_memory_eoln(output_ty *fp)
 {
-    output_memory_ty *this;
+    output_memory_ty *this_thing;
 
     trace(("output_memory_eol(fp = %08lX)\n{\n", (long)fp));
-    this = (output_memory_ty *)fp;
-    if (this->size && this->buffer[this->size - 1] != '\n')
+    this_thing = (output_memory_ty *)fp;
+    if (this_thing->size && this_thing->buffer[this_thing->size - 1] != '\n')
 	output_fputc(fp, '\n');
     trace(("}\n"));
 }
@@ -139,29 +123,27 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_memory_open()
+output_memory_open(void)
 {
     output_ty       *result;
-    output_memory_ty *this;
+    output_memory_ty *this_thing;
 
     trace(("output_memory_open()\n{\n"));
     result = output_new(&vtbl);
-    this = (output_memory_ty *)result;
-    this->buffer = 0;
-    this->size = 0;
-    this->maximum = 0;
-    trace(("return %08lX\n", (long)this));
+    this_thing = (output_memory_ty *)result;
+    this_thing->buffer = 0;
+    this_thing->size = 0;
+    this_thing->maximum = 0;
+    trace(("return %08lX\n", (long)this_thing));
     trace(("}\n"));
     return result;
 }
 
 
 void
-output_memory_forward(fp, deeper)
-    output_ty       *fp;
-    output_ty       *deeper;
+output_memory_forward(output_ty *fp, output_ty *deeper)
 {
-    output_memory_ty *this;
+    output_memory_ty *this_thing;
 
     trace(("output_memory_forward(fp = %08lX, deeper = %08lX)\n{\n",
 	(long)fp, (long)deeper));
@@ -169,9 +151,9 @@ output_memory_forward(fp, deeper)
     assert(fp->vptr == &vtbl);
     if (fp->vptr == &vtbl)
     {
-	this = (output_memory_ty *)fp;
-	if (this->size)
-	    output_write(deeper, this->buffer, this->size);
+	this_thing = (output_memory_ty *)fp;
+	if (this_thing->size)
+	    output_write(deeper, this_thing->buffer, this_thing->size);
 #ifdef DEBUG
 	else
 	    error_raw("%s: %d: nothing to forward", __FILE__, __LINE__);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,7 @@
 
 
 output_ty *
-output_wrap_open(deeper, delete_on_close, width)
-	output_ty	*deeper;
-	int		delete_on_close;
-	int		width;
+output_wrap_open(output_ty *deeper, int delete_on_close, int width)
 {
 	wide_output_ty	*fp1;
 	wide_output_ty	*fp2;

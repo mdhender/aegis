@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-2000, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -90,13 +90,15 @@ and are subject to the same process.
 Be careful to make sure that the test filename template pattern matches
 the \fInew_test_filename\fP field.
 .so z_filesize.so
-.so z_test_rtnl.so
-.so z_test_corr.so
+.so z_retype.so
 .SS Notification
 The \fInew_test_command\fP in the project \fIconfig\fP file is run,
 if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
 if there has been an integration recently.  See \fIaepconf\fP(5) for
 more information.
+.\" unlike the above, these next two start new sections
+.so z_test_rtnl.so
+.so z_test_corr.so
 .SH OPTIONS
 The following options are understood;
 .so o_auto.so

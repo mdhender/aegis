@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,20 +35,15 @@ str_downcase(string_ty *s)
     char	    *cp1;
     char	    *cp2;
 
-    if (!tmp)
+    if (s->str_length > tmplen)
     {
-	tmplen = s->str_length;
-	if (tmplen < 16)
-    	    tmplen = 16;
-	tmp = mem_alloc(tmplen);
-    }
-    else
-    {
-	if (tmplen < s->str_length)
+	for (;;)
 	{
-    	    tmplen = s->str_length;
-    	    tmp = mem_change_size(tmp, tmplen);
+	    tmplen = tmplen * 2 + 8;
+	    if (s->str_length <= tmplen)
+		break;
 	}
+	tmp = (char *)mem_change_size(tmp, tmplen);
     }
     for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
     {

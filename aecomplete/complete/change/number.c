@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,31 +38,24 @@ struct complete_change_number_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_change_number_ty *this;
+    complete_change_number_ty *this_thing;
 
-    this = (complete_change_number_ty *)cp;
-    project_free(this->pp);
+    this_thing = (complete_change_number_ty *)cp;
+    project_free(this_thing->pp);
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cop, sh)
-    complete_ty     *cop;
-    shell_ty        *sh;
+perform(complete_ty *cop, shell_ty *sh)
 {
-    complete_change_number_ty *this;
+    complete_change_number_ty *this_thing;
     string_ty       *prefix;
     size_t          j;
 
-    this = (complete_change_number_ty *)cop;
+    this_thing = (complete_change_number_ty *)cop;
     prefix = shell_prefix_get(sh);
     for (j = 0; ; ++j)
     {
@@ -70,12 +63,12 @@ perform(cop, sh)
 	long            change_number;
 	change_ty       *cp;
 
-	if (!project_change_nth(this->pp, j, &change_number))
+	if (!project_change_nth(this_thing->pp, j, &change_number))
 	    break;
-	cp = change_alloc(this->pp, change_number);
+	cp = change_alloc(this_thing->pp, change_number);
 	change_bind_existing(cp);
 	cstate_data = change_cstate_get(cp);
-	if (this->mask & (1 << cstate_data->state))
+	if (this_thing->mask & (1 << cstate_data->state))
 	{
 	    string_ty       *name;
 
@@ -99,16 +92,14 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_change_number(pp, mask)
-    project_ty      *pp;
-    int              mask;
+complete_change_number(project_ty *pp, int mask)
 {
     complete_ty     *result;
-    complete_change_number_ty *this;
+    complete_change_number_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_change_number_ty *)result;
-    this->pp = pp;
-    this->mask = mask ? mask : ~0;
+    this_thing = (complete_change_number_ty *)result;
+    this_thing->pp = pp;
+    this_thing->mask = mask ? mask : ~0;
     return result;
 }

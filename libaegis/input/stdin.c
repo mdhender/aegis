@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,8 @@
 #include <str.h>
 
 
-static string_ty *standard_input _((void));
-
 static string_ty *
-standard_input()
+standard_input(void)
 {
 	static string_ty *name;
 	sub_context_ty	*scp;
@@ -48,22 +46,14 @@ standard_input()
 }
 
 
-static void input_stdin_destructor _((input_ty *));
-
 static void
-input_stdin_destructor(this)
-	input_ty	*this;
+input_stdin_destructor(input_ty *this_thing)
 {
 }
 
 
-static long input_stdin_read _((input_ty *, void *, size_t));
-
 static long
-input_stdin_read(this, data, len)
-	input_ty	*this;
-	void		*data;
-	size_t		len;
+input_stdin_read(input_ty *this_thing, void *data, size_t len)
 {
 	long		result;
 
@@ -84,31 +74,22 @@ input_stdin_read(this, data, len)
 }
 
 
-static long input_stdin_ftell _((input_ty *));
-
 static long
-input_stdin_ftell(this)
-	input_ty	*this;
+input_stdin_ftell(input_ty *this_thing)
 {
 	return ftell(stdin);
 }
 
 
-static string_ty *input_stdin_name _((input_ty *));
-
 static string_ty *
-input_stdin_name(this)
-	input_ty	*this;
+input_stdin_name(input_ty *this_thing)
 {
 	return standard_input();
 }
 
 
-static long input_stdin_length _((input_ty *));
-
 static long
-input_stdin_length(this)
-	input_ty	*this;
+input_stdin_length(input_ty *this_thing)
 {
 	struct stat	st;
 
@@ -132,7 +113,7 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_stdin()
+input_stdin(void)
 {
 	return input_new(&vtbl);
 }

@@ -27,41 +27,33 @@
 #include <error.h>
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 1);
+    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	rpt_value_ty	*result;
+    rpt_value_ty    *result;
 
-	assert(argc == 1);
-	result = rpt_value_count(argv[0]);
-	if (result->method->type == rpt_value_type_error)
-	{
-		assert(ep->pos);
-		rpt_value_error_setpos(result, ep->pos);
-	}
-	return result;
+    assert(argc == 1);
+    result = rpt_value_count(argv[0]);
+    if (result->method->type == rpt_value_type_error)
+    {
+	assert(ep->pos);
+	rpt_value_error_setpos(result, ep->pos);
+    }
+    return result;
 }
 
 
 rpt_func_ty rpt_func_count =
 {
-	"count",
-	1, /* optimizable */
-	verify,
-	run,
+    "count",
+    1, /* optimizable */
+    verify,
+    run,
 };

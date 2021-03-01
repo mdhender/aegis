@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,12 +30,8 @@
 #include <wstr_list.h>
 
 
-static string_ty *pconf_project_specific_find _((pconf, string_ty *));
-
 static string_ty *
-pconf_project_specific_find(pconf_data, name)
-    pconf	    pconf_data;
-    string_ty	    *name;
+pconf_project_specific_find(pconf pconf_data, string_ty *name)
 {
     size_t	    k;
 
@@ -79,9 +75,7 @@ pconf_project_specific_find(pconf_data, name)
  */
 
 wstring_ty *
-sub_project_specific(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_project_specific(sub_context_ty *scp, wstring_list_ty *arg)
 {
     string_ty	    *name;
     string_ty	    *value;

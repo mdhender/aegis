@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,6 @@
 #include <main.h>
 
 void progname_set(char *);
-char *progname_get(void);
+const char *progname_get(void);
 
 #endif /* COMMON_PROGNAME_H */

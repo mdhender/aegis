@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,8 @@
 #include <main.h>
 
 struct string_ty; /* existence */
+struct string_list_ty; /* existence */
 
-void list_integrators(struct string_ty *, long);
+void list_integrators(struct string_ty *, long, struct string_list_ty *);
 
 #endif /* LIBAEGIS_AEL_PROJECT_INTEGRATORS_H */

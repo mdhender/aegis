@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,26 +29,21 @@
 string_ty *
 str_catenate(string_ty *s1, string_ty *s2)
 {
-    static char	*tmp;
-    static size_t	tmplen;
-    string_ty	*s;
-    size_t		length;
+    static char     *tmp;
+    static size_t   tmpmax;
+    string_ty       *s;
+    size_t          length;
 
     length = s1->str_length + s2->str_length;
-    if (!tmp)
+    if (length > tmpmax)
     {
-	tmplen = length;
-	if (tmplen < 16)
-    	    tmplen = 16;
-	tmp = mem_alloc(tmplen);
-    }
-    else
-    {
-	if (tmplen < length)
+	for (;;)
 	{
-    	    tmplen = length;
-    	    tmp = mem_change_size(tmp, tmplen);
+	    tmpmax = tmpmax * 2 + 8;
+	    if (length <= tmpmax)
+		break;
 	}
+	tmp = (char *)mem_change_size(tmp, tmpmax);
     }
     memcpy(tmp, s1->str_text, s1->str_length);
     memcpy(tmp + s1->str_length, s2->str_text, s2->str_length);

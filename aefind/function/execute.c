@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,14 +33,14 @@
 static rpt_value_ty *
 evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     int		    exit_status;
 
     trace(("tree::execute::evaluate\n"));
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     svp = rpt_value_stringize(vp);
     rpt_value_free(vp);
     os_become_orig();

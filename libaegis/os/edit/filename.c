@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,13 +28,12 @@
 
 
 string_ty *
-os_edit_filename(at_home)
-    int             at_home;
+os_edit_filename(int at_home)
 {
     static int      num;
     string_ty       *buffer;
     string_ty       *result;
-    char            *dir;
+    const char      *dir;
     int             name_max;
 
     if (at_home)

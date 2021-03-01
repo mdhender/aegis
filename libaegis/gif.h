@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,27 +27,28 @@
 
 enum gif_mode_ty
 {
-	gif_mode_rdonly,
-	gif_mode_rdwr
+    gif_mode_rdonly,
+    gif_mode_rdwr
 };
 typedef enum gif_mode_ty gif_mode_ty;
 
 typedef struct gif_ty gif_ty;
 struct gif_ty
 {
-	char		*fn;
-	int		width, height;
-	unsigned char	colormap[256][3];
-	unsigned char	*image_flat;
-	unsigned char	**image;
-	gif_mode_ty	mode;
-	int		mime;
+    char            *fn;
+    int             width;
+    int             height;
+    unsigned char   colormap[256][3];
+    unsigned char   *image_flat;
+    unsigned char   **image;
+    gif_mode_ty     mode;
+    int             mime;
 };
 
-gif_ty *gif_open(char *path, int mode);
+gif_ty *gif_open(const char *path, int mode);
 void gif_close(gif_ty *);
-gif_ty *gif_create(char *path, int size_x, int size_y);
-void gif_rename(gif_ty *, char *);
+gif_ty *gif_create(const char *path, int size_x, int size_y);
+void gif_rename(gif_ty *, const char *);
 int gif_pixel_get(gif_ty *gp, int x, int y);
 void gif_pixel_set(gif_ty *gp, int x, int y, int color);
 void gif_colormap_get(gif_ty *, int, int *, int *, int *);
@@ -56,6 +57,6 @@ void gif_mime(gif_ty *);
 
 void gif_line(gif_ty *gp, int x1, int y1, int x2, int y2, int color);
 void gif_rect(gif_ty *gp, int x1, int y1, int x2, int y2, int color);
-void gif_text(gif_ty *gp, int x, int y, char *text, int color);
+void gif_text(gif_ty *gp, int x, int y, const char *text, int color);
 
 #endif /* LIBAEGIS_GIF_H */

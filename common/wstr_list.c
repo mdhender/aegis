@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 2002 Peter Miller;
+ *	Copyright (C) 1995, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ wstring_list_append(wstring_list_ty *wlp, wstring_ty *w)
 	 */
 	wlp->nitems_max = wlp->nitems_max * 2 + 8;
 	nbytes = wlp->nitems_max * sizeof(wstring_ty *);
-	wlp->item = mem_change_size(wlp->item, nbytes);
+	wlp->item = (wstring_ty **)mem_change_size(wlp->item, nbytes);
     }
     wlp->item[wlp->nitems++] = wstr_copy(w);
 }
@@ -75,7 +75,7 @@ wstring_list_prepend(wstring_list_ty *wlp, wstring_ty *w)
 	 */
 	wlp->nitems_max = wlp->nitems_max * 2 + 8;
 	nbytes = wlp->nitems_max * sizeof(wstring_ty *);
-	wlp->item = mem_change_size(wlp->item, nbytes);
+	wlp->item = (wstring_ty **)mem_change_size(wlp->item, nbytes);
     }
     for (j = wlp->nitems; j > 0; --j)
 	    wlp->item[j] = wlp->item[j - 1];
@@ -195,9 +195,10 @@ wstring_list_copy(wstring_list_ty *to, wstring_list_ty *from)
  */
 
 wstring_ty *
-wstring_list_to_wstring(wstring_list_ty *wl, int start, int stop, char *sep)
+wstring_list_to_wstring(wstring_list_ty *wl, size_t start, size_t stop,
+    const char *sep)
 {
-    int		    j, k;
+    size_t          j;
     static wchar_t  *tmp;
     static size_t   tmplen;
     size_t	    length;
@@ -222,8 +223,13 @@ wstring_list_to_wstring(wstring_list_ty *wl, int start, int stop, char *sep)
 
     if (tmplen < length)
     {
-	tmplen = length;
-	tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
+	for (;;)
+	{
+	    tmplen = tmplen * 2 + 8;
+	    if (length <= tmplen)
+		break;
+	}
+	tmp = (wchar_t *)mem_change_size(tmp, tmplen * sizeof(wchar_t));
     }
 
     pos = tmp;
@@ -234,6 +240,8 @@ wstring_list_to_wstring(wstring_list_ty *wl, int start, int stop, char *sep)
 	{
 	    if (pos != tmp)
 	    {
+		size_t          k;
+
 		for (k = 0; k < seplen; ++k)
 	    	    *pos++ = sep[k];
 	    }
@@ -248,7 +256,7 @@ wstring_list_to_wstring(wstring_list_ty *wl, int start, int stop, char *sep)
 
 
 static int
-wc_find(char *s, wchar_t c)
+wc_find(const char *s, wchar_t c)
 {
     while (*s)
     {
@@ -287,7 +295,7 @@ wc_find(char *s, wchar_t c)
  */
 
 void
-wstring_to_wstring_list(wstring_list_ty *slp, wstring_ty *s, char *sep,
+wstring_to_wstring_list(wstring_list_ty *slp, wstring_ty *s, const char *sep,
     int ewhite)
 {
     static char     white[] = " \t\n\f\r";

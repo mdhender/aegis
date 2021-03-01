@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <gonzo.h>
 #include <lock.h>
 #include <mem.h>
+#include <now.h>
 #include <os.h>
 #include <r250.h>
 #include <sub.h>
@@ -100,15 +101,8 @@ static int      quitregd;
 #define LOCK_PREP_EXCL_PRIO (LOCK_PREP_EXCLUSIVE | LOCK_PREP_PRIORITY)
 
 
-static void flock_construct _((struct flock *p, int type, long start,
-    long length));
-
 static void
-flock_construct(p, type, start, length)
-    struct flock    *p;
-    int             type;
-    long            start;
-    long            length;
+flock_construct(struct flock *p, int type, long start, long length)
 {
     /*
      * the memset is here because some systems have
@@ -129,12 +123,8 @@ flock_construct(p, type, start, length)
 }
 
 
-static int flock_equal _((struct flock *, struct flock *));
-
 static int
-flock_equal(p1, p2)
-    struct flock    *p1;
-    struct flock    *p2;
+flock_equal(struct flock *p1, struct flock *p2)
 {
     return
 	(
@@ -147,15 +137,9 @@ flock_equal(p1, p2)
 }
 
 
-static void lock_prepare _((long, long, int, lock_callback_ty, void *));
-
 static void
-lock_prepare(start, length, exclusive, callback, arg)
-    long            start;
-    long            length;
-    int             exclusive;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare(long start, long length, int exclusive, lock_callback_ty callback,
+    void *arg)
 {
     int             j;
     lock_place_ty   p;
@@ -214,9 +198,7 @@ lock_prepare(start, length, exclusive, callback, arg)
 
 
 void
-lock_prepare_gstate(callback, arg)
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_gstate(lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_gstate()\n{\n"));
     lock_prepare((long)lock_gstate, 1L, 1, callback, arg);
@@ -224,16 +206,9 @@ lock_prepare_gstate(callback, arg)
 }
 
 
-static void lock_prepare_mux _((lock_mux_ty, long, int, lock_callback_ty,
-    void *));
-
 static void
-lock_prepare_mux(lock_mux, n, exclusive, callback, arg)
-    lock_mux_ty     lock_mux;
-    long            n;
-    int             exclusive;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_mux(lock_mux_ty lock_mux, long n, int exclusive,
+    lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_mux(lock_mux = %d, n = %ld, excl = %d)\n{\n",
 	lock_mux, n, exclusive));
@@ -249,15 +224,9 @@ lock_prepare_mux(lock_mux, n, exclusive, callback, arg)
 }
 
 
-static void lock_prepare_mux_all _((lock_mux_ty, int, lock_callback_ty,
-    void *));
-
 static void
-lock_prepare_mux_all(lock_mux, exclusive, callback, arg)
-    lock_mux_ty     lock_mux;
-    int             exclusive;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_mux_all(lock_mux_ty lock_mux, int exclusive,
+    lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_mux_all(lock_mux = %d)\n{\n", lock_mux));
     lock_prepare
@@ -273,10 +242,7 @@ lock_prepare_mux_all(lock_mux, exclusive, callback, arg)
 
 
 void
-lock_prepare_pstate(s, callback, arg)
-    string_ty       *s;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_pstate(string_ty *s, lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_pstate(s = \"%s\")\n{\n", s->str_text));
     lock_prepare_mux
@@ -292,10 +258,7 @@ lock_prepare_pstate(s, callback, arg)
 
 
 void
-lock_prepare_baseline_read(s, callback, arg)
-    string_ty       *s;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_baseline_read(string_ty *s, lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_pstate(s = \"%s\")\n{\n", s->str_text));
 #ifdef LOCK_PRIORITY_SCHEME
@@ -321,10 +284,7 @@ lock_prepare_baseline_read(s, callback, arg)
 
 
 void
-lock_prepare_baseline_write(s, callback, arg)
-    string_ty       *s;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_baseline_write(string_ty *s, lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_pstate(s = \"%s\")\n{\n", s->str_text));
 #ifdef LOCK_PRIORITY_SCHEME
@@ -350,10 +310,7 @@ lock_prepare_baseline_write(s, callback, arg)
 
 
 void
-lock_prepare_history(s, callback, arg)
-    string_ty       *s;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_history(string_ty *s, lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_pstate(s = \"%s\")\n{\n", s->str_text));
     lock_prepare_mux
@@ -369,10 +326,7 @@ lock_prepare_history(s, callback, arg)
 
 
 void
-lock_prepare_ustate(uid, callback, arg)
-    int             uid;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_ustate(int uid, lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_ustate()\n{\n"));
     lock_prepare_mux
@@ -388,9 +342,7 @@ lock_prepare_ustate(uid, callback, arg)
 
 
 void
-lock_prepare_ustate_all(callback, arg)
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_ustate_all(lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_ustate_all()\n{\n"));
     lock_prepare_mux_all(lock_mux_ustate, LOCK_PREP_EXCLUSIVE, callback, arg);
@@ -399,11 +351,8 @@ lock_prepare_ustate_all(callback, arg)
 
 
 void
-lock_prepare_cstate(project_name, change_number, callback, arg)
-    string_ty       *project_name;
-    long            change_number;
-    lock_callback_ty callback;
-    void            *arg;
+lock_prepare_cstate(string_ty *project_name, long change_number,
+    lock_callback_ty callback, void *arg)
 {
     trace(("lock_prepare_cstate(project_name = \"%s\", change_number = %ld)\n"
 	"{\n", project_name->str_text, change_number));
@@ -419,11 +368,8 @@ lock_prepare_cstate(project_name, change_number, callback, arg)
 }
 
 
-static char *flock_type_string _((int));
-
-static char *
-flock_type_string(n)
-    int             n;
+static const char *
+flock_type_string(int n)
 {
     switch (n)
     {
@@ -440,11 +386,8 @@ flock_type_string(n)
 }
 
 
-static char *flock_whence_string _((int));
-
-static char *
-flock_whence_string(n)
-    int             n;
+static const char *
+flock_whence_string(int n)
 {
     switch (n)
     {
@@ -461,11 +404,8 @@ flock_whence_string(n)
 }
 
 
-static char *flock_string _((struct flock *));
-
 static char *
-flock_string(p)
-    struct flock    *p;
+flock_string(struct flock *p)
 {
     static char     buffer[120];
 
@@ -484,11 +424,8 @@ flock_string(p)
 }
 
 
-static char *lock_description _((struct flock *));
-
-static char *
-lock_description(p)
-    struct flock    *p;
+static const char *
+lock_description(struct flock *p)
 {
     switch (p->l_start)
     {
@@ -522,11 +459,8 @@ lock_description(p)
 }
 
 
-static void quitter _((int));
-
 static void
-quitter(n)
-    int             n;
+quitter(int n)
 {
     if (fd >= 0)
     {
@@ -538,7 +472,7 @@ quitter(n)
 
 
 void
-lock_take()
+lock_take(void)
 {
     int             flags;
     struct flock    p;
@@ -925,12 +859,18 @@ lock_take()
     }
     gonzo_become_undo();
     magic++;
+
+    /*
+     * Reset the idea of when it is, we pobably needed to sleep.
+     * The timestamps need to be dates *after* the lock was obtained.
+     */
+    now_clear();
     trace(("}\n"));
 }
 
 
 void
-lock_release()
+lock_release(void)
 {
     struct flock    p;
     int             fildes;
@@ -999,19 +939,14 @@ lock_release()
 
 
 long
-lock_magic()
+lock_magic(void)
 {
     return magic;
 }
 
 
-static void lock_walk_hunt _((long, long, lock_walk_callback));
-
 static void
-lock_walk_hunt(min, max, callback)
-    long            min;
-    long            max;
-    lock_walk_callback callback;
+lock_walk_hunt(long min, long max, lock_walk_callback callback)
 {
     struct flock    flock;
     int             j;
@@ -1176,8 +1111,7 @@ lock_walk_hunt(min, max, callback)
 
 
 void
-lock_walk(callback)
-    lock_walk_callback callback;
+lock_walk(lock_walk_callback callback)
 {
     int             flags;
     int             fildes;
@@ -1260,7 +1194,7 @@ lock_walk(callback)
 
 
 void
-lock_release_child()
+lock_release_child(void)
 {
 #ifdef glue_close
     /*

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 2002 Peter Miller;
+ *	Copyright (C) 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,6 @@ rpt_pos_ty *rpt_pos_alloc(struct string_ty *, long);
 rpt_pos_ty *rpt_pos_copy(rpt_pos_ty *);
 rpt_pos_ty *rpt_pos_union(rpt_pos_ty *, rpt_pos_ty *);
 void rpt_pos_free(rpt_pos_ty *);
-void rpt_pos_error(struct sub_context_ty *, rpt_pos_ty *, char *);
+void rpt_pos_error(struct sub_context_ty *, rpt_pos_ty *, const char *);
 
 #endif /* AEGIS_AER_POS_H */

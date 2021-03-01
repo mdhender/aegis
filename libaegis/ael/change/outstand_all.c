@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,9 +35,9 @@
 
 
 void
-list_outstanding_changes_all(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_outstanding_changes_all(string_ty *project_name,
+                             long change_number,
+                             string_list_ty *args)
 {
 	output_ty	*project_col = 0;
 	output_ty	*number_col = 0;

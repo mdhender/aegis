@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <aer/func/page_width.h>
 #include <aer/value/integer.h>
 #include <error.h>
-#include <option.h>
+#include <page.h>
 
 
 static int
@@ -38,7 +38,7 @@ static rpt_value_ty *
 page_width_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
     assert(argc == 0);
-    return rpt_value_integer(option_page_width_get(-1));
+    return rpt_value_integer(page_width_get(-1));
 }
 
 
@@ -62,7 +62,7 @@ static rpt_value_ty *
 page_length_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
     assert(argc == 0);
-    return rpt_value_integer(option_page_length_get(-1));
+    return rpt_value_integer(page_length_get(-1));
 }
 
 

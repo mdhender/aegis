@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,52 +30,50 @@
 
 
 void
-change_run_review_pass_notify_command(cp)
-	change_ty	*cp;
+change_run_review_pass_notify_command(change_ty *cp)
 {
-	sub_context_ty	*scp;
-	string_ty	*the_command;
-	string_ty	*dd;
+    sub_context_ty  *scp;
+    string_ty       *the_command;
+    string_ty       *dd;
 
-	/*
-	 * make sure there is one
-	 */
-	trace(("change_run_review_pass_notify_command(cp = %08lX)\n{\n",
-		(long)cp));
-	assert(cp->reference_count >= 1);
-	the_command = project_review_pass_notify_command_get(cp->pp);
-	if (!the_command)
-		goto done;
+    /*
+     * make sure there is one
+     */
+    trace(("change_run_review_pass_notify_command(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    the_command = project_review_pass_notify_command_get(cp->pp);
+    if (!the_command || !the_command->str_length)
+	goto done;
 
-	/*
-	 * notify the review has passed
-	 *	(it could be mail, or an internal bulletin board, etc)
-	 * it happens after the data is written and the locks are released,
-	 * so we don't much care if the command fails!
-	 *
-	 * All of the substitutions described in aesub(5) are available.
-	 */
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "1", "${project}");
-	sub_var_set_charstar(scp, "2", "${change}");
-	sub_var_set_charstar(scp, "3", "${developer}");
-	sub_var_set_charstar(scp, "4", "${reviewer}");
-	the_command = substitute(scp, cp, the_command);
-	sub_context_delete(scp);
+    /*
+     * notify the review has passed
+     *	(it could be mail, or an internal bulletin board, etc)
+     * it happens after the data is written and the locks are released,
+     * so we don't much care if the command fails!
+     *
+     * All of the substitutions described in aesub(5) are available.
+     */
+    scp = sub_context_new();
+    sub_var_set_charstar(scp, "1", "${project}");
+    sub_var_set_charstar(scp, "2", "${change}");
+    sub_var_set_charstar(scp, "3", "${developer}");
+    sub_var_set_charstar(scp, "4", "${reviewer}");
+    the_command = substitute(scp, cp, the_command);
+    sub_context_delete(scp);
 
-	/*
-	 * execute the command
-	 */
-	dd = change_development_directory_get(cp, 0);
-	change_env_set(cp, 0);
-	change_become(cp);
-	os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dd);
-	str_free(the_command);
-	change_become_undo();
+    /*
+     * execute the command
+     */
+    dd = change_development_directory_get(cp, 0);
+    change_env_set(cp, 0);
+    change_become(cp);
+    os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dd);
+    str_free(the_command);
+    change_become_undo();
 
-	/*
-	 * here for all exits
-	 */
-	done:
-	trace(("}\n"));
+    /*
+     * here for all exits
+     */
+    done:
+    trace(("}\n"));
 }

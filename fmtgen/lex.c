@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ lex_initialize(void)
     typedef struct keyword_ty keyword_ty;
     struct keyword_ty
     {
-	char            *k_name;
+	const char      *k_name;
 	int             k_token;
     };
 
@@ -105,7 +105,7 @@ lex_initialize(void)
 
 
 void
-lex_open(char *s)
+lex_open(const char *s)
 {
     file_ty         *f;
 
@@ -299,7 +299,7 @@ parse_lex(void)
 		    break;
 		}
 		s = str_from_c(buffer);
-		data = symtab_query(keyword, s);
+		data = (int *)symtab_query(keyword, s);
 		if (data)
 		{
 		    str_free(s);
@@ -478,7 +478,7 @@ parse_lex(void)
 
 
 void
-parse_error(char *s, ...)
+parse_error(const char *s, ...)
 {
     va_list	    ap;
     char	    buffer[1000];
@@ -500,7 +500,7 @@ lex_in_include_file(void)
 
 
 void
-lex_include_path(char *s)
+lex_include_path(const char *s)
 {
     string_list_append_unique(&include_path, str_from_c(s));
 }

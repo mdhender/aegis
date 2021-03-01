@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@
 static void
 make_transparent_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -180,7 +180,7 @@ make_transparent_list(void)
 	}
 	arglex();
     }
-    list_project_files(project_name, change_number);
+    list_project_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -229,6 +229,7 @@ make_transparent_main(void)
     int		    based;
     string_ty	    *base;
     sub_context_ty  *scp;
+    int             unchanged;
 
     trace(("make_transparent_main()\n{\n"));
     arglex();
@@ -236,6 +237,7 @@ make_transparent_main(void)
     change_number = 0;
     string_list_constructor(&wl);
     log_style = log_style_append_default;
+    unchanged = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -309,6 +311,12 @@ make_transparent_main(void)
 	    log_style = log_style_none;
 	    break;
 
+	case arglex_token_unchanged:
+	    if (unchanged)
+		duplicate_option(make_transparent_usage);
+	    unchanged = 1;
+	    break;
+
 	case arglex_token_wait:
 	case arglex_token_wait_not:
 	    user_lock_wait_argument(make_transparent_usage);
@@ -326,7 +334,7 @@ make_transparent_main(void)
 	}
 	arglex();
     }
-    if (!wl.nstrings)
+    if (!unchanged && !wl.nstrings)
     {
 	error_intl(0, i18n("no file names"));
 	make_transparent_usage();
@@ -373,6 +381,14 @@ make_transparent_main(void)
 	change_fatal(cp, 0, i18n("bad nf branch"));
     if (!str_equal(change_developer_name(cp), user_name(up)))
 	change_fatal(cp, 0, i18n("not developer"));
+
+    /*
+     * If no files were named and the -unchanged option was used,
+     * add all of the project's unchanged files in the change.
+     * It is an error if there are none.
+     */
+    if (!wl.nstrings)
+	string_list_append(&wl, change_development_directory_get(cp, 1));
 
     /*
      * Where to search to resolve file names.
@@ -524,6 +540,7 @@ make_transparent_main(void)
 	fstate_src      pp_src_data;
 
 	s1 = wl.string[j];
+	trace(("s1 = \"%s\"\n", s1->str_text));
 	if (change_file_find(cp, s1))
 	{
 	    scp = sub_context_new();
@@ -600,6 +617,12 @@ make_transparent_main(void)
 	case file_action_remove:
 	    if (!pp->parent)
 	    {
+		if (unchanged)
+		{
+		    trace(("not this one\n"));
+		    continue;
+		}
+
 		/*
 		 * You may not make a trunk file transparent.
 		 * What would you see through it?
@@ -621,6 +644,11 @@ make_transparent_main(void)
 		project_file_find(pp->parent, s1, view_path_simple);
 	    if (!pp_src_data)
 	    {
+		if (unchanged)
+		{
+		    trace(("not this one\n"));
+		    continue;
+		}
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s1);
 		project_error
@@ -638,10 +666,47 @@ make_transparent_main(void)
 	case file_action_transparent:
 	case file_action_insulate:
 	    /* not possible */
+	    trace(("not possible\n"));
 	    assert(0);
 	    continue;
 	}
 	assert(pp_src_data);
+
+	if (unchanged)
+	{
+	    /*
+	     * It isn't sufficient to compare versions strings, because
+	     * not everyone configures their history commands to avoid
+	     * unnecessary checkins.  We have to actually compare the
+	     * two files.
+	     */
+	    string_ty       *f1_path;
+	    int             f1_unlink;
+	    string_ty       *f2_path;
+	    int             f2_unlink;
+	    int             different;
+
+	    trace(("mark\n"));
+	    f1_path = project_file_version_path(pp, b_src_data, &f1_unlink);
+	    f2_path =
+		project_file_version_path(pp->parent, pp_src_data, &f2_unlink);
+	    user_become(up);
+	    different = files_are_different(f1_path, f2_path);
+	    if (f1_unlink)
+		os_unlink(f1_path);
+	    if (f2_unlink)
+		os_unlink(f2_path);
+	    user_become_undo();
+
+	    str_free(f1_path);
+	    str_free(f2_path);
+	    if (different)
+	    {
+		trace(("not this one, it's different\n"));
+		continue;
+	    }
+	}
+
 	c_src_data = change_file_new(cp, s1);
 	c_src_data->action = file_action_transparent;
 	c_src_data->usage = pp_src_data->usage;
@@ -681,31 +746,36 @@ make_transparent_main(void)
      * the way.
      */
     dd = change_development_directory_get(cp, 0);
-    for (j = 0; j < wl.nstrings; ++j)
+    for (j = 0; ; ++j)
     {
 	fstate_src      pp_src_data;
 
-	s1 = wl.string[j];
-
-	c_src_data = change_file_find(cp, s1);
-	assert(c_src_data);
+	c_src_data = change_file_nth(cp, j);
+	if (!c_src_data)
+	    break;
 	assert(pp->parent);
-	pp_src_data = project_file_find(pp->parent, s1, view_path_extreme);
+	pp_src_data =
+	    project_file_find
+	    (
+		pp->parent,
+		c_src_data->file_name,
+		view_path_extreme
+	    );
 	if (pp_src_data)
 	{
 	    string_ty       *from;
 	    string_ty       *to;
 	    int             mode;
 
-	    from = project_file_path(pp->parent, s1);
+	    from = project_file_path(pp->parent, c_src_data->file_name);
 	    assert(from);
-	    to = str_format("%S/%S", dd, s1);
+	    to = str_format("%S/%S", dd, c_src_data->file_name);
 
 	    /*
 	     * copy the file
 	     */
 	    user_become(up);
-	    os_mkdir_between(dd, s1, 02755);
+	    os_mkdir_between(dd, c_src_data->file_name, 02755);
 	    if (os_exists(to))
 		os_unlink(to);
 	    copy_whole_file(from, to, 0);
@@ -732,7 +802,7 @@ make_transparent_main(void)
 	     * Remove any existing file (this cleans up junk, and
 	     * breaks the link if we are using symlink trees).
 	     */
-	    change_file_whiteout_write(cp, s1, up);
+	    change_file_whiteout_write(cp, c_src_data->file_name, up);
 	}
     }
 
@@ -746,9 +816,7 @@ make_transparent_main(void)
      * run the change file command
      * and the project file command if necessary
      */
-#if 0
     change_run_make_transparent_command(cp, &wl, up);
-#endif
     change_run_project_file_command(cp, up);
 
     /*

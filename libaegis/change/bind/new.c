@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,7 @@
 
 
 void
-change_bind_new(cp)
-	change_ty	*cp;
+change_bind_new(change_ty *cp)
 {
 	trace(("change_bind_new(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	assert(cp->reference_count >= 1);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,76 +47,70 @@ struct output_uuencode_ty
 };
 
 
-static void output_uuencode_destructor _((output_ty *));
-
 static void
-output_uuencode_destructor(fp)
-    output_ty	    *fp;
+output_uuencode_destructor(output_ty *fp)
 {
-    output_uuencode_ty *this;
+    output_uuencode_ty *this_thing;
 
-    this = (output_uuencode_ty *)fp;
-    if (this->begun)
+    this_thing = (output_uuencode_ty *)fp;
+    if (this_thing->begun)
     {
-	while (this->residual_bits > 0)
+	while (this_thing->residual_bits > 0)
 	{
 	    int		    n;
 
-	    if (this->residual_bits < 6)
+	    if (this_thing->residual_bits < 6)
 	    {
 		/* fake a NUL character */
-		this->residual_value <<= 8;
-		this->residual_bits += 8;
+		this_thing->residual_value <<= 8;
+		this_thing->residual_bits += 8;
 	    }
 
-	    this->residual_bits -= 6;
-	    n = (this->residual_value >> this->residual_bits);
+	    this_thing->residual_bits -= 6;
+	    n = (this_thing->residual_value >> this_thing->residual_bits);
 	    n &= 0x3F;
-	    this->obuf[this->opos++] = etab[n];
+	    this_thing->obuf[this_thing->opos++] = etab[n];
 	}
-	if (this->ipos)
+	if (this_thing->ipos)
 	{
-	    this->obuf[0] = etab[this->ipos];
-	    this->obuf[this->opos++] = '\n';
-	    output_write(this->deeper, this->obuf, this->opos);
-	    this->ipos = 0;
-	    this->opos = 1; /* The length character */
+	    this_thing->obuf[0] = etab[this_thing->ipos];
+	    this_thing->obuf[this_thing->opos++] = '\n';
+	    output_write(this_thing->deeper,
+                         this_thing->obuf,
+                         this_thing->opos);
+	    this_thing->ipos = 0;
+	    this_thing->opos = 1; /* The length character */
 	}
-	output_fputs(this->deeper, "`\nend\n");
+	output_fputs(this_thing->deeper, "`\nend\n");
     }
-    if (this->delete_on_close)
-	output_delete(this->deeper);
-    if (this->filename)
-	str_free(this->filename);
-    this->delete_on_close = 0;
-    this->deeper = 0;
-    this->filename = 0;
+    if (this_thing->delete_on_close)
+	output_delete(this_thing->deeper);
+    if (this_thing->filename)
+	str_free(this_thing->filename);
+    this_thing->delete_on_close = 0;
+    this_thing->deeper = 0;
+    this_thing->filename = 0;
 }
 
 
-static void output_uuencode_write _((output_ty *, const void *, size_t));
-
 static void
-output_uuencode_write(fp, p, len)
-    output_ty	    *fp;
-    const void	    *p;
-    size_t	    len;
+output_uuencode_write(output_ty *fp, const void *p, size_t len)
 {
     const unsigned char *data;
-    output_uuencode_ty *this;
+    output_uuencode_ty *this_thing;
 
-    this = (output_uuencode_ty *)fp;
-    if (!this->begun)
+    this_thing = (output_uuencode_ty *)fp;
+    if (!this_thing->begun)
     {
-	this->begun = 1;
-	output_fputs(this->deeper, "begin 644 ");
-	output_put_str(this->deeper, output_filename(fp));
-	output_fputc(this->deeper, '\n');
+	this_thing->begun = 1;
+	output_fputs(this_thing->deeper, "begin 644 ");
+	output_put_str(this_thing->deeper, output_filename(fp));
+	output_fputc(this_thing->deeper, '\n');
     }
-    data = p;
+    data = (unsigned char *)p;
     if (len > 0)
-	this->bol = (data[len - 1] == '\n');
-    this->pos += len;
+	this_thing->bol = (data[len - 1] == '\n');
+    this_thing->pos += len;
     while (len > 0)
     {
 	unsigned char   c;
@@ -124,49 +118,49 @@ output_uuencode_write(fp, p, len)
 	c = *data++;
 	--len;
 
-	this->residual_value = (this->residual_value << 8) | (c & 0xFF);
-	this->ipos++;
-	this->residual_bits += 8;
+	this_thing->residual_value =
+            (this_thing->residual_value << 8) | (c & 0xFF);
+	this_thing->ipos++;
+	this_thing->residual_bits += 8;
 	for (;;)
 	{
 	    int		    n;
 
-	    this->residual_bits -= 6;
-	    n = (this->residual_value >> this->residual_bits);
+	    this_thing->residual_bits -= 6;
+	    n = (this_thing->residual_value >> this_thing->residual_bits);
 	    n &= 0x3F;
-	    this->obuf[this->opos++] = etab[n];
-	    if (this->residual_bits == 0 && this->opos > 60)
+	    this_thing->obuf[this_thing->opos++] = etab[n];
+	    if (this_thing->residual_bits == 0 && this_thing->opos > 60)
 	    {
-		this->obuf[0] = etab[this->ipos];
-		this->obuf[this->opos++] = '\n';
-		output_write(this->deeper, this->obuf, this->opos);
-		this->opos = 1; /* The length character */
-		this->ipos = 0;
+		this_thing->obuf[0] = etab[this_thing->ipos];
+		this_thing->obuf[this_thing->opos++] = '\n';
+		output_write(this_thing->deeper,
+                             this_thing->obuf,
+                             this_thing->opos);
+		this_thing->opos = 1; /* The length character */
+		this_thing->ipos = 0;
 	    }
-	    if (this->residual_bits < 6)
+	    if (this_thing->residual_bits < 6)
 		break;
 	}
     }
 }
 
 
-static string_ty *output_uuencode_filename _((output_ty *));
-
 static string_ty *
-output_uuencode_filename(fp)
-    output_ty	    *fp;
+output_uuencode_filename(output_ty *fp)
 {
-    output_uuencode_ty *this;
+    output_uuencode_ty *this_thing;
 
-    this = (output_uuencode_ty *)fp;
-    if (!this->filename)
+    this_thing = (output_uuencode_ty *)fp;
+    if (!this_thing->filename)
     {
 	char		*cp1;
 	char		*cp2;
 	char		*cp3;
 
-	this->filename = output_filename(this->deeper);
-	cp1 = this->filename->str_text;
+	this_thing->filename = output_filename(this_thing->deeper);
+	cp1 = this_thing->filename->str_text;
 	cp2 = strrchr(cp1, '/');
 	if (cp2)
 	    ++cp2;
@@ -174,57 +168,45 @@ output_uuencode_filename(fp)
 	    cp2 = cp1;
 	cp3 = strstr(cp2, ".uu");
 	if (cp3)
-	    this->filename = str_n_from_c(cp1, cp3 - cp1);
+	    this_thing->filename = str_n_from_c(cp1, cp3 - cp1);
 	else
-	    this->filename = str_copy(this->filename);
+	    this_thing->filename = str_copy(this_thing->filename);
     }
-    return this->filename;
+    return this_thing->filename;
 }
 
-
-static long output_uuencode_ftell _((output_ty *));
 
 static long
-output_uuencode_ftell(fp)
-    output_ty	    *fp;
+output_uuencode_ftell(output_ty *fp)
 {
-    output_uuencode_ty *this;
+    output_uuencode_ty *this_thing;
 
-    this = (output_uuencode_ty *)fp;
-    return this->pos;
+    this_thing = (output_uuencode_ty *)fp;
+    return this_thing->pos;
 }
 
 
-static int output_uuencode_page_width _((output_ty *));
-
 static int
-output_uuencode_page_width(fp)
-    output_ty	    *fp;
+output_uuencode_page_width(output_ty *fp)
 {
     return 80;
 }
 
 
-static int output_uuencode_page_length _((output_ty *));
-
 static int
-output_uuencode_page_length(fp)
-    output_ty	    *fp;
+output_uuencode_page_length(output_ty *fp)
 {
     return 66;
 }
 
 
-static void output_uuencode_eoln _((output_ty *));
-
 static void
-output_uuencode_eoln(fp)
-    output_ty	    *fp;
+output_uuencode_eoln(output_ty *fp)
 {
-    output_uuencode_ty *this;
+    output_uuencode_ty *this_thing;
 
-    this = (output_uuencode_ty *)fp;
-    if (!this->bol)
+    this_thing = (output_uuencode_ty *)fp;
+    if (!this_thing->bol)
 	output_fputc(fp, '\n');
 }
 
@@ -245,24 +227,22 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_uuencode(deeper, delete_on_close)
-    output_ty	    *deeper;
-    int		    delete_on_close;
+output_uuencode(output_ty *deeper, int delete_on_close)
 {
     output_ty	    *result;
-    output_uuencode_ty *this;
+    output_uuencode_ty *this_thing;
 
     result = output_new(&vtbl);
-    this = (output_uuencode_ty *)result;
-    this->deeper = deeper;
-    this->delete_on_close = !!delete_on_close;
-    this->residual_value = 0;
-    this->residual_bits = 0;
-    this->opos = 1; /* The length character */
-    this->ipos = 0;
-    this->pos = 0;
-    this->bol = 1;
-    this->begun = 0;
-    this->filename = 0;
+    this_thing = (output_uuencode_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->delete_on_close = !!delete_on_close;
+    this_thing->residual_value = 0;
+    this_thing->residual_bits = 0;
+    this_thing->opos = 1; /* The length character */
+    this_thing->ipos = 0;
+    this_thing->pos = 0;
+    this_thing->bol = 1;
+    this_thing->begun = 0;
+    this_thing->filename = 0;
     return result;
 }

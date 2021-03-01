@@ -43,7 +43,7 @@
 static void
 new_developer_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -102,7 +102,7 @@ new_developer_list(void)
 	}
 	arglex();
     }
-    list_developers(project_name, 0);
+    list_developers(project_name, 0, 0);
     trace(("}\n"));
 }
 
@@ -206,7 +206,6 @@ new_developer_main(void)
     project_ty	    *pp;
     int             recursive;
 
-
     trace(("new_developer_main()\n{\n"));
     arglex();
     string_list_constructor(&wl);
@@ -221,7 +220,7 @@ new_developer_main(void)
 	    continue;
 
 	case arglex_token_project_recursive:
-	    recursive=boolean_true;
+	    recursive = 1;
 	    break;
 
 	case arglex_token_user:

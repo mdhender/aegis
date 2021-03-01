@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,7 @@
 
 
 void
-change_architecture_add(cp, name)
-	change_ty	*cp;
-	string_ty	*name;
+change_architecture_add(change_ty *cp, string_ty *name)
 {
 	cstate		cstate_data;
 	type_ty		*type_p;

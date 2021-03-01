@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,50 +40,39 @@ struct rpt_value_list_ty
 };
 
 
-static void construct _((rpt_value_ty *));
-
 static void
-construct(vp)
-	rpt_value_ty	*vp;
+construct(rpt_value_ty *vp)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 
-	this = (rpt_value_list_ty *)vp;
-	assert(this->method->type == rpt_value_type_list);
-	this->length = 0;
-	this->max = 0;
-	this->item = 0;
+	this_thing = (rpt_value_list_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_list);
+	this_thing->length = 0;
+	this_thing->max = 0;
+	this_thing->item = 0;
 }
 
 
-static void destruct _((rpt_value_ty *));
-
 static void
-destruct(vp)
-	rpt_value_ty	*vp;
+destruct(rpt_value_ty *vp)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 	size_t		j;
 
-	this = (rpt_value_list_ty *)vp;
-	assert(this->method->type == rpt_value_type_list);
-	for (j = 0; j < this->length; ++j)
-		rpt_value_free(this->item[j]);
-	if (this->item)
-		mem_free(this->item);
+	this_thing = (rpt_value_list_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_list);
+	for (j = 0; j < this_thing->length; ++j)
+		rpt_value_free(this_thing->item[j]);
+	if (this_thing->item)
+		mem_free(this_thing->item);
 }
 
 
-static rpt_value_ty *lookup _((rpt_value_ty *, rpt_value_ty *, int));
-
 static rpt_value_ty *
-lookup(vp, rhs, lvalue)
-	rpt_value_ty	*vp;
-	rpt_value_ty	*rhs;
-	int		lvalue;
+lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 {
 	sub_context_ty	*scp;
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 	rpt_value_ty	*rhs2;
 	long		idx;
 	string_ty	*s;
@@ -105,8 +94,8 @@ lookup(vp, rhs, lvalue)
 		str_free(s);
 		return result;
 	}
-	this = (rpt_value_list_ty *)vp;
-	assert(this->method->type == rpt_value_type_list);
+	this_thing = (rpt_value_list_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_list);
 	rhs2 = rpt_value_arithmetic(rhs);
 	switch (rhs2->method->type)
 	{
@@ -115,7 +104,7 @@ lookup(vp, rhs, lvalue)
 		break;
 
 	case rpt_value_type_real:
-		idx = rpt_value_real_query(rhs2);
+		idx = (long int)rpt_value_real_query(rhs2);
 		break;
 
 	default:
@@ -130,26 +119,23 @@ lookup(vp, rhs, lvalue)
 		return result;
 	}
 	rpt_value_free(rhs2);
-	if (idx < 0 || idx >= this->length)
+	if (idx < 0 || idx >= (long)this_thing->length)
 		return rpt_value_nul();
-	return rpt_value_copy(this->item[idx]);
+	return rpt_value_copy(this_thing->item[idx]);
 }
 
 
-static rpt_value_ty *keys _((rpt_value_ty *));
-
 static rpt_value_ty *
-keys(vp)
-	rpt_value_ty	*vp;
+keys(rpt_value_ty *vp)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 	rpt_value_ty	*result;
 	long		j;
 	rpt_value_ty	*n;
 
-	this = (rpt_value_list_ty *)vp;
+	this_thing = (rpt_value_list_ty *)vp;
 	result = rpt_value_list();
-	for (j = 0; j < this->length; ++j)
+	for (j = 0; j < (long)this_thing->length; ++j)
 	{
 		n = rpt_value_integer(j);
 		rpt_value_list_append(result, n);
@@ -159,16 +145,13 @@ keys(vp)
 }
 
 
-static rpt_value_ty *count _((rpt_value_ty *));
-
 static rpt_value_ty *
-count(vp)
-	rpt_value_ty	*vp;
+count(rpt_value_ty *vp)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 
-	this = (rpt_value_list_ty *)vp;
-	return rpt_value_integer(this->length);
+	this_thing = (rpt_value_list_ty *)vp;
+	return rpt_value_integer(this_thing->length);
 }
 
 
@@ -198,48 +181,44 @@ rpt_value_list()
 
 
 void
-rpt_value_list_append(vp, child)
-	rpt_value_ty	*vp;
-	rpt_value_ty	*child;
+rpt_value_list_append(rpt_value_ty *vp, rpt_value_ty *child)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 
-	this = (rpt_value_list_ty *)vp;
-	assert(this->method->type == rpt_value_type_list);
-	if (this->length >= this->max)
+	this_thing = (rpt_value_list_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_list);
+	if (this_thing->length >= this_thing->max)
 	{
 		size_t		nbytes;
 
-		this->max = this->max * 2 + 4;
-		nbytes = this->max * sizeof(rpt_value_ty *);
-		this->item = mem_change_size(this->item, nbytes);
+		this_thing->max = this_thing->max * 2 + 4;
+		nbytes = this_thing->max * sizeof(rpt_value_ty *);
+		this_thing->item =
+                    (rpt_value_ty **)mem_change_size(this_thing->item, nbytes);
 	}
-	this->item[this->length++] = rpt_value_copy(child);
+	this_thing->item[this_thing->length++] = rpt_value_copy(child);
 }
 
 
 long
-rpt_value_list_length(vp)
-	rpt_value_ty	*vp;
+rpt_value_list_length(rpt_value_ty *vp)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 
-	this = (rpt_value_list_ty *)vp;
-	assert(this->method->type == rpt_value_type_list);
-	return this->length;
+	this_thing = (rpt_value_list_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_list);
+	return this_thing->length;
 }
 
 
 rpt_value_ty *
-rpt_value_list_nth(vp, n)
-	rpt_value_ty	*vp;
-	long		n;
+rpt_value_list_nth(rpt_value_ty *vp, long n)
 {
-	rpt_value_list_ty *this;
+	rpt_value_list_ty *this_thing;
 
-	this = (rpt_value_list_ty *)vp;
-	assert(this->method->type == rpt_value_type_list);
+	this_thing = (rpt_value_list_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_list);
 	assert(n >= 0);
-	assert(n < this->length);
-	return this->item[n];
+	assert(n < this_thing->length);
+	return this_thing->item[n];
 }

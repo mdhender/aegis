@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,7 @@
 
 
 void
-change_test_baseline_time_set(cp, when)
-	change_ty	*cp;
-	time_t		when;
+change_test_baseline_time_set(change_ty *cp, time_t when)
 {
 	long		j, k;
 	cstate_architecture_times tp;

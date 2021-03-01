@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,7 @@
 
 
 void
-gif_colormap_set(gp, idx, r, g, b)
-	gif_ty		*gp;
-	int		idx;
-	int		r;
-	int		g;
-	int		b;
+gif_colormap_set(gif_ty *gp, int idx, int r, int g, int b)
 {
 	if (idx >= 0 && idx < 256)
 	{

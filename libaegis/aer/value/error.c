@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,20 +35,17 @@ struct rpt_value_error_ty
 };
 
 
-static void destruct _((rpt_value_ty *));
-
 static void
-destruct(vp)
-	rpt_value_ty	*vp;
+destruct(rpt_value_ty *vp)
 {
-	rpt_value_error_ty *this;
+	rpt_value_error_ty *this_thing;
 
-	this = (rpt_value_error_ty *)vp;
-	assert(this->method->type == rpt_value_type_error);
-	if (this->pp)
-		rpt_pos_free(this->pp);
-	if (this->value)
-		str_free(this->value);
+	this_thing = (rpt_value_error_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_error);
+	if (this_thing->pp)
+		rpt_pos_free(this_thing->pp);
+	if (this_thing->value)
+		str_free(this_thing->value);
 }
 
 
@@ -71,58 +68,52 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_error(pp, s)
-	rpt_pos_ty	*pp;
-	string_ty	*s;
+rpt_value_error(rpt_pos_ty *pp, string_ty *s)
 {
 	rpt_value_ty	*that;
-	rpt_value_error_ty *this;
+	rpt_value_error_ty *this_thing;
 
 	that = rpt_value_alloc(&method);
-	this = (rpt_value_error_ty *)that;
-	this->pp = (pp ? rpt_pos_copy(pp) : 0);
-	this->value = str_copy(s);
+	this_thing = (rpt_value_error_ty *)that;
+	this_thing->pp = (pp ? rpt_pos_copy(pp) : 0);
+	this_thing->value = str_copy(s);
 	return that;
 }
 
 
 string_ty *
-rpt_value_error_query(vp)
-	rpt_value_ty	*vp;
+rpt_value_error_query(rpt_value_ty *vp)
 {
-	rpt_value_error_ty *this;
+	rpt_value_error_ty *this_thing;
 
-	this = (rpt_value_error_ty *)vp;
+	this_thing = (rpt_value_error_ty *)vp;
 	assert(vp->method == &method);
-	return this->value;
+	return this_thing->value;
 }
 
 
 void
-rpt_value_error_print(vp)
-	rpt_value_ty	*vp;
+rpt_value_error_print(rpt_value_ty *vp)
 {
 	sub_context_ty	*scp;
-	rpt_value_error_ty *this;
+	rpt_value_error_ty *this_thing;
 
-	this = (rpt_value_error_ty *)vp;
+	this_thing = (rpt_value_error_ty *)vp;
 	assert(vp->method == &method);
 	scp = sub_context_new();
-	sub_var_set_string(scp, "Message", this->value);
-	rpt_pos_error(scp, this->pp, i18n("$message"));
+	sub_var_set_string(scp, "Message", this_thing->value);
+	rpt_pos_error(scp, this_thing->pp, i18n("$message"));
 	sub_context_delete(scp);
 }
 
 
 void
-rpt_value_error_setpos(vp, pp)
-	rpt_value_ty	*vp;
-	rpt_pos_ty	*pp;
+rpt_value_error_setpos(rpt_value_ty *vp, rpt_pos_ty *pp)
 {
-	rpt_value_error_ty *this;
+	rpt_value_error_ty *this_thing;
 
-	this = (rpt_value_error_ty *)vp;
+	this_thing = (rpt_value_error_ty *)vp;
 	assert(vp->method == &method);
-	if (!this->pp)
-		this->pp = rpt_pos_copy(pp);
+	if (!this_thing->pp)
+		this_thing->pp = rpt_pos_copy(pp);
 }

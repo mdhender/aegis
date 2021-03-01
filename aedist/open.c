@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,7 @@
 
 
 input_ty *
-aedist_open(ifn, subject_p)
-	string_ty	*ifn;
-	string_ty	**subject_p;
+aedist_open(string_ty *ifn, string_ty **subject_p)
 {
 	input_ty	*ifp;
 	input_ty	*cpio_p;

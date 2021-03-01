@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,49 +22,47 @@
 
 #include <error.h> /* for assert */
 #include <mem.h>
-#include <option.h>
+#include <page.h>
 #include <trace.h>
 #include <wide_output/private.h>
 
 
 wide_output_ty *
-wide_output_new(vptr)
-	wide_output_vtbl_ty	*vptr;
+wide_output_new(wide_output_vtbl_ty *vptr)
 {
-	wide_output_ty	*this;
+	wide_output_ty	*this_thing;
 
 	trace(("wide_output_new(vptr = %08lX)\n{\n", (long)vptr));
-	trace(("type is \"%s\"\n", vptr->typename));
+	trace(("type is \"%s\"\n", vptr->type_name));
 	assert(vptr);
 	assert(vptr->size > sizeof(wide_output_ty));
-	this = mem_alloc(vptr->size);
-	this->vptr = vptr;
+	this_thing = mem_alloc(vptr->size);
+	this_thing->vptr = vptr;
 
-	this->buffer_size = (size_t)1 << 11;
-	this->buffer = mem_alloc(this->buffer_size * sizeof(wchar_t));
-	this->buffer_position = this->buffer;
-	this->buffer_end = this->buffer + this->buffer_size;
+	this_thing->buffer_size = (size_t)1 << 11;
+	this_thing->buffer =
+            mem_alloc(this_thing->buffer_size * sizeof(wchar_t));
+	this_thing->buffer_position = this_thing->buffer;
+	this_thing->buffer_end = this_thing->buffer + this_thing->buffer_size;
 
-	this->ncallbacks = 0;
-	this->ncallbacks_max = 0;
-	this->callback = 0;
-	trace(("return %08lX;", (long)this));
+	this_thing->ncallbacks = 0;
+	this_thing->ncallbacks_max = 0;
+	this_thing->callback = 0;
+	trace(("return %08lX;", (long)this_thing));
 	trace(("}\n"));
-	return this;
+	return this_thing;
 }
 
 
 int
-wide_output_generic_page_width(fp)
-	wide_output_ty	*fp;
+wide_output_generic_page_width(wide_output_ty *fp)
 {
-	return option_page_width_get(-1) - 1;
+	return page_width_get(-1) - 1;
 }
 
 
 int
-wide_output_generic_page_length(fp)
-	wide_output_ty	*fp;
+wide_output_generic_page_length(wide_output_ty *fp)
 {
-	return option_page_length_get(-1);
+	return page_length_get(-1);
 }

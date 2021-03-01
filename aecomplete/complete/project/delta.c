@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,31 +36,24 @@ struct complete_project_delta_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_project_delta_ty *this;
+    complete_project_delta_ty *this_thing;
 
-    this = (complete_project_delta_ty *)cp;
-    project_free(this->pp);
+    this_thing = (complete_project_delta_ty *)cp;
+    project_free(this_thing->pp);
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_project_delta_ty *this;
+    complete_project_delta_ty *this_thing;
     string_ty       *prefix;
     size_t          j;
 
-    this = (complete_project_delta_ty *)cp;
+    this_thing = (complete_project_delta_ty *)cp;
     prefix = shell_prefix_get(sh);
     for (j = 0; ; ++j)
     {
@@ -70,7 +63,7 @@ perform(cp, sh)
 	size_t		k;
 	string_ty       *s;
 
-	if (!project_history_nth(this->pp, j, &cn, &dn, &name))
+	if (!project_history_nth(this_thing->pp, j, &cn, &dn, &name))
 	    break;
 
 	s = str_format("%ld", dn);
@@ -99,14 +92,13 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_project_delta(pp)
-    project_ty      *pp;
+complete_project_delta(project_ty *pp)
 {
     complete_ty     *result;
-    complete_project_delta_ty *this;
+    complete_project_delta_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_project_delta_ty *)result;
-    this->pp = pp;
+    this_thing = (complete_project_delta_ty *)result;
+    this_thing->pp = pp;
     return result;
 }

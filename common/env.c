@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1990, 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1990-1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,16 @@
  * MANIFEST: functions to manipulate environment variables
  */
 
+#include <ac/stdarg.h>
 #include <ac/stddef.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
 #include <env.h>
 #include <error.h>
 #include <mem.h>
+#include <page.h>
 #include <trace.h>
 
 
@@ -70,13 +73,19 @@ env_initialize(void)
 	char		*was;
 
 	was = old[j];
-	cp = mem_alloc(strlen(was) + 1);
+	cp = (char *)mem_alloc(strlen(was) + 1);
 	strcpy(cp, was);
 	environ[j] = cp;
     }
     environ[nenvirons] = 0;
     env_set("SHELL", CONF_SHELL);
-    trace((/*{*/"}\n"));
+
+    /*
+     * Default the language to "en" if not set already.
+     */
+    if (!getenv("LANGUAGE") && !getenv("LANG"))
+	env_set("LANG", "en");
+    trace(("}\n"));
 }
 
 
@@ -96,7 +105,7 @@ env_initialize(void)
  */
 
 void
-env_set(char *name, char *value)
+env_set(const char *name, const char *value)
 {
     size_t	    name_len;
     size_t	    j;
@@ -123,13 +132,14 @@ env_set(char *name, char *value)
     }
     if (j < nenvirons)
     {
-	environ[j] = mem_change_size(environ[j], nbytes);
+	environ[j] = (char *)mem_change_size(environ[j], nbytes);
 	cp = environ[j];
     }
     else
     {
-	environ = mem_change_size(environ, (nenvirons + 2) * sizeof(char *));
-	environ[nenvirons] = mem_alloc(nbytes);
+	environ =
+            (char **)mem_change_size(environ, (nenvirons + 2) * sizeof(char *));
+	environ[nenvirons] = (char *)mem_alloc(nbytes);
 	cp = environ[nenvirons];
 	++nenvirons;
 	environ[nenvirons] = 0;
@@ -138,6 +148,19 @@ env_set(char *name, char *value)
     cp[name_len] = '=';
     strcpy(cp + name_len + 1, value);
     trace(("}\n"));
+}
+
+
+void
+env_setf(const char *name, const char *fmt, ...)
+{
+    char            buffer[1000];
+    va_list         ap;
+
+    va_start(ap, fmt);
+    vsprintf(buffer, fmt, ap);
+    va_end(ap);
+    env_set(name, buffer);
 }
 
 
@@ -160,7 +183,7 @@ env_set(char *name, char *value)
  */
 
 void
-env_unset(char *name)
+env_unset(const char *name)
 {
     size_t	    name_len;
     size_t	    j;
@@ -192,4 +215,12 @@ env_unset(char *name)
     for ( ; j < nenvirons; ++j)
 	environ[j] = environ[j + 1];
     trace(("}\n"));
+}
+
+
+void
+env_set_page(void)
+{
+    env_setf("LINES", "%d", page_length_get(-1));
+    env_setf("COLS", "%d", page_width_get(-1));
 }

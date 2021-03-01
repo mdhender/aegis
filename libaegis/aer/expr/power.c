@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 
 
 static rpt_value_ty *
-evaluate(rpt_expr_ty *this)
+evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -51,8 +51,8 @@ evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("power::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -69,7 +69,7 @@ evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1a);
@@ -107,7 +107,7 @@ evaluate(rpt_expr_ty *this)
 	rpt_value_free(v2a);
 	s = subst_intl(scp, i18n("illegal power ($name1 ** $name2)"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->pos, s);
+	result = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	trace(("}\n"));
 	return result;
@@ -140,7 +140,7 @@ evaluate(rpt_expr_ty *this)
 	sub_var_set_format(scp, "Value2", "%g", v2d);
 	s = subst_intl(scp, i18n("$value1 ** $value2: $errno"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->pos, s);
+	result = rpt_value_error(this_thing->pos, s);
 	str_free(s);
     }
 
@@ -164,10 +164,10 @@ static rpt_expr_method_ty method =
 rpt_expr_ty *
 rpt_expr_power(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }

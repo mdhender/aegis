@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <progname.h>
 
 
-static char     *progname;
+static const char *progname;
 
 
 void
@@ -39,13 +39,13 @@ progname_set(char *s)
      */
     for (;;)
     {
-	progname = strrchr(s, '/');
+	char *slash = strrchr(s, '/');
 
 	/*
 	 * we were invoked as
 	 *	progname -args
 	 */
-	if (!progname)
+	if (!slash)
 	{
 	    /*
 	     * Nuke any ugly progname suffix
@@ -62,9 +62,9 @@ progname_set(char *s)
 	 * we were invoked as
 	 *	/usr/local/progname -args
 	 */
-	if (progname[1])
+	if (slash[1])
 	{
-	    ++progname;
+	    progname = slash + 1;
 	    break;
 	}
 
@@ -74,12 +74,12 @@ progname_set(char *s)
 	 *	/usr//local///bin////progname///// -args
 	 * and it is legal!!
 	 */
-	*progname = 0;
+	*slash = 0;
     }
 }
 
 
-char *
+const char *
 progname_get(void)
 {
     /* do NOT put tracing in this function */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993-1995, 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1993-1995, 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -125,11 +125,8 @@ static proxy_ty	*proxy_table[17];
 
 #ifdef DEBUG
 
-static char *command_name _((int));
-
-static char *
-command_name(n)
-	int		n;
+static const char *
+command_name(int n)
 {
 	static char	buf[12];
 
@@ -172,14 +169,10 @@ command_name(n)
 #endif /* DEBUG */
 
 
-static void put_int _((FILE *, int));
-
 static void
-put_int(fp, n)
-	FILE		*fp;
-	int		n;
+put_int(FILE *fp, int n)
 {
-	int		j;
+	size_t		j;
 	unsigned char	*ptr;
 
 	trace(("put_int(%d)\n{\n"/*}*/, n));
@@ -192,14 +185,11 @@ put_int(fp, n)
 }
 
 
-static int get_int _((FILE *));
-
 static int
-get_int(fp)
-	FILE		*fp;
+get_int(FILE *fp)
 {
 	int		result;
-	int		j;
+	size_t		j;
 	unsigned char	*ptr;
 
 	trace(("get_int()\n{\n"/*}*/));
@@ -227,14 +217,10 @@ get_int(fp)
 }
 
 
-static void put_long _((FILE *, long));
-
 static void
-put_long(fp, n)
-	FILE		*fp;
-	long		n;
+put_long(FILE *fp, long n)
 {
-	int		j;
+	size_t		j;
 	unsigned char	*ptr;
 
 	trace(("put_long(%ld)\n{\n"/*}*/, n));
@@ -247,14 +233,11 @@ put_long(fp, n)
 }
 
 
-static long get_long _((FILE *));
-
 static long
-get_long(fp)
-	FILE		*fp;
+get_long(FILE *fp)
 {
 	long		result;
-	int		j;
+	size_t		j;
 	unsigned char	*ptr;
 
 	trace(("get_long()\n{\n"/*}*/));
@@ -282,13 +265,8 @@ get_long(fp)
 }
 
 
-static void put_binary _((FILE *, const void *, size_t));
-
 static void
-put_binary(fp, ptr, len)
-	FILE		*fp;
-	const void	*ptr;
-	size_t		len;
+put_binary(FILE *fp, const void *ptr, size_t len)
 {
 	trace(("put_binary(%ld)\n{\n"/*}*/, (long)len));
 	fwrite(ptr, 1, len, fp);
@@ -298,19 +276,14 @@ put_binary(fp, ptr, len)
 }
 
 
-static void get_binary _((FILE *, void *, size_t));
-
 static void
-get_binary(fp, ptr, len)
-	FILE		*fp;
-	void		*ptr;
-	size_t		len;
+get_binary(FILE *fp, void *ptr, size_t len)
 {
 	long		n;
 
 	trace(("get_binary(%ld)\n{\n"/*}*/, (long)len));
 	n = fread(ptr, 1, len, fp);
-	if (n != len)
+	if ((size_t)n != len)
 	{
 		if (ferror(fp))
 			nfatal("reading pipe");
@@ -320,12 +293,8 @@ get_binary(fp, ptr, len)
 }
 
 
-static void put_string _((FILE *, char *));
-
 static void
-put_string(fp, s)
-	FILE		*fp;
-	char		*s;
+put_string(FILE *fp, char *s)
 {
 	trace(("put_string(\"%s\")\n{\n"/*}*/, s));
 	for (;;)
@@ -341,11 +310,8 @@ put_string(fp, s)
 }
 
 
-static void *get_string _((FILE *));
-
 static void *
-get_string(fp)
-	FILE		*fp;
+get_string(FILE *fp)
 {
 	static char	*result;
 	static size_t	result_max;
@@ -355,7 +321,7 @@ get_string(fp)
 	if (!result)
 	{
 		result_max = (1L << 10 ) - 32;
-		result = mem_alloc(result_max);
+		result = (char *)mem_alloc(result_max);
 	}
 
 	pos = 0;
@@ -377,7 +343,7 @@ get_string(fp)
 		if (pos >= result_max)
 		{
 			result_max += (1L << 10);
-			result = mem_change_size(result, result_max);
+			result = (char *)mem_change_size(result, result_max);
 		}
 		result[pos] = c;
 		if (!c)
@@ -390,12 +356,8 @@ get_string(fp)
 }
 
 
-static void proxy _((int rd, int wr));
-
 static void
-proxy(rd_fd, wr_fd)
-	int		rd_fd;
-	int		wr_fd;
+proxy(int rd_fd, int wr_fd)
 {
 	FILE		*command;
 	FILE		*reply = 0;
@@ -414,7 +376,7 @@ proxy(rd_fd, wr_fd)
 	int		fd;
 	long		nbytes;
 	long		nbytes2;
-	struct flock	flock;
+	struct flock	theFlock;
 
 	trace(("proxy(%d, %d)\n{\n"/*}*/, rd_fd, wr_fd));
 	errno = 0;
@@ -454,7 +416,7 @@ proxy(rd_fd, wr_fd)
 			fatal_raw("proxy: unknown %d command (bug)", c);
 
 		case command_access:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			mode = get_int(command);
 			if (access(path, mode))
 				result = errno;
@@ -464,7 +426,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_catfile:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			if (catfile(path))
 				result = errno;
 			else
@@ -473,7 +435,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_chmod:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			mode = get_int(command);
 			if (chmod(path, mode))
 				result = errno;
@@ -483,7 +445,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_chown:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			uid = get_int(command);
 			gid = get_int(command);
 			if (chown(path, uid, gid))
@@ -503,9 +465,9 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_copyfile:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			path1 = mem_copy_string(path);
-			path = get_string(command);
+			path = (char *)get_string(command);
 			result = copyfile(path1, path);
 			if (result)
 				result = errno;
@@ -514,7 +476,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_creat:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			mode = get_int(command);
 			result = creat(path, mode);
 			put_int(reply, result);
@@ -524,7 +486,7 @@ proxy(rd_fd, wr_fd)
 
 		case command_getcwd:
 			max = get_int(command);
-			path = mem_alloc(max);
+			path = (char *)mem_alloc(max);
 			if (!getcwd(path, max))
 				put_int(reply, errno);
 			else
@@ -538,18 +500,18 @@ proxy(rd_fd, wr_fd)
 		case command_fcntl:
 			fd = get_int(command);
 			mode = get_int(command);
-			get_binary(command, &flock, sizeof(flock));
-			result = fcntl(fd, mode, &flock);
+			get_binary(command, &theFlock, sizeof(theFlock));
+			result = fcntl(fd, mode, &theFlock);
 			if (result)
 				result = errno;
 			put_int(reply, result);
-			put_binary(reply, &flock, sizeof(flock));
+			put_binary(reply, &theFlock, sizeof(theFlock));
 			break;
 
 		case command_file_compare:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			path1 = mem_copy_string(path);
-			path = get_string(command);
+			path = (char *)get_string(command);
 			result = file_compare(path1, path);
 			if (result < 0)
 				result = -errno;
@@ -558,9 +520,9 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_file_fingerprint:
-			path = get_string(command);
+                        path = (char *)get_string(command);
 			max = get_int(command);
-			path1 = mem_alloc(max + 1);
+			path1 = (char *)mem_alloc(max + 1);
 			result = file_fingerprint(path, path1, max);
 			put_int(reply, result);
 			if (result < 0)
@@ -571,9 +533,9 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_link:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			path1 = mem_copy_string(path);
-			path2 = get_string(command);
+			path2 = (char *)get_string(command);
 			result = link(path1, path2);
 			if (result)
 				result = errno;
@@ -582,7 +544,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_lstat:
-			path = get_string(command);
+			path = (char *)get_string(command);
 #ifdef S_IFLNK
 			result = lstat(path, &st);
 #else
@@ -598,7 +560,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_mkdir:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			mode = get_int(command);
 			if (mkdir(path, mode))
 				result = errno;
@@ -608,7 +570,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_open:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			mode = get_int(command);
 			perm = get_int(command);
 			result = open(path, mode, perm);
@@ -618,7 +580,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_pathconf:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			mode = get_int(command);
 #ifndef _PC_NAME_MAX
 			put_long(reply, -1L);
@@ -633,9 +595,9 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_rename:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			path1 = mem_copy_string(path);
-			path = get_string(command);
+			path = (char *)get_string(command);
 			result = rename(path1, path);
 			if (result)
 				result = errno;
@@ -646,7 +608,7 @@ proxy(rd_fd, wr_fd)
 		case command_read:
 			fd = get_int(command);
 			nbytes = get_long(command);
-			buf = mem_alloc(nbytes);
+			buf = (char *)mem_alloc(nbytes);
 			nbytes2 = read(fd, buf, nbytes);
 			put_long(reply, nbytes2);
 			if (nbytes2 > 0)
@@ -657,9 +619,9 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_readlink:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			max = get_int(command);
-			path1 = mem_alloc(max + 1);
+			path1 = (char *)mem_alloc(max + 1);
 #ifdef S_IFLNK
 			result = readlink(path, path1, max);
 			put_int(reply, result);
@@ -675,7 +637,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_read_whole_dir:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			result = read_whole_dir(path, &buf, &nbytes);
 			if (result < 0)
 				put_int(reply, errno);
@@ -688,7 +650,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_rmdir:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			if (rmdir(path))
 				result = errno;
 			else
@@ -697,7 +659,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_rmdir_bg:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			if (rmdir_bg(path))
 				result = errno;
 			else
@@ -706,7 +668,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_rmdir_tree:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			if (rmdir_tree(path))
 				result = errno;
 			else
@@ -715,7 +677,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_stat:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			result = stat(path, &st);
 			if (result)
 				put_int(reply, errno);
@@ -727,9 +689,9 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_symlink:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			path1 = mem_copy_string(path);
-			path2 = get_string(command);
+			path2 = (char *)get_string(command);
 #ifdef S_IFLNK
 			result = symlink(path1, path2);
 			if (result)
@@ -742,7 +704,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_unlink:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			result = unlink(path);
 			if (result)
 				result = errno;
@@ -750,7 +712,7 @@ proxy(rd_fd, wr_fd)
 			break;
 
 		case command_utime:
-			path = get_string(command);
+			path = (char *)get_string(command);
 			get_binary(command, &utb, sizeof(utb));
 			result = utime(path, &utb);
 			if (result)
@@ -761,7 +723,7 @@ proxy(rd_fd, wr_fd)
 		case command_write:
 			fd = get_int(command);
 			nbytes = get_long(command);
-			buf = mem_alloc(nbytes);
+			buf = (char *)mem_alloc(nbytes);
 			get_binary(command, buf, nbytes);
 			nbytes2 = write(fd, buf, nbytes);
 			put_long(reply, nbytes2);
@@ -778,12 +740,8 @@ proxy(rd_fd, wr_fd)
 }
 
 
-static void get_pipe _((int *, int *));
-
 static void
-get_pipe(rd, wr)
-	int	*rd;
-	int	*wr;
+get_pipe(int *rd, int *wr)
 {
 	int	fd[2];
 
@@ -798,13 +756,11 @@ get_pipe(rd, wr)
 }
 
 
-static  void proxy_close _((void));
-
 static void
-proxy_close()
+proxy_close(void)
 {
 	proxy_ty	*p;
-	int		j;
+	size_t		j;
 
 	trace(("proxy_close()\n{\n"/*}*/));
 	trace(("pid = %d;\n", getpid()));
@@ -827,11 +783,8 @@ proxy_close()
 }
 
 
-static void proxy_spawn _((proxy_ty *));
-
 static void
-proxy_spawn(pp)
-	proxy_ty	*pp;
+proxy_spawn(proxy_ty *pp)
 {
 	int		command_read_fd;
 	int		command_write_fd;
@@ -937,10 +890,8 @@ proxy_spawn(pp)
 }
 
 
-static proxy_ty *proxy_find _((void));
-
 static proxy_ty *
-proxy_find()
+proxy_find(void)
 {
 	int		uid;
 	int		gid;
@@ -998,11 +949,8 @@ proxy_find()
 }
 
 
-static void end_of_command _((proxy_ty *));
-
 static void
-end_of_command(pp)
-	proxy_ty	*pp;
+end_of_command(proxy_ty *pp)
 {
 	trace(("end_of_command()\n{\n"/*}*/));
 	if (fflush(pp->command))
@@ -1012,9 +960,7 @@ end_of_command(pp)
 
 
 int
-glue_stat(path, st)
-	char		*path;
-	struct stat	*st;
+glue_stat(char *path, struct stat *st)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1039,9 +985,7 @@ glue_stat(path, st)
 
 
 int
-glue_lstat(path, st)
-	char		*path;
-	struct stat	*st;
+glue_lstat(char *path, struct stat *st)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1066,9 +1010,7 @@ glue_lstat(path, st)
 
 
 int
-glue_mkdir(path, mode)
-	char		*path;
-	int		mode;
+glue_mkdir(char *path, int mode)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1092,10 +1034,7 @@ glue_mkdir(path, mode)
 
 
 int
-glue_chown(path, uid, gid)
-	char		*path;
-	int		uid;
-	int		gid;
+glue_chown(char *path, int uid, int gid)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1120,8 +1059,7 @@ glue_chown(path, uid, gid)
 
 
 int
-glue_catfile(path)
-	char		*path;
+glue_catfile(char *path)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1144,9 +1082,7 @@ glue_catfile(path)
 
 
 int
-glue_chmod(path, mode)
-	char		*path;
-	int		mode;
+glue_chmod(char *path, int mode)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1170,8 +1106,7 @@ glue_chmod(path, mode)
 
 
 int
-glue_rmdir(path)
-	char		*path;
+glue_rmdir(char *path)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1194,8 +1129,7 @@ glue_rmdir(path)
 
 
 int
-glue_rmdir_bg(path)
-	char		*path;
+glue_rmdir_bg(char *path)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1218,9 +1152,7 @@ glue_rmdir_bg(path)
 
 
 int
-glue_rename(p1, p2)
-	char		*p1;
-	char		*p2;
+glue_rename(char *p1, char *p2)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1244,9 +1176,7 @@ glue_rename(p1, p2)
 
 
 int
-glue_symlink(name1, name2)
-	char		*name1;
-	char		*name2;
+glue_symlink(char *name1, char *name2)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1270,8 +1200,7 @@ glue_symlink(name1, name2)
 
 
 int
-glue_unlink(path)
-	char		*path;
+glue_unlink(char *path)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1294,9 +1223,7 @@ glue_unlink(path)
 
 
 int
-glue_link(p1, p2)
-	char		*p1;
-	char		*p2;
+glue_link(char *p1, char *p2)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1320,9 +1247,7 @@ glue_link(p1, p2)
 
 
 int
-glue_access(path, mode)
-	char		*path;
-	int		mode;
+glue_access(char *path, int mode)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1346,9 +1271,7 @@ glue_access(path, mode)
 
 
 char *
-glue_getcwd(buf, max)
-	char		*buf;
-	int		max;
+glue_getcwd(char *buf, int max)
 {
 	proxy_ty	*pp;
 	char		*s;
@@ -1373,7 +1296,7 @@ glue_getcwd(buf, max)
 	}
 	else
 	{
-		s = get_string(pp->reply);
+		s = (char *)get_string(pp->reply);
 		strcpy(buf, s);
 		s = buf;
 		trace(("return \"%s\";\n", s));
@@ -1384,10 +1307,7 @@ glue_getcwd(buf, max)
 
 
 int
-glue_readlink(path, buf, max)
-	char		*path;
-	char		*buf;
-	int		max;
+glue_readlink(char *path, char *buf, int max)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1416,9 +1336,7 @@ glue_readlink(path, buf, max)
 
 
 int
-glue_utime(path, values)
-	char		*path;
-	struct utimbuf	*values;
+glue_utime(char *path, struct utimbuf *values)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1442,9 +1360,7 @@ glue_utime(path, values)
 
 
 int
-glue_copyfile(p1, p2)
-	char		*p1;
-	char		*p2;
+glue_copyfile(char *p1, char *p2)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1485,9 +1401,7 @@ struct glue_file_ty
 
 
 FILE *
-glue_fopen(path, mode)
-	char		*path;
-	char		*mode;
+glue_fopen(char *path, char *mode)
 {
 	glue_file_ty	*gfp;
 	proxy_ty	*pp;
@@ -1556,8 +1470,7 @@ glue_fopen(path, mode)
 
 
 int
-glue_fclose(fp)
-	FILE		*fp;
+glue_fclose(FILE *fp)
 {
 	proxy_ty	*pp;
 	glue_file_ty	*gfp;
@@ -1618,8 +1531,7 @@ glue_fclose(fp)
 
 
 int
-glue_fgetc(fp)
-	FILE		*fp;
+glue_fgetc(FILE *fp)
 {
 	proxy_ty	*pp;
 	glue_file_ty	*gfp;
@@ -1717,10 +1629,7 @@ glue_fgetc(fp)
 
 
 long
-glue_read(fd, data, len)
-	int		fd;
-	void		*data;
-	size_t		len;
+glue_read(int fd, void *data, size_t len)
 {
 	proxy_ty	*pp;
 	long		nbytes;
@@ -1762,9 +1671,7 @@ glue_read(fd, data, len)
 
 
 int
-glue_ungetc(c, fp)
-	int		c;
-	FILE		*fp;
+glue_ungetc(int c, FILE *fp)
 {
 	glue_file_ty	*gfp;
 	int		result;
@@ -1813,9 +1720,7 @@ glue_ungetc(c, fp)
 
 
 int
-glue_fputc(c, fp)
-	int		c;
-	FILE		*fp;
+glue_fputc(int c, FILE *fp)
 {
 	proxy_ty	*pp;
 	glue_file_ty	*gfp;
@@ -1902,11 +1807,7 @@ glue_fputc(c, fp)
 
 
 int
-glue_fwrite(buf, len1, len2, fp)
-	char		*buf;
-	long		len1;
-	long		len2;
-	FILE		*fp;
+glue_fwrite(char *buf, long len1, long len2, FILE *fp)
 {
 	proxy_ty	*pp;
 	glue_file_ty	*gfp;
@@ -2004,8 +1905,7 @@ glue_fwrite(buf, len1, len2, fp)
 
 
 int
-glue_ferror(fp)
-	FILE		*fp;
+glue_ferror(FILE *fp)
 {
 	glue_file_ty	*gfp;
 
@@ -2038,8 +1938,7 @@ glue_ferror(fp)
 
 
 int
-glue_fflush(fp)
-	FILE		*fp;
+glue_fflush(FILE *fp)
 {
 	glue_file_ty	*gfp;
 	proxy_ty	*pp;
@@ -2122,10 +2021,7 @@ glue_fflush(fp)
 
 
 int
-glue_open(path, mode, perm)
-	char		*path;
-	int		mode;
-	int		perm;
+glue_open(char *path, int mode, int perm)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2147,9 +2043,7 @@ glue_open(path, mode, perm)
 
 
 int
-glue_creat(path, mode)
-	char		*path;
-	int		mode;
+glue_creat(char *path, int mode)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2170,8 +2064,7 @@ glue_creat(path, mode)
 
 
 int
-glue_close(fd)
-	int		fd;
+glue_close(int fd)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2194,10 +2087,7 @@ glue_close(fd)
 
 
 int
-glue_write(fd, buf, len)
-	int		fd;
-	const void	*buf;
-	long		len;
+glue_write(int fd, const void *buf, long len)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2222,10 +2112,7 @@ glue_write(fd, buf, len)
 
 
 int
-glue_fcntl(fd, cmd, data)
-	int		fd;
-	int		cmd;
-	struct flock	*data;
+glue_fcntl(int fd, int cmd, struct flock *data)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2253,9 +2140,7 @@ glue_fcntl(fd, cmd, data)
 
 
 int
-glue_file_compare(p1, p2)
-	char		*p1;
-	char		*p2;
+glue_file_compare(char *p1, char *p2)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2279,10 +2164,7 @@ glue_file_compare(p1, p2)
 
 
 int
-glue_file_fingerprint(path, buf, max)
-	char		*path;
-	char		*buf;
-	int		max;
+glue_file_fingerprint(char *path, char *buf, int max)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2311,10 +2193,7 @@ glue_file_fingerprint(path, buf, max)
 
 
 int
-glue_read_whole_dir(path, data_p, data_len_p)
-	char		*path;
-	char		**data_p;
-	long		*data_len_p;
+glue_read_whole_dir(char *path, char **data_p, long *data_len_p)
 {
 	static char	*data;
 	static long	data_max;
@@ -2340,9 +2219,9 @@ glue_read_whole_dir(path, data_p, data_len_p)
 		{
 			data_max = data_len;
 			if (!data)
-				data = mem_alloc(data_max);
+				data = (char *)mem_alloc(data_max);
 			else
-				data = mem_change_size(data, data_max);
+				data = (char *)mem_change_size(data, data_max);
 		}
 		get_binary(pp->reply, data, data_len);
 		*data_len_p = data_len;
@@ -2355,9 +2234,7 @@ glue_read_whole_dir(path, data_p, data_len_p)
 
 
 long
-glue_pathconf(path, cmd)
-	char		*path;
-	int		cmd;
+glue_pathconf(char *path, int cmd)
 {
 	proxy_ty	*pp;
 	long		result;
@@ -2378,8 +2255,7 @@ glue_pathconf(path, cmd)
 
 
 int
-glue_rmdir_tree(path)
-	char		*path;
+glue_rmdir_tree(char *path)
 {
 	proxy_ty	*pp;
 	int		result;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,9 +51,9 @@ static long	list_locks_count;
 static void
 list_locks_callback(lock_walk_found *found)
 {
-    char	    *name_str;
-    char	    *type_str;
-    char	    *project_str;
+    const char      *name_str;
+    const char      *type_str;
+    const char      *project_str;
     long	    change_number;
     long	    j;
     static itab_ty  *user_name_by_uid;
@@ -222,7 +222,7 @@ list_locks_callback(lock_walk_found *found)
 
 
 void
-list_locks(string_ty *project_name, long change_number)
+list_locks(string_ty *project_name, long change_number, string_list_ty *args)
 {
     /*
      * check for silly arguments

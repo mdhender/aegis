@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -268,6 +268,9 @@ convert_to_new_format(project_ty *pp)
 	sp2->locked_by = sp1->locked_by;
 	sp2->about_to_be_created_by = sp1->about_to_be_created_by;
 	sp2->deleted_by = sp1->deleted_by;
+
+	if (sp2->deleted_by && sp2->action == file_action_create)
+	    sp2->action = file_action_remove;
     }
     pstate_src_list_type.free(pstate_data->src);
     pp->pstate_data->src = 0;
@@ -992,8 +995,8 @@ project_bind_new(project_ty *pp)
 
 
 int
-break_up_version_string(char *sp, long *buf, int buflen_max, int *buflen_p,
-    int leading_punct)
+break_up_version_string(const char *sp, long *buf, int buflen_max,
+    int *buflen_p, int leading_punct)
 {
     int		    buflen;
     long	    n;
@@ -1113,7 +1116,7 @@ extract_version_from_project_name(string_ty **name_p, long *buf, int buflen_max,
 
 
 project_ty *
-project_find_branch(project_ty *pp, char *version_string)
+project_find_branch(project_ty *pp, const char *version_string)
 {
     long	    version[20];
     int		    version_length;
@@ -1488,7 +1491,7 @@ project_name_get(project_ty *pp)
 
 
 void
-project_error(project_ty *pp, sub_context_ty *scp, char *s)
+project_error(project_ty *pp, sub_context_ty *scp, const char *s)
 {
     string_ty	    *msg;
     int		    need_to_delete;
@@ -1522,7 +1525,7 @@ project_error(project_ty *pp, sub_context_ty *scp, char *s)
 
 
 void
-project_fatal(project_ty *pp, sub_context_ty *scp, char *s)
+project_fatal(project_ty *pp, sub_context_ty *scp, const char *s)
 {
     string_ty	    *msg;
     int		    need_to_delete;
@@ -1556,7 +1559,7 @@ project_fatal(project_ty *pp, sub_context_ty *scp, char *s)
 
 
 void
-project_verbose(project_ty *pp, sub_context_ty *scp, char *s)
+project_verbose(project_ty *pp, sub_context_ty *scp, const char *s)
 {
     string_ty	    *msg;
     int		    need_to_delete;
@@ -1871,7 +1874,7 @@ project_skip_unlucky_set(project_ty *pp, int n)
 int
 project_name_ok(string_ty *s)
 {
-    char	    *sp;
+    const char      *sp;
 
     /*
      * The horrible characters are file separators in a variety of

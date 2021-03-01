@@ -37,6 +37,7 @@ print("");
 print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" "
         ## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
 print("<html><head>");
+print("<meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\">");
 print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
 print("<meta http-equiv=\"Content-Type\" "
         ## "content=\"text/html; charset=ISO-8859-1\">");
@@ -52,8 +53,16 @@ print("<style type=\"text/css\"> "
  */
 print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
     ## "media=\"all\">");
-print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
-    ## "media=\"all\">");
+auto stack, depth, n;
+depth=0;
+stack[depth] = project[pn].state.name;
+while ("" != ( n = project[stack[depth]].state.parent_name )) {
+  stack[++depth] = n;
+}
+while ( depth >= 0) {
+    print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ##
+      stack[depth--] ## ".css\" " ## "media=\"all\">");
+}
 print("<title>");
 
 auto cause_map;

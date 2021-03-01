@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,36 +35,29 @@ struct complete_project_developer_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_project_developer_ty *this;
+    complete_project_developer_ty *this_thing;
 
-    this = (complete_project_developer_ty *)cp;
-    project_free(this->pp);
+    this_thing = (complete_project_developer_ty *)cp;
+    project_free(this_thing->pp);
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_project_developer_ty *this;
+    complete_project_developer_ty *this_thing;
     string_ty       *prefix;
     size_t          j;
     string_ty       *name;
 
-    this = (complete_project_developer_ty *)cp;
+    this_thing = (complete_project_developer_ty *)cp;
     prefix = shell_prefix_get(sh);
     for (j = 0; ; ++j)
     {
-	name = project_developer_nth(this->pp, j);
+	name = project_developer_nth(this_thing->pp, j);
 	if (!name)
 	    break;
 	if (str_leading_prefix(name, prefix))
@@ -83,14 +76,13 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_project_developer(pp)
-    project_ty      *pp;
+complete_project_developer(project_ty *pp)
 {
     complete_ty     *result;
-    complete_project_developer_ty *this;
+    complete_project_developer_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_project_developer_ty *)result;
-    this->pp = pp;
+    this_thing = (complete_project_developer_ty *)result;
+    this_thing->pp = pp;
     return result;
 }

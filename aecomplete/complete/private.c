@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,26 +25,24 @@
 
 
 complete_ty *
-complete_new(vptr)
-    complete_vtbl_ty *vptr;
+complete_new(complete_vtbl_ty *vptr)
 {
-    complete_ty     *this;
+    complete_ty     *this_thing;
 
-    this = mem_alloc(vptr->size);
-    this->vptr = vptr;
-    return this;
+    this_thing = (complete_ty *)mem_alloc(vptr->size);
+    this_thing->vptr = vptr;
+    return this_thing;
 }
 
 
 void
-complete_delete(this)
-    complete_ty     *this;
+complete_delete(complete_ty *this_thing)
 {
-    if (this)
+    if (this_thing)
     {
-	if (this->vptr && this->vptr->destructor)
-	    this->vptr->destructor(this);
-	this->vptr = 0;
-	mem_free(this);
+	if (this_thing->vptr && this_thing->vptr->destructor)
+	    this_thing->vptr->destructor(this_thing);
+	this_thing->vptr = 0;
+	mem_free(this_thing);
     }
 }

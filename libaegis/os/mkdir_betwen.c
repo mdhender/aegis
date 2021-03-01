@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,7 @@
 
 
 void
-os_mkdir_between(top, extn, mode)
-	string_ty	*top;
-	string_ty	*extn;
-	int		mode;
+os_mkdir_between(string_ty *top, string_ty *extn, int mode)
 {
 	char		*cp;
 	string_ty	*s1;

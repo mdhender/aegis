@@ -26,9 +26,7 @@
 
 
 void
-change_history_delta_name_delete(cp, delta_name)
-	change_ty	*cp;
-	string_ty	*delta_name;
+change_history_delta_name_delete(change_ty *cp, string_ty *delta_name)
 {
 	cstate		cstate_data;
 	cstate_branch_history_list h;

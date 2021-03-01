@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999-2002 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@
 static void
 change_directory_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -126,7 +126,7 @@ static void
 change_directory_main(void)
 {
     sub_context_ty  *scp;
-    char	    *subdir =	    0;
+    const char      *subdir =	    0;
     int		    devdir =	    0;
     cstate	    cstate_data;
     string_ty	    *d;
@@ -138,7 +138,7 @@ change_directory_main(void)
     user_ty	    *up;
     int		    trunk;
     int		    grandparent;
-    char	    *branch;
+    const char      *branch;
 
     trace(("change_directory_main()\n{\n"));
     arglex();

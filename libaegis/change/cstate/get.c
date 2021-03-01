@@ -29,11 +29,8 @@
 #include <trace.h>
 
 
-static void cstate_to_fstate _((change_ty *));
-
 static void
-cstate_to_fstate(cp)
-    change_ty	    *cp;
+cstate_to_fstate(change_ty *cp)
 {
     long	    j;
 
@@ -129,8 +126,7 @@ cstate_to_fstate(cp)
 
 
 cstate
-change_cstate_get(cp)
-    change_ty	    *cp;
+change_cstate_get(change_ty *cp)
 {
     string_ty	    *fn;
 

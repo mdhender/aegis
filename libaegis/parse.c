@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,9 +35,7 @@ static sem_ty	*sem_root;
 
 
 void *
-parse(filename, type)
-    string_ty	    *filename;
-    type_ty	    *type;
+parse(string_ty *filename, type_ty *type)
 {
     void	    *addr;
 
@@ -64,9 +62,7 @@ parse(filename, type)
 
 
 void *
-parse_env(name, type)
-    char	    *name;
-    type_ty	    *type;
+parse_env(const char *name, type_ty *type)
 {
     void	    *addr;
 
@@ -92,9 +88,7 @@ parse_env(name, type)
 
 
 void *
-parse_input(ifp, type)
-    input_ty	    *ifp;
-    type_ty	    *type;
+parse_input(input_ty *ifp, type_ty *type)
 {
     void	    *addr;
 
@@ -121,16 +115,14 @@ parse_input(ifp, type)
 
 
 void
-sem_push(type, addr)
-    type_ty	    *type;
-    void	    *addr;
+sem_push(type_ty *type, void *addr)
 {
     sem_ty	    *sp;
 
     trace(("sem_push(type = %08lX, addr = %08lX)\n{\n", (long)type,
 	(long)addr));
     trace(("type->name == \"%s\";\n", type ? type->name : "void"));
-    sp = mem_alloc(sizeof(sem_ty));
+    sp = (sem_ty *)mem_alloc(sizeof(sem_ty));
     sp->type = type;
     sp->addr = addr;
     sp->next = sem_root;
@@ -140,7 +132,7 @@ sem_push(type, addr)
 
 
 void
-sem_pop()
+sem_pop(void)
 {
     sem_ty	    *x;
 
@@ -156,8 +148,7 @@ sem_pop()
 
 
 void
-sem_integer(n)
-    long	    n;
+sem_integer(long n)
 {
     trace(("sem_integer(n = %ld)\n{\n", n));
     if (!sem_root->type)
@@ -190,8 +181,7 @@ sem_integer(n)
 
 
 void
-sem_real(n)
-    double	    n;
+sem_real(double n)
 {
     trace(("sem_real(n = %g)\n{\n", n));
     if (!sem_root->type)
@@ -199,7 +189,7 @@ sem_real(n)
     else if (sem_root->type == &integer_type)
     {
 	/* Precision may be lost. */
-	*(long *)sem_root->addr = n;
+	*(long *)sem_root->addr = (long int)n;
     }
     else if (sem_root->type == &real_type)
 	*(double *)sem_root->addr = n;
@@ -209,7 +199,7 @@ sem_real(n)
 	 * Time is always arithmetic, never a structure.
 	 * Precision may be lost.
 	 */
-	*(time_t *)sem_root->addr = n;
+	*(time_t *)sem_root->addr = (long int)n;
     }
     else
     {
@@ -225,8 +215,7 @@ sem_real(n)
 
 
 void
-sem_string(s)
-    string_ty	    *s;
+sem_string(string_ty *s)
 {
     trace(("sem_string(s = %08lX)\n{\n", (long)s));
     trace_string(s->str_text);
@@ -252,8 +241,7 @@ sem_string(s)
 
 
 void
-sem_enum(s)
-    string_ty	    *s;
+sem_enum(string_ty *s)
 {
     trace(("sem_enum(s = %08lX)\n{\n", (long)s));
     trace_string(s->str_text);
@@ -312,7 +300,7 @@ sem_enum(s)
 
 
 void
-sem_list()
+sem_list(void)
 {
     trace(("sem_list()\n{\n"));
     if (!sem_root->type)
@@ -342,7 +330,7 @@ sem_list()
 	    void	    *contents;
 
 	    contents = type->alloc();
-	    *(generic_struct_ty **)addr = contents;
+	    *(generic_struct_ty **)addr = (generic_struct_ty *)contents;
 	    addr = contents;
 	}
 
@@ -353,8 +341,7 @@ sem_list()
 
 
 void
-sem_field(name)
-    string_ty	    *name;
+sem_field(string_ty *name)
 {
     trace(("sem_field(name = %08lX)\n{\n", (long)name));
     trace_string(name->str_text);
@@ -380,7 +367,7 @@ sem_field(name)
 	unsigned long	mask;
 	generic_struct_ty *gsp;
 
-	gsp = sem_root->addr;
+	gsp = (generic_struct_ty *)sem_root->addr;
 	addr = sem_root->type->struct_parse(gsp, name, &type, &mask);
 	if (!addr)
 	{
@@ -434,7 +421,7 @@ sem_field(name)
 		void		*contents;
 
 		contents = type->alloc();
-		*(generic_struct_ty **)addr = contents;
+		*(generic_struct_ty **)addr = (generic_struct_ty *)contents;
 		addr = contents;
 	    }
 

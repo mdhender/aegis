@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <input/file.h>
 #include <send.h>
 #include <gettime.h>
+#include <now.h>
 #include <os.h>
 #include <output/file.h>
 #include <output/gzip.h>
@@ -52,7 +53,7 @@
 static void
 usage(void)
 {
-    char            *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
@@ -66,7 +67,7 @@ send(void)
 {
     string_ty       *project_name;
     long            change_number;
-    char            *branch;
+    const char      *branch;
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
@@ -77,14 +78,13 @@ send(void)
     user_ty         *up;
     cstate          cstate_data;
     string_ty       *output;
-    time_t          now;
     size_t          j;
     int             baseline;
     int             entire_source;
     int             compress;
     long            delta_number;
     time_t          delta_date;
-    char            *delta_name;
+    const char      *delta_name;
     string_list_ty  wl;
 
     branch = 0;
@@ -394,7 +394,6 @@ send(void)
 	str_free(s1);
 	delta_name = 0;
     }
-    time(&now);
     if (delta_date != NO_TIME_SET)
     {
 	/*
@@ -404,7 +403,7 @@ send(void)
 	 * This is the "time safe" quality first described by
 	 * Damon Poole <damon@ede.com>
 	 */
-	if (delta_date > now)
+	if (delta_date > now())
 	    project_error(pp, 0, i18n("date in the future"));
 
 	/*

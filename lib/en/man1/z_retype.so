@@ -1,0 +1,28 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2003 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/man1/z_retypes
+.\"
+.SS Changing the Type of a File
+If you want to change the type of a file (say, from a test to a source
+file, or \fIvice versa\fP) you could do it as two changes, by first using
+\fIaerm\fP(1) in one change and then using \fIaenf\fP(1) or \fIaent\fP(1)
+in a second change, or you can combine both steps in the same change.
+Remember to use the \fIaerm -nowhiteout\fP option or you will get a most
+peculiar new file template.

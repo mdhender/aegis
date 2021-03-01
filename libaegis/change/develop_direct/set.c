@@ -30,9 +30,7 @@
 
 
 void
-change_development_directory_set(cp, s)
-    change_ty	    *cp;
-    string_ty	    *s;
+change_development_directory_set(change_ty *cp, string_ty *s)
 {
     cstate	    cstate_data;
 

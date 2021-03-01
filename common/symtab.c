@@ -32,13 +32,14 @@ symtab_alloc(int size)
     symtab_ty	*stp;
     str_hash_ty	j;
 
-    stp = mem_alloc(sizeof(symtab_ty));
+    stp = (symtab_ty *)mem_alloc(sizeof(symtab_ty));
     stp->chain = 0;
     stp->reap = 0;
     stp->hash_modulus = 1 << 5; /* MUST be a power of 2 */
     stp->hash_mask = stp->hash_modulus - 1;
     stp->hash_load = 0;
-    stp->hash_table = mem_alloc(stp->hash_modulus * sizeof(symtab_row_ty *));
+    stp->hash_table = (symtab_row_ty **)mem_alloc(
+        stp->hash_modulus * sizeof(symtab_row_ty *));
     for (j = 0; j < stp->hash_modulus; ++j)
 	stp->hash_table[j] = 0;
     return stp;
@@ -110,7 +111,8 @@ split(symtab_ty *stp)
      */
     new_hash_modulus = stp->hash_modulus * 2;
     new_hash_mask = new_hash_modulus - 1;
-    new_hash_table = mem_alloc(new_hash_modulus * sizeof(symtab_row_ty *));
+    new_hash_table =
+        (symtab_row_ty **)mem_alloc(new_hash_modulus * sizeof(symtab_row_ty *));
 
     /*
      * now redistribute the list elements
@@ -269,7 +271,7 @@ symtab_assign(symtab_ty *stp, string_ty *key, void *data)
 	}
     }
 
-    p = mem_alloc(sizeof(symtab_row_ty));
+    p = (symtab_row_ty *)mem_alloc(sizeof(symtab_row_ty));
     p->key = str_copy(key);
     p->overflow = stp->hash_table[index];
     p->data = data;
@@ -306,7 +308,7 @@ symtab_assign_push(symtab_ty *stp, string_ty *key, void *data)
 
     index = key->str_hash & stp->hash_mask;
 
-    p = mem_alloc(sizeof(symtab_row_ty));
+    p = (symtab_row_ty *)mem_alloc(sizeof(symtab_row_ty));
     p->key = str_copy(key);
     p->overflow = stp->hash_table[index];
     p->data = data;

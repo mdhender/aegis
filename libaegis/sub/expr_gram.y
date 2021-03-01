@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,8 @@
 #ifdef DEBUG
 #define YYDEBUG 1
 #endif
+
+static void yyerror(const char *s);
 
 %}
 
@@ -75,42 +77,37 @@ static sub_context_ty *scp;
 
 
 string_ty *
-sub_expr_gram(scp_arg, s)
-	sub_context_ty	*scp_arg;
-	string_ty	*s;
+sub_expr_gram(sub_context_ty *scp_arg, string_ty *s)
 {
-	int		bad;
-	extern int yyparse _((void));
+    int             bad;
+    extern int yyparse(void);
 #ifdef DEBUG
-        extern int yydebug;
+    extern int      yydebug;
 #endif
 
-	trace(("sub_expr_gram()\n{\n"/*}*/));
+    trace(("sub_expr_gram()\n{\n"));
 #ifdef DEBUG
-	yydebug = trace_pretest_;
+    yydebug = trace_pretest_;
 #endif
-	scp = scp_arg;
-	sub_expr_lex_open(s);
-	bad = yyparse();
-	sub_expr_lex_close();
-	trace(("bad = %d\n", bad));
+    scp = scp_arg;
+    sub_expr_lex_open(s);
+    bad = yyparse();
+    sub_expr_lex_close();
+    trace(("bad = %d\n", bad));
 
-	trace((/*{*/"}\n"));
-	if (bad)
-		return 0;
-	return str_format("%ld", result);
+    trace(("}\n"));
+    if (bad)
+	return 0;
+    return str_format("%ld", result);
 }
 
 
-void yyerror _((char *));
-
-void
-yyerror(s)
-	char	*s;
+static void
+yyerror(const char *s)
 {
-	trace(("yyerror(\"%s\")\n{\n", s));
-	sub_context_error_set(scp, s);
-	trace((/*{*/"}\n"));
+    trace(("yyerror(\"%s\")\n{\n", s));
+    sub_context_error_set(scp, s);
+    trace(("}\n"));
 }
 
 #ifdef DEBUG
@@ -139,14 +136,14 @@ yyerror(s)
 void
 yydebugger(void *junk, const char *fmt, ...)
 {
-	va_list		ap;
-	string_ty	*s;
+    va_list         ap;
+    string_ty       *s;
 
-	va_start(ap, fmt);
-	s = str_vformat(fmt, ap);
-	va_end(ap);
-	trace_printf("%s", s->str_text);
-	str_free(s);
+    va_start(ap, fmt);
+    s = str_vformat(fmt, ap);
+    va_end(ap);
+    trace_printf("%s", s->str_text);
+    str_free(s);
 }
 
 #endif
@@ -156,41 +153,41 @@ yydebugger(void *junk, const char *fmt, ...)
 %%
 
 grammar:
-	expr
-		{ result = $1; }
-	;
+    expr
+	{ result = $1; }
+    ;
 
 expr
-	: LP expr RP
-		{ $$ = $2; trace(("$$ = %ld;\n", $$)); }
-	| NUMBER
-		{ $$ = $1; trace(("$$ = %ld;\n", $$)); }
-	| MINUS expr
-		%prec UNARY
-		{ $$ = -$2; trace(("$$ = %ld;\n", $$)); }
-	| expr PLUS expr
-		{ $$ = $1 + $3; trace(("$$ = %ld;\n", $$)); }
-	| expr MINUS expr
-		{ $$ = $1 - $3; trace(("$$ = %ld;\n", $$)); }
-	| expr MUL expr
-		{ $$ = $1 * $3; trace(("$$ = %ld;\n", $$)); }
-	| expr DIV expr
-		{ $$ = $3 ? $1 / $3 : 0; trace(("$$ = %ld;\n", $$)); }
-	| expr MOD expr
-		{ $$ = $3 ? $1 % $3 : 0; trace(("$$ = %ld;\n", $$)); }
-	| expr EQ expr
-		{ $$ = ($1 == $3); trace(("$$ = %ld;\n", $$)); }
-	| expr NE expr
-		{ $$ = ($1 != $3); trace(("$$ = %ld;\n", $$)); }
-	| expr LT expr
-		{ $$ = ($1 < $3); trace(("$$ = %ld;\n", $$)); }
-	| expr LE expr
-		{ $$ = ($1 <= $3); trace(("$$ = %ld;\n", $$)); }
-	| expr GT expr
-		{ $$ = ($1 > $3); trace(("$$ = %ld;\n", $$)); }
-	| expr GE expr
-		{ $$ = ($1 >= $3); trace(("$$ = %ld;\n", $$)); }
-	| NOT expr
-		%prec UNARY
-		{ $$ = (!$2); trace(("$$ = %ld;\n", $$)); }
-	;
+    : LP expr RP
+	{ $$ = $2; trace(("$$ = %ld;\n", $$)); }
+    | NUMBER
+	{ $$ = $1; trace(("$$ = %ld;\n", $$)); }
+    | MINUS expr
+	%prec UNARY
+	{ $$ = -$2; trace(("$$ = %ld;\n", $$)); }
+    | expr PLUS expr
+	{ $$ = $1 + $3; trace(("$$ = %ld;\n", $$)); }
+    | expr MINUS expr
+	{ $$ = $1 - $3; trace(("$$ = %ld;\n", $$)); }
+    | expr MUL expr
+	{ $$ = $1 * $3; trace(("$$ = %ld;\n", $$)); }
+    | expr DIV expr
+	{ $$ = $3 ? $1 / $3 : 0; trace(("$$ = %ld;\n", $$)); }
+    | expr MOD expr
+	{ $$ = $3 ? $1 % $3 : 0; trace(("$$ = %ld;\n", $$)); }
+    | expr EQ expr
+	{ $$ = ($1 == $3); trace(("$$ = %ld;\n", $$)); }
+    | expr NE expr
+	{ $$ = ($1 != $3); trace(("$$ = %ld;\n", $$)); }
+    | expr LT expr
+	{ $$ = ($1 < $3); trace(("$$ = %ld;\n", $$)); }
+    | expr LE expr
+	{ $$ = ($1 <= $3); trace(("$$ = %ld;\n", $$)); }
+    | expr GT expr
+	{ $$ = ($1 > $3); trace(("$$ = %ld;\n", $$)); }
+    | expr GE expr
+	{ $$ = ($1 >= $3); trace(("$$ = %ld;\n", $$)); }
+    | NOT expr
+	%prec UNARY
+	{ $$ = (!$2); trace(("$$ = %ld;\n", $$)); }
+    ;

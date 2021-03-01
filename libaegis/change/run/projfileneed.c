@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,17 +26,16 @@
 
 
 int
-change_run_project_file_command_needed(cp)
-	change_ty	*cp;
+change_run_project_file_command_needed(change_ty *cp)
 {
-	cstate		cstate_data;
+    cstate          cstate_data;
 
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	return
-		(
-			cstate_data->project_file_command_sync
-		!=
-			project_last_change_integrated(cp->pp)
-		);
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    return
+	(
+    	    cstate_data->project_file_command_sync
+	!=
+    	    project_last_change_integrated(cp->pp)
+	);
 }

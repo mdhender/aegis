@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@
 static void
 wrap(const char *s)
 {
-    char	    *progname;
+    const char      *progname;
     static char     escapes[] = "\rr\nn\ff\bb\tt";
     int		    page_width;
     char	    tmp[200];
@@ -246,7 +246,7 @@ copy_string(const char *s)
     char	    *cp;
 
     errno = 0;
-    cp = malloc(strlen(s) + 1);
+    cp = (char *)malloc(strlen(s) + 1);
     if (!cp)
     {
 	if (!errno)
@@ -451,7 +451,7 @@ quit_register(quit_ty func)
 
     if (quitting)
 	return;
-    assert(quit_list_len < SIZEOF(quit_list));
+    assert((size_t)quit_list_len < SIZEOF(quit_list));
     assert(func);
     for (j = 0; j < quit_list_len; ++j)
 	if (quit_list[j] == func)

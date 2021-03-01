@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -350,10 +350,9 @@ trace_long_unsigned_real(const char *name, const unsigned long *vp)
 void
 trace_pointer_real(const char *name, const void *vptrptr)
 {
-    const void *const *ptr_ptr;
     const void *ptr;
+    const void *const *ptr_ptr = (const void *const *)vptrptr;
 
-    ptr_ptr = vptrptr;
     ptr = *ptr_ptr;
     if (!ptr)
 	trace_printf("%s = NULL;\n", name);

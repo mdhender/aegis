@@ -1,0 +1,138 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2003 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 4.12 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 38
+A bug has been fixed in ``ael cf''.  It used to fail an
+assertion when there were no files in the change.
+.PP
+.if n *
+.if t \(bu
+.\" change 37
+A bug has been fixed which caused aeipass to segfault when
+adjusting file modification time stamps in some
+circumstances.
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+A bug has been fixed in the cross branch merging code.  It
+would sometime erroneously complain about files no longer
+being in the baseline.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A bug has been fixed which caused \fIaedist\fP(1) and \fIaeannotate\fP(1)
+to segfault.  It was caused by the roll forward history mechanism ignoring
+some branches in some cases.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+A  bugs has been fixed in the \fIaenrv -Descend_Project_Tree\fP
+option, which was free()ing a project twice, sometimes causing segfaults.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+The \fIaeget\fP CGI interface is now able to retrieve historical
+versions of files.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+The \fIaeget\fP CGI interface now has support for file metrics.
+.PP
+.if n *
+.if t \(bu
+.\" change 30
+The \fIaeget\fP CGI interface has been enhanced to provide more
+information about project files and change files:
+activity, conflicts, history.
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+The \fIaeipass\fP(1) command now sets the
+AEGIS_\%INTEGRATION_\%DIRECTORY environment variable before running the
+\fIintegrate_\%pass_\%notify_\%command\fP, so that you can add a symlink
+for compilers which insist on placing absolute paths into debugging
+information in object files.
+.PP
+.if n *
+.if t \(bu
+.\" change 30
+The \fIaeget\fP CGI interface has been enhanced to provide more
+information about project files and change files -
+activity, conflicts, history.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+The \fIaeget\fP CGI interface now reports more project information.
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+The \fIaeget\fP CGI interface now has download links in many of its menus,
+allowing more and better downloads than the old \fIaegis.cgi\fP(1) script.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+The way \fIaenf\fP(1) and \fIaent\fP(1) work have been made more generous.
+It is now possible to \fIaerm\fP(1) a file and then \fIaenf\fP(1) or
+\fIaent\fP(1) the same file in the same change.  This is useful for
+changing the type of a file.  Previously this has to be done as two
+consecutive changes.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+The \fIaecp \-independent\fP command has been enhanced to allow you
+to extract versions of built files (created with \fIaenf -build\fP and
+maintained at \fIaeipass\fP(1) time).
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+Documentation has been added to \fIaer\fP(5) for the try/catch mechanism.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+There was a disagreement between the \fIaereport\fP(1),
+\fIaeannotate\fP(1), \fIaedist\fP(1), \fIaefind\fP(1), \fIaeimport\fP(1),
+\fIaels\fP(1), \fIaepatch\fP(1), \fIaerect\fP(1), \fIaetar\fP(1) and
+\fIaexml\fP(1) man pages and the commands themselves about the existence
+of the \fB\-version\fP option.  The commands now behave as documented.
+.PP
+.if n *
+.if t \(bu
+.\" change 16
+There is a new \fIProject_\%Branch_\%Dates\fP report, which may be used
+to see when branches of a project were begun and completed.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.12 (29-Sep-2003)

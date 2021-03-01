@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,24 +35,18 @@
 #include <trace.h>
 
 
-static void reap _((void *));
-
 static void
-reap(p)
-    void	    *p;
+reap(void *p)
 {
     string_ty	    *s;
 
-    s = p;
+    s = (string_ty *)p;
     str_free(s);
 }
 
 
-static int has_a_header _((input_ty *));
-
 static int
-has_a_header(ifp)
-    input_ty	    *ifp;
+has_a_header(input_ty *ifp)
 {
     stracc_t	    buffer;
     int		    result;
@@ -246,11 +240,8 @@ has_a_header(ifp)
 }
 
 
-static int is_binary _((input_ty *));
-
 static int
-is_binary(ifp)
-    input_ty	    *ifp;
+is_binary(input_ty *ifp)
 {
     int		    result;
     int		    c;
@@ -284,8 +275,7 @@ is_binary(ifp)
 
 
 rfc822_header_ty *
-rfc822_header_read(ifp)
-    input_ty	    *ifp;
+rfc822_header_read(input_ty *ifp)
 {
     rfc822_header_ty *hp;
     stracc_t	    buffer;
@@ -294,7 +284,7 @@ rfc822_header_read(ifp)
      * Allocate a symbol table to hold everything.
      */
     trace(("rfc822_header_read(ifp = %08lX)\n{\n", (long)ifp));
-    hp = mem_alloc(sizeof(rfc822_header_ty));
+    hp = (rfc822_header_ty *)mem_alloc(sizeof(rfc822_header_ty));
     hp->stp = symtab_alloc(1);
     hp->stp->reap = reap;
 
@@ -453,8 +443,7 @@ rfc822_header_read(ifp)
 
 
 void
-rfc822_header_delete(hp)
-    rfc822_header_ty *hp;
+rfc822_header_delete(rfc822_header_ty *hp)
 {
     symtab_free(hp->stp);
     mem_free(hp);
@@ -462,9 +451,7 @@ rfc822_header_delete(hp)
 
 
 string_ty *
-rfc822_header_query(hp, name)
-    rfc822_header_ty *hp;
-    const char	    *name;
+rfc822_header_query(rfc822_header_ty *hp, const char *name)
 {
     string_ty	    *Name;
     string_ty	    *Name2;
@@ -473,7 +460,7 @@ rfc822_header_query(hp, name)
     Name = str_from_c(name);
     Name2 = str_downcase(Name);
     str_free(Name);
-    result = symtab_query(hp->stp, Name2);
+    result = (string_ty *)symtab_query(hp->stp, Name2);
     str_free(Name2);
     return result;
 }

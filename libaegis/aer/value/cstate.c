@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,12 +50,12 @@ struct rpt_value_cstate_ty
 static void
 destruct(rpt_value_ty *vp)
 {
-    rpt_value_cstate_ty *this;
+    rpt_value_cstate_ty *this_thing;
 
     trace(("rpt_value_cstate::destruct(vp = %08lX)\n{\n"/*}*/, (long)vp));
-    this = (rpt_value_cstate_ty *)vp;
-    project_free(this->pp);
-    mem_free(this->list);
+    this_thing = (rpt_value_cstate_ty *)vp;
+    project_free(this_thing->pp);
+    mem_free(this_thing->list);
     trace((/*{*/"}\n"));
 }
 
@@ -63,7 +63,7 @@ destruct(rpt_value_ty *vp)
 static rpt_value_ty *
 lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
 {
-    rpt_value_cstate_ty *this;
+    rpt_value_cstate_ty *this_thing;
     rpt_value_ty    *rhs2;
     rpt_value_ty    *result;
     long	    change_number;
@@ -78,8 +78,8 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
     /*
      * extract the change number
      */
-    trace(("rpt_value_cstate::lookup(this = %08lX)\n{\n"/*}*/, (long)vp));
-    this = (rpt_value_cstate_ty *)vp;
+    trace(("rpt_value_cstate::lookup(this_thing = %08lX)\n{\n"/*}*/, (long)vp));
+    this_thing = (rpt_value_cstate_ty *)vp;
     rhs2 = rpt_value_integerize(rhs);
     if (rhs2->method->type != rpt_value_type_integer)
     {
@@ -101,10 +101,10 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
     /*
      * see if the change exists
      */
-    for (j = 0; j < this->length; ++j)
-	if (this->list[j] == change_number)
+    for (j = 0; j < this_thing->length; ++j)
+	if (this_thing->list[j] == change_number)
     	    break;
-    if (j >= this->length)
+    if (j >= this_thing->length)
     {
 	result = rpt_value_nul();
 	trace((/*{*/"}\n"));
@@ -114,7 +114,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
     /*
      * find the change
      */
-    cp = change_alloc(this->pp, magic_zero_encode(change_number));
+    cp = change_alloc(this_thing->pp, magic_zero_encode(change_number));
     change_bind_existing(cp);
 
     /*
@@ -140,7 +140,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
      * add some extra stuff
      */
     name = str_from_c("project_name");
-    vp1 = rpt_value_string(project_name_get(this->pp));
+    vp1 = rpt_value_string(project_name_get(this_thing->pp));
     rpt_value_struct__set(result, name, vp1);
     str_free(name);
     rpt_value_free(vp1);
@@ -176,7 +176,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
 	vp3 =
 	    rpt_value_cstate
 	    (
-	       	this->pp,
+	       	this_thing->pp,
 	       	cstate_data->branch->change->length,
 	       	cstate_data->branch->change->list
 	    );
@@ -200,18 +200,18 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
 static rpt_value_ty *
 keys(rpt_value_ty *vp)
 {
-    rpt_value_cstate_ty *this;
+    rpt_value_cstate_ty *this_thing;
     rpt_value_ty    *result;
     long	    j;
 
-    trace(("rpt_value_cstate::keys(this = %08lX)\n{\n"/*}*/, (long)vp));
-    this = (rpt_value_cstate_ty *)vp;
+    trace(("rpt_value_cstate::keys(this_thing = %08lX)\n{\n"/*}*/, (long)vp));
+    this_thing = (rpt_value_cstate_ty *)vp;
     result = rpt_value_list();
-    for (j = 0; j < this->length; ++j)
+    for (j = 0; j < this_thing->length; ++j)
     {
 	rpt_value_ty	*elem;
 
-	elem = rpt_value_integer(magic_zero_decode(this->list[j]));
+	elem = rpt_value_integer(magic_zero_decode(this_thing->list[j]));
 	rpt_value_list_append(result, elem);
 	rpt_value_free(elem);
     }
@@ -224,22 +224,22 @@ keys(rpt_value_ty *vp)
 static rpt_value_ty *
 count(rpt_value_ty *vp)
 {
-    rpt_value_cstate_ty *this;
+    rpt_value_cstate_ty *this_thing;
     rpt_value_ty    *result;
 
-    trace(("rpt_value_cstate::count(this = %08lX)\n{\n"/*}*/, (long)vp));
-    this = (rpt_value_cstate_ty *)vp;
-    result = rpt_value_integer(this->length);
+    trace(("rpt_value_cstate::count(this_thing = %08lX)\n{\n"/*}*/, (long)vp));
+    this_thing = (rpt_value_cstate_ty *)vp;
+    result = rpt_value_integer(this_thing->length);
     trace(("return %08lX;\n", (long)result));
     trace((/*{*/"}\n"));
     return result;
 }
 
 
-static char *
+static const char *
 type_of(rpt_value_ty *vp)
 {
-    char	    *result;
+    const char      *result;
 
     trace(("rpt_value_cstate::type_of(this = %08lX)\n{\n"/*}*/, (long)vp));
     result = "struct";
@@ -270,14 +270,14 @@ static rpt_value_method_ty method =
 rpt_value_ty *
 rpt_value_cstate(project_ty *pp, long length, long *list)
 {
-    rpt_value_cstate_ty *this;
+    rpt_value_cstate_ty *this_thing;
     long		j;
 
-    this = (rpt_value_cstate_ty *)rpt_value_alloc(&method);
-    this->pp = project_copy(pp);
-    this->length = length;
-    this->list = mem_alloc(length * sizeof(long));
+    this_thing = (rpt_value_cstate_ty *)rpt_value_alloc(&method);
+    this_thing->pp = project_copy(pp);
+    this_thing->length = length;
+    this_thing->list = mem_alloc(length * sizeof(long));
     for (j = 0; j < length; ++j)
-	this->list[j] = magic_zero_decode(list[j]);
-    return (rpt_value_ty *)this;
+	this_thing->list[j] = magic_zero_decode(list[j]);
+    return (rpt_value_ty *)this_thing;
 }

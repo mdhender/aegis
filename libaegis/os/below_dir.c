@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,7 @@
 
 
 string_ty *
-os_below_dir(higher, lower)
-    string_ty       *higher;
-    string_ty       *lower;
+os_below_dir(string_ty *higher, string_ty *lower)
 {
     char            *s1;
     char            *s2;

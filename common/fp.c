@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1998, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ fingerprint_new(fingerprint_methods_ty *mp)
 {
     fingerprint_ty  *fp;
 
-    fp = mem_alloc(mp->size);
+    fp = (fingerprint_ty *)mem_alloc(mp->size);
     fp->method = mp;
     mp->constructor(fp);
     return fp;

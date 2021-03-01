@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,98 +37,78 @@ struct output_cpio_child2_ty
 };
 
 
-static void output_cpio_child2_destructor _((output_ty *));
-
 static void
-output_cpio_child2_destructor(fp)
-	output_ty	*fp;
+output_cpio_child2_destructor(output_ty *fp)
 {
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 	output_ty	*tmp;
 
-	this = (output_cpio_child2_ty *)fp;
+	this_thing = (output_cpio_child2_ty *)fp;
 	tmp =
 		output_cpio_child_open
 		(
-			this->deeper,
-			this->name,
-			output_ftell(this->buffer)
+			this_thing->deeper,
+			this_thing->name,
+			output_ftell(this_thing->buffer)
 		);
-	output_memory_forward(this->buffer, tmp);
+	output_memory_forward(this_thing->buffer, tmp);
 	output_delete(tmp);
-	output_delete(this->buffer);
-	str_free(this->name);
+	output_delete(this_thing->buffer);
+	str_free(this_thing->name);
 	/*
-	 * DO NOT output_delete(this->deeper);
+	 * DO NOT output_delete(this_thing->deeper);
 	 * this is output_cpio::destructor's job.
 	 */
 }
 
 
-static string_ty *output_cpio_child2_filename _((output_ty *));
-
 static string_ty *
-output_cpio_child2_filename(fp)
-	output_ty	*fp;
+output_cpio_child2_filename(output_ty *fp)
 {
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 
-	this = (output_cpio_child2_ty *)fp;
-	return output_filename(this->deeper);
+	this_thing = (output_cpio_child2_ty *)fp;
+	return output_filename(this_thing->deeper);
 }
 
-
-static long output_cpio_child2_ftell _((output_ty *));
 
 static long
-output_cpio_child2_ftell(fp)
-	output_ty	*fp;
+output_cpio_child2_ftell(output_ty *fp)
 {
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 
-	this = (output_cpio_child2_ty *)fp;
-	return output_ftell(this->buffer);
+	this_thing = (output_cpio_child2_ty *)fp;
+	return output_ftell(this_thing->buffer);
 }
 
 
-static void output_cpio_child2_write _((output_ty *, const void *, size_t));
-
 static void
-output_cpio_child2_write(fp, data, len)
-	output_ty	*fp;
-	const void	*data;
-	size_t		len;
+output_cpio_child2_write(output_ty *fp, const void *data, size_t len)
 {
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 
-	this = (output_cpio_child2_ty *)fp;
-	output_write(this->buffer, data, len);
+	this_thing = (output_cpio_child2_ty *)fp;
+	output_write(this_thing->buffer, data, len);
 }
 
 
-static void output_cpio_child2_flush _((output_ty *));
-
 static void
-output_cpio_child2_flush(fp)
-	output_ty	*fp;
+output_cpio_child2_flush(output_ty *fp)
 {
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 
-	this = (output_cpio_child2_ty *)fp;
-	output_flush(this->buffer);
+	this_thing = (output_cpio_child2_ty *)fp;
+	output_flush(this_thing->buffer);
 }
 
 
-static void output_cpio_child2_eoln _((output_ty *));
-
 static void
-output_cpio_child2_eoln(fp)
-	output_ty	*fp;
+output_cpio_child2_eoln(output_ty *fp)
 {
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 
-	this = (output_cpio_child2_ty *)fp;
-	output_end_of_line(this->buffer);
+	this_thing = (output_cpio_child2_ty *)fp;
+	output_end_of_line(this_thing->buffer);
 }
 
 
@@ -149,17 +129,15 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_cpio_child2_open(deeper, name)
-	output_ty	*deeper;
-	string_ty	*name;
+output_cpio_child2_open(output_ty *deeper, string_ty *name)
 {
 	output_ty	*result;
-	output_cpio_child2_ty *this;
+	output_cpio_child2_ty *this_thing;
 
 	result = output_new(&vtbl);
-	this = (output_cpio_child2_ty *)result;
-	this->deeper = deeper;
-	this->name = str_copy(name);
-	this->buffer = output_memory_open();
+	this_thing = (output_cpio_child2_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->name = str_copy(name);
+	this_thing->buffer = output_memory_open();
 	return result;
 }

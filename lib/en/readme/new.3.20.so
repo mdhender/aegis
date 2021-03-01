@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2000 Peter Miller;
+.\"	Copyright (C) 1999, 2000, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -109,4 +109,4 @@ A bug has been fixed which caused Aegis to misbehave when launched by
 some versions of \fIcron\fP(8) or \fIat\fP(1).
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.20
+.SS Version 3.20 (19-Oct-1999)

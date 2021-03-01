@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@
 static void
 make_transparent_undo_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -148,7 +148,7 @@ make_transparent_undo_list(void)
 	}
 	arglex();
     }
-    list_change_files(project_name, change_number);
+    list_change_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -674,9 +674,7 @@ make_transparent_undo_main(void)
      * run the change file command
      * and the project file command if necessary
      */
-#if 0
     change_run_make_transparent_undo_command(cp, &wl, up);
-#endif
     change_run_project_file_command(cp, up);
 
     /*

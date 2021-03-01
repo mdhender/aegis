@@ -26,10 +26,7 @@
 
 
 long
-change_history_change_by_name(cp, delta_name, errok)
-    change_ty       *cp;
-    string_ty       *delta_name;
-    int	            errok;
+change_history_change_by_name(change_ty *cp, string_ty *delta_name, int errok)
 {
     cstate          cstate_data;
     cstate_branch_history_list h;

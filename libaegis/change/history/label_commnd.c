@@ -31,10 +31,9 @@
 
 
 void
-change_run_history_label_command(cp, src, label)
-    change_ty       *cp;
-    fstate_src      src;
-    string_ty       *label;
+change_run_history_label_command(change_ty *cp,
+                                 fstate_src src,
+                                 string_ty *label)
 {
     pconf           pconf_data;
     string_ty       *the_command;

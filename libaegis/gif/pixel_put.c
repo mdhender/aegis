@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,11 +24,7 @@
 
 
 void
-gif_pixel_set(gp, x, y, c)
-	gif_ty		*gp;
-	int		x;
-	int		y;
-	int		c;
+gif_pixel_set(gif_ty *gp, int x, int y, int c)
 {
 	if (x >= 0 && y >= 0 && x < gp->width && y < gp->height)
 		gp->image[y][x] = c;

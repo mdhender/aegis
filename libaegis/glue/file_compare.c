@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,9 +51,7 @@
  */
 
 int
-file_compare(fn1, fn2)
-	char		*fn1;
-	char		*fn2;
+file_compare(char *fn1, char *fn2)
 {
 	int		fd1;
 	int		fd2;
@@ -100,7 +98,7 @@ file_compare(fn1, fn2)
 	 * allocate the buffers
 	 */
 	errno = 0;
-	buf1 = malloc(len);
+	buf1 = (char *)malloc(len);
 	if (!buf1)
 	{
 		err = errno ? errno : ENOMEM;
@@ -111,7 +109,7 @@ file_compare(fn1, fn2)
 	}
 
 	errno = 0;
-	buf2 = malloc(len);
+	buf2 = (char *)malloc(len);
 	if (!buf2)
 	{
 		err = errno ? errno : ENOMEM;

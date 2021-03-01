@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,12 +71,15 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	tmp = symtab_alloc(100);
 	for (ppp = pp; ppp; ppp = ppp->parent)
 	{
+	    trace(("project \"%s\"\n", project_name_get(ppp)->str_text));
 	    cp = project_change_get(ppp);
 	    for (j = 0; ; ++j)
 	    {
 		fsp = change_file_nth(cp, j);
 		if (!fsp)
 	    	    break;
+		trace(("%s \"%s\"\n", file_action_ename(fsp->action),
+		    fsp->file_name->str_text));
 
 		/*
 		 * If we already have a "hit" for this file, ignore any

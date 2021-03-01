@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,42 +36,36 @@ struct rpt_value_real_ty
 };
 
 
-static rpt_value_ty *stringize _((rpt_value_ty *));
-
 static rpt_value_ty *
-stringize(vp)
-	rpt_value_ty	*vp;
+stringize(rpt_value_ty *vp)
 {
-	rpt_value_real_ty *this;
+	rpt_value_real_ty *this_thing;
 	string_ty	*s;
 	rpt_value_ty	*result;
 
-	this = (rpt_value_real_ty *)vp;
-	assert(this->method->type == rpt_value_type_real);
-	if (this->value == 0)
+	this_thing = (rpt_value_real_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_real);
+	if (this_thing->value == 0)
 	{
 		/* avoid IEEE ``negative zero'' lunacy */
 		s = str_from_c("0");
 	}
 	else
-		s = str_format("%g", this->value);
+		s = str_format("%g", this_thing->value);
 	result = rpt_value_string(s);
 	str_free(s);
 	return result;
 }
 
 
-static rpt_value_ty *booleanize _((rpt_value_ty *));
-
 static rpt_value_ty *
-booleanize(vp)
-	rpt_value_ty	*vp;
+booleanize(rpt_value_ty *vp)
 {
-	rpt_value_real_ty *this;
+	rpt_value_real_ty *this_thing;
 
-	this = (rpt_value_real_ty *)vp;
-	assert(this->method->type == rpt_value_type_real);
-	return rpt_value_boolean(this->value != 0);
+	this_thing = (rpt_value_real_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_real);
+	return rpt_value_boolean(this_thing->value != 0);
 }
 
 
@@ -94,32 +88,29 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_real(n)
-	double		n;
+rpt_value_real(double n)
 {
-	rpt_value_real_ty *this;
+	rpt_value_real_ty *this_thing;
 
-	this = (rpt_value_real_ty *)rpt_value_alloc(&method);
-	this->value = n;
-	return (rpt_value_ty *)this;
+	this_thing = (rpt_value_real_ty *)rpt_value_alloc(&method);
+	this_thing->value = n;
+	return (rpt_value_ty *)this_thing;
 }
 
 
 double
-rpt_value_real_query(vp)
-	rpt_value_ty	*vp;
+rpt_value_real_query(rpt_value_ty *vp)
 {
-	rpt_value_real_ty *this;
+	rpt_value_real_ty *this_thing;
 
-	this = (rpt_value_real_ty *)vp;
-	assert(this->method->type == rpt_value_type_real);
-	return this->value;
+	this_thing = (rpt_value_real_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_real);
+	return this_thing->value;
 }
 
 
 rpt_value_ty *
-rpt_value_realize(v1)
-	rpt_value_ty	*v1;
+rpt_value_realize(rpt_value_ty *v1)
 {
 	rpt_value_ty	*v2;
 	rpt_value_ty	*v3;

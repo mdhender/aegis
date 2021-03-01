@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,9 +50,7 @@
  */
 
 int
-copyfile(src, dst)
-	char	*src;
-	char	*dst;
+copyfile(char *src, char *dst)
 {
 	int	src_fd;
 	int	dst_fd;
@@ -80,7 +78,7 @@ copyfile(src, dst)
 
 	max = 1L << 13;
 	errno = 0;
-	buffer = malloc(max);
+	buffer = (char *)malloc(max);
 	if (!buffer)
 	{
 		err = errno ? errno : ENOMEM;

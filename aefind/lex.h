@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,10 +75,10 @@ enum
 void cmdline_lex_open(int, char **);
 void cmdline_lex_close(void);
 int cmdline_lex(void);
-void cmdline_error(char *);
+void cmdline_error(const char *);
 void usage(void);
 
 struct sub_context_ty; /* existence */
-void cmdline_lex_error(struct sub_context_ty *, char *);
+void cmdline_lex_error(struct sub_context_ty *, const char *);
 
 #endif /* AEFIND_LEX_H */

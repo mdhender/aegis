@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@
 static void
 usage(void)
 {
-    char            *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -52,7 +52,7 @@ usage(void)
 static void
 help(void)
 {
-    static char *text[] =
+    static const char *const text[] =
     {
 "NAME",
 "	%s - file format read/write generator",
@@ -120,8 +120,8 @@ help(void)
 	    0
     };
 
-    char	**cpp;
-    char	*progname;
+    const char      *const *cpp;
+    const char      *progname;
 
     trace(("help()\n{\n"));
     progname = progname_get();
@@ -142,17 +142,17 @@ enum
 
 static arglex_table_ty argtab[] =
 {
-    { "-\\I*", (arglex_token_ty)arglex_token_include_short, },
-    { "-Include", (arglex_token_ty)arglex_token_include_long, },
-    { 0, (arglex_token_ty)0, }, /* end marker */
+    { "-\\I*", arglex_token_include_short, },
+    { "-Include", arglex_token_include_long, },
+    ARGLEX_END_MARKER
 };
 
 
 int
 main(int argc, char **argv)
 {
-    char            *filename[3];
-    int             j;
+    const char      *filename[3];
+    size_t          j;
 
     arglex_init(argc, argv, argtab);
     str_initialize();

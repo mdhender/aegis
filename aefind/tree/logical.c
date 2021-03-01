@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,15 +35,15 @@
 static rpt_value_ty *
 and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_diadic_ty  *this;
+    tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
     rpt_value_ty    *v1b;
     rpt_value_ty    *v2;
     rpt_value_ty    *v2b;
 
-    this = (tree_diadic_ty *)tp;
+    this_thing = (tree_diadic_ty *)tp;
 
-    v1 = tree_evaluate(this->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1b = rpt_value_booleanize(v1);
@@ -72,7 +72,7 @@ and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 	return v1b;
     rpt_value_free(v1b);
 
-    v2 = tree_evaluate(this->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path, st);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2b = rpt_value_booleanize(v2);
@@ -124,15 +124,15 @@ tree_and_new(tree_ty *left, tree_ty *right)
 static rpt_value_ty *
 or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_diadic_ty  *this;
+    tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
     rpt_value_ty    *v1b;
     rpt_value_ty    *v2;
     rpt_value_ty    *v2b;
 
-    this = (tree_diadic_ty *)tp;
+    this_thing = (tree_diadic_ty *)tp;
 
-    v1 = tree_evaluate(this->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1b = rpt_value_booleanize(v1);
@@ -161,7 +161,7 @@ or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 	return v1b;
     rpt_value_free(v1b);
 
-    v2 = tree_evaluate(this->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path, st);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2b = rpt_value_booleanize(v2);
@@ -213,13 +213,13 @@ tree_or_new(tree_ty *left, tree_ty *right)
 static rpt_value_ty *
 not_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *v1;
     rpt_value_ty    *v2;
     rpt_value_ty    *v3;
 
-    this = (tree_monadic_ty *)tp;
-    v1 = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    v1 = tree_evaluate(this_thing->arg, path, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v2 = rpt_value_booleanize(v1);
@@ -268,17 +268,17 @@ tree_not_new(tree_ty *arg)
 static rpt_value_ty *
 comma_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_diadic_ty  *this;
+    tree_diadic_ty  *this_thing;
     rpt_value_ty    *vp;
 
-    this = (tree_diadic_ty *)tp;
+    this_thing = (tree_diadic_ty *)tp;
 
-    vp = tree_evaluate(this->left, path, st);
+    vp = tree_evaluate(this_thing->left, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     rpt_value_free(vp);
 
-    return tree_evaluate(this->right, path, st);
+    return tree_evaluate(this_thing->right, path, st);
 }
 
 
@@ -315,27 +315,27 @@ struct triadic_ty
 static void
 triadic_destructor(tree_ty *tp)
 {
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
 
-    this = (triadic_ty *)tp;
-    tree_delete(this->arg1);
-    tree_delete(this->arg2);
-    tree_delete(this->arg3);
+    this_thing = (triadic_ty *)tp;
+    tree_delete(this_thing->arg1);
+    tree_delete(this_thing->arg2);
+    tree_delete(this_thing->arg3);
 }
 
 
 static void
 triadic_print(tree_ty *tp)
 {
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
 
-    this = (triadic_ty *)tp;
+    this_thing = (triadic_ty *)tp;
     printf("( ( ");
-    tree_print(this->arg1);
+    tree_print(this_thing->arg1);
     printf(" ) ? ( ");
-    tree_print(this->arg2);
+    tree_print(this_thing->arg2);
     printf(" ) : ( ");
-    tree_print(this->arg3);
+    tree_print(this_thing->arg3);
     printf(" ) )");
 }
 
@@ -343,14 +343,14 @@ triadic_print(tree_ty *tp)
 static rpt_value_ty *
 triadic_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
     rpt_value_ty    *v1;
     rpt_value_ty    *v1b;
     int             which;
 
-    this = (triadic_ty *)tp;
+    this_thing = (triadic_ty *)tp;
 
-    v1 = tree_evaluate(this->arg1, path, st);
+    v1 = tree_evaluate(this_thing->arg1, path, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1b = rpt_value_booleanize(v1);
@@ -378,23 +378,24 @@ triadic_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     which = rpt_value_boolean_query(v1b);
     rpt_value_free(v1b);
 
-    return tree_evaluate((which ? this->arg2 : this->arg3), path, st);
+    return tree_evaluate(
+        (which ? this_thing->arg2 : this_thing->arg3), path, st);
 }
 
 
 static int
 triadic_useful(tree_ty *tp)
 {
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
 
-    this = (triadic_ty *)tp;
+    this_thing = (triadic_ty *)tp;
     return
     (
-	tree_useful(this->arg1)
+	tree_useful(this_thing->arg1)
     ||
-	tree_useful(this->arg2)
+	tree_useful(this_thing->arg2)
     ||
-	tree_useful(this->arg3)
+	tree_useful(this_thing->arg3)
     );
 }
 
@@ -402,16 +403,16 @@ triadic_useful(tree_ty *tp)
 static int
 triadic_constant(tree_ty *tp)
 {
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
     rpt_value_ty    *v1;
     rpt_value_ty    *v1b;
     int             which;
 
-    this = (triadic_ty *)tp;
+    this_thing = (triadic_ty *)tp;
 
-    if (!tree_constant(this->arg1))
+    if (!tree_constant(this_thing->arg1))
 	return 0;
-    v1 = tree_evaluate_constant(this->arg1);
+    v1 = tree_evaluate_constant(this_thing->arg1);
     if (v1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1);
@@ -427,37 +428,37 @@ triadic_constant(tree_ty *tp)
     which = rpt_value_boolean_query(v1b);
     rpt_value_free(v1b);
 
-    return tree_constant(which ? this->arg2 : this->arg3);
+    return tree_constant(which ? this_thing->arg2 : this_thing->arg3);
 }
 
 
 static tree_ty *
 triadic_optimize(tree_ty *tp)
 {
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
     rpt_value_ty    *v1;
     rpt_value_ty    *v1b;
     int             which;
     tree_ty         *result;
 
-    this = (triadic_ty *)tp;
+    this_thing = (triadic_ty *)tp;
 
-    if (!tree_constant(this->arg1))
+    if (!tree_constant(this_thing->arg1))
     {
 	tree_ty		*arg1;
 	tree_ty		*arg2;
 	tree_ty		*arg3;
 
-	arg1 = tree_optimize(this->arg1);
-	arg2 = tree_optimize(this->arg2);
-	arg3 = tree_optimize(this->arg3);
+	arg1 = tree_optimize(this_thing->arg1);
+	arg2 = tree_optimize(this_thing->arg2);
+	arg3 = tree_optimize(this_thing->arg3);
 	result = tree_triadic_new(arg1, arg2, arg3);
 	tree_delete(arg1);
 	tree_delete(arg2);
 	tree_delete(arg3);
 	return result;
     }
-    v1 = tree_evaluate_constant(this->arg1);
+    v1 = tree_evaluate_constant(this_thing->arg1);
     if (v1->method->type == rpt_value_type_error)
     {
 	result = tree_constant_new(v1);
@@ -491,7 +492,7 @@ triadic_optimize(tree_ty *tp)
     which = rpt_value_boolean_query(v1b);
     rpt_value_free(v1b);
 
-    return tree_optimize(which ? this->arg2 : this->arg3);
+    return tree_optimize(which ? this_thing->arg2 : this_thing->arg3);
 }
 
 
@@ -512,12 +513,12 @@ tree_ty *
 tree_triadic_new(tree_ty *arg1, tree_ty *arg2, tree_ty *arg3)
 {
     tree_ty         *tp;
-    triadic_ty      *this;
+    triadic_ty      *this_thing;
 
     tp = tree_new(&triadic_method);
-    this = (triadic_ty *)tp;
-    this->arg1 = tree_copy(arg1);
-    this->arg2 = tree_copy(arg2);
-    this->arg3 = tree_copy(arg3);
+    this_thing = (triadic_ty *)tp;
+    this_thing->arg1 = tree_copy(arg1);
+    this_thing->arg2 = tree_copy(arg2);
+    this_thing->arg3 = tree_copy(arg3);
     return tp;
 }

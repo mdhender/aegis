@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,36 +22,31 @@
 
 #include <change.h>
 #include <error.h> /* for assert */
+#include <now.h>
 #include <trace.h>
 #include <user.h>
 
 
 cstate_history
-change_history_new(cp, up)
-	change_ty	*cp;
-	user_ty		*up;
+change_history_new(change_ty *cp, user_ty *up)
 {
-	cstate		cstate_data;
-	cstate_history	history_data;
-	cstate_history	*history_data_p;
-	type_ty		*type_p;
+    cstate          cstate_data;
+    cstate_history  history_data;
+    cstate_history  *history_data_p;
+    type_ty         *type_p;
 
-	trace(("change_history_new(cp = %08lX)\n{\n", (long)cp));
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->history);
-	history_data_p =
-		cstate_history_list_type.list_parse
-		(
-			cstate_data->history,
-			&type_p
-		);
-	assert(type_p == &cstate_history_type);
-	history_data = cstate_history_type.alloc();
-	*history_data_p = history_data;
-	time(&history_data->when);
-	history_data->who = str_copy(user_name(up));
-	trace(("return %08lX;\n", (long)history_data));
-	trace(("}\n"));
-	return history_data;
+    trace(("change_history_new(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->history);
+    history_data_p =
+	cstate_history_list_type.list_parse(cstate_data->history, &type_p);
+    assert(type_p == &cstate_history_type);
+    history_data = cstate_history_type.alloc();
+    *history_data_p = history_data;
+    history_data->when = now();
+    history_data->who = str_copy(user_name(up));
+    trace(("return %08lX;\n", (long)history_data));
+    trace(("}\n"));
+    return history_data;
 }

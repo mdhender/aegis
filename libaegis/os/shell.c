@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,10 @@
 #include <os.h>
 
 
-char *
+const char *
 os_shell()
 {
-    static char     shell[] = CONF_SHELL;
+    static const char shell[] = CONF_SHELL;
 
     assert(shell[0] == '/');
     return shell;

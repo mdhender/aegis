@@ -38,7 +38,9 @@
 #include <sub.h>
 #include <trace.h>
 #include <str_list.h>
+#include <version.h>
 #include <zero.h>
+
 
 /*
  * NAME
@@ -55,7 +57,7 @@
 static void
 report_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s [ <option>... ] <report-name>\n", progname);
@@ -278,6 +280,10 @@ main(int argc, char **argv)
 
     case arglex_token_list:
 	report_list(report_usage);
+	break;
+
+    case arglex_token_version:
+	version();
 	break;
     }
     exit(0);

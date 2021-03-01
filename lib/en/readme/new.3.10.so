@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -91,4 +91,4 @@ Several portability enhacements, notably the Windows filename
 incompatibility has been fixed, and also the Linux \fIstdlib.h\fP problem.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.10
+.SS Version 3.10 (6-Mar-1999)

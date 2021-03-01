@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,13 +26,12 @@
 
 
 col_ty *
-col_new(vptr)
-	col_vtbl_ty	*vptr;
+col_new(col_vtbl_ty *vptr)
 {
 	col_ty		*result;
 
 	assert(vptr->size > sizeof(col_ty));
-	result = mem_alloc(vptr->size);
+	result = (col_ty *)mem_alloc(vptr->size);
 	result->vptr = vptr;
 	return result;
 }

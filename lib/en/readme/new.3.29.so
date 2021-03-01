@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	Copyright (C) 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -138,4 +138,4 @@ A problem with the CGI interface, which reported a bug to the user,
 has been fixed.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.29
+.SS Version 3.29 (31-Oct-2001)

@@ -25,8 +25,7 @@
 
 
 string_ty *
-change_fstate_filename_get(cp)
-	change_ty	*cp;
+change_fstate_filename_get(change_ty *cp)
 {
 	assert(cp->reference_count >= 1);
 	if (!cp->fstate_filename)

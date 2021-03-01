@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -89,34 +89,29 @@ static action_ty *head2;
  *	path2	- optional argument (NULL if not used)
  */
 
-static void link1 _((what_ty, string_ty *, string_ty *));
-
 static void
-link1(what, path1, path2)
-    what_ty         what;
-    string_ty       *path1;
-    string_ty       *path2;
+link1(what_ty what, string_ty *path1, string_ty *path2)
 {
-    action_ty       *new;
+    action_ty       *new_thing;
 
     trace(("commit::link1(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
 	what, (long)path1, (long)path2));
-    new = (action_ty *) mem_alloc(sizeof(action_ty));
-    new->what = what;
-    os_become_query(&new->uid, &new->gid, &new->umask);
-    new->path1 = str_copy(path1);
+    new_thing = (action_ty *) mem_alloc(sizeof(action_ty));
+    new_thing->what = what;
+    os_become_query(&new_thing->uid, &new_thing->gid, &new_thing->umask);
+    new_thing->path1 = str_copy(path1);
     if (path2)
-	new->path2 = str_copy(path2);
+	new_thing->path2 = str_copy(path2);
     else
-	new->path2 = 0;
-    new->next = 0;
+	new_thing->path2 = 0;
+    new_thing->next = 0;
     if (head1)
     {
-	tail1->next = new;
-	tail1 = new;
+	tail1->next = new_thing;
+	tail1 = new_thing;
     }
     else
-	head1 = tail1 = new;
+	head1 = tail1 = new_thing;
     trace(("}\n"));
 }
 
@@ -138,28 +133,23 @@ link1(what, path1, path2)
  *	path2	- optional argument (NULL if not used)
  */
 
-static void link2 _((what_ty, string_ty *, string_ty *));
-
 static void
-link2(what, path1, path2)
-    what_ty         what;
-    string_ty      *path1;
-    string_ty      *path2;
+link2(what_ty what, string_ty *path1, string_ty *path2)
 {
-    action_ty      *new;
+    action_ty      *new_thing;
 
     trace(("commit::link2(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
 	what, (long)path1, (long)path2));
-    new = (action_ty *) mem_alloc(sizeof(action_ty));
-    new->what = what;
-    os_become_query(&new->uid, &new->gid, &new->umask);
-    new->path1 = str_copy(path1);
+    new_thing = (action_ty *) mem_alloc(sizeof(action_ty));
+    new_thing->what = what;
+    os_become_query(&new_thing->uid, &new_thing->gid, &new_thing->umask);
+    new_thing->path1 = str_copy(path1);
     if (path2)
-	new->path2 = str_copy(path2);
+	new_thing->path2 = str_copy(path2);
     else
-	new->path2 = 0;
-    new->next = head2;
-    head2 = new;
+	new_thing->path2 = 0;
+    new_thing->next = head2;
+    head2 = new_thing;
     trace(("}\n"));
 }
 
@@ -181,9 +171,7 @@ link2(what, path1, path2)
  */
 
 void
-commit_rename(from, to)
-    string_ty      *from;
-    string_ty      *to;
+commit_rename(string_ty *from, string_ty *to)
 {
     trace(("commit_rename(from = %08lX, to = %08lX)\n{\n", (long)from,
 	(long)to));
@@ -210,8 +198,7 @@ commit_rename(from, to)
  */
 
 void
-commit_unlink_errok(path)
-    string_ty      *path;
+commit_unlink_errok(string_ty *path)
 {
     trace(("commit_unlink_errok(path = %08lX)\n{\n", (long)path));
     trace_string(path->str_text);
@@ -238,8 +225,7 @@ commit_unlink_errok(path)
  */
 
 void
-commit_rmdir_errok(path)
-    string_ty      *path;
+commit_rmdir_errok(string_ty *path)
 {
     trace(("commit_rmdir_errok(path = %08lX)\n{\n", (long)path));
     trace_string(path->str_text);
@@ -266,8 +252,7 @@ commit_rmdir_errok(path)
  */
 
 void
-commit_rmdir_tree_bg(path)
-    string_ty      *path;
+commit_rmdir_tree_bg(string_ty *path)
 {
     trace(("commit_rmdir_tree_bg(path = %08lX)\n{\n", (long)path));
     trace_string(path->str_text);
@@ -294,8 +279,7 @@ commit_rmdir_tree_bg(path)
  */
 
 void
-commit_rmdir_tree_errok(path)
-    string_ty      *path;
+commit_rmdir_tree_errok(string_ty *path)
 {
     trace(("commit_rmdir_tree_errok(path = %08lX)\n{\n", (long)path));
     trace_string(path->str_text);
@@ -331,18 +315,13 @@ commit_rmdir_tree_errok(path)
  *	st	- pointer to stat structure describing file system entity
  */
 
-static void rmdir_tree_callback _((void *, dir_walk_message_ty,
-	string_ty * path, struct stat *));
-
 static void
-rmdir_tree_callback(arg, message, path, stat)
-    void           *arg;
-    dir_walk_message_ty message;
-    string_ty      *path;
-    struct stat    *stat;
+rmdir_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
+    struct stat *theStat)
 {
-    trace(("rmdir_tree_callback(message = %d, path = %08lX, stat = %08lX)\n{\n",
-	message, (long)path, (long)stat));
+    trace(("rmdir_tree_callback(message = %d, path = %08lX, "
+           "theStat = %08lX)\n{\n",
+           message, (long)path, (long)theStat));
     trace_string(path->str_text);
     switch (message)
     {
@@ -383,7 +362,7 @@ rmdir_tree_callback(arg, message, path, stat)
  */
 
 void
-commit()
+commit(void)
 {
     /*
      * Disable interrupts (such as ^C) for the duration.  Note that

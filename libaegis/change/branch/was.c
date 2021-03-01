@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,7 @@
 
 
 int
-change_was_a_branch(cp)
-	change_ty	*cp;
+change_was_a_branch(change_ty *cp)
 {
 	cstate		cstate_data;
 

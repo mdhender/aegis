@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1997, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-void help(char *progname, void (*usage)(void));
+void help(const char *progname, void (*usage)(void));
 void generic_argument(void(*usage)(void));
 void bad_argument(void(*usage)(void));
 void mutually_exclusive_options(int name1, int name2, void(*usage)(void));

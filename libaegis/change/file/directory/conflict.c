@@ -25,9 +25,7 @@
 
 
 string_ty *
-change_file_directory_conflict(cp, file_name)
-	change_ty	*cp;
-	string_ty	*file_name;
+change_file_directory_conflict(change_ty *cp, string_ty *file_name)
 {
 	size_t		j;
 	fstate_src	src_data;

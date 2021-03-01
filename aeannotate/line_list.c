@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,7 @@
 
 
 void
-line_list_constructor(llp)
-    line_list_t	    *llp;
+line_list_constructor(line_list_t *llp)
 {
     trace(("line_list_constructor(llp = %08lX)\n{\n", (long)llp));
     llp->maximum = 0;
@@ -66,8 +65,7 @@ line_list_constructor(llp)
 
 
 void
-line_list_destructor(llp)
-    line_list_t	    *llp;
+line_list_destructor(line_list_t *llp)
 {
     trace(("line_list_destructor(llp = %08lX)\n{\n", (long)llp));
     line_list_clear(llp);
@@ -84,8 +82,7 @@ line_list_destructor(llp)
 
 
 void
-line_list_clear(llp)
-    line_list_t	    *llp;
+line_list_clear(line_list_t *llp)
 {
     size_t	    j;
 
@@ -105,10 +102,7 @@ line_list_clear(llp)
 
 
 void
-line_list_delete(llp, first_line, num_lines)
-    line_list_t	    *llp;
-    size_t	    first_line;
-    size_t	    num_lines;
+line_list_delete(line_list_t *llp, size_t first_line, size_t num_lines)
 {
     trace(("line_list_delete(llp = %08lX, first_line = %ld, "
 	"num_lines = %ld)\n{\n", (long)llp, (long)first_line, (long)num_lines));
@@ -250,11 +244,10 @@ line_list_delete(llp, first_line, num_lines)
 
 
 void
-line_list_insert(llp, first_line, cp, text)
-    line_list_t	    *llp;
-    size_t	    first_line;
-    change_ty	    *cp;
-    string_ty	    *text;
+line_list_insert(line_list_t *llp,
+                 size_t first_line,
+                 change_ty *cp,
+                 string_ty *text)
 {
     trace(("line_list_insert(llp = %08lX, first_line = %ld, cp = %08lX, "
 	"text = %08lX)\n{\n", (long)llp, (long)first_line, (long)cp,

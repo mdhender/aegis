@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -56,14 +56,14 @@ static arglex_table_ty argtab[] =
     { "-Unix_to_Unix_Encode", arglex_token_unix_to_unix, },
     { "-Unix_to_Unix_Decode", arglex_token_unix_to_unix, },
     { "-Unix_to_Unix", arglex_token_unix_to_unix, },
-    { 0 } /* end marker */
+    ARGLEX_END_MARKER
 };
 
 
 static void
 usage(void)
 {
-    const char	*progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -79,8 +79,8 @@ usage(void)
 static void
 test_input_base64(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	*ifp;
-    output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
     ifp = input_file_open(ifn);
     ofp = output_file_text_open(ofn);
@@ -117,8 +117,8 @@ test_input_base64(string_ty *ifn, string_ty *ofn)
 static void
 test_input_qp(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	*ifp;
-    output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
     ifp = input_file_open(ifn);
     ofp = output_file_text_open(ofn);
@@ -129,7 +129,7 @@ test_input_qp(string_ty *ifn, string_ty *ofn)
      */
     for (;;)
     {
-	string_ty	*s;
+	string_ty       *s;
 
 	s = input_one_line(ifp);
 	if (!s)
@@ -152,8 +152,8 @@ test_input_qp(string_ty *ifn, string_ty *ofn)
 static void
 test_input_uu(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	*ifp;
-    output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
     ifp = input_file_open(ifn);
     ofp = output_file_text_open(ofn);
@@ -184,10 +184,11 @@ test_input_uu(string_ty *ifn, string_ty *ofn)
 }
 
 
-static void test_output_base64(string_ty *ifn, string_ty *ofn)
+static void
+test_output_base64(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	*ifp;
-    output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
@@ -205,8 +206,8 @@ static void test_output_base64(string_ty *ifn, string_ty *ofn)
 static void
 test_output_qp(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	*ifp;
-    output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
@@ -224,8 +225,8 @@ test_output_qp(string_ty *ifn, string_ty *ofn)
 static void
 test_output_uu(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	*ifp;
-    output_ty	*ofp;
+    input_ty        *ifp;
+    output_ty       *ofp;
 
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
@@ -243,11 +244,11 @@ test_output_uu(string_ty *ifn, string_ty *ofn)
 int
 main(int argc, char **argv)
 {
-    string_ty	    *ifn;
-    string_ty	    *ofn;
-    void	    (*ifunc)_((string_ty *, string_ty *));
-    void	    (*ofunc)_((string_ty *, string_ty *));
-    void	    (*func)_((string_ty *, string_ty *));
+    string_ty       *ifn;
+    string_ty       *ofn;
+    void            (*ifunc)(string_ty *, string_ty *);
+    void            (*ofunc)(string_ty *, string_ty *);
+    void            (*func)(string_ty *, string_ty *);
 
     ifunc = test_input_base64;
     ofunc = test_output_base64;

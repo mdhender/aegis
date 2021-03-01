@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ struct complete_vtbl_ty
     void (*destructor)(complete_ty *);
     void (*perform)(complete_ty *, struct shell_ty *);
     int size;
-    char *name;
+    const char *name;
 };
 
 complete_ty *complete_new(complete_vtbl_ty *);

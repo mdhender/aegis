@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,12 +31,8 @@
 #include <trace.h>
 
 
-static int starts_with _((string_ty *, const char *));
-
 static int
-starts_with(line, prefix)
-    string_ty	    *line;
-    const char	    *prefix;
+starts_with(string_ty *line, const char *prefix)
 {
     size_t	    pfxlen;
 
@@ -52,17 +48,8 @@ starts_with(line, prefix)
 }
 
 
-static int parse_command _((string_ty *, long *, long *, char *, long *,
-    long *));
-
 static int
-parse_command(line, b1, b2, c, a1, a2)
-    string_ty	    *line;
-    long	    *b1;
-    long	    *b2;
-    char	    *c;
-    long	    *a1;
-    long	    *a2;
+parse_command(string_ty *line, long *b1, long *b2, char *c, long *a1, long *a2)
 {
     char	    *s;
     char	    *end;
@@ -125,11 +112,8 @@ parse_command(line, b1, b2, c, a1, a2)
 }
 
 
-static string_ty *second_word _((string_ty *));
-
 static string_ty *
-second_word(line)
-	string_ty	*line;
+second_word(string_ty *line)
 {
 	const char	*cp;
 	const char	*ep;
@@ -146,11 +130,8 @@ second_word(line)
 }
 
 
-static patch_ty *diff_header _((patch_context_ty *));
-
 static patch_ty *
-diff_header(context)
-    patch_context_ty *context;
+diff_header(patch_context_ty *context)
 {
     string_ty	    *line;
     int		    idx;
@@ -227,11 +208,8 @@ diff_header(context)
 }
 
 
-static patch_hunk_ty *diff_hunk _((patch_context_ty *));
-
 static patch_hunk_ty *
-diff_hunk(context)
-    patch_context_ty *context;
+diff_hunk(patch_context_ty *context)
 {
     long	    before1;
     long	    before2;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 2000 Peter Miller;
+ *	Copyright (C) 1994, 2000, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,10 +35,8 @@ static long	change_number;
 static int	change_number_set;
 
 
-static void grab _((void));
-
 static void
-grab()
+grab(void)
 {
 	rpt_value_ty	*vp;
 	string_ty	*project_name;
@@ -80,24 +78,15 @@ grab()
 }
 
 
-static int change_number_valid _((rpt_expr_ty *));
-
 static int
-change_number_valid(ep)
-	rpt_expr_ty	*ep;
+change_number_valid(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *change_number_run _((rpt_expr_ty *, size_t,
-	rpt_value_ty **));
-
 static rpt_value_ty *
-change_number_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+change_number_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	assert(argc == 0);
 	if (!change_number && !change_number_set)
@@ -115,24 +104,15 @@ rpt_func_ty rpt_func_change_number =
 };
 
 
-static int change_number_set_valid _((rpt_expr_ty *));
-
 static int
-change_number_set_valid(ep)
-	rpt_expr_ty	*ep;
+change_number_set_valid(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *change_number_set_run _((rpt_expr_ty *, size_t,
-	rpt_value_ty **));
-
 static rpt_value_ty *
-change_number_set_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+change_number_set_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	assert(argc == 0);
 	return rpt_value_boolean(change_number_set);
@@ -149,11 +129,8 @@ rpt_func_ty rpt_func_change_number_set =
 
 
 void
-report_parse_change_set(n)
-	long		n;
+report_parse_change_set(long n)
 {
-	assert(!n);
-	assert(n > 0);
 	change_number = n;
 	change_number_set = 1;
 }

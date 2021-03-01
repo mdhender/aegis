@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,7 @@
 
 
 int
-os_readable(path)
-    string_ty       *path;
+os_readable(string_ty *path)
 {
     int             fd;
     os_become_must_be_active();

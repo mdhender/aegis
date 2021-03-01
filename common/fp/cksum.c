@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ cksum_destructor(fingerprint_ty *p)
 
 
 static void
-cksum_addn(fingerprint_ty *p, unsigned char *s, int n)
+cksum_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 {
     cksum_ty	    *f;
 

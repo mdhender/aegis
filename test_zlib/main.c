@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ static arglex_table_ty argtab[] =
 {
     { "-Input", arglex_token_input, },
     { "-Output", arglex_token_output, },
-    { 0 }
+    ARGLEX_END_MARKER
 };
 
 

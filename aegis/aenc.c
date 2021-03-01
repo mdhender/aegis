@@ -54,7 +54,7 @@
 static void
 new_change_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -109,7 +109,7 @@ new_change_list(void)
 	}
 	arglex();
     }
-    list_changes(project_name, 0);
+    list_changes(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -157,7 +157,7 @@ new_change_main(void)
     string_list_ty  carch;
     string_list_ty  darch;
     string_list_ty  parch;
-    char	    *output;
+    const char      *output;
     string_ty	    *input;
 
     trace(("new_change_main()\n{\n"));

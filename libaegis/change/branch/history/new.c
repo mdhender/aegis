@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,7 @@
 
 
 void
-change_branch_history_new(cp, delta_number, change_number)
-	change_ty	*cp;
-	long		delta_number;
-	long		change_number;
+change_branch_history_new(change_ty *cp, long delta_number, long change_number)
 {
 	cstate		cstate_data;
 	cstate_branch_history hp;

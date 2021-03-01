@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,7 @@
 
 
 int
-patch_apply(pp, ifn, ofn)
-    patch_ty        *pp;
-    string_ty       *ifn;
-    string_ty       *ofn;
+patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 {
     input_ty        *ifp;
     output_ty       *ofp;
@@ -123,7 +120,7 @@ patch_apply(pp, ifn, ofn)
 		 * it can't be there.
 		 */
 		idx = php->before.start_line_number - 1 + offset;
-		if (idx < min_line)
+		if (idx < (int)min_line)
 		    continue;
 		if (idx + php->before.length > buffer.nstrings)
 		    continue;
@@ -200,7 +197,7 @@ patch_apply(pp, ifn, ofn)
 	/*
 	 * Emit anything left over.
 	 */
-	while (curline <= buffer.nstrings)
+	while (curline <= (int)buffer.nstrings)
 	{
 	    output_put_str(ofp, buffer.string[curline - 1]);
 	    output_fputc(ofp, '\n');

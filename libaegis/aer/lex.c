@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ static symtab_ty *stp;
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    char	    *name;
+    const char      *name;
     int		    token;
 };
 
@@ -132,7 +132,7 @@ static table_ty table[] =
 static void
 reserved_init(void)
 {
-    table_ty	    *tp;
+    table_ty        *tp;
     string_ty	    *s;
 
     if (!stp)
@@ -151,10 +151,10 @@ reserved_init(void)
 static int
 reserved(string_ty *name)
 {
-    int		    *data;
+    const int       *data;
 
     assert(stp);
-    data = symtab_query(stp, name);
+    data = (int *)symtab_query(stp, name);
     return (data ? *data : 0);
 }
 
@@ -730,7 +730,7 @@ aer_report_lex(void)
 
 
 void
-aer_report_error(char *fmt)
+aer_report_error(const char *fmt)
 {
     aer_lex_error(0, 0, fmt);
 }
@@ -759,7 +759,7 @@ rpt_lex_pos_get(void)
 
 
 void
-aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, char *fmt)
+aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, const char *fmt)
 {
     int		    need_to_delete;
 
@@ -792,7 +792,7 @@ aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, char *fmt)
 
 
 void
-rpt_lex_error(rpt_pos_ty *p, char *fmt)
+rpt_lex_error(rpt_pos_ty *p, const char *fmt)
 {
     rpt_pos_error(0, 0, fmt);
 

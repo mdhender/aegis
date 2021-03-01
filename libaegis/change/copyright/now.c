@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,18 +21,18 @@
  */
 
 #include <change/branch.h>
+#include <now.h>
 
 
 void
-change_copyright_years_now(cp)
-	change_ty	*cp;
+change_copyright_years_now(change_ty *cp)
 {
-	time_t		now;
-	struct tm	*tm;
-	int		year;
+    time_t          when;
+    struct tm       *tm;
+    int             year;
 
-	time(&now);
-	tm = localtime(&now);
-	year = tm->tm_year + 1900;
-	change_copyright_year_append(cp, year);
+    when = now();
+    tm = localtime(&when);
+    year = tm->tm_year + 1900;
+    change_copyright_year_append(cp, year);
 }

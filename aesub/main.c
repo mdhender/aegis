@@ -55,7 +55,7 @@
 static void
 aesub_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s [ <option>... ] <string>...\n", progname);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1993, 1994, 2002 Peter Miller.
+ *	Copyright (C) 1991, 1993, 1994, 2002, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ static snake_t *snake_table;	/* allocable snake structures */
 typedef struct file file;
 struct file
 {
-    char            *f_lines;
+    const char      *f_lines;
     long            f_linecount;
 };
 
@@ -102,8 +102,8 @@ midsnake(int depth, long A, long N, long B, long M, long *ulx, long *uly,
     long            y;
     long            k;
     long            oldx;
-    char            *lp1;
-    char            *lp2;
+    const char      *lp1;
+    const char      *lp2;
     long            DELTA;
     long            odd;
     long            MAXD;
@@ -304,7 +304,7 @@ findsnake(int depth, long A, long N, long B, long M)
 
 
 double
-fstrcmp(char *s1, char *s2)
+fstrcmp(const char *s1, const char *s2)
 {
     double          result;
     snake_t         *sp;		/* current snake element */
@@ -345,9 +345,12 @@ fstrcmp(char *s1, char *s2)
     if (tablesize > tablesize_max)
     {
 	tablesize_max = tablesize;
-	V1_table = mem_change_size(V1_table, sizeof(long) * tablesize_max);
-	V2_table = mem_change_size(V2_table, sizeof(long) * tablesize_max);
+	V1_table =
+            (long int *)mem_change_size(V1_table, sizeof(long) * tablesize_max);
+	V2_table =
+            (long int *)mem_change_size(V2_table, sizeof(long) * tablesize_max);
 	snake_table =
+	    (snake_t *)
 	    mem_change_size(snake_table, sizeof(snake_t) * tablesize_max);
     }
 

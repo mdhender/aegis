@@ -1,0 +1,71 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2003 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aeget command.
+.\"
+.so z_name.so
+.ds n) aeget
+.TH "aeget" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aeget \- Aegis CGI file access
+.XX "aeget(1)" "Aegis CGI file access"
+.SH SYNOPSIS
+.B \*(n)
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used with Apache (or CGI conforming any other web server)
+to access the files of an Aegis project.
+The files are searched for along the appropriate search path,
+including all ancestor baslines,
+not just the baseline of the branch.
+.PP
+This is useful when developing web sites using Aegis.
+.SS Install
+In order to use \fIaeget\fP(1), you need to copy it into your
+\fIcgi-bin\fP directory.
+.PP
+You may prefer to use a symbolic link, as this will be more stable
+across Aegis upgrades.  However, this requires a corresponding
+\fIfollow-symlinks\fP setting in your web server's configuration file.
+.SS Usage
+Once \fIaeget\fP(1) is installed,
+files may be accessed via
+.RS
+http://localhost/cgi-bin/aeget/\fIproject-name\fP/
+.RE
+If no project name is given, a list of projects will be generated.
+This will lead you through a series of menus, giving access to manu
+useful pages of information about your projects.
+.SS Cascading Style Sheets
+The web interface uses Cascading Style Sheets.  You can give the
+web interface a personalised look and feel, by creating stylesheets
+in the web server's Document Root directory.
+The interface will use it's default styles, then styles from a global
+style sheet called \f[CW]aedefault.css\fP, and then styles from a project
+stylesheet called \fIprojectname\fP\f[CW].css\fP (replace \fIprojectname\fP
+with the name of the project).
+.PP
+There is an example style sheet in
+\f[CW]\*(B)/aedefault.css\fP which demonstrates the style elements used.
+This particular stylesheet is not designed to be aesthetically pleasing,
+but to exercise all of the elements.
+Using this stylesheet unmodified will give psychedelic results.
+Use it as a template.
+.so z_cr.so

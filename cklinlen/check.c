@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -211,7 +211,7 @@ run_state_machine(int c)
     case state_double_quote_escape:
 	/*
 	 * We throw away the character immediately following the
-	 * backslash.  Escape sequences can be longer than thisa, but
+	 * backslash.  Escape sequences can be longer than this, but
 	 * are uninteresting to the state machine.  The only sequences
 	 * which can confuse the state machine are escaped backslash,
 	 * escaped double quote and escaped newline.

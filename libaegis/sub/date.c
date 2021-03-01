@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,8 @@
  * MANIFEST: functions to manipulate dates
  */
 
-#include <ac/time.h>
-
 #include <language.h>
+#include <now.h>
 #include <sub.h>
 #include <sub/date.h>
 #include <trace.h>
@@ -52,25 +51,23 @@
  */
 
 wstring_ty *
-sub_date(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_date(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
-    time_t	    now;
+    time_t	    when;
 
     trace(("sub_date()\n{\n"));
-    time(&now);
+    when = now();
     if (arg->nitems < 2)
     {
 	char		*time_string;
 
-	time_string = ctime(&now);
+	time_string = ctime(&when);
 	result = wstr_n_from_c(time_string, 24);
     }
     else
     {
-	struct tm	*tm;
+	struct tm	*theTm;
 	char		buf[1000];
 	size_t		nbytes;
 	wstring_ty	*wfmt;
@@ -79,13 +76,13 @@ sub_date(scp, arg)
 	wfmt = wstring_list_to_wstring(arg, 1, 32767, (char *)0);
 	fmt = wstr_to_str(wfmt);
 	wstr_free(wfmt);
-	tm = localtime(&now);
+	theTm = localtime(&when);
 
 	/*
 	 * The strftime is locale dependent.
 	 */
 	language_human();
-	nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, tm);
+	nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, theTm);
 	language_C();
 
 	if (!nbytes && fmt->str_length)

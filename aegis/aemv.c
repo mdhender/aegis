@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1993-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@
 static void
 move_file_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -120,7 +120,7 @@ move_file_list(void)
 	}
 	arglex();
     }
-    list_project_files(project_name, change_number);
+    list_project_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));

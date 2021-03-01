@@ -2372,15 +2372,6 @@ msgid	"field \"$name\" redefined"
 msgstr	"field \"$name\" redefined"
 
 #
-# This error message is issued when a change file collides with a file
-# already in the project.  Must be modifiable by (***) above.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"file \"$filename\" already exists in project"
-msgstr	"file \"$filename\" already exists in project"
-
-#
 # This error message is issued when a change file name is not acceptable
 # to the filename pattern filters.  Must be modifiable by (***) above.
 #
@@ -2518,16 +2509,6 @@ msgstr	"file \"$filename\" too long (by $number), suggest \"$suggest\" "
 	"instead"
 
 #
-# This error message is issued when a change file collides with a file
-# already in the project.  Must be modifiable by (***) above.
-#
-# 	$File_Name1	The name of the offending change file.
-# 	$File_Name2	The name of the offending project file.
-#
-msgid	"file \"$filename1\" collides with file \"$filename2\" in project"
-msgstr	"file \"$filename1\" collides with file \"$filename2\" in project"
-
-#
 # This fatal error message is issued when aenf or aent detects a directory
 # name conflict with a proposed new file name.
 #
@@ -2584,6 +2565,13 @@ msgstr	"file name \"$filename\" not suitable for DOS, suggest \"$suggest"
 #
 msgid	"file name \"$filename\" not suitable for Windows"
 msgstr	"file name \"$filename\" not suitable for Windows "
+
+#
+# This error message is issued when a file qualifier in a substitution
+# is an unknown name.  See (+++) below.
+#
+msgid	"file qualifier unknown"
+msgstr	"file qualifier unknown"
 
 #
 # This error message is issued when an unknown file type name is given
@@ -4913,6 +4901,28 @@ msgstr	"sleeping $number second${plural $number s} to allow file "
 #
 msgid	"throw statement requires string argument (not $name)"
 msgstr	"the throw statement requires string argument (was given $name)"
+
+#
+# This warning is issued when a delta date is specified which
+# falls before the start of a branch.  This is not meaningful when
+# recreating the contents of a branch.
+#
+# 	$number		The offending date and time.
+#
+msgid	"time $number after branch"
+msgstr	"warning: the time \"$number\" is after the branch finished, this "
+	"is not meaningful when recreating the contents of the branch"
+
+#
+# This warning is issued when a delta date is specified which falls
+# before the start of a branch.  This is not meaningful when recreating
+# the contents of a branch.
+#
+# 	$number		The offending date and time.
+#
+msgid	"time $number before branch"
+msgstr	"warning: the time \"$number\" is before the branch started, this "
+	"is not meaningful when recreating the contents of the branch"
 
 #
 # This error message is issued when too few files names are specified on

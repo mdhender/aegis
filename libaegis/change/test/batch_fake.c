@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000-2002 Peter Miller;
+ *	Copyright (C) 2000-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,8 +41,8 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 {
     size_t	    j;
     string_ty	    *dir;
-    int		    (*run_test_command)_((change_ty *, user_ty *, string_ty *,
-			string_ty *, int, int));
+    int		    (*run_test_command)(change_ty *, user_ty *, string_ty *,
+			string_ty *, int, int);
     cstate	    cstate_data;
     batch_result_list_ty *result;
     int		    persevere;

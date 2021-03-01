@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@
 static void
 review_pass_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -169,7 +169,7 @@ review_pass_main(void)
     user_ty	    *up;
     long	    j;
     string_ty	    *comment =	    0;
-    char	    *reason =	    0;
+    const char      *reason =	    0;
     edit_ty	    edit;
 
     trace(("review_pass_main()\n{\n"));

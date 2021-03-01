@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -172,7 +172,8 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 	    s = path_cat(path, wl.string[j]);
-	    descend(s, resolve, callback, arg);
+	    if (!stack_eliminate(s))
+		descend(s, resolve, callback, arg);
 	    str_free(s);
 	}
 	string_list_destructor(&wl);

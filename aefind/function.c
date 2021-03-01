@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    char            *name;
+    const char      *name;
     tree_ty         *(*func)(tree_list_ty *);
 };
 
@@ -92,7 +92,7 @@ function_indirection(string_ty *name, tree_list_ty *args)
 	}
     }
 
-    tp = symtab_query(stp, name);
+    tp = (table_ty *)symtab_query(stp, name);
     if (!tp)
     {
 	string_ty	*guess;

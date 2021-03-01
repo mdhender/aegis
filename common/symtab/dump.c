@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 void
 symtab_dump(symtab_ty *stp, char *caption)
 {
-    int		    j;
+    str_hash_ty     j;
     symtab_row_ty   *p;
 
     error_raw("symbol table %s = {", caption);

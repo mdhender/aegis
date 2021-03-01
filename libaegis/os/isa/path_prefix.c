@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,7 @@
 
 
 int
-os_isa_path_prefix(s1, s2)
-	string_ty	*s1;
-	string_ty	*s2;
+os_isa_path_prefix(string_ty *s1, string_ty *s2)
 {
 	return
 	(

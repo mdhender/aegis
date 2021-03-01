@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 2002 Peter Miller.
+ *	Copyright (C) 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,14 +17,42 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: interface definition for aegis/aev.c
+ * MANIFEST: functions to manipulate mains
  */
 
-#ifndef VERSION_H
-#define VERSION_H
+#include <ac/stdlib.h>
 
-#include <main.h>
+#include <arglex2.h>
+#include <env.h>
+#include <cgi.h>
+#include <http.h>
+#include <language.h>
+#include <os.h>
+#include <r250.h>
+#include <str.h>
 
-void version(void);
 
-#endif /* VERSION_H */
+int
+main(int argc, char **argv)
+{
+    /*
+     * Initialize everything thyat needs it.
+     */
+    r250_init();
+    os_become_init_mortal();
+    arglex2_init(argc, argv);
+    str_initialize();
+    env_initialize();
+    language_init();
+
+    /*
+     * Process the request
+     */
+    cgi();
+
+    /*
+     * Report success.
+     */
+    exit(0);
+    return 0;
+}

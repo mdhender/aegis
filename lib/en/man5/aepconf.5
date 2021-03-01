@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-1996, 1998-2002 Peter Miller;
+.\"	Copyright (C) 1994-1996, 1998-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -213,12 +213,12 @@ naming only the last filename path element will \fInot\fP work
 change_file_command = string;
 .RS 8n
 This field contains a command to be executed whenever a
-'\*(n) -CoPy_file',
-'\*(n) -New_File'
-'\*(n) -New_Test'
-'\*(n) -MoVe_file'
+\'\*(n) -CoPy_file\',
+\'\*(n) -New_File\'
+\'\*(n) -New_Test\'
+\'\*(n) -MoVe_file\'
 or
-'\*(n) -ReMove_file'
+\'\*(n) -ReMove_file\'
 command is successful.
 See also command-specific overrides.
 If this field is absent, nothing is done.
@@ -247,12 +247,12 @@ Exit status: ignored.
 change_file_undo_command = string;
 .RS 8n
 This field contains a command to be executed whenever a
-'\*(n) -CoPy_file_Undo',
-'\*(n) -MoVe_file_Undo'
-'\*(n) -New_File_Undo',
-'\*(n) -New_Test_Undo',
+\'\*(n) -CoPy_file_Undo',
+\'\*(n) -MoVe_file_Undo'
+\'\*(n) -New_File_Undo',
+\'\*(n) -New_Test_Undo',
 or
-'\*(n) -ReMove_file_Undo'
+\'\*(n) -ReMove_file_Undo'
 command is successful.
 Default to \fIchange_\%file_\%command\fP if absent.
 See also command-specific overrides.
@@ -284,7 +284,7 @@ new_file_command = string;
 Executed whenever the aegis -new_file command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -300,7 +300,7 @@ new_test_command = string;
 Executed whenever the aegis -new_test command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -316,7 +316,7 @@ copy_file_command = string;
 Executed whenever the aegis -copy_file command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -332,7 +332,7 @@ remove_file_command = string;
 Executed whenever the aegis -remove_file command is run successfully.
 Defaults to `change_file_command' if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -348,7 +348,7 @@ new_file_undo_command = string;
 Executed whenever the aegis -new_file_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -364,7 +364,7 @@ new_test_undo_command = string;
 Executed whenever the aegis -new_test_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -380,7 +380,7 @@ copy_file_undo_command = string;
 Executed whenever the aegis -copy_file_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -390,13 +390,14 @@ Executed as: the developer
 Current directory: the development directory of the change
 Exit status: ignored
 .RE
+.\" ------------------------------------------------------------------------
 .TP 8n
 remove_file_undo_command = string;
 .RS
 Executed whenever the aegis -remove_file_undo command is run successfully.
 Defaults to change_file_undo_command if not set.
 .PP
-All of the substitutions described in aesub(5) are available.
+All of the substitutions described in \fIaesub\fP(5) are available.
 In addition:
 .TP
 ${File_List}
@@ -406,6 +407,43 @@ Executed as: the developer
 Current directory: the development directory of the change
 Exit status: ignored
 .RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+make_transparent_command = string;
+.RS
+The make_transparent_command is executed whenever the
+aegis -make_transparent command is run successfully.
+Defaults to change_file_command if not set.
+.PP
+All of the substitutions described in \fIaesub\fP(5) are available.
+In addition:
+.TP
+${File_List}
+Space separated list of files named (at times, can be empty).
+.PP
+Executed as: the developer
+Current directory: the development directory of the change
+Exit status: ignored
+.RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+make_transparent_undo_command = string;
+.RS
+The make_transparent_undo_command is executed whenever the
+aegis -make_transparent_undo command is run successfully.
+Defaults to change_file_undo_command if not set.
+.PP
+All of the substitutions described in \fIaesub\fP(5) are available.
+In addition:
+.TP
+${File_List}
+Space separated list of files named (at times, can be empty).
+.PP
+Executed as: the developer
+Current directory: the development directory of the change
+Exit status: ignored
+.RE
+.\" ------------------------------------------------------------------------
 .TP 8n
 project_file_command = string;
 .RS
@@ -1119,6 +1157,17 @@ else indicates "no result".
 .RE
 .\" ------------------------------------------------------------------------
 .TP 8n
+architecture_discriminator_command = string;
+.RS
+If this field is present it is used as a command to be executed in
+order to further identify the platform architecture (see below).
+All of the substitutions described by \fIaesub\fP(5) are available;
+.br
+Executed as: the developer.
+Current directory: the development directory of the change.
+Exit status: zero indicates success, all non-zero exits indicate failure.
+.RE
+.TP 8n
 architecture = [{ ... }];
 .br
 .RS
@@ -1148,8 +1197,10 @@ The system and machine architecture are determined by using the
 system call.
 The
 .IR uname (2)
-return value is assembled into a string of the
-form "\fIsysname\fB-\fIrelease\fB-\fIversion\fB-\fImachine\fR".
+return value is assembled into a string of the form
+"\fIsysname\fB-\fIrelease\fB-\fIversion\fB-\fImachine\fR", or
+"\fIsysname\fB-\fIrelease\fB-\fIversion\fB-\fImachine\fB-\fIdisc\fR"
+if \fIarchitecture_discriminator_command\fP is used.
 .PP
 The pattern field must match this uname result string.
 The first match found is used.
@@ -1404,7 +1455,7 @@ development_directory_template = string;
 .RS
 This field is used to determine the name of the development directory
 at develop begin.
-All of the substitutions defined in aesub(5) are
+All of the substitutions defined in \fIaesub\fP(5) are
 available.  The following substitutions is also available:
 .TP 8n
 Default_Development_Directory
@@ -1429,7 +1480,7 @@ name into underscores.
 metrics_filename_pattern = string;
 .RS
 This field is used to form the name of the metrics file, given a source file.
-All of the substitutions defined in aesub(5) are
+All of the substitutions defined in \fIaesub\fP(5) are
 available.  The following substitutions is also available:
 .TP 8n
 File_Name

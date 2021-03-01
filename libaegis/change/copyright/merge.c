@@ -24,9 +24,7 @@
 
 
 void
-change_copyright_years_merge(cp1, cp2)
-	change_ty	*cp1;
-	change_ty	*cp2;
+change_copyright_years_merge(change_ty *cp1, change_ty *cp2)
 {
 	cstate		cstate_data;
 	size_t		j;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,20 +24,17 @@
 #include <trace.h>
 
 
-static void run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-run(this, rp)
-	rpt_stmt_ty	*this;
-	rpt_stmt_result_ty *rp;
+run(rpt_stmt_ty *this_thing, rpt_stmt_result_ty *rp)
 {
 	size_t		j;
 
-	trace(("stmt_compound::run(this = %08lX)\n{\n"/*}*/, (long)this));
-	for (j = 0; j < this->nchild; ++j)
+	trace(("stmt_compound::run(this_thing = %08lX)\n{\n"/*}*/,
+               (long)this_thing));
+	for (j = 0; j < this_thing->nchild; ++j)
 	{
 		trace(("child %ld\n", (long)j));
-		rpt_stmt_run(this->child[j], rp);
+		rpt_stmt_run(this_thing->child[j], rp);
 		if (rp->status != rpt_stmt_status_normal)
 		{
 			trace(("return %d;\n", rp->status));

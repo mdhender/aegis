@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,10 +37,14 @@ static arglex_table_ty table[] =
     { "-Help",    arglex_token_help,    },
     { "-VERSion", arglex_token_version, },
     { "-TRAce",   arglex_token_trace,   },
+    { "-Page_Length", arglex_token_page_length, },
+    { "-Page_Width", arglex_token_page_width, },
 };
 
+typedef const char **argv_t;
+
 static int      argc;
-static char   **argv;
+static argv_t   argv;
 arglex_value_ty arglex_value;
 int             arglex_token;
 static arglex_table_ty *utable;
@@ -75,7 +79,8 @@ arglex_init(int ac, char **av, arglex_table_ty *tp)
 {
     progname_set(av[0]);
     argc = ac - 1;
-    argv = av + 1;
+    argv = (argv_t)(av + 1); /* gcc incorrectly whines about incompatible
+	pointer types in assignment */
     utable = tp;
 }
 
@@ -307,7 +312,7 @@ arglex_compare(const char *formal, const char *actual)
  */
 
 static int
-is_a_number(char *s)
+is_a_number(const char *s)
 {
     long            n;
     int             sign;
@@ -440,7 +445,7 @@ is_a_number(char *s)
  *	arglex
  *
  * SYNOPSIS
- *	arglex_token_ty arglex(void);
+ *	int arglex(void);
  *
  * DESCRIPTION
  *	The arglex function is used to perfom lexical analysis
@@ -465,8 +470,8 @@ arglex(void)
     int             j;
     arglex_table_ty *hit[20];
     int             nhit;
-    static char     *pushback;
-    char            *arg;
+    static const char *pushback;
+    const char      *arg;
     string_ty       *s1;
     string_ty       *s2;
     int             is_inco;
@@ -670,8 +675,7 @@ arglex(void)
  *	arglex_prefetch
  *
  * SYNOPSIS
- *	arglex_token_ty arglex_token_ty arglex_prefetch(arglex_token_ty *list,
- *		int list_len);
+ *	int arglex_prefetch(int *list, int list_len);
  *
  * DESCRIPTION
  *	The arglex_prefetch function is used to perfom lexical analysis
@@ -688,8 +692,8 @@ arglex(void)
  *	Must call arglex_init before this function is called.
  */
 
-arglex_token_ty
-arglex_prefetch(arglex_token_ty *list, int list_len)
+int
+arglex_prefetch(int *list, int list_len)
 {
     int             j;
 
@@ -699,7 +703,7 @@ arglex_prefetch(arglex_token_ty *list, int list_len)
 
     for (j = 0; j < argc; ++j)
     {
-	char            *actual;
+	const char      *actual;
 	int             k;
 
 	if (j == incomplete)
@@ -737,8 +741,8 @@ arglex_prefetch(arglex_token_ty *list, int list_len)
 
 	for (k = 0; k < list_len; ++k)
 	{
-	    arglex_token_ty token;
-	    char            *formal;
+	    int             token;
+	    const char      *formal;
 
 	    token = list[k];
 	    formal = arglex_token_name(token);
@@ -777,8 +781,8 @@ arglex_prefetch(arglex_token_ty *list, int list_len)
 }
 
 
-char *
-arglex_token_name(arglex_token_ty n)
+const char *
+arglex_token_name(int n)
 {
     arglex_table_ty *tp;
 
@@ -835,7 +839,7 @@ arglex_table_catenate(arglex_table_ty *tp1, arglex_table_ty *tp2)
     for (len2 = 0; tp2[len2].t_name; ++len2)
 	;
     len = len1 + len2;
-    tp = mem_alloc((len + 1) * sizeof(arglex_table_ty));
+    tp = (arglex_table_ty *)mem_alloc((len + 1) * sizeof(arglex_table_ty));
     memcpy(tp, tp1, len1 * sizeof(arglex_table_ty));
     memcpy(tp + len1, tp2, len2 * sizeof(arglex_table_ty));
     tp[len] = zero;
@@ -861,13 +865,13 @@ arglex_dispatch(arglex_dispatch_ty *choices, int choices_len,
     void (*the_default)(void))
 {
     int             j;
-    arglex_token_ty *tmp;
+    int             *tmp;
     int             tmp_len;
-    arglex_token_ty tok;
+    int             tok;
     int             priority;
 
     trace(("arglex_dispatch()\n{\n"));
-    tmp = mem_alloc(choices_len * sizeof(tmp[0]));
+    tmp = (int *)mem_alloc(choices_len * sizeof(tmp[0]));
     for (priority = 0;; ++priority)
     {
 	tmp_len = 0;
@@ -905,7 +909,8 @@ void
 arglex_synthetic(int ac, char **av, int inco)
 {
     argc = ac - 1;
-    argv = av + 1;
+    argv = (argv_t)(av + 1); /* gcc incorrectly whines about incompatible
+	pointer types in assignment */
     is_synthetic = 1;
     incomplete = inco - 1;
 }

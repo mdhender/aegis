@@ -120,6 +120,12 @@ ancestors.";
 		filename = "report/proj_bran.rpt";
 	},
 	{
+		name = "Project_Branch_Dates";
+		description = "Report all branches below the project, \
+with their start and finish dates.";
+		filename = "report/proj_brada.rpt";
+	},
+	{
 		name = "Project_Active_Branches";
 		description = "Report all active branches below the project.";
 		filename = "report/proj_brana.rpt";

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ aix_touch(void *vp, size_t nbytes)
     char            *endp;
     int             pgsize;
     volatile char   c;
-    void            (*oldsig)_((int));
+    void            (*oldsig)(int);
 
     oldsig = signal(SIGDANGER, aix_danger);
     if (setjmp(aix_bungy))
@@ -202,12 +202,12 @@ mem_copy_string(const char *s)
 
     if (s)
     {
-	cp = mem_alloc(strlen(s) + 1);
+	cp = (char *)mem_alloc(strlen(s) + 1);
 	strcpy(cp, s);
     }
     else
     {
-	cp = mem_alloc(1);
+	cp = (char *)mem_alloc(1);
 	*cp = 0;
     }
     return cp;

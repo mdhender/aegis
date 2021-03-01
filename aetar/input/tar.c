@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,10 +38,10 @@ struct input_tar_ty
 static void
 input_tar_destructor(input_ty *fp)
 {
-    input_tar_ty    *this;
+    input_tar_ty    *this_thing;
 
-    this = (input_tar_ty *)fp;
-    input_delete(this->deeper);
+    this_thing = (input_tar_ty *)fp;
+    input_delete(this_thing->deeper);
 }
 
 
@@ -64,20 +64,20 @@ input_tar_ftell(input_ty *fp)
 static string_ty *
 input_tar_name(input_ty *fp)
 {
-    input_tar_ty    *this;
+    input_tar_ty    *this_thing;
 
-    this = (input_tar_ty *)fp;
-    return input_name(this->deeper);
+    this_thing = (input_tar_ty *)fp;
+    return input_name(this_thing->deeper);
 }
 
 
 static long
 input_tar_length(input_ty *fp)
 {
-    input_tar_ty    *this;
+    input_tar_ty    *this_thing;
 
-    this = (input_tar_ty *)fp;
-    return input_length(this->deeper);
+    this_thing = (input_tar_ty *)fp;
+    return input_length(this_thing->deeper);
 }
 
 
@@ -96,11 +96,11 @@ input_ty *
 input_tar(input_ty *deeper)
 {
     input_ty	    *result;
-    input_tar_ty    *this;
+    input_tar_ty    *this_thing;
 
     result = input_new(&vtbl);
-    this = (input_tar_ty *)result;
-    this->deeper = deeper;
+    this_thing = (input_tar_ty *)result;
+    this_thing->deeper = deeper;
     return result;
 }
 
@@ -108,11 +108,11 @@ input_tar(input_ty *deeper)
 input_ty *
 input_tar_child(input_ty *fp, string_ty **archive_name_p)
 {
-    input_tar_ty    *this;
+    input_tar_ty    *this_thing;
 
     assert(archive_name_p);
     if (fp->vptr != &vtbl)
 	return 0;
-    this = (input_tar_ty *)fp;
-    return input_tar_child_open(this->deeper, archive_name_p);
+    this_thing = (input_tar_ty *)fp;
+    return input_tar_child_open(this_thing->deeper, archive_name_p);
 }

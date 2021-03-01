@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@
 static void
 difference_usage(void)
 {
-    char            *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -132,7 +132,7 @@ difference_list(void)
 	arglex();
     }
 
-    list_change_files(project_name, change_number);
+    list_change_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -140,8 +140,8 @@ difference_list(void)
 
 
 static void
-anticipate(string_ty *project_name, long change_number, char *branch, long cn2,
-    log_style_ty log_style, string_list_ty *wl)
+anticipate(string_ty *project_name, long change_number, const char *branch,
+    long cn2, log_style_ty log_style, string_list_ty *wl)
 {
     string_ty       *dd1;
     string_ty       *dd2;
@@ -564,7 +564,7 @@ difference_main(void)
     size_t          mergable_files;
     int             integrating;
     user_ty         *diff_user_p;
-    char            *branch;
+    const char      *branch;
     project_ty      *pp2;
     project_ty      *pp2bl;
     int             trunk;
@@ -1225,6 +1225,14 @@ difference_main(void)
 	    if (!src2_data)
 	    {
 		sub_context_ty  *scp;
+
+		/*
+		 * If we are doing a cross branch merge, and this file
+		 * isn't in the other branch, treat it like a new file
+		 * and ignore it.
+		 */
+		if (pp != pp2)
+		    continue;
 
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s1);

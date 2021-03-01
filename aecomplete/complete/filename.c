@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,24 +41,17 @@ struct complete_filename_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_filename_ty *this;
+    complete_filename_ty *this_thing;
 
-    this = (complete_filename_ty *)cp;
+    this_thing = (complete_filename_ty *)cp;
 }
 
 
-static void read_dir _((string_ty *, string_list_ty *));
-
 static void
-read_dir(path, wlp)
-    string_ty       *path;
-    string_list_ty  *wlp;
+read_dir(string_ty *path, string_list_ty *wlp)
 {
     char            *data;
     long            data_len;
@@ -81,21 +74,17 @@ read_dir(path, wlp)
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_filename_ty *this;
+    complete_filename_ty *this_thing;
     string_ty       *prefix;
     string_ty       *prefix_dir;
     string_ty       *prefix_ent;
     size_t          j;
     string_list_ty  names;
 
-    this = (complete_filename_ty *)cp;
+    this_thing = (complete_filename_ty *)cp;
     prefix = shell_prefix_get(sh);
 
     /*
@@ -143,12 +132,12 @@ perform(cp, sh)
 	}
 	else if (S_ISREG(st.st_mode))
 	{
-	    if (this->regular_ok)
+	    if (this_thing->regular_ok)
 		shell_emit(sh, path);
 	}
 	else
 	{
-	    if (this->special_ok)
+	    if (this_thing->special_ok)
 		shell_emit(sh, path);
 	}
 	str_free(path);
@@ -169,15 +158,14 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_filename(dir_only)
-    int             dir_only;
+complete_filename(int dir_only)
 {
     complete_ty     *result;
-    complete_filename_ty *this;
+    complete_filename_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_filename_ty *)result;
-    this->regular_ok = !dir_only;
-    this->special_ok = 0;
+    this_thing = (complete_filename_ty *)result;
+    this_thing->regular_ok = !dir_only;
+    this_thing->special_ok = 0;
     return result;
 }

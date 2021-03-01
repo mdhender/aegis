@@ -26,10 +26,9 @@
 
 
 void
-change_history_delta_name_add(cp, delta_number, delta_name)
-    change_ty       *cp;
-    long            delta_number;
-    string_ty       *delta_name;
+change_history_delta_name_add(change_ty *cp,
+                              long delta_number,
+                              string_ty *delta_name)
 {
     cstate          cstate_data;
     cstate_branch_history_list h;

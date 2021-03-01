@@ -19,10 +19,179 @@
 .\"
 .\" MANIFEST: document describing new 4.11 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change NN
+.PP
+.if n *
+.if t \(bu
+.\" change 107
+A bug has been fixed in \fIaedist\fP(1) where it handled moved files
+incorrectly.
+.PP
+.if n *
+.if t \(bu
+.\" change 105, 102, 101, 100, 98, 97
+There is a new experimental \fIaeget\fP(1) program.
+It is a potentially faster, potentially more capable replacement
+for the \fIaegis.cgi\fP(1) script.
+At the moment it isn't, it's experimental.
+.PP
+.if n *
+.if t \(bu
+.\" change 103
+A bug has been fixed in \fIaedist\fP(1) where it would sometimes segfault
+when sending transparent files.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+Command completion now works for the \fIaemt\fP(1) and \fIaemtu\fP(1) commands.
+.PP
+.if n *
+.if t \(bu
+.\" change 31, 26
+A bug has been fixed where the symbolic link farm could point to the
+wrong place when change files are transparent.
+.PP
+.if n *
+.if t \(bu
+.\" change 96, 93
+Change file notification commands have been added for the \fIaemt\fP(1)
+and \fIaemtu\fP(1) commands.  See \fIaepconf\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 90
+A bug has been fixed in \fIaefind\fP(1) command where
+it could report files which had been removed.
+.PP
+.if n *
+.if t \(bu
+.\" change 89
+A bug has been fixed in the \fIaecp\fP(1) command
+where it would scramble the \fIaet -reg\fP exemption.
+.PP
+.if n *
+.if t \(bu
+.\" change 88
+A bug has been fixed in the \fIaede\fP(1) command.
+The problem manifested as an \fIaet -reg\fP command which terminated early.
+.PP
+.if n *
+.if t \(bu
+.\" change 68
+There is a new \fIaexml\fP(1) command.
+You can now obtain various pieces of the Aegis database as XML.
+See \fIaexml\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 69
+The the \fInew_file_command\fP, \fIcopy_file_command\fP and
+\fIremove_file_command\fP fields of the project \fIconfig\fP file are
+now defaulted correctly.
+.PP
+.if n *
+.if t \(bu
+.\" change 65
+Theer is a new \fI$change_files\fP substitution.
+See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 14
+The project \fPconfig\fP file has a new
+\fIarchitecture_discriminator_command\fP field.  Now you can use an
+arbitrary command (rather than \fIuname\fP(2) information) to determine
+the architecture.  See \fIaepconf\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 58
+The Russian message translation has been updated.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+The German message translation has been updated.
+.PP
+.if n *
+.if t \(bu
+.\" change 57
+The \fIael\fP(1) command now has a new \fIincomplete\fP listing.
+It lists changes between \fIawaiting review\fP and \fIbeing
+integrated\fP. inclusive.
+.PP
+.if n *
+.if t \(bu
+.\" change 38, 24, 13
+The \fIael\fP(1) command now accepts arguments for the listings.  The
+\fIdefault-change\fP,
+\fIdefault-project\fP,
+\fIoutstanding-changes\fP and
+\fIuser-changes\fP
+lists now accept a user name argument.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+The \fIaemt\fP(1) command now understand the \fB\-UNCHanged\fP option,
+so that files which are in the branch, but unchanged from the deeper
+branch, may be made transparent.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+A bug has been fixed in the \fIwecp\fP(1) command
+where the \fB\-OverWrite\fP option did not honor
+the presence/absence of the \fB\-ReadOnly\fP flag.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+There is a new \fIaeedit\fP script.
+See \fIaeedit\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 106, 83, 16
+A bug has been fixed in the file history mechanism (as used by
+the \fI\-delta\fP options, \fIaeannotate\fP(1), \fIaedist\fP(1),
+\fIaepatch\fP(1), etc) which did not correctly understand transparent
+files.
+.PP
+.if n *
+.if t \(bu
+.\" change 65
+The \fIaeclean\fP(1) command now touches all of the source sfiles.
+It also accepts a \fB\-NoTouch\fP option.
+.PP
+.if n *
+.if t \(bu
+.\" change 65
+There is a new \fI$change_files\fP substitution.
+See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+The \fIaeclean\fP command now touches the source files as well.
+Use the now \fB\-no-touch option if you don't want this.
+.PP
+.if n *
+.if t \(bu
+.\" change 111, 71, 67
+There have been several improvements to the output of the \fIaegis.cgi\fP
+script
+.\" change 92, 78, 32, 15
+and the web site.
+.PP
+.if n *
+.if t \(bu
+For Aegis developers:
+.\" change 63, 61, 60, 56, 55, 53, 52, 51, 50, 39, 37, 29, 17
+all of the K&R insulation has been removed; you
+now need an ANSI C compiler to build Aegis.
+.\" change 99, 95, 75, 42, 40, 12
+Some preparation has also been done to get the source ready for a C++ compiler.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.11
+.SS Version 4.11 (29-Jan-2003)

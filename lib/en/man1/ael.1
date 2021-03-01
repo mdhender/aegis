@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1999, 2001, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -88,15 +88,23 @@ which is good for shell scripts.
 .TP 8n
 Default_Change
 .br
-List the default change for the current user.
+List the default change for the specified user (defaults to the current
+user if no user specified).
 .TP 8n
 Default_Project
 .br
-List the default project for the current user.
+List the default project for the specified user (defaults to the current
+user if no user specified).
 .TP 8n
 Developers
 .br
 List the developers of a project.
+.TP 8n
+INComplete
+.br
+List the changes between the \fIawaiting review\fP and \fIbeing
+integrated\fP states, inclusive.  Defaults to all users if no user
+name specified.
 .TP 8n
 Integrators
 .br
@@ -112,7 +120,8 @@ List all currently active locks.
 .TP 8n
 Outstanding_Changes
 .br
-List all changes not yet completed.
+List all changes owned by the specified user that are not yet completed
+(default to all users if no user specified).
 .TP 8n
 All_Outstanding_Changes
 .br
@@ -139,6 +148,9 @@ List all projects.
 Project_Aliases
 .br
 List all project aliases.
+If you use the \fB\-Project\fP command line option, the list will
+only include aliases of the specified project, or the project of the
+specified alias.
 .TP 8n
 Reviewers
 .br
@@ -151,7 +163,8 @@ Useful for cookbooks and makefiles.
 .TP 8n
 Users_Changes
 .br
-List of changes owned by the current user.
+List of changes owned by the specified user (defaults to current user
+if no user specified).
 .TP 8n
 Version
 .br

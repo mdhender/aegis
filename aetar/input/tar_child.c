@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -54,48 +54,48 @@ padding(input_ty *ip)
 static void
 input_tar_child_destructor(input_ty *fp)
 {
-    input_tar_child_ty *this;
+    input_tar_child_ty *this_thing;
 
     /*
      * read the rest of the input,
      * it wasn't all used.
      */
-    this = (input_tar_child_ty *)fp;
-    if (this->pos < this->length)
-	input_skip(this->deeper, this->length - this->pos);
+    this_thing = (input_tar_child_ty *)fp;
+    if (this_thing->pos < this_thing->length)
+	input_skip(this_thing->deeper, this_thing->length - this_thing->pos);
 
     /*
      * move to the next padding boundary
      */
-    padding(this->deeper);
+    padding(this_thing->deeper);
 
     /*
      * free the archive member name
      */
-    if (this->archive_name);
-	str_free(this->archive_name);
-    if (this->filename);
-	str_free(this->filename);
+    if (this_thing->archive_name);
+	str_free(this_thing->archive_name);
+    if (this_thing->filename);
+	str_free(this_thing->filename);
 
-    /* DO NOT input_delete(this->deeper); */
+    /* DO NOT input_delete(this_thing->deeper); */
 }
 
 
 static long
 input_tar_child_read(input_ty *fp, void *data, size_t len)
 {
-    input_tar_child_ty *this;
+    input_tar_child_ty *this_thing;
 
-    this = (input_tar_child_ty *)fp;
+    this_thing = (input_tar_child_ty *)fp;
     if (len <= 0)
 	return 0;
-    if (this->pos >= this->length)
+    if (this_thing->pos >= this_thing->length)
        	return 0;
-    if (this->pos + len > this->length)
-       	len = this->length - this->pos;
+    if (this_thing->pos + (long)len > this_thing->length)
+       	len = this_thing->length - this_thing->pos;
     assert(len > 0);
-    input_read_strictest(this->deeper, data, len);
-    this->pos += len;
+    input_read_strictest(this_thing->deeper, data, len);
+    this_thing->pos += len;
     return len;
 }
 
@@ -103,30 +103,30 @@ input_tar_child_read(input_ty *fp, void *data, size_t len)
 static long
 input_tar_child_ftell(input_ty *fp)
 {
-    input_tar_child_ty *this;
+    input_tar_child_ty *this_thing;
 
-    this = (input_tar_child_ty *)fp;
-    return this->pos;
+    this_thing = (input_tar_child_ty *)fp;
+    return this_thing->pos;
 }
 
 
 static string_ty *
 input_tar_child_name(input_ty *fp)
 {
-    input_tar_child_ty *this;
+    input_tar_child_ty *this_thing;
 
-    this = (input_tar_child_ty *)fp;
-    return this->filename;
+    this_thing = (input_tar_child_ty *)fp;
+    return this_thing->filename;
 }
 
 
 static long
 input_tar_child_length(input_ty *fp)
 {
-    input_tar_child_ty *this;
+    input_tar_child_ty *this_thing;
 
-    this = (input_tar_child_ty *)fp;
-    return this->length;
+    this_thing = (input_tar_child_ty *)fp;
+    return this_thing->length;
 }
 
 
@@ -150,7 +150,7 @@ read_data_as_string(input_ty *ip, size_t size)
     if (size > maximum)
     {
 	maximum = size;
-	buffer = mem_change_size(buffer, maximum);
+	buffer = (char *)mem_change_size(buffer, maximum);
     }
     input_read_strictest(ip, buffer, size);
     padding(ip);
@@ -182,7 +182,7 @@ input_tar_child_open(input_ty *deeper, string_ty **archive_name_p)
     for (;;)
     {
 	input_ty	*result;
-	input_tar_child_ty *this;
+	input_tar_child_ty *this_thing;
 	char		header[TBLOCK];
 	header_ty	*hp;
 	int		hchksum;
@@ -281,14 +281,14 @@ input_tar_child_open(input_ty *deeper, string_ty **archive_name_p)
 
 	case LF_LONGNAME:
 	    /*
-	     * The next real file gets this as its name.
+	     * The next real file gets this_thing as its name.
 	     */
 	    longname = read_data_as_string(deeper, hsize);
 	    continue;
 
 	case LF_LONGLINK:
 	    /*
-	     * The next file gets this as its link name.
+	     * The next file gets this_thing as its link name.
 	     * (But we toss links, so toss the data).
 	     */
 	    input_skip(deeper, hsize);
@@ -315,12 +315,12 @@ input_tar_child_open(input_ty *deeper, string_ty **archive_name_p)
 	 * Create a new input instance.
 	 */
 	result = input_new(&vtbl);
-	this = (input_tar_child_ty *)result;
-	this->deeper = deeper;
-	this->pos = 0;
-	this->length = hsize;
-	this->archive_name = name;
-	this->filename = str_format("%S(%S)", input_name(deeper), name);
+	this_thing = (input_tar_child_ty *)result;
+	this_thing->deeper = deeper;
+	this_thing->pos = 0;
+	this_thing->length = hsize;
+	this_thing->archive_name = name;
+	this_thing->filename = str_format("%S(%S)", input_name(deeper), name);
 
 	/*
 	 * the child will read everything.

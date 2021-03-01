@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,9 +30,11 @@
 #include <ac/unistd.h>
 #include <ac/fcntl.h>
 
+#include <env.h>
 #include <error.h>
 #include <lock.h>	/* for lock_release_child */
 #include <log.h>
+#include <now.h>
 #include <os.h>
 #include <sub.h>
 #include <trace.h>
@@ -43,28 +45,32 @@
 static int      pid;
 
 
-static void tee_stdout _((user_ty *, char *, int, int));
-
 static void
-tee_stdout(up, filename, also_to_tty, append_to_file)
-    user_ty         *up;
-    char            *filename;
-    int             also_to_tty;
-    int             append_to_file;
+tee_stdout(user_ty *up, char *filename, int also_to_tty, int append_to_file)
 {
     int             fd[2];
     int             uid;
     int             gid;
     int             um;
-    char            *argv[4];
+    const char      *argv[4];
     int             argc;
+
+    trace(("tee_stdout(up = %08lX, filename = \"%s\", also_to_tty = %d, "
+	"append_to_file = %d)\n{\n", (long)up, filename, also_to_tty,
+	append_to_file));
+
+    /*
+     * We are about to mangle stdout, which is one of the file
+     * descriptios programs typically use to determine the width of
+     * the termional.  So we need to set LINES and COLS before we do,
+     * so that out sub-commands wtill think the terminal is the same
+     * with as Aegis does.
+     */
+    env_set_page();
 
     /*
      * list both to a file and to the terminal
      */
-    trace(("tee_stdout(up = %08lX, filename = \"%s\", also_to_tty = %d, "
-	"append_to_file = %d)\n{\n", (long)up, filename, also_to_tty,
-	append_to_file));
     uid = user_id(up);
     gid = user_gid(up);
     um = user_umask(up);
@@ -127,8 +133,12 @@ tee_stdout(up, filename, also_to_tty, append_to_file)
 
 	/*
 	 * try to exec it
+	 *
+	 * (The cast is because many operating systems have a stupid
+	 * prototype, in turn probably because gcc whines incorrectly when
+	 * you have the correct prototype.)
 	 */
-	execvp(argv[0], argv);
+	execvp(argv[0], (char **)argv);
 	nfatal("exec \"%s\"", argv[0]);
 
     case -1:
@@ -150,11 +160,8 @@ tee_stdout(up, filename, also_to_tty, append_to_file)
 }
 
 
-static log_style_ty pref_to_style _((uconf_log_file_preference_ty));
-
 static log_style_ty
-pref_to_style(dflt)
-    uconf_log_file_preference_ty dflt;
+pref_to_style(uconf_log_file_preference_ty dflt)
 {
     switch (user_log_file_preference(user_executing(0), dflt))
     {
@@ -189,10 +196,7 @@ pref_to_style(dflt)
  */
 
 void
-log_open(log, up, style)
-    string_ty       *log;
-    user_ty         *up;
-    log_style_ty    style;
+log_open(string_ty *log, user_ty *up, log_style_ty style)
 {
     static int      already_done;
     int             bg;
@@ -244,13 +248,11 @@ log_open(log, up, style)
     exists = os_exists(log);
     if (style == log_style_snuggle && exists)
     {
-	time_t          now;
 	time_t          log_old;
 	time_t          log_new;
 
-	time(&now);
 	os_mtime_range(log, &log_old, &log_new);
-	if (now - log_new < 30)
+	if (now() - log_new < 30)
 	    append_to_file = 1;
     }
     if (!append_to_file && exists)
@@ -308,7 +310,7 @@ log_open(log, up, style)
 
 
 void
-log_close()
+log_close(void)
 {
     if (pid > 0)
     {
@@ -335,8 +337,7 @@ log_close()
 
 
 void
-log_quitter(n)
-    int             n;
+log_quitter(int n)
 {
     /*
      * Skip the close (and the wait) if we were interrupted.

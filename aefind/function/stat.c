@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,14 +41,14 @@
 static rpt_value_ty *
 atime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -120,14 +120,14 @@ function_atime(tree_list_ty *args)
 static rpt_value_ty *
 ctime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -199,14 +199,14 @@ function_ctime(tree_list_ty *args)
 static rpt_value_ty *
 mtime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -278,14 +278,14 @@ function_mtime(tree_list_ty *args)
 static rpt_value_ty *
 mode_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -357,14 +357,14 @@ function_mode(tree_list_ty *args)
 static rpt_value_ty *
 nlink_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty  *this;
+    tree_monadic_ty  *this_thing;
     rpt_value_ty     *vp;
     rpt_value_ty     *svp;
     rpt_value_ty     *result;
     string_ty        *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -436,14 +436,14 @@ function_nlink(tree_list_ty *args)
 static rpt_value_ty *
 ino_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -515,14 +515,14 @@ function_ino(tree_list_ty *args)
 static rpt_value_ty *
 uid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -594,14 +594,14 @@ function_uid(tree_list_ty *args)
 static rpt_value_ty *
 gid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -673,14 +673,14 @@ function_gid(tree_list_ty *args)
 static rpt_value_ty *
 size_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -752,15 +752,15 @@ function_size(tree_list_ty *args)
 static rpt_value_ty *
 type_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_monadic_ty *this;
+    tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
     rpt_value_ty    *result;
     string_ty       *s;
     int             n;
 
-    this = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this->arg, path, st);
+    this_thing = (tree_monadic_ty *)tp;
+    vp = tree_evaluate(this_thing->arg, path, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);

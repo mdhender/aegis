@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,14 +23,15 @@
 #include <ael/change/by_state.h>
 #include <ael/change/changes.h>
 #include <ael/change/inappropriat.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 
 
 void
-list_changes(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_changes(string_ty *project_name,
+             long change_number,
+             string_list_ty *args)
 {
 	trace(("list_changes()\n{\n"));
 	if (change_number)

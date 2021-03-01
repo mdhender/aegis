@@ -1,6 +1,13 @@
 .hy 0
 .TS
 l r lw(2.5i) lw(2.5i).
+aeget(1)	\*[Page*Of*aeget(1)]	T{
+.ad r
+aeget - Aegis CGI file
+T}	T{
+.ad l
+access
+T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
 aegis -CoPy file Undo - reverse
@@ -169,6 +176,13 @@ T}	T{
 .ad l
 aedist - remotely distribute a change
 T}
+aeedit(1)	\*[Page*Of*aeedit(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aeedit - edit a change's files
+T}
 aefstate(5)	\*[Page*Of*aefstate(5)]	T{
 .ad r
 
@@ -176,12 +190,33 @@ T}	T{
 .ad l
 aefstate - aegis file state file
 T}
+aeget(1)	\*[Page*Of*aeget(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aeget - Aegis CGI file access
+T}
+aeget(1)	\*[Page*Of*aeget(1)]	T{
+.ad r
+aeget -
+T}	T{
+.ad l
+Aegis CGI file access
+T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
 aegis - GUI tool for reviewing
 T}	T{
 .ad l
 Aegis change sets, using TCL/TK
+T}
+aexml(1)	\*[Page*Of*aexml(1)]	T{
+.ad r
+aexml -
+T}	T{
+.ad l
+Aegis database to XML
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
@@ -322,6 +357,13 @@ aeustate(5)	\*[Page*Of*aeustate(5)]	T{
 T}	T{
 .ad l
 aeustate - user state file
+T}
+aexml(1)	\*[Page*Of*aexml(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aexml - Aegis database to XML
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
@@ -581,6 +623,13 @@ aegis.
 T}	T{
 .ad l
 cgi - Aegis web interface script
+T}
+aeget(1)	\*[Page*Of*aeget(1)]	T{
+.ad r
+aeget - Aegis
+T}	T{
+.ad l
+CGI file access
 T}
 aedist(1)	\*[Page*Of*aedist(1)]	T{
 .ad r
@@ -848,6 +897,13 @@ T}	T{
 .ad l
 change sets, using TCL/TK
 T}
+aeedit(1)	\*[Page*Of*aeedit(1)]	T{
+.ad r
+aeedit - edit a
+T}	T{
+.ad l
+change's files
+T}
 aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
 .ad r
 aegis - integrate
@@ -1043,6 +1099,13 @@ ae
 T}	T{
 .ad l
 c - set change number
+T}
+aexml(1)	\*[Page*Of*aexml(1)]	T{
+.ad r
+aexml - Aegis
+T}	T{
+.ad l
+database to XML
 T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
@@ -1247,6 +1310,13 @@ T}	T{
 .ad l
 echo strings
 T}
+aeedit(1)	\*[Page*Of*aeedit(1)]	T{
+.ad r
+aeedit -
+T}	T{
+.ad l
+edit a change's files
+T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
 aegis -Develop Begin Undo - undo the
@@ -1366,6 +1436,13 @@ T}	T{
 .ad l
 file
 T}
+aeget(1)	\*[Page*Of*aeget(1)]	T{
+.ad r
+aeget - Aegis CGI
+T}	T{
+.ad l
+file access
+T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
 aegis -ReMove
@@ -1463,6 +1540,13 @@ aegis -MoVe
 T}	T{
 .ad l
 file - rename a file as part of a change
+T}
+aeedit(1)	\*[Page*Of*aeedit(1)]	T{
+.ad r
+aeedit - edit a change's
+T}	T{
+.ad l
+files
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
@@ -3081,6 +3165,13 @@ T}	T{
 .ad l
 sets, using TCL/TK
 T}
+aeedit(1)	\*[Page*Of*aeedit(1)]	T{
+.ad r
+aeedit - edit a change'
+T}	T{
+.ad l
+s files
+T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r
 aemeasure -
@@ -3591,6 +3682,13 @@ aegis locks - how locking
 T}	T{
 .ad l
 works, and which commands use them
+T}
+aexml(1)	\*[Page*Of*aexml(1)]	T{
+.ad r
+aexml - Aegis database to
+T}	T{
+.ad l
+XML
 T}
 .TE
 .ad b

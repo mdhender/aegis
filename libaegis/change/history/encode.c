@@ -36,12 +36,8 @@
 #include <undo.h>
 
 
-static string_ty *dir_and_base _((string_ty *, string_ty *));
-
 static string_ty *
-dir_and_base(dir, other)
-	string_ty	*dir;
-	string_ty	*other;
+dir_and_base(string_ty *dir, string_ty *other)
 {
 	string_ty	*base;
 	string_ty	*result;
@@ -54,9 +50,7 @@ dir_and_base(dir, other)
 
 
 string_ty *
-change_history_encode(cp, src)
-	change_ty	*cp;
-	fstate_src	src;
+change_history_encode(change_ty *cp, fstate_src src)
 {
 	pconf		pconf_data;
 	int		min_qp_enc;

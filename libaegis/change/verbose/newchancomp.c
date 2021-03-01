@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 
 
 void
-change_verbose_new_change_complete(cp)
-	change_ty	*cp;
+change_verbose_new_change_complete(change_ty *cp)
 {
 	change_verbose(cp, 0, i18n("new change complete"));
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,7 @@
 
 
 void
-change_become(cp)
-	change_ty	*cp;
+change_become(change_ty *cp)
 {
 	trace(("change_become(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);
@@ -48,8 +47,7 @@ change_become_undo()
 
 
 void
-change_developer_become(cp)
-	change_ty       *cp;
+change_developer_become(change_ty *cp)
 {
 	string_ty       *name;
 	user_ty         *up;

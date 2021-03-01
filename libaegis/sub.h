@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #ifndef SUB_H
 #define SUB_H
 
+#include <ac/time.h>
 #include <str.h>
 
 struct change_ty; /* existence */
@@ -39,6 +40,7 @@ void sub_var_set_format(sub_context_ty *, const char *, const char *, ...);
 void sub_var_set_string(sub_context_ty *, const char *, struct string_ty *);
 void sub_var_set_charstar(sub_context_ty *, const char *, const char *);
 void sub_var_set_long(sub_context_ty *, const char *, long);
+void sub_var_set_time(sub_context_ty *, const char *, time_t);
 void sub_var_optional(sub_context_ty *, const char *);
 void sub_var_append_if_unused(sub_context_ty *, const char *);
 void sub_var_override(sub_context_ty *, const char *);

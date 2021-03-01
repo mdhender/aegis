@@ -795,7 +795,6 @@ msgid	"$name1 and $name2"
 msgstr	"$name1 und $name2"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when an option which needs to be
 # accompanied by another option, but that option is not present.
 #
@@ -803,7 +802,7 @@ msgstr	"$name1 und $name2"
 # 	$Name2		The name of the offending option.
 #
 msgid	"$name1 needs $name2"
-msgstr	"the $name1 option must be accompanied the $name2 option"
+msgstr	"Die Option $name1 braucht die Option $name2"
 
 #
 # This format string is used to glue together two items in the
@@ -1064,13 +1063,12 @@ msgstr	"Dieser Change ist im Status '$state', er muß im 'being "
 	"developed' Status sein, um den Verzeichnisbaum zu durchsuchen"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aels command is used on
 # a change which is in the `aewaiting development' state.
 #
 msgid	"bad aels state"
-msgstr	"this change is in the '$state' state, it must be in the 'being "
-	"developed' state to list file information"
+msgstr	"Dieser Change ist im Status '$state', er muß im 'being "
+	"developed' Status sein, um die Datei-Information anzuzeigen"
 
 #
 # This error message is issued when a project alias is given to aenpa
@@ -1623,7 +1621,6 @@ msgstr	"Datei \"$filename\" hat sich seit dem letzten 'aegis -"
 	"Merge durchführen"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when aede finds a file which has been
 # modified in a branch's parent baseline.  It will be necessary to
 # create a new change in the branch, and do a cross branch merge with
@@ -1632,14 +1629,15 @@ msgstr	"Datei \"$filename\" hat sich seit dem letzten 'aegis -"
 # 	$File_Name	The name of the offending file.
 #
 msgid	"baseline $filename changed, merge in new change"
-msgstr	"File \"$filename\" in this branch's parent baseline has changed "
-	"since it was modified by this branch.  In order to resolve this, "
-	"you will need to create a new change in this branch, copy the "
-	"file into it (aecp $filename) and do a cross branch merge with "
-	"the grandparent (aed -merge -grandparent $filename). Once this "
-	"is integrated, the file will be up-to-date with the branch's "
-	"parent's baseline.  See the Branching chapter of the Aegis User "
-	"Guide for more information."
+msgstr	"Datei \"$filename\" hat sich in der Baseline des Parent dieses "
+	"Branches geändert seit sie in diesem Branch geändert wurde.  Um "
+	"diesen Konflikt zu lösen, müssen Sie einen neuen Change in "
+	"diesem Branch anlegen, die Datei hineinkopieren (aecp $filename) "
+	"und einen Cross Branch Merge mit dem Grandparent (aed -merge -"
+	"grandparent $filename) durchführen.  Nachdem dieser Change "
+	"integriert ist, ist die Datei up-to-date mit der Baseline des "
+	"Parent dieses Branches.  Siehe auch das Kapitel über Branching "
+	"im Aegis User Guide."
 
 #
 # This fatal error message is issued when a lock is not available.
@@ -1654,7 +1652,6 @@ msgid	"baseline write lock not available"
 msgstr	"Baseline write lock nicht verfügbar"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued before running batch_test_command if
 # progress messages were requested
 #
@@ -1663,7 +1660,7 @@ msgstr	"Baseline write lock nicht verfügbar"
 # 	$Total		Total number of tests
 #
 msgid	"batch test from $current to $last of $total"
-msgstr	"batch test from $current to $last of $total"
+msgstr	"Batch Test von $current bis $last von $total"
 
 #
 # This error message is issued when the bevel size specified is negative,
@@ -1760,7 +1757,6 @@ msgstr	"Dieser Change muß einen erfolgreichen 'aegis -Build' "
 	"werden kann"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when aeipass detects that the
 # build (or some other command between aeib and aeipass) has modified
 # a source file.  This often occurs when a source files becomes a
@@ -1769,11 +1765,12 @@ msgstr	"Dieser Change muß einen erfolgreichen 'aegis -Build' "
 # 	$File_Name	The name of the offending file.
 #
 msgid	"build trashed $filename"
-msgstr	"The build appears to have modified the \"$filename\" source "
-	"file.  This often occurs when a source files becomes a generated "
-	"file.  In a separate change you need to change the build "
-	"configuration, or ``aerm $filename'', or ``aerm $filename'' and "
-	"then ``aenf -build $filename'' in a following change."
+msgstr	"Die Source-Datei \"$filename\" scheint durch den Build verändert "
+	"worden zu sein. Dies passiert oft, wenn eine Source-Datei in "
+	"eine generierte Datei umgewandelt wird. Ändern Sie in einem "
+	"separaten Change die Build-Konfiguration, oder ``aerm "
+	"$filename'', oder ``aerm $filename'' und dann ``aenf -build "
+	"$filename'' in einem Folgechange."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -1803,16 +1800,14 @@ msgid	"change $change: $message"
 msgstr	"Change $change: $message"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error is issued when the --delta-from-change option is used
 # with a change which has not yet been completed.
 #
 # 	$Number		The offending change's number.
 #
 msgid	"change $number not completed"
-msgstr	"change $number is in the \"$state\" state; it must be in the "
-	"\"completed\" state to be used with the --delta-from-change "
-	"option"
+msgstr	"Change $number ist im Status \"$state\", er muß im \"completed\" "
+	"Status sein, um die Option --delta-from-change anzuwenden"
 
 #
 # This error message is issued when an absurd change number is given.
@@ -2037,7 +2032,6 @@ msgid	"copy file complete"
 msgstr	"$number ${plural $number Dateien Datei} kopiert"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aecpu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -2421,15 +2415,6 @@ msgid	"field \"$name\" redefined"
 msgstr	"Feld \"$name\" undefiniert"
 
 #
-# This error message is issued when a change file collides with a file
-# already in the project.  Must be modifiable by (***) above.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"file \"$filename\" already exists in project"
-msgstr	"Datei \"$filename\" existiert bereits im Projekt"
-
-#
 # This error message is issued when a change file name is not acceptable
 # to the filename pattern filters.  Must be modifiable by (***) above.
 #
@@ -2568,17 +2553,6 @@ msgstr	"Dateiname \"$filename\" ist um $number zu lang, schlage "
 	"\"$suggest\" stattdessen vor"
 
 #
-# This error message is issued when a change file collides with a file
-# already in the project.  Must be modifiable by (***) above.
-#
-# 	$File_Name1	The name of the offending change file.
-# 	$File_Name2	The name of the offending project file.
-#
-msgid	"file \"$filename1\" collides with file \"$filename2\" in project"
-msgstr	"Datei \"$filename1\" kollidiert mit Datei \"$filename2\" im "
-	"Projekt"
-
-#
 # This fatal error message is issued when aenf or aent detects a directory
 # name conflict with a proposed new file name.
 #
@@ -2635,6 +2609,14 @@ msgstr	"Dateiname \"$filename\" ist nicht für DOS geeignet, schlage "
 #
 msgid	"file name \"$filename\" not suitable for Windows"
 msgstr	"Dateiname \"$filename\" ist nicht für Windows geeignet"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a file qualifier in a substitution
+# is an unknown name.  See (+++) below.
+#
+msgid	"file qualifier unknown"
+msgstr	"file qualifier unknown"
 
 #
 # This error message is issued when an unknown file type name is given
@@ -3335,7 +3317,6 @@ msgid	"lstat $filename: $errno"
 msgstr	"$filename: $errno"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent which is not present the the branch, but is
 # present in a deeper ancestor branch.
@@ -3343,12 +3324,11 @@ msgstr	"$filename: $errno"
 # $filename	The name of the offending file.
 #
 msgid	"make $filename transparent, fail, too deep"
-msgstr	"it is not possible to make $filename transparent because it is "
-	"not present in the branch, but is present in a deeper ancestor "
-	"branch"
+msgstr	"Datei $filename kann nicht transparent gemacht werden, weil sie "
+	"nicht im Branch vorhanden ist, sondern in einem tieferen "
+	"Vorgänger-Branch"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent which is present the the branch, but is not
 # present in a deeper ancestor branch.
@@ -3356,41 +3336,39 @@ msgstr	"it is not possible to make $filename transparent because it is "
 # $filename	The name of the offending file.
 #
 msgid	"make $filename transparent, fail, too shallow"
-msgstr	"it is not possible to make $filename transparent because it is "
-	"not also present in a deeper ancestor branch"
+msgstr	"Datei $filename kann nicht transparent gemacht werden, weil sie "
+	"nicht auch in einem tieferen Vorgänger-Branch vorhanden ist"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent, and the branch being operated on is the trunk.
 #
 # $filename	The name of the offending file.
 #
 msgid	"make $filename transparent, fail, trunk"
-msgstr	"it is not possible to make $filename transparent because it is "
-	"in the trunk, you probably want to use the aerm command instead"
+msgstr	"Datei $filename kann nicht transparent gemacht werden, weil sie "
+	"im Stamm vorhanden ist.  Möglicherweise wollen Sie das aerm "
+	"Kommando stattdessen anwenden"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
 msgid	"make transparent bad state"
-msgstr	"this change is in the '$state' state, it must be in the 'being "
-	"developed' state to make a file transparent with it"
+msgstr	"Dieser Change ist im Status '$state', er muß im 'being "
+	"developed' Status sein, einen Datei darin transparent zu machen"
 
 #
-# TRANSLATION REQUIRED
 # This information message is issued by the aemt command when it
 # successfully complete.
 #
 # $number	The number of files (optional).
 #
 msgid	"make transparent complete"
-msgstr	"making $number ${plural $number files file} transparent"
+msgstr	"$number ${plural $number Dateien Datei} wurden transparent "
+	"gemacht"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aemtu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -3402,21 +3380,19 @@ msgid	"make transparent undo $filename complete"
 msgstr	"Datei \"$filename\" ist nicht mehr im Change"
 
 #
-# TRANSLATION REQUIRED
 # This informational message is issued when the aede command makes the
 # development directory read only.  This remindes the developer not to
 # change anything.
 #
 msgid	"making dev dir read only"
-msgstr	"making the development directory read-only"
+msgstr	"Bearbeitungsverzeichnis wird read-only gemacht"
 
 #
-# TRANSLATION REQUIRED
 # This informational message is issued when the aedeu, aerfail or aeifail
 # command make the development directory writable again.
 #
 msgid	"making dev dir writable"
-msgstr	"making the development directory writable again"
+msgstr	"Bearbeitungsverzeichnis wird wieder schreibbar gemacht"
 
 #
 # This error message is issued when a number which looks like a floating
@@ -3574,7 +3550,6 @@ msgid	"move $filename1 to $filename2 complete"
 msgstr	"Datei \"$filename1\" umbenannt in \"$filename2\""
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aemvu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -4323,14 +4298,13 @@ msgid	"proj dir $filename"
 msgstr	"Projektverzeichnis \"$filename\""
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a request is made to run regression
 # tests, but there are no files which are candidates of the options
 # specified, or the project may have no tests at all.
 #
 msgid	"proj has no tests"
-msgstr	"this project requires relevant tests before this command may be "
-	"used"
+msgstr	"Dieses Projekt braucht passende Tests, bevor dieses Kommando "
+	"verwendet werden kann"
 
 #
 # This is the format of project messages (error, fatal and verbose).
@@ -4617,7 +4591,6 @@ msgid	"requires one or two arguments"
 msgstr	"benötigt ein oder zwei Argumente"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) below.
 #
@@ -4832,14 +4805,12 @@ msgid	"syntax error"
 msgstr	"Es ist unklar, was Sie ausdrücken wollen"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when yacc finds an error at parse time.
 #
 msgid	"syntax error: cannot back up"
 msgstr	"Es ist unklar, was Sie ausdrücken wollen"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"syntax error; also virtual memory exhausted"
@@ -4855,7 +4826,6 @@ msgid	"tab width $number out of range"
 msgstr	"Eine Tab-Breite von $number ist ungültig"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued before running test_command if
 # progress messages were requested
 #
@@ -4863,7 +4833,7 @@ msgstr	"Eine Tab-Breite von $number ist ungültig"
 #      $Total          Total number of tests
 #
 msgid	"test $current of $total"
-msgstr	"test $current of $total"
+msgstr	"Test $current von $total"
 
 #
 # This verbose message is issued when aent determines the list of
@@ -4980,15 +4950,14 @@ msgid	"the name \"$name\" is undefined"
 msgstr	"der Name \"$name\" ist nicht definiert"
 
 #
-# TRANSLATION REQUIRED
 # This information message is issued when Aegis needs to delay for a
 # number fo seconds to ensure that file modification tikmes do not extend
 # into the future.  Commonest sighting is when aeipass needs to sleep.
 # Also used as a debug message, only visable when DEBUG is defined.
 #
 msgid	"throttling $number seconds"
-msgstr	"sleeping $number second${plural $number s} to allow file "
-	"modifications times to be consistent"
+msgstr	"Warte $number Sekunde${plural $number n}, damit die "
+	"Änderungszeiten der Dateien konsistent werden"
 
 #
 # This message is issued whrn a throw statement is evaluated, and the
@@ -4999,6 +4968,30 @@ msgstr	"sleeping $number second${plural $number s} to allow file "
 msgid	"throw statement requires string argument (not $name)"
 msgstr	"die throw-Anweisung benötigt ein string-Argument (angegeben "
 	"wurde $name)"
+
+#
+# TRANSLATION REQUIRED
+# This warning is issed when a delta date is specified which falls before
+# the start of a branch.  This is not meaningful when recreating the
+# contents of a branch.
+#
+# 	$number		The offending date and time.
+#
+msgid	"time $number after branch"
+msgstr	"warning: the time \"$number\" is after the branch finished, this "
+	"is not meaningful when recreating the contents of the branch"
+
+#
+# TRANSLATION REQUIRED
+# This warning is issed when a delta date is specified which falls before
+# the start of a branch.  This is not meaningful when recreating the
+# contents of a branch.
+#
+# 	$number		The offending date and time.
+#
+msgid	"time $number before branch"
+msgstr	"warning: the time \"$number\" is before the branch started, this "
+	"is not meaningful when recreating the contents of the branch"
 
 #
 # This error message is issued when too few files names are specified on
@@ -5161,11 +5154,11 @@ msgstr	"Es gibt in diesem Projekt keinen Change oder Branch mit dieser "
 	"Nummer"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the shell cannot be determined.
 #
 msgid	"unknown shell"
-msgstr	"unable to determine the shell which has requested the completion"
+msgstr	"Die Shell kann nicht ermittelt werden, die die Vervollständigung "
+	"angefordert hat"
 
 #
 # This error message is issued when an unknown substitution is
@@ -5385,7 +5378,6 @@ msgstr	"Warnung: das History Tool hat die Source-Datei \"$filename\" "
 	"verändert"
 
 #
-# TRANSLATION REQUIRED
 # This warning message is issued by aedist when a patch in an incominmg
 # change set cannot be used (it could be malformed, it may have one or
 # more chunks that can't be applied, etc) and so the full source for
@@ -5394,9 +5386,9 @@ msgstr	"Warnung: das History Tool hat die Source-Datei \"$filename\" "
 # 	$filename	The name of the offending file.
 #
 msgid	"warning: $filename patch not used"
-msgstr	"warning: the patch for \"$filename\" could not be used, so the "
-	"full incoming source for this file has been used; you may need "
-	"to resolve conflicts manually"
+msgstr	"Warnung: der Patch für \"$filename\" konnte nicht verwendet "
+	"werden, deshalb wurde die vollständige Source für diese Datei "
+	"verwendet; möglicherweise müssen Sie Konflikte manuell auflösen"
 
 #
 # This warning message is issued when the AEGIS environment is observed.

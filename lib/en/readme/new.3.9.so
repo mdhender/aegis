@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -73,4 +73,4 @@ than 5% of the size of the repository.)  On slow networks, however,
 this can sometimes improve the preformance of file-related commands.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.9
+.SS Version 3.9 (7-Feb-1999)

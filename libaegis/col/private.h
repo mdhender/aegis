@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ struct col_vtbl_ty
 	 * Putting this field last catches many instances of forgetting
 	 * a method pointer.
 	 */
-	const char	*typename;
+	const char	*theTypename;
 };
 
 col_ty *col_new(col_vtbl_ty *);

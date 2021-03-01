@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1999, 2002, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,15 @@
 
 #include <main.h>
 
+/**
+  * The version_copyright function is used to print a generic version
+  * number and copyright notice.
+  */
 void version_copyright(void);
+
+/**
+  * The version function is used to handle --version command line options.
+  */
+void version(void);
 
 #endif /* LIBAEGIS_VERSION_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 2002 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,18 +22,6 @@
 
 #ifndef MAIN_H
 #define MAIN_H
-
-/*
- *  function prototype insulation
- */
-#ifndef _
-# ifdef __STDC__
-#  define _(x) x
-# else
-#  define _(x) ()
-#  define const
-# endif
-#endif /* _ */
 
 /*
  * array manipulation

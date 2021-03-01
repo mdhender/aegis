@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,16 +58,18 @@ static mbstate_t initial_state; /*lint !e86*/
 static void
 output_to_wide_flush(output_ty *fp)
 {
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::flush(fp = %08lX)\n{\n", (long)fp));
-    this = (output_to_wide_ty *)fp;
-    if (this->output_len > 0)
+    this_thing = (output_to_wide_ty *)fp;
+    if (this_thing->output_len > 0)
     {
-	wide_output_write(this->deeper, this->output_buf, this->output_len);
-	this->output_len = 0;
+	wide_output_write(this_thing->deeper,
+                          this_thing->output_buf,
+                          this_thing->output_len);
+	this_thing->output_len = 0;
     }
-    wide_output_flush(this->deeper);
+    wide_output_flush(this_thing->deeper);
     trace(("}\n"));
 }
 
@@ -75,17 +77,17 @@ output_to_wide_flush(output_ty *fp)
 static void
 output_to_wide_destructor(output_ty *fp)
 {
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::destructor(fp = %08lX)\n{\n", (long)fp));
-    this = (output_to_wide_ty *)fp;
+    this_thing = (output_to_wide_ty *)fp;
 
     /*
      * If there are any input characters left, they are probably a
      * partial which is never going to be completed.
      */
     language_human();
-    while (this->input_len)
+    while (this_thing->input_len)
     {
 	int		n;
 	wchar_t		wc;
@@ -96,8 +98,11 @@ output_to_wide_destructor(output_ty *fp)
 	 * character is scanned.  If there is an error, we want
 	 * to be able to restore it.
 	 */
-	sequester = this->input_state;
-	n = mbrtowc(&wc, this->input_buf, this->input_len, &this->input_state);
+	sequester = this_thing->input_state;
+	n = mbrtowc(&wc,
+                    this_thing->input_buf,
+                    this_thing->input_len,
+                    &this_thing->input_state);
 	if (n == 0)
 	{
 	    /*
@@ -117,41 +122,42 @@ output_to_wide_destructor(output_ty *fp)
 	     * know it's illegal because we are never getting
 	     * any more characters.)  Restore the state.
 	     */
-	    this->input_state = sequester;
+	    this_thing->input_state = sequester;
 
 	    /*
 	     * It's an illegal sequence.  Use the first
 	     * character in the buffer, and shuffle the
 	     * rest down.
 	     */
-	    wc = (unsigned char)this->input_buf[0];
+	    wc = (unsigned char)this_thing->input_buf[0];
 	    n = 1;
 	}
 
 	/*
 	 * stash the output
 	 */
-	if (this->output_len >= this->output_max)
+	if (this_thing->output_len >= this_thing->output_max)
 	{
 	    size_t	    nbytes;
 
-	    this->output_max = 32 + 2 * this->output_max;
-	    nbytes = sizeof(this->output_buf[0]) * this->output_max;
-	    this->output_buf = mem_change_size(this->output_buf, nbytes);
+	    this_thing->output_max = 32 + 2 * this_thing->output_max;
+	    nbytes = sizeof(this_thing->output_buf[0]) * this_thing->output_max;
+	    this_thing->output_buf =
+                mem_change_size(this_thing->output_buf, nbytes);
 	}
-	this->output_buf[this->output_len++] = wc;
+	this_thing->output_buf[this_thing->output_len++] = wc;
 
 	/*
 	 * the one wchar_t used n chars
 	 */
 	skip_one:
-	assert(n<=this->input_len);
-	if (n >= this->input_len)
-	    this->input_len = 0;
+	assert(n<=this_thing->input_len);
+	if (n >= this_thing->input_len)
+	    this_thing->input_len = 0;
 	else
 	{
-	    memmove(this->input_buf + n, this->input_buf, n);
-	    this->input_len -= n;
+	    memmove(this_thing->input_buf + n, this_thing->input_buf, n);
+	    this_thing->input_len -= n;
 	}
     }
     language_C();
@@ -164,29 +170,29 @@ output_to_wide_destructor(output_ty *fp)
     /*
      * Delete the deeper output if we were asked to.
      */
-    if (this->delete_on_close)
-	wide_output_delete(this->deeper);
+    if (this_thing->delete_on_close)
+	wide_output_delete(this_thing->deeper);
 
     /*
      * Let the buffers go.
      */
-    if (this->input_buf)
-	mem_free(this->input_buf);
-    if (this->output_buf)
-	mem_free(this->output_buf);
+    if (this_thing->input_buf)
+	mem_free(this_thing->input_buf);
+    if (this_thing->output_buf)
+	mem_free(this_thing->output_buf);
 
     /*
      * paranoia
      */
-    this->deeper = 0;
-    this->delete_on_close = 0;
-    this->input_buf = 0;
-    this->input_len = 0;
-    this->input_max = 0;
-    this->input_state = initial_state;
-    this->output_buf = 0;
-    this->output_len = 0;
-    this->output_max = 0;
+    this_thing->deeper = 0;
+    this_thing->delete_on_close = 0;
+    this_thing->input_buf = 0;
+    this_thing->input_len = 0;
+    this_thing->input_max = 0;
+    this_thing->input_state = initial_state;
+    this_thing->output_buf = 0;
+    this_thing->output_len = 0;
+    this_thing->output_max = 0;
     trace(("}\n"));
 }
 
@@ -194,12 +200,12 @@ output_to_wide_destructor(output_ty *fp)
 static string_ty *
 output_to_wide_filename(output_ty *fp)
 {
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
     string_ty	    *result;
 
     trace(("output_to_wide::filename(fp = %08lX)\n{\n", (long)fp));
-    this = (output_to_wide_ty *)fp;
-    result = wide_output_filename(this->deeper);
+    this_thing = (output_to_wide_ty *)fp;
+    result = wide_output_filename(this_thing->deeper);
     trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
     return result;
@@ -218,11 +224,11 @@ static void
 output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 {
     const char	    *input;
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
 	(long)fp, (long)input_p, (long)len));
-    this = (output_to_wide_ty *)fp;
+    this_thing = (output_to_wide_ty *)fp;
     language_human();
     input = input_p;
     while (len > 0)
@@ -240,7 +246,7 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 	 * (This makes the assumption that \n will no be part
 	 * of any multi-byte sequence.)
 	 */
-	this->input_bol = (c == '\n');
+	this_thing->input_bol = (c == '\n');
 
 	/*
 	 * The NUL character is not legal in the output stream.
@@ -253,20 +259,24 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 	/*
 	 * drop the character into the buffer
 	 */
-	if (this->input_len >= this->input_max)
+	if (this_thing->input_len >= this_thing->input_max)
 	{
-	    this->input_max = 4 + 2 * this->input_max;
-	    this->input_buf = mem_change_size(this->input_buf, this->input_max);
+	    this_thing->input_max = 4 + 2 * this_thing->input_max;
+	    this_thing->input_buf =
+                mem_change_size(this_thing->input_buf, this_thing->input_max);
 	}
-	this->input_buf[this->input_len++] = c;
+	this_thing->input_buf[this_thing->input_len++] = c;
 
 	/*
 	 * The state represents the state before the mutli-byte
 	 * character is scanned.  If there is an error, we want
 	 * to be able to restore it.
 	 */
-	sequester = this->input_state;
-	n = mbrtowc(&wc, this->input_buf, this->input_len, &this->input_state);
+	sequester = this_thing->input_state;
+	n = mbrtowc(&wc,
+                    this_thing->input_buf,
+                    this_thing->input_len,
+                    &this_thing->input_state);
 	if (n == 0)
 	{
 	    /*
@@ -283,7 +293,7 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 	     * Invalid multi byte sequence.
 	     * Restore the state.
 	     */
-	    this->input_state = sequester;
+	    this_thing->input_state = sequester;
 
 	    /*
 	     * The error return from mbrtowc fails to
@@ -292,7 +302,7 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 	     * sequence that could potentially be valid if
 	     * there were more characters in the buffer.
 	     */
-	    if (this->input_len < MB_CUR_MAX)
+	    if (this_thing->input_len < MB_CUR_MAX)
 	    {
 		/*
 		 * We do, however, know the maximum
@@ -308,27 +318,29 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 	     * character in the buffer, and shuffle the
 	     * rest down.
 	     */
-	    wc = (unsigned char)this->input_buf[0];
+	    wc = (unsigned char)this_thing->input_buf[0];
 	    n = 1;
 	}
 
 	/*
 	 * stash the output
 	 */
-	if (this->output_len >= this->output_max)
+	if (this_thing->output_len >= this_thing->output_max)
 	{
 	    size_t	    nbytes;
 
-	    this->output_max = 32 + 2 * this->output_max;
-	    nbytes = sizeof(this->output_buf[0]) * this->output_max;
-	    this->output_buf = mem_change_size(this->output_buf, nbytes);
+	    this_thing->output_max = 32 + 2 * this_thing->output_max;
+	    nbytes =
+                sizeof(this_thing->output_buf[0]) * this_thing->output_max;
+	    this_thing->output_buf =
+                mem_change_size(this_thing->output_buf, nbytes);
 	}
-	this->output_buf[this->output_len++] = wc;
+	this_thing->output_buf[this_thing->output_len++] = wc;
 
 	/*
 	 * If the output buffer is starting to fill up, empty it.
 	 */
-	if (this->output_len >= 1024)
+	if (this_thing->output_len >= 1024)
 	{
 	    language_C();
 	    output_to_wide_flush(fp);
@@ -339,13 +351,13 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 	 * the one wchar_t used n chars
 	 */
 	skip_one:
-	assert(n<=this->input_len);
-	if (n >= this->input_len)
-	    this->input_len = 0;
+	assert(n<=this_thing->input_len);
+	if (n >= this_thing->input_len)
+	    this_thing->input_len = 0;
 	else
 	{
-	    memmove(this->input_buf + n, this->input_buf, n);
-	    this->input_len -= n;
+	    memmove(this_thing->input_buf + n, this_thing->input_buf, n);
+	    this_thing->input_len -= n;
 	}
     }
     language_C();
@@ -356,33 +368,33 @@ output_to_wide_write(output_ty *fp, const void *input_p, size_t len)
 static int
 output_to_wide_page_width(output_ty *fp)
 {
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::width(fp = %08lX)\n", (long)fp));
-    this = (output_to_wide_ty *)fp;
-    return wide_output_page_width(this->deeper);
+    this_thing = (output_to_wide_ty *)fp;
+    return wide_output_page_width(this_thing->deeper);
 }
 
 
 static int
 output_to_wide_page_length(output_ty *fp)
 {
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::length(fp = %08lX)\n", (long)fp));
-    this = (output_to_wide_ty *)fp;
-    return wide_output_page_length(this->deeper);
+    this_thing = (output_to_wide_ty *)fp;
+    return wide_output_page_length(this_thing->deeper);
 }
 
 
 static void
 output_to_wide_eoln(output_ty *fp)
 {
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::eoln(fp = %08lX)\n{\n", (long)fp));
-    this = (output_to_wide_ty *)fp;
-    if (!this->input_bol)
+    this_thing = (output_to_wide_ty *)fp;
+    if (!this_thing->input_bol)
 	output_fputc(fp, '\n');
     trace(("}\n"));
 }
@@ -407,21 +419,21 @@ output_ty *
 output_to_wide_open(wide_output_ty *deeper, int	delete_on_close)
 {
     output_ty	    *result;
-    output_to_wide_ty *this;
+    output_to_wide_ty *this_thing;
 
     trace(("output_to_wide::new(deeper = %08lX)\n{\n", (long)deeper));
     result = output_new(&vtbl);
-    this = (output_to_wide_ty *)result;
-    this->deeper = deeper;
-    this->delete_on_close = delete_on_close;
-    this->input_buf = 0;
-    this->input_len = 0;
-    this->input_max = 0;
-    this->input_state = initial_state;
-    this->input_bol = 1;
-    this->output_buf = 0;
-    this->output_len = 0;
-    this->output_max = 0;
+    this_thing = (output_to_wide_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->delete_on_close = delete_on_close;
+    this_thing->input_buf = 0;
+    this_thing->input_len = 0;
+    this_thing->input_max = 0;
+    this_thing->input_state = initial_state;
+    this_thing->input_bol = 1;
+    this_thing->output_buf = 0;
+    this_thing->output_len = 0;
+    this_thing->output_max = 0;
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;

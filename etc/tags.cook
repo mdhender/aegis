@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,15 +24,22 @@ if [find_command ctags] then
 	all += tags TAGS;
 
 tags: [change_files]
+    set shallow no-cascade
 {
     ctags -f [target] -L- --c-types\=+px
 	set meter;
 data
-[unsplit "\n" [resolve [source_files]]]
+[unsplit "\n"
+    [resolve
+	[stringset [source_files] - [match_mask %0%.h [source_files]]]
+	[match_mask %0%.h [source_files]]
+    ]
+]
 dataend
 }
 
 TAGS: [change_files]
+    set shallow no-cascade
 {
     ctags -e -f [target] -L- --c-types\=+px
 	set meter;

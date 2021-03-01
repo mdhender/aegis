@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998-2002 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -268,6 +268,42 @@ copy_file_undo_command = string;
  * Exit status: ignored
  */
 remove_file_undo_command = string;
+
+/*
+ * The make_transparent_command is executed whenever the
+ * aegis -make_transparent command is run successfully.
+ * Defaults to `change_file_command' if not set.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${File_List}
+ *	space separated list of files named
+ *	(at times, can be empty)
+ *
+ * Executed as: the developer
+ * Current directory: the development directory of the change
+ * Exit status: ignored
+ */
+make_transparent_command = string;
+
+/*
+ * The make_transparent_undo_command is executed whenever the
+ * aegis -make_transparent_undo command is run successfully.
+ * Defaults to `change_file_undo_command' if not set.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${File_List}
+ *	space separated list of files named
+ *	(at times, can be empty)
+ *
+ * Executed as: the developer
+ * Current directory: the development directory of the change
+ * Exit status: ignored
+ */
+make_transparent_undo_command = string;
 
 /*
  * Executed at development build before 'development_build_command' when
@@ -790,6 +826,13 @@ development_test_command = string;
  *	Individual test tesults are read from $output.
  */
 batch_test_command = string;
+
+
+/*
+ * This command is executed to help determine the architecture of the
+ * machine.  If it is empty or undefined then nothing is done.
+ */
+architecture_discriminator_command = string ;
 
 /*
  * This is a list of system and machine architectures on which each

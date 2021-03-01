@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -149,7 +149,7 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
      * Thsi is undocumented: if the first argument starts with '@'
      * then use it instead of the Plural-Forms: header in the po/mo file.
      */
-    if (argpos >= arg->nitems)
+    if (argpos >= (int)arg->nitems)
     {
 	oh_dear:
 	sub_context_error_set(scp, i18n("requires two or three arguments"));
@@ -174,7 +174,7 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
     /*
      * Get the number of items that the plural form is for.
      */
-    if (argpos >= arg->nitems)
+    if (argpos >= (int)arg->nitems)
 	goto oh_dear;
     s = wstr_to_str(arg->item[argpos++]);
     n = atoi(s->str_text);
@@ -190,7 +190,7 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
      * If the appropriately numbered argument is not present,
      * return the singular form.
      */
-    if (argpos >= arg->nitems)
+    if (argpos >= (int)arg->nitems)
 	goto oh_dear;
     if (argpos + n > arg->nitems)
 	n = 0;

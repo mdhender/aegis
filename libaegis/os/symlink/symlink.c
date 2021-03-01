@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,7 @@
 
 
 void
-os_symlink(src, dst)
-    string_ty       *src;
-    string_ty       *dst;
+os_symlink(string_ty *src, string_ty *dst)
 {
     trace(("os_symlink()\n{\n"));
     os_become_must_be_active();

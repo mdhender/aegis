@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,16 +21,15 @@
  */
 
 #include <change.h>
-#include <progname.h>
 #include <str.h>
 
 
 string_ty *
-change_logfile_basename()
+change_logfile_basename(void)
 {
-	static string_ty *s;
+    static string_ty *s;
 
-	if (!s)
-		s = str_format("%.10s.log", progname_get());
-	return s;
+    if (!s)
+       	s = str_from_c("aegis.log");
+    return s;
 }

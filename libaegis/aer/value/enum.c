@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,59 +37,47 @@ struct rpt_value_enumeration_ty
 };
 
 
-static void destruct _((rpt_value_ty *));
-
 static void
-destruct(vp)
-	rpt_value_ty	*vp;
+destruct(rpt_value_ty *vp)
 {
-	rpt_value_enumeration_ty *this;
+	rpt_value_enumeration_ty *this_thing;
 
-	this = (rpt_value_enumeration_ty *)vp;
-	assert(this->method->type == rpt_value_type_enumeration);
-	str_free(this->value_s);
+	this_thing = (rpt_value_enumeration_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_enumeration);
+	str_free(this_thing->value_s);
 }
 
 
-static rpt_value_ty *stringize _((rpt_value_ty *));
-
 static rpt_value_ty *
-stringize(vp)
-	rpt_value_ty	*vp;
+stringize(rpt_value_ty *vp)
 {
-	rpt_value_enumeration_ty *this;
+	rpt_value_enumeration_ty *this_thing;
 
-	this = (rpt_value_enumeration_ty *)vp;
-	assert(this->method->type == rpt_value_type_enumeration);
-	return rpt_value_string(this->value_s);
+	this_thing = (rpt_value_enumeration_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_enumeration);
+	return rpt_value_string(this_thing->value_s);
 }
 
 
-static rpt_value_ty *arithmetic _((rpt_value_ty *));
-
 static rpt_value_ty *
-arithmetic(vp)
-	rpt_value_ty	*vp;
+arithmetic(rpt_value_ty *vp)
 {
-	rpt_value_enumeration_ty *this;
+	rpt_value_enumeration_ty *this_thing;
 
-	this = (rpt_value_enumeration_ty *)vp;
-	assert(this->method->type == rpt_value_type_enumeration);
-	return rpt_value_integer(this->value_n);
+	this_thing = (rpt_value_enumeration_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_enumeration);
+	return rpt_value_integer(this_thing->value_n);
 }
 
 
-static rpt_value_ty *booleanize _((rpt_value_ty *));
-
 static rpt_value_ty *
-booleanize(vp)
-	rpt_value_ty	*vp;
+booleanize(rpt_value_ty *vp)
 {
-	rpt_value_enumeration_ty *this;
+	rpt_value_enumeration_ty *this_thing;
 
-	this = (rpt_value_enumeration_ty *)vp;
-	assert(this->method->type == rpt_value_type_enumeration);
-	return rpt_value_boolean(this->value_n != 0);
+	this_thing = (rpt_value_enumeration_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_enumeration);
+	return rpt_value_boolean(this_thing->value_n != 0);
 }
 
 
@@ -112,14 +100,12 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_enumeration(n, s)
-	long		n;
-	string_ty	*s;
+rpt_value_enumeration(long n, string_ty *s)
 {
-	rpt_value_enumeration_ty *this;
+	rpt_value_enumeration_ty *this_thing;
 
-	this = (rpt_value_enumeration_ty *)rpt_value_alloc(&method);
-	this->value_n = n;
-	this->value_s = str_copy(s);;
-	return (rpt_value_ty *)this;
+	this_thing = (rpt_value_enumeration_ty *)rpt_value_alloc(&method);
+	this_thing->value_n = n;
+	this_thing->value_s = str_copy(s);;
+	return (rpt_value_ty *)this_thing;
 }

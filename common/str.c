@@ -139,7 +139,8 @@ split(void)
      * for the lifetime of the program.
      */
     new_hash_modulus = hash_modulus * 2;
-    new_hash_table = mem_alloc(new_hash_modulus * sizeof(string_ty *));
+    new_hash_table =
+        (string_ty **)mem_alloc(new_hash_modulus * sizeof(string_ty *));
     new_hash_mask = new_hash_modulus - 1;
 
     /*
@@ -300,7 +301,7 @@ str_validate(string_ty *s)
 
 
 void
-slow_to_fast(char **in, string_ty **out, size_t length)
+slow_to_fast(const char *const *in, string_ty **out, size_t length)
 {
     size_t          j;
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,7 @@
 
 
 long
-magic_zero_encode(x)
-	long		x;
+magic_zero_encode(long x)
 {
 	if (x == 0)
 		x = MAGIC_ZERO;
@@ -35,8 +34,7 @@ magic_zero_encode(x)
 
 
 long
-magic_zero_decode(x)
-	long		x;
+magic_zero_decode(long x)
 {
 	assert(MAGIC_ZERO != 0);
 	if (x == MAGIC_ZERO)

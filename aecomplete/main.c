@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,12 +33,8 @@
 #include <str.h>
 
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-    int             argc;
-    char            **argv;
+main(int argc, char **argv)
 {
     shell_ty        *sh;
     command_ty      *cmd;

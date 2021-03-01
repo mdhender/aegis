@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -124,7 +124,7 @@ crc32_destructor(fingerprint_ty *p)
 
 
 static void
-crc32_addn(fingerprint_ty *p, unsigned char *s, int n)
+crc32_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 {
     crc32_ty	    *c;
     unsigned long   x;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ verify(rpt_expr_ty *ep)
      * you may not print with more arguments
      * than columns defined
      */
-    return (ep->nchild <= rpt_func_print__ncolumns);
+    return ((int)ep->nchild <= rpt_func_print__ncolumns);
 }
 
 
@@ -63,7 +63,7 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
     static rpt_value_ty **argv2;
     string_ty	    *s;
 
-    if (argc > rpt_func_print__ncolumns)
+    if (argc > (size_t)rpt_func_print__ncolumns)
     {
 	sub_context_ty	*scp;
 
@@ -89,7 +89,8 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
     if (argc > argc2)
     {
 	argc2 = argc;
-	argv2 = mem_change_size(argv2, argc2 * sizeof(argv2[0]));
+	argv2 =
+            (rpt_value_ty **)mem_change_size(argv2, argc2 * sizeof(argv2[0]));
     }
 
     /*

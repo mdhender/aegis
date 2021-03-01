@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000 Peter Miller;
+.\"	Copyright (C) 2000, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -87,4 +87,4 @@ the (unnecessary) use of new file templates, when the actual template
 files don't yet exist in the --receive development directory.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.22
+.SS Version 3.22 (13-May-2000)

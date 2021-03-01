@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,48 +24,45 @@
 
 #include <error.h> /* for assert */
 #include <mem.h>
-#include <option.h>
 #include <output/private.h>
+#include <page.h>
 
 
 output_ty *
-output_new(vptr)
-	output_vtbl_ty	*vptr;
+output_new(output_vtbl_ty *vptr)
 {
-	output_ty	*this;
+	output_ty	*this_thing;
 
 	assert(vptr);
 	assert(vptr->size > sizeof(output_ty));
-	this = mem_alloc(vptr->size);
-	this->vptr = vptr;
-	this->del_cb = 0;
-	this->del_cb_arg = 0;
-	this->buffer_size = (size_t)1 << 13;
-	this->buffer = mem_alloc(this->buffer_size);
-	this->buffer_position = this->buffer;
-	this->buffer_end = this->buffer + this->buffer_size;
-	return this;
+	this_thing = (output_ty *)mem_alloc(vptr->size);
+	this_thing->vptr = vptr;
+	this_thing->del_cb = 0;
+	this_thing->del_cb_arg = 0;
+	this_thing->buffer_size = (size_t)1 << 13;
+	this_thing->buffer =
+            (unsigned char *)mem_alloc(this_thing->buffer_size);
+	this_thing->buffer_position = this_thing->buffer;
+	this_thing->buffer_end = this_thing->buffer + this_thing->buffer_size;
+	return this_thing;
 }
 
 
 void
-output_generic_flush(fp)
-	output_ty	*fp;
+output_generic_flush(output_ty *fp)
 {
 }
 
 
 int
-output_generic_page_width(fp)
-	output_ty	*fp;
+output_generic_page_width(output_ty *fp)
 {
-	return option_page_width_get(-1) - 1;
+	return page_width_get(-1) - 1;
 }
 
 
 int
-output_generic_page_length(fp)
-	output_ty	*fp;
+output_generic_page_length(output_ty *fp)
 {
-	return option_page_length_get(-1);
+	return page_length_get(-1);
 }

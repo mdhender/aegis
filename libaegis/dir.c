@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,10 +33,7 @@
 
 
 void
-dir_walk(path, callback, arg)
-	string_ty	*path;
-	dir_walk_callback_ty callback;
-	void		*arg;
+dir_walk(string_ty *path, dir_walk_callback_ty callback, void *arg)
 {
 	string_list_ty		wl;
 	struct stat	st;
@@ -48,6 +45,8 @@ dir_walk(path, callback, arg)
 
 	trace(("dir_walk(path = %08lX, callback = %08lX, "
 	    "arg = %08lX)\n{\n", (long)path, (long)callback, (long)arg));
+	assert(path);
+	assert(callback);
 	trace_string(path->str_text);
 #if defined(S_IFLNK) || defined(S_ISLNK)
 	if (glue_lstat(path->str_text, &st))
@@ -95,7 +94,7 @@ dir_walk(path, callback, arg)
 			string_list_append(&wl, s);
 			str_free(s);
 		}
-		for (j = 0; j < wl.nstrings; ++j)
+		for (j = 0; j < (int)wl.nstrings; ++j)
 		{
 			s = str_format("%S/%S", path, wl.string[j]);
 			dir_walk(s, callback, arg);

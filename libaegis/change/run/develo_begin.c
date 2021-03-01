@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,30 +29,22 @@
 
 
 void
-change_run_develop_begin_command(cp, up)
-	change_ty	*cp;
-	user_ty		*up;
+change_run_develop_begin_command(change_ty *cp, user_ty *up)
 {
-	pconf		pconf_data;
-	string_ty	*the_command;
-	string_ty	*dir;
+    pconf           pconf_data;
+    string_ty       *the_command;
+    string_ty       *dir;
 
-	assert(cp->reference_count >= 1);
-	pconf_data = change_pconf_get(cp, 0);
-	if (!pconf_data->develop_begin_command)
-		return;
-
-	the_command = pconf_data->develop_begin_command;
-	the_command = substitute(0, cp, the_command);
-	dir = change_development_directory_get(cp, 1);
-	change_env_set(cp, 0);
-	user_become(up);
-	os_execute
-	(
-		the_command,
-		OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK,
-		dir
-	);
-	user_become_undo();
-	str_free(the_command);
+    assert(cp->reference_count >= 1);
+    pconf_data = change_pconf_get(cp, 0);
+    the_command = pconf_data->develop_begin_command;
+    if (!the_command || !the_command->str_length)
+	return;
+    the_command = substitute(0, cp, the_command);
+    dir = change_development_directory_get(cp, 1);
+    change_env_set(cp, 0);
+    user_become(up);
+    os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dir);
+    user_become_undo();
+    str_free(the_command);
 }

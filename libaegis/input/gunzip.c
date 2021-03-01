@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,19 +60,15 @@ struct input_gunzip_ty
 };
 
 
-static void zlib_fatal_error _((input_gunzip_ty	*, int));
-
 static void
-zlib_fatal_error(this, err)
-    input_gunzip_ty *this;
-    int		    err;
+zlib_fatal_error(input_gunzip_ty *this_thing, int err)
 {
     sub_context_ty  *scp;
 
     if (err >= 0)
 	    return;
     scp = sub_context_new();
-    if (this->stream.msg)
+    if (this_thing->stream.msg)
     {
 	sub_var_set_format
 	(
@@ -80,43 +76,37 @@ zlib_fatal_error(this, err)
 	    "ERRNO",
 	    "%s (%s)",
 	    z_error(err),
-	    this->stream.msg
+	    this_thing->stream.msg
 	);
     }
     else
 	sub_var_set_charstar(scp, "ERRNO", z_error(err));
     sub_var_override(scp, "ERRNO");
-    sub_var_set_string(scp, "File_Name", input_name(this->deeper));
+    sub_var_set_string(scp, "File_Name", input_name(this_thing->deeper));
     fatal_intl(scp, i18n("gunzip $filename: $errno"));
 }
 
 
-static void input_gunzip_destructor _((input_ty *));
-
 static void
-input_gunzip_destructor(fp)
-    input_ty	    *fp;
+input_gunzip_destructor(input_ty *fp)
 {
-    input_gunzip_ty *this;
+    input_gunzip_ty *this_thing;
     int		    err;
 
-    this = (input_gunzip_ty *)fp;
-    err = inflateEnd(&this->stream);
+    this_thing = (input_gunzip_ty *)fp;
+    err = inflateEnd(&this_thing->stream);
     if (err < 0)
-	zlib_fatal_error(this, err);
-    input_delete(this->deeper);
-    mem_free(this->buf);
-    this->deeper = 0;
-    if (this->filename)
-	str_free(this->filename);
+	zlib_fatal_error(this_thing, err);
+    input_delete(this_thing->deeper);
+    mem_free(this_thing->buf);
+    this_thing->deeper = 0;
+    if (this_thing->filename)
+	str_free(this_thing->filename);
 }
 
 
-static long getLong _((input_gunzip_ty *));
-
 static long
-getLong(this)
-    input_gunzip_ty *this;
+getLong(input_gunzip_ty *this_thing)
 {
     long	    result;
     int		    j;
@@ -125,12 +115,12 @@ getLong(this)
     result = 0;
     for (j = 0; j < 4; ++j)
     {
-	c = input_getc(this->deeper);
+	c = input_getc(this_thing->deeper);
 	if (c < 0)
 	{
     	    input_fatal_error
 	    (
-		(input_ty *)this,
+		(input_ty *)this_thing,
 		"gunzip: premature end of file"
 	    );
 	}
@@ -140,66 +130,61 @@ getLong(this)
 }
 
 
-static long input_gunzip_read _((input_ty *, void *, size_t));
-
 static long
-input_gunzip_read(fp, data, len)
-    input_ty	    *fp;
-    void	    *data;
-    size_t	    len;
+input_gunzip_read(input_ty *fp, void *data, size_t len)
 {
-    input_gunzip_ty *this;
+    input_gunzip_ty *this_thing;
     Bytef	    *start;
     int		    err;
     long	    result;
 
-    this = (input_gunzip_ty *)fp;
-    if (this->z_eof)
+    this_thing = (input_gunzip_ty *)fp;
+    if (this_thing->z_eof)
 	return 0;
 
-    start = data; /* starting point for crc computation */
-    this->stream.next_out = data;
-    this->stream.avail_out = len;
+    start = (Bytef *)data; /* starting point for crc computation */
+    this_thing->stream.next_out = (Bytef *)data;
+    this_thing->stream.avail_out = len;
 
-    while (this->stream.avail_out > 0)
+    while (this_thing->stream.avail_out > 0)
     {
-	if (this->stream.avail_in == 0)
+	if (this_thing->stream.avail_in == 0)
 	{
-	    this->stream.next_in = this->buf;
-    	    this->stream.avail_in =
-       		input_read(this->deeper, this->buf, Z_BUFSIZE);
+	    this_thing->stream.next_in = this_thing->buf;
+    	    this_thing->stream.avail_in =
+       		input_read(this_thing->deeper, this_thing->buf, Z_BUFSIZE);
 	    /*
 	     * There should always be something left on the
 	     * input, because we have the CRC and Length
 	     * to follow.  Fatal error if not.
 	     */
-	    if (this->stream.avail_in <= 0)
+	    if (this_thing->stream.avail_in <= 0)
 	    {
 		input_fatal_error
 		(
-		    this->deeper,
+		    this_thing->deeper,
 		    "gunzip: premature end of file"
 		);
 	    }
 	}
-	err = inflate(&this->stream, Z_PARTIAL_FLUSH);
+	err = inflate(&this_thing->stream, Z_PARTIAL_FLUSH);
 	if (err < 0)
-    	    zlib_fatal_error(this, err);
+    	    zlib_fatal_error(this_thing, err);
 	if (err == Z_STREAM_END)
 	{
-    	    this->z_eof = 1;
+    	    this_thing->z_eof = 1;
 
 	    /*
 	     * Push back the unused portion of the input stream.
 	     * (The way we wrote it, there shouldn't be much.)
 	     */
-	    while (this->stream.avail_in > 0)
+	    while (this_thing->stream.avail_in > 0)
 	    {
-		this->stream.avail_in--;
+		this_thing->stream.avail_in--;
 		input_ungetc
 		(
-	    	    this->deeper,
-	    	    this->stream.next_in[this->stream.avail_in]
+	    	    this_thing->deeper,
+	    	    this_thing->stream.next_in[this_thing->stream.avail_in]
 		);
 	    }
 
@@ -213,18 +198,18 @@ input_gunzip_read(fp, data, len)
     /*
      * Calculate the running CRC
      */
-    result = this->stream.next_out - start;
-    this->crc = crc32(this->crc, start, (uInt)result);
+    result = this_thing->stream.next_out - start;
+    this_thing->crc = crc32(this_thing->crc, start, (uInt)result);
 
     /*
      * Update the file position.
      */
-    this->pos += result;
+    this_thing->pos += result;
 
     /*
      * At end-of-file we need to do some checking.
      */
-    if (this->z_eof)
+    if (this_thing->z_eof)
     {
 	/*
 	 * Check CRC
@@ -232,19 +217,22 @@ input_gunzip_read(fp, data, len)
 	 * Watch out for 64-bit machines.  This is what
 	 * those aparrently redundant 0xFFFFFFFF are for.
 	 */
-	if ((getLong(this) & 0xFFFFFFFF) != (this->crc & 0xFFFFFFFF))
-	    input_fatal_error((input_ty *)this, "gunzip: checksum mismatch");
+	if ((getLong(this_thing) & 0xFFFFFFFF) !=
+            (this_thing->crc & 0xFFFFFFFF))
+	    input_fatal_error((input_ty *)this_thing,
+                              "gunzip: checksum mismatch");
 
 	/*
 	 * The uncompressed length here may be different
-	 * from this->pos in case of concatenated .gz
+	 * from this_thing->pos in case of concatenated .gz
 	 * files.  But we don't write them that way,
 	 * so give an error if it happens.
 	 *
 	 * We shouldn't have 64-bit problems in this case.
 	 */
-	if (getLong(this) != this->pos)
-	    input_fatal_error((input_ty *)this, "gunzip: length mismatch");
+	if (getLong(this_thing) != this_thing->pos)
+	    input_fatal_error((input_ty *)this_thing,
+                              "gunzip: length mismatch");
     }
 
     /*
@@ -255,25 +243,18 @@ input_gunzip_read(fp, data, len)
 }
 
 
-static long input_gunzip_ftell _((input_ty *));
-
 static long
-input_gunzip_ftell(fp)
-    input_ty	    *fp;
+input_gunzip_ftell(input_ty *fp)
 {
-    input_gunzip_ty *this;
+    input_gunzip_ty *this_thing;
 
-    this = (input_gunzip_ty *)fp;
-    return this->pos;
+    this_thing = (input_gunzip_ty *)fp;
+    return this_thing->pos;
 }
 
 
-static int end_with _((string_ty *, const char *));
-
 static int
-end_with(haystack, needle)
-    string_ty	    *haystack;
-    const char	    *needle;
+end_with(string_ty *haystack, const char *needle)
 {
     size_t	    len;
     char	    *s;
@@ -287,41 +268,35 @@ end_with(haystack, needle)
 
 
 
-static string_ty *input_gunzip_name _((input_ty *));
-
 static string_ty *
-input_gunzip_name(fp)
-    input_ty	    *fp;
+input_gunzip_name(input_ty *fp)
 {
-    input_gunzip_ty *this;
+    input_gunzip_ty *this_thing;
 
-    this = (input_gunzip_ty *)fp;
-    if (!this->filename)
+    this_thing = (input_gunzip_ty *)fp;
+    if (!this_thing->filename)
     {
 	string_ty	*s;
 
-	s = input_name(this->deeper);
+	s = input_name(this_thing->deeper);
 	if (end_with(s, ".z"))
-	    this->filename = str_n_from_c(s->str_text, s->str_length - 2);
+	    this_thing->filename = str_n_from_c(s->str_text, s->str_length - 2);
 	else if (end_with(s, ".gz"))
-	    this->filename = str_n_from_c(s->str_text, s->str_length - 3);
+	    this_thing->filename = str_n_from_c(s->str_text, s->str_length - 3);
 	else if (end_with(s, ".tgz"))
 	{
-	    this->filename =
+	    this_thing->filename =
 		str_format("%.*s.tar", s->str_length - 4, s->str_text);
 	}
 	else
-	    this->filename = str_copy(s);
+	    this_thing->filename = str_copy(s);
     }
-    return this->filename;
+    return this_thing->filename;
 }
 
 
-static long input_gunzip_length _((input_ty *));
-
 static long
-input_gunzip_length(fp)
-    input_ty	    *fp;
+input_gunzip_length(input_ty *fp)
 {
     /*
      * We have no idea how long the decompressed stream will be.
@@ -333,19 +308,16 @@ input_gunzip_length(fp)
 /*
  * Check the gzip header of a gz_stream opened for reading. Set the
  * stream mode to transparent if the gzip magic header is not present;
- * set this->err to Z_DATA_ERROR if the magic header is present but the
+ * set this_thing->err to Z_DATA_ERROR if the magic header is present but the
  * rest of the header is incorrect.
  *
  * IN assertion: the stream this has already been created sucessfully;
- * this->stream.avail_in is zero for the first time, but may be non-zero
+ * this_thing->stream.avail_in is zero for the first time, but may be non-zero
  * for concatenated .gz files.
  */
 
-static int check_header _((input_ty *));
-
 static int
-check_header(deeper)
-    input_ty	    *deeper;
+check_header(input_ty *deeper)
 {
     int		    method;
     int		    flags;
@@ -457,11 +429,10 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_gunzip(deeper)
-    input_ty	    *deeper;
+input_gunzip(input_ty *deeper)
 {
     input_ty	    *result;
-    input_gunzip_ty *this;
+    input_gunzip_ty *this_thing;
     int		    err;
 
     /*
@@ -478,20 +449,20 @@ input_gunzip(deeper)
     }
 
     result = input_new(&vtbl);
-    this = (input_gunzip_ty *)result;
-    this->deeper = deeper;
-    this->stream.zalloc = (alloc_func)0;
-    this->stream.zfree = (free_func)0;
-    this->stream.opaque = (voidpf)0;
-    this->stream.next_in = Z_NULL;
-    this->stream.avail_in = 0;
-    this->stream.next_out = Z_NULL;
-    this->stream.avail_out = 0;
-    this->buf = mem_alloc(Z_BUFSIZE);
-    this->crc = crc32(0L, Z_NULL, 0);
-    this->pos = 0;
-    this->z_eof = 0;
-    this->filename = 0;
+    this_thing = (input_gunzip_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->stream.zalloc = (alloc_func)0;
+    this_thing->stream.zfree = (free_func)0;
+    this_thing->stream.opaque = (voidpf)0;
+    this_thing->stream.next_in = Z_NULL;
+    this_thing->stream.avail_in = 0;
+    this_thing->stream.next_out = Z_NULL;
+    this_thing->stream.avail_out = 0;
+    this_thing->buf = (Byte *)mem_alloc(Z_BUFSIZE);
+    this_thing->crc = crc32(0L, Z_NULL, 0);
+    this_thing->pos = 0;
+    this_thing->z_eof = 0;
+    this_thing->filename = 0;
 
     /*
      * windowBits is passed < 0 to tell that there is no zlib header.
@@ -500,9 +471,9 @@ input_gunzip(deeper)
      * and return Z_STREAM_END. Here the gzip CRC32 ensures that 4
      * bytes are present after the compressed stream.
      */
-    err = inflateInit2(&this->stream, -MAX_WBITS);
+    err = inflateInit2(&this_thing->stream, -MAX_WBITS);
     if (err < 0)
-	zlib_fatal_error(this, err);
+	zlib_fatal_error(this_thing, err);
 
     return result;
 }

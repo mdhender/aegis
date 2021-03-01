@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ push_name(string_ty *s)
     name_ty         *np;
 
     trace(("push_name(s = \"%s\")\n{\n", s->str_text));
-    np = mem_alloc(sizeof(name_ty));
+    np = (name_ty *)mem_alloc(sizeof(name_ty));
     np->name_short = str_copy(s);
     np->name_long = str_format("%S_%S", current->name_long, s);
     np->parent = current;
@@ -117,7 +117,7 @@ push_name_abs(string_ty *s)
     name_ty         *np;
 
     trace(("push_name_abs(s = \"%s\")\n{\n", s->str_text));
-    np = mem_alloc(sizeof(name_ty));
+    np = (name_ty *)mem_alloc(sizeof(name_ty));
     np->name_short = str_copy(s);
     np->name_long = str_copy(s);
     np->parent = current;
@@ -152,18 +152,19 @@ define_type(type_ty *type)
     {
 	emit_length_max += 10;
 	nbytes = emit_length_max * sizeof(emit_list[0]);
-	emit_list = mem_change_size(emit_list, nbytes);
+	emit_list = (type_ty **)mem_change_size(emit_list, nbytes);
     }
     emit_list[emit_length++] = type;
     trace(("}\n"));
 }
 
 
-static char *
-base_name(char *s)
+static const char *
+base_name(const char *s)
 {
     static char     buffer[256];
-    char            *cp;
+    const char      *cp;
+    char            *bp;
 
     cp = strrchr(s, '/');
     if (cp)
@@ -171,22 +172,22 @@ base_name(char *s)
     else
 	cp = s;
     strcpy(buffer, cp);
-    cp = strrchr(buffer, '.');
-    if (cp)
-	*cp = 0;
-    for (cp = buffer; *cp; ++cp)
+    bp = strrchr(buffer, '.');
+    if (bp)
+	*bp = 0;
+    for (bp = buffer; *bp; ++bp)
     {
-	if (!isalnum((unsigned char)*cp))
-    	    *cp = '_';
+	if (!isalnum((unsigned char)*bp))
+    	    *bp = '_';
     }
     return buffer;
 }
 
 
 static void
-generate_include_file(char *include_file)
+generate_include_file(const char *include_file)
 {
-    char            *cp1;
+    const char      *cp1;
     size_t	    j;
     string_ty	    *s;
 
@@ -232,9 +233,9 @@ generate_include_file(char *include_file)
 
 
 static void
-generate_code_file(char *code_file, char *include_file)
+generate_code_file(const char *code_file, const char *include_file)
 {
-    char	    *cp1;
+    const char      *cp1;
     size_t	    j;
     string_ty	    *s;
 
@@ -344,7 +345,8 @@ generate_code__init(string_ty *s)
 
 
 void
-parse(char *definition_file, char *code_file, char *include_file)
+parse(const char *definition_file, const char *code_file,
+    const char *include_file)
 {
     string_ty       *s;
     extern int      yyparse(void);
@@ -465,7 +467,7 @@ type
 	{
 	    type_ty         *data;
 
-	    data = symtab_query(typedef_symtab, $1);
+	    data = (type_ty *)symtab_query(typedef_symtab, $1);
 	    if (data)
 		$$ = data;
 	    else

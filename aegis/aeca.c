@@ -52,7 +52,7 @@
 static void
 change_attributes_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf

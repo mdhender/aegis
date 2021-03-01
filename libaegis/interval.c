@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1995, 1997, 2002 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1995, 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -97,7 +97,7 @@ interval_create_empty(void)
     interval_ty	*ip;
 
     trace(("interval_create_empty()\n{\n"));
-    ip = mem_alloc(sizeof(interval_ty));
+    ip = (interval_ty *)mem_alloc(sizeof(interval_ty));
     ip->length = 0;
     ip->size = 0;
     ip->scan_index = 0;
@@ -166,7 +166,8 @@ interval_create_range(interval_data_ty first, interval_data_ty last)
     interval_ty	*ip;
 
     trace(("interval_create_range(%ld, %ld)\n{\n", first, last));
-    ip = mem_alloc(sizeof(interval_ty) + 2 * sizeof(interval_data_ty));
+    ip = (interval_ty *)mem_alloc(
+        sizeof(interval_ty) + 2 * sizeof(interval_data_ty));
     ip->length = 2;
     ip->size = 2;
     ip->scan_index = 0;
@@ -186,7 +187,7 @@ interval_create_range(interval_data_ty first, interval_data_ty last)
  *	append - append datum to interval data
  *
  * SYNOPSIS
- *	void append _((interval_ty **ipp, interval_data_ty datum));
+ *	void append(interval_ty **ipp, interval_data_ty datum);
  *
  * DESCRIPTION
  *	The append function is used to append a datum to
@@ -223,7 +224,7 @@ append(interval_ty **ipp, interval_data_ty datum)
 
 	ip->size += 8;
 	nbytes = sizeof(interval_ty) + ip->size * sizeof(interval_data_ty);
-	ip = mem_change_size(ip, nbytes);
+	ip = (interval_ty *)mem_change_size(ip, nbytes);
 	*ipp = ip;
     }
 
@@ -274,7 +275,7 @@ normalize(interval_ty **ipp)
 
 	ip->size = ip->length;
 	nbytes = sizeof(interval_ty) + ip->size * sizeof(interval_data_ty);
-	ip = mem_change_size(ip, nbytes);
+	ip = (interval_ty *)mem_change_size(ip, nbytes);
 	*ipp = ip;
     }
     assert(interval_valid(ip));

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,7 @@
 
 
 int
-os_symlink_query(path)
-    string_ty       *path;
+os_symlink_query(string_ty *path)
 {
     int             result;
     struct stat     st;

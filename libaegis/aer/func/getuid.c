@@ -27,36 +27,28 @@
 #include <error.h>
 
 
-static int getuid_verify _((rpt_expr_ty *));
-
 static int
-getuid_verify(ep)
-	rpt_expr_ty	*ep;
+getuid_verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 0);
+    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *getuid_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-getuid_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+getuid_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	int             uid;
+    int             uid;
 
-	assert(argc == 0);
-	os_become_orig_query(&uid, (int *)0, (int *)0);
-	return rpt_value_integer(uid);
+    assert(argc == 0);
+    os_become_orig_query(&uid, (int *)0, (int *)0);
+    return rpt_value_integer(uid);
 }
 
 
 rpt_func_ty rpt_func_getuid =
 {
-	"getuid",
-	0, /* optimizable */
-	getuid_verify,
-	getuid_run,
+    "getuid",
+    0, /* optimizable */
+    getuid_verify,
+    getuid_run,
 };

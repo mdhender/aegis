@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,7 @@
 
 
 void
-os_setuid(uid)
-    int             uid;
+os_setuid(int uid)
 {
     os_become_must_not_be_active();
     if (setuid(uid))

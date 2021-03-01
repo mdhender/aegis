@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,15 +48,15 @@ struct output_indent_ty
 static void
 output_indent_destructor(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
     trace(("output_indent::destructor()\n{\n"));
-    this = (output_indent_ty *)fp;
-    trace_pointer(this->deeper);
-    if (this->out_col)
-	output_fputc(this->deeper, '\n');
-    output_delete(this->deeper);
-    this->deeper = 0;
+    this_thing = (output_indent_ty *)fp;
+    trace_pointer(this_thing->deeper);
+    if (this_thing->out_col)
+	output_fputc(this_thing->deeper, '\n');
+    output_delete(this_thing->deeper);
+    this_thing->deeper = 0;
     trace(("}\n"));
 }
 
@@ -64,20 +64,20 @@ output_indent_destructor(output_ty *fp)
 static string_ty *
 output_indent_filename(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
-    this = (output_indent_ty *)fp;
-    return output_filename(this->deeper);
+    this_thing = (output_indent_ty *)fp;
+    return output_filename(this_thing->deeper);
 }
 
 
 static long
 output_indent_ftell(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
-    this = (output_indent_ty *)fp;
-    return this->pos;
+    this_thing = (output_indent_ty *)fp;
+    return this_thing->pos;
 }
 
 
@@ -105,58 +105,59 @@ static void
 output_indent_write(output_ty *fp, const void *p, size_t len)
 {
     const unsigned char *data;
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
-    data = p;
-    this = (output_indent_ty *)fp;
+    data = (unsigned char *)p;
+    this_thing = (output_indent_ty *)fp;
     while (len > 0)
     {
 	int		c;
 
 	c = *data++;
 	--len;
-	this->pos++;
+	this_thing->pos++;
 	switch (c)
 	{
 	case '\n':
-	    output_fputc(this->deeper, '\n');
-	    this->in_col = 0;
-	    this->out_col = 0;
-	    if (this->continuation_line == 1)
-		this->continuation_line = 2;
+	    output_fputc(this_thing->deeper, '\n');
+	    this_thing->in_col = 0;
+	    this_thing->out_col = 0;
+	    if (this_thing->continuation_line == 1)
+		this_thing->continuation_line = 2;
 	    else
-		this->continuation_line = 0;
+		this_thing->continuation_line = 0;
 	    break;
 
 	case ' ':
-	    if (this->out_col)
-		this->in_col++;
+	    if (this_thing->out_col)
+		this_thing->in_col++;
 	    break;
 
 	case '\t':
-	    if (this->out_col)
-		this->in_col = (this->in_col / INDENT + 1) * INDENT;
+	    if (this_thing->out_col)
+		this_thing->in_col = (this_thing->in_col / INDENT + 1) * INDENT;
 	    break;
 
 	case '\1':
-	    if (!this->out_col)
+	    if (!this_thing->out_col)
 		break;
-	    if (this->in_col >= INDENT * (this->depth + 2))
-		this->in_col++;
+	    if (this_thing->in_col >= INDENT * (this_thing->depth + 2))
+		this_thing->in_col++;
 	    else
-		this->in_col = INDENT * (this->depth + 2);
+		this_thing->in_col = INDENT * (this_thing->depth + 2);
 	    break;
 
 	case '}':
 	case ')':
 	case ']':
-	    this->depth--;
+	    this_thing->depth--;
 	    /* fall through */
 
 	default:
-	    if (!this->out_col && c != '#' && this->continuation_line != 2)
-		this->in_col += INDENT * this->depth;
-	    if (!this->out_col)
+	    if (!this_thing->out_col && c != '#' &&
+                this_thing->continuation_line != 2)
+		this_thing->in_col += INDENT * this_thing->depth;
+	    if (!this_thing->out_col)
 	    {
 		/*
 		 * Only emit tabs into the output if we are at
@@ -166,26 +167,26 @@ output_indent_write(output_ty *fp, const void *p, size_t len)
 		{
 		    int		    x;
 
-		    if (this->out_col + 1 >= this->in_col)
+		    if (this_thing->out_col + 1 >= this_thing->in_col)
 			break;
-		    x = ((this->out_col / INDENT) + 1) * INDENT;
-		    if (x > this->in_col)
+		    x = ((this_thing->out_col / INDENT) + 1) * INDENT;
+		    if (x > this_thing->in_col)
 			break;
-		    output_fputc(this->deeper, '\t');
-		    this->out_col = x;
+		    output_fputc(this_thing->deeper, '\t');
+		    this_thing->out_col = x;
 		}
 	    }
-	    while (this->out_col < this->in_col)
+	    while (this_thing->out_col < this_thing->in_col)
 	    {
-		output_fputc(this->deeper, ' ');
-		this->out_col++;
+		output_fputc(this_thing->deeper, ' ');
+		this_thing->out_col++;
 	    }
 	    if (c == '{' || c == '(' || c == '[')
-		this->depth++;
-	    output_fputc(this->deeper, c);
-	    this->in_col++;
-	    this->out_col = this->in_col;
-	    this->continuation_line = (c == '\\');
+		this_thing->depth++;
+	    output_fputc(this_thing->deeper, c);
+	    this_thing->in_col++;
+	    this_thing->out_col = this_thing->in_col;
+	    this_thing->continuation_line = (c == '\\');
 	    break;
 	}
     }
@@ -195,30 +196,30 @@ output_indent_write(output_ty *fp, const void *p, size_t len)
 static int
 output_indent_page_width(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
-    this = (output_indent_ty *)fp;
-    return output_page_width(this->deeper);
+    this_thing = (output_indent_ty *)fp;
+    return output_page_width(this_thing->deeper);
 }
 
 
 static int
 output_indent_page_length(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
-    this = (output_indent_ty *)fp;
-    return output_page_length(this->deeper);
+    this_thing = (output_indent_ty *)fp;
+    return output_page_length(this_thing->deeper);
 }
 
 
 static void
 output_indent_eoln(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
-    this = (output_indent_ty *)fp;
-    if (this->in_col)
+    this_thing = (output_indent_ty *)fp;
+    if (this_thing->in_col)
 	output_fputc(fp, '\n');
 }
 
@@ -242,17 +243,17 @@ output_ty *
 output_indent(output_ty	*deeper)
 {
     output_ty	    *result;
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
     trace(("output_indent(deeper = %08lX)\n{\n", (long)deeper));
     result = output_new(&vtbl);
-    this = (output_indent_ty *)result;
-    this->deeper = deeper;
-    this->depth = 0;
-    this->in_col = 0;
-    this->out_col = 0;
-    this->continuation_line = 0;
-    this->pos = 0;
+    this_thing = (output_indent_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->depth = 0;
+    this_thing->in_col = 0;
+    this_thing->out_col = 0;
+    this_thing->continuation_line = 0;
+    this_thing->pos = 0;
     trace(("}\n"));
     return result;
 }
@@ -282,12 +283,12 @@ output_indent(output_ty	*deeper)
 void
 output_indent_more(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
     if (fp->vptr != &vtbl)
 	return;
-    this = (output_indent_ty *)fp;
-    this->depth++;
+    this_thing = (output_indent_ty *)fp;
+    this_thing->depth++;
 }
 
 
@@ -315,11 +316,11 @@ output_indent_more(output_ty *fp)
 void
 output_indent_less(output_ty *fp)
 {
-    output_indent_ty *this;
+    output_indent_ty *this_thing;
 
     if (fp->vptr != &vtbl)
 	return;
-    this = (output_indent_ty *)fp;
-    if (this->depth > 0)
-	this->depth--;
+    this_thing = (output_indent_ty *)fp;
+    if (this_thing->depth > 0)
+	this_thing->depth--;
 }

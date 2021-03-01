@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ print("");
 print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
 	## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
 print("<html><head>");
+print("<meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\">");
 print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
 print("<meta http-equiv=\"Content-Type\" "
 	## "content=\"text/html; charset=ISO-8859-1\">");

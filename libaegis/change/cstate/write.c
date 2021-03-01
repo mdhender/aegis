@@ -32,12 +32,8 @@
 #include <undo.h>
 
 
-static int src_cmp _((const void *, const void *));
-
 static int
-src_cmp(s1p, s2p)
-    const void	    *s1p;
-    const void	    *s2p;
+src_cmp(const void *s1p, const void *s2p)
 {
     fstate_src	    s1;
     fstate_src	    s2;
@@ -48,12 +44,8 @@ src_cmp(s1p, s2p)
 }
 
 
-static int long_cmp _((const void *, const void *));
-
 static int
-long_cmp(s1p, s2p)
-    const void	    *s1p;
-    const void	    *s2p;
+long_cmp(const void *s1p, const void *s2p)
 {
     long	    n1;
     long	    n2;
@@ -68,12 +60,8 @@ long_cmp(s1p, s2p)
 }
 
 
-static int string_cmp _((const void *, const void *));
-
 static int
-string_cmp(v1, v2)
-    const void	    *v1;
-    const void	    *v2;
+string_cmp(const void *v1, const void *v2)
 {
     string_ty	    *s1;
     string_ty	    *s2;
@@ -85,8 +73,7 @@ string_cmp(v1, v2)
 
 
 void
-change_cstate_write(cp)
-    change_ty	    *cp;
+change_cstate_write(change_ty *cp)
 {
     string_ty	    *filename_new;
     string_ty	    *filename_old;

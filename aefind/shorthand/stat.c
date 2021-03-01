@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -448,8 +448,8 @@ type_name_by_pattern(string_ty *abbrev)
     typedef struct table_ty table_ty;
     struct table_ty
     {
-	char            *pattern;
-	char            *name;
+	const char      *pattern;
+	const char      *name;
     };
 
     static table_ty table[] =

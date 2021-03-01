@@ -35,11 +35,10 @@
 
 
 void
-change_run_history_get_command(cp, src, output_file, up)
-    change_ty	    *cp;
-    fstate_src	    src;
-    string_ty	    *output_file;
-    user_ty	    *up;
+change_run_history_get_command(change_ty *cp,
+                               fstate_src src,
+                               string_ty *output_file,
+                               user_ty *up)
 {
     sub_context_ty  *scp;
     string_ty	    *dir;

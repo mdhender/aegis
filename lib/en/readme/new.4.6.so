@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -125,4 +125,4 @@ range of input vagueries, including some weird things done by MTAs and
 more content transfer encoding synonyms.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.6
+.SS Version 4.6 (11-Jul-2002)

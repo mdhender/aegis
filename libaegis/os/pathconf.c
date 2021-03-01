@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,8 @@
 #include <sub.h>
 
 
-static long pathconf_inner _((char *, int));
-
 static long
-pathconf_inner(path, arg)
-    char            *path;
-    int             arg;
+pathconf_inner(const char *path, int arg)
 {
 #ifdef HAVE_PATHCONF
     long            result;
@@ -72,13 +68,8 @@ pathconf_inner(path, arg)
 }
 
 
-static long pathconf_wrapper _((char *, int, long));
-
 static long
-pathconf_wrapper(path, arg, default_value)
-    char            *path;
-    int             arg;
-    long            default_value;
+pathconf_wrapper(char *path, int arg, long default_value)
 {
 #ifdef HAVE_PATHCONF
     long            result;
@@ -106,8 +97,7 @@ pathconf_wrapper(path, arg, default_value)
 
 
 int
-os_pathconf_path_max(path)
-    string_ty       *path;
+os_pathconf_path_max(string_ty *path)
 {
     long            result;
 
@@ -129,8 +119,7 @@ os_pathconf_path_max(path)
 
 
 int
-os_pathconf_name_max(path)
-    string_ty       *path;
+os_pathconf_name_max(string_ty *path)
 {
     long            result;
 

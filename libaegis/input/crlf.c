@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,38 +42,30 @@ struct input_crlf_ty
 };
 
 
-static void input_crlf_destructor _((input_ty *));
-
 static void
-input_crlf_destructor(p)
-	input_ty	*p;
+input_crlf_destructor(input_ty *p)
 {
-	input_crlf_ty	*this;
+	input_crlf_ty	*this_thing;
 
 	trace(("input_crlf_destructor()\n{\n"));
-	this = (input_crlf_ty *)p;
-	input_pushback_transfer(this->deeper, p);
-	if (this->delete_on_close)
-		input_delete(this->deeper);
-	this->deeper = 0; /* paranoia */
-	if (this->name_cache)
+	this_thing = (input_crlf_ty *)p;
+	input_pushback_transfer(this_thing->deeper, p);
+	if (this_thing->delete_on_close)
+		input_delete(this_thing->deeper);
+	this_thing->deeper = 0; /* paranoia */
+	if (this_thing->name_cache)
 	{
-		str_free(this->name_cache);
-		this->name_cache = 0;
+		str_free(this_thing->name_cache);
+		this_thing->name_cache = 0;
 	}
 	trace(("}\n"));
 }
 
 
-static long input_crlf_read _((input_ty *, void *, size_t));
-
 static long
-input_crlf_read(ip, data, len)
-	input_ty	*ip;
-	void		*data;
-	size_t		len;
+input_crlf_read(input_ty *ip, void *data, size_t len)
 {
-	input_crlf_ty	*this;
+	input_crlf_ty	*this_thing;
 	int		c;
 	unsigned char	*cp;
 	unsigned char	*end;
@@ -81,36 +73,36 @@ input_crlf_read(ip, data, len)
 	sub_context_ty	*scp;
 
 	trace(("input_crlf_read()\n{\n"));
-	this = (input_crlf_ty *)ip;
-	if (this->prev_was_newline)
+	this_thing = (input_crlf_ty *)ip;
+	if (this_thing->prev_was_newline)
 	{
-		this->line_number++;
-		this->prev_was_newline = 0;
+		this_thing->line_number++;
+		this_thing->prev_was_newline = 0;
 
 		/*
 		 * The name cache includes the line number, and the line
 		 * number just changed, so nuke it.
 		 */
-		if (this->name_cache)
+		if (this_thing->name_cache)
 		{
-			str_free(this->name_cache);
-			this->name_cache = 0;
+			str_free(this_thing->name_cache);
+			this_thing->name_cache = 0;
 		}
 	}
 
-	cp = data;
+	cp = (unsigned char *)data;
 	end = cp + len;
 	while (cp < end)
 	{
-		c = input_getc(this->deeper);
+		c = input_getc(this_thing->deeper);
 		switch (c)
 		{
 		case '\r':
-			c = input_getc(this->deeper);
+			c = input_getc(this_thing->deeper);
 			if (c == '\n')
 				goto newline;
 			if (c >= 0)
-				input_ungetc(this->deeper, c);
+				input_ungetc(this_thing->deeper, c);
 #ifdef __mac_os_x__
 			goto newline;
 #else
@@ -119,9 +111,9 @@ input_crlf_read(ip, data, len)
 #endif
 
 		case '\\':
-			if (this->escaped_newline)
+			if (this_thing->escaped_newline)
 			{
-				c = input_getc(this->deeper);
+				c = input_getc(this_thing->deeper);
 				if (c == '\n')
 				{
 					/*
@@ -130,11 +122,11 @@ input_crlf_read(ip, data, len)
 					 * so that the line numbers
 					 * are right.
 					 */
-					this->prev_was_newline = 1;
+					this_thing->prev_was_newline = 1;
 					break;
 				}
 				if (c >= 0)
-					input_ungetc(this->deeper, c);
+					input_ungetc(this_thing->deeper, c);
 			}
 			*cp++ = '\\';
 			continue;
@@ -194,7 +186,7 @@ input_crlf_read(ip, data, len)
 			 */
 			newline:
 			*cp++ = '\n';
-			this->prev_was_newline = 1;
+			this_thing->prev_was_newline = 1;
 			break;
 		}
 		break;
@@ -204,58 +196,49 @@ input_crlf_read(ip, data, len)
 	 * Figure what happened.
 	 */
 	nbytes = (cp - (unsigned char *)data);
-	this->pos += nbytes;
+	this_thing->pos += nbytes;
 	trace(("return %ld;\n", (long)nbytes));
 	trace(("}\n"));
 	return nbytes;
 }
 
 
-static long input_crlf_ftell _((input_ty *));
-
 static long
-input_crlf_ftell(fp)
-	input_ty	*fp;
+input_crlf_ftell(input_ty *fp)
 {
-	input_crlf_ty	*this;
+	input_crlf_ty	*this_thing;
 
-	this = (input_crlf_ty *)fp;
-	trace(("input_crlf_ftell => %ld\n", this->pos));
-	return this->pos;
+	this_thing = (input_crlf_ty *)fp;
+	trace(("input_crlf_ftell => %ld\n", this_thing->pos));
+	return this_thing->pos;
 }
 
 
-static string_ty *input_crlf_name _((input_ty *));
-
 static string_ty *
-input_crlf_name(p)
-	input_ty	*p;
+input_crlf_name(input_ty *p)
 {
-	input_crlf_ty	*this;
+	input_crlf_ty	*this_thing;
 
 	trace(("input_crlf_name\n"));
-	this = (input_crlf_ty *)p;
-	if (!this->line_number)
-		return input_name(this->deeper);
-	if (!this->name_cache)
+	this_thing = (input_crlf_ty *)p;
+	if (!this_thing->line_number)
+		return input_name(this_thing->deeper);
+	if (!this_thing->name_cache)
 	{
-		this->name_cache =
+		this_thing->name_cache =
 			str_format
 			(
 				"%S: %ld",
-				input_name(this->deeper),
-				this->line_number
+				input_name(this_thing->deeper),
+				this_thing->line_number
 			);
 	}
-	return this->name_cache;
+	return this_thing->name_cache;
 }
 
 
-static long input_crlf_length _((input_ty *));
-
 static long
-input_crlf_length(p)
-	input_ty	*p;
+input_crlf_length(input_ty *p)
 {
 	trace(("input_crlf_length => -1\n"));
 	return -1;
@@ -274,23 +257,21 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_crlf(fp, delete_on_close)
-	input_ty	*fp;
-	int		delete_on_close;
+input_crlf(input_ty *fp, int delete_on_close)
 {
 	input_ty	*result;
-	input_crlf_ty	*this;
+	input_crlf_ty	*this_thing;
 
 	trace(("input_crlf(fp = %08lX)\n{\n", (long)fp));
 	result = input_new(&vtbl);
-	this = (input_crlf_ty *)result;
-	this->deeper = fp;
-	this->pos = 0;
-	this->delete_on_close = !!delete_on_close;
-	this->line_number = 0;
-	this->prev_was_newline = 1;
-	this->name_cache = 0;
-	this->escaped_newline = 0;
+	this_thing = (input_crlf_ty *)result;
+	this_thing->deeper = fp;
+	this_thing->pos = 0;
+	this_thing->delete_on_close = !!delete_on_close;
+	this_thing->line_number = 0;
+	this_thing->prev_was_newline = 1;
+	this_thing->name_cache = 0;
+	this_thing->escaped_newline = 0;
 	trace(("return %08lX\n", (long)result));
 	trace(("}\n"));
 	return result;
@@ -298,14 +279,13 @@ input_crlf(fp, delete_on_close)
 
 
 void
-input_crlf_escaped_newline(ip)
-	input_ty	*ip;
+input_crlf_escaped_newline(input_ty *ip)
 {
 	if (ip->vptr == &vtbl)
 	{
-		input_crlf_ty	*this;
+		input_crlf_ty	*this_thing;
 
-		this = (input_crlf_ty *)ip;
-		this->escaped_newline = 1;
+		this_thing = (input_crlf_ty *)ip;
+		this_thing->escaped_newline = 1;
 	}
 }

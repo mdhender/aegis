@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,7 @@
 
 
 void
-change_bind_existing(cp)
-	change_ty	*cp;
+change_bind_existing(change_ty *cp)
 {
 	change_ty	*pcp;
 	cstate		pcsp;

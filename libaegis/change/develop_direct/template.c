@@ -29,9 +29,7 @@
 
 
 string_ty *
-change_development_directory_template(cp, up)
-	change_ty	*cp;
-	user_ty		*up;
+change_development_directory_template(change_ty *cp, user_ty *up)
 {
 	pconf		pconf_data;
 	unsigned long	k;

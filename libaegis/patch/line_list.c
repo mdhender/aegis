@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,46 +26,44 @@
 
 
 void
-patch_line_list_constructor(this)
-	patch_line_list_ty *this;
+patch_line_list_constructor(patch_line_list_ty *this_thing)
 {
-	this->start_line_number = -1;
-	this->length = 0;
-	this->maximum = 0;
-	this->item = 0;
+    this_thing->start_line_number = -1;
+    this_thing->length = 0;
+    this_thing->maximum = 0;
+    this_thing->item = 0;
 }
 
 
 void
-patch_line_list_destructor(this)
-	patch_line_list_ty *this;
+patch_line_list_destructor(patch_line_list_ty *this_thing)
 {
-	size_t		j;
+    size_t          j;
 
-	for (j = 0; j < this->length; ++j)
-		patch_line_destructor(this->item + j);
-	if (this->item)
-		mem_free(this->item);
-	this->start_line_number = -1;
-	this->length = 0;
-	this->maximum = 0;
-	this->item = 0;
+    for (j = 0; j < this_thing->length; ++j)
+	patch_line_destructor(this_thing->item + j);
+    if (this_thing->item)
+	mem_free(this_thing->item);
+    this_thing->start_line_number = -1;
+    this_thing->length = 0;
+    this_thing->maximum = 0;
+    this_thing->item = 0;
 }
 
 
 void
-patch_line_list_append(this, type, value)
-	patch_line_list_ty *this;
-	patch_line_type	type;
-	string_ty	*value;
+patch_line_list_append(patch_line_list_ty *this_thing, patch_line_type type,
+    string_ty *value)
 {
-	if (this->length >= this->maximum)
-	{
-		size_t		nbytes;
+    if (this_thing->length >= this_thing->maximum)
+    {
+	size_t		nbytes;
 
-		this->maximum = this->maximum * 2 + 8;
-		nbytes = this->maximum * sizeof(this->item[0]);
-		this->item = mem_change_size(this->item, nbytes);
-	}
-	patch_line_constructor(this->item + this->length++, type, value);
+	this_thing->maximum = this_thing->maximum * 2 + 8;
+	nbytes = this_thing->maximum * sizeof(this_thing->item[0]);
+	this_thing->item =
+            (patch_line_ty *)mem_change_size(this_thing->item, nbytes);
+    }
+    patch_line_constructor(
+        this_thing->item + this_thing->length++, type, value);
 }

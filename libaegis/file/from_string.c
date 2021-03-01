@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,7 @@
 
 
 void
-file_from_string(filename, content, mode)
-	string_ty	*filename;
-	string_ty	*content;
-	int		mode;
+file_from_string(string_ty *filename, string_ty *content, int mode)
 {
 	int		fd;
 

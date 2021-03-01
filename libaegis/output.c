@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,11 +31,10 @@
 
 
 void
-output_delete(fp)
-	output_ty	*fp;
+output_delete(output_ty *fp)
 {
 	trace(("output_delete(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	assert(fp);
 	assert(fp->vptr);
 	output_flush(fp);
@@ -57,13 +56,12 @@ output_delete(fp)
 
 
 string_ty *
-output_filename(fp)
-	output_ty	*fp;
+output_filename(output_ty *fp)
 {
 	string_ty	*result;
 
 	trace(("output_filename(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	assert(fp);
 	assert(fp->vptr);
 	assert(fp->vptr->filename);
@@ -75,13 +73,12 @@ output_filename(fp)
 
 
 long
-output_ftell(fp)
-	output_ty	*fp;
+output_ftell(output_ty *fp)
 {
 	long		result;
 
 	trace(("output_ftell(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	assert(fp);
 	assert(fp->vptr);
 	assert(fp->vptr->ftell);
@@ -98,12 +95,10 @@ output_ftell(fp)
 #endif
 
 void
-output_fputc(fp, c)
-	output_ty	*fp;
-	int		c;
+output_fputc(output_ty *fp, int c)
 {
 	trace(("output_fputc(fp = %08lX, c = %d)\n{\ntype is output_%s\n",
-		(long)fp, c, fp->vptr->typename));
+		(long)fp, c, fp->vptr->type_name));
 	assert(fp);
 	assert(fp->buffer);
 	assert(fp->buffer_position >= fp->buffer);
@@ -125,14 +120,12 @@ output_fputc(fp, c)
 
 
 void
-output_fputs(fp, s)
-	output_ty	*fp;
-	const char	*s;
+output_fputs(output_ty *fp, const char *s)
 {
 	size_t		nbytes;
 
 	trace(("output_fputs(fp = %08lX, s = \"%s\")\n{\ntype is output_%s\n",
-		(long)fp, s, fp->vptr->typename));
+		(long)fp, s, fp->vptr->type_name));
 	nbytes = strlen(s);
 	if (nbytes)
 		output_write(fp, s, nbytes);
@@ -141,13 +134,10 @@ output_fputs(fp, s)
 
 
 void
-output_write(fp, data, len)
-	output_ty	*fp;
-	const void	*data;
-	size_t		len;
+output_write(output_ty *fp, const void *data, size_t len)
 {
 	trace(("output_write(fp = %08lX, data = %08lX, len = %ld)\n\
-{\ntype is output_%s\n", (long)fp, (long)data, (long)len, fp->vptr->typename));
+{\ntype is output_%s\n", (long)fp, (long)data, (long)len, fp->vptr->type_name));
 	assert(fp);
 	assert(fp->vptr);
 	assert(fp->vptr->write);
@@ -187,11 +177,10 @@ output_write(fp, data, len)
 
 
 void
-output_flush(fp)
-	output_ty	*fp;
+output_flush(output_ty *fp)
 {
 	trace(("output_flush(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	assert(fp);
 	assert(fp->vptr);
 
@@ -212,15 +201,14 @@ output_flush(fp)
 
 
 void
-output_end_of_line(fp)
-	output_ty	*fp;
+output_end_of_line(output_ty *fp)
 {
 	/*
 	 * If possible, just stuff a newline into the buffer and bail.
 	 * This results in the fewest deeper calls.
 	 */
 	trace(("output_end_of_line(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	if
 	(
 		fp->buffer_position > fp->buffer
@@ -259,8 +247,7 @@ output_end_of_line(fp)
 
 
 int
-output_page_width(fp)
-	output_ty	*fp;
+output_page_width(output_ty *fp)
 {
 	int		result;
 
@@ -268,7 +255,7 @@ output_page_width(fp)
 	assert(fp->vptr);
 	assert(fp->vptr->page_width);
 	trace(("output_page_width(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	result = fp->vptr->page_width(fp);
 	trace(("return %d;\n", result));
 	trace(("}\n"));
@@ -277,8 +264,7 @@ output_page_width(fp)
 
 
 int
-output_page_length(fp)
-	output_ty	*fp;
+output_page_length(output_ty *fp)
 {
 	int		result;
 
@@ -286,7 +272,7 @@ output_page_length(fp)
 	assert(fp->vptr);
 	assert(fp->vptr->page_length);
 	trace(("output_page_length(fp = %08lX)\n{\ntype is output_%s\n",
-		(long)fp, fp->vptr->typename));
+		(long)fp, fp->vptr->type_name));
 	assert(fp->vptr->page_length);
 	result = fp->vptr->page_length(fp);
 	trace(("return %d;\n", result));
@@ -307,10 +293,7 @@ output_fprintf(output_ty *fp, const char *fmt, ...)
 
 
 void
-output_vfprintf(fp, fmt, ap)
-	output_ty	*fp;
-	const char	*fmt;
-	va_list		ap;
+output_vfprintf(output_ty *fp, const char *fmt, va_list ap)
 {
 	char		*tmp;
 
@@ -326,9 +309,7 @@ output_vfprintf(fp, fmt, ap)
 
 
 void
-output_put_str(fp, s)
-	output_ty	*fp;
-	string_ty	*s;
+output_put_str(output_ty *fp, string_ty *s)
 {
 	if (!s || !s->str_length)
 		return;
@@ -337,10 +318,7 @@ output_put_str(fp, s)
 
 
 void
-output_delete_callback(fp, func, arg)
-	output_ty	*fp;
-	output_delete_callback_ty func;
-	void		*arg;
+output_delete_callback(output_ty *fp, output_delete_callback_ty func, void *arg)
 {
 	fp->del_cb = func;
 	fp->del_cb_arg = arg;

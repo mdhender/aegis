@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <ac/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -35,6 +34,7 @@
 #include <getpw_cache.h>
 #include <glue.h>
 #include <list.h>
+#include <now.h>
 #include <os.h>
 #include <output.h>
 #include <project/file.h>
@@ -539,11 +539,13 @@ list_dir(string_ty *dirname)
 {
     string_list_ty  wl;
     size_t	    j;
+    string_list_ty  more_dirs;
 
     os_become_orig();
     readdir_stack(dirname, &wl);
     os_become_undo();
     string_list_sort(&wl);
+    string_list_constructor(&more_dirs);
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty	*s;
@@ -557,12 +559,14 @@ list_dir(string_ty *dirname)
 	resolved_path = stat_stack(s, &st);
 	os_become_undo();
 	if (recursive_flag && (st.st_mode & S_IFMT) == S_IFDIR)
-	    string_list_append(&dirs, s);
+	    string_list_append(&more_dirs, s);
 	list_file(s, wl.string[j], &st, resolved_path);
 	str_free(resolved_path);
 	str_free(s);
     }
     string_list_destructor(&wl);
+    string_list_prepend_list(&dirs, &more_dirs);
+    string_list_destructor(&more_dirs);
 }
 
 
@@ -585,11 +589,11 @@ list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
     int		    need_eject;
     int		    column =	    0;
     int		    width;
-    time_t	    now;
+    time_t	    when;
 
-    time(&now);
-    oldest = now - 6L * 30 * 24 * 60 * 60;
-    youngest = now + 6L * 30 * 24 * 60 * 60;
+    when = now();
+    oldest = when - 6L * 30 * 24 * 60 * 60;
+    youngest = when + 6L * 30 * 24 * 60 * 60;
     pp = a_pp;
     cp = a_cp;
 
@@ -674,13 +678,14 @@ list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
 	str_free(resolved_path);
     }
 
-    for (j = 0; j < dirs.nstrings; ++j)
+    while (dirs.nstrings)
     {
 	string_ty	*path;
 
 	if (need_eject)
 	    col_eject(col_ptr);
-	path = dirs.string[j];
+	path = str_copy(dirs.string[0]);
+	string_list_remove(&dirs, path);
 	col_title(col_ptr, "Annotated Directory Listing", path->str_text);
 	list_dir(path);
 	need_eject = 1;

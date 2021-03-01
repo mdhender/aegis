@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,7 @@
 
 
 int
-os_waitpid(child, status_p)
-    int             child;
-    int             *status_p;
+os_waitpid(int child, int *status_p)
 {
     typedef struct ret_ty ret_ty;
     struct ret_ty
@@ -105,9 +103,9 @@ os_waitpid(child, status_p)
 	    nret_max += 11;
 	    nbytes = nret_max * sizeof(ret_ty);
 	    if (!ret)
-		ret = mem_alloc(nbytes);
+		ret = (ret_ty *)mem_alloc(nbytes);
 	    else
-		ret = mem_change_size(ret, nbytes);
+		ret = (ret_ty *)mem_change_size(ret, nbytes);
 	}
 	ret[nret].pid = pid;
 	ret[nret].status = status;

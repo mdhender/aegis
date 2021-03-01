@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -194,12 +194,12 @@ struct input_base64_ty
 static void
 input_quoted_printable_destructor(input_ty *fp)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
-    this = (input_base64_ty *)fp;
-    if (this->close_on_close)
-	input_delete(this->deeper);
-    this->deeper = 0; /* paranoia */
+    this_thing = (input_base64_ty *)fp;
+    if (this_thing->close_on_close)
+	input_delete(this_thing->deeper);
+    this_thing->deeper = 0; /* paranoia */
 }
 
 
@@ -245,15 +245,15 @@ hex(int c)
 static long
 input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
     unsigned char   *cp;
     unsigned char   *end;
     long	    nbytes;
 
-    this = (input_base64_ty *)fp;
-    if (this->eof)
+    this_thing = (input_base64_ty *)fp;
+    if (this_thing->eof)
 	return 0;
-    cp = data;
+    cp = (unsigned char *)data;
     end = cp + len;
     while (cp < end)
     {
@@ -261,10 +261,10 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	int		n1;
 	int      	n2;
 
-	c = input_getc(this->deeper);
+	c = input_getc(this_thing->deeper);
 	if (c < 0)
 	{
-	    this->eof = 1;
+	    this_thing->eof = 1;
 	    break;
 	}
 	if (c == ' ' || c == '\t')
@@ -291,14 +291,14 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 		if (bufpos >= bufmax)
 		{
 		    bufmax = bufmax * 2 + 8;
-		    buffer = mem_change_size(buffer, bufmax);
+		    buffer = (char *)mem_change_size(buffer, bufmax);
 		}
 		buffer[bufpos++] = c;
 
 		/*
 		 * See what comes next.
 		 */
-		c = input_getc(this->deeper);
+		c = input_getc(this_thing->deeper);
 		if (c < 0)
 		    break;
 		if (c == '\n')
@@ -308,7 +308,7 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 		}
 		if (c != ' ' && c != '\t')
 		{
-		    input_ungetc(this->deeper, c);
+		    input_ungetc(this_thing->deeper, c);
 		    break;
 		}
 	    }
@@ -336,7 +336,7 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	    while (bufpos > nchars)
 	    {
 		--bufpos;
-		input_ungetc(this->deeper, buffer[bufpos]);
+		input_ungetc(this_thing->deeper, buffer[bufpos]);
 	    }
 
 	    /*
@@ -363,21 +363,21 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	 *
 	 * Except for trailing white space; that we ignore.
 	 */
-	c = input_getc(this->deeper);
+	c = input_getc(this_thing->deeper);
 	if (c < 0)
 	    break;
 	if (c == ' ' || c == '\t')
 	{
 	    for (;;)
 	    {
-		c = input_getc(this->deeper);
+		c = input_getc(this_thing->deeper);
 		if (c == '\n')
 		    break;
 		if (c != ' ' && c != '\t')
 		{
 		    input_fatal_error
 		    (
-			this->deeper,
+			this_thing->deeper,
 			"quoted printable: invalid character"
 		    );
 		    /* NOTREACHED */
@@ -392,7 +392,7 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	    input_fatal_error(fp, "quoted printable: invalid hex character");
 	    /* NOTREACHED */
 	}
-	c = input_getc(this->deeper);
+	c = input_getc(this_thing->deeper);
 	n2 = hex(c);
 	if (n2 < 0)
 	{
@@ -404,7 +404,7 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	;
     }
     nbytes = (cp - (unsigned char *)data);
-    this->pos += nbytes;
+    this_thing->pos += nbytes;
     return nbytes;
 }
 
@@ -412,20 +412,20 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 static long
 input_quoted_printable_ftell(input_ty *deeper)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
-    this = (input_base64_ty *)deeper;
-    return this->pos;
+    this_thing = (input_base64_ty *)deeper;
+    return this_thing->pos;
 }
 
 
 static struct string_ty *
 input_quoted_printable_name(input_ty *fp)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
-    this = (input_base64_ty *)fp;
-    return input_name(this->deeper);
+    this_thing = (input_base64_ty *)fp;
+    return input_name(this_thing->deeper);
 }
 
 
@@ -451,13 +451,13 @@ input_ty *
 input_quoted_printable(input_ty *deeper, int coc)
 {
     input_ty	    *result;
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
     result = input_new(&vtbl);
-    this = (input_base64_ty *)result;
-    this->deeper = deeper;
-    this->close_on_close = coc;
-    this->eof = 0;
-    this->pos = 0;
+    this_thing = (input_base64_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->close_on_close = coc;
+    this_thing->eof = 0;
+    this_thing->pos = 0;
     return result;
 }

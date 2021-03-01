@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1990, 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1990-1993, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,9 @@
 #include <main.h>
 
 void env_initialize(void);
-void env_set(char *name, char *value);
-void env_unset(char *name);
+void env_set(const char *name, const char *value);
+void env_setf(const char *name, const char *value, ...);
+void env_set_page(void);
+void env_unset(const char *name);
 
 #endif /* COMMON_ENV_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,7 @@
 
 
 void
-input_to_output(ifp, ofp)
-	input_ty	*ifp;
-	output_ty	*ofp;
+input_to_output(input_ty *ifp, output_ty *ofp)
 {
 	unsigned char	buffer[4096];
 	size_t		n;

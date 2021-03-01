@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,11 +29,8 @@
 #include <wstr_list.h>
 
 
-static string_ty *qemail _((user_ty *));
-
 static string_ty *
-qemail(up)
-    user_ty	    *up;
+qemail(user_ty *up)
 {
     static string_ty *result;
     string_ty	    *s;
@@ -67,8 +64,7 @@ static symtab_ty *stp;
 
 
 sub_user_func_ptr
-sub_user_func(name)
-    string_ty	    *name;
+sub_user_func(string_ty *name)
 {
     table_ty	    *tp;
     string_ty	    *s;
@@ -124,9 +120,7 @@ sub_user_func(name)
  */
 
 wstring_ty *
-sub_user(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_user(sub_context_ty *scp, wstring_list_ty *arg)
 {
     string_ty	    *s;
     wstring_ty	    *result;

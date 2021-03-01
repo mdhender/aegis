@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,53 +34,53 @@
 rpt_expr_ty *
 rpt_expr_alloc(rpt_expr_method_ty *method)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
     trace(("rpt_expr_alloc(%08lX)\n{\n", (long)method));
     trace(("method is \"%s\"\n", method->name));
-    this = mem_alloc(method->size);
-    this->method = method;
-    this->reference_count = 1;
-    this->pos = 0;
-    this->child = 0;
-    this->nchild = 0;
-    this->nchild_max = 0;
+    this_thing = (rpt_expr_ty *)mem_alloc(method->size);
+    this_thing->method = method;
+    this_thing->reference_count = 1;
+    this_thing->pos = 0;
+    this_thing->child = 0;
+    this_thing->nchild = 0;
+    this_thing->nchild_max = 0;
     if (method->construct)
-	method->construct(this);
-    trace(("return %08lX;\n", (long)this));
+	method->construct(this_thing);
+    trace(("return %08lX;\n", (long)this_thing));
     trace(("}\n"));
-    return this;
+    return this_thing;
 }
 
 
 rpt_expr_ty *
-rpt_expr_copy(rpt_expr_ty *this)
+rpt_expr_copy(rpt_expr_ty *this_thing)
 {
-    this->reference_count++;
-    return this;
+    this_thing->reference_count++;
+    return this_thing;
 }
 
 
 void
-rpt_expr_free(rpt_expr_ty *this)
+rpt_expr_free(rpt_expr_ty *this_thing)
 {
     size_t	    j;
 
-    this->reference_count--;
-    if (this->reference_count > 0)
+    this_thing->reference_count--;
+    if (this_thing->reference_count > 0)
 	return;
-    trace(("rpt_expr_free(%08lX)\n{\n", (long)this));
-    trace(("method is \"%s\"\n", this->method->name));
-    assert(this->reference_count == 0);
-    if (this->method->destruct)
-	this->method->destruct(this);
-    for (j = 0; j < this->nchild; ++j)
-	rpt_expr_free(this->child[j]);
-    if (this->child)
-	mem_free(this->child);
-    if (this->pos)
-	rpt_pos_free(this->pos);
-    mem_free(this);
+    trace(("rpt_expr_free(%08lX)\n{\n", (long)this_thing));
+    trace(("method is \"%s\"\n", this_thing->method->name));
+    assert(this_thing->reference_count == 0);
+    if (this_thing->method->destruct)
+	this_thing->method->destruct(this_thing);
+    for (j = 0; j < this_thing->nchild; ++j)
+	rpt_expr_free(this_thing->child[j]);
+    if (this_thing->child)
+	mem_free(this_thing->child);
+    if (this_thing->pos)
+	rpt_pos_free(this_thing->pos);
+    mem_free(this_thing);
     trace(("}\n"));
 }
 
@@ -98,7 +98,7 @@ rpt_expr_append(rpt_expr_ty *parent, rpt_expr_ty *child)
     {
 	parent->nchild_max = parent->nchild_max * 2 + 4;
 	nbytes = parent->nchild_max * sizeof(parent->child[0]);
-	parent->child = mem_change_size(parent->child, nbytes);
+	parent->child = (rpt_expr_ty **)mem_change_size(parent->child, nbytes);
     }
     parent->child[parent->nchild++] = rpt_expr_copy(child);
 
@@ -136,7 +136,7 @@ rpt_expr_prepend(rpt_expr_ty *parent, rpt_expr_ty *child)
     {
 	parent->nchild_max = parent->nchild_max * 2 + 4;
 	nbytes = parent->nchild_max * sizeof(parent->child[0]);
-	parent->child = mem_change_size(parent->child, nbytes);
+	parent->child = (rpt_expr_ty **)mem_change_size(parent->child, nbytes);
     }
     for (j = parent->nchild; j > 0; --j)
 	parent->child[j] = parent->child[j - 1];
@@ -162,7 +162,7 @@ rpt_expr_prepend(rpt_expr_ty *parent, rpt_expr_ty *child)
 
 
 void
-rpt_expr_parse_error(rpt_expr_ty *ep, char *fmt)
+rpt_expr_parse_error(rpt_expr_ty *ep, const char *fmt)
 {
     assert(ep->pos);
     rpt_lex_error(ep->pos, fmt);

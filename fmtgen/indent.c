@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,11 +32,12 @@
 #define INDENT 4
 
 static FILE	*fp;
-static char	*fn;
+static const char *fn;
 static int	depth;
 static int	in_col;
 static int	out_col;
 static int	continuation_line;
+static int	within_string;
 
 
 /*
@@ -153,13 +154,23 @@ indent_putchar(int c)
 	    in_col = INDENT * depth + 16;
 	break;
 
+    case '"':
+    case '\'':
+	if (within_string == 0)
+	    within_string = c;
+	else if (continuation_line != 1 && within_string == c)
+	    within_string = 0;
+	goto normal;
+
     case '}':
     case ')':
     case ']':
-	--depth;
+	if (!within_string)
+	    --depth;
 	/* fall through */
 
     default:
+	normal:
 	if (!out_col && c != '#' && continuation_line != 2)
 	    in_col += INDENT * depth;
 	while (((out_col + 8) & -8) <= in_col && out_col + 1 < in_col)
@@ -172,7 +183,7 @@ indent_putchar(int c)
 	    fputc(' ', fp);
 	    ++out_col;
 	}
-	if (c == '{' || c == '(' || c == '[')
+	if (!within_string && (c == '{' || c == '(' || c == '['))
 	    ++depth;
 	fputc(c, fp);
 	in_col++;
@@ -207,7 +218,7 @@ indent_putchar(int c)
  */
 
 void
-indent_printf(char *s, ...)
+indent_printf(const char *s, ...)
 {
     va_list	    ap;
     char	    buffer[2000];
@@ -221,7 +232,7 @@ indent_printf(char *s, ...)
 
 
 void
-indent_open(char *s)
+indent_open(const char *s)
 {
     trace(("indent_open(s = %08lX)\n{\n", (long)s));
     if (!s)

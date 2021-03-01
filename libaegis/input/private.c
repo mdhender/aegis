@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,15 +25,14 @@
 
 
 input_ty *
-input_new(vptr)
-	input_vtbl_ty	*vptr;
+input_new(input_vtbl_ty *vptr)
 {
 	input_ty	*ip;
 
-	ip = mem_alloc(vptr->size);
+	ip = (input_ty *)mem_alloc(vptr->size);
 	ip->vptr = vptr;
 	ip->buffer_size = (size_t)1 << 14;
-	ip->buffer = mem_alloc(ip->buffer_size);
+	ip->buffer = (unsigned char *)mem_alloc(ip->buffer_size);
 	ip->buffer_position = ip->buffer;
 	ip->buffer_end = ip->buffer;
 	return ip;

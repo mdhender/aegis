@@ -223,6 +223,7 @@ all: [all]
  * This is given to us by aegis.
  */
 vs_file = common/patchlevel.h;
+change_files_removed = ;
 change_files = ;
 change_files_build = ;
 #include-cooked-nowarn etc/cook/change_files.[version]
@@ -250,6 +251,7 @@ etc/cook/project_files.[version]: : etc/proj_files.awk
  * Speed up graph building by stating the leaves explictly.
  * This also gives more useful error messages.
  */
+if [not [change_files_removed]] then
 if [count [project_files]] then
 if [count [change_files]] then
 {
@@ -410,7 +412,9 @@ fmtgen_obj =
 	[arch]/common/progname.o
 	[arch]/common/str.o
 	[arch]/common/str/format.o
-	[arch]/common/str_list.o
+	[arch]/common/str_list/append.o
+	[arch]/common/str_list/constructor.o
+	[arch]/common/str_list/append_uniqu.o
 	[arch]/common/symtab.o
 	[arch]/common/trace.o
 	;
@@ -469,7 +473,7 @@ if [not [defined ld_flags]] then
  */
 if [in [cc] gcc] then
 cc_flags = [cc_flags] -ansi -Wall -Wstrict-prototypes -Wmissing-prototypes
-	-Wshadow -Wmissing-declarations -Wpointer-arith;
+	-Wshadow -Wmissing-declarations -Wpointer-arith -Wwrite-strings;
 
 /*
  * For development builds, on the primary architecture, all warnings are
@@ -701,30 +705,34 @@ cascade common/fp/snefru.c = [arch]/common/find_sizes.h ;
 cascade common/version_stmp.c = common/patchlevel.h ;
 cascade etc/aegis.html = etc/version.so ;
 cascade fmtgen/lex.c = fmtgen/parse.gen.h ;
-cascade lib/en/aoss4/main.mm = etc/version.so ;
-cascade lib/en/auug93/main.mm = etc/version.so ;
-cascade lib/en/building/main.man = etc/version.so ;
-cascade lib/en/cvs-comparison/main.ms = [arch]/etc/libdir.so etc/version.so ;
-cascade lib/en/faq/main.roff = etc/version.so lib/en/faq/toc.so ;
+cascade lib/en/aoss4/main.mm = etc/version.so(exists) ;
+cascade lib/en/auug93/main.mm = etc/version.so(exists) ;
+cascade lib/en/building/main.man = etc/version.so(exists) ;
+cascade lib/en/cvs-comparison/main.ms = [arch]/etc/libdir.so
+		etc/version.so(exists) ;
+cascade lib/en/faq/main.roff = etc/version.so(exists) lib/en/faq/toc.so ;
 cascade lib/en/howto/introductio.so = [arch]/etc/libdir.so ;
-cascade lib/en/howto/introductio.so = etc/version.so ;
-cascade lib/en/cvs-comparison/main.ms = etc/version.so [arch]/etc/libdir.so ;
+cascade lib/en/howto/introductio.so = etc/version.so(exists) ;
+cascade lib/en/cvs-comparison/main.ms = etc/version.so(exists)
+		[arch]/etc/libdir.so ;
 cascade lib/en/lsm/main.roff = etc/version.so ;
 cascade lib/en/man1/aegis.cgi.1 = [arch]/etc/libdir.so;
-cascade lib/en/man1/aeintegratq.1 = [arch]/etc/libdir.so etc/version.so;
+cascade lib/en/man1/aeintegratq.1 = [arch]/etc/libdir.so etc/version.so(exists);
 cascade lib/en/man1/aenpr.1 = [arch]/etc/libdir.so ;
 cascade lib/en/man1/aenrls.1 = [arch]/etc/libdir.so ;
 cascade lib/en/man1/aer.1 = [arch]/etc/libdir.so ;
-cascade lib/en/man1/tkaegis.1 = etc/version.so ;
-cascade lib/en/man1/z_cr.so = etc/version.so ;
+cascade lib/en/man1/tkaegis.1 = etc/version.so(exists) ;
+cascade lib/en/man1/z_cr.so = etc/version.so(exists) ;
 cascade lib/en/man5/aegstate.5 = [arch]/etc/libdir.so ;
 cascade lib/en/man5/aer.5 = [arch]/etc/libdir.so ;
 cascade lib/en/man5/aerptidx.5 = [arch]/etc/libdir.so ;
 cascade lib/en/man5/aeustate.5 = [arch]/etc/libdir.so ;
 /* cascade lib/en/readme/main.man = etc/proj_metric.so; */
-cascade lib/en/readme/main.man = etc/version.so lib/en/readme/new.so ;
+cascade lib/en/readme/main.man = etc/version.so(exists) lib/en/readme/new.so ;
 cascade lib/en/refman/main.man = lib/en/refman/parts.so lib/en/refman/index.so ;
-cascade lib/en/user-guide/c1.0.so = [arch]/etc/libdir.so etc/version.so ;
+cascade lib/en/user-guide/c1.0.so = [arch]/etc/libdir.so
+		etc/version.so(exists) ;
+cascade libaegis/ael/change/incomplete.c = libaegis/cstate.h;
 cascade libaegis/ael/change/outstanding.c = libaegis/cstate.h;
 cascade libaegis/ael/formeditnum.c = libaegis/fstate.h;
 cascade libaegis/aer/expr/name.c = libaegis/cattr.h libaegis/common.h

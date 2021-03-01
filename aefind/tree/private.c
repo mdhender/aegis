@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ tree_new(tree_method_ty *mp)
 {
     tree_ty         *tp;
 
-    tp = mem_alloc(mp->size);
+    tp = (tree_ty *)mem_alloc(mp->size);
     tp->method = mp;
     tp->reference_count = 1;
     return tp;

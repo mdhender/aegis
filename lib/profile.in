@@ -35,14 +35,6 @@ then
 fi
 
 #
-# If the user has not set their preferred language, default it to
-# English here.  This will give behaviour consistent with previous Aegis
-# behaviour.
-#
-LANGUAGE=${LANGUAGE-en}
-export LANGUAGE
-
-#
 # Set the MANPATH environment variable to include the Aegis' library
 # directory.  This directory contains subdirectories for each of the
 # supported languages, structured in such a way that man(1) programs
@@ -435,6 +427,8 @@ then
 	    aeibu \
 	    aeifail \
 	    aeipass \
+	    aemt \
+	    aemtu \
 	    aena \
 	    aencu \
 	    aend \

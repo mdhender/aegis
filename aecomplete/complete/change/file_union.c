@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,17 +50,17 @@ struct complete_change_file_union_ty
 static void
 destructor(complete_ty *cp)
 {
-    complete_change_file_union_ty *this;
+    complete_change_file_union_ty *this_thing;
 
-    this = (complete_change_file_union_ty *)cp;
-    change_free(this->cp);
+    this_thing = (complete_change_file_union_ty *)cp;
+    change_free(this_thing->cp);
 }
 
 
 static void
 perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_change_file_union_ty *this;
+    complete_change_file_union_ty *this_thing;
     string_ty       *prefix;
     string_ty       *prefix_dir;
     string_ty       *prefix_ent;
@@ -72,10 +72,10 @@ perform(complete_ty *cp, shell_ty *sh)
     /*
      * Get the change search path.
      */
-    this = (complete_change_file_union_ty *)cp;
-    change_search_path_get(this->cp, &search_path, 1);
+    this_thing = (complete_change_file_union_ty *)cp;
+    change_search_path_get(this_thing->cp, &search_path, 1);
 
-    if (this->baserel)
+    if (this_thing->baserel)
 	base = str_from_c("");
     else
     {
@@ -148,17 +148,18 @@ perform(complete_ty *cp, shell_ty *sh)
 	 * and change source files.
 	 */
 	path = os_path_cat(prefix_dir, name);
-	if (!this->source_ok)
+	if (!this_thing->source_ok)
 	{
 	    fstate_src      src;
 
-	    src = project_file_find(this->cp->pp, path, view_path_extreme);
+	    src =
+                project_file_find(this_thing->cp->pp, path, view_path_extreme);
 	    if (src)
 	    {
 		str_free(path);
 		continue;
 	    }
-	    src = change_file_find(this->cp, path);
+	    src = change_file_find(this_thing->cp, path);
 	    if (src)
 	    {
 		str_free(path);
@@ -202,12 +203,12 @@ perform(complete_ty *cp, shell_ty *sh)
 	}
 	else if (S_ISREG(st.st_mode))
 	{
-	    if (this->regular_ok)
+	    if (this_thing->regular_ok)
 		shell_emit(sh, relfn);
 	}
 	else
 	{
-	    if (this->special_ok)
+	    if (this_thing->special_ok)
 		shell_emit(sh, relfn);
 	}
 	str_free(relfn);
@@ -233,14 +234,14 @@ complete_ty *
 complete_change_file_union(change_ty *cp, int baserel, int dir_only)
 {
     complete_ty     *result;
-    complete_change_file_union_ty *this;
+    complete_change_file_union_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_change_file_union_ty *)result;
-    this->cp = cp;
-    this->baserel = !!baserel;
-    this->regular_ok = !dir_only;
-    this->special_ok = 0;
-    this->source_ok = 0;
+    this_thing = (complete_change_file_union_ty *)result;
+    this_thing->cp = cp;
+    this_thing->baserel = !!baserel;
+    this_thing->regular_ok = !dir_only;
+    this_thing->special_ok = 0;
+    this_thing->source_ok = 0;
     return result;
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-2002 Peter Miller;
+ *	Copyright (C) 1994-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -105,8 +105,7 @@ static rpt_func_ty *table[] =
 
 
 void
-rpt_func_init(stp)
-	symtab_ty	*stp;
+rpt_func_init(symtab_ty *stp)
 {
 	size_t		j;
 	rpt_func_ty	*fp;

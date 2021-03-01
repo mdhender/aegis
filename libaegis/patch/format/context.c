@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,13 +32,8 @@
 static string_ty *star15;
 
 
-static int starts_with _((string_ty *, const char *, size_t));
-
 static int
-starts_with(line, prefix, pfxlen)
-    string_ty	    *line;
-    const char	    *prefix;
-    size_t	    pfxlen;
+starts_with(string_ty *line, const char *prefix, size_t pfxlen)
 {
     return
 	(
@@ -51,11 +46,8 @@ starts_with(line, prefix, pfxlen)
 }
 
 
-static string_ty *second_word _((string_ty *));
-
 static string_ty *
-second_word(line)
-    string_ty	    *line;
+second_word(string_ty *line)
 {
     const char	    *cp;
     const char	    *ep;
@@ -72,11 +64,8 @@ second_word(line)
 }
 
 
-static patch_ty *context_diff_header _((patch_context_ty *));
-
 static patch_ty *
-context_diff_header(context)
-    patch_context_ty *context;
+context_diff_header(patch_context_ty *context)
 {
     string_ty	    *line;
     int		    idx;
@@ -162,14 +151,8 @@ context_diff_header(context)
 }
 
 
-static int range _((string_ty *, const char *, int *, int *));
-
 static int
-range(line, prefix, n1, n2)
-    string_ty	    *line;
-    const char	    *prefix;
-    int		    *n1;
-    int		    *n2;
+range(string_ty *line, const char *prefix, int *n1, int *n2)
 {
     const char	    *cp;
     int		    n;
@@ -291,12 +274,8 @@ range(line, prefix, n1, n2)
 }
 
 
-static int line_append _((patch_line_list_ty *, string_ty *));
-
 static int
-line_append(pllp, line)
-    patch_line_list_ty *pllp;
-    string_ty	    *line;
+line_append(patch_line_list_ty *pllp, string_ty *line)
 {
     patch_line_type type;
     string_ty	    *value;
@@ -334,11 +313,8 @@ line_append(pllp, line)
 }
 
 
-static patch_hunk_ty *context_diff_hunk _((patch_context_ty *));
-
 static patch_hunk_ty *
-context_diff_hunk(context)
-    patch_context_ty *context;
+context_diff_hunk(patch_context_ty *context)
 {
     int		    before1;
     int		    before2;

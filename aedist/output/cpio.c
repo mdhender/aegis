@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,71 +36,54 @@ struct output_cpio_ty
 };
 
 
-static void output_cpio_destructor _((output_ty *));
-
 static void
-output_cpio_destructor(fp)
-	output_ty	*fp;
+output_cpio_destructor(output_ty *fp)
 {
-	output_cpio_ty	*this;
+	output_cpio_ty	*this_thing;
 	string_ty	*trailer;
 
 	/*
 	 * Emit the archive trailer.
 	 * (An empty file with a magic name.)
 	 */
-	this = (output_cpio_ty *)fp;
+	this_thing = (output_cpio_ty *)fp;
 	trailer = str_from_c("TRAILER!!!");
-	output_delete(output_cpio_child_open(this->deeper, trailer, 0));
+	output_delete(output_cpio_child_open(this_thing->deeper, trailer, 0));
 	str_free(trailer);
 
 	/*
 	 * Finish writing the archive file.
 	 */
-	output_delete(this->deeper);
+	output_delete(this_thing->deeper);
 }
 
-
-static string_ty *output_cpio_filename _((output_ty *));
 
 static string_ty *
-output_cpio_filename(fp)
-	output_ty	*fp;
+output_cpio_filename(output_ty *fp)
 {
-	output_cpio_ty	*this;
+	output_cpio_ty	*this_thing;
 
-	this = (output_cpio_ty *)fp;
-	return output_filename(this->deeper);
+	this_thing = (output_cpio_ty *)fp;
+	return output_filename(this_thing->deeper);
 }
 
 
-static long output_cpio_ftell _((output_ty *));
-
 static long
-output_cpio_ftell(fp)
-	output_ty	*fp;
+output_cpio_ftell(output_ty *fp)
 {
 	return 0;
 }
 
 
-static void output_cpio_write _((output_ty *, const void *, size_t));
-
 static void
-output_cpio_write(fp, data, len)
-	output_ty	*fp;
-	const void	*data;
-	size_t		len;
+output_cpio_write(output_ty *fp, const void *data, size_t len)
 {
 	this_is_a_bug();
 }
 
 
-static void output_cpio_eoln _((output_ty *));
-
 static void
-output_cpio_eoln(fp)
-	output_ty	*fp;
+output_cpio_eoln(output_ty *fp)
 {
 	this_is_a_bug();
 }
@@ -122,31 +105,27 @@ static output_vtbl_ty vtbl =
 
 
 output_ty *
-output_cpio(deeper)
-	output_ty	*deeper;
+output_cpio(output_ty *deeper)
 {
 	output_ty	*result;
-	output_cpio_ty	*this;
+	output_cpio_ty	*this_thing;
 
 	result = output_new(&vtbl);
-	this = (output_cpio_ty *)result;
-	this->deeper = deeper;
+	this_thing = (output_cpio_ty *)result;
+	this_thing->deeper = deeper;
 	return result;
 }
 
 
 output_ty *
-output_cpio_child(fp, name, len)
-	output_ty	*fp;
-	string_ty	*name;
-	long		len;
+output_cpio_child(output_ty *fp, string_ty *name, long len)
 {
-	output_cpio_ty	*this;
+	output_cpio_ty	*this_thing;
 
 	if (fp->vptr != &vtbl)
 		this_is_a_bug();
-	this = (output_cpio_ty *)fp;
+	this_thing = (output_cpio_ty *)fp;
 	if (len < 0)
-		return output_cpio_child2_open(this->deeper, name);
-	return output_cpio_child_open(this->deeper, name, len);
+		return output_cpio_child2_open(this_thing->deeper, name);
+	return output_cpio_child_open(this_thing->deeper, name, len);
 }

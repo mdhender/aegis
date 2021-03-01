@@ -27,9 +27,7 @@
 
 
 fstate_src
-change_file_find_fuzzy(cp, file_name)
-	change_ty	*cp;
-	string_ty	*file_name;
+change_file_find_fuzzy(change_ty *cp, string_ty *file_name)
 {
 	string_ty	*best_file_name;
 	fstate_src	best;

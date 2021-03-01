@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,9 +52,7 @@
  */
 
 wstring_ty *
-sub_reviewer_list(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+sub_reviewer_list(sub_context_ty *scp, wstring_list_ty *arg)
 {
 	wstring_ty	*result;
 	long		j;

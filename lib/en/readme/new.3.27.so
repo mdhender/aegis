@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -91,4 +91,4 @@ the \fB\-BaseLine\fP option.
 The \fIaegis.spec\fP file now mentions the executables again.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.27
+.SS Version 3.27 (26-Jun-2001)

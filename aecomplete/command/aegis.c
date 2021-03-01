@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,20 +31,14 @@
 static complete_ty *result;
 
 
-static void destructor _((command_ty *));
-
 static void
-destructor(this)
-    command_ty     *this;
+destructor(command_ty *this_thing)
 {
 }
 
 
-static void redirect _((const char *));
-
 static void
-redirect(name)
-    const char     *name;
+redirect(const char *name)
 {
     command_ty     *cmd;
     string_ty      *s;
@@ -56,497 +50,386 @@ redirect(name)
 }
 
 
-static void aeb _((void));
-
 static void
-aeb()
+aeb(void)
 {
     redirect("aeb");
 }
 
 
-static void aeca _((void));
-
 static void
-aeca()
+aeca(void)
 {
     redirect("aeca");
 }
 
 
-static void aecd _((void));
-
 static void
-aecd()
+aecd(void)
 {
     redirect("aecd");
 }
 
 
-static void aechown _((void));
-
 static void
-aechown()
+aechown(void)
 {
     redirect("aechown");
 }
 
 
-static void aeclean _((void));
-
 static void
-aeclean()
+aeclean(void)
 {
     redirect("aeclean");
 }
 
 
-static void aeclone _((void));
-
 static void
-aeclone()
+aeclone(void)
 {
     redirect("aeclone");
 }
 
 
-static void aecp _((void));
-
 static void
-aecp()
+aecp(void)
 {
     redirect("aecp");
 }
 
 
-static void aecpu _((void));
-
 static void
-aecpu()
+aecpu(void)
 {
     redirect("aecpu");
 }
 
 
-static void aedb _((void));
-
 static void
-aedb()
+aedb(void)
 {
     redirect("aedb");
 }
 
 
-static void aedbu _((void));
-
 static void
-aedbu()
+aedbu(void)
 {
     redirect("aedbu");
 }
 
 
-static void aede _((void));
-
 static void
-aede()
+aede(void)
 {
     redirect("aede");
 }
 
 
-static void aedeu _((void));
-
 static void
-aedeu()
+aedeu(void)
 {
     redirect("aedeu");
 }
 
 
-static void aed _((void));
-
 static void
-aed()
+aed(void)
 {
     redirect("aed");
 }
 
 
-static void aedn _((void));
-
 static void
-aedn()
+aedn(void)
 {
     redirect("aedn");
 }
 
 
-static void aeib _((void));
-
 static void
-aeib()
+aeib(void)
 {
     redirect("aeib");
 }
 
 
-static void aeibu _((void));
-
 static void
-aeibu()
+aeibu(void)
 {
     redirect("aeibu");
 }
 
 
-static void aeifail _((void));
-
 static void
-aeifail()
+aeifail(void)
 {
     redirect("aeifail");
 }
 
 
-static void aeipass _((void));
-
 static void
-aeipass()
+aeipass(void)
 {
     redirect("aeipass");
 }
 
 
-static void aemv _((void));
-
 static void
-aemv()
+aemv(void)
 {
     redirect("aemv");
 }
 
 
-static void aemvu _((void));
-
 static void
-aemvu()
+aemvu(void)
 {
     redirect("aemvu");
 }
 
 
-static void aena _((void));
-
 static void
-aena()
+aena(void)
 {
     redirect("aena");
 }
 
 
-static void aenbr _((void));
-
 static void
-aenbr()
+aenbr(void)
 {
     redirect("aenbr");
 }
 
 
-static void aenbru _((void));
-
 static void
-aenbru()
+aenbru(void)
 {
     redirect("aenbru");
 }
 
 
-static void aenc _((void));
-
 static void
-aenc()
+aenc(void)
 {
     redirect("aenc");
 }
 
 
-static void aencu _((void));
-
 static void
-aencu()
+aencu(void)
 {
     redirect("aencu");
 }
 
 
-static void aend _((void));
-
 static void
-aend()
+aend(void)
 {
     redirect("aend");
 }
 
 
-static void aenf _((void));
-
 static void
-aenf()
+aenf(void)
 {
     redirect("aenf");
 }
 
 
-static void aenfu _((void));
-
 static void
-aenfu()
+aenfu(void)
 {
     redirect("aenfu");
 }
 
 
-static void aeni _((void));
-
 static void
-aeni()
+aeni(void)
 {
     redirect("aeni");
 }
 
 
-static void aenpr _((void));
-
 static void
-aenpr()
+aenpr(void)
 {
     redirect("aenpr");
 }
 
 
-static void aenrls _((void));
-
 static void
-aenrls()
+aenrls(void)
 {
     redirect("aenrls");
 }
 
 
-static void aenrv _((void));
-
 static void
-aenrv()
+aenrv(void)
 {
     redirect("aenrv");
 }
 
 
-static void aent _((void));
-
 static void
-aent()
+aent(void)
 {
     redirect("aent");
 }
 
 
-static void aentu _((void));
-
 static void
-aentu()
+aentu(void)
 {
     redirect("aentu");
 }
 
 
-static void aepa _((void));
-
 static void
-aepa()
+aepa(void)
 {
     redirect("aepa");
 }
 
 
-static void aenpa _((void));
-
 static void
-aenpa()
+aenpa(void)
 {
     redirect("aenpa");
 }
 
 
-static void aerpa _((void));
-
 static void
-aerpa()
+aerpa(void)
 {
     redirect("aerpa");
 }
 
 
-static void aera _((void));
-
 static void
-aera()
+aera(void)
 {
     redirect("aera");
 }
 
 
-static void aerd _((void));
-
 static void
-aerd()
+aerd(void)
 {
     redirect("aerd");
 }
 
 
-static void aerm _((void));
-
 static void
-aerm()
+aerm(void)
 {
     redirect("aerm");
 }
 
 
-static void aermu _((void));
-
 static void
-aermu()
+aermu(void)
 {
     redirect("aermu");
 }
 
 
-static void aermpr _((void));
-
 static void
-aermpr()
+aermpr(void)
 {
     redirect("aermpr");
 }
 
 
-static void aeri _((void));
-
 static void
-aeri()
+aeri(void)
 {
     redirect("aeri");
 }
 
 
-static void aerrv _((void));
-
 static void
-aerrv()
+aerrv(void)
 {
     redirect("aerrv");
 }
 
 
-static void aer _((void));
-
 static void
-aer()
+aer(void)
 {
     redirect("aer");
 }
 
 
-static void aerb _((void));
-
 static void
-aerb()
+aerb(void)
 {
     redirect("aerb");
 }
 
 
-static void aerbu _((void));
-
 static void
-aerbu()
+aerbu(void)
 {
     redirect("aerbu");
 }
 
 
-static void aerfail _((void));
-
 static void
-aerfail()
+aerfail(void)
 {
     redirect("aerfail");
 }
 
 
-static void aerpass _((void));
-
 static void
-aerpass()
+aerpass(void)
 {
     redirect("aerpass");
 }
 
 
-static void aerpu _((void));
-
 static void
-aerpu()
+aerpu(void)
 {
     redirect("aerpu");
 }
 
 
-static void aet _((void));
-
 static void
-aet()
+aet(void)
 {
     redirect("aet");
 }
 
 
-static void aev _((void));
-
 static void
-aev()
+aev(void)
 {
     redirect("aev");
 }
 
 
-static void ael _((void));
-
 static void
-ael()
+ael(void)
 {
     redirect("ael");
 }
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
     result = complete_nil();
 }
 
 
-static complete_ty *completion_get _((command_ty *));
-
 static complete_ty *
-completion_get(cmd)
-    command_ty     *cmd;
+completion_get(command_ty *cmd)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,6 @@
  * MANIFEST: functions to manipulate detailss
  */
 
-#include <ac/time.h>
-
 #include <ael/change/details.h>
 #include <ael/column_width.h>
 #include <ael/formeditnum.h>
@@ -30,6 +28,7 @@
 #include <change/file.h>
 #include <col.h>
 #include <error.h> /* for assert */
+#include <now.h>
 #include <option.h>
 #include <output.h>
 #include <project.h>
@@ -61,7 +60,9 @@ showtime(output_ty *fp, time_t when, int exempt)
 
 
 void
-list_change_details(string_ty *project_name, long change_number)
+list_change_details(string_ty *project_name,
+                    long change_number,
+                    string_list_ty *args)
 {
     int		    j;
     output_ty	    *head_col;
@@ -596,7 +597,7 @@ list_change_details(string_ty *project_name, long change_number)
 		if (j + 1 < cstate_data->history->length)
 		    finish = cstate_data->history->list[j + 1]->when;
 		else
-		    time(&finish);
+		    finish = now();
 		if (finish - t >= ELAPSED_TIME_THRESHOLD)
 		{
 		    output_end_of_line(why_col);

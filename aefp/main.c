@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ main(int argc, char **argv)
 {
     string_ty	    *minus;
     string_list_ty  file;
-    long	    j;
+    size_t	    j;
     fingerprint_methods_ty *method;
     string_ty	    *s;
 

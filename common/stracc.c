@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 2001 Peter Miller;
+ *	Copyright (C) 1998, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ stracc_char(stracc_t *sap, int c)
     if (sap->length >= sap->maximum)
     {
 	sap->maximum = sap->maximum * 2 + 16;
-	sap->buffer = mem_change_size(sap->buffer, sap->maximum);
+	sap->buffer = (char *)mem_change_size(sap->buffer, sap->maximum);
     }
     sap->buffer[sap->length++] = c;
 }
@@ -79,10 +79,15 @@ stracc_chars(stracc_t *sap, const char *cp, size_t n)
 {
     if (!n)
 	return;
-    while (sap->length + n > sap->maximum)
+    if (sap->length + n > sap->maximum)
     {
-	sap->maximum = sap->maximum * 2 + 16;
-	sap->buffer = mem_change_size(sap->buffer, sap->maximum);
+	for (;;)
+	{
+	    sap->maximum = sap->maximum * 2 + 16;
+	    if (sap->length + n <= sap->maximum)
+		break;
+	}
+	sap->buffer = (char *)mem_change_size(sap->buffer, sap->maximum);
     }
     memcpy(sap->buffer + sap->length, cp, n);
     sap->length += n;

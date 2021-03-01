@@ -27,8 +27,7 @@
 
 
 void
-change_lock_sync(cp)
-	change_ty	*cp;
+change_lock_sync(change_ty *cp)
 {
 	long		n;
 

@@ -27,14 +27,8 @@
 #include <project.h>
 
 
-static void change_copyright_years_slurp _((change_ty *, int *, int , int *));
-
 static void
-change_copyright_years_slurp(cp, a, amax, alen_p)
-	change_ty	*cp;
-	int		*a;
-	int		amax;
-	int		*alen_p;
+change_copyright_years_slurp(change_ty *cp, int *a, int amax, int *alen_p)
 {
 	int		j, k;
 	int		n;
@@ -62,12 +56,8 @@ change_copyright_years_slurp(cp, a, amax, alen_p)
 }
 
 
-static int change_copyright_years_cmp _((const void *, const void *));
-
 static int
-change_copyright_years_cmp(va, vb)
-	const void	*va;
-	const void	*vb;
+change_copyright_years_cmp(const void *va, const void *vb)
 {
 	const int	*a;
 	const int	*b;
@@ -79,11 +69,7 @@ change_copyright_years_cmp(va, vb)
 
 
 void
-change_copyright_years_get(cp, a, amax, alen_p)
-	change_ty	*cp;
-	int		*a;
-	int		amax;
-	int		*alen_p;
+change_copyright_years_get(change_ty *cp, int *a, int amax, int *alen_p)
 {
 	project_ty	*pp;
 

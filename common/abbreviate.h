@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 #ifndef COMMON_ABBREVIATE_H
 #define COMMON_ABBREVIATE_H
 
-#include <main.h>
+#include <ac/stddef.h>
 
-struct string_ty *abbreviate_filename(struct string_ty *, int);
-struct string_ty *abbreviate_dirname(struct string_ty *, int);
+struct string_ty *abbreviate_filename(struct string_ty *, size_t);
+struct string_ty *abbreviate_dirname(struct string_ty *, size_t);
 struct string_ty *abbreviate_8dos3(struct string_ty *);
 
 #endif /* COMMON_ABBREVIATE_H */

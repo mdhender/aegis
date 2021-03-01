@@ -51,7 +51,7 @@
 static void
 usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "Usage: %s --receive [ <option>... ]\n", progname);
@@ -271,7 +271,7 @@ receive(void)
     string_ty	    *dd;
     int		    need_to_test;
     int		    could_have_a_trojan;
-    char	    *delta;
+    const char      *delta;
     string_list_ty  files_source;
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;

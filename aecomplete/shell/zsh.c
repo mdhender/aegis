@@ -58,20 +58,20 @@ copy_of(const char *s, size_t len)
 static void
 destructor(shell_ty *sp)
 {
-    shell_zsh_ty    *this;
+    shell_zsh_ty    *this_thing;
 
-    this = (shell_zsh_ty *)sp;
-    if (this->command)
-	str_free(this->command);
-    if (this->prefix)
-	str_free(this->prefix);
+    this_thing = (shell_zsh_ty *)sp;
+    if (this_thing->command)
+	str_free(this_thing->command);
+    if (this_thing->prefix)
+	str_free(this_thing->prefix);
 }
 
 
 static void
 usage(void)
 {
-    char            *prog;
+    const char      *prog;
 
     prog = progname_get();
     fprintf(stderr, "Usage: %s <prog-name> <word> <context>\n", prog);
@@ -82,7 +82,7 @@ usage(void)
 static int
 test(shell_ty *sp)
 {
-    shell_zsh_ty    *this;
+    shell_zsh_ty    *this_thing;
     char            *cp;
     char            *end;
     unsigned long   n;
@@ -93,7 +93,7 @@ test(shell_ty *sp)
     char            **av;
     int             inco_ac;
 
-    this = (shell_zsh_ty *)sp;
+    this_thing = (shell_zsh_ty *)sp;
 
     /*
      * The PREFIX environment variable must be set and valid.
@@ -101,7 +101,7 @@ test(shell_ty *sp)
     cp = getenv("PREFIX");
     if (!cp)
 	return 0;
-    this->prefix = str_from_c(cp);
+    this_thing->prefix = str_from_c(cp);
 
     /*
      * The BUFFER environment variable must be set and valid.
@@ -129,7 +129,7 @@ test(shell_ty *sp)
      */
     if (arglex_get_string() != arglex_token_string)
 	usage();
-    this->command = str_from_c(arglex_value.alv_string);
+    this_thing->command = str_from_c(arglex_value.alv_string);
 
     /*
      * Ignore the rest of the command line arguments.
@@ -261,30 +261,30 @@ test(shell_ty *sp)
 static string_ty *
 command_get(shell_ty *sh)
 {
-    shell_zsh_ty    *this;
+    shell_zsh_ty    *this_thing;
 
-    this = (shell_zsh_ty *)sh;
-    return this->command;
+    this_thing = (shell_zsh_ty *)sh;
+    return this_thing->command;
 }
 
 
 static string_ty *
 prefix_get(shell_ty *sh)
 {
-    shell_zsh_ty    *this;
+    shell_zsh_ty    *this_thing;
 
-    this = (shell_zsh_ty *)sh;
-    return this->prefix;
+    this_thing = (shell_zsh_ty *)sh;
+    return this_thing->prefix;
 }
 
 
 static void
 emit(shell_ty *sh, string_ty *s)
 {
-    shell_zsh_ty    *this;
+    shell_zsh_ty    *this_thing;
     char            *cp;
 
-    this = (shell_zsh_ty *)sh;
+    this_thing = (shell_zsh_ty *)sh;
     for (cp = s->str_text; *cp; ++cp)
     {
 	switch (*cp)
@@ -318,11 +318,11 @@ shell_ty *
 shell_zsh(void)
 {
     shell_ty        *sp;
-    shell_zsh_ty    *this;
+    shell_zsh_ty    *this_thing;
 
     sp = shell_new(&vtbl);
-    this = (shell_zsh_ty *)sp;
-    this->command = 0;
-    this->prefix = 0;
+    this_thing = (shell_zsh_ty *)sp;
+    this_thing->command = 0;
+    this_thing->prefix = 0;
     return sp;
 }

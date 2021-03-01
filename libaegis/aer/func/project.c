@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,8 +34,7 @@ static int	project_name_set;
 
 
 void
-report_parse_project_set(s)
-	string_ty	*s;
+report_parse_project_set(string_ty *s)
 {
 	assert(!project_name);
 	project_name = str_copy(s);
@@ -43,24 +42,15 @@ report_parse_project_set(s)
 }
 
 
-static int project_name_validate _((rpt_expr_ty *));
-
 static int
-project_name_validate(ep)
-	rpt_expr_ty	*ep;
+project_name_validate(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *project_name_run _((rpt_expr_ty *, size_t,
-	rpt_value_ty **));
-
 static rpt_value_ty *
-project_name_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+project_name_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	assert(argc == 0);
 	if (!project_name)
@@ -78,24 +68,15 @@ rpt_func_ty rpt_func_project_name =
 };
 
 
-static int project_name_set_validate _((rpt_expr_ty *));
-
 static int
-project_name_set_validate(ep)
-	rpt_expr_ty	*ep;
+project_name_set_validate(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *project_name_set_run _((rpt_expr_ty *, size_t,
-	rpt_value_ty **));
-
 static rpt_value_ty *
-project_name_set_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+project_name_set_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	assert(argc == 0);
 	return rpt_value_boolean(project_name_set);

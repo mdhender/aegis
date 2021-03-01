@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,7 @@
 
 
 int
-gif_pixel_get(gp, x, y)
-	gif_ty		*gp;
-	int		x;
-	int		y;
+gif_pixel_get(gif_ty *gp, int x, int y)
 {
 	if (x < 0 || y < 0 || x >= gp->width || y >= gp->height)
 		return 0;

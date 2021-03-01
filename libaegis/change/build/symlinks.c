@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
     string_ty       *dd_abs;
     long            j;
     pconf_symlink_exceptions_list lp;
+    fstate_src      c_src;
     fstate_src      p_src;
     int             p_src_set;
     string_ty       *s;
@@ -138,6 +139,8 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	break;
 
     case dir_stack_walk_symlink:
+	trace(("symlink\n"));
+
 	/*
 	 * We were invoked with the argument specifying that symbolic
 	 * links were to be ignored.  In order to get to here, there
@@ -150,22 +153,35 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	assert(ignore_symlinks);
 
 	/*
-	 * Leave unique top-level symlinks alone.
+	 * Don't make symlinks for files which are (supposed to
+	 * be) in the change.
 	 */
-	trace(("symlink\n"));
-	if (!depth)
+	c_src = change_file_find(sip->cp, path);
+	if (c_src)
 	{
-	    trace(("no attention required\n"));
+	    trace(("mark\n"));
+	    if (c_src->action == file_action_transparent)
+	    {
+		project_ty      *ppp;
+
+		ppp = sip->cp->pp->parent;
+		if (ppp && project_file_find(ppp, path, view_path_extreme))
+		{
+		    s = project_file_path(ppp, path);
+		    goto normal_file;
+		}
+		if (depth == 0)
+		    os_unlink_errok(dd_abs);
+	    }
 	    break;
 	}
 
 	/*
-	 * Don't make symlinks for files which are (supposed to
-	 * be) in the change.
+	 * Leave unique top-level symlinks alone.
 	 */
-	if (change_file_find(sip->cp, path))
+	if (depth == 0)
 	{
-	    trace(("mark\n"));
+	    trace(("no attention required\n"));
 	    break;
 	}
 
@@ -224,8 +240,26 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	 * Don't make symlinks for files which are (supposed to
 	 * be) in the change.
 	 */
-	if (change_file_find(sip->cp, path))
+	c_src = change_file_find(sip->cp, path);
+	if (c_src)
 	{
+	    project_ty      *ppp;
+
+	    ppp = sip->cp->pp->parent;
+	    if
+	    (
+		ppp
+	    &&
+		depth
+	    &&
+		c_src->action == file_action_transparent
+	    &&
+		project_file_find(ppp, path, view_path_extreme)
+	    )
+	    {
+		s = project_file_path(ppp, path);
+		goto normal_file;
+	    }
 	    trace(("change file\n"));
 	    break;
 	}
@@ -238,21 +272,10 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	{
 	    trace(("minimum\n"));
 	    user_become_undo();
-	    p_src = project_file_find(sip->cp->pp, path, view_path_simple);
+	    p_src = project_file_find(sip->cp->pp, path, view_path_extreme);
 	    p_src_set = 1;
 	    user_become(sip->up);
 	    if (!p_src)
-		break;
-	    if
-	    (
-		p_src
-	    &&
-		(
-		    p_src->action == file_action_remove
-		||
-		    p_src->deleted_by
-		)
-	    )
 		break;
 	}
 
@@ -298,10 +321,32 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	}
 
 	/*
+	 * Work out where the symlink is supposed to point.
+	 */
+	if (p_src)
+	{
+	    /*
+	     * Due to transparent files, the depth could be wrong,
+	     * so we ask Aegis what the path is supposed to be, rather
+	     * than what happens to be lying around in the file system.
+	     */
+	    s = project_file_path(sip->cp->pp, path);
+	    assert(s);
+	}
+	else
+	{
+	    /*
+	     * For a non-project file (a derived file produced by an
+	     * integration build) just glue the paths together.
+	     */
+	    s = os_path_cat(sip->stack.string[depth], path);
+	}
+
+	/*
 	 * make the symbolic link
 	 */
+	normal_file:
 	trace(("maintain the link\n"));
-	s = os_path_cat(sip->stack.string[depth], path);
 	if (top_level_symlink)
 	    os_symlink_repair(s, dd_abs);
 	else

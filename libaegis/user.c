@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,12 +74,8 @@ static user_ty	**user;
  *	when it reads it's state file to find the umask.
  */
 
-static void user_set_project _((user_ty *, project_ty *));
-
 static void
-user_set_project(up, pp)
-    user_ty	    *up;
-    project_ty	    *pp;
+user_set_project(user_ty *up, project_ty *pp)
 {
     struct group    *gr;
 
@@ -146,9 +142,7 @@ user_set_project(up, pp)
  */
 
 user_ty *
-user_numeric(pp, uid)
-    project_ty	    *pp;
-    int		    uid;
+user_numeric(project_ty *pp, int uid)
 {
     size_t	    j;
     user_ty	    *up;
@@ -287,9 +281,7 @@ user_numeric(pp, uid)
  */
 
 user_ty *
-user_numeric2(uid, gid)
-    int		    uid;
-    int		    gid;
+user_numeric2(int uid, int gid)
 {
     user_ty	    *up;
     struct passwd   *pw;
@@ -378,9 +370,7 @@ user_numeric2(uid, gid)
  */
 
 user_ty *
-user_symbolic(pp, name)
-    project_ty	    *pp;
-    string_ty	    *name;
+user_symbolic(project_ty *pp, string_ty *name)
 {
     struct passwd   *pw;
     user_ty	    *result;
@@ -463,8 +453,7 @@ user_symbolic(pp, name)
  */
 
 user_ty *
-user_executing(pp)
-    project_ty	    *pp;
+user_executing(project_ty *pp)
 {
     user_ty	    *result;
     int		    uid;
@@ -495,8 +484,7 @@ user_executing(pp)
  */
 
 void
-user_free(up)
-    user_ty	    *up;
+user_free(user_ty *up)
 {
     trace(("user_free(up = %08lX)\n{\n", (long)up));
     up->reference_count--;
@@ -561,8 +549,7 @@ user_free(up)
  */
 
 user_ty *
-user_copy(up)
-    user_ty	    *up;
+user_copy(user_ty *up)
 {
     trace(("user_copy(up = %08lX)\n{\n", (long)up));
     up->reference_count++;
@@ -591,8 +578,7 @@ user_copy(up)
  */
 
 string_ty *
-user_name(up)
-    user_ty	    *up;
+user_name(user_ty *up)
 {
     trace(("user_name(up = %08lX)\n{\n", (long)up));
     trace(("return \"%s\";\n", up->name->str_text));
@@ -602,8 +588,7 @@ user_name(up)
 
 
 string_ty *
-user_name2(up)
-    user_ty	    *up;
+user_name2(user_ty *up)
 {
     trace(("user_name2(up = %08lX)\n{\n", (long)up));
     trace(("return \"%s\";\n", up->name->str_text));
@@ -631,8 +616,7 @@ user_name2(up)
  */
 
 int
-user_id(up)
-    user_ty	    *up;
+user_id(user_ty *up)
 {
     trace(("user_id(up = %08lX)\n{\n", (long)up));
     trace(("return %d;\n", up->uid));
@@ -660,8 +644,7 @@ user_id(up)
  */
 
 string_ty *
-user_group(up)
-    user_ty	    *up;
+user_group(user_ty *up)
 {
     trace(("user_group(up = %08lX)\n{\n", (long)up));
     trace(("return \"%s\";\n", up->group->str_text));
@@ -689,8 +672,7 @@ user_group(up)
  */
 
 int
-user_gid(up)
-    user_ty	    *up;
+user_gid(user_ty *up)
 {
     trace(("user_gid(up = %08lX)\n{\n", (long)up));
     trace(("return %d;\n", up->gid));
@@ -718,8 +700,7 @@ user_gid(up)
  */
 
 int
-user_umask(up)
-    user_ty	    *up;
+user_umask(user_ty *up)
 {
     trace(("user_umask(up = %08lX)\n{\n", (long)up));
     trace(("return %05o;\n", up->umask));
@@ -744,11 +725,8 @@ user_umask(up)
  *	up	- pointer to user structure
  */
 
-static void lock_sync _((user_ty *));
-
 static void
-lock_sync(up)
-    user_ty	    *up;
+lock_sync(user_ty *up)
 {
     long	    n;
 
@@ -786,11 +764,8 @@ lock_sync(up)
  *	pointer to ustate structure in dynamic memory
  */
 
-static ustate user_ustate_get _((user_ty *));
-
 static ustate
-user_ustate_get(up)
-    user_ty	    *up;
+user_ustate_get(user_ty *up)
 {
     trace(("user_ustate_get(up = %08lX)\n{\n", (long)up));
     lock_sync(up);
@@ -825,11 +800,8 @@ user_ustate_get(up)
 }
 
 
-static void fix_default_change _((uconf));
-
 static void
-fix_default_change(uconf_data)
-    uconf	    uconf_data;
+fix_default_change(uconf uconf_data)
 {
     if
     (
@@ -862,12 +834,8 @@ fix_default_change(uconf_data)
  *
  */
 
-static void merge_uconf _((uconf, uconf));
-
 static void
-merge_uconf(data, tmp)
-    uconf	    data;
-    uconf	    tmp;
+merge_uconf(uconf data, uconf tmp)
 {
     if (!data->default_project_name && tmp->default_project_name)
     {
@@ -971,19 +939,15 @@ merge_uconf(data, tmp)
 }
 
 
-static void read_and_merge _((uconf, string_ty *));
-
 static void
-read_and_merge(data, filename)
-    uconf	    data;
-    string_ty	    *filename;
+read_and_merge(uconf data, string_ty *filename)
 {
     uconf	    uconf_new;
 
     /*
      * Read the file.
      */
-    if (os_exists(filename))
+    if (os_readable(filename) == 0)
 	uconf_new = uconf_read_file(filename);
     else
 	uconf_new = uconf_type.alloc();
@@ -1015,11 +979,8 @@ read_and_merge(data, filename)
  *	pointer to uconf structure in dynamic memory
  */
 
-static uconf user_uconf_get _((user_ty *up));
-
-static uconf
-user_uconf_get(up)
-    user_ty	    *up;
+uconf
+user_uconf_get(user_ty *up)
 {
     trace(("user_uconf_get(up = %08lX)\n{\n", (long)up));
     lock_sync(up);
@@ -1097,8 +1058,7 @@ user_uconf_get(up)
  */
 
 string_ty *
-user_home(up)
-    user_ty	    *up;
+user_home(user_ty *up)
 {
     trace(("user_home(up = %08lX)\n{\n", (long)up));
     assert(up->home);
@@ -1131,12 +1091,11 @@ user_home(up)
  *	The returned data is volatile, it will not remain stable for long.
  */
 
-char *
-user_full_name(name)
-    string_ty	    *name;
+const char *
+user_full_name(string_ty *name)
 {
     struct passwd   *pw;
-    char	    *result;
+    const char      *result;
     char	    *comma;
     static char	    *trimmed;
     static size_t   trimmed_max;
@@ -1195,8 +1154,7 @@ user_full_name(name)
  */
 
 void
-user_ustate_write(up)
-    user_ty	    *up;
+user_ustate_write(user_ty *up)
 {
     string_ty	    *filename_new;
     string_ty	    *filename_old;
@@ -1261,10 +1219,7 @@ user_ustate_write(up)
  */
 
 void
-user_own_add(up, project_name, change_number)
-    user_ty	    *up;
-    string_ty	    *project_name;
-    long	    change_number;
+user_own_add(user_ty *up, string_ty *project_name, long change_number)
 {
     ustate	    ustate_data;
     int		    j;
@@ -1343,11 +1298,7 @@ user_own_add(up, project_name, change_number)
  */
 
 int
-user_own_nth(up, project_name, n, change_number)
-    user_ty	    *up;
-    string_ty	    *project_name;
-    long	    n;
-    long	    *change_number;
+user_own_nth(user_ty *up, string_ty *project_name, long n, long *change_number)
 {
     ustate	    ustate_data;
     int		    j;
@@ -1416,10 +1367,7 @@ user_own_nth(up, project_name, n, change_number)
  */
 
 void
-user_own_remove(up, project_name, change_number)
-    user_ty	    *up;
-    string_ty	    *project_name;
-    long	    change_number;
+user_own_remove(user_ty *up, string_ty *project_name, long change_number)
 {
     ustate	    ustate_data;
     int		    j;
@@ -1490,13 +1438,8 @@ user_own_remove(up, project_name, change_number)
 }
 
 
-static void user_error _((user_ty *, sub_context_ty *, char *));
-
 static void
-user_error(up, scp, fmt)
-    user_ty	    *up;
-    sub_context_ty  *scp;
-    char	    *fmt;
+user_error(user_ty *up, sub_context_ty *scp, const char *fmt)
 {
     string_ty	    *s;
     int		    need_to_delete;
@@ -1522,13 +1465,8 @@ user_error(up, scp, fmt)
 }
 
 
-static void user_fatal _((user_ty *, sub_context_ty *, char *));
-
 static void
-user_fatal(up, scp, fmt)
-    user_ty	    *up;
-    sub_context_ty  *scp;
-    char	    *fmt;
+user_fatal(user_ty *up, sub_context_ty *scp, const char *fmt)
 {
     string_ty	    *s;
     int		    need_to_delete;
@@ -1554,11 +1492,8 @@ user_fatal(up, scp, fmt)
 }
 
 
-static void waiting_for_lock _((void *));
-
 static void
-waiting_for_lock(p)
-    void	    *p;
+waiting_for_lock(void *p)
 {
     user_ty	    *up;
 
@@ -1586,8 +1521,7 @@ waiting_for_lock(p)
  */
 
 void
-user_ustate_lock_prepare(up)
-    user_ty	    *up;
+user_ustate_lock_prepare(user_ty *up)
 {
     trace(("user_ustate_lock_prepare(up = %08lX)\n{\n", (long)up));
     lock_prepare_ustate(up->uid, waiting_for_lock, up);
@@ -1617,11 +1551,8 @@ user_ustate_lock_prepare(up)
  *	it is a fatal error if there is no default change number
  */
 
-static long is_a_change_number _((char *));
-
 static long
-is_a_change_number(s)
-    char	    *s;
+is_a_change_number(char *s)
 {
     long	    n;
 
@@ -1644,12 +1575,8 @@ is_a_change_number(s)
 }
 
 
-static long project_dot_change _((string_ty *, string_ty *));
-
 static long
-project_dot_change(s, p)
-    string_ty	    *s;
-    string_ty	    *p;
+project_dot_change(string_ty *s, string_ty *p)
 {
     char	    *suffix;
 
@@ -1669,12 +1596,8 @@ project_dot_change(s, p)
 }
 
 
-static int is_below _((string_ty *, string_ty *));
-
 static int
-is_below(hi, lo)
-    string_ty	    *hi;
-    string_ty	    *lo;
+is_below(string_ty *hi, string_ty *lo)
 {
     if (str_equal(hi, lo))
 	return 1;
@@ -1690,8 +1613,7 @@ is_below(hi, lo)
 
 
 long
-user_default_change(up)
-    user_ty	    *up;
+user_default_change(user_ty *up)
 {
     long	    change_number;
     char	    *cp;
@@ -1870,37 +1792,31 @@ user_default_change(up)
     return change_number;
 }
 
-
 /*
  * NAME
- *	user_default_project
+ *	user_default_project_by_user
  *
  * SYNOPSIS
- *	void user_default_project(void);
+ *	void user_default_project_by_user(user_ty *);
  *
  * DESCRIPTION
- *	The user_default_project function is used to
- *	determine the default project of the user who invoked the program.
+ *	The user_default_project_by_user function is used to
+ *	determine the default project of the specified user.
  *
  * RETURNS
  *	pointer to string containing project name
  *
  * CAVEAT
- *	it is a fatal error if there is no default project name
+ *	it is a fatal error if there is no default project name for the user
  */
 
 string_ty *
-user_default_project()
+user_default_project_by_user(user_ty *up)
 {
-    string_ty	    *result;
-    user_ty	    *up;
+    string_ty       *result;
     char	    *cp;
 
-    /*
-     * build a temporary user
-     */
-    trace(("user_default_project()\n{\n"));
-    up = user_executing((project_ty *)0);
+    trace(("user_default_project_by_user()\n{\n"));
     result = 0;
 
     /*
@@ -2085,6 +2001,35 @@ user_default_project()
 
 /*
  * NAME
+ *	user_default_project
+ *
+ * SYNOPSIS
+ *	void user_default_project(void);
+ *
+ * DESCRIPTION
+ *	The user_default_project function is used to
+ *	determine the default project of the user who invoked the program.
+ *
+ * RETURNS
+ *	pointer to string containing project name
+ *
+ * CAVEAT
+ *	it is a fatal error if there is no default project name
+ */
+
+string_ty *
+user_default_project()
+{
+    /*
+     * build a temporary user
+     */
+    trace(("user_default_project()\n{\n"));
+    return user_default_project_by_user(user_executing((project_ty *)0));
+}
+
+
+/*
+ * NAME
  *	user_default_development_directory_get
  *
  * SYNOPSIS
@@ -2107,8 +2052,7 @@ user_default_project()
  */
 
 string_ty *
-user_default_development_directory(up)
-    user_ty	    *up;
+user_default_development_directory(user_ty *up)
 {
     uconf	    uconf_data;
     string_ty	    *path;
@@ -2163,8 +2107,7 @@ user_default_development_directory(up)
  */
 
 string_ty *
-user_default_project_directory(up)
-    user_ty	    *up;
+user_default_project_directory(user_ty *up)
 {
     uconf	    uconf_data;
     string_ty	    *path;
@@ -2218,8 +2161,7 @@ user_default_project_directory(up)
  */
 
 int
-user_uid_check(name)
-    string_ty	    *name;
+user_uid_check(string_ty *name)
 {
     struct passwd   *pw;
 
@@ -2262,8 +2204,7 @@ user_uid_check(name)
  */
 
 int
-user_gid_check(name)
-    string_ty	    *name;
+user_gid_check(string_ty *name)
 {
     struct group    *gr;
 
@@ -2301,8 +2242,7 @@ user_gid_check(name)
  */
 
 void
-user_become(up)
-    user_ty	    *up;
+user_become(user_ty *up)
 {
     trace(("user_become(up = %08lX)\n{\n", (long)up));
     os_become(up->uid, up->gid, up->umask);
@@ -2332,8 +2272,7 @@ static del_pref cmd_line_pref = del_pref_unset;
 
 
 void
-user_delete_file_argument(usage)
-    void	    (*usage)_((void));
+user_delete_file_argument(void (*usage)(void))
 {
     if (cmd_line_pref != del_pref_unset)
     {
@@ -2365,19 +2304,15 @@ user_delete_file_argument(usage)
 }
 
 
-static int ask _((string_ty *, int));
-
 static int
-ask(filename, isdir)
-    string_ty	    *filename;
-    int		    isdir;
+ask(string_ty *filename, int isdir)
 {
     typedef struct table_ty table_ty;
     struct table_ty
     {
-	char		*name;
-	del_pref	set;
-	int		result;
+	const char      *name;
+	del_pref        set;
+	int             result;
     };
 
     /*
@@ -2388,14 +2323,14 @@ ask(filename, isdir)
      */
     static table_ty table[] =
     {
-	{"No", del_pref_unset, 0, },
-	{"False", del_pref_unset, 0, },
-	{"Never", del_pref_keep, 0, },
-	{"None", del_pref_keep, 0, },
-	{"Yes", del_pref_unset, 1, },
-	{"True", del_pref_unset, 1, },
-	{"All", del_pref_keep_not, 1, },
-	{"Always", del_pref_keep_not, 1, },
+	{ "No", del_pref_unset, 0, },
+	{ "False", del_pref_unset, 0, },
+	{ "Never", del_pref_keep, 0, },
+	{ "None", del_pref_keep, 0, },
+	{ "Yes", del_pref_unset, 1, },
+	{ "True", del_pref_unset, 1, },
+	{ "All", del_pref_keep_not, 1, },
+	{ "Always", del_pref_keep_not, 1, },
     };
     table_ty	    *tp;
     char	    buffer[100];
@@ -2438,10 +2373,7 @@ ask(filename, isdir)
 
 
 int
-user_delete_file_query(up, filename, isdir)
-    user_ty	    *up;
-    string_ty	    *filename;
-    int		    isdir;
+user_delete_file_query(user_ty *up, string_ty *filename, int isdir)
 {
     int		    result;
 
@@ -2507,8 +2439,7 @@ user_delete_file_query(up, filename, isdir)
 
 
 int
-user_diff_preference(up)
-    user_ty	    *up;
+user_diff_preference(user_ty *up)
 {
     uconf	    uconf_data;
 
@@ -2520,8 +2451,7 @@ user_diff_preference(up)
 
 
 int
-user_pager_preference(up)
-    user_ty	    *up;
+user_pager_preference(user_ty *up)
 {
     uconf	    uconf_data;
 
@@ -2534,8 +2464,7 @@ static int	uconf_persevere_option = -1;
 
 
 void
-user_persevere_argument(usage)
-    void	    (*usage)_((void));
+user_persevere_argument(void (*usage)(void))
 {
     if (uconf_persevere_option >= 0)
 	duplicate_option(usage);
@@ -2557,9 +2486,7 @@ user_persevere_argument(usage)
 
 
 int
-user_persevere_preference(up, dflt)
-    user_ty	    *up;
-    int		    dflt;
+user_persevere_preference(user_ty *up, int dflt)
 {
     uconf	    uconf_data;
 
@@ -2581,9 +2508,7 @@ user_persevere_preference(up, dflt)
 
 
 uconf_log_file_preference_ty
-user_log_file_preference(up, dflt)
-    user_ty	    *up;
-    uconf_log_file_preference_ty dflt;
+user_log_file_preference(user_ty *up, uconf_log_file_preference_ty dflt)
 {
     uconf	    uconf_data;
 
@@ -2598,8 +2523,7 @@ static int	uconf_lock_wait_option = -1;
 
 
 void
-user_lock_wait_argument(usage)
-    void	    (*usage)_((void));
+user_lock_wait_argument(void (*usage)(void))
 {
     if (uconf_lock_wait_option >= 0)
 	duplicate_option(usage);
@@ -2621,8 +2545,7 @@ user_lock_wait_argument(usage)
 
 
 int
-user_lock_wait(up)
-    user_ty	    *up;
+user_lock_wait(user_ty *up)
 {
     if (uconf_lock_wait_option < 0)
     {
@@ -2654,8 +2577,7 @@ static int	uconf_whiteout_option = -1;
 
 
 void
-user_whiteout_argument(usage)
-    void	    (*usage)_((void));
+user_whiteout_argument(void (*usage)(void))
 {
     if (uconf_whiteout_option >= 0)
 	duplicate_option(usage);
@@ -2677,8 +2599,7 @@ user_whiteout_argument(usage)
 
 
 int
-user_whiteout(up)
-    user_ty	    *up;
+user_whiteout(user_ty *up)
 {
     if (uconf_whiteout_option < 0)
     {
@@ -2699,8 +2620,7 @@ static int	uconf_symlink_pref_option = -1;
 
 
 void
-user_symlink_pref_argument(usage)
-    void	    (*usage)_((void));
+user_symlink_pref_argument(void (*usage)(void))
 {
     if (uconf_symlink_pref_option >= 0)
 	duplicate_option(usage);
@@ -2722,9 +2642,7 @@ user_symlink_pref_argument(usage)
 
 
 int
-user_symlink_pref(up, proj_files_changed)
-    user_ty	    *up;
-    int		    proj_files_changed;
+user_symlink_pref(user_ty *up, int proj_files_changed)
 {
     if (uconf_symlink_pref_option < 0)
     {
@@ -2753,8 +2671,7 @@ static int	user_relative_filename_preference_option = -1;
 
 
 void
-user_relative_filename_preference_argument(usage)
-    void	    (*usage)_((void));
+user_relative_filename_preference_argument(void (*usage)(void))
 {
     if (user_relative_filename_preference_option >= 0)
 	duplicate_option(usage);
@@ -2778,9 +2695,8 @@ user_relative_filename_preference_argument(usage)
 
 
 uconf_relative_filename_preference_ty
-user_relative_filename_preference(up, dflt)
-    user_ty	    *up;
-    uconf_relative_filename_preference_ty dflt;
+user_relative_filename_preference(user_ty *up,
+                                  uconf_relative_filename_preference_ty dflt)
 {
     if (user_relative_filename_preference_option < 0)
     {
@@ -2813,11 +2729,8 @@ user_relative_filename_preference(up, dflt)
  *	string_ty *; use str_free when finished with
  */
 
-static string_ty *clean_up _((string_ty *));
-
 static string_ty *
-clean_up(s)
-    string_ty	    *s;
+clean_up(string_ty *s)
 {
     stracc_t	    buf;
     const char	    *cp;
@@ -2863,8 +2776,7 @@ clean_up(s)
  */
 
 string_ty *
-user_email_address(up)
-    user_ty	    *up;
+user_email_address(user_ty *up)
 {
     uconf	    uconf_data;
 
@@ -2917,8 +2829,7 @@ user_email_address(up)
  */
 
 string_ty *
-user_editor_command(up)
-    user_ty	    *up;
+user_editor_command(user_ty *up)
 {
     uconf	    uconf_data;
     char	    *editor;
@@ -2969,11 +2880,9 @@ user_editor_command(up)
  */
 
 string_ty *
-user_visual_command(up)
-    user_ty	    *up;
+user_visual_command(user_ty *up)
 {
     uconf	    uconf_data;
-    char	    *editor;
 
     trace(("user_visual_command()\n{\n"));
     if (!up)
@@ -2984,6 +2893,8 @@ user_visual_command(up)
 
     if (!uconf_data->visual_command)
     {
+	const char      *editor;
+
 	editor = getenv("VISUAL");
 	if (!editor || !*editor)
 	    editor = getenv("EDITOR");
@@ -3014,8 +2925,7 @@ user_visual_command(up)
  */
 
 string_ty *
-user_pager_command(up)
-    user_ty	    *up;
+user_pager_command(user_ty *up)
 {
     uconf	    uconf_data;
 
@@ -3027,7 +2937,7 @@ user_pager_command(up)
 
     if (!uconf_data->pager_command)
     {
-	char		*pager;
+	const char      *pager;
 
 	pager = getenv("PAGER");
 	if (!pager || !*pager)
@@ -3037,4 +2947,16 @@ user_pager_command(up)
     trace(("return \"%s\";\n", uconf_data->pager_command->str_text));
     trace(("}\n"));
     return uconf_data->pager_command;
+}
+
+
+void
+user_uconf_write_xml(user_ty *up, output_ty *op)
+{
+    uconf	    uconf_data;
+
+    up = user_executing((project_ty *)0);
+    user_email_address(up); /* establish email_address field */
+    uconf_data = user_uconf_get(up);
+    uconf_write_xml(op, uconf_data);
 }

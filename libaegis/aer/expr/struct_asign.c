@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,30 +39,30 @@ struct rpt_expr_struct_assign_ty
 static void
 destruct(rpt_expr_ty *ep)
 {
-    rpt_expr_struct_assign_ty *this;
+    rpt_expr_struct_assign_ty *this_thing;
 
-    this = (rpt_expr_struct_assign_ty *)ep;
-    str_free(this->name);
-    rpt_expr_free(this->value);
+    this_thing = (rpt_expr_struct_assign_ty *)ep;
+    str_free(this_thing->name);
+    rpt_expr_free(this_thing->value);
 }
 
 
 static rpt_value_ty *
 evaluate(rpt_expr_ty *ep)
 {
-    rpt_expr_struct_assign_ty *this;
+    rpt_expr_struct_assign_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *rvp;
     symtab_ty       *stp;
 
-    this = (rpt_expr_struct_assign_ty *)ep;
-    vp = rpt_expr_evaluate(this->value, 0);
+    this_thing = (rpt_expr_struct_assign_ty *)ep;
+    vp = rpt_expr_evaluate(this_thing->value, 0);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     rvp = rpt_value_reference(vp);
     rpt_value_free(vp);
     stp = rpt_expr_struct__symtab_query();
-    symtab_assign(stp, this->name, rvp);
+    symtab_assign(stp, this_thing->name, rvp);
     return rpt_value_void();
 }
 
@@ -81,10 +81,10 @@ static rpt_expr_method_ty method =
 rpt_expr_ty *
 rpt_expr_struct_assign(string_ty *name, rpt_expr_ty *ep)
 {
-    rpt_expr_struct_assign_ty *this;
+    rpt_expr_struct_assign_ty *this_thing;
 
-    this = (rpt_expr_struct_assign_ty *)rpt_expr_alloc(&method);
-    this->name = str_copy(name);
-    this->value = rpt_expr_copy(ep);
-    return (rpt_expr_ty *)this;
+    this_thing = (rpt_expr_struct_assign_ty *)rpt_expr_alloc(&method);
+    this_thing->name = str_copy(name);
+    this_thing->value = rpt_expr_copy(ep);
+    return (rpt_expr_ty *)this_thing;
 }

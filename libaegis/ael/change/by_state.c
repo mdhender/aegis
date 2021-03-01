@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,8 @@ single_bit(int n)
 
 
 void
-list_changes_in_state_mask(string_ty *project_name, int state_mask)
+list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
+    string_ty *login)
 {
     output_ty       *number_col = 0;
     output_ty       *state_col = 0;
@@ -79,13 +80,22 @@ list_changes_in_state_mask(string_ty *project_name, int state_mask)
     string_ty       *line2;
     int             left;
     col_ty	    *colp;
+    user_ty         *up;
+
+    /*
+     * Check that the specified user exists.
+     */
+    if (login)
+        up = user_symbolic((project_ty *)0, login);
+    else
+        up = user_executing((project_ty *)0);
 
     /*
      * locate project data
      */
     trace(("list_changes_in_state_mask(state_mask = 0x%X)\n{\n", state_mask));
     if (!project_name)
-	project_name = user_default_project();
+	project_name = user_default_project_by_user(up);
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -142,7 +152,16 @@ list_changes_in_state_mask(string_ty *project_name, int state_mask)
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
 	cstate_data = change_cstate_get(cp);
-	if (state_mask & (1 << cstate_data->state))
+	if
+	(
+	    (state_mask & (1 << cstate_data->state))
+	&&
+            /*
+	     * If no user has been specified, we don't care who the
+	     * owner of the change is.
+	     */
+            (!login || str_equal(login, change_developer_name(cp)))
+	)
 	{
 	    output_fprintf
 	    (
@@ -189,4 +208,11 @@ list_changes_in_state_mask(string_ty *project_name, int state_mask)
     col_close(colp);
     project_free(pp);
     trace(("}\n"));
+}
+
+
+void
+list_changes_in_state_mask(string_ty *project_name, int state_mask)
+{
+    list_changes_in_state_mask_by_user(project_name, state_mask, 0);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,15 +41,15 @@ struct rpt_stmt_try_ty
 static void
 run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
 {
-    rpt_stmt_try_ty *this;
+    rpt_stmt_try_ty *this_thing;
     rpt_value_ty    *lhs;
 
     /*
      * evaluate the catch variable's address
      */
     trace(("try::run()\n{\n"/*}*/));
-    this = (rpt_stmt_try_ty *)that;
-    lhs = rpt_expr_evaluate(this->e, 0);
+    this_thing = (rpt_stmt_try_ty *)that;
+    lhs = rpt_expr_evaluate(this_thing->e, 0);
     if (lhs->method->type == rpt_value_type_error)
     {
 	rp->status = rpt_stmt_status_error;
@@ -72,7 +72,7 @@ run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
 	    );
 	sub_context_delete(scp);
 	rp->status = rpt_stmt_status_error;
-	rp->thrown = rpt_value_error(this->e->pos, s);
+	rp->thrown = rpt_value_error(this_thing->e->pos, s);
 	str_free(s);
 	trace((/*{*/"}\n"));
 	return;
@@ -81,8 +81,8 @@ run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
     /*
      * run the try clause
      */
-    assert(this->nchild == 2);
-    rpt_stmt_run(this->child[0], rp);
+    assert(this_thing->nchild == 2);
+    rpt_stmt_run(this_thing->child[0], rp);
     if (rp->status == rpt_stmt_status_error)
     {
 	rpt_value_ty	*vp;
@@ -100,7 +100,7 @@ run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
 	/*
 	 * run the catch clause
 	 */
-	rpt_stmt_run(this->child[1], rp);
+	rpt_stmt_run(this_thing->child[1], rp);
     }
     rpt_value_free(lhs);
     trace((/*{*/"}\n"));
@@ -121,11 +121,11 @@ rpt_stmt_ty *
 rpt_stmt_try(rpt_stmt_ty *s1, rpt_expr_ty *e, rpt_stmt_ty *s2)
 {
     rpt_stmt_ty	    *that;
-    rpt_stmt_try_ty *this;
+    rpt_stmt_try_ty *this_thing;
 
     that = rpt_stmt_alloc(&method);
-    this = (rpt_stmt_try_ty *)that;
-    this->e = rpt_expr_copy(e);
+    this_thing = (rpt_stmt_try_ty *)that;
+    this_thing->e = rpt_expr_copy(e);
     rpt_stmt_append(that, s1);
     rpt_stmt_append(that, s2);
     if (!rpt_expr_lvalue(e))

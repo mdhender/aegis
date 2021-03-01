@@ -1,0 +1,88 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2003 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aexml command.
+.\"
+.so z_name.so
+.ds n) aexml
+.TH "aexml" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aexml \- Aegis database to XML
+.XX "aexml(1)" "Aegis database to XML"
+.SH SYNOPSIS
+.B aexml
+[
+.IR option \&...
+]
+.IR listname
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -List
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "aexml"
+command is used to
+extract portions of Aegis' database in XML format.
+.SS List Names
+The following list names may be given
+.TP 8n
+Change_Files
+Internal change file state.
+See \fIaefstate\fP(5) for structure.
+.TP 8n
+Change_State
+Internal change state.
+See \fIaecstate\fP(5) for structure.
+.TP 8n
+Projects
+List of projects.
+See \fIaegstate\fP(5) for structure.
+.TP 8n
+Project_Change_State
+Internal project change state.
+See \fIaecstate\fP(5) for structure.
+.TP
+Project_Config_File
+The project config file.
+See \fIaepconf\fP(5) for structure.
+.TP 8n
+Project_Files
+Internal project file state.
+See \fIaefstate\fP(5) for structure.
+.TP 8n
+Project_State
+Internal project state.
+See \fIaepstate\fP(5) for structure.
+.PP
+The abbreviations foe the list names follows the same rules as for
+command line options.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+.so o_list.so
+.so o_help.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

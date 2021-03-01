@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,7 @@
 
 
 int
-os_isa_directory(path)
-	string_ty	*path;
+os_isa_directory(string_ty *path)
 {
 	struct stat	st;
 	int		err;

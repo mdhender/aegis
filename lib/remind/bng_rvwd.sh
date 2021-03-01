@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 2002 Peter Miller;
+#	Copyright (C) 1997, 2002, 2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,18 @@ $aegis -rpass -l -p $project > /tmp/$$
 if cmp /dev/null /tmp/$$ > /dev/null 2>&1 ; then
 	: do nothing
 else
-	cat > /tmp/$$.intro << fubar
-Subject: Outstanding "$project" Reviews
+    #
+    # Get any aliases for the project
+    #
+    aliases=`aegis -list Project_Aliases -unf -p $project | awk '{ print $1 }'`
+    if [ "$aliases" ]
+    then
+	# format as comma separated list in brackets
+       aliases=" ["`echo $aliases | tr ' ' ','`"]"
+    fi
+
+    cat > /tmp/$$.intro << fubar
+Subject: Outstanding "${project}$aliases" Reviews
 To: $addr
 
 The following changes are ready to be reviewed.  Please review

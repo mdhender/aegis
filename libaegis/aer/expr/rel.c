@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@
 
 
 static rpt_value_ty *
-lt_evaluate(rpt_expr_ty *this)
+lt_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -51,8 +51,8 @@ lt_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("lt::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -68,7 +68,7 @@ lt_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -162,7 +162,7 @@ lt_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 < $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -190,17 +190,17 @@ static rpt_expr_method_ty lt_method =
 rpt_expr_ty *
 rpt_expr_lt(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&lt_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&lt_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-le_evaluate(rpt_expr_ty *this)
+le_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -214,8 +214,8 @@ le_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("le::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -231,7 +231,7 @@ le_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -323,7 +323,7 @@ le_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 <= $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -351,17 +351,17 @@ static rpt_expr_method_ty le_method =
 rpt_expr_ty *
 rpt_expr_le(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&le_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&le_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-gt_evaluate(rpt_expr_ty *this)
+gt_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -375,8 +375,8 @@ gt_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("gt::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -392,7 +392,7 @@ gt_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -484,7 +484,7 @@ gt_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 > $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -512,17 +512,17 @@ static rpt_expr_method_ty gt_method =
 rpt_expr_ty *
 rpt_expr_gt(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&gt_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&gt_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-ge_evaluate(rpt_expr_ty *this)
+ge_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -536,8 +536,8 @@ ge_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("ge::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -553,7 +553,7 @@ ge_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -645,7 +645,7 @@ ge_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 >= $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -673,17 +673,17 @@ static rpt_expr_method_ty ge_method =
 rpt_expr_ty *
 rpt_expr_ge(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&ge_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&ge_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-eq_evaluate(rpt_expr_ty *this)
+eq_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -697,8 +697,8 @@ eq_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("eq::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -714,7 +714,7 @@ eq_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -797,14 +797,14 @@ eq_evaluate(rpt_expr_ty *this)
 	    goto string_string;
 
 	/*
-	 * give up on this one
+	 * give up on this_thing one
 	 */
 	scp = sub_context_new();
 	sub_var_set_charstar(scp, "Name1", lv1->method->name);
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 == $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -832,17 +832,17 @@ static rpt_expr_method_ty eq_method =
 rpt_expr_ty *
 rpt_expr_eq(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&eq_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&eq_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-ne_evaluate(rpt_expr_ty *this)
+ne_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -856,8 +856,8 @@ ne_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("ne::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -873,7 +873,7 @@ ne_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -963,7 +963,7 @@ ne_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 != $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -991,17 +991,17 @@ static rpt_expr_method_ty ne_method =
 rpt_expr_ty *
 rpt_expr_ne(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&ne_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&ne_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-match_evaluate(rpt_expr_ty *this)
+match_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -1015,8 +1015,8 @@ match_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("match::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -1032,7 +1032,7 @@ match_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -1071,7 +1071,7 @@ match_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 ~~ $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -1099,17 +1099,17 @@ static rpt_expr_method_ty match_method =
 rpt_expr_ty *
 rpt_expr_match(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&match_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&match_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-nmatch_evaluate(rpt_expr_ty *this)
+nmatch_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *lv1;
@@ -1123,8 +1123,8 @@ nmatch_evaluate(rpt_expr_ty *this)
      * evaluate the left hand side
      */
     trace(("nmatch::evaluate()\n{\n"));
-    assert(this->nchild == 2);
-    lv1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -1140,7 +1140,7 @@ nmatch_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    rv1 = rpt_expr_evaluate(this->child[1], 1);
+    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -1181,7 +1181,7 @@ nmatch_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", rv1->method->name);
 	s = subst_intl(scp, i18n("illegal comparison ($name1 !~ $name2)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->pos, s);
+	vp = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	break;
     }
@@ -1209,10 +1209,10 @@ static rpt_expr_method_ty nmatch_method =
 rpt_expr_ty *
 rpt_expr_nmatch(rpt_expr_ty *a, rpt_expr_ty *b)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&nmatch_method);
-    rpt_expr_append(this, a);
-    rpt_expr_append(this, b);
-    return this;
+    this_thing = rpt_expr_alloc(&nmatch_method);
+    rpt_expr_append(this_thing, a);
+    rpt_expr_append(this_thing, b);
+    return this_thing;
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -54,30 +54,22 @@ struct input_uudecode_ty
 };
 
 
-static void input_uudecode_destructor _((input_ty *));
-
 static void
-input_uudecode_destructor(fp)
-    input_ty	    *fp;
+input_uudecode_destructor(input_ty *fp)
 {
-    input_uudecode_ty *this;
+    input_uudecode_ty *this_thing;
 
-    this = (input_uudecode_ty *)fp;
-    if (this->close_on_close)
-	input_delete(this->deeper);
-    this->deeper = 0; /* paranoia */
+    this_thing = (input_uudecode_ty *)fp;
+    if (this_thing->close_on_close)
+	input_delete(this_thing->deeper);
+    this_thing->deeper = 0; /* paranoia */
 }
 
 
-static long input_uudecode_read _((input_ty *, void *, size_t));
-
 static long
-input_uudecode_read(fp, data, len)
-    input_ty	    *fp;
-    void	    *data;
-    size_t	    len;
+input_uudecode_read(input_ty *fp, void *data, size_t len)
 {
-    input_uudecode_ty *this;
+    input_uudecode_ty *this_thing;
     int		    c;
     unsigned char   *cp;
     unsigned char   *end;
@@ -87,14 +79,14 @@ input_uudecode_read(fp, data, len)
     /*
      * Look for the line which starts with 'begin '
      */
-    this = (input_uudecode_ty *)fp;
-    if (this->state >= 6)
+    this_thing = (input_uudecode_ty *)fp;
+    if (this_thing->state >= 6)
 	return 0;
-    cp = data;
+    cp = (unsigned char *)data;
     end = cp + len;
     assert(len >= 64);
     if (len < 64)
-	input_fatal_error(this->deeper, "uudecode: read too little");
+	input_fatal_error(this_thing->deeper, "uudecode: read too little");
     while (cp + 64 < end)
     {
 	unsigned char	buf[1000];
@@ -111,27 +103,28 @@ input_uudecode_read(fp, data, len)
 	bp = buf;
 	for (;;)
 	{
-	    c = input_getc(this->deeper);
+	    c = input_getc(this_thing->deeper);
 	    if (c < 0)
 	    {
-		if (bp == buf && this->state == 0)
+		if (bp == buf && this_thing->state == 0)
 		{
 		    input_fatal_error
 		    (
-			this->deeper,
+			this_thing->deeper,
 			"uudecode: no data in file"
 		    );
 		}
 		else
 		{
-		    input_fatal_error(this->deeper, "premature end-of-file");
+		    input_fatal_error(this_thing->deeper,
+                                      "premature end-of-file");
 		}
 	    }
 	    if (c == '\n')
 		break;
 	    if (bp >= ENDOF(buf) - 1)
 	    {
-		input_fatal_error(this->deeper, "line too long");
+		input_fatal_error(this_thing->deeper, "line too long");
 	    }
 	    *bp++ = c;
 	}
@@ -141,35 +134,36 @@ input_uudecode_read(fp, data, len)
 	ep = bp;
 	bp = buf;
 
-	switch (this->state)
+	switch (this_thing->state)
 	{
 	case 0:
 	    /* before "table" or "begin " */
-	    if (!strcmp(buf, "table"))
-		this->state = 1;
+	    if (!strcmp((const char *)buf, "table"))
+		this_thing->state = 1;
 	    else if (!memcmp(buf, "begin ", 6))
 	    {
-		this->state = 4;
+		this_thing->state = 4;
 
 		/*
 		 * use default encoding
 		 */
-		memcpy(this->etab, default_encoding_table, 64);
+		memcpy(this_thing->etab, default_encoding_table, 64);
 
 		/*
 		 * invert the encoding table
 		 */
 		invert:
 		for (j = 0; j <= UCHAR_MAX; ++j)
-		    this->itab[j] = NOT_DECODABLE;
+		    this_thing->itab[j] = NOT_DECODABLE;
 		for (j = 0; j < 64; ++j)
 		{
-		    n = (unsigned char)this->etab[j];
-		    if (this->itab[n] != NOT_DECODABLE)
+		    n = (unsigned char)this_thing->etab[j];
+		    if (this_thing->itab[n] != NOT_DECODABLE)
 		    {
-			input_fatal_error(this->deeper, "table has duplicate");
+			input_fatal_error(this_thing->deeper,
+                                          "table has duplicate");
 		    }
-		    this->itab[n] = j;
+		    this_thing->itab[n] = j;
 		}
 
 		/*
@@ -177,8 +171,9 @@ input_uudecode_read(fp, data, len)
 		 * extension (because many e-mail
 		 * forwarders rip of trailing spaces).
 		 */
-		if (this->etab[0] == ' ' && this->itab['`'] == NOT_DECODABLE)
-		    this->itab['`'] = 0;
+		if (this_thing->etab[0] == ' ' &&
+                    this_thing->itab['`'] == NOT_DECODABLE)
+		    this_thing->itab['`'] = 0;
 	    }
 	    continue;
 
@@ -186,20 +181,20 @@ input_uudecode_read(fp, data, len)
 	    /* after "table" */
 	    if (ilen != 32)
 	    {
-		input_fatal_error(this->deeper, "broken table section");
+		input_fatal_error(this_thing->deeper, "broken table section");
 	    }
-	    memcpy(this->etab, buf, 32);
-	    this->state++;
+	    memcpy(this_thing->etab, buf, 32);
+	    this_thing->state++;
 	    continue;
 
 	case 2:
 	    /* after "table" + 1 */
 	    if (ilen != 32)
 	    {
-		input_fatal_error(this->deeper, "broken table section");
+		input_fatal_error(this_thing->deeper, "broken table section");
 	    }
-	    memcpy(this->etab + 32, buf, 32);
-	    this->state++;
+	    memcpy(this_thing->etab + 32, buf, 32);
+	    this_thing->state++;
 	    goto invert;
 
 	case 3:
@@ -207,10 +202,10 @@ input_uudecode_read(fp, data, len)
 	    if (!ilen)
 		continue;
 	    if (!memcmp(buf, "begin ", 6))
-		this->state++;
+		this_thing->state++;
 	    else
 	    {
-		input_fatal_error(this->deeper, "expected \"begin\"");
+		input_fatal_error(this_thing->deeper, "expected \"begin\"");
 	    }
 	    continue;
 
@@ -218,19 +213,20 @@ input_uudecode_read(fp, data, len)
 	    /* data section */
 	    if (!ilen)
 	    {
-		input_fatal_error(this->deeper, "blank line in data section");
+		input_fatal_error(this_thing->deeper,
+                                  "blank line in data section");
 	    }
 
 	    /*
 	     * get length
 	     */
-	    n = this->itab[*bp++];
+	    n = this_thing->itab[*bp++];
 	    if (n == NOT_DECODABLE)
 	    {
 		broken:
 		input_fatal_error
 		(
-		    this->deeper,
+		    this_thing->deeper,
 		    "broken data section (character not in encoding table)"
 		);
 	    }
@@ -243,92 +239,93 @@ input_uudecode_read(fp, data, len)
 		switch ((n * 4 + 2) / 3 + 2 - ilen)
 		{
 		case 0:
-		    if (this->checksum < 0)
-			this->checksum = 1;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 1;
 		    break;
 
 		case 1:
-		    if (this->padding < 0)
-			this->padding = 1;
-		    if (this->checksum < 0)
-			this->checksum = 0;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 1;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 0;
 		    break;
 
 		default:
 		    broken_length:
 		    input_fatal_error
 		    (
-			this->deeper,
+			this_thing->deeper,
 			"data line has wrong length"
 		    );
 		}
-		check_the_sum = this->checksum;
+		check_the_sum = this_thing->checksum;
 		break;
 
 	    case 1:
 		switch ((n + 2) / 3 * 4 + 2 - ilen)
 		{
 		case 0:
-		    if (this->padding < 0)
-			this->padding = 1;
-		    if (this->checksum < 0)
-			this->checksum = 1;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 1;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 1;
 		    break;
 
 		case 1:
-		    if (this->padding < 0)
-			this->padding = 1;
-		    if (this->checksum < 0)
-			this->checksum = 0;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 1;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 0;
 		    break;
 
 		case 2:
-		    if (this->padding < 0)
-			this->padding = 0;
-		    if (this->checksum < 0)
-			this->checksum = 1;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 0;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 1;
 		    break;
 
 		case 3:
-		    if (this->padding < 0)
-			this->padding = 0;
-		    if (this->checksum < 0)
-			this->checksum = 0;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 0;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 0;
 		    break;
 
 		default:
 		    goto broken_length;
 		}
-		check_the_sum = this->checksum;
+		check_the_sum = this_thing->checksum;
 		break;
 
 	    case 2:
 		switch ((n + 2) / 3 * 4 + 2 - ilen)
 		{
 		case 0:
-		    if (this->padding < 0)
-			this->padding = 1;
-		    if (this->checksum < 0)
-			this->checksum = 1;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 1;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 1;
 		    break;
 
 		case 1:
 		    /* padding or checksum, but not both */
-		    if (this->checksum >= 0)
-			this->padding = !this->checksum;
+		    if (this_thing->checksum >= 0)
+			this_thing->padding = !this_thing->checksum;
 		    break;
 
 		case 2:
-		    if (this->padding < 0)
-			this->padding = 0;
-		    if (this->checksum < 0)
-			this->checksum = 0;
+		    if (this_thing->padding < 0)
+			this_thing->padding = 0;
+		    if (this_thing->checksum < 0)
+			this_thing->checksum = 0;
 		    break;
 
 		default:
 		    goto broken_length;
 		}
-		check_the_sum = this->checksum && this->padding >= 0;
+		check_the_sum =
+                    this_thing->checksum && this_thing->padding >= 0;
 		break;
 	    }
 
@@ -343,13 +340,13 @@ input_uudecode_read(fp, data, len)
 		int		c3;
 		int		c4;
 
-		c1 = this->itab[*bp++];
+		c1 = this_thing->itab[*bp++];
 		if (c1 == NOT_DECODABLE)
 		    goto broken;
 		assert(c1 < 64);
 		sum += c1;
 
-		c2 = this->itab[*bp++];
+		c2 = this_thing->itab[*bp++];
 		if (c2 == NOT_DECODABLE)
 		    goto broken;
 		assert(c2 < 64);
@@ -358,9 +355,9 @@ input_uudecode_read(fp, data, len)
 		c = (c1 << 2) | ((c2 >> 4) & 0x03);
 		*cp++ = c;
 
-		if (j + 1 < n || this->padding == 1)
+		if (j + 1 < n || this_thing->padding == 1)
 		{
-		    c3 = this->itab[*bp++];
+		    c3 = this_thing->itab[*bp++];
 		    if (c3 == NOT_DECODABLE)
 			goto broken;
 		    assert(c3 < 64);
@@ -372,9 +369,9 @@ input_uudecode_read(fp, data, len)
 			*cp++ = c;
 		    }
 
-		    if (j + 2 < n || this->padding == 1)
+		    if (j + 2 < n || this_thing->padding == 1)
 		    {
-			c4 = this->itab[*bp++];
+			c4 = this_thing->itab[*bp++];
 			if (c4 == NOT_DECODABLE)
 			    goto broken;
 			assert(c4 < 64);
@@ -392,28 +389,28 @@ input_uudecode_read(fp, data, len)
 	    {
 		if (bp >= ep)
 		{
-		    input_fatal_error(this->deeper, "checksum required");
+		    input_fatal_error(this_thing->deeper, "checksum required");
 		}
-		c = this->itab[*bp++];
+		c = this_thing->itab[*bp++];
 		if (c == NOT_DECODABLE)
 		    goto broken;
 		assert(c < 64);
 		if (c != (sum & 077))
 		{
-		    input_fatal_error(this->deeper, "checksum is wrong");
+		    input_fatal_error(this_thing->deeper, "checksum is wrong");
 		}
 	    }
 	    if (n == 0)
-		this->state++;
+		this_thing->state++;
 	    continue;
 
 	case 5:
-	    if (!strcmp(buf, "end"))
+	    if (!strcmp((const char *)buf, "end"))
 	    {
-		this->state++;
+		this_thing->state++;
 		break;
 	    }
-	    input_fatal_error(this->deeper, "end required");
+	    input_fatal_error(this_thing->deeper, "end required");
 
 	case 6:
 	    break;
@@ -422,42 +419,33 @@ input_uudecode_read(fp, data, len)
     }
 
     nbytes = (cp - (unsigned char *)data);
-    this->pos += nbytes;
+    this_thing->pos += nbytes;
     return nbytes;
 }
 
 
-static long input_uudecode_tell _((input_ty *));
-
 static long
-input_uudecode_tell(deeper)
-    input_ty	    *deeper;
+input_uudecode_tell(input_ty *deeper)
 {
-    input_uudecode_ty *this;
+    input_uudecode_ty *this_thing;
 
-    this = (input_uudecode_ty *)deeper;
-    return this->pos;
+    this_thing = (input_uudecode_ty *)deeper;
+    return this_thing->pos;
 }
 
-
-static struct string_ty *input_uudecode_name _((input_ty *));
 
 static struct string_ty *
-input_uudecode_name(fp)
-    input_ty	    *fp;
+input_uudecode_name(input_ty *fp)
 {
-    input_uudecode_ty *this;
+    input_uudecode_ty *this_thing;
 
-    this = (input_uudecode_ty *)fp;
-    return input_name(this->deeper);
+    this_thing = (input_uudecode_ty *)fp;
+    return input_name(this_thing->deeper);
 }
 
 
-static long input_uudecode_length _((input_ty *));
-
 static long
-input_uudecode_length(fp)
-    input_ty	    *fp;
+input_uudecode_length(input_ty *fp)
 {
     return -1;
 }
@@ -475,28 +463,25 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_uudecode(deeper, coc)
-    input_ty	    *deeper;
-    int		    coc;
+input_uudecode(input_ty *deeper, int coc)
 {
     input_ty	    *result;
-    input_uudecode_ty *this;
+    input_uudecode_ty *this_thing;
 
     result = input_new(&vtbl);
-    this = (input_uudecode_ty *)result;
-    this->deeper = deeper;
-    this->close_on_close = !!coc;
-    this->pos = 0;
-    this->state = 0;
-    this->checksum = -1;
-    this->padding = -1;
+    this_thing = (input_uudecode_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->close_on_close = !!coc;
+    this_thing->pos = 0;
+    this_thing->state = 0;
+    this_thing->checksum = -1;
+    this_thing->padding = -1;
     return result;
 }
 
 
 int
-input_uudecode_recognise(ifp)
-    input_ty	    *ifp;
+input_uudecode_recognise(input_ty *ifp)
 {
     static char	    magic[] = "begin ";
     int		    result;
@@ -517,7 +502,7 @@ input_uudecode_recognise(ifp)
 	stracc_char(&buffer, c);
 	if (c == '\n')
 	    state = 0;
-	else if (state < sizeof(magic) && c == magic[state])
+	else if ((size_t)state < sizeof(magic) && c == magic[state])
 	{
 	    ++state;
 	    if (!magic[state])

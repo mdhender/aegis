@@ -24,8 +24,7 @@
 
 
 void
-change_file_list_metrics_check(cp)
-	change_ty	*cp;
+change_file_list_metrics_check(change_ty *cp)
 {
 	size_t		j;
 	fstate_src	src_data;

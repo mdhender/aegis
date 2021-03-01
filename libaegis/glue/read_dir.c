@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,7 @@
 
 
 int
-read_whole_dir(path, data_p, data_len_p)
-	char		*path;
-	char		**data_p;
-	long		*data_len_p;
+read_whole_dir(char *path, char **data_p, long *data_len_p)
 {
 	DIR		*dp;
 	struct dirent	*de;
@@ -52,7 +49,7 @@ read_whole_dir(path, data_p, data_len_p)
 	if (!data)
 	{
 		data_max = 1000;
-		data = mem_alloc(data_max);
+		data = (char *)mem_alloc(data_max);
 	}
 	data_len = 0;
 	for (;;)
@@ -67,7 +64,7 @@ read_whole_dir(path, data_p, data_len_p)
 		if (data_len + len > data_max)
 		{
 			data_max += 1000;
-			data = mem_change_size(data, data_max);
+			data = (char *)mem_change_size(data, data_max);
 		}
 		memcpy(data + data_len, np, len);
 		data_len += len;

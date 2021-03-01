@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1995, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ ident_destructor(fingerprint_ty *p)
 
 
 static void
-ident_addn(fingerprint_ty *p, unsigned char *s, int n)
+ident_addn(fingerprint_ty *p, unsigned char *s, size_t n)
 {
     ident_ty	*f;
 
@@ -73,7 +73,7 @@ static int
 ident_hash(fingerprint_ty *p, unsigned char *h)
 {
     ident_ty	    *f;
-    int		    nbytes;
+    size_t          nbytes;
     unsigned char   t[1024];
 
     f = (ident_ty *)p;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,32 +37,25 @@ struct complete_user_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_user_ty *this;
+    complete_user_ty *this_thing;
 
-    this = (complete_user_ty *)cp;
-    project_free(this->pp);
+    this_thing = (complete_user_ty *)cp;
+    project_free(this_thing->pp);
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_user_ty *this;
+    complete_user_ty *this_thing;
     string_ty       *prefix;
     string_ty       *name;
     struct passwd   *pw;
 
-    this = (complete_user_ty *)cp;
+    this_thing = (complete_user_ty *)cp;
     prefix = shell_prefix_get(sh);
     setpwent();
     for (;;)
@@ -77,7 +70,7 @@ perform(cp, sh)
 	(
 	    str_leading_prefix(name, prefix)
 	&&
-	    (!this->func || this->func(this->pp, name))
+	    (!this_thing->func || this_thing->func(this_thing->pp, name))
 	)
 	{
 	    shell_emit(sh, name);
@@ -98,16 +91,14 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_user(pp, func)
-    project_ty      *pp;
-    complete_user_func func;
+complete_user(project_ty *pp, complete_user_func func)
 {
     complete_ty     *result;
-    complete_user_ty *this;
+    complete_user_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_user_ty *)result;
-    this->pp = pp;
-    this->func = func;
+    this_thing = (complete_user_ty *)result;
+    this_thing->pp = pp;
+    this_thing->func = func;
     return result;
 }

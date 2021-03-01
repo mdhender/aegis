@@ -47,7 +47,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 08-Sep-2002\n"
+msgstr	"PO-Revision-Date: 10-Apr-2003\n"
 	"Last-Translator: Alexey Voinov <voins@voins.program.ru>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=KOI8-R\n"
@@ -792,7 +792,6 @@ msgid	"$name1 and $name2"
 msgstr	"$name1 и $name2"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when an option which needs to be
 # accompanied by another option, but that option is not present.
 #
@@ -800,7 +799,7 @@ msgstr	"$name1 и $name2"
 # 	$Name2		The name of the offending option.
 #
 msgid	"$name1 needs $name2"
-msgstr	"the $name1 option must be accompanied the $name2 option"
+msgstr	"опция $name1 должна сопровождаться опцией $name2"
 
 #
 # This format string is used to glue together two items in the
@@ -2033,7 +2032,6 @@ msgid	"copy file complete"
 msgstr	"скопирован${pl $n о} $n файл${plf $n '' а ов}"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aecpu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -2419,15 +2417,6 @@ msgid	"field \"$name\" redefined"
 msgstr	"поле \"$name\" переопределено"
 
 #
-# This error message is issued when a change file collides with a file
-# already in the project.  Must be modifiable by (***) above.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"file \"$filename\" already exists in project"
-msgstr	"файл \"$filename\" уже присутствует в проекте"
-
-#
 # This error message is issued when a change file name is not acceptable
 # to the filename pattern filters.  Must be modifiable by (***) above.
 #
@@ -2566,17 +2555,6 @@ msgstr	"слишком длинное имя файла \"$filename\" (на $number символ${plf "
 	"$n '' а ов}), лучше использовать \"$suggest\""
 
 #
-# This error message is issued when a change file collides with a file
-# already in the project.  Must be modifiable by (***) above.
-#
-# 	$File_Name1	The name of the offending change file.
-# 	$File_Name2	The name of the offending project file.
-#
-msgid	"file \"$filename1\" collides with file \"$filename2\" in project"
-msgstr	"имя файла \"$filename1\" конфликтует с файлом \"$filename2\" в "
-	"проекте"
-
-#
 # This fatal error message is issued when aenf or aent detects a directory
 # name conflict with a proposed new file name.
 #
@@ -2633,6 +2611,14 @@ msgstr	"имя файла \"$filename\" не подходит для DOS, лучше использовать "
 #
 msgid	"file name \"$filename\" not suitable for Windows"
 msgstr	"имя файла \"$filename\" не подходит для Windows "
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a file qualifier in a substitution
+# is an unknown name.  See (+++) below.
+#
+msgid	"file qualifier unknown"
+msgstr	"file qualifier unknown"
 
 #
 # This error message is issued when an unknown file type name is given
@@ -3336,7 +3322,6 @@ msgid	"lstat $filename: $errno"
 msgstr	"$filename: $errno"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent which is not present the the branch, but is
 # present in a deeper ancestor branch.
@@ -3344,12 +3329,11 @@ msgstr	"$filename: $errno"
 # $filename	The name of the offending file.
 #
 msgid	"make $filename transparent, fail, too deep"
-msgstr	"it is not possible to make $filename transparent because it is "
-	"not present in the branch, but is present in a deeper ancestor "
-	"branch"
+msgstr	"для файла $filename невозможно установить режим прозрачности, "
+	"потому что он отсутствует в текущей ветви проекта, но "
+	"присутствует в одной из родительских ветвей"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent which is present the the branch, but is not
 # present in a deeper ancestor branch.
@@ -3357,41 +3341,39 @@ msgstr	"it is not possible to make $filename transparent because it is "
 # $filename	The name of the offending file.
 #
 msgid	"make $filename transparent, fail, too shallow"
-msgstr	"it is not possible to make $filename transparent because it is "
-	"not also present in a deeper ancestor branch"
+msgstr	"для файла $filename невозможно установить режим прозрачности, "
+	"потому что он отсутсвует в родительской ветсив проекта"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent, and the branch being operated on is the trunk.
 #
 # $filename	The name of the offending file.
 #
 msgid	"make $filename transparent, fail, trunk"
-msgstr	"it is not possible to make $filename transparent because it is "
-	"in the trunk, you probably want to use the aerm command instead"
+msgstr	"для файла $filename невозможно установить режим прозрачности, "
+	"потому что осуществляется работа с основной ветвью проекта; "
+	"возможно следует воспользоваться командой aerm"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
 msgid	"make transparent bad state"
-msgstr	"this change is in the '$state' state, it must be in the 'being "
-	"developed' state to make a file transparent with it"
+msgstr	"этот блок изменений находится в стадии '$state', для управления "
+	"режимом прозрачности файлов он должен быть в стадии 'being "
+	"developed'"
 
 #
-# TRANSLATION REQUIRED
 # This information message is issued by the aemt command when it
 # successfully complete.
 #
 # $number	The number of files (optional).
 #
 msgid	"make transparent complete"
-msgstr	"making $number ${plural $number files file} transparent"
+msgstr	"устанавливается режим прозрачности для $number файл${plf '' а ов}"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aemtu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -3400,7 +3382,7 @@ msgstr	"making $number ${plural $number files file} transparent"
 # 	$File_Name	Name of the file removed from the change.
 #
 msgid	"make transparent undo $filename complete"
-msgstr	"файл \"$filename\" удалён из блока изменений"
+msgstr	"снят режим прозрачности для файла $filename"
 
 #
 # This informational message is issued when the aede command makes the
@@ -3575,7 +3557,6 @@ msgid	"move $filename1 to $filename2 complete"
 msgstr	"файл \"$filename1\" перемещён в \"$filename2\""
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aemvu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -3584,7 +3565,7 @@ msgstr	"файл \"$filename1\" перемещён в \"$filename2\""
 # 	$File_Name	Name of the file removed from the change.
 #
 msgid	"move file undo $filename complete"
-msgstr	"файл \"$filename\" удалён из блока изменений"
+msgstr	"отмена перемещения файла $filename"
 
 #
 # This text is used when aenc -edit creates a template attributes file,
@@ -4326,14 +4307,13 @@ msgid	"proj dir $filename"
 msgstr	"директория проекта \"$filename\""
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a request is made to run regression
 # tests, but there are no files which are candidates of the options
 # specified, or the project may have no tests at all.
 #
 msgid	"proj has no tests"
-msgstr	"this project requires relevant tests before this command may be "
-	"used"
+msgstr	"для того, чтобы ипользовать эту команду, требуется чтобы в "
+	"проекте был набор подходящих тестов"
 
 #
 # This is the format of project messages (error, fatal and verbose).
@@ -4622,7 +4602,6 @@ msgid	"requires one or two arguments"
 msgstr	"требуется один или два параметра"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) below.
 #
@@ -4843,7 +4822,6 @@ msgid	"syntax error: cannot back up"
 msgstr	"невозможно определить что имелось ввиду"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"syntax error; also virtual memory exhausted"
@@ -4997,6 +4975,30 @@ msgstr	"задержка на $number секунд${sw ${ex (((($n <10)+($n >19))*$n ) % "
 msgid	"throw statement requires string argument (not $name)"
 msgstr	"для оператора throw требуется строка в качестве параметра "
 	"(передано $name)"
+
+#
+# TRANSLATION REQUIRED
+# This warning is issed when a delta date is specified which falls before
+# the start of a branch.  This is not meaningful when recreating the
+# contents of a branch.
+#
+# 	$number		The offending date and time.
+#
+msgid	"time $number after branch"
+msgstr	"warning: the time \"$number\" is after the branch finished, this "
+	"is not meaningful when recreating the contents of the branch"
+
+#
+# TRANSLATION REQUIRED
+# This warning is issed when a delta date is specified which falls before
+# the start of a branch.  This is not meaningful when recreating the
+# contents of a branch.
+#
+# 	$number		The offending date and time.
+#
+msgid	"time $number before branch"
+msgstr	"warning: the time \"$number\" is before the branch started, this "
+	"is not meaningful when recreating the contents of the branch"
 
 #
 # This error message is issued when too few files names are specified on
@@ -5383,7 +5385,6 @@ msgstr	"предупреждение: исходный файл \"$filename\" был изменён "
 	"программой хранения истории файла"
 
 #
-# TRANSLATION REQUIRED
 # This warning message is issued by aedist when a patch in an incominmg
 # change set cannot be used (it could be malformed, it may have one or
 # more chunks that can't be applied, etc) and so the full source for
@@ -5392,9 +5393,9 @@ msgstr	"предупреждение: исходный файл \"$filename\" был изменён "
 # 	$filename	The name of the offending file.
 #
 msgid	"warning: $filename patch not used"
-msgstr	"warning: the patch for \"$filename\" could not be used, so the "
-	"full incoming source for this file has been used; you may need "
-	"to resolve conflicts manually"
+msgstr	"предупреждение: не удаётся использовать патч для файла "
+	"\"$filename\", будет использован полный вариант файла; возможно "
+	"потребуется ручное устранение конфликтов"
 
 #
 # This warning message is issued when the AEGIS environment is observed.

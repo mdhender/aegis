@@ -43,7 +43,7 @@
 static void
 remove_reviewer_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -102,7 +102,7 @@ remove_reviewer_list(void)
 	}
 	arglex();
     }
-    list_reviewers(project_name, 0);
+    list_reviewers(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));

@@ -99,9 +99,9 @@ string_ty *change_integration_directory_get(change_ty *, int);
 string_ty *change_logfile_basename(void);
 string_ty *change_logfile_get(change_ty *);
 void change_cstate_lock_prepare(change_ty *);
-void change_error(change_ty *, struct sub_context_ty *, char *);
-void change_fatal(change_ty *, struct sub_context_ty *, char *);
-void change_verbose(change_ty *, struct sub_context_ty *, char *);
+void change_error(change_ty *, struct sub_context_ty *, const char *);
+void change_fatal(change_ty *, struct sub_context_ty *, const char *);
+void change_verbose(change_ty *, struct sub_context_ty *, const char *);
 string_ty *change_pconf_path_get(change_ty *);
 pconf change_pconf_get(change_ty *, int);
 void change_run_new_file_command(change_ty *, struct string_list_ty *,
@@ -119,6 +119,10 @@ void change_run_copy_file_undo_command(change_ty *,
 void change_run_remove_file_command(change_ty *, struct string_list_ty *,
 	struct user_ty *);
 void change_run_remove_file_undo_command(change_ty *,
+	struct string_list_ty *, struct user_ty *);
+void change_run_make_transparent_command(change_ty *, struct string_list_ty *,
+	struct user_ty *);
+void change_run_make_transparent_undo_command(change_ty *,
 	struct string_list_ty *, struct user_ty *);
 int change_run_project_file_command_needed(change_ty *);
 void change_run_project_file_command(change_ty *, struct user_ty *);
@@ -156,7 +160,7 @@ void change_run_patch_diff_command(change_ty *cp, struct user_ty *up,
 	string_ty *index_name);
 void change_run_annotate_diff_command(change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *input, string_ty *output,
-	string_ty *index_name, char *diff_option);
+	string_ty *index_name, const char *diff_option);
 int change_has_merge_command(change_ty *);
 void change_run_integrate_begin_command(change_ty *);
 void change_run_integrate_begin_undo_command(change_ty *);
@@ -183,6 +187,7 @@ void change_architecture_clear(change_ty *);
 void change_architecture_add(change_ty *, string_ty *);
 void change_architecture_query(change_ty *);
 string_ty *change_architecture_name(change_ty *, int);
+string_ty *change_run_architecture_discriminator_command(change_ty *cp);
 cstate_architecture_times change_architecture_times_find(change_ty *,
 	string_ty *);
 void change_build_time_set(change_ty *);
@@ -193,13 +198,13 @@ void change_test_times_clear(change_ty *);
 void change_build_times_clear(change_ty *);
 void change_architecture_from_pconf(change_ty *);
 
-char *change_outstanding_builds(change_ty *, time_t);
-char *change_outstanding_tests(change_ty *, time_t);
-char *change_outstanding_tests_baseline(change_ty *, time_t);
-char *change_outstanding_tests_regression(change_ty *, time_t);
+const char *change_outstanding_builds(change_ty *, time_t);
+const char *change_outstanding_tests(change_ty *, time_t);
+const char *change_outstanding_tests_baseline(change_ty *, time_t);
+const char *change_outstanding_tests_regression(change_ty *, time_t);
 
 int change_pathconf_name_max(change_ty *);
-string_ty *change_filename_check(change_ty *, string_ty *, int);
+string_ty *change_filename_check(change_ty *, string_ty *);
 
 void change_create_symlinks_to_baseline(change_ty *, struct project_ty *,
     struct user_ty *, int);
@@ -218,5 +223,17 @@ string_ty *change_new_test_filename_get(change_ty *, long, int);
 string_ty *change_development_directory_template(change_ty *,
 	struct user_ty *);
 string_ty *change_metrics_filename_pattern_get(change_ty *);
+
+/**
+  * The change_is_completed function returns true (no-zero) if the given
+  * change is in the completed state, and false (zero) if it is not.
+  */
+int change_is_completed(change_ty *);
+
+/**
+  * The change_delta_number_get function is used to get the delta number
+  * of a change, or zero if the change is not yet completed.
+  */
+long change_delta_number_get(change_ty *);
 
 #endif /* LIBAEGIS_CHANGE_H */

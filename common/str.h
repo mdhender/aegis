@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -330,7 +330,7 @@ string_ty *str_field(string_ty *str, int sep, int nth);
   * \return
   *	void
   */
-void slow_to_fast(char **, string_ty **, size_t);
+void slow_to_fast(const char *const *, string_ty **, size_t);
 
 /**
   * \brief
@@ -456,7 +456,7 @@ int str_re_match(string_ty *pattern, string_ty *candidate,
   *	A pointer to an error message function to be called if there is
   *	something wrong with the pattern.  If this pointer is NULL,
   *	it will not be called.
-  * \param count
+  * \param count_
   *	The maximum number of times to match the expression agains the
   *	string (zero means infinite).
   *
@@ -519,7 +519,7 @@ string_ty *str_trim(string_ty *str);
   * \return
   *	Non-zero if valid, zero if invalid.
   */
-int str_validate(string_ty *);
+int str_validate(string_ty *str);
 
 /**
   * \brief

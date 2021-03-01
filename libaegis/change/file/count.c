@@ -25,8 +25,7 @@
 
 
 size_t
-change_file_count(cp)
-	change_ty	*cp;
+change_file_count(change_ty *cp)
 {
 	fstate		fstate_data;
 

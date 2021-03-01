@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998-2000, 2002 Peter Miller;
+ *	Copyright (C) 1998-2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,8 @@
 #include <rect.h>
 #include <str.h>
 #include <sub.h>
+#include <version.h>
+
 
 enum
 {
@@ -60,7 +62,7 @@ static arglex_table_ty argtab[] =
 static void
 rect_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s [ <option>... ] width height\n", progname);
@@ -137,9 +139,9 @@ main(int argc, char **argv)
 {
     int             width;
     int             height;
-    char	    *outfile;
+    const char      *outfile;
     int		    r, g, b;
-    char	    *label;
+    const char      *label;
 
     r250_init();
     os_become_init_mortal();
@@ -148,8 +150,16 @@ main(int argc, char **argv)
     env_initialize();
     language_init();
 
-    if (arglex() == arglex_token_help)
+    switch (arglex())
+    {
+    case arglex_token_help:
 	rect_help();
+	quit(0);
+
+    case arglex_token_version:
+	version();
+	quit(0);
+    }
 
     width = 0;
     height = 0;

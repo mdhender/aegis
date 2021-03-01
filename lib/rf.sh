@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999-2002 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999-2003 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -47,10 +47,20 @@ quit()
 }
 
 #
+# Get any aliases for the project
+#
+aliases=`aegis -list Project_Aliases -unf -p $project | awk '{ print $1 }'`
+if [ "$aliases" ]
+then
+    # format as comma separated list in brackets
+   aliases=" ["`echo $aliases | tr ' ' ','`"]"
+fi
+
+#
 # build the notice to be mailed
 #
 cat > $tmp << TheEnd
-Subject: Project $project: Change $change: failed review
+Subject: Project ${project}$aliases: Change $change: failed review
 To: $developer, $reviewer
 
 The change described below has failed review.

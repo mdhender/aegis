@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,14 @@
 #include <ael/state_file.h>
 #include <change.h>
 #include <project.h>
+#include <str_list.h>
 #include <user.h>
 
 
 void
-list_state_file_name(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_state_file_name(string_ty *project_name,
+                     long change_number,
+                     string_list_ty *args)
 {
 	project_ty	*pp;
 	change_ty	*cp;

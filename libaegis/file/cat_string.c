@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@
 
 
 void
-cat_string_to_stdout(content)
-	string_ty	*content;
+cat_string_to_stdout(string_ty *content)
 {
 	write(1, content->str_text, content->str_length);
 	if

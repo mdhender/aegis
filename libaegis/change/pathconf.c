@@ -27,8 +27,7 @@
 
 
 int
-change_pathconf_name_max(cp)
-	change_ty	*cp;
+change_pathconf_name_max(change_ty *cp)
 {
 	string_ty	*bl;
 	int		bl_max;

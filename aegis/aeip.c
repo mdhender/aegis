@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 #include <change/branch.h>
 #include <change/file.h>
 #include <dir.h>
+#include <env.h>
 #include <error.h>
 #include <file.h>
 #include <help.h>
@@ -41,6 +42,7 @@
 #include <log.h>
 #include <metrics.h>
 #include <mem.h>
+#include <now.h>
 #include <progname.h>
 #include <os.h>
 #include <project.h>
@@ -75,7 +77,7 @@ struct time_map_list_ty
 static void
 integrate_pass_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -Integrate_PASS [ <option>... ]\n", progname);
@@ -479,6 +481,12 @@ integrate_pass_main(void)
     assert(tml.time_aeib);
 
     id = change_integration_directory_get(cp, 1);
+
+    /*
+     * Set this environment variable for the integrate_pass_notify_command
+     * which is run after the name is gone from the database.
+     */
+    env_set("AEGIS_INTEGRATION_DIRECTORY", id->str_text);
 
     /*
      * Walk the change files, making sure
@@ -1552,6 +1560,7 @@ integrate_pass_main(void)
     dev_dir = str_copy(change_top_path_get(cp, 1));
     change_development_directory_clear(cp);
     new_baseline = str_copy(change_integration_directory_get(cp, 1));
+    id = str_copy(id);
     change_integration_directory_clear(cp);
     int_name = change_integrator_name(cp);
     rev_name = change_reviewer_name(cp);
@@ -1667,6 +1676,61 @@ integrate_pass_main(void)
 	 */
 	change_run_build_time_adjust_notify_command(cp);
     }
+    str_free(id);
+    id = 0;
+
+    /*
+     * Deal with mod times which extend into the future.
+     */
+    switch (pconf_data->build_time_adjust)
+    {
+    case pconf_build_time_adjust_dont_adjust:
+	break;
+
+    case pconf_build_time_adjust_adjust_and_sleep:
+	time_final = now();
+	if (tml.len > 0 && time_final < tml.list[tml.len - 1].new)
+	{
+	    long            nsec;
+	    sub_context_ty  *scp;
+
+	    nsec = tml.list[tml.len - 1].new - time_final;
+	    scp = sub_context_new();
+	    sub_var_set_long(scp, "Number", nsec);
+	    error_intl(scp, i18n("throttling $number seconds"));
+	    sub_context_delete(scp);
+	    os_interrupt_register();
+	    sleep(nsec);
+	    if (os_interrupt_has_occurred())
+	    {
+		now_clear();
+		time_final = now();
+		if (time_final < tml.list[tml.len - 1].new)
+		    goto impatient;
+	    }
+	}
+	break;
+
+    case pconf_build_time_adjust_adjust_only:
+	/*
+	 * warn the user if some files have been timed into the future
+	 */
+	time_final = now();
+	if (tml.len > 0 && time_final < tml.list[tml.len - 1].new)
+	{
+	    sub_context_ty	*scp;
+	    long		nsec;
+
+	    impatient:
+	    scp = sub_context_new();
+	    nsec = tml.list[tml.len - 1].new - time_final;
+	    sub_var_set_long(scp, "Number", nsec);
+	    sub_var_optional(scp, "Number");
+	    error_intl(scp, i18n("warning: file times in future"));
+	    sub_context_delete(scp);
+	}
+	break;
+    }
 
     /*
      * Write the change table row.
@@ -1681,51 +1745,10 @@ integrate_pass_main(void)
     lock_release();
 
     /*
-     * Deal with mod times which extend into the future.
-     */
-    switch (pconf_data->build_time_adjust)
-    {
-    case pconf_build_time_adjust_dont_adjust:
-	break;
-
-    case pconf_build_time_adjust_adjust_and_sleep:
-	time(&time_final);
-	if (tml.len > 0 && time_final < tml.list[tml.len - 1].new)
-	{
-	    long            nsec;
-	    sub_context_ty  *scp;
-
-	    nsec = tml.list[tml.len - 1].new - time_final;
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", nsec);
-	    error_intl(scp, i18n("throttling $number seconds"));
-	    sub_context_delete(scp);
-	    sleep(nsec);
-	}
-	break;
-
-    case pconf_build_time_adjust_adjust_only:
-	/*
-	 * warn the user if some files have been timed into the future
-	 */
-	time(&time_final);
-	if (tml.len > 0 && time_final < tml.list[tml.len - 1].new)
-	{
-	    sub_context_ty	*scp;
-	    long		nsec;
-
-	    scp = sub_context_new();
-	    nsec = tml.list[tml.len - 1].new - time_final;
-	    sub_var_set_long(scp, "Number", nsec);
-	    sub_var_optional(scp, "Number");
-	    error_intl(scp, i18n("warning: file times in future"));
-	    sub_context_delete(scp);
-	}
-	break;
-    }
-
-    /*
      * run the notify command
+     *
+     * Note that we set the AEGIS_INTEGRATION_DIRECTORY environment
+     * variable further back in the code.
      */
     change_run_integrate_pass_notify_command(cp);
 

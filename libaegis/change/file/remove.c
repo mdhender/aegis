@@ -27,9 +27,7 @@
 
 
 void
-change_file_remove(cp, file_name)
-	change_ty	*cp;
-	string_ty	*file_name;
+change_file_remove(change_ty *cp, string_ty *file_name)
 {
 	fstate		fstate_data;
 	int		j;

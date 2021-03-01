@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,22 +37,15 @@
 #define PAIR(a, b) ((a) * rpt_value_type_MAX + (b))
 
 
-static int verify _((rpt_expr_ty *));
-
 static int
-verify(ep)
-	rpt_expr_ty	*ep;
+verify(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 1);
 }
 
 
-static int cmp _((const void *, const void *));
-
 static int
-cmp(va, vb)
-	const void	*va;
-	const void	*vb;
+cmp(const void *va, const void *vb)
 {
 	rpt_value_ty	*a;
 	rpt_value_ty	*b;
@@ -140,13 +133,8 @@ cmp(va, vb)
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	rpt_value_ty	*result;
 	rpt_value_ty	*vp;
@@ -196,7 +184,7 @@ run(ep, argc, argv)
 	 * sort the list items
 	 */
 	length = rpt_value_list_length(vp);
-	item = mem_alloc(length * sizeof(rpt_value_ty *));
+	item = (rpt_value_ty **)mem_alloc(length * sizeof(rpt_value_ty *));
 	for (j = 0; j < length; ++j)
 		item[j] = rpt_value_arithmetic(rpt_value_list_nth(vp, j));
 	qsort(item, length, sizeof(item[0]), cmp);

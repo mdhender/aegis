@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1997 Peter Miller;
+ *	Copyright (C) 1992-1994, 1997, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <ac/time.h>
 #include <main.h>
 
-time_t date_scan(char *);
-char *date_string(time_t);
+time_t date_scan(const char *);
+const char *date_string(time_t);
 
 #endif /* COMMON_GETTIME_H */

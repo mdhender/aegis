@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,9 +32,7 @@
 
 
 void
-os_mtime_set(path, when)
-    string_ty       *path;
-    time_t          when;
+os_mtime_set(string_ty *path, time_t when)
 {
     struct utimbuf  utb;
     int             err;

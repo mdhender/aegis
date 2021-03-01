@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,8 @@
  * MANIFEST: functions to manipulate now tree nodes
  */
 
-#include <ac/time.h>
-
 #include <aer/value/time.h>
+#include <now.h>
 #include <tree.h>
 #include <tree/constant.h>
 #include <tree/now.h>
@@ -34,11 +33,6 @@ tree_now_new(void)
     static rpt_value_ty *vp;
 
     if (!vp)
-    {
-	time_t		now;
-
-	time(&now);
-	vp = rpt_value_time(now);
-    }
+	vp = rpt_value_time(now());
     return tree_constant_new(vp);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1997, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1997, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,13 +42,8 @@
 
 
 
-static void process _((string_ty *, char *, rptidx_where_list));
-
 static void
-process(dir, nondir, result)
-	string_ty	*dir;
-	char		*nondir;
-	rptidx_where_list result;
+process(string_ty *dir, const char *nondir, rptidx_where_list result)
 {
 	string_ty	*fn;
 	int		err;
@@ -115,12 +110,8 @@ process(dir, nondir, result)
 
 
 
-static int cmp _((const void *, const void *));
-
 static int
-cmp(va, vb)
-	const void	*va;
-	const void	*vb;
+cmp(const void *va, const void *vb)
 {
 	rptidx_where	a;
 	rptidx_where	b;
@@ -132,8 +123,7 @@ cmp(va, vb)
 
 
 void
-report_list(usage)
-	void		(*usage)_((void));
+report_list(void (*usage)(void))
 {
 	string_list_ty		path;
 	rptidx_where_list result;

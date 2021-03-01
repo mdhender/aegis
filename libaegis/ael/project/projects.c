@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,9 +36,7 @@
 
 
 void
-list_projects(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
+list_projects(string_ty *project_name, long change_number, string_list_ty *args)
 {
 	string_list_ty	name;
 	output_ty	*name_col = 0;

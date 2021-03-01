@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 
 
 static rpt_value_ty *
-neg_evaluate(rpt_expr_ty *this)
+neg_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -43,8 +43,8 @@ neg_evaluate(rpt_expr_ty *this)
      * evaluate the argument
      */
     trace(("neg::evaluate()\n{\n"));
-    assert(this->nchild == 1);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 1);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -79,7 +79,7 @@ neg_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name", v2->method->name);
 	s = subst_intl(scp, i18n("illegal negative ($name)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->child[0]->pos, s);
+	vp = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	break;
     }
@@ -104,16 +104,16 @@ static rpt_expr_method_ty neg_method =
 rpt_expr_ty *
 rpt_expr_neg(rpt_expr_ty *a)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&neg_method);
-    rpt_expr_append(this, a);
-    return this;
+    this_thing = rpt_expr_alloc(&neg_method);
+    rpt_expr_append(this_thing, a);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-pos_evaluate(rpt_expr_ty *this)
+pos_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -125,8 +125,8 @@ pos_evaluate(rpt_expr_ty *this)
      * evaluate the argument
      */
     trace(("pos::evaluate()\n{\n"));
-    assert(this->nchild == 1);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 1);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -156,7 +156,7 @@ pos_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name", v2->method->name);
 	s = subst_intl(scp, i18n("illegal positive ($name)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->child[0]->pos, s);
+	vp = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	break;
     }
@@ -181,9 +181,9 @@ static rpt_expr_method_ty pos_method =
 rpt_expr_ty *
 rpt_expr_pos(rpt_expr_ty *a)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&pos_method);
-    rpt_expr_append(this, a);
-    return this;
+    this_thing = rpt_expr_alloc(&pos_method);
+    rpt_expr_append(this_thing, a);
+    return this_thing;
 }

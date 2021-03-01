@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1999, 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -219,6 +219,12 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Some compilers bury absolute path names into object files and executables.
+The renaming of the integration directory to become the new baseline
+breaks these paths.  This command is passed an environment variable
+called AEGIS_\%INTEGRATION_\%DIRECTORY so that the appropriate symlink
+may be placed, if desired.
 .PP
 Executed as: the project owner.
 Current directory: the new project baseline.

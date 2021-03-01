@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -163,9 +163,12 @@ split(void)
 
     /*
      * increase the modulus by one
+     *
+     * FIXME: must double to get O(1) behaviour.
      */
     hash_modulus++;
     hash_table =
+        (wstring_ty **)
 	mem_change_size(hash_table, hash_modulus * sizeof(wstring_ty *));
     hash_table[hash_modulus - 1] = 0;
     hash_split = hash_modulus - hash_cutover;
@@ -290,9 +293,14 @@ wstr_n_from_c(const char *s, size_t length)
      */
     if (bufmax < length)
     {
-	bufmax = length;
+	for (;;)
+	{
+	    bufmax = bufmax * 2 + 8;
+	    if (length <= bufmax)
+		break;
+	}
 	/* the 4 is the longest escape sequence */
-	buf = mem_change_size(buf, bufmax * sizeof(wchar_t) * 4);
+	buf = (wchar_t *)mem_change_size(buf, bufmax * sizeof(wchar_t) * 4);
     }
 
     /*
@@ -421,7 +429,7 @@ wstr_to_mbs(const wstring_ty *s, char **result_p, size_t *result_length_p)
     if (buflen < s->wstr_length + 1)
     {
 	/*
-	 * There are some wonderfully brain-dead implementatiosn
+	 * There are some wonderfully brain-dead implementations
 	 * out there.  The more stupid ones manage to make
 	 * MB_CUR_MAX be zero!
 	 */
@@ -429,8 +437,13 @@ wstr_to_mbs(const wstring_ty *s, char **result_p, size_t *result_length_p)
     }
     if (buflen > bufmax)
     {
-	bufmax = buflen;
-	buf = mem_change_size(buf, bufmax);
+	for (;;)
+	{
+	    bufmax = bufmax * 2 + 8;
+	    if (buflen <= bufmax)
+		break;
+	}
+	buf = (char *)mem_change_size(buf, bufmax);
     }
 
     /*
@@ -682,8 +695,13 @@ wstr_catenate(const wstring_ty *s1, const wstring_ty *s2)
     length = s1->wstr_length + s2->wstr_length;
     if (length > tmplen)
     {
-	tmplen = length;
-	tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
+	for (;;)
+	{
+	    tmplen = tmplen * 2 + 8;
+	    if (length <= tmplen)
+		break;
+	}
+	tmp = (wchar_t *)mem_change_size(tmp, tmplen * sizeof(wchar_t));
     }
     memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
     memcpy
@@ -727,8 +745,13 @@ wstr_cat_three(const wstring_ty *s1, const wstring_ty *s2, const wstring_ty *s3)
     length = s1->wstr_length + s2->wstr_length + s3->wstr_length;
     if (tmplen < length)
     {
-	tmplen = length;
-	tmp = mem_change_size(tmp, tmplen * sizeof(wchar_t));
+	for (;;)
+	{
+	    tmplen = tmplen * 2 + 8;
+	    if (length <= tmplen)
+		break;
+	}
+	tmp = (wchar_t *)mem_change_size(tmp, tmplen * sizeof(wchar_t));
     }
     memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
     memcpy
@@ -758,8 +781,13 @@ wstr_capitalize(const wstring_ty *ws)
 
     if (ws->wstr_length > buflen)
     {
-	buflen = ws->wstr_length;
-	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+	for (;;)
+	{
+	    buflen = buflen * 2 + 8;
+	    if (ws->wstr_length <= buflen)
+		break;
+	}
+	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
     }
     language_human();
     prev_was_alpha = 0;
@@ -798,8 +826,13 @@ wstr_to_upper(const wstring_ty *ws)
 
     if (ws->wstr_length > buflen)
     {
-	buflen = ws->wstr_length;
-	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+	for (;;)
+	{
+	    buflen = buflen * 2 + 8;
+	    if (ws->wstr_length <= buflen)
+		break;
+	}
+	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
     }
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)
@@ -825,8 +858,13 @@ wstr_to_lower(const wstring_ty *ws)
 
     if (ws->wstr_length > buflen)
     {
-	buflen = ws->wstr_length;
-	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+	for (;;)
+	{
+	    buflen = buflen * 2 + 8;
+	    if (ws->wstr_length <= buflen)
+		break;
+	}
+	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
     }
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)
@@ -854,8 +892,13 @@ wstr_to_ident(const wstring_ty *ws)
 	return wstr_from_c("_");
     if (ws->wstr_length > buflen)
     {
-	buflen = ws->wstr_length;
-	buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+	for (;;)
+	{
+	    buflen = buflen * 2 + 8;
+	    if (ws->wstr_length <= buflen)
+		break;
+	}
+	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
     }
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)

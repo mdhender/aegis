@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,7 @@
 
 
 wstring_ty *
-sub_right(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
+sub_right(sub_context_ty *scp, wstring_list_ty *arg)
 {
 	wstring_ty	*result;
 	string_ty	*s;
@@ -50,7 +48,7 @@ sub_right(scp, arg)
 
 	if (n <= 0)
 		result = wstr_from_c("");
-	else if (n > arg->item[1]->wstr_length)
+	else if (n > (long)arg->item[1]->wstr_length)
 		result = wstr_copy(arg->item[1]);
 	else
 	{

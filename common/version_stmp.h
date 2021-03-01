@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-char *version_stamp(void);
-char *copyright_years(void);
+const char *version_stamp(void);
+const char *copyright_years(void);
 
 #endif /* COMMON_VERSION_STMP_H */

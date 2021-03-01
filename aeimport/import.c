@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,6 @@
  */
 
 #include <ac/stdio.h>
-#include <ac/time.h>
 
 #include <ael/project/projects.h>
 #include <arglex3.h>
@@ -38,18 +37,20 @@
 #include <import.h>
 #include <io.h>
 #include <lock.h>
-#include <progname.h>
-#include <sub.h>
-#include <synthesize.h>
+#include <now.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
 #include <project/history.h>
 #include <project/pattr/set.h>
 #include <project/verbose.h>
 #include <reconstruct.h>
+#include <sub.h>
+#include <synthesize.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
+#include <version.h>
 #include <zero.h>
 
 
@@ -68,7 +69,7 @@
 static void
 import_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s [ <option>... ]\n", progname);
@@ -83,7 +84,7 @@ import_list(void)
     arglex();
     while (arglex_token != arglex_token_eoln)
 	generic_argument(import_usage);
-    list_projects(0, 0);
+    list_projects(0, 0, 0);
 }
 
 
@@ -137,7 +138,7 @@ import_main(void)
     string_ty	    *version_string;
     long	    j;
     pattr	    pattr_data;
-    char	    *format_name =  0;
+    const char      *format_name =  0;
     format_ty	    *format;
     format_search_list_ty *fslp;
     string_ty	    *source_directory;
@@ -145,7 +146,6 @@ import_main(void)
     project_ty	    *ppp;
     string_list_ty  staff;
     int		    mode;
-    time_t	    when;
 
     trace(("import_main()\n{\n"));
     project_name = 0;
@@ -303,6 +303,25 @@ import_main(void)
      */
     string_list_constructor(&staff);
     format_search_list_staff(fslp, &staff);
+
+    /* -------------------------------------------------------------- */
+
+    /*
+     * Grope the file version information in order to produce a list
+     * of change sets.
+     */
+    error_intl(0, i18n("find change sets"));
+    cslp = change_set_find(fslp);
+
+    /*
+     * Now set the current time to just before the first change set
+     * discovered.
+     */
+    if (cslp->length)
+    {
+	now_set(cslp->item[0]->when - 60);
+	now_unclearable();
+    }
 
     /* -------------------------------------------------------------- */
 
@@ -513,15 +532,7 @@ import_main(void)
 	ppp = version_pp[version_number_length - 1];
     project_name = str_copy(project_name_get(ppp));
 
-    /* -------------------------------------------------------------- */
-
-    /*
-     * Grope the file version information in order to produce a list
-     * of change sets.
-     */
-    project_error(ppp, 0, i18n("find change sets"));
     project_free(pp);
-    cslp = change_set_find(fslp);
     pp = 0;
     ppp = 0;
 
@@ -532,11 +543,7 @@ import_main(void)
      * necessary so that we can do all of the commits and produce
      * a complete project at the end of the process.
      */
-    if (cslp->length)
-	when = cslp->item[0]->when - 60;
-    else
-    	time(&when);
-    config_file(project_name, format, when);
+    config_file(project_name, format, now());
 
     /*
      * Create a change for each change set
@@ -571,6 +578,10 @@ import(void)
 
     case arglex_token_list:
 	import_list();
+	break;
+
+    case arglex_token_version:
+	version();
 	break;
     }
 }

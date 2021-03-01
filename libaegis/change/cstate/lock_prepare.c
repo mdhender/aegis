@@ -29,11 +29,8 @@
 #include <user.h>
 
 
-static void waiting_callback _((void*));
-
 static void
-waiting_callback(p)
-	void		*p;
+waiting_callback(void *p)
 {
 	change_ty	*cp;
 
@@ -46,8 +43,7 @@ waiting_callback(p)
 
 
 void
-change_cstate_lock_prepare(cp)
-	change_ty	*cp;
+change_cstate_lock_prepare(change_ty *cp)
 {
 	trace(("change_cstate_lock_prepare(cp = %08lX)\n{\n", (long)cp));
 	assert(cp->reference_count >= 1);

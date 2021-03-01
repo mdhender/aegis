@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,110 +40,93 @@ struct input_catenate_ty
 };
 
 
-static void input_catenate_destructor _((input_ty *));
-
 static void
-input_catenate_destructor(p)
-    input_ty        *p;
+input_catenate_destructor(input_ty *p)
 {
-    input_catenate_ty *this;
+    input_catenate_ty *this_thing;
     size_t          j;
 
     trace(("input_catenate_destructor()\n{\n"));
-    this = (input_catenate_ty *)p;
-    input_pushback_transfer(this->deeper[this->selector], p);
-    if (this->delete_on_close)
+    this_thing = (input_catenate_ty *)p;
+    input_pushback_transfer(this_thing->deeper[this_thing->selector], p);
+    if (this_thing->delete_on_close)
     {
-	for (j = 0; j < this->ndeeper; ++j)
+	for (j = 0; j < this_thing->ndeeper; ++j)
 	{
-	    input_delete(this->deeper[j]);
-	    this->deeper[j] = 0;
+	    input_delete(this_thing->deeper[j]);
+	    this_thing->deeper[j] = 0;
 	}
     }
-    this->deeper = 0;
+    this_thing->deeper = 0;
     trace(("}\n"));
 }
 
 
-static long input_catenate_read _((input_ty *, void *, size_t));
-
 static long
-input_catenate_read(ip, data, len)
-    input_ty        *ip;
-    void            *data;
-    size_t          len;
+input_catenate_read(input_ty *ip, void *data, size_t len)
 {
-    input_catenate_ty *this;
+    input_catenate_ty *this_thing;
     size_t          nbytes;
     input_ty        *fp;
 
     trace(("input_catenate_read()\n{\n"));
-    this = (input_catenate_ty *)ip;
+    this_thing = (input_catenate_ty *)ip;
     for (;;)
     {
-	assert(this->selector < this->ndeeper);
-	fp = this->deeper[this->selector];
+	assert(this_thing->selector < this_thing->ndeeper);
+	fp = this_thing->deeper[this_thing->selector];
 	nbytes = input_read(fp, data, len);
 	if (nbytes)
 	    break;
-	if (this->selector + 1 >= this->ndeeper)
+	if (this_thing->selector + 1 >= (int)this_thing->ndeeper)
 	    break;
-	this->selector++;
+	this_thing->selector++;
     }
-    this->pos += nbytes;
+    this_thing->pos += nbytes;
     trace(("return %ld;\n", (long)nbytes));
     trace(("}\n"));
     return nbytes;
 }
 
 
-static long input_catenate_ftell _((input_ty *));
-
 static long
-input_catenate_ftell(fp)
-    input_ty        *fp;
+input_catenate_ftell(input_ty *fp)
 {
-    input_catenate_ty *this;
+    input_catenate_ty *this_thing;
 
-    this = (input_catenate_ty *)fp;
-    trace(("input_catenate_ftell => %ld\n", (long)this->pos));
-    return this->pos;
+    this_thing = (input_catenate_ty *)fp;
+    trace(("input_catenate_ftell => %ld\n", (long)this_thing->pos));
+    return this_thing->pos;
 }
 
 
-static string_ty *input_catenate_name _((input_ty *));
-
 static string_ty *
-input_catenate_name(p)
-    input_ty        *p;
+input_catenate_name(input_ty *p)
 {
-    input_catenate_ty *this;
+    input_catenate_ty *this_thing;
     input_ty        *fp;
 
     trace(("input_catenate_name\n"));
-    this = (input_catenate_ty *)p;
-    assert(this->selector < this->ndeeper);
-    fp = this->deeper[this->selector];
+    this_thing = (input_catenate_ty *)p;
+    assert(this_thing->selector < this_thing->ndeeper);
+    fp = this_thing->deeper[this_thing->selector];
     return input_name(fp);
 }
 
 
-static long input_catenate_length _((input_ty *));
-
 static long
-input_catenate_length(p)
-    input_ty        *p;
+input_catenate_length(input_ty *p)
 {
-    input_catenate_ty *this;
+    input_catenate_ty *this_thing;
     long            result;
     size_t          j;
     long            len;
 
-    this = (input_catenate_ty *)p;
+    this_thing = (input_catenate_ty *)p;
     result = 0;
-    for (j = 0; j < this->ndeeper; ++j)
+    for (j = 0; j < this_thing->ndeeper; ++j)
     {
-	len = input_length(this->deeper[j]);
+	len = input_length(this_thing->deeper[j]);
 	if (len < 0)
 	{
 	    result = -1;
@@ -168,26 +151,23 @@ static input_vtbl_ty vtbl =
 
 
 input_ty *
-input_catenate(fpl, nfp, del)
-    input_ty        **fpl;
-    size_t          nfp;
-    int             del;
+input_catenate(input_ty **fpl, size_t nfp, int del)
 {
     input_ty        *result;
-    input_catenate_ty *this;
+    input_catenate_ty *this_thing;
     size_t          j;
 
     trace(("input_catenate(fpl = %08lX, nfp = %ld)\n{\n",
 	    (long)fpl, (long)nfp));
     result = input_new(&vtbl);
-    this = (input_catenate_ty *)result;
-    this->ndeeper = nfp;
-    this->deeper = mem_alloc(nfp * sizeof(input_ty *));
+    this_thing = (input_catenate_ty *)result;
+    this_thing->ndeeper = nfp;
+    this_thing->deeper = (input_ty **)mem_alloc(nfp * sizeof(input_ty *));
     for (j = 0; j < nfp; ++j)
-	this->deeper[j] = fpl[j];
-    this->delete_on_close = !!del;
-    this->selector = 0;
-    this->pos = 0;
+	this_thing->deeper[j] = fpl[j];
+    this_thing->delete_on_close = !!del;
+    this_thing->selector = 0;
+    this_thing->pos = 0;
     trace(("return %08lX\n", (long)result));
     trace(("}\n"));
     return result;

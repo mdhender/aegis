@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,12 +33,8 @@
 #include <str_list.h>
 
 
-static string_ty *path_cat _((string_ty *, string_ty *));
-
 static string_ty *
-path_cat(s1, s2)
-    string_ty       *s1;
-    string_ty       *s2;
+path_cat(string_ty *s1, string_ty *s2)
 {
     static string_ty *dot;
 
@@ -53,13 +49,8 @@ path_cat(s1, s2)
 
 
 string_ty *
-dir_stack_find(stack, start_pos, path, st, depth_p, ignore_symlinks)
-    string_list_ty  *stack;
-    size_t          start_pos;
-    string_ty       *path;
-    struct stat     *st;
-    int             *depth_p;
-    int             ignore_symlinks;
+dir_stack_find(string_list_ty *stack, size_t start_pos, string_ty *path,
+    struct stat *st, int *depth_p, int ignore_symlinks)
 {
     size_t          j;
     string_ty       *dir;
@@ -161,12 +152,8 @@ dir_stack_find(stack, start_pos, path, st, depth_p, ignore_symlinks)
 
 
 void
-dir_stack_stat(stack, path, st, depth_p, ignore_symlinks)
-    string_list_ty  *stack;
-    string_ty       *path;
-    struct stat     *st;
-    int             *depth_p;
-    int             ignore_symlinks;
+dir_stack_stat(string_list_ty *stack, string_ty *path, struct stat *st,
+    int *depth_p, int ignore_symlinks)
 {
     string_ty       *result;
 
@@ -188,10 +175,8 @@ dir_stack_stat(stack, path, st, depth_p, ignore_symlinks)
 
 
 void
-dir_stack_readdir(stack, path, result)
-    string_list_ty  *stack;
-    string_ty       *path;
-    string_list_ty  *result;
+dir_stack_readdir(string_list_ty *stack, string_ty *path,
+    string_list_ty *result)
 {
     size_t          j;
     string_ty       *s;
@@ -245,12 +230,8 @@ dir_stack_readdir(stack, path, result)
 
 
 void
-dir_stack_walk(stack, path, callback, arg, ignore_symlinks)
-    string_list_ty  *stack;
-    string_ty       *path;
-    dir_stack_walk_callback_t callback;
-    void            *arg;
-    int             ignore_symlinks;
+dir_stack_walk(string_list_ty *stack, string_ty *path,
+    dir_stack_walk_callback_t callback, void *arg, int ignore_symlinks)
 {
     string_list_ty  wl;
     struct stat     st;
@@ -271,7 +252,7 @@ dir_stack_walk(stack, path, callback, arg, ignore_symlinks)
 	string_list_constructor(&wl);
 	dir_stack_readdir(stack, path, &wl);
 	trace(("mark\n"));
-	for (j = 0; j < wl.nstrings; ++j)
+	for (j = 0; j < (int)wl.nstrings; ++j)
 	{
 	    s = path_cat(path, wl.string[j]);
 	    trace(("s = \"%s\";\n", s->str_text));
@@ -305,14 +286,12 @@ dir_stack_walk(stack, path, callback, arg, ignore_symlinks)
 	    ignore_symlinks);
 	break;
     }
-    trace(( /*{ */ "}\n"));
+    trace(("}\n"));
 }
 
 
 string_ty *
-dir_stack_relative(stack, path)
-    string_list_ty  *stack;
-    string_ty       *path;
+dir_stack_relative(string_list_ty *stack, string_ty *path)
 {
     size_t          j;
     string_ty       *s;

@@ -49,8 +49,7 @@ static stracc_t buffer;
 
 
 void
-lex_open(s)
-    string_ty	    *s;
+lex_open(string_ty *s)
 {
     input_ty	    *fp;
 
@@ -82,23 +81,21 @@ lex_open(s)
 
 
 void
-lex_open_env(s)
-    const char	    *s;
+lex_open_env(const char *s)
 {
     lex_open_input(input_env_open(s));
 }
 
 
 void
-lex_open_input(ifp)
-    input_ty	    *ifp;
+lex_open_input(input_ty *ifp)
 {
     input = ifp;
 }
 
 
 void
-lex_close()
+lex_close(void)
 {
     if (error_count)
     {
@@ -120,7 +117,7 @@ lex_close()
 
 
 int
-gram_lex()
+gram_lex(void)
 {
     sub_context_ty  *scp;
     int		    c;
@@ -670,8 +667,7 @@ gram_lex()
 
 
 void
-gram_error(s)
-    const char	    *s;
+gram_error(const char *s)
 {
     sub_context_ty  *scp;
 
@@ -682,9 +678,7 @@ gram_error(s)
 
 
 void
-lex_error(scp, s)
-    sub_context_ty  *scp;
-    const char	    *s;
+lex_error(sub_context_ty *scp, const char *s)
 {
     string_ty	    *msg;
 

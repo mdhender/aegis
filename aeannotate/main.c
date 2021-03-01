@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,50 +32,46 @@
 #include <os.h>
 #include <str.h>
 #include <usage.h>
+#include <version.h>
 
-
-static void main_help _((void));
 
 static void
-main_help()
+main_help(void)
 {
-	help(0, usage);
+    help(0, usage);
 }
 
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
-	static arglex_dispatch_ty dispatch[] =
-        {
-		{ arglex_token_list, list, },
-		{ arglex_token_help, main_help, },
-	};
+    static arglex_dispatch_ty dispatch[] =
+    {
+	{ arglex_token_list, list, },
+	{ arglex_token_help, main_help, },
+	{ arglex_token_version, version, },
+    };
 
-	/*
-	 * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
-	 * kinda dumb, because it breaks assumptions made in libc (like
-	 * pclose, for instance).  It also blows away most of Cook's
-	 * process handling.  We explicitly set the SIGCHLD signal
-	 * handling to SIG_DFL to make sure this signal does what we
-	 * expect no matter how we are invoked.
-	 */
+    /*
+     * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
+     * kinda dumb, because it breaks assumptions made in libc (like
+     * pclose, for instance).  It also blows away most of Cook's
+     * process handling.  We explicitly set the SIGCHLD signal
+     * handling to SIG_DFL to make sure this signal does what we
+     * expect no matter how we are invoked.
+     */
 #ifdef SIGCHLD
-	signal(SIGCHLD, SIG_DFL);
+    signal(SIGCHLD, SIG_DFL);
 #else
-	signal(SIGCLD, SIG_DFL);
+    signal(SIGCLD, SIG_DFL);
 #endif
 
-	arglex3_init(argc, argv);
-	str_initialize();
-	env_initialize();
-	language_init();
-	os_become_init_mortal();
-	arglex_dispatch(dispatch, SIZEOF(dispatch), annotate);
-	exit(0);
-	return 0;
+    arglex3_init(argc, argv);
+    str_initialize();
+    env_initialize();
+    language_init();
+    os_become_init_mortal();
+    arglex_dispatch(dispatch, SIZEOF(dispatch), annotate);
+    exit(0);
+    return 0;
 }

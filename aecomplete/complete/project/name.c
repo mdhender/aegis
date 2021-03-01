@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,21 +28,14 @@
 #include <str_list.h>
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
     string_list_ty  list;
     string_ty       *prefix;
@@ -73,7 +66,7 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_project_name()
+complete_project_name(void)
 {
     return complete_new(&vtbl);
 }

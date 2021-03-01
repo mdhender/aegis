@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,21 +39,21 @@ struct tree_constant_ty
 static void
 destructor(tree_ty *tp)
 {
-    tree_constant_ty *this;
+    tree_constant_ty *this_thing;
 
-    this = (tree_constant_ty *)tp;
-    rpt_value_free(this->value);
+    this_thing = (tree_constant_ty *)tp;
+    rpt_value_free(this_thing->value);
 }
 
 
 static void
 print(tree_ty *tp)
 {
-    tree_constant_ty *this;
+    tree_constant_ty *this_thing;
     rpt_value_ty    *vp;
 
-    this = (tree_constant_ty *)tp;
-    vp = rpt_value_stringize(this->value);
+    this_thing = (tree_constant_ty *)tp;
+    vp = rpt_value_stringize(this_thing->value);
     printf("'%s'", rpt_value_string_query(vp)->str_text);
     rpt_value_free(vp);
 }
@@ -62,10 +62,10 @@ print(tree_ty *tp)
 static rpt_value_ty *
 evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 {
-    tree_constant_ty *this;
+    tree_constant_ty *this_thing;
 
-    this = (tree_constant_ty *)tp;
-    return rpt_value_copy(this->value);
+    this_thing = (tree_constant_ty *)tp;
+    return rpt_value_copy(this_thing->value);
 }
 
 
@@ -100,10 +100,10 @@ tree_ty *
 tree_constant_new(rpt_value_ty *value)
 {
     tree_ty         *tp;
-    tree_constant_ty *this;
+    tree_constant_ty *this_thing;
 
     tp = tree_new(&method);
-    this = (tree_constant_ty *)tp;
-    this->value = rpt_value_copy(value);
+    this_thing = (tree_constant_ty *)tp;
+    this_thing->value = rpt_value_copy(value);
     return tp;
 }

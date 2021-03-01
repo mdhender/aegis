@@ -26,9 +26,7 @@
 
 
 long
-change_history_change_by_delta(cp, delta_number)
-    change_ty       *cp;
-    long            delta_number;
+change_history_change_by_delta(change_ty *cp, long delta_number)
 {
     cstate	    cstate_data;
     cstate_branch_history_list h;

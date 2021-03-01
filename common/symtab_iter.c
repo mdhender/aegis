@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ symtab_iterator_new(symtab_ty *stp)
     symtab_iterator *stip;
 
     assert(stp);
-    stip = mem_alloc(sizeof(symtab_iterator));
+    stip = (symtab_iterator *)mem_alloc(sizeof(symtab_iterator));
     symtab_iterator_constructor(stip, stp);
     return stip;
 }

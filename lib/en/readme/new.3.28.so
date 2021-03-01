@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -82,4 +82,4 @@ user appear.
 A number of errors and typos have been fixed in the documentation.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.28
+.SS Version 3.28 (21-Aug-2001)

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,21 +28,15 @@
 #include <str.h>
 
 
-static rpt_value_ty *arithmetic _((rpt_value_ty *));
-
 static rpt_value_ty *
-arithmetic(vp)
-	rpt_value_ty	*vp;
+arithmetic(rpt_value_ty *vp)
 {
 	return rpt_value_integer(0);
 }
 
 
-static rpt_value_ty *stringize _((rpt_value_ty *));
-
 static rpt_value_ty *
-stringize(vp)
-	rpt_value_ty	*vp;
+stringize(rpt_value_ty *vp)
 {
 	string_ty	*s;
 	rpt_value_ty	*result;
@@ -54,43 +48,29 @@ stringize(vp)
 }
 
 
-static rpt_value_ty *booleanize _((rpt_value_ty *));
-
 static rpt_value_ty *
-booleanize(vp)
-	rpt_value_ty	*vp;
+booleanize(rpt_value_ty *vp)
 {
 	return rpt_value_boolean(0);
 }
 
 
-static rpt_value_ty *lookup _((rpt_value_ty *, rpt_value_ty *, int));
-
 static rpt_value_ty *
-lookup(vp, rhs, lvalue)
-	rpt_value_ty	*vp;
-	rpt_value_ty	*rhs;
-	int		lvalue;
+lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 {
 	return rpt_value_copy(vp);
 }
 
 
-static rpt_value_ty *keys _((rpt_value_ty *));
-
 static rpt_value_ty *
-keys(vp)
-	rpt_value_ty	*vp;
+keys(rpt_value_ty *vp)
 {
 	return rpt_value_list();
 }
 
 
-static rpt_value_ty *count _((rpt_value_ty *));
-
 static rpt_value_ty *
-count(vp)
-	rpt_value_ty	*vp;
+count(rpt_value_ty *vp)
 {
 	return rpt_value_integer(0);
 }

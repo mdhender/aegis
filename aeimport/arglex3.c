@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 static arglex_table_ty argtab[] =
 {
     { "-FORmat", arglex_token_format, },
-    { 0, }
+    ARGLEX_END_MARKER
 };
 
 

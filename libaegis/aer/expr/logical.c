@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 
 
 static rpt_value_ty *
-and_evaluate(rpt_expr_ty *this)
+and_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v1i;
@@ -40,8 +40,8 @@ and_evaluate(rpt_expr_ty *this)
     /*
      * eveluate the left hand side
      */
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_booleanize(v1);
@@ -61,7 +61,7 @@ and_evaluate(rpt_expr_ty *this)
 		i18n("boolean value required for logical and (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -77,7 +77,7 @@ and_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2i = rpt_value_booleanize(v2);
@@ -97,7 +97,7 @@ and_evaluate(rpt_expr_ty *this)
 		i18n("boolean value required for logical and (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[1]->pos, s);
+	result = rpt_value_error(this_thing->child[1]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -120,17 +120,17 @@ static rpt_expr_method_ty and_method =
 rpt_expr_ty *
 rpt_expr_and_logical(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&and_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&and_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-or_evaluate(rpt_expr_ty *this)
+or_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v1i;
@@ -141,8 +141,8 @@ or_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the left hand side
      */
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_booleanize(v1);
@@ -162,7 +162,7 @@ or_evaluate(rpt_expr_ty *this)
 		i18n("boolean value required for logical or (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -178,7 +178,7 @@ or_evaluate(rpt_expr_ty *this)
     /*
      * evaluate the right hand side
      */
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2i = rpt_value_booleanize(v2);
@@ -198,7 +198,7 @@ or_evaluate(rpt_expr_ty *this)
 		i18n("boolean value required for logical or (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[1]->pos, s);
+	result = rpt_value_error(this_thing->child[1]->pos, s);
 	str_free(s);
 	return result;
     }
@@ -221,17 +221,17 @@ static rpt_expr_method_ty or_method =
 rpt_expr_ty *
 rpt_expr_or_logical(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&or_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&or_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-not_evaluate(rpt_expr_ty *this)
+not_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v2;
@@ -241,8 +241,8 @@ not_evaluate(rpt_expr_ty *this)
      * evaluate the argument
      */
     trace(("not::evaluate()\n{\n"));
-    assert(this->nchild == 1);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 1);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -271,7 +271,7 @@ not_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name", v2->method->name);
 	s = subst_intl(scp, i18n("illegal logical not ($name)"));
 	sub_context_delete(scp);
-	vp = rpt_value_error(this->child[0]->pos, s);
+	vp = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
     }
     rpt_value_free(v2);
@@ -295,16 +295,16 @@ static rpt_expr_method_ty not_method =
 rpt_expr_ty *
 rpt_expr_not_logical(rpt_expr_ty *a)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&not_method);
-    rpt_expr_append(this, a);
-    return this;
+    this_thing = rpt_expr_alloc(&not_method);
+    rpt_expr_append(this_thing, a);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-if_evaluate(rpt_expr_ty *this)
+if_evaluate(rpt_expr_ty *this_thing)
 {
     rpt_value_ty    *v1;
     rpt_value_ty    *v1b;
@@ -315,8 +315,8 @@ if_evaluate(rpt_expr_ty *this)
      * evaluate the argument
      */
     trace(("if::evaluate()\n{\n"));
-    assert(this->nchild == 3);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 3);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -344,7 +344,7 @@ if_evaluate(rpt_expr_ty *this)
 	      i18n("boolean value required for arithmetic if (was given $name)")
 	    );
 	sub_context_delete(scp);
-	result = rpt_value_error(this->child[0]->pos, s);
+	result = rpt_value_error(this_thing->child[0]->pos, s);
 	str_free(s);
 	trace(("}\n"));
 	return result;
@@ -353,9 +353,9 @@ if_evaluate(rpt_expr_ty *this)
     cond = rpt_value_boolean_query(v1b);
     rpt_value_free(v1b);
     if (cond)
-	result = rpt_expr_evaluate(this->child[1], 0);
+	result = rpt_expr_evaluate(this_thing->child[1], 0);
     else
-	result = rpt_expr_evaluate(this->child[2], 0);
+	result = rpt_expr_evaluate(this_thing->child[2], 0);
 
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
@@ -377,11 +377,11 @@ static rpt_expr_method_ty if_method =
 rpt_expr_ty *
 rpt_expr_if(rpt_expr_ty *e1, rpt_expr_ty *e2, rpt_expr_ty *e3)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&if_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    rpt_expr_append(this, e3);
-    return this;
+    this_thing = rpt_expr_alloc(&if_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    rpt_expr_append(this_thing, e3);
+    return this_thing;
 }

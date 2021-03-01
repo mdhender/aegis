@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <gettime.h>
 #include <help.h>
 #include <input/file.h>
+#include <now.h>
 #include <option.h>
 #include <os.h>
 #include <output/conten_encod.h>
@@ -76,7 +77,7 @@ len_printable(string_ty *s, int max)
 static void
 usage(void)
 {
-    char            *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
@@ -107,7 +108,7 @@ send(void)
     output_ty       *t2;
     string_ty       *project_name;
     long            change_number;
-    char            *branch;
+    const char      *branch;
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
@@ -125,7 +126,7 @@ send(void)
     string_ty       *dev_null;
     long            delta_number;
     time_t          delta_date;
-    char            *delta_name;
+    const char      *delta_name;
 
     branch = 0;
     change_number = 0;
@@ -425,8 +426,6 @@ send(void)
     }
     if (delta_date != NO_TIME_SET)
     {
-	time_t          now;
-
 	/*
 	 * If the time is in the future, you could get a different
 	 * answer for the same input at some point in the future.
@@ -434,8 +433,7 @@ send(void)
 	 * This is the "time safe" quality first described by
 	 * Damon Poole <damon@ede.com>
 	 */
-	time(&now);
-	if (delta_date > now)
+	if (delta_date > now())
 	    project_error(pp, 0, i18n("date in the future"));
 
 	/*
@@ -518,16 +516,18 @@ send(void)
     output_fprintf
     (
 	ofp,
-	"Content-Name: %s.C%3.3ld.patch\n",
+	"Content-Name: %s.C%3.3ld.patch%s\n",
 	project_name_get(pp)->str_text,
-	change_number
+	change_number,
+	(compress ? ".gz" : "")
     );
     output_fprintf
     (
 	ofp,
-	"Content-Disposition: attachment; filename=%s.C%3.3ld.patch\n",
+	"Content-Disposition: attachment; filename=%s.C%3.3ld.patch%s\n",
 	project_name_get(pp)->str_text,
-	change_number
+	change_number,
+	(compress ? ".gz" : "")
     );
     output_fprintf
     (

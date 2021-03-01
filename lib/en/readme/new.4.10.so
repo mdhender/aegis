@@ -146,4 +146,4 @@ The \fIaeannotate\fP(1) command now olny prints caption columns if their
 value changes.  This highlights the differences, and is less distracting.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.10
+.SS Version 4.10 (24-Dec-2002)

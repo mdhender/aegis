@@ -30,6 +30,7 @@
 #include <error.h>	/* for assert */
 #include <help.h>
 #include <input/cpio.h>
+#include <move.h>
 #include <open.h>
 #include <os.h>
 #include <output/bit_bucket.h>
@@ -103,6 +104,7 @@ receive_main(void (*usage)(void))
     string_list_ty  files_build;
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;
+    move_list_ty    files_moved;
     int             need_to_test;
     int             could_have_a_trojan;
     int             config_seen;
@@ -580,6 +582,7 @@ receive_main(void (*usage)(void))
     /*
      * add the removed files to the change
      */
+    move_list_constructor(&files_moved);
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src      src_data;
@@ -595,7 +598,17 @@ receive_main(void (*usage)(void))
 	/*
 	 * add it to the list
 	 */
-	string_list_append_unique(&files_source, src_data->file_name);
+	if (src_data->move)
+	{
+	    move_list_append_remove
+	    (
+		&files_moved,
+		src_data->file_name,
+		src_data->move
+	    );
+	}
+	else
+	    string_list_append_unique(&files_source, src_data->file_name);
     }
     if (files_source.nstrings)
     {
@@ -630,6 +643,16 @@ receive_main(void (*usage)(void))
 	/*
 	 * add it to the list
 	 */
+	if (src_data->move)
+	{
+	    move_list_append_create
+	    (
+		&files_moved,
+		src_data->move,
+		src_data->file_name
+	    );
+	    continue;
+	}
 	switch (src_data->usage)
 	{
 	case file_usage_source:
@@ -724,6 +747,99 @@ receive_main(void (*usage)(void))
     string_list_destructor(&files_build);
     string_list_destructor(&files_test_auto);
     string_list_destructor(&files_test_manual);
+
+    /*
+     * Now cope with files which moved.
+     * They get a command each.
+     */
+    os_become_orig();
+    for (j = 0; j < files_moved.length; ++j)
+    {
+	move_ty         *mp;
+
+	mp = files_moved.item + j;
+	if (mp->create)
+	{
+	    if (mp->remove)
+	    {
+		string_ty       *s1;
+		string_ty       *s2;
+		string_ty       *s3;
+
+		s1 = str_quote_shell(mp->from);
+		s2 = str_quote_shell(mp->to);
+		s3 =
+		    str_format
+		    (
+			"aegis --move-file --project=%S --change=%ld "
+			    "--verbose %S %S",
+			project_name,
+			change_number,
+			s1,
+			s2
+		    );
+		str_free(s1);
+		str_free(s2);
+		os_execute(s3, OS_EXEC_FLAG_INPUT, dd);
+		str_free(s3);
+	    }
+	    else
+	    {
+		string_ty       *s1;
+		string_ty       *s2;
+
+		/*
+		 * This can happen with older versions of Aegis if
+		 * the user does aemv, and then aermu of the source.
+		 * Recent versions of Aegis treat this as an error, so
+		 * we can't do what they did, we treat it as a simple
+		 * create instead.
+		 */
+		s1 = str_quote_shell(mp->to);
+		s2 =
+		    str_format
+		    (
+			"aegis --new-file --project=%S --change=%ld "
+			    "--verbose %S",
+			project_name,
+			change_number,
+			s1
+		    );
+		str_free(s1);
+		os_execute(s2, OS_EXEC_FLAG_INPUT, dd);
+		str_free(s2);
+	    }
+	}
+	else
+	{
+	    string_ty       *s1;
+	    string_ty       *s2;
+
+	    /*
+	     * This can happen with an older version of Aegis if the
+	     * user does aemv, and then aenfu of the destination.
+	     * Recent versions of Aegis treat this as an error, so
+	     * we can't do what they did, we treat it as a simple
+	     * remove instead.
+	     */
+	    assert(mp->create);
+	    s1 = str_quote_shell(mp->from);
+	    s2 =
+		str_format
+		(
+		    "aegis --remove-file --project=%S --change=%ld "
+			"--verbose %S",
+		    project_name,
+		    change_number,
+		    s1
+		);
+	    str_free(s1);
+	    os_execute(s2, OS_EXEC_FLAG_INPUT, dd);
+	    str_free(s2);
+	}
+    }
+    move_list_destructor(&files_moved);
+    os_become_undo();
 
     /*
      * now extract each file from the input

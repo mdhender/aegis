@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,7 @@
 
 
 string_ty *
-input_one_line(fp)
-	input_ty	*fp;
+input_one_line(input_ty *fp)
 {
 	int		c;
 	static stracc_t	buffer;

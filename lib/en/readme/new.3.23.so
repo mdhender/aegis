@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2001 Peter Miller;
+.\"	Copyright (C) 2000, 2001, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -110,4 +110,4 @@ very encouraging.  The instructions for how to do this are contained in
 the ``Howto'', in the \fIDeveloper\fP section.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.23
+.SS Version 3.23 (29-Oct-2000)

@@ -27,9 +27,7 @@
 
 
 fstate_src
-change_file_new(cp, file_name)
-	change_ty	*cp;
-	string_ty	*file_name;
+change_file_new(change_ty *cp, string_ty *file_name)
 {
 	fstate		fstate_data;
 	fstate_src	src_data;

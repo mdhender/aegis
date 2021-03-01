@@ -26,13 +26,8 @@
 #include <trace.h>
 
 
-static void fimprove _((fstate, string_ty *, change_ty *));
-
 static void
-fimprove(fstate_data, filename, cp)
-    fstate	    fstate_data;
-    string_ty	    *filename;
-    change_ty	    *cp;
+fimprove(fstate fstate_data, string_ty *filename, change_ty *cp)
 {
     size_t	    j;
 
@@ -47,6 +42,12 @@ fimprove(fstate_data, filename, cp)
 	fstate_src	src;
 
 	src = fstate_data->src->list[j];
+
+	/*
+	 * Fix an ugly inconsistency in the file action.
+	 */
+	if (src->deleted_by && src->action == file_action_create)
+	    src->action = file_action_remove;
 
 	/*
 	 * Historical 2.3 -> 3.0 transition.
@@ -143,8 +144,7 @@ fimprove(fstate_data, filename, cp)
 
 
 fstate
-change_fstate_get(cp)
-    change_ty	    *cp;
+change_fstate_get(change_ty *cp)
 {
     cstate	    cstate_data;
     string_ty	    *fn;

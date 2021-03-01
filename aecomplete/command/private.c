@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,30 +26,28 @@
 
 
 command_ty *
-command_new(vptr)
-    command_vtbl_ty *vptr;
+command_new(command_vtbl_ty *vptr)
 {
-    command_ty      *this;
+    command_ty      *this_thing;
 
     assert(vptr);
-    assert(vptr->size >= sizeof(command_ty));
-    this = mem_alloc(vptr->size);
-    this->vptr = vptr;
-    return this;
+    assert((size_t)vptr->size >= sizeof(command_ty));
+    this_thing = (command_ty *)mem_alloc(vptr->size);
+    this_thing->vptr = vptr;
+    return this_thing;
 }
 
 
 void
-command_delete(this)
-    command_ty      *this;
+command_delete(command_ty *this_thing)
 {
-    assert(this);
-    if (this)
+    assert(this_thing);
+    if (this_thing)
     {
-	assert(this->vptr);
-	if (this->vptr && this->vptr->destructor)
-	    this->vptr->destructor(this);
-	this->vptr = 0;
-	mem_free(this);
+	assert(this_thing->vptr);
+	if (this_thing->vptr && this_thing->vptr->destructor)
+	    this_thing->vptr->destructor(this_thing);
+	this_thing->vptr = 0;
+	mem_free(this_thing);
     }
 }

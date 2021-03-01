@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-2002 Peter Miller;
+.\"	Copyright (C) 1994-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -381,6 +381,26 @@ for (n = 0, bit = 1; n < bit_num; ++n, bit <<= 1)
 .fi
 .ft R
 .RE
+.SS The Try Catch Statement
+The \fItry catch\fP statement is used to catch errors which would usually
+cause the report to fail.
+.RS
+.ft CW
+.nf
+.ta 0.5i 1i 1.5i
+try
+	\fIstatement1\fP
+catch (\fIvariable\fP)
+	\fIstatement2\fP
+.fi
+.ft R
+.RE
+The first statement is executed.
+If no error occurs, nothing else is done.
+If an error occurs in the execution of the first statement
+the firsdt statement execution is terminated and then
+the given variable is set to a description of the
+error and the second statement is executed.
 .SH EXPRESSIONS
 Expressions are much the same as in C,
 using the same operators.

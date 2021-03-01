@@ -233,6 +233,35 @@ version
 This returns the version of the change.
 .RE
 .TP 8n
+Change_Files
+.RS
+This is replaced by a space separated list of change file names.
+There are several qualifying arguments you can give to this substitution:
+.TP 8n
+\fIaction\fP
+You may give one or more file actions (e.g. \fImodify\fP).
+Only files with one of the actions will be returned.
+By default, all file actions are returned.
+.TP 8n
+\fItype\fP
+You may give one or more file types (e.g. \fIsource\fP).
+Only files with one of the types will be returned.
+By default, all file types are returned.
+.TP 8n
+not
+Inverts the sense of operations.
+For example \fI${change_files not remove}\fP will return the names of
+all change files not being removed.
+.TP 8n
+quote
+This does not affect which file are selected, but it causes the file
+names to be quoted if they contain shell meta-characters.
+.PP
+If you specify both actions and types, only files both qualifiers will
+be returned.  For example \fI${change_files modify test}\fP will return
+only the names of automatic test files which are being modified.
+.RE
+.TP 8n
 COMment
 .br
 Inserts exactly nothing; any and all arguments are ignored.

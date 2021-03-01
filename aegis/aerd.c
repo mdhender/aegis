@@ -43,7 +43,7 @@
 static void
 remove_developer_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -102,7 +102,7 @@ remove_developer_list(void)
 	}
 	arglex();
     }
-    list_developers(project_name, 0);
+    list_developers(project_name, 0, 0);
     trace(("}\n"));
 }
 

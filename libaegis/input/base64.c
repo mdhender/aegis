@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,34 +41,34 @@ struct input_base64_ty
 static void
 input_base64_destructor(input_ty *fp)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
-    this = (input_base64_ty *)fp;
-    if (this->close_on_close)
-	input_delete(this->deeper);
-    this->deeper = 0; /* paranoia */
+    this_thing = (input_base64_ty *)fp;
+    if (this_thing->close_on_close)
+	input_delete(this_thing->deeper);
+    this_thing->deeper = 0; /* paranoia */
 }
 
 
 static long
 input_base64_read(input_ty *fp, void *data, size_t len)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
     int		    c;
     unsigned char   *cp;
     unsigned char   *end;
     size_t	    nbytes;
 
-    this = (input_base64_ty *)fp;
-    if (this->eof)
+    this_thing = (input_base64_ty *)fp;
+    if (this_thing->eof)
 	return 0;
-    cp = data;
+    cp = (unsigned char *)data;
     end = cp + len;
     while (cp < end)
     {
-	while (this->residual_bits < 8)
+	while (this_thing->residual_bits < 8)
 	{
-	    c = input_getc(this->deeper);
+	    c = input_getc(this_thing->deeper);
 	    switch (c)
 	    {
 	    case ' ':
@@ -78,7 +78,7 @@ input_base64_read(input_ty *fp, void *data, size_t len)
 		continue;
 
 	    case '=':
-		this->eof = 1;
+		this_thing->eof = 1;
 		goto done;
 
 	    case 'A':
@@ -173,23 +173,23 @@ input_base64_read(input_ty *fp, void *data, size_t len)
 	    default:
 		if (c < 0)
 		{
-		    if (this->residual_bits != 0)
+		    if (this_thing->residual_bits != 0)
 			input_fatal_error(fp, "base64: residual bits != 0");
-		    this->eof = 1;
+		    this_thing->eof = 1;
 		    goto done;
 		}
 		input_fatal_error(fp, "base64: invalid character");
 		/* NOTREACHED */
 	    }
-	    this->residual_value = (this->residual_value << 6) + c;
-	    this->residual_bits += 6;
+	    this_thing->residual_value = (this_thing->residual_value << 6) + c;
+	    this_thing->residual_bits += 6;
 	}
-	this->residual_bits -= 8;
-	*cp++ = (this->residual_value >> this->residual_bits);
+	this_thing->residual_bits -= 8;
+	*cp++ = (this_thing->residual_value >> this_thing->residual_bits);
     }
     done:
     nbytes = (cp - (unsigned char *)data);
-    this->pos += nbytes;
+    this_thing->pos += nbytes;
     return nbytes;
 }
 
@@ -197,20 +197,20 @@ input_base64_read(input_ty *fp, void *data, size_t len)
 static long
 input_base64_tell(input_ty *deeper)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
-    this = (input_base64_ty *)deeper;
-    return this->pos;
+    this_thing = (input_base64_ty *)deeper;
+    return this_thing->pos;
 }
 
 
 static struct string_ty *
 input_base64_name(input_ty *fp)
 {
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
-    this = (input_base64_ty *)fp;
-    return input_name(this->deeper);
+    this_thing = (input_base64_ty *)fp;
+    return input_name(this_thing->deeper);
 }
 
 
@@ -236,16 +236,16 @@ input_ty *
 input_base64(input_ty *deeper, int coc)
 {
     input_ty	    *result;
-    input_base64_ty *this;
+    input_base64_ty *this_thing;
 
     result = input_new(&vtbl);
-    this = (input_base64_ty *)result;
-    this->deeper = deeper;
-    this->close_on_close = !!coc;
-    this->pos = 0;
-    this->residual_bits = 0;
-    this->residual_value = 0;
-    this->eof = 0;
+    this_thing = (input_base64_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->close_on_close = !!coc;
+    this_thing->pos = 0;
+    this_thing->residual_bits = 0;
+    this_thing->residual_value = 0;
+    this_thing->eof = 0;
     return result;
 }
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ typedef enum state_ty state_ty;
 
 
 static void
-format_error(char *fn)
+format_error(const char *fn)
 {
     sub_context_ty  *scp;
 
@@ -66,7 +66,7 @@ format_error(char *fn)
 
 
 static int
-gif_getc(FILE *fp, char *fn)
+gif_getc(FILE *fp, const char *fn)
 {
     int		    c;
 
@@ -90,8 +90,8 @@ gif_getc(FILE *fp, char *fn)
 
 
 static void
-read_image(FILE *fp, char *fn, int row_bytes, unsigned char *data, int width,
-    int height, int interlaced)
+read_image(FILE *fp, const char *fn, int row_bytes, unsigned char *data,
+    int width, int height, int interlaced)
 {
     int		    c;
     int		    unpack_buffer;
@@ -419,7 +419,7 @@ read_image(FILE *fp, char *fn, int row_bytes, unsigned char *data, int width,
 
 
 static int
-get_le_short(FILE *fp, char *fn)
+get_le_short(FILE *fp, const char *fn)
 {
     int		    c1;
     int		    c2;
@@ -436,7 +436,7 @@ get_le_short(FILE *fp, char *fn)
 
 
 gif_ty *
-gif_open(char *fn, int mode)
+gif_open(const char *fn, int mode)
 {
     gif_ty	    *result;
     int		    j;
@@ -451,7 +451,7 @@ gif_open(char *fn, int mode)
     /*
      * initialize things
      */
-    result = mem_alloc(sizeof(gif_ty));
+    result = (gif_ty *)mem_alloc(sizeof(gif_ty));
     for (j = 0; j < 256; ++j)
     {
 	result->colormap[j][0] = j;
@@ -460,7 +460,7 @@ gif_open(char *fn, int mode)
     }
     result->image_flat = 0;
     result->image = 0;
-    result->mode = mode;
+    result->mode = (gif_mode_ty)mode;
     result->mime = 0;
 
     /*
@@ -511,9 +511,10 @@ gif_open(char *fn, int mode)
     /*
      * allocate the image
      */
-    result->image_flat =
-	mem_alloc((size_t)result->width * (size_t)result->height);
-    result->image = mem_alloc((size_t)result->height * sizeof(unsigned char *));
+    result->image_flat = (unsigned char *)mem_alloc(
+        (size_t)result->width * (size_t)result->height);
+    result->image = (unsigned char **)mem_alloc(
+        (size_t)result->height * sizeof(unsigned char *));
     for (j = 0; j < result->height; ++j)
 	result->image[j] = result->image_flat + j * result->width;
 

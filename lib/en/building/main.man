@@ -701,6 +701,13 @@ This program shows the difference between two text files, nicely
 highlighted in color.  This is used by the \fItkaer\fP and \fIaecomp\fP
 scripts (and probably others as they are contributed).
 By John M. Klassa, http://www.ede.com/free/tkdiff
+.TP 8n
+libmagic
+If \fIlibmagic\fP(3) is present, the \fIaeget\fP(1) CGI handler will use
+it to determine the MIME type of files.  This is installed by \fBfile\fP
+version 4.0 and later (\f[CW]ftp://ftp.astron.com/pub/file/\fP), and uses
+the same database as the \fIfile\fP(1) command.  If this library is not
+present when Aegis is built, a much less accurate method will be used.
 .PP
 The tests also depend on the presence of a number of common UNIX programs,
 including but not limited to:
@@ -1221,10 +1228,10 @@ or anything else.
 At this point it would probably be a very good idea to print out the
 manual entries and read them carefully.
 You will also want to print a copy of the User Guide;
-if you don't gave groff,
+if you don't have groff,
 there should be a PostScript copy at the archive site.
 It is a known flaw that the User Guide is incomplete,
-it is something the author is working on "at this moment".
+contributions are most welcome.
 .TP
 9. The Example Project
 .br

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@
 static void
 new_file_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -125,7 +125,7 @@ new_file_list(void)
 	}
 	arglex();
     }
-    list_project_files(project_name, change_number);
+    list_project_files(project_name, change_number, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
@@ -554,7 +554,7 @@ new_file_main(void)
 	}
 	str_free(ffn);
 	user_become_undo();
-	e = change_filename_check(cp, fn, 1);
+	e = change_filename_check(cp, fn);
 	if (e)
 	{
 	    sub_context_ty  *scp;
@@ -594,6 +594,7 @@ new_file_main(void)
     /*
      * ensure that each file
      * 1. is not already part of the change
+     *        - except removed files
      * 2. is not already part of the baseline
      * 3. does not have a directory conflict
      */
@@ -640,15 +641,19 @@ new_file_main(void)
 	    ++nerrs;
 	    continue;
 	}
-	if (change_file_find(cp, s1))
+	src_data = change_file_find(cp, s1);
+	if (src_data)
 	{
-	    sub_context_ty  *scp;
+	    if (src_data->action != file_action_remove)
+	    {
+		sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    change_error(cp, scp, i18n("file $filename dup"));
-	    sub_context_delete(scp);
-	    ++nerrs;
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", s1);
+		change_error(cp, scp, i18n("file $filename dup"));
+		sub_context_delete(scp);
+		++nerrs;
+	    }
 	}
 	else
 	{
@@ -694,7 +699,21 @@ new_file_main(void)
     {
 	fstate_src	src_data;
 
-	src_data = change_file_new(cp, wl.string[j]);
+	s1 = wl.string[j];
+
+	/*
+	 * If the file is already in the change (we checked for this
+	 * earlier) then it must be being removed, and we are replacing
+	 * it, so we can change its type.
+	 */
+	src_data = change_file_find(cp, s1);
+	if (src_data)
+	{
+	    assert(src_data->action == file_action_remove);
+	    change_file_remove(cp, s1);
+	}
+
+	src_data = change_file_new(cp, s1);
 	src_data->action = file_action_create;
 	if (generated)
 	    src_data->usage = file_usage_build;

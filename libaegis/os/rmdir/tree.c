@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,7 @@
 
 
 void
-os_rmdir_tree(path)
-    string_ty       *path;
+os_rmdir_tree(string_ty *path)
 {
     trace(("os_rmdir_tree(path = \"%s\")\n{\n", path->str_text));
     os_become_must_be_active();

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,7 @@
 
 
 int
-file_fingerprint(path, buf, max)
-	char		*path;
-	char		*buf;
-	int		max;
+file_fingerprint(char *path, char *buf, int max)
 {
 	fingerprint_ty	*fp;
 	int		result;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,26 +37,18 @@ struct complete_project_branch_ty
 };
 
 
-static void destructor _((complete_ty *));
-
 static void
-destructor(cp)
-    complete_ty     *cp;
+destructor(complete_ty *cp)
 {
-    complete_project_branch_ty *this;
+    complete_project_branch_ty *this_thing;
 
-    this = (complete_project_branch_ty *)cp;
-    project_free(this->pp);
+    this_thing = (complete_project_branch_ty *)cp;
+    project_free(this_thing->pp);
 }
 
 
-static void hunt _((project_ty *, int, shell_ty *));
-
 static void
-hunt(pp, all, sh)
-    project_ty      *pp;
-    int             all;
-    shell_ty        *sh;
+hunt(project_ty *pp, int all, shell_ty *sh)
 {
     string_ty       *prefix;
     string_ty       *s;
@@ -101,28 +93,24 @@ hunt(pp, all, sh)
 }
 
 
-static void perform _((complete_ty *, shell_ty *));
-
 static void
-perform(cp, sh)
-    complete_ty     *cp;
-    shell_ty        *sh;
+perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_project_branch_ty *this;
+    complete_project_branch_ty *this_thing;
     project_ty      *pp;
 
     /*
      * Locate the trunk.
      */
-    this = (complete_project_branch_ty *)cp;
-    pp = this->pp;
+    this_thing = (complete_project_branch_ty *)cp;
+    pp = this_thing->pp;
     while (pp && pp->parent)
 	pp = pp->parent;
 
     /*
      * Scan all of the branches outwards from the trunk.
      */
-    hunt(pp, this->all, sh);
+    hunt(pp, this_thing->all, sh);
 }
 
 
@@ -136,16 +124,14 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_project_branch(pp, all)
-    project_ty      *pp;
-    int             all;
+complete_project_branch(project_ty *pp, int all)
 {
     complete_ty     *result;
-    complete_project_branch_ty *this;
+    complete_project_branch_ty *this_thing;
 
     result = complete_new(&vtbl);
-    this = (complete_project_branch_ty *)result;
-    this->pp = pp;
-    this->all = !!all;
+    this_thing = (complete_project_branch_ty *)result;
+    this_thing->pp = pp;
+    this_thing->all = !!all;
     return result;
 }

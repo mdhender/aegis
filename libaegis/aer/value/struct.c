@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@
  * MANIFEST: functions to manipulate struct values
  */
 
+#include <aer/pos.h>
 #include <aer/value/error.h>
 #include <aer/value/integer.h>
 #include <aer/value/list.h>
@@ -47,7 +48,7 @@ reap(void *p)
     rpt_value_ty    *vp;
 
     trace(("reap(%08lX);\n", (long)p));
-    vp = p;
+    vp = (rpt_value_ty *)p;
     rpt_value_free(vp);
 }
 
@@ -66,15 +67,15 @@ func(symtab_ty *stp, string_ty *key, void *data, void *arg)
 static void
 destruct(rpt_value_ty *vp)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
 
-    trace(("value_struct::destruct(this = %08lX)\n{\n", (long)vp));
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->method->type == rpt_value_type_structure);
+    trace(("value_struct::destruct(this_thing = %08lX)\n{\n", (long)vp));
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->method->type == rpt_value_type_structure);
 #ifdef DEBUG
-    symtab_walk(this->value, func, (void *)0);
+    symtab_walk(this_thing->value, func, (void *)0);
 #endif
-    symtab_free(this->value);
+    symtab_free(this_thing->value);
     trace(("}\n"));
 }
 
@@ -82,16 +83,16 @@ destruct(rpt_value_ty *vp)
 static rpt_value_ty *
 lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
     rpt_value_ty    *rhs2;
     rpt_value_ty    *data;
-    rpt_value_ty    *result;
+    rpt_value_ty    *result = 0;
 
     trace(("value_struct::lookup(lhs = %08lX, rhs = %08lX, lvalue = %d)\n{\n",
 	(long)vp, (long)rhs, lvalue));
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->reference_count >= 1);
-    assert(this->method->type == rpt_value_type_structure);
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->reference_count >= 1);
+    assert(this_thing->method->type == rpt_value_type_structure);
     rhs2 = rpt_value_stringize(rhs);
     if (rhs2->method->type != rpt_value_type_string)
     {
@@ -105,12 +106,14 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 	sub_var_set_charstar(scp, "Name2", rhs->method->name);
 	s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
 	sub_context_delete(scp);
-	result = rpt_value_error((void *)0, s);
+	result = (rpt_value_ty *)rpt_value_error((rpt_pos_ty *)0, s);
 	str_free(s);
 	return result;
     }
     trace(("find the datum\n"));
-    data = symtab_query(this->value, rpt_value_string_query(rhs2));
+    data =
+	(rpt_value_ty *)
+	symtab_query(this_thing->value, rpt_value_string_query(rhs2));
     trace(("data = %08lX;\n", (long)data));
     if (!data)
     {
@@ -121,7 +124,9 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 	    data = rpt_value_reference(result);
 	    /* reference takes a copy */
 	    rpt_value_free(result);
-	    symtab_assign(this->value, rpt_value_string_query(rhs2), data);
+	    symtab_assign(this_thing->value,
+                          rpt_value_string_query(rhs2),
+                          data);
 	    result = rpt_value_copy(data);
 	}
 	else
@@ -168,7 +173,7 @@ keys_callback(symtab_ty *stp, string_ty *key, void *data, void *arg)
     rpt_value_ty    *vlp;
     rpt_value_ty    *s;
 
-    vlp = arg;
+    vlp = (rpt_value_ty *)arg;
     s = rpt_value_string(key);
     rpt_value_list_append(vlp, s);
     rpt_value_free(s);
@@ -178,13 +183,13 @@ keys_callback(symtab_ty *stp, string_ty *key, void *data, void *arg)
 static rpt_value_ty *
 keys(rpt_value_ty *vp)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
     rpt_value_ty    *result;
 
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->method->type == rpt_value_type_structure);
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->method->type == rpt_value_type_structure);
     result = rpt_value_list();
-    symtab_walk(this->value, keys_callback, result);
+    symtab_walk(this_thing->value, keys_callback, result);
     return result;
 }
 
@@ -192,11 +197,11 @@ keys(rpt_value_ty *vp)
 static rpt_value_ty *
 count(rpt_value_ty *vp)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
 
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->method->type == rpt_value_type_structure);
-    return rpt_value_integer(this->value->hash_load);
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->method->type == rpt_value_type_structure);
+    return rpt_value_integer(this_thing->value->hash_load);
 }
 
 
@@ -221,52 +226,52 @@ static rpt_value_method_ty method =
 rpt_value_ty *
 rpt_value_struct(symtab_ty *stp)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
 
-    this = (rpt_value_struct_ty *)rpt_value_alloc(&method);
+    this_thing = (rpt_value_struct_ty *)rpt_value_alloc(&method);
     if (!stp)
 	stp = symtab_alloc(5);
     stp->reap = reap;
-    this->value = stp;
-    return (rpt_value_ty *)this;
+    this_thing->value = stp;
+    return (rpt_value_ty *)this_thing;
 }
 
 
 symtab_ty *
 rpt_value_struct_query(rpt_value_ty *vp)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
 
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->method == &method);
-    return this->value;
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->method == &method);
+    return this_thing->value;
 }
 
 
 rpt_value_ty *
 rpt_value_struct_lookup(rpt_value_ty *vp, string_ty *name)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
 
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->method == &method);
-    return symtab_query(this->value, name);
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->method == &method);
+    return (rpt_value_ty *)symtab_query(this_thing->value, name);
 }
 
 
 void
 rpt_value_struct__set(rpt_value_ty *vp, string_ty *name, rpt_value_ty *value)
 {
-    rpt_value_struct_ty *this;
+    rpt_value_struct_ty *this_thing;
 
-    trace(("rpt_value_struct__set(this = %08lX, name = \"%s\", "
+    trace(("rpt_value_struct__set(this_thing = %08lX, name = \"%s\", "
 	"value = %08lX)\n{\n", (long)vp, name->str_text, (long)value));
-    this = (rpt_value_struct_ty *)vp;
-    assert(this->method == &method);
+    this_thing = (rpt_value_struct_ty *)vp;
+    assert(this_thing->method == &method);
     if (value->method->type == rpt_value_type_reference)
 	value = rpt_value_copy(value);
     else
 	value = rpt_value_reference(value);
-    symtab_assign(this->value, name, value);
+    symtab_assign(this_thing->value, name, value);
     trace(("}\n"));
 }

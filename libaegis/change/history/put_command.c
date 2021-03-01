@@ -32,9 +32,7 @@
 
 
 void
-change_run_history_put_command(cp, src)
-	change_ty	*cp;
-	fstate_src	src;
+change_run_history_put_command(change_ty *cp, fstate_src src)
 {
 	sub_context_ty	*scp;
 	string_ty	*hp;

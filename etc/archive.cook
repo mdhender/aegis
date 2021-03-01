@@ -23,6 +23,7 @@
 integration-build-targets =
 	/* archive/Part.01.gz */
 	/* archive/[project_minus].patch.gz */
+	archive/change_log.txt
 	archive/[project_minus].README
 	archive/[project_minus].ae
 	archive/[project_minus].faq
@@ -48,6 +49,24 @@ if [find_command tardy] then
 	    integration-build-targets += RPM;
     }
 }
+
+if [find_command png2ico] then
+{
+    integration-build-targets += archive/favicon.ico;
+
+    archive/favicon.ico: archive/[project_short].png
+    {
+	pngtopnm [resolve archive/[project_short].png] | pnmgamma 2.0
+	    | pnmscale -xysize 16 16 > temp1.pnm;
+	pnmquant 16 temp1.pnm | pnmtopng > temp16.png;
+	pngtopnm [resolve archive/[project_short].png] | pnmgamma 2.0
+	    | pnmscale -xysize 32 32 > temp1.pnm;
+	pnmquant 16 temp1.pnm | pnmtopng > temp32.png;
+	png2ico [target] temp16.png temp32.png;
+	rm temp1.pnm temp16.png temp32.png;
+    }
+}
+
 integration-build-targets: [integration-build-targets];
 
 html-targets: [html-targets];
@@ -88,9 +107,21 @@ archive/%.html: etc/%.html: etc/ssp.awk
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve etc/%.html]
-	| groff -Tascii -t -P-hub -man
+	| groff -Tascii -t -P-hubc -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
+}
+
+archive/%.txt: etc/%.man
+{
+    roffpp
+	[prepost "-I" /[arch]/etc [search_list]]
+	[prepost "-I" "/etc" [search_list]]
+	[prepost "-I" "/lib/en/readme" [search_list]]
+	[resolve etc/%.man]
+    | groff -Tascii -t -P-bchu -man
+    | [awk] -f [resolve etc/ssp.awk]
+    > [target];
 }
 
 archive/[project_minus].ug.ps.gz: lib/en/user-guide/user-guide.ps.gz
@@ -142,7 +173,7 @@ source_file_order =
 			common/config.h.in
 			common/patchlevel.h
 			configure
-			etc/CHANGES
+			/* etc/CHANGES */
 			[fromto
 				lib/%1/faq/main.%2 lib/%1/faq/toc.so
 				[match_mask lib/%1/faq/main.%2 [source_files]]
@@ -368,7 +399,7 @@ archive/[project_minus].ae: [source_files]
 example-cook-fhist-version = 1.0;
 example-cook-fhist-baseline =
      [collect aegis -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
-	'2>&1' || true];
+	'2>/dev/null' || true];
 
 if [example-cook-fhist-baseline] then
 {
@@ -396,7 +427,7 @@ if [example-cook-fhist-baseline] then
 example-make-rcs-version = 1.0;
 example-make-rcs-baseline =
 	[collect aegis -cd -bl -p example-make-rcs.[example-make-rcs-version]
-		'2>&1' || true];
+		'2>/dev/null' || true];
 
 if [example-make-rcs-baseline] then
 {

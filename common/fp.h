@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_FP_H
 #define COMMON_FP_H
 
-#include <main.h>
+#include <ac/stddef.h>
 
 struct fingerprint_methods_ty; /* forward */
 
@@ -40,10 +40,10 @@ typedef struct fingerprint_methods_ty fingerprint_methods_ty;
 struct fingerprint_methods_ty
 {
     long	    size;
-    char	    *name;
+    const char      *name;
     void	    (*constructor)(fingerprint_ty *);
     void	    (*destructor)(fingerprint_ty *);
-    void	    (*addn)(fingerprint_ty *, unsigned char *, int);
+    void	    (*addn)(fingerprint_ty *, unsigned char *, size_t);
     int		    (*hash)(fingerprint_ty *, unsigned char *);
     void	    (*sum)(fingerprint_ty *, char *);
 };

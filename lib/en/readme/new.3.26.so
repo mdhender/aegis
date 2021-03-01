@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -60,4 +60,4 @@ history\fP report.  It is much faster, much more informatuve, and less
 selective.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 3.26
+.SS Version 3.26 (21-Jun-2001)

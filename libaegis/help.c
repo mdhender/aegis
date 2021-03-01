@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,10 +38,8 @@
 #include <str_list.h>
 
 
-static void help_env _((void));
-
 static void
-help_env()
+help_env(void)
 {
 	char		*cp;
 	string_list_ty	manpath;
@@ -138,9 +136,7 @@ help_env()
 
 
 void
-help(progname, usage)
-	char		*progname;
-	void		(*usage)_((void));
+help(const char *progname, void (*usage)(void))
 {
 	int		flags;
 	string_ty	*s;
@@ -182,8 +178,7 @@ help(progname, usage)
 
 
 void
-generic_argument(usage)
-	void	(*usage)_((void));
+generic_argument(void (*usage)(void))
 {
 	trace(("generic_argument()\n{\n"/*}*/));
 	switch (arglex_token)
@@ -276,8 +271,7 @@ generic_argument(usage)
 
 
 void
-bad_argument(usage)
-	void	(*usage)_((void));
+bad_argument(void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -324,10 +318,7 @@ bad_argument(usage)
 
 
 void
-mutually_exclusive_options(a1, a2, usage)
-	int		a1;
-	int		a2;
-	void		(*usage)_((void));
+mutually_exclusive_options(int a1, int a2, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -342,11 +333,7 @@ mutually_exclusive_options(a1, a2, usage)
 
 
 void
-mutually_exclusive_options3(a1, a2, a3, usage)
-	int		a1;
-	int		a2;
-	int		a3;
-	void		(*usage)_((void));
+mutually_exclusive_options3(int a1, int a2, int a3, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -362,9 +349,7 @@ mutually_exclusive_options3(a1, a2, a3, usage)
 
 
 void
-duplicate_option_by_name(name, usage)
-	int		name;
-	void		(*usage)_((void));
+duplicate_option_by_name(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -378,17 +363,14 @@ duplicate_option_by_name(name, usage)
 
 
 void
-duplicate_option(usage)
-	void		(*usage)_((void));
+duplicate_option(void (*usage)(void))
 {
 	duplicate_option_by_name(arglex_token, usage);
 }
 
 
 void
-option_needs_number(name, usage)
-	int		name;
-	void		(*usage)_((void));
+option_needs_number(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -402,9 +384,7 @@ option_needs_number(name, usage)
 
 
 void
-option_needs_string(name, usage)
-	int		name;
-	void		(*usage)_((void));
+option_needs_string(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -418,9 +398,7 @@ option_needs_string(name, usage)
 
 
 void
-option_needs_name(name, usage)
-	int		name;
-	void		(*usage)_((void));
+option_needs_name(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -434,9 +412,7 @@ option_needs_name(name, usage)
 
 
 void
-option_needs_file(name, usage)
-	int		name;
-	void		(*usage)_((void));
+option_needs_file(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -450,9 +426,7 @@ option_needs_file(name, usage)
 
 
 void
-option_needs_dir(name, usage)
-	int		name;
-	void		(*usage)_((void));
+option_needs_dir(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 
@@ -466,9 +440,7 @@ option_needs_dir(name, usage)
 
 
 void
-option_needs_files(name, usage)
-	int		name;
-	void		(*usage)_((void));
+option_needs_files(int name, void (*usage)(void))
 {
 	sub_context_ty	*scp;
 

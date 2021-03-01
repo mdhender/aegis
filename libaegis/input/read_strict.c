@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,7 @@
 
 
 int
-input_read_strict(ip, buf, len)
-    input_ty	    *ip;
-    void	    *buf;
-    size_t	    len;
+input_read_strict(input_ty *ip, void *buf, size_t len)
 {
     long	    asked;
     long	    got;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,8 +60,7 @@
  */
 
 col_ty *
-col_open(filename)
-    string_ty	    *filename;
+col_open(string_ty *filename)
 {
     col_ty	    *result;
     output_ty	    *narrow_fp;
@@ -123,8 +122,7 @@ col_open(filename)
  */
 
 void
-col_close(fp)
-    col_ty	    *fp;
+col_close(col_ty *fp)
 {
     trace(("col_close(fp = %08lX)\n{\n", (long)fp));
     if (fp->vptr->destructor)
@@ -167,11 +165,7 @@ col_close(fp)
  */
 
 output_ty *
-col_create(fp, min, max, title)
-    col_ty	    *fp;
-    int		    min;
-    int		    max;
-    const char	    *title;
+col_create(col_ty *fp, int min, int max, const char *title)
 {
     output_ty	    *result;
 
@@ -206,8 +200,7 @@ col_create(fp, min, max, title)
  */
 
 void
-col_eoln(fp)
-    col_ty	    *fp;
+col_eoln(col_ty *fp)
 {
     trace(("col_eoln(fp = %08lX)\n{\n", (long)fp));
     assert(fp->vptr->eoln);
@@ -233,10 +226,7 @@ col_eoln(fp)
  */
 
 void
-col_title(fp, s1, s2)
-    col_ty	    *fp;
-    const char	    *s1;
-    const char	    *s2;
+col_title(col_ty *fp, const char *s1, const char *s2)
 {
     trace(("col_title(fp = %08lX, s1 = %08lX, s2 = %08lX)\n{\n",
 	(long)fp, (long)s1, (long)s2));
@@ -259,8 +249,7 @@ col_title(fp, s1, s2)
  */
 
 void
-col_eject(fp)
-    col_ty	    *fp;
+col_eject(col_ty *fp)
 {
     trace(("col_eject(fp = %08lX)\n{\n", (long)fp));
     assert(fp->vptr->eject);
@@ -288,9 +277,7 @@ col_eject(fp)
  */
 
 void
-col_need(fp, n)
-    col_ty	    *fp;
-    int		    n;
+col_need(col_ty *fp, int n)
 {
     trace(("col_need(fp = %08lX, n = %d)\n{\n", (long)fp, n));
     assert(fp->vptr->need);

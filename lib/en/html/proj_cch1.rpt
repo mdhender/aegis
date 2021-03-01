@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 2002 Peter Miller;
+ *	Copyright (C) 1998, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ print("");
 print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
 	## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
 print("<html><head>");
+print("<meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\">");
 print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
 print("<meta http-equiv=\"Content-Type\" "
 	## "content=\"text/html; charset=ISO-8859-1\">");
@@ -59,14 +60,22 @@ print("<style type=\"text/css\"> "
 	## "</style>");
 /*
  * Netscape 4.x has numerous CSS bugs, two of which need mentioning.
- * 1. If a style sheet is nopt present Netscape says 404 Not found, when
+ * 1. If a style sheet is not present Netscape says 404 Not found, when
  * it should silently ignore it.  2. Style sheets who's media is not
  * "screen" will be ignored.  Fortunately we can use (2) to get around (1).
  */
 print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
 	## "media=\"all\">");
-print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
-	## "media=\"all\">");
+auto stack, depth, bn;
+depth=0;
+stack[depth] = project[pn].state.name;
+while ("" != ( bn = project[stack[depth]].state.parent_name )) {
+  stack[++depth] = bn;
+}
+while ( depth >= 0) {
+    print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ##
+       stack[depth--] ## ".css\" " ## "media=\"all\">");
+}
 print("<title>");
 print("Project " ## quote_html(pn) ## ", Change Cause Histogram");
 print("</title><head><body><h1 align=center>");

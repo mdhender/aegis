@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,8 +46,7 @@
  */
 
 string_ty *
-os_dirname(path)
-	string_ty	*path;
+os_dirname(string_ty *path)
 {
 	string_ty	*s;
 	char		*cp;

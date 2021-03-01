@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2002 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 
 
 static string_ty *
-abbreviate(string_ty *s, int max, int keep_last_dot)
+abbreviate(string_ty *s, size_t max, int keep_last_dot)
 {
     string_list_ty  word;
     size_t          word_total;
@@ -39,6 +39,7 @@ abbreviate(string_ty *s, int max, int keep_last_dot)
     size_t          total;
     char            *cp;
     int             j;		/* must be signed */
+    size_t          k;
     size_t          word_max;
     static char     *buffer;
     static size_t   buffer_max;
@@ -48,7 +49,7 @@ abbreviate(string_ty *s, int max, int keep_last_dot)
      */
     assert(max > 0);
     total = s->str_length;
-    if (total <= max || max <= 0)
+    if (total <= max || max == 0)
 	return str_copy(s);
 
     /*
@@ -165,7 +166,7 @@ abbreviate(string_ty *s, int max, int keep_last_dot)
 	    (
 		keep_last_dot
     	    &&
-		j == punct.nstrings - 1
+		j == (int)punct.nstrings - 1
 	    &&
 		punct.string[j]->str_text[0] == '.'
 	    )
@@ -182,10 +183,10 @@ abbreviate(string_ty *s, int max, int keep_last_dot)
     /*
      * shorten all the words
      */
-    word_max = 0;
-    for (j = 0; j < word.nstrings; ++j)
-	if (word.string[j]->str_length > word_max)
-	    word_max = word.string[j]->str_length;
+    word_max = 1;
+    for (k = 0; k < word.nstrings; ++k)
+	if (word.string[k]->str_length > word_max)
+	    word_max = word.string[k]->str_length;
     --word_max;
     while (word_max >= 1)
     {
@@ -209,15 +210,15 @@ abbreviate(string_ty *s, int max, int keep_last_dot)
     if (total > buffer_max)
     {
 	buffer_max = total;
-	buffer = mem_change_size(buffer, buffer_max);
+	buffer = (char *)mem_change_size(buffer, buffer_max);
     }
     cp = buffer;
-    for (j = 0; j < punct.nstrings; ++j)
+    for (k = 0; k < punct.nstrings; ++k)
     {
-	memcpy(cp, punct.string[j]->str_text, punct.string[j]->str_length);
-	cp += punct.string[j]->str_length;
-	memcpy(cp, word.string[j]->str_text, word.string[j]->str_length);
-	cp += word.string[j]->str_length;
+	memcpy(cp, punct.string[k]->str_text, punct.string[k]->str_length);
+	cp += punct.string[k]->str_length;
+	memcpy(cp, word.string[k]->str_text, word.string[k]->str_length);
+	cp += word.string[k]->str_length;
     }
     return str_n_from_c(buffer, total);
 }
@@ -234,7 +235,7 @@ nuke_unprintable(string_ty *s)
     if (s->str_length > buffer_max)
     {
 	buffer_max = s->str_length;
-	buffer = mem_change_size(buffer, buffer_max);
+	buffer = (char *)mem_change_size(buffer, buffer_max);
     }
     ip = s->str_text;
     op = buffer;
@@ -252,7 +253,7 @@ nuke_unprintable(string_ty *s)
 
 
 string_ty *
-abbreviate_dirname(string_ty *s, int max)
+abbreviate_dirname(string_ty *s, size_t max)
 {
     string_ty       *s2;
     string_ty       *result;
@@ -265,7 +266,7 @@ abbreviate_dirname(string_ty *s, int max)
 
 
 string_ty *
-abbreviate_filename(string_ty *s, int max)
+abbreviate_filename(string_ty *s, size_t max)
 {
     string_ty       *s2;
     string_ty       *result;
@@ -280,7 +281,7 @@ abbreviate_filename(string_ty *s, int max)
 static int
 contains_moronic_ms_restrictions(string_ty *fn)
 {
-    static char     *moronic[] =
+    static const char *const moronic[] =
     {
 	"aux",
 	"com1",
@@ -290,7 +291,7 @@ contains_moronic_ms_restrictions(string_ty *fn)
 	"con",
 	"nul",
     };
-    char            **cpp;
+    const char      *const *cpp;
     string_ty       *fn2;
     static string_list_ty wl;
     int             result;

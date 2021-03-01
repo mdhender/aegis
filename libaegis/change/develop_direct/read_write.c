@@ -34,14 +34,8 @@
 #include <undo.h>
 
 
-static void func _((void *, dir_walk_message_ty, string_ty *, struct stat *));
-
 static void
-func(arg, msg, path, st)
-    void            *arg;
-    dir_walk_message_ty msg;
-    string_ty       *path;
-    struct stat     *st;
+func(void *arg, dir_walk_message_ty msg, string_ty *path, struct stat *st)
 {
     int             mode;
     int             mask;
@@ -68,8 +62,7 @@ func(arg, msg, path, st)
 
 
 void
-change_development_directory_chmod_read_write(cp)
-    change_ty       *cp;
+change_development_directory_chmod_read_write(change_ty *cp)
 {
     cstate          cstate_data;
     string_ty       *dd;

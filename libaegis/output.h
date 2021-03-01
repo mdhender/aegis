@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ struct output_vtbl_ty
 	 * By putting this last, we catch many cases where a method
 	 * pointer has been left out.
 	 */
-	const char	*typename;
+	const char	*type_name;
 };
 
 void output_delete(output_ty *);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,7 @@
 
 
 void
-fatal_project_name_too_long(name, max)
-	string_ty	*name;
-	int		max;
+fatal_project_name_too_long(string_ty *name, int max)
 {
 	sub_context_ty	*scp;
 

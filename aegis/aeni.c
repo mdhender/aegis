@@ -43,7 +43,7 @@
 static void
 new_integrator_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -102,7 +102,7 @@ new_integrator_list(void)
 	}
 	arglex();
     }
-    list_integrators(project_name, 0);
+    list_integrators(project_name, 0, 0);
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -67,24 +67,24 @@ struct col_unformatted_ty
 static void
 destructor(col_ty *fp)
 {
-    col_unformatted_ty *this;
+    col_unformatted_ty *this_thing;
     size_t	    j;
 
     trace(("col_unformatted::destructor(fp = %08lX)\n{\n", (long)fp));
-    this = (col_unformatted_ty *)fp;
-    for (j = 0; j < this->ncolumns; ++j)
+    this_thing = (col_unformatted_ty *)fp;
+    for (j = 0; j < this_thing->ncolumns; ++j)
     {
 	column_ty	*cp;
 
 	/* The delcb() will do all the work. */
-	cp = &this->column[j];
+	cp = &this_thing->column[j];
 	if (cp->content_filter)
 	    output_delete(cp->content_filter);
     }
-    if (this->column)
-	mem_free(this->column);
-    if (this->delete_on_close)
-	wide_output_delete(this->deeper);
+    if (this_thing->column)
+	mem_free(this_thing->column);
+    if (this_thing->delete_on_close)
+	wide_output_delete(this_thing->deeper);
     trace(("}\n"));
 }
 
@@ -105,18 +105,18 @@ destructor(col_ty *fp)
 static void
 delcb(output_ty *fp, void *arg)
 {
-    col_unformatted_ty *this;
+    col_unformatted_ty *this_thing;
     size_t	    j;
 
     /* called just before a wide output is deleted */
     trace(("col_unformatted::delcb(fp = %08lX, arg = %08lX)\n{\n",
 	(long)fp, (long)arg));
-    this = (col_unformatted_ty *)arg;
-    for (j = 0; j < this->ncolumns; ++j)
+    this_thing = (col_unformatted_ty *)arg;
+    for (j = 0; j < this_thing->ncolumns; ++j)
     {
 	column_ty	*cp;
 
-	cp = &this->column[j];
+	cp = &this_thing->column[j];
 	if (cp->content_filter != fp)
 	    continue;
 	cp->content = 0;
@@ -126,11 +126,11 @@ delcb(output_ty *fp, void *arg)
 
     while
     (
-	this->ncolumns > 0
+	this_thing->ncolumns > 0
     &&
-	this->column[this->ncolumns - 1].content_filter == 0
+	this_thing->column[this_thing->ncolumns - 1].content_filter == 0
     )
-	this->ncolumns--;
+	this_thing->ncolumns--;
     trace(("}\n"));
 }
 
@@ -162,7 +162,7 @@ delcb(output_ty *fp, void *arg)
 static output_ty *
 create(col_ty *fp, int left, int right, const char *title)
 {
-    col_unformatted_ty *this;
+    col_unformatted_ty *this_thing;
     column_ty	    *cp;
     wide_output_ty  *fp4;
 
@@ -178,19 +178,20 @@ create(col_ty *fp, int left, int right, const char *title)
     /*
      * make sure we grok enough columns
      */
-    this = (col_unformatted_ty *)fp;
-    if (this->ncolumns >= this->ncolumns_max)
+    this_thing = (col_unformatted_ty *)fp;
+    if (this_thing->ncolumns >= this_thing->ncolumns_max)
     {
 	size_t		nbytes;
 	int		old;
 
-	old = this->ncolumns_max;
-	this->ncolumns_max = this->ncolumns_max * 2 + 4;
-	nbytes = this->ncolumns_max * sizeof(this->column[0]);
-	this->column = mem_change_size(this->column, nbytes);
-	while (old < this->ncolumns_max)
+	old = this_thing->ncolumns_max;
+	this_thing->ncolumns_max = this_thing->ncolumns_max * 2 + 4;
+	nbytes = this_thing->ncolumns_max * sizeof(this_thing->column[0]);
+	this_thing->column =
+            (column_ty *)mem_change_size(this_thing->column, nbytes);
+	while (old < (int)this_thing->ncolumns_max)
 	{
-	    cp = &this->column[old++];
+	    cp = &this_thing->column[old++];
 	    cp->content = 0;
 	}
     }
@@ -199,12 +200,12 @@ create(col_ty *fp, int left, int right, const char *title)
      * allocate storage for the column content
      */
     trace(("mark\n"));
-    cp = &this->column[this->ncolumns++];
+    cp = &this_thing->column[this_thing->ncolumns++];
     cp->content =
 	wide_output_column_open
 	(
-    	    wide_output_page_width(this->deeper),
-    	    wide_output_page_length(this->deeper)
+    	    wide_output_page_width(this_thing->deeper),
+    	    wide_output_page_length(this_thing->deeper)
 	);
 
     /*
@@ -215,7 +216,7 @@ create(col_ty *fp, int left, int right, const char *title)
     trace(("mark\n"));
     fp4 = wide_output_expand_open(cp->content, 1);
     cp->content_filter = output_to_wide_open(fp4, 1);
-    output_delete_callback(cp->content_filter, delcb, this);
+    output_delete_callback(cp->content_filter, delcb, this_thing);
     trace(("return %08lX;\n", (long)cp->content_filter));
     trace(("}\n"));
     return cp->content_filter;
@@ -250,7 +251,7 @@ title(col_ty *fp, const char *s1, const char *s2)
 static void
 eoln(col_ty *fp)
 {
-    col_unformatted_ty *this;
+    col_unformatted_ty *this_thing;
     size_t	    j;
     int		    col;
 
@@ -258,9 +259,9 @@ eoln(col_ty *fp)
      * Send the first line of each column, only.
      */
     trace(("col_unformatted::eoln(fp = %08lX)\n{\n", (long)fp));
-    this = (col_unformatted_ty *)fp;
+    this_thing = (col_unformatted_ty *)fp;
     col = 0;
-    for (j = 0; j < this->ncolumns; ++j)
+    for (j = 0; j < this_thing->ncolumns; ++j)
     {
 	column_ty	*cp;
 	column_row_ty	*crp;
@@ -270,7 +271,7 @@ eoln(col_ty *fp)
 	/*
 	 * flush the output first
 	 */
-	cp = &this->column[j];
+	cp = &this_thing->column[j];
 	trace(("cp = %08lX;\n", (long)cp));
 	if (!cp->content_filter)
 	    continue;
@@ -311,18 +312,18 @@ eoln(col_ty *fp)
 	if (wp_len > 0)
 	{
 	    if (col++)
-	       	wide_output_putwc(this->deeper, this->separator);
-	    wide_output_write(this->deeper, wp, wp_len);
+	       	wide_output_putwc(this_thing->deeper, this_thing->separator);
+	    wide_output_write(this_thing->deeper, wp, wp_len);
 	}
-	else if (this->separator != (wchar_t)' ' && col++)
-	    wide_output_putwc(this->deeper, this->separator);
+	else if (this_thing->separator != (wchar_t)' ' && col++)
+	    wide_output_putwc(this_thing->deeper, this_thing->separator);
 
 	/*
 	 * reset content buffers
 	 */
 	wide_output_column_reset(cp->content);
     }
-    wide_output_putwc(this->deeper, (wchar_t)'\n');
+    wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
     trace(("}\n"));
 }
 
@@ -343,11 +344,11 @@ eoln(col_ty *fp)
 static void
 eject(col_ty *fp)
 {
-    col_unformatted_ty *this;
+    col_unformatted_ty *this_thing;
 
     trace(("col_unformatted::eject(fp = %08lX)\n{\n", (long)fp));
-    this = (col_unformatted_ty *)fp;
-    wide_output_putwc(this->deeper, '\n');
+    this_thing = (col_unformatted_ty *)fp;
+    wide_output_putwc(this_thing->deeper, '\n');
     trace(("}\n"));
 }
 
@@ -413,17 +414,17 @@ col_ty *
 col_unformatted_open(wide_output_ty *deeper, int delete_on_close)
 {
     col_ty	    *result;
-    col_unformatted_ty *this;
+    col_unformatted_ty *this_thing;
 
     trace(("col_unformatted::new(deeper = %08lX)\n{\n", (long)deeper));
     result = col_new(&vtbl);
-    this = (col_unformatted_ty *)result;
-    this->deeper = deeper;
-    this->delete_on_close = delete_on_close;
-    this->ncolumns = 0;
-    this->ncolumns_max = 0;
-    this->column = 0;
-    this->separator = (wchar_t)' ';
+    this_thing = (col_unformatted_ty *)result;
+    this_thing->deeper = deeper;
+    this_thing->delete_on_close = delete_on_close;
+    this_thing->ncolumns = 0;
+    this_thing->ncolumns_max = 0;
+    this_thing->column = 0;
+    this_thing->separator = (wchar_t)' ';
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;

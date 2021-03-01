@@ -23,7 +23,6 @@
 #include <ac/ctype.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
-#include <ac/time.h>
 
 #include <arglex3.h>
 #include <change/branch.h>
@@ -34,6 +33,7 @@
 #include <help.h>
 #include <input/file.h>
 #include <mem.h>
+#include <now.h>
 #include <os.h>
 #include <output/conten_encod.h>
 #include <output/cpio.h>
@@ -55,12 +55,8 @@
 #define NO_TIME_SET ((time_t)(-1))
 
 
-static int have_it_already _((cstate, fstate_src));
-
 static int
-have_it_already(change_set, src_data)
-    cstate          change_set;
-    fstate_src      src_data;
+have_it_already(cstate change_set, fstate_src src_data)
 {
     size_t          j;
     cstate_src      dst_data;
@@ -77,12 +73,8 @@ have_it_already(change_set, src_data)
 }
 
 
-static void one_more_src _((cstate, fstate_src));
-
 static void
-one_more_src(change_set, src_data)
-    cstate          change_set;
-    fstate_src      src_data;
+one_more_src(cstate change_set, fstate_src src_data)
 {
     cstate_src      *dst_data_p;
     cstate_src      dst_data;
@@ -99,15 +91,13 @@ one_more_src(change_set, src_data)
     dst_data->action = src_data->action;
     dst_data->usage = src_data->usage;
     dst_data->executable = src_data->executable;
+    if (src_data->move)
+	dst_data->move = str_copy(src_data->move);
 }
 
 
-static int cmp  _((const void *, const void *));
-
 static int
-cmp(va, vb)
-    const void      *va;
-    const void      *vb;
+cmp(const void *va, const void *vb)
 {
     cstate_src      a;
     cstate_src      b;
@@ -118,12 +108,8 @@ cmp(va, vb)
 }
 
 
-static int len_printable _((string_ty *, int));
-
 static int
-len_printable(s, max)
-    string_ty       *s;
-    int             max;
+len_printable(string_ty *s, int max)
 {
     const char      *cp;
     int             result;
@@ -141,13 +127,12 @@ len_printable(s, max)
 
 
 void
-send_main(usage)
-    void            (*usage)_((void));
+send_main(void (*usage)(void))
 {
     int		    use_patch;
     string_ty       *project_name;
     long            change_number;
-    char            *branch;
+    const char      *branch;
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
@@ -161,7 +146,7 @@ send_main(usage)
     string_ty       *s;
     string_ty       *s2;
     cstate          change_set;
-    time_t          now;
+    time_t          when;
     size_t          j;
     char            *buffer;
     size_t          buffer_size;
@@ -174,7 +159,7 @@ send_main(usage)
     string_ty       *diff_output_filename;
     long            delta_number;
     time_t          delta_date;
-    char            *delta_name;
+    const char      *delta_name;
 
     use_patch = -1;
     branch = 0;
@@ -570,7 +555,7 @@ send_main(usage)
 	str_free(s1);
 	delta_name = 0;
     }
-    time(&now);
+    when = now();
     if (delta_date != NO_TIME_SET)
     {
 	/*
@@ -580,7 +565,7 @@ send_main(usage)
 	 * This is the "time safe" quality first described by
 	 * Damon Poole <damon@ede.com>
 	 */
-	if (delta_date > now)
+	if (delta_date > when)
 	    project_error(pp, 0, i18n("date in the future"));
 
 	/*
@@ -614,8 +599,12 @@ send_main(usage)
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
     {
+    case cstate_state_awaiting_development:
+#ifndef DEBUG
     default:
+#endif
 	change_fatal(cp, 0, i18n("bad send state"));
+	/* NOTREACHED */
 
     case cstate_state_completed:
 	/*
@@ -779,7 +768,7 @@ send_main(usage)
 
 		hp = hlp->list[hlp->length - 1];
 		assert(hp);
-		now = hp->when;
+		when = hp->when;
 	    }
 	}
 	change_set->description =
@@ -787,7 +776,7 @@ send_main(usage)
 	    (
 		"From: %s\nDate: %.24s\n%s\n%S",
 		user_email_address(up)->str_text,
-		ctime(&now),
+		ctime(&when),
 		(warning ? warning->str_text : ""),
 		cstate_data->description
 	    );
@@ -815,24 +804,51 @@ send_main(usage)
 	src_data = change_file_nth(cp, j);
 	if (!src_data)
 	    break;
-	if (src_data->action == file_action_insulate)
-	    continue;
-	if (src_data->about_to_be_created_by)
-	    continue;
-	if
-	(
-	    src_data->usage == file_usage_build
-	&&
-	    src_data->action == file_action_modify
-	)
-	    continue;
-	if (cstate_data->state < cstate_state_completed)
+	switch (src_data->usage)
 	{
-	    s = change_file_path(cp, src_data->file_name);
-	    os_become_orig();
-	    src_data->executable = os_executable(s);
-	    os_become_undo();
-	    str_free(s);
+	case file_usage_build:
+	    if (src_data->action == file_action_modify)
+		continue;
+	    /* fall through...*/
+
+	case file_usage_source:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    switch (src_data->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+		if (cstate_data->state < cstate_state_completed)
+		{
+		    s = change_file_path(cp, src_data->file_name);
+		    assert(s);
+		    if (s)
+		    {
+			os_become_orig();
+			src_data->executable = os_executable(s);
+			os_become_undo();
+			str_free(s);
+		    }
+		}
+		break;
+
+	    case file_action_remove:
+		break;
+
+	    case file_action_insulate:
+		continue;
+
+	    case file_action_transparent:
+		if
+		(
+		    src_data->about_to_be_created_by
+		||
+		    src_data->about_to_be_copied_by
+		)
+		    continue;
+		break;
+	    }
+	    break;
 	}
 	one_more_src(change_set, src_data);
     }
@@ -845,15 +861,30 @@ send_main(usage)
 	    src_data = project_file_nth(pp, j, view_path_simple);
 	    if (!src_data)
 		break;
-	    if (src_data->action == file_action_insulate)
-		continue;
-	    if
-	    (
-		src_data->usage == file_usage_build
-	    &&
-		src_data->action == file_action_modify
-	    )
-		continue;
+	    switch (src_data->usage)
+	    {
+	    case file_usage_build:
+		if (src_data->action == file_action_modify)
+		    continue;
+		/* fall through...*/
+
+	    case file_usage_source:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		switch (src_data->action)
+		{
+		case file_action_create:
+		case file_action_modify:
+		case file_action_remove:
+		    break;
+
+		case file_action_insulate:
+		case file_action_transparent:
+		    /* can't happen */
+		    continue;
+		}
+		break;
+	    }
 	    if (!have_it_already(change_set, src_data))
 		one_more_src(change_set, src_data);
 	}
@@ -1028,7 +1059,7 @@ send_main(usage)
 		input_filename = str_copy(dev_null);
 		break;
 
-	    default:
+	    case file_action_modify:
 		felp = project_file_roll_forward_get(csrc->file_name);
 		assert(felp);
 		assert(felp->length >= 2);
@@ -1060,6 +1091,18 @@ send_main(usage)
 			old_src,
 			&input_filename_unlink
 		    );
+		break;
+
+	    case file_action_insulate:
+		/* this is supposed to be impossible */
+		trace(("insulate = \"%s\"\n", csrc->file_name->str_text));
+		assert(0);
+		break;
+
+	    case file_action_transparent:
+		/* no file content appears in the output */
+		trace(("transparent = \"%s\"\n", csrc->file_name->str_text));
+		break;
 	    }
 	    break;
 	}

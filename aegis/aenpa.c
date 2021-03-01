@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 static void
 project_alias_create_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf
@@ -74,7 +74,7 @@ project_alias_create_list(void)
     arglex();
     while (arglex_token != arglex_token_eoln)
 	generic_argument(project_alias_create_usage);
-    list_project_aliases(0, 0);
+    list_project_aliases(0, 0, 0);
 }
 
 

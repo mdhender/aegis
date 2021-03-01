@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2003 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-double fstrcmp(char *, char *);
+double fstrcmp(const char *, const char *);
 
 #endif /* COMMON_FSTRCMP_H */

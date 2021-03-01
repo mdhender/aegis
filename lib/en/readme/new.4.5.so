@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -62,4 +62,4 @@ A bug has been fixed in the "user changes" list.  It was not explicitly
 passing the project name when it accessed the list of user owned changes.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.5
+.SS Version 4.5 (26-Jun-2002)

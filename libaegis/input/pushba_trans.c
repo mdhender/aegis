@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,7 @@
 
 
 void
-input_pushback_transfer(to, from)
-	input_ty	*to;
-	input_ty	*from;
+input_pushback_transfer(input_ty *to, input_ty *from)
 {
 	while (from->buffer_end > from->buffer_position)
 		input_ungetc(to, *(--(from->buffer_end)));

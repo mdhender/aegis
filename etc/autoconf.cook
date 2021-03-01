@@ -82,9 +82,9 @@ configure: etc/configure.ac install-sh
  */
 loop install-sh-maybe =
     /usr/share/autoconf/install-sh
-    /usr/share/automake/install-sh
+    [glob /usr/share/automake*/install-sh]
     /usr/local/share/autoconf/install-sh
-    /usr/local/share/automake/install-sh
+    [glob /usr/local/share/automake*/install-sh]
 {
     if [exists [install-sh-maybe]] then
     {

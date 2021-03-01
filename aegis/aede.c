@@ -56,7 +56,7 @@
 static void
 develop_end_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s -Develop_End [ <option>... ]\n", progname);
@@ -453,7 +453,7 @@ develop_end_main(void)
 	{
 	    string_ty	    *e;
 
-	    e = change_filename_check(cp, c_src_data->file_name, 0);
+	    e = change_filename_check(cp, c_src_data->file_name);
 	    if (e)
 	    {
 		scp = sub_context_new();
@@ -559,6 +559,9 @@ develop_end_main(void)
 	 * from a deeper level than the immediate parent
 	 * project, the file needs to be added to the immediate
 	 * parent project.
+	 *
+	 * This is where the about_to_be_copied_by attribute comes from.
+	 * Nothing is done for files being created.
 	 */
 	project_file_shallow(pp, c_src_data->file_name, change_number);
 
@@ -802,10 +805,10 @@ develop_end_main(void)
 		 * and mark it as "about to be created".
 		 */
 		p_src_data = project_file_new(pp, c_src_data->file_name);
+		p_src_data->usage = c_src_data->usage;
+		p_src_data->action = file_action_transparent;
+		p_src_data->about_to_be_created_by = change_number;
 	    }
-	    p_src_data->usage = c_src_data->usage;
-	    p_src_data->action = file_action_transparent;
-	    p_src_data->about_to_be_created_by = change_number;
 	    p_src_data->locked_by = change_number;
 	    break;
 
@@ -850,7 +853,7 @@ develop_end_main(void)
 	    if (change_file_find(cp, p_src_data->file_name))
 		continue;
 
-	    e = change_filename_check(cp, p_src_data->file_name, 0);
+	    e = change_filename_check(cp, p_src_data->file_name);
 	    if (e)
 	    {
 		scp = sub_context_new();

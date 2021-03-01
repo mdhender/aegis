@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,21 +29,17 @@
 #include <wstr.h>
 #include <wstr_list.h>
 
-typedef string_ty *(*func_ptr)_((project_ty *));
-
+typedef string_ty *(*func_ptr)(project_ty *);
 typedef struct table_ty table_ty;
 struct table_ty
 {
-    char	    *name;
+    const char      *name;
     func_ptr	    func;
 };
 
 
-static string_ty *trunk_name_get _((project_ty *));
-
 static string_ty *
-trunk_name_get(pp)
-    project_ty	    *pp;
+trunk_name_get(project_ty *pp)
 {
     while (pp->parent)
 	pp = pp->parent;
@@ -51,11 +47,8 @@ trunk_name_get(pp)
 }
 
 
-static string_ty *trunk_description_get _((project_ty *));
-
 static string_ty *
-trunk_description_get(pp)
-    project_ty	    *pp;
+trunk_description_get(project_ty *pp)
 {
     while (pp->parent)
 	pp = pp->parent;
@@ -74,11 +67,8 @@ static table_ty table[] =
 static symtab_ty *stp;
 
 
-static func_ptr find_func _((string_ty *));
-
 static func_ptr
-find_func(name)
-    string_ty	    *name;
+find_func(string_ty *name)
 {
     table_ty	    *tp;
     string_ty	    *s;
@@ -133,9 +123,7 @@ find_func(name)
  */
 
 wstring_ty *
-sub_project(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_project(sub_context_ty *scp, wstring_list_ty *arg)
 {
     string_ty	    *s;
     wstring_ty	    *result;

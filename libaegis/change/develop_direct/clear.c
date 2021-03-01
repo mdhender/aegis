@@ -25,8 +25,7 @@
 
 
 void
-change_development_directory_clear(cp)
-	change_ty	*cp;
+change_development_directory_clear(change_ty *cp)
 {
 	cstate		cstate_data;
 

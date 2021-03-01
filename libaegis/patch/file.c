@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,32 +25,29 @@
 
 
 patch_ty *
-patch_new()
+patch_new(void)
 {
-	patch_ty	*this;
+	patch_ty	*this_thing;
 
-	this = mem_alloc(sizeof(patch_ty));
-	this->action = -1;
-	this->usage = -1;
-	string_list_constructor(&this->name);
-	patch_hunk_list_constructor(&this->actions);
-	return this;
+	this_thing = (patch_ty *)mem_alloc(sizeof(patch_ty));
+	this_thing->action = -1;
+	this_thing->usage = -1;
+	string_list_constructor(&this_thing->name);
+	patch_hunk_list_constructor(&this_thing->actions);
+	return this_thing;
 }
 
 
 void
-patch_delete(this)
-	patch_ty	*this;
+patch_delete(patch_ty *this_thing)
 {
-	string_list_destructor(&this->name);
-	patch_hunk_list_destructor(&this->actions);
+	string_list_destructor(&this_thing->name);
+	patch_hunk_list_destructor(&this_thing->actions);
 }
 
 
 void
-patch_append(this, php)
-	patch_ty	*this;
-	patch_hunk_ty	*php;
+patch_append(patch_ty *this_thing, patch_hunk_ty *php)
 {
-	patch_hunk_list_append(&this->actions, php);
+	patch_hunk_list_append(&this_thing->actions, php);
 }

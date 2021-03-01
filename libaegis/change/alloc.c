@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2000, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,7 @@
 
 
 change_ty *
-change_alloc(pp, number)
-	project_ty	*pp;
-	long		number;
+change_alloc(project_ty *pp, long number)
 {
 	change_ty	*cp;
 

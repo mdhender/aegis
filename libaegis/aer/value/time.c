@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,50 +36,41 @@ struct rpt_value_time_ty
 };
 
 
-static rpt_value_ty *stringize _((rpt_value_ty *));
-
 static rpt_value_ty *
-stringize(vp)
-	rpt_value_ty	*vp;
+stringize(rpt_value_ty *vp)
 {
-	rpt_value_time_ty *this;
+	rpt_value_time_ty *this_thing;
 	string_ty	*s;
 	rpt_value_ty	*result;
 
-	this = (rpt_value_time_ty *)vp;
-	assert(this->method->type == rpt_value_type_time);
-	s = str_format("%.24s", ctime(&this->value));
+	this_thing = (rpt_value_time_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_time);
+	s = str_format("%.24s", ctime(&this_thing->value));
 	result = rpt_value_string(s);
 	str_free(s);
 	return result;
 }
 
 
-static rpt_value_ty *arithmetic _((rpt_value_ty *));
-
 static rpt_value_ty *
-arithmetic(vp)
-	rpt_value_ty	*vp;
+arithmetic(rpt_value_ty *vp)
 {
-	rpt_value_time_ty *this;
+	rpt_value_time_ty *this_thing;
 
-	this = (rpt_value_time_ty *)vp;
-	assert(this->method->type == rpt_value_type_time);
-	return rpt_value_integer((long)this->value);
+	this_thing = (rpt_value_time_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_time);
+	return rpt_value_integer((long)this_thing->value);
 }
 
 
-static rpt_value_ty *booleanize _((rpt_value_ty *));
-
 static rpt_value_ty *
-booleanize(vp)
-	rpt_value_ty	*vp;
+booleanize(rpt_value_ty *vp)
 {
-	rpt_value_time_ty *this;
+	rpt_value_time_ty *this_thing;
 
-	this = (rpt_value_time_ty *)vp;
-	assert(this->method->type == rpt_value_type_time);
-	return rpt_value_boolean((long)this->value != 0);
+	this_thing = (rpt_value_time_ty *)vp;
+	assert(this_thing->method->type == rpt_value_type_time);
+	return rpt_value_boolean((long)this_thing->value != 0);
 }
 
 
@@ -102,12 +93,11 @@ static rpt_value_method_ty method =
 
 
 rpt_value_ty *
-rpt_value_time(n)
-	time_t		n;
+rpt_value_time(time_t n)
 {
-	rpt_value_time_ty *this;
+	rpt_value_time_ty *this_thing;
 
-	this = (rpt_value_time_ty *)rpt_value_alloc(&method);
-	this->value = n;
-	return (rpt_value_ty *)this;
+	this_thing = (rpt_value_time_ty *)rpt_value_alloc(&method);
+	this_thing->value = n;
+	return (rpt_value_ty *)this_thing;
 }

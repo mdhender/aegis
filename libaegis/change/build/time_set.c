@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <change.h>
 #include <change/architecture/find_variant.h>
 #include <error.h> /* for assert */
+#include <now.h>
 #include <trace.h>
 #include <uname.h>
 
@@ -34,7 +35,6 @@ change_build_time_set(change_ty *cp)
     cstate_architecture_times tp;
     cstate	    cstate_data;
     pconf	    pconf_data;
-    time_t	    now;
 
     /*
      * set the build_time in the change state.
@@ -42,9 +42,8 @@ change_build_time_set(change_ty *cp)
     trace(("change_build_time_set(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
-    time(&now);
     cstate_data = change_cstate_get(cp);
-    cstate_data->build_time = now;
+    cstate_data->build_time = now();
     if (pconf_data->build_covers_all_architectures)
     {
 	/*
@@ -58,7 +57,7 @@ change_build_time_set(change_ty *cp)
 	    	    cp,
 	    	    cstate_data->architecture->list[j]
 		);
-	    tp->build_time = now;
+	    tp->build_time = now();
 	    tp->test_time = 0;
 	    tp->test_baseline_time = 0; /* XXX */
 	    tp->regression_test_time = 0;
@@ -73,7 +72,7 @@ change_build_time_set(change_ty *cp)
 	 * set the build_time in the architecture variant record
 	 */
 	tp = change_find_architecture_variant(cp);
-	tp->build_time = now;
+	tp->build_time = now();
 	tp->test_time = 0;
 	tp->test_baseline_time = 0; /* XXX */
 	tp->regression_test_time = 0;

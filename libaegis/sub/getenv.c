@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,9 +51,7 @@
  */
 
 wstring_ty *
-sub_getenv(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_getenv(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
 
@@ -73,7 +71,7 @@ sub_getenv(scp, arg)
 	for (j = 1; j < arg->nitems; ++j)
 	{
 	    string_ty	    *name;
-	    char	    *value;
+	    const char      *value;
 
 	    name = wstr_to_str(arg->item[j]);
 	    value = getenv(name->str_text);

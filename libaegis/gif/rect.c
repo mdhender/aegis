@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,11 +24,7 @@
 
 
 void
-gif_rect(gp, x1, y1, x2, y2, clr)
-	gif_ty		*gp;
-	int		x1, y1;
-	int		x2, y2;
-	int		clr;
+gif_rect(gif_ty *gp, int x1, int y1, int x2, int y2, int clr)
 {
 	int		tmp;
 	int		x, y;

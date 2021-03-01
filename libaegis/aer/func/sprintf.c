@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -81,7 +81,7 @@ static void
 bigger(void)
 {
     tmplen += QUANTUM;
-    tmp = mem_change_size(tmp, tmplen);
+    tmp = (char *)mem_change_size(tmp, tmplen);
 }
 
 
@@ -324,7 +324,7 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
     if (!tmplen)
     {
 	tmplen = 500;
-	tmp = mem_alloc(tmplen);
+	tmp = (char *)mem_alloc(tmplen);
     }
     length = 0;
 
@@ -740,7 +740,7 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 		len = a->str_length;
 		if (!prec_set)
 		    prec = len;
-		if (len < prec)
+		if (len < (size_t)prec)
 		    prec = len;
 		if (!width_set)
 		    width = prec;

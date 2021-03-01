@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -138,7 +138,7 @@ input_ungetc_complicated(input_ty *ip, int c)
 	 * it is still O(1) overall.
 	 */
 	ip->buffer_size *= 2;
-	tmp = mem_alloc(ip->buffer_size);
+	tmp = (unsigned char *)mem_alloc(ip->buffer_size);
 	nbytes = ip->buffer_end - ip->buffer_position;
 	memcpy(tmp + ip->buffer_size - nbytes, ip->buffer_position, nbytes);
 	mem_free(ip->buffer);
@@ -189,7 +189,7 @@ input_unread(input_ty *ip, const void *data, size_t len)
 	 * it is still O(1) overall.
 	 */
 	ip->buffer_size *= 2;
-	tmp = mem_alloc(ip->buffer_size);
+	tmp = (unsigned char *)mem_alloc(ip->buffer_size);
 	nbytes = ip->buffer_end - ip->buffer_position;
 	memcpy(tmp + ip->buffer_size - nbytes, ip->buffer_position, nbytes);
 	mem_free(ip->buffer);

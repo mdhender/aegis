@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2002 Peter Miller;
+ *	Copyright (C) 1991-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,7 @@
 
 
 void
-os_unlink(path)
-    string_ty       *path;
+os_unlink(string_ty *path)
 {
     struct stat     st;
     int             oret;

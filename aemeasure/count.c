@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -478,7 +478,7 @@ typedef void (*count_t)(FILE *, data_t *);
 typedef struct table_t table_t;
 struct table_t
 {
-    char            *name;
+    const char      *name;
     count_t         count;
     test_t          test;
 };

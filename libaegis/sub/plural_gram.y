@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -192,117 +192,117 @@ expr
 	: LP expr RP
 	    {
 		$$ = $2;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| NUMBER
 	    {
 		$$ = number;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| INTEGER
 	    {
 		$$ = $1;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| MINUS expr
 	    %prec UNARY
 	    {
 		$$ = -$2;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr PLUS expr
 	    {
 		$$ = $1 + $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr MINUS expr
 	    {
 		$$ = $1 - $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr MUL expr
 	    {
 		$$ = $1 * $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr DIV expr
 	    {
 		$$ = $3 ? $1 / $3 : 0;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr MOD expr
 	    {
 		$$ = $3 ? $1 % $3 : 0;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr EQ expr
 	    {
 		$$ = ($1 == $3);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr NE expr
 	    {
 		$$ = ($1 != $3);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr LT expr
 	    {
 		$$ = ($1 < $3);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr LE expr
 	    {
 		$$ = ($1 <= $3);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr GT expr
 	    {
 		$$ = ($1 > $3);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
     	    }
 	| expr GE expr
 	    {
 		$$ = ($1 >= $3);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| NOT expr
 	    {
 		$$ = (!$2);
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| BITNOT expr
 	    {
 		$$ = ~$2;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr ANDAND expr
 	    {
 		$$ = $1 && $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr BITAND expr
 	    {
 		$$ = $1 & $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr OROR expr
 	    {
 		$$ = $1 || $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr BITOR expr
 	    {
 		$$ = $1 | $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr BITXOR expr
 	    {
 		$$ = $1 ^ $3;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	| expr QUEST expr COLON expr
 	    {
 		$$ = $1 ? $3 : $5;
-		trace(("$$ = %ld;\n", $$));
+		trace(("$$ = %u;\n", $$));
 	    }
 	;

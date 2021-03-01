@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,23 +38,23 @@ struct output_tar_ty
 static void
 output_tar_destructor(output_ty *fp)
 {
-    output_tar_ty   *this;
+    output_tar_ty   *this_thing;
 
     /*
      * Finish writing the archive file.
      */
-    this = (output_tar_ty *)fp;
-    output_delete(this->deeper);
+    this_thing = (output_tar_ty *)fp;
+    output_delete(this_thing->deeper);
 }
 
 
 static string_ty *
 output_tar_filename(output_ty *fp)
 {
-    output_tar_ty   *this;
+    output_tar_ty   *this_thing;
 
-    this = (output_tar_ty *)fp;
-    return output_filename(this->deeper);
+    this_thing = (output_tar_ty *)fp;
+    return output_filename(this_thing->deeper);
 }
 
 
@@ -98,11 +98,11 @@ output_ty *
 output_tar(output_ty *deeper)
 {
     output_ty       *result;
-    output_tar_ty   *this;
+    output_tar_ty   *this_thing;
 
     result = output_new(&vtbl);
-    this = (output_tar_ty *)result;
-    this->deeper = deeper;
+    this_thing = (output_tar_ty *)result;
+    this_thing->deeper = deeper;
     return result;
 }
 
@@ -110,11 +110,11 @@ output_tar(output_ty *deeper)
 output_ty *
 output_tar_child(output_ty *fp, string_ty *name, long len, int executable)
 {
-    output_tar_ty   *this;
+    output_tar_ty   *this_thing;
 
     if (fp->vptr != &vtbl)
 	    this_is_a_bug();
-    this = (output_tar_ty *)fp;
+    this_thing = (output_tar_ty *)fp;
     assert(len >= 0);
-    return output_tar_child_open(this->deeper, name, len, executable);
+    return output_tar_child_open(this_thing->deeper, name, len, executable);
 }

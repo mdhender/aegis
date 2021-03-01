@@ -26,9 +26,7 @@
 
 
 long
-change_history_change_by_timestamp(pp, when)
-	project_ty	*pp;
-	time_t          when;
+change_history_change_by_timestamp(project_ty *pp, time_t when)
 {
 	cstate		cstate_data;
 	cstate_branch_history_list hl;

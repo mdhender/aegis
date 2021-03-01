@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 
 
 static rpt_value_ty *
-shift_left_evaluate(rpt_expr_ty *this)
+shift_left_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -39,14 +39,14 @@ shift_left_evaluate(rpt_expr_ty *this)
     long	    v2n;
     rpt_value_ty    *result;
 
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
     rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2i = rpt_value_integerize(v2);
@@ -66,7 +66,7 @@ shift_left_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", v2i->method->name);
 	s = subst_intl(scp, i18n("illegal shift ($name1 << $name2)"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->pos, s);
+	result = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	return result;
     }
@@ -93,17 +93,17 @@ static rpt_expr_method_ty shift_left_method =
 rpt_expr_ty *
 rpt_expr_shift_left(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&shift_left_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&shift_left_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }
 
 
 static rpt_value_ty *
-shift_right_evaluate(rpt_expr_ty *this)
+shift_right_evaluate(rpt_expr_ty *this_thing)
 {
     sub_context_ty  *scp;
     rpt_value_ty    *v1;
@@ -114,14 +114,14 @@ shift_right_evaluate(rpt_expr_ty *this)
     long	    v2n;
     rpt_value_ty    *result;
 
-    assert(this->nchild == 2);
-    v1 = rpt_expr_evaluate(this->child[0], 1);
+    assert(this_thing->nchild == 2);
+    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
     rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this->child[1], 1);
+    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2i = rpt_value_integerize(v2);
@@ -141,7 +141,7 @@ shift_right_evaluate(rpt_expr_ty *this)
 	sub_var_set_charstar(scp, "Name2", v2i->method->name);
 	s = subst_intl(scp, i18n("illegal shift ($name1 >> $name2)"));
 	sub_context_delete(scp);
-	result = rpt_value_error(this->pos, s);
+	result = rpt_value_error(this_thing->pos, s);
 	str_free(s);
 	return result;
     }
@@ -168,10 +168,10 @@ static rpt_expr_method_ty shift_right_method =
 rpt_expr_ty *
 rpt_expr_shift_right(rpt_expr_ty *e1, rpt_expr_ty *e2)
 {
-    rpt_expr_ty     *this;
+    rpt_expr_ty     *this_thing;
 
-    this = rpt_expr_alloc(&shift_right_method);
-    rpt_expr_append(this, e1);
-    rpt_expr_append(this, e2);
-    return this;
+    this_thing = rpt_expr_alloc(&shift_right_method);
+    rpt_expr_append(this_thing, e1);
+    rpt_expr_append(this_thing, e2);
+    return this_thing;
 }

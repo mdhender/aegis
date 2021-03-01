@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <env.h>
 #include <error.h>
 #include <option.h>
 #include <os.h>
@@ -41,13 +42,8 @@
 #define MAX_CMD_RPT 36
 
 
-static void who_and_where _((int, int, string_ty *));
-
 static void
-who_and_where(uid, gid, dir)
-    int             uid;
-    int             gid;
-    string_ty       *dir;
+who_and_where(int uid, int gid, string_ty *dir)
 {
     static int      last_uid;
     static int      last_gid;
@@ -103,10 +99,7 @@ who_and_where(uid, gid, dir)
 
 
 int
-os_execute_retcode(cmd, flags, dir)
-    string_ty       *cmd;
-    int             flags;
-    string_ty       *dir;
+os_execute_retcode(string_ty *cmd, int flags, string_ty *dir)
 {
     sub_context_ty  *scp;
     int             uid;
@@ -114,9 +107,9 @@ os_execute_retcode(cmd, flags, dir)
     int             um;
     int             child;
     int             result = 0;
-    RETSIGTYPE      (*hold)_((int));
+    RETSIGTYPE      (*hold)(int);
     string_ty       *cmd2;
-    char            *shell;
+    const char      *shell;
 
     trace(("os_execute_retcode()\n{\n"));
     os_become_must_be_active();
@@ -161,6 +154,14 @@ os_execute_retcode(cmd, flags, dir)
 	 */
 	if (dir)
 	    os_chdir(dir);
+
+	/*
+	 * We are about to break stdin, one of the file descriptors
+	 * used by programs to determine the terminal size.  Set the
+	 * appropriate environment variables to that the sub-program
+	 * agrees with Aegis.
+	 */
+	env_set_page();
 
 	/*
 	 * Redirect stdin from a broken pipe.

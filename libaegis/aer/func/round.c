@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,23 +31,15 @@
 #include <sub.h>
 
 
-static int round_verify _((rpt_expr_ty *));
-
 static int
-round_verify(ep)
-	rpt_expr_ty	*ep;
+round_verify(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *round_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-round_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+round_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	double		n;
 	rpt_value_ty	*tmp;
@@ -97,23 +89,15 @@ rpt_func_ty rpt_func_round =
 };
 
 
-static int floor_verify _((rpt_expr_ty *));
-
 static int
-floor_verify(ep)
-	rpt_expr_ty	*ep;
+floor_verify(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *floor_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-floor_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+floor_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	double		n;
 	rpt_value_ty	*tmp;
@@ -163,23 +147,15 @@ rpt_func_ty rpt_func_floor =
 };
 
 
-static int ceil_verify _((rpt_expr_ty *));
-
 static int
-ceil_verify(ep)
-	rpt_expr_ty	*ep;
+ceil_verify(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *ceil_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-ceil_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+ceil_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	double		n;
 	rpt_value_ty	*tmp;
@@ -229,23 +205,15 @@ rpt_func_ty rpt_func_ceil =
 };
 
 
-static int trunc_verify _((rpt_expr_ty *));
-
 static int
-trunc_verify(ep)
-	rpt_expr_ty	*ep;
+trunc_verify(rpt_expr_ty *ep)
 {
 	return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *trunc_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-trunc_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+trunc_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
 	double		n;
 	rpt_value_ty	*tmp;

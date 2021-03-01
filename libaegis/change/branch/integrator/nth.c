@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,7 @@
 
 
 string_ty *
-change_branch_integrator_nth(cp, n)
-	change_ty	*cp;
-	long		n;
+change_branch_integrator_nth(change_ty *cp, long n)
 {
 	cstate		cstate_data;
 	cstate_branch_integrator_list lp;

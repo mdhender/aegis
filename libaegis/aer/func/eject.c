@@ -27,34 +27,26 @@
 #include <col.h>
 #include <error.h> /* for assert */
 
-static int valid _((rpt_expr_ty *));
-
 static int
-valid(ep)
-	rpt_expr_ty	*ep;
+valid(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 0);
+    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	assert(rpt_func_print__colp);
-	col_eject(rpt_func_print__colp);
-	return rpt_value_void();
+    assert(rpt_func_print__colp);
+    col_eject(rpt_func_print__colp);
+    return rpt_value_void();
 }
 
 
 rpt_func_ty rpt_func_eject =
 {
-	"eject",
-	0, /* not optimizable */
-	valid,
-	run
+    "eject",
+    0, /* not optimizable */
+    valid,
+    run
 };

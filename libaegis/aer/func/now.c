@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1994-1997, 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,42 +27,32 @@
 #include <aer/value/real.h>
 #include <aer/value/time.h>
 #include <error.h>
+#include <now.h>
 #include <sub.h>
 #include <trace.h>
 
 
-static int now_verify _((rpt_expr_ty *));
-
 static int
-now_verify(ep)
-	rpt_expr_ty	*ep;
+now_verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 0);
+    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *now_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
-
 static rpt_value_ty *
-now_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+now_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	time_t		t;
-
-	assert(argc == 0);
-	time(&t);
-	return rpt_value_time(t);
+    assert(argc == 0);
+    return rpt_value_time(now());
 }
 
 
 rpt_func_ty rpt_func_now =
 {
-	"now",
-	0, /* optimizable */
-	now_verify,
-	now_run,
+    "now",
+    0, /* optimizable */
+    now_verify,
+    now_run,
 };
 
 
@@ -73,171 +63,159 @@ rpt_func_ty rpt_func_now =
 
 
 double
-working_days(start, finish)
-	time_t		start;
-	time_t		finish;
+working_days(time_t start, time_t finish)
 {
-	long		working_days_whole;
-	double		working_days_frac;
-	int		wday;
+    long            working_days_whole;
+    double          working_days_frac;
+    int             wday;
 
-	/*
-	 * Flip it end-for-end if they gave it the wrong way round.
-	 */
-	trace(("working_days(start = %ld, finish = %ld)\n{\n"/*}*/, start,
-		finish));
-	trace(("start = %s", ctime(&start)));
-	trace(("finish = %s", ctime(&finish)));
-	if (start > finish)
-	{
-		time_t		swap;
+    /*
+     * Flip it end-for-end if they gave it the wrong way round.
+     */
+    trace(("working_days(start = %ld, finish = %ld)\n{\n"/*}*/, start, finish));
+    trace(("start = %s", ctime(&start)));
+    trace(("finish = %s", ctime(&finish)));
+    if (start > finish)
+    {
+	time_t		swap;
 
-		swap = start;
-		finish = start;
-		start = swap;
-	}
+	swap = start;
+	finish = start;
+	start = swap;
+    }
 
-	/*
-	 * Get the current week say.
-	 * Adjust it so that MON=0 thru SUN=6
-	 */
-	wday = localtime(&start)->tm_wday;
-	wday = (wday + 6) % 7;
+    /*
+     * Get the current week say.
+     * Adjust it so that MON=0 thru SUN=6
+     */
+    wday = localtime(&start)->tm_wday;
+    wday = (wday + 6) % 7;
 
-	working_days_whole = 0;
-	working_days_frac = 0;
+    working_days_whole = 0;
+    working_days_frac = 0;
 
-	/*
-	 * Treat the first day specially, in case it is a day of the
-	 * weekend.
-	 */
-	if ((long)start + SECONDS_PER_WORKING_DAY <= (long)finish)
-	{
-		working_days_whole++;
-		start += SECONDS_PER_DAY;
-		wday = (wday + 1) % 7;
-	}
+    /*
+     * Treat the first day specially, in case it is a day of the
+     * weekend.
+     */
+    if ((long)start + SECONDS_PER_WORKING_DAY <= (long)finish)
+    {
+	working_days_whole++;
+	start += SECONDS_PER_DAY;
+	wday = (wday + 1) % 7;
+    }
 
-	/*
-	 * Loop over the intervening days, incrimenting the counter for
-	 * any day that is not a day of the weekend.
-	 */
-	while ((long)start + SECONDS_PER_WORKING_DAY <= (long)finish)
-	{
-		if (wday < WORKING_DAYS_PER_WEEK)
-			working_days_whole++;
-		start += SECONDS_PER_DAY;
-		wday = (wday + 1) % 7;
-	}
+    /*
+     * Loop over the intervening days, incrimenting the counter for
+     * any day that is not a day of the weekend.
+     */
+    while ((long)start + SECONDS_PER_WORKING_DAY <= (long)finish)
+    {
+	if (wday < WORKING_DAYS_PER_WEEK)
+    	    working_days_whole++;
+	start += SECONDS_PER_DAY;
+	wday = (wday + 1) % 7;
+    }
 
-	/*
-	 * Always do the fraction, even if it is a day of the weekend.
-	 */
-	assert((long)finish - (long)start < SECONDS_PER_WORKING_DAY);
-	if (start < finish)
-	{
-		working_days_frac =
-			(finish - start) / (double)SECONDS_PER_WORKING_DAY;
-	}
+    /*
+     * Always do the fraction, even if it is a day of the weekend.
+     */
+    assert((long)finish - (long)start < SECONDS_PER_WORKING_DAY);
+    if (start < finish)
+    {
+	working_days_frac =
+	    (finish - start) / (double)SECONDS_PER_WORKING_DAY;
+    }
 
-	/*
-	 * done
-	 */
-	working_days_frac += working_days_whole;
-	trace(("return %.10g;\n", working_days_frac));
-	trace((/*{*/"}\n"));
-	return working_days_frac;
+    /*
+     * done
+     */
+    working_days_frac += working_days_whole;
+    trace(("return %.10g;\n", working_days_frac));
+    trace((/*{*/"}\n"));
+    return working_days_frac;
 }
 
-
-static int working_days_verify _((rpt_expr_ty *));
 
 static int
-working_days_verify(ep)
-	rpt_expr_ty	*ep;
+working_days_verify(rpt_expr_ty *ep)
 {
-	return (ep->nchild == 2);
+    return (ep->nchild == 2);
 }
 
 
-static rpt_value_ty *working_days_run _((rpt_expr_ty *, size_t,
-	rpt_value_ty **));
-
 static rpt_value_ty *
-working_days_run(ep, argc, argv)
-	rpt_expr_ty	*ep;
-	size_t		argc;
-	rpt_value_ty	**argv;
+working_days_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 {
-	rpt_value_ty	*t1;
-	rpt_value_ty	*t2;
-	rpt_value_ty	*result;
+    rpt_value_ty    *t1;
+    rpt_value_ty    *t2;
+    rpt_value_ty    *result;
 
-	assert(argc == 2);
-	t1 = rpt_value_integerize(argv[0]);
-	if (t1->method->type != rpt_value_type_integer)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
+    assert(argc == 2);
+    t1 = rpt_value_integerize(argv[0]);
+    if (t1->method->type != rpt_value_type_integer)
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
 
-		scp = sub_context_new();
-		rpt_value_free(t1);
-		sub_var_set_charstar(scp, "Function", "working_days");
-		sub_var_set_charstar(scp, "Number", "1");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
+	scp = sub_context_new();
+	rpt_value_free(t1);
+	sub_var_set_charstar(scp, "Function", "working_days");
+	sub_var_set_charstar(scp, "Number", "1");
+	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
       i18n("$function: argument $number: time value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	t2 = rpt_value_integerize(argv[1]);
-	if (t2->method->type != rpt_value_type_integer)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		rpt_value_free(t1);
-		rpt_value_free(t2);
-		sub_var_set_charstar(scp, "Function", "working_days");
-		sub_var_set_charstar(scp, "Number", "2");
-		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-      i18n("$function: argument $number: time value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	result =
-		rpt_value_real
-		(
-			working_days
-			(
-				rpt_value_integer_query(t1),
-				rpt_value_integer_query(t2)
-			)
-		);
+	    );
+	sub_context_delete(scp);
+	result = rpt_value_error(ep->pos, s);
+	str_free(s);
 	return result;
+    }
+
+    t2 = rpt_value_integerize(argv[1]);
+    if (t2->method->type != rpt_value_type_integer)
+    {
+	sub_context_ty	*scp;
+	string_ty	*s;
+
+	scp = sub_context_new();
+	rpt_value_free(t1);
+	rpt_value_free(t2);
+	sub_var_set_charstar(scp, "Function", "working_days");
+	sub_var_set_charstar(scp, "Number", "2");
+	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
+	s =
+	    subst_intl
+	    (
+	       	scp,
+      i18n("$function: argument $number: time value required (was given $name)")
+	    );
+	sub_context_delete(scp);
+	result = rpt_value_error(ep->pos, s);
+	str_free(s);
+	return result;
+    }
+
+    result =
+	rpt_value_real
+	(
+    	    working_days
+    	    (
+       		rpt_value_integer_query(t1),
+       		rpt_value_integer_query(t2)
+    	    )
+	);
+    return result;
 }
 
 
 rpt_func_ty rpt_func_working_days =
 {
-	"working_days",
-	1, /* optimizable */
-	working_days_verify,
-	working_days_run,
+    "working_days",
+    1, /* optimizable */
+    working_days_verify,
+    working_days_run,
 };

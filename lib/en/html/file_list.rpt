@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2002 Peter Miller;
+ *	Copyright (C) 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: report the files in a project
+ * MANIFEST: report the files in a change / project
  */
 
 auto pn;
@@ -28,12 +28,14 @@ script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
 	script_name = "http://localhost/cgi-bin/aegis.cgi";
 
+
 columns({width = 1000; });
 print("Content-Type: text/html");
 print("");
 print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
 	## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
 print("<html><head>");
+print("<meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\">");
 print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
 print("<meta http-equiv=\"Content-Type\" "
 	## "content=\"text/html; charset=ISO-8859-1\">");
@@ -49,22 +51,36 @@ print("<style type=\"text/css\"> "
  */
 print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
 	## "media=\"all\">");
-print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
-	## "media=\"all\">");
-print("<title>");
+auto stack, depth, n;
+depth=0;
+stack[depth] = project[pn].state.name;
+while ("" != (n = project[stack[depth]].state.parent_name))
+{
+    stack[++depth] = n;
+}
+while (depth >= 0)
+{
+    print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ##
+	stack[depth--] ## ".css\" " ## "media=\"all\">");
+}
 
-print("Project " ## quote_html(pn) ## " Files");
+print("<title>");
+print("Project " ## quote_html(pn));
+if (change_number_set())
+    print(" Change Files");
+else
+    print(" Files");
 print("</title></head><body><h1 align=center>");
 
-auto href;
 print("<a href=\"" ## script_name ## "\">Project</a>");
 auto long_project_name;
 auto prj_name_parts;
 prj_name_parts = split(pn, '.');
+auto href;
 href = script_name ## "?file@proj_menu+project@"
-	## quote_url(prj_name_parts[0]);
+    ## quote_url(prj_name_parts[0]);
 long_project_name = "<a href=\"" ## href ## "\" >"
-	## quote_html(prj_name_parts[0]) ## "</a>";
+    ## quote_html(prj_name_parts[0]) ## "</a>";
 auto j;
 for (j = 1; j < count(prj_name_parts); j++)
 {
@@ -72,103 +88,143 @@ for (j = 1; j < count(prj_name_parts); j++)
     long_project_name ##= ".<a href=\"" ## href ## "\" >"
     	## quote_html(prj_name_parts[j]) ## "</a>";
 };
-long_project_name = "``" ## long_project_name ## "'',<br>";
+long_project_name = "``" ## long_project_name ## "'',";
+if (!change_number_set())
+	long_project_name ##="<br>";
 /* HTTP limits lines to 510 characters */
 for (j in wrap(long_project_name, 510))
     print(j);
 
+auto cn;
+if (change_number_set())
+{
+    cn = change_number();
+    href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
+        ## "+change@" ## cn;
+    print("Change <a href=\"" ## href ## "\">" ## cn ## "</a>,<br>");
+}
 print("List of Files");
 print("</h1>");
-
 print("<div class=\"information\">");
 
 auto p, ps;
-p = project[pn];
-ps = p.state.src;
+if (change_number_set())
+{
+    ps = project[pn].state.branch;
+    auto cs;
+    cs = ps.change[cn];
+}
+else
+{
+    p = project[pn];
+    ps = p.state.src;
+}
 
 print("<table align=center>");
 print("<tr class=\"even-group\"><th>Type</th><th>Action</th><th>Edit</th>"
-	## "<th>File Name</th></tr>");
+    ## "<th>File Name</th></tr>");
 
-auto rownum;
+auto src, rownum;
 rownum = 0;
-for (j in ps)
+auto files;
+if (change_number_set())
+    files = cs.src;
+else
+    files = ps;
+for (src in files)
 {
     if (rownum++ % 6 < 3)
 	print("<tr class=\"odd-group\">");
     else
 	print("<tr class=\"even-group\">");
     print("<td valign=top>");
-    print(j.usage);
+    print(src.usage);
     print("</td><td valign=top>");
-    print(j.action);
+    print(src.action);
     print("</td><td valign=top align=right>");
 
-    if (j.edit_origin.revision != "" && j.edit.revision != "")
+    if (src.edit_origin.revision != "" && src.edit.revision != "")
     {
-	if (j.edit_origin.revision == j.edit.revision)
-	    print(j.edit.revision);
+       	if (src.edit_origin.revision == src.edit.revision)
+	    print(src.edit.revision);
        	else
-	    print(j.edit_origin.revision ## " -> " ## j.edit.revision);
+	    print(src.edit_origin.revision ## " -> " ## src.edit.revision);
     }
-    else if (j.edit_origin.revision != "")
-       	print(j.edit_origin.revision);
-    else if (j.edit.revision != "")
-       	print(j.edit.revision);
+    else if (src.edit_origin.revision != "")
+       	print(src.edit_origin.revision);
+    else if (src.edit.revision != "")
+       	print(src.edit.revision);
+    if (change_number_set())
+    {
+	if (src.edit_origin_new.revision != "")
+	    print("<br>{cross " ## src.edit_origin_new.revision ## "}");
+    }
 
     print("</td><td valign=top>");
-    href = script_name ## "?file@file_menu+" ## quote_url(j.file_name);
+    href = script_name ## "?file@file_menu+" ## quote_url(src.file_name);
     href ##= "+project@" ## quote_url(pn);
+    if (change_number_set())
+    {
+	href = href ## "+change@" ## cn;
+    }
     print("<a href=\"" ## href ## "\">");
-    print("<span class=\"filename\">" ## quote_html(j.file_name)
-	## "</span></a>");
-    if (j.deleted_by)
+    print("<span class=\"filename\">" ## quote_html(src.file_name)
+	## "</span>");
+    print("</a>");
+    if (src.deleted_by)
     {
        	href = script_name ## "?file@chan_menu";
        	href ##= "+project@" ## quote_url(pn);
-       	href ##= "+change@" ## j.deleted_by;
+       	href ##= "+change@" ## src.deleted_by;
        	print("<br>Deleted by change");
-       	print("<a href=\"" ## href ## "\">" ## j.deleted_by ## "</a>.");
+       	print("<a href=\"" ## href ## "\">" ## src.deleted_by ## "</a>.");
     }
-    if (j.about_to_be_created_by)
+    if (src.about_to_be_created_by)
     {
        	href = script_name ## "?file@chan_menu";
        	href ##= "+project@" ## quote_url(pn);
-       	href ##= "+change@" ## j.about_to_be_created_by;
+       	href ##= "+change@" ## src.about_to_be_created_by;
        	print("<br>About to be created by change");
-       	print("<a href=\"" ## href ## "\">" ## j.about_to_be_created_by
+       	print("<a href=\"" ## href ## "\">" ## src.about_to_be_created_by
 	    ## "</a>.");
     }
-    if (j.locked_by)
+    if (src.locked_by)
     {
        	href = script_name ## "?file@chan_menu";
        	href ##= "+project@" ## quote_url(pn);
-       	href ##= "+change@" ## j.locked_by;
+       	href ##= "+change@" ## src.locked_by;
        	print("<br>Locked by change");
-       	print("<a href=\"" ## href ## "\">" ## j.locked_by ## "</a>.");
+       	print("<a href=\"" ## href ## "\">" ## src.locked_by ## "</a>.");
     }
-    if (j.about_to_be_copied_by)
+    if (src.about_to_be_copied_by)
     {
        	href = script_name ## "?file@chan_menu";
        	href ##= "+project@" ## quote_url(pn);
-       	href ##= "+change@" ## j.about_to_be_copied_by;
+       	href ##= "+change@" ## src.about_to_be_copied_by;
        	print("<br>About to be copied by change");
-       	print("<a href=\"" ## href ## "\">" ## j.about_to_be_copied_by
+       	print("<a href=\"" ## href ## "\">" ## src.about_to_be_copied_by
 	    ## "</a>.");
     }
-    if (j.move != "")
+    if (src.move != "")
     {
-       	href = script_name ## "?file@file_menu+" ## quote_url(j.move);
+       	href = script_name ## "?file@file_menu+" ## quote_url(src.move);
        	href ##= "+project@" ## quote_url(pn);
-       	print("<br>Moved " ## (j.action == create ? "from" : "to"));
+       	print("<br>Moved " ## (src.action == create ? "from" : "to"));
        	print("<a href=\"" ## href ## "\">");
-       	print("<span class=\"filename\">" ## quote_html(j.move)
-    	    ## "</span></a>");
+       	print("<span class=\"filename\">" ## quote_html(src.move)
+	    ## "</span></a>");
     }
     print("</td></tr>");
 }
 print("<tr><td colspan=4>");
-print("Listed " ## count(keys(ps)) ## " files.");
+if (change_number_set())
+{
+    print("Listed " ## count(keys(cs.src)) ## " files.");
+}
+else
+{
+    print("Listed " ## count(keys(ps)) ## " files.");
+}
 print("</td></tr>");
 print("</table>");
 print("</div>");
@@ -176,8 +232,17 @@ print("</div>");
 print("<hr>");
 print("<div class=\"report-cmd\">");
 print("A similar report may be obtained from the command line, with one of");
-print("<blockquote><pre>ael pf -p " ## quote_html(pn));
-print("aer proj_files -p " ## quote_html(pn) ## "</pre></blockquote>");
+if (change_number_set())
+{
+    print("<blockquote><pre>ael cf -p " ## quote_html(pn) ## " -c " ## cn);
+    print("aer cf -p " ## quote_html(pn) ## " -c " ## cn ##
+	"</pre></blockquote>");
+}
+else
+{
+    print("<blockquote><pre>ael pf -p " ## quote_html(pn));
+    print("aer proj_files -p " ## quote_html(pn) ## "</pre></blockquote>");
+}
 print("</div>");
 
 print("<hr>");
@@ -187,6 +252,12 @@ href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Project Menu</a> |");
 href = script_name ## "?file@changes+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Change List</a>");
+if (change_number_set())
+{
+    href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
+	## "+change@" ## cn ;
+    print(" |<a href=\"" ## href ## "\">Change Menu</a>");
+}
 print("]</p>");
 
 print("<hr>");

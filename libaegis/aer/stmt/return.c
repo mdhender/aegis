@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,20 +34,16 @@ struct rpt_stmt_return_ty
 };
 
 
-static void run _((rpt_stmt_ty *, rpt_stmt_result_ty *));
-
 static void
-run(that, rp)
-	rpt_stmt_ty	*that;
-	rpt_stmt_result_ty *rp;
+run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
 {
-	rpt_stmt_return_ty *this;
+	rpt_stmt_return_ty *this_thing;
 
 	trace(("return::run()\n{\n"/*}*/));
-	this = (rpt_stmt_return_ty *)that;
+	this_thing = (rpt_stmt_return_ty *)that;
 	rp->status = rpt_stmt_status_return;
-	if (this->e)
-		rp->thrown = rpt_expr_evaluate(this->e, 0);
+	if (this_thing->e)
+		rp->thrown = rpt_expr_evaluate(this_thing->e, 0);
 	else
 		rp->thrown = rpt_value_void();
 	trace((/*{*/"}\n"));
@@ -65,14 +61,13 @@ static rpt_stmt_method_ty method =
 
 
 rpt_stmt_ty *
-rpt_stmt_return(e)
-	rpt_expr_ty	*e;
+rpt_stmt_return(rpt_expr_ty *e)
 {
 	rpt_stmt_ty	*that;
-	rpt_stmt_return_ty *this;
+	rpt_stmt_return_ty *this_thing;
 
 	that = rpt_stmt_alloc(&method);
-	this = (rpt_stmt_return_ty *)that;
-	this->e = e ? rpt_expr_copy(e) : 0;
+	this_thing = (rpt_stmt_return_ty *)that;
+	this_thing->e = e ? rpt_expr_copy(e) : 0;
 	return that;
 }

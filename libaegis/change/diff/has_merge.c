@@ -24,8 +24,7 @@
 
 
 int
-change_has_merge_command(cp)
-	change_ty	*cp;
+change_has_merge_command(change_ty *cp)
 {
 	pconf		pconf_data;
 

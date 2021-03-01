@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,8 @@
 #include <sub.h>
 #include <user.h>
 #include <zero.h>
+#include <version.h>
+
 
 enum
 {
@@ -86,7 +88,7 @@ static arglex_table_ty argtab[] =
 static void
 list_usage(void)
 {
-    char	    *progname;
+    const char      *progname;
 
     progname = progname_get();
     fprintf(stderr, "usage: %s [ <option>... ] width height\n", progname);
@@ -123,8 +125,16 @@ main(int argc, char **argv)
     env_initialize();
     language_init();
 
-    if (arglex() == arglex_token_help)
+    switch (arglex())
+    {
+    case arglex_token_help:
 	list_help();
+	exit(0);
+
+    case arglex_token_version:
+	version();
+	exit(0);
+    }
 
     project_name = 0;
     change_number = 0;

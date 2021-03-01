@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,7 @@
 
 
 void
-input_fatal_error(fp, msg)
-	input_ty	*fp;
-	const char	*msg;
+input_fatal_error(input_ty *fp, const char *msg)
 {
 	sub_context_ty	*scp;
 	string_ty	*s;

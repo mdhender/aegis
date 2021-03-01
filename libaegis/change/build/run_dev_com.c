@@ -30,10 +30,9 @@
 
 
 void
-change_run_development_build_command(cp, up, partial)
-	change_ty	*cp;
-	user_ty		*up;
-	string_list_ty	*partial;
+change_run_development_build_command(change_ty *cp,
+                                     user_ty *up,
+                                     string_list_ty *partial)
 {
 	sub_context_ty	*scp;
 	pconf		pconf_data;
