@@ -1,8 +1,8 @@
-aegis (4.25.D509-1) unstable; urgency=low
+aegis (4.25.D510-1) unstable; urgency=low
 
-  * This change set updates the way */common.po files are handled, to avoid
-    installing them, or even building them directly.  Instead they get subsumed
-    into the processing of other *.po files.
+  * This change set fixes a problem in the generated debian/control files, where
+    the extended descriptions were absent, or from th wrong part of th
+    packaging.
   * Signed-off-by: Peter Miller <pmiller@opensource.org.au>
   * 4.22.D048: Closes: #435422
   * 4.23.D099: Closes: #393624
@@ -16,7 +16,16 @@ aegis (4.25.D509-1) unstable; urgency=low
   * This is a summary, see earlier changelog entries for details of individual
     bug fixes.
 
- -- Peter Miller <pmiller@opensource.org.au>  Thu, 29 Nov 2012 11:50:41 +1100
+ -- Peter Miller <pmiller@opensource.org.au>  Tue, 04 Dec 2012 13:02:58 +1100
+
+aegis (4.25.D509-1) unstable; urgency=low
+
+  * This change set updates the way */common.po files are handled, to avoid
+    installing them, or even building them directly.  Instead they get subsumed
+    into the processing of other *.po files.
+  * Signed-off-by: Peter Miller <pmiller@opensource.org.au>
+
+ -- Peter Miller <pmiller@opensource.org.au>  Thu, 29 Nov 2012 12:06:41 +1100
 
 aegis (4.25.D508-1) unstable; urgency=low
 

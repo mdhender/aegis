@@ -30,7 +30,7 @@
 #
 msgid ""
 msgstr ""
-"POT-Creation-Date: Thu Nov 29 11:48:52 EST 2012\n"
+"POT-Creation-Date: Tue Dec 04 13:01:24 EST 2012\n"
 "PO-Revision-Date: 2012-08-13\n"
 "Last-Translator: Laurentiu Buzdugan <buzdugan@voyager.net>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"

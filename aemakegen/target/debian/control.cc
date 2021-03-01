@@ -569,11 +569,43 @@ target_debian::gen_control(void)
         nstring(project_brief_description_get(get_pp()->trunk_get()));
     source_description = first_line_only(source_description).trim();
 
-    nstring lib_extended_description =
+    nstring source_extended_description =
         get_cp()->pconf_attributes_find
         (
             "aemakegen:debian:extended-description:" + source_package_name
         );
+    if (source_extended_description.empty())
+    {
+        source_extended_description =
+            get_cp()->pconf_attributes_find
+            (
+                "aemakegen:debian:extended-description"
+            );
+    }
+
+    nstring runtime_extended_description =
+        get_cp()->pconf_attributes_find
+        (
+            "aemakegen:debian:description:" + runtime_package_name
+        );
+    if (runtime_extended_description.empty())
+    {
+        runtime_extended_description =
+            get_cp()->pconf_attributes_find
+            (
+                "aemakegen:debian:description:lib" + binary_package_name
+            );
+    }
+    if (runtime_extended_description.empty())
+        runtime_extended_description = source_extended_description;
+
+    nstring devel_extended_description =
+        get_cp()->pconf_attributes_find
+        (
+            "aemakegen:debian:extended-description:" + developer_package_name
+        );
+    if (devel_extended_description.empty())
+        devel_extended_description = source_extended_description;
 
     // write debian/control
     os_become_orig();
@@ -688,8 +720,11 @@ target_debian::gen_control(void)
         {
             nstring aname =
                 "aemakegen:debian:extended-description:" + binary_package_name;
-            nstring d = get_cp()->pconf_attributes_find(aname);
-            if (!d.empty())
+            nstring binary_extended_description =
+                get_cp()->pconf_attributes_find(aname);
+            if (binary_extended_description.empty())
+                binary_extended_description = source_extended_description;
+            if (!binary_extended_description.empty())
             {
                 output::pointer op2 =
                     output_wrap_open
@@ -700,7 +735,7 @@ target_debian::gen_control(void)
                         ),
                         79
                     );
-                op2->fputs(d);
+                op2->fputs(binary_extended_description);
                 op2->end_of_line();
             }
         }
@@ -767,7 +802,9 @@ target_debian::gen_control(void)
             documentation_package_name;
         nstring doc_extended_description =
             get_cp()->pconf_attributes_find(aname);
-        if (!lib_extended_description.empty())
+        if (doc_extended_description.empty())
+            doc_extended_description = devel_extended_description;
+        if (!doc_extended_description.empty())
         {
             output::pointer op2 =
                 output_wrap_open
@@ -778,7 +815,7 @@ target_debian::gen_control(void)
                     ),
                     79
                 );
-            op2->fputs(lib_extended_description);
+            op2->fputs(doc_extended_description);
             op2->end_of_line();
         }
 
@@ -889,7 +926,7 @@ target_debian::gen_control(void)
             fp->fprintf("Description: %s\n", description.c_str());
             // wrap the extended description, if one has been provided
             // in the project-specific attributes.
-            if (!lib_extended_description.empty())
+            if (!runtime_extended_description.empty())
             {
                 output::pointer op2 =
                     output_wrap_open
@@ -900,7 +937,7 @@ target_debian::gen_control(void)
                         ),
                         79
                     );
-                op2->fputs(lib_extended_description);
+                op2->fputs(runtime_extended_description);
                 op2->end_of_line();
             }
 
@@ -944,7 +981,15 @@ target_debian::gen_control(void)
                 description = source_description;
             description += " - debugging symbols";
             fp->fprintf("Description: %s\n", description.c_str());
-            if (!lib_extended_description.empty())
+            aname =
+                "aemakegen:debian:extended-description:" + debug_package_name;
+            nstring debug_extended_description =
+                get_cp()->pconf_attributes_find(aname);
+            if (debug_extended_description.empty())
+                debug_extended_description = runtime_extended_description;
+            if (debug_extended_description.empty())
+                debug_extended_description = source_extended_description;
+            if (!debug_extended_description.empty())
             {
                 output::pointer op2 =
                     output_wrap_open
@@ -955,7 +1000,7 @@ target_debian::gen_control(void)
                         ),
                         79
                     );
-                op2->fputs(lib_extended_description);
+                op2->fputs(debug_extended_description);
                 op2->end_of_line();
             }
 
@@ -992,13 +1037,13 @@ target_debian::gen_control(void)
             fp->fprintf("Architecture: any\n");
 
             nstring aname =
-                    "aemakegen:debian:description:" + developer_package_name;
+                "aemakegen:debian:description:" + developer_package_name;
             nstring description = get_cp()->pconf_attributes_find(aname);
             if (description.empty())
                 description = source_description;
             description += " - development files";
             fp->fprintf("Description: %s\n", description.c_str());
-            if (!lib_extended_description.empty())
+            if (!devel_extended_description.empty())
             {
                 output::pointer op2 =
                     output_wrap_open
@@ -1009,7 +1054,7 @@ target_debian::gen_control(void)
                         ),
                         79
                     );
-                op2->fputs(lib_extended_description);
+                op2->fputs(devel_extended_description);
                 op2->end_of_line();
             }
 
