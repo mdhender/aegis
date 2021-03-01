@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2007 Peter Miller
+//	Copyright (C) 1991-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -22,32 +22,34 @@
 #include <common/ac/fcntl.h>
 #include <common/ac/unistd.h>
 
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
 #include <libaegis/ael/project/files.h>
-#include <aegis/aent.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <common/error.h>
 #include <libaegis/file.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <common/uuidentifier.h>
+
+#include <aegis/aent.h>
 
 
 static void
@@ -73,42 +75,11 @@ new_test_help(void)
 static void
 new_test_list(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-
     trace(("new_test_list()\n{\n"));
-    project_name = 0;
-    change_number = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_test_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, new_test_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_test_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_project_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_test_usage);
+    list_project_files(cid, 0);
     trace(("}\n"));
 }
 
@@ -132,7 +103,7 @@ new_test_main(void)
     size_t	    k;
     int		    nerrs;
     log_style_ty    log_style;
-    const char      *output;
+    const char      *output_filename;
     int		    use_template;
     string_ty       *uuid;
 
@@ -144,7 +115,7 @@ new_test_main(void)
     change_number = 0;
     log_style = log_style_append_default;
     string_list_ty wl;
-    output = 0;
+    output_filename = 0;
     use_template = -1;
     uuid = 0;
     while (arglex_token != arglex_token_eoln)
@@ -208,7 +179,7 @@ new_test_main(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filename)
 		duplicate_option(new_test_usage);
 	    switch (arglex())
 	    {
@@ -217,11 +188,11 @@ new_test_main(void)
 		// NOTREACHED
 
 	    case arglex_token_string:
-		output = arglex_value.alv_string;
+		output_filename = arglex_value.alv_string;
 		break;
 
 	    case arglex_token_stdio:
-		output = "";
+		output_filename = "";
 		break;
 	    }
 	    break;
@@ -248,7 +219,7 @@ new_test_main(void)
 	}
 	arglex();
     }
-    if (change_number && output)
+    if (change_number && output_filename)
     {
 	mutually_exclusive_options
 	(
@@ -578,7 +549,7 @@ new_test_main(void)
 	    // change_filename_check function.
 	    //
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Message", e);
+	    sub_var_set_string(scp, "MeSsaGe", e);
 	    change_error(cp, scp, i18n("$message"));
 	    sub_context_delete(scp);
 	    ++nerrs;
@@ -677,14 +648,14 @@ new_test_main(void)
     // If there is an output option,
     // write the change number to the file.
     //
-    if (output)
+    if (output_filename)
     {
 	string_ty *content = wl.unsplit("\n");
-	if (*output)
+	if (*output_filename)
 	{
 	    string_ty	    *fn;
 
-	    fn = str_from_c(output);
+	    fn = str_from_c(output_filename);
             user_ty::become scoped(up);
 	    file_from_string(fn, content, 0644);
 	    str_free(fn);

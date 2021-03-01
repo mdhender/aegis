@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-1999, 2001, 2002, 2004-2007 Peter Miller
+//	Copyright (C) 1995-1999, 2001, 2002, 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: interface definition for aegis/change_bran.c
 //
 
 #ifndef AEGIS_CHANGE_BRANCH_H
@@ -146,7 +144,7 @@ void change_branch_default_test_exemption_set(change::pointer cp, bool yesno);
   * @returns
   *     The state of the attribute.
   */
-bool change_branch_default_test_exemption_get(change::pointer );
+bool change_branch_default_test_exemption_get(change::pointer cp);
 
 /**
   * The change_branch_default_test_regression_exemption_set function is
@@ -171,7 +169,7 @@ void change_branch_default_test_regression_exemption_set(change::pointer cp,
   * @returns
   *     The state of the attribute.
   */
-bool change_branch_default_test_regression_exemption_get(change::pointer );
+bool change_branch_default_test_regression_exemption_get(change::pointer cp);
 
 long change_branch_minimum_change_number_get(change::pointer );
 void change_branch_minimum_change_number_set(change::pointer , long);

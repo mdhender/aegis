@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 2001, 2002, 2004-2006 Peter Miller.
+//	Copyright (C) 1991-1993, 2001, 2002, 2004-2006, 2008 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,16 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/col.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef COL_H
 #define COL_H
 
 #include <common/main.h>
+#include <libaegis/output.h>
 
 struct string_ty; // forward
 
@@ -33,6 +32,8 @@ struct string_ty; // forward
 class col
 {
 public:
+    typedef aegis_shared_ptr<col> pointer;
+
     /**
       * The destructor.
       */
@@ -55,9 +56,9 @@ public:
       *
       * @param filename
       *     name of file to write,
-      *	pager is used if NULL pointer given.
+      *     pager is used if NULL pointer given.
       */
-    static col *open(struct string_ty *filename);
+    static col::pointer open(struct string_ty *filename);
 
     /**
       * The create method is used to specify a range of locations for an
@@ -77,11 +78,11 @@ public:
       *     the column title to use.  Give NULL pointer for none.
       *
       * @returns
-      *      output_ty *; a pointer to an output stream to be used to write
+      *      output::pointer ; a pointer to an output stream to be used to write
       *      into this column.  Use the delete operator when you are done
       *      with the column.
       */
-    virtual struct output_ty *create(int left, int right, const char *title)
+    virtual output::pointer create(int left, int right, const char *title)
 	= 0;
 
     /**
@@ -131,6 +132,14 @@ public:
       */
     virtual void flush() = 0;
 
+    /**
+      * The forget method is used to discontinue an output column.
+      *
+      * @param op
+      *     The column to forget.
+      */
+    virtual void forget(const output::pointer &op) = 0;
+
 private:
     /**
       * The copy constructor.  Do not use.
@@ -142,47 +151,5 @@ private:
       */
     col &operator=(const col &);
 };
-
-inline DEPRECATED col *
-col_open(struct string_ty *filename)
-{
-    return col::open(filename);
-}
-
-inline DEPRECATED void
-col_close(col *p)
-{
-    delete p;
-}
-
-inline DEPRECATED struct output_ty *
-col_create(col *p, int left, int right, const char *title)
-{
-    return p->create(left, right, title);
-}
-
-inline DEPRECATED void
-col_title(col *cp, const char *lhs, const char *rhs)
-{
-    cp->title(lhs, rhs);
-}
-
-inline DEPRECATED void
-col_eoln(col *cp)
-{
-    cp->eoln();
-}
-
-inline DEPRECATED void
-col_need(col *cp, int n)
-{
-    cp->need(n);
-}
-
-inline DEPRECATED void
-col_eject(col *cp)
-{
-    cp->eject();
-}
 
 #endif // COL_H

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 2001, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/uuencode.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_UUENCODE_H
@@ -26,32 +24,40 @@
 #include <libaegis/output.h>
 
 /**
-  * The output_uuencode_ty class is used to represent the state of a
+  * The output_uuencode class is used to represent the state of a
   * filter which unix-to-unix encodes the data being written.  See
   * uuencode(1) for more information.
   */
-class output_uuencode_ty:
-    public output_ty
+class output_uuencode:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_uuencode_ty();
+    virtual ~output_uuencode();
 
+private:
     /**
       * The constructor.
       *
       * \param deeper
       *     The deeper output stream this filter is to write its output to.
-      * \param close_on_close
-      *     Whether or not to delete the deeper output stream in our
-      *     destructor.
       */
-    output_uuencode_ty(output_ty *deeper, bool close_on_close);
+    output_uuencode(const output::pointer &deeper);
 
+public:
+    /**
+      * The constructor.
+      *
+      * \param deeper
+      *     The deeper output stream this filter is to write its output to.
+      */
+    static pointer create(const output::pointer &deeper);
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -76,13 +82,7 @@ private:
       * The deeeper instance variable is used to remember the deeper
       * output stream this filter is to write its output to.
       */
-    output_ty *deeper;
-
-    /**
-      * The deeeper instance variable is used to remember whether or not
-      * to delete the deeper output stream in our destructor.
-      */
-    bool close_on_close;
+    output::pointer deeper;
 
     /**
       * The residual_value instance variable is used to remember the
@@ -142,24 +142,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    output_uuencode_ty();
+    output_uuencode();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_uuencode_ty(const output_uuencode_ty &);
+    output_uuencode(const output_uuencode &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_uuencode_ty &operator=(const output_uuencode_ty &);
+    output_uuencode &operator=(const output_uuencode &);
 };
-
-
-inline DEPRECATED output_ty *
-output_uuencode(output_ty *deeper, bool close_on_close)
-{
-    return new output_uuencode_ty(deeper, close_on_close);
-}
 
 #endif // LIBAEGIS_OUTPUT_UUENCODE_H

@@ -1,11 +1,11 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2004-2006 Peter Miller
-//      Copyright (C) 2007 Walter Franzini
+//      Copyright (C) 2004-2006, 2008 Peter Miller
+//      Copyright (C) 2007, 2008 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the process_tail class
+//      along with this program; if not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -36,7 +34,6 @@ process_tail::process_tail(printer &arg) :
     dir_st.set_reaper();
 
     clean_files.push_back("core");
-    clean_files.push_back("bin/find_sizes$(EXEEXT)");
     clean_files.push_back("bin/fmtgen$(EXEEXT)");
     clean_files.push_back("libaegis/libaegis.$(LIBEXT)");
     clean_files.push_back("common/common.$(LIBEXT)");
@@ -53,32 +50,6 @@ process_tail::process_tail(printer &arg) :
 
     libaegis_files = new nstring_list;
     dir_st.assign("libaegis", libaegis_files);
-
-    find_sizes_files = new nstring_list;
-    dir_st.assign("find_sizes", find_sizes_files);
-    find_sizes_files->push_back("common/ac/libintl.$(OBJEXT)");
-    find_sizes_files->push_back("common/ac/stdlib.$(OBJEXT)");
-    find_sizes_files->push_back("common/ac/string.$(OBJEXT)");
-    find_sizes_files->push_back("common/ac/time.$(OBJEXT)");
-    find_sizes_files->push_back("common/ac/unistd.$(OBJEXT)");
-    find_sizes_files->push_back("common/ac/wchar.$(OBJEXT)");
-    find_sizes_files->push_back("common/ac/wctype.$(OBJEXT)");
-    find_sizes_files->push_back("common/arglex.$(OBJEXT)");
-    find_sizes_files->push_back("common/arglex/compare.$(OBJEXT)");
-    find_sizes_files->push_back("common/error.$(OBJEXT)");
-    find_sizes_files->push_back("common/exeext.$(OBJEXT)");
-    find_sizes_files->push_back("common/libdir.$(OBJEXT)");
-    find_sizes_files->push_back("common/mem.$(OBJEXT)");
-    find_sizes_files->push_back("common/mprintf.$(OBJEXT)");
-    find_sizes_files->push_back("common/nstring.$(OBJEXT)");
-    find_sizes_files->push_back("common/progname.$(OBJEXT)");
-    find_sizes_files->push_back("common/quit.$(OBJEXT)");
-    find_sizes_files->push_back("common/rsrc_limits.$(OBJEXT)");
-    find_sizes_files->push_back("common/str.$(OBJEXT)");
-    find_sizes_files->push_back("common/str/catenate.$(OBJEXT)");
-    find_sizes_files->push_back("common/str/format.$(OBJEXT)");
-    find_sizes_files->push_back("common/stracc.$(OBJEXT)");
-    find_sizes_files->push_back("common/trace.$(OBJEXT)");
 
     datadir_files.push_back(
         "$(RPM_BUILD_ROOT)$(sysconfdir)/profile.d/aegis.sh");
@@ -146,20 +117,25 @@ process_tail::per_file(const nstring &filename)
 {
     nstring file(filename);
     if (!file.starts_with("script/") && file.ends_with(".in"))
+    {
         file = nstring(file.c_str(), file.size() - 3);
-
-    if (file == "script/aegis.synpic" || file == "script/ae-symlinks.in")
-    {
-        // do nothing
+        clean_files.push_back_unique(file);
     }
-    else if (file.starts_with("script/") && file.ends_with(".in"))
+
+    else if (file.starts_with("script/"))
     {
-        nstring name(file.c_str() + 7, file.size() - 10);
-        commands_bin.push_back("bin/" + name + "$(EXEEXT)");
-        scripts.push_back(name);
-        commands_install.push_back(
-            "$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)" + name +
-            "$(PROGRAM_SUFFIX)$(EXEEXT)");
+        nstring name = file.trim_extension().basename();
+        if (name != "aegis.synpic" && name != "ae-symlinks")
+        {
+            commands_bin.push_back("bin/" + name + "$(EXEEXT)");
+            clean_files.push_back("bin/" + name + "$(EXEEXT)");
+            if (!name.starts_with("test_"))
+            {
+                nstring install_name = "$(RPM_BUILD_ROOT)$(bindir)/"
+                    "$(PROGRAM_PREFIX)" + name + "$(PROGRAM_SUFFIX)$(EXEEXT)";
+                commands_install.push_back(install_name);
+            }
+        }
     }
     else if (file.ends_with("/main.cc"))
     {
@@ -172,8 +148,6 @@ process_tail::per_file(const nstring &filename)
             name != "aefp"
         &&
             name != "fmtgen"
-        &&
-            name != "find_sizes"
         &&
             name != "cklinlen"
         &&
@@ -327,6 +301,7 @@ process_tail::per_file(const nstring &filename)
 void
 process_tail::postlude()
 {
+    commands_bin.sort();
     print << "\n";
     print << "all-bin: " << commands_bin << "\n";
 
@@ -340,19 +315,8 @@ process_tail::postlude()
         print << name << "_files = " << *dir_p << "\n";
         print << "\n";
 
-        if (name == "find_sizes")
-        {
-            print << "bin/" << name << "$(EXEEXT): $(" << name
-                << "_files) .bin\n";
-            print << "\t@sleep 1\n";
-            print << "\t$(CXX) $(LDFLAGS) -o $@ $(" << name
-                << "_files) $(LIBS)\n";
-            print << "\t@sleep 1\n";
-        }
-        else if
+        if
         (
-            name == "aefp"
-        ||
             name == "aemakefile"
         ||
             name == "aemeasure"
@@ -386,24 +350,6 @@ process_tail::postlude()
         print << "\t$(INSTALL_PROGRAM) bin/" << name << "$(EXEEXT) $@\n";
         if (name == "aegis" || name == "aeimport" || name == "aelock")
             print << "\t-chown root $@ && chmod 4755 $@\n";
-    }
-
-    for (size_t k = 0; k < scripts.size(); ++k)
-    {
-        nstring name(scripts[k]);
-        print << "\n";
-        print << "bin/" << name << "$(EXEEXT): script/" << name << ".in .bin\n";
-        print << "\t@sleep 1\n";
-        print << "\tCONFIG_FILES=$@:script/" << name
-            << ".in CONFIG_HEADERS= $(SH) ./config.status\n";
-        print << "\tchmod a+rx $@\n";
-        print << "\t@sleep 1\n";
-
-        print << "\n";
-        print << "$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)" << name
-            << "$(PROGRAM_SUFFIX)$(EXEEXT): bin/" << name
-            << "$(EXEEXT) .bindir\n";
-        print << "\t$(INSTALL_SCRIPT) bin/" << name << "$(EXEEXT) $@\n";
     }
 
     print << "\nCommonFiles = " << *common_files << "\n";
@@ -445,12 +391,14 @@ process_tail::postlude()
     //  (make sure command lines do not get too long)
     //
     print << "\nclean-obj:\n";
+    clean_files.sort();
     for (size_t m = 0; m < clean_files.size(); ++m)
         print << "\trm -f " << clean_files[m] << "\n";
 
     print << "\nclean: clean-obj\n";
     print << "\trm -f " << commands_bin << "\n";
 
+    commands_install.sort();
     print << "\ninstall-bin: " << commands_install << "\n";
     print << "\n"
         "uninstall-bin:\n"
@@ -512,14 +460,6 @@ process_tail::postlude()
         "\n"
         "sure: $(TestFiles) etc/test.sh\n"
         "\t@$(SH) etc/test.sh -summary $(TestFiles)\n"
-        "\n"
-        "#\n"
-        "# This looks at the various integral type sizes\n"
-        "# and constructs a suitable include file\n"
-        "#\n"
-        "common/find_sizes.h: bin/find_sizes$(EXEEXT)\n"
-        "\tbin/find_sizes$(EXEEXT) > common/find_sizes.h\n"
-        "\t@sleep 1\n"
         "\n"
         "#\n"
         "# This target is used when preparing for the second\n"

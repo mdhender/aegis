@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment checkin
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -24,19 +22,20 @@
 #include <common/ac/stdio.h>
 #include <common/ac/pwd.h>
 
+#include <common/mem.h>
+#include <common/quit.h>
 #include <libaegis/adler32.h>
 #include <libaegis/getpw_cache.h>
 #include <libaegis/input/bunzip2.h>
 #include <libaegis/input/file.h>
 #include <libaegis/input/gunzip.h>
-#include <common/quit.h>
-#include <libaegis/quit/action/unlink.h>
 #include <libaegis/os.h>
 #include <libaegis/output/bzip2.h>
 #include <libaegis/output/file.h>
 #include <libaegis/output/gzip.h>
-#include <libaegis/rfc822/functor/version_prev.h>
+#include <libaegis/quit/action/unlink.h>
 #include <libaegis/rfc822/functor/vers_search.h>
+#include <libaegis/rfc822/functor/version_prev.h>
 #include <libaegis/simpverstool.h>
 #include <libaegis/sub.h>
 
@@ -45,8 +44,8 @@ static nstring
 build_temp_file_name(const nstring &path)
 {
     nstring dirname = os_dirname_relative(path);
-    nstring basename = os_basename(path);
-    return dirname + "/.tmp." + basename;
+    nstring base = os_basename(path);
+    return dirname + "/.tmp." + base;
 }
 
 
@@ -177,17 +176,14 @@ simple_version_tool::checkin(const nstring &input_file_name,
     // written and closed before we do the rename.
     //
     {
-	output_file out_u(temp_file_name);
-	output_ty *out_c = 0;
+	output::pointer os = output_file::open(temp_file_name);
 	switch (compression_algorithm)
 	{
 	case compression_algorithm_none:
-            // "none" is a special case.  Once we have "smart pointers"
-            // for output_ty, it will be possible to honour this option by
-            // doing nothing.  For now, we use gzip.
+            break;
 
 	case compression_algorithm_gzip:
-	    out_c = new output_gzip(&out_u, false);
+	    os = output_gzip::create(os);
 	    break;
 
 #ifndef DEBUG
@@ -199,7 +195,7 @@ simple_version_tool::checkin(const nstring &input_file_name,
 	    // For now, that means bzip2
 
 	case compression_algorithm_bzip2:
-	    out_c = new output_bzip2(&out_u, false);
+	    os = output_bzip2::create(os);
 	    break;
 	}
 
@@ -213,8 +209,8 @@ simple_version_tool::checkin(const nstring &input_file_name,
         // Note that if the source file is plain text, then the
         // (uncompressed) output will be plain text, too.
 	//
-	header.store(*out_c);
-	*out_c << in;
+	header.store(os);
+	os << in;
 
 	if (there_are_previous_versions)
 	{
@@ -238,10 +234,8 @@ simple_version_tool::checkin(const nstring &input_file_name,
             // looking at an older archive.
 	    input temp = input_gunzip_open(old_hist_uncom);
 	    input old_history_file = input_bunzip2_open(temp);
-	    *out_c << old_history_file;
+	    os << old_history_file;
 	}
-	delete out_c;
-	out_c = 0;
     }
 
     //

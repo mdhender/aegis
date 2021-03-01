@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the simpverstool class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_SIMPVERSTOOL_H
@@ -24,6 +22,7 @@
 
 #include <common/nstring.h>
 #include <libaegis/compres_algo.h>
+#include <libaegis/output.h>
 
 class rfc822; // forward
 class rfc822_functor; // forward
@@ -137,7 +136,7 @@ public:
       *     understood to mean the head revision (the most recently
       *     checked in version).
       */
-    void checkout(output_ty &os, const nstring &version);
+    void checkout(output::pointer os, const nstring &version);
 
 private:
     /**

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2007 Peter Miller
+//	Copyright (C) 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate imports
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -29,6 +27,7 @@
 #include <libaegis/ael/project/projects.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/file.h>
 #include <libaegis/gonzo.h>
@@ -85,9 +84,9 @@ static void
 import_list(void)
 {
     arglex();
-    while (arglex_token != arglex_token_eoln)
-	generic_argument(import_usage);
-    list_projects(0, 0, 0);
+    change_identifier cid;
+    cid.command_line_parse_rest(import_usage);
+    list_projects(cid, 0);
 }
 
 
@@ -433,10 +432,10 @@ import_main(void)
 	nstring s1 = up->default_project_directory();
 	assert(s1);
 	os_become_orig();
-	int max = os_pathconf_name_max(s1);
+	int name_max = os_pathconf_name_max(s1);
 	os_become_undo();
-	if ((int)project_name_get(pp)->str_length > max)
-	    fatal_project_name_too_long(project_name_get(pp), max);
+	if ((int)project_name_get(pp)->str_length > name_max)
+	    fatal_project_name_too_long(project_name_get(pp), name_max);
 	home = os_path_cat(s1, nstring(project_name_get(pp)));
 
 	project_verbose_directory(pp, home.get_ref());

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005-2007 Peter Miller
+//	Copyright (C) 2005-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: interface of the change_functor_integr_histo class
 //
 
 #ifndef AEGET_CHANGE_FUNCTOR_INTEGR_HISTO_H
@@ -70,7 +68,7 @@ private:
     time_t max_time;
     bool recurse;
     const char *format;
-    long max;
+    long size_of_biggest_bucket;
     time_t min_seen;
     time_t max_seen;
     symtab_ty bucket;

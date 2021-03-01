@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2007 Peter Miller
+//	Copyright (C) 2006-2008 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -17,20 +17,17 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: interface of the change_functor_pendin_print class
-//
 
 #ifndef AEDIST_CHANGE_FUNCTOR_PENDIN_PRINT_H
 #define AEDIST_CHANGE_FUNCTOR_PENDIN_PRINT_H
 
-#include <libaegis/change/functor.h>
-#include <libaegis/change.h>
-#include <libaegis/project.h>
-#include <common/symtab/template.h>
 #include <common/nstring.h>
+#include <common/symtab/template.h>
+#include <libaegis/change.h>
+#include <libaegis/change/functor.h>
+#include <libaegis/col.h>
+#include <libaegis/project.h>
 
-struct col;
-struct output_ty;
 template <class valye_type_ty> class symtab;
 
 /**
@@ -63,10 +60,10 @@ private:
     nstring_list *in_version_list;
     nstring_list *ex_uuid_list;
     nstring_list *ex_version_list;
-    col *colp;
-    output_ty *vers_col;
-    output_ty *uuid_col;
-    output_ty *desc_col;
+    col::pointer colp;
+    output::pointer vers_col;
+    output::pointer uuid_col;
+    output::pointer desc_col;
     int n;
 
     /**

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the output_revml_encode class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -31,19 +29,21 @@ output_revml_encode::~output_revml_encode()
     // method.
     //
     flush();
-
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-output_revml_encode::output_revml_encode(output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+output_revml_encode::output_revml_encode(const output::pointer &a_deeper) :
+    deeper(a_deeper),
     pos(0),
     bol(true)
 {
+}
+
+
+output::pointer
+output_revml_encode::create(const output::pointer &a_deeper)
+{
+    return pointer(new output_revml_encode(a_deeper));
 }
 
 
@@ -116,7 +116,7 @@ output_revml_encode::flush_inner()
 }
 
 
-string_ty *
+nstring
 output_revml_encode::filename()
     const
 {

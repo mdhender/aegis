@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2005-2007 Peter Miller.
+//	Copyright (C) 1994, 2005-2008 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -21,11 +21,13 @@
 #define AEGIS_AER_FUNC_PRINT_H
 
 #include <libaegis/aer/func.h>
+#include <libaegis/output.h>
+#include <libaegis/col.h>
 
 extern size_t rpt_func_print__ncolumns;
 extern size_t rpt_func_print__ncolumns_max;
-extern struct output_ty **rpt_func_print__column;
-extern struct col *rpt_func_print__colp;
+extern output::pointer *rpt_func_print__column;
+extern col::pointer rpt_func_print__colp;
 
 
 /**

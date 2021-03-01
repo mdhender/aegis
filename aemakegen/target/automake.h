@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEMAKEGEN_TARGET_AUTOMAKE_H
@@ -182,6 +182,20 @@ private:
       * false.
       */
     bool use_dot_man;
+
+    /**
+      * The pkgdatadir instance variable is used to remember the files
+      * to be installed into $(DATADIR)/$(PACKAGE).  The name mirrors
+      * the dist_pkgdatadir_DATA makefile variable.
+      */
+    nstring_list pkgdatadir;
+
+    /**
+      * The pkglibdir instance variable is used to remember the files
+      * to be installed into $(LIBDIR)/$(PACKAGE).  The name mirrors
+      * the dist_pkglibdir_DATA makefile variable.
+      */
+    nstring_list pkglibdir;
 
     /**
       * The copy constructor.  Do not use.

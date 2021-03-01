@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1994, 1998, 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -96,13 +96,13 @@ type_structure::gen_include()
     {
 	indent_printf
 	(
-    	    "void %s_write(struct output_ty *, %s_ty *);\n",
+    	    "void %s_write(const output::pointer &fp, %s_ty *value);\n",
     	    def_name().c_str(),
     	    def_name().c_str()
 	);
 	indent_printf
 	(
-    	    "void %s_write_xml(struct output_ty *, %s_ty *);\n",
+    	    "void %s_write_xml(const output::pointer &fp, %s_ty *value);\n",
     	    def_name().c_str(),
     	    def_name().c_str()
 	);
@@ -111,13 +111,15 @@ type_structure::gen_include()
     {
 	indent_printf
 	(
-    	    "void %s_write(struct output_ty *, const char *, %s_ty *);\n",
+    	    "void %s_write(const output::pointer &fp, const char *name, "
+                "%s_ty *value);\n",
     	    def_name().c_str(),
     	    def_name().c_str()
 	);
 	indent_printf
 	(
-    	    "void %s_write_xml(struct output_ty *, const char *, %s_ty *);\n",
+    	    "void %s_write_xml(const output::pointer &fp, const char *name, "
+                "%s_ty *value);\n",
     	    def_name().c_str(),
     	    def_name().c_str()
 	);
@@ -182,7 +184,7 @@ type_structure::gen_code()
     {
 	indent_printf
 	(
-	    "%s_write(output_ty *fp, %s_ty *this_thing)\n",
+	    "%s_write(const output::pointer &fp, %s_ty *this_thing)\n",
 	    def_name().c_str(),
 	    def_name().c_str()
 	);
@@ -191,7 +193,8 @@ type_structure::gen_code()
     {
 	indent_printf
 	(
-	    "%s_write(output_ty *fp, const char *name, %s_ty *this_thing)\n",
+	    "%s_write(const output::pointer &fp, const char *name, "
+                "%s_ty *this_thing)\n",
 	    def_name().c_str(),
 	    def_name().c_str()
 	);
@@ -265,7 +268,7 @@ type_structure::gen_code()
     {
 	indent_printf
 	(
-	    "%s_write_xml(output_ty *fp, %s_ty *this_thing)\n",
+	    "%s_write_xml(const output::pointer &fp, %s_ty *this_thing)\n",
 	    def_name().c_str(),
 	    def_name().c_str()
 	);
@@ -274,7 +277,8 @@ type_structure::gen_code()
     {
 	indent_printf
 	(
-	   "%s_write_xml(output_ty *fp, const char *name, %s_ty *this_thing)\n",
+	   "%s_write_xml(const output::pointer &fp, const char *name, "
+                "%s_ty *this_thing)\n",
 	    def_name().c_str(),
 	    def_name().c_str()
 	);

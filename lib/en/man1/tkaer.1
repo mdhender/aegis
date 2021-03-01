@@ -1,12 +1,12 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2005-2007 Peter Miller
+.\"	Copyright (C) 2000, 2005-2008 Peter Miller
 .\"
 .\"	Contributed by Scott Finneran <sfinneran@lucent.com>,
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -45,9 +45,11 @@ moved files. (In the case of moved files, the original name is used to
 access the baseline
 version.)
 .PP
-Double-clicking button 1 on a file will show the differences
+Double-clicking button 1 on a filename (or pressing the space key when
+the filename is highlighted) will show the differences
 between the change and the current branch baseline. Holding down button
-3 will invoke a pop-up menu presenting the reviewer with a list of
+3 (or pressing the \[lq]a\[rq] key)
+will invoke a pop-up menu presenting the reviewer with a list of
 grandparent branches which also contain the file. This is particularly
 useful when rolling in branches.
 .SH NEW AND REMOVED FILES

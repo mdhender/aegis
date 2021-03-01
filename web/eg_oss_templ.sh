@@ -1,11 +1,11 @@
 #!/bin/sh
 #
 #       aegis - project change supervisor
-#       Copyright (C) 2006 Peter Miller
+#       Copyright (C) 2006, 2008 Peter Miller
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 2 of the License, or
+#       the Free Software Foundation; either version 3 of the License, or
 #       (at your option) any later version.
 #
 #       This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 #       GNU General Public License for more details.
 #
 #       You should have received a copy of the GNU General Public License
-#       along with this program; if not, write to the Free Software
-#       Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: shell script to create archive/eg_oss_templ.ae
+#       along with this program. If not, see
+#       <http://www.gnu.org/licenses/>.
 #
 output=
 here=`pwd`
@@ -316,7 +314,7 @@ cat > $tmp/chan.dir.3/aegis.file.template/c << 'fubar'
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * you option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -324,10 +322,8 @@ cat > $tmp/chan.dir.3/aegis.file.template/c << 'fubar'
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
- * USA
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
 #include <${trim_ext $fn}.h>
@@ -347,7 +343,7 @@ cat > $tmp/chan.dir.3/aegis.file.template/generic << 'fubar'
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or (at
+# the Free Software Foundation; either version 3 of the License, or (at
 # you option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -355,10 +351,8 @@ cat > $tmp/chan.dir.3/aegis.file.template/generic << 'fubar'
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
-# USA
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>
 #
 fubar
 test $? -eq 0 || fail
@@ -370,7 +364,7 @@ cat > $tmp/chan.dir.3/aegis.file.template/h << 'fubar'
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * you option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -378,10 +372,8 @@ cat > $tmp/chan.dir.3/aegis.file.template/h << 'fubar'
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
- * USA
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
 #ifndef ${id ${upcase $fn}}
@@ -409,7 +401,7 @@ cat > $tmp/chan.dir.3/aegis.file.template/sh << 'fubar'
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or (at
+# the Free Software Foundation; either version 3 of the License, or (at
 # you option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -417,10 +409,8 @@ cat > $tmp/chan.dir.3/aegis.file.template/sh << 'fubar'
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
-# USA
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>
 #
 exit 0
 fubar
@@ -434,7 +424,7 @@ cat > $tmp/chan.dir.3/aegis.file.template/test.sh << 'fubar'
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or (at
+# the Free Software Foundation; either version 3 of the License, or (at
 # you option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -442,10 +432,8 @@ cat > $tmp/chan.dir.3/aegis.file.template/test.sh << 'fubar'
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
-# USA
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>
 #
 TEST_SUBJECT="fill me in"
 
@@ -491,7 +479,7 @@ cat > $tmp/chan.dir.3/aegis.supplementary/test_prelude.inc.sh << 'fubar'
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or (at
+# the Free Software Foundation; either version 3 of the License, or (at
 # you option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -499,10 +487,8 @@ cat > $tmp/chan.dir.3/aegis.supplementary/test_prelude.inc.sh << 'fubar'
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
-# USA
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>
 #
 
 if [ "$TEST_SUBJECT" = "fill me in" ]

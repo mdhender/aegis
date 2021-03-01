@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 2002-2006 Peter Miller
+//	Copyright (C) 1995, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for common/wstr_list.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_WSTR_LIST_H
@@ -193,7 +191,7 @@ public:
     /**
       * The split method is used to split a wide string into compendent pieces.
       *
-      * \param ws
+      * \param wis
       *     The wide string to be split.
       * \param sep
       *     The separator charactres.  Any one of these will split.
@@ -202,7 +200,7 @@ public:
       *     True if should discard extra while space at the start and
       *     end of each piece.  Defaults to false.
       */
-    void split(wstring_ty *ws, const char *sep = 0, bool ewhite = false);
+    void split(wstring_ty *wis, const char *sep = 0, bool ewhite = false);
 
     /**
       * The equal_to method is used to test whether this wide string
@@ -254,80 +252,6 @@ inline bool
 operator!=(const wstring_list_ty &lhs, const wstring_list_ty &rhs)
 {
     return !lhs.equal_to(rhs);
-}
-
-inline DEPRECATED int
-wstring_list_member(wstring_list_ty *wlp, wstring_ty *w)
-{
-    return wlp->member(w);
-}
-
-inline DEPRECATED wstring_ty *
-wstring_list_to_wstring(const wstring_list_ty *wlp, size_t start, size_t stop,
-    const char *sep)
-{
-    return wlp->unsplit(start, stop, sep);
-}
-
-inline DEPRECATED void
-wstring_to_wstring_list(wstring_list_ty *wlp, wstring_ty *ws, const char *sep,
-    int ewhite)
-{
-    wlp->split(ws, sep, ewhite);
-}
-
-inline DEPRECATED void
-wstring_list_prepend(wstring_list_ty *wlp, wstring_ty *ws)
-{
-    wlp->push_front(ws);
-}
-
-inline DEPRECATED void
-wstring_list_append(wstring_list_ty *wlp, wstring_ty *ws)
-{
-    wlp->push_back(ws);
-}
-
-inline DEPRECATED void
-wstring_list_append_unique(wstring_list_ty *wlp, wstring_ty *ws)
-{
-    wlp->push_back_unique(ws);
-}
-
-inline DEPRECATED void
-wstring_list_copy(wstring_list_ty *wlp, const wstring_list_ty *arg)
-{
-    *wlp = *arg;
-}
-
-inline DEPRECATED void
-wstring_list_delete(wstring_list_ty *wlp, wstring_ty *w)
-{
-    wlp->remove(w);
-}
-
-inline DEPRECATED void
-wstring_list_destructor(wstring_list_ty *wlp)
-{
-    wlp->clear();
-}
-
-inline DEPRECATED void
-wstring_list_constructor(wstring_list_ty *wlp)
-{
-    wlp->clear();
-}
-
-inline DEPRECATED int
-wstring_list_equal(const wstring_list_ty *lhs, const wstring_list_ty *rhs)
-{
-    return (*lhs == *rhs);
-}
-
-inline DEPRECATED int
-wstring_list_subset(const wstring_list_ty *lhs, const wstring_list_ty *rhs)
-{
-    return lhs->is_a_subset_of(*rhs);
 }
 
 /** @} */

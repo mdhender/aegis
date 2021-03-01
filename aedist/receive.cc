@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2007 Peter Miller
-//	Copyright (C) 2005-2007 Walter Franzini
+//	Copyright (C) 1999-2008 Peter Miller
+//	Copyright (C) 2005-2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -569,11 +569,13 @@ receive_main(void)
     assert(!archive_name.empty());
     if (archive_name != "etc/project-name")
 	wrong_file(ifp, "etc/project-name");
+    {
     nstring s;
     if (!ifp->one_line(s) || s.empty())
 	ifp->fatal_error("short file");
     if (!project_name)
 	project_name = str_copy(s.get_ref());
+    }
     ifp.close();
     os_become_undo();
 
@@ -598,7 +600,7 @@ receive_main(void)
     assert(archive_name);
     if (archive_name == "etc/change-number")
     {
-	s.clear();
+	nstring s;
 	if (!ifp->one_line(s) || s.empty())
 	    ifp->fatal_error("short file");
 	long proposed_change_number = s.to_long();
@@ -870,7 +872,7 @@ receive_main(void)
     nstring trace_options(trace_args());
     os_become_orig();
     nstring dot(os_curdir());
-    s =
+    nstring new_change_command =
 	nstring::format
 	(
 	    "aegis --new-change %ld --project=%s --file=%s --verbose%s%s",
@@ -880,13 +882,13 @@ receive_main(void)
 	    reason.c_str(),
             trace_options.c_str()
 	);
-    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+    os_execute(new_change_command, OS_EXEC_FLAG_INPUT, dot);
     os_unlink_errok(attribute_file_name);
 
     //
     // Begin development of the new change.
     //
-    s =
+    nstring develop_begin_command =
 	nstring::format
 	(
 	    "aegis --develop-begin %ld --project %s --verbose%s%s",
@@ -895,7 +897,7 @@ receive_main(void)
 	    (devdir ? devdir->str_text : ""),
             trace_options.c_str()
 	);
-    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+    os_execute(develop_begin_command, OS_EXEC_FLAG_INPUT, dot);
     os_become_undo();
 
     //
@@ -1450,7 +1452,7 @@ receive_main(void)
     }
     if (!files_source.empty())
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --remove-file --project=%s --change=%ld%s --verbose",
@@ -1639,7 +1641,7 @@ receive_main(void)
             nstring_list *files_list =
                 files_source_by_origin.query(origin[c]);
             assert(!files_list->empty());
-            s =
+            nstring s =
                 nstring::format
                 (
                     "aegis --copy-file --project=%s --change=%ld%s "
@@ -1727,7 +1729,7 @@ receive_main(void)
 
     if (!files_build.empty())
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --new-file --build --project=%s --change=%ld%s "
@@ -1740,7 +1742,7 @@ receive_main(void)
     }
     if (!files_test_auto.empty())
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --new-test --automatic --project=%s --change=%ld%s "
@@ -1753,7 +1755,7 @@ receive_main(void)
     }
     if (!files_test_manual.empty())
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --new-test --manual --project=%s --change=%ld%s "
@@ -1766,7 +1768,7 @@ receive_main(void)
     }
     if (!files_source.empty())
     {
-	s = nstring(THE_CONFIG_FILE_OLD);
+	nstring s = nstring(THE_CONFIG_FILE_OLD);
 	// FIXME: need to use the "is a config file" function
 	if (files_source.member(s))
 	{
@@ -1778,7 +1780,7 @@ receive_main(void)
 	    files_config.push_back(s);
 	}
 
-	s =
+	nstring new_file_command =
 	    nstring::format
 	    (
 		"aegis --new-file --project=%s --change=%ld%s --verbose "
@@ -1787,7 +1789,7 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s, files_source, dd);
+	os_xargs(new_file_command, files_source, dd);
     }
 
     //
@@ -1799,7 +1801,7 @@ receive_main(void)
     //
     if (!files_config.empty())
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --new-file --config --project=%s --change=%ld%s "
@@ -1850,7 +1852,7 @@ receive_main(void)
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
-	output_ty       *ofp;
+	output::pointer ofp;
 	int             need_whole_source;
 
 	// verbose progress message here?
@@ -1910,12 +1912,20 @@ receive_main(void)
 	assert(archive_name);
 	need_whole_source = 1;
 
-        if (!old)
-            s = nstring::format("patch/%s", src_data->file_name->str_text);
-        else
-            s = nstring::format("patch/%s", old->c_str());
-	if (archive_name == s)
+	if (archive_name.starts_with("patch/"))
 	{
+            //
+            // Check to see we got the file we expected
+            //
+            {
+                nstring s1 =
+                    nstring::format("patch/%s", src_data->file_name->str_text);;
+                nstring s2;
+                if (old)
+                    s2 = "patch/" + *old;
+                assert(archive_name == s1 || archive_name == s2);
+            }
+
 	    bool patch_is_empty = (ifp->length() == 0);
 
 	    //
@@ -1926,10 +1936,8 @@ receive_main(void)
 	    nstring patch_file_name = nstring(os_edit_filename(0));
 	    if (!patch_is_empty)
 	    {
-		ofp = output_file_binary_open(patch_file_name);
-		*ofp << ifp;
-		delete ofp;
-		ofp = 0;
+		output::pointer os = output_file::binary_open(patch_file_name);
+		os << ifp;
 	    }
 	    ifp.close();
 
@@ -2020,19 +2028,24 @@ receive_main(void)
 	    }
 	    assert(archive_name);
 	}
-        if (!old)
-            s = nstring::format("src/%s", src_data->file_name->str_text);
-        else
-            s = nstring::format("src/%s", old->c_str());
-	if (archive_name != s)
-	    wrong_file(ifp, s);
+
+        // make sure we have the file we expected
+        {
+            nstring s1 =
+                nstring::format("src/%s", src_data->file_name->str_text);
+            nstring s2;
+            if (old)
+                s2 = "src/" + *old;
+            if (archive_name != s1 && (!s2 || archive_name != s2))
+                wrong_file(ifp, s1);
+        }
+
+        output::pointer os;
 	if (need_whole_source)
-	    ofp = output_file_binary_open(src_data->file_name);
+	    os = output_file::binary_open(src_data->file_name);
 	else
-	    ofp = new output_bit_bucket();
-	*ofp << ifp;
-	delete ofp;
-	ofp = 0;
+	    os = output_bit_bucket::create();
+	os << ifp;
 	ifp.close();
     }
 
@@ -2075,7 +2088,7 @@ receive_main(void)
 	    fattr_write_file(attribute_file_name, fattr_data, 0);
 	    fattr_type.free(fattr_data);
 	    s2 = str_quote_shell(src_data->file_name);
-	    s =
+	    nstring s =
 		nstring::format
 		(
 		    "aegis --file-attributes --change=%ld --project=%s "
@@ -2101,7 +2114,7 @@ receive_main(void)
                 // file, run "aefa -uuid" to set it.
 		//
 		string_ty *qfn = str_quote_shell(src_data->file_name);
-		s =
+		nstring s =
 		    nstring::format
 		    (
 			"aegis --file-attributes --uuid %s --change=%ld "
@@ -2287,7 +2300,7 @@ receive_main(void)
 	// Make sure we are using an appropriate architecture.	This is
 	// one of the commonest problems when seeding an empty repository.
 	//
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --change-attr --fix-arch --change=%ld --project=%s%s",
@@ -2304,16 +2317,18 @@ receive_main(void)
     //
     // now merge the change
     //
-    s =
-	nstring::format
-	(
-	    "aegis --diff --only-merge --change=%ld --project=%s --verbose",
-	    magic_zero_decode(change_number),
-	    project_name->str_text
-        );
-    os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-    os_become_undo();
+    {
+        nstring merge_command =
+            nstring::format
+            (
+                "aegis --diff --only-merge --change=%ld --project=%s --verbose",
+                magic_zero_decode(change_number),
+                project_name->str_text
+            );
+        os_become_orig();
+        os_execute(merge_command, OS_EXEC_FLAG_INPUT, dd);
+        os_become_undo();
+    }
 
     //
     // Now that all the files have been unpacked,
@@ -2360,18 +2375,20 @@ receive_main(void)
     //
     if (uncopy)
     {
-	s =
-	    nstring::format
-	    (
-		"aegis --copy-file-undo --unchanged --change=%ld --project=%s "
-		    "--verbose%s",
-		magic_zero_decode(change_number),
-		project_name->str_text,
-                trace_options.c_str()
-	    );
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
+        {
+            nstring copy_file_undo_cmd =
+                nstring::format
+                (
+                    "aegis --copy-file-undo --unchanged --change=%ld "
+                        "--project=%s --verbose%s",
+                    magic_zero_decode(change_number),
+                    project_name->str_text,
+                    trace_options.c_str()
+                );
+            os_become_orig();
+            os_execute(copy_file_undo_cmd, OS_EXEC_FLAG_INPUT, dd);
+            os_become_undo();
+        }
 
 	//
 	// If there are no files left, we already have this change.
@@ -2387,33 +2404,19 @@ receive_main(void)
 
 	    //
 	    // stop developing the change
+	    // cancel the change
 	    //
-	    s =
+	    nstring s =
 		nstring::format
 		(
 		    "aegis --develop-begin-undo --change=%ld --project=%s "
-			"--verbose%s",
+			"--verbose%s --new-change-undo",
 		    magic_zero_decode(change_number),
 		    project_name->str_text,
                     trace_options.c_str()
 		);
 	    os_become_orig();
 	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-
-	    //
-	    // cancel the change
-	    //
-	    s =
-		nstring::format
-		(
-		    "aegis --new-change-undo --change=%ld --project=%s "
-			"--verbose%s",
-		    magic_zero_decode(change_number),
-		    project_name->str_text,
-                    trace_options.c_str()
-		);
-	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-	    os_become_undo();
 
 	    //
 	    // run away, run away!
@@ -2467,17 +2470,19 @@ receive_main(void)
     //
     // now diff the change
     //
-    s =
-	nstring::format
-	(
-	    "aegis --diff --no-merge --change=%ld --project=%s --verbose%s",
-	    magic_zero_decode(change_number),
-	    project_name->str_text,
-            trace_options.c_str()
-	);
-    os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-    os_become_undo();
+    {
+        nstring diff_command =
+            nstring::format
+            (
+                "aegis --diff --no-merge --change=%ld --project=%s --verbose%s",
+                magic_zero_decode(change_number),
+                project_name->str_text,
+                trace_options.c_str()
+            );
+        os_become_orig();
+        os_execute(diff_command, OS_EXEC_FLAG_INPUT, dd);
+        os_become_undo();
+    }
 
     //
     // If the change could have a trojan horse in it, stop here with
@@ -2504,17 +2509,19 @@ receive_main(void)
     //
     // now build the change
     //
-    s =
-	nstring::format
-	(
-	    "aegis --build --change=%ld --project=%s --verbose%s",
-	    magic_zero_decode(change_number),
-	    project_name->str_text,
-            trace_options.c_str()
-	);
-    os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-    os_become_undo();
+    {
+        nstring build_command =
+            nstring::format
+            (
+                "aegis --build --change=%ld --project=%s --verbose%s",
+                magic_zero_decode(change_number),
+                project_name->str_text,
+                trace_options.c_str()
+            );
+        os_become_orig();
+        os_execute(build_command, OS_EXEC_FLAG_INPUT, dd);
+        os_become_undo();
+    }
 
     //
     // Sleep for a second to make sure the aet timestamps will be
@@ -2534,7 +2541,7 @@ receive_main(void)
     //
     if (need_to_test && !cstate_data->test_exempt)
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --test --change=%ld --project=%s --verbose%s",
@@ -2548,7 +2555,7 @@ receive_main(void)
     }
     if (need_to_test && !cstate_data->test_baseline_exempt)
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --test --baseline --change=%ld --project=%s "
@@ -2565,7 +2572,7 @@ receive_main(void)
     // always to a regession test?
     if (!cstate_data->regression_test_exempt)
     {
-	s =
+	nstring s =
 	    nstring::format
 	    (
 		"aegis --test --regression --change=%ld --project=%s "
@@ -2587,7 +2594,7 @@ receive_main(void)
     //
     // end development (if we got this far!)
     //
-    s =
+    nstring s =
 	nstring::format
 	(
 	    "aegis --develop-end --change=%ld --project=%s --verbose%s",

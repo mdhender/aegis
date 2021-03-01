@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1997, 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1994, 1995, 1997, 1999, 2002-2006, 2008 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: operating system start point, and command line argument parsing
+//	along with this program; if not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -32,6 +31,9 @@
 #include <common/fp/snefru.h>
 #include <common/progname.h>
 #include <common/str_list.h>
+
+#include <libaegis/help.h>
+#include <libaegis/os.h>
 
 
 enum
@@ -73,6 +75,8 @@ main(int argc, char **argv)
     fingerprint_methods_ty *method;
     string_ty	    *s;
 
+    os_become_init_mortal();
+
     arglex_init(argc, argv, argtab);
     arglex();
 
@@ -90,6 +94,11 @@ main(int argc, char **argv)
 		arglex_value.alv_string
 	    );
 	    usage();
+
+	case arglex_token_help:
+	    help(progname_get(), usage);
+            exit(0);
+            // NOTREACHED
 
 	case arglex_token_snefru:
 	    if (method)

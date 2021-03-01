@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 1999, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,34 +13,44 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/memory.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_MEMORY_H
 #define LIBAEGIS_OUTPUT_MEMORY_H
 
+#include <common/nstring/accumulator.h>
 #include <libaegis/output.h>
 
 /**
-  * The output_memory_ty class is used to represent an output stream
+  * The output_memory class is used to represent an output stream
   * which writes to a block of dynamically allocated memory.
   */
-class output_memory_ty:
-    public output_ty
+class output_memory:
+    public output
 {
 public:
+    typedef aegis_shared_ptr<output_memory> mpointer;
+
     /**
       * The destructor.
       */
-    virtual ~output_memory_ty();
+    virtual ~output_memory();
 
+private:
     /**
-      * The default constructor.
+      * The default constructor.  It is private on purpose, use the
+      * "create" class method instead.
       */
-    output_memory_ty();
+    output_memory();
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      */
+    static mpointer create();
 
     /**
       * The forward method is used to forward the data held by this
@@ -52,10 +62,22 @@ public:
       *     call flush() before we do anything else, to make sure all
       *     the data is in the memory buffer.
       */
-    void forward(output_ty *deeper);
+    void forward(output::pointer deeper);
 
+    /**
+      * The mkstr method is used to turn the accumulated data into a
+      * string.
+      *
+      * \note:
+      *     The only reason this method isn't const is that we have to
+      *     call flush() before we do anything else, to make sure all
+      *     the data is in the memory buffer.
+      */
+    nstring mkstr();
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -69,53 +91,23 @@ public:
     // See base class for documentation.
     void end_of_line_inner();
 
-    /**
-      * The mkstr method is used to turn the accumulated data into a
-      * string.
-      */
-    nstring mkstr() const;
-
 private:
     /**
       * The buffer instance variable is used to remember the dynamically
       * alloocated buffer to hold the data written to this output
       * stream.
       */
-    unsigned char *buffer;
-
-    /**
-      * The size instance variable is used to remember how mant
-      * charactgers have been saved in the buffer to date.
-      */
-    size_t size;
-
-    /**
-      * The maximum instance variable is used to remember how many
-      * characters have been allocated for the buffer.
-      */
-    size_t maximum;
+    nstring_accumulator buffer;
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_memory_ty(const output_memory_ty &);
+    output_memory(const output_memory &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_memory_ty &operator=(const output_memory_ty &);
+    output_memory &operator=(const output_memory &);
 };
-
-inline DEPRECATED output_ty *
-output_memory_open(void)
-{
-    return new output_memory_ty();
-}
-
-inline DEPRECATED void
-output_memory_forward(output_memory_ty *fp, output_ty *deeper)
-{
-    fp->forward(deeper);
-}
 
 #endif // LIBAEGIS_OUTPUT_MEMORY_H

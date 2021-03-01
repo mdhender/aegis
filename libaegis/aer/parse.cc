@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -280,8 +280,7 @@ report_run()
     trace(("interpret the report\n"));
     report_interpret();
     trace(("close the output file\n"));
-    delete rpt_func_print__colp;
-    rpt_func_print__colp = 0;
+    rpt_func_print__colp.reset();
 
     //
     // release dynamic memory

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate bit_buckets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/page.h>
@@ -40,11 +38,18 @@ output_bit_bucket::output_bit_bucket() :
 }
 
 
-string_ty *
+output::pointer
+output_bit_bucket::create()
+{
+    return pointer(new output_bit_bucket());
+}
+
+
+nstring
 output_bit_bucket::filename()
     const
 {
-    return file_name.get_ref();
+    return file_name;
 }
 
 

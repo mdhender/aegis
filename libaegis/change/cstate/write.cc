@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to manipulate writes
 //
 
 #include <common/ac/stdlib.h>
@@ -76,7 +74,7 @@ change_cstate_write(change::pointer cp)
 {
     string_ty	    *filename_new;
     string_ty	    *filename_old;
-    static int	    count;
+    static int	    temp_file_counter;
     string_ty	    *fn;
     int		    mode;
     int		    compress;
@@ -124,8 +122,8 @@ change_cstate_write(change::pointer cp)
 	}
 
 	fn = change_fstate_filename_get(cp);
-	filename_new = str_format("%s,%d", fn->str_text, ++count);
-	filename_old = str_format("%s,%d", fn->str_text, ++count);
+	filename_new = str_format("%s,%d", fn->str_text, ++temp_file_counter);
+	filename_old = str_format("%s,%d", fn->str_text, ++temp_file_counter);
 	change_become(cp);
 	if (cp->fstate_is_a_new_file)
 	{
@@ -210,8 +208,8 @@ change_cstate_write(change::pointer cp)
     //
     fn = change_cstate_filename_get(cp);
     assert(!cp->cstate_data->src);
-    filename_new = str_format("%s,%d", fn->str_text, ++count);
-    filename_old = str_format("%s,%d", fn->str_text, ++count);
+    filename_new = str_format("%s,%d", fn->str_text, ++temp_file_counter);
+    filename_old = str_format("%s,%d", fn->str_text, ++temp_file_counter);
     change_become(cp);
     if (cp->cstate_is_a_new_file)
     {

@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Walter Franzini
-#       Copyright (C) 2007 Peter Miller
+#	Copyright (C) 2007, 2008 Walter Franzini
+#       Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aedist -rec functionality
+#	along with this program; if not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -255,20 +253,24 @@ activity="develop end 252"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activitye="integrate 231"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 10 > log 2>&1
+activity="integrate begin 256"
+$bin/aegis -ib -c 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="send the change 260"
+activity="integrate 260"
+$bin/aefinish -p $AEGIS_PROJECT -c 10 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="send the change 264"
 $bin/aedist -send -c 10 -ndh -o c10.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="receive the change 264"
+activity="receive the change 268"
 $bin/aedist -receive -c 11 -f c10.ae -dir $workchan \
     -ignore-uuid -trojan -verbose > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="check cstate 269"
+activity="check cstate 273"
 cat > ok <<EOF
 brief_description = "zero";
 description = "zero";

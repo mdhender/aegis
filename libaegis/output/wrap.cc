@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller
+//	Copyright (C) 1999, 2003-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,25 +13,24 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate wraps
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/output/wrap.h>
+#include <common/mem.h>
 #include <libaegis/output/to_wide.h>
+#include <libaegis/output/wrap.h>
 #include <libaegis/wide_output/expand.h>
-#include <libaegis/wide_output/wrap.h>
 #include <libaegis/wide_output/to_narrow.h>
+#include <libaegis/wide_output/wrap.h>
 
 
-output_ty *
-output_wrap_open(output_ty *deeper, int delete_on_close, int width)
+output::pointer
+output_wrap_open(const output::pointer &deeper, int width)
 {
-    wide_output_ty *fp1 = wide_output_to_narrow_open(deeper, delete_on_close);
-    wide_output_ty *fp2 = wide_output_wrap_open(fp1, 1, width);
-    wide_output_ty *fp3 = wide_output_expand_open(fp2, 1);
-    output_ty *fp4 = new output_to_wide_ty(fp3, true);
+    wide_output::pointer fp1 = wide_output_to_narrow::open(deeper);
+    wide_output::pointer fp2 = wide_output_wrap::open(fp1, width);
+    wide_output::pointer fp3 = wide_output_expand::open(fp2);
+    output::pointer fp4 = output_to_wide::open(fp3);
     return fp4;
 }

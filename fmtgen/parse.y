@@ -1,10 +1,11 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001-2007 Peter Miller
+ *	Copyright (C) 1991-1994, 1997-1999, 2001-2008 Peter Miller
+ *	Copyright (C) 2007 Walter Franzini
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
+ *	the Free Software Foundation; either version 3 of the License, or
  *	(at your option) any later version.
  *
  *	This program is distributed in the hope that it will be useful,
@@ -13,10 +14,9 @@
  *	GNU General Public License for more details.
  *
  *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *	along with this program.  If not, see
+ *	<http://www.gnu.org/licenses/>.
  *
- * MANIFEST: grammar and functions to parse aegis file contents definitions
  */
 
 %{
@@ -263,11 +263,11 @@ generate_include_file(const char *include_file, const char *definition_file)
 	indent_putchar('\n');
     }
     indent_printf("#include <common/str.h>\n");
+    indent_printf("#include <libaegis/output.h>\n");
     indent_printf("#include <libaegis/meta_lex.h>\n");
     indent_printf("#include <libaegis/meta_parse.h>\n");
     indent_printf("#include <libaegis/meta_type.h>\n");
     indent_putchar('\n');
-    indent_printf("struct output_ty; // forward\n");
     indent_printf("class nstring; // forward\n");
     for (j = 0; j < emit_length; ++j)
 	emit_list[j]->gen_include();
@@ -398,7 +398,7 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_printf("#include <libaegis/meta_type.h>\n");
     indent_printf("#include <libaegis/os.h>\n");
     indent_printf("#include <libaegis/output/file.h>\n");
-    indent_printf("#include <libaegis/output/bzip2.h>\n");
+    indent_printf("#include <libaegis/output/gzip.h>\n");
     indent_printf("#include <libaegis/output/indent.h>\n");
     indent_printf("#include <%s>\n", include_file);
     const char *cp1 = base_name(code_file);
@@ -462,7 +462,6 @@ generate_code_file(const char *code_file, const char *include_file,
 	s->str_text
     );
     indent_printf("{\n");
-    indent_printf("output_ty *fp;\n\n");
     indent_printf
     (
 	"trace((\"%s_write_file(filename = \\\"%%s\\\", value = %%08lX)\\n"
@@ -473,17 +472,17 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_more();
     indent_printf("os_become_must_be_active();\n");
     indent_less();
+    indent_printf("output::pointer fp;\n");
     indent_printf("if (needs_compression)\n{\n");
-    indent_printf("fp = output_file_binary_open(filename);\n");
-    indent_printf("fp = new output_bzip2(fp, true);\n");
+    indent_printf("fp = output_file::binary_open(filename);\n");
+    indent_printf("fp = output_gzip::create(fp);\n");
     indent_printf("}\nelse\n{\n");
-    indent_printf("fp = output_file_text_open(filename);\n");
+    indent_printf("fp = output_file::text_open(filename);\n");
     indent_printf("}\n");
-    indent_printf("fp = new output_indent_ty(fp, true);\n");
+    indent_printf("fp = output_indent::create(fp);\n");
     indent_printf("io_comment_emit(fp);\n");
     indent_printf("%s_write(fp, value);\n", s->str_text);
     indent_printf("type_enum_option_clear();\n");
-    indent_printf("delete fp;\n");
     indent_printf("trace((\"}\\n\"));\n");
     indent_printf("}\n");
 

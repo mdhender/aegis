@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller
+//	Copyright (C) 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate outstandings
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/str.h>
@@ -25,19 +23,19 @@
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/ael/change/inappropriat.h>
 #include <libaegis/ael/change/outstanding.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/cstate.h>
 
 
 void
-list_outstanding_changes(string_ty *project_name, long change_number,
-    string_list_ty *args)
+list_outstanding_changes(change_identifier &cid, string_list_ty *args)
 {
     trace(("list_outstanding_changes()\n{\n"));
-    if (change_number)
+    if (cid.set())
 	list_change_inappropriate();
     list_changes_in_state_mask_by_user
     (
-	project_name,
+	cid,
 	~(1 << cstate_state_completed),
 	(args->nstrings ? args->string[0] : 0)
     );

@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2007 Peter Miller
+//      Copyright (C) 1991-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -23,7 +23,7 @@
 #include <common/ac/time.h>
 #include <common/ac/unistd.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/error.h>
 #include <common/gmatch.h>
@@ -40,6 +40,7 @@
 #include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
 #include <libaegis/file.h>
@@ -86,36 +87,11 @@ integrate_begin_help(void)
 static void
 integrate_begin_list(void)
 {
-    string_ty       *project_name;
-
     trace(("integrate_begin_list()\n{\n"));
     arglex();
-    project_name = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(integrate_begin_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, integrate_begin_usage);
-            continue;
-        }
-        arglex();
-    }
-    list_changes_in_state_mask
-    (
-        project_name,
-        1 << cstate_state_awaiting_integration
-    );
-    if (project_name)
-        str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(integrate_begin_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_awaiting_integration);
     trace(("}\n"));
 }
 
@@ -499,7 +475,12 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // They shouldn't be source, anyway.
         //
         os_become_query(&uid, (int *)0, (int *)0);
-        if ((st->st_uid != (unsigned)uid) || (st->st_mode & 07000))
+        if
+        (
+            ((unsigned int)st->st_uid != (unsigned int)uid)
+        ||
+            (st->st_mode & 07000) != 0
+        )
         {
             project_become_undo(cp->pp);
             exists = !!project_file_find(cp->pp, s1, view_path_extreme);
@@ -643,7 +624,12 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         // They shouldn't be source, anyway.
         //
         os_become_query(&uid, (int *)0, (int *)0);
-        if ((st->st_uid != (unsigned)uid) || (st->st_mode & 07000))
+        if
+        (
+            (unsigned int)st->st_uid != (unsigned int)uid
+        ||
+            (st->st_mode & 07000) != 0
+        )
         {
             project_become_undo(cp->pp);
             exists = !!project_file_find(cp->pp, s1, view_path_extreme);
@@ -942,7 +928,7 @@ integrate_begin_main(void)
     //
     // Create the integration directory.
     //
-    base = str_format("delta%d", getpid());
+    base = str_format("delta%d", (int)getpid());
     num = str_format(".%3.3ld", cstate_data->delta_number);
     os_become_orig();
     base_max = os_pathconf_name_max(project_top_path_get(pp, 0));

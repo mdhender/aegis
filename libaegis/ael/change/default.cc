@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,70 +13,44 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate defaults
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
-#include <libaegis/ael/change/default.h>
-#include <libaegis/ael/change/inappropriat.h>
-#include <libaegis/project.h>
 #include <common/str_list.h>
 #include <common/trace.h>
+#include <libaegis/ael/change/default.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/project.h>
 #include <libaegis/user.h>
 #include <libaegis/zero.h>
 
 
 void
-list_default_change(string_ty *project_name, long change_number,
-    string_list_ty *args)
+list_default_change(change_identifier &cid, string_list_ty *args)
 {
-    project_ty      *pp;
-    user_ty::pointer up;
-
-    //
-    // check for silly arguments
-    //
     trace(("list_default_change()\n{\n"));
-    if (change_number)
+    if (cid.set())
+    {
+        //
+        // we don't want them specifying it on the command line.  We
+        // want to obtain the results of the *defaulting* mechanism.
+        //
 	list_change_inappropriate();
+    }
 
-    //
-    // resolve the project name
-    //
-    if (!project_name)
-	project_name = str_copy(user_ty::create()->default_project().get_ref());
-    else
-	project_name = str_copy(project_name);
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    if (!args->nstrings)
-	up = user_ty::create();
-    else
-	up = user_ty::create(nstring(args->string[0]));
-
-    //
-    // Find default change number;
-    // will generate fatal error if no default.
-    //
-    change_number = up->default_change(pp);
+    if (args && args->nstrings)
+    {
+        nstring login(args->string[0]);
+        cid.set_user_by_name(login);
+    }
 
     //
     // print it out
     //
-    printf("%ld\n", magic_zero_decode(change_number));
-
-    //
-    // clean up and go home
-    //
-    project_free(pp);
+    printf("%ld\n", magic_zero_decode(cid.get_cp()->number));
     trace(("}\n"));
 }

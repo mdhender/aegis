@@ -1,10 +1,10 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997-1999, 2002-2007 Peter Miller
+.\"	Copyright (C) 1995, 1997-1999, 2002-2008 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -48,13 +48,13 @@ sufficiently rarely, that it was worth writing down.
 .br
 .ne 2i
 .SH NEW BRANCH
-The version stamping is \fIpost\fP-numbered.
+The version stamping is \f[I]post\fP-numbered.
 You decide what major or minor version number you want
 as you are about to release,
 not when you start work.
 .PP
 Finish development of the branch in the normal way.
-For example, if you are working on project \fI\*(n).51.19\fP,
+For example, if you are working on project \f[I]\*(n).51.19\fP,
 then you would say
 .e(
 % \f[CB]aede -p \*(n).51 19\fP
@@ -67,7 +67,7 @@ then you would say
 % \f[CB]aeipass -reg -p \*(n).51 -c 19\fP
 %
 .e)
-At this point, branch 19 if project \fI\*(n).51\fP is completed.
+At this point, branch 19 if project \f[I]\*(n).51\fP is completed.
 Cut a new branch, as follows
 .e(
 % \f[CB]aenbr -p \*(n).51 20
@@ -76,17 +76,17 @@ Cut a new branch, as follows
 The branch number will default.  This is OK unless you ever skipped a
 number - in which case it will back fill which is usually undesirable.
 .PP
-At this point project \fI\*(n).51.20\fP is ready for use.  If you want
+At this point project \f[I]\*(n).51.20\fP is ready for use.  If you want
 a major version number increment, the process is similar, however you
-must also terminate the \fI\*(n).51\fP branch, and you may well want to
+must also terminate the \f[I]\*(n).51\fP branch, and you may well want to
 create a branch on the branch, to get back to a two-number version scheme.
 .e(
-aede -p \*(n).51 19 \fIet al, to complete\fP
-aede -p \*(n) 51 \fIet al, to complete\fP
+aede -p \*(n).51 19 \f[I]et al, to complete\fP
+aede -p \*(n) 51 \f[I]et al, to complete\fP
 aenbr -p \*(n) 52
 aenbr -p \*(n) 52 0
 .e)
-The purpose of a \fIpost\fP-numbered branching scheme is that, at any point,
+The purpose of a \f[I]post\fP-numbered branching scheme is that, at any point,
 you can cut a suitable bug-fix sub-branch.
 .br
 .ne 2i
@@ -95,7 +95,7 @@ Create a new change on the branch you just created,
 and start development of it.
 .PP
 Update any version numbering files,
-or create any special release notes files, \fIetc\fP,
+or create any special release notes files, \f[I]etc\fP,
 as required.
 Much of this can be obtained from Aegis, but not all of it.
 .PP
@@ -110,28 +110,27 @@ Continuing the above example:
 .SS Verify New Branch
 The first pass of verifying the release set is to use the
 .e(
-% \f[CB]aeb RPM\fP
-\fIlots of output\fP
+% \f[CB]aeb check-tarball\fP
+\f[I]lots of output\fP
 %
 .e)
-command.  This builds a RedHat package manager file.  It is a fairly
-vigorous test of the build and install, though highly Linux specific.
-Fix any problems encountered.
+command.  This builds The tarball, and then unpacks it and builds Aegis
+from scratch.  It is a fairly vigorous test of the build and install,
+though highly Linux specific.  Fix any problems encountered.
 .PP
 Take the \f[CW]archive/\*(n).\*(v).tar.gz\fP file from the current
-baseline.
-Unpack it and verify that it configures and builds on one of the
-Solaris boxes.
-There are usually small niggling problems,
-so fix them and try again.
-.PP
-Then unpack it on some other computer which
-is in the architecture list in the project \fIconfig\fP file.
-Configure, build and test it on this machine.
-.PP
-Find yet another type of UNIX box and try again.
-AIX or Pyramid are always good torture tests,
-they are such bad UNIX implementations.
+change.
+Try it out on as many different architectures as you have access to.
+Try as many of these as you have access to:
+various Linux distributions (including AMD64),
+various BSD distributions,
+various Solaris versions,
+MacOSX,
+AIX,
+HP/UX,
+SGI.
+Some are such bad implementations of Unix that you will almost always
+find something.
 .PP
 Once you have fixed all of the problems,
 develop end and integrate the change as normal.
@@ -142,33 +141,30 @@ it will contain the appropriate version numbers for release.
 .SH ARCHIVES
 Once a viable release is ready, it is necessary to upload it to the archives.
 .SS Update Primary Archive
+The \f[I]aeb check-tarball\fP step, above, produces a bunch of files
+suitable for installation on SourceForge to as the CGI interface.  This
+serves a s a demo of Aegis' distributed development facilities, and is
+also used by Aegis developers for just this use.
+Upload the \f[I]aegis-sf.tgz\fP file and unpack it
+.e(
+% \f[CB]scp aegis-sf.tgz aegis.sourceforge.net:.\fP
+% \f[CB]ssh aegis.sourceforge.net\fP
+\f[I]blah blah\fP
+%
+.e)
+.PP
 Transfer a copy to \f[CW]aegis.sourceforge.net\fP by FTP.
 Use the following commands
 .e(
 % \f[CB]aecd -bl archive\fP
-% \f[CW]scp -r . aegis.sourceforge.net:aegis.web/htdocs/.\fP
-%
-.e)
-.br
-.ne 2i
-.SS Update Linux Archive
-Transfer a copy to \f[CW]metalab.unc.edu\fP by FTP.
-Login as \f[CW]anonymous\fP and change to the \f[CW]incoming/linux\fP directory.
-Use the following commands
-.e(
-% \f[CB]aecd -bl archive\fP
-% \f[CW]ftp metalab.unc.edu\fP
-user: \f[CB]anonymous\fP
-ftp> \f[CB]cd incoming/linux\fP
-ftp> \f[CB]binary\fP
-ftp> \f[CB]prompt\fP
-ftp> \f[CB]mput \*(n)-*\fP
-ftp> \f[CB]quit\fP
+% \f[CB]scp -r . aegis.sourceforge.net:aegis.web/htdocs/.\fP
 %
 .e)
 .PP
-There is no need to send email to \fIewt@metalab.unc.edu\fP,
-it will be archived automatically in a day or two (or fifteen).
+You also need to update the SourceForge download servers.  This
+is best done by using FTP from \f[I]aegis.sourceforge.net\fP to
+\f[I]upload.sourceforge.net\fP as this is a fast internal SourceForge
+network transfer, and not a slower through-the-cloud transfer.
 .br
 .ne 2i
 .SS Update SourceForge Archive
@@ -182,6 +178,8 @@ user: \f[CB]anonymous\fP
 ftp> \f[CB]cd /incoming\fP
 ftp> \f[CB]binary\fP
 ftp> \f[CB]put \*(n)-\*(v).tar.gz\fP
+ftp> \f[CB]put \*(n)-\*(v).rm.pdf\fP
+ftp> \f[CB]put \*(n)-\*(v).ug.pdf\fP
 ftp> \f[CB]quit\fP
 %
 .e)
@@ -190,20 +188,20 @@ ftp> \f[CB]quit\fP
 .SH NOTIFICATION
 Once the archives are ready, you can let folks know it's there.
 .LP
-Only send the notifications \fIafter\fP the files are actually available
+Only send the notifications \f[I]after\fP the files are actually available
 at the archive site.
 .br
 .ne 2i
 .SS SourceForge.Net
-This is \fIway\fP harder than any sane person expects.
+This is \f[I]way\fP harder than any sane person expects.
 Go to http://sourceforge.net and login then go to
 http://sourceforge.net/projects/aegis/
 and click the \fBAdmin\fP link,
 and the \fBFile Releases\fP link,
 and the \fB[Add Release]\fP link (near the bottom of the page).
-In the "\fINew release name\fP" box put the version number,
-and click the "\fICreate This Release\fP" button.
-In the "\fIPaste The Notes In\fP" box type
+In the "\f[I]New release name\fP" box put the version number,
+and click the "\f[I]Create This Release\fP" button.
+In the "\f[I]Paste The Notes In\fP" box type
 .RS
 http://aegis.sourceforge.net/change_log.txt
 .RE
@@ -214,9 +212,9 @@ And then finish the rest of the rather cumbersome dialog gunk.
 .\" See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
 .\" for more information.
 Send a notification to the Translation Project
-\fItranslation@iro.umontreal.ca\fP list.  It should look like this:
+\f[I]robot@translationproject.org\fP list.  It should look like this:
 .e(
-To: translation@iro.umontreal.ca
+To: robot@translationproject.org
 Reply-To: millerp@canb.auug.org.au
 Subject: \*(n)-\*(v).pot
 
@@ -227,10 +225,10 @@ http://aegis.sourceforge.net/\*(n)-\*(v).tar.gz
 Note that this is read and processed by a robot,
 so don't worry about the human-friendly language of the other notifications.
 .LP
-Only send this notification \fIafter\fP the files are actually available
+Only send this notification \f[I]after\fP the files are actually available
 at the archive site.
 .SS Notify Mailing List
-Send a notification to the \fI\*(n)-users@auug.org.au\fP list.
+Send a notification to the \f[I]\*(n)-users@auug.org.au\fP list.
 It should look like this:
 .e(
 To: \*(n)-users@auug.org.au
@@ -258,101 +256,17 @@ or on the web site at
 .ce 1
 http://aegis.sourceforge.net/change_log.txt
 .sp
-\fIput your \f[CW].sig\fI file here
+\f[I]put your \f[CW].sig\f[I] file here
 .e)
 .PP
-Only send this notification \fIafter\fP the files are actually available
+Only send this notification \f[I]after\fP the files are actually available
 at the archive site.
-.br
-.ne 2i
-.SS Notify Newsgroups
-It is probably preferable to use \f[CW]groups.google.com\fP to do this,
-rather than the method outlined below.
-.PP
-A variety of newsgroups are relevant to \*(N),
-so notify them that the release is available.
-.e(
-To: mail2news@replay.com
-Subject: \*(N) \*(v) \- a project change supervisor
-Reply-To: millerp@canb.auug.org.au
-Followup-To: millerp@canb.auug.org.au
-.fi
-Newsgroups:
-'in +4n
-alt.sources.d, comp.sources.d, comp.software-eng, comp.software.config-mgmt,
-gnu.announce
-.in -4n
-.sp
-I am pleased to announce that \*(N) \*(v) is now available.
-.sp
-Aegis is a transaction-based software configuration management system.
-It provides a framework within which a team of developers may work
-on many changes to a program independently, and Aegis coordinates
-integrating these changes back into the master source of the program,
-with as little disruption as possible.
-.sp
-You are invited to visit
-.ce 1
-http://aegis.sourceforge.net/
-for a more complete description of what \*(N) is, and access to the
-download files.
-.sp
-If you are upgrading, please take the time to read the release notes,
-which may be found in the README file in the sources,
-or on the web site at
-.ce 1
-http://aegis.sourceforge.net/change_log.txt
-.sp
-insert \fI.sig\fP file here
-.e)
-Please note that the \f[CW]Newsgroups:\fP line may not actually wrap,
-or have spaces around the commas.
-.br
-.ne 2i
-.SS Notify Linux Announce
-Send a notification to the \fIcomp.os.linux.announce\fP list.
-It should look like this:
-.e(
-To: linux-announce@news.ornl.gov
-Reply-To: millerp@canb.auug.org.au
-Subject: \*(N) \*(v) \- a project change supervisor
-
-.fi
-I am pleased to announce that \*(N) \*(v) is now available.
-.sp
-Aegis is a transaction-based software configuration management system.
-It provides a framework within which a team of developers may work
-on many changes to a program independently, and Aegis coordinates
-integrating these changes back into the master source of the program,
-with as little disruption as possible.
-.sp
-You are invited to visit
-.ce 1
-http://aegis.sourceforge.net/
-for a more complete description of what \*(N) is, and access to the
-download files.
-.sp
-If you are upgrading, please take the time to read the release notes,
-which may be found in the README file in the sources,
-or on the web site at
-.ce 1
-http://aegis.sourceforge.net/change_log.txt
-.sp
-\fIput your \f[CW].sig\fI file here
-.e)
-.PP
-Only send this notification \fIafter\fP the files are actually available
-at the archive site.
+.ne 1i
 .SS Notify Web
 \(bu) Notify \f[CW]www.freshmeat.net\fP that a new release of Aegis
 is available.
 Search for \[lq]aegis\[rq] as there is already an application record.
 .PP
-\(bu Notify \f[CW]www.cmtoday.com\fP that a new release of Aegis is available.
-.PP
 \(bu Notify \f[CW]chris@absolutegiganten.org\fP that a new release of
 Aegis is available, he's the Debian package maintainer.
-.PP
-\(bu Notify \f[CW]pr@32bitsonline.com\fP that a new release of Aegis
-is available.
 .so ../man1/z_cr.so

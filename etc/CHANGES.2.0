@@ -37,7 +37,7 @@ Change	State		Description
   26	completed	interface improvements
   27	being_		documentation example fails on convex
 	integrated
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 1
@@ -100,7 +100,7 @@ FILES
 	source	create	1	aegis/gram.h
 	source	create	1	aegis/gram.y
 	source	create	1	aegis/gstate.def
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 2
@@ -163,7 +163,7 @@ Change Details				       Tue Aug 17 23:24:20 1993
 	source	create	1	aegis/test.c
 	source	create	1	aegis/test.h
 	source	create	1	aegis/type.c
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 3
@@ -226,7 +226,7 @@ Change Details				       Tue Aug 17 23:24:20 1993
 	source	create	1	doc/c1.2.so
 	source	create	1	doc/c1.3.so
 	source	create	1	doc/c1.4.so
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 4
@@ -289,7 +289,7 @@ Change Details				       Tue Aug 17 23:24:20 1993
 	source	create	1	lib/de.inews.sh
 	source	create	1	lib/de.sh
 	source	create	1	lib/deu.inews.sh
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 5
@@ -352,7 +352,7 @@ Change Details				       Tue Aug 17 23:24:20 1993
 	source	create	1	man1/aev.1
 	source	create	1	man1/install.sh
 	source	create	1	man1/o__rules.so
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 6
@@ -415,7 +415,7 @@ Change Details				       Tue Aug 17 23:24:20 1993
 	test	create	1	test/00/t0011a.sh
 	test	create	1	test/00/t0012a.sh
 	test	create	1	test/00/t0013a.sh
-
+
 
 
 Project "aegis.2.0", Change 1					 Page 7
@@ -441,7 +441,7 @@ HISTORY
 			21:55:41 1993
 	integrate_pass	Wed Mar 31	pmiller
 			22:05:11 1993
-
+
 
 
 Project "aegis.2.0", Change 2					 Page 1
@@ -485,7 +485,7 @@ HISTORY
 			10:53:34 1993		days.
 	integrate_pass	Mon Apr	 5	pmiller
 			12:09:49 1993
-
+
 
 
 Project "aegis.2.0", Change 3					 Page 1
@@ -548,7 +548,7 @@ FILES
 	source	modify	2	man1/aed.1
 	source	modify	2	man1/aegis.1
 	source	modify	2	man1/aeib.1
-
+
 
 
 Project "aegis.2.0", Change 3					 Page 2
@@ -597,7 +597,7 @@ HISTORY
 			15:25:23 1993		days.
 	integrate_pass	Mon Apr	 5	pmiller
 			17:06:47 1993
-
+
 
 
 Project "aegis.2.0", Change 4					 Page 1
@@ -660,7 +660,7 @@ FILES
 	source	modify	2	aegis/test.c
 	source	modify	2	aegis/undo.c
 	source	modify	2	aegis/user.c
-
+
 
 
 Project "aegis.2.0", Change 4					 Page 2
@@ -707,7 +707,7 @@ HISTORY
 			11:37:12 1993		days.
 	integrate_pass	Tue Apr	 6	pmiller
 			13:49:29 1993
-
+
 
 
 Project "aegis.2.0", Change 5					 Page 1
@@ -770,7 +770,7 @@ HISTORY
 	integrate_begin Wed Apr 14	pmiller Elapsed time: 0.093
 			08:55:55 1993		days.
 	integrate_pass	Wed Apr 14	pmiller
-
+
 
 
 Project "aegis.2.0", Change 5					 Page 2
@@ -779,7 +779,7 @@ Change Details				       Tue Aug 17 23:24:24 1993
 	What		When		Who	Comment
 	------		------		-----	---------
 			09:37:44 1993
-
+
 
 
 Project "aegis.2.0", Change 6					 Page 1
@@ -828,7 +828,7 @@ HISTORY
 			13:03:04 1993		days.
 	integrate_pass	Fri Jun 11	pmiller
 			14:15:16 1993
-
+
 
 
 Project "aegis.2.0", Change 7					 Page 1
@@ -883,7 +883,7 @@ HISTORY
 			13:50:38 1993		days.
 	integrate_pass	Tue May	 4	pmiller
 			16:39:26 1993
-
+
 
 
 Project "aegis.2.0", Change 8					 Page 1
@@ -929,7 +929,7 @@ HISTORY
 			10:05:17 1993		days.
 	integrate_pass	Mon May 10	pmiller
 			11:23:27 1993
-
+
 
 
 Project "aegis.2.0", Change 9					 Page 1
@@ -988,7 +988,7 @@ FILES
 	test	modify	3	test/00/t0013a.sh
 	test	modify	3	test/00/t0014a.sh
 	test	modify	3	test/00/t0015a.sh
-
+
 
 
 Project "aegis.2.0", Change 9					 Page 2
@@ -1013,7 +1013,7 @@ HISTORY
 			14:53:47 1993		days.
 	integrate_pass	Tue May 25	pmiller
 			16:43:01 1993
-
+
 
 
 Project "aegis.2.0", Change 10					 Page 1
@@ -1060,7 +1060,7 @@ HISTORY
 			10:01:08 1993		days.
 	integrate_pass	Tue May 25	pmiller
 			14:20:59 1993
-
+
 
 
 Project "aegis.2.0", Change 11					 Page 1
@@ -1107,7 +1107,7 @@ HISTORY
 			14:54:45 1993		days.
 	integrate_pass	Thu May 27	pmiller
 			20:49:14 1993
-
+
 
 
 Project "aegis.2.0", Change 12					 Page 1
@@ -1157,7 +1157,7 @@ HISTORY
 			16:10:01 1993		days.
 	integrate_pass	Tue Jun	 8	pmiller
 			10:58:54 1993
-
+
 
 
 Project "aegis.2.0", Change 13					 Page 1
@@ -1211,7 +1211,7 @@ HISTORY
 			09:52:28 1993		days.
 	integrate_pass	Fri Jun 11	pmiller
 			10:56:04 1993
-
+
 
 
 Project "aegis.2.0", Change 14					 Page 1
@@ -1257,7 +1257,7 @@ HISTORY
 			16:17:04 1993		days.
 	integrate_pass	Sat Jun 12	pmiller
 			00:03:22 1993
-
+
 
 
 Project "aegis.2.0", Change 15					 Page 1
@@ -1306,7 +1306,7 @@ HISTORY
 			16:17:38 1993		days.
 	integrate_pass	Wed Jul 21	pmiller
 			16:55:18 1993
-
+
 
 
 Project "aegis.2.0", Change 16					 Page 1
@@ -1369,7 +1369,7 @@ HISTORY
 			11:53:10 1993
 	review_pass	Thu Jul 22	pmiller
 			11:57:17 1993
-
+
 
 
 Project "aegis.2.0", Change 16					 Page 2
@@ -1381,7 +1381,7 @@ Change Details				       Tue Aug 17 23:24:32 1993
 			11:58:58 1993		days.
 	integrate_pass	Thu Jul 22	pmiller
 			13:05:58 1993
-
+
 
 
 Project "aegis.2.0", Change 17					 Page 1
@@ -1438,7 +1438,7 @@ HISTORY
 			15:50:48 1993		days.
 	integrate_pass	Sat Jul 24	pmiller
 			21:01:25 1993
-
+
 
 
 Project "aegis.2.0", Change 18					 Page 1
@@ -1501,7 +1501,7 @@ HISTORY
 						and aeifail commands
 						Elapsed time: 0.309
 						days.
-
+
 
 
 Project "aegis.2.0", Change 18					 Page 2
@@ -1517,7 +1517,7 @@ Change Details				       Tue Aug 17 23:24:33 1993
 			09:47:44 1993		days.
 	integrate_pass	Tue Jul 27	pmiller
 			12:56:06 1993
-
+
 
 
 Project "aegis.2.0", Change 19					 Page 1
@@ -1569,7 +1569,7 @@ HISTORY
 			22:04:02 1993		days.
 	integrate_pass	Mon Aug	 2	pmiller
 			23:20:19 1993
-
+
 
 
 Project "aegis.2.0", Change 20					 Page 1
@@ -1613,7 +1613,7 @@ HISTORY
 			23:25:11 1993		days.
 	integrate_pass	Tue Aug	 3	pmiller
 			21:30:37 1993
-
+
 
 
 Project "aegis.2.0", Change 21					 Page 1
@@ -1660,7 +1660,7 @@ HISTORY
 			14:08:56 1993		days.
 	integrate_pass	Sat Aug	 7	pmiller
 			21:48:58 1993
-
+
 
 
 Project "aegis.2.0", Change 22					 Page 1
@@ -1708,7 +1708,7 @@ HISTORY
 			00:05:37 1993		days.
 	integrate_pass	Sun Aug	 8	pmiller
 			22:12:51 1993
-
+
 
 
 Project "aegis.2.0", Change 23					 Page 1
@@ -1771,7 +1771,7 @@ HISTORY
 	develop_end_	Thu Aug 12	pmiller Elapsed time: 0.086
 	undo		22:21:06 1993		days.
 	develop_end	Thu Aug 12	pmiller
-
+
 
 
 Project "aegis.2.0", Change 23					 Page 2
@@ -1786,7 +1786,7 @@ Change Details				       Tue Aug 17 23:24:38 1993
 			23:04:14 1993		days.
 	integrate_pass	Fri Aug 13	pmiller
 			21:53:28 1993
-
+
 
 
 Project "aegis.2.0", Change 24					 Page 1
@@ -1846,7 +1846,7 @@ HISTORY
 			23:32:41 1993		days.
 	integrate_pass	Sun Aug 15	pmiller
 			00:19:26 1993
-
+
 
 
 Project "aegis.2.0", Change 25					 Page 1
@@ -1895,7 +1895,7 @@ HISTORY
 			11:58:33 1993		days.
 	integrate_pass	Mon Aug 16	pmiller
 			12:56:54 1993
-
+
 
 
 Project "aegis.2.0", Change 26					 Page 1
@@ -1944,7 +1944,7 @@ HISTORY
 			13:35:44 1993		days.
 	integrate_pass	Mon Aug 16	pmiller
 			14:31:11 1993
-
+
 
 
 Project "aegis.2.0", Change 27					 Page 1

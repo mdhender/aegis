@@ -1,20 +1,19 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2007 Peter Miller;
+//	Copyright (C) 2006-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License,
-//      version 2, as published by the Free Software Foundation.
+//      version 3, as published by the Free Software Foundation.
 //
 //      This program is distributed in the hope that it will be useful,
 //      but WITHOUT ANY WARRANTY; without even the implied warranty of
 //      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //      GNU General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public
-//      License along with this program; if not, write to the Free
-//      Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-//      MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -36,8 +35,54 @@ target_makefile::~target_makefile()
 target_makefile::target_makefile() :
     seen_c(false),
     seen_c_plus_plus(false),
-    have_groff(false)
+    have_groff(false),
+    have_soelim(false),
+    objext("o"),
+    libext("a"),
+    seen_datadir(false),
+    seen_libdir(false),
+    seen_yacc(false),
+    install_script(false)
 {
+}
+
+
+void
+target_makefile::preprocess(const nstring &filename)
+{
+    if (filename.starts_with("datadir/"))
+        seen_datadir = true;
+    if (filename.starts_with("libdir/"))
+        seen_libdir = true;
+    if (filename.ends_with(".y"))
+        seen_yacc = true;
+    if (filename.starts_with("script/") || filename.starts_with("scripts/"))
+        install_script = true;
+    if
+    (
+        memcmp(filename.c_str(), "configure", 9) == 0
+    ||
+        memmem(filename.c_str(), filename.size(), "/configure", 10)
+    )
+    {
+        process_configure_dot_ac(filename);
+    }
+
+    if
+    (
+        filename.downcase().ends_with(".cc")
+    ||
+        filename.downcase().ends_with(".cxx")
+    ||
+        filename.ends_with(".C")
+    )
+    {
+        seen_c_plus_plus = true;
+    }
+    else if (filename.ends_with(".c"))
+    {
+        seen_c = true;
+    }
 }
 
 
@@ -90,18 +135,24 @@ target_makefile::begin()
     printf("INSTALL = @INSTALL@\n");
     printf("INSTALL_PROGRAM = @INSTALL_PROGRAM@\n");
     printf("INSTALL_DATA = @INSTALL_DATA@\n");
+    if (install_script)
+        printf("INSTALL_SCRIPT = @INSTALL_SCRIPT@\n");
     printf("\n");
     printf("#\n");
     printf("# the name of the compiler to use\n");
     printf("#\n");
-    printf("CXX = @CXX@\n");
-    printf("CC = @CC@\n");
+    if (seen_c_plus_plus)
+        printf("CXX = @CXX@\n");
+    if (seen_c)
+        printf("CC = @CC@\n");
     printf("\n");
     printf("#\n");
     printf("# The compiler flags to use\n");
     printf("#\n");
-    printf("CXXFLAGS = @CXXFLAGS@ -Wall -Wextra\n");
-    printf("CFLAGS = @CFLAGS@ -Wall -Wextra\n");
+    if (seen_c_plus_plus)
+        printf("CXXFLAGS = @CXXFLAGS@\n");
+    if (seen_c)
+        printf("CFLAGS = @CFLAGS@\n");
     printf("\n");
     printf("#\n");
     printf("# The preprocessor flags to use\n");
@@ -140,11 +191,48 @@ target_makefile::begin()
     printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
     printf("#\n");
     printf("mandir = $(DESTDIR)$(RPM_BUILD_ROOT)@mandir@\n");
-    printf("\n");
-    printf("#\n");
-    printf("# Which yacc to use\n");
-    printf("#\n");
-    printf("YACC = @YACC@\n");
+
+    if (seen_datadir)
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# where to put the non-executable package data\n");
+        printf("#\n");
+        printf("# On a network, this would be shared between all\n");
+        printf("# machines on the network.  It can be read-only.\n");
+        printf("#\n");
+        printf("# The $(DESTDIR) is for Debian packaging.\n");
+        printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
+        printf("#\n");
+        printf("DATADIR = $(DESTDIR)$(RPM_BUILD_ROOT)@datadir@\n");
+        printf("DATAROOTDIR = $(DESTDIR)$(RPM_BUILD_ROOT)@datarootdir@\n");
+    }
+
+    if (seen_libdir)
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# where to put the supplementary package executables\n");
+        printf("#\n");
+        printf("# On a network, this would be shared between all\n");
+        printf("# machines of identical architecture.  It can be\n");
+        printf("# read-only.\n");
+        printf("#\n");
+        printf("# The $(DESTDIR) is for Debian packaging.\n");
+        printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
+        printf("#\n");
+        printf("LIBDIR = $(DESTDIR)$(RPM_BUILD_ROOT)@libdir@\n");
+    }
+
+    if (seen_yacc)
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# Which yacc to use\n");
+        printf("#\n");
+        printf("YACC = @YACC@\n");
+    }
+
     printf("\n");
     printf("#\n");
     printf("# extra libraries required for your system\n");
@@ -161,16 +249,49 @@ target_makefile::begin()
     printf("#\n");
     printf("RANLIB = @RANLIB@\n");
     printf("AR = ar\n");
-    printf("\n");
-    printf("#\n");
-    printf("# object file name extension (typically \"o\" or \"obj\")\n");
-    printf("#\n");
-    printf("OBJEXT = @OBJEXT@\n");
-    printf("\n");
-    printf("#\n");
-    printf("# library file name extension (typically \"a\" or \"lib\")\n");
-    printf("#\n");
-    printf("LIBEXT = @LIBEXT@\n");
+    if (objext != "o")
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# object file name extension (typically \"o\" or \"obj\")\n");
+        printf("#\n");
+        printf("OBJEXT = @OBJEXT@\n");
+    }
+    if (libext != "a")
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# library file name extension (typically \"a\" or \"lib\")\n");
+        printf("#\n");
+        printf("LIBEXT = @LIBEXT@\n");
+    }
+    if (!exeext.empty())
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# command file name extension (typically \"\" or \".exe\")\n");
+        printf("#\n");
+        printf("EXEEXT = @EXEEXT@\n");
+    }
+    if (have_groff)
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# Set GROFF to the name of the roff command on your\n");
+        printf("# system, usually \"groff\" or \"troff\" or \"nroff\"\n");
+        printf("#\n");
+        printf("GROFF = @GROFF@\n");
+    }
+    if (have_soelim)
+    {
+        printf("\n");
+        printf("#\n");
+        printf("# Set SOELIM to the name of the roff proprocessor command\n");
+        printf("# on your system, usually \"soelim\" or \"gsoelim\"\n");
+        printf("#\n");
+        printf("SOELIM = @SOELIM@\n");
+    }
+
     printf("\n");
     printf("# -------------------------------------------------------------\n");
     printf("# You should not need to change anything below this line.\n");
@@ -178,7 +299,7 @@ target_makefile::begin()
     printf("#\n");
     printf("# The default target\n");
     printf("#\n");
-    printf("all: bin-all\n");
+    printf("the-default-target: all\n");
 
     clean_files.push_back("core");
     clean_files.push_back("y.tab.c");
@@ -186,7 +307,13 @@ target_makefile::begin()
     clean_files.push_back("y.output");
     clean_files.push_back(".bin");
     clean_files.push_back(".bindir");
-    clean_files.push_back("lib/lib.$(LIBEXT)");
+    clean_files.push_back("lib/lib." + libext);
+
+    dist_clean_files.push_back("Makefile");
+    dist_clean_files.push_back("config.cache");
+    dist_clean_files.push_back("config.log");
+    dist_clean_files.push_back("config.status");
+    dist_clean_files.push_back("lib/config.h");
 }
 
 
@@ -238,7 +365,7 @@ target_makefile::remember_program(const nstring &name)
 void
 target_makefile::remember_object_file(const nstring &path)
 {
-    assert(path.ends_with(".$(OBJEXT)"));
+    assert(path.ends_with("." + objext));
     nstring objdir = path.first_dirname();
     nstring_list *obj_file_list = object_list.query(objdir);
     if (!obj_file_list)
@@ -265,6 +392,14 @@ target_makefile::process_configure_dot_ac(const nstring &fn)
 	    break;
 	if (0 == memcmp(line, "AC_CHECK_PROGS(GROFF,", 21))
             have_groff = true;
+	if (0 == memcmp(line, "AC_CHECK_PROGS(SOELIM,", 21))
+            have_soelim = true;
+	if (0 == memcmp(line, "AC_OBJEXT", 9))
+            objext = "$(OBJEXT)";
+	if (0 == memcmp(line, "AC_LIBEXT", 9))
+            libext = "$(LIBEXT)";
+	if (0 == memcmp(line, "AC_EXEEXT", 9))
+            exeext = "$(EXEEXT)";
     }
 }
 
@@ -272,23 +407,68 @@ target_makefile::process_configure_dot_ac(const nstring &fn)
 void
 target_makefile::process(const nstring &a_fn, bool is_a_script)
 {
-    if
-    (
-        memcmp(a_fn.c_str(), "configure", 9) == 0
-    ||
-        strstr(a_fn.c_str(), "/configure")
-    )
-    {
-        process_configure_dot_ac(a_fn);
-    }
-
     nstring fn = a_fn;
     if (fn.ends_with(".in"))
-	fn = fn.substring(0, fn.size() - 3);
+    {
+        nstring fn2 = nstring(fn.c_str(), fn.size() - 3);
+        printf("\n");
+        printf("%s: %s ./config.status\n\t", fn2.c_str(), fn.c_str());
+        if (fn2.ends_with(".h"))
+        {
+            printf("CONFIG_FILES= CONFIG_HEADERS=$@:%s ", fn.c_str());
+        }
+        else
+        {
+            printf("CONFIG_FILES=$@:%s CONFIG_HEADERS= ", fn.c_str());
+        }
+        printf("$(SH) ./config.status\n");
+        fn = fn2;
+        dist_clean_files.push_back_unique(fn);
+    }
+
+    if (fn.starts_with("datadir/"))
+    {
+        nstring src = fn;
+        nstring stem = src.substring(8, src.size() - 8);
+        nstring dst = "$(DATADIR)/" + stem;
+
+	nstring src_dir = os_dirname_relative(src);
+	nstring dst_dir = os_dirname_relative(dst);
+	recursive_mkdir(src_dir, dst_dir, "datadir");
+
+        printf("\n");
+	printf("%s: %s %s/.datadir\n", dst.c_str(), src.c_str(),
+            src_dir.c_str());
+        printf("\t$(INSTALL_DATA) %s $@\n", src.c_str());
+
+        install_datadir.push_back(dst);
+        return;
+    }
+
+    if (fn.starts_with("libdir/"))
+    {
+        nstring src = fn;
+        nstring stem = src.substring(7, src.size() - 7);
+        nstring dst = "$(LIBDIR)/" + stem;
+
+	nstring src_dir = os_dirname_relative(src);
+	nstring dst_dir = os_dirname_relative(dst);
+	recursive_mkdir(src_dir, dst_dir, "libdir");
+
+        printf("\n");
+	printf("%s: %s %s/.libdir\n", dst.c_str(), src.c_str(),
+            src_dir.c_str());
+        printf("\t$(INSTALL_DATA) %s $@\n", src.c_str());
+
+        install_libdir.push_back(dst);
+        return;
+    }
+
     if (fn.gmatch("*/*.y"))
     {
 	nstring base = os_basename(fn, ".y");
 	nstring stem = fn.substring(0, fn.size() - 2);
+	clean_files.push_back(stem + ".yacc.c");
 	clean_files.push_back(stem + ".yacc.cc");
 	clean_files.push_back(stem + ".yacc.h");
 	nstring yy = base.identifier();
@@ -324,6 +504,7 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
     else if (fn.gmatch("*/*.l"))
     {
 	nstring stem = fn.substring(0, fn.size() - 2);
+	clean_files.push_back(stem + ".lex.c");
 	clean_files.push_back(stem + ".lex.cc");
 	nstring yy = os_basename(stem).identifier();
 
@@ -358,10 +539,8 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
         fn.ends_with(".C")
     )
     {
-        seen_c_plus_plus = true;
-
 	nstring stem = fn.trim_extension();
-	remember_object_file(stem + ".$(OBJEXT)");
+	remember_object_file(stem + "." + objext);
 
 	nstring root = os_basename(stem);
         if (root == "main")
@@ -369,20 +548,19 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
 	nstring dep = c_include_dependencies(fn);
 
 	printf("\n");
-	printf("%s.$(OBJEXT): %s %s\n", stem.c_str(), fn.c_str(), dep.c_str());
+	printf("%s.%s: %s %s\n", stem.c_str(), objext.c_str(), fn.c_str(),
+            dep.c_str());
 	printf("\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I. -c %s\n", fn.c_str());
         if (root != stem)
         {
-            printf("\tmv %s.$(OBJEXT) %s.$(OBJEXT)\n", root.c_str(),
-                stem.c_str());
+            printf("\tmv %s.%s %s.%s\n", root.c_str(), objext.c_str(),
+                stem.c_str(), objext.c_str());
         }
     }
     else if (fn.ends_with(".c"))
     {
-        seen_c = true;
-
 	nstring stem = fn.trim_extension();
-	remember_object_file(stem + ".$(OBJEXT)");
+	remember_object_file(stem + "." + objext);
 
 	if (fn.ends_with("/main.c"))
 	    remember_program(fn.first_dirname());
@@ -391,13 +569,13 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
 	nstring dep = c_include_dependencies(fn);
 
 	printf("\n");
-	printf("%s.$(OBJEXT): %s %s\n", stem.c_str(), fn.c_str(),
+	printf("%s.%s: %s %s\n", stem.c_str(), objext.c_str(), fn.c_str(),
 		dep.c_str());
 	printf("\t$(CC) $(CPPFLAGS) $(CFLAGS) -I. -c %s\n", fn.c_str());
         if (root != stem)
         {
-            printf("\tmv %s.$(OBJEXT) %s.$(OBJEXT)\n", root.c_str(),
-                stem.c_str());
+            printf("\tmv %s.%s %s.%s\n", root.c_str(), objext.c_str(),
+                stem.c_str(), objext.c_str());
         }
     }
     else if (fn.gmatch("test/*/*.sh"))
@@ -407,7 +585,7 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
 
 	printf("\n");
 	printf("%s: %s all\n", base.c_str(), fn.c_str());
-	printf("\t$(SH) %s\n", fn.c_str());
+	printf("\tPATH=`pwd`/bin:$$PATH $(SH) %s\n", fn.c_str());
     }
     else if (fn.gmatch("man/man[0-9]/*.[0-9]"))
     {
@@ -429,7 +607,7 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
 	printf("\n");
 	printf("%s: %s %s %s/.mandir\n", file2.c_str(), fn.c_str(), dep.c_str(),
                 dir.c_str());
-        if (have_groff)
+        if (have_soelim)
         {
             printf("\t$(SOELIM) -I. -I%s %s > tmp\n", dir.c_str(), fn.c_str());
             printf("\t$(INSTALL_DATA) tmp $@\n");
@@ -443,11 +621,6 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
     else if (fn.gmatch("etc/*.man"))
     {
 	nstring stem = fn.substring(4, fn.size() - 8);
-	clean_files.push_back(stem + ".ps");
-	clean_files.push_back(stem + ".pdf");
-	clean_files.push_back(stem + ".dvi");
-	clean_files.push_back(stem + ".txt");
-
 	nstring base = os_basename(fn, ".man");
 #if 0
 	nstring dep = roff_include_dependencies(fn);
@@ -458,10 +631,37 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
         if (have_groff)
         {
             printf("\n");
-            printf("etc/%s.ps: %s %s\n", base.c_str(), fn.c_str(),
-                dep.c_str());
+            nstring tgt = "etc/" + base + ".ps";
+            printf("%s: %s %s\n", tgt.c_str(), fn.c_str(), dep.c_str());
             printf("\t$(GROFF) -s -I. -t -man %s > $@\n", fn.c_str());
+
+            all_doc.push_back(tgt);
         }
+    }
+    else if (fn.starts_with("script/") || fn.starts_with("scripts/"))
+    {
+        nstring name = fn.basename();
+        nstring ext = name.get_extension();
+        if (ext == "tcl" || ext == "sh" || ext == "pl" || ext == "py")
+            name = name.trim_extension();
+
+        nstring bin_name = "bin/" + name + exeext;
+        printf("\n");
+        printf("%s: %s .bin\n", bin_name.c_str(), fn.c_str());
+        printf("\tcp %s $@\n", fn.c_str());
+        printf("\tchmod a+rx $@\n");
+
+        all_bin.push_back_unique(bin_name);
+        clean_files.push_back_unique(bin_name);
+
+        nstring install_name = "$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)"
+            + name + "$(PROGRAM_SUFFIX)" + exeext;
+        printf("\n");
+        printf("%s: %s .bindir\n", install_name.c_str(), bin_name.c_str());
+        printf("\t$(INSTALL_SCRIPT) %s $@\n", bin_name.c_str());
+
+        if (!name.starts_with("test_"))
+            install_bin.push_back_unique(install_name);
     }
 }
 
@@ -481,6 +681,7 @@ target_makefile::c_include_dependencies(const nstring &fn)
 	if (exists(path))
 	    temp.push_back(file.quote_shell());
     }
+    temp.sort();
     return temp.unsplit();
 }
 
@@ -584,14 +785,16 @@ target_makefile::end()
     if (lib_obj_list)
     {
         printf("\n");
+        lib_obj_list->sort();
         printf("lib_obj = %s\n", lib_obj_list->unsplit().c_str());
         printf("\n");
-        printf("lib/lib.$(LIBEXT): $(lib_obj)\n");
+        printf("lib/lib.%s: $(lib_obj)\n", libext.c_str());
         printf("\trm -f $@\n");
         printf("\t$(AR) qc $@ $(lib_obj)\n");
         printf("\t$(RANLIB) $@\n");
     }
 
+    programs.sort();
     for (size_t j = 0; j < programs.size(); ++j)
     {
 	nstring prog = programs[j];
@@ -601,9 +804,9 @@ target_makefile::end()
 	printf("%s_obj = %s\n", prog.c_str(), obj_file_list->unsplit().c_str());
 
 	printf("\n");
-	printf("bin/%s: $(%s_obj) .bin", prog.c_str(), prog.c_str());
+	printf("bin/%s: $(%s_obj) .bin", (prog + exeext).c_str(), prog.c_str());
         if (lib_obj_list)
-            printf(" lib/lib.$(LIBEXT)");
+            printf(" lib/lib.%s", libext.c_str());
         printf("\n");
         if (seen_c_plus_plus)
             printf("\t$(CXX)");
@@ -611,21 +814,37 @@ target_makefile::end()
             printf("\t$(CC)");
         printf(" $(LDFLAGS) -o $@ $(%s_obj)", prog.c_str());
         if (lib_obj_list)
-            printf(" lib/lib.$(LIBEXT)");
+            printf(" lib/lib.%s", libext.c_str());
         printf(" $(LIBS)\n");
 
-	all.push_back("bin/" + prog);
+	all_bin.push_back("bin/" + prog + exeext);
 
 	printf("\n");
-	printf("$(bindir)/%s: bin/%s .bindir\n", prog.c_str(), prog.c_str());
-	printf("\t$(INSTALL_PROGRAM) bin/%s $@\n", prog.c_str());
+	printf("$(bindir)/%s: bin/%s .bindir\n", (prog + exeext).c_str(),
+            (prog + exeext).c_str());
+	printf("\t$(INSTALL_PROGRAM) bin/%s $@\n", (prog + exeext).c_str());
 
-	if (prog != progname_get())
+	if (!prog.starts_with("test_"))
 	    install_bin.push_back("$(bindir)/" + prog);
     }
 
     printf("\n");
-    printf("bin-all: %s\n", all.unsplit().c_str());
+    printf("all:");
+    if (!all_bin.empty())
+        printf(" all-bin");
+    if (!all_doc.empty())
+        printf(" all-doc");
+    printf("\n");
+    if (!all_bin.empty())
+    {
+        all_bin.sort();
+        printf("all-bin: %s\n", all_bin.unsplit().c_str());
+    }
+    if (!all_doc.empty())
+    {
+        all_doc.sort();
+        printf("all-doc: %s\n", all_doc.unsplit().c_str());
+    }
 
     printf("\n");
     printf(".bin:\n");
@@ -641,11 +860,13 @@ target_makefile::end()
     printf("\t@sleep 1\n");
 
     printf("\n");
+    test_files.sort();
     printf("sure: %s\n", test_files.unsplit().c_str());
     printf("\t@echo Passed All Tests\n");
 
     printf("\n");
     printf("clean-obj:\n");
+    clean_files.sort();
     for (size_t k = 0; k < clean_files.size(); ++k)
     {
 	printf("\trm -f %s\n", clean_files[k].quote_shell().c_str());
@@ -653,39 +874,52 @@ target_makefile::end()
 
     printf("\n");
     printf("clean: clean-obj\n");
-    for (size_t k = 0; k < all.size(); ++k)
+    for (size_t k = 0; k < all_bin.size(); ++k)
     {
-	printf("\trm -f %s\n", all[k].quote_shell().c_str());
+	printf("\trm -f %s\n", all_bin[k].quote_shell().c_str());
+    }
+    for (size_t k = 0; k < all_doc.size(); ++k)
+    {
+	printf("\trm -f %s\n", all_doc[k].quote_shell().c_str());
+    }
+
+    dist_clean_files.sort();
+    printf("\n");
+    printf("distclean: clean\n");
+    for (size_t k = 0; k < dist_clean_files.size(); ++k)
+    {
+	printf("\trm -f %s\n", dist_clean_files[k].quote_shell().c_str());
     }
 
     printf("\n");
-    printf("distclean: clean\n");
-    printf("\trm -f Makefile lib/config.h\n");
-    printf("\trm -f config.status config.cache config.log\n");
-
-    printf("\n");
+    install_bin.sort();
     printf("install-bin: %s\n", install_bin.unsplit().c_str());
 
     if (!man_files.empty())
     {
         printf("\n");
-        if (have_groff)
-        {
-            printf("install-man: install-man-${HAVE_GROFF}\n");
-            printf("\n");
-            printf("install-man-yes: %s\n", man_files.unsplit().c_str());
-            printf("\n");
-            printf("install-man-no:\n");
-        }
-        else
-        {
-            printf("install-man: %s\n", man_files.unsplit().c_str());
-        }
+        man_files.sort();
+        printf("install-man: %s\n", man_files.unsplit().c_str());
+    }
+
+    if (!install_datadir.empty())
+    {
+        install_datadir.sort();
+        printf("install-datadir: %s\n", install_datadir.unsplit().c_str());
+    }
+    if (!install_libdir.empty())
+    {
+        install_libdir.sort();
+        printf("install-libdir: %s\n", install_libdir.unsplit().c_str());
     }
 
     printf("\n");
     printf("install: install-bin");
     if (!man_files.empty())
         printf(" install-man");
+    if (!install_datadir.empty())
+        printf(" install-datadir");
+    if (!install_libdir.empty())
+        printf(" install-libdir");
     printf("\n");
 }

@@ -1,0 +1,74 @@
+/*
+ * aegis - project change supervisor
+ * Copyright (C) 2008 Peter Miller
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * list of architectures on which each change must build and test
+ */
+architecture =
+[
+	{
+		name = "linux-i486";
+		pattern = "Linux-*-*-i?86";
+	},
+	{
+		name = "linux-x86_64";
+		pattern = "Linux-*-*-x86_64";
+		mode = optional;
+	},
+	{
+		name = "sunos-4.1-sparc";
+		pattern = "SunOS-4.1*-*-sun4*";
+		mode = optional;
+	},
+	{
+		name = "solaris-2.6-sparc";
+		pattern = "SunOS-5.6*-*-sun4*";
+		mode = optional;
+	},
+	{
+		name = "solaris-2.6-i386";
+		pattern = "SunOS-5.6*-*-i86pc";
+		mode = optional;
+	},
+	{
+		name = "solaris-7-sparc";
+		pattern = "SunOS-5.7*-*-sun4*";
+		mode = optional;
+	},
+	{
+		name = "solaris-7-i386";
+		pattern = "SunOS-5.7*-*-i86pc";
+		mode = optional;
+	},
+	{
+		name = "ppc-Darwin-7.x";
+		pattern = "Darwin-7.*-Darwin*";
+		mode = optional;
+	},
+	{
+		/*
+		 * If you are only ever going to build on the same
+		 * architecture every time, you may as well delete the
+		 * architecture field completely.  This will default the
+		 * architecture to "unspecified".
+		 */
+		name = "you-need-to-set-architecture-in-aegis.conf";
+		pattern = "*";
+		mode = optional;
+	},
+];

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2006 Peter Miller
+//	Copyright (C) 2001, 2003-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,42 +13,42 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate prefixs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/output/prefix.h>
 
 
-output_prefix_ty::~output_prefix_ty()
+output_prefix::~output_prefix()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
     // method.
     //
     flush();
-
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-output_prefix_ty::output_prefix_ty(output_ty *arg1, bool arg2,
-       	const char *arg3) :
-    deeper(arg1),
-    close_on_close(arg2),
-    prefix(arg3),
+output_prefix::output_prefix(const output::pointer &a_deeper,
+       	const char *a_prefix) :
+    deeper(a_deeper),
+    prefix(a_prefix),
     column(0),
     pos(0)
 {
 }
 
 
+output::pointer
+output_prefix::create(const output::pointer &a_deeper, const char *a_prefix)
+{
+    return pointer(new output_prefix(a_deeper, a_prefix));
+}
+
+
 void
-output_prefix_ty::write_inner(const void *p, size_t len)
+output_prefix::write_inner(const void *p, size_t len)
 {
     const unsigned char *data = (unsigned char *)p;
     const unsigned char *begin = data;
@@ -83,14 +83,14 @@ output_prefix_ty::write_inner(const void *p, size_t len)
 
 
 void
-output_prefix_ty::flush_inner()
+output_prefix::flush_inner()
 {
     deeper->flush();
 }
 
 
-string_ty *
-output_prefix_ty::filename()
+nstring
+output_prefix::filename()
     const
 {
     return deeper->filename();
@@ -98,7 +98,7 @@ output_prefix_ty::filename()
 
 
 long
-output_prefix_ty::ftell_inner()
+output_prefix::ftell_inner()
     const
 {
     return pos;
@@ -106,7 +106,7 @@ output_prefix_ty::ftell_inner()
 
 
 int
-output_prefix_ty::page_width()
+output_prefix::page_width()
     const
 {
     return deeper->page_width();
@@ -114,7 +114,7 @@ output_prefix_ty::page_width()
 
 
 int
-output_prefix_ty::page_length()
+output_prefix::page_length()
     const
 {
     return deeper->page_length();
@@ -122,7 +122,7 @@ output_prefix_ty::page_length()
 
 
 void
-output_prefix_ty::end_of_line_inner()
+output_prefix::end_of_line_inner()
 {
     if (column != 0)
 	fputc('\n');
@@ -130,7 +130,7 @@ output_prefix_ty::end_of_line_inner()
 
 
 const char *
-output_prefix_ty::type_name()
+output_prefix::type_name()
     const
 {
     return "prefix";

@@ -1,10 +1,10 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997-2007 Peter Miller
+.\"	Copyright (C) 1997-2008 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: input for archive/index.html
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
@@ -29,11 +27,17 @@
 .br
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 .br
-<title>Aegis \*(v)</title></head>
+<title>Aegis
+.if (\*(o)) \*(V)
+.el \*(v)
+</title></head>
 <body bgcolor="#ffffff"><h1>
 <img src="aegis.png" align=left>
 <img src="aegis.png" align=right>
-<center>Aegis \*(v)</center></h1>
+<center>Aegis
+.if (\*(o)) \*(V)
+.el \*(v)
+</center></h1>
 Aegis is a transaction-based software configuration management system.
 It provides a framework within which
 a team of developers may work on many changes to a
@@ -55,7 +59,7 @@ see also the
 <a href="http://sourceforge.net/projects/aegis/">
 Project</a> and
 .br
-<a href="http://sourceforge.net/project/stats/?group_id=224">
+<a href="http://sourceforge.net/project/stats/?group_id=224&ugn=aegis">
 Statistics</a> pages.
 (<a href="disk_quota.html">Disk Usage</a>)
 </td><td align=center valign=top bgcolor="#eeffee" width="35%">
@@ -230,7 +234,8 @@ src="missiku/pdf_dir_2.png" border=0></a><p><br></td>
     <ul><li>
 	There is a <a
 .nf
-href="http://mysite.verizon.net/ralph.a.smith1/aegis/user-guide-html/ug-c2_0-the_change_development_cycle.html"
+href="http://mysite.verizon.net/ralph.a.smith1/aegis/user-guide-html/\
+ug-c2_0-the_change_development_cycle.html"
 .fi
 	>worked example</a> of the first few change sets of a new
 	project in the <a href="user-guide.pdf">User Guide</a>.
@@ -257,7 +262,8 @@ href="eg_oss.html">
     <ul><li>
         The <i><a
 .nf
-href="http://mysite.verizon.net/ralph.a.smith1/aegis/user-guide-html/ug-c10_0-geographically_distributed_development.html"
+href="http://mysite.verizon.net/ralph.a.smith1/aegis/user-guide-html/\
+ug-c10_0-geographically_distributed_development.html"
 .fi
 	>Geographically Distributed Development</a></i> chapter of the <a
 	href="user-guide.pdf">User Guide</a> describes how to use the <a
@@ -280,7 +286,8 @@ href="http://mysite.verizon.net/ralph.a.smith1/aegis/refman-html/rn03re84.html"
     <li>
         The <i><a
 .nf
-href="http://mysite.verizon.net/ralph.a.smith1/aegis/howto-html/working_in_teams.html"
+href="http://mysite.verizon.net/ralph.a.smith1/aegis/howto-html/\
+working_in_teams.html"
 .fi
 	>Working in Teams</a></i> section of the <a
         href="howto.pdf">How To</a> describes a number of ways to
@@ -314,7 +321,9 @@ src="missiku/dgn_dir_2.png" border=0></a><p><br></td>
 	download files.
     <li>
         The <a href="building.pdf">BUILDING</a> file in the <a
-        href="aegis-\*(v).tar.gz">tarball</a> contains instructions
+.if (\*(o)) href="aegis-\*(V).tar.gz"
+.el href="aegis-\*(v).tar.gz"
+        >tarball</a> contains instructions
         for building Aegis, or you could use the nicely formatted
         <i>Building</i> section of the <a href="refman.pdf">Reference
         Manual</a>.
@@ -380,7 +389,8 @@ src="missiku/email_2.png" border=0></a><p><br></td>
 	<a href="http://sourceforge.net/projects/advantaegis/">AdvantAegis</a>
 	(download it <a
 .nf
-href="http://sourceforge.net/project/showfiles.php?group_id=13621&package_id=65678"
+href="http://sourceforge.net/project/\
+showfiles.php?group_id=13621&package_id=65678"
 .fi
 	>here</a>)
         is a Graphical User Interface (GUI) to Aegis.

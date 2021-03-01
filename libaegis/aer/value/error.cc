@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994-1996, 1999, 2003-2007 Peter Miller
+//      Copyright (C) 1994-1996, 1999, 2003-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -37,30 +37,31 @@ rpt_value_error::rpt_value_error(const rpt_position::pointer &a_where,
 
 
 rpt_value::pointer
-rpt_value_error::create(const rpt_position::pointer &where, string_ty *what)
+rpt_value_error::create(const rpt_position::pointer &e_where, string_ty *e_what)
 {
-    return pointer(new rpt_value_error(where, nstring(what)));
+    return pointer(new rpt_value_error(e_where, nstring(e_what)));
 }
 
 
 rpt_value::pointer
-rpt_value_error::create(const rpt_position::pointer &where, const nstring &what)
+rpt_value_error::create(const rpt_position::pointer &e_where,
+    const nstring &e_what)
 {
-    return pointer(new rpt_value_error(where, what));
+    return pointer(new rpt_value_error(e_where, e_what));
 }
 
 
 rpt_value::pointer
-rpt_value_error::create(string_ty *what)
+rpt_value_error::create(string_ty *e_what)
 {
-    return create(rpt_position::pointer(), nstring(what));
+    return create(rpt_position::pointer(), nstring(e_what));
 }
 
 
 rpt_value::pointer
-rpt_value_error::create(const nstring &what)
+rpt_value_error::create(const nstring &e_what)
 {
-    return create(rpt_position::pointer(), what);
+    return create(rpt_position::pointer(), e_what);
 }
 
 
@@ -93,7 +94,7 @@ rpt_value_error::print()
     const
 {
     sub_context_ty sc;
-    sc.var_set_string("Message", what);
+    sc.var_set_string("MeSsaGe", what);
     if (where)
         where->print_error(sc, i18n("$message"));
     else

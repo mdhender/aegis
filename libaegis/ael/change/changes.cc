@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,26 +13,25 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to list changes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
 #include <libaegis/ael/change/changes.h>
 #include <libaegis/ael/change/inappropriat.h>
-#include <common/str_list.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
 void
-list_changes(string_ty *project_name, long change_number, string_list_ty *)
+list_changes(change_identifier &cid, string_list_ty *)
 {
-	trace(("list_changes()\n{\n"));
-	if (change_number)
-		list_change_inappropriate();
-	list_changes_in_state_mask(project_name, ~0);
-	trace(("}\n"));
+    trace(("list_changes()\n{\n"));
+    if (cid.set())
+        list_change_inappropriate();
+    list_changes_in_state_mask(cid, ~0);
+    trace(("}\n"));
 }

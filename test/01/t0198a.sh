@@ -1,11 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004-2007 Peter Miller
+#	Copyright (C) 2004-2008 Peter Miller
+#	Copyright (C) 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -14,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the dev dir style functionality
+#	along with this program.  If not, see
+#	<http://www.gnu.org/licenses/>,
 #
 
 unset AEGIS_PROJECT
@@ -96,7 +95,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 91"
+activity="create test directory 98"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -133,7 +132,7 @@ check_it()
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 128"
+activity="new project 135"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -142,7 +141,7 @@ AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
 
-activity="project attributes 137"
+activity="project attributes 144"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -155,7 +154,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 150"
+activity="staff 157"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -163,7 +162,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 158"
+activity="new change 165"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -173,11 +172,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 168"
+activity="develop begin 175"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 172"
+activity="new file 179"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -216,35 +215,39 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/test.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 211"
+activity="register derived2 218"
+$bin/aegis -nf -build $work/test.C010/derived2 -v -nl > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+
+activity="build 222"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="diff 215"
+activity="diff 226"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 219"
+activity="develop end 230"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 223"
+activity="integrate begin 234"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 227"
+activity="integrate build 238"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 231"
+activity="integrate diff 242"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 235"
+activity="integrate pass 246"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new branch 239"
+activity="new branch 250"
 $bin/aegis -nbr -p $AEGIS_PROJECT 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -255,7 +258,7 @@ export AEGIS_PROJECT
 # The first change on the branch edits barney,
 # and leaves fred alone.
 #
-activity="new change 250"
+activity="new change 261"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -264,7 +267,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 259"
+activity="develop begin 270"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -272,6 +275,10 @@ if test $? -ne 0 ; then cat log; fail; fi
 # make sure there are hard links from dev dir to the baseline.
 #
 test -r $work/test.1.C010/derived1 && fail
+#
+# derived2 should NOT be there, because it's derived even as a
+# registered file.
+#
 test -r $work/test.1.C010/derived2 && fail
 test -r $work/test.1.C010/barney || fail
 test -r $work/test.1.C010/aegis.conf || fail
@@ -280,7 +287,7 @@ test -w $work/test.1.C010/barney && fail
 test -w $work/test.1.C010/aegis.conf && fail
 test -w $work/test.1.C010/fred && fail
 
-activity="copy file 275"
+activity="copy file 290"
 $bin/aegis -cp $work/test.1.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -289,26 +296,26 @@ test -w $work/test.1.C010/barney || fail
 echo second > $work/test.1.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 284"
+activity="build 299"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 test -w $work/test.1.C010/derived1 || fail
 test -w $work/test.1.C010/derived2 || fail
 
-activity="diff 291"
+activity="diff 306"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 295"
+activity="develop end 310"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 299"
+activity="integrate begin 314"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="verify integration directory contents 303"
+activity="verify integration directory contents 318"
 test -r $work/proj.dir/branch.1/delta*/barney || fail
 test -w $work/proj.dir/branch.1/delta*/barney && fail
 test -r $work/proj.dir/branch.1/delta*/aegis.conf || fail
@@ -321,7 +328,7 @@ test -w $work/proj.dir/branch.1/delta*/fred && fail
 cmp proj.dir/branch.1/delta*/barney proj.dir/branch.1/baseline/barney \
 	> /dev/null 2>&1 && fail
 
-activity="integrate build 316"
+activity="integrate build 331"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -330,18 +337,18 @@ test -r $work/proj.dir/branch.1/delta*/derived2 || fail
 test -r $work/proj.dir/branch.1/delta*/barney || fail
 test -w $work/proj.dir/branch.1/delta*/barney && fail
 
-activity="integrate diff 325"
+activity="integrate diff 340"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 329"
+activity="integrate pass 344"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 test -r $work/proj.dir/branch.1/baseline/barney || fail
 test -w $work/proj.dir/branch.1/baseline/barney && fail
 
-activity="new change 336"
+activity="new change 351"
 cat > caf << 'fubar'
 brief_description = "the third change";
 cause = internal_enhancement;
@@ -350,7 +357,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 345"
+activity="develop begin 360"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

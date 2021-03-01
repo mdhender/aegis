@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller
+//	Copyright (C) 2004-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate update_exists
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 //
 // Update-existing <pathname>
@@ -80,7 +78,7 @@ response_update_existing::response_update_existing(string_ty *arg1,
 
 
 void
-response_update_existing::write(output_ty *op)
+response_update_existing::write(output::pointer op)
 {
     //
     // The output looks something like this...
@@ -116,7 +114,7 @@ response_update_existing::write(output_ty *op)
 	// a naive usage of output_gzip().  Just say no.
 	//
 	op->fprintf("%ld\n", length);
-	*op << source;
+	op << source;
     }
     else
     {
@@ -141,4 +139,4 @@ response_update_existing::flushable()
     const
 {
     return true;
-};
+}

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2006 Peter Miller
+//	Copyright (C) 1999-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,14 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate unexpands
-//
-// This wide output class is used to convert sequences of spaces
-// into tabs, where appropriate (and smaller than the original).
-// The -Tab_Width option is used to determine the output tab width.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/wchar.h>
@@ -28,222 +22,165 @@
 
 #include <common/language.h>
 #include <common/mem.h>
-#include <libaegis/option.h>
 #include <common/str.h>
 #include <common/trace.h>
+#include <common/wstring/accumulator.h>
+#include <libaegis/option.h>
 #include <libaegis/wide_output.h>
 #include <libaegis/wide_output/unexpand.h>
-#include <libaegis/wide_output/private.h>
 
 
-struct wide_output_unexpand_ty
+wide_output_unexpand::~wide_output_unexpand()
 {
-    wide_output_ty  inherited;
-    wide_output_ty  *deeper;
-    int		    delete_on_close;
-    int		    icol;
-    int		    ocol;
-    int		    tab_width;
-};
-
-
-static void
-wide_output_unexpand_destructor(wide_output_ty *fp)
-{
-    wide_output_unexpand_ty *this_thing;
-
-    trace(("wide_output_unexpand::destructor(fp = %08lX)\n{\n", (long)fp));
-    this_thing = (wide_output_unexpand_ty *)fp;
-    if (this_thing->delete_on_close)
-	wide_output_delete(this_thing->deeper);
-    this_thing->deeper = 0;
-    trace(("}\n"));
+    flush();
 }
 
 
-static string_ty *
-wide_output_unexpand_filename(wide_output_ty *fp)
+wide_output_unexpand::wide_output_unexpand(const wide_output::pointer &a_deeper,
+        int a_tab_width) :
+    deeper(a_deeper),
+    icol(0),
+    ocol(0),
+    tab_width(a_tab_width > 0 ? a_tab_width : option_tab_width_get())
 {
-    wide_output_unexpand_ty *this_thing;
-
-    this_thing = (wide_output_unexpand_ty *)fp;
-    return wide_output_filename(this_thing->deeper);
 }
 
 
-static void
-wide_output_unexpand_write(wide_output_ty *fp, const wchar_t *data, size_t len)
+wide_output::pointer
+wide_output_unexpand::open(const wide_output::pointer &a_deeper, int a_tabwidth)
 {
-    wide_output_unexpand_ty *this_thing;
+    return pointer(new wide_output_unexpand(a_deeper, a_tabwidth));
+}
 
+
+nstring
+wide_output_unexpand::filename()
+{
+    return deeper->filename();
+}
+
+
+void
+wide_output_unexpand::write_inner(const wchar_t *data, size_t len)
+{
     //
     // Put all of the output into a stash, rather then direct calls
-    // to wide_output_putwc(this_thing->deeper).  This allows us to minimize
+    // to deeper->put_wc().  This allows us to minimize
     // the number of language_C() and language_human() calls, which
     // tend to be slow-ish
     //
-#define stash_size 1024
-    wchar_t	    stash_buf[stash_size];
-    wchar_t	    *stash_pos;
-#define stash_end (stash_buf + stash_size)
+    wstring_accumulator stash;
 
-#define stash(wc)							\
-    { *stash_pos++ = (wc); if (stash_pos >= stash_end) { language_C();	\
-    wide_output_write(this_thing->deeper, stash_buf, stash_size);	\
-    language_human(); stash_pos = stash_buf; } }
-
-    trace(("wide_output_unexpand::write(fp = %08lX, data = %08lX, "
-	"len = %ld)\n{\n", (long)fp, (long)data, (long)len));
-    this_thing = (wide_output_unexpand_ty *)fp;
-    stash_pos = stash_buf;
+    trace(("wide_output_unexpand::write_inner(this = %08lX, data = %08lX, "
+	"len = %ld)\n{\n", (long)this, (long)data, (long)len));
     language_human();
     while (len > 0)
     {
-	wchar_t		wc;
+        if (stash.size() > 2000)
+        {
+            language_C();
+            deeper->write(stash.get_data(), stash.size());
+            stash.clear();
+            language_human();
+        }
 
-	wc = *data++;
+	wchar_t wc = *data++;
 	--len;
 	switch (wc)
 	{
-	case (wchar_t)'\n':
-	case (wchar_t)'\f':
-	    stash(wc);
-	    this_thing->icol = 0;
-	    this_thing->ocol = 0;
+	case L'\n':
+	case L'\f':
+	    stash.push_back(wc);
+	    icol = 0;
+	    ocol = 0;
 	    break;
 
-	case (wchar_t)'\t':
+	case L'\t':
 	    // internal tabs are 8 characters wide
-	    this_thing->icol = (this_thing->icol + 8) & ~7;
+	    icol = (icol + 8) & ~7;
 	    break;
 
 	case (wchar_t)0:
-	case (wchar_t)' ':
-	    this_thing->icol++;
+	case L' ':
+	    icol++;
 	    break;
 
 	default:
-	    trace(("icol = %d\n", this_thing->icol));
-	    if (this_thing->tab_width >= 2)
+	    trace(("icol = %d\n", icol));
+	    if (tab_width >= 2)
 	    {
-		trace(("tab_width = %d\n", this_thing->tab_width));
+		trace(("tab_width = %d\n", tab_width));
 		for (;;)
 		{
-		    int		    ncol;
-
-		    trace(("ocol = %d\n", this_thing->ocol));
-		    if (this_thing->ocol + 1 >= this_thing->icol)
+		    trace(("ocol = %d\n", ocol));
+		    if (ocol + 1 >= icol)
 			break;
-		    ncol =
-			((this_thing->ocol / this_thing->tab_width) + 1) *
-                        this_thing->tab_width;
+		    int ncol = ((ocol / tab_width) + 1) * tab_width;
 		    trace(("ncol = %d\n", ncol));
-		    if (ncol > this_thing->icol)
+		    if (ncol > icol)
 			break;
-		    stash('\t');
-		    this_thing->ocol = ncol;
+		    stash.push_back(L'\t');
+		    ocol = ncol;
 		}
 	    }
-	    while (this_thing->ocol < this_thing->icol)
+	    while (ocol < icol)
 	    {
-		trace(("ocol = %d\n", this_thing->ocol));
-		stash(' ');
-		this_thing->ocol++;
+		trace(("ocol = %d\n", ocol));
+		stash.push_back(L' ');
+		ocol++;
 	    }
-	    trace(("ocol = %d\n", this_thing->ocol));
-	    this_thing->icol += wcwidth(wc);
-	    stash(wc);
-	    trace(("icol = %d\n", this_thing->icol));
-	    this_thing->ocol = this_thing->icol;
+	    trace(("ocol = %d\n", ocol));
+	    icol += wcwidth(wc);
+	    stash.push_back(wc);
+	    trace(("icol = %d\n", icol));
+	    ocol = icol;
 	    break;
 	}
     }
     language_C();
-    if (stash_pos > stash_buf)
+    if (!stash.empty())
     {
-	size_t		nwc;
-
-	nwc = stash_pos - stash_buf;
-	wide_output_write(this_thing->deeper, stash_buf, nwc);
+	deeper->write(stash.get_data(), stash.size());
     }
     trace(("}\n"));
 }
 
 
-static void
-wide_output_unexpand_flush(wide_output_ty *fp)
+void
+wide_output_unexpand::flush_inner()
 {
-    wide_output_unexpand_ty *this_thing;
-
-    this_thing = (wide_output_unexpand_ty *)fp;
-    wide_output_flush(this_thing->deeper);
+    deeper->flush();
 }
 
 
-static int
-wide_output_unexpand_page_width(wide_output_ty *fp)
+int
+wide_output_unexpand::page_width()
 {
-    wide_output_unexpand_ty *this_thing;
-
-    this_thing = (wide_output_unexpand_ty *)fp;
-    return wide_output_page_width(this_thing->deeper);
+    return deeper->page_width();
 }
 
 
-static int
-wide_output_unexpand_page_length(wide_output_ty *fp)
+int
+wide_output_unexpand::page_length()
 {
-    wide_output_unexpand_ty *this_thing;
-
-    this_thing = (wide_output_unexpand_ty *)fp;
-    return wide_output_page_length(this_thing->deeper);
+    return deeper->page_length();
 }
 
 
-static void
-wide_output_unexpand_eoln(wide_output_ty *fp)
+void
+wide_output_unexpand::end_of_line_inner()
 {
-    wide_output_unexpand_ty *this_thing;
-
-    trace(("wide_output_unexpand::eoln(fp = %08lX)\n{\n", (long)fp));
-    this_thing = (wide_output_unexpand_ty *)fp;
-    if (this_thing->icol > 0)
-	wide_output_putwc(fp, (wchar_t)'\n');
+    trace(("wide_output_unexpand::end_of_line_inner(this = %08lX)\n{\n",
+        (long)this));
+    if (icol > 0)
+	put_wc(L'\n');
     trace(("}\n"));
 }
 
 
-static wide_output_vtbl_ty vtbl =
+const char *
+wide_output_unexpand::type_name()
+    const
 {
-    sizeof(wide_output_unexpand_ty),
-    wide_output_unexpand_destructor,
-    wide_output_unexpand_filename,
-    wide_output_unexpand_write,
-    wide_output_unexpand_flush,
-    wide_output_unexpand_page_width,
-    wide_output_unexpand_page_length,
-    wide_output_unexpand_eoln,
-    "unexpand",
-};
-
-
-wide_output_ty *
-wide_output_unexpand_open(wide_output_ty *deeper, int delete_on_close,
-    int tab_width)
-{
-    wide_output_ty  *result;
-    wide_output_unexpand_ty *this_thing;
-
-    trace(("wide_output_unexpand::new(deeper = %08lX)\n{\n", (long)deeper));
-    result = wide_output_new(&vtbl);
-    this_thing = (wide_output_unexpand_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->delete_on_close = delete_on_close;
-    this_thing->icol = 0;
-    this_thing->ocol = 0;
-    this_thing->tab_width =
-        (tab_width > 0 ? tab_width : option_tab_width_get());
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    return "wide_output_unexpand";
 }

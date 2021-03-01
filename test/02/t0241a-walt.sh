@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Walter Franzini;
-#	Copyright (C) 2006, 2007 Peter Miller
+#	Copyright (C) 2006, 2008 Walter Franzini
+#	Copyright (C) 2006-2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aeipass functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -113,7 +111,7 @@ check_it()
 
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 115"
+activity="create test directory 114"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -160,14 +158,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 162"
+activity="new project 161"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 169"
+activity="project attributes 168"
 cat > tmp << 'end'
 description = "A bogus project created to test the "
     "aeipass functionality.";
@@ -184,7 +182,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 186"
+activity="staff 185"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -192,7 +190,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new branch 194"
+activity="new branch 193"
 $bin/aegis -p $AEGIS_PROJECT -nbr 1 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -202,7 +200,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 204"
+activity="new change 203"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -214,14 +212,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 216"
+activity="develop begin 215"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 223"
+activity="new file 222"
 $bin/aegis -nf  $workchan/bogus1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -253,46 +251,46 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 255"
+activity="build 254"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 262"
+activity="diff 261"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 269"
+activity="develop end 268"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 276"
+activity="integrate begin 275"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 280"
+activity="diff the change 279"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 287"
+activity="build 286"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 294"
+activity="integrate pass 293"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -318,15 +316,15 @@ if test $? -ne 0; then no_result; fi
 AEGIS_PROJECT=example
 export AEGIS_PROJECT
 
-activity="develop end the branch 320"
+activity="develop end the branch 319"
 $bin/aegis -dev_end 1 -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="ibegin 324"
+activity="ibegin 323"
 $bin/aegis -ibegin 1 -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="ipass the branch 328"
+activity="ipass the branch 327"
 $bin/aegis -ipass 1 -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 

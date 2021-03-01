@@ -1,10 +1,10 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2007 Peter Miller
+.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2008 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -54,16 +54,92 @@ if it does not exist already.
 If the file already exists,
 it will not be altered.
 .PP
-If you name a directory on the command line, the entire directory tree
-will be searched for new files.  (Note: absolutely everything will be added,
-including dot files and binary files, so you will need to clean out any
-junk first.)
-.PP
 If you want a new source file to be executable (shell scripts, for
 example) then you simply use the normal \fIchmod\fP(1) command.  If any
 of the file's executable bits are set at \fIaede\fP(1) time the file is
 remembered as executable and all execute bits (minus the project's umask)
 will be set by subsequent \fIaecp\fP(1) commands.
+.PP
+If you name a directory on the command line, the entire directory tree
+will be searched for new files.  (Note: absolutely everything will be added,
+including dot files and binary files, so you will need to clean out any
+junk first.)
+Files below this named directory which are already in the change, or in
+the project, will be ignored.
+The \f[I]file_name_accept\fP and \f[I]file_name_reject\fP patterns
+in the project \f[I]aegis.conf\fP file will also be applied, see
+\f[I]aepconf\fP(5) for more information.
+.SS Directory Example
+There are times when a command such as
+.RS
+.ft CW
+.nf
+$ \f[CB]aenf fubar/*\fP
+.fi
+aegis: project "example": change 42: "fubar/glorp" already in change
+.br
+aegis: project "example": change 42: found 1 fatal error, no new files added
+.nf
+$
+.fi
+.ft R
+.RE
+will fail as shown.  There are several ways to deal with this,
+the easiest being to simply name the directory:
+.RS
+.ft CW
+.nf
+$ \f[CB]aenf fubar\fP
+.fi
+aegis: project "example": change 42: file "fubar/smiley" added
+.br
+aegis: project "example": change 42: file "fubar/frownie" added
+.nf
+$
+.fi
+.ft R
+.RE
+You could also use the \f[I]find\fP(1) command for arbitrarily complex
+file selection, but you must first exclude files that the above command
+excludes automatically:
+.RS
+.ft CW
+.nf
+$ \f[CB]aelcf > exclude\fP
+$ \f[CB]aelpf >> exclude\fP
+$ \f[CB]find fubar -type f | \e
+    grep -v -f exclude | \e
+    xargs aegis --new-file -v\fP
+.fi
+aegis: project "example": change 42: file "fubar/smiley" added
+.br
+aegis: project "example": change 42: file "fubar/frownie" added
+.nf
+$
+.fi
+.ft R
+.RE
+If you aren't using the exclude list,
+the \f[I]find\fP(1) command will need fine tuning for your development
+directory style.  If you are using the symlink-style, you will need to
+add the \f[I]find -nlink 1\fP option in addition to the
+\f[I]find -type f\fP option.
+.RS
+.ft CW
+.nf
+$ \f[CB]find fubar -type f -nlinks 1 | \e
+    xargs aegis --new-file -v\fP
+.fi
+aegis: project "example": change 42: file "fubar/smiley" added
+.br
+aegis: project "example": change 42: file "fubar/frownie" added
+.nf
+$
+.fi
+.ft R
+.RE
+If you are using the full-copy development directory style,
+you will have to use the exclude list method, above.
 .so z_template.so
 .so z_filesize.so
 .so z_intuit.so

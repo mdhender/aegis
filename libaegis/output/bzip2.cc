@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
+//	Copyright (C) 2006, 2008 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,14 +14,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the output_bzip2 class
+//	along with this program.  If not, see
+//	<http://www.gnu.org/licences/>.
 //
 
 #include <common/trace.h>
 
+#include <common/mem.h>
 #include <libaegis/output/bzip2.h>
 #include <libaegis/sub.h>
 
@@ -80,20 +80,12 @@ output_bzip2::~output_bzip2()
     //
     delete [] buf;
     buf = 0;
-
-    //
-    // Finish the deeper stream.
-    //
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
     trace(("}\n"));
 }
 
 
-output_bzip2::output_bzip2(output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+output_bzip2::output_bzip2(const output::pointer &a_deeper) :
+    deeper(a_deeper),
     buf(new char [BUFFER_SIZE]),
     pos(0),
     bol(true)
@@ -107,7 +99,7 @@ output_bzip2::output_bzip2(output_ty *arg1, bool arg2) :
     stream.avail_out = BUFFER_SIZE;
     stream.next_out = buf;
 
-    int block_size_100k = 9;
+    int block_size_100k = 3;
     int verbosity = 0;
     int work_factor = 30;
     int err =
@@ -122,7 +114,14 @@ output_bzip2::output_bzip2(output_ty *arg1, bool arg2) :
 }
 
 
-string_ty *
+output::pointer
+output_bzip2::create(const output::pointer &a_deeper)
+{
+    return pointer(new output_bzip2(a_deeper));
+}
+
+
+nstring
 output_bzip2::filename()
     const
 {

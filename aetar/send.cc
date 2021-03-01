@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -76,12 +76,11 @@ tar_send(void)
     const char      *branch;
     int             grandparent;
     int             trunk;
-    output_ty       *ofp;
     project_ty      *pp;
     change::pointer cp;
     user_ty::pointer up;
     cstate_ty       *cstate_data;
-    string_ty       *output;
+    string_ty       *output_filename;
     size_t          j;
     int             baseline;
     int             entire_source;
@@ -95,7 +94,7 @@ tar_send(void)
     grandparent = 0;
     project_name = 0;
     trunk = 0;
-    output = 0;
+    output_filename = 0;
     baseline = 0;
     entire_source = -1;
     compression_algorithm_t needs_compression = compression_algorithm_not_set;
@@ -191,7 +190,7 @@ tar_send(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filename)
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -200,11 +199,11 @@ tar_send(void)
 		// NOTREACHED
 
 	    case arglex_token_stdio:
-		output = str_from_c("");
+		output_filename = str_from_c("");
 		break;
 
 	    case arglex_token_string:
-		output = str_from_c(arglex_value.alv_string);
+		output_filename = str_from_c(arglex_value.alv_string);
 		break;
 	    }
 	    break;
@@ -606,7 +605,7 @@ tar_send(void)
     // open the output
     //
     os_become_orig();
-    ofp = output_file_binary_open(output);
+    output::pointer out_fp = output_file::binary_open(output_filename);
     switch (needs_compression)
     {
     case compression_algorithm_not_set:
@@ -618,14 +617,14 @@ tar_send(void)
 	break;
 
     case compression_algorithm_gzip:
-	ofp = new output_gzip(ofp, true);
+	out_fp = output_gzip::create(out_fp);
 	break;
 
     case compression_algorithm_bzip2:
-	ofp = new output_bzip2(ofp, true);
+	out_fp = output_bzip2::create(out_fp);
 	break;
     }
-    output_tar_ty *tar_p = new output_tar_ty(ofp);
+    output_tar *tar_p = new output_tar(out_fp);
     os_become_undo();
 
     //
@@ -913,12 +912,12 @@ tar_send(void)
 		input ifp = input_file_open(abs_filename);
 		assert(ifp.is_open());
 		len = ifp->length();
-		nstring tar_name = path_prefix + nstring(str_copy(filename));
-		ofp = tar_p->child(tar_name, len, csrc->executable);
-		*ofp << ifp;
+		nstring tar_name = path_prefix + nstring(filename);
+		output::pointer ofp =
+                    tar_p->child(tar_name, len, csrc->executable);
+		ofp << ifp;
 		ifp.close();
-		delete ofp;
-		ofp = 0;
+		ofp.reset();
 		os_become_undo();
 	    }
 	    break;

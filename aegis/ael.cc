@@ -1,22 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: list interesting things about changes and projects
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // If you add another list to this file,
 // don't forget to update man1/ael.1
@@ -24,239 +22,241 @@
 
 #include <common/ac/stdio.h>
 
-#include <aegis/ael.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/branch/files.h>
 #include <libaegis/ael/change/changes.h>
 #include <libaegis/ael/change/default.h>
 #include <libaegis/ael/change/details.h>
-#include <libaegis/ael/change/files.h>
 #include <libaegis/ael/change/file_history.h>
 #include <libaegis/ael/change/file_invento.h>
+#include <libaegis/ael/change/files.h>
 #include <libaegis/ael/change/history.h>
 #include <libaegis/ael/change/inappropriat.h>
 #include <libaegis/ael/change/incomplete.h>
 #include <libaegis/ael/change/inventory.h>
-#include <libaegis/ael/change/outstanding.h>
 #include <libaegis/ael/change/outstand_all.h>
+#include <libaegis/ael/change/outstanding.h>
 #include <libaegis/ael/change/user.h>
 #include <libaegis/ael/change/version.h>
 #include <libaegis/ael/column_width.h>
 #include <libaegis/ael/formeditnum.h>
 #include <libaegis/ael/locks.h>
-#include <libaegis/output.h>
 #include <libaegis/ael/project/administrato.h>
 #include <libaegis/ael/project/aliases.h>
 #include <libaegis/ael/project/default.h>
 #include <libaegis/ael/project/details.h>
 #include <libaegis/ael/project/developers.h>
-#include <libaegis/ael/project/files.h>
 #include <libaegis/ael/project/file_invento.h>
+#include <libaegis/ael/project/files.h>
 #include <libaegis/ael/project/history.h>
 #include <libaegis/ael/project/inappropriat.h>
 #include <libaegis/ael/project/integrators.h>
 #include <libaegis/ael/project/projects.h>
 #include <libaegis/ael/project/reviewers.h>
 #include <libaegis/ael/state_file.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/help.h>
 #include <libaegis/option.h>
-#include <common/progname.h>
-#include <common/quit.h>
-#include <common/str_list.h>
+#include <libaegis/output.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/zero.h>
 
+#include <aegis/ael.h>
 
-static void list_list_list(string_ty *, long, string_list_ty *); // forward
+
+static void list_list_list(change_identifier &, string_list_ty *); // forward
 
 
 struct table_ty
 {
-    const char      *name;
-    const char      *description;
-    void	    (*func)(string_ty *, long, string_list_ty *);
-    int             number_allowed_args;
+    const char *name;
+    const char *description;
+    void (*func)(change_identifier &, string_list_ty *);
+    int number_allowed_args;
 };
 
 
 static table_ty table[] =
 {
     {
-	"Administrators",
-	"List the administrators of a project",
-	list_administrators,
+        "Administrators",
+        "List the administrators of a project",
+        list_administrators,
         0,
     },
     {
-	"Branch_Files",
-	"List the files in a branch",
-	list_branch_files,
+        "Branch_Files",
+        "List the files in a branch",
+        list_branch_files,
         0,
     },
     {
-	"Change_Details",
-	"List all information about a change in large layout form.",
-	list_change_details,
+        "Change_Details",
+        "List all information about a change in large layout form.",
+        list_change_details,
         0,
     },
     {
-	"Change_Files",
-	"List all files in a change",
-	list_change_files,
+        "Change_Files",
+        "List all files in a change",
+        list_change_files,
         0,
     },
     {
-	"Change_File_History",
-	"List the history of all files in a change.",
-	list_change_file_history,
+        "Change_File_History",
+        "List the history of all files in a change.",
+        list_change_file_history,
         0,
     },
     {
-	"Change_File_INventory",
-	"List all files in a change with their UUID.",
-	list_change_file_inventory,
+        "Change_File_INventory",
+        "List all files in a change with their UUID.",
+        list_change_file_inventory,
         0,
     },
     {
-	"Change_History",
-	"List the history of a change",
-	list_change_history,
+        "Change_History",
+        "List the history of a change",
+        list_change_history,
         0,
     },
     {
-	"Change_INventory",
-	"List the changes of a project with their UUID.",
-	list_change_inventory,
+        "Change_INventory",
+        "List the changes of a project with their UUID.",
+        list_change_inventory,
         0,
     },
     {
-	"Changes",
-	"List the changes of a project",
-	list_changes,
+        "Changes",
+        "List the changes of a project",
+        list_changes,
         0,
     },
     {
-	"Default_Change",
-	"List the default change for the current user",
-	list_default_change,
+        "Default_Change",
+        "List the default change for the current user",
+        list_default_change,
         1,
     },
     {
-	"Default_Project",
-	"List the default project for a (the current) user",
-	list_default_project,
+        "Default_Project",
+        "List the default project for a (the current) user",
+        list_default_project,
         1,
     },
     {
-	"Developers",
-	"List the developers of a project",
-	list_developers,
+        "Developers",
+        "List the developers of a project",
+        list_developers,
         0,
     },
     {
-	"INComplete",
-	"List the incomplete changes (for a user)",
-	list_incomplete_changes,
+        "INComplete",
+        "List the incomplete changes (for a user)",
+        list_incomplete_changes,
         0,
     },
     {
-	"Integrators",
-	"List the integrators of a project",
-	list_integrators,
+        "Integrators",
+        "List the integrators of a project",
+        list_integrators,
         0,
     },
     {
-	"List_List",
-	"List all lists available",
-	list_list_list,
+        "List_List",
+        "List all lists available",
+        list_list_list,
         0,
     },
     {
-	"Locks",
-	"List the active locks",
-	list_locks,
+        "Locks",
+        "List the active locks",
+        list_locks,
         0,
     },
     {
-	"Outstanding_Changes",
-	"List the outstanding changes (for a user)",
-	list_outstanding_changes,
+        "Outstanding_Changes",
+        "List the outstanding changes (for a user)",
+        list_outstanding_changes,
         1,
     },
     {
-	"All_Outstanding_Changes",
-	"List the outstanding changes for all projects",
-	list_outstanding_changes_all,
+        "All_Outstanding_Changes",
+        "List the outstanding changes for all projects",
+        list_outstanding_changes_all,
         0,
     },
     {
-	"Branch_Details",
-	"List the details of all changes in the branch (recursive)",
-	list_project_details,
+        "Branch_Details",
+        "List the details of all changes in the branch (recursive)",
+        list_project_details,
         0,
     },
     {
-	"Project_Details",
-	"List the details of all changes in the project (recursive)",
-	list_project_details,
+        "Project_Details",
+        "List the details of all changes in the project (recursive)",
+        list_project_details,
         0,
     },
     {
-	"Project_Files",
-	"List all files in the baseline of a project",
-	list_project_files,
+        "Project_Files",
+        "List all files in the baseline of a project",
+        list_project_files,
         0,
     },
     {
-	"Project_File_INventory",
-	"List all files in the baseline of a project with their UUID.",
-	list_project_file_inventory,
+        "Project_File_INventory",
+        "List all files in the baseline of a project with their UUID.",
+        list_project_file_inventory,
         0,
     },
     {
-	"Project_History",
-	"List the integration history of a project",
-	list_project_history,
+        "Project_History",
+        "List the integration history of a project",
+        list_project_history,
         0,
     },
     {
-	"Projects",
-	"List all projects",
-	list_projects,
+        "Projects",
+        "List all projects",
+        list_projects,
         0,
     },
     {
-	"Project_Aliases",
-	"List all project aliases (the -Project option limits results)",
-	list_project_aliases,
+        "Project_Aliases",
+        "List all project aliases (the -Project option limits results)",
+        list_project_aliases,
         0,
     },
     {
-	"Reviewers",
-	"List the reviewers of a project",
-	list_reviewers,
+        "Reviewers",
+        "List the reviewers of a project",
+        list_reviewers,
         0,
     },
     {
-	"State_File_Name",
-	"List the full path name of the change's state file.",
-	list_state_file_name,
+        "State_File_Name",
+        "List the full path name of the change's state file.",
+        list_state_file_name,
         0,
     },
     {
-	"Users_Changes",
-	"List of changes owned by a (the current) user",
-	list_user_changes,
+        "Users_Changes",
+        "List of changes owned by a (the current) user",
+        list_user_changes,
         1,
     },
     {
-	"Version",
-	"List version of a project or change",
-	list_version,
+        "Version",
+        "List version of a project or change",
+        list_version,
         0,
     },
 };
@@ -287,9 +287,10 @@ list_list(void)
 {
     trace(("list_list()\n{\n"));
     arglex();
+    change_identifier cid;
     while (arglex_token != arglex_token_eoln)
-	generic_argument(list_usage);
-    list_list_list(0, 0, 0);
+        generic_argument(list_usage);
+    list_list_list(cid, 0);
     trace(("}\n"));
 }
 
@@ -317,104 +318,102 @@ static void
 list_main(void)
 {
     sub_context_ty  *scp;
-    table_ty	    *tp;
-    int		    j;
-    table_ty	    *hit[SIZEOF(table)];
-    int		    nhit;
-    string_ty	    *s1;
-    string_ty	    *s2;
+    table_ty        *tp;
+    int             j;
+    table_ty        *hit[SIZEOF(table)];
+    int             nhit;
+    string_ty       *s1;
+    string_ty       *s2;
 
     trace(("list_main()\n{\n"));
     arglex();
     const char *listname = 0;
-    string_ty *project_name = 0;
-    long change_number = 0;
+    change_identifier cid;
     string_list_ty args_list;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(list_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(list_usage);
+            continue;
 
-	case arglex_token_string:
+        case arglex_token_string:
             if (listname)
-	    {
-		string_ty       *s;
+            {
+                string_ty       *s;
 
-		s = str_from_c(arglex_value.alv_string);
-		args_list.push_back(s);
-		str_free(s);
+                s = str_from_c(arglex_value.alv_string);
+                args_list.push_back(s);
+                str_free(s);
 
                 if (args_list.nstrings > (size_t)max_num_table_args())
                 {
                     fatal_intl(0, i18n("too many lists"));
                 }
-	    }
-	    else
+            }
+            else
             {
                 listname = arglex_value.alv_string;
             }
-	    break;
+            break;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, list_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, list_usage);
-	    continue;
-	}
-	arglex();
+        case arglex_token_baseline:
+        case arglex_token_branch:
+        case arglex_token_change:
+        case arglex_token_delta:
+        case arglex_token_delta_date:
+        case arglex_token_development_directory:
+        case arglex_token_grandparent:
+        case arglex_token_number:
+        case arglex_token_project:
+        case arglex_token_trunk:
+            cid.command_line_parse(list_usage);
+            continue;
+        }
+        arglex();
     }
+    cid.command_line_check(list_usage);
     if (!listname)
-	fatal_intl(0, i18n("no list"));
+        fatal_intl(0, i18n("no list"));
 
     nhit = 0;
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (arglex_compare(tp->name, listname, 0))
-	    hit[nhit++] = tp;
+        if (arglex_compare(tp->name, listname, 0))
+            hit[nhit++] = tp;
     }
     switch (nhit)
     {
     case 0:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", listname);
-	fatal_intl(scp, i18n("no $name list"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_charstar(scp, "Name", listname);
+        fatal_intl(scp, i18n("no $name list"));
+        // NOTREACHED
+        sub_context_delete(scp);
 
     case 1:
-	hit[0]->func(project_name, change_number, &args_list);
-	break;
+        hit[0]->func(cid, &args_list);
+        break;
 
     default:
-	s1 = str_from_c(hit[0]->name);
-	for (j = 1; j < nhit; ++j)
-	{
-	    s2 = str_format("%s, %s", s1->str_text, hit[j]->name);
-	    str_free(s1);
-	    s1 = s2;
-	}
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", listname);
-	sub_var_set_string(scp, "Name_List", s1);
-	str_free(s1);
-	sub_var_optional(scp, "Name_List");
-	fatal_intl(scp, i18n("list $name ambiguous"));
-	// NOTREACHED
-	sub_context_delete(scp);
-	break;
+        s1 = str_from_c(hit[0]->name);
+        for (j = 1; j < nhit; ++j)
+        {
+            s2 = str_format("%s, %s", s1->str_text, hit[j]->name);
+            str_free(s1);
+            s1 = s2;
+        }
+        scp = sub_context_new();
+        sub_var_set_charstar(scp, "Name", listname);
+        sub_var_set_string(scp, "Name_List", s1);
+        str_free(s1);
+        sub_var_optional(scp, "Name_List");
+        fatal_intl(scp, i18n("list $name ambiguous"));
+        // NOTREACHED
+        sub_context_delete(scp);
+        break;
     }
-    if (project_name)
-	str_free(project_name);
     trace(("}\n"));
 }
 
@@ -424,8 +423,8 @@ list(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, list_help, 0 },
-	{ arglex_token_list, list_list, 0 },
+        { arglex_token_help, list_help, 0 },
+        { arglex_token_list, list_list, 0 },
     };
 
     trace(("list()\n{\n"));
@@ -435,44 +434,35 @@ list(void)
 
 
 static void
-list_list_list(string_ty *project_name, long change_number, string_list_ty *)
+list_list_list(change_identifier &cid, string_list_ty *)
 {
-    output_ty	    *name_col =	    0;
-    output_ty	    *desc_col =	    0;
-    table_ty	    *tp;
-    col	    *colp;
-
     trace(("list_list_list()\n{\n"));
-    if (project_name)
-	list_project_inappropriate();
-    if (change_number)
-	list_change_inappropriate();
+    if (cid.project_set())
+        list_project_inappropriate();
+    if (cid.set())
+        list_change_inappropriate();
 
     //
     // create the columns
     //
-    colp = col::open((string_ty *)0);
+    col::pointer colp = col::open((string_ty *)0);
     colp->title("List of Lists", (const char *)0);
-    name_col = colp->create(0, 15, "Name\n------");
+    output::pointer name_col = colp->create(0, 15, "Name\n------");
+    output::pointer desc_col;
     if (!option_terse_get())
     {
-	desc_col = colp->create(16, 0, "Description\n-------------");
+        desc_col = colp->create(16, 0, "Description\n-------------");
     }
 
     //
     // list the lists
     //
-    for (tp = table; tp < ENDOF(table); ++tp)
+    for (table_ty *tp = table; tp < ENDOF(table); ++tp)
     {
-	name_col->fputs(tp->name);
-	if (desc_col)
-	    desc_col->fputs(tp->description);
-	colp->eoln();
+        name_col->fputs(tp->name);
+        if (desc_col)
+            desc_col->fputs(tp->description);
+        colp->eoln();
     }
-
-    //
-    // clean up and go home
-    //
-    delete colp;
     trace(("}\n"));
 }

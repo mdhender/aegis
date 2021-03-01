@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,11 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the nstring::replace method
-//
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 
 #include <common/ac/string.h>
 
@@ -51,18 +48,16 @@ nstring::replace(const nstring &lhs, const nstring &rhs, int maximum)
     const char *ip_end = ip + size();
     while (ip < ip_end && (size_t)(ip_end - ip) >= lhs.size())
     {
-	if (0 == memcmp(ip, lhs.c_str(), lhs.size()))
-	{
-	    sa.push_back(rhs);
-	    ip += lhs.size();
-	    if (--maximum <= 0)
-		break;
-	}
-	else
-	{
-	    char c = *ip++;
-	    sa.push_back(c);
-	}
+        void *p = memmem(ip, ip_end - ip, lhs.c_str(), lhs.size());
+        if (!p)
+            break;
+        const char *pp = (const char *)p;
+        sa.push_back(ip, pp - ip);
+        ip = pp;
+        sa.push_back(rhs);
+        ip += (lhs.empty() ? 1 : lhs.size());
+        if (--maximum <= 0)
+            break;
     }
 
     //

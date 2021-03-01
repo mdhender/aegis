@@ -1,11 +1,11 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
-//      Copyright (C) 2006, 2007 Peter Miller
+//      Copyright (C) 2006-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -17,8 +17,6 @@
 //      along with this program. If not, see
 //      <http://www.gnu.org/licenses/>.
 //
-// MANIFEST: implementation of the get_rss class
-//
 
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
@@ -28,7 +26,9 @@
 #include <common/nstring.h>
 #include <common/str_list.h>
 #include <libaegis/change/branch.h>
+#include <libaegis/emit/project.h>
 #include <libaegis/gif.h>
+#include <libaegis/http.h>
 #include <libaegis/input/file.h>
 #include <libaegis/input/string.h>
 #include <libaegis/os.h>
@@ -38,9 +38,7 @@
 #include <libaegis/rss.h>
 #include <libaegis/rss/feed.h>
 
-#include <aeget/emit/project.h>
 #include <aeget/get/rss.h>
-#include <aeget/http.h>
 
 
 static void
@@ -138,11 +136,8 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
 	fake.description_set("No feed of this name.");
     else
 	fake.description_set("No feed name specified.");
-    output_memory_ty op;
-    fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
-    fake.print(&op);
-    fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
-    op.flush();
-    input ip = new input_string(op.mkstr());
+    output_memory::mpointer op = output_memory::create();
+    fake.print(op);
+    input ip = new input_string(op->mkstr());
     postprocess(ip);
 }

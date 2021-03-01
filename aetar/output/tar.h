@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aetar/output/tar.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AETAR_OUTPUT_TAR_H
@@ -25,16 +23,16 @@
 #include <libaegis/output.h>
 
 /**
-  * The output_tar_ty class is used to represent a tar archive.
+  * The output_tar class is used to represent a tar archive.
   */
-class output_tar_ty:
-    public output_ty
+class output_tar:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_tar_ty();
+    virtual ~output_tar();
 
     /**
       * The constructor.
@@ -43,7 +41,7 @@ public:
       *     The underlying output to which the tar archive is to be
       *     written.
       */
-    output_tar_ty(output_ty *deeper);
+    output_tar(const output::pointer &deeper);
 
     /**
       * The child method is used to create a new output object into
@@ -57,10 +55,11 @@ public:
       * \param executable
       *     Wherther ot not the archive member is executable.
       */
-    output_ty *child(const nstring &name, long len, bool executable);
+    output::pointer child(const nstring &name, long len, bool executable);
 
+protected:
     // See base class for documentation.
-    string_ty *filename() const ;
+    nstring filename() const ;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -79,35 +78,22 @@ private:
       * The deeper instance variable is used to remember the underlying
       * output to which the tar archive is to be written.
       */
-    output_ty *deeper;
+    output::pointer deeper;
 
     /**
       * The default constructor.  Do not use.
       */
-    output_tar_ty();
+    output_tar();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_tar_ty(const output_tar_ty &);
+    output_tar(const output_tar &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_tar_ty &operator=(const output_tar_ty &);
+    output_tar &operator=(const output_tar &);
 };
-
-inline DEPRECATED output_ty *
-output_tar(output_ty *deeper)
-{
-    return new output_tar_ty(deeper);
-}
-
-inline DEPRECATED output_ty *
-output_tar_child(output_tar_ty *op, const nstring &name, long length,
-    bool executable)
-{
-    return op->child(name, length, executable);
-}
 
 #endif // AETAR_OUTPUT_TAR_H

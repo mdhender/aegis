@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2007 Peter Miller
+//      Copyright (C) 1991-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -23,7 +23,7 @@
 #include <common/ac/time.h>
 
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/error.h>
 #include <common/progname.h>
@@ -38,6 +38,7 @@
 #include <libaegis/change/branch.h>
 #include <libaegis/change/develop_direct/read_only.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change/signedoffby.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
@@ -82,32 +83,11 @@ develop_end_help(void)
 static void
 develop_end_list(void)
 {
-    string_ty       *project_name;
-
     trace(("develop_end_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(develop_end_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, develop_end_usage);
-            continue;
-        }
-        arglex();
-    }
-    list_changes_in_state_mask(project_name, 1 << cstate_state_being_developed);
-    if (project_name)
-        str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(develop_end_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_being_developed);
     trace(("}\n"));
 }
 
@@ -281,6 +261,7 @@ develop_end_main(void)
     is_a_branch = change_is_a_branch(cp);
     pconf_ty *pconf_data = change_pconf_get(cp, 1);
     bool entire_source_hide = true;
+    bool local_source_hide = true;
     for (j = 0;; ++j)
     {
         fstate_src_ty   *c_src_data;
@@ -301,17 +282,22 @@ develop_end_main(void)
         // marked entire-source-hide so that we can mark the change set
         // with the aeget:inventory:hide attribute.
 	//
-	if
-       	(
-	    !attributes_list_find_boolean
-	    (
-		c_src_data->attribute,
-		"entire-source-hide"
-	    )
-	)
-	{
+        bool esh =
+            attributes_list_find_boolean
+            (
+                c_src_data->attribute,
+                "entire-source-hide"
+            );
+        bool lsh =
+            attributes_list_find_boolean
+            (
+                c_src_data->attribute,
+                "local-source-hide"
+            );
+        if (!esh)
 	    entire_source_hide = false;
-	}
+        if (!esh && !lsh)
+	    local_source_hide = false;
 
 	switch (pconf_data->unchanged_file_develop_end_policy)
 	{
@@ -899,9 +885,9 @@ develop_end_main(void)
     //
     if
     (
-	entire_source_hide
+        (entire_source_hide || local_source_hide)
     &&
-	!change_attributes_find_boolean(cp, "aeget:inventory:hide")
+        !change_attributes_find_boolean(cp, "aeget:inventory:hide")
     )
     {
 	change_attributes_append(cstate_data, "aeget:inventory:hide", "true");
@@ -935,7 +921,7 @@ develop_end_main(void)
             if (e)
             {
                 scp = sub_context_new();
-                sub_var_set_string(scp, "Message", e);
+                sub_var_set_string(scp, "MeSsaGe", e);
                 str_free(e);
                 change_error(cp, scp, i18n("project $message"));
                 sub_context_delete(scp);

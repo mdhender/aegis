@@ -1,30 +1,28 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 1999, 2002, 2005, 2006, 2008 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/col/pretty.c
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_COL_PRETTY_H
 #define LIBAEGIS_COL_PRETTY_H
 
 #include <libaegis/col.h>
-
-struct wide_output_ty; // forward
+#include <libaegis/output.h>
+#include <libaegis/wide_output/column.h>
 
 /**
   * The col_pretty class is used to represent multi-column output with
@@ -40,16 +38,32 @@ public:
       */
     virtual ~col_pretty();
 
+private:
     /**
-      * The constructor.
+      * The constructor.  Its is private on pupose, use the #create
+      * class method instead.
+      *
+      * @param deeper
+      *     The output stream upon which to write the columnar output.
       */
-    col_pretty(wide_output_ty *deeper, bool delete_on_close);
+    col_pretty(const wide_output::pointer &deeper);
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * @param deeper
+      *     The output stream upon which to write the columnar output.
+      */
+    static pointer create(const wide_output::pointer &deeper);
+
+protected:
+    // See base class for documentation.
+    output::pointer create(int, int, const char *);
 
     // See base class for documentation.
-    output_ty *create(int, int, const char*);
-
-    // See base class for documentation.
-    void title(const char*, const char*);
+    void title(const char *, const char *);
 
     // See base class for documentation.
     void eoln();
@@ -60,52 +74,42 @@ public:
     // See base class for documentation.
     void eject();
 
-    /**
-      * The delcb method is used to notify us that one of the output
-      * streams (which indirectly fills out column contents) is about to
-      * be deleted.  This allows us to stop remembering it, and thus not
-      * de-reference dangling pointers.
-      *
-      * @param fp
-      *     The output stream about to be deleted.
-      *
-      * @note
-      *     This method is pub;ic only so that the output_ty destructor
-      *     can call it.  Nothing else may use this method.
-      */
-    void delcb(output_ty *fp);
-
     // See base class for documentation.
     void flush();
 
+    // See base class for documentation.
+    void forget(const output::pointer &op);
+
 private:
-    wide_output_ty *deeper;
+    wide_output::pointer deeper;
     bool need_to_emit_headers;
     size_t ncolumns;
     size_t ncolumns_max;
 
     struct column_ty
     {
-	~column_ty();
-	column_ty();
-	column_ty(const column_ty &);
-	column_ty &operator=(const column_ty &);
+        ~column_ty();
+        column_ty();
+        column_ty(const column_ty &);
+        column_ty &operator=(const column_ty &);
 
-	wide_output_ty *header;
-	wide_output_ty *content;
-	output_ty *content_filter;
-	int left;
-	int right;
+        wide_output_column::cpointer header;
+        wide_output_column::cpointer content;
+        output::pointer content_filter;
+        int left;
+        int right;
+
+        void clear();
     };
 
     column_ty *column;
 
     struct emit_ty
     {
-	emit_ty() : content(0), left(0) { }
+        emit_ty() : left(0) { }
 
-	wide_output_ty *content;
-	int	left;
+        wide_output_column::cpointer content;
+        int left;
     };
 
     /**
@@ -125,12 +129,12 @@ private:
 
     /**
       * The emit_content method is used to generate the output, given
-      * the content written inforctly via the wide output streams
+      * the content written and formatted via the wide output streams
       * privide by create (below).
       *
       * Usually, the column headers are handled by the top-of-page
       * callback, however if new columns with headers are created in the
-      * middile of the page, this method also causes the new column
+      * middle of the page, this method also causes the new column
       * headings to be emitted, before the content.
       */
     void emit_content();

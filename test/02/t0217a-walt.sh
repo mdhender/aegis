@@ -1,13 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2005-2007 Peter Miller
-#
-#	Copyright (C) 2004 Walter Franzini;
+#	Copyright (C) 2005-2008 Peter Miller
+#	Copyright (C) 2004, 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -16,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aedist -replay functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -117,7 +114,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="create test directory 112"
+activity="create test directory 117"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -139,7 +136,7 @@ unset LANGUAGE
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 134"
+activity="new project 139"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -148,7 +145,7 @@ AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
 
-activity="project attributes 143"
+activity="project attributes 148"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -161,7 +158,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 156"
+activity="staff 161"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -169,7 +166,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 164"
+activity="new change 169"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -179,11 +176,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 174"
+activity="develop begin 179"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 178"
+activity="new file 183"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -210,42 +207,42 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/test.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 205"
+activity="build 210"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="diff 209"
+activity="diff 214"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="uuid set 213"
+activity="uuid set 218"
 $bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd000 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 217"
+activity="develop end 222"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 221"
+activity="integrate begin 226"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 225"
+activity="integrate build 230"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 229"
+activity="integrate diff 234"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 233"
+activity="integrate pass 238"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # second change
 #
-activity="new change 240"
+activity="new change 245"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -254,18 +251,18 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 249"
+activity="develop begin 254"
 $bin/aegis -db 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="copy file 253"
+activity="copy file 258"
 $bin/aegis -cp $work/test.C002/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo second > $work/test.C002/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="copy file 260"
+activity="copy file 265"
 $bin/aegis -cp $work/test.C002/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -275,46 +272,44 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build the change 270"
+activity="build the change 275"
 $bin/aegis -build -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 274"
+activity="diff the change 279"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="end the change 278"
+activity="end the change 283"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 282"
+activity="integrate begin 287"
 $bin/aegis -ibeg 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate build 286"
+activity="integrate build 291"
 $bin/aegis -build -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate pass 290"
+activity="integrate pass 295"
 $bin/aegis -ipass 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="inventory generate 294"
+activity="inventory generate 299"
+$bin/aedist -p test --inventory --path-prefix file: > $work/test.html
+if test $? -ne 0; then fail; fi
+
+activity="change inventory 303"
 $bin/aegis -list change_inventory -ter > test.cin
 if test $? -ne 0; then no_result; fi
 
-cat > cin.awk <<'EOF'
-{printf ("<tr><td><a href=\"%s/?menu\">%s</a></td><td><tt><a href=\"file:%s.ae\">%s</a></tt></td><td>%s</td></tr>\n",$1,$1,$1,$2,$1);}
-EOF
-if test $? -ne 0; then no_result; fi
-
-awk -f cin.awk < test.cin > test.html
-if test $? -ne 0; then no_result; fi
-
-activity="dump changes 306"
+activity="dump changes 307"
 for d in `awk '{print $1}' < test.cin`
 do
-  $bin/aedist -send -change test.$d -o $d.ae > LOG 2>&1
+  uuid=`$bin/aesub -c test.$d '${change uuid}' | $bin/test_uuid --translate`
+  mkdir -p `dirname $uuid`
+  $bin/aedist -send -change test.$d -o $uuid.ae > LOG 2>&1
   if test $? -ne 0; then cat LOG; no_result; fi
 done
 
@@ -323,7 +318,7 @@ done
 #
 # Create a second project: test2
 #
-activity="new project 318"
+activity="new project 321"
 $bin/aegis -npr test2 -version - -v -dir $work/test2.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -331,7 +326,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test2
 export AEGIS_PROJECT
 
-activity="project attributes 326"
+activity="project attributes 329"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -344,7 +339,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 339"
+activity="staff 342"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -356,15 +351,15 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # The URL handling code must be improved, now we must write
 # ./test.html (note the leading ./) instead of test.html
 #
-activity="replay 351"
+activity="replay 354"
 $bin/aedist  --replay -p test2 -f ./test.html -no-trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="dump inventory for test2 355"
+activity="dump inventory for test2 358"
 $bin/aegis -list change_inventory -p test2 -terse > test2.cin
 if test $? -ne 0; then no_result; fi
 
-activity="check inventories 359"
+activity="check inventories 362"
 diff test.cin test2.cin > cin.diff
 if test $? -ne 0; then cat cin.diff; fail; fi
 

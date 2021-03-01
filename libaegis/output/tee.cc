@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2006 Peter Miller
+//	Copyright (C) 2001, 2003-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,44 +13,39 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate tees
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/output/tee.h>
 
 
-output_tee_ty::~output_tee_ty()
+output_tee::~output_tee()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
     // method.
     //
     flush();
-
-    if (d1_close)
-	delete d1;
-    d1 = 0;
-    if (d2_close)
-	delete d2;
-    d2 = 0;
 }
 
 
-output_tee_ty::output_tee_ty(output_ty *arg1, bool arg2, output_ty *arg3,
-	bool arg4) :
-    d1(arg1),
-    d1_close(arg2),
-    d2(arg3),
-    d2_close(arg4)
+output_tee::output_tee(const output::pointer &a1, const output::pointer &a2) :
+    d1(a1),
+    d2(a2)
 {
 }
 
 
+output::pointer
+output_tee::create(const output::pointer &a1, const output::pointer &a2)
+{
+    return pointer(new output_tee(a1, a2));
+}
+
+
 void
-output_tee_ty::write_inner(const void *data, size_t nbytes)
+output_tee::write_inner(const void *data, size_t nbytes)
 {
     d1->write(data, nbytes);
     d2->write(data, nbytes);
@@ -58,15 +53,15 @@ output_tee_ty::write_inner(const void *data, size_t nbytes)
 
 
 void
-output_tee_ty::flush_inner()
+output_tee::flush_inner()
 {
     d1->flush();
     d2->flush();
 }
 
 
-string_ty *
-output_tee_ty::filename()
+nstring
+output_tee::filename()
     const
 {
     return d1->filename();
@@ -74,18 +69,18 @@ output_tee_ty::filename()
 
 
 long
-output_tee_ty::ftell_inner()
+output_tee::ftell_inner()
     const
 {
     long result = d1->ftell();
     if (result < 0)
-	    result = d2->ftell();
+        result = d2->ftell();
     return result;
 }
 
 
 int
-output_tee_ty::page_width()
+output_tee::page_width()
     const
 {
     return d1->page_width();
@@ -93,7 +88,7 @@ output_tee_ty::page_width()
 
 
 int
-output_tee_ty::page_length()
+output_tee::page_length()
     const
 {
     return d1->page_length();
@@ -101,7 +96,7 @@ output_tee_ty::page_length()
 
 
 void
-output_tee_ty::end_of_line_inner()
+output_tee::end_of_line_inner()
 {
     d1->end_of_line();
     d2->end_of_line();
@@ -109,7 +104,7 @@ output_tee_ty::end_of_line_inner()
 
 
 const char *
-output_tee_ty::type_name()
+output_tee::type_name()
     const
 {
     return "tee";

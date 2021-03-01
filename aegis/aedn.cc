@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1994-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the 'aegis -Delta_Name' command
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -31,6 +29,7 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/file/event.h>
 #include <libaegis/help.h>
@@ -75,44 +74,11 @@ delta_name_help(void)
 static void
 delta_name_list(void)
 {
-    string_ty       *project_name;
-    long            change_number;
-
     trace(("delta_name_list()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(delta_name_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		delta_name_usage
-	    );
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, delta_name_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_project_history(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(delta_name_usage);
+    list_project_history(cid, 0);
     trace(("}\n"));
 }
 

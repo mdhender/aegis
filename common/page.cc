@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller
+//	Copyright (C) 2003-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate pages
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
@@ -108,21 +106,21 @@ default_terminal_sizes(void)
 #ifdef TIOCGWINSZ
     if (!terminal_width || !terminal_length)
     {
-	struct winsize  ws;
+	struct winsize  window_size;
 
-	if (ioctl(0, TIOCGWINSZ, &ws) == 0)
+	if (ioctl(0, TIOCGWINSZ, &window_size) == 0)
 	{
-	    if (!terminal_width && ws.ws_col > 0)
+	    if (!terminal_width && window_size.ws_col > 0)
 	    {
-		terminal_width = ws.ws_col;
+		terminal_width = window_size.ws_col;
 		if (terminal_width < MIN_PAGE_WIDTH)
 		    terminal_width = MIN_PAGE_WIDTH;
 		if (terminal_width > MAX_PAGE_WIDTH)
 		    terminal_width = MAX_PAGE_WIDTH;
 	    }
-	    if (!terminal_length && ws.ws_row > 0)
+	    if (!terminal_length && window_size.ws_row > 0)
 	    {
-		terminal_length = ws.ws_row;
+		terminal_length = window_size.ws_row;
 		if (terminal_length < MIN_PAGE_LENGTH)
 		    terminal_length = MIN_PAGE_LENGTH;
 		if (terminal_length > MAX_PAGE_LENGTH)

@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1992-1999, 2001-2008 Peter Miller
+//      Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -30,6 +31,7 @@
 class string_list_ty; // forward
 class sub_context_ty; // forward
 class fstate_src_ty; // forward
+class itab_ty; // forward
 
 /**
   * The project_ty class is used to remember the state of a project.
@@ -367,6 +369,21 @@ public:
     int gid_get();
 
     /**
+      * The change_completion_timestamp is used to
+      * determine the completion timestamp of a change.
+      *
+      * @param change_number
+      *    the number of the change.
+      *
+      * @returns
+      *    the completion timestamp of the change.
+      *
+      * @note
+      *    this method caches its results for speed.
+      */
+    time_t change_completion_timestamp(long change_number);
+
+    /**
       * The history_path_get method is used to determine the top-level
       * directory of the tree which is used to hold the project's
       * history files.
@@ -583,6 +600,14 @@ private:
     string_ty *baseline_path;
 
     /**
+      * The change2time_stp instance variable is used to remember for
+      * each change the completion timestamp.  All access are via the
+      * change_completion_timestamp_maybe_cached method, which take
+      * care of calculating it on demand.
+      */
+    itab_ty *change2time_stp;
+
+    /**
       * The history_path is used to remember the absolute path of the
       * distory directory.  The calculation is deferred until needed.
       * Always use the history_path_get method, never access this
@@ -708,6 +733,14 @@ private:
     user_ty::pointer up;
 
     /**
+      * The off_limits instance variable is used to remember when
+      * a project is inaccessable to the executing user.  This
+      * flag is normally false, but it will be set to true by
+      * project::bind_existing for projects which are inaccessable.
+      */
+    bool off_limits;
+
+    /**
       * The default constructor.
       *
       * Do not use this method.  It is not defined.  Projects will
@@ -735,25 +768,25 @@ private:
 
 project_ty *project_alloc(string_ty *name);
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_bind_existing(project_ty *pp)
 {
     pp->bind_existing();
 }
 
-DEPRECATED inline bool
+inline DEPRECATED bool
 project_bind_existing_errok(project_ty *pp)
 {
     return pp->bind_existing_errok();
 }
 
-DEPRECATED inline project_ty *
+inline DEPRECATED project_ty *
 project_bind_branch(project_ty *ppp, change::pointer bp)
 {
     return ppp->bind_branch(bp);
 }
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_bind_new(project_ty *pp)
 {
     pp->bind_new();
@@ -761,13 +794,13 @@ project_bind_new(project_ty *pp)
 
 void project_list_get(struct string_list_ty *);
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_list_inner(struct string_list_ty *result, project_ty *pp)
 {
     pp->list_inner(*result);
 }
 
-DEPRECATED inline project_ty *
+inline DEPRECATED project_ty *
 project_find_branch(project_ty *pp, const char *number)
 {
     return pp->find_branch(number);
@@ -783,13 +816,13 @@ project_name_get(project_ty *pp)
 
 project_ty *project_copy(project_ty *);
 
-DEPRECATED inline change::pointer
+inline DEPRECATED change::pointer
 project_change_get(project_ty *pp)
 {
     return pp->change_get();
 }
 
-DEPRECATED inline string_ty *
+inline DEPRECATED string_ty *
 project_home_path_get(project_ty *pp)
 {
     return pp->home_path_get();
@@ -811,19 +844,19 @@ string_ty *project_top_path_get(project_ty *, int);
   */
 nstring project_rss_path_get(project_ty *pp, bool resolve = false);
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_home_path_set(project_ty *pp, string_ty *dir)
 {
     pp->home_path_set(dir);
 }
 
-DEPRECATED inline string_ty *
+inline DEPRECATED string_ty *
 project_baseline_path_get(project_ty *pp, bool resolve = false)
 {
     return pp->baseline_path_get(resolve);
 }
 
-DEPRECATED inline string_ty *
+inline DEPRECATED string_ty *
 project_history_path_get(project_ty *pp)
 {
     return pp->history_path_get();
@@ -839,13 +872,13 @@ project_history_path_get(project_ty *pp)
   */
 string_ty *project_history_filename_get(project_ty *, struct fstate_src_ty *);
 
-DEPRECATED inline string_ty *
+inline DEPRECATED string_ty *
 project_info_path_get(project_ty *pp)
 {
     return pp->info_path_get();
 }
 
-DEPRECATED inline string_ty *
+inline DEPRECATED string_ty *
 project_changes_path_get(project_ty *pp)
 {
     return pp->changes_path_get();
@@ -854,19 +887,19 @@ project_changes_path_get(project_ty *pp)
 DEPRECATED
 string_ty *project_change_path_get(project_ty *, long);
 
-DEPRECATED inline string_ty *
+inline DEPRECATED string_ty *
 project_pstate_path_get(project_ty *pp)
 {
     return pp->pstate_path_get();
 }
 
-DEPRECATED inline pstate_ty *
+inline DEPRECATED pstate_ty *
 project_pstate_get(project_ty *pp)
 {
     return pp->pstate_get();
 }
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_pstate_write(project_ty *pp)
 {
     pp->pstate_write();
@@ -874,7 +907,7 @@ project_pstate_write(project_ty *pp)
 
 void project_pstate_write_top(project_ty *);
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_pstate_lock_prepare(project_ty *pp)
 {
     pp->pstate_lock_prepare();
@@ -894,13 +927,13 @@ int project_change_number_in_use(project_ty *, long);
 string_ty *project_version_short_get(project_ty *);
 string_ty *project_version_get(project_ty *);
 
-DEPRECATED inline int
+inline DEPRECATED int
 project_uid_get(project_ty *pp)
 {
     return pp->uid_get();
 }
 
-DEPRECATED inline int
+inline DEPRECATED int
 project_gid_get(project_ty *pp)
 {
     return pp->gid_get();
@@ -956,7 +989,7 @@ pconf_ty *project_pconf_get(project_ty *);
 project_ty *project_new_branch(project_ty *pp, user_ty::pointer up,
     long change_number, string_ty *topdir = 0, string_ty *reason = 0);
 
-DEPRECATED inline void
+inline DEPRECATED void
 project_file_list_invalidate(project_ty *pp)
 {
     pp->file_list_invalidate();

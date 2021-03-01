@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the sub_functor_list class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_SUB_FUNCTOR_LIST_H
@@ -57,7 +55,7 @@ public:
       * @param n
       *     The number (zero based) of the element of interest.
       */
-    sub_functor::pointer get(size_t n);
+    sub_functor::pointer get(size_t n) const;
 
     /**
       * The array index operator method is used to obtain the <i>n</i>th
@@ -66,7 +64,7 @@ public:
       * @param n
       *     The number (zero based) of the element of interest.
       */
-    sub_functor::pointer operator[](size_t n) { return get(n); }
+    sub_functor::pointer operator[](size_t n) const { return get(n); }
 
     /**
       * The size method is used to obtain the number of elements in the
@@ -108,7 +106,7 @@ public:
       * @returns
       *     pointer to functor, or NULL if not found
       */
-    sub_functor::pointer find(const nstring &name);
+    sub_functor::pointer find(const nstring &name) const;
 
 private:
     /**

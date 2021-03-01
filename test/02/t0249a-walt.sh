@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Walter Franzini
-#       Copyright (C) 2007 Peter Miller
+#	Copyright (C) 2007, 2008 Walter Franzini
+#       Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the setenv:* functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -114,7 +112,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 116"
+activity="create test directory 115"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -161,7 +159,7 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 163"
+activity="new project 162"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj -lib $work/lib \
     > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -169,7 +167,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # change project attributes
 #
-activity="project attributes 171"
+activity="project attributes 170"
 cat > tmp << 'end'
 description = "A bogus project created to test the setenv:* "
     "functionality.";
@@ -185,7 +183,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 187"
+activity="staff 186"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -198,7 +196,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 200"
+activity="new change 199"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -217,7 +215,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add new files to the change
 #
-activity="new file 219"
+activity="new file 218"
 $bin/aegis -nf $workchan/bogus1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/aegis.conf -nl > log 2>&1
@@ -263,25 +261,25 @@ test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="set the AVAR variable 265"
+activity="set the AVAR variable 264"
 AVAR=bar
 export AVAR
 
-activity="diff the change 269"
+activity="diff the change 268"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="expected output 273"
+activity="expected output 272"
 cat > ok <<EOF
 foo:bar
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="check the diff 279"
+activity="check the diff 278"
 cmp ok $workchan/aegis.conf,D
 if test $? -ne 0; then fail; fi
 
-activity="check the diff 283"
+activity="check the diff 282"
 cmp ok $workchan/bogus1,D
 if test $? -ne 0; then fail; fi
 

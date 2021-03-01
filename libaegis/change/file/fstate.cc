@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
+//	Copyright (C) 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -17,17 +18,23 @@
 //	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/change/file.h>
 #include <common/error.h> // for assert
-#include <libaegis/sub.h>
 #include <common/symtab.h>
+#include <common/symtab_iter.h>
+#include <common/symtab/template.h>
 #include <common/trace.h>
+
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
 
 
 static void
 fimprove(fstate_ty *fstate_data, string_ty *, change::pointer cp)
 {
-    size_t	    j;
+    trace(("fimprove(%08lX, , %s)\n{\n", (long)fstate_data,
+           change_version_get(cp)->str_text));
 
     if (!fstate_data->src)
     {
@@ -37,7 +44,9 @@ fimprove(fstate_ty *fstate_data, string_ty *, change::pointer cp)
     //
     // Migrate file state information.
     //
-    for (j = 0; j < fstate_data->src->length; ++j)
+    symtab<fstate_src_ty> create_half;
+    symtab<fstate_src_ty> remove_half;
+    for (size_t j = 0; j < fstate_data->src->length; ++j)
     {
 	fstate_src_ty   *src;
 
@@ -61,7 +70,29 @@ fimprove(fstate_ty *fstate_data, string_ty *, change::pointer cp)
 	switch (src->action)
 	{
 	case file_action_transparent:
+            break;
+
 	case file_action_remove:
+            //
+            // There was once a bug in aeclone which caused the
+            // edit_origin field to be omitted for removed files.  This,
+            // in turn, led to project file entries with no edit_origin
+            // field, which hauses assert failues and segfaults all over
+            // the place.
+            //
+            if (!src->edit_origin && !src->edit_number_origin)
+            {
+                //
+                // The problem is , what the heck to we replace it with?
+                // Probably not important, since it will never be passed
+                // to the history_get_command.
+                //
+                src->edit_origin =
+                    (history_version_ty *)history_version_type.alloc();
+                src->edit_origin->errpos = str_copy(src->errpos);
+                src->edit_origin->revision = str_from_c("0.0");
+                src->edit_origin->encoding = history_version_encoding_none;
+            }
 	    break;
 
 	case file_action_create:
@@ -173,7 +204,171 @@ fimprove(fstate_ty *fstate_data, string_ty *, change::pointer cp)
 	    // NOTREACHED
 	    sub_context_delete(scp);
 	}
+
+        //
+        // Adjust the move field in order to cope with a bug in the
+        // aeipass code.  We need another pass to fix the removed
+        // files.
+        //
+        switch (src->action)
+        {
+        case file_action_remove:
+            if (src->move && change_was_a_branch(cp))
+            {
+                trace(("remember %s;\n", src->file_name->str_text));
+                remove_half.assign (nstring(src->file_name), src);
+            }
+            break;
+
+        case file_action_create:
+            if (src->move && change_was_a_branch(cp))
+                create_half.assign(nstring(src->file_name), src);
+            break;
+
+        case file_action_insulate:
+        case file_action_modify:
+        case file_action_transparent:
+#ifndef DEBUG
+        default:
+#endif
+            if (src->move)
+            {
+                trace(("reset move;\n"));
+                str_free(src->move);
+                src->move = 0;
+            }
+            break;
+        }
     }
+
+    //
+    // Adjust the move field, we now fix the deleted files.
+    //
+    if (remove_half.size() > 0)
+    {
+	assert(change_was_a_branch(cp));
+        nstring_list candidate;
+
+        remove_half.keys(candidate);
+        trace(("candidate.size() = %ld;\n", (long)candidate.size()));
+
+        for (size_t i = 0; i < remove_half.size(); ++i)
+        {
+            trace_nstring(candidate[i]);
+            fstate_src_ty *src2 = remove_half.query(candidate[i]);
+	    //
+	    // Skip over if src2 is NULL, it means the file has already
+	    // been removed from the list.
+	    //
+            if (!src2)
+		continue;
+            assert(src2->move);
+
+            trace_string(src2->move->str_text);
+
+            fstate_src_ty *src3 = remove_half.query(src2->move);
+            trace_pointer(src3);
+
+            //
+            // Skip over is src3 is NULL, it means the file has already
+	    // been removed from the list.
+            //
+            if (!src3)
+                continue;
+	    assert(src3->move);
+
+            //
+            // Skip over if src3->move is the create half of a rename.
+            //
+            if (create_half.query(src3->move))
+                continue;
+
+	    //
+	    // If the deletion comes from the same branch we need to go
+	    // down one step to retrieve the right value.
+	    // Otherwise we compare the integration_timestamp of the changes.
+	    //
+            project_ty *pp = cp->pp->bind_branch(cp);
+            assert(pp);
+            trace(("pp->version = \"%s\";\n",
+                   project_version_get(pp)->str_text));
+	    if (src2->deleted_by == src3->deleted_by)
+	    {
+                change::pointer cp2 = change_alloc(pp, src2->deleted_by);
+                change_bind_existing(cp2);
+
+		change_fstate_get(cp2);
+		assert(cp2->fstate_stp);
+
+		fstate_src_ty *src2_tmp =
+		    (fstate_src_ty*)cp2->fstate_stp->query(src2->file_name);
+		fstate_src_ty *src3_tmp =
+		    (fstate_src_ty*)cp2->fstate_stp->query(src3->file_name);
+
+                assert
+                (
+                    (src3_tmp->move && !src2_tmp->move)
+                ||
+                    (src2_tmp->move && !src3_tmp->move)
+                );
+
+                if (!src2_tmp->move)
+                {
+                    str_free(src2->move);
+                    src2->move = 0;
+                    remove_half.remove(nstring(src2->file_name));
+                }
+                else
+                {
+                    assert(str_equal(src2->move, src2_tmp->move));
+                }
+
+                if (!src3_tmp->move)
+                {
+                    str_free(src3->move);
+                    src3->move = 0;
+                    remove_half.remove(nstring(src3->file_name));
+                }
+                else
+                {
+                    assert(str_equal(src3->move, src3_tmp->move));
+                }
+	    }
+            else
+            {
+                //
+                // The files are modified by two *different* changes.
+                // Since the only possibile scenario is to have a
+                // rename followed by a delete (and not the other
+                // way), the most recent change is a deletion and
+                // it cannot have the move field set.
+                //
+                time_t completion_timestamp2 =
+                    pp->change_completion_timestamp(src2->deleted_by);
+                time_t completion_timestamp3 =
+                    pp->change_completion_timestamp(src3->deleted_by);
+                assert(completion_timestamp2 != completion_timestamp3);
+                if (completion_timestamp2 < completion_timestamp3)
+                {
+                    trace(("reset move;\n"));
+                    str_free(src3->move);
+                    src3->move = 0;
+                    remove_half.remove(nstring(src3->file_name));
+                }
+                else
+                {
+                    trace(("reset move;\n"));
+                    str_free(src2->move);
+                    src2->move = 0;
+                    remove_half.remove(candidate[i]);
+                }
+            }
+            // project_free(pp);
+        }
+    }
+
+    trace(("return;\n"));
+    trace(("}\n"));
 }
 
 

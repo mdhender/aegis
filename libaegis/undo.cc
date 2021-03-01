@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1995, 1999, 2002-2006 Peter Miller
+//      Copyright (C) 1991-1995, 1999, 2002-2006, 2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to store and enact file operations on transaction abort
+//      along with this program; if not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -46,7 +44,7 @@ void
 undo_rename(string_ty *from, string_ty *to)
 {
     trace(("undo_rename(from = %08lX, to = %08lX)\n{\n", (long)from, (long)to));
-    undo_rename(nstring(str_copy(from)), nstring(str_copy(to)));
+    undo_rename(nstring(from), nstring(to));
     trace(("}\n"));
 }
 
@@ -66,7 +64,7 @@ undo_rename(const nstring &from, const nstring &to)
 void
 undo_rename_cancel(string_ty *from, string_ty *to)
 {
-    undo_rename_cancel(nstring(str_copy(from)), nstring(str_copy(to)));
+    undo_rename_cancel(nstring(from), nstring(to));
 }
 
 
@@ -100,7 +98,7 @@ undo_rename_cancel(const nstring &from, const nstring &to)
 void
 undo_chmod(string_ty *path, int mode)
 {
-    undo_chmod(nstring(str_copy(path)), mode);
+    undo_chmod(nstring(path), mode);
 }
 
 
@@ -119,7 +117,7 @@ undo_chmod(const nstring &path, int mode)
 void
 undo_chmod_errok(string_ty *path, int mode)
 {
-    undo_chmod_errok(nstring(str_copy(path)), mode);
+    undo_chmod_errok(nstring(path), mode);
 }
 
 
@@ -139,7 +137,7 @@ undo_chmod_errok(const nstring &path, int mode)
 void
 undo_unlink_errok(string_ty *path)
 {
-    undo_unlink_errok(nstring(str_copy(path)));
+    undo_unlink_errok(nstring(path));
 }
 
 
@@ -157,7 +155,7 @@ undo_unlink_errok(const nstring &path)
 void
 undo_message(string_ty *path)
 {
-    undo_message(nstring(str_copy(path)));
+    undo_message(nstring(path));
 }
 
 
@@ -174,7 +172,7 @@ undo_message(const nstring &msg)
 void
 undo_rmdir_bg(string_ty *path)
 {
-    undo_rmdir_bg(nstring(str_copy(path)));
+    undo_rmdir_bg(nstring(path));
 }
 
 
@@ -192,7 +190,7 @@ undo_rmdir_bg(const nstring &path)
 void
 undo_rmdir_errok(string_ty *path)
 {
-    undo_rmdir_errok(nstring(str_copy(path)));
+    undo_rmdir_errok(nstring(path));
 }
 
 
@@ -211,9 +209,9 @@ void
 undo()
 {
     trace(("undo()\n{\n"));
-    static int count;
-    ++count;
-    switch (count)
+    static int recursion_depth;
+    ++recursion_depth;
+    switch (recursion_depth)
     {
     case 1:
         while (os_become_active())
@@ -247,7 +245,7 @@ undo()
         // probably an error writing stderr
         break;
     }
-    --count;
+    --recursion_depth;
     trace(("}\n"));
 }
 

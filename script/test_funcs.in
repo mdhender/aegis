@@ -1,0 +1,141 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2006 Jerry Pendergraft
+#	Copyright (C) 2007, 2008 Peter Miller
+#	Copyright (C) 2007 Walter Franzini
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
+#
+
+if [ "$TEST_SUBJECT" = "fill me in" -o "$TEST_SUBJECT" = "" ]
+then
+    echo '    You must set the TEST_SUBJECT environment variable' 1>&2
+    echo '    at the top of your test script to something' 1>&2
+    echo '    descriptive.' 1>&2
+    exit 2
+fi
+
+## Report from which location this file was loaded.
+## It is/was found in the PATH so we resolve it with type
+#echo "loading `type test_funcs | awk '{print $NF}'`"
+
+unset AEGIS_PROJECT
+unset AEGIS_CHANGE
+unset AEGIS_PATH
+unset AEGIS
+umask 022
+
+LINES=24
+export LINES
+COLS=80
+export COLS
+
+USER=${USER:-${LOGNAME:-`whoami`}}
+
+work=${AEGIS_TMP:-/tmp}/$$
+PAGER=cat
+export PAGER
+AEGIS_FLAGS="delete_file_preference = no_keep; \
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never; \
+        default_development_directory = \"$work\";"
+export AEGIS_FLAGS
+AEGIS_THROTTLE=-1
+export AEGIS_THROTTLE
+
+# This tells aeintegratq that it is being used by a test.
+AEGIS_TEST_DIR=$work
+export AEGIS_TEST_DIR
+
+here=`pwd`
+if test $? -ne 0; then exit 2; fi
+
+AEGIS_DATADIR=$here/lib
+export AEGIS_DATADIR
+
+pass()
+{
+	set +x
+	echo PASSED
+	cd $here
+	rm -rf $work
+	exit 0
+}
+fail()
+{
+	set +x
+	cd $here
+	rm -rf $work
+	echo "FAILED test of $TEST_SUBJECT ($activity)" 1>&2
+	exit 1
+}
+no_result()
+{
+	set +x
+	cd $here
+	rm -rf $work
+	echo "NO RESULT for test of $TEST_SUBJECT ($activity)" 1>&2
+	exit 2
+}
+trap "no_result" 1 2 3 15
+
+activity="create test directory"
+mkdir $work $work/lib
+if test $? -ne 0 ; then no_result; fi
+chmod 777 $work/lib
+if test $? -ne 0 ; then no_result; fi
+cd $work
+if test $? -ne 0 ; then no_result; fi
+
+#
+# Set AEGIS_PATH
+#
+AEGIS_PATH=$work/lib
+export AEGIS_PATH
+
+#
+# use the built-in error messages
+#
+AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
+export AEGIS_MESSAGE_LIBRARY
+unset LANG
+unset LANGUAGE
+unset LC_ALL
+
+#
+# If the C++ compiler is called something other than "c++", as
+# discovered by the configure script, create a shell script called
+# "c++" which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
+#
+if test "$CXX" != "c++"
+then
+        cat >> $work/c++ << fubar
+#!/bin/sh
+exec ${CXX-g++} \$$*
+fubar
+
+   if test $? -ne 0 ; then no_result; fi
+   chmod a+rx $work/c++
+   if test $? -ne 0 ; then no_result; fi
+   PATH=${work}:${PATH}
+   export PATH
+fi
+
+# EOF:  etc/test_funcs.sh

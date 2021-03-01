@@ -1,11 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Walter Franzini
+#	Copyright (C) 2007, 2008 Walter Franzini
+#	Copyright (C) 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -14,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aem functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -113,7 +112,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 116"
+activity="create test directory 114"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -160,14 +159,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 163"
+activity="new project 161"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 170"
+activity="project attributes 168"
 cat > tmp << 'end'
 description = "A bogus project created to test the "
     "aeipass functionality.";
@@ -184,7 +183,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 187"
+activity="staff 185"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -195,7 +194,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 198"
+activity="new change 196"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -207,14 +206,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 210"
+activity="develop begin 208"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 217"
+activity="new file 215"
 $bin/aegis -nf  $workchan/aegis.conf -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd0 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -238,50 +237,50 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 241"
+activity="build 239"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 248"
+activity="diff 246"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 255"
+activity="develop end 253"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 262"
+activity="integrate begin 260"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 266"
+activity="diff the change 264"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 273"
+activity="build 271"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 280"
+activity="integrate pass 278"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new branch 284"
+activity="new branch 282"
 $bin/aegis -p example -nbr 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -294,7 +293,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 297"
+activity="new change 295"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -306,14 +305,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 309"
+activity="develop begin 307"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 316"
+activity="new file 314"
 $bin/aegis -nf  $workchan/file1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -326,53 +325,53 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 329"
+activity="build 327"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 336"
+activity="diff 334"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 343"
+activity="develop end 341"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 350"
+activity="integrate begin 348"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 354"
+activity="diff the change 352"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 361"
+activity="build 359"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 368"
+activity="integrate pass 366"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # New branch
 #
-activity="new branch 375"
+activity="new branch 373"
 $bin/aegis -nbr -p example 20 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -382,7 +381,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 385"
+activity="new change 383"
 cat > tmp << 'end'
 brief_description = "The third change";
 cause = internal_bug;
@@ -394,7 +393,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 397"
+activity="develop begin 395"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -403,7 +402,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # We set a UUID different from the one set in .10.C1 to trigger a bug
 # in the aem code.
 #
-activity="new file 406"
+activity="new file 404"
 $bin/aegis -nf  $workchan/file1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -417,46 +416,46 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 420"
+activity="build 418"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 427"
+activity="diff 425"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 434"
+activity="develop end 432"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 441"
+activity="integrate begin 439"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 445"
+activity="diff the change 443"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 452"
+activity="build 450"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 459"
+activity="integrate pass 457"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -466,15 +465,15 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=example
 export AEGIS_PROJECT
 
-activity="close the branch 469"
+activity="close the branch 467"
 $bin/aegis -dev_end -c 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate the branch 473"
+activity="integrate the branch 471"
 $bin/aegis -ib -c 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the branch integration 477"
+activity="complete the branch integration 475"
 $bin/aefinish -c 10 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -487,7 +486,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 490"
+activity="new change 488"
 cat > tmp << 'end'
 brief_description = "The fourth change";
 cause = internal_bug;
@@ -499,7 +498,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 502"
+activity="develop begin 500"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -508,7 +507,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # We set a UUID different from the one set in .1.C1 to trigger a bug
 # in the aem code.
 #
-activity="new file 511"
+activity="new file 509"
 $bin/aegis -cp  $workchan/file1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -518,7 +517,7 @@ More not so random stuff
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="merge the file 521"
+activity="merge the file 519"
 $bin/aegis -diff -only-merge -gp -v > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 

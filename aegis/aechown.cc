@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1994-1999, 2001-2008 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -77,29 +78,11 @@ change_owner_help(void)
 static void
 change_owner_list(void)
 {
-    string_ty	    *project_name;
-
     trace(("change_owner_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(change_owner_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, change_owner_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_changes_in_state_mask(project_name, 1 << cstate_state_being_developed);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(change_owner_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_being_developed);
     trace(("}\n"));
 }
 
@@ -108,7 +91,6 @@ static void
 change_owner_main(void)
 {
     sub_context_ty  *scp;
-    project_ty	    *pp;
     user_ty::pointer up1;
     user_ty::pointer up2;
     cstate_ty       *cstate_data;
@@ -204,7 +186,7 @@ change_owner_main(void)
     {
 	scp = sub_context_new();
 	sub_var_set_string(scp, "Target", new_developer);
-	project_fatal(pp, scp, i18n("$target not developer"));
+	project_fatal(cid.get_pp(), scp, i18n("$target not developer"));
 	// NOTREACHED
 	sub_context_delete(scp);
     }

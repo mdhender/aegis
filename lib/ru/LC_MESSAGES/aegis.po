@@ -1,10 +1,10 @@
 #
 #       aegis - project change supervisor
-#       Copyright (C) 2002-2007 Peter Miller
+#       Copyright (C) 2002-2008 Peter Miller
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 2 of the License, or
+#       the Free Software Foundation; either version 3 of the License, or
 #       (at your option) any later version.
 #
 #       This program is distributed in the hope that it will be useful,
@@ -49,7 +49,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2007-07-21\n"
+msgstr	"PO-Revision-Date: 2008-01-09\n"
 	"Last-Translator: Alexey Voinov <voins@voins.program.ru>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=KOI8-R\n"
@@ -3799,7 +3799,7 @@ msgstr	"условие цикла должно быть логическим выражением (передано $name)"
 #       $File_Name      The name of the offending file.
 #
 msgid	"lstat $filename: $errno"
-msgstr	"$filename: $errno"
+msgstr	"lstat $filename: $errno"
 
 #
 # This fatal error message is issued when the aemt command is asked to
@@ -5333,7 +5333,7 @@ msgstr	"стандартный поток вывода"
 #       $File_Name      The name of the offending file.
 #
 msgid	"stat $filename: $errno"
-msgstr	"$filename: $errno"
+msgstr	"stat $filename: $errno"
 
 #
 # This error message is issued when a symlink fails.

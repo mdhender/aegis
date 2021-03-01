@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
+//	Copyright (C) 1999, 2001, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to deliver output to files
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -57,11 +55,11 @@ output_file::~output_file()
 }
 
 
-string_ty *
+nstring
 output_file::filename()
     const
 {
-    return file_name.get_ref();
+    return file_name;
 }
 
 
@@ -192,17 +190,10 @@ output_file::output_file(const nstring &fn, bool binary) :
 }
 
 
-output_ty *
-output_file_open(const nstring &fn, bool binary)
+output::pointer
+output_file::open(const nstring &fn, bool binary)
 {
     if (fn.empty() || fn == "-")
-	return new output_stdout();
-    return new output_file(fn, binary);
-}
-
-
-output_ty *
-output_file_open(string_ty *fn, bool binary)
-{
-    return output_file_open(nstring(fn), binary);
+	return output_stdout::create();
+    return pointer(new output_file(fn, binary));
 }

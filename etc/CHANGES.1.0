@@ -52,7 +52,7 @@ Change	State		Description
 42	completed	make sub.c do the right thing for notify commands
 43	being_		make -lib add to search path
 	integrated
-
+
 IDENTIFICATION
 	Project "aegis", build 1, change 1.
 
@@ -234,7 +234,7 @@ HISTORY
 			15:04:18 1990
 	integrate_pass	Mon Sep 17	peter
 			15:47:23 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 2, change 2.
 
@@ -289,7 +289,7 @@ HISTORY
 			18:35:19 1990
 	integrate_pass	Wed Sep 19	peter
 			13:35:11 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 3, change 3.
 
@@ -325,7 +325,7 @@ HISTORY
 			09:28:05 1990
 	integrate_pass	Thu Sep 20	peter
 			09:50:52 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 4, change 4.
 
@@ -363,7 +363,7 @@ HISTORY
 			17:48:47 1990
 	integrate_pass	Mon Sep 24	peter
 			12:02:27 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 5, change 5.
 
@@ -461,7 +461,7 @@ HISTORY
 			15:20:23 1990
 	integrate_pass	Tue Sep 25	peter
 			15:37:15 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 9, change 6.
 
@@ -576,7 +576,7 @@ HISTORY
 			15:01:20 1990
 	integrate_pass	Mon Oct	 8	peter
 			16:35:51 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 10, change 7.
 
@@ -626,7 +626,7 @@ HISTORY
 			12:13:24 1990
 	integrate_pass	Wed Oct 10	peter
 			13:32:41 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 11, change 8.
 
@@ -685,7 +685,7 @@ HISTORY
 			10:22:06 1990
 	integrate_pass	Mon Oct 22	peter
 			11:28:02 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 13, change 9.
 
@@ -740,7 +740,7 @@ HISTORY
 			16:30:32 1990
 	integrate_pass	Tue Oct 23	peter
 			17:20:35 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 14, change 10.
 
@@ -857,7 +857,7 @@ HISTORY
 			14:51:41 1990
 	integrate_pass	Thu Nov	 1	peter
 			17:11:52 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 16, change 11.
 
@@ -890,7 +890,7 @@ HISTORY
 			20:59:42 1990
 	integrate_pass	Tue Nov	 6	peter
 			21:25:47 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 15, change 12.
 
@@ -923,7 +923,7 @@ HISTORY
 			16:28:33 1990
 	integrate_pass	Sun Nov	 4	peter
 			16:39:20 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 17, change 13.
 
@@ -956,7 +956,7 @@ HISTORY
 			10:50:03 1990
 	integrate_pass	Wed Nov	 7	peter
 			11:33:33 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 18, change 14.
 
@@ -1009,7 +1009,7 @@ HISTORY
 			16:05:36 1990
 	integrate_pass	Tue Nov 13	peter
 			12:01:29 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 19, change 15.
 
@@ -1052,7 +1052,7 @@ HISTORY
 			14:51:24 1990
 	integrate_pass	Thu Nov 15	peter
 			16:14:25 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 20, change 16.
 
@@ -1103,7 +1103,7 @@ HISTORY
 			15:46:22 1990
 	integrate_pass	Thu Nov 29	peter
 			11:01:25 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 21, change 17.
 
@@ -1137,7 +1137,7 @@ HISTORY
 			13:52:52 1990
 	integrate_pass	Thu Dec 13	peter
 			15:47:15 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 23, change 18.
 
@@ -1204,7 +1204,7 @@ HISTORY
 			14:19:39 1990
 	integrate_pass	Mon Dec 17	peter
 			15:11:38 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 24, change 19.
 
@@ -1242,7 +1242,7 @@ HISTORY
 			21:29:52 1990
 	integrate_pass	Mon Dec 17	peter
 			22:46:42 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 25, change 20.
 
@@ -1288,7 +1288,7 @@ HISTORY
 			14:49:54 1990
 	integrate_pass	Tue Dec 18	peter
 			15:50:48 1990
-
+
 IDENTIFICATION
 	Project "aegis", change 21.
 
@@ -1312,7 +1312,7 @@ HISTORY
 	------		------		-----	---------
 	new_change	Mon Dec 17	peter	Elapsed time: 389.305 days.
 			21:53:25 1990
-
+
 IDENTIFICATION
 	Project "aegis", build 30, change 22.
 
@@ -1349,7 +1349,7 @@ HISTORY
 			12:38:43 1991
 	integrate_pass	Mon Mar 25	pmiller
 			13:15:25 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 26, change 23.
 
@@ -1383,7 +1383,7 @@ HISTORY
 			12:13:03 1991
 	integrate_pass	Fri Mar 15	pmiller
 			12:24:52 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 27, change 24.
 
@@ -1418,7 +1418,7 @@ HISTORY
 			15:41:37 1991
 	integrate_pass	Tue Mar 19	pmiller
 			16:04:48 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 28, change 25.
 
@@ -1460,7 +1460,7 @@ HISTORY
 			13:52:48 1991
 	integrate_pass	Fri Mar 22	pmiller
 			14:01:57 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 29, change 26.
 
@@ -1498,7 +1498,7 @@ HISTORY
 			11:48:45 1991
 	integrate_pass	Mon Mar 25	pmiller
 			11:57:08 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 31, change 27.
 
@@ -1794,7 +1794,7 @@ HISTORY
 			12:43:27 1991
 	integrate_pass	Wed Mar 27	pmiller
 			15:13:42 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 32, change 28.
 
@@ -1937,7 +1937,7 @@ HISTORY
 			16:01:03 1991
 	integrate_pass	Wed Mar 27	pmiller
 			16:12:56 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 33, change 29.
 
@@ -1970,7 +1970,7 @@ HISTORY
 			15:15:49 1991
 	integrate_pass	Sat Apr 13	pmiller
 			15:23:16 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 34, change 30.
 
@@ -2003,7 +2003,7 @@ HISTORY
 			09:49:59 1991
 	integrate_pass	Mon Apr 22	pmiller
 			09:55:01 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 35, change 31.
 
@@ -2042,7 +2042,7 @@ HISTORY
 			12:31:43 1991
 	integrate_pass	Wed Jun 12	pmiller
 			12:49:29 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 37, change 32.
 
@@ -2080,7 +2080,7 @@ HISTORY
 			13:57:08 1991
 	integrate_pass	Wed Jun 12	pmiller
 			15:25:51 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 38, change 33.
 
@@ -2113,7 +2113,7 @@ HISTORY
 			16:28:56 1991
 	integrate_pass	Wed Jun 12	pmiller
 			16:38:06 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 39, change 34.
 
@@ -2148,7 +2148,7 @@ HISTORY
 			13:31:35 1991
 	integrate_pass	Wed Aug 28	pmiller
 			14:02:58 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 40, change 35.
 
@@ -2181,7 +2181,7 @@ HISTORY
 			16:25:27 1991
 	integrate_pass	Wed Aug 28	pmiller
 			16:30:42 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 41, change 36.
 
@@ -2216,7 +2216,7 @@ HISTORY
 			11:53:07 1991
 	integrate_pass	Fri Oct 18	pmiller
 			12:17:32 1991
-
+
 IDENTIFICATION
 	Project "aegis", build 42, change 37.
 
@@ -2275,7 +2275,7 @@ HISTORY
 			15:37:12 1992
 	integrate_pass	Tue May	 5	pmiller
 			16:07:03 1992
-
+
 IDENTIFICATION
 	Project "aegis", build 43, change 38.
 
@@ -2395,7 +2395,7 @@ HISTORY
 			22:37:45 1992
 	integrate_pass	Sat May 30	pmiller
 			23:37:20 1992
-
+
 IDENTIFICATION
 	Project "aegis", build 44, change 39.
 
@@ -2462,7 +2462,7 @@ HISTORY
 			23:30:51 1992
 	integrate_pass	Wed Jun	 3	pmiller
 			22:20:12 1992
-
+
 IDENTIFICATION
 	Project "aegis", build 45, change 40.
 
@@ -2506,7 +2506,7 @@ HISTORY
 			22:03:00 1992
 	integrate_pass	Thu Jun	 4	pmiller
 			22:43:08 1992
-
+
 IDENTIFICATION
 	Project "aegis", build 46, change 41.
 
@@ -2550,7 +2550,7 @@ HISTORY
 			16:41:18 1992
 	integrate_pass	Fri Jun	 5	pmiller
 			21:41:06 1992
-
+
 IDENTIFICATION
 	Project "aegis", build 47, change 42.
 
@@ -2589,7 +2589,7 @@ HISTORY
 			23:06:49 1992
 	integrate_pass	Fri Jun	 5	pmiller
 			23:34:58 1992
-
+
 IDENTIFICATION
 	Project "aegis", build 48, change 43.
 

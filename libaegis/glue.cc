@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1995, 1997-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1993-1995, 1997-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to perform systems calls in subprocesses
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // Most of the functions in this file are only used when
 // the CONF_NO_seteuid symbol is defined in "[arch]/common/config.h".
@@ -45,7 +43,7 @@
 #include <common/ac/fcntl.h>
 #include <common/ac/unistd.h>
 #include <utime.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 //
 // Turn off the function defines in aegis/glue.h so that we can
@@ -341,28 +339,9 @@ get_string(FILE *fp)
 static void
 proxy(int rd_fd, int wr_fd)
 {
-    FILE		*command;
-    FILE		*reply = 0;
-    char		*path;
-    char		*path1;
-    char		*path2;
-    int		mode;
-    struct stat	st;
-    struct utimbuf	utb;
-    int		uid;
-    int		gid;
-    char		*buf;
-    int		max;
-    int		perm;
-    int		result;
-    int		fd;
-    long		nbytes;
-    long		nbytes2;
-    struct flock	theFlock;
-
     trace(("proxy(%d, %d)\n{\n", rd_fd, wr_fd));
     errno = 0;
-    command = fdopen(rd_fd, "r");
+    FILE *command = fdopen(rd_fd, "r");
     if (!command)
     {
 	if (!errno)
@@ -371,7 +350,7 @@ proxy(int rd_fd, int wr_fd)
     }
 
     errno = 0;
-    reply = fdopen(wr_fd, "w");
+    FILE *reply = fdopen(wr_fd, "w");
     if (!reply)
     {
 	if (!errno)
@@ -396,333 +375,393 @@ proxy(int rd_fd, int wr_fd)
 	    fatal_raw("proxy: unknown %d command (bug)", c);
 
 	case command_access:
-	    path = (char *)get_string(command);
-	    mode = get_int(command);
-	    if (access(path, mode))
-	       	result = errno;
-	    else
-	       	result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int mode = get_int(command);
+                int result = 0;
+                if (access(path, mode))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_catfile:
-	    path = (char *)get_string(command);
-	    if (catfile(path))
-	       	result = errno;
-	    else
-	       	result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int result = 0;
+                if (catfile(path))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_chmod:
-	    path = (char *)get_string(command);
-	    mode = get_int(command);
-	    if (chmod(path, mode))
-	       	result = errno;
-	    else
-	       	result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int mode = get_int(command);
+                int result = 0;
+                if (chmod(path, mode))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_chown:
-	    path = (char *)get_string(command);
-	    uid = get_int(command);
-	    gid = get_int(command);
-	    if (chown(path, uid, gid))
-	       	result = errno;
-	    else
-	       	result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int uid = get_int(command);
+                int gid = get_int(command);
+                int result = 0;
+                if (chown(path, uid, gid))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_close:
-	    fd = get_int(command);
-	    if (close(fd))
-	       	result = errno;
-	    else
-	       	result = 0;
-	    put_int(reply, result);
+            {
+                int fd = get_int(command);
+                int result = 0;
+                if (close(fd))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_copyfile:
-	    path = (char *)get_string(command);
-	    path1 = mem_copy_string(path);
-	    path = (char *)get_string(command);
-	    result = copyfile(path1, path);
-	    if (result)
-	       	result = errno;
-	    mem_free(path1);
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                char *path1 = mem_copy_string(path);
+                path = (char *)get_string(command);
+                int result = copyfile(path1, path);
+                if (result)
+                    result = errno;
+                mem_free(path1);
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_creat:
-	    path = (char *)get_string(command);
-	    mode = get_int(command);
-	    result = creat(path, mode);
-	    put_int(reply, result);
-	    if (result < 0)
-	       	put_int(reply, errno);
+            {
+                char *path = (char *)get_string(command);
+                int mode = get_int(command);
+                int result = creat(path, mode);
+                put_int(reply, result);
+                if (result < 0)
+                    put_int(reply, errno);
+            }
 	    break;
 
 	case command_getcwd:
-	    max = get_int(command);
-	    path = (char *)mem_alloc(max);
-	    if (!getcwd(path, max))
-	       	put_int(reply, errno);
-	    else
-	    {
-	       	put_int(reply, 0);
-	       	put_string(reply, path);
-	    }
-	    mem_free(path);
+            {
+                int path_max = get_int(command);
+                char *path = (char *)mem_alloc(path_max);
+                if (!getcwd(path, path_max))
+                    put_int(reply, errno);
+                else
+                {
+                    put_int(reply, 0);
+                    put_string(reply, path);
+                }
+                mem_free(path);
+            }
 	    break;
 
 	case command_fcntl:
-	    fd = get_int(command);
-	    mode = get_int(command);
-	    get_binary(command, &theFlock, sizeof(theFlock));
-	    result = fcntl(fd, mode, &theFlock);
-	    if (result)
-		result = errno;
-	    put_int(reply, result);
-	    put_binary(reply, &theFlock, sizeof(theFlock));
+            {
+                int fd = get_int(command);
+                int mode = get_int(command);
+                struct flock theFlock;
+                get_binary(command, &theFlock, sizeof(theFlock));
+                int result = fcntl(fd, mode, &theFlock);
+                if (result)
+                    result = errno;
+                put_int(reply, result);
+                put_binary(reply, &theFlock, sizeof(theFlock));
+            }
 	    break;
 
 	case command_file_compare:
-	    path = (char *)get_string(command);
-	    path1 = mem_copy_string(path);
-	    path = (char *)get_string(command);
-	    result = file_compare(path1, path);
-	    if (result < 0)
-		result = -errno;
-	    mem_free(path1);
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                char *path1 = mem_copy_string(path);
+                path = (char *)get_string(command);
+                int result = file_compare(path1, path);
+                if (result < 0)
+                    result = -errno;
+                mem_free(path1);
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_file_fingerprint:
-	    path = (char *)get_string(command);
-	    max = get_int(command);
-	    path1 = (char *)mem_alloc(max + 1);
-	    result = file_fingerprint(path, path1, max);
-	    put_int(reply, result);
-	    if (result < 0)
-		put_int(reply, errno);
-	    else
-		put_binary(reply, path1, result);
-	    mem_free(path1);
+            {
+                char *path = (char *)get_string(command);
+                int path1_max = get_int(command);
+                char *path1 = (char *)mem_alloc(path1_max + 1);
+                int result = file_fingerprint(path, path1, path1_max);
+                put_int(reply, result);
+                if (result < 0)
+                    put_int(reply, errno);
+                else
+                    put_binary(reply, path1, result);
+                mem_free(path1);
+            }
 	    break;
 
 	case command_link:
-	    path = (char *)get_string(command);
-	    path1 = mem_copy_string(path);
-	    path2 = (char *)get_string(command);
-	    result = link(path1, path2);
-	    if (result)
-		result = errno;
-	    mem_free(path1);
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                char *path1 = mem_copy_string(path);
+                char *path2 = (char *)get_string(command);
+                int result = link(path1, path2);
+                if (result)
+                    result = errno;
+                mem_free(path1);
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_lstat:
-	    path = (char *)get_string(command);
+            {
+                char *path = (char *)get_string(command);
+                struct stat st;
 #ifdef S_IFLNK
-	    result = lstat(path, &st);
+                int result = lstat(path, &st);
 #else
-	    result = stat(path, &st);
+                int result = stat(path, &st);
 #endif
-	    if (result)
-		put_int(reply, errno);
-	    else
-	    {
-		put_int(reply, 0);
-		put_binary(reply, &st, sizeof(st));
-	    }
+                if (result)
+                    put_int(reply, errno);
+                else
+                {
+                    put_int(reply, 0);
+                    put_binary(reply, &st, sizeof(st));
+                }
+            }
 	    break;
 
 	case command_lutime:
-	    path = (char *)get_string(command);
-	    get_binary(command, &utb, sizeof(utb));
+            {
+                char *path = (char *)get_string(command);
+                struct utimbuf utb;
+                get_binary(command, &utb, sizeof(utb));
 #ifdef HAVE_LUTIME
-	    result = utime(path, &utb);
-	    if (result)
-		result = errno;
+                int result = utime(path, &utb);
+                if (result)
+                    result = errno;
 #else
-	    result = EINVAL;
+                (void)path;
+                int result = EINVAL;
 #endif
-	    put_int(reply, result);
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_mkdir:
-	    path = (char *)get_string(command);
-	    mode = get_int(command);
-	    if (mkdir(path, mode))
-		result = errno;
-	    else
-		result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int mode = get_int(command);
+                int result = 0;
+                if (mkdir(path, mode))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_open:
-	    path = (char *)get_string(command);
-	    mode = get_int(command);
-	    perm = get_int(command);
-	    result = open(path, mode, perm);
-	    put_int(reply, result);
-	    if (result < 0)
-		put_int(reply, errno);
+            {
+                char *path = (char *)get_string(command);
+                int mode = get_int(command);
+                int perm = get_int(command);
+                int result = open(path, mode, perm);
+                put_int(reply, result);
+                if (result < 0)
+                    put_int(reply, errno);
+            }
 	    break;
 
 	case command_pathconf:
-	    path = (char *)get_string(command);
-	    mode = get_int(command);
+            {
+                char *path = (char *)get_string(command);
+                int mode = get_int(command);
 #ifndef _PC_NAME_MAX
-	    put_long(reply, -1L);
-	    put_int(reply, EINVAL);
+                (void)path;
+                (void)mode;
+                put_long(reply, -1L);
+                put_int(reply, EINVAL);
 #else
-	    errno = EINVAL;
-	    nbytes = pathconf(path, mode);
-	    put_long(reply, nbytes);
-	    if (nbytes < 0)
-		put_int(reply, errno);
+                errno = EINVAL;
+                long nbytes = pathconf(path, mode);
+                put_long(reply, nbytes);
+                if (nbytes < 0)
+                    put_int(reply, errno);
 #endif
+            }
 	    break;
 
 	case command_rename:
-	    path = (char *)get_string(command);
-	    path1 = mem_copy_string(path);
-	    path = (char *)get_string(command);
-	    result = rename(path1, path);
-	    if (result)
-		result = errno;
-	    mem_free(path1);
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                char *path1 = mem_copy_string(path);
+                path = (char *)get_string(command);
+                int result = rename(path1, path);
+                if (result)
+                    result = errno;
+                mem_free(path1);
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_read:
-	    fd = get_int(command);
-	    nbytes = get_long(command);
-	    buf = (char *)mem_alloc(nbytes);
-	    nbytes2 = read(fd, buf, nbytes);
-	    put_long(reply, nbytes2);
-	    if (nbytes2 > 0)
-		put_binary(reply, buf, nbytes2);
-	    else if (nbytes2 < 0)
-		put_int(reply, errno);
-	    mem_free(buf);
+            {
+                int fd = get_int(command);
+                long nbytes = get_long(command);
+                char *buf = (char *)mem_alloc(nbytes);
+                long nbytes2 = read(fd, buf, nbytes);
+                put_long(reply, nbytes2);
+                if (nbytes2 > 0)
+                    put_binary(reply, buf, nbytes2);
+                else if (nbytes2 < 0)
+                    put_int(reply, errno);
+                mem_free(buf);
+            }
 	    break;
 
 	case command_readlink:
-	    path = (char *)get_string(command);
-	    max = get_int(command);
-	    path1 = (char *)mem_alloc(max + 1);
+            {
+                char *path = (char *)get_string(command);
+                int path1_max = get_int(command);
+                char *path1 = (char *)mem_alloc(path1_max + 1);
 #ifdef S_IFLNK
-	    result = readlink(path, path1, max);
-	    put_int(reply, result);
-	    if (result < 0)
-		put_int(reply, errno);
-	    else
-		put_binary(reply, path1, result);
+                int result = readlink(path, path1, path1_max);
+                put_int(reply, result);
+                if (result < 0)
+                    put_int(reply, errno);
+                else
+                    put_binary(reply, path1, result);
 #else
-	    put_int(reply, -1);
-	    put_int(reply, EINVAL);
+                put_int(reply, -1);
+                put_int(reply, EINVAL);
 #endif
-	    mem_free(path1);
+                mem_free(path1);
+            }
 	    break;
 
 	case command_read_whole_dir:
-	    path = (char *)get_string(command);
-	    result = read_whole_dir(path, &buf, &nbytes);
-	    if (result < 0)
-		put_int(reply, errno);
-	    else
-	    {
-		put_int(reply, 0);
-		put_long(reply, nbytes);
-		put_binary(reply, buf, nbytes);
-	    }
+            {
+                char *path = (char *)get_string(command);
+                long nbytes = 0;
+                char *buf = 0;
+                int result = read_whole_dir(path, &buf, &nbytes);
+                if (result < 0)
+                    put_int(reply, errno);
+                else
+                {
+                    put_int(reply, 0);
+                    put_long(reply, nbytes);
+                    put_binary(reply, buf, nbytes);
+                }
+                // do not free *buf, or *buf[*]
+            }
 	    break;
 
 	case command_rmdir:
-	    path = (char *)get_string(command);
-	    if (rmdir(path))
-		result = errno;
-	    else
-		result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int result = 0;
+                if (rmdir(path))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_rmdir_bg:
-	    path = (char *)get_string(command);
-	    if (rmdir_bg(path))
-		result = errno;
-	    else
-		result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int result = 0;
+                if (rmdir_bg(path))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_rmdir_tree:
-	    path = (char *)get_string(command);
-	    if (rmdir_tree(path))
-		result = errno;
-	    else
-		result = 0;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int result = 0;
+                if (rmdir_tree(path))
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_stat:
-	    path = (char *)get_string(command);
-	    result = stat(path, &st);
-	    if (result)
-		put_int(reply, errno);
-	    else
-	    {
-		put_int(reply, 0);
-		put_binary(reply, &st, sizeof(st));
-	    }
+            {
+                char *path = (char *)get_string(command);
+                struct stat st;
+                int result = stat(path, &st);
+                if (result)
+                    put_int(reply, errno);
+                else
+                {
+                    put_int(reply, 0);
+                    put_binary(reply, &st, sizeof(st));
+                }
+            }
 	    break;
 
 	case command_symlink:
-	    path = (char *)get_string(command);
-	    path1 = mem_copy_string(path);
-	    path2 = (char *)get_string(command);
+            {
+                char *path = (char *)get_string(command);
+                char *path1 = mem_copy_string(path);
+                char *path2 = (char *)get_string(command);
 #ifdef S_IFLNK
-	    result = symlink(path1, path2);
-	    if (result)
-		result = errno;
+                int result = symlink(path1, path2);
+                if (result)
+                    result = errno;
 #else
-	    result = EINVAL;
+                int result = EINVAL;
 #endif
-	    mem_free(path1);
-	    put_int(reply, result);
+                mem_free(path1);
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_unlink:
-	    path = (char *)get_string(command);
-	    result = unlink(path);
-	    if (result)
-		result = errno;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                int result = unlink(path);
+                if (result)
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_utime:
-	    path = (char *)get_string(command);
-	    get_binary(command, &utb, sizeof(utb));
-	    result = utime(path, &utb);
-	    if (result)
-		result = errno;
-	    put_int(reply, result);
+            {
+                char *path = (char *)get_string(command);
+                struct utimbuf utb;
+                get_binary(command, &utb, sizeof(utb));
+                int result = utime(path, &utb);
+                if (result)
+                    result = errno;
+                put_int(reply, result);
+            }
 	    break;
 
 	case command_write:
-	    fd = get_int(command);
-	    nbytes = get_long(command);
-	    buf = (char *)mem_alloc(nbytes);
-	    get_binary(command, buf, nbytes);
-	    nbytes2 = write(fd, buf, nbytes);
-	    put_long(reply, nbytes2);
-	    if (nbytes2 < 0)
-		put_int(reply, errno);
-	    mem_free(buf);
+            {
+                int fd = get_int(command);
+                long nbytes = get_long(command);
+                char *buf = (char *)mem_alloc(nbytes);
+                get_binary(command, buf, nbytes);
+                long nbytes2 = write(fd, buf, nbytes);
+                put_long(reply, nbytes2);
+                if (nbytes2 < 0)
+                    put_int(reply, errno);
+                mem_free(buf);
+            }
 	    break;
 	}
 	fflush(reply);
@@ -1264,33 +1303,29 @@ glue_access(const char *path, int mode)
 
 
 char *
-glue_getcwd(char *buf, int max)
+glue_getcwd(char *buf, int buf_len)
 {
-    proxy_ty	*pp;
-    char		*s;
-    int		result;
-
     //
     // don't bother with the case where buf
     // is the NULL pointer, aegis never uses it.
     //
     trace(("glue_getcwd()\n{\n"));
     assert(buf);
-    pp = proxy_find();
+    proxy_ty *pp = proxy_find();
     fputc(command_getcwd, pp->command);
-    put_int(pp->command, max);
+    put_int(pp->command, buf_len);
     end_of_command(pp);
-    result = get_int(pp->reply);
+    int result = get_int(pp->reply);
+    char *s = 0;
     if (result)
     {
-	s = 0;
 	trace(("return NULL; /* errno = %d */\n", result));
 	errno = result;
     }
     else
     {
 	s = (char *)get_string(pp->reply);
-	strendcpy(buf, s, buf + max);
+	strendcpy(buf, s, buf + buf_len);
 	s = buf;
 	trace(("return \"%s\";\n", s));
     }
@@ -1300,18 +1335,15 @@ glue_getcwd(char *buf, int max)
 
 
 int
-glue_readlink(const char *path, char *buf, int max)
+glue_readlink(const char *path, char *buf, int buf_len)
 {
-    proxy_ty	*pp;
-    int		result;
-
     trace(("glue_readlink()\n{\n"));
-    pp = proxy_find();
+    proxy_ty *pp = proxy_find();
     fputc(command_readlink, pp->command);
     put_string(pp->command, path);
-    put_int(pp->command, max);
+    put_int(pp->command, buf_len);
     end_of_command(pp);
-    result = get_int(pp->reply);
+    int result = get_int(pp->reply);
     if (result < 0)
     {
 	errno = get_int(pp->reply);
@@ -2187,7 +2219,7 @@ glue_file_compare(const char *p1, const char *p2)
 
 
 int
-glue_file_fingerprint(const char *path, char *buf, int max)
+glue_file_fingerprint(const char *path, char *buf, int buf_len)
 {
     proxy_ty	*pp;
     int		result;
@@ -2196,7 +2228,7 @@ glue_file_fingerprint(const char *path, char *buf, int max)
     pp = proxy_find();
     fputc(command_file_fingerprint, pp->command);
     put_string(pp->command, path);
-    put_int(pp->command, max);
+    put_int(pp->command, buf_len);
     end_of_command(pp);
     result = get_int(pp->reply);
     if (result < 0)

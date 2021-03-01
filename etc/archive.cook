@@ -1,11 +1,11 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 1997-2007 Peter Miller
- * Copyright (C) 2006 Walter Franzini
+ * Copyright (C) 1997-2008 Peter Miller
+ * Copyright (C) 2006-2008 Walter Franzini
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,10 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+branch_version_normalized = [split "." [version_short]] 0 0;
+branch_project_minus = [project_minus];
+if [expr [word 2 [branch_version_normalized]] % 2] then
+    branch_project_minus = [project_short]-[version];
+
+
 integration-build-targets +=
         archive/change_log.txt
         archive/[project_minus].README
-        archive/[project_minus].ae
+        archive/[branch_project_minus].ae
         archive/[project_minus].faq
         archive/[project_minus].lsm
         archive/[project_minus].spec
@@ -39,7 +45,7 @@ if [find_command tardy] then
         tar-cmd = tar;
 
     integration-build-targets +=
-        archive/[project_minus].tar.gz
+        archive/[branch_project_minus].tar.gz
         ;
 
     /*
@@ -61,11 +67,11 @@ if [find_command png2ico] then
 if [find_command convert] then
     integration-build-targets += archive/favicon.ico;
 
-archive/favicon.ico: archive/[project_short].png
+archive/favicon.ico: archive/aegis2.png
 {
-    convert [resolve archive/[project_short].png] -scale 16 -gamma 2
+    convert [resolve archive/aegis2.png] -scale 16 -gamma 2
         temp16.png;
-    convert [resolve archive/[project_short].png] -scale 32 -gamma 2
+    convert [resolve archive/aegis2.png] -scale 32 -gamma 2
         temp32.png;
     png2ico [target] temp16.png temp32.png;
     rm temp16.png temp32.png;
@@ -282,18 +288,18 @@ if [find_command msgcat] then
         ;
 }
 
-archive/[project_minus].tar.gz: [source_file_order]
+archive/%.tar.gz: [source_file_order]
         set shallow
 {
-        if [exists archive/[project_minus].tar] then
-                rm archive/[project_minus].tar
+        if [exists archive/%.tar] then
+                rm archive/%.tar
                         set clearstat;
         [tar-cmd] --create --file - --dereference [resolve [source_file_order]]
                 | tardy -unu 0 -gnu 0 -una Peter -gna Miller
-                        -p [project_minus] -ms 0644 -mc 07022 -now
+                        -p % -ms 0644 -mc 07022 -now
                         [prepost "-rp=" "" [search_list]]
-                > archive/[project_minus].tar;
-        gzip -9 -v archive/[project_minus].tar;
+                > archive/%.tar;
+        gzip -9 -v archive/%.tar;
 }
 
 patch_files = [fromto %0% %0%,P [source_files] etc/CHANGES.[version_short]];
@@ -398,7 +404,7 @@ LICENSE: lib/en/cat1/aelic.1
         cat [resolve [need]] > [target];
 }
 
-archive/[project_minus].ae: [source_files] [arch]/bin/aedist
+archive/[branch_project_minus].ae: [source_files] [arch]/bin/aedist
 {
     [arch]/bin/aedist --send --entire-source -ndh
         --comp-alg\=gzip

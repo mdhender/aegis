@@ -1,10 +1,10 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2002-2007 Peter Miller
+//	Copyright (C) 1994, 1999, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate snefru fingerprints
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // Derived from code marked
 //	Daniel J. Bernstein, brnstnd@nyu.edu.
@@ -28,11 +26,12 @@
 //	No known patent problems.
 //
 
+#include <common/ac/inttypes.h>
+#include <common/ac/stdint.h>
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
 #include <common/fp/snefru.h>
-#include <common/find_sizes.h>
 
 //
 // NAME
@@ -111,7 +110,7 @@
 // Snefru 2.0's 8 standard S boxes replaced with Snefru 2.5's 16.
 //
 
-typedef uint32 snefru512_word;
+typedef uint32_t snefru512_word;
 
 #define OUTPUTBLOCKSIZE 8
 #define SBOXCOUNT	16
@@ -1235,9 +1234,9 @@ snefru512_setup(void)
 	    {
        		snefru512_rotated[rotation][idx][i] =
 		    (
-			((uint32)snefru512_sboxes[idx][i] >> (rotation * 8))
+			((uint32_t)snefru512_sboxes[idx][i] >> (rotation * 8))
 		    |
-			(uint32)
+			(uint32_t)
 			(
 			    snefru512_sboxes[idx][i] << (32 - rotation * 8)
 			)

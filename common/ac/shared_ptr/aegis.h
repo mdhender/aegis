@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_AC_SHARED_PTR_AEGIS_H
@@ -37,7 +37,7 @@ class aegis_shared_ptr
 {
 private:
     /**
-      * The reference_count instanve variable is used to remember the
+      * The reference_count instance variable is used to remember the
       * location of the reference count.  By having the reference count
       * separate from the subject, we can cope with compatible pointers,
       * not just exact pointers.
@@ -56,6 +56,7 @@ private:
       */
     T *subject;
 
+public:
     /**
       * The valid method is used to establish the correctness of the
       * internal state.  Think of it as the contract.
@@ -74,7 +75,6 @@ private:
             );
     }
 
-public:
     /**
       * The destructor.
       *
@@ -84,7 +84,37 @@ public:
       */
     ~aegis_shared_ptr()
     {
-        reset();
+        assert(valid());
+        if (reference_count)
+        {
+            --*reference_count;
+            if (*reference_count <= 0)
+            {
+                delete subject;
+                subject = 0;
+                delete reference_count;
+                reference_count = 0;
+            }
+        }
+    }
+
+    /**
+      * Swap the contents of two aegis_shared_ptr<T> objects.
+      * This method swaps the internal pointers to T.  This can be done
+      * safely without involving a reference / unreference cycle and is
+      * therefore highly efficient.
+      */
+    void
+    swap(aegis_shared_ptr &rhs)
+    {
+        assert(valid());
+        assert(rhs.valid());
+        long *temp_reference_count = reference_count;
+        T *temp_subject = subject;
+        reference_count = rhs.reference_count;
+        subject = rhs.subject;
+        rhs.reference_count = temp_reference_count;
+        rhs.subject = temp_subject;
     }
 
     /**
@@ -93,29 +123,19 @@ public:
     void
     reset()
     {
-        assert(valid());
-        if (subject)
-        {
-            --*reference_count;
-            if (*reference_count <= 0)
-            {
-                delete reference_count;
-                reference_count = 0;
-                delete subject;
-                subject = 0;
-            }
-            assert(valid());
-        }
+        // swap with a NULL pointer
+        aegis_shared_ptr tmp;
+        this->swap(tmp);
     }
 
     /**
-      * The constructor.
+      * The default constructor.
       */
     aegis_shared_ptr() :
         reference_count(0),
         subject(0)
     {
-        assert(valid);
+        assert(valid());
     }
 
     /**
@@ -130,10 +150,10 @@ public:
         reference_count(0),
         subject(0)
     {
+        assert(valid());
         if (rhs)
         {
-            reference_count = new long;
-            *reference_count = 1;
+            reference_count = new long(1);
             subject = rhs;
         }
         assert(valid());
@@ -152,6 +172,7 @@ public:
         assert(rhs.valid());
         if (rhs.subject)
         {
+            assert(rhs.reference_count);
             reference_count = rhs.reference_count;
             subject = rhs.subject;
             ++*reference_count;
@@ -159,11 +180,13 @@ public:
         assert(valid());
     }
 
+    template <class Y> friend class aegis_shared_ptr;
+
     /**
-      * The copy constructor.
+      * The compatible copy constructor.
       *
       * @param rhs
-      *     The smart pointer to be copied.
+      *     The compatable smart pointer to be copied.
       */
     template<class Y>
     aegis_shared_ptr(const aegis_shared_ptr<Y> &rhs) :
@@ -173,6 +196,7 @@ public:
         assert(rhs.valid());
         if (rhs.subject)
         {
+            assert(rhs.reference_count);
             reference_count = rhs.reference_count;
             subject = rhs.subject;
             ++*reference_count;
@@ -191,17 +215,41 @@ public:
     {
         assert(valid());
         assert(rhs.valid());
-        if (this != &rhs && subject != rhs.subject)
+        if (this != &rhs)
         {
-            reset();
-            if (rhs.subject)
-            {
-                reference_count = rhs.reference_count;
-                subject = rhs.subject;
-                ++*reference_count;
-            }
+            // In case you haven't seen the swap() technique to
+            // implement copy assignment before, here's what it does:
+            //
+            // 1) Create a temporary aegis_shared_ptr<> instance via the
+            //    copy constructor, thereby increasing the reference
+            //    count of the source object.
+            //
+            // 2) Swap the internal object pointers of *this and the
+            //    temporary aegis_shared_ptr<>.  After this step, *this
+            //    already contains the new pointer, and the old pointer
+            //    is now managed by temp.
+            //
+            // 3) The destructor of temp is executed, thereby
+            //    unreferencing the old object pointer.
+            //
+            // This technique is described in Herb Sutter's "Exceptional
+            // C++", and has a number of advantages over conventional
+            // approaches:
+            //
+            // - Code reuse by calling the copy constructor.
+            // - Strong exception safety for free.
+            // - Self assignment is handled implicitly.
+            // - Simplicity.
+            // - It just works and is hard to get wrong; i.e. you can
+            //   use it without even thinking about it to implement
+            //   copy assignment where ever the object data is managed
+            //   indirectly via a pointer, which is very common.
+            //
+            aegis_shared_ptr temp(rhs);
+            this->swap(temp);
+            assert(valid());
+            assert(rhs.valid());
         }
-        assert(valid());
         return *this;
     }
 
@@ -217,17 +265,13 @@ public:
     {
         assert(valid());
         assert(rhs.valid());
-        if (this != &rhs && subject != rhs.subject)
+        if (this != (aegis_shared_ptr *)&rhs)
         {
-            reset();
-            if (rhs)
-            {
-                reference_count = rhs.get_reference_count();
-                subject = rhs.get();
-                ++*reference_count;
-            }
+            aegis_shared_ptr tmp(rhs);
+            this->swap(tmp);
+            assert(valid());
+            assert(rhs.valid());
         }
-        assert(valid());
         return *this;
     }
 
@@ -246,8 +290,7 @@ public:
         Y *tmp = r.get();
         if (tmp)
         {
-            reference_count = new long;
-            *reference_count = 1;
+            reference_count = new long(1);
             subject = tmp;
         }
         assert(valid());
@@ -267,8 +310,7 @@ public:
         reset();
         if (tmp)
         {
-            reference_count = new long;
-            *reference_count = 1;
+            reference_count = new long(1);
             subject = tmp;
         }
         assert(valid());
@@ -301,20 +343,6 @@ public:
       */
     T *
     operator->()
-    {
-        assert(subject != 0);
-        return subject;
-    }
-
-    /**
-      * The "pointing at" operator.  Return a pointer to the object, not
-      * to the smart pointer.
-      *
-      * This is part of why it's called a "smart pointer" when it's
-      * actually neither - it *acts* like a pointer.
-      */
-    const T *
-    operator->()
         const
     {
         assert(subject != 0);
@@ -325,15 +353,6 @@ public:
       * The get method is used to obtain the pointer to the object.
       */
     T *
-    get()
-    {
-        return subject;
-    }
-
-    /**
-      * The get method is used to obtain the pointer to the object.
-      */
-    const T *
     get()
         const
     {
@@ -389,6 +408,21 @@ public:
         const
     {
         return (subject != rhs.get());
+    }
+
+    inline bool
+    operator<(aegis_shared_ptr &rhs)
+        const
+    {
+        return (subject < rhs.get());
+    }
+
+    template<class U>
+    inline bool
+    operator<(aegis_shared_ptr<U> &rhs)
+        const
+    {
+        return (subject < rhs.get());
     }
 };
 

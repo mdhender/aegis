@@ -1,10 +1,10 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1995, 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1994, 1995, 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate md5 fingerprints
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // Derived from code marked
 //	derived from RSADSI MD5 Message-Digest Algorithm
@@ -42,11 +40,12 @@
 //	documentation and/or software.
 //
 
+#include <common/ac/inttypes.h>
+#include <common/ac/stdint.h>
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
 #include <common/fp/md5.h>
-#include <common/find_sizes.h>
 
 #define MD5_HASH_LEN 16
 
@@ -98,7 +97,8 @@ static unsigned char PADDING[64] =
 //
 // ROTATE_LEFT rotates x left n bits.
 //
-#define ROTATE_LEFT(x, n) ((uint32)((x) << (n)) | ((uint32)(x) >> (32 - (n))))
+#define ROTATE_LEFT(x, n) \
+    ((uint32_t)((x) << (n)) | ((uint32_t)(x) >> (32 - (n))))
 
 //
 // FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.

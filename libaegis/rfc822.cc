@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the rfc822 class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -25,6 +23,7 @@
 #include <common/ac/time.h>
 
 #include <common/error.h> // for assert
+#include <common/mem.h>
 #include <common/nstring/accumulator.h>
 #include <common/quit.h>
 #include <common/trace.h>
@@ -513,7 +512,7 @@ rfc822::load_from_file(const nstring &filename)
 
 
 void
-rfc822::store(output_ty &dest)
+rfc822::store(output::pointer dest)
 {
     nstring_list names;
     database.keys(names);
@@ -537,20 +536,20 @@ rfc822::store(output_ty &dest)
 	while (cp < end)
 	{
 	    unsigned char c = *cp++;
-	    dest << c;
+	    dest->fputc(c);
 	    if (c == '\n' && *cp != ' ' && *cp != '\t')
-		dest << ' ';
+		dest->fputc(' ');
 	}
-	dest << '\n';
+	dest->fputc('\n');
     }
-    dest << '\n';
+    dest->fputc('\n');
 }
 
 
 void
 rfc822::store_to_file(const nstring &filename)
 {
-    output_file os(filename);
+    output::pointer os = output_file::text_open(filename);
     store(os);
 }
 

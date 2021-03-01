@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -22,7 +22,7 @@
 #include <common/ac/string.h>
 #include <common/ac/time.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/error.h>
 #include <common/progname.h>
@@ -33,6 +33,7 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
 #include <libaegis/common.h>
@@ -84,36 +85,11 @@ develop_begin_help(void)
 static void
 develop_begin_list(void)
 {
-    string_ty       *project_name;
-
     trace(("develop_begin_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(develop_begin_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, develop_begin_usage);
-            continue;
-        }
-        arglex();
-    }
-    list_changes_in_state_mask
-    (
-        project_name,
-        1 << cstate_state_awaiting_development
-    );
-    if (project_name)
-        str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(develop_begin_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_awaiting_development);
     trace(("}\n"));
 }
 

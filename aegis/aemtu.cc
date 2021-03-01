@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -19,28 +19,30 @@
 
 #include <common/ac/stdio.h>
 
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/files.h>
-#include <aegis/aemtu.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
-#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
-#include <common/error.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
-#include <libaegis/project/file.h>
 #include <libaegis/project.h>
-#include <common/quit.h>
-#include <common/str_list.h>
+#include <libaegis/project/file.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
+
+#include <aegis/aemtu.h>
 
 
 static void
@@ -76,47 +78,11 @@ make_transparent_undo_help(void)
 static void
 make_transparent_undo_list(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-
     trace(("make_transparent_undo_list()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(make_transparent_undo_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		make_transparent_undo_usage
-	    );
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, make_transparent_undo_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_change_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(make_transparent_undo_usage);
+    list_change_files(cid, 0);
     trace(("}\n"));
 }
 
@@ -578,7 +544,8 @@ make_transparent_undo_main(void)
     //
     // Repair symlinks (etc) is necessary.
     //
-    change_maintain_symlinks_to_baseline(cp, up);
+    bool undoing = true;
+    change_maintain_symlinks_to_baseline(cp, up, undoing);
 
     bool recent_integration = cp->run_project_file_command_needed();
     if (recent_integration)

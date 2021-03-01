@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2007 Peter Miller
+//	Copyright (C) 2001-2008 Peter Miller
 //      Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -1080,7 +1080,7 @@ project_file_roll_forward::get(const nstring &filename)
 file_event_list::pointer
 project_file_roll_forward::get(string_ty *filename)
 {
-    return get(nstring(str_copy(filename)));
+    return get(nstring(filename));
 }
 
 
@@ -1254,14 +1254,7 @@ file_event *
 project_file_roll_forward::get_last(const nstring &filename)
 {
     trace(("project_file_roll_forward::get_last(%s)\n{\n", filename.c_str()));
-    nstring uuid(filename_to_uuid.query(filename));
-    if (!uuid)
-    {
-	trace(("return NULL;\n"));
-	trace(("}\n"));
-	return 0;
-    }
-    file_event_list::pointer felp = uuid_to_felp.get(uuid);
+    file_event_list::pointer felp = get(filename);
     if (!felp || felp->empty())
     {
 	trace(("return NULL;\n"));
@@ -1279,7 +1272,27 @@ project_file_roll_forward::get_last(const nstring &filename)
 file_event *
 project_file_roll_forward::get_last(string_ty *filename)
 {
-    return get_last(nstring(str_copy(filename)));
+    return get_last(nstring(filename));
+}
+
+
+file_event *
+project_file_roll_forward::get_last(fstate_src_ty *src)
+{
+    trace(("project_file_roll_forward::get_last_by_uuid(%s)\n{\n",
+        src->file_name->str_text));
+    file_event_list::pointer felp = get(src);
+    if (!felp || felp->empty())
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+
+    file_event *result = felp->back();
+    trace(("return %08lX (%08lX)\n", (long)result, (long)result->get_src()));
+    trace(("}\n"));
+    return result;
 }
 
 
@@ -1329,7 +1342,7 @@ project_file_roll_forward::get_older(const nstring &filename)
 file_event *
 project_file_roll_forward::get_older(string_ty *filename)
 {
-    return get_older(nstring(str_copy(filename)));
+    return get_older(nstring(filename));
 }
 
 

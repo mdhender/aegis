@@ -1,7 +1,7 @@
 #
 #       aegis - project change supervisor
 #       Copyright (C) 2003 Free Software Foundation, Inc.
-#       Copyright (C) 2005-2007 Peter Miller
+#       Copyright (C) 2005-2008 Peter Miller
 #
 # Mesajele în limba românã pentru aegis.
 #
@@ -10,7 +10,7 @@
 #
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
-#       published by the Free Software Foundation; either version 2 of
+#       published by the Free Software Foundation; either version 3 of
 #       the License, or (at your option) any later version.
 #
 #       This program is distributed in the hope that it will be useful,
@@ -30,7 +30,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2007-07-21\n"
+msgstr	"PO-Revision-Date: 2008-01-09\n"
 	"Last-Translator: Laurentiu Buzdugan <buzdugan@voyager.net>\n"
 	"Language-Team: Romanian <translation-team-ro@lists.sourceforge."
 	"net>\n"
@@ -4362,7 +4362,7 @@ msgstr	"loop condition must be boolean (was given $name)"
 #       $File_Name      The name of the offending file.
 #
 msgid	"lstat $filename: $errno"
-msgstr	"$filename: $errno"
+msgstr	"lstat $filename: $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -6160,7 +6160,7 @@ msgstr	"the standard output"
 #       $File_Name      The name of the offending file.
 #
 msgid	"stat $filename: $errno"
-msgstr	"$filename: $errno"
+msgstr	"stat $filename: $errno"
 
 #
 # This error message is issued when a symlink fails.

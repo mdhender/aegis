@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2007 Peter Miller
+//	Copyright (C) 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -27,15 +27,15 @@
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
 #include <libaegis/cstate.h>
+#include <libaegis/emit/brief_descri.h>
+#include <libaegis/emit/edit_number.h>
 #include <libaegis/file/event.h>
 #include <libaegis/file/event/list.h>
+#include <libaegis/http.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/project.h>
 
-#include <aeget/emit/brief_descri.h>
-#include <aeget/emit/edit_number.h>
 #include <aeget/get/file/history.h>
-#include <aeget/http.h>
 
 
 void
@@ -43,7 +43,7 @@ get_file_history(change::pointer master_cp, string_ty *a_filename,
     string_list_ty *modifier)
 {
     trace(("get_file_history()\n{\n"));
-    nstring filename(str_copy(a_filename));
+    nstring filename(a_filename);
     bool detailed = false;
     bool all = false;
     if (filename == ".")

@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001-2007 Peter Miller
+//      Copyright (C) 2001-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -20,7 +20,7 @@
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/mem.h>
 #include <common/progname.h>
@@ -31,6 +31,7 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
@@ -83,32 +84,11 @@ review_begin_help(void)
 static void
 review_begin_list(void)
 {
-    string_ty       *project_name;
-    int             mask;
-    project_ty      *pp;
-
     trace(("review_begin_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(review_begin_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, review_begin_usage);
-            continue;
-        }
-        arglex();
-    }
-    mask = 1 << cstate_state_awaiting_review;
+    change_identifier cid;
+    cid.command_line_parse_rest(review_begin_usage);
+    int mask = 1 << cstate_state_awaiting_review;
 
     //
     // It's messy.  Depending on the "develop end action" project
@@ -120,28 +100,17 @@ review_begin_list(void)
     // command", which is usually used to send email (or news)
     // to other reviewers and thus avoid duplicating effort.
     //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    pp->bind_existing();
     if
     (
-        project_develop_end_action_get(pp)
+        project_develop_end_action_get(cid.get_pp())
     ==
         pattr_develop_end_action_goto_being_reviewed
     )
     {
         mask |= 1 << cstate_state_being_reviewed;
     }
-    project_free(pp);
 
-    list_changes_in_state_mask(project_name, mask);
-    // FIXME: do this to aerp and aerf as well
-    if (project_name)
-        str_free(project_name);
+    list_changes_in_state_mask(cid, mask);
     trace(("}\n"));
 }
 

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 1999, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/base64.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_BASE64_H
@@ -24,17 +22,23 @@
 
 #include <libaegis/output.h>
 
-class output_base64_ty:
-    public output_ty
+/**
+  * The output_base64 class is used to represent the processing
+  * necessary to MIME BASE64 encode an output stream.
+  */
+class output_base64:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_base64_ty();
+    virtual ~output_base64();
 
+private:
     /**
-      * The constructor.
+      * The constructor.  It's private on purpose, use the "create"
+      * class method instead.
       *
       * \param deeper
       *     The deeper output, the place this filter writes the filtered
@@ -43,10 +47,25 @@ public:
       *     Wherther or not to delete the deeper output in this
       *     instance's destructor.
       */
-    output_base64_ty(output_ty *deeper, bool delete_deeper);
+    output_base64(const output::pointer &deeper);
 
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * \param deeper
+      *     The deeper output, the place this filter writes the filtered
+      *     output.
+      * \param delete_deeper
+      *     Wherther or not to delete the deeper output in this
+      *     instance's destructor.
+      */
+    static pointer create(const output::pointer &deeper);
+
+protected:
     // See base class for documentation.
-    string_ty* filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -71,14 +90,7 @@ private:
       * The deeper instance variable is used to remember the deeper
       * output to which this filter writes its filtered output.
       */
-    output_ty *deeper;
-
-    /**
-      * The delete_deeper instance variable is used to remember whether
-      * or not the deeper output stream should be deleted in this
-      * instance's destructor.
-      */
-    bool delete_deeper;
+    output::pointer deeper;
 
     /**
       * The residual_value instance variable is used to remember the
@@ -112,23 +124,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    output_base64_ty();
+    output_base64();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_base64_ty(const output_base64_ty &);
+    output_base64(const output_base64 &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_base64_ty operator=(const output_base64_ty &);
+    output_base64 operator=(const output_base64 &);
 };
-
-inline DEPRECATED output_ty *
-output_base64(output_ty *deeper, bool delete_deeper)
-{
-    return new output_base64_ty(deeper, delete_deeper);
-}
 
 #endif // LIBAEGIS_OUTPUT_BASE64_H

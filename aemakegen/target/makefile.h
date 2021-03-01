@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2007 Peter Miller;
+//	Copyright (C) 2006-2008 Peter Miller;
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License,
-//      version 2, as published by the Free Software Foundation.
+//      version 3, as published by the Free Software Foundation.
 //
 //	This program is distributed in the hope that it will be useful,
 //	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef MAKEGEN_TARGET_MAKEFILE_H
@@ -41,6 +41,9 @@ public:
     target_makefile();
 
 protected:
+    // See base class for documentation.
+    void preprocess(const nstring &filename);
+
     // See base class for documentation.
     void begin();
 
@@ -80,13 +83,59 @@ private:
     bool seen_c_plus_plus;
     symtab<int> dir_table;
     nstring_list clean_files;
+    nstring_list dist_clean_files;
     nstring_list programs;
     nstring_list test_files;
     nstring_list man_files;
-    nstring_list all;
+
+    /**
+      * The all_bin instance variable is used to remember the list of
+      * executable files to be constructed by the "all" target.
+      */
+    nstring_list all_bin;
+
+    /**
+      * The all_doc instance variable is used to remember the list of
+      * documentation files to be constructed by the "all" target.
+      */
+    nstring_list all_doc;
+
     nstring_list install_bin;
     symtab<nstring_list> object_list;
+
+    /**
+      * The have_groff instance variable is used to remember whether or
+      * not we have seen GROFF mentioned in the configure.ac file.  If
+      * this is the case, we emit more rules which use groff.
+      */
     bool have_groff;
+
+    /**
+      * The have_soelim instance variable is used to remember whether or
+      * not we have seen SOELIM mentioned in the configure.ac file.  If
+      * this is the case, we emit rules which use soelim to pre-process
+      * the man files before installing them, otherwise man files are
+      * install as-is.
+      */
+    bool have_soelim;
+
+    nstring objext;
+    nstring libext;
+    nstring exeext;
+
+    bool seen_datadir;
+    nstring_list install_datadir;
+
+    bool seen_libdir;
+    nstring_list install_libdir;
+
+    bool seen_yacc;
+
+    /**
+      * The install_script instance variable is used to remember whether
+      * or not a script has been seen.
+      */
+    bool install_script;
 
     void recursive_mkdir(const nstring &a_src_dir, const nstring &a_dst_dir,
 	const nstring &flavor = "datadir");

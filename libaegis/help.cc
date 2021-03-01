@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2002-2007 Peter Miller
+//	Copyright (C) 1991-1997, 1999, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,28 +13,26 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to provide consistent treatment of -Help options
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
 #include <common/ac/unistd.h>
 
-#include <libaegis/arglex2.h>
 #include <common/env.h>
+#include <common/libdir.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
-#include <common/libdir.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
 #include <libaegis/output/pager.h>
-#include <common/progname.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
-#include <common/str_list.h>
 
 
 static void

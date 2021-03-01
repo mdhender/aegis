@@ -685,6 +685,7 @@ MSGFMT
 MSGCAT
 GROFF
 SOELIM
+REFER
 AWK
 MANPATH_PROG
 LOCALE_PROG
@@ -1292,6 +1293,11 @@ fi
 if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
+
+Optional Features:
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --disable-largefile     omit support for large files
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3525,6 +3531,53 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
+
+if test "$YACC" = "yacc" -a ! -f /usr/bin/yacc
+then
+  { echo "$as_me:$LINENO: result:
+        You must have the bison command installed in order
+        to build Aegis.
+        Homepage: http://www.gnu.org/software/bison/" >&5
+echo "${ECHO_T}
+        You must have the bison command installed in order
+        to build Aegis.
+        Homepage: http://www.gnu.org/software/bison/" >&6; }
+  OK=no
+  if apt-get --version > /dev/null 2> /dev/null; then
+    { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install bison
+    " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install bison
+    " >&6; }
+    OK=yes
+  fi
+  if yum --version > /dev/null 2> /dev/null; then
+    { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install bison
+    " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install bison
+    " >&6; }
+    OK=yes
+  fi
+  if test "$OK" != "yes"; then
+    { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        bison package.
+    " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        bison package.
+    " >&6; }
+  fi
+  exit 1
+fi
+
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -4490,6 +4543,482 @@ fi
 
 
 
+{ echo "$as_me:$LINENO: checking for _LARGEFILE_SOURCE value needed for large files" >&5
+echo $ECHO_N "checking for _LARGEFILE_SOURCE value needed for large files... $ECHO_C" >&6; }
+if test "${ac_cv_sys_largefile_source+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  while :; do
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <sys/types.h> /* for off_t */
+     #include <stdio.h>
+int
+main ()
+{
+int (*fp) (FILE *, off_t, int) = fseeko;
+     return fseeko (stdin, 0, 0) && fp (stdin, 0, 0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_sys_largefile_source=no; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#define _LARGEFILE_SOURCE 1
+#include <sys/types.h> /* for off_t */
+     #include <stdio.h>
+int
+main ()
+{
+int (*fp) (FILE *, off_t, int) = fseeko;
+     return fseeko (stdin, 0, 0) && fp (stdin, 0, 0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_sys_largefile_source=1; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+  ac_cv_sys_largefile_source=unknown
+  break
+done
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_sys_largefile_source" >&5
+echo "${ECHO_T}$ac_cv_sys_largefile_source" >&6; }
+case $ac_cv_sys_largefile_source in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _LARGEFILE_SOURCE $ac_cv_sys_largefile_source
+_ACEOF
+;;
+esac
+rm -f conftest*
+
+# We used to try defining _XOPEN_SOURCE=500 too, to work around a bug
+# in glibc 2.1.3, but that breaks too many other things.
+# If you want fseeko and ftello with glibc, upgrade to a fixed glibc.
+if test $ac_cv_sys_largefile_source != unknown; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_FSEEKO 1
+_ACEOF
+
+fi
+
+# Check whether --enable-largefile was given.
+if test "${enable_largefile+set}" = set; then
+  enableval=$enable_largefile;
+fi
+
+if test "$enable_largefile" != no; then
+
+  { echo "$as_me:$LINENO: checking for special C compiler options needed for large files" >&5
+echo $ECHO_N "checking for special C compiler options needed for large files... $ECHO_C" >&6; }
+if test "${ac_cv_sys_largefile_CC+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_sys_largefile_CC=no
+     if test "$GCC" != yes; then
+       ac_save_CC=$CC
+       while :; do
+	 # IRIX 6.2 and later do not support large files by default,
+	 # so use the C compiler's -n32 option if that helps.
+	 cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+	 rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext
+	 CC="$CC -n32"
+	 rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_sys_largefile_CC=' -n32'; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext
+	 break
+       done
+       CC=$ac_save_CC
+       rm -f conftest.$ac_ext
+    fi
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_sys_largefile_CC" >&5
+echo "${ECHO_T}$ac_cv_sys_largefile_CC" >&6; }
+  if test "$ac_cv_sys_largefile_CC" != no; then
+    CC=$CC$ac_cv_sys_largefile_CC
+  fi
+
+  { echo "$as_me:$LINENO: checking for _FILE_OFFSET_BITS value needed for large files" >&5
+echo $ECHO_N "checking for _FILE_OFFSET_BITS value needed for large files... $ECHO_C" >&6; }
+if test "${ac_cv_sys_file_offset_bits+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  while :; do
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_sys_file_offset_bits=no; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#define _FILE_OFFSET_BITS 64
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_sys_file_offset_bits=64; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_file_offset_bits=unknown
+  break
+done
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_sys_file_offset_bits" >&5
+echo "${ECHO_T}$ac_cv_sys_file_offset_bits" >&6; }
+case $ac_cv_sys_file_offset_bits in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _FILE_OFFSET_BITS $ac_cv_sys_file_offset_bits
+_ACEOF
+;;
+esac
+rm -f conftest*
+  if test $ac_cv_sys_file_offset_bits = unknown; then
+    { echo "$as_me:$LINENO: checking for _LARGE_FILES value needed for large files" >&5
+echo $ECHO_N "checking for _LARGE_FILES value needed for large files... $ECHO_C" >&6; }
+if test "${ac_cv_sys_large_files+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  while :; do
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_sys_large_files=no; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#define _LARGE_FILES 1
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_sys_large_files=1; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_large_files=unknown
+  break
+done
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_sys_large_files" >&5
+echo "${ECHO_T}$ac_cv_sys_large_files" >&6; }
+case $ac_cv_sys_large_files in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _LARGE_FILES $ac_cv_sys_large_files
+_ACEOF
+;;
+esac
+rm -f conftest*
+  fi
+fi
+
+
+
 { echo "$as_me:$LINENO: checking for wschr" >&5
 echo $ECHO_N "checking for wschr... $ECHO_C" >&6; }
 if test "${ac_cv_func_wschr+set}" = set; then
@@ -4650,6 +5179,80 @@ fi
 
 
 
+{ echo "$as_me:$LINENO: checking for iconv in -liconv" >&5
+echo $ECHO_N "checking for iconv in -liconv... $ECHO_C" >&6; }
+if test "${ac_cv_lib_iconv_iconv+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-liconv  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char iconv ();
+int
+main ()
+{
+return iconv ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_iconv_iconv=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_iconv_iconv=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_iconv_iconv" >&5
+echo "${ECHO_T}$ac_cv_lib_iconv_iconv" >&6; }
+if test $ac_cv_lib_iconv_iconv = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBICONV 1
+_ACEOF
+
+  LIBS="-liconv $LIBS"
+
+else
+  unset ac_cv_func_iconv
+fi
+
+
+
 { echo "$as_me:$LINENO: checking for gettext in -lintl" >&5
 echo $ECHO_N "checking for gettext in -lintl... $ECHO_C" >&6; }
 if test "${ac_cv_lib_intl_gettext+set}" = set; then
@@ -4719,7 +5322,83 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 else
+
+    unset ac_cv_func_gettext
+
+{ echo "$as_me:$LINENO: checking for gettext in -lgettext" >&5
+echo $ECHO_N "checking for gettext in -lgettext... $ECHO_C" >&6; }
+if test "${ac_cv_lib_gettext_gettext+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgettext  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gettext ();
+int
+main ()
+{
+return gettext ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_gettext_gettext=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_gettext_gettext=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_gettext_gettext" >&5
+echo "${ECHO_T}$ac_cv_lib_gettext_gettext" >&6; }
+if test $ac_cv_lib_gettext_gettext = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGETTEXT 1
+_ACEOF
+
+  LIBS="-lgettext $LIBS"
+
+else
   unset ac_cv_func_gettext
+fi
+
+
+
 fi
 
 
@@ -4882,9 +5561,9 @@ fi
 fi
 
 
-{ echo "$as_me:$LINENO: checking for main in -lm" >&5
-echo $ECHO_N "checking for main in -lm... $ECHO_C" >&6; }
-if test "${ac_cv_lib_m_main+set}" = set; then
+{ echo "$as_me:$LINENO: checking for (atan2) in -lm" >&5
+echo $ECHO_N "checking for (atan2) in -lm... $ECHO_C" >&6; }
+if test "${ac_cv_lib_m__atan2_+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -4896,11 +5575,17 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char (atan2) ();
 int
 main ()
 {
-return main ();
+return (atan2) ();
   ;
   return 0;
 }
@@ -4923,21 +5608,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_m_main=yes
+  ac_cv_lib_m__atan2_=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_m_main=no
+	ac_cv_lib_m__atan2_=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_m_main" >&5
-echo "${ECHO_T}$ac_cv_lib_m_main" >&6; }
-if test $ac_cv_lib_m_main = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_m__atan2_" >&5
+echo "${ECHO_T}$ac_cv_lib_m__atan2_" >&6; }
+if test $ac_cv_lib_m__atan2_ = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBM 1
 _ACEOF
@@ -4947,9 +5632,9 @@ _ACEOF
 fi
 
 
-{ echo "$as_me:$LINENO: checking for main in -lrx" >&5
-echo $ECHO_N "checking for main in -lrx... $ECHO_C" >&6; }
-if test "${ac_cv_lib_rx_main+set}" = set; then
+{ echo "$as_me:$LINENO: checking for regcomp in -lrx" >&5
+echo $ECHO_N "checking for regcomp in -lrx... $ECHO_C" >&6; }
+if test "${ac_cv_lib_rx_regcomp+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -4961,11 +5646,17 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char regcomp ();
 int
 main ()
 {
-return main ();
+return regcomp ();
   ;
   return 0;
 }
@@ -4988,21 +5679,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_rx_main=yes
+  ac_cv_lib_rx_regcomp=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_rx_main=no
+	ac_cv_lib_rx_regcomp=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_rx_main" >&5
-echo "${ECHO_T}$ac_cv_lib_rx_main" >&6; }
-if test $ac_cv_lib_rx_main = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_rx_regcomp" >&5
+echo "${ECHO_T}$ac_cv_lib_rx_regcomp" >&6; }
+if test $ac_cv_lib_rx_regcomp = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBRX 1
 _ACEOF
@@ -5012,9 +5703,9 @@ _ACEOF
 fi
 
 
-{ echo "$as_me:$LINENO: checking for main in -lz" >&5
-echo $ECHO_N "checking for main in -lz... $ECHO_C" >&6; }
-if test "${ac_cv_lib_z_main+set}" = set; then
+{ echo "$as_me:$LINENO: checking for gzopen in -lz" >&5
+echo $ECHO_N "checking for gzopen in -lz... $ECHO_C" >&6; }
+if test "${ac_cv_lib_z_gzopen+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -5026,11 +5717,17 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gzopen ();
 int
 main ()
 {
-return main ();
+return gzopen ();
   ;
   return 0;
 }
@@ -5053,21 +5750,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_z_main=yes
+  ac_cv_lib_z_gzopen=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_z_main=no
+	ac_cv_lib_z_gzopen=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_z_main" >&5
-echo "${ECHO_T}$ac_cv_lib_z_main" >&6; }
-if test $ac_cv_lib_z_main = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_z_gzopen" >&5
+echo "${ECHO_T}$ac_cv_lib_z_gzopen" >&6; }
+if test $ac_cv_lib_z_gzopen = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBZ 1
 _ACEOF
@@ -5077,19 +5774,48 @@ _ACEOF
 else
 
     { echo "$as_me:$LINENO: result:
-        You must have the zlib compression library (http://www.zlib.net/)
-        installed in order to build Aegis.  Please install zlib, and
-        then re-run this ./configure script.  If you are using a package
-        based install, you will need the zlib-devel package in addition
-        to the zlib package.
-    " >&5
+        You must have the zlib compression library installed in order
+        to build Aegis.  Please install zlib, and then re-run this
+        ./configure script.
+        Homepage: http://www.zlib.net/" >&5
 echo "${ECHO_T}
-        You must have the zlib compression library (http://www.zlib.net/)
-        installed in order to build Aegis.  Please install zlib, and
-        then re-run this ./configure script.  If you are using a package
-        based install, you will need the zlib-devel package in addition
-        to the zlib package.
-    " >&6; }
+        You must have the zlib compression library installed in order
+        to build Aegis.  Please install zlib, and then re-run this
+        ./configure script.
+        Homepage: http://www.zlib.net/" >&6; }
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install zlib1g-dev
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install zlib1g-dev
+      " >&6; }
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install zlib-devel
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install zlib-devel
+      " >&6; }
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        zlib-devel package in addition to the zlib package.
+      " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        zlib-devel package in addition to the zlib package.
+      " >&6; }
+    fi
     exit 1
 
 
@@ -5167,19 +5893,48 @@ _ACEOF
 else
 
     { echo "$as_me:$LINENO: result:
-        You must have the BZip2 compression library (http://www.bzip.org/)
-        installed in order to build Aegis.  Please install the bzip2
-        library, and then re-run this ./configure script.  If you are
-        using a package based install, you will need the bzip2-devel
-        package in addition to the bzip2 package.
-    " >&5
+        You must have the BZip2 compression library installed in order
+        to build Aegis.  Please install the bzip2 library, and then
+        re-run this ./configure script.
+        Homepage: http://www.bzip.org/" >&5
 echo "${ECHO_T}
-        You must have the BZip2 compression library (http://www.bzip.org/)
-        installed in order to build Aegis.  Please install the bzip2
-        library, and then re-run this ./configure script.  If you are
-        using a package based install, you will need the bzip2-devel
-        package in addition to the bzip2 package.
-    " >&6; }
+        You must have the BZip2 compression library installed in order
+        to build Aegis.  Please install the bzip2 library, and then
+        re-run this ./configure script.
+        Homepage: http://www.bzip.org/" >&6; }
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install libbz2-dev bzip2
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install libbz2-dev bzip2
+      " >&6; }
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install libbz2-devel bzip2
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install libbz2-devel bzip2
+      " >&6; }
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        bzip2-devel package in addition to the bzip package.
+      " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        bzip2-devel package in addition to the bzip package.
+      " >&6; }
+    fi
     exit 1
 
 
@@ -5325,12 +6080,59 @@ _ACEOF
 
   LIBS="-lmagic $LIBS"
 
+else
+
+    { echo "$as_me:$LINENO: result:
+        You make like to have the file magic number library installed in
+        order to build Aegis.  This will result is superior Content-Type
+        information being inserted at several points in the code.
+        Homepage: http://www.darwinsys.com/file/" >&5
+echo "${ECHO_T}
+        You make like to have the file magic number library installed in
+        order to build Aegis.  This will result is superior Content-Type
+        information being inserted at several points in the code.
+        Homepage: http://www.darwinsys.com/file/" >&6; }
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install libmagic-dev
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install libmagic-dev
+      " >&6; }
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install libmagic-devel
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install libmagic-devel
+      " >&6; }
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        libmagic-devel package in addition to the libmagic package.
+      " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        libmagic-devel package in addition to the libmagic package.
+      " >&6; }
+    fi
+
+
 fi
 
 
-{ echo "$as_me:$LINENO: checking for main in -lclu" >&5
-echo $ECHO_N "checking for main in -lclu... $ECHO_C" >&6; }
-if test "${ac_cv_lib_clu_main+set}" = set; then
+{ echo "$as_me:$LINENO: checking for clu_info in -lclu" >&5
+echo $ECHO_N "checking for clu_info in -lclu... $ECHO_C" >&6; }
+if test "${ac_cv_lib_clu_clu_info+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -5342,11 +6144,17 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char clu_info ();
 int
 main ()
 {
-return main ();
+return clu_info ();
   ;
   return 0;
 }
@@ -5369,21 +6177,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_clu_main=yes
+  ac_cv_lib_clu_clu_info=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_clu_main=no
+	ac_cv_lib_clu_clu_info=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_clu_main" >&5
-echo "${ECHO_T}$ac_cv_lib_clu_main" >&6; }
-if test $ac_cv_lib_clu_main = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_clu_clu_info" >&5
+echo "${ECHO_T}$ac_cv_lib_clu_clu_info" >&6; }
+if test $ac_cv_lib_clu_clu_info = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBCLU 1
 _ACEOF
@@ -5393,6 +6201,58 @@ _ACEOF
 fi
 
 
+STATIC_LIBS=
+
+for ac_prog in curl-config
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_CURL_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CURL_CONFIG"; then
+  ac_cv_prog_CURL_CONFIG="$CURL_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_CURL_CONFIG="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+CURL_CONFIG=$ac_cv_prog_CURL_CONFIG
+if test -n "$CURL_CONFIG"; then
+  { echo "$as_me:$LINENO: result: $CURL_CONFIG" >&5
+echo "${ECHO_T}$CURL_CONFIG" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+  test -n "$CURL_CONFIG" && break
+done
+
+
+if test -n "$CURL_CONFIG"
+then
+    CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
+    CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
+    STATIC_LIBS="`$CURL_CONFIG --libs`"
+fi
+
 
 { echo "$as_me:$LINENO: checking for curl_multi_perform in -lcurl" >&5
 echo $ECHO_N "checking for curl_multi_perform in -lcurl... $ECHO_C" >&6; }
@@ -5400,7 +6260,7 @@ if test "${ac_cv_lib_curl_curl_multi_perform+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lcurl  $LIBS"
+LIBS="-lcurl $STATIC_LIBS $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -5462,8 +6322,104 @@ _ACEOF
 
   LIBS="-lcurl $LIBS"
 
+else
+
+    { echo "$as_me:$LINENO: result:
+        You make like to have the multi-protocol file transfer library
+        installed in order to build Aegis.
+        Homepage: http://curl.haxx.se/" >&5
+echo "${ECHO_T}
+        You make like to have the multi-protocol file transfer library
+        installed in order to build Aegis.
+        Homepage: http://curl.haxx.se/" >&6; }
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        One of the following commands may be used to install it:
+        sudo apt-get install libcurl4-gnutls-dev
+        sudo apt-get install libcurl3-dev
+      " >&5
+echo "${ECHO_T}
+        One of the following commands may be used to install it:
+        sudo apt-get install libcurl4-gnutls-dev
+        sudo apt-get install libcurl3-dev
+      " >&6; }
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install libcurl-devel
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install libcurl-devel
+      " >&6; }
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        libcurl-devel package in addition to the libcurl package.
+      " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        libcurl-devel package in addition to the libcurl package.
+      " >&6; }
+    fi
+
 fi
 
+
+for ac_prog in xml2-config
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_XML2_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$XML2_CONFIG"; then
+  ac_cv_prog_XML2_CONFIG="$XML2_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_XML2_CONFIG="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+XML2_CONFIG=$ac_cv_prog_XML2_CONFIG
+if test -n "$XML2_CONFIG"; then
+  { echo "$as_me:$LINENO: result: $XML2_CONFIG" >&5
+echo "${ECHO_T}$XML2_CONFIG" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+  test -n "$XML2_CONFIG" && break
+done
+
+
+if test -n "$XML2_CONFIG"
+then
+    CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
+    CXXFLAGS="$CXXFLAGS `$XML2_CONFIG --cflags`"
+    STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
+fi
 
 
 { echo "$as_me:$LINENO: checking for xmlTextReaderRead in -lxml2" >&5
@@ -5472,7 +6428,8 @@ if test "${ac_cv_lib_xml2_xmlTextReaderRead+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
+LIBS="-lxml2 $STATIC_LIBS
+ $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -5537,157 +6494,65 @@ _ACEOF
 else
 
     { echo "$as_me:$LINENO: result:
-        You must have the Gnome libxml2 library (http://xmlsoft.org/)
-        installed in order to build Aegis.  Please install the
-        xml2 library version 1.8.17 or later, and then re-run this
-        ./configure script.  You do not have to install the rest of
-        Gnome, the library can be used on its own.  If you are using a
-        package based install, you will need the libxml2-devel package
-        in addition to the libxml2 package.
-    " >&5
+        You must have the Gnome libxml2 library installed in order to
+        build Aegis.  Please install the xml2 library version 1.8.17 or
+        later, and then re-run this ./configure script.  You do not have
+        to install the rest of Gnome, the library can be used on its own.
+        Homepage: http://xmlsoft.org/" >&5
 echo "${ECHO_T}
-        You must have the Gnome libxml2 library (http://xmlsoft.org/)
-        installed in order to build Aegis.  Please install the
-        xml2 library version 1.8.17 or later, and then re-run this
-        ./configure script.  You do not have to install the rest of
-        Gnome, the library can be used on its own.  If you are using a
-        package based install, you will need the libxml2-devel package
-        in addition to the libxml2 package.
-    " >&6; }
+        You must have the Gnome libxml2 library installed in order to
+        build Aegis.  Please install the xml2 library version 1.8.17 or
+        later, and then re-run this ./configure script.  You do not have
+        to install the rest of Gnome, the library can be used on its own.
+        Homepage: http://xmlsoft.org/" >&6; }
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install libxml2-dev
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install libxml2-dev
+      " >&6; }
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install libxml2-devel
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install libxml2-devel
+      " >&6; }
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        libxml2-devel package in addition to the libxml2 package.
+      " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        libxml2-devel package in addition to the libxml2 package.
+      " >&6; }
+    fi
     exit 1
 
-
 fi
 
 
-#
-# Look for static libraries necessary with -lcurl, but we don't need
-# them when we are using shared libraries.
-#
-STATIC_LIBS=
-if test "$ac_cv_lib_curl_curl_multi_perform" = "yes"
-then
-    for ac_prog in curl-config
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_CURL_CONFIG+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CURL_CONFIG"; then
-  ac_cv_prog_CURL_CONFIG="$CURL_CONFIG" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_CURL_CONFIG="$ac_prog"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-CURL_CONFIG=$ac_cv_prog_CURL_CONFIG
-if test -n "$CURL_CONFIG"; then
-  { echo "$as_me:$LINENO: result: $CURL_CONFIG" >&5
-echo "${ECHO_T}$CURL_CONFIG" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-  test -n "$CURL_CONFIG" && break
-done
-
-
-    if test -n "$CURL_CONFIG"
-    then
-        CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
-        CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
-        STATIC_LIBS="`$CURL_CONFIG --libs`"
-    fi
-fi
-
-#
-# Look for static libraries necessary with -lxml2, but we don't need
-# them when we are using shared libraries.
-#
-if test "$ac_cv_lib_xml2_xmlTextReaderRead" = "yes"
-then
-    for ac_prog in xml2-config
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_XML2_CONFIG+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$XML2_CONFIG"; then
-  ac_cv_prog_XML2_CONFIG="$XML2_CONFIG" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_XML2_CONFIG="$ac_prog"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-XML2_CONFIG=$ac_cv_prog_XML2_CONFIG
-if test -n "$XML2_CONFIG"; then
-  { echo "$as_me:$LINENO: result: $XML2_CONFIG" >&5
-echo "${ECHO_T}$XML2_CONFIG" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-  test -n "$XML2_CONFIG" && break
-done
-
-
-    if test -n "$XML2_CONFIG"
-    then
-        CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
-        CXXFLAGS="$CXXFLAGS `$XML2_CONFIG --cflags`"
-        STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
-    fi
-fi
-
-#
-# Arrange for a special make variable for static builds.
-#
 
 
 
-{ echo "$as_me:$LINENO: checking for main in -luuid" >&5
-echo $ECHO_N "checking for main in -luuid... $ECHO_C" >&6; }
-if test "${ac_cv_lib_uuid_main+set}" = set; then
+{ echo "$as_me:$LINENO: checking for uuid_hash in -lc" >&5
+echo $ECHO_N "checking for uuid_hash in -lc... $ECHO_C" >&6; }
+if test "${ac_cv_lib_c_uuid_hash+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-luuid  $LIBS"
+LIBS="-lc  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -5695,11 +6560,17 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char uuid_hash ();
 int
 main ()
 {
-return main ();
+return uuid_hash ();
   ;
   return 0;
 }
@@ -5722,26 +6593,241 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_uuid_main=yes
+  ac_cv_lib_c_uuid_hash=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_uuid_main=no
+	ac_cv_lib_c_uuid_hash=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_main" >&5
-echo "${ECHO_T}$ac_cv_lib_uuid_main" >&6; }
-if test $ac_cv_lib_uuid_main = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_c_uuid_hash" >&5
+echo "${ECHO_T}$ac_cv_lib_c_uuid_hash" >&6; }
+if test $ac_cv_lib_c_uuid_hash = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBC 1
+_ACEOF
+
+  LIBS="-lc $LIBS"
+
+else
+
+{ echo "$as_me:$LINENO: checking for uuid_load in -luuid" >&5
+echo $ECHO_N "checking for uuid_load in -luuid... $ECHO_C" >&6; }
+if test "${ac_cv_lib_uuid_uuid_load+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-luuid  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char uuid_load ();
+int
+main ()
+{
+return uuid_load ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_uuid_uuid_load=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_uuid_uuid_load=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_uuid_load" >&5
+echo "${ECHO_T}$ac_cv_lib_uuid_uuid_load" >&6; }
+if test $ac_cv_lib_uuid_uuid_load = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBUUID 1
 _ACEOF
 
   LIBS="-luuid $LIBS"
+
+fi
+
+
+{ echo "$as_me:$LINENO: checking for uuid_generate in -luuid" >&5
+echo $ECHO_N "checking for uuid_generate in -luuid... $ECHO_C" >&6; }
+if test "${ac_cv_lib_uuid_uuid_generate+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-luuid  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char uuid_generate ();
+int
+main ()
+{
+return uuid_generate ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_uuid_uuid_generate=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_uuid_uuid_generate=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_uuid_generate" >&5
+echo "${ECHO_T}$ac_cv_lib_uuid_uuid_generate" >&6; }
+if test $ac_cv_lib_uuid_uuid_generate = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBUUID 1
+_ACEOF
+
+  LIBS="-luuid $LIBS"
+
+fi
+
+
+{ echo "$as_me:$LINENO: checking for uuid_hash in -luuid" >&5
+echo $ECHO_N "checking for uuid_hash in -luuid... $ECHO_C" >&6; }
+if test "${ac_cv_lib_uuid_uuid_hash+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-luuid  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char uuid_hash ();
+int
+main ()
+{
+return uuid_hash ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_uuid_uuid_hash=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_uuid_uuid_hash=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_uuid_hash" >&5
+echo "${ECHO_T}$ac_cv_lib_uuid_uuid_hash" >&6; }
+if test $ac_cv_lib_uuid_uuid_hash = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBUUID 1
+_ACEOF
+
+  LIBS="-luuid $LIBS"
+
+fi
+
 
 fi
 
@@ -5812,7 +6898,6 @@ fi
 
   test -n "$MSGFMT" && break
 done
-test -n "$MSGFMT" || MSGFMT="msgfmt"
 
 for ac_prog in gmsgcat msgcat
 do
@@ -5940,7 +7025,49 @@ fi
   test -n "$SOELIM" && break
 done
 
-for ac_prog in gawk nawk awk
+for ac_prog in grefer refer
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_REFER+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$REFER"; then
+  ac_cv_prog_REFER="$REFER" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_REFER="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+REFER=$ac_cv_prog_REFER
+if test -n "$REFER"; then
+  { echo "$as_me:$LINENO: result: $REFER" >&5
+echo "${ECHO_T}$REFER" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+  test -n "$REFER" && break
+done
+
+for ac_prog in gawk mawk nawk awk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -5981,7 +7108,6 @@ fi
 
   test -n "$AWK" && break
 done
-test -n "$AWK" || AWK="awk"
 
 
 for ac_prog in manpath
@@ -6524,9 +7650,9 @@ cat >>conftest.$ac_ext <<_ACEOF
 #include <sys/ioctl.h>
 int main(int argc, char **argv){
 #ifdef TIOCGWINSZ
-struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
+struct winsize window_size; window_size.ws_col = 0; return(window_size.ws_col);
 #else
-exit(1);
+return(1);
 #endif
 }
 
@@ -6588,9 +7714,9 @@ cat >>conftest.$ac_ext <<_ACEOF
 #include <termios.h>
 int main(int argc, char **argv){
 #ifdef TIOCGWINSZ
-struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
+struct winsize window_size; window_size.ws_col = 0; return(window_size.ws_col);
 #else
-exit(1);
+return(1);
 #endif
 }
 
@@ -6657,7 +7783,7 @@ int test(char*,...);
 int test(fmt)char*fmt;{va_list ap;char*a;int x;
 va_start(ap,fmt);a=va_arg(ap,char*);x=(a!=foo);va_end(ap);return x;}
 int main(int argc, char **argv){
-exit(test("",foo));}
+return(test("",foo));}
 
 _ACEOF
 rm -f conftest$ac_exeext
@@ -6716,7 +7842,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #include <stdlib.h>
 int main(){mblen(0,0);
-exit(mblen("OK", 2) != 1);}
+return(mblen("OK", 2) != 1);}
 _ACEOF
 rm -f conftest$ac_exeext
 if { (ac_try="$ac_link"
@@ -6795,7 +7921,9 @@ fi
 
 
 
+
 for ac_header in \
+        bits/c++locale.h     \
         boost/shared_ptr.hpp \
         bzlib.h              \
         crypt.h              \
@@ -8321,7 +9449,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 #include <wctype.h>
 #endif
 int main(int argc, char **argv){
-exit(iswprint('a') == 0);}
+return(iswprint('a') == 0);}
 
 _ACEOF
 rm -f conftest$ac_exeext
@@ -8379,9 +9507,9 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 int main(int argc, char **argv) {
 #ifdef HAVE_GETPGRP
-if (getpgrp(32767) == getpgrp(0)) exit(2);
+if (getpgrp(32767) == getpgrp(0)) return(2);
 #endif
-exit(0); }
+return(0); }
 
 _ACEOF
 rm -f conftest$ac_exeext
@@ -8437,12 +9565,18 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+
 #include <pwd.h>
+#include <stdio.h>
+
 int
 main ()
 {
+
 struct passwd *pw;
-pw = getpwnam("root"); printf("%s\n", pw->pw_comment);
+pw = getpwnam("root");
+printf("%s\n", pw->pw_comment);
+
   ;
   return 0;
 }
@@ -8489,6 +9623,7 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
+#include <stdio.h>
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
 #include <time.h>
@@ -8622,12 +9757,13 @@ echo $ECHO_N "checking for owner of aegis library files... $ECHO_C" >&6; }
     if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
     if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
-#line 8625 "configure"
+#line 9760 "configure"
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 main(int ac, char **av){struct stat st;
-if (stat(*(av+1),&st)!=0)exit(1);
-printf("%d\n", ac>2?st.st_gid:st.st_uid);exit(0);}
+if (stat(*(av+1),&st)!=0)return(1);
+printf("%d\n", ac>2?st.st_gid:st.st_uid);return(0);}
 EOF
 	if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
@@ -8658,7 +9794,7 @@ EOF
 echo "${ECHO_T}$AEGIS_UID, $AEGIS_GID" >&6; }
 fi
 
-if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
+if test "$ac_cv_lib_z_gzopen" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   { echo "$as_me:$LINENO: result:
 	You need to install the GNU zlib compression
@@ -8689,24 +9825,29 @@ echo "${ECHO_T}
         script." >&6; }
 fi
 
-UUID_ok=no
+UUID_OK=0
 if test "$ac_cv_func_uuid_generate" = "yes" \
     -a "$ac_cv_func_uuid_unparse" = "yes"
 then
-     UUID_ok=yes
- fi
- if test "$ac_cv_func_uuid_create" = "yes" \
+    UUID_OK=1
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
     -a "$ac_cv_func_uuid_make" = "yes" \
     -a "$ac_cv_func_uuid_export" = "yes"
- then
-     UUID_ok=yes
- fi
- if test "$ac_cv_func_uuid_create" = "yes" \
+then
+    UUID_OK=1
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
     -a "$ac_cv_func_uuid_to_string" = "yes"
- then
-     UUID_ok=yes
- fi
-if test "$UUID_ok" != "yes"
+then
+    UUID_OK=1
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define UUID_OK $UUID_OK
+_ACEOF
+
+if test "$UUID_OK" != "1"
 then
   { echo "$as_me:$LINENO: result:
 	You may wish to install one of the following UUID
@@ -8720,23 +9861,88 @@ echo "${ECHO_T}
 	 * e2fsprogs implementation
 	 * OSSP implementation
 	Don't Panic: this library is optional, nothing will break." >&6; }
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        ONE of the following commands may be used to install it:
+        sudo apt-get install uuid-dev
+        sudo apt-get install libossp-uuid-dev
+      " >&5
+echo "${ECHO_T}
+        ONE of the following commands may be used to install it:
+        sudo apt-get install uuid-dev
+        sudo apt-get install libossp-uuid-dev
+      " >&6; }
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install uuid-devel
+      " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install uuid-devel
+      " >&6; }
+      OK=yes
+    fi
 fi
 
+po_files=no
 if test "$ac_cv_func_gettext" = "yes"
 then
-  po_files=yes
-else
-  po_files=no
+  if test -n "$MSGFMT"
+  then
+    po_files=yes
+  fi
+fi
+if test "$po_files" = "no"
+then
   { echo "$as_me:$LINENO: result:
 	Aegis will emit much more useful error messages if
-	you install GNU \`\`gettext'' and then re-run this
+	you install GNU Gettext and then re-run this
 	./configure script.
-	Remember to use \`\`rm config.cache'' before you do." >&5
+	Remember to use \`\`rm config.cache'' before you do.
+        Homepage: http://www.gnu.org/software/gettext/" >&5
 echo "${ECHO_T}
 	Aegis will emit much more useful error messages if
-	you install GNU \`\`gettext'' and then re-run this
+	you install GNU Gettext and then re-run this
 	./configure script.
-	Remember to use \`\`rm config.cache'' before you do." >&6; }
+	Remember to use \`\`rm config.cache'' before you do.
+        Homepage: http://www.gnu.org/software/gettext/" >&6; }
+  OK=no
+  if apt-get --version > /dev/null 2> /dev/null; then
+    { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install gettext
+    " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install gettext
+    " >&6; }
+    OK=yes
+  fi
+  if yum --version > /dev/null 2> /dev/null; then
+    { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install gettext
+    " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install gettext
+    " >&6; }
+    OK=yes
+  fi
+  if test "$OK" != "yes"; then
+    { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        gettext package.
+    " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        gettext package.
+    " >&6; }
+  fi
 fi
 
 
@@ -8756,6 +9962,18 @@ echo "${ECHO_T}
 	See the BUILDING file for details." >&6; }
     GROFF=
   fi
+else
+  GROFF=
+fi
+if test -n "$REFER"
+then
+    : nothing
+else
+    # It turns out that somehow Debian systems get a half-assed groff
+    # install from build-essential.  Looking for "refer" is a better
+    # test of the completeness of the groff install than either
+    # "groff" or "soelim" on their own, plus it's needed for the build.
+    GROFF=
 fi
 if test -n "$GROFF"
 then
@@ -8767,14 +9985,49 @@ else
 	be formatted and installed if you first install
 	GNU Groff 1.15 or later and then re-run this ./configure script.
 	Remember to use \`\`rm config.cache'' before you do.
-" >&5
+        Homepage: http://www.gnu.org/software/groff/" >&5
 echo "${ECHO_T}
 	The Aegis documentation set and manual pages will
 	be formatted and installed if you first install
 	GNU Groff 1.15 or later and then re-run this ./configure script.
 	Remember to use \`\`rm config.cache'' before you do.
-" >&6; }
+        Homepage: http://www.gnu.org/software/groff/" >&6; }
+  OK=no
+  if apt-get --version > /dev/null 2> /dev/null; then
+    { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo apt-get install groff
+    " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo apt-get install groff
+    " >&6; }
+    OK=yes
+  fi
+  if yum --version > /dev/null 2> /dev/null; then
+    { echo "$as_me:$LINENO: result:
+        The following command may be used to install it:
+        sudo yum install groff
+    " >&5
+echo "${ECHO_T}
+        The following command may be used to install it:
+        sudo yum install groff
+    " >&6; }
+    OK=yes
+  fi
+  if test "$OK" != "yes"; then
+    { echo "$as_me:$LINENO: result:
+        If you are using a package based install, you will need the
+        groff package.
+    " >&5
+echo "${ECHO_T}
+        If you are using a package based install, you will need the
+        groff package.
+    " >&6; }
+  fi
 fi
+
+
 if test "$HAVE_GNU_DIFF" != "yes"
 then
   { echo "$as_me:$LINENO: result:
@@ -8792,7 +10045,6 @@ echo "${ECHO_T}
 	Remember to use \`\`rm config.cache'' before you do.
 " >&6; }
 fi
-
 
 case $host in
      i?86-*-gnu*)
@@ -9513,6 +10765,7 @@ MSGFMT!$MSGFMT$ac_delim
 MSGCAT!$MSGCAT$ac_delim
 GROFF!$GROFF$ac_delim
 SOELIM!$SOELIM$ac_delim
+REFER!$REFER$ac_delim
 AWK!$AWK$ac_delim
 MANPATH_PROG!$MANPATH_PROG$ac_delim
 LOCALE_PROG!$LOCALE_PROG$ac_delim
@@ -9538,7 +10791,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 95; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 96; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -9557,7 +10810,7 @@ fi
 
 cat >>$CONFIG_STATUS <<_ACEOF
 cat >"\$tmp/subs-1.sed" <<\CEOF$ac_eof
-/@[a-zA-Z_][a-zA-Z_0-9]*@/!b end
+/@[a-zA-Z_][a-zA-Z_0-9]*@/!b
 _ACEOF
 sed '
 s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g
@@ -9570,8 +10823,6 @@ N; s/^.*\n//; s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g; b n
 ' >>$CONFIG_STATUS <conf$$subs.sed
 rm -f conf$$subs.sed
 cat >>$CONFIG_STATUS <<_ACEOF
-:end
-s/|#_!!_#|//g
 CEOF$ac_eof
 _ACEOF
 
@@ -9819,7 +11070,7 @@ s&@abs_builddir@&$ac_abs_builddir&;t t
 s&@abs_top_builddir@&$ac_abs_top_builddir&;t t
 s&@INSTALL@&$ac_INSTALL&;t t
 $ac_datarootdir_hack
-" $ac_file_inputs | sed -f "$tmp/subs-1.sed" >$tmp/out
+" $ac_file_inputs | sed -f "$tmp/subs-1.sed" | sed 's/|#_!!_#|//g' >$tmp/out
 
 test -z "$ac_datarootdir_hack$ac_datarootdir_seen" &&
   { ac_out=`sed -n '/\${datarootdir}/p' "$tmp/out"`; test -n "$ac_out"; } &&

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,26 +16,25 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: functions to manipulate execute_retcs
-//
 
+#include <common/ac/stdio.h>
 #include <common/ac/errno.h>
-#include <common/ac/grp.h>
-#include <common/ac/pwd.h>
 #include <common/ac/signal.h>
 #include <common/ac/stddef.h>
 #include <common/ac/unistd.h>
 
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/env.h>
 #include <common/error.h>
+#include <common/trace.h>
+#include <libaegis/getgr_cache.h>
+#include <libaegis/getpw_cache.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
 #include <libaegis/os/interrupt.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 
 
@@ -70,14 +69,14 @@ who_and_where(int uid, int gid, const nstring &dir)
 	sub_context_ty sc;
 
 	last_uid = uid;
-	struct passwd *pw = getpwuid(uid);
+	struct passwd *pw = getpwuid_cached(uid);
 	if (pw)
 	    sc.var_set_format("Name1", "\"%s\"", pw->pw_name);
 	else
 	    sc.var_set_long("Name1", uid);
 
 	last_gid = gid;
-	struct group *gr = getgrgid(gid);
+	struct group *gr = getgrgid_cached(gid);
 	if (gr)
 	    sc.var_set_format("Name2", "\"%s\"", gr->gr_name);
 	else
@@ -108,6 +107,12 @@ os_execute_retcode(const nstring &cmd, int flags, const nstring &dir)
     nstring cmd2 = cmd;
     if (!(flags & OS_EXEC_FLAG_SILENT) && cmd.size() > MAX_CMD_RPT)
 	cmd2 = nstring::format("%.*s...", MAX_CMD_RPT - 3, cmd.c_str());
+
+    //
+    // Remember the user name, so we can set the environment variable.
+    // We do this before the fork, so it will be cached for next time.
+    //
+    (void)getpwuid_cached(uid);
 
     //
     // fork to get a process to do the command
@@ -161,6 +166,22 @@ os_execute_retcode(const nstring &cmd, int flags, const nstring &dir)
         trace(("child\n"));
 	env_set_page();
 
+        //
+        // Set the user name to match the UID
+        // (we cached it before the fork)
+        //
+        {
+            struct passwd *pw = getpwuid_cached(uid);
+            if (pw)
+            {
+                env_set("USER", pw->pw_name);
+                env_set("LOGIN", pw->pw_name);
+                env_set("USERNAME", pw->pw_name);
+                env_set("LOGNAME", pw->pw_name);
+                env_set("HOME", pw->pw_dir);
+            }
+        }
+
 	//
 	// Redirect stdin from a broken pipe.
 	// (Don't redirect stdin if not logging, for manual tests.)
@@ -188,7 +209,7 @@ os_execute_retcode(const nstring &cmd, int flags, const nstring &dir)
 	if (!(flags & OS_EXEC_FLAG_SILENT))
 	{
             sub_context_ty sc;
-	    sc.var_set_string("Message", cmd);
+	    sc.var_set_string("MeSsaGe", cmd);
 	    sc.error_intl("$message");
 	}
 

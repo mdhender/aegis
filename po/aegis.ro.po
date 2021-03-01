@@ -1,7 +1,7 @@
 #
 #       aegis - project change supervisor
 #       Copyright (C) 2003 Free Software Foundation, Inc.
-#       Copyright (C) 2005-2007 Peter Miller
+#       Copyright (C) 2005-2008 Peter Miller
 #
 # Mesajele în limba românã pentru aegis.
 #
@@ -10,7 +10,7 @@
 #
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
-#       published by the Free Software Foundation; either version 2 of
+#       published by the Free Software Foundation; either version 3 of
 #       the License, or (at your option) any later version.
 #
 #       This program is distributed in the hope that it will be useful,
@@ -31,8 +31,8 @@
 #
 msgid ""
 msgstr ""
-"POT-Creation-Date: Mon Aug 13 18:19:25 EST 2007\n"
-"PO-Revision-Date: 2007-07-21\n"
+"POT-Creation-Date: Mon Mar 10 08:53:38 EST 2008\n"
+"PO-Revision-Date: 2008-01-09\n"
 "Last-Translator: Laurentiu Buzdugan <buzdugan@voyager.net>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -59,7 +59,7 @@ msgstr "the $name environment variable must be a positive decimal number"
 #
 #       $Name           The -UUid switch
 #
-#: libaegis/help.cc:448
+#: libaegis/help.cc:446
 #, fuzzy
 msgid "$Name needs an uuid"
 msgstr "The $Name option needs to be given a valid UUID"
@@ -71,7 +71,7 @@ msgstr "The $Name option needs to be given a valid UUID"
 #
 #       $Name           The option name
 #
-#: libaegis/help.cc:436
+#: libaegis/help.cc:434
 #, fuzzy
 msgid "$Name needs url"
 msgstr "The $Name option needs to be given a valid URL"
@@ -85,8 +85,8 @@ msgstr "The $Name option needs to be given a valid URL"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:430 aegis/aeib.cc:1084 aegis/aeib.cc:1114 aegis/aerb.cc:362
-#: aegis/aerb.cc:387 aegis/aerp.cc:489 aegis/aerp.cc:513
+#: aegis/aede.cc:416 aegis/aeib.cc:1070 aegis/aeib.cc:1100 aegis/aerb.cc:331
+#: aegis/aerb.cc:356 aegis/aerp.cc:469 aegis/aerp.cc:493
 #, fuzzy
 msgid "$filename altered"
 msgstr "file \"$filename\" has been altered"
@@ -107,7 +107,7 @@ msgstr "file \"$filename\" attributes changed"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aenf.cc:589
+#: aegis/aenf.cc:559
 #, fuzzy
 msgid "$filename bad nf type"
 msgstr ""
@@ -178,7 +178,7 @@ msgstr "test \"$filename\" on baseline passed (it must fail)"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aet.cc:1006
+#: aegis/aet.cc:976
 #, fuzzy
 msgid "$filename being removed"
 msgstr "file \"$filename\" is being removed"
@@ -192,7 +192,7 @@ msgstr "file \"$filename\" is being removed"
 #       $Outstanding    A list of outstanding architectures to be built,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aede.cc:982
+#: aegis/aede.cc:968
 #, fuzzy
 msgid "$filename changed after build"
 msgstr ""
@@ -208,7 +208,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:576 aegis/aede.cc:591
+#: aegis/aede.cc:562 aegis/aede.cc:577
 #, fuzzy
 msgid "$filename changed after diff"
 msgstr ""
@@ -221,7 +221,7 @@ msgstr ""
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
-#: aegis/aed.cc:1535
+#: aegis/aed.cc:1504
 #, fuzzy
 msgid "$filename diff3ed"
 msgstr ""
@@ -258,7 +258,7 @@ msgstr "test \"$filename\" failed on $architecture"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:860 aegis/aemv.cc:263 aegis/aenf.cc:718 aegis/aent.cc:478
+#: aegis/aede.cc:846 aegis/aemv.cc:234 aegis/aenf.cc:688 aegis/aent.cc:449
 #, fuzzy
 msgid "$filename in baseline"
 msgstr "file \"$filename\" already exists in the project"
@@ -270,7 +270,7 @@ msgstr "file \"$filename\" already exists in the project"
 #
 #       $File_Name      The offending file name.
 #
-#: aegis/aecp.cc:1593
+#: aegis/aecp.cc:1566
 #, fuzzy
 msgid "$filename is built"
 msgstr "file \"$filename\" is built, it may not be copied into a change"
@@ -283,7 +283,7 @@ msgstr "file \"$filename\" is built, it may not be copied into a change"
 #
 #     $File_Name      The offending file name.
 #
-#: aegis/aede.cc:888
+#: aegis/aede.cc:874
 #, fuzzy
 msgid "$filename is insulation"
 msgstr ""
@@ -295,7 +295,7 @@ msgstr ""
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
-#: aegis/aed.cc:1533
+#: aegis/aed.cc:1502
 #, fuzzy
 msgid "$filename merged"
 msgstr ""
@@ -310,7 +310,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/history/trash.cc:92
+#: libaegis/change/history/trash.cc:90
 #, fuzzy
 msgid "$filename modified by history tool"
 msgstr "the history tool modified the \"$filename\" source file"
@@ -327,7 +327,7 @@ msgstr "the history tool modified the \"$filename\" source file"
 #       $Mode_Old       The current mode of the directory (optional).
 #       $Mode_New       The desirable mode of the directory (optional).
 #
-#: libaegis/os/ck_path_trav.cc:137
+#: libaegis/os/ck_path_trav.cc:135
 #, fuzzy
 msgid "$filename needs permissions $mode_change"
 msgstr ""
@@ -372,7 +372,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:484 aegis/aede.cc:557
+#: aegis/aede.cc:470 aegis/aede.cc:543
 #, fuzzy
 msgid "$filename not found"
 msgstr "file \"$filename\" not found"
@@ -384,7 +384,7 @@ msgstr "file \"$filename\" not found"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aet.cc:996 aegis/aet.cc:1074 aegis/aet.cc:1871
+#: aegis/aet.cc:966 aegis/aet.cc:1044 aegis/aet.cc:1841
 #, fuzzy
 msgid "$filename not test"
 msgstr "file \"$filename\" is not a test"
@@ -444,7 +444,7 @@ msgstr "test \"$filename\" skipped on $architecture"
 #
 #       $File_Name      The offending file.
 #
-#: aegis/aede.cc:326 aegis/aede.cc:335 aegis/aeip.cc:623
+#: aegis/aede.cc:312 aegis/aede.cc:321 aegis/aeip.cc:589
 #, fuzzy
 msgid "$filename unchanged"
 msgstr ""
@@ -458,13 +458,13 @@ msgstr ""
 #
 #       $File_Name      The offending command line argument.
 #
-#: aefind/cmdline.y:255 aefind/cmdline.y:256 aegis/aeb.cc:437
-#: aegis/aecp.cc:517 aegis/aecp.cc:1409 aegis/aecpu.cc:359 aegis/aed.cc:311
-#: aegis/aed.cc:1030 aegis/aemt.cc:400 aegis/aemtu.cc:346 aegis/aemv.cc:570
-#: aegis/aemv.cc:607 aegis/aemvu.cc:336 aegis/aenf.cc:492 aegis/aenfu.cc:364
-#: aegis/aent.cc:415 aegis/aentu.cc:380 aegis/aerm.cc:418 aegis/aermu.cc:397
-#: aegis/aet.cc:905 aegis/aet.cc:1771 aels/main.cc:373 aels/main.cc:374
-#: libaegis/change/file/resolve_name.cc:116
+#: aefind/cmdline.y:256 aefind/cmdline.y:257 aegis/aeb.cc:419
+#: aegis/aecp.cc:490 aegis/aecp.cc:1382 aegis/aecpu.cc:328 aegis/aed.cc:280
+#: aegis/aed.cc:999 aegis/aemt.cc:366 aegis/aemtu.cc:312 aegis/aemv.cc:541
+#: aegis/aemv.cc:578 aegis/aemvu.cc:301 aegis/aenf.cc:462 aegis/aenfu.cc:330
+#: aegis/aent.cc:386 aegis/aentu.cc:346 aegis/aerm.cc:384 aegis/aermu.cc:363
+#: aegis/aet.cc:875 aegis/aet.cc:1741 aels/main.cc:373 aels/main.cc:374
+#: libaegis/change/file/resolve_name.cc:114
 #, fuzzy
 msgid "$filename unrelated"
 msgstr ""
@@ -506,7 +506,7 @@ msgstr ""
 #       $File_Name      The filename containg the message
 #       $Line_Number    The line number of the message
 #
-#: libaegis/sub.cc:473
+#: libaegis/sub.cc:471
 #, fuzzy
 msgid "$filename: $linenumber: empty $${} substitution"
 msgstr "$filename: $linenumber: empty $${} substitution"
@@ -524,7 +524,7 @@ msgstr "$filename: $linenumber: empty $${} substitution"
 #       $Number         The number of unused substitution variables.
 #                       (Optional)
 #
-#: libaegis/sub.cc:1096
+#: libaegis/sub.cc:1094
 #, fuzzy
 msgid ""
 "$filename: $linenumber: in substitution \"$message\" found unused variables"
@@ -545,7 +545,7 @@ msgstr ""
 #       $Name           The name of the unused substitution variable.
 #                       (optional)
 #
-#: libaegis/sub.cc:1070
+#: libaegis/sub.cc:1068
 #, fuzzy
 msgid ""
 "$filename: $linenumber: in substitution \"$message\" variable \"$name\" "
@@ -567,7 +567,7 @@ msgstr ""
 #       $Name           The name of the offending substitution.
 #       $Message        What was wrong with it.
 #
-#: libaegis/sub.cc:504 libaegis/sub.cc:527
+#: libaegis/sub.cc:502 libaegis/sub.cc:525
 #, fuzzy
 msgid "$filename: $linenumber: substitution $${$name} failed: $message"
 msgstr "$filename: $linenumber: substitution $${$name} failed: $message"
@@ -580,7 +580,7 @@ msgstr "$filename: $linenumber: substitution $${$name} failed: $message"
 #       $File_Name      The filename containg the message
 #       $Line_Number    The line number of the message
 #
-#: libaegis/sub.cc:880
+#: libaegis/sub.cc:878
 #, fuzzy
 msgid "$filename: $linenumber: unterminated $${} \\ sequence"
 msgstr "$filename: $linenumber: unterminated $${} \\ sequence"
@@ -593,7 +593,7 @@ msgstr "$filename: $linenumber: unterminated $${} \\ sequence"
 #       $File_Name      The filename containg the message
 #       $Line_Number    The line number of the message
 #
-#: libaegis/sub.cc:841
+#: libaegis/sub.cc:839
 #, fuzzy
 msgid "$filename: $linenumber: unterminated $${} quotes"
 msgstr "$filename: $linenumber: unterminated $${} quotes"
@@ -603,7 +603,7 @@ msgstr "$filename: $linenumber: unterminated $${} quotes"
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub.cc:808
+#: libaegis/sub.cc:806
 #, fuzzy
 msgid "$filename: $linenumber: unterminated $${} substitution"
 msgstr "$filename: $linenumber: unterminated $${} substitution"
@@ -614,10 +614,10 @@ msgstr "$filename: $linenumber: unterminated $${} substitution"
 #       $File_Name      The name of the file being read or parsed.
 #       $Message        The error message, formed previously.
 #
-#: aeimport/format/rcs/lex.cc:115 aeimport/format/sccs/lex.cc:71
-#: libaegis/aer/pos.cc:124 libaegis/input/fatal_error.cc:33
-#: libaegis/meta_lex.cc:703 libaegis/xmltextread.cc:153
-#: libaegis/xmltextread.cc:212 libaegis/xmltextread.cc:265
+#: aeimport/format/rcs/lex.cc:113 aeimport/format/sccs/lex.cc:69
+#: libaegis/aer/pos.cc:124 libaegis/input/fatal_error.cc:31
+#: libaegis/meta_lex.cc:701 libaegis/xmltextread.cc:151
+#: libaegis/xmltextread.cc:210 libaegis/xmltextread.cc:263
 msgid "$filename: $message"
 msgstr "$filename: $message"
 
@@ -628,7 +628,7 @@ msgstr "$filename: $message"
 #
 #       $File_Name      The name of the offending file
 #
-#: libaegis/change/pconf/get.cc:666
+#: libaegis/change/pconf/get.cc:811
 #, fuzzy
 msgid "$filename: arch needs name and pattern"
 msgstr ""
@@ -657,7 +657,7 @@ msgstr ""
 #       $Number1        The checksum in the history header.
 #       $Number2        The checksum calculated when reading the data.
 #
-#: libaegis/input/verify_check.cc:64
+#: libaegis/input/verify_check.cc:62
 #, fuzzy
 msgid "$filename: checksum mismatch ($number1 != $number2)"
 msgstr "$filename: checksum mismatch ($number1 != $number2)"
@@ -671,23 +671,23 @@ msgstr "$filename: checksum mismatch ($number1 != $number2)"
 #                       absolute path, but not always.
 #       $FieLD_Name     The name of the absent field.
 #
-#: libaegis/attrlistveri.cc:49 libaegis/attrlistveri.cc:64
-#: libaegis/change/attributes/verify.cc:38
-#: libaegis/change/attributes/verify.cc:49
+#: libaegis/attrlistveri.cc:47 libaegis/attrlistveri.cc:62
+#: libaegis/change/attributes/verify.cc:36
+#: libaegis/change/attributes/verify.cc:47
 #: libaegis/change/build/run_dev_com.cc:53
-#: libaegis/change/build/run_int_com.cc:56 libaegis/change/cstate/get.cc:204
+#: libaegis/change/build/run_int_com.cc:54 libaegis/change/cstate/get.cc:204
 #: libaegis/change/cstate/get.cc:223 libaegis/change/cstate/get.cc:242
-#: libaegis/change/diff/run_diff.cc:106 libaegis/change/diff/run_diff3.cc:95
-#: libaegis/change/diff/run_merge.cc:95 libaegis/change/file/fstate.cc:137
-#: libaegis/change/file/fstate.cc:154 libaegis/change/file/fstate.cc:171
-#: libaegis/change/history/create_comma.cc:141
-#: libaegis/change/history/get_command.cc:116
-#: libaegis/change/history/put_command.cc:136
-#: libaegis/change/history/query_comman.cc:74 libaegis/change/pconf/get.cc:59
-#: libaegis/change/pconf/get.cc:154 libaegis/change/pconf/get.cc:171
-#: libaegis/change/pconf/get.cc:186 libaegis/change/pconf/get.cc:201
-#: libaegis/change/pconf/get.cc:216 libaegis/change/pconf/get.cc:248
-#: libaegis/change/pconf/get.cc:263
+#: libaegis/change/diff/run_diff.cc:106 libaegis/change/diff/run_diff3.cc:93
+#: libaegis/change/diff/run_merge.cc:93 libaegis/change/file/fstate.cc:168
+#: libaegis/change/file/fstate.cc:185 libaegis/change/file/fstate.cc:202
+#: libaegis/change/history/create_comma.cc:139
+#: libaegis/change/history/get_command.cc:115
+#: libaegis/change/history/put_command.cc:134
+#: libaegis/change/history/query_comman.cc:72 libaegis/change/pconf/get.cc:61
+#: libaegis/change/pconf/get.cc:156 libaegis/change/pconf/get.cc:173
+#: libaegis/change/pconf/get.cc:188 libaegis/change/pconf/get.cc:203
+#: libaegis/change/pconf/get.cc:218 libaegis/change/pconf/get.cc:250
+#: libaegis/change/pconf/get.cc:265
 #, fuzzy
 msgid "$filename: contains no \"$field_name\" field"
 msgstr "$filename: contains no \"$field_name\" field"
@@ -715,13 +715,13 @@ msgstr ""
 #                       absolute path, but not always.
 #       $FieLD_Name     The name of the absent field.
 #
-#: aegis/aeip.cc:1560 libaegis/change/cstate/get.cc:79
+#: aegis/aeip.cc:1514 libaegis/change/cstate/get.cc:79
 #: libaegis/change/cstate/get.cc:155 libaegis/change/cstate/get.cc:169
-#: libaegis/change/cstate/get.cc:183 libaegis/change/file/metrics/get.cc:42
-#: libaegis/change/file/metrics/get.cc:54 libaegis/change/pconf/get.cc:278
+#: libaegis/change/cstate/get.cc:183 libaegis/change/file/metrics/get.cc:40
+#: libaegis/change/file/metrics/get.cc:52 libaegis/change/pconf/get.cc:280
 #: libaegis/change/test/batch.cc:272 libaegis/change/test/batch.cc:302
 #: libaegis/change/test/batch.cc:327 libaegis/project.cc:254
-#: libaegis/project/pstate/get.cc:67
+#: libaegis/project/pstate/get.cc:65
 #, fuzzy
 msgid "$filename: corrupted \"$field_name\" field"
 msgstr "$filename: corrupted \"$field_name\" field"
@@ -747,7 +747,7 @@ msgstr ""
 #      $Name1          The name of the obsolete field.
 #      $Name2          The name of the preferred field.
 #
-#: libaegis/change/warning_obso.cc:38
+#: libaegis/change/warning_obso.cc:36
 #, fuzzy
 msgid "$filename: field \"$name1\" obsolete, use \"$name2\" instead"
 msgstr ""
@@ -758,7 +758,7 @@ msgstr ""
 # This fatal error message is issued when Aegis is checking a project's
 # ownership and finds something incorrect.
 #
-#: libaegis/project/owner/get.cc:82
+#: libaegis/project/owner/get.cc:93
 #, fuzzy
 msgid "$filename: gid $number1 invalid, must be >= $number2"
 msgstr ""
@@ -777,7 +777,7 @@ msgstr ""
 #       $Number1        The file's gid.
 #       $Number2        What Aegis expected as the file's gid.
 #
-#: libaegis/os/become.cc:190
+#: libaegis/os/become.cc:194
 #, fuzzy
 msgid "$filename: group is $number1, should be $number2"
 msgstr "$filename: group is $number1, should be $number2"
@@ -789,7 +789,7 @@ msgstr "$filename: group is $number1, should be $number2"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/os/become.cc:210
+#: libaegis/os/become.cc:214
 #, fuzzy
 msgid "$filename: has been tampered with (fatal)"
 msgstr "$filename: has been tampered with (fatal)"
@@ -805,8 +805,8 @@ msgstr "$filename: has been tampered with (fatal)"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: libaegis/aer/lex.cc:174 libaegis/meta_lex.cc:116
-#: libaegis/xmltextread.cc:114 libaegis/xmltextread.cc:202
+#: libaegis/aer/lex.cc:174 libaegis/meta_lex.cc:114
+#: libaegis/xmltextread.cc:112 libaegis/xmltextread.cc:200
 #, fuzzy
 msgid "$filename: has errors"
 msgstr "$filename: found $number fatal error${plural $number s}"
@@ -844,7 +844,7 @@ msgstr "the \"$filename\" file contains unprintable characters (line $number)"
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
-#: libaegis/rfc822.cc:458
+#: libaegis/rfc822.cc:457
 #, fuzzy
 msgid "$filename: malformed RFC 822 header line"
 msgstr "$filename: malformed RFC 822 header line"
@@ -871,7 +871,7 @@ msgstr "$filename: this file contains unresolved merge conflicts"
 #       $Number1        The file's mode.
 #       $Number2        What Aegis expected as the file's mode.
 #
-#: libaegis/os/become.cc:132
+#: libaegis/os/become.cc:136
 #, fuzzy
 msgid "$filename: mode is $number1, should be $number2"
 msgstr "$filename: mode is $number1, should be $number2"
@@ -932,8 +932,8 @@ msgstr ""
 #       $Number1        The file's uid.
 #       $Number2        What Aegis expected as the file's uid.
 #
-#: libaegis/os/become.cc:152 libaegis/os/become.cc:174
-#: libaegis/project/bind/keep.cc:60
+#: libaegis/os/become.cc:156 libaegis/os/become.cc:178
+#: libaegis/project/bind/keep.cc:58
 #, fuzzy
 msgid "$filename: owner is $number1, should be $number2"
 msgstr "$filename: owner is $number1, should be $number2"
@@ -945,8 +945,8 @@ msgstr "$filename: owner is $number1, should be $number2"
 #
 #       $File_Name      The name of the file being read or parsed.
 #
-#: aeimport/format/rcs/lex.cc:122 aeimport/format/sccs/lex.cc:78
-#: libaegis/aer/lex.cc:789 libaegis/aer/lex.cc:809 libaegis/meta_lex.cc:709
+#: aeimport/format/rcs/lex.cc:120 aeimport/format/sccs/lex.cc:76
+#: libaegis/aer/lex.cc:789 libaegis/aer/lex.cc:809 libaegis/meta_lex.cc:707
 #, fuzzy
 msgid "$filename: too many errors"
 msgstr "$filename: too many fatal errors, aborted"
@@ -956,7 +956,7 @@ msgstr "$filename: too many fatal errors, aborted"
 # This fatal error message is issued when Aegis is checking a project's
 # ownership and finds something incorrect.
 #
-#: libaegis/project/owner/get.cc:66
+#: libaegis/project/owner/get.cc:77
 #, fuzzy
 msgid "$filename: uid $number1 invalid, must be >= $number2"
 msgstr ""
@@ -974,7 +974,7 @@ msgstr ""
 #       $File_Name      the offending filename
 #       $Number         the offending version number
 #
-#: libaegis/simpverstool/checkin.cc:136
+#: libaegis/simpverstool/checkin.cc:135
 #, fuzzy
 msgid "$filename: version $number already exists"
 msgstr "$filename: version \"$number\" already exists"
@@ -987,7 +987,7 @@ msgstr "$filename: version \"$number\" already exists"
 #       $File_Name      the history file name
 #       $Number         the offending version number
 #
-#: libaegis/simpverstool/checkin.cc:90
+#: libaegis/simpverstool/checkin.cc:89
 #, fuzzy
 msgid "$filename: version $number invalid"
 msgstr "$filename: version number \"$number\" not appropriate"
@@ -1219,11 +1219,11 @@ msgstr "$function: unknown format specifier '$name'"
 #
 #       $Message        The message to be issued.
 #
-#: aefind/cmdline.y:201 aegis/aede.cc:518 aegis/aenf.cc:610 aegis/aent.cc:582
-#: libaegis/aer/value/error.cc:98 libaegis/aer/value/error.cc:100
-#: libaegis/change/error.cc:59 libaegis/change/fatal.cc:59
-#: libaegis/change/verbose.cc:59 libaegis/change/warning.cc:67
-#: libaegis/os/execute_retc.cc:192 libaegis/undo/item/message.cc:42
+#: aefind/cmdline.y:202 aegis/aede.cc:504 aegis/aenf.cc:580 aegis/aent.cc:553
+#: libaegis/aer/value/error.cc:99 libaegis/aer/value/error.cc:101
+#: libaegis/change/error.cc:57 libaegis/change/fatal.cc:57
+#: libaegis/change/verbose.cc:57 libaegis/change/warning.cc:65
+#: libaegis/os/execute_retc.cc:213 libaegis/undo/item/message.cc:40
 msgid "$message"
 msgstr "$mesaj"
 
@@ -1236,7 +1236,7 @@ msgstr "$mesaj"
 #       $Name           The name of the offending option.
 #       $Number         The value given to the option.
 #
-#: aegis/aet.cc:599 aegis/aet.cc:647
+#: aegis/aet.cc:569 aegis/aet.cc:617
 #, fuzzy
 msgid "$name $number must be pos"
 msgstr ""
@@ -1252,7 +1252,7 @@ msgstr ""
 #       $Name           The name of the offending option.
 #       $Number         The value given to the option.
 #
-#: aegis/aet.cc:621
+#: aegis/aet.cc:591
 #, fuzzy
 msgid "$name $number must not be neg"
 msgstr ""
@@ -1266,7 +1266,7 @@ msgstr ""
 #
 #       $Name           The offending user name.
 #
-#: aegis/aena.cc:146
+#: aegis/aena.cc:125
 #, fuzzy
 msgid "$name already administrator"
 msgstr "user \"$name\" is already an administrator"
@@ -1278,7 +1278,7 @@ msgstr "user \"$name\" is already an administrator"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aend.cc:144
+#: aegis/aend.cc:125
 #, fuzzy
 msgid "$name already developer"
 msgstr "user \"$name\" is already a developer"
@@ -1290,7 +1290,7 @@ msgstr "user \"$name\" is already a developer"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aeni.cc:146
+#: aegis/aeni.cc:125
 #, fuzzy
 msgid "$name already integrator"
 msgstr "user \"$name\" is already an integrator"
@@ -1302,7 +1302,7 @@ msgstr "user \"$name\" is already an integrator"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aenrv.cc:146
+#: aegis/aenrv.cc:125
 #, fuzzy
 msgid "$name already reviewer"
 msgstr "user \"$name\" is already a reviewer"
@@ -1323,7 +1323,7 @@ msgstr "$name lock not available"
 #
 #       $Name           The name of the offending option.
 #
-#: libaegis/help.cc:412
+#: libaegis/help.cc:410
 #, fuzzy
 msgid "$name needs dir"
 msgstr "the $name option must be followed by a directory path"
@@ -1335,7 +1335,7 @@ msgstr "the $name option must be followed by a directory path"
 #
 #       $Name           The name of the offending option.
 #
-#: libaegis/help.cc:400
+#: libaegis/help.cc:398
 #, fuzzy
 msgid "$name needs file"
 msgstr "the $name option must be followed by a file name"
@@ -1347,7 +1347,7 @@ msgstr "the $name option must be followed by a file name"
 #
 #       $Name           The name of the offending option.
 #
-#: libaegis/help.cc:424
+#: libaegis/help.cc:422
 #, fuzzy
 msgid "$name needs files"
 msgstr "the $name option must be followed by one or more file names"
@@ -1358,7 +1358,7 @@ msgstr "the $name option must be followed by one or more file names"
 #
 #       $Name           The name of the offending option.
 #
-#: libaegis/help.cc:388
+#: libaegis/help.cc:386
 msgid "$name needs name"
 msgstr "opþiunea $name trebuie urmatã de un nume"
 
@@ -1368,7 +1368,7 @@ msgstr "opþiunea $name trebuie urmatã de un nume"
 #
 #       $Name           The name of the offending option.
 #
-#: libaegis/help.cc:364
+#: libaegis/help.cc:362
 msgid "$name needs number"
 msgstr "opþiunea $name trebuie urmatã de un numãr"
 
@@ -1378,7 +1378,7 @@ msgstr "opþiunea $name trebuie urmatã de un numãr"
 #
 #       $Name           The name of the offending option.
 #
-#: libaegis/help.cc:376
+#: libaegis/help.cc:374
 msgid "$name needs string"
 msgstr "opþiunea $name trebuie urmatã de un ºir"
 
@@ -1400,7 +1400,7 @@ msgstr "$name1 ºi $name2"
 #       $Name1          The name of the offending option.
 #       $Name2          The name of the offending option.
 #
-#: aegis/aecp.cc:1118
+#: aegis/aecp.cc:1091
 msgid "$name1 needs $name2"
 msgstr "opþiunea $name1 trebuie acompaniatã de opþiunea $name2"
 
@@ -1421,7 +1421,7 @@ msgstr "$name1, $name2"
 #
 #       $Target         The login name of the non-developer.
 #
-#: aegis/aechown.cc:207
+#: aegis/aechown.cc:189
 msgid "$target not developer"
 msgstr "utilizator \"$target\" nu este un dezvoltator"
 
@@ -1442,7 +1442,7 @@ msgstr "$value1 ** $value2: $errno"
 # version of Aegis compiled without the DEBUG define in common/main.h
 # turned on.
 #
-#: aefind/cmdline.y:1128 libaegis/help.cc:248
+#: aefind/cmdline.y:1130 libaegis/help.cc:246
 #, fuzzy
 msgid "-TRace needs DEBUG"
 msgstr ""
@@ -1456,7 +1456,7 @@ msgstr ""
 #       $Number1        the current AEGIS_USER_GID setting
 #       $Number2        the current AEGIS_MIN_GID setting
 #
-#: libaegis/gonzo.cc:101
+#: libaegis/gonzo.cc:99
 #, fuzzy
 msgid "AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) misconfigured"
 msgstr ""
@@ -1472,7 +1472,7 @@ msgstr ""
 #       $Number1        the current AEGIS_USER_UID setting
 #       $Number2        the current AEGIS_MIN_UID setting
 #
-#: libaegis/gonzo.cc:86
+#: libaegis/gonzo.cc:84
 #, fuzzy
 msgid "AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) misconfigured"
 msgstr ""
@@ -1487,7 +1487,7 @@ msgstr ""
 #
 #       $Name           The name of the old project.
 #
-#: aegis/aenrls.cc:752
+#: aegis/aenrls.cc:754
 #, fuzzy
 msgid "New release derived from $name."
 msgstr "New release derived from $name."
@@ -1499,7 +1499,7 @@ msgstr "New release derived from $name."
 #
 #       $Name           The name of a project.
 #
-#: aegis/aenc.cc:404
+#: aegis/aenc.cc:384
 msgid "Project $name"
 msgstr "Proiect $name"
 
@@ -1537,7 +1537,7 @@ msgstr "Project \"$name\", Change $number, File \"$filename\""
 # This error message is issued when the ${read_file} substitution is
 # called incorrectly.  See (+++) above.
 #
-#: libaegis/sub/read_file.cc:64
+#: libaegis/sub/read_file.cc:62
 #, fuzzy
 msgid "absolute path required"
 msgstr "absolute path required"
@@ -1546,7 +1546,7 @@ msgstr "absolute path required"
 # This verbose message is issued when aeipass is updating the modification
 # times of all the files in the integration directory.
 #
-#: aegis/aeip.cc:2027
+#: aegis/aeip.cc:2047
 msgid "adjust file modification times"
 msgstr "ajusteazã data modificãrii fiºierului"
 
@@ -1557,7 +1557,7 @@ msgstr "ajusteazã data modificãrii fiºierului"
 # an administrator is to undo a forced aedb; thus if the change has been
 # worked on at all, this is probably not a good idea.
 #
-#: aegis/aedbu.cc:308
+#: aegis/aedbu.cc:218
 #, fuzzy
 msgid "aedbu, has files"
 msgstr ""
@@ -1582,7 +1582,7 @@ msgstr ""
 # This fatal error message is issued if it appears that there is a
 # reference loop of project aliases.
 #
-#: libaegis/project/bind/existing.cc:141
+#: libaegis/project/bind/existing.cc:152
 #, fuzzy
 msgid "alias loop detected"
 msgstr "alias loop detected"
@@ -1593,7 +1593,7 @@ msgstr "alias loop detected"
 # test, and all the test numbers appear to have been consumed.  This error
 # message should be impossible.
 #
-#: aegis/aent.cc:508
+#: aegis/aent.cc:479
 #, fuzzy
 msgid "all test numbers used"
 msgstr "it appears that all test numbers have been consumed"
@@ -1603,7 +1603,7 @@ msgstr "it appears that all test numbers have been consumed"
 # This error message is issued when an unknown substitution is
 # referenced.  See (+++) above.
 #
-#: libaegis/sub.cc:517
+#: libaegis/sub.cc:515
 #, fuzzy
 msgid "ambiguous substitution name"
 msgstr "ambiguous substitution name"
@@ -1613,7 +1613,7 @@ msgstr "ambiguous substitution name"
 # This progress message is issued when an 'aegis -diff -anticipate'
 # command completes successfully.
 #
-#: aegis/aed.cc:539
+#: aegis/aed.cc:508
 #, fuzzy
 msgid "anticipated merge complete"
 msgstr "anticipated merge complete"
@@ -1625,7 +1625,7 @@ msgstr "anticipated merge complete"
 #
 #       $File_Name      The name of the log file.
 #
-#: libaegis/log.cc:285
+#: libaegis/log.cc:283
 #, fuzzy
 msgid "appending log to $filename"
 msgstr "appending log to \"$filename\""
@@ -1635,7 +1635,7 @@ msgstr "appending log to \"$filename\""
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
-#: aegis/aeib.cc:1176
+#: aegis/aeib.cc:1162
 #, fuzzy
 msgid "apply change to integration directory"
 msgstr "applying the change to the integration directory"
@@ -1649,7 +1649,7 @@ msgstr "applying the change to the integration directory"
 #       $Name           The offending architecture name.
 #
 #: libaegis/change/architecture/check.cc:66
-#: libaegis/change/architecture/name.cc:83
+#: libaegis/change/architecture/name.cc:81
 #, fuzzy
 msgid "architecture \"$name\" forbidden"
 msgstr ""
@@ -1665,7 +1665,7 @@ msgstr ""
 #
 #       $Name           The offending architecture name.
 #
-#: libaegis/change/architecture/name.cc:99
+#: libaegis/change/architecture/name.cc:97
 #, fuzzy
 msgid "architecture \"$name\" unknown"
 msgstr "architecture \"$name\" unknown"
@@ -1693,7 +1693,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aetar/output/tar_child.cc:93 libaegis/output/cpio_child.cc:78
+#: aetar/output/tar_child.cc:98 libaegis/output/cpio_child.cc:84
 #, fuzzy
 msgid "archive member $filename changed size"
 msgstr ""
@@ -1729,7 +1729,7 @@ msgstr "arithmetic type required for increment (was given $name)"
 #
 #       $Name           The offending string.
 #
-#: aelock/lock.cc:94
+#: aelock/lock.cc:92
 #, fuzzy
 msgid "attribute $name unknown"
 msgstr "the attribute \"$name\" does not exist"
@@ -1750,8 +1750,8 @@ msgstr "atribute schimbate"
 #       $File_Name      The absolute path of the file containing the
 #                       offending attributes text file.
 #
-#: aegis/aefa.cc:331 libaegis/change/attributes/edit.cc:52
-#: libaegis/project/pattr/edit.cc:53
+#: aegis/aefa.cc:331 libaegis/change/attributes/edit.cc:50
+#: libaegis/project/pattr/edit.cc:51
 #, fuzzy
 msgid "attributes in $filename"
 msgstr "attributes text left in the \"$filename\" file"
@@ -1761,7 +1761,7 @@ msgstr "attributes text left in the \"$filename\" file"
 # This error message is issued when the change is not in a suitable state
 # to search within for files.
 #
-#: aefind/cmdline.y:433
+#: aefind/cmdline.y:434
 #, fuzzy
 msgid "bad aefind state"
 msgstr ""
@@ -1798,7 +1798,7 @@ msgstr "project alias \"$name\" is invalid"
 # This error message is issued when an attempt is made to difference
 # against a change which is in an inappropriate state.
 #
-#: aegis/aed.cc:204
+#: aegis/aed.cc:173
 #, fuzzy
 msgid "bad anticipate diff"
 msgstr ""
@@ -1811,7 +1811,7 @@ msgstr ""
 # This error message is issued when a user requests a build of a branch
 # which is in the 'being developed' state.
 #
-#: aegis/aeb.cc:269
+#: aegis/aeb.cc:251
 #, fuzzy
 msgid "bad branch build"
 msgstr ""
@@ -1824,7 +1824,7 @@ msgstr ""
 # directly into a branch.  You must use a change on the branch for
 # that.
 #
-#: aegis/aecp.cc:1237 aegis/aemv.cc:483
+#: aegis/aecp.cc:1210 aegis/aemv.cc:454
 #, fuzzy
 msgid "bad branch cp"
 msgstr ""
@@ -1836,7 +1836,7 @@ msgstr ""
 # This error message is issued when an aed command is used on a branch
 # which is not in the 'being integrated' state.
 #
-#: aegis/aed.cc:188 aegis/aed.cc:867
+#: aegis/aed.cc:157 aegis/aed.cc:836
 #, fuzzy
 msgid "bad branch diff"
 msgstr ""
@@ -1848,7 +1848,7 @@ msgstr ""
 # This error message is issued when a user requests a build of a branch
 # which is in the 'being developed' state.
 #
-#: aegis/aet.cc:773
+#: aegis/aet.cc:743
 #, fuzzy
 msgid "bad branch test"
 msgstr ""
@@ -1860,7 +1860,7 @@ msgstr ""
 # This error message is issued when a user requests a build of a change
 # from the wrong state.
 #
-#: aegis/aeb.cc:264
+#: aegis/aeb.cc:246
 #, fuzzy
 msgid "bad build state"
 msgstr ""
@@ -1872,7 +1872,7 @@ msgstr ""
 # This error message is issued when a partial integration is requested
 # for a change in the 'being integrated' state.
 #
-#: aegis/aeb.cc:290
+#: aegis/aeb.cc:272
 #, fuzzy
 msgid "bad build, partial"
 msgstr "you may not do a partial build in the \"$state\" state"
@@ -1882,7 +1882,7 @@ msgstr "you may not do a partial build in the \"$state\" state"
 # This error message is issued when a developer who is not an administrator
 # attempts to grant an architecture exemption to a change.
 #
-#: aegis/aeca.cc:894 aegis/aenc.cc:541
+#: aegis/aeca.cc:894 aegis/aenc.cc:521
 #, fuzzy
 msgid "bad ca, no arch exempt"
 msgstr "only a project administrator may grant architecture exemptions"
@@ -1892,7 +1892,7 @@ msgstr "only a project administrator may grant architecture exemptions"
 # This error message is issued when a user who is not an administrator
 # attempts to grant a test exemption to a change.
 #
-#: aegis/aeca.cc:833 aegis/aenc.cc:528
+#: aegis/aeca.cc:833 aegis/aenc.cc:508
 #, fuzzy
 msgid "bad ca, no test exempt"
 msgstr "only project administrators may exempt changes from testing"
@@ -1916,7 +1916,7 @@ msgstr ""
 # attributes to include an architecture not named in the project
 # 'config' file.
 #
-#: aegis/aeca.cc:879 aegis/aenc.cc:558
+#: aegis/aeca.cc:879 aegis/aenc.cc:538
 #, fuzzy
 msgid "bad ca, unknown architecture"
 msgstr ""
@@ -1941,7 +1941,7 @@ msgstr "the UUID of this change has already been set"
 #       $Other  The version of change using the specified UUID.
 #               Optional.
 #
-#: aegis/aeca.cc:392 aegis/aenf.cc:424 aegis/aent.cc:344
+#: aegis/aeca.cc:392 aegis/aenf.cc:394 aegis/aent.cc:315
 #, fuzzy
 msgid "bad ca, uuid duplicate"
 msgstr "the UUID specified is already is use by $other"
@@ -1951,7 +1951,7 @@ msgstr "the UUID specified is already is use by $other"
 # This error message is issued when an aecd is requested for a change
 # which does not have a directory.
 #
-#: aegis/aecd.cc:169
+#: aegis/aecd.cc:151
 #, fuzzy
 msgid "bad cd, no dir"
 msgstr "this change is in the '$state' state, there is no directory to go to"
@@ -1962,7 +1962,7 @@ msgstr "this change is in the '$state' state, there is no directory to go to"
 # owner of a change, when that change is not in the 'being developed'
 # state.
 #
-#: aegis/aechown.cc:216
+#: aegis/aechown.cc:198
 #, fuzzy
 msgid "bad chown state"
 msgstr ""
@@ -1974,7 +1974,7 @@ msgstr ""
 # This error message is issued when an attempt is made to clean a change
 # which is not in the 'being developed' state.
 #
-#: aegis/aeclean.cc:467
+#: aegis/aeclean.cc:439
 #, fuzzy
 msgid "bad clean state"
 msgstr ""
@@ -1986,7 +1986,7 @@ msgstr ""
 # This error message is issued when an attempt is made to copy files
 # into a change which is not in the 'being developed' state.
 #
-#: aegis/aecp.cc:1229
+#: aegis/aecp.cc:1202
 #, fuzzy
 msgid "bad cp state"
 msgstr ""
@@ -2000,7 +2000,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aecpu.cc:488 aegis/aed.cc:359 aegis/aed.cc:392 aegis/aemtu.cc:475
+#: aegis/aecpu.cc:457 aegis/aed.cc:328 aegis/aed.cc:361 aegis/aemtu.cc:441
 #, fuzzy
 msgid "bad cp undo $filename"
 msgstr ""
@@ -2012,7 +2012,7 @@ msgstr ""
 # This error message is issued when an aecpu command is used directly on
 # a branch.  Branches may only be altered via a change.
 #
-#: aegis/aecpu.cc:285 aegis/aemtu.cc:280 aegis/aemvu.cc:270 aegis/aermu.cc:327
+#: aegis/aecpu.cc:254 aegis/aemtu.cc:246 aegis/aemvu.cc:235 aegis/aermu.cc:293
 #, fuzzy
 msgid "bad cp undo branch"
 msgstr ""
@@ -2024,7 +2024,7 @@ msgstr ""
 # This error message is issued when the aecpu command is used on a change
 # which is not in the 'being developed' state.
 #
-#: aegis/aecpu.cc:283 aegis/aemtu.cc:278 aegis/aemvu.cc:268
+#: aegis/aecpu.cc:252 aegis/aemtu.cc:244 aegis/aemvu.cc:233
 #, fuzzy
 msgid "bad cp undo state"
 msgstr ""
@@ -2039,7 +2039,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aecp.cc:1525
+#: aegis/aecp.cc:1498
 #, fuzzy
 msgid "bad cp, file $filename dup"
 msgstr ""
@@ -2052,7 +2052,7 @@ msgstr ""
 # development on a change which is not in the 'awaiting development'
 # state.
 #
-#: aegis/aedb.cc:300
+#: aegis/aedb.cc:276
 #, fuzzy
 msgid "bad db state"
 msgstr ""
@@ -2064,7 +2064,7 @@ msgstr ""
 # This error message is issued when aedbu is asked to operate on
 # a change which is not in the 'being developed' state.
 #
-#: aegis/aedbu.cc:298 aegis/aenbru.cc:251
+#: aegis/aedbu.cc:198 aegis/aenbru.cc:232
 #, fuzzy
 msgid "bad dbu state"
 msgstr ""
@@ -2076,7 +2076,7 @@ msgstr ""
 # This error message is issued when aede is invokes on a change which is
 # not in the 'being developed' state.
 #
-#: aede-policy/policy.cc:117 aegis/aede.cc:260
+#: aede-policy/policy.cc:117 aegis/aede.cc:240
 #, fuzzy
 msgid "bad de state"
 msgstr ""
@@ -2088,7 +2088,7 @@ msgstr ""
 # This error message is issued when aedeu is invoked for a change which
 # is not in the 'being reviewed' or 'awaiting integration' state.
 #
-#: aegis/aedeu.cc:263 aegis/aedeu.cc:279
+#: aegis/aedeu.cc:243 aegis/aedeu.cc:259
 #, fuzzy
 msgid "bad deu state"
 msgstr ""
@@ -2100,7 +2100,7 @@ msgstr ""
 # This error message is issued when an aed command used on a change
 # which is not in the 'being developed' state.
 #
-#: aegis/aed.cc:190
+#: aegis/aed.cc:159
 #, fuzzy
 msgid "bad diff state"
 msgstr ""
@@ -2123,7 +2123,7 @@ msgstr ""
 # This error message is issued when an aeib command is used on a change
 # which is not in the 'awaiting integration' state.
 #
-#: aegis/aeib.cc:877
+#: aegis/aeib.cc:863
 msgid "bad ib state"
 msgstr ""
 "this change is in the '$state' state, it must be in the 'awaiting "
@@ -2134,7 +2134,7 @@ msgstr ""
 # This error message is issued when aeibu is used on a change which is
 # not in the 'being integrated' state.
 #
-#: aegis/aeibu.cc:238
+#: aegis/aeibu.cc:215
 #, fuzzy
 msgid "bad ibu state"
 msgstr ""
@@ -2146,7 +2146,7 @@ msgstr ""
 # This error message is issued when an aed command used on a change
 # which is not in the 'being developed' or 'being integrated' state.
 #
-#: aegis/aed.cc:874
+#: aegis/aed.cc:843
 #, fuzzy
 msgid "bad idiff state"
 msgstr ""
@@ -2158,7 +2158,7 @@ msgstr ""
 # This error message is issued when aeifail is invoked for a change which
 # is not in the 'being integrated' state.
 #
-#: aegis/aeif.cc:156
+#: aegis/aeif.cc:133
 #, fuzzy
 msgid "bad if state"
 msgstr ""
@@ -2170,7 +2170,7 @@ msgstr ""
 # This error message is issued when an aeipass command is invoked on a
 # change which is not in the 'being integrated' state.
 #
-#: aegis/aeip.cc:517
+#: aegis/aeip.cc:483
 #, fuzzy
 msgid "bad ip state"
 msgstr ""
@@ -2185,7 +2185,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be built,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1248
+#: aegis/aeip.cc:1202
 #, fuzzy
 msgid "bad ip, build required"
 msgstr ""
@@ -2200,7 +2200,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1280
+#: aegis/aeip.cc:1234
 #, fuzzy
 msgid "bad ip, test -bl required"
 msgstr ""
@@ -2215,7 +2215,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1300
+#: aegis/aeip.cc:1254
 #, fuzzy
 msgid "bad ip, test -reg required"
 msgstr ""
@@ -2230,7 +2230,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1264
+#: aegis/aeip.cc:1218
 #, fuzzy
 msgid "bad ip, test required"
 msgstr ""
@@ -2242,7 +2242,7 @@ msgstr ""
 # This error message is issued when aemv is asked to operate on a change
 # which is not in the 'being developed' state.
 #
-#: aegis/aemv.cc:481
+#: aegis/aemv.cc:452
 #, fuzzy
 msgid "bad mv state"
 msgstr ""
@@ -2256,7 +2256,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aemvu.cc:460
+#: aegis/aemvu.cc:425
 #, fuzzy
 msgid "bad mv undo $filename"
 msgstr ""
@@ -2268,7 +2268,7 @@ msgstr ""
 # This error message is issued when aencu is requested of a change which
 # is not in the 'awaiting development' state.
 #
-#: aegis/aencu.cc:206
+#: aegis/aencu.cc:182
 #, fuzzy
 msgid "bad ncu state"
 msgstr ""
@@ -2281,7 +2281,7 @@ msgstr ""
 # 'being developed' state.  You must use a change on the branch for
 # that.
 #
-#: aegis/aemt.cc:325 aegis/aenf.cc:405 aegis/aent.cc:325 aegis/aerm.cc:348
+#: aegis/aemt.cc:291 aegis/aenf.cc:375 aegis/aent.cc:296 aegis/aerm.cc:314
 #, fuzzy
 msgid "bad nf branch"
 msgstr ""
@@ -2293,7 +2293,7 @@ msgstr ""
 # This error message is issued when aenf is invoked on a change which is
 # not in the 'being developed' state.
 #
-#: aegis/aenf.cc:403
+#: aegis/aenf.cc:373
 #, fuzzy
 msgid "bad nf state"
 msgstr ""
@@ -2307,7 +2307,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aenfu.cc:487
+#: aegis/aenfu.cc:453
 #, fuzzy
 msgid "bad nf undo $filename"
 msgstr ""
@@ -2320,7 +2320,7 @@ msgstr ""
 # 'being developed' state.  You must use a change on the branch for
 # that.
 #
-#: aegis/aenfu.cc:294 aegis/aentu.cc:310
+#: aegis/aenfu.cc:260 aegis/aentu.cc:276
 #, fuzzy
 msgid "bad nfu branch"
 msgstr ""
@@ -2332,7 +2332,7 @@ msgstr ""
 # This error message is issued when aenfu is invoked on a change which is
 # not in the 'being developed' state.
 #
-#: aegis/aenfu.cc:292
+#: aegis/aenfu.cc:258
 #, fuzzy
 msgid "bad nfu state"
 msgstr ""
@@ -2346,7 +2346,7 @@ msgstr ""
 # onwards.  The New_ReLeaSe command is only used to convert the old
 # branch-less style to the new branch style.
 #
-#: aegis/aenrls.cc:346
+#: aegis/aenrls.cc:348
 #, fuzzy
 msgid "bad nrls, too modern"
 msgstr ""
@@ -2359,7 +2359,7 @@ msgstr ""
 # This error message is issued when aent is invoked fro a change which
 # is not in the 'being developed' state.
 #
-#: aegis/aent.cc:323
+#: aegis/aent.cc:294
 #, fuzzy
 msgid "bad nt state"
 msgstr ""
@@ -2373,7 +2373,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aentu.cc:505
+#: aegis/aentu.cc:471
 #, fuzzy
 msgid "bad nt undo $filename"
 msgstr ""
@@ -2385,7 +2385,7 @@ msgstr ""
 # This error message is issued when aentu is invoked for a change which
 # is not in the 'being developed' state.
 #
-#: aegis/aentu.cc:308
+#: aegis/aentu.cc:274
 #, fuzzy
 msgid "bad ntu state"
 msgstr ""
@@ -2397,7 +2397,7 @@ msgstr ""
 # This error message is issued when aepa is given a default development
 # directory which is not an absolute path.
 #
-#: libaegis/project/pattr/set.cc:213
+#: libaegis/project/pattr/set.cc:211
 #, fuzzy
 msgid "bad pa, rel def dev dir"
 msgstr "default development directory must be specified as an absolute path"
@@ -2407,7 +2407,7 @@ msgstr "default development directory must be specified as an absolute path"
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
-#: aediff/diff.cc:66 aepatch/send.cc:558 aerevml/send.cc:234
+#: aediff/diff.cc:65 aepatch/send.cc:556 aerevml/send.cc:236
 #, fuzzy
 msgid "bad patch send state"
 msgstr ""
@@ -2419,7 +2419,7 @@ msgstr ""
 #
 #       $File_Name      The offending file name pattern.
 #
-#: libaegis/change/file/template.cc:58 libaegis/change/file/whiteout.cc:85
+#: libaegis/change/file/template.cc:56 libaegis/change/file/whiteout.cc:83
 #, fuzzy
 msgid "bad pattern $filename"
 msgstr "filename pattern \"$filename\" is illegal"
@@ -2431,7 +2431,7 @@ msgstr "filename pattern \"$filename\" is illegal"
 #
 #       $Name           The offending project name.
 #
-#: libaegis/help/badprojname.cc:33
+#: libaegis/help/badprojname.cc:31
 #, fuzzy
 msgid "bad project $name"
 msgstr "project name \"$name\" is invalid"
@@ -2441,7 +2441,7 @@ msgstr "project name \"$name\" is invalid"
 # This error message is issued when aerb is invoked for a change which is
 # not in the 'awaiting review' state.
 #
-#: aegis/aerb.cc:269
+#: aegis/aerb.cc:238
 #, fuzzy
 msgid "bad rb state"
 msgstr ""
@@ -2453,7 +2453,7 @@ msgstr ""
 # This error message is issued when aerbu is invoked for a change which is
 # not in the 'being reviewed' state.
 #
-#: aegis/aerbu.cc:216
+#: aegis/aerbu.cc:197
 #, fuzzy
 msgid "bad rbu state"
 msgstr ""
@@ -2465,7 +2465,7 @@ msgstr ""
 # This error message is issued when a request is made to fail a review
 # of a change, but that change is not in the 'being reviewed' state.
 #
-#: aegis/aerf.cc:131
+#: aegis/aerf.cc:111
 #, fuzzy
 msgid "bad rf state"
 msgstr ""
@@ -2477,7 +2477,7 @@ msgstr ""
 # This error message is issued when aerm is invoked for a change which
 # is not in the 'being developed' state.
 #
-#: aegis/aerm.cc:346
+#: aegis/aerm.cc:312
 #, fuzzy
 msgid "bad rm state"
 msgstr ""
@@ -2491,7 +2491,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aermu.cc:518
+#: aegis/aermu.cc:484
 #, fuzzy
 msgid "bad rm undo $filename"
 msgstr ""
@@ -2503,7 +2503,7 @@ msgstr ""
 # This error message is issued when aermu is invoked for a change which
 # is not in the 'being developed' state.
 #
-#: aegis/aermu.cc:325
+#: aegis/aermu.cc:291
 #, fuzzy
 msgid "bad rmu state"
 msgstr ""
@@ -2515,7 +2515,7 @@ msgstr ""
 # This error message is issued when aerpass is invoked for a change which is
 # not in the 'being reviewed' state.
 #
-#: aegis/aerp.cc:129
+#: aegis/aerp.cc:109
 #, fuzzy
 msgid "bad rp state"
 msgstr ""
@@ -2527,7 +2527,7 @@ msgstr ""
 # This error message is issued when aerpu is invoked for a change which is
 # not in the 'awaiting integration' state.
 #
-#: aegis/aerpu.cc:261
+#: aegis/aerpu.cc:238
 #, fuzzy
 msgid "bad rpu state"
 msgstr ""
@@ -2539,8 +2539,8 @@ msgstr ""
 # This fatal error message is issued when there would be no files in
 # the distributed change set.
 #
-#: aedist/send.cc:1489 aepatch/send.cc:814 aerevml/send.cc:900
-#: aetar/send.cc:768
+#: aedist/send.cc:1530 aepatch/send.cc:813 aerevml/send.cc:902
+#: aetar/send.cc:767
 #, fuzzy
 msgid "bad send no files"
 msgstr "there are no files to distribute"
@@ -2549,7 +2549,7 @@ msgstr "there are no files to distribute"
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
-#: aedist/send.cc:963 aetar/send.cc:531
+#: aedist/send.cc:964 aetar/send.cc:530
 msgid "bad send state"
 msgstr ""
 "aceastã schimbare este în starea $state; aceasta trebuie sã fie într-o stare "
@@ -2560,7 +2560,7 @@ msgstr ""
 # This error message is issued when a user requests a test of a change
 # from the wrong state.
 #
-#: aegis/aet.cc:823
+#: aegis/aet.cc:793
 #, fuzzy
 msgid "bad test state"
 msgstr ""
@@ -2574,8 +2574,8 @@ msgstr ""
 #
 #       $Number         The offending version number.
 #
-#: aegis/aenpr.cc:444 aegis/aenrls.cc:458 aeimport/import.cc:279
-#: libaegis/project.cc:808
+#: aegis/aenpr.cc:444 aegis/aenrls.cc:460 aeimport/import.cc:278
+#: libaegis/project.cc:812
 #, fuzzy
 msgid "bad version $number"
 msgstr "version number \"$number\" is invalid"
@@ -2587,7 +2587,7 @@ msgstr "version number \"$number\" is invalid"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:697 aegis/aede.cc:803
+#: aegis/aede.cc:683 aegis/aede.cc:789
 #, fuzzy
 msgid "baseline $filename changed"
 msgstr ""
@@ -2603,7 +2603,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:692
+#: aegis/aede.cc:678
 #, fuzzy
 msgid "baseline $filename changed, merge in new change"
 msgstr ""
@@ -2619,7 +2619,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
-#: libaegis/project.cc:556
+#: libaegis/project.cc:560
 #, fuzzy
 msgid "baseline read lock not available"
 msgstr "baseline read lock not available"
@@ -2628,7 +2628,7 @@ msgstr "baseline read lock not available"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
-#: libaegis/project.cc:595
+#: libaegis/project.cc:599
 #, fuzzy
 msgid "baseline write lock not available"
 msgstr "baseline write lock not available"
@@ -2652,7 +2652,7 @@ msgstr "tests ${current} to ${last} of $total, ${date %H:%M}, ETA $remaining"
 # This error message is issued when the bevel size specified is negative,
 # or too big.
 #
-#: aerect/main.cc:100
+#: aerect/main.cc:98
 msgid "bevel size $number out of range"
 msgstr ""
 "dimensiune muchie $number în afara domeniului: acesta trebuie sã fie de la 0 "
@@ -2724,7 +2724,7 @@ msgstr "boolean value required in \"if\" statement (was given $name)"
 #
 #       $Number         The offending branch number.
 #
-#: libaegis/arglex/change.cc:226
+#: libaegis/arglex/change.cc:224
 #, fuzzy
 msgid "branch $number out of range"
 msgstr "ramurã $number în afara domeniului"
@@ -2737,7 +2737,7 @@ msgstr "ramurã $number în afara domeniului"
 #
 #       $Number         The offending branch number.
 #
-#: aegis/aenbr.cc:264
+#: aegis/aenbr.cc:246
 #, fuzzy
 msgid "branch $number used"
 msgstr ""
@@ -2749,7 +2749,7 @@ msgstr ""
 # This error message is issued when aenc or aenbr are issued against a
 # project branch which is no longer in the `being developed' state.
 #
-#: aegis/aeclone.cc:314 aegis/aenbr.cc:229 aegis/aenc.cc:354
+#: aegis/aeclone.cc:291 aegis/aenbr.cc:211 aegis/aenc.cc:334
 #, fuzzy
 msgid "branch completed"
 msgstr ""
@@ -2775,7 +2775,7 @@ msgstr "the brief description has been not set"
 #       $Outstanding    A list of outstanding architectures to be built,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aede.cc:995
+#: aegis/aede.cc:981
 #, fuzzy
 msgid "build required"
 msgstr ""
@@ -2791,7 +2791,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeip.cc:1068
+#: aegis/aeip.cc:1022
 #, fuzzy
 msgid "build trashed $filename"
 msgstr ""
@@ -2808,7 +2808,7 @@ msgstr ""
 #
 #       $File_Name      The name of the source file.
 #
-#: libaegis/file.cc:97
+#: libaegis/file.cc:95
 msgid "cat $filename: $errno"
 msgstr "cat \"$filename\": $errno"
 
@@ -2816,7 +2816,7 @@ msgstr "cat \"$filename\": $errno"
 # This information message is issued when Aegis is about to execute a
 # command, to tell the user where the command is to be executed.
 #
-#: libaegis/os/execute_retc.cc:65
+#: libaegis/os/execute_retc.cc:64
 msgid "cd $filename"
 msgstr "cd $filename"
 
@@ -2827,9 +2827,9 @@ msgstr "cd $filename"
 #
 #       $Message        The message to be issued.
 #
-#: libaegis/arglex/change.cc:188 libaegis/change/error.cc:65
-#: libaegis/change/fatal.cc:65 libaegis/change/verbose.cc:65
-#: libaegis/change/warning.cc:73
+#: libaegis/arglex/change.cc:186 libaegis/change/error.cc:63
+#: libaegis/change/fatal.cc:63 libaegis/change/verbose.cc:63
+#: libaegis/change/warning.cc:71
 #, fuzzy
 msgid "change $change: $message"
 msgstr "change $change: $message"
@@ -2841,7 +2841,7 @@ msgstr "change $change: $message"
 #
 #       $Number         The offending change's number.
 #
-#: aeannotate/annotate.cc:135 libaegis/project/change2delta.cc:42
+#: aeannotate/annotate.cc:160 libaegis/project/change2delta.cc:42
 #, fuzzy
 msgid "change $number not completed"
 msgstr ""
@@ -2855,9 +2855,9 @@ msgstr ""
 #
 #       $Number         The offending change number.
 #
-#: aefind/cmdline.y:1177 aegis/aecp.cc:259 aegis/aecp.cc:976 aegis/aed.cc:686
-#: aegis/aentu.cc:230 libaegis/arglex/change.cc:228
-#: libaegis/arglex/change.cc:406
+#: aefind/cmdline.y:1179 aegis/aecp.cc:232 aegis/aecp.cc:949 aegis/aed.cc:655
+#: aegis/aentu.cc:196 libaegis/arglex/change.cc:226
+#: libaegis/arglex/change.cc:404
 #, fuzzy
 msgid "change $number out of range"
 msgstr ""
@@ -2872,7 +2872,7 @@ msgstr ""
 #
 #       $Number         The offending change number.
 #
-#: aegis/aeclone.cc:362 aegis/aenc.cc:434
+#: aegis/aeclone.cc:339 aegis/aenc.cc:414
 #, fuzzy
 msgid "change $number used"
 msgstr ""
@@ -2884,7 +2884,7 @@ msgstr ""
 # This message is issued when aedist --receive cancells a change because
 # the change is alreday present in the repository.  No action required.
 #
-#: aedist/receive.cc:716 aedist/receive.cc:2421 aepatch/receive.cc:1200
+#: aedist/receive.cc:718 aedist/receive.cc:2424 aepatch/receive.cc:1200
 #, fuzzy
 msgid "change already present"
 msgstr ""
@@ -2897,7 +2897,7 @@ msgstr ""
 #
 #       $File_Name      The absolute path of the directory changed to.
 #
-#: aegis/aecd.cc:220
+#: aegis/aecd.cc:202
 #, fuzzy
 msgid "change directory $filename complete"
 msgstr "$filename"
@@ -2907,7 +2907,7 @@ msgstr "$filename"
 #
 #       $File_Name      The name of the directory to chdir to.
 #
-#: libaegis/os/chdir.cc:39
+#: libaegis/os/chdir.cc:37
 msgid "chdir $filename: $errno"
 msgstr "chdir \"$filename\": $errno"
 
@@ -2917,7 +2917,7 @@ msgstr "chdir \"$filename\": $errno"
 #       $File_Name      The name of the file to be changed.
 #       $Argument       The GID the file is to be set.
 #
-#: libaegis/os/mkdir.cc:66
+#: libaegis/os/mkdir.cc:64
 msgid "chgrp(\"$filename\", $arg): $errno"
 msgstr "chgrp(\"$filename\", $arg): $errno"
 
@@ -2927,7 +2927,7 @@ msgstr "chgrp(\"$filename\", $arg): $errno"
 #       $File_Name      The name of the file to be changed.
 #       $Argument       The mode desired.
 #
-#: libaegis/os/chmod/chmod.cc:53 libaegis/os/mkdir.cc:83
+#: libaegis/os/chmod/chmod.cc:51 libaegis/os/mkdir.cc:81
 msgid "chmod(\"$filename\", $arg): $errno"
 msgstr "chmod(\"$filename\", $arg): $errno"
 
@@ -2938,7 +2938,7 @@ msgstr "chmod(\"$filename\", $arg): $errno"
 #       $ORiginal       The login name of the original owner.  (Optional)
 #       $Target         The login name of the new owner.  (Optional)
 #
-#: aegis/aechown.cc:439
+#: aegis/aechown.cc:421
 #, fuzzy
 msgid "chown complete"
 msgstr ""
@@ -2949,7 +2949,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This message is issued when an aeclean command completes successfully.
 #
-#: aegis/aeclean.cc:799
+#: aegis/aeclean.cc:771
 #, fuzzy
 msgid "clean complete"
 msgstr "curãþenie terminatã"
@@ -2960,7 +2960,7 @@ msgstr "curãþenie terminatã"
 #
 #       $ORiginal       The login the original change.  (Optional)
 #
-#: aegis/aeclone.cc:897
+#: aegis/aeclone.cc:875
 #, fuzzy
 msgid "clone complete"
 msgstr "copy of change $original completed"
@@ -2970,7 +2970,7 @@ msgstr "copy of change $original completed"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/input/file.cc:51 libaegis/output/file.cc:51
+#: libaegis/input/file.cc:50 libaegis/output/file.cc:49
 msgid "close $filename: $errno"
 msgstr "close \"$filename\": $errno"
 
@@ -2983,7 +2983,7 @@ msgstr "close \"$filename\": $errno"
 #       $File_Name1     The name of the source file.
 #       $File_Name2     The name of the destination file.
 #
-#: libaegis/file.cc:158
+#: libaegis/file.cc:156
 msgid "cmp $filename1 $filename2: $errno"
 msgstr "cmp \"$filename1\" \"$filename2\": $errno"
 
@@ -2992,7 +2992,7 @@ msgstr "cmp \"$filename1\" \"$filename2\": $errno"
 # This error message is issued when a color component is not in the
 # range 0..255.
 #
-#: aerect/main.cc:126
+#: aerect/main.cc:124
 #, fuzzy
 msgid "color component $number out of range"
 msgstr "color component $number out of range, it must be 0 to 255"
@@ -3017,7 +3017,7 @@ msgstr "command \"$command\" exit status $number"
 #
 #       $Command        The offending command.
 #
-#: libaegis/os/waitpid_st.cc:64
+#: libaegis/os/waitpid_st.cc:63
 #, fuzzy
 msgid "command \"$command\" stopped"
 msgstr "command \"$command\" stopped"
@@ -3030,7 +3030,7 @@ msgstr "command \"$command\" stopped"
 #       $Command        The offending command.
 #       $Signal         The name of the terminating signal.
 #
-#: libaegis/os/waitpid_st.cc:80
+#: libaegis/os/waitpid_st.cc:79
 #, fuzzy
 msgid "command \"$command\" terminated by $signal"
 msgstr "command \"$command\" terminated by $signal"
@@ -3043,7 +3043,7 @@ msgstr "command \"$command\" terminated by $signal"
 #       $Command        The offending command.
 #       $Signal         The name of the terminating signal.
 #
-#: libaegis/os/waitpid_st.cc:86
+#: libaegis/os/waitpid_st.cc:85
 #, fuzzy
 msgid "command \"$command\" terminated by $signal (core dumped)"
 msgstr "command \"$command\" terminated by $signal (core dumped)"
@@ -3052,7 +3052,7 @@ msgstr "command \"$command\" terminated by $signal (core dumped)"
 # TRANSLATION REQUIRED
 # This error message is issued when the command line is too short.
 #
-#: libaegis/help.cc:296
+#: libaegis/help.cc:294
 #, fuzzy
 msgid "command line too short"
 msgstr "command line too short"
@@ -3064,7 +3064,7 @@ msgstr "command line too short"
 #
 #       $name           The offending compression algorithm name.
 #
-#: libaegis/compres_algo.cc:65
+#: libaegis/compres_algo.cc:63
 #, fuzzy
 msgid "compression algorithm \"$name\" unknown"
 msgstr "compression algorithm \"$name\" unknown"
@@ -3093,8 +3093,8 @@ msgstr ""
 #
 #       $Name           The offending encoding name.
 #
-#: aedist/open.cc:86 aepatch/slurp.cc:107 libaegis/output/conten_encod.cc:65
-#: test_cpio/main.cc:113
+#: aedist/open.cc:84 aepatch/slurp.cc:105 libaegis/output/conten_encod.cc:64
+#: test_cpio/main.cc:111
 #, fuzzy
 msgid "content transfer encoding $name unknown"
 msgstr "content transfer encoding \"$name\" unknown"
@@ -3104,7 +3104,7 @@ msgstr "content transfer encoding \"$name\" unknown"
 # This progress message is issued for aecp file when aecp completes
 # successfully.
 #
-#: aegis/aecp.cc:761 aegis/aecp.cc:2063
+#: aegis/aecp.cc:734 aegis/aecp.cc:2035
 #, fuzzy
 msgid "copied $filename"
 msgstr "file \"$filename\" copied"
@@ -3114,7 +3114,7 @@ msgstr "file \"$filename\" copied"
 # This progress message is issued when aenrls creates a copy of the
 # baseline in the new project.
 #
-#: aegis/aenrls.cc:848
+#: aegis/aenrls.cc:850
 #, fuzzy
 msgid "copy baseline"
 msgstr "copying baseline"
@@ -3124,7 +3124,7 @@ msgstr "copying baseline"
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1164
+#: aegis/aeib.cc:1150
 #, fuzzy
 msgid "copy baseline to integration directory"
 msgstr "copying baseline to integration directory"
@@ -3134,7 +3134,7 @@ msgstr "copying baseline to integration directory"
 # This progress message is issued when copying the change source files
 # during an aechown command.
 #
-#: aegis/aechown.cc:333 aegis/aeclone.cc:491
+#: aegis/aechown.cc:315 aegis/aeclone.cc:468
 #, fuzzy
 msgid "copy change source files"
 msgstr "copying change source files"
@@ -3147,7 +3147,7 @@ msgstr "copying change source files"
 #       $Number         The number of files copied.
 #                       (Optional)
 #
-#: aegis/aecp.cc:2107
+#: aegis/aecp.cc:2079
 #, fuzzy
 msgid "copy file complete"
 msgstr "copied $number ${plural $number files file}"
@@ -3161,7 +3161,7 @@ msgstr "copied $number ${plural $number files file}"
 #
 #       $File_Name      Name of the file removed from the change.
 #
-#: aegis/aecpu.cc:681
+#: aegis/aecpu.cc:650
 #, fuzzy
 msgid "copy file undo $filename complete"
 msgstr "file \"$filename\" no longer being modified"
@@ -3170,7 +3170,7 @@ msgstr "file \"$filename\" no longer being modified"
 # This progress message is issued by aeimport when it starts to copy the
 # history fierls from the old repository into the project history tree.
 #
-#: aeimport/import.cc:523
+#: aeimport/import.cc:522
 msgid "copy history files"
 msgstr ""
 "Copiem fiºierele de istorie din depozit extern în arborele istoric al "
@@ -3184,7 +3184,7 @@ msgstr ""
 #       $File_Name1     The name of the source file.
 #       $File_Name2     The name of the destination file.
 #
-#: libaegis/file.cc:82
+#: libaegis/file.cc:80
 msgid "cp $filename1 $filename2: $errno"
 msgstr "cp \"$filename1\" \"$filename2\": $errno"
 
@@ -3193,7 +3193,7 @@ msgstr "cp \"$filename1\" \"$filename2\": $errno"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/file/from_string.cc:47 libaegis/gif/close.cc:418
+#: libaegis/file/from_string.cc:45
 msgid "create $filename: $errno"
 msgstr "create \"$filename\": $errno"
 
@@ -3202,7 +3202,7 @@ msgstr "create \"$filename\": $errno"
 # This progress message is issued when Aegis creates the symbolic links
 # from the development directory which point to the baseline.
 #
-#: libaegis/change/build/symlinks.cc:994
+#: libaegis/change/build/symlinks.cc:1063
 #, fuzzy
 msgid "creating symbolic links to baseline"
 msgstr ""
@@ -3217,7 +3217,7 @@ msgstr ""
 #
 #       $Number         The change number of the current integration.
 #
-#: aegis/aeib.cc:904
+#: aegis/aeib.cc:890
 #, fuzzy
 msgid "currently integrating $number"
 msgstr ""
@@ -3231,7 +3231,7 @@ msgstr ""
 #
 #       $Name           The offending string.
 #
-#: aegis/aecp.cc:947 libaegis/help/date_unknown.cc:33
+#: aegis/aecp.cc:920 libaegis/help/date_unknown.cc:31
 #, fuzzy
 msgid "date $name unknown"
 msgstr "the string \"$name\" does not look like a date"
@@ -3241,8 +3241,8 @@ msgstr "the string \"$name\" does not look like a date"
 # which is in the future.  Unlike times in the past, the answer could
 # change at a later date.  This is Damon Poole's "time safe" property.
 #
-#: aedist/send.cc:917 aegis/aecp.cc:429 aegis/aecp.cc:1261 aepatch/send.cc:517
-#: aetar/send.cc:493 libaegis/change/identifi_sub/set_change.cc:73
+#: aedist/send.cc:918 aegis/aecp.cc:402 aegis/aecp.cc:1234 aepatch/send.cc:515
+#: aetar/send.cc:492 libaegis/change/identifi_sub/set_change.cc:71
 msgid "date in the future"
 msgstr ""
 "Avertisment: Diferenþa de datã specificatã este în viitor.  Aceeaºi comandã "
@@ -3259,7 +3259,7 @@ msgstr ""
 #       $Other          The delta number already associated with the
 #                       delta name.
 #
-#: aegis/aedn.cc:360
+#: aegis/aedn.cc:326
 #, fuzzy
 msgid "delta $name in use"
 msgstr ""
@@ -3273,9 +3273,9 @@ msgstr ""
 #
 #       $Number         The offending delta number.
 #
-#: aedist/send.cc:579 aegis/aecp.cc:211 aegis/aecp.cc:923 aegis/aedn.cc:203
-#: aepatch/send.cc:337 aetar/send.cc:291
-#: libaegis/change/identifi_sub/cmd_lin_par.cc:85
+#: aedist/send.cc:580 aegis/aecp.cc:184 aegis/aecp.cc:896 aegis/aedn.cc:169
+#: aepatch/send.cc:335 aetar/send.cc:290
+#: libaegis/change/identifi_sub/cmd_lin_par.cc:83
 #, fuzzy
 msgid "delta $number out of range"
 msgstr ""
@@ -3289,7 +3289,7 @@ msgstr ""
 #       $Name           The name of the delta.  (Optional)
 #       $Number         The number of the delta.  (Optional)
 #
-#: aegis/aedn.cc:443
+#: aegis/aedn.cc:409
 #, fuzzy
 msgid "delta name complete"
 msgstr "delta $number may now be referred to as delta \"$name\""
@@ -3309,7 +3309,7 @@ msgstr "the description field has not been set"
 # TRANSLATION REQUIRED
 # This progress message is issued when aedb completes successfully.
 #
-#: aegis/aedb.cc:445
+#: aegis/aedb.cc:421
 #, fuzzy
 msgid "develop begin complete"
 msgstr "user \"$user\" has begun development"
@@ -3318,7 +3318,7 @@ msgstr "user \"$user\" has begun development"
 # TRANSLATION REQUIRED
 # This progress message is issued when aedbu completes successfully.
 #
-#: aegis/aedbu.cc:392
+#: aegis/aedbu.cc:334
 #, fuzzy
 msgid "develop begin undo complete"
 msgstr "no longer being developed"
@@ -3329,7 +3329,7 @@ msgstr "no longer being developed"
 # been found.  Because they are often grouped, as many errors as
 # possible are found before aede aborts.
 #
-#: aegis/aede.cc:1097
+#: aegis/aede.cc:1083
 #, fuzzy
 msgid "develop end fail"
 msgstr ""
@@ -3340,7 +3340,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This progress message is issued when aedeu completes successfully.
 #
-#: aegis/aedeu.cc:394
+#: aegis/aedeu.cc:374
 #, fuzzy
 msgid "develop end undo complete"
 msgstr "development resumed"
@@ -3350,7 +3350,7 @@ msgstr "development resumed"
 # This error message is issued when a developer attempts to integrate her
 # own change, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:884
+#: aegis/aeib.cc:870
 #, fuzzy
 msgid "developer may not integrate"
 msgstr "the developer of a change may not also integrate it"
@@ -3360,7 +3360,7 @@ msgstr "the developer of a change may not also integrate it"
 # This error message is issued when a developer attempts to review her
 # own change, and the project is configured to disallow this.
 #
-#: aegis/aerb.cc:278 aegis/aerbu.cc:232 aegis/aerf.cc:154 aegis/aerp.cc:153
+#: aegis/aerb.cc:247 aegis/aerbu.cc:213 aegis/aerf.cc:134 aegis/aerp.cc:133
 #, fuzzy
 msgid "developer may not review"
 msgstr "the developer of a change may not also review it"
@@ -3369,7 +3369,7 @@ msgstr "the developer of a change may not also review it"
 # TRANSLATION REQUIRED
 # This message is issued when development builds are completed.
 #
-#: aegis/aeb.cc:587
+#: aegis/aeb.cc:569
 #, fuzzy
 msgid "development build complete"
 msgstr "development build complete ${date %H:%M}"
@@ -3378,7 +3378,7 @@ msgstr "development build complete ${date %H:%M}"
 # TRANSLATION REQUIRED
 # This message is issued when development builds are commenced.
 #
-#: aegis/aeb.cc:576
+#: aegis/aeb.cc:558
 #, fuzzy
 msgid "development build started"
 msgstr "development build started ${date %H:%M}"
@@ -3387,7 +3387,7 @@ msgstr "development build started ${date %H:%M}"
 # TRANSLATION REQUIRED
 # This progress message is issued when aede completes successfully.
 #
-#: aegis/aede.cc:1237
+#: aegis/aede.cc:1223
 #, fuzzy
 msgid "development completed"
 msgstr "Dezvoltare terminatã"
@@ -3401,7 +3401,7 @@ msgstr "Dezvoltare terminatã"
 #       $File_Name      The absolute path of the generated development
 #                       directory.
 #
-#: aegis/aechown.cc:307 aegis/aeclone.cc:453 aegis/aedb.cc:331
+#: aegis/aechown.cc:289 aegis/aeclone.cc:430 aegis/aedb.cc:307
 #: libaegis/project/new_branch.cc:133
 #, fuzzy
 msgid "development directory \"$filename\""
@@ -3415,7 +3415,7 @@ msgstr "development directory \"$filename\""
 #       $Number         The number of errors found.
 #                       (Optional)
 #
-#: aegis/aed.cc:407 aegis/aed.cc:1078
+#: aegis/aed.cc:376 aegis/aed.cc:1047
 #, fuzzy
 msgid "diff fail"
 msgstr "found $number error${plural $number s}, no files were differenced"
@@ -3426,7 +3426,7 @@ msgstr "found $number error${plural $number s}, no files were differenced"
 # differenced.  Can occur in both the 'being developed' and 'being
 # integrated' states.
 #
-#: aegis/aede.cc:598 aegis/aeip.cc:700
+#: aegis/aede.cc:584 aegis/aeip.cc:666
 #, fuzzy
 msgid "diff required"
 msgstr ""
@@ -3437,7 +3437,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This progress message is issued when the aed command completes successfully.
 #
-#: aegis/aed.cc:2029
+#: aegis/aed.cc:2021
 #, fuzzy
 msgid "difference complete"
 msgstr "difference complete"
@@ -3447,7 +3447,7 @@ msgstr "difference complete"
 # This error message is issued when an option which must be a relative
 # directory is specified as an absolute directory.
 #
-#: aegis/aecd.cc:139
+#: aegis/aecd.cc:121
 #, fuzzy
 msgid "dir must be rel"
 msgstr "directory must be relative (must not start with /)"
@@ -3462,10 +3462,10 @@ msgstr "directory must be relative (must not start with /)"
 #       $Number         The number of files found in the directory
 #                       (Optional)
 #
-#: aegis/aecp.cc:1331 aegis/aecp.cc:1481 aegis/aecpu.cc:425 aegis/aemt.cc:450
-#: aegis/aemtu.cc:412 aegis/aemvu.cc:391 aegis/aenf.cc:560 aegis/aenfu.cc:420
-#: aegis/aentu.cc:438 aegis/aerm.cc:478 aegis/aermu.cc:453 aegis/aet.cc:964
-#: aegis/aet.cc:1832
+#: aegis/aecp.cc:1304 aegis/aecp.cc:1454 aegis/aecpu.cc:394 aegis/aemt.cc:416
+#: aegis/aemtu.cc:378 aegis/aemvu.cc:356 aegis/aenf.cc:530 aegis/aenfu.cc:386
+#: aegis/aentu.cc:404 aegis/aerm.cc:444 aegis/aermu.cc:419 aegis/aet.cc:934
+#: aegis/aet.cc:1802
 #, fuzzy
 msgid "directory $filename contains no relevant files"
 msgstr ""
@@ -3477,7 +3477,7 @@ msgstr ""
 # This progress message is issued when aeipass is deleting the
 # development directory and the old baseline directory.
 #
-#: aegis/aeip.cc:2165
+#: aegis/aeip.cc:2185
 msgid "discard old directories"
 msgstr "renunþã la directoarele vechi"
 
@@ -3496,7 +3496,7 @@ msgstr "division by zero"
 # options are used with the new modern better improved preferred -version
 # option.
 #
-#: aegis/aenpr.cc:372 aegis/aenrls.cc:321
+#: aegis/aenpr.cc:372 aegis/aenrls.cc:323
 #, fuzzy
 msgid "don't mix old and new version options"
 msgstr ""
@@ -3511,7 +3511,7 @@ msgstr ""
 #
 #: libaegis/change/develop_direct/set.cc:61
 #: libaegis/change/integra_direct/set.cc:55 libaegis/change/top_path/set.cc:68
-#: libaegis/help.cc:345 libaegis/project/home_path/set.cc:55
+#: libaegis/help.cc:343 libaegis/project/home_path/set.cc:53
 #, fuzzy
 msgid "duplicate $name option"
 msgstr "duplicate $name option, you may only give one"
@@ -3522,7 +3522,7 @@ msgstr "duplicate $name option, you may only give one"
 # user has already reviewed this change once since the last develop end.
 # (This can occur when the review_policy_command is being used.)
 #
-#: aegis/aerp.cc:144
+#: aegis/aerp.cc:124
 #, fuzzy
 msgid "duplicate review"
 msgstr "you may not review the same change twice"
@@ -3532,7 +3532,7 @@ msgstr "you may not review the same change twice"
 # This error message is issued when an unterminated comment is seen.
 # Comments may not span input files.
 #
-#: libaegis/aer/lex.cc:660 libaegis/meta_lex.cc:651
+#: libaegis/aer/lex.cc:660 libaegis/meta_lex.cc:649
 #, fuzzy
 msgid "end-of-file within comment"
 msgstr "end-of-file within comment"
@@ -3542,7 +3542,7 @@ msgstr "end-of-file within comment"
 # This error message is issued when an unterminated string is detected.
 # Strings may not span input files.
 #
-#: libaegis/aer/lex.cc:393 libaegis/meta_lex.cc:334
+#: libaegis/aer/lex.cc:393 libaegis/meta_lex.cc:332
 #, fuzzy
 msgid "end-of-file within string"
 msgstr "end-of-file within string"
@@ -3552,7 +3552,7 @@ msgstr "end-of-file within string"
 # This error message is issued when an unterminated string is detected.
 # Strings may not span multiple input lines.
 #
-#: libaegis/aer/lex.cc:398 libaegis/meta_lex.cc:339
+#: libaegis/aer/lex.cc:398 libaegis/meta_lex.cc:337
 #, fuzzy
 msgid "end-of-line within string"
 msgstr "end-of-line within string"
@@ -3575,8 +3575,8 @@ msgstr "environment variable \"$name\" not set"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aeget/get/command.cc:46 libaegis/os/execute_retc.cc:205
-#: libaegis/output/pager.cc:127
+#: aeget/get/command.cc:44 libaegis/os/execute_retc.cc:226
+#: libaegis/output/pager.cc:126
 msgid "exec \"$filename\": $errno"
 msgstr "exec \"$filename\": $errno"
 
@@ -3586,7 +3586,7 @@ msgstr "exec \"$filename\": $errno"
 #
 #       $Number         The number of tests which failed.
 #
-#: aegis/aet.cc:380 aegis/aet.cc:382
+#: aegis/aet.cc:350 aegis/aet.cc:352
 #, fuzzy
 msgid "failed $number tests"
 msgstr "failed $number test${plural $number s}"
@@ -3596,7 +3596,7 @@ msgstr "failed $number test${plural $number s}"
 # This error message is issued when a fatal error occurs while Aegis is
 # attempting to recover from an earlier fatal error.
 #
-#: libaegis/undo.cc:234
+#: libaegis/undo.cc:232
 #, fuzzy
 msgid "fatal error during fatal error recovery"
 msgstr ""
@@ -3668,7 +3668,7 @@ msgstr "fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 #       $Number1        The number of tests available.
 #       $Number2        The number of tests requested by the user.
 #
-#: aegis/aet.cc:179
+#: aegis/aet.cc:149
 #, fuzzy
 msgid "few candidate tests"
 msgstr ""
@@ -3682,7 +3682,7 @@ msgstr ""
 #
 #       $Name           The name of the offending field.
 #
-#: libaegis/meta_parse.cc:418
+#: libaegis/meta_parse.cc:416
 #, fuzzy
 msgid "field \"$name\" redefined"
 msgstr "field \"$name\" redefined"
@@ -3694,7 +3694,7 @@ msgstr "field \"$name\" redefined"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/file/name_check.cc:666
+#: libaegis/change/file/name_check.cc:809
 #, fuzzy
 msgid "file \"$filename\" bombs filters"
 msgstr ""
@@ -3708,7 +3708,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:602
+#: aegis/aeclean.cc:574
 #, fuzzy
 msgid "file \"$filename\" does not exist"
 msgstr "file \"$filename\" does not exist, and yet is a change source file"
@@ -3720,7 +3720,7 @@ msgstr "file \"$filename\" does not exist, and yet is a change source file"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/file/name_check.cc:578
+#: libaegis/change/file/name_check.cc:721
 #, fuzzy
 msgid "file \"$filename\" is log file"
 msgstr "file \"$filename\" duplicates log file name"
@@ -3734,7 +3734,7 @@ msgstr "file \"$filename\" duplicates log file name"
 #       $File_Name      The name of the offending file.
 #       $Number         The change number of the change which locked the file.
 #
-#: aegis/aede.cc:715 aegis/aede.cc:822 aegis/aede.cc:851
+#: aegis/aede.cc:701 aegis/aede.cc:808 aegis/aede.cc:837
 #, fuzzy
 msgid "file \"$filename\" locked for change $number"
 msgstr "file \"$filename\" locked for change $number, try again later"
@@ -3748,7 +3748,7 @@ msgstr "file \"$filename\" locked for change $number, try again later"
 #       $File_Name      The name of the offending file.
 #       $PArt           The directory part in question.
 #
-#: libaegis/change/file/name_check.cc:675
+#: libaegis/change/file/name_check.cc:818
 #, fuzzy
 msgid "file \"$filename\" part \"$part\" bombs filters"
 msgstr ""
@@ -3763,7 +3763,7 @@ msgstr ""
 #       $File_Name      The name of the offending file.
 #       $PArt           The directory part in question.
 #
-#: libaegis/change/file/name_check.cc:619
+#: libaegis/change/file/name_check.cc:762
 #, fuzzy
 msgid "file \"$filename\" part \"$part\" contains illegal characters"
 msgstr "file \"$filename\" path element \"$part\" contains illegal characters"
@@ -3776,7 +3776,7 @@ msgstr "file \"$filename\" path element \"$part\" contains illegal characters"
 #       $File_Name      The name of the offending file.
 #       $PArt           The directory part in question.
 #
-#: libaegis/change/file/name_check.cc:651
+#: libaegis/change/file/name_check.cc:794
 #, fuzzy
 msgid "file \"$filename\" part \"$part\" contains shell special characters"
 msgstr ""
@@ -3790,7 +3790,7 @@ msgstr ""
 #       $File_Name      The name of the offending file.
 #       $PArt           The directory part in question.
 #
-#: libaegis/change/file/name_check.cc:587
+#: libaegis/change/file/name_check.cc:730
 #, fuzzy
 msgid "file \"$filename\" part \"$part\" is log file"
 msgstr "file \"$filename\" path element \"$part\" duplicates log file name"
@@ -3804,7 +3804,7 @@ msgstr "file \"$filename\" path element \"$part\" duplicates log file name"
 #       $PArt           The directory part in question.
 #       $SUGgest        Suggested alternative.
 #
-#: libaegis/change/file/name_check.cc:484
+#: libaegis/change/file/name_check.cc:628
 #, fuzzy
 msgid "file \"$filename\" part \"$part\" not suitable for DOS"
 msgstr ""
@@ -3819,7 +3819,7 @@ msgstr ""
 #       $File_Name      The name of the offending file.
 #       $PArt           The directory part in question.
 #
-#: libaegis/change/file/name_check.cc:513
+#: libaegis/change/file/name_check.cc:657
 #, fuzzy
 msgid "file \"$filename\" part \"$part\" not suitable for Windows"
 msgstr "file \"$filename\" path element \"$part\" not suitable for Windows"
@@ -3835,7 +3835,7 @@ msgstr "file \"$filename\" path element \"$part\" not suitable for Windows"
 #                       (Optional)
 #       $SUGgest        Suggested abbreviated filename (optional).
 #
-#: libaegis/change/file/name_check.cc:558
+#: libaegis/change/file/name_check.cc:701
 #, fuzzy
 msgid ""
 "file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead"
@@ -3853,7 +3853,7 @@ msgstr ""
 #                       (Optional)
 #       $SUGgest        Suggested abbreviated filename (optional).
 #
-#: libaegis/change/file/name_check.cc:548
+#: libaegis/change/file/name_check.cc:691
 #, fuzzy
 msgid "file \"$filename\" too long, suggest \"$suggest\" instead"
 msgstr "file \"$filename\" too long (by $number), suggest \"$suggest\" instead"
@@ -3866,8 +3866,8 @@ msgstr "file \"$filename\" too long (by $number), suggest \"$suggest\" instead"
 #       $File_Name      The name of the offending file.
 #       $File_Name2     The name of the conflicting file.  (Optional)
 #
-#: aegis/aemv.cc:215 aegis/aemv.cc:233 aegis/aenf.cc:659 aegis/aenf.cc:678
-#: aegis/aent.cc:546 aegis/aent.cc:565
+#: aegis/aemv.cc:186 aegis/aemv.cc:204 aegis/aenf.cc:629 aegis/aenf.cc:648
+#: aegis/aent.cc:517 aegis/aent.cc:536
 #, fuzzy
 msgid "file $filename directory name conflict"
 msgstr ""
@@ -3881,8 +3881,8 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aemt.cc:489 aegis/aemv.cc:141 aegis/aemv.cc:248 aegis/aenf.cc:703
-#: aegis/aent.cc:463 aegis/aerm.cc:544
+#: aegis/aemt.cc:455 aegis/aemv.cc:112 aegis/aemv.cc:219 aegis/aenf.cc:673
+#: aegis/aent.cc:434 aegis/aerm.cc:510
 #, fuzzy
 msgid "file $filename dup"
 msgstr "file \"$filename\" already in change"
@@ -3894,7 +3894,9 @@ msgstr "file \"$filename\" already in change"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/file/name_check.cc:609
+#: libaegis/change/file/name_check.cc:578
+#: libaegis/change/file/name_check.cc:594
+#: libaegis/change/file/name_check.cc:752
 #, fuzzy
 msgid "file name \"$filename\" contains illegal characters"
 msgstr "file name \"$filename\" contains illegal characters"
@@ -3906,7 +3908,7 @@ msgstr "file name \"$filename\" contains illegal characters"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/file/name_check.cc:641
+#: libaegis/change/file/name_check.cc:784
 #, fuzzy
 msgid "file name \"$filename\" contains shell special characters"
 msgstr "file name \"$filename\" contains shell special characters"
@@ -3919,7 +3921,7 @@ msgstr "file name \"$filename\" contains shell special characters"
 #       $File_Name      The name of the offending file.
 #       $SUGgest        Suggested alternative file name.
 #
-#: libaegis/change/file/name_check.cc:474
+#: libaegis/change/file/name_check.cc:618
 #, fuzzy
 msgid "file name \"$filename\" not suitable for DOS"
 msgstr ""
@@ -3932,7 +3934,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/file/name_check.cc:503
+#: libaegis/change/file/name_check.cc:647
 #, fuzzy
 msgid "file name \"$filename\" not suitable for Windows"
 msgstr "file name \"$filename\" not suitable for Windows "
@@ -3942,7 +3944,7 @@ msgstr "file name \"$filename\" not suitable for Windows "
 # This error message is issued when a file qualifier in a substitution
 # is an unknown name.  See (+++) above.
 #
-#: libaegis/sub/change/files.cc:107
+#: libaegis/sub/change/files.cc:105
 #, fuzzy
 msgid "file qualifier unknown"
 msgstr "file qualifier unknown"
@@ -3968,7 +3970,7 @@ msgstr "file type \"$name\" unknown"
 #       $Number         The number of files modified.
 #                       (Optional)
 #
-#: libaegis/change/history/trash.cc:116
+#: libaegis/change/history/trash.cc:114
 #, fuzzy
 msgid "files modified by history tool"
 msgstr ""
@@ -3983,7 +3985,7 @@ msgstr ""
 # This progress message is issued when aeimport starts going through
 # the history information looking for change sets.
 #
-#: aeimport/import.cc:335
+#: aeimport/import.cc:334
 #, fuzzy
 msgid "find change sets"
 msgstr ""
@@ -3996,7 +3998,7 @@ msgstr ""
 #
 #       $File_Name      The file to be fingerprinted
 #
-#: libaegis/os/fingerprint.cc:46
+#: libaegis/os/fingerprint.cc:44
 #, fuzzy
 msgid "fingerprint $filename: $errno"
 msgstr "fingerprint \"$filename\": $errno"
@@ -4069,7 +4071,7 @@ msgstr ""
 #
 #       $name   The function name.
 #
-#: aefind/function/needs.cc:38
+#: aefind/function/needs.cc:36
 msgid "function $name requires one argument"
 msgstr "funcþia $name cere un singur argument"
 
@@ -4079,7 +4081,7 @@ msgstr "funcþia $name cere un singur argument"
 #
 #       $name   The function name.
 #
-#: aefind/function/needs.cc:51
+#: aefind/function/needs.cc:49
 msgid "function $name requires two arguments"
 msgstr "funcþia $name cere exact douã argumente"
 
@@ -4087,7 +4089,7 @@ msgstr "funcþia $name cere exact douã argumente"
 # TRANSLATION REQUIRED
 # This error message is issued when a getcwd fails.
 #
-#: libaegis/os/pathname.cc:105
+#: libaegis/os/pathname.cc:104
 #, fuzzy
 msgid "getcwd: $errno"
 msgstr "get current directory: $errno"
@@ -4109,7 +4111,7 @@ msgstr "gid $number unknown"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
-#: libaegis/gonzo.cc:1053
+#: libaegis/gonzo.cc:1051
 #, fuzzy
 msgid "global state lock not available"
 msgstr "global state lock not available"
@@ -4134,7 +4136,7 @@ msgstr "group \"$name\" unknown"
 #
 #       $Name           The offending group name.
 #
-#: libaegis/help/grouptoopriv.cc:31
+#: libaegis/help/grouptoopriv.cc:29
 #, fuzzy
 msgid "group $name too privileged"
 msgstr "group \"$name\" is too privileged"
@@ -4148,7 +4150,7 @@ msgstr "group \"$name\" is too privileged"
 #       $ERRNO          Overridden to contain the error string from zlib
 #                       (but sometimes not, because the real errno has it)
 #
-#: libaegis/input/bunzip2.cc:37 libaegis/input/gunzip.cc:58
+#: libaegis/input/bunzip2.cc:38 libaegis/input/gunzip.cc:57
 #, fuzzy
 msgid "gunzip $filename: $errno"
 msgstr "while decompressing input from the \"$filename\" file: $errno"
@@ -4162,7 +4164,7 @@ msgstr "while decompressing input from the \"$filename\" file: $errno"
 #       $ERRNO          Overridden to contain the error string from zlib
 #                       (but sometimes not, because the real errno has it)
 #
-#: libaegis/output/bzip2.cc:35 libaegis/output/gzip.cc:44
+#: libaegis/output/bzip2.cc:35 libaegis/output/gzip.cc:43
 #, fuzzy
 msgid "gzip $filename: $errno"
 msgstr "while compressing output for the \"$filename\" file: $errno"
@@ -4173,7 +4175,7 @@ msgstr "while compressing output for the \"$filename\" file: $errno"
 # there are no files which are candidates of the options specified, or
 # the project may have no tests at all.
 #
-#: aegis/aet.cc:1206 aegis/aet.cc:1920
+#: aegis/aet.cc:1176 aegis/aet.cc:1890
 #, fuzzy
 msgid "has no tests"
 msgstr "this change requires tests before this command may be used"
@@ -4185,7 +4187,7 @@ msgstr "this change requires tests before this command may be used"
 #
 # $File_Name    The name of the source file.
 #
-#: libaegis/change/history/create_comma.cc:82
+#: libaegis/change/history/create_comma.cc:80
 #, fuzzy
 msgid "history create $filename"
 msgstr "adding the first version to the history of the \"$filename\" file"
@@ -4197,7 +4199,7 @@ msgstr "adding the first version to the history of the \"$filename\" file"
 #
 #       $name           The offending format name.
 #
-#: aeimport/format/find.cc:60
+#: aeimport/format/find.cc:58
 #, fuzzy
 msgid "history format \"$name\" unknown"
 msgstr "history format \"$name\" unknown"
@@ -4210,7 +4212,7 @@ msgstr "history format \"$name\" unknown"
 # $File_Name    The name of the source file.
 # $Edit         The version to be extracted (optional)
 #
-#: libaegis/change/history/get_command.cc:71
+#: libaegis/change/history/get_command.cc:70
 #, fuzzy
 msgid "history get $filename"
 msgstr "historical version $edit of the \"$filename\" file being recreated"
@@ -4222,7 +4224,7 @@ msgstr "historical version $edit of the \"$filename\" file being recreated"
 #
 # $File_Name    The name of the source file.
 #
-#: libaegis/change/history/label_commnd.cc:82
+#: libaegis/change/history/label_commnd.cc:80
 #, fuzzy
 msgid "history label $filename"
 msgstr "history of the \"$filename\" file head revision being labeled"
@@ -4231,7 +4233,7 @@ msgstr "history of the \"$filename\" file head revision being labeled"
 #
 # This fatal error message is issued when a lock is not available.
 #
-#: libaegis/project.cc:622
+#: libaegis/project.cc:626
 #, fuzzy
 msgid "history lock not available"
 msgstr "history lock not available"
@@ -4245,7 +4247,7 @@ msgstr "history lock not available"
 #               renames, even though the history file's UUID never
 #               changes.
 #
-#: libaegis/change/history/put_command.cc:80
+#: libaegis/change/history/put_command.cc:78
 #, fuzzy
 msgid "history put $filename"
 msgstr "adding another version to the history of the \"$filename\" file"
@@ -4256,7 +4258,7 @@ msgstr "adding another version to the history of the \"$filename\" file"
 # empty string.  It is meant to return a unique string to identify the
 # top-most version number in the history file.
 #
-#: libaegis/change/history/query_comman.cc:89
+#: libaegis/change/history/query_comman.cc:87
 #, fuzzy
 msgid "history_query_command return empty"
 msgstr ""
@@ -4270,7 +4272,7 @@ msgstr ""
 #
 #       $Name           The offending character, as a C octal escape sequence.
 #
-#: libaegis/input/crlf.cc:121
+#: libaegis/input/crlf.cc:119
 #, fuzzy
 msgid "illegal '$name' character"
 msgstr "illegal '$name' character"
@@ -4493,8 +4495,8 @@ msgstr "boolean value required for logical \"not\" (was given $name)"
 #       $Name2          The type name of the second operand.
 #
 #: libaegis/aer/value.cc:49 libaegis/aer/value/group.cc:126
-#: libaegis/aer/value/gstate.cc:120 libaegis/aer/value/list.cc:78
-#: libaegis/aer/value/passwd.cc:146 libaegis/aer/value/struct.cc:66
+#: libaegis/aer/value/gstate.cc:119 libaegis/aer/value/list.cc:79
+#: libaegis/aer/value/passwd.cc:146 libaegis/aer/value/struct.cc:67
 #: libaegis/aer/value/uconf.cc:131
 #, fuzzy
 msgid "illegal lookup ($name1[$name2])"
@@ -4612,7 +4614,7 @@ msgstr "illegal subtraction ($name1 - $name2)"
 # TRANSLATION REQUIRED
 # This progress message is issued when aeimport completed successfully.
 #
-#: aeimport/reconstruct.cc:188
+#: aeimport/reconstruct.cc:186
 #, fuzzy
 msgid "import complete"
 msgstr "import completed successfully"
@@ -4624,8 +4626,8 @@ msgstr "import completed successfully"
 #
 #       $Name           The name of the offending command line option.
 #
-#: libaegis/ael/change/inappropriat.cc:34
-#: libaegis/ael/project/inappropriat.cc:34
+#: libaegis/ael/change/inappropriat.cc:32
+#: libaegis/ael/project/inappropriat.cc:32
 #, fuzzy
 msgid "inappropriate $name option"
 msgstr "inappropriate use of the $name command line option"
@@ -4638,7 +4640,7 @@ msgstr "inappropriate use of the $name command line option"
 #       $Name           The offending info name.
 #       $Name_List      The list of possible alternatives.
 #
-#: libaegis/version.cc:165
+#: libaegis/version.cc:158
 #, fuzzy
 msgid "info $name ambig ($name_list)"
 msgstr "version information name \"$name\" ambiguous ($name_list)"
@@ -4650,7 +4652,7 @@ msgstr "version information name \"$name\" ambiguous ($name_list)"
 # You must not name files, and thus you must difference all files in the
 # change.
 #
-#: aegis/aed.cc:995
+#: aegis/aed.cc:964
 #, fuzzy
 msgid "int must diff all"
 msgstr ""
@@ -4663,7 +4665,7 @@ msgstr ""
 # the being 'integrated state' and files are named on the command line.
 # You must not name files, and thus you must run all tests in the change.
 #
-#: aegis/aet.cc:838
+#: aegis/aet.cc:808
 #, fuzzy
 msgid "int must test all"
 msgstr ""
@@ -4722,7 +4724,7 @@ msgstr "integer value required for bit-wise \"exclusive or\" (was given $name)"
 # TRANSLATION REQUIRED
 # This progress message is issued when aeib complete successfully.
 #
-#: aegis/aeib.cc:1320
+#: aegis/aeib.cc:1306
 #, fuzzy
 msgid "integrate begin complete"
 msgstr "integration has begun"
@@ -4732,7 +4734,7 @@ msgstr "integration has begun"
 # This verbose message is issued when integrate begin undo completes
 # successfully.
 #
-#: aegis/aeibu.cc:342
+#: aegis/aeibu.cc:319
 #, fuzzy
 msgid "integrate begin undo complete"
 msgstr "integrate begin undo complete, change returned to the '$state' state"
@@ -4741,7 +4743,7 @@ msgstr "integrate begin undo complete, change returned to the '$state' state"
 # TRANSLATION REQUIRED
 # This progress message is issued when aeifail completes successfully.
 #
-#: aegis/aeif.cc:540
+#: aegis/aeif.cc:517
 #, fuzzy
 msgid "integrate fail complete"
 msgstr "failed integration, returned to developer"
@@ -4750,7 +4752,7 @@ msgstr "failed integration, returned to developer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aeipass completes successfully.
 #
-#: aegis/aeip.cc:2185
+#: aegis/aeip.cc:2205
 #, fuzzy
 msgid "integrate pass complete"
 msgstr "integrate pass"
@@ -4762,7 +4764,7 @@ msgstr "integrate pass"
 #
 #       $Number         Number of fatal errors found.
 #
-#: aegis/aeip.cc:1315
+#: aegis/aeip.cc:1269
 #, fuzzy
 msgid "integrate pass fail"
 msgstr ""
@@ -4773,7 +4775,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This message is issued when integration builds are completed.
 #
-#: aegis/aeb.cc:525
+#: aegis/aeb.cc:507
 #, fuzzy
 msgid "integration build complete"
 msgstr "integration build complete ${date %H:%M}"
@@ -4782,7 +4784,7 @@ msgstr "integration build complete ${date %H:%M}"
 # TRANSLATION REQUIRED
 # This message is issued when integration builds are commenced.
 #
-#: aegis/aeb.cc:523
+#: aegis/aeb.cc:505
 #, fuzzy
 msgid "integration build started"
 msgstr "integration build started ${date %H:%M}"
@@ -4795,7 +4797,7 @@ msgstr "integration build started ${date %H:%M}"
 #
 #       $Signal         The name of the signal which interrupted us.
 #
-#: libaegis/os/interrupt.cc:50
+#: libaegis/os/interrupt.cc:49
 #, fuzzy
 msgid "interrupted by $signal"
 msgstr "interrupted by $signal"
@@ -4827,7 +4829,7 @@ msgstr ""
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
-#: aegis/aeip.cc:1389
+#: aegis/aeip.cc:1343
 #, fuzzy
 msgid "leave baseline"
 msgstr "please leave the baseline directory"
@@ -4839,7 +4841,7 @@ msgstr "please leave the baseline directory"
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
-#: aegis/aeip.cc:1385
+#: aegis/aeip.cc:1339
 #, fuzzy
 msgid "leave dev dir"
 msgstr "please leave the development directory"
@@ -4851,7 +4853,7 @@ msgstr "please leave the development directory"
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
-#: aegis/aeibu.cc:306 aegis/aeif.cc:140 aegis/aeip.cc:1387
+#: aegis/aeibu.cc:283 aegis/aeif.cc:117 aegis/aeip.cc:1341
 #, fuzzy
 msgid "leave int dir"
 msgstr "please leave the integration directory"
@@ -4861,7 +4863,7 @@ msgstr "please leave the integration directory"
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1154
+#: aegis/aeib.cc:1140
 #, fuzzy
 msgid "link baseline to integration directory"
 msgstr "linking baseline to integration directory"
@@ -4872,7 +4874,7 @@ msgstr "linking baseline to integration directory"
 #       $File_Name1     The name of the source file.
 #       $File_Name1     The name of the destination file.
 #
-#: libaegis/change/build/symlinks.cc:207 libaegis/os/link.cc:44
+#: libaegis/change/build/symlinks.cc:209 libaegis/os/link.cc:42
 msgid "link(\"$filename1\", \"$filename2\"): $errno"
 msgstr "link(\"$filename1\", \"$filename2\"): $errno"
 
@@ -4883,7 +4885,7 @@ msgstr "link(\"$filename1\", \"$filename2\"): $errno"
 #       $Name           The offending list name.
 #       $Name_List      A list of possible interpretations.  (Optional)
 #
-#: aegis/ael.cc:411 aexml/main.cc:198
+#: aegis/ael.cc:412 aexml/main.cc:193
 #, fuzzy
 msgid "list $name ambiguous"
 msgstr "list name \"$name\" is ambiguous ($name_list)"
@@ -4903,8 +4905,8 @@ msgstr "list value required (was given $name)"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
-#: libaegis/change/cstate/lock_prepare.cc:40
-#: libaegis/project/lock/prepare.cc:38 libaegis/user/ustate_lock.cc:54
+#: libaegis/change/cstate/lock_prepare.cc:38
+#: libaegis/project/lock/prepare.cc:36 libaegis/user/ustate_lock.cc:54
 #, fuzzy
 msgid "lock not available"
 msgstr "lock not available"
@@ -4916,7 +4918,7 @@ msgstr "lock not available"
 #
 #       $File_Name      The name of the log file.
 #
-#: libaegis/log.cc:287
+#: libaegis/log.cc:285
 #, fuzzy
 msgid "logging to $filename"
 msgstr "logging to \"$filename\""
@@ -4939,10 +4941,10 @@ msgstr "loop condition must be boolean (was given $name)"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aefind/descend.cc:78 aegis/aeip.cc:320 aels/list.cc:140 libaegis/dir.cc:64
-#: libaegis/dir_stack.cc:116
+#: aefind/descend.cc:76 aegis/aeip.cc:286 aels/list.cc:138 libaegis/dir.cc:62
+#: libaegis/dir_stack.cc:111
 msgid "lstat $filename: $errno"
-msgstr "$filename: $errno"
+msgstr "lstat $filename: $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -4952,7 +4954,7 @@ msgstr "$filename: $errno"
 #
 # $filename     The name of the offending file.
 #
-#: aegis/aemt.cc:522
+#: aegis/aemt.cc:488
 #, fuzzy
 msgid "make $filename transparent, fail, too deep"
 msgstr ""
@@ -4967,7 +4969,7 @@ msgstr ""
 #
 # $filename     The name of the offending file.
 #
-#: aegis/aemt.cc:582
+#: aegis/aemt.cc:548
 #, fuzzy
 msgid "make $filename transparent, fail, too shallow"
 msgstr ""
@@ -4981,7 +4983,7 @@ msgstr ""
 #
 # $filename     The name of the offending file.
 #
-#: aegis/aemt.cc:560
+#: aegis/aemt.cc:526
 #, fuzzy
 msgid "make $filename transparent, fail, trunk"
 msgstr ""
@@ -4993,7 +4995,7 @@ msgstr ""
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
-#: aegis/aemt.cc:323
+#: aegis/aemt.cc:289
 #, fuzzy
 msgid "make transparent bad state"
 msgstr ""
@@ -5007,7 +5009,7 @@ msgstr ""
 #
 # $number       The number of files (optional).
 #
-#: aegis/aemt.cc:776
+#: aegis/aemt.cc:742
 #, fuzzy
 msgid "make transparent complete"
 msgstr "making $number ${plural $number files file} transparent"
@@ -5021,7 +5023,7 @@ msgstr "making $number ${plural $number files file} transparent"
 #
 #       $File_Name      Name of the file removed from the change.
 #
-#: aegis/aemtu.cc:613
+#: aegis/aemtu.cc:580
 #, fuzzy
 msgid "make transparent undo $filename complete"
 msgstr "file \"$filename\" no longer being made transparent"
@@ -5052,7 +5054,7 @@ msgstr "making the development directory writable again"
 # This error message is issued when a number which looks like a floating
 # point constant has an incomplete exponent.
 #
-#: libaegis/aer/lex.cc:359 libaegis/meta_lex.cc:313
+#: libaegis/aer/lex.cc:359 libaegis/meta_lex.cc:311
 #, fuzzy
 msgid "malformed exponent"
 msgstr "malformed exponent"
@@ -5062,7 +5064,7 @@ msgstr "malformed exponent"
 # This error message is issued when a number which looks like a hex
 # constant is not complete.
 #
-#: libaegis/aer/lex.cc:273 libaegis/meta_lex.cc:195
+#: libaegis/aer/lex.cc:273 libaegis/meta_lex.cc:193
 #, fuzzy
 msgid "malformed hex constant"
 msgstr "malformed hex constant"
@@ -5075,7 +5077,7 @@ msgstr "malformed hex constant"
 #       $Name1          The type name of the first operand.
 #       $Name2          The type name of the second operand.
 #
-#: libaegis/aer/value/list.cc:66
+#: libaegis/aer/value/list.cc:67
 #, fuzzy
 msgid "may not assign to a list member ($name1[$name2])"
 msgstr "may not assign to a list member ($name1[$name2])"
@@ -5088,7 +5090,7 @@ msgstr "may not assign to a list member ($name1[$name2])"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aerm.cc:523
+#: aegis/aerm.cc:489
 #, fuzzy
 msgid "may not remove $filename"
 msgstr "file \"$filename\" may not be removed"
@@ -5101,7 +5103,7 @@ msgstr "file \"$filename\" may not be removed"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aent.cc:529
+#: aegis/aent.cc:500
 #, fuzzy
 msgid "may not test $filename"
 msgstr "file \"$filename\" may not be a test"
@@ -5112,7 +5114,7 @@ msgstr "file \"$filename\" may not be a test"
 #
 #       $Name           The name of the -Edit option.
 #
-#: libaegis/os/edit.cc:60
+#: libaegis/os/edit.cc:58
 #, fuzzy
 msgid "may not use $name in the background"
 msgstr "may not use $name in the background"
@@ -5124,7 +5126,7 @@ msgstr "may not use $name in the background"
 #       $Number         The number of files merged.
 #                       (Optional)
 #
-#: aegis/aed.cc:1546
+#: aegis/aed.cc:1515
 #, fuzzy
 msgid "merge complete"
 msgstr "merged $number file${plural $number s}, new 'aegis -Build' required"
@@ -5136,7 +5138,7 @@ msgstr "merged $number file${plural $number s}, new 'aegis -Build' required"
 #
 #       $Name           The offending command line argument.
 #
-#: libaegis/help.cc:302
+#: libaegis/help.cc:300
 #, fuzzy
 msgid "misplaced \"$name\" option"
 msgstr "misplaced \"$name\" option on the command line"
@@ -5148,7 +5150,7 @@ msgstr "misplaced \"$name\" option on the command line"
 #
 #       $File_Name      The offending command line argument.
 #
-#: libaegis/help.cc:277
+#: libaegis/help.cc:275
 #, fuzzy
 msgid "misplaced file name (\"$filename\")"
 msgstr "misplaced file name (\"$filename\") on command line"
@@ -5160,7 +5162,7 @@ msgstr "misplaced file name (\"$filename\") on command line"
 #
 #       $Number         The offending command line argument.
 #
-#: libaegis/help.cc:284
+#: libaegis/help.cc:282
 #, fuzzy
 msgid "misplaced number ($number)"
 msgstr "misplaced number ($number) on the command line"
@@ -5171,7 +5173,7 @@ msgstr "misplaced number ($number) on the command line"
 #       $File_Name      The name of the directory to be created.
 #       $Argument       The mode the directory is to be created.
 #
-#: libaegis/os/mkdir.cc:46
+#: libaegis/os/mkdir.cc:44
 msgid "mkdir(\"$filename\", $arg): $errno"
 msgstr "mkdir(\"$filename\", $arg): $errno"
 
@@ -5235,7 +5237,7 @@ msgstr "modulo by zero"
 #       $File_Name1     The name of the original file.
 #       $File_Name2     The name of the destination file.
 #
-#: aegis/aemv.cc:724
+#: aegis/aemv.cc:695
 #, fuzzy
 msgid "move $filename1 to $filename2 complete"
 msgstr "file \"$filename1\" moved to \"$filename2\""
@@ -5249,7 +5251,7 @@ msgstr "file \"$filename1\" moved to \"$filename2\""
 #
 #       $File_Name      Name of the file removed from the change.
 #
-#: aegis/aemvu.cc:637
+#: aegis/aemvu.cc:603
 #, fuzzy
 msgid "move file undo $filename complete"
 msgstr "file \"$filename\" no longer being moved"
@@ -5262,7 +5264,7 @@ msgstr "file \"$filename\" no longer being moved"
 # (A leading newline is a good idea.  Internal newlines are also a good
 # idea, because io_comment_append does not automatically wrap.)
 #
-#: aegis/aenc.cc:405
+#: aegis/aenc.cc:385
 #, fuzzy
 msgid "nc dflt hint"
 msgstr ""
@@ -5276,7 +5278,7 @@ msgstr ""
 #
 #       $Name           The user name of the new administrator.
 #
-#: aegis/aena.cc:180
+#: aegis/aena.cc:159
 #, fuzzy
 msgid "new administrator $name complete"
 msgstr "user \"$name\" is now an administrator"
@@ -5294,7 +5296,7 @@ msgstr "new alias \"$name\" created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenbr completes successfully.
 #
-#: libaegis/project/verbose/newbrancomp.cc:30
+#: libaegis/project/verbose/newbrancomp.cc:28
 #, fuzzy
 msgid "new branch complete"
 msgstr "created"
@@ -5303,7 +5305,7 @@ msgstr "created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenbru completes successfully.
 #
-#: aegis/aenbru.cc:306
+#: aegis/aenbru.cc:287
 #, fuzzy
 msgid "new branch undo complete"
 msgstr "removed"
@@ -5312,7 +5314,7 @@ msgstr "removed"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenc completes successfully.
 #
-#: libaegis/change/verbose/newchancomp.cc:30
+#: libaegis/change/verbose/newchancomp.cc:28
 #, fuzzy
 msgid "new change complete"
 msgstr "created"
@@ -5321,7 +5323,7 @@ msgstr "created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aencu completes successfully.
 #
-#: aegis/aencu.cc:240
+#: aegis/aedbu.cc:336 aegis/aencu.cc:216
 #, fuzzy
 msgid "new change undo complete"
 msgstr "removed"
@@ -5332,7 +5334,7 @@ msgstr "removed"
 #
 #       $Name           The user name of the new developer.
 #
-#: aegis/aend.cc:178
+#: aegis/aend.cc:159
 #, fuzzy
 msgid "new developer $name complete"
 msgstr "user \"$name\" is now a developer"
@@ -5341,7 +5343,7 @@ msgstr "user \"$name\" is now a developer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenf completes successfully
 #
-#: aegis/aenf.cc:868
+#: aegis/aenf.cc:838
 #, fuzzy
 msgid "new file $filename completed"
 msgstr "file \"$filename\" added"
@@ -5354,7 +5356,7 @@ msgstr "file \"$filename\" added"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/file/template.cc:231
+#: libaegis/change/file/template.cc:229
 #, fuzzy
 msgid "new file $filename not created"
 msgstr "the file \"$filename\" was not created"
@@ -5365,7 +5367,7 @@ msgstr "the file \"$filename\" was not created"
 #
 #       $File_Name      The name of a removed file.
 #
-#: aegis/aenfu.cc:599
+#: aegis/aenfu.cc:565
 #, fuzzy
 msgid "new file undo $filename complete"
 msgstr "new file \"$filename\" removed"
@@ -5380,7 +5382,7 @@ msgstr "new file \"$filename\" removed"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aenfu.cc:499
+#: aegis/aenfu.cc:465
 #, fuzzy
 msgid "new file undo fail"
 msgstr ""
@@ -5393,7 +5395,7 @@ msgstr ""
 #
 #       $Name           The user name of the new integrator.
 #
-#: aegis/aeni.cc:180
+#: aegis/aeni.cc:159
 #, fuzzy
 msgid "new integrator $name complete"
 msgstr "user \"$name\" is now an integrator"
@@ -5402,7 +5404,7 @@ msgstr "user \"$name\" is now an integrator"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenpr completes successfully.
 #
-#: libaegis/project/verbose/newprojcomp.cc:30
+#: libaegis/project/verbose/newprojcomp.cc:28
 #, fuzzy
 msgid "new project complete"
 msgstr "created"
@@ -5411,7 +5413,7 @@ msgstr "created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenrls completes successfully.
 #
-#: aegis/aenrls.cc:1013 aegis/aenrls.cc:1015
+#: aegis/aenrls.cc:1015 aegis/aenrls.cc:1017
 #, fuzzy
 msgid "new release complete"
 msgstr "created"
@@ -5422,7 +5424,7 @@ msgstr "created"
 #
 #       $Name           The user name of the new reviewer.
 #
-#: aegis/aenrv.cc:180
+#: aegis/aenrv.cc:159
 #, fuzzy
 msgid "new reviewer $name complete"
 msgstr "user \"$name\" is now a reviewer"
@@ -5431,7 +5433,7 @@ msgstr "user \"$name\" is now a reviewer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aent completes successfully.
 #
-#: aegis/aent.cc:729
+#: aegis/aent.cc:700
 #, fuzzy
 msgid "new test $filename complete"
 msgstr "file \"$filename\" new test"
@@ -5446,7 +5448,7 @@ msgstr "file \"$filename\" new test"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aent.cc:595
+#: aegis/aent.cc:566
 #, fuzzy
 msgid "new test failed"
 msgstr ""
@@ -5459,7 +5461,7 @@ msgstr ""
 #
 #       $File_Name      The name of the test removed.
 #
-#: aegis/aentu.cc:617
+#: aegis/aentu.cc:583
 #, fuzzy
 msgid "new test undo $filename complete"
 msgstr "file \"$filename\" new test undo"
@@ -5474,7 +5476,7 @@ msgstr "file \"$filename\" new test undo"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aentu.cc:517
+#: aegis/aentu.cc:483
 #, fuzzy
 msgid "new test undo fail"
 msgstr ""
@@ -5489,7 +5491,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aemv.cc:185
+#: aegis/aemv.cc:156
 #, fuzzy
 msgid "nil move $filename"
 msgstr "you may not move the \"$filename\" file on top of itself"
@@ -5503,11 +5505,11 @@ msgstr "you may not move the \"$filename\" file on top of itself"
 #       $Guess          The closest match found for the name.
 #
 #: aede-policy/validation/factory.cc:192 aefind/function.cc:103
-#: aelcf/main.cc:99 aelcf/main.cc:132 aelpf/main.cc:100 aelpf/main.cc:133
-#: aemakegen/target/factory.cc:74 libaegis/aer/expr/name.cc:132
-#: libaegis/meta_parse.cc:273 libaegis/meta_parse.cc:373
-#: libaegis/sub/change/number.cc:327 libaegis/sub/project.cc:100
-#: libaegis/sub/user.cc:114
+#: aelcf/main.cc:97 aelcf/main.cc:130 aelpf/main.cc:98 aelpf/main.cc:131
+#: aemakegen/target/factory.cc:77 libaegis/aer/expr/name.cc:133
+#: libaegis/meta_parse.cc:271 libaegis/meta_parse.cc:371
+#: libaegis/sub/change/number.cc:327 libaegis/sub/project.cc:98
+#: libaegis/sub/user.cc:112
 #, fuzzy
 msgid "no \"$name\", guessing \"$guess\""
 msgstr "the name \"$name\" is undefined, guessing you meant \"$guess\" instead"
@@ -5519,12 +5521,13 @@ msgstr "the name \"$name\" is undefined, guessing you meant \"$guess\" instead"
 #
 #       $File_Name      The offending file name.
 #
-#: aeannotate/annotate.cc:156 aegis/aecp.cc:586 aegis/aecp.cc:1575
-#: aegis/aecpu.cc:472 aegis/aed.cc:338 aegis/aed.cc:371 aegis/aed.cc:1063
-#: aegis/aefa.cc:117 aegis/aemt.cc:527 aegis/aemtu.cc:459 aegis/aemv.cc:170
-#: aegis/aemvu.cc:438 aegis/aenfu.cc:475 aegis/aentu.cc:493 aegis/aerm.cc:569
-#: aegis/aermu.cc:506 aegis/aet.cc:1052 aegis/aet.cc:1851
+#: aeannotate/annotate.cc:181 aediff/diff.cc:256 aegis/aecp.cc:559
+#: aegis/aecp.cc:1548 aegis/aecpu.cc:441 aegis/aed.cc:307 aegis/aed.cc:340
+#: aegis/aed.cc:1032 aegis/aefa.cc:117 aegis/aemt.cc:493 aegis/aemtu.cc:425
+#: aegis/aemv.cc:141 aegis/aemvu.cc:403 aegis/aenfu.cc:441 aegis/aentu.cc:459
+#: aegis/aerm.cc:535 aegis/aermu.cc:472 aegis/aet.cc:1022 aegis/aet.cc:1821
 #: libaegis/change/identifi_sub/file_revisio.cc:108
+#: libaegis/change/identifi_sub/filerevuuid.cc:87
 msgid "no $filename"
 msgstr "fiºierul \"$filename\" nu existã"
 
@@ -5536,8 +5539,8 @@ msgstr "fiºierul \"$filename\" nu existã"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aed.cc:1301 aegis/aede.cc:644 aegis/aede.cc:745
-#: libaegis/change/file/promote.cc:143
+#: aegis/aed.cc:1270 aegis/aede.cc:630 aegis/aede.cc:731
+#: libaegis/change/file/promote.cc:141
 #, fuzzy
 msgid "no $filename in baseline"
 msgstr "file \"$filename\" no longer in baseline"
@@ -5552,10 +5555,11 @@ msgstr "file \"$filename\" no longer in baseline"
 #       $Guess          The best guess as to the most possible filename
 #                       the user may have meant.
 #
-#: aegis/aecp.cc:582 aegis/aecp.cc:1571 aegis/aecpu.cc:469 aegis/aefa.cc:112
-#: aegis/aemt.cc:503 aegis/aemtu.cc:456 aegis/aemv.cc:160 aegis/aemvu.cc:435
-#: aegis/aenfu.cc:466 aegis/aentu.cc:484 aegis/aerm.cc:560 aegis/aermu.cc:497
-#: aegis/aet.cc:1043 libaegis/change/identifi_sub/file_revisio.cc:104
+#: aediff/diff.cc:250 aegis/aecp.cc:555 aegis/aecp.cc:1544 aegis/aecpu.cc:438
+#: aegis/aefa.cc:112 aegis/aemt.cc:469 aegis/aemtu.cc:422 aegis/aemv.cc:131
+#: aegis/aemvu.cc:400 aegis/aenfu.cc:432 aegis/aentu.cc:450 aegis/aerm.cc:526
+#: aegis/aermu.cc:463 aegis/aet.cc:1013
+#: libaegis/change/identifi_sub/file_revisio.cc:104
 #, fuzzy
 msgid "no $filename, closest is $guess"
 msgstr "file \"$filename\" is unknown, closest is the \"$guess\" file"
@@ -5567,7 +5571,7 @@ msgstr "file \"$filename\" is unknown, closest is the \"$guess\" file"
 #
 #       $Name           The offending list name.
 #
-#: aede-policy/validation/factory.cc:197 aegis/ael.cc:390 aexml/main.cc:157
+#: aede-policy/validation/factory.cc:197 aegis/ael.cc:391 aexml/main.cc:152
 #, fuzzy
 msgid "no $name list"
 msgstr "list name \"$name\" unknown"
@@ -5579,7 +5583,7 @@ msgstr "list name \"$name\" unknown"
 #
 #       $Name           The offending project name.
 #
-#: libaegis/project/bind/existing.cc:190 libaegis/project/home_path/get.cc:47
+#: libaegis/project/bind/existing.cc:201 libaegis/project/home_path/get.cc:45
 #, fuzzy
 msgid "no $name project"
 msgstr "project \"$name\" unknown"
@@ -5592,7 +5596,7 @@ msgstr "project \"$name\" unknown"
 #       $Name           The offending project name.
 #       $Guess          The closest matching project name.
 #
-#: libaegis/project/bind/existing.cc:182
+#: libaegis/project/bind/existing.cc:193
 #, fuzzy
 msgid "no $name project, closest is $guess"
 msgstr "project \"$name\" unknown, closest is the \"$guess\" project"
@@ -5602,7 +5606,7 @@ msgstr "project \"$name\" unknown, closest is the \"$guess\" project"
 # This error message is issued if no action was specified on the aesvt
 # command line.  Exactly one is required.
 #
-#: aesvt/main.cc:325
+#: aesvt/main.cc:323
 #, fuzzy
 msgid "no action specified"
 msgstr "no action specified"
@@ -5612,7 +5616,7 @@ msgstr "no action specified"
 # This fatal error message is issued when an attempt is made to aechown
 # a branch.
 #
-#: aegis/aechown.cc:258
+#: aegis/aechown.cc:240
 #, fuzzy
 msgid "no branch chown"
 msgstr ""
@@ -5624,7 +5628,7 @@ msgstr ""
 # This information message is issued when aeb is invoked for a change in
 # a project which is configured to not require builds.
 #
-#: aegis/aeb.cc:348
+#: aegis/aeb.cc:330
 #, fuzzy
 msgid "no build required"
 msgstr "no build is required for changes to this project"
@@ -5633,8 +5637,8 @@ msgstr "no build is required for changes to this project"
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
 #
-#: aegis/aechown.cc:196 aegis/aeclone.cc:252 aegis/aedb.cc:280
-#: libaegis/change/identifi_sub/erro_no_chan.cc:30
+#: aegis/aechown.cc:178 aegis/aeclone.cc:229 aegis/aedb.cc:256
+#: libaegis/change/identifi_sub/erro_no_chan.cc:28
 #: libaegis/user/default.cc:241
 msgid "no change number"
 msgstr "trebuie sa daþi numãrul explicit pentru aceastã comandã"
@@ -5644,7 +5648,7 @@ msgstr "trebuie sa daþi numãrul explicit pentru aceastã comandã"
 # This fatal error message is issued when a user attempts to perform a
 # cross branch merge on a change in the "being integrated" state.
 #
-#: aegis/aed.cc:943
+#: aegis/aed.cc:912
 #, fuzzy
 msgid "no cross branch int merge"
 msgstr ""
@@ -5656,7 +5660,7 @@ msgstr ""
 #
 #       $Name           The offending delta name.
 #
-#: aegis/aecp.cc:443 aegis/aecp.cc:1275
+#: aegis/aecp.cc:416 aegis/aecp.cc:1248
 #: libaegis/change/history/delta_name/by.cc:90
 #: libaegis/change/history/delta_name/to_change.cc:90
 #: libaegis/project/delta2change.cc:57
@@ -5683,7 +5687,7 @@ msgstr "delta name \"$name\" unknown, closest is \"$guess\""
 #
 #       $Number         The offending delta number.
 #
-#: aegis/aedn.cc:318 aegis/aedn.cc:335
+#: aegis/aedn.cc:284 aegis/aedn.cc:301
 #: libaegis/change/history/delta2change.cc:53
 #, fuzzy
 msgid "no delta $number"
@@ -5694,7 +5698,7 @@ msgstr "delta $number unknown"
 # This error message is issued when a delta name should have been given
 # on the command line, and was not.
 #
-#: aegis/aedn.cc:273
+#: aegis/aedn.cc:239
 #, fuzzy
 msgid "no delta name"
 msgstr "no delta name specified"
@@ -5706,7 +5710,7 @@ msgstr "no delta name specified"
 # does not yet have an integrations, and so nothing to attache a delta
 # name to.
 #
-#: aegis/aedn.cc:344
+#: aegis/aedn.cc:310
 #, fuzzy
 msgid "no delta yet"
 msgstr ""
@@ -5730,7 +5734,7 @@ msgstr ""
 # This information message is issued when the aed command is run for a
 # change which is in a project configured not to use aed.
 #
-#: aegis/aed.cc:215 aegis/aed.cc:1569
+#: aegis/aed.cc:184 aegis/aed.cc:1538
 #, fuzzy
 msgid "no diff required"
 msgstr ""
@@ -5745,7 +5749,7 @@ msgstr ""
 #
 #       $Name           The name of the -Output option.
 #
-#: aegis/aecp.cc:543 aegis/aecp.cc:1442
+#: aegis/aecp.cc:516 aegis/aecp.cc:1415
 #, fuzzy
 msgid "no dir with $name"
 msgstr "may not name directories and use the $name option"
@@ -5754,11 +5758,11 @@ msgstr "may not name directories and use the $name option"
 # This error message is issued when a command which requires file names
 # on the command line is not given any.
 #
-#: aeannotate/annotate.cc:739 aegis/aecp.cc:316 aegis/aecp.cc:1056
-#: aegis/aecpu.cc:243 aegis/aecpu.cc:501 aegis/aefa.cc:217 aegis/aefa.cc:483
-#: aegis/aefa.cc:783 aegis/aemt.cc:281 aegis/aemtu.cc:238 aegis/aemtu.cc:488
-#: aegis/aemvu.cc:228 aegis/aenf.cc:334 aegis/aenfu.cc:250 aegis/aentu.cc:266
-#: aegis/aerm.cc:287 aegis/aermu.cc:283 aesubunit/subunit.cc:208
+#: aeannotate/annotate.cc:762 aegis/aecp.cc:289 aegis/aecp.cc:1029
+#: aegis/aecpu.cc:212 aegis/aecpu.cc:470 aegis/aefa.cc:217 aegis/aefa.cc:483
+#: aegis/aefa.cc:783 aegis/aemt.cc:247 aegis/aemtu.cc:204 aegis/aemtu.cc:454
+#: aegis/aemvu.cc:193 aegis/aenf.cc:304 aegis/aenfu.cc:216 aegis/aentu.cc:232
+#: aegis/aerm.cc:253 aegis/aermu.cc:249 aesubunit/subunit.cc:206
 msgid "no file names"
 msgstr "nici un nume de fiºier nu a fost specificat în linia de comandã"
 
@@ -5769,8 +5773,8 @@ msgstr "nici un nume de fiºier nu a fost specificat în linia de comandã"
 #
 #       $Name           The name of the conflicting option.
 #
-#: aegis/aet.cc:677 aegis/aet.cc:690 aegis/aet.cc:711 aegis/aet.cc:1659
-#: aegis/aet.cc:1674
+#: aegis/aet.cc:647 aegis/aet.cc:660 aegis/aet.cc:681 aegis/aet.cc:1629
+#: aegis/aet.cc:1644
 #, fuzzy
 msgid "no file with $name"
 msgstr "may not name files and use the $name option"
@@ -5779,7 +5783,7 @@ msgstr "may not name files and use the $name option"
 # This error message is issued when an otherwise valid command is
 # used for a change which does not yet have any files attached to it.
 #
-#: aegis/aeb.cc:278 aegis/aed.cc:971 aegis/aede.cc:264
+#: aegis/aeb.cc:260 aegis/aed.cc:940 aegis/aede.cc:244
 msgid "no files"
 msgstr ""
 "aceastã schimbare nu are nici un fiºier, trebuie sã adãugaþi câteva înainte "
@@ -5795,7 +5799,7 @@ msgstr ""
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aecp.cc:596 aegis/aecp.cc:1605
+#: aegis/aecp.cc:569 aegis/aecp.cc:1578
 #, fuzzy
 msgid "no files copied"
 msgstr "found $number fatal error${plural $number s}, no files copied"
@@ -5810,7 +5814,7 @@ msgstr "found $number fatal error${plural $number s}, no files copied"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aecpu.cc:509 aegis/aemtu.cc:496 aegis/aemvu.cc:476
+#: aegis/aecpu.cc:478 aegis/aemtu.cc:462 aegis/aemvu.cc:441
 #, fuzzy
 msgid "no files uncopied"
 msgstr ""
@@ -5822,7 +5826,7 @@ msgstr ""
 # This fatal error message is issued when aesvt finds no history
 # file on the command line.
 #
-#: aesvt/main.cc:257
+#: aesvt/main.cc:255
 #, fuzzy
 msgid "no history file name specified"
 msgstr "no history file name specified"
@@ -5832,7 +5836,7 @@ msgstr "no history file name specified"
 # This fatal error message is issued when aeimport finds no history
 # files in the directory tree specified on the command line.
 #
-#: aeimport/import.cc:313
+#: aeimport/import.cc:312
 #, fuzzy
 msgid "no history files found"
 msgstr "nici un fiºier de istorie nu a fost gãsit sub directorul specificat"
@@ -5844,7 +5848,7 @@ msgstr "nici un fiºier de istorie nu a fost gãsit sub directorul specificat"
 #
 #       $Name           The offending info name.
 #
-#: libaegis/version.cc:148
+#: libaegis/version.cc:141
 #, fuzzy
 msgid "no info $name"
 msgstr "version information name \"$name\" unknown"
@@ -5854,7 +5858,7 @@ msgstr "version information name \"$name\" unknown"
 # This error message is issued if the assvt -checkin command is not
 # given an input file name on the command line.
 #
-#: aesvt/main.cc:294
+#: aesvt/main.cc:292
 #, fuzzy
 msgid "no input file"
 msgstr "no input file name specified"
@@ -5877,7 +5881,7 @@ msgstr ""
 # change in the 'being integrated' state.  The integrator has no mandate
 # to fix things, and so a merge in this state is illegal.
 #
-#: aegis/aed.cc:955
+#: aegis/aed.cc:924
 #, fuzzy
 msgid "no int merge"
 msgstr "a change in the 'being integrated' state may not be merged"
@@ -5885,7 +5889,7 @@ msgstr "a change in the 'being integrated' state may not be merged"
 #
 # This error message is issued when ael is not given a list name.
 #
-#: aegis/ael.cc:377 aexml/main.cc:325
+#: aegis/ael.cc:378 aexml/main.cc:308
 msgid "no list"
 msgstr "nici un nume de listã specificat"
 
@@ -5905,7 +5909,7 @@ msgstr "this change is in the '$state' state, there is no log file"
 # This error message is issued when the user gives a merge option to
 # aed, as well as the -anticipate option.
 #
-#: aegis/aed.cc:806
+#: aegis/aed.cc:775
 #, fuzzy
 msgid "no merge anticipate"
 msgstr "you may not specify a merge option with -ANticipate"
@@ -5920,7 +5924,7 @@ msgstr "you may not specify a merge option with -ANticipate"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aenf.cc:328 aegis/aenf.cc:629 aegis/aenf.cc:731
+#: aegis/aenf.cc:298 aegis/aenf.cc:599 aegis/aenf.cc:701
 #, fuzzy
 msgid "no new files"
 msgstr "found $number fatal error${plural $number s}, no new files added"
@@ -5930,7 +5934,7 @@ msgstr "found $number fatal error${plural $number s}, no new files added"
 # This error message is issued if output file name was specified on the
 # aesvt -checkout command line.
 #
-#: aesvt/main.cc:313
+#: aesvt/main.cc:311
 #, fuzzy
 msgid "no output file"
 msgstr "no output file name specified"
@@ -5940,9 +5944,9 @@ msgstr "no output file name specified"
 # This error message is issued when a command which requires an explicit
 # project name is not given one.
 #
-#: aegis/aenbr.cc:220 aegis/aenc.cc:345 aegis/aenpa.cc:126 aegis/aenpr.cc:365
-#: aegis/aenrls.cc:316 aegis/aermpr.cc:126 aegis/aerpa.cc:129
-#: aeimport/import.cc:248 libaegis/user/default.cc:405
+#: aegis/aenbr.cc:202 aegis/aenc.cc:325 aegis/aenpa.cc:126 aegis/aenpr.cc:365
+#: aegis/aenrls.cc:318 aegis/aermpr.cc:126 aegis/aerpa.cc:129
+#: aeimport/import.cc:247 libaegis/user/default.cc:405
 #, fuzzy
 msgid "no project name"
 msgstr "you must give the project name explicitly to this command"
@@ -5960,7 +5964,7 @@ msgstr "nume raport \"$name\" nu existã"
 # This error message is issued when aer is not given a report name on
 # the command line.
 #
-#: aegis/aer.cc:195 aereport/main.cc:187
+#: aegis/aer.cc:193 aereport/main.cc:185
 msgid "no report name"
 msgstr "nume raport nespecificat"
 
@@ -5971,7 +5975,7 @@ msgstr "nume raport nespecificat"
 #
 #       $Number         The number of tests which failed.
 #
-#: aegis/aet.cc:362 aegis/aet.cc:364 aegis/aet.cc:369 aegis/aet.cc:371
+#: aegis/aet.cc:332 aegis/aet.cc:334 aegis/aet.cc:339 aegis/aet.cc:341
 #, fuzzy
 msgid "no result $number tests"
 msgstr ""
@@ -5983,7 +5987,7 @@ msgstr ""
 # This error message is issued if no size was specified on the command
 # line.  Exactly two are required.
 #
-#: aerect/main.cc:253
+#: aerect/main.cc:251
 #, fuzzy
 msgid "no size specified"
 msgstr "no size specified"
@@ -5993,7 +5997,7 @@ msgstr "no size specified"
 # This error message is issued when aed attempts to anticipate another
 # change, and the two files don't have any suitable files in common.
 #
-#: aegis/aed.cc:270
+#: aegis/aed.cc:239
 #, fuzzy
 msgid "no suitable files in common"
 msgstr "no suitable files in common"
@@ -6002,7 +6006,7 @@ msgstr "no suitable files in common"
 # This error message is issued when a command which requires an explicit
 # user name is not given one.
 #
-#: aegis/aechown.cc:198
+#: aegis/aechown.cc:180
 msgid "no user name"
 msgstr "trebuie sã daþi numele utilizatorului explicit acestei comenzi"
 
@@ -6010,8 +6014,8 @@ msgstr "trebuie sã daþi numele utilizatorului explicit acestei comenzi"
 # This error message is issued when a command which requires a list
 # of user names is not given any name on the command line.
 #
-#: aegis/aena.cc:246 aegis/aend.cc:245 aegis/aeni.cc:247 aegis/aenrv.cc:255
-#: aegis/aera.cc:246 aegis/aerd.cc:227 aegis/aeri.cc:229 aegis/aerrv.cc:225
+#: aegis/aena.cc:225 aegis/aend.cc:226 aegis/aeni.cc:226 aegis/aenrv.cc:234
+#: aegis/aera.cc:225 aegis/aerd.cc:208 aegis/aeri.cc:208 aegis/aerrv.cc:204
 msgid "no user names"
 msgstr "nici un nume de utilizator specificat"
 
@@ -6024,7 +6028,7 @@ msgstr "nici un nume de utilizator specificat"
 #       $Name2          The name of a command line option.
 #       $Name3          The name of a command line option.
 #
-#: libaegis/help.cc:333
+#: libaegis/help.cc:331
 #, fuzzy
 msgid "not $name1 and $name2 and $name3 together"
 msgstr ""
@@ -6039,7 +6043,7 @@ msgstr ""
 #       $Name1          The name of a command line option.
 #       $Name2          The name of a command line option.
 #
-#: libaegis/help.cc:319
+#: libaegis/help.cc:317
 #, fuzzy
 msgid "not $name1 and $name2 together"
 msgstr ""
@@ -6052,7 +6056,7 @@ msgstr ""
 # which requires a branch.  (The change number will be supplied by the
 # change_fatal function.)
 #
-#: libaegis/project/bind/existing.cc:97
+#: libaegis/project/bind/existing.cc:107
 #, fuzzy
 msgid "not a branch"
 msgstr "this change is not a branch"
@@ -6062,7 +6066,7 @@ msgstr "this change is not a branch"
 # This error message is issued when a command which requires
 # developer privileges is used, and the user is not a developer.
 #
-#: aegis/aedb.cc:312
+#: aegis/aedb.cc:288
 #, fuzzy
 msgid "not a developer"
 msgstr "user \"$user\" is not a developer"
@@ -6072,8 +6076,8 @@ msgstr "user \"$user\" is not a developer"
 # This error message is issued when a command which requires
 # reviewer privileges is used, and the user is not a reviewer.
 #
-#: aegis/aerb.cc:271 aegis/aerbu.cc:225 aegis/aerf.cc:146 aegis/aerp.cc:141
-#: aegis/aet.cc:800
+#: aegis/aerb.cc:240 aegis/aerbu.cc:206 aegis/aerf.cc:126 aegis/aerp.cc:121
+#: aegis/aet.cc:770
 #, fuzzy
 msgid "not a reviewer"
 msgstr "user \"$user\" is not a reviewer"
@@ -6082,13 +6086,13 @@ msgstr "user \"$user\" is not a reviewer"
 # This error message is issued when a command which requires
 # administrator privileges is used, and the user is not an administrator.
 #
-#: aegis/aechown.cc:235 aegis/aedb.cc:258 aegis/aedbu.cc:248
-#: aegis/aedbu.cc:291 aegis/aedn.cc:304 aegis/aena.cc:127 aegis/aenbr.cc:249
-#: aegis/aenbru.cc:206 aegis/aenbru.cc:244 aegis/aenc.cc:133
-#: aegis/aencu.cc:213 aegis/aend.cc:125 aegis/aeni.cc:127 aegis/aenpa.cc:144
-#: aegis/aenrls.cc:359 aegis/aenrv.cc:127 aegis/aepa.cc:143 aegis/aera.cc:127
-#: aegis/aerd.cc:125 aegis/aeri.cc:127 aegis/aermpr.cc:185 aegis/aerpa.cc:161
-#: aegis/aerrv.cc:127 aelock/lock.cc:105
+#: aegis/aechown.cc:217 aegis/aedb.cc:234 aegis/aedbu.cc:202 aegis/aedn.cc:270
+#: aegis/aena.cc:106 aegis/aenbr.cc:231 aegis/aenbru.cc:187
+#: aegis/aenbru.cc:225 aegis/aenc.cc:113 aegis/aencu.cc:189 aegis/aend.cc:106
+#: aegis/aeni.cc:106 aegis/aenpa.cc:144 aegis/aenrls.cc:361 aegis/aenrv.cc:106
+#: aegis/aepa.cc:111 aegis/aera.cc:106 aegis/aerd.cc:106 aegis/aeri.cc:106
+#: aegis/aermpr.cc:185 aegis/aerpa.cc:161 aegis/aerrv.cc:106
+#: aelock/lock.cc:103
 msgid "not an administrator"
 msgstr "utilizatorul \"$user\" nu este un administrator"
 
@@ -6096,7 +6100,7 @@ msgstr "utilizatorul \"$user\" nu este un administrator"
 # This error message is issued when a command which requires an even
 # number of file names is not given one.
 #
-#: aegis/aemv.cc:440
+#: aegis/aemv.cc:411
 #, fuzzy
 msgid "not an even number of args"
 msgstr "you must give an even number of files to this command"
@@ -6106,7 +6110,7 @@ msgstr "you must give an even number of files to this command"
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
-#: aegis/aeib.cc:875
+#: aegis/aeib.cc:861
 #, fuzzy
 msgid "not an integrator"
 msgstr "user \"$user\" is not an integrator"
@@ -6117,11 +6121,11 @@ msgstr "user \"$user\" is not an integrator"
 # change which is in the being developed state, but the requesting user
 # is not the change's developer.
 #
-#: aegis/aeb.cc:276 aegis/aeclean.cc:469 aegis/aecp.cc:1239 aegis/aecpu.cc:287
-#: aegis/aed.cc:207 aegis/aed.cc:884 aegis/aedbu.cc:300 aegis/aede.cc:262
-#: aegis/aemt.cc:327 aegis/aemtu.cc:282 aegis/aemv.cc:485 aegis/aemvu.cc:272
-#: aegis/aenf.cc:407 aegis/aenfu.cc:296 aegis/aent.cc:327 aegis/aentu.cc:312
-#: aegis/aerm.cc:350 aegis/aermu.cc:329 aegis/aet.cc:776
+#: aegis/aeb.cc:258 aegis/aeclean.cc:441 aegis/aecp.cc:1212 aegis/aecpu.cc:256
+#: aegis/aed.cc:176 aegis/aed.cc:853 aegis/aedbu.cc:200 aegis/aede.cc:242
+#: aegis/aemt.cc:293 aegis/aemtu.cc:248 aegis/aemv.cc:456 aegis/aemvu.cc:237
+#: aegis/aenf.cc:377 aegis/aenfu.cc:262 aegis/aent.cc:298 aegis/aentu.cc:278
+#: aegis/aerm.cc:316 aegis/aermu.cc:295 aegis/aet.cc:746
 #, fuzzy
 msgid "not developer"
 msgstr ""
@@ -6134,7 +6138,7 @@ msgstr ""
 # administrator of a project.  There must always be at least one project
 # administrator at all times.
 #
-#: aegis/aera.cc:156
+#: aegis/aera.cc:135
 #, fuzzy
 msgid "not enough admin"
 msgstr "must have at least one administrator at all times"
@@ -6145,8 +6149,8 @@ msgstr "must have at least one administrator at all times"
 # change which is in the 'being integrated' state, but the requesting user
 # is not the change's integrator.
 #
-#: aegis/aeb.cc:288 aegis/aed.cc:879 aegis/aeibu.cc:245 aegis/aeif.cc:158
-#: aegis/aeip.cc:519 aegis/aet.cc:807
+#: aegis/aeb.cc:270 aegis/aed.cc:848 aegis/aeibu.cc:222 aegis/aeif.cc:135
+#: aegis/aeip.cc:485 aegis/aet.cc:777
 #, fuzzy
 msgid "not integrator"
 msgstr ""
@@ -6160,7 +6164,7 @@ msgstr ""
 # state, but the requesting user is not the change's reviewer AND the
 # project attribute "develop_end_action" is set to "goto_awaiting_review".
 #
-#: aegis/aerbu.cc:237 aegis/aerf.cc:137 aegis/aerp.cc:135 aegis/aet.cc:795
+#: aegis/aerbu.cc:218 aegis/aerf.cc:117 aegis/aerp.cc:115 aegis/aet.cc:765
 #, fuzzy
 msgid "not reviewer"
 msgstr ""
@@ -6172,24 +6176,24 @@ msgstr ""
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/architecture.cc:69 libaegis/sub/base_relativ.cc:71
+#: libaegis/sub/architecture.cc:67 libaegis/sub/base_relativ.cc:71
 #: libaegis/sub/base_relativ.cc:94 libaegis/sub/change/active_direc.cc:42
-#: libaegis/sub/change/attribute.cc:37 libaegis/sub/change/delta.cc:62
+#: libaegis/sub/change/attribute.cc:35 libaegis/sub/change/delta.cc:62
 #: libaegis/sub/change/develo_direc.cc:63
-#: libaegis/sub/change/develop_list.cc:36 libaegis/sub/change/developer.cc:61
-#: libaegis/sub/change/files.cc:63 libaegis/sub/change/integr_direc.cc:63
-#: libaegis/sub/change/integrator.cc:60 libaegis/sub/change/number.cc:400
-#: libaegis/sub/change/number.cc:446 libaegis/sub/change/reviewer.cc:60
-#: libaegis/sub/change/reviewr_list.cc:38 libaegis/sub/change/state.cc:57
+#: libaegis/sub/change/develop_list.cc:36 libaegis/sub/change/developer.cc:59
+#: libaegis/sub/change/files.cc:61 libaegis/sub/change/integr_direc.cc:63
+#: libaegis/sub/change/integrator.cc:58 libaegis/sub/change/number.cc:400
+#: libaegis/sub/change/number.cc:446 libaegis/sub/change/reviewer.cc:58
+#: libaegis/sub/change/reviewr_list.cc:36 libaegis/sub/change/state.cc:57
 #: libaegis/sub/change/version.cc:81 libaegis/sub/change/version.cc:93
-#: libaegis/sub/copyri_owner.cc:40 libaegis/sub/copyri_years.cc:85
-#: libaegis/sub/histo_direc.cc:64 libaegis/sub/history_path.cc:45
-#: libaegis/sub/history_path.cc:68 libaegis/sub/project.cc:135
-#: libaegis/sub/project/adminis_list.cc:68 libaegis/sub/project/baseline.cc:63
-#: libaegis/sub/project/develop_list.cc:67
-#: libaegis/sub/project/integra_list.cc:67
-#: libaegis/sub/project/reviewe_list.cc:67 libaegis/sub/project/specific.cc:80
-#: libaegis/sub/search_path.cc:76 libaegis/sub/source.cc:76
+#: libaegis/sub/copyri_owner.cc:38 libaegis/sub/copyri_years.cc:83
+#: libaegis/sub/histo_direc.cc:62 libaegis/sub/history_path.cc:45
+#: libaegis/sub/history_path.cc:68 libaegis/sub/project.cc:133
+#: libaegis/sub/project/adminis_list.cc:66 libaegis/sub/project/baseline.cc:61
+#: libaegis/sub/project/develop_list.cc:65
+#: libaegis/sub/project/integra_list.cc:65
+#: libaegis/sub/project/reviewe_list.cc:65 libaegis/sub/project/specific.cc:78
+#: libaegis/sub/search_path.cc:74 libaegis/sub/source.cc:76
 #: libaegis/sub/source.cc:126
 #, fuzzy
 msgid "not valid in current context"
@@ -6200,9 +6204,9 @@ msgstr "not valid in current context"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aesubunit/subunit.cc:73 libaegis/gif/open.cc:482 libaegis/input/file.cc:128
-#: libaegis/lock.cc:577 libaegis/lock.cc:1201 libaegis/os/edit/string.cc:44
-#: libaegis/output/file.cc:187 libaegis/safe_freopen.cc:38
+#: aesubunit/subunit.cc:71 libaegis/gif/open.cc:480 libaegis/input/file.cc:127
+#: libaegis/lock.cc:577 libaegis/lock.cc:1201 libaegis/os/edit/string.cc:42
+#: libaegis/output/file.cc:185 libaegis/safe_freopen.cc:38
 msgid "open $filename: $errno"
 msgstr "open \"$filename\": $errno"
 
@@ -6255,7 +6259,7 @@ msgstr ""
 #
 #       $Number         The offending page length.
 #
-#: libaegis/option.cc:153
+#: libaegis/option.cc:151
 #, fuzzy
 msgid "page length $number out of range"
 msgstr "a page length of $number is out of range"
@@ -6266,7 +6270,7 @@ msgstr "a page length of $number is out of range"
 #
 #       $Number         The offending page width.
 #
-#: libaegis/option.cc:131
+#: libaegis/option.cc:129
 #, fuzzy
 msgid "page width $number out of range"
 msgstr "a page width of $number is out of range"
@@ -6317,7 +6321,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This message is issued when partial development builds are completed.
 #
-#: aegis/aeb.cc:585
+#: aegis/aeb.cc:567
 #, fuzzy
 msgid "partial build complete"
 msgstr "partial build complete ${date %H:%M}"
@@ -6326,7 +6330,7 @@ msgstr "partial build complete ${date %H:%M}"
 # TRANSLATION REQUIRED
 # This message is issued when partial development builds are commenced.
 #
-#: aegis/aeb.cc:574
+#: aegis/aeb.cc:556
 #, fuzzy
 msgid "partial build started"
 msgstr "partial build started ${date %H:%M}"
@@ -6338,7 +6342,7 @@ msgstr "partial build started ${date %H:%M}"
 #
 #       $Number         The number of tests which passed.
 #
-#: aegis/aet.cc:341 aegis/aet.cc:343
+#: aegis/aet.cc:311 aegis/aet.cc:313
 #, fuzzy
 msgid "passed $number tests"
 msgstr "passed $number test${plural $number s}"
@@ -6348,7 +6352,7 @@ msgstr "passed $number test${plural $number s}"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/os/pathconf.cc:147
+#: libaegis/os/pathconf.cc:145
 msgid "pathconf(\"$filename\", {NAME_MAX}): $errno"
 msgstr "pathconf(\"$filename\", {NAME_MAX}): $errno"
 
@@ -6357,7 +6361,7 @@ msgstr "pathconf(\"$filename\", {NAME_MAX}): $errno"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/os/pathconf.cc:117
+#: libaegis/os/pathconf.cc:115
 msgid "pathconf(\"$filename\", {PATH_MAX}): $errno"
 msgstr "pathconf(\"$filename\", {PATH_MAX}): $errno"
 
@@ -6368,7 +6372,7 @@ msgstr "pathconf(\"$filename\", {PATH_MAX}): $errno"
 #
 #       $File_Name      The absolute path of the project home directory.
 #
-#: aegis/aenrls.cc:545 libaegis/project/verbose/directory.cc:34
+#: aegis/aenrls.cc:547 libaegis/project/verbose/directory.cc:32
 #, fuzzy
 msgid "proj dir $filename"
 msgstr "project directory \"$filename\""
@@ -6379,7 +6383,7 @@ msgstr "project directory \"$filename\""
 # tests, but there are no files which are candidates of the options
 # specified, or the project may have no tests at all.
 #
-#: aegis/aet.cc:1205
+#: aegis/aet.cc:1175
 #, fuzzy
 msgid "proj has no tests"
 msgstr "this project requires relevant tests before this command may be used"
@@ -6389,7 +6393,7 @@ msgstr "this project requires relevant tests before this command may be used"
 # This is the format of project messages (error, fatal and verbose).
 # Change messages also pass through this format indirectly.
 #
-#: libaegis/project.cc:964 libaegis/project.cc:998 libaegis/project.cc:1032
+#: libaegis/project.cc:968 libaegis/project.cc:1002 libaegis/project.cc:1036
 #, fuzzy
 msgid "project \"$project\": $message"
 msgstr "project \"$project\": $message"
@@ -6400,7 +6404,7 @@ msgstr "project \"$project\": $message"
 #
 #       $Message        The message to be supplemented.
 #
-#: aegis/aede.cc:940
+#: aegis/aede.cc:926
 msgid "project $message"
 msgstr "proiect $message"
 
@@ -6411,8 +6415,8 @@ msgstr "proiect $message"
 #
 #       $Name           The offending project name.
 #
-#: aegis/aenpa.cc:174 libaegis/project/bind/keep.cc:37
-#: libaegis/project/bind/new.cc:45
+#: aegis/aenpa.cc:174 libaegis/project/bind/keep.cc:35
+#: libaegis/project/bind/new.cc:43
 #, fuzzy
 msgid "project $name exists"
 msgstr "project name \"$name\" already in use"
@@ -6427,7 +6431,7 @@ msgstr "project name \"$name\" already in use"
 #       $Number         How many characters too long (how many to remove)
 #                       (Optional)
 #
-#: libaegis/help/pronamtoolon.cc:35
+#: libaegis/help/pronamtoolon.cc:31
 #, fuzzy
 msgid "project $name too long"
 msgstr "project name \"$name\" too long (by $number)"
@@ -6439,7 +6443,7 @@ msgstr "project name \"$name\" too long (by $number)"
 #
 #       $Name           The offending project alias.
 #
-#: libaegis/help/projaliaexis.cc:33
+#: libaegis/help/projaliaexis.cc:31
 #, fuzzy
 msgid "project alias $name exists"
 msgstr "project alias \"$name\" already in use"
@@ -6460,7 +6464,7 @@ msgstr "the name \"$name\" is not a project alias"
 # TRANSLATION REQUIRED
 # This progress message is issued when aepa completes successfully.
 #
-#: aegis/aepa.cc:177
+#: aegis/aepa.cc:145
 #, fuzzy
 msgid "project attributes complete"
 msgstr "attributes changed"
@@ -6471,11 +6475,11 @@ msgstr "attributes changed"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aefind/descend.cc:136 aegis/aeip.cc:301 aels/list.cc:208
-#: aesubunit/subunit.cc:92 libaegis/dir.cc:90 libaegis/dir_stack.cc:213
-#: libaegis/gif/open.cc:83 libaegis/input/curl.cc:514
-#: libaegis/input/file.cc:153 libaegis/input/stdin.cc:73
-#: libaegis/os/magic_file.cc:70
+#: aefind/descend.cc:134 aegis/aeip.cc:267 aels/list.cc:206
+#: aesubunit/subunit.cc:90 libaegis/dir.cc:88 libaegis/dir_stack.cc:208
+#: libaegis/gif/open.cc:81 libaegis/input/curl.cc:514
+#: libaegis/input/file.cc:152 libaegis/input/stdin.cc:71
+#: libaegis/os/magic_file.cc:69
 msgid "read $filename: $errno"
 msgstr "read \"$filename\": $errno"
 
@@ -6486,7 +6490,7 @@ msgstr "read \"$filename\": $errno"
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/gif/open.cc:61
+#: libaegis/gif/open.cc:59
 #, fuzzy
 msgid "read $filename: format error"
 msgstr "read \"$filename\": format error"
@@ -6498,7 +6502,7 @@ msgstr "read \"$filename\": format error"
 # history files, and reading each one to extract the history information
 # it will use to reconstruct the changes.
 #
-#: aeimport/import.cc:302
+#: aeimport/import.cc:301
 #, fuzzy
 msgid "read history files"
 msgstr ""
@@ -6509,8 +6513,8 @@ msgstr ""
 #
 #       $File_Name      The name of the file to be readlink()ed.
 #
-#: libaegis/os/pathname.cc:792 libaegis/os/pathname.cc:814
-#: libaegis/os/readlink.cc:58
+#: libaegis/os/pathname.cc:789 libaegis/os/pathname.cc:811
+#: libaegis/os/readlink.cc:56
 msgid "readlink $filename: $errno"
 msgstr "readlink \"$filename\": $errno"
 
@@ -6519,7 +6523,7 @@ msgstr "readlink \"$filename\": $errno"
 # This progress message is issued when aeimport starts to checkout the
 # head revision of each history file to form the baseline of the project.
 #
-#: aeimport/reconstruct.cc:156
+#: aeimport/reconstruct.cc:154
 #, fuzzy
 msgid "reconstruct baseline"
 msgstr ""
@@ -6533,7 +6537,7 @@ msgstr ""
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
-#: aegis/aecd.cc:183
+#: aegis/aecd.cc:165
 #, fuzzy
 msgid "remember to use the aerb command"
 msgstr ""
@@ -6547,7 +6551,7 @@ msgstr ""
 #
 #       $Name           The name of the removed user.
 #
-#: aegis/aera.cc:174
+#: aegis/aera.cc:153
 #, fuzzy
 msgid "remove administrator $name complete"
 msgstr "user \"$name\" is no longer an administrator"
@@ -6558,7 +6562,7 @@ msgstr "user \"$name\" is no longer an administrator"
 #
 #       $Name           The name of the removed user.
 #
-#: aegis/aerd.cc:161
+#: aegis/aerd.cc:142
 #, fuzzy
 msgid "remove developer $name complete"
 msgstr "user \"$name\" is no longer a developer"
@@ -6568,7 +6572,7 @@ msgstr "user \"$name\" is no longer a developer"
 # This progress message is issued when removing the development
 # directory during an aedbu command.
 #
-#: aegis/aedbu.cc:358 aegis/aenbru.cc:265
+#: aegis/aedbu.cc:226 aegis/aenbru.cc:246
 #, fuzzy
 msgid "remove development directory"
 msgstr "removing development directory"
@@ -6579,7 +6583,7 @@ msgstr "removing development directory"
 #
 #       $File_Name      The name of the file to be removed.
 #
-#: aegis/aerm.cc:670
+#: aegis/aerm.cc:636
 #, fuzzy
 msgid "remove file $filename complete"
 msgstr "file \"$filename\" being removed"
@@ -6594,7 +6598,7 @@ msgstr "file \"$filename\" being removed"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aemt.cc:665 aegis/aerm.cc:603
+#: aegis/aemt.cc:631 aegis/aerm.cc:569
 #, fuzzy
 msgid "remove file fail"
 msgstr ""
@@ -6607,7 +6611,7 @@ msgstr ""
 #
 #       $File_Name      The name of the file to be removed.
 #
-#: aegis/aermu.cc:630
+#: aegis/aermu.cc:596
 #, fuzzy
 msgid "remove file undo $filename complete"
 msgstr "file \"$filename\" no longer being removed"
@@ -6622,7 +6626,7 @@ msgstr "file \"$filename\" no longer being removed"
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aermu.cc:532
+#: aegis/aermu.cc:498
 #, fuzzy
 msgid "remove file undo fail"
 msgstr ""
@@ -6634,7 +6638,7 @@ msgstr ""
 # This progress message is issued when removing the integration
 # directory during an aeibu command.
 #
-#: aegis/aeibu.cc:314
+#: aegis/aeibu.cc:291
 #, fuzzy
 msgid "remove integration directory"
 msgstr "removing integration directory"
@@ -6645,7 +6649,7 @@ msgstr "removing integration directory"
 #
 #       $Name           The name of the removed user.
 #
-#: aegis/aeri.cc:163
+#: aegis/aeri.cc:142
 #, fuzzy
 msgid "remove integrator $name complete"
 msgstr "user \"$name\" is no longer an integrator"
@@ -6655,7 +6659,7 @@ msgstr "user \"$name\" is no longer an integrator"
 # This progress message is issued when removing the old development
 # directory during an aechown command.
 #
-#: aegis/aechown.cc:391
+#: aegis/aechown.cc:373
 #, fuzzy
 msgid "remove old development directory"
 msgstr "removing old development directory"
@@ -6692,7 +6696,7 @@ msgstr "ºterg directorul proiectului"
 #
 #       $Name           The user name of the removed reviewer.
 #
-#: aegis/aerrv.cc:163
+#: aegis/aerrv.cc:142
 #, fuzzy
 msgid "remove reviewer $name complete"
 msgstr "user \"$name\" is no longer a reviewer"
@@ -6702,7 +6706,7 @@ msgstr "user \"$name\" is no longer a reviewer"
 # This progress message is issued when Aegis removes the symbolic links
 # from the development directory which point to the baseline.
 #
-#: libaegis/change/build/symlinks.cc:1200
+#: libaegis/change/build/symlinks.cc:1269
 #, fuzzy
 msgid "removing symbolic links to baseline"
 msgstr ""
@@ -6715,7 +6719,7 @@ msgstr ""
 #       $File_Name1     The name of the source file or directory.
 #       $File_Name2     The name of the destination file or directory.
 #
-#: libaegis/os/rename.cc:42
+#: libaegis/os/rename.cc:40
 msgid "rename(\"$filename1\", \"$filename2\"): $errno"
 msgstr "rename(\"$filename1\", \"$filename2\"): $errno"
 
@@ -6747,8 +6751,8 @@ msgstr "report aborted"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/addpathsuffi.cc:39 libaegis/sub/change/number.cc:343
-#: libaegis/sub/expr.cc:40
+#: libaegis/sub/addpathsuffi.cc:37 libaegis/sub/change/number.cc:343
+#: libaegis/sub/expr.cc:38
 #, fuzzy
 msgid "requires at least one argument"
 msgstr "requires at least one argument"
@@ -6757,21 +6761,21 @@ msgstr "requires at least one argument"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/base_relativ.cc:83 libaegis/sub/capitalize.cc:58
-#: libaegis/sub/change/attribute.cc:44 libaegis/sub/change/developer.cc:87
-#: libaegis/sub/change/integrator.cc:87 libaegis/sub/change/number.cc:361
-#: libaegis/sub/change/reviewer.cc:87 libaegis/sub/dirname.cc:57
-#: libaegis/sub/dirname_rel.cc:57 libaegis/sub/downcase.cc:58
-#: libaegis/sub/getenv.cc:58 libaegis/sub/history_path.cc:57
-#: libaegis/sub/identifier.cc:59 libaegis/sub/length.cc:35
-#: libaegis/sub/namemax.cc:37 libaegis/sub/project.cc:155
-#: libaegis/sub/project/adminis_list.cc:76
-#: libaegis/sub/project/develop_list.cc:75
-#: libaegis/sub/project/integra_list.cc:75
-#: libaegis/sub/project/reviewe_list.cc:75 libaegis/sub/project/specific.cc:88
-#: libaegis/sub/read_file.cc:57 libaegis/sub/source.cc:90
-#: libaegis/sub/trim_directo.cc:38 libaegis/sub/trim_extensi.cc:35
-#: libaegis/sub/upcase.cc:58 libaegis/sub/user.cc:170
+#: libaegis/sub/base_relativ.cc:83 libaegis/sub/capitalize.cc:56
+#: libaegis/sub/change/attribute.cc:42 libaegis/sub/change/developer.cc:85
+#: libaegis/sub/change/integrator.cc:85 libaegis/sub/change/number.cc:361
+#: libaegis/sub/change/reviewer.cc:85 libaegis/sub/dirname.cc:55
+#: libaegis/sub/dirname_rel.cc:55 libaegis/sub/downcase.cc:56
+#: libaegis/sub/getenv.cc:56 libaegis/sub/history_path.cc:57
+#: libaegis/sub/identifier.cc:57 libaegis/sub/length.cc:33
+#: libaegis/sub/namemax.cc:35 libaegis/sub/project.cc:153
+#: libaegis/sub/project/adminis_list.cc:74
+#: libaegis/sub/project/develop_list.cc:73
+#: libaegis/sub/project/integra_list.cc:73
+#: libaegis/sub/project/reviewe_list.cc:73 libaegis/sub/project/specific.cc:86
+#: libaegis/sub/read_file.cc:55 libaegis/sub/source.cc:90
+#: libaegis/sub/trim_directo.cc:36 libaegis/sub/trim_extensi.cc:33
+#: libaegis/sub/upcase.cc:56 libaegis/sub/user.cc:168
 msgid "requires one argument"
 msgstr "necesitã un argument"
 
@@ -6779,7 +6783,7 @@ msgstr "necesitã un argument"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/basename.cc:60
+#: libaegis/sub/basename.cc:58
 msgid "requires one or two arguments"
 msgstr "necesitã unul sau douã argumente"
 
@@ -6787,7 +6791,7 @@ msgstr "necesitã unul sau douã argumente"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/change/number.cc:367 libaegis/sub/substr.cc:35
+#: libaegis/sub/change/number.cc:367 libaegis/sub/substr.cc:33
 msgid "requires three arguments"
 msgstr "requires three arguments"
 
@@ -6795,9 +6799,9 @@ msgstr "requires three arguments"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/change/number.cc:364 libaegis/sub/left.cc:35
-#: libaegis/sub/right.cc:35 libaegis/sub/split.cc:35
-#: libaegis/sub/unsplit.cc:35 libaegis/sub/zero_pad.cc:37
+#: libaegis/sub/change/number.cc:364 libaegis/sub/left.cc:33
+#: libaegis/sub/right.cc:33 libaegis/sub/split.cc:33
+#: libaegis/sub/unsplit.cc:33 libaegis/sub/zero_pad.cc:36
 msgid "requires two arguments"
 msgstr "necesitã douã argumente"
 
@@ -6805,8 +6809,8 @@ msgstr "necesitã douã argumente"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/change/number.cc:346 libaegis/sub/substitute.cc:41
-#: libaegis/sub/switch.cc:36
+#: libaegis/sub/change/number.cc:346 libaegis/sub/substitute.cc:39
+#: libaegis/sub/switch.cc:34
 msgid "requires two or more arguments"
 msgstr "necesitã douã sau mai multe argumente"
 
@@ -6814,7 +6818,7 @@ msgstr "necesitã douã sau mai multe argumente"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub/plural.cc:37 libaegis/sub/plural_forms.cc:133
+#: libaegis/sub/plural.cc:35 libaegis/sub/plural_forms.cc:131
 msgid "requires two or three arguments"
 msgstr "necesitã douã sau trei argumente"
 
@@ -6822,17 +6826,17 @@ msgstr "necesitã douã sau trei argumente"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#: libaegis/sub.cc:204 libaegis/sub/architecture.cc:59
-#: libaegis/sub/binary_direc.cc:56 libaegis/sub/change/active_direc.cc:34
+#: libaegis/sub.cc:202 libaegis/sub/architecture.cc:57
+#: libaegis/sub/binary_direc.cc:54 libaegis/sub/change/active_direc.cc:34
 #: libaegis/sub/change/delta.cc:54 libaegis/sub/change/develo_direc.cc:55
 #: libaegis/sub/change/integr_direc.cc:55 libaegis/sub/change/number.cc:358
-#: libaegis/sub/change/version.cc:71 libaegis/sub/common_direc.cc:57
-#: libaegis/sub/copyri_owner.cc:46 libaegis/sub/copyri_years.cc:78
-#: libaegis/sub/data_directo.cc:57 libaegis/sub/diff.cc:34
-#: libaegis/sub/dollar.cc:57 libaegis/sub/histo_direc.cc:57
-#: libaegis/sub/librar_direc.cc:56 libaegis/sub/perl.cc:56
-#: libaegis/sub/project/baseline.cc:56 libaegis/sub/search_path.cc:63
-#: libaegis/sub/shell.cc:58
+#: libaegis/sub/change/version.cc:71 libaegis/sub/common_direc.cc:55
+#: libaegis/sub/copyri_owner.cc:44 libaegis/sub/copyri_years.cc:76
+#: libaegis/sub/data_directo.cc:55 libaegis/sub/diff.cc:32
+#: libaegis/sub/dollar.cc:55 libaegis/sub/histo_direc.cc:55
+#: libaegis/sub/librar_direc.cc:54 libaegis/sub/perl.cc:54
+#: libaegis/sub/project/baseline.cc:54 libaegis/sub/search_path.cc:61
+#: libaegis/sub/shell.cc:56
 msgid "requires zero arguments"
 msgstr "nu cere nici un argument"
 
@@ -6843,7 +6847,7 @@ msgstr "nu cere nici un argument"
 # fingerprints are absent, and restarting the integration will cause
 # them to be created.
 #
-#: aegis/aeip.cc:971
+#: aegis/aeip.cc:925
 #, fuzzy
 msgid "restart integration after upgrade"
 msgstr ""
@@ -6855,7 +6859,7 @@ msgstr ""
 # TRANSLATION REQUIRED
 # This progress message is issued when aerb completes successfully.
 #
-#: aegis/aerb.cc:416
+#: aegis/aerb.cc:385
 #, fuzzy
 msgid "review begin complete"
 msgstr "user \"$user\" has begun review"
@@ -6864,7 +6868,7 @@ msgstr "user \"$user\" has begun review"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerbu completes successfully.
 #
-#: aegis/aerbu.cc:270
+#: aegis/aerbu.cc:251
 #, fuzzy
 msgid "review begin undo complete"
 msgstr "review begin rescinded"
@@ -6873,7 +6877,7 @@ msgstr "review begin rescinded"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerfail completes successfully.
 #
-#: aegis/aerf.cc:474
+#: aegis/aerf.cc:454
 #, fuzzy
 msgid "review fail complete"
 msgstr "failed review, returned to developer"
@@ -6882,7 +6886,7 @@ msgstr "failed review, returned to developer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerpass completes successfully.
 #
-#: aegis/aerp.cc:550
+#: aegis/aerp.cc:530
 #, fuzzy
 msgid "review pass complete"
 msgstr "passed review"
@@ -6891,7 +6895,7 @@ msgstr "passed review"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerpu completes successfully.
 #
-#: aegis/aerpu.cc:294
+#: aegis/aerpu.cc:271
 #, fuzzy
 msgid "review pass undo complete"
 msgstr "review pass rescinded"
@@ -6901,7 +6905,7 @@ msgstr "review pass rescinded"
 # This error message is issued when a reviewer attempts to integrate
 # a change she reviewed, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:891
+#: aegis/aeib.cc:877
 #, fuzzy
 msgid "reviewer may not integrate"
 msgstr "the reviewer of a change may not also integrate it"
@@ -6911,7 +6915,7 @@ msgstr "the reviewer of a change may not also integrate it"
 # This progress message is issued when aeifail is removing the
 # integration directory.
 #
-#: aegis/aeif.cc:500
+#: aegis/aeif.cc:477
 #, fuzzy
 msgid "rm int dir"
 msgstr "removing the integration directory"
@@ -6921,7 +6925,7 @@ msgstr "removing the integration directory"
 #
 #       $File_Name      The name of the directory to be removed.
 #
-#: libaegis/os/rmdir/rmdir.cc:42
+#: libaegis/os/rmdir/rmdir.cc:40
 msgid "rmdir $filename: $errno"
 msgstr "rmdir \"$filename\": $errno"
 
@@ -6940,7 +6944,7 @@ msgstr "second argument must be \"Absolute\" or \"Relative\""
 #
 #       $Argument       The gid argument.
 #
-#: libaegis/os/become.cc:82
+#: libaegis/os/become.cc:80
 msgid "setgid $arg: $errno"
 msgstr "setgid $arg: $errno"
 
@@ -6949,7 +6953,7 @@ msgstr "setgid $arg: $errno"
 #
 #       $Argument       The uid argument.
 #
-#: libaegis/os/setuid.cc:44
+#: libaegis/os/setuid.cc:42
 msgid "setuid $arg: $errno"
 msgstr "setuid $arg: $errno"
 
@@ -6961,7 +6965,7 @@ msgstr "setuid $arg: $errno"
 #       $Number         The number of files actually given.
 #                       (Optional)
 #
-#: aegis/aecp.cc:364 aegis/aecp.cc:1132
+#: aegis/aecp.cc:337 aegis/aecp.cc:1105
 #, fuzzy
 msgid "single file with -Output"
 msgstr ""
@@ -6975,7 +6979,7 @@ msgstr ""
 #
 #       $Number         The number of tests which were skipped.
 #
-#: aegis/aet.cc:351 aegis/aet.cc:353
+#: aegis/aet.cc:321 aegis/aet.cc:323
 #, fuzzy
 msgid "skipped $number tests"
 msgstr "skipped $number test${plural $number s}"
@@ -7019,7 +7023,7 @@ msgstr "source file unknown"
 # This is the name of the program's standard input.  The place input
 # from getchar (et al) comes from.
 #
-#: libaegis/input/stdin.cc:52
+#: libaegis/input/stdin.cc:50
 #, fuzzy
 msgid "standard input"
 msgstr "the standard input"
@@ -7029,7 +7033,7 @@ msgstr "the standard input"
 # This is the name of the program's standard output.  The place output
 # from putchar (et al) goes.
 #
-#: libaegis/output/stdout.cc:43
+#: libaegis/output/stdout.cc:41
 #, fuzzy
 msgid "standard output"
 msgstr "the standard output"
@@ -7039,20 +7043,20 @@ msgstr "the standard output"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aefind/descend.cc:93 aefind/descend.cc:102 aels/list.cc:152
-#: aels/list.cc:161 libaegis/aer/func/mtime.cc:124
-#: libaegis/aer/value/pstate.cc:89 libaegis/change/build/symlinks.cc:332
-#: libaegis/dir.cc:74 libaegis/dir_stack.cc:136 libaegis/dir_stack.cc:174
-#: libaegis/os/become.cc:118 libaegis/os/chmod/query.cc:56
-#: libaegis/os/ck_path_trav.cc:99 libaegis/os/executable.cc:55
-#: libaegis/os/exists.cc:60 libaegis/os/isa/directory.cc:57
-#: libaegis/os/isa/special_file.cc:57 libaegis/os/isa/symlink.cc:51
-#: libaegis/os/mtime/actual.cc:57 libaegis/os/mtime/range.cc:57
-#: libaegis/os/owner_query.cc:49 libaegis/os/size.cc:47
-#: libaegis/os/unlink/errok.cc:63 libaegis/os/unlink/unlink.cc:62
-#: libaegis/user/creat_by_dir.cc:43
+#: aefind/descend.cc:91 aefind/descend.cc:100 aels/list.cc:150
+#: aels/list.cc:159 libaegis/aer/func/mtime.cc:124
+#: libaegis/aer/value/pstate.cc:89 libaegis/change/build/symlinks.cc:334
+#: libaegis/dir.cc:72 libaegis/dir_stack.cc:131 libaegis/dir_stack.cc:169
+#: libaegis/os/become.cc:116 libaegis/os/chmod/query.cc:54
+#: libaegis/os/ck_path_trav.cc:97 libaegis/os/executable.cc:53
+#: libaegis/os/exists.cc:58 libaegis/os/isa/directory.cc:55
+#: libaegis/os/isa/special_file.cc:55 libaegis/os/isa/symlink.cc:49
+#: libaegis/os/mtime/actual.cc:55 libaegis/os/mtime/range.cc:55
+#: libaegis/os/owner_query.cc:47 libaegis/os/size.cc:45
+#: libaegis/os/unlink/errok.cc:61 libaegis/os/unlink/unlink.cc:60
+#: libaegis/user/creat_by_dir.cc:41
 msgid "stat $filename: $errno"
-msgstr "$filename: $errno"
+msgstr "stat $filename: $errno"
 
 #
 # This error message is issued when a symlink fails.
@@ -7060,7 +7064,7 @@ msgstr "$filename: $errno"
 #       $File_Name1     The name of the source file.
 #       $File_Name1     The name of the destination file.
 #
-#: libaegis/change/build/symlinks.cc:260 libaegis/os/symlink/symlink.cc:58
+#: libaegis/change/build/symlinks.cc:262 libaegis/os/symlink/symlink.cc:56
 msgid "symlink(\"$filename1\", \"$filename2\"): $errno"
 msgstr "symlink(\"$filename1\", \"$filename2\"): $errno"
 
@@ -7070,7 +7074,7 @@ msgstr "symlink(\"$filename1\", \"$filename2\"): $errno"
 # obtained, has changed by the time the lock was obtained.  This is only
 # seen rarely.
 #
-#: aegis/aechown.cc:256
+#: aegis/aechown.cc:238
 #, fuzzy
 msgid "sync error, try again"
 msgstr "something changed, operation aborted, please try again"
@@ -7078,7 +7082,7 @@ msgstr "something changed, operation aborted, please try again"
 #
 # This error message is issued when yacc finds an error at parse time.
 #
-#: libaegis/aer/lex.cc:827 libaegis/xmltextread.cc:206
+#: libaegis/aer/lex.cc:827 libaegis/xmltextread.cc:204
 msgid "syntax error"
 msgstr "nu pot înþelege ce aþi dorit sã spuneþi"
 
@@ -7086,7 +7090,7 @@ msgstr "nu pot înþelege ce aþi dorit sã spuneþi"
 # TRANSLATION REQUIRED
 # This error message is issued when yacc finds an error at parse time.
 #
-#: libaegis/meta_lex.cc:718
+#: libaegis/meta_lex.cc:716
 #, fuzzy
 msgid "syntax error: cannot back up"
 msgstr "unable to work out what you meant to say"
@@ -7094,7 +7098,7 @@ msgstr "unable to work out what you meant to say"
 #
 # This error message is issued when bison finds an error at parse time.
 #
-#: libaegis/meta_lex.cc:719
+#: libaegis/meta_lex.cc:717
 msgid "syntax error; also virtual memory exhausted"
 msgstr ""
 "unable to work out what you meant to say, because it was too complicated to "
@@ -7106,7 +7110,7 @@ msgstr ""
 #
 #       $Number         The offending tab width.
 #
-#: libaegis/option.cc:172
+#: libaegis/option.cc:170
 #, fuzzy
 msgid "tab width $number out of range"
 msgstr "a tab width of $number is out of range"
@@ -7131,7 +7135,7 @@ msgstr "test $current of $total, ${date %H:%M}, ETA $remaining"
 # suggestions.  This allows the user to know which are exact, and which
 # are noise.
 #
-#: aegis/aet.cc:313
+#: aegis/aet.cc:283
 #, fuzzy
 msgid "test $filename scored $number"
 msgstr "$number $filename"
@@ -7144,7 +7148,7 @@ msgstr "$number $filename"
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aede.cc:1054
+#: aegis/aede.cc:1040
 #, fuzzy
 msgid "test -bl required"
 msgstr ""
@@ -7159,7 +7163,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aede.cc:1083
+#: aegis/aede.cc:1069
 #, fuzzy
 msgid "test -reg required"
 msgstr ""
@@ -7173,7 +7177,7 @@ msgstr ""
 #
 #       $Name   The name of the -LIBrary option.
 #
-#: libaegis/gonzo.cc:434
+#: libaegis/gonzo.cc:432
 #, fuzzy
 msgid "test mode needs $name"
 msgstr ""
@@ -7187,7 +7191,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aede.cc:1025
+#: aegis/aede.cc:1011
 #, fuzzy
 msgid "test required"
 msgstr ""
@@ -7257,7 +7261,7 @@ msgstr "the loop variable must be a modifiable lvalue (was given $name)"
 #
 #       $Name           The offending variable name.
 #
-#: libaegis/aer/expr/name.cc:156
+#: libaegis/aer/expr/name.cc:157
 #, fuzzy
 msgid "the name \"$name\" has already been used"
 msgstr "the name \"$name\" has already been used"
@@ -7268,10 +7272,10 @@ msgstr "the name \"$name\" has already been used"
 #
 #       $Name           The undefined variable name.
 #
-#: aefind/function.cc:96 aelcf/main.cc:106 aelcf/main.cc:139 aelpf/main.cc:107
-#: aelpf/main.cc:140 aemakegen/target/factory.cc:80
-#: libaegis/aer/expr/name.cc:124 libaegis/meta_parse.cc:281
-#: libaegis/meta_parse.cc:389
+#: aefind/function.cc:96 aelcf/main.cc:104 aelcf/main.cc:137 aelpf/main.cc:105
+#: aelpf/main.cc:138 aemakegen/target/factory.cc:83
+#: libaegis/aer/expr/name.cc:125 libaegis/meta_parse.cc:279
+#: libaegis/meta_parse.cc:387
 #, fuzzy
 msgid "the name \"$name\" is undefined"
 msgstr "the name \"$name\" is undefined"
@@ -7283,7 +7287,7 @@ msgstr "the name \"$name\" is undefined"
 # into the future.  Commonest sighting is when aeipass needs to sleep.
 # Also used as a debug message, only visable when DEBUG is defined.
 #
-#: aegis/aeip.cc:2125 libaegis/os/throttle.cc:73
+#: aegis/aeip.cc:2145 libaegis/os/throttle.cc:71
 #, fuzzy
 msgid "throttling $number seconds"
 msgstr ""
@@ -7337,7 +7341,7 @@ msgstr ""
 # This error message is issued when too few files names are specified on
 # the command line.
 #
-#: aediff/diff.cc:214 aegis/aemv.cc:433
+#: aediff/diff.cc:213 aegis/aemv.cc:404
 #, fuzzy
 msgid "too few files named"
 msgstr "too few files named"
@@ -7348,13 +7352,13 @@ msgstr "too few files named"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeb.cc:451 aegis/aecp.cc:1458 aegis/aecp.cc:1492 aegis/aecpu.cc:394
-#: aegis/aecpu.cc:437 aegis/aed.cc:641 aegis/aemt.cc:428 aegis/aemt.cc:462
-#: aegis/aemtu.cc:380 aegis/aemtu.cc:424 aegis/aemvu.cc:367 aegis/aemvu.cc:403
-#: aegis/aenf.cc:503 aegis/aenfu.cc:396 aegis/aenfu.cc:434 aegis/aent.cc:425
-#: aegis/aentu.cc:414 aegis/aentu.cc:452 aegis/aerm.cc:448 aegis/aerm.cc:498
-#: aegis/aermu.cc:429 aegis/aermu.cc:467 aegis/aet.cc:936 aegis/aet.cc:1021
-#: aegis/aet.cc:1083 aegis/aet.cc:1802 aegis/aet.cc:1882
+#: aegis/aeb.cc:433 aegis/aecp.cc:1431 aegis/aecp.cc:1465 aegis/aecpu.cc:363
+#: aegis/aecpu.cc:406 aegis/aed.cc:610 aegis/aemt.cc:394 aegis/aemt.cc:428
+#: aegis/aemtu.cc:346 aegis/aemtu.cc:390 aegis/aemvu.cc:332 aegis/aemvu.cc:368
+#: aegis/aenf.cc:473 aegis/aenfu.cc:362 aegis/aenfu.cc:400 aegis/aent.cc:396
+#: aegis/aentu.cc:380 aegis/aentu.cc:418 aegis/aerm.cc:414 aegis/aerm.cc:464
+#: aegis/aermu.cc:395 aegis/aermu.cc:433 aegis/aet.cc:906 aegis/aet.cc:991
+#: aegis/aet.cc:1053 aegis/aet.cc:1772 aegis/aet.cc:1852
 msgid "too many $filename"
 msgstr "fiºierul \"$filename\" numit mai mult decât o datã"
 
@@ -7363,7 +7367,7 @@ msgstr "fiºierul \"$filename\" numit mai mult decât o datã"
 # This error message is issued when too many delta names are given on
 # the command line.
 #
-#: aegis/aedn.cc:161
+#: aegis/aedn.cc:127
 #, fuzzy
 msgid "too many delta names"
 msgstr "too many delta names specified"
@@ -7372,7 +7376,7 @@ msgstr "too many delta names specified"
 # This error message is issued when a command which expects one
 # directory to be specified on the command line, receives more than one.
 #
-#: aegis/aecd.cc:136
+#: aegis/aecd.cc:118
 msgid "too many dir"
 msgstr "prea multe directoare specificate"
 
@@ -7380,8 +7384,8 @@ msgstr "prea multe directoare specificate"
 # This error message is issued when too many file names are specified on
 # the command line.
 #
-#: aeannotate/annotate.cc:663 aegis/aenf.cc:344 aegis/aent.cc:278
-#: aesubunit/subunit.cc:217 libaegis/help/toomanyfiles.cc:29
+#: aeannotate/annotate.cc:687 aegis/aenf.cc:314 aegis/aent.cc:249
+#: aesubunit/subunit.cc:215 libaegis/help/toomanyfiles.cc:27
 msgid "too many files"
 msgstr "prea multe nume de fiºiere specificate"
 
@@ -7390,7 +7394,7 @@ msgstr "prea multe nume de fiºiere specificate"
 # This error message is issued when too many information names are
 # specified to the aev command.  It only accepts one.
 #
-#: libaegis/version.cc:120
+#: libaegis/version.cc:113
 #, fuzzy
 msgid "too many info names"
 msgstr "too many version information names specified"
@@ -7399,7 +7403,7 @@ msgstr "too many version information names specified"
 # This error message is issued when ael is given too many list names on
 # the command line.
 #
-#: aegis/ael.cc:352 aexml/main.cc:318
+#: aegis/ael.cc:352 aexml/main.cc:301
 msgid "too many lists"
 msgstr "prea multe nume de liste specificate"
 
@@ -7407,7 +7411,7 @@ msgstr "prea multe nume de liste specificate"
 # This error message is issued when there are too many project names
 # specified on the command line.
 #
-#: aegis/aenpa.cc:113 aegis/aenrls.cc:202
+#: aegis/aenpa.cc:113 aegis/aenrls.cc:204
 msgid "too many proj name"
 msgstr "prea multe nume de proiecte specificate"
 
@@ -7415,7 +7419,7 @@ msgstr "prea multe nume de proiecte specificate"
 # This error message is issued too many sizes are specified on the
 # command line.  Exactly two are required.
 #
-#: aerect/main.cc:180
+#: aerect/main.cc:178
 msgid "too many sizes specified"
 msgstr "prea multe dimensiuni specificate"
 
@@ -7425,8 +7429,8 @@ msgstr "prea multe dimensiuni specificate"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aena.cc:224 aegis/aend.cc:223 aegis/aeni.cc:225 aegis/aenrv.cc:224
-#: aegis/aera.cc:224 aegis/aerd.cc:205 aegis/aeri.cc:207 aegis/aerrv.cc:202
+#: aegis/aena.cc:203 aegis/aend.cc:204 aegis/aeni.cc:204 aegis/aenrv.cc:203
+#: aegis/aera.cc:203 aegis/aerd.cc:186 aegis/aeri.cc:186 aegis/aerrv.cc:181
 #, fuzzy
 msgid "too many user $name"
 msgstr "user \"$name\" named more than once"
@@ -7438,8 +7442,8 @@ msgstr "user \"$name\" named more than once"
 #
 #       $Message        The message to be issued.
 #
-#: libaegis/change/error.cc:61 libaegis/change/fatal.cc:61
-#: libaegis/change/verbose.cc:61 libaegis/change/warning.cc:69
+#: libaegis/change/error.cc:59 libaegis/change/fatal.cc:59
+#: libaegis/change/verbose.cc:59 libaegis/change/warning.cc:67
 #, fuzzy
 msgid "trunk: $message"
 msgstr "trunk: $message"
@@ -7460,7 +7464,7 @@ msgstr "uid $number unknown"
 #
 # This error message is issued when the uname system call fails.
 #
-#: libaegis/uname.cc:51
+#: libaegis/uname.cc:49
 msgid "uname: $errno"
 msgstr "uname: $errno"
 
@@ -7472,7 +7476,7 @@ msgstr "uname: $errno"
 #       $Argument       The mode, in octal, the file is to be changed to.
 #       $File_Name      The name of the file
 #
-#: libaegis/undo/item/chmod.cc:52 libaegis/undo/item/chmod_errok.cc:52
+#: libaegis/undo/item/chmod.cc:50 libaegis/undo/item/chmod_errok.cc:50
 #, fuzzy
 msgid "unfinished: chmod $arg $filename"
 msgstr "unfinished recovery: chmod $arg $filename"
@@ -7485,7 +7489,7 @@ msgstr "unfinished recovery: chmod $arg $filename"
 #       $File_Name1     The name of the source file
 #       $File_Name2     The name of the destination file
 #
-#: libaegis/undo/item/rename.cc:52
+#: libaegis/undo/item/rename.cc:50
 #, fuzzy
 msgid "unfinished: mv $filename1 $filename2"
 msgstr "unfinished recovery: mv $filename1 $filename2"
@@ -7497,7 +7501,7 @@ msgstr "unfinished recovery: mv $filename1 $filename2"
 #
 #       $File_Name      The name of the file
 #
-#: libaegis/undo/item/unlink_errok.cc:50
+#: libaegis/undo/item/unlink_errok.cc:48
 #, fuzzy
 msgid "unfinished: rm $filename"
 msgstr "unfinished recovery: rm $filename"
@@ -7509,7 +7513,7 @@ msgstr "unfinished recovery: rm $filename"
 #
 #       $File_Name      The name of the directory
 #
-#: libaegis/undo/item/rmdir_bg.cc:50 libaegis/undo/item/rmdir_errok.cc:50
+#: libaegis/undo/item/rmdir_bg.cc:48 libaegis/undo/item/rmdir_errok.cc:48
 #, fuzzy
 msgid "unfinished: rmdir $filename"
 msgstr "unfinished recovery: rmdir $filename"
@@ -7521,7 +7525,7 @@ msgstr "unfinished recovery: rmdir $filename"
 #
 #       $Name           The offending command line argument.
 #
-#: libaegis/help.cc:291
+#: libaegis/help.cc:289
 #, fuzzy
 msgid "unknown \"$name\" option"
 msgstr "unknown \"$name\" option on the command line"
@@ -7532,7 +7536,7 @@ msgstr "unknown \"$name\" option on the command line"
 #
 #       $Name           The offending escape sequence, including the backslash.
 #
-#: libaegis/aer/lex.cc:412 libaegis/meta_lex.cc:352
+#: libaegis/aer/lex.cc:412 libaegis/meta_lex.cc:350
 #, fuzzy
 msgid "unknown '$name' escape"
 msgstr "unknown '$name' escape"
@@ -7542,7 +7546,7 @@ msgstr "unknown '$name' escape"
 # This error message is issued when an unknown change is referred to.
 # The change number will be given in the surrounding "wrapper".
 #
-#: libaegis/arglex/change.cc:174 libaegis/change/bind/existing.cc:65
+#: libaegis/arglex/change.cc:172 libaegis/change/bind/existing.cc:65
 #, fuzzy
 msgid "unknown change"
 msgstr "there is no change or branch of this number known to this project"
@@ -7551,7 +7555,7 @@ msgstr "there is no change or branch of this number known to this project"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when the shell cannot be determined.
 #
-#: aecomplete/shell.cc:53
+#: aecomplete/shell.cc:51
 #, fuzzy
 msgid "unknown shell"
 msgstr "unable to determine the shell which has requested the completion"
@@ -7561,7 +7565,7 @@ msgstr "unable to determine the shell which has requested the completion"
 # This error message is issued when an unknown substitution is
 # referenced.  See (+++) above.
 #
-#: libaegis/sub.cc:494
+#: libaegis/sub.cc:492
 #, fuzzy
 msgid "unknown substitution name"
 msgstr "unknown substitution name"
@@ -7571,12 +7575,12 @@ msgstr "unknown substitution name"
 # This error message is issued when an unknown substitution variant
 # is referenced.  See (+++) above.
 #
-#: libaegis/sub/change/developer.cc:75 libaegis/sub/change/integrator.cc:75
-#: libaegis/sub/change/number.cc:417 libaegis/sub/change/reviewer.cc:75
-#: libaegis/sub/project.cc:147 libaegis/sub/project/adminis_list.cc:89
-#: libaegis/sub/project/develop_list.cc:88
-#: libaegis/sub/project/integra_list.cc:88
-#: libaegis/sub/project/reviewe_list.cc:87 libaegis/sub/user.cc:159
+#: libaegis/sub/change/developer.cc:73 libaegis/sub/change/integrator.cc:73
+#: libaegis/sub/change/number.cc:417 libaegis/sub/change/reviewer.cc:73
+#: libaegis/sub/project.cc:145 libaegis/sub/project/adminis_list.cc:87
+#: libaegis/sub/project/develop_list.cc:86
+#: libaegis/sub/project/integra_list.cc:86
+#: libaegis/sub/project/reviewe_list.cc:85 libaegis/sub/user.cc:157
 #, fuzzy
 msgid "unknown substitution variant"
 msgstr "unknown substitution variant"
@@ -7586,7 +7590,7 @@ msgstr "unknown substitution variant"
 #
 #       $File_Name      The name of the file to be unlinked.
 #
-#: libaegis/os/unlink/unlink.cc:70 libaegis/os/unlink/unlink.cc:79
+#: libaegis/os/unlink/unlink.cc:68 libaegis/os/unlink/unlink.cc:77
 msgid "unlink $filename: $errno"
 msgstr "unlink \"$filename\": $errno"
 
@@ -7595,7 +7599,7 @@ msgstr "unlink \"$filename\": $errno"
 # This fatal error message is issued when aedbu command is applied to
 # a simple change.
 #
-#: aegis/aenbru.cc:220
+#: aegis/aenbru.cc:201
 #, fuzzy
 msgid "use aedbu instead"
 msgstr "use the `aegis -dbu' command instead"
@@ -7605,7 +7609,7 @@ msgstr "use the `aegis -dbu' command instead"
 # This fatal error message is issued when the aedbu or aermpr commands
 # are applied to a branch.
 #
-#: aegis/aedbu.cc:268 aegis/aermpr.cc:137
+#: aegis/aedbu.cc:173 aegis/aermpr.cc:137
 #, fuzzy
 msgid "use aenbru instead"
 msgstr "use the `aegis -nbru' command instead"
@@ -7618,7 +7622,7 @@ msgstr "use the `aegis -nbru' command instead"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aerd.cc:139
+#: aegis/aerd.cc:120
 #, fuzzy
 msgid "user \"$name\" is not a developer"
 msgstr "user \"$name\" is not a developer"
@@ -7630,7 +7634,7 @@ msgstr "user \"$name\" is not a developer"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aerrv.cc:141
+#: aegis/aerrv.cc:120
 #, fuzzy
 msgid "user \"$name\" is not a reviewer"
 msgstr "user \"$name\" is not a reviewer"
@@ -7643,7 +7647,7 @@ msgstr "user \"$name\" is not a reviewer"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aera.cc:145
+#: aegis/aera.cc:124
 #, fuzzy
 msgid "user \"$name\" is not an administrator"
 msgstr "user \"$name\" is not an administrator"
@@ -7656,7 +7660,7 @@ msgstr "user \"$name\" is not an administrator"
 #
 #       $Name           The offending user name.
 #
-#: aegis/aeri.cc:141
+#: aegis/aeri.cc:120
 #, fuzzy
 msgid "user \"$name\" is not an integrator"
 msgstr "user \"$name\" is not an integrator"
@@ -7669,7 +7673,7 @@ msgstr "user \"$name\" is not an integrator"
 #
 #       $Name           The offending user name.
 #
-#: libaegis/help/user_toopriv.cc:39
+#: libaegis/help/user_toopriv.cc:37
 #, fuzzy
 msgid "user $name too privileged"
 msgstr "user \"$name\" is too privileged"
@@ -7708,7 +7712,7 @@ msgstr "user \"$name\" unknown, closest is the \"$guess\" user"
 #       $Name1          The quoted user name.
 #       $Name2          The quoted group name.
 #
-#: libaegis/os/execute_retc.cc:86
+#: libaegis/os/execute_retc.cc:85
 #, fuzzy
 msgid "user $name1, group $name2"
 msgstr "user $name1, group $name2"
@@ -7727,7 +7731,7 @@ msgstr "user \"$name\": $message"
 #
 #       $File_Name      The name of the file
 #
-#: libaegis/os/mtime/set.cc:60
+#: libaegis/os/mtime/set.cc:58
 msgid "utime $filename: $errno"
 msgstr "utime \"$filename\": $errno"
 
@@ -7738,9 +7742,9 @@ msgstr "utime \"$filename\": $errno"
 #
 #       $Name           The type name of the *required* type.
 #
-#: libaegis/meta_parse.cc:174 libaegis/meta_parse.cc:209
-#: libaegis/meta_parse.cc:230 libaegis/meta_parse.cc:258
-#: libaegis/meta_parse.cc:301 libaegis/meta_parse.cc:346
+#: libaegis/meta_parse.cc:172 libaegis/meta_parse.cc:207
+#: libaegis/meta_parse.cc:228 libaegis/meta_parse.cc:256
+#: libaegis/meta_parse.cc:299 libaegis/meta_parse.cc:344
 #, fuzzy
 msgid "value of type $name required"
 msgstr "value of type $name required"
@@ -7752,7 +7756,7 @@ msgstr "value of type $name required"
 #
 #       $number The offending version number.
 #
-#: libaegis/project.cc:833
+#: libaegis/project.cc:837
 #, fuzzy
 msgid "version $number not a branch"
 msgstr "version \"$number\" is not a branch"
@@ -7774,7 +7778,7 @@ msgstr "waiting for $name lock"
 # This progress message is issued when Aegis is waiting for a project
 # baseline read lock.  This message is issued with a project indicator.
 #
-#: libaegis/project.cc:554
+#: libaegis/project.cc:558
 #, fuzzy
 msgid "waiting for baseline read lock"
 msgstr ""
@@ -7786,7 +7790,7 @@ msgstr ""
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
-#: libaegis/project.cc:593
+#: libaegis/project.cc:597
 #, fuzzy
 msgid "waiting for baseline write lock"
 msgstr ""
@@ -7798,7 +7802,7 @@ msgstr ""
 # This progress message is issued when Aegis is waiting for a global state
 # lock.  The global state remembers project names and where they are.
 #
-#: libaegis/gonzo.cc:1051
+#: libaegis/gonzo.cc:1049
 #, fuzzy
 msgid "waiting for global state lock"
 msgstr "waiting for project location index lock"
@@ -7808,7 +7812,7 @@ msgstr "waiting for project location index lock"
 # This progress message is issued when Aegis is waiting for a project
 # history lock.  This message is issued with a project indicator.
 #
-#: libaegis/project.cc:620
+#: libaegis/project.cc:624
 #, fuzzy
 msgid "waiting for history lock"
 msgstr ""
@@ -7820,8 +7824,8 @@ msgstr ""
 # This progress message is issued when Aegis is waiting for a lock.
 # This message is seen often, usually with a change or project indicator.
 #
-#: libaegis/change/cstate/lock_prepare.cc:38
-#: libaegis/project/lock/prepare.cc:36 libaegis/user/ustate_lock.cc:44
+#: libaegis/change/cstate/lock_prepare.cc:36
+#: libaegis/project/lock/prepare.cc:34 libaegis/user/ustate_lock.cc:44
 #, fuzzy
 msgid "waiting for lock"
 msgstr "waiting for lock"
@@ -7835,7 +7839,7 @@ msgstr "waiting for lock"
 #
 #       $File_Name      The name of the affected file.
 #
-#: libaegis/change/file/promote.cc:97
+#: libaegis/change/file/promote.cc:95
 #, fuzzy
 msgid "warning: $filename in baseline, copying"
 msgstr ""
@@ -7850,7 +7854,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/change/history/trash.cc:83
+#: libaegis/change/history/trash.cc:81
 #, fuzzy
 msgid "warning: $filename modified by history tool"
 msgstr "Avertisment: the history tool modified the \"$filename\" source file"
@@ -7864,7 +7868,7 @@ msgstr "Avertisment: the history tool modified the \"$filename\" source file"
 #
 #       $filename       The name of the offending file.
 #
-#: aedist/receive.cc:1997
+#: aedist/receive.cc:2005
 #, fuzzy
 msgid "warning: $filename patch not used"
 msgstr ""
@@ -7882,7 +7886,7 @@ msgstr ""
 #       $File_Name1     The name of the old project configuration file.
 #       $File_Name2     The name of the new project configuration file default.
 #
-#: aegis/aenf.cc:802
+#: aegis/aenf.cc:772
 #, fuzzy
 msgid "warning: $filename1 deprecated, use $filename2 file instead"
 msgstr ""
@@ -7897,7 +7901,7 @@ msgstr ""
 #
 #       $MeSsaGe        The message to be printed as a warning.
 #
-#: libaegis/change/warning.cc:54
+#: libaegis/change/warning.cc:52
 #, fuzzy
 msgid "warning: $message"
 msgstr "Avertisment: $message"
@@ -7911,7 +7915,7 @@ msgstr "Avertisment: $message"
 #       $Name1  The name of the AEGIS environment variable.
 #       $Name2  The name of the AEGIS_PATH environment variable.
 #
-#: libaegis/gonzo.cc:401
+#: libaegis/gonzo.cc:399
 #, fuzzy
 msgid "warning: $name1 is obsolete, use $name2 environment variable"
 msgstr ""
@@ -7925,8 +7929,8 @@ msgstr ""
 #       $Name1          The name of the obsolete option.
 #       $Name2          The name of the preferred option.
 #
-#: aedist/send.cc:624 aedist/send.cc:655 aegis/aenpr.cc:266 aegis/aenpr.cc:297
-#: aegis/aenrls.cc:272
+#: aedist/send.cc:625 aedist/send.cc:656 aegis/aenpr.cc:266 aegis/aenpr.cc:297
+#: aegis/aenrls.cc:274
 #, fuzzy
 msgid "warning: $name1 obsolete, use $name2 option"
 msgstr ""
@@ -7940,7 +7944,7 @@ msgstr ""
 #       $File_Name      The name of the file to be changed.
 #       $Argument       The mode desired.
 #
-#: libaegis/os/chmod/errok.cc:54
+#: libaegis/os/chmod/errok.cc:52
 #, fuzzy
 msgid "warning: chmod(\"$filename\", $arg): $errno"
 msgstr "Avertisment: chmod(\"$filename\", $arg): $errno"
@@ -7953,7 +7957,7 @@ msgstr "Avertisment: chmod(\"$filename\", $arg): $errno"
 #       $Command        The offending command.
 #       $Number         The exit status of the child.
 #
-#: libaegis/os/execute_retc.cc:216
+#: libaegis/os/execute_retc.cc:237
 #, fuzzy
 msgid "warning: command \"$command\" exit status $number"
 msgstr "Avertisment: command \"$command\" exit status $number"
@@ -7967,7 +7971,7 @@ msgstr "Avertisment: command \"$command\" exit status $number"
 #       $Number         The number of files requiring merging.
 #                       (Optional)
 #
-#: aegis/aeclean.cc:671
+#: aegis/aeclean.cc:643
 #, fuzzy
 msgid "warning: diffable files"
 msgstr ""
@@ -7979,7 +7983,7 @@ msgstr ""
 # This error message is issued when your search expression doesn't
 # do anything.
 #
-#: aefind/cmdline.y:527
+#: aefind/cmdline.y:528
 #, fuzzy
 msgid "warning: expression has no side effects, assuming you meant -PRint"
 msgstr ""
@@ -7993,7 +7997,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:649
+#: aegis/aeclean.cc:621
 #, fuzzy
 msgid "warning: file \"$filename\" needs diff"
 msgstr "Avertisment: file \"$filename\" needs to be differenced"
@@ -8005,7 +8009,7 @@ msgstr "Avertisment: file \"$filename\" needs to be differenced"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:554
+#: aegis/aeclean.cc:526
 #, fuzzy
 msgid "warning: file \"$filename\" needs merge"
 msgstr "Avertisment: file \"$filename\" needs to be merged"
@@ -8019,7 +8023,7 @@ msgstr "Avertisment: file \"$filename\" needs to be merged"
 #       $Number         The number of seconds into the future.
 #                       (Optional)
 #
-#: aegis/aeip.cc:2150
+#: aegis/aeip.cc:2170
 #, fuzzy
 msgid "warning: file times in future"
 msgstr ""
@@ -8035,7 +8039,7 @@ msgstr ""
 #       $Number         The number of files modified.
 #                       (Optional)
 #
-#: libaegis/change/history/trash.cc:111
+#: libaegis/change/history/trash.cc:109
 #, fuzzy
 msgid "warning: files modified by history tool"
 msgstr ""
@@ -8055,7 +8059,7 @@ msgstr ""
 #       $Number         The number of files requiring merging.
 #                       (Optional)
 #
-#: aegis/aeclean.cc:663 aegis/aed.cc:1559
+#: aegis/aeclean.cc:635 aegis/aed.cc:1528
 #, fuzzy
 msgid "warning: mergable files"
 msgstr ""
@@ -8071,7 +8075,7 @@ msgstr ""
 #
 #       $File_Name      The name of the affected file.
 #
-#: libaegis/change/file/promote.cc:194
+#: libaegis/change/file/promote.cc:192
 #, fuzzy
 msgid "warning: no $filename in baseline, creating"
 msgstr ""
@@ -8086,8 +8090,8 @@ msgstr ""
 #       $Name1          The name of a command line option.
 #       $Name2          The name of a command line option.
 #
-#: aegis/aeca.cc:637 aegis/aefa.cc:510 aegis/aeif.cc:326 aegis/aenc.cc:336
-#: aegis/aepa.cc:316 aegis/aerf.cc:324
+#: aegis/aeca.cc:637 aegis/aefa.cc:510 aegis/aeif.cc:303 aegis/aenc.cc:316
+#: aegis/aepa.cc:284 aegis/aerf.cc:304
 #, fuzzy
 msgid "warning: no $name1, assuming $name2"
 msgstr "Avertisment: no $name1 specified, assuming $name2 desired"
@@ -8097,7 +8101,7 @@ msgstr "Avertisment: no $name1 specified, assuming $name2 desired"
 # This warning message is issued when an aechown command attempts to
 # change the owner of a change to the current owner.
 #
-#: aegis/aechown.cc:233
+#: aegis/aechown.cc:215
 #, fuzzy
 msgid "warning: no chown"
 msgstr ""
@@ -8109,7 +8113,7 @@ msgstr ""
 # This warning is issued when a received file could have a Trojan horse
 # attack in it, but the use said to keep going.
 #
-#: aedist/receive.cc:2214 aepatch/receive.cc:1213
+#: aedist/receive.cc:2227 aepatch/receive.cc:1213
 #, fuzzy
 msgid "warning: potential trojan, proceeding anyway"
 msgstr ""
@@ -8122,7 +8126,7 @@ msgstr ""
 # This warning is issued when a received file could have a Trojan horse
 # attack in it.
 #
-#: aedist/receive.cc:2271 aedist/receive.cc:2491 aepatch/receive.cc:1231
+#: aedist/receive.cc:2284 aedist/receive.cc:2496 aepatch/receive.cc:1231
 #: aepatch/receive.cc:1290
 #, fuzzy
 msgid "warning: potential trojan, review before completing development"
@@ -8137,9 +8141,9 @@ msgstr ""
 #
 #       $File_Name      The name of the directory to be removed.
 #
-#: aegis/aeclean.cc:184 libaegis/dir/functor/rmdir_bg.cc:62
-#: libaegis/os/rmdir/bg.cc:41 libaegis/os/rmdir/errok.cc:42
-#: libaegis/os/rmdir/tree.cc:41
+#: aegis/aeclean.cc:156 libaegis/dir/functor/rmdir_bg.cc:60
+#: libaegis/os/rmdir/bg.cc:39 libaegis/os/rmdir/errok.cc:40
+#: libaegis/os/rmdir/tree.cc:39
 #, fuzzy
 msgid "warning: rmdir $filename: $errno"
 msgstr "Avertisment: rmdir \"$filename\": $errno"
@@ -8150,7 +8154,7 @@ msgstr "Avertisment: rmdir \"$filename\": $errno"
 #
 #       $Argument       The gid argument.
 #
-#: libaegis/os/become.cc:79
+#: libaegis/os/become.cc:77
 #, fuzzy
 msgid "warning: setgid $arg: $errno"
 msgstr "Avertisment: setgid $arg: $errno"
@@ -8161,7 +8165,7 @@ msgstr "Avertisment: setgid $arg: $errno"
 #
 #       $File_Name      The name of the file to be stat()ed.
 #
-#: libaegis/os/unlink/errok.cc:64
+#: libaegis/os/unlink/errok.cc:62
 #, fuzzy
 msgid "warning: stat $filename: $errno"
 msgstr "Avertisment: stat \"$filename\": $errno"
@@ -8170,7 +8174,7 @@ msgstr "Avertisment: stat \"$filename\": $errno"
 # TRANSLATION REQUIRED
 # This warning message is issued when in Aegis runs in test mode.
 #
-#: libaegis/os/become.cc:299
+#: libaegis/os/become.cc:303
 #, fuzzy
 msgid "warning: test mode"
 msgstr ""
@@ -8184,8 +8188,8 @@ msgstr ""
 #
 #       $File_Name      The name of the file to be unlinked.
 #
-#: libaegis/dir/functor/rmdir_bg.cc:77 libaegis/os/unlink/errok.cc:72
-#: libaegis/os/unlink/errok.cc:81
+#: libaegis/dir/functor/rmdir_bg.cc:75 libaegis/os/unlink/errok.cc:70
+#: libaegis/os/unlink/errok.cc:79
 #, fuzzy
 msgid "warning: unlink $filename: $errno"
 msgstr "Avertisment: unlink \"$filename\": $errno"
@@ -8199,8 +8203,8 @@ msgstr "Avertisment: unlink \"$filename\": $errno"
 #       $Name           The name of the -File option,
 #                       assuming option names will be internationalized RSN
 #
-#: aegis/aeca.cc:480 aegis/aeif.cc:201 aegis/aenc.cc:193 aegis/aepa.cc:217
-#: aegis/aerf.cc:198
+#: aegis/aeca.cc:480 aegis/aeif.cc:178 aegis/aenc.cc:173 aegis/aepa.cc:185
+#: aegis/aerf.cc:178
 #, fuzzy
 msgid "warning: use $name option"
 msgstr ""
@@ -8213,7 +8217,7 @@ msgstr ""
 #
 #       $File_Name      The name of the file
 #
-#: libaegis/os/mtime/set_errok.cc:54
+#: libaegis/os/mtime/set_errok.cc:52
 #, fuzzy
 msgid "warning: utime $filename: $errno"
 msgstr "Avertisment: utime \"$filename\": $errno"
@@ -8223,7 +8227,7 @@ msgstr "Avertisment: utime \"$filename\": $errno"
 # This error message is issued when a aedbu command is run by a
 # user who was not the developer of the change being operated on.
 #
-#: aegis/aedeu.cc:281
+#: aegis/aedeu.cc:261
 #, fuzzy
 msgid "was not developer"
 msgstr ""
@@ -8235,7 +8239,7 @@ msgstr ""
 # This error message is issued when a aerpu command is run by a
 # user who was not the reviewer of the change being operated on.
 #
-#: aegis/aerpu.cc:227
+#: aegis/aerpu.cc:204
 #, fuzzy
 msgid "was not reviewer"
 msgstr ""
@@ -8247,9 +8251,8 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/gif/close.cc:65 libaegis/gif/close.cc:503
-#: libaegis/output/file.cc:89 libaegis/output/pager.cc:169
-#: libaegis/output/stdout.cc:98
+#: libaegis/output/file.cc:87 libaegis/output/pager.cc:162
+#: libaegis/output/stdout.cc:103
 msgid "write $filename: $errno"
 msgstr "write \"$filename\": $errno"
 
@@ -8270,7 +8273,7 @@ msgstr "unable to work out what you meant to say, it's too complicated"
 #
 #       $File_Name      The name of the offending file
 #
-#: libaegis/change/pconf/get.cc:934
+#: libaegis/change/pconf/get.cc:1079
 #, fuzzy
 msgid "you must create a \"$filename\" file"
 msgstr "you must create a \"$filename\" file"

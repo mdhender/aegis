@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2007 Peter Miller
+//	Copyright (C) 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -144,8 +144,8 @@ public:
     file_event_list::pointer get(string_ty *filename);
 
     /**
-      * The project_file_roll_forward_get_last function is used to get the
-      * last file event, used by most functions which deal with deltas.
+      * The get_last method is used to get the last file event, used by
+      * most functions which deal with deltas.
       *
       * \param filename
       *    The name of the file to fetch the last event
@@ -156,8 +156,8 @@ public:
     file_event *get_last(const nstring &filename);
 
     /**
-      * The project_file_roll_forward_get_last function is used to get the
-      * last file event, used by most functions which deal with deltas.
+      * The get_last method is used to get the last file event, used by
+      * most functions which deal with deltas.
       *
       * \param filename
       *    The name of the file to fetch the last event
@@ -168,6 +168,19 @@ public:
       *    This method will be DEPRECATED one day.
       */
     file_event *get_last(string_ty *filename);
+
+    /**
+      * The get_last method is used to get the last file event,
+      * using the file's meta data to identify it.
+      *
+      * \param src
+      *    The meta-data describing the file (any revision data, if
+      *    present, will be ignored)
+      * \returns
+      *    Pointer to the last event for the named file, or NULL if the
+      *    file has never existed at the time (delta) specified.
+      */
+    file_event *get_last(fstate_src_ty *src);
 
     /**
       * The project_file_roll_forward_get_older function is used to get the

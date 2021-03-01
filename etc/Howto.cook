@@ -1,11 +1,11 @@
 /*
  * aegis - project change supervisor
- * Copyright (C) 1991-2007 Peter Miller
- * Copyright (C) 2007 Walter Franzini
+ * Copyright (C) 1991-2008 Peter Miller
+ * Copyright (C) 2007, 2008 Walter Franzini
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -234,9 +234,32 @@ if [not [count [primary_arch]]] then
     primary_arch = linux-i486;
 
 /*
+ * To turn on the dmalloccxx library you need these two lines
+ *
+c++_flags += -DDMALLOC -DDMALLOC_FUNC_CHECK;
+libs += -ldmalloccxx;
+ *
+ * and the dmalloc library itself, of course.
+ *
+ * WARNING:  The dmalloc library can be instructed to log to a file,
+ * circumventing the Aegis I/O layer, thus it's possible to create file
+ * owned by root.  The dmalloc library should only ever be used as a
+ * debugging tool, and NEVER be used in a production build of Aegis.
+ */
+
+/*
+ * To turn on the Electric Fence malloc debugging library
+ *
+libs += -lefence;
+ *
+ * and the Electic Fence library itself, of course.
+ */
+
+/*
  * The default recipe
  */
 all =
+        [arch]/bin/test_funcs
         configured_files
         ;
 integration-build-targets = ;
@@ -260,12 +283,13 @@ all: [all]
         if [in [resolve etc/set-uid-root] etc/set-uid-root] then
             chmod a+rx etc/set-uid-root;
         set silent;
-        echo\;ls -l [arch]/bin/aegis [arch]/bin/aeimport;
+        echo\;ls -l [addprefix [arch]/bin/ [set-uid-root-commands]];
         echo "Integrator: please do the following:";
         echo "\"  sudo" [pathname [resolve etc/set-uid-root]] [arch]
-            "aegis aeimport\"";
-        echo "\"if they aren't root already.  See etc/set-uid-root for\"";
-        echo "\"instructions for how to set-up your /etc/sudoers file.\"";
+            [set-uid-root-commands]'"';
+        echo "\"if they aren't set-uid-root already.  See the comments\"";
+        echo "\"in the etc/set-uid-root file for instructions for how to set\"";
+        echo "\"up your /etc/sudoers file.\"";
     }
 }
 
@@ -397,7 +421,6 @@ commands =
                 [fromto %1/%0%2 %1 [match_mask %/main.cc [source_files]]]
         -
                 fmtgen
-                find_sizes
                 aefp
                 cklinlen
                 aemakefile
@@ -453,7 +476,7 @@ loop
 
 aefp_obj =
         [arch]/aefp/main.o
-        [common_obj]
+        [libaegis_obj]
         ;
 
 aemeasure_obj =
@@ -484,31 +507,6 @@ fmtgen_obj =
         [arch]/common/common.a
         ;
 
-find_sizes_obj =
-        [fromto
-                find_sizes/%.cc
-                [arch]/find_sizes/%.o
-                [match_mask find_sizes/%.cc [source_files]]
-        ]
-        [arch]/common/ac/string.o
-        [arch]/common/arglex.o
-        [arch]/common/arglex/compare.o
-        [arch]/common/error.o
-        [arch]/common/exeext.o
-        [arch]/common/libdir.o
-        [arch]/common/mem.o
-        [arch]/common/mprintf.o
-        [arch]/common/nstring.o
-        [arch]/common/progname.o
-        [arch]/common/quit.o
-        [arch]/common/rsrc_limits.o
-        [arch]/common/str.o
-        [arch]/common/str/catenate.o
-        [arch]/common/str/format.o
-        [arch]/common/stracc.o
-        [arch]/common/trace.o
-        ;
-
 source_files_build =
         [change_files_build] [project_files_build];
 source_files_non_build =
@@ -521,7 +519,8 @@ if [defined [arch]_c++_flags] then
     c++_flags = [split "%" [[arch]_c++_flags]];
 
 if [not [defined c++_flags]] then
-    c++_flags = -O2 [debug];
+    c++_flags = -O2;
+c++_flags = [stringset [c++_flags] [debug]];
 
 if [defined [arch]_cc_include_flags] then
     cc_include_flags = [split "%" [[arch]_cc_include_flags]];
@@ -552,7 +551,7 @@ if [not [defined ld_flags]] then
  * The g++ include files MUST be first.
  */
 g++_modern = 0;;
-#if [in [substring 1 3 [c++]] g++]
+#if [in [substring 1 3 [entryname [c++]]] g++]
 
 [arch]/etc/gxx_flags.cook: etc/gxx_flags.pl
 {
@@ -560,12 +559,12 @@ g++_modern = 0;;
 }
 ;;
 #include-cooked-nowarn [arch]/etc/gxx_flags.cook
-#endif
 
 c++_flags =
     [stringset
         -ansi -Wall -Werror
         [c++_flags]
+        [debug]
         -Wshadow -Wpointer-arith -Wwrite-strings
         /*
          * The g++ command doesn't have the -Wmissing-declarations
@@ -583,7 +582,73 @@ if [g++_modern] then
             -fmessage-length\=0 /* this makes vim -q work better */
         ];
 }
+#endif
 
+/*
+ *  Support for compiling with the Intel C++ Compiler.
+ *
+ *  The icc seems to catch different problem from gcc, thus compiling
+ *  Aegis with icc from time to time may help improve the quality of
+ *  the code.
+ *
+ *  To enable that compiler you need to modify the
+ *  aegis.conf.d/site.conf file setting the compiler and options value
+ *  most appropriate for you platform.
+ *
+ *  Example:
+ *  ------------------------------------------------------------------------
+ *  {
+ *      name = "linux-i486_c++";
+ *      value = "/opt/intel/cc/10.1.008/bin/icpc";
+ *  },
+ *  {
+ *      name = "linux-i486_c++_flags";
+ *      value = "-gxx-name=c++%-cxxlib";
+ *  },
+ *  ------------------------------------------------------------------------
+ *
+ *  Note the % sign in the example above (separating the -gxx-name and
+ *  -cxxlib options).  It's not an error and you should use it to
+ *  separate additional options you may need.
+ *
+ *  To be able to test the suid binary (at least on Linux) you must
+ *  modify the /etc/ld.so.conf file adding the directory name where to
+ *  find icc specific libraries.
+ *
+ */
+#if [in [notdir [c++]] icpc]
+
+/*
+ * The order of the -W* options must be preserved otherwise the
+ * -Werror option became unhelpful.  It seems that:
+ *
+ * 1) -Wall selects the warning to be raised
+ * 2) -Werror mark the selected warning to be reported as errors.
+ *
+ * Thus reverting the order shows a different behavior.
+ *
+ * The following diagnostic messages are disabled because they give
+ * too much warnings or because a "fix" is not evident:
+ *
+ * #111: statement is unreachable
+ * #181: argument is incompatible with corresponding format string conversion
+ * #193: (preprocessor) zero used for undefined preprocessing identifier
+ * #383: value copied to temporary, reference to temporary used
+ * #593: variable "__d0" was set but never used (FD_SET related)
+ * #810: suppress int to char warning
+ * #981: operands are evaluated in unspecified order
+ * #1418: external function definition with no prior declaration
+ * #1419: external declaration in primary source file
+ * #1572: floating-point equality and inequality comparisons are unreliable
+ *
+ */
+c++_flags =
+    [stringset
+     -ansi -Wall -Wbrief -Werror
+     -wd111,181,193,383,593,810,981,1418,1419,1572
+     [c++_flags]
+    ];
+#endif
 
 
 /*
@@ -597,9 +662,16 @@ include_search_list =
         ;
 
 /*
+ *  The gcc compiler and the icc compiler both supports -o in
+ *  combination with -c.
+ */
+cxx_c_o = [or
+           [in g++ [substring 1 3 [entryname [c++]]]]
+           [in [notdir [c++]] icpc]];
+
+/*
  * Build %1/%2.o from %1/%2.cc
  */
-
 [arch]/%1/%0%2.o: %1/%0%2.cc [c++_path]
 {
     extra = [c++_flags];
@@ -608,7 +680,15 @@ include_search_list =
 
     if [match %%.gen %2] then
     {
-        if [in [substring 1 3 [c++]] g++] then
+        /*
+         * Generated files may have warnings, because we have no
+         * control over the quality of generated code (usually
+         * warnings about missing prototypes or unreferenced
+         * labels).
+         */
+        extra = [stringset [extra] - -Werror];
+
+        if [in [substring 1 3 [entryname [c++]]] g++] then
         {
             /*
              * Generated files may have warnings, because we have no
@@ -622,7 +702,7 @@ include_search_list =
     }
 
     local post =;
-    if [in g++ [substring 1 3 [c++]]]
+    if [cxx_c_o]
         then post = -o [target];
     else
         post = "&&" mv %2.o [target];
@@ -653,8 +733,8 @@ include_search_list =
     [c++] [extra]
         [cc_include_flags]
         -c [resolve [arch]/%1/%0%2.cc]
-        ['if' [in g++ [substring 1 3 [c++]]] 'then' -o [target]];
-    if [not [in g++ [substring 1 3 [c++]]]] then
+        ['if' [cxx_c_o] 'then' -o [target]];
+    if [not [cxx_c_o]] then
         mv %2.o [target];
 }
 
@@ -858,11 +938,8 @@ cascade common/ac/unistd.h = [arch]/common/config.h;
 cascade common/ac/uuid.h = [arch]/common/config.h;
 cascade common/ac/wchar.h = [arch]/common/config.h;
 cascade common/ac/zlib.h = [arch]/common/config.h;
-cascade common/fp/md5.cc = [arch]/common/find_sizes.h;
-cascade common/fp/snefru.cc = [arch]/common/find_sizes.h;
 cascade common/version_stmp.cc = common/patchlevel.h;
 cascade etc/aegis.html = etc/version.so;
-cascade find_sizes/main.cc = [arch]/common/config.h;
 cascade fmtgen/lex.cc = fmtgen/parse.gen.h;
 cascade lib/en/aoss4/main.mm = etc/version.so(exists);
 cascade lib/en/auug93/main.mm = etc/version.so(exists);
@@ -1028,6 +1105,25 @@ yacc_flags = -v;
 }
 
 /*
+ * Or from a .sh script
+ * Use bash to check syntax.
+ * Or fall back to ksh if there
+ * This avoids linux ksh that gripes about obsolete back-tic usage
+ */
+check_sh = [find_command bash];
+if [not [check_sh]] then
+    check_sh = [find_command ksh];
+if [not [check_sh]] then
+    check_sh = sh;
+
+[arch]/bin/%: etc/%.sh
+{
+    cat [resolve etc/%.sh] > [target];
+    [check_sh] -n [target];
+    chmod 755 [target];
+}
+
+/*
  * How to automatically configure things to cope with the environment
  * we find ourselves in.
  */
@@ -1170,6 +1266,7 @@ etc/version.so:
                 ] ] ] 'then' shallow]
 {
         echo \".ds v) [version_short]\" > [target];
+        echo \".ds V) [version]\" >> [target];
         echo [version]
                 | [awk] -F.  "'{o=$2%2; print\".ds o) \"o;"
                     "print \".ds p) \" $1 \".\" (o ? ($2 - 1) : ($2 + 1)) }'"
@@ -1232,9 +1329,9 @@ etc/CHANGES: [arch]/bin/aereport lib/report/proj_detai.rpt [vs_file]
                                                                       set meter;
 }
 
-[arch]/common/find_sizes.h: [arch]/bin/find_sizes
+[arch]/common/find_sizes.h:
 {
-        [resolve [arch]/bin/find_sizes] > [target];
+    echo "'#error \"do not include this file\"'" > [target];
 }
 
 /*

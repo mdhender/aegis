@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -19,18 +19,18 @@
 
 #include <common/ac/stdio.h>
 
-#include <libaegis/change.h>
 #include <common/error.h> // for assert
-#include <aeget/get/project/staff.h>
-#include <aeget/emit/project.h>
-#include <aeget/http.h>
 #include <common/mem.h>
-#include <libaegis/project.h>
-#include <libaegis/project/history.h>
 #include <common/str_list.h>
 #include <common/symtab.h>
+#include <libaegis/change.h>
+#include <libaegis/emit/project.h>
+#include <libaegis/http.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
 #include <libaegis/user.h>
 
+#include <aeget/get/project/staff.h>
 
 #define BAR_WIDTH 50
 #define BAR_HEIGHT 12
@@ -125,7 +125,7 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
     size_t          n;
     cstate_ty       *cstate_data;
     staff_member_ty total;
-    staff_member_ty max;
+    staff_member_ty highwater;
     long            tmax;
     string_ty       *key;
     staff_member_ty *smp;
@@ -189,7 +189,7 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
     // traverse each change
     //
     staff_member_constructor(&total);
-    staff_member_constructor(&max);
+    staff_member_constructor(&highwater);
     cp = pp->change_get();
     cstate_data = cp->cstate_get();
     bp = cstate_data->branch;
@@ -225,8 +225,8 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
 		{
 		case cstate_history_what_new_change:
 		    smp->admin.count++;
-		    if (max.admin.count < smp->admin.count)
-			max.admin.count = smp->admin.count;
+		    if (highwater.admin.count < smp->admin.count)
+			highwater.admin.count = smp->admin.count;
 		    total.admin.count++;
 		    break;
 
@@ -237,8 +237,8 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
 		case cstate_history_what_develop_end_2ai:
 		case cstate_history_what_develop_end_undo:
 		    smp->developer.count++;
-		    if (max.developer.count < smp->developer.count)
-			max.developer.count = smp->developer.count;
+		    if (highwater.developer.count < smp->developer.count)
+			highwater.developer.count = smp->developer.count;
 		    total.developer.count++;
 		    break;
 
@@ -251,8 +251,8 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
 		case cstate_history_what_review_pass_2br:
 		case cstate_history_what_review_pass_undo_2ar:
 		    smp->reviewer.count++;
-		    if (max.reviewer.count < smp->reviewer.count)
-			max.reviewer.count = smp->reviewer.count;
+		    if (highwater.reviewer.count < smp->reviewer.count)
+			highwater.reviewer.count = smp->reviewer.count;
 		    total.reviewer.count++;
 		    break;
 
@@ -261,8 +261,8 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
 		case cstate_history_what_integrate_pass:
 		case cstate_history_what_integrate_fail:
 		    smp->integrator.count++;
-		    if (max.integrator.count < smp->integrator.count)
-			max.integrator.count = smp->integrator.count;
+		    if (highwater.integrator.count < smp->integrator.count)
+			highwater.integrator.count = smp->integrator.count;
 		    total.integrator.count++;
 		    break;
 		}
@@ -273,13 +273,13 @@ get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
 	change_free(cp);
 	cp = 0;
     }
-    tmax = max.admin.count;
-    if (tmax < max.developer.count)
-	tmax = max.developer.count;
-    if (tmax < max.reviewer.count)
-	tmax = max.reviewer.count;
-    if (tmax < max.integrator.count)
-	tmax = max.integrator.count;
+    tmax = highwater.admin.count;
+    if (tmax < highwater.developer.count)
+	tmax = highwater.developer.count;
+    if (tmax < highwater.reviewer.count)
+	tmax = highwater.reviewer.count;
+    if (tmax < highwater.integrator.count)
+	tmax = highwater.integrator.count;
     scale = (tmax ? (double)BAR_WIDTH / tmax : 1);
 
     //

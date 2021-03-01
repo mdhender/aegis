@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1998, 2002-2006 Peter Miller
+//	Copyright (C) 1997, 1998, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate abbreviates
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -24,12 +22,13 @@
 
 #include <common/abbreviate.h>
 #include <common/error.h>	// for assert
-#include <common/stracc.h>
+#include <common/mem.h>
 #include <common/str_list.h>
+#include <common/stracc.h>
 
 
 static string_ty *
-abbreviate(string_ty *s, size_t max, int keep_last_dot)
+abbreviate(string_ty *s, size_t max_len, int keep_last_dot)
 {
     size_t          word_total;
     size_t          punct_total;
@@ -42,9 +41,9 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
     //
     // trivial sanity check
     //
-    assert(max > 0);
+    assert(max_len > 0);
     total = s->str_length;
-    if (total <= max || max == 0)
+    if (total <= max_len || max_len == 0)
 	return str_copy(s);
 
     //
@@ -104,7 +103,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	punct_total -= punct.string[0]->str_length;
 	str_free(punct.string[0]);
 	punct.string[0] = str_from_c("");
-	if (total <= max)
+	if (total <= max_len)
 	    goto reassemble;
     }
 
@@ -122,7 +121,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	punct_total -= punct.string[punct.nstrings - 1]->str_length;
 	str_free(punct.string[--punct.nstrings]);
 	str_free(word.string[--word.nstrings]);
-	if (total <= max)
+	if (total <= max_len)
 	    goto reassemble;
     }
     assert(punct.nstrings);
@@ -142,7 +141,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	s1 = str_n_from_c(punct.string[j]->str_text, (size_t)1);
 	str_free(punct.string[j]);
 	punct.string[j] = s1;
-	if (total <= max)
+	if (total <= max_len)
 	    goto reassemble;
     }
 
@@ -150,7 +149,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
     // nuke all punctuation if we are very squeezed for space
     // (except last dot, for file suffixes)
     //
-    if (punct_total * 5 > max)
+    if (punct_total * 5 > max_len)
     {
 	for (j = punct.nstrings - 1; j >= 0; --j)
 	{
@@ -170,7 +169,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	    --punct_total;
 	    str_free(punct.string[j]);
 	    punct.string[j] = str_from_c("");
-	    if (total <= max)
+	    if (total <= max_len)
 		goto reassemble;
 	}
     }
@@ -195,7 +194,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	    s1 = str_n_from_c(word.string[j]->str_text, word_max);
 	    str_free(word.string[j]);
 	    word.string[j] = s1;
-	    if (total <= max)
+	    if (total <= max_len)
 		goto reassemble;
 	}
 	--word_max;
@@ -250,26 +249,26 @@ nuke_unprintable(string_ty *s)
 
 
 string_ty *
-abbreviate_dirname(string_ty *s, size_t max)
+abbreviate_dirname(string_ty *s, size_t max_len)
 {
     string_ty       *s2;
     string_ty       *result;
 
     s2 = nuke_unprintable(s);
-    result = abbreviate(s2, max, 0);
+    result = abbreviate(s2, max_len, 0);
     str_free(s2);
     return result;
 }
 
 
 string_ty *
-abbreviate_filename(string_ty *s, size_t max)
+abbreviate_filename(string_ty *s, size_t max_len)
 {
     string_ty       *s2;
     string_ty       *result;
 
     s2 = nuke_unprintable(s);
-    result = abbreviate(s2, max, 1);
+    result = abbreviate(s2, max_len, 1);
     str_free(s2);
     return result;
 }

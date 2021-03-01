@@ -1,11 +1,11 @@
 dnl
 dnl     aegis - a project change supervisor
-dnl     Copyright (C) 1994, 1995, 1997-1999, 2001-2007 Peter Miller
-dnl     Copyright (C) 2006, 2007 Walter Franzini
+dnl     Copyright (C) 1994, 1995, 1997-1999, 2001-2008 Peter Miller
+dnl     Copyright (C) 2006-2008 Walter Franzini
 dnl
 dnl     This program is free software; you can redistribute it and/or
 dnl     modify it under the terms of the GNU General Public License as
-dnl     published by the Free Software Foundation; either version 2 of
+dnl     published by the Free Software Foundation; either version 3 of
 dnl     the License, or (at your option) any later version.
 dnl
 dnl     This program is distributed in the hope that it will be useful,
@@ -54,11 +54,60 @@ fi
 
 AC_PROG_INSTALL
 AC_PROG_YACC
+
+if test "$YACC" = "yacc" -a ! -f /usr/bin/yacc
+then
+  AC_MSG_RESULT([
+        You must have the bison command installed in order
+        to build Aegis.
+        Homepage: http://www.gnu.org/software/bison/])
+  OK=no
+  if apt-get --version > /dev/null 2> /dev/null; then
+    AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install bison
+    ])
+    OK=yes
+  fi
+  if yum --version > /dev/null 2> /dev/null; then
+    AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install bison
+    ])
+    OK=yes
+  fi
+  if test "$OK" != "yes"; then
+    AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        bison package.
+    ])
+  fi
+  exit 1
+fi
+
 AC_PROG_RANLIB
 AC_MINIX
 AC_ISC_POSIX
 AC_OBJEXT
 AC_EXEEXT
+
+dnl
+dnl Large file support.
+dnl
+AC_FUNC_FSEEKO
+AC_SYS_LARGEFILE
+
+dnl
+dnl     DO NOT check for -ldmalloc, using
+dnl         AC_CHECK_LIB(dmalloc, dmalloc_malloc)
+dnl     or similar.
+dnl
+dnl     The dmalloc library can be instructed to log to a file,
+dnl     circumventing the Aegis I/O layer, thus it's possible to create
+dnl     file owned by root.  The dmalloc library should only ever be
+dnl     used as a debugging tool, and NEVER be used in a production build
+dnl     of Aegis.
+dnl
 
 dnl Solaris 2.5.1 and below wide-character support
 AC_CHECK_FUNC(wschr, ,
@@ -66,111 +115,238 @@ AC_CHECK_FUNC(wschr, ,
         AC_CHECK_LIB(w, wschr))
 
 dnl
+dnl we need to check for libiconv before we check for libintl
+dnl
+AC_CHECK_LIB(iconv, iconv, ,
+    unset ac_cv_func_iconv)
+
+dnl
 dnl Solaris needs to use the GNU Gettext to have any chance of
 dnl having working error message translation.  So we look for -lintl
 dnl unconditionally.
 dnl
 AC_CHECK_LIB(intl, gettext, ,
-        unset ac_cv_func_gettext)
+  [
+    unset ac_cv_func_gettext
+    AC_CHECK_LIB(gettext, gettext, ,
+      unset ac_cv_func_gettext)
+  ]
+)
 
 AC_CHECK_FUNC(setsockopt, ,
         unset ac_cv_func_setsockopt
         AC_CHECK_LIB(socket, setsockopt))
-AC_CHECK_LIB(m, main)
-AC_CHECK_LIB(rx, main)
-AC_CHECK_LIB(z, main, ,
+dnl
+dnl Check the presence of libm.  We use additional parentheses around
+dnl the name of the function to avoid problems if atan2 is *also*
+dnl defined as a macro.
+dnl
+AC_CHECK_LIB(m, (atan2))
+AC_CHECK_LIB(rx, regcomp)
+AC_CHECK_LIB(z, gzopen, ,
   [
     AC_MSG_RESULT([
-        You must have the zlib compression library (http://www.zlib.net/)
-        installed in order to build Aegis.  Please install zlib, and
-        then re-run this ./configure script.  If you are using a package
-        based install, you will need the zlib-devel package in addition
-        to the zlib package.
-    ])
+        You must have the zlib compression library installed in order
+        to build Aegis.  Please install zlib, and then re-run this
+        ./configure script.
+        Homepage: http://www.zlib.net/])
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install zlib1g-dev
+      ])
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install zlib-devel
+      ])
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        zlib-devel package in addition to the zlib package.
+      ])
+    fi
     exit 1
   ]
 )
 AC_CHECK_LIB(bz2, BZ2_bzopen, ,
   [
     AC_MSG_RESULT([
-        You must have the BZip2 compression library (http://www.bzip.org/)
-        installed in order to build Aegis.  Please install the bzip2
-        library, and then re-run this ./configure script.  If you are
-        using a package based install, you will need the bzip2-devel
-        package in addition to the bzip2 package.
-    ])
+        You must have the BZip2 compression library installed in order
+        to build Aegis.  Please install the bzip2 library, and then
+        re-run this ./configure script.
+        Homepage: http://www.bzip.org/])
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install libbz2-dev bzip2
+      ])
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install libbz2-devel bzip2
+      ])
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        bzip2-devel package in addition to the bzip package.
+      ])
+    fi
     exit 1
   ]
 )
 AC_CHECK_LIB(crypt, crypt)
-AC_CHECK_LIB(magic, magic_file)
+AC_CHECK_LIB(magic, magic_file, ,
+  [
+    AC_MSG_RESULT([
+        You make like to have the file magic number library installed in
+        order to build Aegis.  This will result is superior Content-Type
+        information being inserted at several points in the code.
+        Homepage: http://www.darwinsys.com/file/])
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install libmagic-dev
+      ])
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install libmagic-devel
+      ])
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        libmagic-devel package in addition to the libmagic package.
+      ])
+    fi
+  ]
+)
 dnl The -lclu library is for OSF/1 clustering
-AC_CHECK_LIB(clu, main)
+AC_CHECK_LIB(clu, clu_info)
+
+STATIC_LIBS=
+
+dnl
+dnl Look for static libraries necessary with -lcurl, but we don't need
+dnl them when we are using shared libraries.
+dnl
+AC_CHECK_PROGS(CURL_CONFIG, curl-config)
+
+if test -n "$CURL_CONFIG"
+then
+    CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
+    CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
+    STATIC_LIBS="`$CURL_CONFIG --libs`"
+fi
 
 dnl
 dnl The curl library is used to read from arbitrary URLs.
 dnl
-AC_CHECK_LIB(curl, curl_multi_perform)
+AC_CHECK_LIB(curl, curl_multi_perform, [],
+  [
+    AC_MSG_RESULT([
+        You make like to have the multi-protocol file transfer library
+        installed in order to build Aegis.
+        Homepage: http://curl.haxx.se/])
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        One of the following commands may be used to install it:
+        sudo apt-get install libcurl4-gnutls-dev
+        sudo apt-get install libcurl3-dev
+      ])
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install libcurl-devel
+      ])
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        libcurl-devel package in addition to the libcurl package.
+      ])
+    fi
+  ],
+  [$STATIC_LIBS])
+
+dnl
+dnl Look for static libraries necessary with -lxml2, but we don't need
+dnl them when we are using shared libraries.
+dnl
+AC_CHECK_PROGS(XML2_CONFIG, xml2-config)
+
+if test -n "$XML2_CONFIG"
+then
+    CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
+    CXXFLAGS="$CXXFLAGS `$XML2_CONFIG --cflags`"
+    STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
+fi
 
 dnl
 dnl The libxml2 library is used by the aerevml(1) command to parse its
 dnl input files.
 dnl
-AC_CHECK_LIB(xml2, xmlTextReaderRead, ,
+AC_CHECK_LIB(xml2, xmlTextReaderRead, [],
   [
     AC_MSG_RESULT([
-        You must have the Gnome libxml2 library (http://xmlsoft.org/)
-        installed in order to build Aegis.  Please install the
-        xml2 library version 1.8.17 or later, and then re-run this
-        ./configure script.  You do not have to install the rest of
-        Gnome, the library can be used on its own.  If you are using a
-        package based install, you will need the libxml2-devel package
-        in addition to the libxml2 package.
-    ])
+        You must have the Gnome libxml2 library installed in order to
+        build Aegis.  Please install the xml2 library version 1.8.17 or
+        later, and then re-run this ./configure script.  You do not have
+        to install the rest of Gnome, the library can be used on its own.
+        Homepage: http://xmlsoft.org/])
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install libxml2-dev
+      ])
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install libxml2-devel
+      ])
+      OK=yes
+    fi
+    if test "$OK" != "yes"; then
+      AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        libxml2-devel package in addition to the libxml2 package.
+      ])
+    fi
     exit 1
-  ]
+  ],
+  [$STATIC_LIBS]
 )
 
-#
-# Look for static libraries necessary with -lcurl, but we don't need
-# them when we are using shared libraries.
-#
-STATIC_LIBS=
-if test "$ac_cv_lib_curl_curl_multi_perform" = "yes"
-then
-    AC_CHECK_PROGS(CURL_CONFIG, curl-config)
-
-    if test -n "$CURL_CONFIG"
-    then
-        CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
-        CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
-        STATIC_LIBS="`$CURL_CONFIG --libs`"
-    fi
-fi
-
-#
-# Look for static libraries necessary with -lxml2, but we don't need
-# them when we are using shared libraries.
-#
-if test "$ac_cv_lib_xml2_xmlTextReaderRead" = "yes"
-then
-    AC_CHECK_PROGS(XML2_CONFIG, xml2-config)
-
-    if test -n "$XML2_CONFIG"
-    then
-        CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
-        CXXFLAGS="$CXXFLAGS `$XML2_CONFIG --cflags`"
-        STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
-    fi
-fi
-
-#
-# Arrange for a special make variable for static builds.
-#
+dnl
+dnl Arrange for a special make variable for static builds.
+dnl
 AC_SUBST(STATIC_LIBS)
 
 dnl
-dnl Try to detect a library with the UUID functions.
+dnl Try to detect a library with the UUID functions, where available
+dnl (FreeBSD) prefer libc.
 dnl
 dnl The OSSP variant has uuid_load in -luuid
 dnl     and which include file?
@@ -185,9 +361,13 @@ dnl     The include file is <dce/uuid.h>
 dnl     *** later we check for uuid_create and uuid_to_string
 dnl
 dnl The BSD variant has uuid_has in libc (no -l required)
-dnl     and which include file?
+dnl     The include file is <uuid.h>
 dnl     *** it is supposed to be the same as the DCE variant.  Is it?
-AC_CHECK_LIB(uuid, main)
+AC_CHECK_LIB(c, uuid_hash,,
+AC_CHECK_LIB(uuid, uuid_load)
+AC_CHECK_LIB(uuid, uuid_generate)
+AC_CHECK_LIB(uuid, uuid_hash)
+)
 
 dnl
 dnl If there are no UUID libraries we can roll our own, but first we
@@ -210,11 +390,12 @@ then
 fi
 AC_MSG_RESULT([$HAVE_LINUX_UUID])
 
-AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt, msgfmt)
+AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt)
 AC_CHECK_PROGS(MSGCAT, gmsgcat msgcat)
 AC_CHECK_PROGS(GROFF, groff roff)
 AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
-AC_CHECK_PROGS(AWK, gawk nawk awk, awk)
+AC_CHECK_PROGS(REFER, grefer refer)
+AC_PROG_AWK
 
 dnl
 dnl We need some way to determine the value of the default MANPATH
@@ -341,9 +522,9 @@ AC_TRY_RUN([
 #include <sys/ioctl.h>
 int main(int argc, char **argv){
 #ifdef TIOCGWINSZ
-struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
+struct winsize window_size; window_size.ws_col = 0; return(window_size.ws_col);
 #else
-exit(1);
+return(1);
 #endif
 }]
 , AC_DEFINE(HAVE_winsize_SYS_IOCTL_H,1,
@@ -361,9 +542,9 @@ AC_TRY_RUN([
 #include <termios.h>
 int main(int argc, char **argv){
 #ifdef TIOCGWINSZ
-struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
+struct winsize window_size; window_size.ws_col = 0; return(window_size.ws_col);
 #else
-exit(1);
+return(1);
 #endif
 }]
 , AC_DEFINE(HAVE_winsize_TERMIOS_H,1,
@@ -386,7 +567,7 @@ int test(char*,...);
 int test(fmt)char*fmt;{va_list ap;char*a;int x;
 va_start(ap,fmt);a=va_arg(ap,char*);x=(a!=foo);va_end(ap);return x;}
 int main(int argc, char **argv){
-exit(test("",foo));}]
+return(test("",foo));}]
 , AC_DEFINE(HAVE_STDARG_H,1,
 [Define this symbol of your system has <stdarg.h> AND it works.])
 AC_MSG_RESULT(yes),
@@ -400,7 +581,7 @@ AC_MSG_CHECKING([for working mblen])
 AC_TRY_RUN([
 #include <stdlib.h>
 int main(){mblen(0,0);
-exit(mblen("OK", 2) != 1);}],
+return(mblen("OK", 2) != 1);}],
 AC_DEFINE(HAVE_MBLEN,1,
 [Define this symbol of your system has mblen AND it works.])
 AC_MSG_RESULT(yes),
@@ -408,6 +589,7 @@ AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
 AC_CHECK_HEADERS(            \
+        bits/c++locale.h     \
         boost/shared_ptr.hpp \
         bzlib.h              \
         crypt.h              \
@@ -558,7 +740,7 @@ AC_TRY_RUN([
 #include <wctype.h>
 #endif
 int main(int argc, char **argv){
-exit(iswprint('a') == 0);}]
+return(iswprint('a') == 0);}]
 , AC_DEFINE(HAVE_ISWPRINT,1,
 [Define this symbol of your system has iswprint() AND it works.])
 AC_MSG_RESULT(yes),
@@ -573,9 +755,9 @@ AC_MSG_CHECKING([for appropriate getpgrp argument])
 AC_TRY_RUN([
 int main(int argc, char **argv) {
 #ifdef HAVE_GETPGRP
-if (getpgrp(32767) == getpgrp(0)) exit(2);
+if (getpgrp(32767) == getpgrp(0)) return(2);
 #endif
-exit(0); }]
+return(0); }]
 , AC_DEFINE(CONF_getpgrp_arg, 0,
 [Set this to a suitable argument for the getpgrp function to discover
 the process group of the current process.])
@@ -589,8 +771,14 @@ dnl	Test to see if the pw_comment field exists in
 dnl	the passwd struct defined in the <pwd.h> include file.
 dnl
 AC_MSG_CHECKING([for pw_comment in struct passwd])
-AC_TRY_COMPILE([#include <pwd.h>], [struct passwd *pw;
-pw = getpwnam("root"); printf("%s\n", pw->pw_comment);],
+AC_TRY_COMPILE([
+#include <pwd.h>
+#include <stdio.h>
+], [
+struct passwd *pw;
+pw = getpwnam("root");
+printf("%s\n", pw->pw_comment);
+],
 AC_DEFINE(HAVE_pw_comment,1,
 [Define this symbol if your system has
 the pw_comment field in the passwd struct defined in <pwd.h>.])
@@ -602,6 +790,7 @@ dnl	the passwd tm defined in the <time.h> include file.
 dnl
 AC_MSG_CHECKING([for tm_zone in struct tm])
 AC_TRY_COMPILE([
+#include <stdio.h>
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
 #include <time.h>
@@ -708,11 +897,12 @@ if test "x$AEGIS_UID" = "x"; then
     if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
 #line __oline__ "configure"
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 main(int ac, char **av){struct stat st;
-if (stat(*(av+1),&st)!=0)exit(1);
-printf("%d\n", ac>2?st.st_gid:st.st_uid);exit(0);}
+if (stat(*(av+1),&st)!=0)return(1);
+printf("%d\n", ac>2?st.st_gid:st.st_uid);return(0);}
 EOF
 	if AC_TRY_EVAL(ac_link); then
 		if maybe=`./conftest ${sharedstatedir}/lockfile`; then
@@ -742,7 +932,7 @@ dnl
 dnl	If the libz.h is not present, Aegis will fail to compile.
 dnl	If the -lz is not present, Aegis will fail to link.
 dnl
-if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
+if test "$ac_cv_lib_z_gzopen" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   AC_MSG_RESULT([
 	You need to install the GNU zlib compression
@@ -769,24 +959,26 @@ fi
 dnl
 dnl	Warn them about UUID libraries.
 dnl
-UUID_ok=no
+UUID_OK=0
 if test "$ac_cv_func_uuid_generate" = "yes" \
     -a "$ac_cv_func_uuid_unparse" = "yes"
 then
-     UUID_ok=yes
- fi
- if test "$ac_cv_func_uuid_create" = "yes" \
+    UUID_OK=1
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
     -a "$ac_cv_func_uuid_make" = "yes" \
     -a "$ac_cv_func_uuid_export" = "yes"
- then
-     UUID_ok=yes
- fi
- if test "$ac_cv_func_uuid_create" = "yes" \
+then
+    UUID_OK=1
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
     -a "$ac_cv_func_uuid_to_string" = "yes"
- then
-     UUID_ok=yes
- fi
-if test "$UUID_ok" != "yes"
+then
+    UUID_OK=1
+fi
+AC_DEFINE_UNQUOTED([UUID_OK], [$UUID_OK],
+    [Define this symbol if your system has a working UUID implementation.])
+if test "$UUID_OK" != "1"
 then
   AC_MSG_RESULT([
 	You may wish to install one of the following UUID
@@ -794,6 +986,22 @@ then
 	 * e2fsprogs implementation
 	 * OSSP implementation
 	Don't Panic: this library is optional, nothing will break.])
+    OK=no
+    if apt-get --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        ONE of the following commands may be used to install it:
+        sudo apt-get install uuid-dev
+        sudo apt-get install libossp-uuid-dev
+      ])
+      OK=yes
+    fi
+    if yum --version > /dev/null 2> /dev/null; then
+      AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install uuid-devel
+      ])
+      OK=yes
+    fi
 fi
 
 dnl
@@ -801,16 +1009,43 @@ dnl	If the gettext function exists, assume the msgfmt program does
 dnl	also, and arrange for the Makefile to install the .mo files
 dnl	from the .po files.
 dnl
+po_files=no
 if test "$ac_cv_func_gettext" = "yes"
 then
-  po_files=yes
-else
-  po_files=no
+  if test -n "$MSGFMT"
+  then
+    po_files=yes
+  fi
+fi
+if test "$po_files" = "no"
+then
   AC_MSG_RESULT([
 	Aegis will emit much more useful error messages if
-	you install GNU \`\`gettext'' and then re-run this
+	you install GNU Gettext and then re-run this
 	./configure script.
-	Remember to use \`\`rm config.cache'' before you do.])
+	Remember to use \`\`rm config.cache'' before you do.
+        Homepage: http://www.gnu.org/software/gettext/])
+  OK=no
+  if apt-get --version > /dev/null 2> /dev/null; then
+    AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install gettext
+    ])
+    OK=yes
+  fi
+  if yum --version > /dev/null 2> /dev/null; then
+    AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install gettext
+    ])
+    OK=yes
+  fi
+  if test "$OK" != "yes"; then
+    AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        gettext package.
+    ])
+  fi
 fi
 AC_SUBST(po_files)
 
@@ -831,6 +1066,18 @@ then
 	See the BUILDING file for details.])
     GROFF=
   fi
+else
+  GROFF=
+fi
+if test -n "$REFER"
+then
+    : nothing
+else
+    # It turns out that somehow Debian systems get a half-assed groff
+    # install from build-essential.  Looking for "refer" is a better
+    # test of the completeness of the groff install than either
+    # "groff" or "soelim" on their own, plus it's needed for the build.
+    GROFF=
 fi
 if test -n "$GROFF"
 then
@@ -842,8 +1089,31 @@ else
 	be formatted and installed if you first install
 	GNU Groff 1.15 or later and then re-run this ./configure script.
 	Remember to use \`\`rm config.cache'' before you do.
-])
+        Homepage: http://www.gnu.org/software/groff/])
+  OK=no
+  if apt-get --version > /dev/null 2> /dev/null; then
+    AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo apt-get install groff
+    ])
+    OK=yes
+  fi
+  if yum --version > /dev/null 2> /dev/null; then
+    AC_MSG_RESULT([
+        The following command may be used to install it:
+        sudo yum install groff
+    ])
+    OK=yes
+  fi
+  if test "$OK" != "yes"; then
+    AC_MSG_RESULT([
+        If you are using a package based install, you will need the
+        groff package.
+    ])
+  fi
 fi
+AC_SUBST(HAVE_GROFF)
+
 if test "$HAVE_GNU_DIFF" != "yes"
 then
   AC_MSG_RESULT([
@@ -854,7 +1124,6 @@ then
 	Remember to use \`\`rm config.cache'' before you do.
 ])
 fi
-AC_SUBST(HAVE_GROFF)
 
 dnl
 dnl If the $host is Linux then we add -rdynamic to LD_FLAGS in order
@@ -881,11 +1150,11 @@ AC_SUBST(PROGRAM_SUFFIX)
 AH_TOP(
 [/*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2007 Peter Miller
+ *	Copyright (C) 1991-2008 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
+ *	the Free Software Foundation; either version 3 of the License, or
  *	(at your option) any later version.
  *
  *	This program is distributed in the hope that it will be useful,

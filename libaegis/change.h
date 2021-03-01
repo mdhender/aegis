@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2007 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+//	Copyright (C) 1995-2008 Peter Miller
+//	Copyright (C) 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -21,7 +21,6 @@
 #ifndef LIBAEGIS_CHANGE_H
 #define LIBAEGIS_CHANGE_H
 
-#include <common/main.h>
 #include <libaegis/cstate.h>
 #include <libaegis/fstate.h>
 #include <libaegis/pconf.h>
@@ -44,6 +43,8 @@ class nstring_list; // forward
 // of the project.  It has an exceptional file name.
 //
 #define TRUNK_CHANGE_NUMBER ((long)((~(unsigned long)0) >> 1))
+
+#define TIME_NOT_SET (time_t)0
 
 struct string_list_ty; // forward
 struct sub_context_ty; // forward
@@ -460,6 +461,8 @@ public:
       */
     void run_integrate_fail_notify_command();
 
+    time_t time_limit_get();
+
     /**
      * The uuid_get method is used to obtain the UUID of this change set.
      *
@@ -479,6 +482,13 @@ public:
      */
     void uuid_get_list(nstring_list &uuids);
 
+    /**
+      * The developer_user_get method is used to obtain a user_ty
+      * instance representing the (most recent) developer of this change
+      * set.
+      */
+    user_ty::pointer developer_user_get();
+
     //
     // if you add to this structure, don't forget to update
     // change_alloc()     in libaegis/change/alloc.cc
@@ -495,7 +505,7 @@ int change_bind_existing_errok(change::pointer );
 void change_bind_new(change::pointer );
 change::pointer change_bogus(project_ty *);
 
-DEPRECATED inline cstate_ty *
+inline DEPRECATED cstate_ty *
 change_cstate_get(change::pointer cp)
 {
     return cp->cstate_get();
@@ -828,6 +838,15 @@ void change_create_symlinks_to_baseline(change::pointer , user_ty::pointer ,
  * The "symlink" in the name is an historical accident, it also
  * maintains the hard links and copies as well.
  *
+ * @param cp
+ *     The change to operatte on
+ * @param up
+ *     The user to operate as
+ * @param undoing
+ *     True if this call is in response to and undo operation (aecpu,
+ *     aemtu) because they need special attention for file time stamps.
+ *     Defaults to false if not specified.
+ *
  * \note
  *      This function is NOT to be called by aeb, because it needs
  *      different logic.
@@ -835,7 +854,8 @@ void change_create_symlinks_to_baseline(change::pointer , user_ty::pointer ,
  *     This function may only be called when the change is in the
  *     "being developed" state.
  */
-void change_maintain_symlinks_to_baseline(change::pointer , user_ty::pointer );
+void change_maintain_symlinks_to_baseline(change::pointer cp,
+    user_ty::pointer up, bool undoing = false);
 
 void change_remove_symlinks_to_baseline(change::pointer , user_ty::pointer ,
     const work_area_style_ty &);
@@ -883,7 +903,7 @@ string_ty *change_metrics_filename_pattern_get(change::pointer );
  * given change is in the awaiting development state, and false if it
  * is not.
  */
-DEPRECATED inline bool
+inline DEPRECATED bool
 change_is_awaiting_development(change::pointer cp)
 {
     return cp->is_awaiting_development();
@@ -894,7 +914,7 @@ change_is_awaiting_development(change::pointer cp)
  * the given change is in the being developed state, and false (zero)
  * if it is not.
  */
-DEPRECATED inline int
+inline DEPRECATED int
 change_is_being_developed(change::pointer cp)
 {
     return cp->is_being_developed();
@@ -910,7 +930,7 @@ change_is_being_developed(change::pointer cp)
  *     bool; true if the given change is in the being integarted state,
  *     and false if it is not.
  */
-DEPRECATED inline bool
+inline DEPRECATED bool
 change_is_being_integrated(change::pointer cp)
 {
     return cp->is_being_integrated();
@@ -920,7 +940,7 @@ change_is_being_integrated(change::pointer cp)
  * The change_is_completed function returns true (non-zero) if the given
  * change is in the completed state, and false (zero) if it is not.
  */
-DEPRECATED inline int
+inline DEPRECATED int
 change_is_completed(change::pointer cp)
 {
     return cp->is_completed();
@@ -1019,6 +1039,9 @@ bool change_diff_required(change::pointer cp);
  *
  * @param cp
  *     The change in question.
+ * @param conf_exists
+ *     true if the project configuration file must exist (causing fatal
+ *     error if it does not), or false if it doesn't matter.
  * @returns
  *     bool; true if build command needs to be run, false if not.
  */

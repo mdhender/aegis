@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2007 Peter Miller
+//	Copyright (C) 1991-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,16 +13,14 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: wrappers around operating system functions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
 #include <common/ac/stddef.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 #include <common/ac/unistd.h>
 #include <common/ac/sys/prctl.h>
 
@@ -124,7 +122,13 @@ os_chown_check(string_ty *path, int mode, int uid, int gid)
 
 	scp = sub_context_new();
 	sub_var_set_string(scp, "File_Name", path);
-	sub_var_set_format(scp, "Number1", "%5.5o", st.st_mode & 07777);
+	sub_var_set_format
+        (
+            scp,
+            "Number1",
+            "%5.5o",
+            (unsigned int)(st.st_mode & 07777)
+        );
 	sub_var_set_format(scp, "Number2", "%5.5o", mode);
 	error_intl
 	(

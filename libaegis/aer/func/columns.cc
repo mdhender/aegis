@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003-2007 Peter Miller.
+//	Copyright (C) 1994, 2003-2008 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -18,6 +18,7 @@
 //
 
 #include <common/error.h> // for assert
+#include <common/mem.h>
 #include <common/str.h>
 #include <common/trace.h>
 #include <libaegis/aer/expr.h>
@@ -78,7 +79,7 @@ rpt_func_columns::verify(const rpt_expr::pointer &ep)
 
 
 static long
-extract_integer(const rpt_value::pointer &vp, int min)
+extract_integer(const rpt_value::pointer &vp, int minimum_result)
 {
     trace(("%s\n", __PRETTY_FUNCTION__));
     if (!vp)
@@ -91,9 +92,9 @@ extract_integer(const rpt_value::pointer &vp, int min)
     if (ivp)
     {
 	long result = ivp->query();
-        if (result < min)
+        if (result < minimum_result)
         {
-            trace(("%ld < %d ==> -1\n", result, min));
+            trace(("%ld < %d ==> -1\n", result, minimum_result));
             return -1;
         }
         trace(("==> %ld\n", result));
@@ -137,8 +138,7 @@ rpt_func_columns::run(const rpt_expr::pointer &, size_t argc,
 	trace(("mark\n"));
 	--rpt_func_print__ncolumns;
 	size_t j = rpt_func_print__ncolumns;
-	delete rpt_func_print__column[j];
-	rpt_func_print__column[j] = 0;
+	rpt_func_print__column[j].reset();
     }
 
     //
@@ -155,13 +155,11 @@ rpt_func_columns::run(const rpt_expr::pointer &, size_t argc,
 		new_rpt_func_print__ncolumns_max * 2 + 8;
 	}
 	trace(("new max = %d\n", (int)new_rpt_func_print__ncolumns_max));
-	output_ty **new_rpt_func_print__column =
-	    new output_ty * [new_rpt_func_print__ncolumns_max];
+	output::pointer *new_rpt_func_print__column =
+	    new output::pointer [new_rpt_func_print__ncolumns_max];
 	size_t k = 0;
 	for (; k < rpt_func_print__ncolumns_max; ++k)
 	    new_rpt_func_print__column[k] = rpt_func_print__column[k];
-	for (; k < new_rpt_func_print__ncolumns_max; ++k)
-	    new_rpt_func_print__column[k] = 0;
 	delete [] rpt_func_print__column;
 	rpt_func_print__column = new_rpt_func_print__column;
 	rpt_func_print__ncolumns_max = new_rpt_func_print__ncolumns_max;

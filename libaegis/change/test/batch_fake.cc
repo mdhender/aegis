@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2007 Peter Miller
+//	Copyright (C) 2000-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -261,9 +261,9 @@ change_test_batch_fake(change::pointer cp, string_list_ty *wlp,
 	//
 	if (time_limit)
 	{
-	    time_t now;
-	    time(&now);
-	    if (now >= time_limit)
+	    time_t curr_time;
+	    time(&curr_time);
+	    if (curr_time >= time_limit)
 		break;
 	}
     }

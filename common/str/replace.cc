@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller
+//	Copyright (C) 2004-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,11 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the str_replace class
-//
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 
 #include <common/ac/string.h>
 
@@ -50,18 +47,16 @@ str_replace(string_ty *str, string_ty *lhs, string_ty *rhs, int how_many_times)
     sa.clear();
     while (ip < ip_end && (size_t)(ip_end - ip) >= lhs->str_length)
     {
-	if (0 == memcmp(ip, lhs->str_text, lhs->str_length))
-	{
-	    sa.push_back(rhs->str_text, rhs->str_length);
-	    ip += lhs->str_length;
-	    if (--how_many_times <= 0)
-		break;
-	}
-	else
-	{
-	    char c = *ip++;
-	    sa.push_back(c);
-	}
+        void *p = memmem(ip, ip_end - ip, lhs->str_text, lhs->str_length);
+        if (!p)
+            break;
+        const char *pp = (const char *)p;
+        sa.push_back(ip, pp - ip);
+        ip = pp;
+        sa.push_back(rhs->str_text, rhs->str_length);
+        ip += (lhs->str_length ? lhs->str_length : 1);
+        if (--how_many_times <= 0)
+            break;
     }
 
     //

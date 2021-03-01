@@ -1,20 +1,19 @@
 .\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2007 Peter Miller
+.\" aegis - project change supervisor
+.\" Copyright (C) 1999-2008 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
-.\"	(at your option) any later version.
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program. If not, see
-.\"	<http://www.gnu.org/licenses/>.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to Become an Aegis Developer"
 .LP
@@ -98,12 +97,6 @@ http://curl.haxx.se/
 You need UUID generation capability.
 This requirement may be
 satisfied in several different ways depending of your development platform.
-.IP \(bu 2n
-The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to
-parse XML, you will need version 1.8.17 or later.  You do not have to
-install the rest of GNOME as this library is able to be used by itself.
-This package is \fBnot\fP optional, you need it to successfully build
-Aegis.
 .br
 First, on GNU/Linux you could skip this requirement provided that your
 kernel has support for \fI/proc\fP filesystem.  Please note: in order to
@@ -124,6 +117,12 @@ http://www.ossp.org/pkg/lib/uuid/
 Fourth, if your platform has support for an API compliant with DCE 1.1,
 Aegis also supports the DCE API.
 .IP \(bu 2n
+The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to
+parse XML, you will need version 1.8.17 or later.  You do not have to
+install the rest of GNOME as this library is able to be used by itself.
+This package is \fBnot\fP optional, you need it to successfully build
+Aegis.
+.IP \(bu 2n
 You need to install Bison, the GNU replacement for Yacc.
 .br
 http://ftp.gnu.org/pub/gnu/bison/
@@ -132,11 +131,11 @@ You will need to install Flex, the GNU replacement for Lex.
 .br
 http://ftp.gnu.org/pub/gnu/non-gnu/flex/
 .IP \(bu 2n
-You need to GNU Gettext (0.11.4 or later) tools installed.
+You need to GNU Gettext (0.16.1 or later) tools installed.
 Even though Glibc 2.0 and
 later include Gettext, you need the developer tools as well.  (You need
 GNU Gettext even on Solaris, because the Solaris Gettext implementation
-is... well... stuffed.)
+is less than adequate.)
 .br
 http://ftp.gnu.org/pub/gnu/gettext/
 .IP \(bu 2n
@@ -179,10 +178,29 @@ but the build can cope if you don't have it.
 .br
 http://www.imagemagick.org/
 .IP \(bu 2n
+The PNG images are optimized by the \f[I]pngcrush\fP command.
+.br
+http://pmt.sourceforge.net/pngcrush/
+.IP \(bu 2n
 The location box icon is generated using \fIpng2ico\fP but the build
 can cope if you don't have it.
 .br
 http://www.winterdrache.de/freeware/png2ico/
+.IP \(bu 2n
+It is possible to use the dmalloc library
+for
+debugging memory abuses.  Be warned: the dmalloc library can be
+instructed to log to a file, circumventing the Aegis I/O layer, thus
+it's possible to create file owned by root.  The dmalloc library should
+only ever be used as a debugging tool, and \f[I]never\fP be used in a
+production build of Aegis.
+.br
+http://dmalloc.com/
+.br
+On a Debian system, use the \f[CW]apt-get install libdmalloc-dev\fP command.
+.br
+You will need to aecp the \f[CW]etc/Howto.cook\fP file to alter the build
+to use the dmalloc library.
 .IP \(bu 2n
 \fIProbably more things I've forgotten.\fP
 .IP \(bu 2n
@@ -331,7 +349,7 @@ For PC users, this is almost always
 .E(
 architecture =
 [
-	"linux-i486",
+	"linux-i386",
 ];
 .E)
 The alternatives may be found in the \fIconfig\fP in the current directory
@@ -407,8 +425,9 @@ is complete are the files actually committed to the repository.
 \fI\&...you will see commands which build the project...\fP
 -rwsr-xr-x 1 root ... \fIarch\fP/bin/aegis
 -rwsr-xr-x 1 root ... \fIarch\fP/bin/aeimport
+-rwsr-xr-x 1 root ... \fIarch\fP/bin/aelock
 Integrator: please do the following:
-  sudo .../baseline/etc/set-uid-root \fIarch\fP aegis aeimport
+  sudo .../baseline/etc/set-uid-root \fIarch\fP aegis aeimport aelock
   if they aren't root already.  See etc/set-uid-root for
   instructions for how to set-up your /etc/sudoers file.
 %
@@ -420,6 +439,16 @@ out of \fI/usr/local/bin\fP (or wherever you installed Aegis) right into
 the baseline.  In this way, you will be executing your bleeding-edge
 version of Aegis, exercising it before you send it to anyone else.
 Hang on a bit, the sending part comes later.
+.LP
+Don't know how to set these files set-uid-root?  The above message
+includes the command to do it:
+.E(
+$ \f[CB]cd\fP \f[I]blahblah\fP\f[CB]/delta*
+$ \f[CB]sudo etc/set-uid-root\fP \f[I]arch\fP \f[CB]aegis aeimport aelock\fP
+$
+.E)
+You will need to substitute the appropriate architecture name,
+although it is likely to be \[lq]unspicified\fP on a fresh project.
 .LP
 Things that can go wrong...
 .IP \(bu 2n
@@ -452,6 +481,95 @@ aegis: project "aegis.1.0": change 10:
 The \[lq]\fIcd\fP\[rq] command you see is actually important: you need to
 be out of the development directory and integration directory
 so that they can be cleaned up (deleted) when the change completes.
+.nh 2 "Supporting Several Architectures"
+.LP
+Aegis is able to track architectures to make sure that change sets have
+been built and tested on all necessary architectures.  You may hav
+notices that Aegis is calling your architecture \[lq]unspecified\[rq],
+you can give it a more descriptive name, too.
+.LP
+The architecture configuration data is described in the
+\f[I]architecture\fP field of the \f[I]aepconf\fP(1) man page.
+It is based on the \f[I]uname\fP(2) data, see the man page for how.
+You will, of course, need a change set to change it.
+.LP
+Once you have a change set, you need to create the
+\f[I]aegis.conf.d/architecture\fP file.
+.E(
+% \f[CB]aenf aegis.conf.d/architecture\fP
+% \f[CB]aefa aegis.conf.d/architecture entire-source-hide\fP
+% \f[CB]aefa aegis.conf.d/architecture local-source-hide\fP
+%
+.E)
+.LP
+Here are some suggestions for what you may like to set for your
+architecture or architectures.
+.E(
+architecture =
+[
+  {
+    name = "linux-i386";
+    pattern = "Linux-*-*-i?86";
+  },
+  {
+    name = "linux-x86_64";
+    pattern = "Linux-*-*-x86_64";
+  },
+  {
+    name = "freebsd-i386";
+    pattern = "FreeBSD-*-*-i?86";
+  },
+  {
+    name = "sunos-4.1-sparc";
+    pattern = "SunOS-4.1*-*-sun4*";
+  },
+  {
+    name = "solaris-2.6-sparc";
+    pattern = "SunOS-5.6*-*-sun4*";
+  },
+  {
+    name = "solaris-2.6-i386";
+    pattern = "SunOS-5.6*-*-i86pc";
+  },
+  {
+    name = "solaris-7-sparc";
+    pattern = "SunOS-5.7*-*-sun4*";
+  },
+  {
+    name = "solaris-7-i386";
+    pattern = "SunOS-5.7*-*-i86pc";
+  },
+  {
+    name = "ppc-Darwin-7.x";
+    pattern = "Darwin-7.*-Darwin*";
+  },
+];
+.E)
+Remember to only include the architectures from the above list that
+you actually have.  Having architectures in this list that you
+don't routinely have access to means that you will not be able to
+\f[I]aede\fP(1) any change sets.
+.LP
+Occasional architectures can be handled, too:
+.E(
+architecture =
+[
+  {
+    name = "ppc-Darwin-7.x";
+    pattern = "Darwin-7.*-Darwin*";
+    mode = optional;
+  },
+];
+.E)
+Again, only do this with architectures you actually have access to.
+.PP
+If you need to have architecture specific options to some commands,
+you can also have \f[I]project_specific\fP attributes, too.
+\f[B]Note\fP that you should \f[I]first\fP look into having a
+\f[CW]$prefix/share/config.site\fP or \f[CW]$prefix/etc/config.site\fP
+file for \f[I]./configure\fP to read.  This is particularly important if
+you want to include \f[I]/usr/local/include\fP, \f[I]/usr/local/lib\fP,
+\f[I]etc\fP, in the various compiler flags.
 .nh 2 "The Bleeding Edge"
 .LP
 As I mentioned above, the next thing to do is create symbolic links out
@@ -546,8 +664,9 @@ set-uid-root executable.
 .LP
 Please try to emulate the existing coding style.
 (Indents recently changed from 8 to 4, not all of the code has caugh-up yet.)
-Lines are to be 80 charcters or less wide, no unprintable characters,
-no trailing white space.
+Lines are to be 80 charcters or less wide,
+limited to the 95 printable ASCII characters,
+with no trailing white space.
 .LP
 Probably need a GNU Indent profile for code formatting, too.
 .nh 2 "Writing Tests"
@@ -562,8 +681,8 @@ your work to P.Miller you may want to modify your \f[CW]aegis.conf\fP
 adding the following lines:
 .E(
 new_test_filename =
-	"test/${zpad $hundred 2}/"
-	"t${zpad $number 4}${left $type 1}-${left ${user login} 4}.sh";
+  "test/${zpad $hundred 2}/"
+  "t${zpad $number 4}${left $type 1}-${left ${user login} 4}.sh";
 .E)
 In this way the possibility of a name collision should be reduced.
 Invoke \fIaent\fP:

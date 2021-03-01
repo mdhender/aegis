@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1997, 2006, 2007 Peter Miller
+#	Copyright (C) 1995, 1997, 2006-2008 Peter Miller
 #	Copyright (C) 2006 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -22,7 +22,12 @@
 progname=$0
 shell=/bin/sh
 
-whoami=`id -u`
+ # Get user name in a portable way
+whoami=${USER:-${LOGNAME:-`id | cut -d'(' -f2 | cut -d')' -f1`}}
+ # Must set path so that test_funcs may be loaded correctly
+newbin=`pwd`/bin
+PATH=$newbin:$PATH
+export PATH
 
 usage() {
 	echo "usage: $progname -run test-file results-file" 1>&2

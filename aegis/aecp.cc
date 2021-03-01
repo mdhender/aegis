@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+//	Copyright (C) 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -36,6 +36,7 @@
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/file/event.h>
 #include <libaegis/file.h>
@@ -88,39 +89,11 @@ copy_file_help(void)
 static void
 copy_file_list(void)
 {
-    string_ty       *project_name;
-    long            change_number;
-
     trace(("copy_file_list()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(copy_file_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, copy_file_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, copy_file_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_project_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(copy_file_usage);
+    list_project_files(cid, 0);
     trace(("}\n"));
 }
 
@@ -149,7 +122,7 @@ copy_file_independent(void)
     int             trunk;
     int             based;
     string_ty       *base;
-    const char      *output;
+    const char      *output_filname;
     int             original_umask;
 
     trace(("copy_file_independent()\n{\n"));
@@ -162,7 +135,7 @@ copy_file_independent(void)
     delta_name = 0;
     branch = 0;
     trunk = 0;
-    output = 0;
+    output_filname = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -292,7 +265,7 @@ copy_file_independent(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filname)
 		duplicate_option(copy_file_usage);
 	    switch (arglex())
 	    {
@@ -300,11 +273,11 @@ copy_file_independent(void)
 		option_needs_file(arglex_token_output, copy_file_usage);
 
 	    case arglex_token_stdio:
-		output = "";
+		output_filname = "";
 		break;
 
 	    case arglex_token_string:
-		output = arglex_value.alv_string;
+		output_filname = arglex_value.alv_string;
 		break;
 	    }
 	    break;
@@ -354,7 +327,7 @@ copy_file_independent(void)
     //
     // make sure output is unambiguous
     //
-    if (output)
+    if (output_filname)
     {
 	if (wl.nstrings != 1)
 	{
@@ -401,7 +374,7 @@ copy_file_independent(void)
     // Take a read lock on the baseline, to ensure that it does
     // not change (aeip) for the duration of the copy.
     //
-    if (!output)
+    if (!output_filname)
     {
 	project_baseline_read_lock_prepare(pp2);
 	lock_take();
@@ -532,7 +505,7 @@ copy_file_independent(void)
 	    wl_in.push_back(wl_out);
 	if (wl_in.nstrings)
 	{
-	    if (output)
+	    if (output_filname)
 	    {
 		sub_context_ty sc;
 		sc.var_set_charstar
@@ -658,8 +631,8 @@ copy_file_independent(void)
 	    //
 	    // figure where to send it
 	    //
-	    if (output)
-		to = str_from_c(output);
+	    if (output_filname)
+		to = str_from_c(output_filname);
 	    else
 		to = os_path_join(dd, s1);
 
@@ -667,7 +640,7 @@ copy_file_independent(void)
 	    // copy the file
 	    //
 	    os_become_orig();
-	    if (!output)
+	    if (!output_filname)
 	    {
 		os_mkdir_between(dd, s1, 02777 & ~original_umask);
 		if (os_exists(to))
@@ -701,8 +674,8 @@ copy_file_independent(void)
             if (!file_exists)
                 from = project_file_version_path(pp2, old_src, &from_unlink);
 
-            if (output)
-		to = str_from_c(output);
+            if (output_filname)
+		to = str_from_c(output_filname);
 	    else
 		to = os_path_join(dd, s1);
 
@@ -710,7 +683,7 @@ copy_file_independent(void)
 	    // copy the file
 	    //
 	    os_become_orig();
-	    if (!output)
+	    if (!output_filname)
 	    {
 		os_mkdir_between(dd, s1, 02777 & ~original_umask);
 		if (os_exists(to))
@@ -721,7 +694,7 @@ copy_file_independent(void)
 	    //
 	    // set the file mode
 	    //
-	    if (!output)
+	    if (!output_filname)
 	    {
 		int mode = 0666;
 		if (old_src->executable)
@@ -748,7 +721,7 @@ copy_file_independent(void)
     //
     // release the baseline lock
     //
-    if (!output)
+    if (!output_filname)
 	lock_release();
 
     //
@@ -820,7 +793,7 @@ copy_file_main(void)
     change::pointer cp;
     log_style_ty    log_style;
     user_ty::pointer up;
-    const char      *output;
+    const char      *output_filname;
     time_t          delta_date;
     long            delta_number;
     const char      *delta_name;
@@ -840,7 +813,7 @@ copy_file_main(void)
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
-    output = 0;
+    output_filname = 0;
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
@@ -979,7 +952,7 @@ copy_file_main(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filname)
 		duplicate_option(copy_file_usage);
 	    switch (arglex())
 	    {
@@ -987,11 +960,11 @@ copy_file_main(void)
 		option_needs_file(arglex_token_output, copy_file_usage);
 
 	    case arglex_token_stdio:
-		output = "";
+		output_filname = "";
 		break;
 
 	    case arglex_token_string:
-		output = arglex_value.alv_string;
+		output_filname = arglex_value.alv_string;
 		break;
 	    }
 	    break;
@@ -1069,7 +1042,7 @@ copy_file_main(void)
 	}
 	branch = "";
     }
-    if (rescind && output && wl.nstrings != 1)
+    if (rescind && output_filname && wl.nstrings != 1)
     {
 	mutually_exclusive_options
 	(
@@ -1122,7 +1095,7 @@ copy_file_main(void)
     //
     // make sure output is unambiguous
     //
-    if (output)
+    if (output_filname)
     {
 	if (wl.nstrings != 1)
 	{
@@ -1174,7 +1147,7 @@ copy_file_main(void)
     // Also take a read lock on the baseline, to ensure that it does
     // not change (aeip) for the duration of the build.
     //
-    if (!output)
+    if (!output_filname)
     {
 	change_cstate_lock_prepare(cp);
 	project_baseline_read_lock_prepare(pp2);
@@ -1209,7 +1182,7 @@ copy_file_main(void)
     // It is an error if the change is not in the being_developed state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (output)
+    if (output_filname)
     {
 	switch (cstate_data->state)
 	{
@@ -1431,7 +1404,7 @@ copy_file_main(void)
 	    // add all of the source files in that directory,
 	    // provided they are not already in the change.
 	    //
-	    if (output)
+	    if (output_filname)
 	    {
 		sub_context_ty sc;
 		sc.var_set_charstar
@@ -1517,7 +1490,7 @@ copy_file_main(void)
 	&&
 	    !overwriting
 	&&
-	    !output
+	    !output_filname
 	)
 	{
 	    sub_context_ty sc;
@@ -1526,7 +1499,7 @@ copy_file_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
-	if (output)
+	if (output_filname)
 	{
 	    fstate_src_ty   *c_src_data;
 
@@ -1576,7 +1549,7 @@ copy_file_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
-	if (src_data && !output)
+	if (src_data && !output_filname)
 	{
 	    switch (src_data->usage)
 	    {
@@ -1626,7 +1599,6 @@ copy_file_main(void)
 	if (delta_date != NO_TIME_SET)
 	{
 	    file_event   *fep;
-            bool         set_mode = true;
 
 	    fep = historian.get_last(s1);
 	    if (!fep)
@@ -1681,6 +1653,7 @@ copy_file_main(void)
 	    trace(("old_src = %lX\n", (long)old_src));
 	    assert(older_src);
 	    trace(("older_src = %lX\n", (long)older_src));
+            bool set_mode = true;
             switch (older_src->action)
 	    {
 	    case file_action_remove:
@@ -1703,8 +1676,8 @@ copy_file_main(void)
 	    //
 	    // figure where to send it
 	    //
-	    if (output)
-		to = str_from_c(output);
+	    if (output_filname)
+		to = str_from_c(output_filname);
 	    else
 		to = os_path_join(dd, s1);
 
@@ -1715,7 +1688,7 @@ copy_file_main(void)
 	    // or the user didn't say --keep.
 	    //
 	    up->become_begin();
-	    if (output)
+	    if (output_filname)
 	    {
 		copy_whole_file(from, to, 0);
 	    }
@@ -1767,9 +1740,8 @@ copy_file_main(void)
 	    if (from_unlink)
 		os_unlink_errok(from);
 	    up->become_end();
-
         done:
-            str_free(from);
+	    str_free(from);
 	    str_free(to);
 	}
 	else
@@ -1783,8 +1755,8 @@ copy_file_main(void)
 	    {
 		from = project_file_path(pp2, s1);
 	    }
-	    if (output)
-		to = str_from_c(output);
+	    if (output_filname)
+		to = str_from_c(output_filname);
 	    else
 		to = os_path_join(dd, s1);
 
@@ -1807,7 +1779,7 @@ copy_file_main(void)
 	    //
             bool set_mode = true;
 	    up->become_begin();
-	    if (output)
+	    if (output_filname)
 	    {
 		copy_whole_file(from, to, 0);
 	    }
@@ -1861,7 +1833,7 @@ copy_file_main(void)
 	    str_free(to);
 	}
 
-	if (!output)
+	if (!output_filname)
 	{
 	    fstate_src_ty   *c_src_data;
 	    fstate_src_ty   *p_src_data;
@@ -2064,7 +2036,7 @@ copy_file_main(void)
     }
 
     bool recent_integration = false;
-    if (!output)
+    if (!output_filname)
     {
 	//
 	// the number of files changed,
@@ -2106,7 +2078,7 @@ copy_file_main(void)
     sc.var_optional("Number");
     change_verbose(cp, &sc, i18n("copy file complete"));
 
-    if (!output)
+    if (!output_filname)
     {
 	//
 	// run the change file command

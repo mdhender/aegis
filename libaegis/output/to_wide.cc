@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2007 Peter Miller
+//      Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate to_wides
+//      along with this program; if not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
@@ -25,31 +23,18 @@
 
 #include <common/error.h> // for assert
 #include <common/language.h>
-#include <libaegis/output.h>
-#include <libaegis/output/to_wide.h>
+#include <common/mem.h>
 #include <common/str.h>
 #include <common/trace.h>
+#include <libaegis/output.h>
+#include <libaegis/output/to_wide.h>
 #include <libaegis/wide_output.h>
 
 
 static mbstate_t initial_state;
 
 
-void
-output_to_wide_ty::flush_inner()
-{
-    trace(("output_to_wide::flush_inner(this = %08lX)\n{\n", (long)this));
-    if (output_len > 0)
-    {
-        wide_output_write(deeper, output_buf, output_len);
-        output_len = 0;
-    }
-    wide_output_flush(deeper);
-    trace(("}\n"));
-}
-
-
-output_to_wide_ty::~output_to_wide_ty()
+output_to_wide::~output_to_wide()
 {
     trace(("~output_to_wide(this = %08lX)\n{\n", (long)this));
 
@@ -130,23 +115,11 @@ output_to_wide_ty::~output_to_wide_ty()
             input_len = 0;
         else
         {
-            memmove
-	    (
-		input_buf,
-		input_buf + n,
-		input_len - n
-	    );
+            memmove(input_buf, input_buf + n, input_len - n);
             input_len -= n;
         }
     }
     language_C();
-
-    //
-    // Delete the deeper output if we were asked to.
-    //
-    if (close_on_close)
-        wide_output_delete(deeper);
-    deeper = 0;
 
     //
     // Let the buffers go.
@@ -159,7 +132,6 @@ output_to_wide_ty::~output_to_wide_ty()
     //
     // paranoia
     //
-    close_on_close = 0;
     input_len = 0;
     input_max = 0;
     input_state = initial_state;
@@ -169,31 +141,66 @@ output_to_wide_ty::~output_to_wide_ty()
 }
 
 
-string_ty *
-output_to_wide_ty::filename()
+output_to_wide::output_to_wide(const wide_output::pointer &a_deeper) :
+    deeper(a_deeper),
+    input_buf(0),
+    input_len(0),
+    input_max(0),
+    input_state(initial_state),
+    input_bol(true),
+    output_buf(0),
+    output_len(0),
+    output_max(0)
+{
+}
+
+
+output::pointer
+output_to_wide::open(const wide_output::pointer &a_deeper)
+{
+    return pointer(new output_to_wide(a_deeper));
+}
+
+
+void
+output_to_wide::flush_inner()
+{
+    trace(("output_to_wide::flush_inner(this = %08lX)\n{\n", (long)this));
+    if (output_len > 0)
+    {
+        deeper->write(output_buf, output_len);
+        output_len = 0;
+    }
+    deeper->flush();
+    trace(("}\n"));
+}
+
+
+nstring
+output_to_wide::filename()
     const
 {
     trace(("output_to_wide::filename(this = %08lX)\n{\n", (long)this));
-    string_ty *result = wide_output_filename(deeper);
-    trace(("return \"%s\";\n", result->str_text));
+    nstring result = deeper->filename();
+    trace(("return \"%s\";\n", result.c_str()));
     trace(("}\n"));
     return result;
 }
 
 
 long
-output_to_wide_ty::ftell_inner()
+output_to_wide::ftell_inner()
     const
 {
-    trace(("output_to_wide_ty::ftell_inner(fp = %08lX)\n", (long)this));
+    trace(("output_to_wide::ftell_inner(fp = %08lX)\n", (long)this));
     return -1;
 }
 
 
 void
-output_to_wide_ty::write_inner(const void *input_p, size_t len)
+output_to_wide::write_inner(const void *input_p, size_t len)
 {
-    trace(("output_to_wide_ty::write_inner(this = %08lX, data = %08lX, "
+    trace(("output_to_wide::write_inner(this = %08lX, data = %08lX, "
 	"len = %ld)\n{\n", (long)this, (long)input_p, (long)len));
     language_human();
     const char *ip = (const char *)input_p;
@@ -334,25 +341,25 @@ output_to_wide_ty::write_inner(const void *input_p, size_t len)
 
 
 int
-output_to_wide_ty::page_width()
+output_to_wide::page_width()
     const
 {
     trace(("output_to_wide::page_width(this = %08lX)\n", (long)this));
-    return wide_output_page_width(deeper);
+    return deeper->page_width();
 }
 
 
 int
-output_to_wide_ty::page_length()
+output_to_wide::page_length()
     const
 {
     trace(("output_to_wide::page_length(this = %08lX)\n", (long)this));
-    return wide_output_page_length(deeper);
+    return deeper->page_length();
 }
 
 
 void
-output_to_wide_ty::end_of_line_inner()
+output_to_wide::end_of_line_inner()
 {
     trace(("output_to_wide::end_of_line_inner(this = %08lX)\n{\n", (long)this));
     if (!input_bol)
@@ -362,23 +369,8 @@ output_to_wide_ty::end_of_line_inner()
 
 
 const char *
-output_to_wide_ty::type_name()
+output_to_wide::type_name()
     const
 {
     return "to_wide";
-}
-
-
-output_to_wide_ty::output_to_wide_ty(wide_output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
-    input_buf(0),
-    input_len(0),
-    input_max(0),
-    input_state(initial_state),
-    input_bol(true),
-    output_buf(0),
-    output_len(0),
-    output_max(0)
-{
 }

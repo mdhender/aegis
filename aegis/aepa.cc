@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to list and modify project attributes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -27,8 +25,10 @@
 #include <common/quit.h>
 #include <common/str_list.h>
 #include <common/trace.h>
+#include <libaegis/ael/change/inappropriat.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/help.h>
 #include <libaegis/io.h>
@@ -86,49 +86,17 @@ project_attributes_help(void)
 static void
 project_attributes_list(void)
 {
-    pattr_ty	    *pattr_data;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-
     trace(("project_attributes_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(project_attributes_usage);
-	    continue;
+    change_identifier cid;
+    cid.command_line_parse_rest(project_attributes_usage);
+    if (cid.set())
+        list_change_inappropriate();
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, project_attributes_usage);
-	    continue;
-	}
-	arglex();
-    }
-
-    //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    pattr_data = (pattr_ty *)pattr_type.alloc();
-    project_pattr_get(pp, pattr_data);
+    pattr_ty *pattr_data = (pattr_ty *)pattr_type.alloc();
+    project_pattr_get(cid.get_pp(), pattr_data);
     pattr_write_file((string_ty *)0, pattr_data, 0);
     pattr_type.free(pattr_data);
-    project_free(pp);
     trace(("}\n"));
 }
 

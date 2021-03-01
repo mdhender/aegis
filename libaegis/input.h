@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004-2006 Peter Miller
+//	Copyright (C) 1999, 2002, 2004-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/input.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_INPUT_H
@@ -350,22 +348,6 @@ input_fatal_error(input_ty *ip, const char *msg)
 {
     ip->fatal_error(msg);
 }
-
-
-struct output_ty; // existence
-
-/**
-  * The input_to_output function is used to copy the entire contents of
-  * the input to the specified output.
-  *
-  * @param ip
-  *     The input to be read
-  * @param op
-  *     The output to be written.
-  */
-void input_to_output(input &ip, output_ty *op);
-
-#define input_to_output use_operator_left_instead@
 
 
 /**

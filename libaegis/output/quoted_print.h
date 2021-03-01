@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 2001, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/quoted_print.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_QUOTED_PRINT_H
@@ -24,31 +22,44 @@
 
 #include <libaegis/output.h>
 
-class output_quoted_printable_ty:
-    public output_ty
+class output_quoted_printable:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_quoted_printable_ty();
+    virtual ~output_quoted_printable();
 
+private:
     /**
-      * The constructor.
+      * The constructor. it is private on purpose, use the "create"class
+      * method instead.
       *
       * \param deeper
       *      The output stream this filter uses to write its output.
-      * \param close_on_close
-      *     Whether or not the deeper output stream is to be deleted in
-      *     this instance's destructor.
       * \param allow_international_characters
       *     Whether or not internalional characters are allowed or not.
       */
-    output_quoted_printable_ty(output_ty *deeper, bool close_on_close = true,
+    output_quoted_printable(const output::pointer &deeper,
 	bool allow_international_characters = false);
 
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * \param deeper
+      *      The output stream this filter uses to write its output.
+      * \param allow_international_characters
+      *     Whether or not internalional characters are allowed or not.
+      */
+    static pointer create(const output::pointer &deeper,
+	bool allow_international_characters = false);
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -76,14 +87,7 @@ private:
       * The deeper instance variable is used to remember the output
       * stream this filter uses to write its output.
       */
-    output_ty *deeper;
-
-    /**
-      * The close_on_c lose instance variable is used to remember
-      * whether or not the deeper output stream is to be deleted in this
-      * instance's destructor.
-      */
-    bool close_on_close;
+    output::pointer deeper;
 
     /**
       * The allow_international_characters instance variable is used
@@ -139,25 +143,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    output_quoted_printable_ty();
+    output_quoted_printable();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_quoted_printable_ty(const output_quoted_printable_ty &);
+    output_quoted_printable(const output_quoted_printable &);
 
     /**
       * The assignment apperator.  Do not use.
       */
-    output_quoted_printable_ty &operator=(const output_quoted_printable_ty &);
+    output_quoted_printable &operator=(const output_quoted_printable &);
 };
-
-
-inline DEPRECATED output_ty *
-output_quoted_printable(output_ty *deeper, int close_on_close,
-    int allow_intl)
-{
-    return new output_quoted_printable_ty(deeper, close_on_close, allow_intl);
-}
 
 #endif // LIBAEGIS_OUTPUT_QUOTED_PRINT_H

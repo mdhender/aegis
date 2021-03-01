@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to manipulate lists
 //
 
 #include <libaegis/change.h>
@@ -89,23 +87,22 @@ project_list_get(string_list_ty *wlp)
         trace(("j = %d/%d\n", (int)j, (int)toplevel.nstrings));
 	string_ty *name = toplevel.string[j];
 	trace(("name = \"%s\"\n", name->str_text));
-        trace(("libaegis/project/list.cc\n"));
 	project_ty *pp = project_alloc(name);
-        trace(("libaegis/project/list.cc\n"));
+        trace(("mark\n"));
 	pp->bind_existing();
-        trace(("libaegis/project/list.cc\n"));
+        trace(("mark\n"));
 
 	//
 	// watch out for permissions
 	// (returns errno of attempt to read project state)
 	//
 	int err = project_is_readable(pp);
-        trace(("libaegis/project/list.cc\n"));
+        trace(("err = %d\n", err));
 
 	//
 	// Recurse into readable branch trees.
 	//
-	if (!err)
+	if (err == 0)
         {
             trace(("libaegis/project/list.cc\n"));
 	    pp->list_inner(*wlp);

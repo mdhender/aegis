@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2005-2007 Peter Miller
+//      Copyright (C) 2005-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -43,7 +43,7 @@ project_specific_find(change_identifier &cid, const char *name)
     if (!psp)
         return 0;
     assert(psp->value);
-    return nstring(str_copy(psp->value));
+    return nstring(psp->value);
 }
 
 
@@ -52,7 +52,7 @@ void
 policy()
 {
     trace(("policy()\n{\n"));
-    change_identifier cid;
+    change_identifier chg;
     validation_list to_do;
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -73,7 +73,7 @@ policy()
         case arglex_token_grandparent:
         case arglex_token_number:
         case arglex_token_trunk:
-            cid.command_line_parse(usage);
+            chg.command_line_parse(usage);
             continue;
 
         case arglex_token_string:
@@ -89,7 +89,7 @@ policy()
     //
     if (to_do.empty())
     {
-        nstring s = project_specific_find(cid, "aede-policy");
+        nstring s = project_specific_find(chg, "aede-policy");
         if (!s.empty())
         {
             nstring_list names;
@@ -113,14 +113,14 @@ policy()
     // Make sure the change is in the "being developed" state.
     // The aede-policy command makes no sense in any other state.
     //
-    if (!cid.get_cp()->is_being_developed())
-        change_fatal(cid.get_cp(), 0, i18n("bad de state"));
+    if (!chg.get_cp()->is_being_developed())
+        change_fatal(chg.get_cp(), 0, i18n("bad de state"));
 
     //
     // Perform all of the validations.
     // If any of them fail, quit with a failure exit status.
     //
-    bool ok = to_do.run(cid.get_cp());
+    bool ok = to_do.run(chg.get_cp());
     if (!ok)
         quit(1);
     trace(("}\n"));

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -54,10 +54,23 @@
 
 struct column_t
 {
+    ~column_t() { }
+
+    column_t() :
+        formula(0),
+        heading(0),
+        width(0),
+        stp(0),
+        maximum(0),
+        previous(0),
+        newval(0)
+    {
+    }
+
     string_ty	    *formula;
     string_ty	    *heading;
     int		    width;
-    output_ty	    *fp;
+    output::pointer fp;
     symtab_ty	    *stp;
     long	    maximum;
     string_ty       *previous;
@@ -67,6 +80,18 @@ struct column_t
 
 struct column_list_t
 {
+    ~column_list_t()
+    {
+        delete [] item;
+    }
+
+    column_list_t() :
+        length(0),
+        maximum(0),
+        item(0)
+    {
+    }
+
     size_t	    length;
     size_t	    maximum;
     column_t	    *item;
@@ -96,7 +121,7 @@ column_list_append(column_list_t *clp, string_ty *formula, string_ty *heading,
     cp->formula = formula;
     cp->heading = heading;
     cp->width = width;
-    cp->fp = 0;
+    cp->fp.reset();
     cp->stp = new symtab_ty(5);
     cp->maximum = 1;
     cp->previous = 0;
@@ -243,7 +268,7 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
             trace(("diff_option = \"%s\"\n", diff_option));
 	    change_run_annotate_diff_command
 	    (
-		fep->get_change(),
+                cid.get_cp(),
 		user_ty::create(),
 		prev_ifn,
 		ifn,
@@ -418,8 +443,8 @@ incr(symtab_ty *stp, string_ty *key, long *maximum_p)
 
 
 static void
-emit_range(output_ty *line_col, output_ty *source_col, line_t *line_array,
-    size_t line_len, long *linum_p, col *ofp)
+emit_range(output::pointer line_col, output::pointer source_col,
+    line_t *line_array, size_t line_len, long *linum_p, col::pointer ofp)
 {
     size_t	    j;
 
@@ -485,9 +510,9 @@ static void
 emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
     project_ty *pp)
 {
-    col	    *ofp;
-    output_ty	    *line_col;
-    output_ty	    *source_col;
+    col::pointer ofp;
+    output::pointer line_col;
+    output::pointer source_col;
     size_t	    j;
     long	    linum;
     int		    left;
@@ -622,7 +647,6 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	    ofp->eoln();
 	}
     }
-    delete ofp;
 }
 
 
@@ -677,7 +701,6 @@ annotate(void)
 		string_ty	*formula;
 		string_ty	*heading;
 		int		width;
-		char		*minus;
 		string_ty	*s;
 
 		if (arglex() != arglex_token_string)
@@ -702,11 +725,11 @@ annotate(void)
 		else
 		    width = 7;
 
-		minus = new char [width + 1];
-		memset(minus, '-', width);
-		minus[width] = 0;
-		s = str_format("%.*s\n%s", width, heading->str_text, minus);
-		delete [] minus;
+		char *minus_ch = new char [width + 1];
+		memset(minus_ch, '-', width);
+		minus_ch[width] = 0;
+		s = str_format("%.*s\n%s", width, heading->str_text, minus_ch);
+		delete [] minus_ch;
 		str_free(heading);
 		heading = s;
 
@@ -739,7 +762,7 @@ annotate(void)
 	fatal_intl(0, i18n("no file names"));
 
     //
-    // Insert the default columsn if the user does not specify any.
+    // Insert the default columns if the user does not specify any.
     //
     if (columns.length == 0)
     {

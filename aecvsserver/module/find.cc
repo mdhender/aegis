@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller
+//	Copyright (C) 2004-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,11 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate finds
-//
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
@@ -34,14 +31,19 @@ static bool
 extract_change_number(string_ty **project_name_p, long *change_number_p)
 {
     string_ty       *project_name;
-    const char      *cp;
     char            *end;
     long            change_number;
 
     project_name = *project_name_p;
-    cp = strstr(project_name->str_text, ".C");
+    const char *cp =
+        (const char *)
+        memmem(project_name->str_text, project_name->str_length, ".C", 2);
     if (!cp)
-	cp = strstr(project_name->str_text, ".c");
+    {
+	cp =
+            (const char *)
+            memmem(project_name->str_text, project_name->str_length, ".c", 2);
+    }
     if (!cp)
 	return false;
     change_number = strtol(cp + 2, &end, 10);

@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005-2007 Peter Miller,
-//	Copyright (C) 2004, 2005 Walter Franzini;
+//	Copyright (C) 2005-2008 Peter Miller,
+//	Copyright (C) 2004, 2005, 2007 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -39,7 +39,9 @@
 #include <libaegis/change.h>
 #include <libaegis/change/lock_sync.h>
 #include <libaegis/help.h>
+#include <libaegis/input/bunzip2.h>
 #include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
 #include <libaegis/input.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
@@ -87,7 +89,7 @@ extract_change_number_from_url(const nstring &uri)
 
 
 static nstring
-fix_compatibility_modifier(const nstring &uri)
+fix_compatibility_modifier(const nstring &uri, bool use_compat)
 {
     trace(("fix_compatibility_modifier(uri = %s)\n{\n", uri.quote_c().c_str()));
     if
@@ -102,9 +104,18 @@ fix_compatibility_modifier(const nstring &uri)
 	trace(("}\n"));
 	return uri;
     }
+    if (!strstr(uri.c_str(), "/cgi-bin/"))
+    {
+        // Only add +compat=xxx to CGI scripts
+	trace(("return %s;\n", uri.quote_c().c_str()));
+	trace(("}\n"));
+	return uri;
+    }
     const char *cp = strstr(uri.c_str(), "compat=");
     if (!cp)
     {
+        if (!use_compat)
+            return uri;
 	nstring result(uri + "+compat=" + version_stamp());
 	trace(("return %s;\n", result.quote_c().c_str()));
 	trace(("}\n"));
@@ -132,6 +143,7 @@ replay_main(void)
     nstring_list exclude_version_list;
     nstring_list include_version_list;
     bool all_changes = false;
+    bool use_compat = true;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -229,6 +241,9 @@ replay_main(void)
 	case arglex_token_maximum:
 	    all_changes = true;
 	    break;
+
+        case arglex_token_compatibility_not:
+            use_compat = false;
         }
         arglex();
     }
@@ -280,6 +295,8 @@ replay_main(void)
     //
     os_become_orig();
     input ifp = input_file_open(ifn.get_ref());
+    ifp = input_bunzip2_open(ifp);
+    ifp = input_gunzip_open(ifp);
     os_become_undo();
 
     nstring_list remote_change;
@@ -370,7 +387,7 @@ replay_main(void)
 	// There could be a compat=n.nn modifier in the
 	// URL, if so replace it, otherwise add one.
 	//
-	url_abs = fix_compatibility_modifier(url_abs);
+	url_abs = fix_compatibility_modifier(url_abs, use_compat);
 
 	//
 	// If the URL contains a change number, try to use that.
@@ -416,6 +433,10 @@ replay_main(void)
         project_free(pp2);
         pp2 = 0;
 
+        trace_int(rc);
+        if (rc && !up->persevere_preference(false))
+            quit(1);
+
         pp2 = project_alloc(project_name);
         pp2->bind_existing();
         change::pointer cp = change_alloc(pp2, change_number);
@@ -424,10 +445,6 @@ replay_main(void)
         trace_int(change_exists);
         if (!change_exists)
             continue;
-
-        trace_int(rc);
-        if (rc && !up->persevere_preference(false))
-            quit(1);
 
         assert(cp);
         cstate_ty *cstate_data = cp->cstate_get();

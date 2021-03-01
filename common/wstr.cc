@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,8 +16,6 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-//
-// MANIFEST: wide string manipulation functions
 //
 // A literal pool is maintained.  Each string has a reference count.  The
 // string stays in the literal pool for as long as it has a positive
@@ -238,9 +236,9 @@ wstr_from_c(const char *s)
 //
 
 wstring_ty *
-wstr_from_wc(const wchar_t *ws)
+wstr_from_wc(const wchar_t *s)
 {
-    return wstr_n_from_wc(ws, wcslen(ws));
+    return wstr_n_from_wc(s, wcslen(s));
 }
 
 
@@ -758,19 +756,19 @@ wstr_cat_three(const wstring_ty *s1, const wstring_ty *s2, const wstring_ty *s3)
 
 
 wstring_ty *
-wstr_capitalize(const wstring_ty *ws)
+wstr_capitalize(const wstring_ty *wsp)
 {
     static wchar_t  *buffer;
     static size_t   buflen;
     size_t          j;
     int             prev_was_alpha;
 
-    if (ws->wstr_length > buflen)
+    if (wsp->wstr_length > buflen)
     {
 	for (;;)
 	{
 	    buflen = buflen * 2 + 8;
-	    if (ws->wstr_length <= buflen)
+	    if (wsp->wstr_length <= buflen)
 		break;
 	}
 	delete [] buffer;
@@ -778,11 +776,11 @@ wstr_capitalize(const wstring_ty *ws)
     }
     language_human();
     prev_was_alpha = 0;
-    for (j = 0; j < ws->wstr_length; ++j)
+    for (j = 0; j < wsp->wstr_length; ++j)
     {
 	wchar_t         c;
 
-	c = ws->wstr_text[j];
+	c = wsp->wstr_text[j];
 	if (iswlower(c))
 	{
 	    if (!prev_was_alpha)
@@ -800,102 +798,102 @@ wstr_capitalize(const wstring_ty *ws)
 	buffer[j] = c;
     }
     language_C();
-    return wstr_n_from_wc(buffer, ws->wstr_length);
+    return wstr_n_from_wc(buffer, wsp->wstr_length);
 }
 
 
 wstring_ty *
-wstr_to_upper(const wstring_ty *ws)
+wstr_to_upper(const wstring_ty *wsp)
 {
     static wchar_t  *buffer;
     static size_t   buflen;
     size_t          j;
 
-    if (ws->wstr_length > buflen)
+    if (wsp->wstr_length > buflen)
     {
 	for (;;)
 	{
 	    buflen = buflen * 2 + 8;
-	    if (ws->wstr_length <= buflen)
+	    if (wsp->wstr_length <= buflen)
 		break;
 	}
 	delete [] buffer;
 	buffer = new wchar_t [buflen];
     }
     language_human();
-    for (j = 0; j < ws->wstr_length; ++j)
+    for (j = 0; j < wsp->wstr_length; ++j)
     {
 	wchar_t         c;
 
-	c = ws->wstr_text[j];
+	c = wsp->wstr_text[j];
 	if (iswlower(c))
 	    c = towupper(c);
 	buffer[j] = c;
     }
     language_C();
-    return wstr_n_from_wc(buffer, ws->wstr_length);
+    return wstr_n_from_wc(buffer, wsp->wstr_length);
 }
 
 
 wstring_ty *
-wstr_to_lower(const wstring_ty *ws)
+wstr_to_lower(const wstring_ty *wsp)
 {
     static wchar_t  *buffer;
     static size_t   buflen;
     size_t          j;
 
-    if (ws->wstr_length > buflen)
+    if (wsp->wstr_length > buflen)
     {
 	for (;;)
 	{
 	    buflen = buflen * 2 + 8;
-	    if (ws->wstr_length <= buflen)
+	    if (wsp->wstr_length <= buflen)
 		break;
 	}
 	delete [] buffer;
 	buffer = new wchar_t [buflen];
     }
     language_human();
-    for (j = 0; j < ws->wstr_length; ++j)
+    for (j = 0; j < wsp->wstr_length; ++j)
     {
 	wchar_t         c;
 
-	c = ws->wstr_text[j];
+	c = wsp->wstr_text[j];
 	if (iswupper(c))
 	    c = towlower(c);
 	buffer[j] = c;
     }
     language_C();
-    return wstr_n_from_wc(buffer, ws->wstr_length);
+    return wstr_n_from_wc(buffer, wsp->wstr_length);
 }
 
 
 wstring_ty *
-wstr_to_ident(const wstring_ty *ws)
+wstr_to_ident(const wstring_ty *wsp)
 {
     static wchar_t  *buffer;
     static size_t   buflen;
     size_t          j;
 
-    if (ws->wstr_length == 0)
+    if (wsp->wstr_length == 0)
 	return wstr_from_c("_");
-    if (ws->wstr_length > buflen)
+    if (wsp->wstr_length > buflen)
     {
 	for (;;)
 	{
 	    buflen = buflen * 2 + 8;
-	    if (ws->wstr_length <= buflen)
+	    if (wsp->wstr_length <= buflen)
 		break;
 	}
 	delete [] buffer;
 	buffer = new wchar_t [buflen];
     }
     language_human();
-    for (j = 0; j < ws->wstr_length; ++j)
+    for (j = 0; j < wsp->wstr_length; ++j)
     {
 	wchar_t         c;
 
-	c = ws->wstr_text[j];
+	c = wsp->wstr_text[j];
 	if (!iswalnum(c))
 	    c = '_';
 	buffer[j] = c;
@@ -903,7 +901,7 @@ wstr_to_ident(const wstring_ty *ws)
     if (iswdigit(buffer[0]))
 	buffer[0] = '_';
     language_C();
-    return wstr_n_from_wc(buffer, ws->wstr_length);
+    return wstr_n_from_wc(buffer, wsp->wstr_length);
 }
 
 
@@ -944,11 +942,11 @@ str_to_wstr(const string_ty *s)
 
 
 string_ty *
-wstr_to_str(const wstring_ty *ws)
+wstr_to_str(const wstring_ty *wsp)
 {
     char            *text;
     size_t          length;
 
-    wstr_to_mbs(ws, &text, &length);
+    wstr_to_mbs(wsp, &text, &length);
     return str_n_from_c(text, length);
 }

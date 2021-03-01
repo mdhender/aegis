@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 2002-2006 Peter Miller
+//	Copyright (C) 1991-1995, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,19 +13,19 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to store and enact file manipulations for commit
+//	along with this program; if not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/mem.h>
+#include <common/trace.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
 #include <libaegis/dir/functor/rm_dir_tree.h>
 #include <libaegis/interrupt.h>
 #include <libaegis/os.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
+
 
 //
 // This file contains "commit" functions.
@@ -141,7 +141,7 @@ link2(what_ty what, const nstring &path1, const nstring &path2)
 void
 commit_rename(string_ty *from, string_ty *to)
 {
-    commit_rename(nstring(str_copy(from)), nstring(str_copy(to)));
+    commit_rename(nstring(from), nstring(to));
 }
 
 
@@ -158,7 +158,7 @@ commit_rename(const nstring &from, const nstring &to)
 void
 commit_symlink(string_ty *from, string_ty *to)
 {
-    commit_symlink(nstring(str_copy(from)), nstring(str_copy(to)));
+    commit_symlink(nstring(from), nstring(to));
 }
 
 
@@ -175,7 +175,7 @@ commit_symlink(const nstring &from, const nstring &to)
 void
 commit_hard_link(string_ty *from, string_ty *to)
 {
-    commit_hard_link(nstring(str_copy(from)), nstring(str_copy(to)));
+    commit_hard_link(nstring(from), nstring(to));
 }
 
 
@@ -192,7 +192,7 @@ commit_hard_link(const nstring &from, const nstring &to)
 void
 commit_unlink_errok(string_ty *path)
 {
-    commit_unlink_errok(nstring(str_copy(path)));
+    commit_unlink_errok(nstring(path));
 }
 
 
@@ -208,7 +208,7 @@ commit_unlink_errok(const nstring &path)
 void
 commit_rmdir_errok(string_ty *path)
 {
-    commit_rmdir_errok(nstring(str_copy(path)));
+    commit_rmdir_errok(nstring(path));
 }
 
 
@@ -224,7 +224,7 @@ commit_rmdir_errok(const nstring &path)
 void
 commit_rmdir_tree_bg(string_ty *path)
 {
-    commit_rmdir_tree_bg(nstring(str_copy(path)));
+    commit_rmdir_tree_bg(nstring(path));
 }
 
 
@@ -240,7 +240,7 @@ commit_rmdir_tree_bg(const nstring &path)
 void
 commit_rmdir_tree_errok(string_ty *path)
 {
-    commit_rmdir_tree_errok(nstring(str_copy(path)));
+    commit_rmdir_tree_errok(nstring(path));
 }
 
 

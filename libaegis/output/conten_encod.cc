@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller
+//	Copyright (C) 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,15 +13,14 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate conten_encods
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/arglex.h>
-#include <libaegis/output/conten_encod.h>
+#include <common/mem.h>
 #include <libaegis/output/base64.h>
+#include <libaegis/output/conten_encod.h>
 #include <libaegis/output/quoted_print.h>
 #include <libaegis/output/uuencode.h>
 #include <libaegis/sub.h>
@@ -69,7 +68,7 @@ content_encoding_grok(const char *name)
 
 
 void
-content_encoding_header(output_ty *ofp, content_encoding_t name)
+content_encoding_header(output::pointer ofp, content_encoding_t name)
 {
     switch (name)
     {
@@ -92,8 +91,8 @@ content_encoding_header(output_ty *ofp, content_encoding_t name)
 }
 
 
-output_ty *
-output_content_encoding(output_ty *ofp, content_encoding_t name)
+output::pointer
+output_content_encoding(output::pointer ofp, content_encoding_t name)
 {
     switch (name)
     {
@@ -102,13 +101,13 @@ output_content_encoding(output_ty *ofp, content_encoding_t name)
 	break;
 
     case content_encoding_base64:
-	return new output_base64_ty(ofp, true);
+	return output_base64::create(ofp);
 
     case content_encoding_quoted_printable:
-	return new output_quoted_printable_ty(ofp, true, false);
+	return output_quoted_printable::create(ofp, false);
 
     case content_encoding_uuencode:
-	return new output_uuencode_ty(ofp, true);
+	return output_uuencode::create(ofp);
     }
     return ofp;
 }

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
+//	Copyright (C) 1999, 2001, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -17,111 +17,70 @@
 //	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/history.h>
 #include <libaegis/ael/column_width.h>
 #include <libaegis/aer/func/now.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
-#include <common/error.h> // for assert
 #include <libaegis/output.h>
 #include <libaegis/project.h>
-#include <common/str_list.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
 void
-list_change_history(string_ty *project_name, long change_number,
-    string_list_ty *)
+list_change_history(change_identifier &cid, string_list_ty *)
 {
-    cstate_ty       *cstate_data;
-    project_ty      *pp;
-    change::pointer cp;
-    user_ty::pointer up;
-    output_ty       *what_col;
-    output_ty       *when_col;
-    output_ty       *who_col;
-    output_ty       *why_col;
-    size_t          j;
-    string_ty       *line1;
-    int             left;
-    col          *colp;
-
-    //
-    // locate project data
-    //
     trace(("list_change_history()\n{\n"));
-    if (!project_name)
-    {
-            nstring n = user_ty::create()->default_project();
-            project_name = str_copy(n.get_ref());
-    }
-    else
-	    project_name = str_copy(project_name);
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    up = user_ty::create();
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-	    change_number = up->default_change(pp);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
-
-    cstate_data = cp->cstate_get();
+    cstate_ty *cstate_data = cid.get_cp()->cstate_get();
 
     //
     // create the columns
     //
-    colp = col::open((string_ty *)0);
-    line1 =
-	    str_format
-	    (
-		    "Project \"%s\"  Change %ld",
-		    project_name_get(pp)->str_text,
-		    magic_zero_decode(change_number)
-	    );
+    col::pointer colp = col::open((string_ty *)0);
+    string_ty *line1 =
+        str_format
+        (
+            "Project \"%s\"  Change %ld",
+            project_name_get(cid.get_pp())->str_text,
+            magic_zero_decode(cid.get_cp()->number)
+        );
     colp->title(line1->str_text, "History");
     str_free(line1);
 
-    left = 0;
-    what_col = colp->create(left, left + WHAT_WIDTH, "What\n------");
+    int left = 0;
+    output::pointer what_col =
+        colp->create(left, left + WHAT_WIDTH, "What\n------");
     left += WHAT_WIDTH + 1;
 
-    when_col = colp->create(left, left + WHEN_WIDTH, "When\n------");
+    output::pointer when_col =
+        colp->create(left, left + WHEN_WIDTH, "When\n------");
     left += WHEN_WIDTH + 1;
 
-    who_col = colp->create(left, left + WHO_WIDTH, "Who\n-----");
+    output::pointer who_col =
+        colp->create(left, left + WHO_WIDTH, "Who\n-----");
     left += WHO_WIDTH + 1;
 
-    why_col = colp->create(left, 0, "Comment\n---------");
+    output::pointer why_col = colp->create(left, 0, "Comment\n---------");
 
     //
     // list the history
     //
-    for (j = 0; j < cstate_data->history->length; ++j)
+    for (size_t j = 0; j < cstate_data->history->length; ++j)
     {
-	cstate_history_ty *history_data;
-	time_t          t;
-
-	history_data = cstate_data->history->list[j];
+	cstate_history_ty *history_data = cstate_data->history->list[j];
 	what_col->fputs(cstate_history_what_ename(history_data->what));
-	t = history_data->when;
+	time_t t = history_data->when;
 	when_col->fputs(ctime(&t));
 	who_col->fputs(history_data->who->str_text);
 	if (history_data->why)
 	    why_col->fputs(history_data->why->str_text);
 	if (history_data->what != cstate_history_what_integrate_pass)
 	{
-	    time_t          finish;
-
+	    time_t finish = 0;
 	    if (j + 1 < cstate_data->history->length)
 		finish = cstate_data->history->list[j + 1]->when;
 	    else
@@ -138,12 +97,5 @@ list_change_history(string_ty *project_name, long change_number,
 	}
 	colp->eoln();
     }
-
-    //
-    // clean up and go home
-    //
-    delete colp;
-    change_free(cp);
-    project_free(pp);
     trace(("}\n"));
 }

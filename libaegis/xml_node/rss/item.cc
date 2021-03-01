@@ -1,12 +1,11 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2005 Matthew Lee;
-//      All rights reserved.
-//      Copyright (C) 2007 Peter Miller
+//      Copyright (C) 2005 Matthew Lee
+//      Copyright (C) 2007, 2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -15,10 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the xml_node_rss_item class
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/output.h>
@@ -35,7 +32,7 @@ xml_node_rss_item::~xml_node_rss_item()
 
 xml_node_rss_item::xml_node_rss_item(rss_item *the_item,
                                      xml_text_reader_by_node &reader,
-                                     output_ty *out) :
+                                     output::pointer out) :
     xml_node_rss(reader, out),
     new_item(the_item),
     num_items_found(0)
@@ -66,11 +63,11 @@ xml_node_rss_item::element_begin(const nstring &)
         if (1 == num_items_found)
         {
             // Dump the new item.
-            new_item->print(output);
+            new_item->print(deeper);
         }
 
         // Print an open element for the item we are now handling.
-        output->fputs("<item>\n");
+        deeper->fputs("<item>\n");
     }
 }
 
@@ -81,7 +78,7 @@ xml_node_rss_item::element_end(const nstring &)
     // If we are not merely counting items, terminate the item element.
     if (new_item != 0)
     {
-        output->fputs("</item>\n");
+        deeper->fputs("</item>\n");
     }
 }
 

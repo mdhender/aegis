@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Walter Franzini
-#       Copyright (C) 2007 Peter Miller
+#	Copyright (C) 2006, 2008 Walter Franzini
+#       Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aenpr -keep functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -194,7 +192,7 @@ if test $? -ne 0; then cat log; no_result; fi
 #
 # Create an archive of the repository.
 #
-activity="create a cpio archive"
+activity="create a cpio archive 195"
 $bin/test_cpio -create -file $work/example.cpio -cd $workproj \
     `(cd $workproj && find . -type f)` > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
@@ -202,12 +200,12 @@ if test $? -ne 0; then cat log; no_result; fi
 mkdir $work/proj2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="extract the archive"
+activity="extract the archive 203"
 $bin/test_cpio -extract -file $work/example.cpio -cd $work/proj2 \
     > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="modify the trunk"
+activity="modify the trunk 208"
 sed -e "s/$USER/${USER}not/g" < $work/proj2/info/trunk \
     > $work/proj2/info/trunk.new
 if test $? -ne 0; then no_result; fi
@@ -215,7 +213,7 @@ if test $? -ne 0; then no_result; fi
 mv $work/proj2/info/trunk.new $work/proj2/info/trunk > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="modify example.1"
+activity="modify example.1 216"
 sed -e "s/$USER/${USER}not/g" < $work/proj2/info/change/0/001 \
     > $work/proj2/info/change/0/001.new
 if test $? -ne 0; then no_result; fi
@@ -224,7 +222,7 @@ mv $work/proj2/info/change/0/001.new $work/proj2/info/change/0/001 \
     > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="modify example.1.1"
+activity="modify example.1.1 225"
 sed -e "s/$USER/${USER}not/g" < $work/proj2/info/change/0/001.branch/0/001 \
     > $work/proj2/info/change/0/001.branch/0/001.new
 if test $? -ne 0; then no_result; fi
@@ -233,7 +231,7 @@ mv $work/proj2/info/change/0/001.branch/0/001.new \
     $work/proj2/info/change/0/001.branch/0/001 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="create a new project"
+activity="create a new project 234"
 $bin/aegis -npr -p example2 -keep -dir $work/proj2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -243,21 +241,21 @@ ${USER}not
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="check example2"
+activity="check example2 244"
 $bin/aegis -list admin -p example2 -ter > example2.adm
 if test $? -ne 0; then no_result; fi
 
 diff $work/ok $work/example2.adm
 if test $? -ne 0; then fail; fi
 
-activity="check example2.1"
+activity="check example2.1 251"
 $bin/aegis -list admin -p example2.1 -ter > example2.1.adm
 if test $? -ne 0; then no_result; fi
 
 diff $work/ok $work/example2.1.adm
 if test $? -ne 0; then fail; fi
 
-activity="check example2.1.1"
+activity="check example2.1.1 258"
 $bin/aegis -list admin -p example2.1.1 -ter > example2.1.1.adm
 if test $? -ne 0; then no_result; fi
 

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1993-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,32 +13,32 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement remove project
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
 #include <libaegis/ael/project/projects.h>
-#include <aegis/aermpr.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/active.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
+
+#include <aegis/aermpr.h>
 
 
 static void
@@ -70,9 +70,9 @@ static void
 remove_project_list(void)
 {
     arglex();
-    while (arglex_token != arglex_token_eoln)
-	generic_argument(remove_project_usage);
-    list_projects(0, 0, 0);
+    change_identifier cid;
+    cid.command_line_parse_rest(remove_project_usage);
+    list_projects(cid, 0);
 }
 
 

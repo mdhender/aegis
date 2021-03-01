@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2007 Peter Miller
+//	Copyright (C) 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,13 +16,11 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: functions to manipulate lists
-//
 
 #include <common/ac/errno.h>
 #include <common/ac/stddef.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/error.h>
 #include <common/now.h>
@@ -48,19 +46,19 @@ int		show_dot_files = -1;
 int		recursive_flag;
 int		long_flag = 0;
 int		mode_flag = -1;
-static output_ty *mode_col;
+static output::pointer mode_col;
 int		attr_flag = -1;
-static output_ty *attr_col;
+static output::pointer attr_col;
 int		user_flag = -1;
-static output_ty *user_col;
+static output::pointer user_col;
 int		group_flag = -1;
-static output_ty *group_col;
+static output::pointer group_col;
 int		size_flag = -1;
-static output_ty *size_col;
+static output::pointer size_col;
 int		when_flag = -1;
-static output_ty *when_col;
-static output_ty *name_col;
-static col	*col_ptr;
+static output::pointer when_col;
+static output::pointer name_col;
+static col::pointer col_ptr;
 static string_list_ty dirs;
 static change::pointer cp;
 static project_ty *pp;
@@ -751,5 +749,13 @@ list(string_list_ty *paths, project_ty *a_pp, change::pointer a_cp)
 	list_dir(path);
 	need_eject = 1;
     }
-    delete col_ptr;
+
+    mode_col.reset();
+    attr_col.reset();
+    user_col.reset();
+    group_col.reset();
+    size_col.reset();
+    when_col.reset();
+    name_col.reset();
+    col_ptr.reset();
 }

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2007 Peter Miller
+//	Copyright (C) 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to manipulate aetars
 //
 
 #include <common/ac/ctype.h>
@@ -37,7 +35,7 @@
 
 
 static int
-len_printable(string_ty *s, int max)
+len_printable(string_ty *s, int max_len)
 {
     const char      *cp;
     int             result;
@@ -48,8 +46,8 @@ len_printable(string_ty *s, int max)
     for (cp = s->str_text; *cp && isprint((unsigned char)*cp); ++cp)
 	;
     result = (cp - s->str_text);
-    if (result > max)
-	result = max;
+    if (result > max_len)
+	result = max_len;
     return result;
 }
 

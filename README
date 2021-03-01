@@ -3,7 +3,7 @@ Read Me(Aegis)							Read Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007 Peter Miller
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008 Peter Miller
 
 	Aegis is distributed under the terms of	the GNU	General	Public
 	License.  See the LICENSE section, below, for more details.
@@ -97,11 +97,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.23.README   # Description, from	tar file
-		File:	aegis.4.23.lsm	    # Description, in LSM format
-		File:	aegis.4.23.ae	    # the complete source, aedist format
-		File:	aegis.4.23.spec	    # RedHat package specification
-		File:	aegis.4.23.tar.gz   # the complete source
+		File:	aegis.4.24.README   # Description, from	tar file
+		File:	aegis.4.24.lsm	    # Description, in LSM format
+		File:	aegis.4.24.ae	    # the complete source, aedist format
+		File:	aegis.4.24.spec	    # RedHat package specification
+		File:	aegis.4.24.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.23.README   # Description, from	tar file
-		File:	aegis.4.23.lsm	    # Description, in LSM format
-		File:	aegis.4.23.spec	    # RedHat package specification
-		File:	aegis.4.23.ae	    # the complete source, aedist format
-		File:	aegis.4.23.tar.gz   # the complete source
+		File:	aegis.4.24.README   # Description, from	tar file
+		File:	aegis.4.24.lsm	    # Description, in LSM format
+		File:	aegis.4.24.spec	    # RedHat package specification
+		File:	aegis.4.24.ae	    # the complete source, aedist format
+		File:	aegis.4.24.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -222,7 +222,7 @@ Windows	NT
 LICENSE
 	Aegis is free software;	you can	redistribute it	and/or modify it under
 	the terms of the GNU General Public License as published by the	Free
-	Software Foundation; either version 2 of the License, or (at your
+	Software Foundation; either version 3 of the License, or (at your
 	option)	any later version.
 
 	Aegis is distributed in	the hope that it will be useful, but WITHOUT
@@ -249,6 +249,542 @@ RELEASE	NOTES
 	same release of	Aegis.	While the database format is backwards
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
+
+   Version 4.24	(09-Mar-2008)
+	* Numerous portability improvements.
+
+	* Numerous improvements	to the history reconstruction code.
+
+	* Numerous improvements	and bug	fixes to the distributed development
+	code.  See aedist(1), aeget(1),	aetar(1) and aepatch(1)	for more
+	information.
+
+	* The site specific architecture information has been split into a
+	separate file, maked with an entire-source-hide	attribute, so that new
+	Aegis-under-Aegis projects don't have such bad architecture problems.
+
+	* The license has been changed to GPLv3.
+
+	* A bug	has been fixed the the change::pconf_get method	which
+	sometimes caused segfaults.
+
+	* A bug	has been fixed in aeclone which	caused aecp -delta to segfault
+	when: a	change set whith a removed file	was cloned, and	the clone
+	change set subsequently	integrated.
+
+	* The aediff command is	now smarter about files	which may have moved.
+
+	* A bug	has been fixed in the aeannotate command, it no	longer
+	segfaults for some file	histories.
+
+	* A Vietnamese error mesage translation	has been added.
+
+	* There	is a new Portugese (Brazillian)	message	catalogue translation.
+
+	* It is	now possible to	develop	begin undo and new change undo in a
+	single command.
+
+	* The ael(1) command now understands are much wider range of ways to
+	specify	changes.
+
+	* A segfault has been fixed in the use of --delta and --delta-data
+	options.
+
+	* This change set fix a	problem	in the aesvt(1)	checkout command that
+	can fail to extract from a gzip	compressed archive.
+
+	* A bug	has been fixed in the aechown(1) command, to stop a segfault
+	when printing some error messages.
+
+	* There	is a new aebisect(1) command which helps to find project
+	regressions not	handled	by the test suite.
+
+	* Many commands	now cope with renames in more situations.
+
+	* A bug	has been fixed in aeclone(1) which caused aecp -delta to
+	segfault when a	change set whith a removed file	was cloned, and	the
+	clone change set subsequently integrated.
+
+	* The aede-policy(1) manual page has been updated to document the
+	aede-policy-line-length	file attribute.
+
+	* A vietnamese translation has been added.
+
+	* The aereport(1) command now understands more ways to specify
+	changes.
+
+	* There	is a new ${path_reduce}	substitution which may be used to
+	remove redundant elements from path lists, such	as used	by the $PATH
+	environment variable.
+
+	* When the development directory style required	actions	to be perfomed
+	on the development directory, the obsolete "creating symbolic links to
+	baseline" message was produced.	This was confusing. A more generic
+	message	is now used, which is intended to be less confusing.
+
+	* The aecp(1) -delta command now follows the whiteout preference when
+	copying	a "removed" file.  The test suite now runs much	faster.
+
+	* A bug	has been fixed in the aedbu(1) command.	It no longer complains
+	about permissions when the develop_begin_undo_command has been set.
+
+	* A bug	has been fixed in the aeimport(1) command.  It no longer uses
+	the Attic portion of filenames when populating the history directory
+	tree.
+
+	* The change details listing now prints	comments in a wide column when
+	the comments are lengthy.
+
+	* There	is a new $Active_Directory substitution, used to obtain	the
+	development directory, or the integration directory, depending on the
+	change state. This is rather like the default behaviour	of the aecd(1)
+	command.
+
+	* There	is a new ${project version} substitution.
+
+	* The commands run by aeipass are now accompanied by more file name
+	information, so	that you can know which	source file corresponds	to
+	which UUID history file, if there is a failure in the history
+	commands.
+
+	* The aeca(1) command now checks for and discards duplicate
+	architecture names. This fixes a bug with unsatifiable architecture
+	dependencies.
+
+	* The aeb(1) command has been improved,	it no longer keeps running the
+	project_file_comand over and over again.
+
+	* A bug	has been fixed in the aenf(1) command; it now preserves
+	existing file contents if new files already exist in the development
+	directory.
+
+	* A bug	has been fixed in the "aet -regression"	command, it no longer
+	reports	free()ing a non-existent string.
+
+	* A bug	has been fixed in the aed(1) command, it no longer reports a
+	bug when a cross branch	merege is attempted for	a file independently
+	created	in both	branches.
+
+   Version 4.23
+   Version 4.22.2 (18-Oct-2007)
+	This is	an update for the 4.22 stable release, it is meant to help
+	Aegis users while the next release cycle ends.
+
+	* [ 1684820 ] Fixed a bug in aeclone that caused aecp -delta
+	segfaults.
+
+	* The symlink farm now handle derived files registered within Aegis
+	more like normal derived files.
+
+	* [ 1697199 ] The change_pconf_get function no longer looks for
+	historical versions of files, if it can	help it.  This makes many
+	things go faster and solved the	problem	of configuration fields
+	redefinition.  While this change does not make Aegis more time safe,
+	it cures one of	the symptoms.
+
+	* Fixed	test 222 to work with recent releases of subversion.
+
+	* The aepconf(5) man page has been improved.
+
+	* [ Debian 435422 ] The	reference manual was wrongly referring to
+	-Page-Headings instead of -Page-Header.	 The documentation has been
+	updated	to match the source code.
+
+	* [ 1704108 ] The aecp(1) -delta command now follows the whiteout
+	preference when	copying	a "removed"file.
+
+	* [ 1704100 ] A	bug has	been fixed that	caused aecp(1) -delta X	to
+	copy in	a change also a	file with the old name of a file aemv(1)ed
+	before delta X.
+
+	* The generated	Makefile now installs aelock(1)	with the correct
+	permissions.
+
+	* [ 1701701 ] A	bug has	been fixed in the aetar(1) command, it no
+	longer creates tarballs	that cause BSD and other tar to	complain like
+	this: tar: End of archive volume 1 reached tar:	Unexpected EOF on
+	archive	file
+
+	* The configure	script now handle correctly the	datadir	substitution.
+
+   Version 4.22.1 (14-Apr-2007)
+	* Test t0247a-walt.sh has been fixed, it was not exporting
+	AEGIS_TEST_DIR.	 This make aeintegratq(1) leaving stuff	in the home
+	directory of the user.
+
+	* Some minor fix that prevented	Aegis to build on RPM based
+	distributions has been fixed.
+
+	* The t0011a.sh	test script failed when	lex(1) was missing, since it
+	is not required	to build Aegis the test	script has been	modified to
+	pass even when lex(1) is missing.
+
+	* aedist(1) now	handle certain renamed files correctly when receiving
+	branches or entire-source.
+
+	* The t0011a.sh	test script failed when	lex(1) was missing, since it
+	is not required	to build Aegis the test	script has been	modified to
+	pass even when lex(1) is missing.
+
+	* aedist(1) now	handle certain renamed files correctly when receiving
+	branches or entire-source.
+
+	* [ 1691122 ] Newer versions of	the autoconf tools introduced a	new
+	@datarootdir@, and complained loudly if	it wasn't used.	 Aegis
+	configure does not trigger anymore those warnings.
+
+	* The test suite does not use anymore diff(1) -u because not all
+	systems	have gnu diff, so the use of gnu diff's	-u option is nor
+	portable, and will give	false negatives	on some	systems.
+
+	* The test suite does not use anymore diff(1) -u because not all
+	systems	have gnu diff, so the use of gnu diff's	-u option is nor
+	portable, and will give	false negatives	on some	systems.
+
+	* aedist(1) -rec now save the UUID as the user defined original-UUID
+	if the UUID is already present in the repository.  This	is especially
+	useful when receiving changes in the same repository.
+
+	* aeclone(1) now preserve the the UUID of the original change as the
+	original-UUID user defined attribute of	the new	change.	It also	copy
+	any other used-defined attribute.
+
+	* Test 89 has been disable on HP-UX-10 because that system has a
+	"vendor	specific" (i.e.	broken)	cpio(1)	archive	format.
+
+	* Test 95 has been improved to be less sensitive to libmagic(3)
+	differences.
+
+	* Test 207 has been changed to be less sensitive to sort(1)
+	differences.
+
+	* The project_specific setenv:*	variables are now exported only	once.
+
+	* [ 1674882 ] The following bug	as been	fixed: if a file is created
+	and renamed within a single branch, and	that branch is integrated,
+	then the file is not included in the output of 'aedist -send -es' from
+	subsequent branches.
+
+	* A bug	has been fixed in the aedbu(1) command.	 It no longer
+	complains about	permissions when the develop_begin_undo_command	has
+	been set.
+
+	* The aedist(1)	-rec command now better	handles	file renamed (not
+	aemved)	to match the local repository state.
+
+	* A bug	has been fixed that caused the change_pconf_get	function
+	terminate aegis(1) with	a fatal	error if applied to a branch without a
+	config file (e.g. if the trunk does not	contain	any closed branch).
+
+	* The aenpr(1) -keep command now set the administrator recursively.
+
+	* A bug	has been fixed in the ${project-specific} substitution,	it now
+	works correctly	with the aesub(1) -bl command.
+
+	* aedist(1) -received has been modified	to set the user	defined
+	attribute foreign-copyright to true when receiving a remote change
+	set.  This in order to avoid aede-policy(1) complain about incorrect
+	copyright notice at aede(1) time.0
+
+	* A bug	has been fixed that caused an aemv(1) followed by an aenf(1)
+	to generate two	different files	with the same UUID.
+
+	* Avoid	the "multiple permission set" error on quit.
+
+	* A bug	has been fixed in the UUID generating code; it was running out
+	of file	descriptors.
+
+	* A bug	has been fixed in the aet(1) -regression command, it no	longer
+	reports	free()ing a non-existent string.
+
+	* A bug	has been fixed in the aed(1) command, it no longer reports a
+	bug when a cross branch	merge is attempted for a file independently
+	created	in both	branches.
+
+	* A bug	has been fixed which caused aeipass(1) to assign UUID to files
+	at branch integration pass time. This can happen if the	files was
+	created	and integrated with an old Aegis release, lacking support for
+	file's UUID.  This bug make it possible	to have	the history for	a file
+	split into two part, one accessible via	the file_name, the other
+	accessible using the UUID.
+
+	* A segfault in	aeannotate(1) has been fixed.
+
+	* A bug	has been fixed related to the use of the
+	unchanged_file_integrate_pass_policy=remove policy described in
+	aepconf(5).  In	this case aeipass failed to reset the locked_by	field
+	from the project fstate	file, this prevented subsequent	changes	to
+	modify the removed file.
+
+	* A bug	has been fixed in the handling of the symlink farm, for
+	development directory styles which use them for	derived	files.
+	Derived	files in the baseline directory	which were formerly source
+	files, but then	aerm-ed, are now included in the development directory
+	when copy/link styles are used.
+
+	* A bug	has been fixed in the aenf(1) command; it now preserves
+	existing file contents if new files already exist in the file
+	development directory.
+
+	* The ./configure script has been improved to stop with	a fatal	error
+	if the bzip2 library is	not available.
+
+   Version 4.22	(29-Mar-2006)
+	* A bug	has been fixed in the aeclean(1) command, it now correctly
+	resets the change build	and test times.
+
+	* A bug	has been fixed in writing of tar and cpio data,	in cases where
+	there was one byte too much padding.
+
+	* A bug	has been fixed in the aeintegratq(1) command, it no longer
+	ignores	change number zero.
+
+	* A bug	has been fixed in the aepromptcmd(1) comand, it	now
+	understands that when the build	command	is "exit 0" then no build is
+	required.
+
+	* The aede(1) comand now runs the review_pass_notify_command (instead
+	of the develop_end_notify_command) for projects	configured to skip the
+	being reviewed state.
+
+	* A bug	has been fixed in the aeannotate(1) command, it	no longer uses
+	the wrong timestamp when creating histories for	completed branches.
+
+	* A bug	in the aed(1) command has been fixed, it no longer reports a
+	bug when trying	to merge a file	that has been renamed.
+
+	* A bug	has been fixed in the aet(1) command, it now correctly handles
+	multiple architectures being reported for batch	test results.
+
+	* A bug	has been fixed in the aet -regression command, the batch_-
+	test_command now correctly handles multiple architectures in the
+	results.
+
+	* The notification scripts distributed with Aegis have been fixed,
+	they now correctly substitute recipients' email	addresses.
+
+	* A bug	has been fixed in the aediff(1)	command, the -change option is
+	now ablew to cope with degenerate forms	of the delta name in cases
+	like aediff -change D001 and similar.
+
+	* A bug	has been fixed in the aenc(1) command, it now takes more
+	notice of project testing default settings.
+
+	* A bug	has been fixed in the aeget(1) interface, the adjective	for
+	the alternate listing link at the bottom of the	Integration Histogram
+	pages has been inverted.
+
+	* A bug	has been fixed in the aeget(1) command,	is is now always
+	possible to see	the error produced by a	script when the	noerror
+	modifier is specified.
+
+	* A bug	has been fixed in the aeget(1) web interface, it now provides
+	the correct links to the more and less detailed	file history pages.
+
+	* The aeget(1) web interface no	longer emits broken links to removed
+	source files.
+
+	* A bug	has been fixed in the aenbr(1) command,	the protect_database
+	project	attribute is now correctly inherited from the parent branch.
+
+	* A bug	has been fixed the the RSS feed, where HTML special characters
+	were not rendered correctly.
+
+	* A bug	has been fixed in the aeipass(1) command, it no	longer fails
+	if the history_create_command was not set, it uses the history_put_-
+	command	instead, as it is supposed to.
+
+	* A bug	has been fixed in the aedist -send command, it no longer
+	attempts to include the	source of removed files.
+
+	* A bug	has been fixed in the aedist(1)	command, it no longer
+	segfaults when compiled	with DEBUG defined.
+
+	* A bug	has been fixed in the aedist -replay command, it no longer
+	downloads change sets more than	once.
+
+	* A bug	has been fixed in the aedist -send command, it no longer
+	obtains	the wrong version of the project files when building patches
+	for files which	have been renamed.
+
+	* A bug	has been fixed in the aedist(1)	command, no longer attempts to
+	include	the source of removed files.
+
+	* A bug	has been fixed in the aedist -pending command, it now resolves
+	project	aliases.
+
+	* A bug	has been fixed in the aedist(1)	command, it no longer
+	segfaults on IRIX.
+
+	* A bug	was fixed which	caused the development_directory of a branch
+	to be recorded as an absolute path in the Aegis	meta-data, rather than
+	relative to the	home of	the project.  This problem make	it difficult
+	to move	a project to a different location in the filesystem.
+
+	* There	is a new open source project example on	the web	site, which
+	allows tarballs	to be unpacked and turned into an Aegis	project	in
+	less than 30 minutes.
+
+	* There	is a new aefinish(1) command which may be used to read the
+	state of a change set and then run all of the Aegis commands necessary
+	to to end development.	See aefinish(1)	for more information.
+
+	* The aexml(1) command now understands ".bz" output file suffix, in
+	addition to the	".gz" suffix it	already	understood.  The man page has
+	been updated to	cover the -output opion.
+
+	* The aerevml -send command is now able	to produce bzip2 compressed
+	output.
+
+	* The restrictions on project alias names have been eased.  It is now
+	possible to have any alias name	you like, so long as it	doesn't
+	contain	any shell special characters.
+
+	* It is	now possible to	set change attributes from the command line,
+	without	going via an editor.  See aeca(1) for more information.
+
+	* The aetar -send command is now able to produce bzip2 compressed
+	output.
+
+	* There	is an new aetar	-exclude command line option, allowing you to
+	exclude	files from the tarball being unpacked and used to for the
+	change set.  This is typically necessary when a	tarball	includes
+	derived	files (e.g. the	./configure script in most open	source
+	projects).
+
+	* There	is a new aetar -exclude-auto-tools option, which can be	used
+	to exclude derived files commonly found	in open	source projects	using
+	the GNU	Autoconf and GNU Automake tools.
+
+	* There	is a new aede-policy(1)	command	which may be invoked by
+	develop_end_policy_command to enforce additional local policies.  See
+	aede-policy(1) for more	information.
+
+	* When symlinking files	(source	or derived) into the development
+	directory, the last-modified time of the link is set to	the last-
+	modified time of the file being	linked to, when	the underlying
+	filesystem supports it.
+
+	* The aefa(1) command now accepts name=value attribute assignments on
+	the command line.
+
+	* The aet(1) command now understands name=value	pairs on the command
+	line, and passes them unchanged	to the test command.  The -force
+	option implies a force=1 variable setting.
+
+	* The aepatch -send command is now able	to produce bzip2 compressed
+	output.
+
+	* The aesvt(1) command now uses	the bzip2(1) algorithm by default.
+	There is a aesvt -compression-algorithm=gzip option for	forwards
+	compatibility.
+
+	* There	is a new ae-repo-ci(1) command which may be used in an
+	integrate_pass_notify_command to do a parallel check-in	of a change
+	set into a second parallel repository.	It understands CVS and SVN at
+	the moment; it is easy to extend to understand more repository types.
+	The old	ae-cvs-ci(1) script now	invokes	the ae-repo-ci(1) command.
+
+	* The build step of the	development process can	now be made optional.
+	Configuring a build_command of "exit 0"	will tell Aegis	your project
+	does not need to be built.
+
+	* The aedist --replay command now adds a compatibility modifier	to all
+	of the downloads URLs, so that the change set received will be
+	compatible with	the version of aedist at the receiving end.
+
+	* The aedist -send command now accepts a -no-mime-header option, to
+	make it	easier to validate the aedist(1) output	against	the real
+	cpio(1)	command.
+
+	* The aedist -send command is now able to produce bzip2	compressed
+	output.
+
+	* There	is a new entire-source-hide file attribute which may be	used
+	to omit	site-specific files from aedist	-send change sets.
+
+	* The aetar -remove-path-prefix	option now also	accepts	a numeric
+	argument.
+
+	* The aeannotate(1) command now	understands the	-change	and -delta
+	options.
+
+	* The aedb(1) command has been enhanced	to check that directory
+	permissions above the development directory will be traversable	by the
+	integrator and the reviewers.
+
+	* The aecpu(1) comand now understands the -read-only option to mean
+	uncopy all of the insulation files.
+
+	* There	is a new aelock(1) command, which may be used to take read-
+	only locks.  This can be useful	for backups, and other activities
+	outside	Aegis' scope which require a constant project state to operate
+	correctly.
+
+	* The aedist command can now perform file merges with better results.
+
+	* The aedist -receive command now looks	to see if the executing	user
+	has project admin priviledges, and if so does not cancel testing
+	exemptions.
+
+	* The aedist -receive command now applies patches using	the patch(1)
+	command, rather	than doing it less well	itself.
+
+	* The aedist -replay command now attempts to use the same change
+	number as on the remote	system.	 A bug has been	fixed in the way it
+	looked for change numbers.
+
+	* There	is a new unchanged_file_integrate_pass_policy field in the
+	project	configuration file, which controls what	to do when a change
+	set contains an	unchanged file at integrate pass time.
+
+	* It is	now possible for developers to edit a change description when
+	a change is in the awaiting development	state, if the project has
+	developers_may_create_changes enabled.
+
+	* The aed(1) command is	now optional.  Configuring a diff_command of
+	"exit 0" will tell Aegis your project does not need to be differenced.
+
+	* The aeget(1) interface now places HTML anchors in description	text
+	where it recognizes them.
+
+	* There	is a new aeget:inventory:hide change attribute,	which may be
+	used to	prevent	strictly local change sets from	being advertised in
+	the aeget(1) change set	inventory.
+
+	* The aeget(1) web interface file listings pages now link the edit
+	numbers	to file	versions. When history is available there are also
+	links to the previous verion, and the arrow is linked to a diff	page.
+
+	* The aeget(1) presentation of file history has	been improved to
+	highlight renaming of files.
+
+	* The aeget(1) web interface now has a recursive option	on its project
+	integration history pages.
+
+	* The aebuffy(1) command is now	able to	run the	tkaer(1) command from
+	more states, and it now	accepts	'q' to quit.  The display of changes
+	with double quotes (") in their	brief description has been improved.
+
+	* A build problem with libcurl not being present has been fixed.
+
+	* A bug	has been fixed which caused errors when	Aegis was compiled
+	with g++ 4.1
+
+	* A build problem has been fixed on Solaris.
+
+	* A build problem related to bison(1) using libintl(3) has been	fixed.
+
+	* The ./configure script has been improved to correctly	detect
+	installation of	the OSSP UUID library.
+
+	* A build problem on HP/UX has been fixed.
+
+	* A build problem on MacOS X has been fixed.
+
+	* A build problem has been fixed where libraries required by the
+	./configure script are located under /usr/local/lib or some other non-
+	standard place.
 
    Version 4.21	(10-Nov-2005)
 	You must have the Gnome	libxml2	library	(http://xmlsoft.org/)

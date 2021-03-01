@@ -1,11 +1,11 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2005 Matthew Lee;
-//      All rights reserved.
+//      Copyright (C) 2005 Matthew Lee
+//      Copyright (C) 2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the xml_node_rss_timedate class
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_XML_NODE_RSS_TIMEDATE_H
@@ -58,7 +56,7 @@ public:
      *     date/time element should be set to just after midnight
      *     (false), or to the current time (true).
      */
-    xml_node_rss_timedate(xml_text_reader_by_node &reader, output_ty *out,
+    xml_node_rss_timedate(xml_text_reader_by_node &reader, output::pointer out,
 	bool use_current_time);
 
     /**

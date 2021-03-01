@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2007 Peter Miller
-//	Copyright (C) 2006 Walter Franzini;
+//	Copyright (C) 1991-2008 Peter Miller
+//	Copyright (C) 2006, 2008 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -35,6 +35,7 @@
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
@@ -80,42 +81,11 @@ new_file_help(void)
 static void
 new_file_list(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-
     trace(("new_file_list()\n{\n"));
-    project_name = 0;
-    change_number = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_file_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, new_file_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_file_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_project_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_file_usage);
+    list_project_files(cid, 0);
     trace(("}\n"));
 }
 
@@ -606,7 +576,7 @@ new_file_main(void)
 	    // change_filename_check function.
 	    //
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Message", e);
+	    sub_var_set_string(scp, "MeSsaGe", e);
 	    change_error(cp, scp, i18n("$message"));
 	    sub_context_delete(scp);
 	    ++nerrs;

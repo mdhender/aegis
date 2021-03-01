@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2007 Peter Miller
+//      Copyright (C) 2007, 2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -108,14 +108,14 @@ validation_files_line_length::check(change::pointer cp, fstate_src_ty *src)
     // Don't perform this check for files marked as being allowed to
     // have really long lines.
     //
-    long max =
+    long max_lin_len =
         attributes_list_find_integer
         (
             src->attribute,
             "aede-policy-line-length",
             line_length
         );
-    if (max <= 0)
+    if (max_lin_len <= 0)
         return true;
 
     nstring path(change_file_path(cp, src));
@@ -133,7 +133,7 @@ validation_files_line_length::check(change::pointer cp, fstate_src_ty *src)
             break;
         ++line_number;
         int ll = calc_line_length(text);
-        if (ll > max)
+        if (ll > max_lin_len)
         {
             sub_context_ty sc;
             sc.var_set_format
@@ -143,7 +143,7 @@ validation_files_line_length::check(change::pointer cp, fstate_src_ty *src)
                 src->file_name->str_text,
                 line_number
             );
-            sc.var_set_long("Number", ll - max);
+            sc.var_set_long("Number", ll - max_lin_len);
             sc.var_optional("Number");
             change_error(cp, &sc, "$filename: line too long, by $number");
             ok = false;

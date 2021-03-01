@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2007 Peter Miller
+//	Copyright (C) 2001, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -31,7 +31,7 @@ change_branch_next_change_number(change::pointer cp, int is_a_change)
     cstate_branch_change_list_ty *lp;
     long            change_number;
     size_t          j, k;
-    long            min;
+    long            minchanum;
     int             reuse;
 
     trace(("change_branch_next_change_number(cp = %8.8lX)\n{\n",
@@ -61,15 +61,15 @@ change_branch_next_change_number(change::pointer cp, int is_a_change)
     }
 
     //
-    // difference the above set from the interval [min..max)
+    // difference the above set from the interval [minchanum..max)
     // This avoids zero.  If the user wants a zero-numbered change,
     // she must ask for it.
     //
     if (is_a_change)
-	min = change_branch_minimum_change_number_get(cp);
+	minchanum = change_branch_minimum_change_number_get(cp);
     else
-	min = change_branch_minimum_branch_number_get(cp);
-    interval ip2(min, TRUNK_CHANGE_NUMBER - 1);
+	minchanum = change_branch_minimum_branch_number_get(cp);
+    interval ip2(minchanum, TRUNK_CHANGE_NUMBER - 1);
     interval ip3 = ip2 - ip1;
     assert(!ip3.empty());
 
@@ -93,10 +93,10 @@ change_branch_next_change_number(change::pointer cp, int is_a_change)
 		change_number = ip3.first();
 	    else
 		change_number = ip3.second_last();
-	    min = skip_unlucky(change_number);
-	    if (min == change_number)
+	    minchanum = skip_unlucky(change_number);
+	    if (minchanum == change_number)
 		break;
-	    ip3 -= interval(change_number, min - 1);
+	    ip3 -= interval(change_number, minchanum - 1);
 	}
     }
     trace(("return %ld;\n", change_number));

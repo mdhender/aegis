@@ -1,10 +1,10 @@
 '\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998, 2001, 2002, 2005-2007 Peter Miller
+.\"	Copyright (C) 1991-1993, 1996, 1998, 2001, 2002, 2005-2008 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -74,16 +74,21 @@ The following options are understood:
 .so o_interact.so
 .so o_keep.so
 .so o_list.so
+.TP 8n
+\fB\-New-Change-Undo\fP
+By using this option it is possible to end developemnt of the change,
+and remove the change, all in the one command.  The executing user must
+have both created the change and be the devloper of the change, or must
+be a project administrator.
+(Order is important here, this option mast appear on the command line
+\f[I]after\fP the \fB\-Develop-Begin-Undo\fP option.
 .so o_project.so
 .so o_reason2.so
 .so o_terse.so
 .TP 8n
 \fB-User\fP \fIname\fP
 .br
-This option may be used by project administrators
-to undo the effects of using the same option with the
-.IR aedb (1)
-command.
+Ignored for backwards compatibility.
 .so o_verbose.so
 .so o_wait.so
 .so o__rules.so

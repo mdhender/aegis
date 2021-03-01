@@ -1,22 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//      aegis - project change supervisor
+//      Copyright (C) 2004-2008 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 3 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate existings
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -36,16 +34,16 @@
 static int
 name_has_numeric_suffix(string_ty *name, string_ty **left, long *right)
 {
-    char	    *ep;
+    char            *ep;
 
     ep = name->str_text + name->str_length;
     while (ep > name->str_text && isdigit((unsigned char)ep[-1]))
-	--ep;
+        --ep;
     if (!*ep)
     // still pointing to end of string
-	return 0;
+        return 0;
     if (ep < name->str_text + 2 || !ispunct((unsigned char)ep[-1]))
-	return 0;
+        return 0;
     *left = str_n_from_c(name->str_text, ep - 1 - name->str_text);
     *right = magic_zero_encode(atol(ep));
     return 1;
@@ -55,9 +53,9 @@ name_has_numeric_suffix(string_ty *name, string_ty **left, long *right)
 void
 project_ty::bind_existing()
 {
-    string_ty	    *s;
-    string_ty	    *parent_name;
-    int		    alias_retry_count;
+    string_ty       *s;
+    string_ty       *parent_name;
+    int             alias_retry_count;
 
     //
     // make sure project exists
@@ -73,13 +71,13 @@ project_ty::bind_existing()
     //
     if (!s)
     {
-	s = gonzo_alias_to_actual(name);
-	if (s)
-	{
-	    str_free(name);
-	    name = str_copy(s);
-	    s = gonzo_project_home_path_from_name(name);
-	}
+        s = gonzo_alias_to_actual(name);
+        if (s)
+        {
+            str_free(name);
+            name = str_copy(s);
+            s = gonzo_project_home_path_from_name(name);
+        }
     }
 
     //
@@ -89,40 +87,53 @@ project_ty::bind_existing()
     //
     if (!s && name_has_numeric_suffix(name, &parent_name, &parent_bn))
     {
-	parent = project_alloc(parent_name);
-	parent->bind_existing();
-	pcp = change_alloc(parent, parent_bn);
-	change_bind_existing(pcp);
-	if (!change_was_a_branch(pcp))
-	    change_fatal(pcp, 0, i18n("not a branch"));
+        trace(("mark\n"));
+        project_ty *ppp = project_alloc(parent_name);
+        ppp->bind_existing();
+        int err = project_is_readable(ppp);
+        if (err != 0)
+        {
+            off_limits = true;
+            project_free(ppp);
+            ppp = 0;
+        }
+        else
+        {
+            parent = ppp;
+            ppp = 0;
+            pcp = change_alloc(parent, parent_bn);
+            change_bind_existing(pcp);
+            if (!change_was_a_branch(pcp))
+                change_fatal(pcp, 0, i18n("not a branch"));
 
-	//
-	// rebuild the project name
-	//	...eventually, use the remembered punctuation
-	//
-	str_free(name);
-	name =
-	    str_format
-	    (
-		"%s.%ld",
-		project_name_get(parent)->str_text,
-		magic_zero_decode(parent_bn)
-	    );
+            //
+            // rebuild the project name
+            //  ...eventually, use the remembered punctuation
+            //
+            str_free(name);
+            name =
+                str_format
+                (
+                    "%s.%ld",
+                    project_name_get(parent)->str_text,
+                    magic_zero_decode(parent_bn)
+                );
 
-	changes_path =
-	    str_format
-	    (
-		"%s.branch",
-		parent->change_path_get(parent_bn)->str_text
-	    );
+            changes_path =
+                str_format
+                (
+                    "%s.branch",
+                    parent->change_path_get(parent_bn)->str_text
+                );
 
-        //
-        // This project's user will be the same as the parent's user.
-        //
-        up = project_user(parent);
-        uid = up->get_uid();
-        gid = up->get_gid();
-	return;
+            //
+            // This project's user will be the same as the parent's user.
+            //
+            up = project_user(parent);
+            uid = up->get_uid();
+            gid = up->get_gid();
+            return;
+        }
     }
 
     //
@@ -131,19 +142,19 @@ project_ty::bind_existing()
     //
     if (!s)
     {
-	string_ty	*other;
+        string_ty       *other;
 
-	other = gonzo_alias_to_actual(name);
-	if (other)
-	{
-	    if (++alias_retry_count > 5)
-	    {
-		project_fatal(this, 0, i18n("alias loop detected"));
-	    }
-	    str_free(name);
-	    name = str_copy(other);
-	    goto alias_retry;
-	}
+        other = gonzo_alias_to_actual(name);
+        if (other)
+        {
+            if (++alias_retry_count > 5)
+            {
+                project_fatal(this, 0, i18n("alias loop detected"));
+            }
+            str_free(name);
+            name = str_copy(other);
+            goto alias_retry;
+        }
     }
 
     //
@@ -152,45 +163,45 @@ project_ty::bind_existing()
     //
     if (!s)
     {
-	string_list_ty	wl;
-	string_ty	*best;
-	double		best_weight;
-	size_t          j;
+        string_list_ty  wl;
+        string_ty       *best;
+        double          best_weight;
+        size_t          j;
 
-	gonzo_project_list(&wl);
-	best = 0;
-	best_weight = 0.6;
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-	    double	    w;
+        gonzo_project_list(&wl);
+        best = 0;
+        best_weight = 0.6;
+        for (j = 0; j < wl.nstrings; ++j)
+        {
+            double          w;
 
-	    s = wl.string[j];
-	    w = fstrcmp(name->str_text, s->str_text);
-	    if (w > best_weight)
-	    {
-		best = s;
-		best_weight = w;
-	    }
-	}
-	if (best)
-	{
-	    sub_context_ty  *scp;
+            s = wl.string[j];
+            w = fstrcmp(name->str_text, s->str_text);
+            if (w > best_weight)
+            {
+                best = s;
+                best_weight = w;
+            }
+        }
+        if (best)
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    sub_var_set_string(scp, "Guess", best);
-	    fatal_intl(scp, i18n("no $name project, closest is $guess"));
-	}
-	else
-	{
-	    sub_context_ty  *scp;
+            scp = sub_context_new();
+            sub_var_set_string(scp, "Name", name);
+            sub_var_set_string(scp, "Guess", best);
+            fatal_intl(scp, i18n("no $name project, closest is $guess"));
+        }
+        else
+        {
+            sub_context_ty  *scp;
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    fatal_intl(scp, i18n("no $name project"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
+            scp = sub_context_new();
+            sub_var_set_string(scp, "Name", name);
+            fatal_intl(scp, i18n("no $name project"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
     }
 
     //
@@ -219,9 +230,9 @@ project_ty::bind_existing()
 bool
 project_ty::bind_existing_errok()
 {
-    string_ty	    *s;
-    string_ty	    *parent_name;
-    int		    alias_retry_count;
+    string_ty       *s;
+    string_ty       *parent_name;
+    int             alias_retry_count;
 
     //
     // make sure project exists
@@ -239,51 +250,51 @@ project_ty::bind_existing_errok()
     //
     if (!s && name_has_numeric_suffix(name, &parent_name, &parent_bn))
     {
-	parent = project_alloc(parent_name);
-	if (!parent->bind_existing_errok())
-	{
+        parent = project_alloc(parent_name);
+        if (!parent->bind_existing_errok())
+        {
             project_free(parent);
-	    trace(("return false;\n"));
-	    trace(("}\n"));
-	    return false;
-	}
-	pcp = change_alloc(parent, parent_bn);
-	if (!change_bind_existing_errok(pcp))
-	{
+            trace(("return false;\n"));
+            trace(("}\n"));
+            return false;
+        }
+        pcp = change_alloc(parent, parent_bn);
+        if (!change_bind_existing_errok(pcp))
+        {
             change_free(pcp);
             project_free(parent);
-	    trace(("return false;\n"));
-	    trace(("}\n"));
-	    return false;
-	}
-	if (!change_was_a_branch(pcp))
-	{
+            trace(("return false;\n"));
+            trace(("}\n"));
+            return false;
+        }
+        if (!change_was_a_branch(pcp))
+        {
             change_free(pcp);
             project_free(parent);
-	    trace(("return false;\n"));
-	    trace(("}\n"));
-	    return false;
-	}
+            trace(("return false;\n"));
+            trace(("}\n"));
+            return false;
+        }
 
-	//
-	// rebuild the project name
-	//	...eventually, use the remembered punctuation
-	//
-	str_free(name);
-	name =
-	    str_format
-	    (
-		"%s.%ld",
-		project_name_get(parent)->str_text,
-		magic_zero_decode(parent_bn)
-	    );
+        //
+        // rebuild the project name
+        //      ...eventually, use the remembered punctuation
+        //
+        str_free(name);
+        name =
+            str_format
+            (
+                "%s.%ld",
+                project_name_get(parent)->str_text,
+                magic_zero_decode(parent_bn)
+            );
 
-	changes_path =
-	    str_format
-	    (
-		"%s.branch",
-		parent->change_path_get(parent_bn)->str_text
-	    );
+        changes_path =
+            str_format
+            (
+                "%s.branch",
+                parent->change_path_get(parent_bn)->str_text
+            );
 
         //
         // This project's user will be the same as the parent's user.
@@ -291,9 +302,9 @@ project_ty::bind_existing_errok()
         up = project_user(parent);
         uid = up->get_uid();
         gid = up->get_gid();
-	trace(("return true;\n"));
-	trace(("}\n"));
-	return true;
+        trace(("return true;\n"));
+        trace(("}\n"));
+        return true;
     }
 
     //
@@ -302,21 +313,21 @@ project_ty::bind_existing_errok()
     //
     if (!s)
     {
-	string_ty	*other;
+        string_ty       *other;
 
-	other = gonzo_alias_to_actual(name);
-	if (other)
-	{
-	    if (++alias_retry_count > 5)
-	    {
-		trace(("return false;\n"));
-		trace(("}\n"));
-		return false;
-	    }
-	    str_free(name);
-	    name = str_copy(other);
-	    goto alias_retry;
-	}
+        other = gonzo_alias_to_actual(name);
+        if (other)
+        {
+            if (++alias_retry_count > 5)
+            {
+                trace(("return false;\n"));
+                trace(("}\n"));
+                return false;
+            }
+            str_free(name);
+            name = str_copy(other);
+            goto alias_retry;
+        }
     }
 
     //
@@ -325,9 +336,9 @@ project_ty::bind_existing_errok()
     //
     if (!s)
     {
-	trace(("return false;\n"));
-	trace(("}\n"));
-	return false;
+        trace(("return false;\n"));
+        trace(("}\n"));
+        return false;
     }
 
     //

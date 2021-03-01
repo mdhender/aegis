@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
-//	Copyright (C) 2006 Walter Franzini
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+//	Copyright (C) 2006-2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -23,29 +23,31 @@
 #include <common/ac/unistd.h>
 #include <common/ac/libintl.h>
 
-#include <aegis/aecpu.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/files.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
-#include <libaegis/commit.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
-#include <common/error.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/commit.h>
 #include <libaegis/file.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <common/str_list.h>
+
+#include <aegis/aecpu.h>
 
 
 static void
@@ -81,44 +83,11 @@ copy_file_undo_help(void)
 static void
 copy_file_undo_list(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-
     trace(("copy_file_undo_list()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(copy_file_undo_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		copy_file_undo_usage
-	    );
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, copy_file_undo_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_change_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(copy_file_undo_usage);
+    list_change_files(cid, 0);
     trace(("}\n"));
 }
 
@@ -700,6 +669,8 @@ copy_file_undo_main(void)
 	// See if there are any tests were uncopied by this action.
 	//
 	psrc_data = project_file_find(pp, wl.string[j], view_path_simple);
+        if (!psrc_data)
+            continue;
 	switch (psrc_data->usage)
 	{
 	case file_usage_source:
@@ -773,7 +744,8 @@ copy_file_undo_main(void)
     //
     // Repair symlinks (etc) to the baseline.
     //
-    change_maintain_symlinks_to_baseline(cp, up);
+    bool undoing = true;
+    change_maintain_symlinks_to_baseline(cp, up, undoing);
 
     // remember that we are about to
     bool recent_integration = cp->run_project_file_command_needed();

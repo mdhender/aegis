@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: interface of the change_identifier class
 //
 
 #ifndef LIBAEGIS_CHANGE_IDENTIFIER_H
@@ -94,6 +92,14 @@ public:
 	change_id.command_line_parse(usage);
     }
 
+    /**
+      * The command_line_parse_rest method is used to parse the rest of
+      * the command line.  It will call arglex(), #command_line_parse,
+      * #command_line_check, and generic_argument() to perform this
+      * processing.
+      */
+    void command_line_parse_rest(void (*usage)(void));
+
     bool get_devdir() { return change_id.get_devdir(); }
 
     /**
@@ -123,11 +129,33 @@ public:
       * The get_file_revision is used to determine the path to the given
       * file at the time specified by the change ID.  It must be called
       * <i>after</i> the set_change method has been called.
+      *
+      * @param filename
+      *     the name of the file of interest
+      * @param bad_state
+      *     what to do if the change is not in an appropriate state
       */
     file_revision
     get_file_revision(const nstring &filename, change_functor &bad_state)
     {
 	return change_id.get_file_revision(filename, bad_state);
+    }
+
+    /**
+      * The get_file_revision is used to determine the path to the given
+      * file at the time specified by the change ID.  It must be called
+      * <i>after</i> the set_change method has been called.
+      *
+      * @param src
+      *     The meta data identifying the file (revison data, if set,
+      *     will be ignored)
+      * @param bad_state
+      *     what to do if the change is not in an appropriate state
+      */
+    file_revision
+    get_file_revision(fstate_src_ty *src, change_functor &bad_state)
+    {
+	return change_id.get_file_revision(src, bad_state);
     }
 
     /**
@@ -199,6 +227,16 @@ public:
     {
 	return branch_id.get_up();
     }
+
+    /**
+      * The set_user_by_name method is used to set the user name by
+      * name.  This is useful for the small set of command which accept
+      * a user name on the command line.
+      *
+      * @param login
+      *     The login name of the user.
+      */
+    void set_user_by_name(nstring &login) { branch_id.set_user_by_name(login); }
 
     /**
       * The get_cp method is used to get the change pointer for the

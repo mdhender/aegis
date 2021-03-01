@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
+//	Copyright (C) 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -19,21 +20,22 @@
 
 #include <common/ac/errno.h>
 #include <common/ac/unistd.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
+#include <common/error.h>	// for assert
+#include <common/mem.h>
+#include <common/nstring.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/file.h>
 #include <libaegis/dir_stack.h>
-#include <common/error.h>	// for assert
 #include <libaegis/file.h>
 #include <libaegis/glue.h>
-#include <common/nstring.h>
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/sub.h>
-#include <common/symtab/template.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -218,13 +220,13 @@ try_to_make_symbolic_link_to_baseline(const nstring &dst, const nstring &src)
     int err = glue_symlink(src.c_str(), dst.c_str());
     if (err == 0)
     {
-#ifdef HAVE_LUTIMES
+#ifdef HAVE_LUTIME
         //
         // If possible, set the mtime of the symlink.  It appears that
         // GNU make looks at symlink mod times when figuring out what to
         // build.  Sigh.
         //
-        // Ignore any error returned, it doesn't matter if it cant be
+        // Ignore any error returned, it doesn't matter if it can't be
         // set correctly.
 	//
 	struct utimes utb;
@@ -326,10 +328,10 @@ os_lstat(const nstring &path, struct stat &st)
     if (oret)
     {
 	int errno_old = errno;
-	sub_context_ty *scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path.get_ref());
-	fatal_intl(scp, i18n("stat $filename: $errno"));
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", path);
+	sc.fatal_intl(i18n("stat $filename: $errno"));
 	// NOTREACHED
     }
 }
@@ -571,12 +573,41 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		}
 		else
 		{
-		    sip->up->become_end();
-		    nstring origin(project_file_path(pp, path_rel));
-		    sip->up->become_begin();
-		    assert(!origin.empty());
-		    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
-		    os_symlink_repair(origin.get_ref(), path_abs.get_ref());
+                    switch(p_src->usage)
+                    {
+                    case file_usage_build:
+                        //
+                        // Do not repair links related to build files.
+                        // They should follow the derived_files_* style.
+                        //
+                        break;
+
+                    case file_usage_config:
+                    case file_usage_source:
+                    case file_usage_manual_test:
+                    case file_usage_test:
+#ifndef DEBUG
+                    default:
+#endif
+                        {
+                            sip->up->become_end();
+                            nstring origin(project_file_path(pp, path_rel));
+                            sip->up->become_begin();
+                            assert(!origin.empty());
+                            os_mkdir_between
+                            (
+                                sip->stack.string[0],
+                                path_rel,
+                                02755
+                            );
+                            os_symlink_repair
+                            (
+                                origin.get_ref(),
+                                path_abs.get_ref()
+                            );
+                        }
+                        break;
+                    }
 		}
 		goto done;
 	    }
@@ -588,6 +619,11 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		goto done;
 
 	    case file_status_out_of_date:
+                //
+                // Do not unlink derived file registered into aegis.
+                //
+                if (p_src && p_src->usage == file_usage_build)
+                    goto done;
 		trace(("rm %s\n", path_abs.c_str()));
 		os_unlink(path_abs.get_ref());
 		depth = 666;
@@ -680,6 +716,13 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		)
 		    goto done;
 
+                //
+                // If the file is a registered derived file then we do
+                // not do anything else.
+                //
+                if (p_src->usage == file_usage_build)
+                    goto done;
+
 		//
 		// Not an accurate reflection of the baseline,
 		// get rid of it and start again.
@@ -704,7 +747,25 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		    sip->style->source_file_copy
 		)
 		{
-		    copy_whole_file(origin.get_ref(), path_abs.get_ref(), 1);
+                    //
+                    // This is a bit subtle.  When aecpu or aemtu call
+                    // change_maintain_symlinks_to_baseline they tell
+                    // it that they are undoing, which in turn causes
+                    // the style to be altered to copy source files and
+                    // prevents hard links or symbolic links.  The aecpu
+                    // and aemtu commands DO NOT want to copy mod time
+                    // (cmt) of source files in the baseline, but they
+                    // do want a copy of the file contents to attach
+                    // the alternate mod time to.
+                    //
+                    bool cmt =
+                        (
+                            !sip->style->source_file_copy
+                        &&
+                            !sip->style->derived_file_copy
+                        );
+
+		    copy_whole_file(origin.get_ref(), path_abs.get_ref(), cmt);
 		    int file_mode = 0444;
 		    if (p_src->executable)
 			file_mode |= 0111;
@@ -770,6 +831,12 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		sip->up->become_begin();
 		if (origin.empty())
 		    break;
+
+                //
+                // Do not process derived files registered within Aegis.
+                //
+                if (c_src->usage == file_usage_build)
+                    break;
 
 		os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 		if
@@ -845,6 +912,8 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 	    trace(("project file not at top\n"));
 	    if (p_src->action == file_action_remove)
 		break;
+            if (p_src->usage == file_usage_build)
+                break;
 	    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 
 	    //

@@ -1,0 +1,258 @@
+.\"
+.\" aegis - project change supervisor
+.\" Copyright (C) 2008 Peter Miller
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program. If not, see <http://www.gnu.org/licenses/>.
+.\"
+.\" ------------------------------------------------------------------------
+.PP
+.if n *
+.if t \(bu
+.\" Change 470, 469, 468, 467, 465, 466, 464, 461, 460, 459, 457, 455,
+.\" 454, 453, 450, 440, 442, 439, 438, 422, 436, 435, 429, 434, 289,
+.\" 177, 416, 415, 648, 654, 653, 644, 509, 400, 625, 294, 294, 407,
+.\" 631, 234, 224, 214, 146, 142, 141, 104, 404, 362, 356, 367, 358,
+.\" 337, 599, 597, 299, 292, 587, 281, 583, 580, 276, 601, 266, 572,
+.\" 237, 573, 567, 229, 226, 522, 209, 544, 191, 189, 173, 524, 126,
+.\" 123, 119
+Numerous portability improvements.
+.PP
+.if n *
+.if t \(bu
+.\" Change 452, 433, 247, 154, 539
+Numerous improvements to the history reconstruction code.
+.PP
+.if n *
+.if t \(bu
+.\" Change 447, 431, 425, 423, 132, 663, 613, 513, 501, 634, 635, 611,
+.\" 300, 581, 275, 239, 238, 576, 260, 23, 232, 562, 227, 220, 546, 217,
+.\" 211, 313, 160, 161, 155, 139, 122, 113, 595
+Numerous improvements and bug fixes to the distributed development
+code.  See \f[I]aedist\fP(1), \f[I]aeget\fP(1), \f[I]aetar\fP(1) and
+\f[I]aepatch\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 448
+The site specific architecture information has been split into a
+separate file, maked with an entire-source-hide attribute, so
+that new Aegis-under-Aegis projects don't have such bad
+architecture problems.
+.PP
+.if n *
+.if t \(bu
+.\" Change 430, 105, 618, 164, 230, 548, 550, 196, 167
+The license has been changed to GPLv3.
+.PP
+.if n *
+.if t \(bu
+.\" Change 345
+A bug has been fixed the the change::pconf_get method which
+sometimes caused segfaults.
+.PP
+.if n *
+.if t \(bu
+.\" Change 282
+A bug has been fixed in aeclone which caused aecp -delta to
+segfault when: a change set whith a removed file was cloned, and
+the clone change set subsequently integrated.
+.PP
+.if n *
+.if t \(bu
+.\" Change 264
+The aediff command is now smarter about files which may have
+moved.
+.PP
+.if n *
+.if t \(bu
+.\" Change 101
+A bug has been fixed in the aeannotate command, it no longer segfaults
+for some file histories.
+.PP
+.if n *
+.if t \(bu
+.\" Change 102
+A Vietnamese error mesage translation has been added.
+.PP
+.if n *
+.if t \(bu
+.\" Change 347, 418
+There is a new Portugese (Brazillian) message catalogue translation.
+.PP
+.if n *
+.if t \(bu
+.\" Change 412
+It is now possible to develop begin undo and new change undo in
+a single command.
+.PP
+.if n *
+.if t \(bu
+.\" Change 413
+The \f[I]ael\fP(1) command now understands are much wider range of ways
+to specify changes.
+.PP
+.if n *
+.if t \(bu
+.\" Change 656, 410, 409
+A segfault has been fixed in the use of --delta and --delta-data options.
+.PP
+.if n *
+.if t \(bu
+.\" Change 652
+This change set fix a problem in the \f[I]aesvt\fP(1) checkout command that
+can fail to extract from a gzip compressed archive.
+.PP
+.if n *
+.if t \(bu
+.\" Change 651
+A bug has been fixed in the \f[I]aechown\fP(1) command, to stop a
+segfault when printing some error messages.
+.PP
+.if n *
+.if t \(bu
+.\" Change 516
+There is a new \f[I]aebisect\fP(1) command which helps
+to find project regressions not handled by the test suite.
+.PP
+.if n *
+.if t \(bu
+.\" Change 577, 638, 535, 585, 602, 563, 549, 531
+Many commands now cope with renames in more situations.
+.PP
+.if n *
+.if t \(bu
+.\" Change 318, 346, 633
+A bug has been fixed in \f[I]aeclone\fP(1) which caused \f[I]aecp
+\&\-delta\fP to segfault when a change set whith a removed file was
+cloned, and the clone change set subsequently integrated.
+.PP
+.if n *
+.if t \(bu
+.\" Change 343
+The \f[I]aede-policy\fP(1) manual page has been updated to document the
+aede-policy-line-length file attribute.
+.PP
+.if n *
+.if t \(bu
+.\" Change 144
+A vietnamese translation has been added.
+.PP
+.if n *
+.if t \(bu
+.\" Change 380
+The \f[I]aereport\fP(1) command now understands more ways to specify changes.
+.PP
+.if n *
+.if t \(bu
+.\" Change 368
+There is a new ${path_reduce} substitution which may be used to
+remove redundant elements from path lists, such as used by the
+$PATH environment variable.
+.PP
+.if n *
+.if t \(bu
+.\" Change 366
+When the development directory style required actions to be
+perfomed on the development directory, the obsolete "creating
+symbolic links to baseline" message was produced. This was
+confusing. A more generic message is now used, which is intended
+to be less confusing.
+.PP
+.if n *
+.if t \(bu
+.\" Change 578
+The aecp(1) -delta command now follows the whiteout preference
+when copying a "removed" file.
+.if t \(bu
+.\" Change 297, 321, 320, 317, 316, 315, 312, 313, 311, 293, 309, 303,
+.\" 302, 296, 295, 291, 288, 287, 280, 261
+The test suite now runs much faster.
+.PP
+.if n *
+.if t \(bu
+.\" Change 265
+A bug has been fixed in the \f[I]aedbu\fP(1) command. It no longer
+complains about permissions when the develop_begin_undo_command
+has been set.
+.PP
+.if n *
+.if t \(bu
+.\" Change 216
+A bug has been fixed in the \f[I]aeimport\fP(1) command.  It no longer
+uses the Attic portion of filenames when populating the history
+directory tree.
+.PP
+.if n *
+.if t \(bu
+.\" Change 201
+The change details listing now prints comments in a wide column
+when the comments are lengthy.
+.PP
+.if n *
+.if t \(bu
+.\" Change 197
+There is a new $Active_Directory substitution, used to obtain
+the development directory, or the integration directory,
+depending on the change state. This is rather like the default
+behaviour of the \f[I]aecd\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" Change 192
+There is a new ${project version} substitution.
+.PP
+.if n *
+.if t \(bu
+.\" Change 178
+The commands run by aeipass are now accompanied by more file
+name information, so that you can know which source file
+corresponds to which UUID history file, if there is a failure in
+the history commands.
+.PP
+.if n *
+.if t \(bu
+.\" Change 157
+The \f[I]aeca\fP(1) command now checks for and discards duplicate
+architecture names. This fixes a bug with unsatifiable
+architecture dependencies.
+.PP
+.if n *
+.if t \(bu
+.\" Change 152
+The \f[I]aeb\fP(1) command has been improved, it no longer keeps running
+the project_file_comand over and over again.
+.PP
+.if n *
+.if t \(bu
+.\" Change 150
+A bug has been fixed in the \f[I]aenf\fP(1) command; it now preserves
+existing file contents if new files already exist in the
+development directory.
+.PP
+.if n *
+.if t \(bu
+.\" Change 110
+A bug has been fixed in the "aet -regression" command, it no
+longer reports free()ing a non-existent string.
+.\" XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+.PP
+.if n *
+.if t \(bu
+.\" Change 109
+A bug has been fixed in the \f[I]aed\fP(1) command, it no longer reports
+a bug when a cross branch merege is attempted for a file
+independently created in both branches.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.23

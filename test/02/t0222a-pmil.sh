@@ -1,11 +1,11 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006, 2007 Peter Miller
+#	Copyright (C) 2006-2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the ae-repo-ci functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -143,7 +141,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 147"
+activity="create test directory 144"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -168,7 +166,7 @@ export LANG
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 172"
+activity="new project 169"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -176,7 +174,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="project attributes 180"
+activity="project attributes 177"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -189,7 +187,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 193"
+activity="staff 190"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -197,7 +195,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 201"
+activity="new change 198"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -207,11 +205,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 211"
+activity="develop begin 208"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 215"
+activity="new file 212"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred/wilma \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -238,15 +236,15 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/test.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="develop end 242"
+activity="develop end 239"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 246"
+activity="integrate begin 243"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 250"
+activity="integrate pass 247"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -254,7 +252,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # Now we have to create the svn repository
 #
-activity="svnadmin create 258"
+activity="svnadmin create 255"
 svnadmin create --fs-type=fsfs $work/svnroot
 if test $? -ne 0 ; then no_result; fi
 
@@ -265,7 +263,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # Now we can test the ae-repo-ci command, to commit the Aegis change into svn.
 #
-activity="ae-repo-ci one 269"
+activity="ae-repo-ci one 266"
 $bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
     -c 10 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
@@ -277,7 +275,7 @@ test -f $work/svnroot/db/revs/2 || fail
 #
 # second change
 #
-activity="new change 281"
+activity="new change 278"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -286,54 +284,42 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 290"
+activity="develop begin 287"
 $bin/aegis -db 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="copy file 294"
+activity="copy file 291"
 $bin/aegis -cp $work/test.C002/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo second > $work/test.C002/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="copy file 301"
+activity="copy file 298"
 $bin/aegis -cp $work/test.C002/fred/wilma -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo third > $work/test.C002/fred/wilma
 if test $? -ne 0 ; then no_result; fi
 
-activity="develop end 308"
+activity="develop end 305"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 312"
+activity="integrate begin 309"
 $bin/aegis -ib 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 316"
+activity="integrate pass 313"
 $bin/aegis -ipass -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # ------------------------------------------------------------------------
 #
-# run the ae-repo-ci command again
-#
-activity="ae-repo-ci two 324"
-$bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
-    -c 2 > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
-
-test -f $work/svnroot/db/revs/3 || fail
-
-# --------------------------------------------------------------------------
-
-#
 # third change
 # (rename and remove)
 #
-activity="new change 337"
+activity="new change 322"
 cat > caf << 'fubar'
 brief_description = "the third change";
 cause = internal_enhancement;
@@ -342,30 +328,30 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 3 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 346"
+activity="develop begin 331"
 $bin/aegis -db 3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="move file 350"
+activity="move file 335"
 $bin/aegis -mv $work/test.C003/barney $work/test.C003/rubble -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo third > $work/test.C003/rubble
 if test $? -ne 0 ; then no_result; fi
 
-activity="remove file 357"
+activity="remove file 342"
 $bin/aegis -rm $work/test.C003/fred/wilma -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 361"
+activity="develop end 346"
 $bin/aegis -de 3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 365"
+activity="integrate begin 350"
 $bin/aegis -ib 3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 369"
+activity="integrate pass 354"
 $bin/aegis -ipass -c 3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -373,12 +359,12 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # run the ae-repo-ci command again
 #
-activity="ae-repo-ci three 377"
+activity="ae-repo-ci three 362"
 $bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
     -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-test -f $work/svnroot/db/revs/4 || fail
+test -f $work/svnroot/db/revs/3 || fail
 
 #
 # Only definite negatives are possible.

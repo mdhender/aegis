@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,16 +13,24 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/string.h>
+
 #include <common/arglex.h>
+#include <common/trace.h>
 #include <libaegis/sub/functor/list.h>
 
 
 sub_functor_list::~sub_functor_list()
 {
+    clear();
+    delete [] list;
+    list = 0;
+    length = 0;
+    maximum = 0;
 }
 
 
@@ -59,6 +67,7 @@ sub_functor_list::match(const nstring &name, sub_functor_list &result)
         sub_functor::pointer sfp = list[j];
         if (arglex_compare(sfp->name_get().c_str(), name.c_str(), 0))
         {
+            trace(("hit \"%s\"\n", sfp->name_get().c_str()));
             if (sfp->override())
                 result.clear();
             result.push_back(sfp);
@@ -80,6 +89,7 @@ sub_functor_list::clear()
 
 sub_functor::pointer
 sub_functor_list::get(size_t n)
+    const
 {
     if (n >= length)
         return sub_functor::pointer();
@@ -89,11 +99,12 @@ sub_functor_list::get(size_t n)
 
 sub_functor::pointer
 sub_functor_list::find(const nstring &name)
+    const
 {
     for (size_t j = 0; j < length; ++j)
     {
         sub_functor::pointer sfp = list[j];
-        if (name == sfp->name_get())
+        if (0 == strcasecmp(name.c_str(), sfp->name_get().c_str()))
             return sfp;
     }
     return sub_functor::pointer();

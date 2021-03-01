@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
-//	Copyright (C) 2006 Walter Franzini
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+//	Copyright (C) 2006, 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -23,29 +23,32 @@
 #include <common/ac/time.h>
 #include <common/ac/unistd.h>
 
-#include <aegis/aed.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/files.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
-#include <common/error.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <common/str_list.h>
+
+#include <aegis/aed.h>
+
 
 #define NOT_SET (-1)
 
@@ -78,45 +81,11 @@ difference_help(void)
 static void
 difference_list(void)
 {
-    string_ty       *project_name;
-    long            change_number;
-
     trace(("difference_list()\n{\n"));
-    project_name = 0;
-    change_number = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(difference_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		difference_usage
-	    );
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, difference_usage);
-	    continue;
-	}
-	arglex();
-    }
-
-    list_change_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(difference_usage);
+    list_change_files(cid, 0);
     trace(("}\n"));
 }
 
@@ -420,8 +389,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	fstate_src_ty   *src2_data;
 	string_ty       *original;
 	string_ty       *most_recent;
-	string_ty       *input;
-	string_ty       *output;
+	string_ty       *inp;
+	string_ty       *output_filename;
 	int             original_unlink;
 	string_ty       *s1;
 
@@ -431,22 +400,22 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	src2_data = change_file_find(acp, s1, view_path_first);
 	assert(src2_data);
 
-	most_recent = change_file_path(acp, s1);
+	most_recent = change_file_path(acp, src1_data);
 	assert(most_recent);
 	if (change_has_merge_command(cp))
 	{
-	    output = change_file_path(cp, s1);
-	    assert(output);
-	    input = str_format("%s,B", output->str_text);
+	    output_filename = change_file_path(cp, src1_data);
+	    assert(output_filename);
+	    inp = str_format("%s,B", output_filename->str_text);
             user_ty::become scoped(up);
-	    os_rename(output, input);
-            undo_rename(input, output);
+	    os_rename(output_filename, inp);
+            undo_rename(inp, output_filename);
         }
 	else
 	{
-	    input = change_file_path(cp, s1);
-	    assert(input);
-	    output = str_format("%s,D", input->str_text);
+	    inp = change_file_path(cp, src1_data);
+	    assert(inp);
+	    output_filename = str_format("%s,D", inp->str_text);
 	}
 	if (change_file_up_to_date(pp2, src1_data))
 	{
@@ -455,7 +424,7 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	    // common ancestor is the baseline
 	    //
 	    trace(("project file path %s\n", s1->str_text));
-	    original = project_file_path(pp, s1);
+	    original = project_file_path(pp, src1_data);
 	    assert(original);
 	    original_unlink = 0;
 	}
@@ -489,11 +458,11 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		up,
 		original,
 		most_recent,
-		input,
-		output
+		inp,
+		output_filename
 	    );
             user_ty::become scoped(up);
-            undo_rename_cancel(input, output);
+            undo_rename_cancel(inp, output_filename);
 	}
 	else
 	{
@@ -503,8 +472,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		up,
 		original,
 		most_recent,
-		input,
-		output
+		inp,
+		output_filename
 	    );
 	}
 
@@ -529,8 +498,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 
 	str_free(original);
 	str_free(most_recent);
-	str_free(input);
-	str_free(output);
+	str_free(inp);
+	str_free(output_filename);
     }
 
     //
@@ -1321,7 +1290,7 @@ difference_main(void)
 	    //
 	    if (change_has_merge_command(cp))
 	    {
-		outname = change_file_path(cp, s1);
+		outname = change_file_path(cp, src1_data);
 		trace_string(outname->str_text);
 		curfile = str_format("%s,B", outname->str_text);
 		trace_string(curfile->str_text);
@@ -1331,7 +1300,7 @@ difference_main(void)
 	    }
 	    else
 	    {
-		curfile = change_file_path(cp, s1);
+		curfile = change_file_path(cp, src1_data);
 		trace_string(curfile->str_text);
 		outname = str_format("%s,D", curfile->str_text);
 		trace_string(outname->str_text);
@@ -1592,6 +1561,7 @@ difference_main(void)
 	    if (!src1_data)
 		this_is_a_bug();
 	    trace(("src1_data = %08lX\n", (long)src1_data));
+            trace(("file_name = \"%s\"\n", src1_data->file_name->str_text));
 	    trace(("action = %s\n", file_action_ename(src1_data->action)));
 	    trace(("usage = %s\n", file_usage_ename(src1_data->usage)));
 
@@ -1604,6 +1574,8 @@ difference_main(void)
 	    {
 		trace(("action2 = %s\n", file_action_ename(src2_data->action)));
 		trace(("usage2 = %s\n", file_usage_ename(src2_data->usage)));
+                trace(("file_name2 = \"%s\";\n",
+                       src2_data->file_name->str_text));
 	    }
 
             //
@@ -1677,7 +1649,7 @@ difference_main(void)
 	    //
 	    // build various paths
 	    //
-	    path = change_file_path(cp, s1);
+	    path = change_file_path(cp, src1_data);
 	    assert(path);
 	    trace(("change file path \"%s\"\n", path->str_text));
 	    path_d = str_format("%s,D", path->str_text);
@@ -1854,7 +1826,17 @@ difference_main(void)
 		    if (src2_data)
 		    {
 			trace(("project file path %s\n", s1->str_text));
-			original = project_file_path(pp2bl, s1);
+                        //
+                        // Use src2_data to handle correctly the case
+                        // of a renamed file.  The UUID, if any, is
+                        // the same and the file name is the right one
+                        // (src1_data->move).
+                        //
+                        // If the file is simply removed everything is
+                        // ok (same name and same UUID).
+                        //
+                        //
+			original = project_file_path(pp2bl, src2_data);
 
 			//
 			// The following code is needed to make it
@@ -1886,7 +1868,17 @@ difference_main(void)
 			change_file_exists(cp, src1_data->move)
 		    )
 		    {
-			input_file_name = change_file_path(cp, src1_data->move);
+                        //
+                        // Use src2_data to handle correctly the case
+                        // of a renamed file.  The UUID, if any, is
+                        // the same and the file name is the right one
+                        // (src1_data->move).
+                        //
+                        // If the file is simply removed everything is
+                        // ok (same name and same UUID).
+                        //
+                        assert(src2_data);
+			input_file_name = change_file_path(cp, src2_data);
 			assert(input_file_name);
 		    }
 		    else
@@ -1966,7 +1958,7 @@ difference_main(void)
 
 		    trace(("project file path \"%s\"\n", s1->str_text));
 		    int org_unlink = 0;
-		    string_ty *original = project_file_path(pp2bl, s1);
+		    string_ty *original = project_file_path(pp2bl, src1_data);
 		    trace_string(original->str_text);
 
 		    //

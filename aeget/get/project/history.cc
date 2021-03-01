@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -20,15 +20,15 @@
 #include <common/ac/stdio.h>
 
 #include <common/error.h> // for assert
-#include <libaegis/change/branch.h>
 #include <libaegis/change.h>
+#include <libaegis/change/branch.h>
 #include <libaegis/cstate.h>
+#include <libaegis/emit/brief_descri.h>
+#include <libaegis/emit/project.h>
+#include <libaegis/http.h>
 #include <libaegis/project.h>
 
-#include <aeget/emit/brief_descri.h>
-#include <aeget/emit/project.h>
 #include <aeget/get/project/history.h>
-#include <aeget/http.h>
 
 
 void
@@ -67,7 +67,8 @@ get_project_history(project_ty *pp, string_ty *, string_list_ty *)
     if (!proj_cstate_data->branch->history)
     {
 	proj_cstate_data->branch->history =
-	    (cstate_branch_history_list_ty *)cstate_branch_history_type.alloc();
+	    (cstate_branch_history_list_ty *)
+            cstate_branch_history_list_type.alloc();
     }
     long rownum = 0;
     for (size_t j = 0; j < proj_cstate_data->branch->history->length; ++j)

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -26,7 +26,8 @@
 
 
 void
-change_maintain_symlinks_to_baseline(change::pointer cp, user_ty::pointer up)
+change_maintain_symlinks_to_baseline(change::pointer cp, user_ty::pointer up,
+    bool undoing)
 {
     trace(("change_maintain_symlinks_to_baseline()\n{\n"));
     assert(cp->is_being_developed());
@@ -39,6 +40,15 @@ change_maintain_symlinks_to_baseline(change::pointer cp, user_ty::pointer up)
 	style.derived_file_link = false;
 	style.derived_file_symlink = false;
 	style.derived_file_copy = false;
+    }
+    if (undoing && (style.source_file_link || style.source_file_symlink))
+    {
+	style.derived_file_link = false;
+	style.derived_file_symlink = false;
+	style.derived_file_copy = false;
+        style.source_file_link = false;
+        style.source_file_symlink = false;
+        style.source_file_copy = true;
     }
     if
     (

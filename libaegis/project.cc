@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2007 Peter Miller
+//	Copyright (C) 1991-2008 Peter Miller
+//      Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,8 +17,6 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: functions to manipulate project state data
-//
 
 #include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
@@ -26,6 +25,7 @@
 
 #include <common/error.h>
 #include <common/fstrcmp.h>
+#include <common/itab.h>
 #include <common/mem.h>
 #include <common/skip_unlucky.h>
 #include <common/str_list.h>
@@ -437,6 +437,8 @@ project_ty::~project_ty()
 	str_free(baseline_path_unresolved);
     if (baseline_path)
 	str_free(baseline_path);
+    if (change2time_stp)
+        itab_free(change2time_stp);
     if (history_path)
 	str_free(history_path);
     if (info_path)
@@ -471,8 +473,10 @@ project_ty::project_ty(string_ty *s) :
     uid(-1),
     gid(-1),
     parent(0),
-    parent_bn(0)
+    parent_bn(0),
+    off_limits(false)
 {
+    change2time_stp = itab_alloc();
     for (size_t j = 0; j < SIZEOF(file_list); ++j)
 	file_list[j] = 0;
     for (size_t k = 0; k < SIZEOF(file_by_uuid); ++k)
@@ -958,7 +962,7 @@ project_error(project_ty *pp, sub_context_ty *scp, const char *s)
     // pass the message to the error function
     //
     // re-use substitution context
-    sub_var_set_string(scp, "Message", msg);
+    sub_var_set_string(scp, "MeSsaGe", msg);
     str_free(msg);
     subst_intl_project(scp, pp);
     error_intl(scp, i18n("project \"$project\": $message"));
@@ -992,7 +996,7 @@ project_fatal(project_ty *pp, sub_context_ty *scp, const char *s)
     // pass the message to the error function
     //
     // re-use substitution context
-    sub_var_set_string(scp, "Message", msg);
+    sub_var_set_string(scp, "MeSsaGe", msg);
     str_free(msg);
     subst_intl_project(scp, pp);
     fatal_intl(scp, i18n("project \"$project\": $message"));
@@ -1026,7 +1030,7 @@ project_verbose(project_ty *pp, sub_context_ty *scp, const char *s)
     // pass the message to the error function
     //
     // re-use the substitution context
-    sub_var_set_string(scp, "Message", msg);
+    sub_var_set_string(scp, "MeSsaGe", msg);
     str_free(msg);
     subst_intl_project(scp, pp);
     verbose_intl(scp, i18n("project \"$project\": $message"));
@@ -1193,14 +1197,13 @@ project_become_undo(project_ty *pp)
 int
 project_is_readable(project_ty *pp)
 {
-    string_ty	    *s;
-    int		    err;
-
+    trace(("%s\n", __PRETTY_FUNCTION__));
     pp = pp->trunk_get();
-    s = pp->pstate_path_get();
+    string_ty *s = pp->pstate_path_get();
     os_become_orig();
-    err = os_readable(s);
+    int err = os_readable(s);
     os_become_undo();
+    trace(("return %d\n", err));
     return err;
 }
 

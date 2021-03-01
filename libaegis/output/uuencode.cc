@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller
+//	Copyright (C) 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate uuencodes
+//	along with this program; if not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -28,7 +26,7 @@ static char etab[] =
            "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
 
 
-output_uuencode_ty::~output_uuencode_ty()
+output_uuencode::~output_uuencode()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -62,15 +60,11 @@ output_uuencode_ty::~output_uuencode_ty()
 	}
 	deeper->fputs("`\nend\n");
     }
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-output_uuencode_ty::output_uuencode_ty(output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+output_uuencode::output_uuencode(const output::pointer &arg) :
+    deeper(arg),
     residual_value(0),
     residual_bits(0),
     opos(1), // The length character
@@ -83,8 +77,8 @@ output_uuencode_ty::output_uuencode_ty(output_ty *arg1, bool arg2) :
     // Figure out what to call ourself,
     // discarding any ".uu*" suffix.
     //
-    string_ty *fn = deeper->filename();
-    const char *cp1 = fn->str_text;
+    nstring fn = deeper->filename();
+    const char *cp1 = fn.c_str();
     const char *cp2 = strrchr(cp1, '/');
     if (cp2)
 	++cp2;
@@ -94,12 +88,19 @@ output_uuencode_ty::output_uuencode_ty(output_ty *arg1, bool arg2) :
     if (cp3)
 	file_name = nstring(cp1, cp3 - cp1);
     else
-	file_name = nstring(str_copy(fn));
+	file_name = fn;
+}
+
+
+output::pointer
+output_uuencode::create(const output::pointer &arg)
+{
+    return pointer(new output_uuencode(arg));
 }
 
 
 void
-output_uuencode_ty::write_inner(const void *p, size_t len)
+output_uuencode::write_inner(const void *p, size_t len)
 {
     if (!begun)
     {
@@ -140,16 +141,16 @@ output_uuencode_ty::write_inner(const void *p, size_t len)
 }
 
 
-string_ty *
-output_uuencode_ty::filename()
+nstring
+output_uuencode::filename()
     const
 {
-    return file_name.get_ref();
+    return file_name;
 }
 
 
 long
-output_uuencode_ty::ftell_inner()
+output_uuencode::ftell_inner()
     const
 {
     return pos;
@@ -157,7 +158,7 @@ output_uuencode_ty::ftell_inner()
 
 
 int
-output_uuencode_ty::page_width()
+output_uuencode::page_width()
     const
 {
     return 80;
@@ -165,7 +166,7 @@ output_uuencode_ty::page_width()
 
 
 int
-output_uuencode_ty::page_length()
+output_uuencode::page_length()
     const
 {
     return 66;
@@ -173,7 +174,7 @@ output_uuencode_ty::page_length()
 
 
 void
-output_uuencode_ty::end_of_line_inner()
+output_uuencode::end_of_line_inner()
 {
     if (!bol)
 	fputc('\n');
@@ -181,7 +182,7 @@ output_uuencode_ty::end_of_line_inner()
 
 
 const char *
-output_uuencode_ty::type_name()
+output_uuencode::type_name()
     const
 {
     return "uuencode";

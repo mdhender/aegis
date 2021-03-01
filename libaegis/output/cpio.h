@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 1999, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aedist/output/cpio.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDIST_OUTPUT_CPIO_H
@@ -28,14 +26,18 @@
 
 struct string_ty; // forward
 
-class output_cpio_ty:
-    public output_ty
+/**
+  * The output_cpio class is used to represent a container class which
+  * produces cpio(7) fomatted output streams.
+  */
+class output_cpio:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_cpio_ty();
+    virtual ~output_cpio();
 
     /**
       * The constructor.
@@ -46,7 +48,7 @@ public:
       * \param mtime
       *     The time stamp to attach to all archive members
       */
-    output_cpio_ty(output_ty *deeper, time_t mtime);
+    output_cpio(const output::pointer &deeper, time_t mtime);
 
     /**
       * The child method is used to create a child archive.
@@ -57,10 +59,11 @@ public:
       *     The length of the archive.  Use -1 if you don't know and it
       *     will be stached into memory until the length is known.
       */
-    output_ty *child(const nstring &name, long len);
+    output::pointer child(const nstring &name, long len);
 
+protected:
     // See base class for documentation.
-    string_ty *filename() const ;
+    nstring filename() const ;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -79,7 +82,7 @@ private:
       * The deeper instance variable is used to remember the underlying
       * output to which the CPIO archive is to be written.
       */
-    output_ty *deeper;
+    output::pointer deeper;
 
     /**
       * The mtime instance variable is used to remember the time to
@@ -90,17 +93,17 @@ private:
     /**
       * The default constructor.
       */
-    output_cpio_ty();
+    output_cpio();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_cpio_ty(const output_cpio_ty &);
+    output_cpio(const output_cpio &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_cpio_ty &operator=(const output_cpio_ty &);
+    output_cpio &operator=(const output_cpio &);
 };
 
 #endif // AEDIST_OUTPUT_CPIO_H

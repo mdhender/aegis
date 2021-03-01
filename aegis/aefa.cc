@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -370,7 +370,7 @@ file_attributes_main(void)
     change::pointer cp;
     user_ty::pointer up;
     edit_ty	    edit;
-    string_ty	    *input;
+    string_ty	    *inp;
     string_ty	    *filename;
     fstate_src_ty   *src;
 
@@ -380,7 +380,7 @@ file_attributes_main(void)
     change_number = 0;
     edit = edit_not_set;
     fattr_data = 0;
-    input = 0;
+    inp = 0;
     filename = 0;
     nstring_list name_value_pairs;
     while (arglex_token != arglex_token_eoln)
@@ -411,7 +411,7 @@ file_attributes_main(void)
 	    break;
 
 	case arglex_token_file:
-	    if (input)
+	    if (inp)
 		duplicate_option(file_attributes_usage);
 	    switch (arglex())
 	    {
@@ -420,11 +420,11 @@ file_attributes_main(void)
 		// NOTREACHED
 
 	    case arglex_token_string:
-		input = str_from_c(arglex_value.alv_string);
+		inp = str_from_c(arglex_value.alv_string);
 		break;
 
 	    case arglex_token_stdio:
-		input = str_from_c("");
+		inp = str_from_c("");
 		break;
 	    }
 	    break;
@@ -483,10 +483,10 @@ file_attributes_main(void)
 	error_intl(0, i18n("no file names"));
 	file_attributes_usage();
     }
-    if (input)
+    if (inp)
     {
 	os_become_orig();
-	fattr_data = fattr_read_file(input);
+	fattr_data = fattr_read_file(inp);
 	os_become_undo();
 	assert(fattr_data);
     }

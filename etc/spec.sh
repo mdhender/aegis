@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999-2007 Peter Miller
-#	Copyright (C) 2006, 2007 Walter Franzini
+#	Copyright (C) 1997, 1999-2008 Peter Miller
+#	Copyright (C) 2006-2008 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -160,7 +160,7 @@ do
 
 	case $file in
 
-	aefp/* | etc/* | common/* | find_sizes/* | fmtgen/* | \
+	aefp/* | etc/* | common/* | fmtgen/* | \
 	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* | \
 	aemanifest/* | aemakefile/* )
 		;;
@@ -265,7 +265,7 @@ done
 for file in $files_rx
 do
 	case $file in
-	*/bin/aegis | */bin/aeimport)
+	*/bin/aegis | */bin/aeimport | */bin/aelock)
 		echo "%attr(4755,root,bin) $file"
 		;;
 	*)

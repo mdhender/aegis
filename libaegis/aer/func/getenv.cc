@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1997, 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -98,8 +98,8 @@ rpt_func_getenv::run(const rpt_expr::pointer &ep, size_t,
     }
 
     //
-    // Scan the string and try to make a time out of it.
-    // It is an error if this can't be done.
+    // Scan the string and try to retrieve its content as an envar.
+    // It is not an error if this can't be done.
     //
     nstring s(rvsp->query());
     const char *cp = getenv(s.c_str());
@@ -109,5 +109,5 @@ rpt_func_getenv::run(const rpt_expr::pointer &ep, size_t,
     //
     // build the return value
     //
-    return rpt_value_string::create(s);
+    return rpt_value_string::create(cp);
 }

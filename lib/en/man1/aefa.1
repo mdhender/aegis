@@ -1,10 +1,10 @@
 '\" t
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2004, 2006, 2007 Peter Miller
+.\"     Copyright (C) 2004, 2006-2008 Peter Miller
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
 .\"     it under the terms of the GNU General Public License as published by
-.\"     the Free Software Foundation; either version 2 of the License, or
+.\"     the Free Software Foundation; either version 3 of the License, or
 .\"     (at your option) any later version.
 .\"
 .\"     This program is distributed in the hope that it will be useful,
@@ -46,6 +46,11 @@
 ]
 \fIname\fP\fB=\fP\fIvalue\fP
 .I filename
+.br
+.B \*(n)
+.B -File_ATtributes
+.B -UUID \f[I]number\f[P]
+.B -File \f[I]filename\f[P]
 .br
 .B \*(n)
 .B -File_ATtributes
@@ -112,6 +117,13 @@ aede-policy-line-length
 integer.
 The maximum allowed line length in the \fIline-length\fP policy of the
 \fIaede-policy\fP(1) command; infinity if 0.
+.TP 8n
+local-source-hide
+boolean.  If true, this file is not included by \fIaedist\fP
+change sets.  The \fIaetar\fP and \fIaerevml\fP commands work similarly.
+Change sets which contain \f[I]only\fP thee files will be omitted
+from the \f[I]aedist \-inventory\fP output.
+Think of it as a "local only" flag.
 .SH OPTIONS
 The following options are understood:
 .so o_baserel.so
@@ -120,6 +132,8 @@ The following options are understood:
 .so o_list.so
 .so o_project.so
 .so o_terse.so
+\f[B]-Universal_Unique_IDentifier\f[P] \f[I]number\f[P]
+This option may be used to set the UUID of a file.
 .so o_verbose.so
 .so o_wait.so
 .so o__rules.so

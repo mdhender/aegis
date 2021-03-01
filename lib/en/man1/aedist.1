@@ -1,10 +1,11 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001-2007 Peter Miller
+.\"	Copyright (C) 1999, 2001-2008 Peter Miller
+.\"	Copyright (C) 2007 Walter Franzini
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -53,6 +54,18 @@ aedist \- remotely distribute a change
 [
 .IR option \&...
 ] -f \fIURL\fP
+.br
+.B \*(n)
+.B -Inventory
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -ARChive
+[
+.IR option \&...
+]
 .br
 .B \*(n)
 .B -List
@@ -134,7 +147,7 @@ outgoing change set.
 .TP 8n
 \fB\-No_Ignore_UUID\fP
 This option forces the \fIaedist\fP command to use the outgoing change
-set's UUID information.  This is the default (unless the compaitibility
+set's UUID information.  This is the default (unless the compatibility
 option will to avoid attributes).
 .so o_mime_heade.so
 .TP 8n
@@ -307,7 +320,7 @@ aedist -rec -f \e
 .RE
 If this completes successfully (and it is possible it won't,
 either because of trojan warnings, or some conflict between local
-changes and the imcoming remote changes), and your project has its
+changes and the incoming remote changes), and your project has its
 \fIdevelop_\%end_\%action\fP set to \fIgoto_\%awaiting_\%integration\fP,
 the change will be integrated using a command such as:
 .RS
@@ -331,13 +344,13 @@ This option may be used to explicitly list change sets to be downloaded
 and unpacked, to the exclusion of all others.  This option may be used
 more than once.
 .TP 8n
-\fB\-EXclude_version\fP \fIpattern\fP
+\fB\-EXclude_VERsion\fP \fIpattern\fP
 This option may be used to explicitly exclude some change set from
 being downloaded and unpacked.  The \fIpattern\fP is matched against
 the version as displayed in the inventory.  This option may be used
 more than once.
 .TP 8n
-\fB\-INclude_Version\fP \fIpattern\fP
+\fB\-INclude_VERsion\fP \fIpattern\fP
 This option may be used to explicitly list change sets to be downloaded
 and unpacked, to the exclusion of all others.  The \fIpattern\fP is
 matched against the version as displayed in the inventory.  This
@@ -346,7 +359,7 @@ option may be used more than once.
 .TP 8n
 .B \-MAXimum
 This option may be used to download as many changes as possible by
-exclusing the maximum number of local changes sets, by excluding both
+excluding the maximum number of local changes sets, by excluding both
 local change sets UUIDs (the default) but also excluding UUIDs mentioned
 in change "original-uuid" attributes.
 .TP 8n
@@ -363,11 +376,15 @@ sets should stop after the first failure.  Defaults to the user's
 more information.
 .so o_project.so
 .TP 8n
-\-Trojan
+.B -Trojan
 This option is passed to any \fIaedist\fP(1) commands spawned by this command.
 .TP 8n
-\-No_Trojan
+.B -No_Trojan
 This option is passed to any \fIaedist\fP(1) commands spawned by this command.
+.TP 8n
+.B -Not_Compatibility
+This option must be used when using \f[I]aedist --replay\f[P] against
+a file based inventory.
 .SH MISSING
 If you want to see the change sets that \fIaedist \-replay\fP may
 download before it goes ahead and does it, you can use a command such as:
@@ -376,7 +393,7 @@ download before it goes ahead and does it, you can use a command such as:
 aedist --missing -f aegis.sf.net
 .ft R
 .RE
-In particular, this allows you to select apropriate UUIDs for the
+In particular, this allows you to select appropriate UUIDs for the
 \fIaedist \-replay \-exclude\fP or \fI\-no-exclude\fP options.
 .SS Options
 The following options are understood by this variant:
@@ -390,7 +407,7 @@ This option may be used to explicitly list change sets to be listed,
 to the exclusion of all others.  This option may be used more than
 once.
 .TP 8n
-\fB\-EXclude_version\fP \fIpattern\fP
+\fB\-EXclude_VERsion\fP \fIpattern\fP
 This option may be used to explicitly exclude some change set from
 being listed.  The \fIpattern\fP is matched against the version as
 displayed in the inventory.  This option may be used more than once.
@@ -403,7 +420,7 @@ more than once.
 .TP 8n
 .B \-MAXimum
 This option may be used to download as many changes as possible by
-exclusing the maximum number of local changes sets, by excluding both
+excluding the maximum number of local changes sets, by excluding both
 local change sets UUIDs (the default) but also excluding UUIDs mentioned
 in change "original-uuid" attributes.
 .SH PENDING
@@ -415,7 +432,7 @@ aedist --pending -f aegis.sf.net
 .ft R
 .RE
 .SS Options
-The following options are understood by this varian:
+The following options are understood by this variant:
 \fB\-EXclude_UUID\fP \fIUUID\fP
 This option may be used to exclude some local change sets from being
 listed.  This option may be used more than once.
@@ -425,16 +442,87 @@ This option may be used to explicitly list local change sets to be listed,
 to the exclusion of all others.  This option may be used more than
 once.
 .TP 8n
-\fB\-EXclude_version\fP \fIpattern\fP
+\fB\-EXclude_VERsion\fP \fIpattern\fP
 This option may be used to explicitly exclude some local change set from
 being listed.  The \fIpattern\fP is matched against the version as
 displayed in the inventory.  This option may be used more than once.
 .TP 8n
-\fB\-INclude_Version\fP \fIpattern\fP
+\fB\-INclude_VERsion\fP \fIpattern\fP
 This option may be used to explicitly list local change sets to be listed,
 to the exclusion of all others.  The \fIpattern\fP is matched against
 the version as displayed in the inventory.  This option may be used
 more than once.
+.SH INVENTORY
+The inventory variant can be used as an alternative to aeget to
+generate the inventory used by the replay, missing and pending
+variants.  The idea is to run the inventory variant on the development
+machine and then upload its output to the public repository.
+In order to generate the inventory you can use a command such as:
+.RS
+.ft R
+aedist --inventory -proj project > inventory.html
+.ft R
+.RE
+.SS Options
+The following options are understood by this variant:
+.TP 8n
+\f[B]-AEGET\f[P]
+This option is used by aeget to require the original
+\f[I]aeget\f[P](1) behavior.
+.TP 8n
+\f[B]-All\f[P]
+This option is used to require the inclusion of the UUIDs contained in
+the original-UUID attribute of each change.
+.TP 8n
+\f[B]\-EXclude_Version\f[P] \f[I]pattern\f[P]
+This option may be used to explicitly exclude some change set to
+be added to the inventory file.  The \f[I]pattern\f[P] is matched against
+the version as displayed in the inventory.  This option may be used
+more than once.
+.TP 8n
+\f[B]\-INclude_Version\f[P] \f[I]pattern\f[P]
+This option may be used to explicitly list change sets to be added
+to the the inventory file, to the exclusion of all others.  The
+\f[I]pattern\f[P] is matched against the version as displayed in the
+inventory.  This option may be used more than once.
+.TP 8n
+\f[B]-path_prefix_add\f[P]
+This option is used to add a path prefix to the URLs generated in the
+inventory.
+.so o_project.so
+.SH ARCHIVE
+As an alternative to using the \f[I]aeget\f[P](1) CGI program, the
+\*(n) archive variant is provided.  This variant can be used to
+populate a directory with the aedist archives of each change with an
+UUID.  The archives will have a name based on the UUID of the change
+with extension ".ae", the fingerprint of the archive will be stored in
+a file with the same (base)name with extension ".fp".
+Running the archive variant multiple times against the same target directory
+will update that directory, adding the files of changes integrated after the
+last run and regenerating the files if a corruption is detected.
+.SS Options
+The following options are understood by the archive variant:
+.TP 8n
+\f[B]-Change-Directory\f[P] \f[I]directory\f[P]
+This option is used to designate the directory to be populated with the
+\f[I]aedist\f[P](1) generated files.
+If this option is not used then the current directory is used as the
+target of the command.
+The directory must exists and be accessible by the user running the
+command.
+.TP 8n
+\f[B]\-EXclude_Version\f[P] \f[I]pattern\f[P]
+This option may be used to explicitly exclude some change set to
+be added to the target directory.  The \f[I]pattern\f[P] is matched against
+the version as displayed in the inventory.  This option may be used
+more than once.
+.TP 8n
+\f[B]\-INclude_Version\f[P] \f[I]pattern\f[P]
+This option may be used to explicitly list change sets to be added
+to the target directory, to the exclusion of all others.  The
+\f[I]pattern\f[P] is matched against the version as displayed in the
+inventory.  This option may be used more than once.
+.so o_project.so
 .SH LIST
 The list variant can be used to list the contents of a package without
 actually unpacking it first.

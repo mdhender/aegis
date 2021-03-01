@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -21,32 +21,34 @@
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
 #include <libaegis/ael/project/projects.h>
-#include <aegis/aenrls.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
-#include <common/error.h>
 #include <libaegis/file.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
-#include <common/mem.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
+
+#include <aegis/aenrls.h>
 
 #define GIVEN -1
 #define NOT_GIVEN -2
@@ -81,9 +83,9 @@ static void
 new_release_list(void)
 {
     arglex();
-    while (arglex_token != arglex_token_eoln)
-	generic_argument(new_release_usage);
-    list_projects(0, 0, 0);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_release_usage);
+    list_projects(cid, 0);
 }
 
 
@@ -534,10 +536,10 @@ new_release_main(void)
 	nstring s3 = pup->default_project_directory();
 	assert(s3);
 	os_become_orig();
-	int max = os_pathconf_name_max(s3);
+	int name_max = os_pathconf_name_max(s3);
 	os_become_undo();
-	if (project_name[1]->str_length > (size_t)max)
-	    fatal_project_name_too_long(project_name[1], max);
+	if (project_name[1]->str_length > (size_t)name_max)
+	    fatal_project_name_too_long(project_name[1], name_max);
 	home = os_path_join(s3, nstring(project_name[1]));
 
 	scp = sub_context_new();

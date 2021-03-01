@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
-//	Copyright (C) 2006 Walter Franzini;
+//	Copyright (C) 2002-2008 Peter Miller
+//	Copyright (C) 2006, 2007 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,8 +16,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to receive change sets
 //
 
 #include <common/ac/ctype.h>
@@ -218,7 +216,6 @@ receive(void)
     string_ty       *dot;
     const char      *delta;
     string_ty       *devdir;
-    output_ty	    *ofp;
     int		    trojan;
 
     project_name = 0;
@@ -422,16 +419,16 @@ receive(void)
     os_become_orig();
     attribute_file_name = os_edit_filename(0);
     undo_unlink_errok(attribute_file_name);
-    ofp = output_file_text_open(attribute_file_name);
-    ofp->fprintf
-    (
-	"brief_description = \"%s\";\n"
-	"description = \"This change was extracted from a tarball.\";\n"
-	"cause = external_bug;\n",
-        ifn.length() > 0 ? ifn.c_str() : "none"
-    );
-    delete ofp;
-    ofp = 0;
+    {
+        output::pointer ofp = output_file::text_open(attribute_file_name);
+        ofp->fprintf
+        (
+            "brief_description = \"%s\";\n"
+            "description = \"This change was extracted from a tarball.\";\n"
+            "cause = external_bug;\n",
+            ifn.length() > 0 ? ifn.c_str() : "none"
+        );
+    }
 
     nstring trace_options(trace_args());
     dot = os_curdir();
@@ -564,9 +561,10 @@ receive(void)
 	//
         os_become_orig();
         os_mkdir_between(dd, filename, 02755 & ~umask);
-        ofp = output_file_binary_open(filename);
-	*ofp << ip;
-	delete ofp;
+        {
+            output::pointer ofp = output_file::binary_open(filename);
+            ofp << ip;
+        }
 	ip.close();
         int mode = 0666;
         if (executable)
@@ -721,13 +719,18 @@ receive(void)
     //
     if (!files_modified.empty())
     {
+        nstring delta_opt;
+        if (delta)
+            delta_opt = nstring(" --delta=") + delta;
+
         nstring cmd =
             nstring::format
             (
-                "aegis --copy-file --project=%s --change=%ld%s "
+                "aegis --copy-file --project=%s --change=%ld%s%s "
 		    "--keep --verbose",
                 project_name->str_text,
 		magic_zero_decode(change_number),
+                delta_opt.c_str(),
                 trace_options.c_str()
             );
         os_xargs(cmd, files_modified, dd);

@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,17 +17,17 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: functions to manipulate list_gets
-//
 
-#include <libaegis/change/branch.h>
-#include <libaegis/change/file/list_get.h>
 #include <common/error.h> // for assert
+#include <common/mem.h>
 #include <common/str_list.h>
-#include <libaegis/project.h>
 #include <common/symtab.h>
 #include <common/symtab_iter.h>
 #include <common/trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file/list_get.h>
+#include <libaegis/project.h>
+#include <libaegis/view_path/next_change.h>
 
 
 string_list_ty *
@@ -38,8 +39,6 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
     {
 	size_t          j;
 	string_list_ty	*wlp;
-	symtab_ty	*tmp;
-	symtab_ty	*xpar;
 	symtab_iterator	*tmpi;
 	string_ty	*key;
 	void		*data;
@@ -55,10 +54,30 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 	// parallel.  It is essential that this function does exactly
 	// what the change_file_find function does.
 	//
-	tmp = symtab_alloc(100);
-	xpar = symtab_alloc(100);
+	// Since we must be sure the fstate_src_ty* put in the symtab
+	// survive the change::pointer they belongs to, we will take a
+	// copy.  Thus we must set the reaper function to assure
+	// proper cleanup.
+	//
+	symtab_ty tmp(100);
+	tmp.set_reap(fstate_src_type.free);
+	symtab_ty xpar(100);
+	xpar.set_reap(fstate_src_type.free);
 	top_level = !change_is_a_branch(cp);
-	cp2 = cp;
+
+        //
+        // In order to make Aegis time safe we need to exclude files
+        // created in the future with respect to the change cp points to.
+        //
+        // There is no need to set the limit if as_view_path ==
+        // view_path_first because we only need to consult the change
+        // record without looking in up to parent branches.
+        //
+        // There is no need to set the limit if the change is not
+        // completed.
+        //
+        time_t limit = cp->time_limit_get();
+	cp2 = change_copy(cp);
 	for (;;)
 	{
 	    fstate_ty       *fs;
@@ -67,7 +86,10 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 		project_name_get(cp2->pp)->str_text, cp2->number));
 	    if (cp2->bogus)
 		goto next;
-	    fs = change_fstate_get(cp2);
+            if (as_view_path != view_path_first && change_pfstate_get(cp2))
+                fs = change_pfstate_get(cp2);
+            else
+                fs = change_fstate_get(cp2);
 	    trace(("fs->src->length = %ld\n", (long)fs->src->length));
 	    for (j = 0; j < fs->src->length; ++j)
 	    {
@@ -82,10 +104,10 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 		// If there is a top-level transparent file,
 		// it hides the next instance of the file.
 		//
-		if (symtab_query(xpar, fsp->file_name))
+		if (xpar.query(fsp->file_name))
 		{
-		    symtab_delete(tmp, fsp->file_name);
-		    symtab_delete(xpar, fsp->file_name);
+		    tmp.remove(fsp->file_name);
+		    xpar.remove(fsp->file_name);
 		    // go onto the next file
 		    continue;
 		}
@@ -97,7 +119,7 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 		//
 		// This has O(1) query times.
 		//
-		if (symtab_query(tmp, fsp->file_name))
+		if (tmp.query(fsp->file_name))
 		    continue;
 
 		switch (as_view_path)
@@ -127,7 +149,7 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 			// are resolved (the underlying file is shown).
 			//
 			if (top_level)
-			    symtab_assign(xpar, fsp->file_name, fsp);
+			    xpar.assign(fsp->file_name, fstate_src_copy(fsp));
 			// go onto the next file
 			continue;
 
@@ -165,7 +187,7 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 		    }
 		    break;
 		}
-		symtab_assign(tmp, fsp->file_name, fsp);
+		tmp.assign(fsp->file_name, fstate_src_copy(fsp));
 	    }
 
 	    next:
@@ -173,7 +195,20 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 		break;
 	    if (cp2->number == TRUNK_CHANGE_NUMBER)
 		break;
-	    cp2 = cp2->pp->change_get();
+            if
+            (
+                limit != TIME_NOT_SET
+            &&
+                change_pfstate_get(cp2)
+            &&
+                cp2->pp->is_a_trunk()
+            )
+                break;
+
+            change::pointer next_change = view_path_next_change(cp2, limit);
+            change_free(cp2);
+            cp2 = next_change;
+
 	    top_level = 0;
 	}
 
@@ -181,7 +216,7 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 	// Walk the symbol table to build the file name list.
 	// This has O(1) query times.
 	//
-	tmpi = symtab_iterator_new(tmp);
+	tmpi = symtab_iterator_new(&tmp);
 	wlp = new string_list_ty();
 	while (symtab_iterator_next(tmpi, &key, &data))
 	{
@@ -200,7 +235,7 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 		// underlying file is shown), but removed files are
 		// omitted from the result.
 		//
-		fsp = (fstate_src_ty *)symtab_query(tmp, key);
+		fsp = (fstate_src_ty *)tmp.query(key);
 		assert(fsp);
 		if (!fsp)
 		    break;
@@ -227,8 +262,6 @@ change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 	    wlp->push_back(key);
 	}
 	symtab_iterator_delete(tmpi);
-	symtab_free(tmp);
-	symtab_free(xpar);
 
 	//
 	// Ensure that the file name list is in lexicographical

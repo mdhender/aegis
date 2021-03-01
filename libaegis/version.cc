@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1995, 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,25 +13,23 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate versions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 
 #include <common/ac/stdio.h>
 
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <common/version_stmp.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/help.h>
 #include <libaegis/output/pager.h>
 #include <libaegis/output/wrap.h>
-#include <common/progname.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/version.h>
-#include <common/version_stmp.h>
 
 
 void
@@ -47,18 +45,13 @@ version_copyright()
 	"details use the '%s -VERSion License' command.\n",
     };
 
-    output_ty	    *fp;
-    const char	    *const *cpp;
-    const char	    *progname;
-
-    progname = progname_get();
-    fp = output_pager_open();
-    fp = output_wrap_open(fp, 1, -1);
+    const char *progname = progname_get();
+    output::pointer fp = output_pager::open();
+    fp = output_wrap_open(fp, -1);
     fp->fprintf("%s version %s\n", progname, version_stamp());
     fp->fprintf("Copyright (C) %s Peter Miller\n", copyright_years());
-    for (cpp = text; cpp < ENDOF(text); ++cpp)
+    for (const char *const *cpp = text; cpp < ENDOF(text); ++cpp)
 	fp->fprintf(*cpp, progname);
-    delete fp;
 }
 
 

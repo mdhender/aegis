@@ -61,7 +61,7 @@ Change	State		Description
   53	completed	document a few dependencies in the "BUILDING"
 			file
   54	completed	update release instructions
-
+
 
 
 Project "aegis.3.0"						 Page 2
@@ -124,7 +124,7 @@ Change	State		Description
 			against the branch's parent's baseline, not the
 			branch's baseline.
  102	completed	make txt2c an awk script
-
+
 
 
 Project "aegis.3.0"						 Page 3
@@ -187,7 +187,7 @@ Change	State		Description
  164	completed	make sure project_file_command triggers for
 			branches
  167	completed	run project file command more often
-
+
 
 
 Project "aegis.3.0"						 Page 4
@@ -219,7 +219,7 @@ Change	State		Description
  191	completed	some minor bug fixes
  192	completed	create libaegis
  193	completed	aefind
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 1
@@ -282,7 +282,7 @@ FILES
 	source	create	    1	      aegis/aeib.h
 	source	create	    1	      aegis/aeibu.c
 	source	create	    1	      aegis/aeibu.h
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 2
@@ -345,7 +345,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      aegis/aer/expr/logical.c
 	source	create	    1	      aegis/aer/expr/logical.h
 	source	create	    1	      aegis/aer/expr/lookup.c
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 3
@@ -408,7 +408,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      aegis/aer/func/terse.h
 	source	create	    1	      aegis/aer/func/title.c
 	source	create	    1	      aegis/aer/func/title.h
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 4
@@ -471,7 +471,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      aegis/aer/value/real.c
 	source	create	    1	      aegis/aer/value/real.h
 	source	create	    1	      aegis/aer/value/ref.c
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 5
@@ -534,7 +534,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      aegis/gonzo.h
 	source	create	    1	      aegis/gram.h
 	source	create	    1	      aegis/gram.y
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 6
@@ -597,7 +597,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      aux/Howto.conf.in
 	source	create	    1	      aux/Howto.cook
 	source	create	    1	      aux/MANIFEST.sh
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 7
@@ -660,7 +660,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	build	create	    1	      common/patchlevel.h
 	source	create	    1	      common/r250.c
 	source	create	    1	      common/r250.h
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 8
@@ -723,7 +723,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      fmtgen/indent.h
 	source	create	    1	      fmtgen/lex.c
 	source	create	    1	      fmtgen/lex.h
-
+
 
 
 Project "aegis.3.0", Change 1					 Page 9
@@ -786,7 +786,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      lib/rf.inews.sh
 	source	create	    1	      lib/rf.sh
 	source	create	    1	      lib/rp.inews.sh
-
+
 
 
 Project "aegis.3.0", Change 1					Page 10
@@ -849,7 +849,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	source	create	    1	      man1/o_bld_lk.so
 	source	create	    1	      man1/o_change.so
 	source	create	    1	      man1/o_devdir.so
-
+
 
 
 Project "aegis.3.0", Change 1					Page 11
@@ -912,7 +912,7 @@ Change Details				       Wed Jan 14 19:53:57 1998
 	test	create	    1	      test/00/t0005a.sh
 	test	create	    1	      test/00/t0006a.sh
 	test	create	    1	      test/00/t0007a.sh
-
+
 
 
 Project "aegis.3.0", Change 1					Page 12
@@ -961,7 +961,7 @@ HISTORY
 			06:54:33 1995		 days.
 	integrate_pass	Wed Mar 15	pmiller
 			07:45:28 1995
-
+
 
 
 Project "aegis.3.0", Change 2					 Page 1
@@ -1019,7 +1019,7 @@ HISTORY
 			09:49:29 1995		 days.
 	integrate_pass	Sun Mar 19	pmiller
 			20:48:53 1995
-
+
 
 
 Project "aegis.3.0", Change 3					 Page 1
@@ -1082,7 +1082,7 @@ FILES
 	test	modify	    6	      test/00/t0016a.sh
 	test	modify	    5	      test/00/t0031a.sh
 	test	create	    1	      test/00/t0039a.sh
-
+
 
 
 Project "aegis.3.0", Change 3					 Page 2
@@ -1103,7 +1103,7 @@ HISTORY
 			22:47:49 1996		 days.
 	integrate_pass	Sat Mar 23	pmiller
 			00:44:44 1996
-
+
 
 
 Project "aegis.3.0", Change 4					 Page 1
@@ -1166,7 +1166,7 @@ FILES
 	source	modify	    2	      aegis/aerf.c
 	source	modify	    2	      aegis/aerm.c
 	source	modify	    2	      aegis/aermu.c
-
+
 
 
 Project "aegis.3.0", Change 4					 Page 2
@@ -1211,7 +1211,7 @@ HISTORY
 			07:55:17 1995		 days.
 	integrate_pass	Mon Apr 17	pmiller
 			08:44:36 1995
-
+
 
 
 Project "aegis.3.0", Change 6					 Page 1
@@ -1274,7 +1274,7 @@ FILES
 	build	modify	    2	      aux/new.so
 	build	modify	    3	      common/config.h.in
 	build	modify	   23	      common/patchlevel.h
-
+
 
 
 Project "aegis.3.0", Change 6					 Page 2
@@ -1304,7 +1304,7 @@ HISTORY
 			09:18:30 1995		 days.
 	integrate_pass	Sun Nov 26	pmiller
 			16:43:38 1995
-
+
 
 
 Project "aegis.3.0", Change 7					 Page 1
@@ -1367,7 +1367,7 @@ FILES
 	source	modify	    2	      aegis/aepa.c
 	source	modify	    3	      aegis/aer/value/cstate.c
 	source	modify	    2	      aegis/aer/value/pstate.c
-
+
 
 
 Project "aegis.3.0", Change 7					 Page 2
@@ -1430,7 +1430,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 	source	modify	    2	      lib/report/proj_rvwrs.rpt
 	source	modify	    2	      lib/report/proj_staff.rpt
 	source	modify	    2	      lib/report/proj_stats.rpt
-
+
 
 
 Project "aegis.3.0", Change 7					 Page 3
@@ -1464,7 +1464,7 @@ HISTORY
 			08:24:01 1995		 days.
 	integrate_pass	Sat Jul 22	pmiller
 			10:25:17 1995
-
+
 
 
 Project "aegis.3.0", Change 8					 Page 1
@@ -1527,7 +1527,7 @@ HISTORY
 	develop_begin	Sat May	 4	pmiller	 Elapsed time: 1.000
 			12:08:28 1996		 days.
 	develop_end	Sun May	 5	pmiller
-
+
 
 
 Project "aegis.3.0", Change 8					 Page 2
@@ -1542,7 +1542,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 			22:13:05 1996		 days.
 	integrate_pass	Sun May	 5	pmiller
 			23:08:05 1996
-
+
 
 
 Project "aegis.3.0", Change 9					 Page 1
@@ -1601,7 +1601,7 @@ FILES
 	test	modify	    4 -> 5    test/00/t0035a.sh
 	test	modify	    4 -> 5    test/00/t0036a.sh
 	test	modify	    1 -> 2    test/00/t0061a.sh
-
+
 
 
 Project "aegis.3.0", Change 9					 Page 2
@@ -1622,7 +1622,7 @@ HISTORY
 			23:17:22 1997		 days.
 	integrate_pass	Tue May 20	pmiller
 			22:49:43 1997
-
+
 
 
 Project "aegis.3.0", Change 10					 Page 1
@@ -1685,7 +1685,7 @@ FILES
 	source	modify	    6	      aegis/ael.c
 	source	modify	    5	      aegis/aemv.c
 	source	modify	    3	      aegis/aena.c
-
+
 
 
 Project "aegis.3.0", Change 10					 Page 2
@@ -1748,7 +1748,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 	source	modify	    2	      aegis/aer/value/list.c
 	source	modify	    2	      aegis/aer/value/passwd.c
 	source	modify	    3	      aegis/aer/value/pstate.c
-
+
 
 
 Project "aegis.3.0", Change 10					 Page 3
@@ -1811,7 +1811,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 	source	modify	    3	      aux/Makefile.head
 	source	modify	    4	      aux/Makefile.sh
 	source	modify	    2	      aux/config.h.in
-
+
 
 
 Project "aegis.3.0", Change 10					 Page 4
@@ -1874,7 +1874,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 	test	modify	    2	      test/00/t0026a.sh
 	source	modify	    2	      txt2c/main.c
 	source	modify	    2	      txt2c/txt2c.c
-
+
 
 
 Project "aegis.3.0", Change 10					 Page 5
@@ -1899,7 +1899,7 @@ HISTORY
 			12:01:06 1995		 days.
 	integrate_pass	Sun Nov 19	pmiller
 			13:43:17 1995
-
+
 
 
 Project "aegis.3.0", Change 11					 Page 1
@@ -1955,7 +1955,7 @@ HISTORY
 			14:27:28 1997
 	integrate_pass	Tue Dec	 9	pmiller
 			14:33:57 1997
-
+
 
 
 Project "aegis.3.0", Change 12					 Page 1
@@ -2018,7 +2018,7 @@ HISTORY
 	review_pass	Sat Apr	 8	pmiller
 			20:32:06 1995
 	integrate_begin Sat Apr	 8	pmiller	 Elapsed time: 0.047
-
+
 
 
 Project "aegis.3.0", Change 12					 Page 2
@@ -2029,7 +2029,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 			20:32:30 1995		 days.
 	integrate_pass	Sat Apr	 8	pmiller
 			20:53:32 1995
-
+
 
 
 Project "aegis.3.0", Change 13					 Page 1
@@ -2092,7 +2092,7 @@ HISTORY
 			23:04:09 1996
 	integrate_begin Fri Mar 15	pmiller	 Elapsed time: 0.145
 			23:04:16 1996		 days.
-
+
 
 
 Project "aegis.3.0", Change 13					 Page 2
@@ -2102,7 +2102,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 	------		------		-----	 ---------
 	integrate_pass	Sat Mar 16	pmiller
 			00:09:42 1996
-
+
 
 
 Project "aegis.3.0", Change 14					 Page 1
@@ -2165,7 +2165,7 @@ HISTORY
 	develop_begin	Fri Apr	 7	pmiller	 Elapsed time: 1.000
 			06:27:49 1995		 days.
 	develop_end	Sat Apr	 8	pmiller
-
+
 
 
 Project "aegis.3.0", Change 14					 Page 2
@@ -2191,7 +2191,7 @@ Change Details				       Wed Jan 14 19:53:58 1998
 			10:24:59 1995		 days.
 	integrate_pass	Sun Apr	 9	pmiller
 			20:16:12 1995
-
+
 
 
 Project "aegis.3.0", Change 15					 Page 1
@@ -2254,7 +2254,7 @@ FILES
 	source	modify	    1	      aux/faq.toc.awk
 	source	modify	    1	      aux/lsm.roff
 	source	modify	    1	      aux/new.1.4.so
-
+
 
 
 Project "aegis.3.0", Change 15					 Page 2
@@ -2302,7 +2302,7 @@ HISTORY
 			18:42:24 1995		 days.
 	integrate_pass	Sat Apr	 8	pmiller
 			20:25:45 1995
-
+
 
 
 Project "aegis.3.0", Change 16					 Page 1
@@ -2365,7 +2365,7 @@ HISTORY
 			05:50:03 1995		 days.
 	integrate_pass	Mon Apr 10	pmiller
 			06:57:39 1995
-
+
 
 
 Project "aegis.3.0", Change 17					 Page 1
@@ -2425,7 +2425,7 @@ FILES
 	source	modify	    5 -> 6    man1/aet.1
 	source	modify	    1 -> 2    man1/z_test_corr.so
 	source	create	    1	      man1/z_test_rtnl.so
-
+
 
 
 Project "aegis.3.0", Change 17					 Page 2
@@ -2455,7 +2455,7 @@ HISTORY
 			22:34:19 1996		 days.
 	integrate_pass	Sun Dec 29	pmiller
 			23:21:07 1996
-
+
 
 
 Project "aegis.3.0", Change 18					 Page 1
@@ -2518,7 +2518,7 @@ FILES
 	source	modify	    9	      aegis/aeib.c
 	source	modify	   10	      aegis/aeip.c
 	source	modify	    8	      aegis/aenc.c
-
+
 
 
 Project "aegis.3.0", Change 18					 Page 2
@@ -2558,7 +2558,7 @@ HISTORY
 			21:24:23 1996		 days.
 	integrate_pass	Sun Feb 25	pmiller
 			22:22:06 1996
-
+
 
 
 Project "aegis.3.0", Change 19					 Page 1
@@ -2614,7 +2614,7 @@ HISTORY
 			11:02:35 1995		 days.
 	integrate_pass	Tue Apr 18	pmiller
 			19:12:58 1995
-
+
 
 
 Project "aegis.3.0", Change 20					 Page 1
@@ -2670,7 +2670,7 @@ HISTORY
 			21:15:56 1995		 days.
 	integrate_pass	Wed Apr 19	pmiller
 			21:33:25 1995
-
+
 
 
 Project "aegis.3.0", Change 21					 Page 1
@@ -2727,7 +2727,7 @@ HISTORY
 			08:17:24 1995		 days.
 	integrate_pass	Sat May 13	pmiller
 			08:28:44 1995
-
+
 
 
 Project "aegis.3.0", Change 22					 Page 1
@@ -2790,7 +2790,7 @@ HISTORY
 			02:18:25 1997
 	integrate_begin Thu Dec 11	pmiller	 Elapsed time: 0.089
 			02:18:29 1997		 days.
-
+
 
 
 Project "aegis.3.0", Change 22					 Page 2
@@ -2800,7 +2800,7 @@ Change Details				       Wed Jan 14 19:53:59 1998
 	------		------		-----	 ---------
 	integrate_pass	Thu Dec 11	pmiller
 			02:58:23 1997
-
+
 
 
 Project "aegis.3.0", Change 23					 Page 1
@@ -2863,7 +2863,7 @@ FILES
 	source	modify	    1 -> 2    aereport/main.c
 	source	modify	   49 -> 50   aux/Howto.cook
 	source	modify	   15 -> 16   aux/Makefile.sh
-
+
 
 
 Project "aegis.3.0", Change 23					 Page 2
@@ -2926,7 +2926,7 @@ HISTORY
 			18:07:30 1997
 	integrate_begin Thu Dec 11	pmiller	 Elapsed time: 0.557
 			18:07:42 1997		 days.
-
+
 
 
 Project "aegis.3.0", Change 23					 Page 3
@@ -2936,7 +2936,7 @@ Change Details				       Wed Jan 14 19:53:59 1998
 	------		------		-----	 ---------
 	integrate_pass	Thu Dec 11	pmiller
 			22:18:29 1997
-
+
 
 
 Project "aegis.3.0", Change 24					 Page 1
@@ -2999,7 +2999,7 @@ HISTORY
 			23:24:11 1996		 days.
 	integrate_pass	Fri May 10	pmiller
 			22:04:48 1996
-
+
 
 
 Project "aegis.3.0", Change 25					 Page 1
@@ -3062,7 +3062,7 @@ HISTORY
 			17:13:11 1997
 	integrate_begin Fri Dec 12	pmiller	 Elapsed time: 1.910
 			17:13:15 1997		 days.
-
+
 
 
 Project "aegis.3.0", Change 25					 Page 2
@@ -3082,7 +3082,7 @@ Change Details				       Wed Jan 14 19:54:00 1998
 			21:47:55 1997		 days.
 	integrate_pass	Wed Dec 17	pmiller
 			07:14:20 1997
-
+
 
 
 Project "aegis.3.0", Change 26					 Page 1
@@ -3139,7 +3139,7 @@ HISTORY
 			21:12:41 1997		 days.
 	integrate_pass	Sat Dec 20	pmiller
 			21:51:28 1997
-
+
 
 
 Project "aegis.3.0", Change 27					 Page 1
@@ -3202,7 +3202,7 @@ FILES
 	source	remove	    1	      aefind/tree/print.c
 	source	remove	    1	      aefind/tree/print.h
 	source	modify	    1 -> 2    aefind/tree/private.c
-
+
 
 
 Project "aegis.3.0", Change 27					 Page 2
@@ -3242,7 +3242,7 @@ HISTORY
 			10:14:05 1997		 days.
 	integrate_pass	Tue Dec 23	pmiller
 			16:06:43 1997
-
+
 
 
 Project "aegis.3.0", Change 28					 Page 1
@@ -3305,7 +3305,7 @@ FILES
 	source	modify	    1 -> 2    aefind/tree/match.c
 	source	create	    1	      aefind/tree/monadic.c
 	source	create	    1	      aefind/tree/monadic.h
-
+
 
 
 Project "aegis.3.0", Change 28					 Page 2
@@ -3346,7 +3346,7 @@ HISTORY
 			22:54:18 1997		 days.
 	integrate_pass	Fri Dec 26	pmiller
 			08:38:51 1997
-
+
 
 
 Project "aegis.3.0", Change 29					 Page 1
@@ -3406,7 +3406,7 @@ FILES
 	build	modify	   13	      configure
 	source	modify	    3 -> 4    lib/en/LC_MESSAGES/aefind.po
 	source	modify	    3 -> 4    lib/en/man1/aefind.1
-
+
 
 
 Project "aegis.3.0", Change 29					 Page 2
@@ -3427,7 +3427,7 @@ HISTORY
 			18:46:01 1997		 days.
 	integrate_pass	Tue Dec 30	pmiller
 			19:23:36 1997
-
+
 
 
 Project "aegis.3.0", Change 30					 Page 1
@@ -3490,7 +3490,7 @@ FILES
 	source	modify	    4	      aegis/aerrv.c
 	source	modify	    9	      aegis/aet.c
 	source	modify	   12	      aegis/change.c
-
+
 
 
 Project "aegis.3.0", Change 30					 Page 2
@@ -3535,7 +3535,7 @@ HISTORY
 			09:14:19 1995		 days.
 	integrate_pass	Sun Dec 17	pmiller
 			17:32:08 1995
-
+
 
 
 Project "aegis.3.0", Change 31					 Page 1
@@ -3598,7 +3598,7 @@ HISTORY
 			17:49:33 1995		 days.
 	develop_end	Tue Jul 25	pmiller
 			06:15:06 1995
-
+
 
 
 Project "aegis.3.0", Change 31					 Page 2
@@ -3612,7 +3612,7 @@ Change Details				       Wed Jan 14 19:54:00 1998
 			06:15:38 1995		 days.
 	integrate_pass	Tue Jul 25	pmiller
 			06:27:04 1995
-
+
 
 
 Project "aegis.3.0", Change 32					 Page 1
@@ -3670,7 +3670,7 @@ HISTORY
 			21:44:16 1995		 days.
 	integrate_pass	Sat Jul 22	pmiller
 			22:19:45 1995
-
+
 
 
 Project "aegis.3.0", Change 33					 Page 1
@@ -3733,7 +3733,7 @@ FILES
 	source	modify	    3	      aegis/main.c
 	source	modify	    4	      aegis/project.c
 	source	modify	    3	      aegis/project.h
-
+
 
 
 Project "aegis.3.0", Change 33					 Page 2
@@ -3773,7 +3773,7 @@ HISTORY
 			12:51:22 1995		 days.
 	integrate_pass	Fri Aug 11	pmiller
 			14:53:37 1995
-
+
 
 
 Project "aegis.3.0", Change 34					 Page 1
@@ -3829,7 +3829,7 @@ HISTORY
 			21:46:37 1996		 days.
 	integrate_pass	Tue Jan 23	pmiller
 			22:32:46 1996
-
+
 
 
 Project "aegis.3.0", Change 35					 Page 1
@@ -3892,7 +3892,7 @@ HISTORY
 	develop_begin	Fri Aug 11	pmiller	 Elapsed time: 1.073
 			14:58:06 1995		 days.
 	develop_end	Sun Aug 13	pmiller
-
+
 
 
 Project "aegis.3.0", Change 35					 Page 2
@@ -3907,7 +3907,7 @@ Change Details				       Wed Jan 14 19:54:01 1998
 			15:31:36 1995		 days.
 	integrate_pass	Sun Aug 13	pmiller
 			16:36:00 1995
-
+
 
 
 Project "aegis.3.0", Change 36					 Page 1
@@ -3970,7 +3970,7 @@ FILES
 	source	modify	    8	      aegis/aerf.c
 	source	modify	    7	      aegis/aerm.c
 	source	modify	    5	      aegis/aermpr.c
-
+
 
 
 Project "aegis.3.0", Change 36					 Page 2
@@ -4021,7 +4021,7 @@ HISTORY
 			23:26:49 1996		 days.
 	integrate_pass	Sat Jan 27	pmiller
 			00:30:44 1996
-
+
 
 
 Project "aegis.3.0", Change 37					 Page 1
@@ -4084,7 +4084,7 @@ HISTORY
 			23:25:57 1997
 	review_pass	Tue Dec 30	pmiller
 			23:29:46 1997
-
+
 
 
 Project "aegis.3.0", Change 37					 Page 2
@@ -4096,7 +4096,7 @@ Change Details				       Wed Jan 14 19:54:01 1998
 			23:29:52 1997		 days.
 	integrate_pass	Wed Dec 31	pmiller
 			01:17:47 1997
-
+
 
 
 Project "aegis.3.0", Change 38					 Page 1
@@ -4151,7 +4151,7 @@ HISTORY
 			21:07:44 1997		 days.
 	integrate_pass	Fri Jun 13	pmiller
 			21:42:09 1997
-
+
 
 
 Project "aegis.3.0", Change 39					 Page 1
@@ -4213,7 +4213,7 @@ FILES
 	source	create	    1	      lib/en/auug97/10-ref.so
 	source	create	    1	      lib/en/auug97/main.ms
 	source	create	    1	      lib/en/auug97/make.bib
-
+
 
 
 Project "aegis.3.0", Change 39					 Page 2
@@ -4234,7 +4234,7 @@ HISTORY
 			22:13:33 1997		 days.
 	integrate_pass	Sun Jun 15	pmiller
 			00:16:49 1997
-
+
 
 
 Project "aegis.3.0", Change 40					 Page 1
@@ -4291,7 +4291,7 @@ HISTORY
 			22:12:12 1997		 days.
 	integrate_pass	Wed Jun 11	pmiller
 			22:44:23 1997
-
+
 
 
 Project "aegis.3.0", Change 41					 Page 1
@@ -4348,7 +4348,7 @@ HISTORY
 			01:20:13 1997		 days.
 	integrate_pass	Sat Jun 14	pmiller
 			02:19:49 1997
-
+
 
 
 Project "aegis.3.0", Change 42					 Page 1
@@ -4411,7 +4411,7 @@ HISTORY
 	review_pass	Mon Aug 14	pmiller
 			21:40:20 1995
 	integrate_begin Mon Aug 14	pmiller	 Elapsed time: 0.049
-
+
 
 
 Project "aegis.3.0", Change 42					 Page 2
@@ -4422,7 +4422,7 @@ Change Details				       Wed Jan 14 19:54:02 1998
 			21:40:59 1995		 days.
 	integrate_pass	Mon Aug 14	pmiller
 			22:02:52 1995
-
+
 
 
 Project "aegis.3.0", Change 43					 Page 1
@@ -4485,7 +4485,7 @@ FILES
 	test	modify	    3	      test/00/t0004a.sh
 	test	modify	    3	      test/00/t0005a.sh
 	test	modify	    2	      test/00/t0006a.sh
-
+
 
 
 Project "aegis.3.0", Change 43					 Page 2
@@ -4527,7 +4527,7 @@ HISTORY
 			07:11:50 1996		 days.
 	integrate_pass	Sat Feb	 3	pmiller
 			09:12:39 1996
-
+
 
 
 Project "aegis.3.0", Change 44					 Page 1
@@ -4589,7 +4589,7 @@ HISTORY
 			22:13:51 1997		 days.
 	integrate_pass	Tue Dec 30	pmiller
 			22:27:44 1997
-
+
 
 
 Project "aegis.3.0", Change 45					 Page 1
@@ -4646,7 +4646,7 @@ HISTORY
 			09:27:00 1996		 days.
 	integrate_pass	Sun Jan	 7	pmiller
 			10:05:52 1996
-
+
 
 
 Project "aegis.3.0", Change 46					 Page 1
@@ -4706,7 +4706,7 @@ HISTORY
 			21:31:28 1997		 days.
 	integrate_pass	Sat Jun 14	pmiller
 			22:10:49 1997
-
+
 
 
 Project "aegis.3.0", Change 47					 Page 1
@@ -4769,7 +4769,7 @@ HISTORY
 			07:11:55 1997		 days.
 	integrate_pass	Thu Nov 20	pmiller
 			07:36:06 1997
-
+
 
 
 Project "aegis.3.0", Change 48					 Page 1
@@ -4824,7 +4824,7 @@ HISTORY
 			10:14:10 1997		 days.
 	integrate_pass	Wed Dec 31	pmiller
 			10:54:58 1997
-
+
 
 
 Project "aegis.3.0", Change 49					 Page 1
@@ -4884,7 +4884,7 @@ HISTORY
 			00:00:33 1997		 days.
 	integrate_pass	Sat May 24	pmiller
 			17:16:47 1997
-
+
 
 
 Project "aegis.3.0", Change 50					 Page 1
@@ -4943,7 +4943,7 @@ HISTORY
 			23:57:33 1997		 days.
 	integrate_pass	Thu Jan	 1	pmiller
 			00:58:35 1998
-
+
 
 
 Project "aegis.3.0", Change 51					 Page 1
@@ -4999,7 +4999,7 @@ HISTORY
 			22:36:00 1998		 days.
 	integrate_pass	Thu Jan	 1	pmiller
 			22:50:03 1998
-
+
 
 
 Project "aegis.3.0", Change 52					 Page 1
@@ -5059,7 +5059,7 @@ HISTORY
 			21:34:50 1998		 days.
 	integrate_pass	Sat Jan	 3	pmiller
 			23:02:41 1998
-
+
 
 
 Project "aegis.3.0", Change 53					 Page 1
@@ -5117,7 +5117,7 @@ HISTORY
 			16:37:22 1995
 	integrate_pass	Thu Oct	 5	pmiller
 			16:47:05 1995
-
+
 
 
 Project "aegis.3.0", Change 54					 Page 1
@@ -5173,7 +5173,7 @@ HISTORY
 			11:01:59 1995		 days.
 	integrate_pass	Fri Oct	 6	pmiller
 			11:13:00 1995
-
+
 
 
 Project "aegis.3.0", Change 55					 Page 1
@@ -5233,7 +5233,7 @@ HISTORY
 			09:03:34 1995		 days.
 	integrate_pass	Fri Nov 10	pmiller
 			15:40:52 1995
-
+
 
 
 Project "aegis.3.0", Change 56					 Page 1
@@ -5287,7 +5287,7 @@ HISTORY
 			22:01:04 1996		 days.
 	integrate_pass	Sat Jan 20	pmiller
 			22:35:23 1996
-
+
 
 
 Project "aegis.3.0", Change 57					 Page 1
@@ -5345,7 +5345,7 @@ HISTORY
 			14:01:21 1996		 days.
 	integrate_pass	Sat May 11	pmiller
 			14:51:23 1996
-
+
 
 
 Project "aegis.3.0", Change 58					 Page 1
@@ -5403,7 +5403,7 @@ HISTORY
 			14:11:13 1995		 days.
 	integrate_pass	Sun Nov 19	pmiller
 			14:21:55 1995
-
+
 
 
 Project "aegis.3.0", Change 59					 Page 1
@@ -5466,7 +5466,7 @@ HISTORY
 			07:32:54 1995		 days.
 	integrate_pass	Sat Nov 25	pmiller
 			07:59:39 1995
-
+
 
 
 Project "aegis.3.0", Change 60					 Page 1
@@ -5529,7 +5529,7 @@ HISTORY
 	integrate_begin Sun Jan	 4	pmiller	 Elapsed time: 0.043
 			00:17:15 1998		 days.
 	integrate_fail	Sun Jan	 4	pmiller	 test 55 failed
-
+
 
 
 Project "aegis.3.0", Change 60					 Page 2
@@ -5547,7 +5547,7 @@ Change Details				       Wed Jan 14 19:54:04 1998
 			10:57:34 1998		 days.
 	integrate_pass	Sun Jan 11	pmiller
 			11:52:56 1998
-
+
 
 
 Project "aegis.3.0", Change 61					 Page 1
@@ -5607,7 +5607,7 @@ HISTORY
 			18:36:28 1995		 days.
 	integrate_pass	Sun Dec 10	pmiller
 			19:45:40 1995
-
+
 
 
 Project "aegis.3.0", Change 62					 Page 1
@@ -5664,7 +5664,7 @@ HISTORY
 			21:21:58 1995		 days.
 	integrate_pass	Sat Dec	 9	pmiller
 			22:15:51 1995
-
+
 
 
 Project "aegis.3.0", Change 63					 Page 1
@@ -5727,7 +5727,7 @@ FILES
 	source	create	    1	      common/ac/fcntl.h
 	build	modify	    4	      common/config.h.in
 	source	create	    1	      common/fp.c
-
+
 
 
 Project "aegis.3.0", Change 63					 Page 2
@@ -5774,7 +5774,7 @@ HISTORY
 			14:55:33 1995		 days.
 	integrate_pass	Sun Dec 10	pmiller
 			16:16:06 1995
-
+
 
 
 Project "aegis.3.0", Change 64					 Page 1
@@ -5837,7 +5837,7 @@ HISTORY
 	review_pass	Sat Jan	 6	pmiller
 			11:11:47 1996
 	integrate_begin Sat Jan	 6	pmiller	 Elapsed time: 1.000
-
+
 
 
 Project "aegis.3.0", Change 64					 Page 2
@@ -5848,7 +5848,7 @@ Change Details				       Wed Jan 14 19:54:04 1998
 			11:12:18 1996		 days.
 	integrate_pass	Sun Jan	 7	pmiller
 			09:18:55 1996
-
+
 
 
 Project "aegis.3.0", Change 65					 Page 1
@@ -5908,7 +5908,7 @@ FILES
 	source	create	    1	      libaegis/gif/private.c
 	source	create	    1	      libaegis/gif/rect.c
 	source	create	    1	      libaegis/gif/text.c
-
+
 
 
 Project "aegis.3.0", Change 65					 Page 2
@@ -5929,7 +5929,7 @@ HISTORY
 			09:49:31 1998		 days.
 	integrate_pass	Sun Jan	 4	pmiller
 			10:01:06 1998
-
+
 
 
 Project "aegis.3.0", Change 66					 Page 1
@@ -5989,7 +5989,7 @@ HISTORY
 			10:37:37 1998		 days.
 	integrate_pass	Sun Jan	 4	pmiller
 			11:22:14 1998
-
+
 
 
 Project "aegis.3.0", Change 67					 Page 1
@@ -6052,7 +6052,7 @@ FILES
 	source	modify	    2	      man1/aeip.1
 	source	modify	    2	      man1/aenrls.1
 	source	remove	    1	      man1/o_bld_lk.so
-
+
 
 
 Project "aegis.3.0", Change 67					 Page 2
@@ -6078,7 +6078,7 @@ HISTORY
 			09:26:30 1996		 days.
 	integrate_pass	Sun Jan 21	pmiller
 			16:50:00 1996
-
+
 
 
 Project "aegis.3.0", Change 68					 Page 1
@@ -6137,7 +6137,7 @@ HISTORY
 			08:45:28 1998		 days.
 	integrate_pass	Sat Jan 10	pmiller
 			09:53:25 1998
-
+
 
 
 Project "aegis.3.0", Change 69					 Page 1
@@ -6196,7 +6196,7 @@ HISTORY
 			23:13:53 1995		 days.
 	integrate_pass	Sun Dec 17	pmiller
 			23:57:36 1995
-
+
 
 
 Project "aegis.3.0", Change 70					 Page 1
@@ -6259,7 +6259,7 @@ HISTORY
 			00:13:10 1997
 	develop_end_	Sat Jun 14	pmiller
 	undo		00:13:59 1997
-
+
 
 
 Project "aegis.3.0", Change 70					 Page 2
@@ -6279,7 +6279,7 @@ Change Details				       Wed Jan 14 19:54:05 1998
 			00:39:52 1997		 days.
 	integrate_pass	Sat Jun 14	pmiller
 			01:18:34 1997
-
+
 
 
 Project "aegis.3.0", Change 71					 Page 1
@@ -6339,7 +6339,7 @@ HISTORY
 			18:28:42 1998		 days.
 	integrate_pass	Sat Jan 10	pmiller
 			18:46:54 1998
-
+
 
 
 Project "aegis.3.0", Change 72					 Page 1
@@ -6402,7 +6402,7 @@ FILES
 	test	modify	    3	      test/00/t0013a.sh
 	test	modify	    3	      test/00/t0014a.sh
 	test	modify	    3	      test/00/t0015a.sh
-
+
 
 
 Project "aegis.3.0", Change 72					 Page 2
@@ -6465,7 +6465,7 @@ HISTORY
 						 days.
 	develop_end	Fri Mar	 8	pmiller
 			17:48:39 1996
-
+
 
 
 Project "aegis.3.0", Change 72					 Page 3
@@ -6479,7 +6479,7 @@ Change Details				       Wed Jan 14 19:54:05 1998
 			17:48:56 1996		 days.
 	integrate_pass	Fri Mar	 8	pmiller
 			19:30:11 1996
-
+
 
 
 Project "aegis.3.0", Change 73					 Page 1
@@ -6542,7 +6542,7 @@ HISTORY
 			09:01:09 1996		 days.
 	develop_end	Sat Feb 10	pmiller
 			10:05:07 1996
-
+
 
 
 Project "aegis.3.0", Change 73					 Page 2
@@ -6560,7 +6560,7 @@ Change Details				       Wed Jan 14 19:54:05 1998
 			10:25:48 1996		 days.
 	integrate_pass	Sat Feb 10	pmiller
 			11:32:15 1996
-
+
 
 
 Project "aegis.3.0", Change 74					 Page 1
@@ -6621,7 +6621,7 @@ HISTORY
 			21:31:49 1996		 days.
 	integrate_pass	Sat Feb 10	pmiller
 			23:17:44 1996
-
+
 
 
 Project "aegis.3.0", Change 75					 Page 1
@@ -6684,7 +6684,7 @@ HISTORY
 	integrate_begin Sat Jan 10	pmiller	 Elapsed time: 0.058
 			23:29:22 1998		 days.
 	integrate_pass	Sat Jan 10	pmiller
-
+
 
 
 Project "aegis.3.0", Change 75					 Page 2
@@ -6693,7 +6693,7 @@ Change Details				       Wed Jan 14 19:54:06 1998
 	What		When		Who	 Comment
 	------		------		-----	 ---------
 			23:55:37 1998
-
+
 
 
 Project "aegis.3.0", Change 76					 Page 1
@@ -6756,7 +6756,7 @@ HISTORY
 	------		------		-----	 ---------
 	new_change	Sun Jan 11	pmiller
 			08:33:00 1998
-
+
 
 
 Project "aegis.3.0", Change 76					 Page 2
@@ -6772,7 +6772,7 @@ Change Details				       Wed Jan 14 19:54:06 1998
 			19:49:54 1998
 	integrate_begin Wed Jan 14	pmiller
 			19:50:09 1998
-
+
 
 
 Project "aegis.3.0", Change 78					 Page 1
@@ -6833,7 +6833,7 @@ HISTORY
 			21:45:48 1996		 days.
 	integrate_pass	Sun Mar	 3	pmiller
 			22:45:37 1996
-
+
 
 
 Project "aegis.3.0", Change 80					 Page 1
@@ -6890,7 +6890,7 @@ HISTORY
 			21:58:43 1996		 days.
 	integrate_pass	Fri Mar 29	pmiller
 			22:22:42 1996
-
+
 
 
 Project "aegis.3.0", Change 81					 Page 1
@@ -6948,7 +6948,7 @@ HISTORY
 			17:44:49 1996		 days.
 	integrate_pass	Sat Mar 30	pmiller
 			20:28:59 1996
-
+
 
 
 Project "aegis.3.0", Change 82					 Page 1
@@ -7011,7 +7011,7 @@ FILES
 	source	modify	    8	      aegis/aermu.c
 	source	modify	   15	      aegis/aet.c
 	source	modify	    7	      aegis/lex.c
-
+
 
 
 Project "aegis.3.0", Change 82					 Page 2
@@ -7063,7 +7063,7 @@ HISTORY
 			10:54:25 1996		 days.
 	integrate_pass	Sat May	 4	pmiller
 			12:01:39 1996
-
+
 
 
 Project "aegis.3.0", Change 83					 Page 1
@@ -7119,7 +7119,7 @@ HISTORY
 			23:47:22 1996		 days.
 	integrate_pass	Sun Mar 31	pmiller
 			00:12:34 1996
-
+
 
 
 Project "aegis.3.0", Change 84					 Page 1
@@ -7175,7 +7175,7 @@ HISTORY
 			08:48:32 1996		 days.
 	integrate_pass	Sun Mar 31	pmiller
 			09:22:34 1996
-
+
 
 
 Project "aegis.3.0", Change 85					 Page 1
@@ -7238,7 +7238,7 @@ HISTORY
 			10:48:58 1996		 days.
 	integrate_pass	Sun Mar 31	pmiller
 			11:40:51 1996
-
+
 
 
 Project "aegis.3.0", Change 86					 Page 1
@@ -7294,7 +7294,7 @@ HISTORY
 			17:30:30 1996		 days.
 	integrate_pass	Sun Mar 31	pmiller
 			19:12:32 1996
-
+
 
 
 Project "aegis.3.0", Change 87					 Page 1
@@ -7355,7 +7355,7 @@ HISTORY
 			22:27:49 1996		 days.
 	integrate_pass	Wed Apr	 3	pmiller
 			22:33:16 1996
-
+
 
 
 Project "aegis.3.0", Change 88					 Page 1
@@ -7413,7 +7413,7 @@ HISTORY
 			22:43:39 1996		 days.
 	integrate_pass	Wed Apr	 3	pmiller
 			23:36:46 1996
-
+
 
 
 Project "aegis.3.0", Change 90					 Page 1
@@ -7476,7 +7476,7 @@ FILES
 	test	modify	   11	      test/00/t0002a.sh
 	test	modify	    2	      test/00/t0003a.sh
 	test	modify	    5	      test/00/t0004a.sh
-
+
 
 
 Project "aegis.3.0", Change 90					 Page 2
@@ -7534,7 +7534,7 @@ HISTORY
 			21:55:55 1996		 days.
 	integrate_pass	Fri Apr	 5	pmiller
 			22:54:26 1996
-
+
 
 
 Project "aegis.3.0", Change 91					 Page 1
@@ -7590,7 +7590,7 @@ HISTORY
 			17:48:39 1996		 days.
 	integrate_pass	Sat Apr	 6	pmiller
 			18:24:37 1996
-
+
 
 
 Project "aegis.3.0", Change 92					 Page 1
@@ -7653,7 +7653,7 @@ FILES
 	source	remove	    2	      common/ansi.c
 	build	modify	    5	      common/config.h.in
 	build	modify	   59	      common/patchlevel.h
-
+
 
 
 Project "aegis.3.0", Change 92					 Page 2
@@ -7690,7 +7690,7 @@ HISTORY
 			12:02:29 1996		 days.
 	integrate_pass	Mon Apr	 8	pmiller
 			14:38:19 1996
-
+
 
 
 Project "aegis.3.0", Change 93					 Page 1
@@ -7747,7 +7747,7 @@ HISTORY
 			12:22:10 1996		 days.
 	integrate_pass	Sat Apr	 6	pmiller
 			16:47:48 1996
-
+
 
 
 Project "aegis.3.0", Change 94					 Page 1
@@ -7809,7 +7809,7 @@ HISTORY
 			11:12:28 1996		 days.
 	integrate_pass	Sat Apr	 6	pmiller
 			11:57:18 1996
-
+
 
 
 Project "aegis.3.0", Change 95					 Page 1
@@ -7866,7 +7866,7 @@ HISTORY
 			16:45:45 1996		 days.
 	integrate_pass	Mon Apr	 8	pmiller
 			17:51:52 1996
-
+
 
 
 Project "aegis.3.0", Change 96					 Page 1
@@ -7929,7 +7929,7 @@ HISTORY
 			12:06:59 1996		 days.
 	integrate_pass	Sat May	 4	pmiller
 			16:46:43 1996
-
+
 
 
 Project "aegis.3.0", Change 97					 Page 1
@@ -7992,7 +7992,7 @@ HISTORY
 	review_pass	Sat Apr 20	pmiller
 			10:43:31 1996
 	integrate_begin Sat Apr 20	pmiller	 Elapsed time: 0.119
-
+
 
 
 Project "aegis.3.0", Change 97					 Page 2
@@ -8003,7 +8003,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 			10:43:46 1996		 days.
 	integrate_pass	Sat Apr 20	pmiller
 			11:37:09 1996
-
+
 
 
 Project "aegis.3.0", Change 98					 Page 1
@@ -8060,7 +8060,7 @@ HISTORY
 			22:49:24 1996		 days.
 	integrate_pass	Wed Apr 24	pmiller
 			23:20:48 1996
-
+
 
 
 Project "aegis.3.0", Change 99					 Page 1
@@ -8118,7 +8118,7 @@ HISTORY
 			11:22:03 1996		 days.
 	integrate_pass	Thu Apr 25	pmiller
 			14:39:15 1996
-
+
 
 
 Project "aegis.3.0", Change 100					 Page 1
@@ -8180,7 +8180,7 @@ HISTORY
 			17:56:58 1996		 days.
 	integrate_pass	Mon May 13	pmiller
 			19:01:26 1996
-
+
 
 
 Project "aegis.3.0", Change 102					 Page 1
@@ -8243,7 +8243,7 @@ HISTORY
 			22:03:38 1996
 	integrate_begin Sat May	 4	pmiller	 Elapsed time: 0.270
 			22:03:43 1996		 days.
-
+
 
 
 Project "aegis.3.0", Change 102					 Page 2
@@ -8253,7 +8253,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	------		------		-----	 ---------
 	integrate_pass	Sun May	 5	pmiller
 			00:05:17 1996
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 1
@@ -8316,7 +8316,7 @@ FILES
 	source	modify	    8 -> 9    aegis/aechown.c
 	source	modify	   18 -> 19   aegis/aecp.c
 	source	modify	   11 -> 12   aegis/aecpu.c
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 2
@@ -8379,7 +8379,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	modify	    3 -> 4    aegis/aer/stmt/if.c
 	source	modify	    1 -> 2    aegis/aer/stmt/return.c
 	source	modify	    1 -> 2    aegis/aer/stmt/throw.c
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 3
@@ -8442,7 +8442,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	modify	   20 -> 21   aegis/aet.c
 	source	modify	    2 -> 3    aegis/aev.c
 	source	modify	   21 -> 22   aegis/change.c
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 4
@@ -8505,7 +8505,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      c1.0.so
 	source	remove	    1	      doc/c1.1.so
 				      Moved to lib/en/user-guide/
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 5
@@ -8568,7 +8568,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	remove	    2	      doc/c4.4.so
 				      Moved to lib/en/user-guide/
 				      c4.4.so
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 6
@@ -8631,7 +8631,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      Moved to lib/en/user-guide/
 				      cI.0.so
 	build	remove	   89	      doc/version.so
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 7
@@ -8694,7 +8694,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	create	    1	      lib/en/man1/aefp.1
 				      Moved from man1/aefp.1
 	source	create	    1	      lib/en/man1/aegis.1
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 8
@@ -8757,7 +8757,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      Moved from man1/aerf.1
 	source	create	    1	      lib/en/man1/aeri.1
 				      Moved from man1/aeri.1
-
+
 
 
 Project "aegis.3.0", Change 103					 Page 9
@@ -8820,7 +8820,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	create	    1	      lib/en/man1/o_min.so
 				      Moved from man1/o_min.so
 	source	create	    1	      lib/en/man1/o_minor.so
-
+
 
 
 Project "aegis.3.0", Change 103					Page 10
@@ -8883,7 +8883,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      Moved from man5/aepattr.5
 	source	create	    1	      lib/en/man5/aepconf.5
 				      Moved from man5/aepconf.5
-
+
 
 
 Project "aegis.3.0", Change 103					Page 11
@@ -8946,7 +8946,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      Moved from doc/c2.5.so
 	source	create	    1	      lib/en/user-guide/c3.0.so
 				      Moved from doc/c3.0.so
-
+
 
 
 Project "aegis.3.0", Change 103					Page 12
@@ -9009,7 +9009,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	create	    1	      lib/en/user-guide/main.ms
 				      Moved from doc/aegis.ms
 	source	remove	    3	      lib/profile
-
+
 
 
 Project "aegis.3.0", Change 103					Page 13
@@ -9072,7 +9072,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	source	remove	    2	      man1/aenc.1
 				      Moved to lib/en/man1/aenc.1
 	source	remove	    1	      man1/aencu.1
-
+
 
 
 Project "aegis.3.0", Change 103					Page 14
@@ -9135,7 +9135,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      Moved to lib/en/man1/o_auto.so
 	source	remove	    1	      man1/o_baselin.so
 				      Moved to lib/en/man1/o_baselin.so
-
+
 
 
 Project "aegis.3.0", Change 103					Page 15
@@ -9198,7 +9198,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 				      Moved to lib/en/man1/o_user.so
 	source	remove	    1	      man1/o_verbose.so
 				      Moved to lib/en/man1/o_verbose.so
-
+
 
 
 Project "aegis.3.0", Change 103					Page 16
@@ -9261,7 +9261,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 	test	modify	   17 -> 18   test/00/t0002a.sh
 	test	modify	    2 -> 3    test/00/t0003a.sh
 	test	modify	    7 -> 8    test/00/t0004a.sh
-
+
 
 
 Project "aegis.3.0", Change 103					Page 17
@@ -9324,7 +9324,7 @@ HISTORY
 			21:43:52 1996		 days.
 	develop_end	Mon Dec 30	pmiller	 Elapsed time: 0.141
 			22:38:31 1996		 days.
-
+
 
 
 Project "aegis.3.0", Change 103					Page 18
@@ -9358,7 +9358,7 @@ Change Details				       Wed Jan 14 19:54:08 1998
 			12:31:25 1996		 days.
 	integrate_pass	Tue Dec 31	pmiller
 			17:13:22 1996
-
+
 
 
 Project "aegis.3.0", Change 104					 Page 1
@@ -9415,7 +9415,7 @@ HISTORY
 			10:25:31 1996		 days.
 	integrate_pass	Sat May 11	pmiller
 			13:19:42 1996
-
+
 
 
 Project "aegis.3.0", Change 105					 Page 1
@@ -9473,7 +9473,7 @@ HISTORY
 			11:45:49 1996		 days.
 	integrate_pass	Sun Jun	 2	pmiller
 			00:45:55 1996
-
+
 
 
 Project "aegis.3.0", Change 106					 Page 1
@@ -9531,7 +9531,7 @@ HISTORY
 			15:41:12 1996		 days.
 	integrate_pass	Mon May 13	pmiller
 			17:55:30 1996
-
+
 
 
 Project "aegis.3.0", Change 108					 Page 1
@@ -9593,7 +9593,7 @@ HISTORY
 			22:22:16 1996		 days.
 	integrate_pass	Wed Jul 17	pmiller
 			16:11:40 1996
-
+
 
 
 Project "aegis.3.0", Change 110					 Page 1
@@ -9650,7 +9650,7 @@ HISTORY
 			17:37:47 1996		 days.
 	integrate_pass	Tue Dec 31	pmiller
 			18:49:29 1996
-
+
 
 
 Project "aegis.3.0", Change 112					 Page 1
@@ -9710,7 +9710,7 @@ HISTORY
 			21:48:14 1996		 days.
 	integrate_pass	Mon Jun 24	pmiller
 			22:30:13 1996
-
+
 
 
 Project "aegis.3.0", Change 113					 Page 1
@@ -9765,7 +9765,7 @@ HISTORY
 			22:58:07 1996		 days.
 	integrate_pass	Fri Jul	 5	pmiller
 			23:17:24 1996
-
+
 
 
 Project "aegis.3.0", Change 114					 Page 1
@@ -9819,7 +9819,7 @@ HISTORY
 			23:07:54 1996		 days.
 	integrate_pass	Fri Jul 12	pmiller
 			23:27:46 1996
-
+
 
 
 Project "aegis.3.0", Change 115					 Page 1
@@ -9882,7 +9882,7 @@ FILES
 	source	modify	    3	      aegis/aer/func/wrap.c
 	source	modify	    3	      aegis/aer/lex.c
 	source	modify	    3	      aegis/aer/lex.h
-
+
 
 
 Project "aegis.3.0", Change 115					 Page 2
@@ -9940,7 +9940,7 @@ HISTORY
 			09:32:03 1996		 days.
 	integrate_pass	Sat Jul 27	pmiller
 			11:23:30 1996
-
+
 
 
 Project "aegis.3.0", Change 116					 Page 1
@@ -10003,7 +10003,7 @@ HISTORY
 			22:33:25 1996
 	review_pass	Mon Jul 15	pmiller
 			22:40:04 1996
-
+
 
 
 Project "aegis.3.0", Change 116					 Page 2
@@ -10015,7 +10015,7 @@ Change Details				       Wed Jan 14 19:54:10 1998
 			22:40:26 1996		 days.
 	integrate_pass	Mon Jul 15	pmiller
 			23:44:30 1996
-
+
 
 
 Project "aegis.3.0", Change 118					 Page 1
@@ -10073,7 +10073,7 @@ HISTORY
 			17:48:38 1996		 days.
 	integrate_pass	Tue Jul 23	pmiller
 			19:14:24 1996
-
+
 
 
 Project "aegis.3.0", Change 119					 Page 1
@@ -10130,7 +10130,7 @@ HISTORY
 			12:30:22 1996		 days.
 	integrate_pass	Tue Aug 13	pmiller
 			12:53:48 1996
-
+
 
 
 Project "aegis.3.0", Change 120					 Page 1
@@ -10193,7 +10193,7 @@ FILES
 	test	modify	    3	      test/00/t0054a.sh
 	test	modify	    2	      test/00/t0055a.sh
 	test	modify	    2	      test/00/t0056a.sh
-
+
 
 
 Project "aegis.3.0", Change 120					 Page 2
@@ -10214,7 +10214,7 @@ HISTORY
 			09:31:46 1996		 days.
 	integrate_pass	Sun Sep	 1	pmiller
 			10:38:29 1996
-
+
 
 
 Project "aegis.3.0", Change 121					 Page 1
@@ -10273,7 +10273,7 @@ HISTORY
 			01:40:02 1997		 days.
 	integrate_pass	Sun Mar 16	pmiller
 			02:02:21 1997
-
+
 
 
 Project "aegis.3.0", Change 122					 Page 1
@@ -10336,7 +10336,7 @@ HISTORY
 	develop_begin	Thu Nov 14	pmiller	 Elapsed time: 2.000
 			10:45:41 1996		 days.
 	develop_end	Sat Nov 16	pmiller
-
+
 
 
 Project "aegis.3.0", Change 122					 Page 2
@@ -10351,7 +10351,7 @@ Change Details				       Wed Jan 14 19:54:11 1998
 			10:24:54 1996		 days.
 	integrate_pass	Sat Nov 16	pmiller
 			11:35:07 1996
-
+
 
 
 Project "aegis.3.0", Change 123					 Page 1
@@ -10407,7 +10407,7 @@ HISTORY
 			21:21:56 1997		 days.
 	integrate_pass	Fri Mar 14	pmiller
 			21:50:49 1997
-
+
 
 
 Project "aegis.3.0", Change 124					 Page 1
@@ -10470,7 +10470,7 @@ FILES
 	source	create	    1	      aegis/sub/namemax.h
 	source	create	    1	      aegis/sub/right.c
 	source	create	    1	      aegis/sub/right.h
-
+
 
 
 Project "aegis.3.0", Change 124					 Page 2
@@ -10521,7 +10521,7 @@ HISTORY
 			23:18:52 1997		 days.
 	integrate_pass	Wed Jan 15	pmiller
 			01:34:12 1997
-
+
 
 
 Project "aegis.3.0", Change 125					 Page 1
@@ -10583,7 +10583,7 @@ FILES
 	test	modify	    4 -> 6    test/00/t0020a.sh
 	test	modify	    9 -> 10   test/00/t0031a.sh
 	test	modify	    4 -> 6    test/00/t0038a.sh
-
+
 
 
 Project "aegis.3.0", Change 125					 Page 2
@@ -10604,7 +10604,7 @@ HISTORY
 			11:22:44 1996		 days.
 	integrate_pass	Sat Dec	 7	pmiller
 			13:51:30 1996
-
+
 
 
 Project "aegis.3.0", Change 126					 Page 1
@@ -10662,7 +10662,7 @@ HISTORY
 			23:43:20 1996		 days.
 	integrate_pass	Sun Dec 29	pmiller
 			00:50:03 1996
-
+
 
 
 Project "aegis.3.0", Change 127					 Page 1
@@ -10724,7 +10724,7 @@ HISTORY
 			01:15:18 1996		 days.
 	integrate_pass	Mon Dec 30	pmiller
 			08:22:34 1996
-
+
 
 
 Project "aegis.3.0", Change 128					 Page 1
@@ -10787,7 +10787,7 @@ HISTORY
 						 Elapsed time: 0.056
 						 days.
 	develop_end	Mon Dec 30	pmiller
-
+
 
 
 Project "aegis.3.0", Change 128					 Page 2
@@ -10802,7 +10802,7 @@ Change Details				       Wed Jan 14 19:54:11 1998
 			10:51:51 1996		 days.
 	integrate_pass	Mon Dec 30	pmiller
 			11:34:34 1996
-
+
 
 
 Project "aegis.3.0", Change 130					 Page 1
@@ -10864,7 +10864,7 @@ FILES
 	build	modify	    8	      configure
 	source	modify	    2 -> 3    fmtgen/parse.y
 	source	modify	    2 -> 3    fmtgen/type/enumeration.c
-
+
 
 
 Project "aegis.3.0", Change 130					 Page 2
@@ -10885,7 +10885,7 @@ HISTORY
 			08:25:24 1997		 days.
 	integrate_pass	Sun Jan	 5	pmiller
 			09:34:37 1997
-
+
 
 
 Project "aegis.3.0", Change 131					 Page 1
@@ -10948,7 +10948,7 @@ FILES
 	source	modify	    1 -> 2    lib/en/man1/aegis.1
 	source	modify	    1 -> 2    lib/en/man1/aeib.1
 	source	modify	    1 -> 2    lib/en/man1/aeibu.1
-
+
 
 
 Project "aegis.3.0", Change 131					 Page 2
@@ -11011,7 +11011,7 @@ Change Details				       Wed Jan 14 19:54:11 1998
 	source	modify	    1	      lib/en/man1/o_minor.so
 	source	modify	    1	      lib/en/man1/o_nolog.so
 	source	modify	    1	      lib/en/man1/o_overw.so
-
+
 
 
 Project "aegis.3.0", Change 131					 Page 3
@@ -11070,7 +11070,7 @@ HISTORY
 			12:54:21 1997		 days.
 	integrate_pass	Sun Jan 12	pmiller
 			22:36:00 1997
-
+
 
 
 Project "aegis.3.0", Change 134					 Page 1
@@ -11130,7 +11130,7 @@ HISTORY
 			20:59:46 1997		 days.
 	integrate_pass	Wed Mar 12	pmiller
 			21:21:40 1997
-
+
 
 
 Project "aegis.3.0", Change 135					 Page 1
@@ -11193,7 +11193,7 @@ HISTORY
 			22:18:49 1997
 	review_pass	Sat Mar 15	pmiller
 			22:19:01 1997
-
+
 
 
 Project "aegis.3.0", Change 135					 Page 2
@@ -11205,7 +11205,7 @@ Change Details				       Wed Jan 14 19:54:12 1998
 			22:19:09 1997		 days.
 	integrate_pass	Sat Mar 15	pmiller
 			23:02:33 1997
-
+
 
 
 Project "aegis.3.0", Change 136					 Page 1
@@ -11265,7 +11265,7 @@ HISTORY
 			22:39:58 1997		 days.
 	integrate_pass	Fri Feb 28	pmiller
 			23:34:12 1997
-
+
 
 
 Project "aegis.3.0", Change 137					 Page 1
@@ -11323,7 +11323,7 @@ HISTORY
 			20:09:37 1997		 days.
 	integrate_pass	Thu Mar 20	pmiller
 			22:05:00 1997
-
+
 
 
 Project "aegis.3.0", Change 138					 Page 1
@@ -11383,7 +11383,7 @@ HISTORY
 			23:04:59 1997		 days.
 	integrate_pass	Thu Mar 20	pmiller
 			23:36:19 1997
-
+
 
 
 Project "aegis.3.0", Change 139					 Page 1
@@ -11441,7 +11441,7 @@ HISTORY
 			22:33:10 1997		 days.
 	integrate_pass	Sun May 11	pmiller
 			23:09:40 1997
-
+
 
 
 Project "aegis.3.0", Change 140					 Page 1
@@ -11504,7 +11504,7 @@ HISTORY
 	integrate_begin Wed Apr	 9	pmiller	 Elapsed time: 19.000
 			22:49:11 1997		 days.
 	integrate_fail	Tue May	 6	pmiller	 ./lib/en/user-guide/
-
+
 
 
 Project "aegis.3.0", Change 140					 Page 2
@@ -11527,7 +11527,7 @@ Change Details				       Wed Jan 14 19:54:12 1998
 			22:06:02 1997		 days.
 	integrate_pass	Tue May	 6	pmiller
 			22:38:21 1997
-
+
 
 
 Project "aegis.3.0", Change 141					 Page 1
@@ -11590,7 +11590,7 @@ HISTORY
 			21:35:37 1997		 days.
 	integrate_pass	Mon Apr	 7	pmiller
 			22:17:40 1997
-
+
 
 
 Project "aegis.3.0", Change 142					 Page 1
@@ -11653,7 +11653,7 @@ FILES
 	source	modify	    9 -> 10   aegis/aenc.c
 	source	modify	    7 -> 8    aegis/aencu.c
 	source	modify	    5 -> 6    aegis/aend.c
-
+
 
 
 Project "aegis.3.0", Change 142					 Page 2
@@ -11716,7 +11716,7 @@ HISTORY
 			22:07:11 1997		 days.
 	integrate_begin Mon Apr	 7	pmiller	 Elapsed time: 0.108
 			22:19:31 1997		 days.
-
+
 
 
 Project "aegis.3.0", Change 142					 Page 3
@@ -11726,7 +11726,7 @@ Change Details				       Wed Jan 14 19:54:12 1998
 	------		------		-----	 ---------
 	integrate_pass	Mon Apr	 7	pmiller
 			23:08:02 1997
-
+
 
 
 Project "aegis.3.0", Change 143					 Page 1
@@ -11789,7 +11789,7 @@ HISTORY
 			21:36:44 1997
 	review_pass	Mon Apr	 7	pmiller	 Elapsed time: 0.209
 			21:39:54 1997		 days.
-
+
 
 
 Project "aegis.3.0", Change 143					 Page 2
@@ -11801,7 +11801,7 @@ Change Details				       Wed Jan 14 19:54:12 1998
 			23:14:05 1997		 days.
 	integrate_pass	Mon Apr	 7	pmiller
 			23:57:59 1997
-
+
 
 
 Project "aegis.3.0", Change 144					 Page 1
@@ -11858,7 +11858,7 @@ HISTORY
 			23:19:18 1997		 days.
 	integrate_pass	Wed May	 7	pmiller
 			23:10:55 1997
-
+
 
 
 Project "aegis.3.0", Change 147					 Page 1
@@ -11921,7 +11921,7 @@ HISTORY
 	develop_begin	Wed May	 7	pmiller	 Elapsed time: 3.000
 			21:43:39 1997		 days.
 	develop_end	Sat May 10	pmiller
-
+
 
 
 Project "aegis.3.0", Change 147					 Page 2
@@ -11936,7 +11936,7 @@ Change Details				       Wed Jan 14 19:54:13 1998
 			21:19:28 1997		 days.
 	integrate_pass	Sat May 10	pmiller
 			22:08:14 1997
-
+
 
 
 Project "aegis.3.0", Change 148					 Page 1
@@ -11999,7 +11999,7 @@ HISTORY
 			22:39:38 1997		 days.
 	develop_end	Sun May 11	pmiller
 			09:40:21 1997
-
+
 
 
 Project "aegis.3.0", Change 148					 Page 2
@@ -12013,7 +12013,7 @@ Change Details				       Wed Jan 14 19:54:13 1998
 			09:44:27 1997		 days.
 	integrate_pass	Sun May 11	pmiller
 			10:35:54 1997
-
+
 
 
 Project "aegis.3.0", Change 149					 Page 1
@@ -12076,7 +12076,7 @@ HISTORY
 			22:17:10 1997		 days.
 	integrate_pass	Sun May 18	pmiller
 			23:15:51 1997
-
+
 
 
 Project "aegis.3.0", Change 150					 Page 1
@@ -12134,7 +12134,7 @@ HISTORY
 			22:53:41 1997		 days.
 	integrate_pass	Sat May 10	pmiller
 			23:29:35 1997
-
+
 
 
 Project "aegis.3.0", Change 151					 Page 1
@@ -12197,7 +12197,7 @@ FILES
 	source	modify	    2 -> 3    lib/report/file_activ.rpt
 	source	modify	    2 -> 3    lib/report/file_hstry.rpt
 	source	modify	    3 -> 4    lib/report/proj_files.rpt
-
+
 
 
 Project "aegis.3.0", Change 151					 Page 2
@@ -12222,7 +12222,7 @@ HISTORY
 			22:57:02 1997		 days.
 	integrate_pass	Thu May 15	pmiller
 			23:59:06 1997
-
+
 
 
 Project "aegis.3.0", Change 152					 Page 1
@@ -12285,7 +12285,7 @@ HISTORY
 	review_pass	Sun May 18	pmiller
 			10:20:15 1997
 	integrate_begin Sun May 18	pmiller	 Elapsed time: 0.197
-
+
 
 
 Project "aegis.3.0", Change 152					 Page 2
@@ -12296,7 +12296,7 @@ Change Details				       Wed Jan 14 19:54:13 1998
 			10:20:25 1997		 days.
 	integrate_pass	Sun May 18	pmiller
 			11:49:13 1997
-
+
 
 
 Project "aegis.3.0", Change 153					 Page 1
@@ -12359,7 +12359,7 @@ FILES
 	test	modify	    2 -> 3    test/00/t0023a.sh
 	test	modify	    6 -> 7    test/00/t0024a.sh
 	test	modify	    6 -> 7    test/00/t0025a.sh
-
+
 
 
 Project "aegis.3.0", Change 153					 Page 2
@@ -12422,7 +12422,7 @@ HISTORY
 	integrate_fail	Sun Nov 16	pmiller	 tests 2 and 31 fail
 			20:58:34 1997		 when set-uid-root
 						 Elapsed time: 0.170
-
+
 
 
 Project "aegis.3.0", Change 153					 Page 3
@@ -12439,7 +12439,7 @@ Change Details				       Wed Jan 14 19:54:13 1998
 			22:15:02 1997		 days.
 	integrate_pass	Sun Nov 16	pmiller
 			22:49:40 1997
-
+
 
 
 Project "aegis.3.0", Change 156					 Page 1
@@ -12502,7 +12502,7 @@ HISTORY
 	develop_end	Mon Jul 28	pmiller	 Elapsed time: 0.082
 			23:15:30 1997		 days.
 	review_pass	Mon Jul 28	pmiller
-
+
 
 
 Project "aegis.3.0", Change 156					 Page 2
@@ -12515,7 +12515,7 @@ Change Details				       Wed Jan 14 19:54:14 1998
 			23:52:32 1997		 days.
 	integrate_pass	Tue Jul 29	pmiller
 			23:17:49 1997
-
+
 
 
 Project "aegis.3.0", Change 158					 Page 1
@@ -12578,7 +12578,7 @@ HISTORY
 	review_pass	Fri Nov 28	pmiller
 			17:18:18 1997
 	integrate_begin Fri Nov 28	pmiller
-
+
 
 
 Project "aegis.3.0", Change 158					 Page 2
@@ -12589,7 +12589,7 @@ Change Details				       Wed Jan 14 19:54:14 1998
 			17:18:24 1997
 	integrate_pass	Fri Nov 28	pmiller
 			17:26:54 1997
-
+
 
 
 Project "aegis.3.0", Change 161					 Page 1
@@ -12652,7 +12652,7 @@ FILES
 	test	modify	    6 -> 7    test/00/t0008a.sh
 	test	modify	    9 -> 10   test/00/t0011a.sh
 	test	modify	    7 -> 8    test/00/t0017a.sh
-
+
 
 
 Project "aegis.3.0", Change 161					 Page 2
@@ -12678,7 +12678,7 @@ HISTORY
 			22:28:06 1997		 days.
 	integrate_pass	Sun Aug 24	pmiller
 			23:43:08 1997
-
+
 
 
 Project "aegis.3.0", Change 162					 Page 1
@@ -12737,7 +12737,7 @@ HISTORY
 			22:29:20 1997		 days.
 	integrate_pass	Tue Nov 18	pmiller
 			07:02:03 1997
-
+
 
 
 Project "aegis.3.0", Change 163					 Page 1
@@ -12793,7 +12793,7 @@ HISTORY
 			22:40:41 1997		 days.
 	integrate_pass	Thu Sep 11	pmiller
 			22:58:04 1997
-
+
 
 
 Project "aegis.3.0", Change 164					 Page 1
@@ -12851,7 +12851,7 @@ HISTORY
 			22:48:36 1997		 days.
 	integrate_pass	Mon Sep 15	pmiller
 			23:25:32 1997
-
+
 
 
 Project "aegis.3.0", Change 167					 Page 1
@@ -12914,7 +12914,7 @@ HISTORY
 			21:35:58 1997		 days.
 	develop_end	Mon Oct	 6	pmiller
 			17:53:22 1997
-
+
 
 
 Project "aegis.3.0", Change 167					 Page 2
@@ -12932,7 +12932,7 @@ Change Details				       Wed Jan 14 19:54:14 1998
 			18:31:04 1997		 days.
 	integrate_pass	Tue Oct	 7	pmiller
 			21:09:19 1997
-
+
 
 
 Project "aegis.3.0", Change 168					 Page 1
@@ -12995,7 +12995,7 @@ FILES
 	source	modify	    3 -> 4    lib/en/man1/aer.1
 	source	modify	    3 -> 4    lib/en/man5/aegstate.5
 	source	modify	    5 -> 6    lib/en/man5/aer.5
-
+
 
 
 Project "aegis.3.0", Change 168					 Page 2
@@ -13028,7 +13028,7 @@ HISTORY
 			22:16:50 1997		 days.
 	integrate_pass	Wed Nov 19	pmiller
 			17:39:39 1997
-
+
 
 
 Project "aegis.3.0", Change 170					 Page 1
@@ -13087,7 +13087,7 @@ HISTORY
 			17:46:57 1997		 days.
 	integrate_pass	Sun Oct 19	pmiller
 			18:35:45 1997
-
+
 
 
 Project "aegis.3.0", Change 171					 Page 1
@@ -13147,7 +13147,7 @@ HISTORY
 			23:28:38 1997		 days.
 	integrate_pass	Tue Oct 21	pmiller
 			21:59:26 1997
-
+
 
 
 Project "aegis.3.0", Change 173					 Page 1
@@ -13210,7 +13210,7 @@ HISTORY
 	review_pass	Tue Nov 18	pmiller
 			08:40:28 1997
 	integrate_begin Tue Nov 18	pmiller
-
+
 
 
 Project "aegis.3.0", Change 173					 Page 2
@@ -13221,7 +13221,7 @@ Change Details				       Wed Jan 14 19:54:15 1998
 			08:40:33 1997
 	integrate_pass	Tue Nov 18	pmiller
 			08:48:15 1997
-
+
 
 
 Project "aegis.3.0", Change 174					 Page 1
@@ -13284,7 +13284,7 @@ FILES
 	source	modify	   10 -> 11   aegis/aenpr.c
 	source	modify	   13 -> 14   aegis/aenrls.c
 	source	modify	    6 -> 7    aegis/aenrv.c
-
+
 
 
 Project "aegis.3.0", Change 174					 Page 2
@@ -13347,7 +13347,7 @@ Change Details				       Wed Jan 14 19:54:15 1998
 	source	modify	    6 -> 7    aegis/aeri.c
 	source	modify	   17 -> 18   aegis/aerm.c
 	source	modify	    7 -> 8    aegis/aermpr.c
-
+
 
 
 Project "aegis.3.0", Change 174					 Page 3
@@ -13410,7 +13410,7 @@ Change Details				       Wed Jan 14 19:54:15 1998
 	source	modify	    1 -> 2    aegis/sub/zero_pad.h
 	source	modify	    2 -> 3    aegis/uname.c
 	source	modify	    3 -> 4    aegis/undo.c
-
+
 
 
 Project "aegis.3.0", Change 174					 Page 4
@@ -13443,7 +13443,7 @@ HISTORY
 			23:28:43 1997		 days.
 	integrate_pass	Mon Dec	 1	pmiller
 			07:32:59 1997
-
+
 
 
 Project "aegis.3.0", Change 175					 Page 1
@@ -13501,7 +13501,7 @@ HISTORY
 			00:19:47 1997		 days.
 	integrate_pass	Sun Nov	 2	pmiller
 			08:38:36 1997
-
+
 
 
 Project "aegis.3.0", Change 176					 Page 1
@@ -13559,7 +13559,7 @@ FILES
 	source	create	    1	      lib/en/html/proj_menu.rpt
 	source	modify	    4 -> 5    lib/en/man5/aer.5
 	source	modify	    2 -> 3    lib/profile.in
-
+
 
 
 Project "aegis.3.0", Change 176					 Page 2
@@ -13580,7 +13580,7 @@ HISTORY
 			02:14:17 1997		 days.
 	integrate_pass	Tue Nov 11	pmiller
 			16:37:13 1997
-
+
 
 
 Project "aegis.3.0", Change 177					 Page 1
@@ -13637,7 +13637,7 @@ HISTORY
 			22:24:04 1997		 days.
 	integrate_pass	Mon Nov	 3	pmiller
 			23:01:53 1997
-
+
 
 
 Project "aegis.3.0", Change 178					 Page 1
@@ -13700,7 +13700,7 @@ FILES
 	test	modify	    5 -> 6    test/00/t0041a.sh
 	test	modify	    3 -> 4    test/00/t0043a.sh
 	test	modify	    5 -> 6    test/00/t0046a.sh
-
+
 
 
 Project "aegis.3.0", Change 178					 Page 2
@@ -13741,7 +13741,7 @@ HISTORY
 			09:18:51 1997		 days.
 	integrate_pass	Fri Dec	 5	pmiller
 			10:00:42 1997
-
+
 
 
 Project "aegis.3.0", Change 179					 Page 1
@@ -13804,7 +13804,7 @@ HISTORY
 	develop_end	Fri Nov 21	pmiller
 			16:39:14 1997
 	review_pass	Fri Nov 21	pmiller
-
+
 
 
 Project "aegis.3.0", Change 179					 Page 2
@@ -13817,7 +13817,7 @@ Change Details				       Wed Jan 14 19:54:15 1998
 			16:39:26 1997		 days.
 	integrate_pass	Fri Nov 21	pmiller
 			17:29:58 1997
-
+
 
 
 Project "aegis.3.0", Change 180					 Page 1
@@ -13880,7 +13880,7 @@ HISTORY
 	develop_begin	Sat Nov 22	pmiller	 Elapsed time: 1.000
 			10:45:21 1997		 days.
 	develop_end	Sun Nov 23	pmiller
-
+
 
 
 Project "aegis.3.0", Change 180					 Page 2
@@ -13895,7 +13895,7 @@ Change Details				       Wed Jan 14 19:54:15 1998
 			09:21:37 1997		 days.
 	integrate_pass	Sun Nov 23	pmiller
 			09:35:49 1997
-
+
 
 
 Project "aegis.3.0", Change 181					 Page 1
@@ -13958,7 +13958,7 @@ HISTORY
 			10:19:39 1997
 	review_pass	Sun Nov 23	pmiller
 			10:19:44 1997
-
+
 
 
 Project "aegis.3.0", Change 181					 Page 2
@@ -13970,7 +13970,7 @@ Change Details				       Wed Jan 14 19:54:16 1998
 			10:19:48 1997
 	integrate_pass	Sun Nov 23	pmiller
 			10:25:11 1997
-
+
 
 
 Project "aegis.3.0", Change 182					 Page 1
@@ -14028,7 +14028,7 @@ HISTORY
 			07:32:22 1997
 	integrate_pass	Mon Nov 24	pmiller
 			07:37:58 1997
-
+
 
 
 Project "aegis.3.0", Change 183					 Page 1
@@ -14084,7 +14084,7 @@ HISTORY
 			07:23:30 1997		 days.
 	integrate_pass	Tue Nov 25	pmiller
 			22:03:04 1997
-
+
 
 
 Project "aegis.3.0", Change 184					 Page 1
@@ -14147,7 +14147,7 @@ HISTORY
 	review_pass	Tue Nov 25	pmiller
 			22:02:17 1997
 	integrate_begin Tue Nov 25	pmiller
-
+
 
 
 Project "aegis.3.0", Change 184					 Page 2
@@ -14175,7 +14175,7 @@ Change Details				       Wed Jan 14 19:54:16 1998
 			22:22:45 1997		 days.
 	integrate_pass	Wed Nov 26	pmiller
 			07:18:37 1997
-
+
 
 
 Project "aegis.3.0", Change 185					 Page 1
@@ -14238,7 +14238,7 @@ FILES
 	source	modify	    2 -> 3    lib/en/html/proj_hstry.rpt
 	source	modify	    3 -> 4    lib/en/html/proj_list.rpt
 	source	modify	    3 -> 4    lib/en/html/proj_menu.rpt
-
+
 
 
 Project "aegis.3.0", Change 185					 Page 2
@@ -14263,7 +14263,7 @@ HISTORY
 			22:20:32 1997		 days.
 	integrate_pass	Sun Nov 30	pmiller
 			22:31:01 1997
-
+
 
 
 Project "aegis.3.0", Change 186					 Page 1
@@ -14326,7 +14326,7 @@ FILES
 	source	modify	    3 -> 4    common/ac/string.h
 	build	modify	    6 -> 7    common/config.h.in
 	source	modify	    2 -> 3    common/error.c
-
+
 
 
 Project "aegis.3.0", Change 186					 Page 2
@@ -14355,7 +14355,7 @@ HISTORY
 			10:30:28 1997		 days.
 	integrate_pass	Sun Nov 30	pmiller
 			17:16:50 1997
-
+
 
 
 Project "aegis.3.0", Change 187					 Page 1
@@ -14413,7 +14413,7 @@ HISTORY
 			07:46:09 1997		 days.
 	integrate_pass	Mon Dec	 1	pmiller
 			08:14:49 1997
-
+
 
 
 Project "aegis.3.0", Change 188					 Page 1
@@ -14476,7 +14476,7 @@ HISTORY
 			08:43:50 1997		 days.
 	integrate_pass	Mon Dec	 1	pmiller
 			09:24:18 1997
-
+
 
 
 Project "aegis.3.0", Change 189					 Page 1
@@ -14535,7 +14535,7 @@ HISTORY
 			10:10:40 1997		 days.
 	integrate_pass	Mon Dec	 1	pmiller
 			10:25:37 1997
-
+
 
 
 Project "aegis.3.0", Change 190					 Page 1
@@ -14591,7 +14591,7 @@ HISTORY
 			16:49:06 1997		 days.
 	integrate_pass	Wed Dec	 3	pmiller
 			20:52:57 1997
-
+
 
 
 Project "aegis.3.0", Change 191					 Page 1
@@ -14654,7 +14654,7 @@ HISTORY
 	review_pass	Mon Dec	 8	pmiller
 			17:30:42 1997
 	integrate_begin Mon Dec	 8	pmiller	 Elapsed time: 0.451
-
+
 
 
 Project "aegis.3.0", Change 191					 Page 2
@@ -14665,7 +14665,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 			17:30:48 1997		 days.
 	integrate_pass	Mon Dec	 8	pmiller
 			20:53:42 1997
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 1
@@ -14728,7 +14728,7 @@ FILES
 	source	remove	    5	      aegis/aer/expr/in.c
 				      Moved to libaegis/aer/expr/in.c
 	source	remove	    1	      aegis/aer/expr/in.h
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 2
@@ -14791,7 +14791,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      shift.h
 	source	remove	    2	      aegis/aer/expr/struct.c
 				      Moved to libaegis/aer/expr/
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 3
@@ -14854,7 +14854,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	remove	    1	      aegis/aer/func/keys.h
 				      Moved to libaegis/aer/func/keys.h
 	source	remove	    4	      aegis/aer/func/length.c
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 4
@@ -14917,7 +14917,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      sprintf.h
 	source	remove	    3	      aegis/aer/func/strftime.c
 				      Moved to libaegis/aer/func/
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 5
@@ -14980,7 +14980,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	remove	    1	      aegis/aer/stmt.c
 				      Moved to libaegis/aer/stmt.c
 	source	remove	    2	      aegis/aer/stmt.h
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 6
@@ -15043,7 +15043,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	remove	    2	      aegis/aer/value/boolean.h
 				      Moved to libaegis/aer/value/
 				      boolean.h
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 7
@@ -15106,7 +15106,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved to libaegis/aer/value/
 				      list.h
 	source	remove	    2	      aegis/aer/value/nul.c
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 8
@@ -15169,7 +15169,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved to libaegis/arglex2.h
 	source	remove	    2	      aegis/cattr.def
 				      Moved to libaegis/cattr.def
-
+
 
 
 Project "aegis.3.0", Change 192					 Page 9
@@ -15232,7 +15232,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	remove	    3	      aegis/indent.c
 				      Moved to libaegis/indent.c
 	source	remove	    1	      aegis/indent.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 10
@@ -15295,7 +15295,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved to libaegis/project.h
 	source	remove	   13	      aegis/project_file.c
 				      Moved to libaegis/project_file.c
-
+
 
 
 Project "aegis.3.0", Change 192					Page 11
@@ -15358,7 +15358,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	remove	    2	      aegis/sub/right.h
 				      Moved to libaegis/sub/right.h
 	source	remove	    2	      aegis/sub/zero_pad.c
-
+
 
 
 Project "aegis.3.0", Change 192					Page 12
@@ -15421,7 +15421,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      assign.c
 	source	create	    1	      libaegis/aer/expr/assign.h
 				      Moved from aegis/aer/expr/
-
+
 
 
 Project "aegis.3.0", Change 192					Page 13
@@ -15484,7 +15484,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/aer/expr/plus.c
 	source	create	    1	      libaegis/aer/expr/plus.h
 				      Moved from aegis/aer/expr/plus.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 14
@@ -15547,7 +15547,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/aer/func/
 				      getenv.h
 	source	create	    1	      libaegis/aer/func/gettime.c
-
+
 
 
 Project "aegis.3.0", Change 192					Page 15
@@ -15610,7 +15610,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/aer/func/
 				      sprintf.c
 	source	create	    1	      libaegis/aer/func/sprintf.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 16
@@ -15673,7 +15673,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	create	    1	      libaegis/aer/stmt.c
 				      Moved from aegis/aer/stmt.c
 	source	create	    1	      libaegis/aer/stmt.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 17
@@ -15736,7 +15736,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/aer/value/
 				      cstate.c
 	source	create	    1	      libaegis/aer/value/cstate.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 18
@@ -15799,7 +15799,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/aer/value/
 				      passwd.h
 	source	create	    1	      libaegis/aer/value/pstate.c
-
+
 
 
 Project "aegis.3.0", Change 192					Page 19
@@ -15862,7 +15862,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/col.c
 	source	create	    1	      libaegis/col.h
 				      Moved from aegis/col.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 20
@@ -15925,7 +15925,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	create	    1	      libaegis/lex/env.c
 				      Moved from aegis/lex/env.c
 	source	create	    1	      libaegis/lex/env.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 21
@@ -15988,7 +15988,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 				      Moved from aegis/sub.h
 	source	create	    1	      libaegis/sub/basename.c
 				      Moved from aegis/sub/basename.c
-
+
 
 
 Project "aegis.3.0", Change 192					Page 22
@@ -16051,7 +16051,7 @@ Change Details				       Wed Jan 14 19:54:17 1998
 	source	create	    1	      libaegis/undo.c
 				      Moved from aegis/undo.c
 	source	create	    1	      libaegis/undo.h
-
+
 
 
 Project "aegis.3.0", Change 192					Page 23
@@ -16096,7 +16096,7 @@ HISTORY
 			07:11:42 1997		 days.
 	integrate_pass	Wed Dec 10	pmiller
 			16:46:45 1997
-
+
 
 
 Project "aegis.3.0", Change 193					 Page 1
@@ -16159,7 +16159,7 @@ FILES
 	source	create	    1	      lib/en/LC_MESSAGES/aefind.po
 	source	modify	   19 -> 20   lib/en/LC_MESSAGES/aegis.po
 	source	modify	    1 -> 2    lib/en/LC_MESSAGES/libaegis.po
-
+
 
 
 Project "aegis.3.0", Change 193					 Page 2

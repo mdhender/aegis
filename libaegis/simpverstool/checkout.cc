@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,12 +13,11 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment the simple version tool checkout
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/mem.h>
 #include <libaegis/input/svt_checkout.h>
 #include <libaegis/output/file.h>
 #include <libaegis/simpverstool.h>
@@ -28,14 +27,13 @@ void
 simple_version_tool::checkout(const nstring &output_file_name,
     const nstring &version)
 {
-    output_ty *op = output_file_open(output_file_name, true);
-    checkout(*op, version);
-    delete op;
+    output::pointer op = output_file::open(output_file_name, true);
+    checkout(op, version);
 }
 
 
 void
-simple_version_tool::checkout(output_ty &dest, const nstring &version)
+simple_version_tool::checkout(output::pointer dest, const nstring &version)
 {
     input src = new input_svt_checkout(history_file_name, version);
     dest << src;

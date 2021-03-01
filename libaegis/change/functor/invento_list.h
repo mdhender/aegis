@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,16 +16,13 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: interface of the change_functor_inventory_list class
-//
 
 #ifndef LIBAEGIS_CHANGE_FUNCTOR_INVENTO_LIST_H
 #define LIBAEGIS_CHANGE_FUNCTOR_INVENTO_LIST_H
 
 #include <libaegis/change/functor.h>
+#include <libaegis/col.h>
 
-struct col; // forward
-struct output_ty; // forward
 struct project_ty; // forward
 
 /**
@@ -64,27 +61,27 @@ private:
       * The colp instance variable is used to remember the columnar
       * output aggregator from which the columns below spring.
       */
-    col *colp;
+    col::pointer colp;
 
     /**
       * The vers_col instance variable is used to remember the output
       * stream in which to print the change's version (including the
       * branch and delta in one string).
       */
-    output_ty *vers_col;
+    output::pointer vers_col;
 
     /**
       * The uuid_col instance variable is used to remember the output
       * stream in which to print the UUID.
       */
-    output_ty *uuid_col;
+    output::pointer uuid_col;
 
     /**
       * The when_col instance variable is used to remember the output
       * stream in which to print the data and time.  Is set to NULL if
       * no date and time is to be listed.
       */
-    output_ty *when_col;
+    output::pointer when_col;
 
     /**
       * The default constructor.  Do not use.

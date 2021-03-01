@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
+//      Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -17,17 +18,18 @@
 //	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/change/branch.h>
 #include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/change/branch.h>
 #include <libaegis/project.h>
 
 
 long
 change_history_timestamp_to_delta(project_ty *pp, time_t when)
 {
+    trace(("%s\n{\n", __PRETTY_FUNCTION__));
     cstate_ty       *cstate_data;
     cstate_branch_history_list_ty *hl;
-    long            j;
     change::pointer cp;
 
     cp = pp->change_get();
@@ -37,22 +39,111 @@ change_history_timestamp_to_delta(project_ty *pp, time_t when)
     hl = cstate_data->branch->history;
     if (!hl)
 	return 0;
-    for (j = hl->length - 1; j >= 0; --j)
-    {
-	cstate_branch_history_ty *bh;
-	change::pointer cp2;
-	time_t		result;
 
-	bh = hl->list[j];
-	assert(bh);
-	if (!bh)
-	    continue;
-	cp2 = change_alloc(pp, bh->change_number);
-	change_bind_existing(cp2);
-	result = change_completion_timestamp(cp2);
-	change_free(cp2);
-	if (result <= when)
-	    return bh->delta_number;
+    if (hl->length == 0)
+        return 0;
+
+    assert(hl->list);
+    if (!hl->list)
+        return 0;
+
+    //
+    // Find the right candidate using an algorithm with a logarithmic
+    // time complexity.
+    //
+
+    long start = 0;
+    long end = hl->length - 1;
+
+    cstate_branch_history_ty *bh_start = hl->list[start];
+    assert(bh_start);
+    time_t time_start =
+        pp->change_completion_timestamp(bh_start->change_number);
+
+    cstate_branch_history_ty *bh_end = hl->list[end];
+    assert(bh_end);
+    time_t time_end =
+        pp->change_completion_timestamp(bh_end->change_number);
+
+    //
+    // Find the right candidate using an algorithm with a logarithmic
+    // time complexity.
+    //
+    long result = 0;
+    for(;;)
+    {
+        assert (start <= end);
+
+        trace_long(start);
+        trace_long(end);
+
+        if (when == time_end)
+        {
+            assert(hl->list[end]);
+            result = hl->list[end]->delta_number;
+            break;
+        }
+
+        //
+        // This happend only at the 1st iteration if `when' is outside
+        // the interval.
+        //
+        if (when > time_end)
+        {
+            assert(hl->list[end]);
+            result = hl->list[end]->delta_number;
+            break;
+        }
+
+        if (when == time_start)
+        {
+            assert(hl->list[start]);
+            result = hl->list[start]->delta_number;
+            break;
+        }
+
+        //
+        // This happend only at the 1st iteration if `when' is outside
+        // the interval.
+        //
+        if (when < time_start)
+        {
+            result = 0;
+            break;
+        }
+
+        //
+        // If we cannot further reduce the interval and `when' is still
+        // missing we return the oldest change (pointed by start).
+        //
+        if (end - start == 1)
+        {
+            assert (time_end > when);
+            assert (when > time_start);
+            assert(hl->list[start]);
+
+            result = hl->list[start]->delta_number;
+            break;
+        }
+
+        long middle = start + (end - start) / 2;
+
+        cstate_branch_history_ty *bh_middle = hl->list[middle];
+        assert(bh_middle);
+	time_t time_middle =
+            pp->change_completion_timestamp(bh_middle->change_number);
+
+        if (when < time_middle)
+        {
+            time_end = time_middle;
+            end = middle;
+        }
+        else
+        {
+            time_start = time_middle;
+            start = middle;
+        }
     }
-    return 0;
+
+    return result;
 }

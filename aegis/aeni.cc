@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,31 +13,31 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new integrator
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/project/integrators.h>
-#include <aegis/aeni.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
+
+#include <aegis/aeni.h>
 
 
 static void
@@ -73,32 +73,11 @@ new_integrator_help(void)
 static void
 new_integrator_list(void)
 {
-    string_ty	    *project_name;
-
     trace(("new_integrator_list()\n{\n"));
     arglex();
-    project_name = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_integrator_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_integrator_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_integrators(project_name, 0, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_integrator_usage);
+    list_integrators(cid, 0);
     trace(("}\n"));
 }
 

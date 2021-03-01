@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller
+//	Copyright (C) 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate diffs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -244,7 +242,6 @@ diff_hunk(patch_context_ty *context)
     string_ty	    *line;
     patch_hunk_ty   *php;
     int		    idx;
-    static string_ty *minus;
     long	    j;
     string_ty	    *value;
 
@@ -320,9 +317,10 @@ diff_hunk(patch_context_ty *context)
 	line = patch_context_getline(context, idx++);
 	if (!line)
 	    goto oops;
-	if (!minus)
-	    minus = str_from_c("---");
-	if (!str_equal(line, minus))
+        static string_ty *dash3;
+	if (!dash3)
+	    dash3 = str_from_c("---");
+	if (!str_equal(line, dash3))
 	    goto oops;
 	for (j = after1; j <= after2; ++j)
 	{

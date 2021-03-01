@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2006 Peter Miller
+//      Copyright (C) 1999-2006, 2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -13,71 +13,49 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate truncates
-//
-// This class of wide output is used to truncate lines to a specified
-// printing width.  Characters beyond on each line this limit are
-// discarded.
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/language.h>
-#include <common/str.h>
 #include <libaegis/wide_output.h>
-#include <libaegis/wide_output/private.h>
 #include <libaegis/wide_output/truncate.h>
 
 
-struct wide_output_truncate_ty
+wide_output_truncate::~wide_output_truncate()
 {
-    wide_output_ty  inherited;
-    wide_output_ty  *deeper;
-    int             delete_on_close;
-    int             width;
-
-    wchar_t         *buf;
-    size_t          buf_pos;
-    size_t          buf_max;
-
-    int             column;
-};
-
-
-static void
-wide_output_truncate_destructor(wide_output_ty *fp)
-{
-    wide_output_truncate_ty *this_thing;
-
-    this_thing = (wide_output_truncate_ty *)fp;
-    if (this_thing->buf_pos)
-        wide_output_write(
-            this_thing->deeper, this_thing->buf, this_thing->buf_pos);
-    delete [] this_thing->buf;
-    if (this_thing->delete_on_close)
-        wide_output_delete(this_thing->deeper);
-    this_thing->deeper = 0;
+    flush();
+    if (!buf.empty())
+        deeper->write(buf.get_data(), buf.size());
 }
 
 
-static string_ty *
-wide_output_truncate_filename(wide_output_ty *fp)
+wide_output_truncate::wide_output_truncate(const wide_output::pointer &a_deeper,
+        int a_width) :
+    deeper(a_deeper),
+    width(a_width <= 0 ? a_deeper->page_width() : a_width),
+    column(0)
 {
-    wide_output_truncate_ty *this_thing;
-
-    this_thing = (wide_output_truncate_ty *)fp;
-    return wide_output_filename(this_thing->deeper);
 }
 
 
-static void
-wide_output_truncate_write(wide_output_ty *fp, const wchar_t *data, size_t len)
+wide_output::pointer
+wide_output_truncate::open(const wide_output::pointer &a_deeper, int a_width)
 {
-    wide_output_truncate_ty *this_thing;
-    int             cwid;
+    return pointer(new wide_output_truncate(a_deeper, a_width));
+}
 
-    this_thing = (wide_output_truncate_ty *)fp;
+
+nstring
+wide_output_truncate::filename()
+{
+    return deeper->filename();
+}
+
+
+void
+wide_output_truncate::write_inner(const wchar_t *data, size_t len)
+{
     language_human();
     while (len > 0)
     {
@@ -86,18 +64,17 @@ wide_output_truncate_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 
         switch (wc)
         {
-        case '\n':
-        case '\f':
+        case L'\n':
+        case L'\f':
             language_C();
-            if (this_thing->buf_pos)
+            if (!buf.empty())
             {
-                wide_output_write(
-                    this_thing->deeper, this_thing->buf, this_thing->buf_pos);
+                deeper->write(buf.get_data(), buf.size());
+                buf.clear();
             }
-            wide_output_putwc(this_thing->deeper, wc);
+            deeper->put_wc(wc);
             language_human();
-            this_thing->buf_pos = 0;
-            this_thing->column = 0;
+            column = 0;
             break;
 
         default:
@@ -105,31 +82,22 @@ wide_output_truncate_write(wide_output_ty *fp, const wchar_t *data, size_t len)
             // If we have already become too wide, don't
             // make the deeper unnecessary function calls.
             //
-            if (this_thing->column >= this_thing->width)
+            if (column >= width)
                 break;
 
             //
             // Only remember this_thing character if all of it
             // fits within the specified width.
             //
-            cwid = wcwidth(wc);
-            if (this_thing->column + cwid > this_thing->width)
+            int cwid = wcwidth(wc);
+            if (column + cwid > width)
                 break;
 
             //
             // Make room if necessary
             //
-            if (this_thing->buf_pos >= this_thing->buf_max)
-            {
-                this_thing->buf_max = 16 + 2 * this_thing->buf_max;
-		wchar_t *new_buf = new wchar_t [this_thing->buf_max];
-		for (size_t k = 0; k < this_thing->buf_pos; ++k)
-		    new_buf[k] = this_thing->buf[k];
-		delete [] this_thing->buf;
-		this_thing->buf = new_buf;
-            }
-            this_thing->buf[this_thing->buf_pos++] = wc;
-            this_thing->column += cwid;
+            buf.push_back(wc);
+            column += cwid;
             break;
         }
     }
@@ -137,78 +105,39 @@ wide_output_truncate_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 }
 
 
-static void
-wide_output_truncate_flush(wide_output_ty *fp)
+void
+wide_output_truncate::flush_inner()
 {
-    wide_output_truncate_ty *this_thing;
-
-    this_thing = (wide_output_truncate_ty *)fp;
-    wide_output_write(this_thing->deeper, this_thing->buf, this_thing->buf_pos);
-    this_thing->buf_pos = 0;
-    // DO NOT reset this_thing->column
+    deeper->write(buf.get_data(), buf.size());
+    // DO NOT reset column
 }
 
 
-static int
-wide_output_truncate_page_width(wide_output_ty *fp)
+int
+wide_output_truncate::page_width()
 {
-    wide_output_truncate_ty *this_thing;
-
-    this_thing = (wide_output_truncate_ty *)fp;
-    return this_thing->width;
+    return width;
 }
 
 
-static int
-wide_output_truncate_page_length(wide_output_ty *fp)
+int
+wide_output_truncate::page_length()
 {
-    wide_output_truncate_ty *this_thing;
-
-    this_thing = (wide_output_truncate_ty *)fp;
-    return wide_output_page_length(this_thing->deeper);
+    return deeper->page_length();
 }
 
 
-static void
-wide_output_truncate_eoln(wide_output_ty *fp)
+void
+wide_output_truncate::end_of_line_inner()
 {
-    wide_output_truncate_ty *this_thing;
-
-    this_thing = (wide_output_truncate_ty *)fp;
-    if (this_thing->column > 0)
-        wide_output_putwc(fp, (wchar_t)'\n');
+    if (column > 0)
+        put_wc(L'\n');
 }
 
 
-static wide_output_vtbl_ty vtbl =
+const char *
+wide_output_truncate::type_name()
+    const
 {
-    sizeof(wide_output_truncate_ty),
-    wide_output_truncate_destructor,
-    wide_output_truncate_filename,
-    wide_output_truncate_write,
-    wide_output_truncate_flush,
-    wide_output_truncate_page_width,
-    wide_output_truncate_page_length,
-    wide_output_truncate_eoln,
-    "truncate",
-};
-
-
-wide_output_ty *
-wide_output_truncate_open(wide_output_ty *deeper, int delete_on_close,
-    int width)
-{
-    wide_output_ty  *result;
-    wide_output_truncate_ty *this_thing;
-
-    result = wide_output_new(&vtbl);
-    this_thing = (wide_output_truncate_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->delete_on_close = delete_on_close;
-    this_thing->width = (width <= 0 ? wide_output_page_width(deeper) : width);
-    this_thing->buf = 0;
-    this_thing->buf_pos = 0;
-    this_thing->buf_max = 0;
-    this_thing->column = 0;
-    return result;
+    return "wide_output_truncate";
 }

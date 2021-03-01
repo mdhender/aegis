@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller
+//	Copyright (C) 1999, 2003-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate cpio_child2s
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/output/cpio_child.h>
@@ -24,7 +22,7 @@
 #include <libaegis/output/memory.h>
 
 
-output_cpio_child2_ty::~output_cpio_child2_ty()
+output_cpio_child2::~output_cpio_child2()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -35,41 +33,36 @@ output_cpio_child2_ty::~output_cpio_child2_ty()
     //
     // Create a cpio archive member, now that the length is known.
     //
-    output_ty *tmp =
-	new output_cpio_child_ty(deeper, name, buffer->ftell(), mtime);
+    output::pointer tmp =
+	output_cpio_child::create(deeper, name, buffer->ftell(), mtime);
 
     //
     // Forward the stashed data to the cpio archive member.
     //
     buffer->forward(tmp);
-
-    //
-    // Get rid all the machinery necessary to pull this off, now that
-    // we've done it.
-    //
-    delete tmp;
-    delete buffer;
-    buffer = 0;
-
-    //
-    // DO NOT delete deeper;
-    // this is output_cpio::destructor's job.
-    //
 }
 
 
-output_cpio_child2_ty::output_cpio_child2_ty(output_ty *arg1,
-	const nstring &arg2, time_t a_mtime) :
-    deeper(arg1),
-    name(arg2),
-    buffer(new output_memory_ty()),
+output_cpio_child2::output_cpio_child2(const output::pointer &a_deeper,
+	const nstring &a_name, time_t a_mtime) :
+    deeper(a_deeper),
+    name(a_name),
+    buffer(output_memory::create()),
     mtime(a_mtime)
 {
 }
 
 
-string_ty *
-output_cpio_child2_ty::filename()
+output::pointer
+output_cpio_child2::create(const output::pointer &a_deeper,
+    const nstring &a_name, time_t a_mtime)
+{
+    return pointer(new output_cpio_child2(a_deeper, a_name, a_mtime));
+}
+
+
+nstring
+output_cpio_child2::filename()
     const
 {
     return deeper->filename();
@@ -77,7 +70,7 @@ output_cpio_child2_ty::filename()
 
 
 long
-output_cpio_child2_ty::ftell_inner()
+output_cpio_child2::ftell_inner()
     const
 {
     return buffer->ftell();
@@ -85,28 +78,28 @@ output_cpio_child2_ty::ftell_inner()
 
 
 void
-output_cpio_child2_ty::write_inner(const void *data, size_t len)
+output_cpio_child2::write_inner(const void *data, size_t len)
 {
     buffer->write(data, len);
 }
 
 
 void
-output_cpio_child2_ty::flush_inner()
+output_cpio_child2::flush_inner()
 {
     buffer->flush();
 }
 
 
 void
-output_cpio_child2_ty::end_of_line_inner()
+output_cpio_child2::end_of_line_inner()
 {
     buffer->end_of_line();
 }
 
 
 const char *
-output_cpio_child2_ty::type_name()
+output_cpio_child2::type_name()
     const
 {
     return "cpio buffered child";

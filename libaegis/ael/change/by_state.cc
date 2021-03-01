@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -17,18 +17,22 @@
 //	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 #include <libaegis/ael/attribu_list.h>
 #include <libaegis/ael/build_header.h>
 #include <libaegis/ael/change/by_state.h>
+#include <libaegis/ael/change/inappropriat.h>
 #include <libaegis/ael/column_width.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/option.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
-#include <common/symtab.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -70,57 +74,38 @@ single_bit(int n)
 static void
 output_reaper(void *p)
 {
-    output_ty       *op;
-
-    op = (output_ty *)p;
-    delete op;
+    output::pointer *opp = (output::pointer *)p;
+    delete opp;
 }
 
 
 void
-list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
+list_changes_in_state_mask_by_user(change_identifier &cid, int state_mask,
     string_ty *login)
 {
-    output_ty       *number_col = 0;
-    output_ty       *state_col = 0;
-    output_ty       *description_col = 0;
+    output::pointer number_col;
+    output::pointer state_col;
+    output::pointer description_col;
     int             j;
-    project_ty      *pp;
     string_ty       *line1;
     string_ty       *line2;
-    int             left;
-    col	    *colp;
-    user_ty::pointer up;
     symtab_ty       *attr_col_stp = 0;
+
+    if (cid.set())
+        list_change_inappropriate();
 
     //
     // Check that the specified user exists.
     //
     if (login)
-        up = user_ty::create(nstring(login));
-    else
-        up = user_ty::create();
-
-    //
-    // locate project data
-    //
-    trace(("list_changes_in_state_mask(state_mask = 0x%X)\n{\n", state_mask));
-    if (!project_name)
-    {
-        nstring n = up->default_project();
-	project_name = str_copy(n.get_ref());
-    }
-    else
-	project_name = str_copy(project_name);
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
+        user_ty::create(nstring(login));
 
     //
     // create the columns
     //
-    colp = col::open((string_ty *)0);
-    line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
+    col::pointer colp = col::open((string_ty *)0);
+    line1 =
+        str_format("Project \"%s\"", project_name_get(cid.get_pp())->str_text);
     j = single_bit(state_mask);
     if (j >= 0)
     {
@@ -150,7 +135,7 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
     str_free(line1);
     str_free(line2);
 
-    left = 0;
+    int left = 0;
     number_col = colp->create(left, left + CHANGE_WIDTH, "Change\n-------");
     left += CHANGE_WIDTH + 1;
 
@@ -164,15 +149,12 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 	attr_col_stp->set_reap(output_reaper);
 	for (j = 0; ; ++j)
 	{
-	    cstate_ty       *cstate_data;
-	    long		change_number;
-	    change::pointer cp;
-
-	    if (!project_change_nth(pp, j, &change_number))
+	    long change_number = 0;
+	    if (!project_change_nth(cid.get_pp(), j, &change_number))
 		break;
-	    cp = change_alloc(pp, change_number);
+	    change::pointer cp = change_alloc(cid.get_pp(), change_number);
 	    change_bind_existing(cp);
-	    cstate_data = cp->cstate_get();
+	    cstate_ty *cstate_data = cp->cstate_get();
 	    if
 	    (
 		(state_mask & (1 << cstate_data->state))
@@ -186,9 +168,7 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 		cstate_data->attribute
 	    )
 	    {
-		size_t          k;
-
-		for (k = 0; k < cstate_data->attribute->length; ++k)
+		for (size_t k = 0; k < cstate_data->attribute->length; ++k)
 		{
 		    attributes_ty *ap = cstate_data->attribute->list[k];
 		    if (ael_attribute_listable(ap))
@@ -197,11 +177,8 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 			void *p = attr_col_stp->query(lc_name);
 			if (!p)
 			{
-			    string_ty       *s;
-			    output_ty       *op;
-
-			    s = ael_build_header(ap->name);
-			    op =
+			    string_ty *s = ael_build_header(ap->name);
+			    output::pointer op =
 				colp->create
 				(
 				    left,
@@ -209,7 +186,11 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 				    s->str_text
 				);
 			    str_free(s);
-			    attr_col_stp->assign(lc_name, op);
+			    attr_col_stp->assign
+                            (
+                                lc_name,
+                                new output::pointer(op)
+                            );
 			    left += ATTR_WIDTH + 1;
 			}
 			str_free(lc_name);
@@ -228,15 +209,12 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
     //
     for (j = 0; ; ++j)
     {
-	cstate_ty       *cstate_data;
-	long		change_number;
-	change::pointer cp;
-
-	if (!project_change_nth(pp, j, &change_number))
+	long change_number = 0;
+	if (!project_change_nth(cid.get_pp(), j, &change_number))
 	    break;
-	cp = change_alloc(pp, change_number);
+	change::pointer cp = change_alloc(cid.get_pp(), change_number);
 	change_bind_existing(cp);
-	cstate_data = cp->cstate_get();
+	cstate_ty *cstate_data = cp->cstate_get();
 	if
 	(
 	    (state_mask & (1 << cstate_data->state))
@@ -279,18 +257,19 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 	    }
 	    if (attr_col_stp && cstate_data->attribute)
 	    {
-		size_t          k;
-
-		for (k = 0; k < cstate_data->attribute->length; ++k)
+		for (size_t k = 0; k < cstate_data->attribute->length; ++k)
 		{
 		    attributes_ty *ap = cstate_data->attribute->list[k];
 		    if (ap->name && ap->value)
 		    {
 			string_ty *lc_name = str_downcase(ap->name);
-			output_ty *op =
-			    (output_ty *)attr_col_stp->query(lc_name);
-			if (op)
+                        void *vp = attr_col_stp->query(lc_name);
+                        if (vp)
+                        {
+                            output::pointer op = *(output::pointer *)vp;
+                            assert(op);
 			    op->fputs(ap->value);
+                        }
 			str_free(lc_name);
 		    }
 		}
@@ -301,18 +280,12 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
     }
     if (attr_col_stp)
 	delete attr_col_stp;
-
-    //
-    // clean up and go home
-    //
-    delete colp;
-    project_free(pp);
     trace(("}\n"));
 }
 
 
 void
-list_changes_in_state_mask(string_ty *project_name, int state_mask)
+list_changes_in_state_mask(change_identifier &cid, int state_mask)
 {
-    list_changes_in_state_mask_by_user(project_name, state_mask, 0);
+    list_changes_in_state_mask_by_user(cid, state_mask, 0);
 }

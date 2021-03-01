@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -290,7 +290,7 @@ public:
       *
       * The str_format function is used to create a new string by interpreting
       * the \a fmt string.  All formats understood by the ANSI C printf(3)
-      * are understodd by this function (but probably not your favorite
+      * are understood by this function (but probably not your favorite
       * proprietary extension).  In addition the '%S' specifier expects a <i>
       * string_ty * </i> argument.
       *
@@ -311,7 +311,7 @@ public:
       *
       * The str_vformat function is used to create a new string by
       * interpreting the \a fmt string.  All formats understood by the
-      * ANSI C printf(3) are understodd by this function (but probably
+      * ANSI C printf(3) are understood by this function (but probably
       * not your favorite proprietary extension).  In addition the '%S'
       * specifier expects a <i>string_ty *</i> argument.
       *
@@ -463,10 +463,17 @@ public:
 
     /**
       * The trim_extension method is used to build a new string without
-      * the file extension.  For example, the string "a/b.b" will return
+      * the file extension.  For example, the string "a/b.c" will return
       * "a/b".
       */
     nstring trim_extension() const;
+
+    /**
+      * The get_extension method is used to build a new string
+      * containing the file extension, if any, without the dot.  For
+      * example, the string "a/b.c" will return "c".
+      */
+    nstring get_extension() const;
 
     /**
       * \brief

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1994-1996, 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -57,10 +57,10 @@ rpt_value_cstate::rpt_value_cstate(project_ty *a_pp, size_t a_length,
 
 
 rpt_value::pointer
-rpt_value_cstate::create(project_ty *pp, size_t length, const long *list)
+rpt_value_cstate::create(project_ty *pptr, size_t o_length, const long *vlist)
 {
     trace(("%s\n", __PRETTY_FUNCTION__));
-    return pointer(new rpt_value_cstate(pp, length, list));
+    return pointer(new rpt_value_cstate(pptr, o_length, vlist));
 }
 
 

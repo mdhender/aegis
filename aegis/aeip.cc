@@ -1,11 +1,11 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2007 Peter Miller
-//      Copyright (C) 2006 Walter Franzini
+//      Copyright (C) 1991-2008 Peter Miller
+//      Copyright (C) 2006-2008 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -23,7 +23,7 @@
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 #include <common/ac/unistd.h>
 
 #include <common/env.h>
@@ -41,6 +41,7 @@
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change/pfs.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
@@ -75,7 +76,7 @@ struct time_map_list_ty
 {
     time_map_ty     *list;
     size_t          len;
-    size_t          max;
+    size_t          max_len;
     time_t          time_aeib;
     time_t          time_aeip;
 };
@@ -109,36 +110,11 @@ integrate_pass_help(void)
 static void
 integrate_pass_list(void)
 {
-    string_ty       *project_name;
-
     trace(("integrate_pass_list()\n{\n"));
     arglex();
-    project_name = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(integrate_pass_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, integrate_pass_usage);
-            continue;
-        }
-        arglex();
-    }
-    list_changes_in_state_mask
-    (
-        project_name,
-        1 << cstate_state_being_integrated
-    );
-    if (project_name)
-        str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(integrate_pass_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_being_integrated);
     trace(("}\n"));
 }
 
@@ -150,8 +126,6 @@ time_map_get(void *p, dir_walk_message_ty message, string_ty *,
     time_map_list_ty *tlp;
     time_map_ty     *tp;
     time_t          t;
-    long            min;
-    long            max;
 
     //
     // If it's not a file, ignore it.
@@ -168,45 +142,42 @@ time_map_get(void *p, dir_walk_message_ty message, string_ty *,
     // Find the time in the list using a binary chop.
     // If it is already there, do nothing.
     //
-    min = 0;
-    max = (long)tlp->len - 1;
-    while (min <= max)
+    long min_idx = 0;
+    long max_idx = (long)tlp->len - 1;
+    while (min_idx <= max_idx)
     {
-        long            mid;
-        time_t          mid_t;
-
-        mid = (min + max) / 2;
-        mid_t = tlp->list[mid].old;
+        long mid = (min_idx + max_idx) / 2;
+        time_t mid_t = tlp->list[mid].old;
         if (mid_t == t)
             return;
         if (mid_t < t)
-            min = mid + 1;
+            min_idx = mid + 1;
         else
-            max = mid - 1;
+            max_idx = mid - 1;
     }
 
     //
     // This is a new time, insert it into the list sorted by time.
     //
-    assert(min >= 0);
-    if (tlp->len >= tlp->max)
+    assert(min_idx >= 0);
+    if (tlp->len >= tlp->max_len)
     {
-        tlp->max = tlp->max * 2 + 16;
-	time_map_ty *new_list = new time_map_ty [tlp->max];
-	for (size_t k = 0; k < size_t(min); ++k)
+        tlp->max_len = tlp->max_len * 2 + 16;
+	time_map_ty *new_list = new time_map_ty [tlp->max_len];
+	for (size_t k = 0; k < size_t(min_idx); ++k)
 	    new_list[k] = tlp->list[k];
-	for (size_t j = min; j < tlp->len; ++j)
+	for (size_t j = min_idx; j < tlp->len; ++j)
 	    new_list[j + 1] = tlp->list[j];
 	delete [] tlp->list;
 	tlp->list = new_list;
     }
     else
     {
-	for (size_t j = tlp->len; j > size_t(min); --j)
+	for (size_t j = tlp->len; j > size_t(min_idx); --j)
 	    tlp->list[j] = tlp->list[j - 1];
     }
     tlp->len++;
-    tp = &tlp->list[min];
+    tp = &tlp->list[min_idx];
     tp->old = st->st_mtime;
     tp->becomes = st->st_mtime;
 }
@@ -218,8 +189,6 @@ time_map_set(void *p, dir_walk_message_ty message, string_ty *path,
 {
     time_map_list_ty *tlp;
     time_t          t;
-    long            min;
-    long            max;
 
     //
     // If it's not a file, ignore it.
@@ -235,25 +204,22 @@ time_map_set(void *p, dir_walk_message_ty message, string_ty *path,
     //
     // Find the time in the list using a binary chop.
     //
-    min = 0;
-    max = (long)tlp->len - 1;
-    while (min <= max)
+    long min_idx = 0;
+    long max_idx = (long)tlp->len - 1;
+    while (min_idx <= max_idx)
     {
-        long            mid;
-        time_t          mid_t;
-
-        mid = (min + max) / 2;
-        mid_t = tlp->list[mid].old;
+        long mid = (min_idx + max_idx) / 2;
+        time_t mid_t = tlp->list[mid].old;
         if (mid_t == t)
         {
-            min = mid;
-            max = mid;
+            min_idx = mid;
+            max_idx = mid;
             break;
         }
         if (mid_t < t)
-            min = mid + 1;
+            min_idx = mid + 1;
         else
-            max = mid - 1;
+            max_idx = mid - 1;
     }
 
     //
@@ -261,15 +227,15 @@ time_map_set(void *p, dir_walk_message_ty message, string_ty *path,
     // thus is not in the list), which hopefully is *very* rare, as
     // it requires direct human interference, use a close time.
     //
-    if (min >= (long)tlp->len)
+    if (min_idx >= (long)tlp->len)
     {
-        min = (long)tlp->len - 1;
+        min_idx = (long)tlp->len - 1;
     }
 
     //
     // set the file time
     //
-    os_mtime_set_errok(path, tlp->list[min].becomes);
+    os_mtime_set_errok(path, tlp->list[min_idx].becomes);
 }
 
 
@@ -357,7 +323,7 @@ reasonable_number_of_test_correlations(change::pointer cp)
 
 	    case file_usage_test:
 	    case file_usage_manual_test:
-		++nsources;
+		++ntests;
 		break;
 	    }
 	    break;
@@ -891,18 +857,6 @@ integrate_pass_main(void)
             transfer_file_times = 0;
             transfer_diff_file_times = 0;
             break;
-        }
-
-        //
-        // Preserve the file movement information (this makes
-        // branches and changes more symmetric, as well as
-        // preserving useful information).
-        //
-        if (c_src_data->move)
-        {
-            if (p_src_data->move)
-                str_free(p_src_data->move);
-            p_src_data->move = str_copy(c_src_data->move);
         }
 
         //
@@ -1812,11 +1766,34 @@ integrate_pass_main(void)
         switch (c_src_data->action)
         {
         case file_action_remove:
+            //
+            // If the action is a real remove (no move field present)
+            // we must reset the project idea of the old name in order
+            // to avoid loops.  If the action is a rename (move field
+            // present) the project idea of the old name must be
+            // updated with the value from the change.
+            //
             p_src_data->action = file_action_remove;
+            if (p_src_data->move)
+            {
+                str_free(p_src_data->move);
+                p_src_data->move = 0;
+            }
+            if (c_src_data->move)
+                p_src_data->move = str_copy(c_src_data->move);
             break;
 
         case file_action_transparent:
+            //
+            // The move field is supposed to not be present in a
+            // transparent action.
+            //
             p_src_data->action = file_action_transparent;
+            if (p_src_data->move)
+            {
+                str_free(p_src_data->move);
+                p_src_data->move = 0;
+            }
             break;
 
         case file_action_create:
@@ -1841,12 +1818,55 @@ integrate_pass_main(void)
                 &&
                     !pp_src_data->deleted_by
                 )
+                {
+                    //
+                    // The move field is supposed to not be present in
+                    // a modify operation.
+                    //
                     p_src_data->action = file_action_modify;
+                    if (p_src_data->move)
+                    {
+                        str_free(p_src_data->move);
+                        p_src_data->move = 0;
+                    }
+                }
                 else
+                {
+                    //
+                    // If the action is a rename (move field present)
+                    // then we must update the project idea of the old
+                    // name with the value from the change.
+                    // In other cases we must preserve the move value
+                    // in the project to not break an existing rename,
+                    // if any.
+                    //
                     p_src_data->action = file_action_create;
+                    if (c_src_data->move)
+                    {
+                        if (p_src_data->move)
+                            str_free(p_src_data->move);
+                        p_src_data->move = str_copy(c_src_data->move);
+                    }
+                }
             }
             else
+            {
+                //
+                // If the action is a rename (move field present)
+                // then we must update the project idea of the old
+                // name with the value from the change.
+                // In other cases we must preserve the move value
+                // in the project to not break an existing rename,
+                // if any.
+                //
                 p_src_data->action = file_action_create;
+                if (c_src_data->move)
+                {
+                    if (p_src_data->move)
+                        str_free(p_src_data->move);
+                    p_src_data->move = str_copy(c_src_data->move);
+                }
+            }
             break;
         }
 
@@ -2016,7 +2036,7 @@ integrate_pass_main(void)
 
     tml.list = 0;
     tml.len = 0;
-    tml.max = 0;
+    tml.max_len = 0;
     if (pconf_data->build_time_adjust != pconf_build_time_adjust_dont_adjust)
     {
         //

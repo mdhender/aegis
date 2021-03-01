@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller
+//	Copyright (C) 2004-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the process_body class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -58,23 +56,6 @@ basename(const nstring &path)
     if (!cp)
 	return path;
     return nstring(cp + 1);
-}
-
-
-static nstring
-basename(const nstring &path, const nstring &ext)
-{
-    const char *cp = strrchr(path.c_str(), '/');
-    if (cp)
-	++cp;
-    else
-	cp = path.c_str();
-
-    const char *ep = path.c_str() + path.size();
-    if (path.ends_with(ext.c_str()))
-	ep -= ext.size();
-
-    return nstring(cp, ep - cp);
 }
 
 
@@ -139,7 +120,21 @@ process_body::per_file(const nstring &filename)
     nstring file(filename);
 
     if (file.ends_with(".in"))
-	file = nstring(file.c_str(), file.size() - 3);
+    {
+	nstring fn2 = nstring(file.c_str(), file.size() - 3);
+        print << "\n";
+        print << fn2 << ": " << file << " ./config.status\n\t";
+        if (fn2.ends_with(".h"))
+        {
+            print << "CONFIG_FILES= CONFIG_HEADERS=$@:" << file << " ";
+        }
+        else
+        {
+            print << "CONFIG_FILES=$@:" << file << " CONFIG_HEADERS= ";
+        }
+        print << "$(SH) ./config.status\n";
+	file = fn2;
+    }
 
     if (file.ends_with(".y"))
     {
@@ -429,13 +424,24 @@ process_body::per_file(const nstring &filename)
 	print << "\tCXX=\"$(CXX)\" $(SH) etc/test.sh -shell $(SH) -run "
 	    << file << " " << stem << ".ES\n";
     }
-    else if (file.gmatch("script/*.tcl"))
+    else if (file.starts_with("script/"))
     {
-	nstring root(basename(file, ".tcl"));
+        nstring name = file.basename();
+        nstring ext = name.get_extension();
+        if (ext == "tcl" || ext == "sh" || ext == "pl" || ext == "py")
+            name = name.trim_extension();
+
+        nstring bin_name = "bin/" + name + "$(EXEEXT)";
 	print << "\n";
-	print << "bin/" << root << ": " << file << "\n";
-	print << "\tcp " << file << " bin/" << root << "\n";
-	print << "\tchmod a+rx bin/" << root << "\n";
+        print << bin_name << ": " << file << " .bin\n";
+	print << "\tcp " << file << " $@\n";
+	print << "\tchmod a+rx $@\n";
+
+        nstring installed_name = "$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)"
+            + name + "$(PROGRAM_SUFFIX)$(EXEEXT)";
+	print << "\n";
+        print << installed_name << ": " << bin_name << " .bindir\n";
+        print << "\t$(INSTALL_SCRIPT) " << bin_name << " $@\n";
     }
 }
 

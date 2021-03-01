@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -212,9 +212,9 @@ module_change::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
     // Copy the file contents to their destination.
     //
     os_become_orig();
-    output_ty *op = output_file_binary_open(abs_file_name);
-    *op << contents;
-    delete op;
+    output::pointer op = output_file::binary_open(abs_file_name);
+    op << contents;
+    op.reset();
 
     //
     // And make sure it is in the specified mode.
@@ -245,7 +245,7 @@ module_change::update(server_ty *sp, string_ty *, string_ty *server_side_0,
     const options &opt)
 {
     size_t          j;
-    static string_ty *minus;
+    static string_ty *minus_str;
     static string_ty *zero;
 
     //
@@ -382,13 +382,13 @@ module_change::update(server_ty *sp, string_ty *, string_ty *server_side_0,
 	        fip = server_file_info_find(sp, server_side, 0);
 		if (!fip || !fip->version)
 		    goto do_nothing;
-		if (!minus)
-		    minus = str_from_c("-");
+		if (!minus_str)
+		    minus_str = str_from_c("-");
 		if (!zero)
 		    zero = str_from_c("0");
 		if
 		(
-		    str_equal(fip->version, minus)
+		    str_equal(fip->version, minus_str)
 		||
 		    str_equal(fip->version, zero)
 		)
@@ -549,16 +549,16 @@ static bool
 file_being_deleted(server_ty *sp, string_ty *server_side)
 {
     file_info_ty    *fip;
-    static string_ty *minus;
+    static string_ty *minus_str;
 
     fip = server_file_info_find(sp, server_side, 0);
     if (!fip)
 	return false;
     if (!fip->version)
 	return false;
-    if (!minus)
-	minus = str_from_c("-");
-    return str_equal(fip->version, minus);
+    if (!minus_str)
+	minus_str = str_from_c("-");
+    return str_equal(fip->version, minus_str);
 }
 
 

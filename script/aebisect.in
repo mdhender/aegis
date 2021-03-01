@@ -1,0 +1,501 @@
+#!@PERL@
+# -*-perl-*-
+#
+#       aebisect - aegis regression detective
+#
+# Copyright (C) 2007 Ralph Smith.
+#
+# Portions shamelessly copied from:
+#
+#       aeintegratq - aegis integration manager
+#       Copyright (C) 2005-2008 Peter Miller.
+#
+#       Copyright (C) 1998-2006 Endocardial Solutions, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#################################################################
+#
+# This script is designed to identify the culprit delta which
+# introduced a bug or made some other verifiable alteration in
+# project behavior.
+#
+# @configure_input@
+#
+# Configure additions?
+my $TmpDir   = "/var/tmp";
+my $ProgramName = "aebisect";
+
+require 5.004;
+use strict;
+use Getopt::Long;
+Getopt::Long::Configure( "auto_abbrev" );
+
+$ENV{'SHELL'} = "/bin/sh";
+  # set signal handlers so stuff is cleaned up on kill
+$SIG{'INT'}  = \&cleanup_and_quit;
+$SIG{'QUIT'} = \&cleanup_and_quit;
+$SIG{'TERM'} = \&cleanup_and_quit;
+
+sub usage
+{
+    warn <<"EO_USAGE";
+  # Usage:
+  # $ProgramName [options] [-b branch] -del delta1 [-b branch] -del delta2 \
+-- command
+  # Accepts options:
+  #  -p project_name - specify project name
+  #  -c change_num - specify change to use for building and testing
+  #  -dir directory - specify development directory
+  #  -h - show this information
+  #  -k - keep some working files (in a temporary directory)
+  #  -v - be verbose
+  #  -l logfile
+  #  -m - minimum builds
+  #  -n - skip the builds (i.e. test only needs source files)
+  #  -z - treat all results other than 0 as equivalent
+  #
+  # For the time being, deltas must be specified as numbers.
+  # Use "-b -" to specify the trunk as a branch.
+EO_USAGE
+
+    exit 1;
+}
+
+# required args
+my @branches;
+my @deltas;
+my $testcmd;
+# needed args with smart defaults
+my $proj = '';
+my $change = -1;
+# assorted optional flags
+my $help = '';
+my $Help = '';
+my $Keep = '';
+my $verbose = '';
+my $LogFile = '';
+my $minibuild = '';
+my $nobuild = '';
+my $zero_only = '';
+my $devdir = '';
+my $DebugMe = '';
+
+# other globals
+my $mainbranch;
+my $trunk_name;
+my $cstate;
+
+my $TmpD;
+my $Tmp;
+my $aecmd;
+my $logf; # for temporary logfiles
+
+my @dlist;
+my @blist;
+
+# Convention: use warn and exit 1 for arglist errors,
+# use die and exit 2 for processing errors.
+
+# TODO?:
+#  allow for "-d ${branch}.D${delta}"
+#  allow for delta specified by name
+#  second delta could default to current baseline
+sub next_delta {
+    shift;
+    my $val = shift;
+    if ($#deltas > 0) {
+	warn "$ProgramName: only two deltas may be specified\n";
+	exit 1;
+    }
+    @deltas = (@deltas, $val);
+    if ($#branches < $#deltas) { $branches[$#deltas] = ""; }
+}
+
+# Note: because of perl conventions, our internals differ from
+# those of aecp.  We use "-" for the trunk internally, whereas
+# an empty branch becomes that of the specified project.
+sub next_branch {
+    shift;
+    my $val = shift;
+    if ($#branches > 0) {
+	warn "$ProgramName: only two branches may be specified, "
+	    . "each before its delta\n";
+	exit 1;
+    }
+    @branches = (@branches, $val);
+}
+
+GetOptions(
+	   "help" => \$help,
+	   "keep" => \$Keep,
+	   "branch=s" => \&next_branch,
+	   "delta=i" => \&next_delta,
+	   "change=i" => \$change,
+	   "project=s" => \$proj,
+	   "verbose" => \$verbose,
+	   "logfile=s" => \$LogFile,
+	   "minimum" => \$minibuild,
+	   "nobuild" => \$nobuild,
+	   "zero_only" => \$zero_only,
+	   "directory=s" => \$devdir,
+	   "quick_debug" => \$DebugMe, # let's not tell them about this one, eh?
+	   ) || usage();
+
+$testcmd = join(' ',@ARGV);
+
+  # if they asked for help - just do it
+if ( $help )
+{
+    &usage;
+}
+
+if (! $testcmd) {
+    warn "$ProgramName: no command specified.\n";
+    &usage;
+}
+
+# We would like use aesub to enjoy the usual context.
+# but if there are multiple open changes, aesub fails.
+if (! $proj) {
+    if (defined($ENV{'AEGIS_PROJECT'})) {
+	$proj = $ENV{'AEGIS_PROJECT'};
+    }
+}
+if (! $proj) {
+    chomp($proj = `aesub \'\$proj\'`);
+    if (! $proj) {
+	warn "$ProgramName: you must give the project name explicitly "
+	    . "to this command\n";
+	exit 1;
+    }
+}
+
+if ($change < 0) {
+    chomp($change = `aesub -p $proj \'\${change number}\'`);
+    if (! $change) {
+	warn "$ProgramName: you must give the change explicitly "
+	    . "to this command\n";
+	exit 1;
+    }
+}
+
+if ($#deltas != 1) {
+    warn "$ProgramName: you must specify two deltas explicitly "
+	. "to this command\n";
+    exit 1;
+}
+
+chomp($trunk_name = `aesub -p $proj -c $change \'\${proj trunk_name}\'`);
+
+$mainbranch = substr($proj,length($trunk_name)+1);
+
+if (! $mainbranch)
+{
+    $mainbranch = "-";
+}
+if ($trunk_name . "." . $mainbranch ne $proj) {
+    warn "trunk=\"$trunk_name\" mainbranch=\"$mainbranch\" proj=\"$proj\"\n";
+}
+
+if (! $branches[0]) { $branches[0] = $mainbranch; }
+if (! $branches[1]) { $branches[1] = $mainbranch; }
+
+chomp($cstate = `aesub -p $proj -c $change \'\${change state}\'`);
+
+#:# The change must be in the awaiting_development state.
+#:# This is because we will have to do aedbu later anyway, since
+#:# it is otherwise painful (and unreliable) to undo a "aecp -delta".
+
+if ($cstate ne "awaiting_development") {
+    warn "$ProgramName: project \"$proj\": change \"$change\":"
+	. "this change must be in the 'awaiting_development' state\n";
+    exit 1;
+}
+
+  # define location for logging
+if (! $LogFile) {
+    if ( defined( $ENV{'AEGIS_TEST_DIR'} ) ) {
+	$LogFile  = "$ENV{'AEGIS_TEST_DIR'}/aebisect.log";
+    }else{
+	$LogFile  = "$ENV{'HOME'}/aebisect.log";
+    }
+    warn "$ProgramName: logging to $LogFile\n";
+}
+
+&write_log("Beginning bisection processing for project \"$proj\""
+	   . " change \"$change\"");
+
+if ($verbose) {
+    &write_log("main branch is $mainbranch, search from " . $branches[0] . ".D"
+	   . $deltas[0] . " to " . $branches[1] . ".D" . $deltas[1] . "\n"
+           . "   for change in result from command\n      " . $testcmd);
+    if ($zero_only) {
+	&write_log("treating nonzero results as equivalent.");
+    }
+}
+
+# now the real work starts
+$SIG{'__DIE__'} = \&cleanup_ere_dying;
+$TmpD = $TmpDir . "/bisect.$$";
+mkdir $TmpD, 0777 or die "Can't create tempdir";
+$Tmp = $TmpD . "/$$";
+&write_log("Using $TmpD for temporary logs.");
+
+#:# We use the change inventory to review the project history.
+#:# This recurses properly through branches.
+$aecmd = "aegis -list -p $proj -ter change_inventory";
+$logf = $Tmp . ".dlist";
+
+die "Failed:$aecmd" if &system_cmd($aecmd, $logf);
+
+&clean_inventory($logf);
+if (! $Keep) { unlink $logf; }
+
+my $dcount = $#dlist +1;
+my $idx_lo = -1;
+my $idx_hi = -1;
+my $idx_try = -1;
+
+for (my $i=0; $i < $dcount; $i++) {
+    if ($dlist[$i] == $deltas[0] && $blist[$i] eq $branches[0]) {
+	$idx_lo = $i;
+    }
+    if ($dlist[$i] == $deltas[1] && $blist[$i] eq $branches[1]) {
+	$idx_hi = $i;
+    }
+}
+
+if ($idx_lo == -1 || $idx_hi == -1) {
+    die "$ProgramName: Failed to find requested deltas in the inventory\n";
+}
+
+if ($DebugMe) {
+    &write_log("*** debug run - no real tests ***");
+}
+
+my $idx_start = $idx_lo; # only used for debugging
+my $idx_end = $idx_hi;
+
+
+my $res_lo = $DebugMe ? &check_test_dbg($idx_lo): &check_test($idx_lo);
+my $res_hi = $DebugMe ? &check_test_dbg($idx_hi) : &check_test($idx_hi);
+my $res_try;
+
+die "$ProgramName: specified deltas do not bracket change in test result\n"
+    unless ($res_lo != $res_hi);
+
+# at last we are ready to do the search
+while ($idx_hi - $idx_lo > 1) {
+    if ($res_lo == $res_hi) {
+	&write_log( "Puzzlement: test results identical for endpoints "
+	    . $blist[$idx_lo] . ".D" . $dlist[$idx_lo] . " and "
+	    . $blist[$idx_hi] . ".D" . $dlist[$idx_hi] . "");
+	die "$ProgramName: nonmonotonic test results\n";
+    }
+    $idx_try = int(($idx_lo + $idx_hi) / 2);
+    $res_try = $DebugMe ? &check_test_dbg($idx_try) : &check_test($idx_try);
+    if ($res_try == $res_lo) {
+	$idx_lo = $idx_try;
+    }
+    elsif ($res_try == $res_hi) {
+	$idx_hi = $idx_try;
+    } else {
+	&write_log( "Confusion: test is not a dichotomy");
+	die "$ProgramName: test results inconsistent with binary search\n";
+    }
+}
+&write_log( "$ProgramName done.\nResults of the command\n  $testcmd\n"
+	    . "changed between "
+	    . $blist[$idx_lo] . ".D" . $dlist[$idx_lo] . " and "
+	    . $blist[$idx_hi] . ".D" . $dlist[$idx_hi] . "");
+print "Final bracketing deltas: "
+    . $blist[$idx_lo] . ".D" . $dlist[$idx_lo] . " and "
+    . $blist[$idx_hi] . ".D" . $dlist[$idx_hi] . "\n";
+&cleanup_and_quit;
+
+
+############
+sub check_test_dbg {
+    my $idx = shift;
+    my $testres;
+    # DEBUG: don't actually do anything in the working directories
+    $testres = ($idx > int((3 * $idx_start + 2 * $idx_end) / 5)) ? 1 : 0;
+    if ($verbose) {
+	warn $ProgramName . ": " .$blist[$idx] . ".D" . $dlist[$idx]
+	    . " yields " . $testres . " idx=" . $idx . "\n";
+    }
+    $testres;
+}
+
+#:# Each test is done in a clean development directory.
+#:# It is possible for the build to fail.
+#:# (For example, sometimes derived files from
+#:# the baseline are hard to get rid of automatically,
+#:# and these may poison the build.)
+#:# In this case, we bail out, leaving the dev. dir. open.
+#:# The clever user may clean things up, rebuild, perform
+#:# the test, and use the logfile to see how to proceed.
+
+# or he/she could read this and use the AEBISECT_DB_HOOK
+sub check_test {
+    my $idx = shift;
+    my $testres;
+    my $delta_str = $blist[$idx] . ".D" . $dlist[$idx];
+    my $ddopt = ($devdir) ? " -dir $devdir" : "";
+    $logf = $Tmp . "." . $delta_str . ".log";
+    $aecmd = "aegis -db -p $proj -c $change" . $ddopt;
+    if ($verbose) { &write_log($aecmd . " [$delta_str]"); }
+    die "Failed:$aecmd" if &system_cmd($aecmd, $logf);
+    my $bropt = ($blist[$idx] eq $mainbranch) ? "" : "-branch $blist[$idx]";
+    $aecmd = "aegis -cp -p $proj -c $change $bropt -delta $dlist[$idx] -bare .";
+    if ($verbose) { &write_log($aecmd . " [$delta_str]"); }
+    die "Failed:$aecmd" if &system_cmd($aecmd, $logf);
+
+    my $cwd;
+    chomp ($cwd = `pwd`);
+    my $wrk;
+    # this must be done after aedb
+    chomp($wrk = `aesub -p $proj -c $change \'\${DD}\'`);
+
+    die "Failed:aecd" unless chdir $wrk;
+    if (! $nobuild) {
+	if (defined($ENV{'AEBISECT_DB_HOOK'})) {
+	    $aecmd = $ENV{'AEBISECT_DB_HOOK'};
+	    if ( open(LOG, ">> $logf") )
+	    {
+		print LOG "$aecmd\n";
+		close(LOG);
+	    }
+	    if ($verbose) { &write_log("db_hook: $aecmd [$delta_str]"); }
+	    die "Failed:$aecmd" if &system_cmd($aecmd, $logf);
+	}
+	my $mflag = $minibuild ? "-mini" : "";
+	$aecmd = "aegis -build -p $proj -c $change $mflag";
+	if ($verbose) { &write_log($aecmd . " [$delta_str]"); }
+	die "Failed:$aecmd" if &system_cmd($aecmd, $logf);
+    }
+
+    $testres = &system_cmd($testcmd, $logf);
+    if ($verbose) {
+	warn $ProgramName . ": " .$delta_str . " yields " . $testres . "\n";
+    }
+    &write_log("Test command on " .$delta_str . " yields " . $testres);
+    chdir $cwd;
+    $aecmd = "aegis -dbu -p $proj -c $change";
+    if ($verbose) { &write_log($aecmd . " [$delta_str]"); }
+    die "Failed:$aecmd" if &system_cmd($aecmd, $logf);
+    if (!$Keep) { unlink $logf; }
+    if ($zero_only && ($testres != 0)) { $testres = 1; }
+    $testres;
+}
+
+sub clean_inventory
+{
+    my $cinf = shift;
+    my $count = 0;
+    my $pbranch = '';
+    my $pdelta = '';
+    my $branch;
+    my $delta;
+    open(CIN, "< $cinf") or die "Unable to open $cinf:$!\n";
+    while (<CIN>)
+	{
+	    ($branch,$delta) = /^([0-9\.]*)D([0-9]*)\s/;
+	    # trunk entries have no dot, otherwise strip
+	    $branch =~ s/\.$//;
+	    # aecp thinks 001 is a string, not a number
+	    $delta =~ s/^0+//;
+	    if (! $branch) { $branch = '-'; } # trunk
+	    # some changesets have multiple uuids for one delta,
+	    # so uniq'ify
+	    if (($branch ne $pbranch) || ($delta != $pdelta)) {
+		$blist[$count] = $branch;
+		$dlist[$count] = $delta;
+		$pbranch = $branch;
+		$pdelta = $delta;
+		$count++;
+	    }
+	}
+    close(CIN);
+}
+
+  # entry in the processing log as necessary
+  # Errors are fatal since the whole point is to produce results.
+sub write_log
+{
+    my $msg = shift;
+    chop(my $date = `date +"%d %b %T"`);
+    if ( open(LOG, ">> $LogFile") )
+    {
+	print LOG "$date $msg\n";
+	close(LOG);
+    }
+    else
+    {
+	die "unable to open $LogFile:$!\n";
+    }
+}
+
+sub system_cmd
+{
+    my($cmdstring, $resfile) = @_;
+    my $sysres;
+    my $logfile = ($resfile =~ /\w+/) ? $resfile : "/dev/null";
+
+    $sysres = system("$cmdstring >> $logfile 2>&1");
+
+    if ( $sysres == 0xff00 )
+    {
+	warn "command ($cmdstring) failed";
+    }
+    elsif ( $sysres > 0x80 )
+    {
+	$sysres >>= 8;
+    }
+    elsif ( $sysres & 0x80 )
+    {
+	my $sig = $sysres & ~0x80;
+
+	warn "command ($cmdstring) core signal $sig\n";
+    }
+    $sysres;
+}
+
+
+sub cleanup_and_quit
+{
+    if ( (! $Keep) && (-d $TmpD) ) {
+	unlink <$Tmp.*>;
+	rmdir $TmpD;
+    }
+    exit 0;
+}
+
+sub cleanup_ere_dying
+{
+    my $msg = $_[0];
+    if ($LogFile) {
+	&write_log($msg);
+	&write_log("$ProgramName: aborted run\n");
+    }
+    if ( (! $Keep) && (-d $TmpD) ) {
+	unlink <$Tmp.*>;
+	rmdir $TmpD;
+    }
+    $! = 2; # is this adequate?
+    # this is a callback, so fall through
+}
+
+# EOF script/aebisect.in

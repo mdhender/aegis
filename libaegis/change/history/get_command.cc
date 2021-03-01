@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,12 +16,12 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: functions to manipulate get_commands
-//
 
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
 #include <libaegis/input/base64.h>
 #include <libaegis/input/file_text.h>
 #include <libaegis/input/quoted_print.h>
@@ -29,7 +29,6 @@
 #include <libaegis/output/file.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -43,7 +42,7 @@ change_run_history_get_command(change::pointer cp, fstate_src_ty *src,
     string_ty	    *the_command;
     pconf_ty        *pconf_data;
     string_ty	    *name_of_encoded_file;
-    output_ty	    *op;
+    output::pointer op;
 
     trace(("change_run_history_get_command(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
@@ -144,7 +143,7 @@ change_run_history_get_command(change::pointer cp, fstate_src_ty *src,
     //
     os_become_orig();
     input ip = input_file_text_open(name_of_encoded_file);
-    op = output_file_binary_open(output_file_name);
+    op = output_file::binary_open(output_file_name);
     switch (src->edit->encoding)
     {
     case history_version_encoding_none:
@@ -159,9 +158,9 @@ change_run_history_get_command(change::pointer cp, fstate_src_ty *src,
 	ip = new input_base64(ip);
 	break;
     }
-    *op << ip;
+    op << ip;
     ip.close();
-    delete op;
+    op.reset();
     os_unlink(name_of_encoded_file);
     os_become_undo();
     str_free(name_of_encoded_file);

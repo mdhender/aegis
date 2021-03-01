@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 1999, 2001, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/file.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_FILE_H
@@ -25,14 +23,14 @@
 #include <common/nstring.h>
 #include <libaegis/output.h>
 
-struct string; // forward
+struct nstring; // forward
 
 /**
   * The output_file class is used to represent the state of an output
   * stream to a regular file.
   */
 class output_file:
-    public output_ty
+    public output
 {
 public:
     /**
@@ -40,8 +38,10 @@ public:
       */
     virtual ~output_file();
 
+private:
     /**
-      * The constructor
+      * The constructor.  It is private on purpose, use one of the open
+      * class methods instead.
       *
       * \param file_name
       *     The name of the file to be opened for output.
@@ -51,8 +51,73 @@ public:
       */
     output_file(const nstring &file_name, bool binary = false);
 
+public:
+    /**
+      * The open class method is used to open an output file.
+      *
+      * \param fn
+      *     The path name of the file to be opened.  If the poijnter is NULL
+      *     or the string is empty, the standard output is used.
+      * \param binary
+      *     Wherther or not the file is binary.  Defaults to false (i.e. text).
+      */
+    static output::pointer open(const nstring &fn, bool binary = false);
+
+    /**
+      * The text_open class method is used to open a text output file.
+      *
+      * \param fn
+      *     The path name of the file to be opened.  If the poijnter is NULL
+      *     or the string is empty, the standard output is used.
+      */
+    static inline output::pointer
+    text_open(string_ty *fn)
+    {
+        return open(nstring(fn), false);
+    }
+
+    /**
+      * The text_open class method is used to open a text output file.
+      *
+      * \param fn
+      *     The path name of the file to be opened.  If the poijnter is NULL
+      *     or the string is empty, the standard output is used.
+      */
+    static inline output::pointer
+    text_open(const nstring &fn)
+    {
+        return open(fn, false);
+    }
+
+    /**
+      * The binary_open class method is used to open a binary output file.
+      *
+      * \param fn
+      *     The path name of the file to be opened.  If the poijnter is NULL
+      *     or the string is empty, the standard output is used.
+      */
+    inline static output::pointer
+    binary_open(string_ty *fn)
+    {
+        return open(nstring(fn), true);
+    }
+
+    /**
+      * The binary_open class method is used to open a binary output file.
+      *
+      * \param fn
+      *     The path name of the file to be opened.  If the poijnter is NULL
+      *     or the string is empty, the standard output is used.
+      */
+    inline static output::pointer
+    binary_open(const nstring &fn)
+    {
+        return open(fn, true);
+    }
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -112,55 +177,5 @@ private:
       */
     output_file &operator=(const output_file &);
 };
-
-/**
-  * The output_file_open function is used to open an output file.
-  *
-  * \param fn
-  *     The path name of the file to be opened.  If the poijnter is NULL
-  *     or the string is empty, the standard output is used.
-  * \param binary
-  *     Wherther or not the file is binary.  Defaults to false (i.e. text).
-  */
-output_ty *output_file_open(const nstring &fn, bool binary = false);
-
-/**
-  * The output_file_text_open function is used to open a text output file.
-  *
-  * \param fn
-  *     The path name of the file to be opened.  If the poijnter is NULL
-  *     or the string is empty, the standard output is used.
-  */
-inline output_ty *
-output_file_text_open(string_ty *fn)
-{
-    return output_file_open(nstring(fn), false);
-}
-
-/**
-  * The output_file_binary_open function is used to open a binary output file.
-  *
-  * \param fn
-  *     The path name of the file to be opened.  If the poijnter is NULL
-  *     or the string is empty, the standard output is used.
-  */
-inline output_ty *
-output_file_binary_open(string_ty *fn)
-{
-    return output_file_open(nstring(fn), true);
-}
-
-/**
-  * The output_file_binary_open function is used to open a binary output file.
-  *
-  * \param fn
-  *     The path name of the file to be opened.  If the poijnter is NULL
-  *     or the string is empty, the standard output is used.
-  */
-inline output_ty *
-output_file_binary_open(const nstring &fn)
-{
-    return output_file_open(fn, true);
-}
 
 #endif // LIBAEGIS_OUTPUT_FILE_H

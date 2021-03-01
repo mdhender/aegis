@@ -1,10 +1,10 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2004, 2006 Peter Miller
+.\"	Copyright (C) 2001-2004, 2006-2008 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: input for archive/download.html
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .de an-p-footer
 ..
@@ -33,7 +31,10 @@
 <body bgcolor="#ffffff"><h1>
 <img src="aegis.png" align=left>
 <img src="missiku/dgn_dir_2.png" align=right>
-<center>Aegis \*(v)<br>Files for Download</center></h1>
+<center>Aegis
+.if (\*(o)) \*(V)
+.el \*(v)
+<br>Files for Download</center></h1>
 This page contains links to files which may be downloaded.  These files
 include the source code for Aegis, and all of the documentation for
 Aegis.  There are also links to some of the libraries you will need to
@@ -87,7 +88,13 @@ build Aegis.
 .br
     <tr>
     <td valign=top>
-    <a href="aegis-\*(v).tar.gz"><tt>aegis-\*(v).tar.gz</tt></a>
+    <a
+.if (\*(o)) href="aegis-\*(V).tar.gz"
+.el href="aegis-\*(v).tar.gz"
+    ><tt>
+.if (\*(o)) aegis-\*(V).tar.gz
+.el aegis-\*(v).tar.gz
+    </tt></a>
     </td>
     <td valign=top>
     The complete source.
@@ -95,7 +102,13 @@ build Aegis.
     </tr>
     <tr>
     <td valign=top>
-    <a href="aegis-\*(v).ae"><tt>aegis-\*(v).ae</tt></a>
+    <a
+.if (\*(o)) href="aegis-\*(V).ae"
+.el href="aegis-\*(v).ae"
+    ><tt>
+.if (\*(o)) aegis-\*(V).ae
+.el aegis-\*(v).ae
+    </tt></a>
     </td>
     <td valign=top>
     The complete source, in <i>aedist</i> format.

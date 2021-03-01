@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1996, 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -84,18 +84,18 @@ rpt_position::join(const rpt_position::pointer &p1,
     assert(p2);
     if (p1->get_file_name() != p2->get_file_name())
         return p1;
-    long min = p1->line_number[0];
-    long max = p1->line_number[1];
-    if (min > p2->line_number[0])
-	min = p2->line_number[0];
-    if (max < p2->line_number[1])
-	max = p2->line_number[1];
-    if (p1->line_number[0] == min && p1->line_number[1] == max)
+    long minlin = p1->line_number[0];
+    long maxlin = p1->line_number[1];
+    if (minlin > p2->line_number[0])
+	minlin = p2->line_number[0];
+    if (maxlin < p2->line_number[1])
+	maxlin = p2->line_number[1];
+    if (p1->line_number[0] == minlin && p1->line_number[1] == maxlin)
 	return p1;
-    if (p2->line_number[0] == min && p2->line_number[1] == max)
+    if (p2->line_number[0] == minlin && p2->line_number[1] == maxlin)
 	return p2;
 
-    return create(p1->get_file_name(), min, max);
+    return create(p1->get_file_name(), minlin, maxlin);
 }
 
 
@@ -106,7 +106,7 @@ rpt_position::print_error(sub_context_ty &sc, const char *fmt)
     string_ty *s = sc.subst_intl(fmt);
 
     // re-use substitution context
-    sc.var_set_string("Message", s);
+    sc.var_set_string("MeSsaGe", s);
     str_free(s);
 
     if (line_number[0])

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2007 Peter Miller;
+//	Copyright (C) 2006-2008 Peter Miller;
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License,
-//      version 2, as published by the Free Software Foundation.
+//      version 3, as published by the Free Software Foundation.
 //
 //      This program is distributed in the hope that it will be useful,
 //      but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -148,7 +148,7 @@ main(int argc, char **argv)
     }
 
     //
-    // If the user mentioned a project or a change number of the command
+    // If the user mentioned a project or a change number on the command
     // line, extract the necessary information from the change.
     //
     if (cid)

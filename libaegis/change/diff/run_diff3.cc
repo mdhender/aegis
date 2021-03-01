@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to manipulate run_diff3s
 //
 
 #include <libaegis/change.h>
@@ -31,7 +29,7 @@
 void
 change_run_diff3_command(change::pointer cp, user_ty::pointer up,
     string_ty *original, string_ty *most_recent, string_ty *input_file_name,
-    string_ty *output)
+    string_ty *output_filename)
 {
     sub_context_ty  *scp;
     pconf_ty        *pconf_data;
@@ -63,13 +61,13 @@ change_run_diff3_command(change::pointer cp, user_ty::pointer up,
     ((
 	    "change_run_diff3_command(cp = %8.8lX, up = %8.8lX, "
 		"original = \"%s\", most_recent = \"%s\", "
-                "input_file_name = \"%s\", output = \"%s\")\n{\n",
+                "input_file_name = \"%s\", output_filename = \"%s\")\n{\n",
 	    (long)cp,
 	    (long)up.get(),
 	    original->str_text,
 	    most_recent->str_text,
 	    input_file_name->str_text,
-	    output->str_text
+	    output_filename->str_text
     ));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
@@ -78,7 +76,7 @@ change_run_diff3_command(change::pointer cp, user_ty::pointer up,
     sub_var_set_string(scp, "ORiginal", original);
     sub_var_set_string(scp, "Most_Recent", most_recent);
     sub_var_set_string(scp, "Input", input_file_name);
-    sub_var_set_string(scp, "Output", output);
+    sub_var_set_string(scp, "Output", output_filename);
     the_command = pconf_data->diff3_command;
     if (!the_command)
     {
@@ -102,8 +100,8 @@ change_run_diff3_command(change::pointer cp, user_ty::pointer up,
 
     change_env_set(cp, 0);
     user_ty::become scoped(up);
-    if (os_exists(output))
-	os_unlink(output);
+    if (os_exists(output_filename))
+	os_unlink(output_filename);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dd);
     str_free(the_command);
     trace(("}\n"));

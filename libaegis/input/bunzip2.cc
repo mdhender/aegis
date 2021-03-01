@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
+//	Copyright (C) 2006-2008 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,14 +14,14 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the input_bunzip2 class
+//	along with this program.  If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
+#include <common/ac/sys/resource.h>
 
+#include <common/mem.h>
 #include <libaegis/input/bunzip2.h>
 #include <libaegis/sub.h>
 
@@ -74,7 +75,16 @@ input_bunzip2::input_bunzip2(input &arg) :
     stream.opaque = 0;
 
     int verbosity = 0;
+
+    //
+    // If we are running with limited resources we use a slower
+    // algorithm that use less memory.
+    //
     int small = 0;
+    struct rlimit memory_limit;
+    getrlimit(RLIMIT_AS, &memory_limit);
+    if (memory_limit.rlim_cur != RLIM_INFINITY)
+        small = 1;
     int err = BZ2_bzDecompressInit(&stream, verbosity, small);
     if (err != BZ_OK)
 	bzlib_fatal_error(err);
@@ -189,14 +199,14 @@ input_bunzip2::length()
 
 
 bool
-input_bunzip2::candidate(input &deeper)
+input_bunzip2::candidate(input &p_deeper)
 {
     //
     // Check for the magic number.
     //
     unsigned char magic[4];
-    long n = deeper->read(magic, 4);
-    deeper->unread(magic, n);
+    long n = p_deeper->read(magic, 4);
+    p_deeper->unread(magic, n);
     return
 	(
 	    n == 4

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1999, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to encode output as MIME base 64
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/output/base64.h>
@@ -32,7 +30,7 @@ map64(int n)
 }
 
 
-output_base64_ty::~output_base64_ty()
+output_base64::~output_base64()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -57,15 +55,11 @@ output_base64_ty::~output_base64_ty()
     }
     if (output_column)
 	deeper->fputc('\n');
-    if (delete_deeper)
-	delete deeper;
-    deeper = 0;
 }
 
 
-output_base64_ty::output_base64_ty(output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    delete_deeper(arg2),
+output_base64::output_base64(const output::pointer &a_deeper) :
+    deeper(a_deeper),
     residual_value(0),
     residual_bits(0),
     output_column(0),
@@ -75,8 +69,15 @@ output_base64_ty::output_base64_ty(output_ty *arg1, bool arg2) :
 }
 
 
+output::pointer
+output_base64::create(const output::pointer &a_deeper)
+{
+    return pointer(new output_base64(a_deeper));
+}
+
+
 void
-output_base64_ty::write_inner(const void *p, size_t len)
+output_base64::write_inner(const void *p, size_t len)
 {
     const unsigned char *data = (const unsigned char *)p;
     while (len > 0)
@@ -105,8 +106,8 @@ output_base64_ty::write_inner(const void *p, size_t len)
 }
 
 
-string_ty *
-output_base64_ty::filename()
+nstring
+output_base64::filename()
     const
 {
     return deeper->filename();
@@ -114,7 +115,7 @@ output_base64_ty::filename()
 
 
 long
-output_base64_ty::ftell_inner()
+output_base64::ftell_inner()
     const
 {
     return pos;
@@ -122,7 +123,7 @@ output_base64_ty::ftell_inner()
 
 
 int
-output_base64_ty::page_width()
+output_base64::page_width()
     const
 {
     return deeper->page_width();
@@ -130,7 +131,7 @@ output_base64_ty::page_width()
 
 
 int
-output_base64_ty::page_length()
+output_base64::page_length()
     const
 {
     return deeper->page_length();
@@ -138,7 +139,7 @@ output_base64_ty::page_length()
 
 
 void
-output_base64_ty::end_of_line_inner()
+output_base64::end_of_line_inner()
 {
     if (!bol)
 	write_inner("\n", 1);
@@ -146,7 +147,7 @@ output_base64_ty::end_of_line_inner()
 
 
 const char *
-output_base64_ty::type_name()
+output_base64::type_name()
     const
 {
     return "base64";

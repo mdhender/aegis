@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-1995, 1997, 1999, 2002-2007 Peter Miller
+//	Copyright (C) 1992-1995, 1997, 1999, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to pipe output through paginator
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -25,29 +23,30 @@
 #include <common/ac/stdlib.h>
 #include <common/ac/unistd.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h> // for umask prototype
+#include <common/ac/sys/stat.h> // for umask prototype
 
-#include <libaegis/arglex2.h>
 #include <common/env.h>
 #include <common/error.h>
+#include <common/mem.h>
+#include <common/quit.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/help.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
 #include <libaegis/output.h>
 #include <libaegis/output/pager.h>
 #include <libaegis/output/stdout.h>
-#include <common/quit.h>
 #include <libaegis/quit/action/pager.h>
-#include <common/str.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
 
 
-static quit_action_pager cleanup;
+static quit_action_pager cleanup_action;
 static int option_pager_flag = -1;
-static output_ty *singleton;
+static output::pointer singleton;
 
 
 void
@@ -83,7 +82,7 @@ option_pager_get(void)
 
 
 void
-output_pager_ty::pipe_open()
+output_pager::pipe_open()
 {
     sub_context_ty  *scp;
     int		    uid;
@@ -144,23 +143,17 @@ output_pager_ty::pipe_open()
 
 
 void
-output_pager_cleanup()
+output_pager::cleanup()
 {
-    trace(("output_pager::cleanup()\n{\n"));
-    if (singleton)
-    {
-	output_ty	*p;
-
-	p = singleton;
-	singleton = 0;
-	delete p;
-    }
+    trace(("output_pager_cleanup()\n{\n"));
+    output::pointer temp;
+    temp.swap(singleton);
     trace(("}\n"));
 }
 
 
 void
-output_pager_ty::pager_error()
+output_pager::pager_error()
 {
     int errno_old = errno;
     sub_context_ty sc;
@@ -171,7 +164,7 @@ output_pager_ty::pager_error()
 }
 
 
-output_pager_ty::~output_pager_ty()
+output_pager::~output_pager()
 {
     trace(("output_pager::destructor(this = %08lX)\n{\n", (long)this));
     assert(vdeeper);
@@ -181,12 +174,6 @@ output_pager_ty::~output_pager_ty()
     // method.
     //
     flush();
-
-    //
-    // nuke the singelton
-    //
-    assert(singleton == this);
-    singleton = 0;
 
     //
     // write the last of the output
@@ -206,7 +193,7 @@ output_pager_ty::~output_pager_ty()
 }
 
 
-output_pager_ty::output_pager_ty() :
+output_pager::output_pager() :
     vdeeper(0),
     pid(0),
     pager(user_ty::create()->pager_command()),
@@ -216,25 +203,19 @@ output_pager_ty::output_pager_ty() :
     pipe_open();
     os_become_undo();
     assert(vdeeper);
-
-    //
-    // We keep track of open paginators,
-    // so we can clean up after them if necessary.
-    //
-    singleton = this;
 }
 
 
-string_ty *
-output_pager_ty::filename()
+nstring
+output_pager::filename()
     const
 {
-    return pager.get_ref();
+    return pager;
 }
 
 
 long
-output_pager_ty::ftell_inner()
+output_pager::ftell_inner()
     const
 {
     return -1;
@@ -242,7 +223,7 @@ output_pager_ty::ftell_inner()
 
 
 void
-output_pager_ty::write_inner(const void *data, size_t len)
+output_pager::write_inner(const void *data, size_t len)
 {
     if (fwrite(data, 1, len, (FILE *)vdeeper) == 0)
 	pager_error();
@@ -252,7 +233,7 @@ output_pager_ty::write_inner(const void *data, size_t len)
 
 
 void
-output_pager_ty::flush_inner()
+output_pager::flush_inner()
 {
     if (fflush((FILE *)vdeeper))
 	pager_error();
@@ -260,7 +241,7 @@ output_pager_ty::flush_inner()
 
 
 void
-output_pager_ty::end_of_line_inner()
+output_pager::end_of_line_inner()
 {
     if (!bol)
 	fputc('\n');
@@ -268,18 +249,22 @@ output_pager_ty::end_of_line_inner()
 
 
 const char *
-output_pager_ty::type_name()
+output_pager::type_name()
     const
 {
     return "pager";
 }
 
 
-output_ty *
-output_pager_open()
+output::pointer
+output_pager::open()
 {
     trace(("output_pager_open()\n{\n"));
-    assert(!singleton);
+    if (singleton)
+    {
+        trace(("}\n"));
+        return singleton;
+    }
 
     //
     // If talking to a terminal,
@@ -297,24 +282,29 @@ output_pager_open()
 	!isatty(0)
     ||
 	!isatty(1)
-    ||
-	singleton
     )
     {
-	output_ty *result = new output_stdout();
-	trace(("return %08lX;\n}\n", (long)result));
+	output::pointer result = output_stdout::create();
+        singleton = result;
+	trace(("return %08lX;\n}\n", (long)result.get()));
 	return result;
     }
 
     //
     // register the cleanup function in case of fatal errors
     //
-    quit_register(cleanup);
+    quit_register(cleanup_action);
 
     //
     // open the paginator
     //
-    output_ty *result = new output_pager_ty();
-    trace(("return %08lX;\n}\n", (long)result));
+    output::pointer result(new output_pager());
+
+    //
+    // We keep track of open paginators,
+    // so we can clean up after them if necessary.
+    //
+    singleton = result;
+    trace(("return %08lX;\n}\n", (long)result.get()));
     return result;
 }

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller
+//	Copyright (C) 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate tar_childs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -30,9 +28,9 @@
 #include <aetar/output/tar_child.h>
 
 
-output_tar_child_ty::~output_tar_child_ty()
+output_tar_child::~output_tar_child()
 {
-    trace(("output_tar_child_ty::~output_tar_child_ty(this = %08lX)\n{\n",
+    trace(("output_tar_child::~output_tar_child(this = %08lX)\n{\n",
 	(long)this));
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -61,8 +59,8 @@ output_tar_child_ty::~output_tar_child_ty()
 }
 
 
-output_tar_child_ty::output_tar_child_ty(output_ty *arg1, const nstring &arg2,
-	long arg3, bool arg4) :
+output_tar_child::output_tar_child(const output::pointer &arg1,
+        const nstring &arg2, long arg3, bool arg4) :
     deeper(arg1),
     name(arg2),
     length(arg3),
@@ -70,7 +68,7 @@ output_tar_child_ty::output_tar_child_ty(output_ty *arg1, const nstring &arg2,
     pos(0),
     bol(true)
 {
-    trace(("output_tar_child_ty::output_tar_child_ty(this = %08lX)\n{\n",
+    trace(("output_tar_child::output_tar_child(this = %08lX)\n{\n",
 	(long)this));
     // assert(length >= 0);
     trace(("deeper pos = %ld\n", deeper->ftell()));
@@ -78,16 +76,23 @@ output_tar_child_ty::output_tar_child_ty(output_ty *arg1, const nstring &arg2,
     trace(("}\n"));
 }
 
+output::pointer
+output_tar_child::create(const output::pointer &a_deeper, const nstring &a_name,
+    long a_length, bool a_exec)
+{
+    return pointer(new output_tar_child(a_deeper, a_name, a_length, a_exec));
+}
+
 
 void
-output_tar_child_ty::changed_size()
+output_tar_child::changed_size()
 {
     sub_context_ty sc;
     sc.var_set_format
     (
 	"File_Name",
 	"%s(%s)",
-	deeper->filename()->str_text,
+	deeper->filename().c_str(),
 	name.c_str()
     );
     sc.fatal_intl(i18n("archive member $filename changed size"));
@@ -95,9 +100,9 @@ output_tar_child_ty::changed_size()
 
 
 void
-output_tar_child_ty::padding()
+output_tar_child::padding()
 {
-    trace(("output_tar_child_ty::padding(this = %08lX)\n{\n", (long)this));
+    trace(("output_tar_child::padding(this = %08lX)\n{\n", (long)this));
     int n = deeper->ftell();
     trace(("n = %d\n", n));
     for (;;)
@@ -115,9 +120,9 @@ output_tar_child_ty::padding()
 
 
 void
-output_tar_child_ty::header()
+output_tar_child::header()
 {
-    trace(("output_tar_child_ty::header(this = %08lX)\n{\n", (long)this));
+    trace(("output_tar_child::header(this = %08lX)\n{\n", (long)this));
     char tblock[TBLOCK];
     header_ty *hp = (header_ty *)tblock;
     nstring root("root");
@@ -166,8 +171,8 @@ output_tar_child_ty::header()
 }
 
 
-string_ty *
-output_tar_child_ty::filename()
+nstring
+output_tar_child::filename()
     const
 {
     return deeper->filename();
@@ -175,7 +180,7 @@ output_tar_child_ty::filename()
 
 
 long
-output_tar_child_ty::ftell_inner()
+output_tar_child::ftell_inner()
     const
 {
     return pos;
@@ -183,9 +188,9 @@ output_tar_child_ty::ftell_inner()
 
 
 void
-output_tar_child_ty::write_inner(const void *data, size_t len)
+output_tar_child::write_inner(const void *data, size_t len)
 {
-    trace(("output_tar_child_ty::write_inner(this = %08lX, data = %08lX, "
+    trace(("output_tar_child::write_inner(this = %08lX, data = %08lX, "
 	"len = %ld)\n{\n", (long)this, (long)data, (long)len));
     deeper->write(data, len);
     pos += len;
@@ -197,9 +202,9 @@ output_tar_child_ty::write_inner(const void *data, size_t len)
 
 
 void
-output_tar_child_ty::end_of_line_inner()
+output_tar_child::end_of_line_inner()
 {
-    trace(("output_tar_child_ty::end_of_line_inner(this = %08lX)\n{\n",
+    trace(("output_tar_child::end_of_line_inner(this = %08lX)\n{\n",
 	(long)this));
     if (!bol)
 	fputc('\n');
@@ -209,7 +214,7 @@ output_tar_child_ty::end_of_line_inner()
 
 
 const char *
-output_tar_child_ty::type_name()
+output_tar_child::type_name()
     const
 {
     return "tar child";

@@ -1,0 +1,179 @@
+.\"     Title: aebisect
+.\"    Author: Peter Miller <millerp AT canb.auug.org.au>
+.\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
+.\"      Date: 23 September 2007
+.\"    Manual: Reference Manual
+.\"    Source: Aegis 4.23
+.\"
+.so z_name.so
+.ds n) aebisect
+.TH "\*(n)" 1 "\*(N)" "Reference Manual"
+.SH "NAME"
+\*(n) \- search for a delta which changed project behaviour
+.XX "aebisect(1)" "search for a delta which changed project behaviour"
+.SH "SYNOPSIS"
+.HP 9
+\fBaebisect\fR [\fIoption\fR...] [\-Branch\ \fIbranch1\fR]\
+ \-DELta\ \fIdelta1\fR [\-Branch\ \fIbranch2\fR] \-DELta\ \fIdelta2\fR\
+ \-\- \fIcommand\fR [command_args]
+.SH "DESCRIPTION"
+.PP
+The
+\fBaebisect\fR
+command is used to determine when in a project history some property
+or behavior changed. It does this by means of a bisection search
+through the inventory of deltas. The user must specify starting and
+ending deltas, which may be in historical branches of the project.
+.PP
+For each delta tested in the search,
+\fBaebisect\fR
+sets up a development directory, builds the project, and then runs the
+specified \fIcommand\fR
+in the development directory. By iteration,
+\fBaebisect\fR
+finds two consecutive deltas where the return code of
+\fIcommand\fR
+changed.
+.PP
+Note:
+\fBaebisect\fR
+can take considerable CPU effort, since it (normally) does a full
+build from scratch for each delta tested.
+.SH "OPTIONS"
+.PP
+The following options are understood:
+.PP
+\fB\-Help\fR
+.RS 3n
+Show usage information.
+.RE
+.PP
+\fB\-Project\fR \fIproject\-name\fR
+.RS 3n
+specify the project (otherwise done via the
+\fBAEGIS_PROJECT\fR
+environment variable)
+.RE
+.PP
+\fB\-Change\fR \fIchange\-number\fR
+.RS 3n
+specify the change to use for the processing (otherwise done via the
+\fBAEGIS_CHANGE\fR
+environment variable). The change must be in the
+\fIawaiting_development\fR
+state; this ensures a correct environment for building and testing.
+.RE
+.PP
+\fB\-Branch\fR \fIbranch\-extension\fR
+.RS 3n
+specify the branch for one of the deltas. Defaults to the baseline
+branch of the project. Use
+\fB\-b \-\fR
+(single dash) to specify the trunk. Branch specifiers must precede the
+corresponding delta specifiers.
+.RE
+.PP
+\fB\-Logfile\fR \fIlogfile\fR
+.RS 3n
+specify where normal output goes; defaults to
+\fI$HOME/aebisect.log\fR.
+.RE
+.PP
+\fB\-Verbose\fR
+.RS 3n
+produce more diagnostic information (both logfile and standard output).
+.RE
+.PP
+\fB\-Keep\fR
+.RS 3n
+do not delete working files, which are in a temporary
+directory. Warning: these may be voluminous!
+.RE
+.PP
+\fB\-DIRectory\fR \fIpath\fR
+.RS 3n
+specify a development directory to use for building and testing.
+.RE
+.PP
+\fB\-Minimum\fR
+.RS 3n
+use the
+\fB\-minimum\fR
+option for the builds.
+.RE
+.PP
+\fB\-Nobuild\fR
+.RS 3n
+skip the build steps. This option is useful if the test command only
+involves source files. (Consider using
+\fBaeannotate\fR(1)
+instead.)
+.RE
+.PP
+\fB\-Zero_only\fR
+.RS 3n
+treat all test result codes other than 0 as equivalent.
+.RE
+.SH "DIAGNOSTICS"
+.PP
+Normally, exit status is 0 if consecutive deltas are found to bracket
+a change in the test command result. Exit status is 1 if errors are
+detected in arguments. Exit status is 2 if a subordinate command fails
+(possibly leaving the development directory in an uncertain state) or
+if the test behavior is found to be inconsistent with bisection
+search.
+.SH "SIGNALS"
+.PP
+\fBaebisect\fR will stop on INT, QUIT, and TERM signals, probably
+leaving the development directory in an uncertain state.
+.SH "EXAMPLE"
+.PP
+Suppose a bug was introduced by development on project \fIfoo\-4.5\fR,
+sometime between version 1.2.D003 and 4.5.D006, and you have written
+an Aegis test script for the bug (see \fBaent\fR(1)), called
+\fI/wrk/test/00/t0007a.sh\fR, taking an argument for system
+architecture. Then the following should isolate the change which
+introduced the bug:
+.sp
+.RS 3n
+.nf
+ % aenc \-p foo\-4.5 \-c 20 \-file caf
+ % aebisect \-p foo\-4.5 \-c 20 \-b 1.2 \-del 3 \-b 4.5 \-del 6 \\
+     \-\- sh /wrk/test/00/t0007a.sh linux\-i486
+.fi
+.RE
+.PP
+Note that the full path for the test script is specified, since the
+command is executed in a development directory.
+.SH "BUGS"
+.PP
+\fBaebisect\fR
+depends on
+\fBaecp \-delta\fR
+for historical reconstructions. This can be problematic.
+.PP
+It is possible for a build to fail: derived files from the baseline
+may poison the build, or there may have been changes in the system
+infrastructure since the old deltas were integrated. In such cases,
+\fBaebisect\fR exits. The user may then snoop around the development
+directory, fix something, rebuild, perform the test, and use the
+logfile to see how to proceed. Remember to \fBaedbu\fR when done.
+.PP
+In some situations the problem may be cured by an additional step
+between \fBaedb\fR and \fBaeb\fR. A command to be interposed may be
+defined via the environment variable \fBAEBISECT_DB_HOOK\fR; this
+command is executed after \fBaecp\fR, so it may be used to patch
+source files \(em see the script source for details.
+.SH "COPYRIGHT"
+.PP
+Copyright
+\(co
+2007 Ralph Smith
+.PP
+Partially derived from aeintegratq, Copyright
+\(co
+1998\-2005 Endocardial Solutions, Inc.
+.PP
+This is free software; see the source for copying conditions. There is
+NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.

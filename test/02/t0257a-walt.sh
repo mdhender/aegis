@@ -1,11 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Walter Franzini
+#	Copyright (C) 2007, 2008 Walter Franzini
+#	Copyright (C) 2008 Peter Miller
 #
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
-#       published by the Free Software Foundation; either version 2 of
+#       published by the Free Software Foundation; either version 3 of
 #       the License, or (at your option) any later version.
 #
 #       This program is distributed in the hope that it will be useful,
@@ -14,11 +15,8 @@
 #       GNU General Public License for more details.
 #
 #       You should have received a copy of the GNU General Public
-#       License along with this program; if not, write to the Free
-#       Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-#       Boston, MA 02110-1301 USA.
-#
-# MANIFEST: Test the loop detection functionality
+#       License along with this program; if not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -115,7 +113,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 118"
+activity="create test directory 115"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -162,7 +160,7 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 165"
+activity="new project 162"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj -lib $work/lib \
     > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -170,7 +168,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # change project attributes
 #
-activity="project attributes 173"
+activity="project attributes 170"
 cat > tmp << 'end'
 description = "A bogus project created to test aegis";
 developer_may_review = true;
@@ -186,7 +184,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 189"
+activity="staff 186"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -199,7 +197,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 202"
+activity="new change 199"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -218,7 +216,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add new files to the change
 #
-activity="new file 221"
+activity="new file 218"
 $bin/aegis -nf $workchan/bogus1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/aegis.conf -nl > log 2>&1
@@ -248,19 +246,19 @@ test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="finish the change 251"
+activity="finish the change 248"
 $bin/aefinish -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate begin 255"
+activity="integrate begin 252"
 $bin/aegis -ib -c 1 -v -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate the change 259"
+activity="integrate the change 256"
 $bin/aefinish -c 1 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="the second change 263"
+activity="the second change 260"
 sleep 1
 cat > tmp << 'end'
 brief_description = "The second change";
@@ -280,7 +278,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # rename bogus1
 #
-activity="rename bogus1  283"
+activity="rename bogus1  280"
 $bin/aegis -mv $workchan/bogus1 $workchan/bogus2 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -289,18 +287,22 @@ random stuff (c2)
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="finish the change 292"
+activity="finish the change 289"
 $bin/aefinish -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate the 2nd change 296"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 2 > log 2>&1
+activity="integrate begin 293"
+$bin/aegis -ib -c 2 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="integrate the 2nd change 297"
+$bin/aefinish -p $AEGIS_PROJECT -c 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # The 3rd change
 #
-activity="the third change 303"
+activity="the third change 304"
 cat > tmp << 'end'
 brief_description = "The third change";
 cause = internal_bug;
@@ -319,7 +321,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # rename bogus2
 #
-activity="rename bogus1  322"
+activity="rename bogus1  323"
 $bin/aegis -mv $workchan/bogus2 $workchan/bogus3 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -328,18 +330,22 @@ random stuff (c3)
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="finish the change 331"
+activity="finish the change 332"
 $bin/aefinish -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate the 3rd change 335"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 3 > log 2>&1
+activity="integrate begin 336"
+$bin/aegis -ib -c 3 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="integrate the 3rd change 340"
+$bin/aefinish -p $AEGIS_PROJECT -c 3 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # The 4th change
 #
-activity="the third change 342"
+activity="the third change 347"
 cat > tmp << 'end'
 brief_description = "The fourth change";
 cause = internal_bug;
@@ -358,16 +364,20 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # remove bogus3
 #
-activity="rename bogus1  361"
+activity="rename bogus1  366"
 $bin/aegis -rm  $workchan/bogus3 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="finish the change 365"
+activity="finish the change 370"
 $bin/aefinish -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate the 4th change 369"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 4 > log 2>&1
+activity="integrate begin 374"
+$bin/aegis -ib -c 4 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="integrate the 4th change 378"
+$bin/aefinish -p $AEGIS_PROJECT -c 4 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
@@ -377,17 +387,17 @@ if test $? -ne 0; then cat log; no_result; fi
 #
 ulimit -t 30
 
-activity="list change files 380"
+activity="list change files 389"
 $bin/aegis -l cf -p $AEGIS_PROJECT -c 4 -unf > $work/list 2>log
 if test $? -ne 0; then cat log; fail; fi
 
-activity="expected output 384"
+activity="expected output 393"
 cat > $work/ok <<EOF
 source remove 3 bogus3
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="check ael cf output 390"
+activity="check ael cf output 399"
 diff $work/ok $work/list
 if test $? -ne 0; then fail; fi
 

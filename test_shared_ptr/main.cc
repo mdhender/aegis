@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,9 +13,12 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
+
+#include <common/ac/stddef.h>
+#include <list>
 
 #include <common/ac/shared_ptr.h>
 #include <common/ac/stdio.h>
@@ -39,14 +42,14 @@ public:
 
 junk::~junk()
 {
-    printf("destructor\n");
+    printf("destructor (%d)\n", a);
 }
 
 
 junk::junk() :
     a(0)
 {
-    printf("default constructor\n");
+    printf("default constructor (0)\n");
 }
 
 
@@ -60,7 +63,7 @@ junk::create()
 junk::junk(int arg) :
     a(arg)
 {
-    printf("constructor\n");
+    printf("constructor (%d)\n", a);
 }
 
 
@@ -99,6 +102,14 @@ main(int argc, char **argv)
         junk::pointer j2 = j1;
         j2->a = 4;
     }
+
+    std::list<junk::pointer> foo;
+    foo.push_back(junk::create(1));
+    foo.push_back(junk::create(2));
+    std::list<junk::pointer> bar = foo;
+    foo.push_back(junk::create(3));
+    std::list<junk::pointer> baz;
+    baz = foo;
 
     return 0;
 }

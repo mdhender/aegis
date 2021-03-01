@@ -1,10 +1,10 @@
 #
 #       aegis - project change supervisor
-#       Copyright (C) 1995-2007 Peter Miller
+#       Copyright (C) 1995-2008 Peter Miller
 #
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
-#       published by the Free Software Foundation; either version 2 of
+#       published by the Free Software Foundation; either version 3 of
 #       the License, or (at your option) any later version.
 #
 #       This program is distributed in the hope that it will be useful,
@@ -52,7 +52,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2007-07-21\n"
+msgstr	"PO-Revision-Date: 2008-01-09\n"
 	"Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=iso-8859-1\n"
@@ -76,16 +76,15 @@ msgstr	"Die Umgebungsvariable $$$name muss eine positive Dezimalzahl sein"
 msgid	"$Name needs an uuid"
 msgstr	"Zur Option $Name muß eine gültige UUID angegeben werden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when the parameter of the given command
 # line option is not a valid URL.
 #
 #       $Name           The option name
 #
-#, fuzzy
+# fuzzy
 msgid	"$Name needs url"
-msgstr	"The $Name option needs to be given a valid URL"
+msgstr	"Zur Option $Name muß eine gültige URL angegeben werden"
 
 #
 # This error message is issued when a file has been tampered with while
@@ -276,7 +275,6 @@ msgstr	"Datei \"$filename\" war nicht mehr aktuell und wurde mit der "
 msgid	"$filename modified by history tool"
 msgstr	"Das History-Tool hat die Source-Datei \"$filename\" verändert"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by the aedb command when it finds
 # a problem with the directory permissions above the development
@@ -288,11 +286,12 @@ msgstr	"Das History-Tool hat die Source-Datei \"$filename\" verändert"
 #       $Mode_Old       The current mode of the directory (optional).
 #       $Mode_New       The desirable mode of the directory (optional).
 #
-#, fuzzy
+# fuzzy
 msgid	"$filename needs permissions $mode_change"
-msgstr	"directory \"$filename\" is not traversable, it currently has "
-	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
-	"$mode_change $filename\" command may be sufficient to fix this"
+msgstr	"Verzeichnis \"$filename\" ist nicht erreichbar, es hat zur Zeit "
+	"die Zugriffsrechte $mode_old, braucht aber mindestens die "
+	"Zugriffsrechte $mode_new, das Kommando \"chmod $mode_change "
+	"$filename\" kann ausreichend sein, um dies zu korrigieren"
 
 #
 # This error message is issued when aet runs a test which returns a "no
@@ -352,18 +351,16 @@ msgstr	"Test \"$filename\" bestanden"
 msgid	"$filename pass, architecture $architecture"
 msgstr	"Test \"$filename\" bestanden auf $architecture"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when a test against the change decides
 # to skip itself.
 #
 #       $File_Name      The name of the test file.
 #
-#, fuzzy
+# fuzzy
 msgid	"$filename skipped"
-msgstr	"test \"$filename\" skipped"
+msgstr	"Test \"$filename\" übersprungen"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a test against the change fails
 # decodes to skip itself.
@@ -371,21 +368,18 @@ msgstr	"test \"$filename\" skipped"
 #       $File_Name      The name of the test file.
 #       $ARCHitecture   The name of the architecture tesed on.
 #
-#, fuzzy
 msgid	"$filename skipped, architecture $architecture"
-msgstr	"test \"$filename\" skipped on $architecture"
+msgstr	"Test \"$filename\" auf $architecture übersprungen"
 
-# TRANSLATION_REQUIRED
 #
 # This error message is issued when aede discovers a file in the change
 # that has not been altered.  (Sometimes it is a warning.)
 #
 #       $File_Name      The offending file.
 #
-#, fuzzy
 msgid	"$filename unchanged"
-msgstr	"the \"$filename\" file has not been changed, it should not be "
-	"included in the change"
+msgstr	"Die Datei \"$filename\" wurde nicht verändert, sie sollte nicht "
+	"im Change sein"
 
 #
 # This error message is issued when a file named on the command
@@ -524,7 +518,6 @@ msgid	"$filename: arch needs name and pattern"
 msgstr	"$filename: Architekturen müssen sowohl als Name als auch als "
 	"Muster angegeben werden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a aede-policy's white-space
 # policy finds blank lines at the end of a file.
@@ -532,10 +525,9 @@ msgstr	"$filename: Architekturen müssen sowohl als Name als auch als "
 #       $File_Name      The name of the offending file.
 #       $Number         The number of blank lines (optional)
 #
-#, fuzzy
 msgid	"$filename: blank lines at end of file"
-msgstr	"$filename: found $number blank line${plural $number s} at the "
-	"end of the file"
+msgstr	"$filename: $number Leerzeile${plural $number n} am Dateiende "
+	"gefunden"
 
 #
 # This error message is issued when aesvt is checking a file checksum,
@@ -559,17 +551,15 @@ msgstr	"$filename: Checksumme falsch ($number1 != $number2)"
 msgid	"$filename: contains no \"$field_name\" field"
 msgstr	"$filename: enthält kein \"$field_name\" Feld"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by aede-policy when a change file
 # contains tab characters.
 #
 #       $File_Name      The name of the offending file.
 #
-#, fuzzy
 msgid	"$filename: contains tab characters"
-msgstr	"$filename: contains tab characters; to preserve the intended "
-	"code formatting, use space characters instead"
+msgstr	"$filename: enthält Tabulator-Zeichen; verwenden Sie stattdessen "
+	"Leerzeichen, um die beabsichtigte Code-Formatierung beizubehalten"
 
 #
 # This error message is issued when an Aegis database file has an
@@ -582,17 +572,15 @@ msgstr	"$filename: contains tab characters; to preserve the intended "
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: unbrauchbares \"$field_name\" Feld"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aede-policy detects a file isung DOS
 # line termination when it must use UNIX line termination.
 #
 #       $File_Name      The offending file.
 #
-#, fuzzy
 msgid	"$filename: dos line termination"
-msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
-	"should use UNIX line termination (LF)"
+msgstr	"Die Datei \"$filename\" verwendet DOS Zeilenenden (CRLF), sie "
+	"sollte stattdessen UNIX Zeilenenden (LF) verwenden"
 
 #
 # This warning is issued when an obsolete field is used.
@@ -649,18 +637,15 @@ msgstr	"$filename: wurde unerlaubt verändert (fatal)"
 msgid	"$filename: has errors"
 msgstr	"$filename: $number fatal${plural $number e} Fehler gefunden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aede-policy detects a binary file,
 # and you have specified a policy whis disallows such files.
 #
 #       $File_Name      The offending file name.
 #
-#, fuzzy
 msgid	"$filename: is binary"
-msgstr	"the \"$filename\" file contains binary bytes"
+msgstr	"Die Datei \"$filename\" enthält Binär-Zeichen"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aede-policy detects unprintable
 # (non-ASCII) characters in a file, and you have specified a policy whis
@@ -669,10 +654,9 @@ msgstr	"the \"$filename\" file contains binary bytes"
 #       $File_Name      The offending file name.
 #       $Number         The line number (optional)
 #
-#, fuzzy
 msgid	"$filename: is unprintable"
-msgstr	"the \"$filename\" file contains unprintable characters (line "
-	"$number)"
+msgstr	"Die Datei \"$filename\" enthält nicht-darstellbare Zeichen "
+	"(Zeile $number)"
 
 #
 # This error message is issued by aesvt when the file header within a
@@ -681,16 +665,14 @@ msgstr	"the \"$filename\" file contains unprintable characters (line "
 msgid	"$filename: malformed RFC 822 header line"
 msgstr	"$filename: ungültige RFC 822 Header-Zeile"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by aede-policy when it detects that text
 # file merge conflict artifacts remain in a source file.
 #
 #       $File_Name      The offending file name.
 #
-#, fuzzy
 msgid	"$filename: merge conflicts"
-msgstr	"$filename: this file contains unresolved merge conflicts"
+msgstr	"$filename: diese Datei enthält ungelöste merge-Konflikte"
 
 #
 # This error message is issued when Aegis is checking a file's modes,
@@ -703,7 +685,6 @@ msgstr	"$filename: this file contains unresolved merge conflicts"
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: Modus ist $number1, sollte $number2 sein"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by the aede-policy command when a file
 # does not contain and up-to-date copyright notice.
@@ -711,12 +692,10 @@ msgstr	"$filename: Modus ist $number1, sollte $number2 sein"
 #       $File_Name      The name of the offending file.
 #       $Suggest        A suggested text for the missing notice (optional).
 #
-#, fuzzy
 msgid	"$filename: no current copyright notice"
-msgstr	"$filename: the file does not contain an up-to-date copyright "
-	"notice; a notice of the form \"$suggest\" would be suitable."
+msgstr	"$filename: die Datei enthält keine aktuelle Copyright-Signatur; "
+	"eine Signatur der Form \"$suggest\" wäre ausreichend."
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued bu aede-policy when the fsf-address
 # policy check finds and out-of-date Free Software Foundation postal
@@ -725,12 +704,10 @@ msgstr	"$filename: the file does not contain an up-to-date copyright "
 #       $filename       The name of the offending file
 #       $suggest        The correct FSF address (optional).
 #
-#, fuzzy
 msgid	"$filename: old FSF address"
-msgstr	"$filename: the old FSF postal address is present in this file, "
-        "you need to replace it with \"$suggest\" instead."
+msgstr	"$filename: die Datei enthält die alte FSF Postanschrift, sie "
+	"sollte durch \"$suggest\" ersetzt werden."
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued bu aede-policy when the gpl-version
 # policy check finds and out-of-date GNU GPL version number in the first
@@ -739,10 +716,9 @@ msgstr	"$filename: the old FSF postal address is present in this file, "
 #       $filename       The name of the offending file
 #       $suggest        The correct GPL version (optional).
 #
-#, fuzzy
-msgid   "$filename: old GPL version"
-msgstr  "$filename: an old GPL version number is present in this file, "
-        "you need to replace it with \"$suggest\" instead."
+msgid	"$filename: old GPL version"
+msgstr	"$filename: eine alte GPL Versionsnummer ist in dieser Datei "
+	"vorhanden, sie sollte durch \"$suggest\" ersetzt werden."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -806,16 +782,14 @@ msgstr	"$filename: Versionsnummer \"$number\" nicht verwendbar"
 msgid	"$filename: version $number not found"
 msgstr	"$filename: Version \"$number\" nicht gefunden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when an aede-policy's white space
 # policy detects white space on the end of a line.
 #
 #       $File_Name      The name of the offending file (includes line number).
 #
-#, fuzzy
 msgid	"$filename: white space at end of line"
-msgstr	"$filename: white space at end of line"
+msgstr	"$filename: Leerzeichen am Ende der Datei"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -1359,16 +1333,14 @@ msgstr	"Arithmetischer Typ für Dekrement (angegeben wurde $name) benötigt"
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"Arithmetischer Typ für Inkrement (angegeben wurde $name) benötigt"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when a user-supplied string can't
 # be interpreted as an attribute name.
 #
 #       $Name           The offending string.
 #
-#, fuzzy
 msgid	"attribute $name unknown"
-msgstr	"the attribute \"$name\" does not exist"
+msgstr	"das Attribut \"$name\" existiert nicht"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -2104,15 +2076,13 @@ msgid	"branch completed"
 msgstr	"Sie können Changes und Branches nur in Branches erzeugen, die "
 	"aktiv sind, dieser Branch ist nicht im 'being developed' Status"
 
-# TRANSLATION_REQUIRED
 #
 # This error messages is issued when aede-policy finds a change set in
 # which the brief description is empty, or has not been changed from the
 # default.
 #
-#, fuzzy
 msgid	"brief_description not set"
-msgstr	"the brief description has been not set"
+msgstr	"Die Kurzbeschreibung ist nicht angegeben"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -2339,16 +2309,14 @@ msgstr	"Kommando \"$command\" beendet durch $signal (core dumped)"
 msgid	"command line too short"
 msgstr	"Kommandozeile zu kurz"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when an unrecognised compression
 # algorithm name is given on the command line (aedist, aepatch, etc).
 #
 #       $name           The offending compression algorithm name.
 #
-#, fuzzy
 msgid	"compression algorithm \"$name\" unknown"
-msgstr	"compression algorithm \"$name\" unknown"
+msgstr	"Kompressions-Algorithmus \"$name\" unbekannt"
 
 #
 # This message is inserted into the top of the project config file
@@ -2450,15 +2418,13 @@ msgstr	"cp (kopieren) \"$filename1\" \"$filename2\": $errno"
 msgid	"create $filename: $errno"
 msgstr	"erzeuge \"$filename\": $errno"
 
-# TRANSALTION REQUIRED
 #
 # This progress message is issued when Aegis creates the symbolic links
 # from the development directory which point to the baseline.
 #
-#, fuzzy
 msgid	"creating symbolic links to baseline"
-msgstr	"merging files from all baselines into working directory "
-	"according to directory style"
+msgstr	"Merge Dateien aus allen Baselines ins Arbeitsverzeichnis "
+	"entsprechend dem Verzeichnis-Stil"
 
 #
 # This error message is issued when an aeib command is given, but there
@@ -2523,15 +2489,13 @@ msgstr	"Delta $number ist ungültig, es muß eine kleine positive Zahl sein"
 msgid	"delta name complete"
 msgstr	"Delta $number kann nun Delta \"$name\" angesprochen werden"
 
-# TRANSLATION_REQUIRED
 #
 # This error messages is issued when aede-policy finds a change set in
 # which the brief description is empty, or has not been changed from the
 # default.
 #
-#, fuzzy
 msgid	"description not set"
-msgstr	"the description field has not been set"
+msgstr	"Die Beschreibung ist nicht angegeben"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -3198,16 +3162,15 @@ msgid	"has no tests"
 msgstr	"Dieser Change benötigt Tests, bevor dieses Kommando benutzt "
 	"werden kann"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aeipass(1) command when it
 # commits the first version of a file into the project history store.
 #
 # $File_Name    The name of the source file.
 #
-#, fuzzy
 msgid	"history create $filename"
-msgstr	"adding the first version to the history of the \"$filename\" file"
+msgstr	"füge erste Version zur Versions-Geschichte der Datei \"$filename"
+	"\" hinzu"
 
 #
 # This fatal error message is issued when aeimport doesn't recognize a
@@ -3218,7 +3181,6 @@ msgstr	"adding the first version to the history of the \"$filename\" file"
 msgid	"history format \"$name\" unknown"
 msgstr	"History-Format \"$name\" unbekannt"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aegis when it extracts a
 # version of a file from the project history store.
@@ -3226,21 +3188,19 @@ msgstr	"History-Format \"$name\" unbekannt"
 # $File_Name    The name of the source file.
 # $Edit         The version to be extracted (optional)
 #
-#, fuzzy
 msgid	"history get $filename"
-msgstr	"historical version $edit of the \"$filename\" file being "
-	"recreated"
+msgstr	"frühere Version $edit der Datei \"$filename\" wird "
+	"wiederhergestellt"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aeipass(1) command when it
 # is labeling the head version of a history history file.
 #
 # $File_Name    The name of the source file.
 #
-#, fuzzy
 msgid	"history label $filename"
-msgstr	"history of the \"$filename\" file head revision being labeled"
+msgstr	"ergänzen der Versions-Geschichte der Haupt-Version von Datei "
+	"\"$filename\""
 
 #
 # This fatal error message is issued when a lock is not available.
@@ -3248,7 +3208,6 @@ msgstr	"history of the \"$filename\" file head revision being labeled"
 msgid	"history lock not available"
 msgstr	"History-Lock nicht verfügbar"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aeipass(1) command when it
 # commits another version of a file into the project history store.
@@ -3257,9 +3216,9 @@ msgstr	"History-Lock nicht verfügbar"
 #               renames, even though the history file's UUID never
 #               changes.
 #
-#, fuzzy
 msgid	"history put $filename"
-msgstr	"adding another version to the history of the \"$filename\" file"
+msgstr	"füge weitere Version zur Versions-Geschichte der Datei "
+	"\"$filename\" hinzu"
 
 #
 # This error message is issued when the history query command returns an
@@ -3763,7 +3722,7 @@ msgstr	"Schleifenbedingung muss Typ Bool sein (angegeben wurde $name)"
 #       $File_Name      The name of the offending file.
 #
 msgid	"lstat $filename: $errno"
-msgstr	"$filename: $errno"
+msgstr	"lstat $filename: $errno"
 
 #
 # This fatal error message is issued when the aemt command is asked to
@@ -4259,14 +4218,12 @@ msgid	"no branch chown"
 msgstr	"Dieser Change ist ein Branch; es ist nicht möglich, den Besitzer "
 	"eines Branches zu ändern "
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued when aeb is invoked for a change in
 # a project which is configured to not require builds.
 #
-#, fuzzy
 msgid	"no build required"
-msgstr	"no build is required for changes to this project"
+msgstr	"für Changes in diesem Projekt ist kein Build notwendig"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -4334,15 +4291,13 @@ msgid	"no dev dir"
 msgstr	"Dieser Change ist im Status '$state', es gibt kein "
 	"Bearbeitungsverzeichnis"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued when the aed command is run for a
 # change which is in a project configured not to use aed.
 #
-#, fuzzy
 msgid	"no diff required"
-msgstr	"no \"aegis -diff\" command is required for this change, the "
-	"project has been configured to omit this requirement"
+msgstr	"In diesem Change ist kein \"aegis -diff\" Kommando notwendig, "
+	"das Project wurde so konfiguriert, daß dies nicht notwendig ist"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -5033,15 +4988,13 @@ msgstr	"entferne Projekt-Verzeichnis"
 msgid	"remove reviewer $name complete"
 msgstr	"Benutzer \"$name\" ist kein Reviewer mehr"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when Aegis removes the symbolic links
 # from the development directory which point to the baseline.
 #
-#, fuzzy
 msgid	"removing symbolic links to baseline"
-msgstr	"de-merging files from all baselines from working directory "
-	"according to directory style"
+msgstr	"entferne symbolische Links in alle Baselines aus dem "
+	"Arbeitsverzeichnis entsprechend dem gewählten Verzeichnis-Stil"
 
 #
 # This error message is issued when a rename fails.
@@ -5224,16 +5177,14 @@ msgid	"single file with -Output"
 msgstr	"Genau eine Quell-Datei darf angegeben werden, wenn die -Output "
 	"Option verwendet wird (Sie haben $number angegeben)"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued when aet completes with one or more
 # skipped tests.
 #
 #       $Number         The number of tests which were skipped.
 #
-#, fuzzy
 msgid	"skipped $number tests"
-msgstr	"skipped $number test${plural $number s}"
+msgstr	"$number Test${plural $number s} übersprungen"
 
 #
 # This error message is issued when an inappropriate argument is given
@@ -5280,7 +5231,7 @@ msgstr	"die Standardausgabe"
 #       $File_Name      The name of the offending file.
 #
 msgid	"stat $filename: $errno"
-msgstr	"$filename: $errno"
+msgstr	"stat $filename: $errno"
 
 #
 # This error message is issued when a symlink fails.

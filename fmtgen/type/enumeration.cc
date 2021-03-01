@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1997-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1994, 1997-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -67,13 +67,15 @@ type_enumeration::gen_include()
     indent_putchar('\n');
     indent_printf
     (
-	"void %s_write(struct output_ty *, const char *, %s_ty, int);\n",
+	"void %s_write(const output::pointer &fp, const char *name, "
+            "%s_ty value, bool show);\n",
 	def_name().c_str(),
 	def_name().c_str()
     );
     indent_printf
     (
-	"void %s_write_xml(struct output_ty *, const char *, %s_ty, int);\n",
+	"void %s_write_xml(const output::pointer &fp, const char *name, "
+            "%s_ty value, bool show);\n",
 	def_name().c_str(),
 	def_name().c_str()
     );
@@ -143,8 +145,8 @@ type_enumeration::gen_code()
     indent_printf("void\n");
     indent_printf
     (
-	"%s_write(output_ty *fp, const char *name, %s_ty this_thing, "
-        "int show)\n",
+	"%s_write(const output::pointer &fp, const char *name, "
+            "%s_ty this_thing, bool show)\n",
 	def_name().c_str(),
 	def_name().c_str()
     );
@@ -173,8 +175,8 @@ type_enumeration::gen_code()
     indent_printf("void\n");
     indent_printf
     (
-	"%s_write_xml(output_ty *fp, const char *name, %s_ty this_thing, "
-        "int show)\n",
+	"%s_write_xml(const output::pointer &fp, const char *name, "
+            "%s_ty this_thing, bool show)\n",
 	def_name().c_str(),
 	def_name().c_str()
     );

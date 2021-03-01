@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 2001, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/prefix.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_PREFIX_H
@@ -27,34 +25,45 @@
 
 
 /**
-  * The output_prefix_ty class is used to represent an output stream
+  * The output_prefix class is used to represent an output stream
   * filter which adds a prefix to every line of output.
   */
-class output_prefix_ty:
-    public output_ty
+class output_prefix:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_prefix_ty();
+    virtual ~output_prefix();
 
+private:
     /**
-      * The constructor.
+      * The constructor.  It is private on purpose, use the "create"
+      * class method instead.
       *
       * \param deeper
       *     the deeper output stream on which this filter writes to.
-      * \param close_on_close
-      *     whether or not the deeper output stream is to be deleted in
-      *     our destructor.
       * \param prefix
       *     the prefix to be added to each line.
       */
-    output_prefix_ty(output_ty *deeper, bool close_on_close,
-	const char *prefix);
+    output_prefix(const output::pointer &deeper, const char *prefix);
 
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * \param deeper
+      *     the deeper output stream on which this filter writes to.
+      * \param prefix
+      *     the prefix to be added to each line.
+      */
+    static pointer create(const output::pointer &deeper, const char *prefix);
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     long ftell_inner() const;
@@ -82,14 +91,7 @@ private:
       * The deeper instance variable is used to remember the deeper
       * output stream on which this filter writes to.
       */
-    output_ty *deeper;
-
-    /**
-      * The close_on_close instance variable is used to remember
-      * whether or not the deeper output stream is to be deleted in our
-      * destructor.
-      */
-    bool close_on_close;
+    output::pointer deeper;
 
     /**
       * The prefix instance variable is used to remember the prefix to
@@ -109,15 +111,20 @@ private:
       */
     long pos;
 
-    output_prefix_ty();
-    output_prefix_ty(const output_prefix_ty &);
-    output_prefix_ty &operator=(const output_prefix_ty &);
-};
+    /**
+      * The default constructor.  Do not use.
+      */
+    output_prefix();
 
-inline DEPRECATED output_ty *
-output_prefix(output_ty *deeper, bool coc, const char *prefix)
-{
-    return new output_prefix_ty(deeper, coc, prefix);
-}
+    /**
+      * The copy constructor.  Do not use.
+      */
+    output_prefix(const output_prefix &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    output_prefix &operator=(const output_prefix &);
+};
 
 #endif // LIBAEGIS_OUTPUT_PREFIX_H

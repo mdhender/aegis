@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-2006 Peter Miller
+//	Copyright (C) 1992-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/output/pager.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef OUTPUT_PAGER_H
@@ -26,26 +24,55 @@
 #include <libaegis/output.h>
 
 /**
-  * The output_pager_ty class is used to represent an output stream
+  * The output_pager class is used to represent an output stream
   * which is run thropugh a paginator onto the users terminal.
   * This is controlled by the PAGER environment variable.
   */
-class output_pager_ty:
-    public output_ty
+class output_pager:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_pager_ty();
+    virtual ~output_pager();
+
+private:
+    /**
+      * The default constructor.  It is private on purpose, use the
+      * open class method instead.
+      */
+    output_pager();
+
+public:
+    /**
+      * The set class method is used to
+      *
+      * \param flag
+      *     The command line flag: 0 means --no-pager, 1 means --pager
+      * \param usage
+      *     The function to call toi print a command line usage message
+      *     and exit.
+      */
+    static void set(int flag, void(*usage)(void));
 
     /**
-      * The default constructor.
+      * The open class method is used to create a paginated output
+      * stream if the output is to a terminal, and if the user has not
+      * prevented it with a command line option.
       */
-    output_pager_ty();
+    static pointer open(void);
 
+    /**
+      * The cleanup class method is called at quit() time to cleanup any
+      * output pager than may still be running.  This function shall
+      * only be called by the quit_action_pager class.
+      */
+    static void cleanup(void);
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -74,12 +101,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    output_pager_ty(const output_pager_ty &);
+    output_pager(const output_pager &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_pager_ty &operator=(const output_pager_ty &);
+    output_pager &operator=(const output_pager &);
 };
 
 /**
@@ -91,19 +118,5 @@ private:
   *     The function to call toi print a command line usage message and exit.
   */
 void option_pager_set(int flag, void(*usage)(void));
-
-/**
-  * The output_pager_open function is used to create a paginated output
-  * stream if the output is to a terminal, and if the user has not
-  * prevented it with a command line option.
-  */
-output_ty *output_pager_open(void);
-
-/**
-  * The pager_cleanup function is called at quit() time to cleanup any
-  * output pager than may still be running.  This function shall only be
-  * called by the quit_action_pager class.
-  */
-void output_pager_cleanup(void);
 
 #endif // OUTPUT_PAGER_H

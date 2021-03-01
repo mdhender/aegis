@@ -1,11 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Walter Franzini
+#	Copyright (C) 2007, 2008 Walter Franzini
+#	Copyright (C) 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -14,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aecp -delta functionality
+#	along with this program; if not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -130,7 +129,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="create test directory 133"
+activity="create test directory 131"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -172,7 +171,7 @@ export AEGIS_PATH
 #
 # test the aecp -delta functionality
 #
-activity="new project 175"
+activity="new project 173"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -180,7 +179,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="project attributes 183"
+activity="project attributes 181"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -193,7 +192,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi;
 
-activity="staff 196"
+activity="staff 194"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -201,14 +200,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="create the branch 204"
+activity="create the branch 202"
 $bin/aegis -nbr -p $AEGIS_PROJECT 1 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 AEGIS_PROJECT=test.1
 export AEGIS_PROJECT
 
-activity="create the branch 211"
+activity="create the branch 209"
 $bin/aegis -nbr -p $AEGIS_PROJECT 1 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -222,7 +221,7 @@ export AEGIS_PROJECT
 #	aegis.conf
 #	foo
 #
-activity="create the 1st change 225"
+activity="create the 1st change 223"
 cat > caf <<EOF
 brief_description = "zero";
 cause = internal_enhancement;
@@ -232,12 +231,12 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 235"
+activity="develop begin 233"
 workchan=$work/change-dir-10
 $bin/aegis -db 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 240"
+activity="new file 238"
 $bin/aegis -nf $workchan/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -263,7 +262,7 @@ development_directory_style =
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="new file 266"
+activity="new file 264"
 $bin/aegis -nf $workchan/foo -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -272,20 +271,24 @@ some not so random text
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="build 275"
+activity="build 273"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 279"
+activity="diff 277"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 283"
+activity="develop end 281"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activitye="integrate 231"
-$bin/aeintegratq -p $AEGIS_PROJECT > log 2>&1
+activity="integrate begin 285"
+$bin/aegis -ib -c 10 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="integrate 289"
+$bin/aefinish -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
 #
@@ -293,7 +296,7 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 #
 # * foo is renamed to foo2
 #
-activity="the 2nd change 296"
+activity="the 2nd change 298"
 cat > caf <<EOF
 brief_description = "zero";
 cause = internal_enhancement;
@@ -303,29 +306,33 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 306"
+activity="develop begin 308"
 workchan=$work/change-dir-11
 $bin/aegis -db 11 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="rename a file 311"
+activity="rename a file 313"
 $bin/aegis -mv $workchan/foo $workchan/foo2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build 315"
+activity="build 317"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 319"
+activity="diff 321"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 323"
+activity="develop end 325"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activitye="integrate 231"
-$bin/aeintegratq -p $AEGIS_PROJECT > log 2>&1
+activity="integrate begin 329"
+$bin/aegis -ib 11 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="integrate 333"
+$bin/aefinish -p $AEGIS_PROJECT -c 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
 #
@@ -334,7 +341,7 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 # bar is created
 # foo2 is modified
 #
-activity="the 3rd change 337"
+activity="the 3rd change 343"
 cat > caf <<EOF
 brief_description = "zero";
 cause = internal_enhancement;
@@ -344,12 +351,12 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 347"
+activity="develop begin 353"
 workchan=$work/change-dir-12
 $bin/aegis -db 12 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 352"
+activity="new file 358"
 $bin/aegis -nf $workchan/bar -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -366,23 +373,27 @@ foo2 has been modified by change 12
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="build 369"
+activity="build 375"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 373"
+activity="diff 379"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 377"
+activity="develop end 383"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activitye="integrate 231"
-$bin/aeintegratq -p $AEGIS_PROJECT > log 2>&1
+activity="integrate begin 387"
+$bin/aegis -ib -c 12 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="check fstate 385"
+activity="integrate 391"
+$bin/aefinish -p $AEGIS_PROJECT -c 12 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="check fstate 395"
 cat > ok <<EOF
 src =
 [
@@ -495,7 +506,7 @@ if test $? -ne 0; then cat log; no_result; fi
 
 check_it ok $work/proj.dir/info/change/0/001.branch/0/001.fs
 
-activity="new change 498"
+activity="new change 508"
 cat > caf <<EOF
 brief_description = "zero";
 cause = internal_enhancement;
@@ -506,7 +517,7 @@ if test $? -ne 0; then no_result; fi
 $bin/aegis -nc 100 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 509"
+activity="develop begin 519"
 workchan=$work/change-dir-100
 $bin/aegis -db 100 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -514,11 +525,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # The renames happened at delta 2.
 #
-activity="copy files 517"
+activity="copy files 527"
 $bin/aegis -cp 100 -delta 1 $workchan -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="check fstate 521"
+activity="check fstate 531"
 cat > ok <<EOF
 src =
 [
@@ -589,7 +600,7 @@ if test $? -ne 0; then fail; fi
 #
 # We expect to have the two files with a size greater than zero.
 #
-activity="test files size 592"
+activity="test files size 602"
 test -s $workchan/bar || fail
 test -s $workchan/foo2 || fail
 

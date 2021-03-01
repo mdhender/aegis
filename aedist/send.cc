@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2007 Peter Miller
-//	Copyright (C) 2004, 2005, 2007 Walter Franzini;
+//	Copyright (C) 1999-2008 Peter Miller
+//	Copyright (C) 2004, 2005, 2007, 2008 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -34,6 +34,7 @@
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/attribute.h>
+#include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change/functor/attribu_list.h>
@@ -250,7 +251,7 @@ cmp(const void *va, const void *vb)
 
 
 static int
-len_printable(string_ty *s, int max)
+len_printable(string_ty *s, int max_len)
 {
     const char      *cp;
     int             result;
@@ -261,8 +262,8 @@ len_printable(string_ty *s, int max)
     for (cp = s->str_text; *cp && isprint((unsigned char)*cp); ++cp)
 	;
     result = (cp - s->str_text);
-    if (result > max)
-	result = max;
+    if (result > max_len)
+	result = max_len;
     return result;
 }
 
@@ -280,12 +281,12 @@ send_main(void)
     const char      *branch;
     int             grandparent;
     int             trunk;
-    output_ty       *ofp;
+    output::pointer ofp;
     project_ty      *pp;
     change::pointer cp;
     user_ty::pointer up;
     cstate_ty       *cstate_data;
-    string_ty       *output;
+    string_ty       *output_filename;
     cstate_ty       *change_set;
     time_t          when;
     size_t          j;
@@ -308,7 +309,7 @@ send_main(void)
     grandparent = 0;
     project_name = 0;
     trunk = 0;
-    output = 0;
+    output_filename = 0;
     description_header = -1;
     baseline = 0;
     entire_source = -1;
@@ -405,7 +406,7 @@ send_main(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filename)
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -414,11 +415,11 @@ send_main(void)
 		// NOTREACHED
 
 	    case arglex_token_stdio:
-		output = str_from_c("");
+		output_filename = str_from_c("");
 		break;
 
 	    case arglex_token_string:
-		output = str_from_c(arglex_value.alv_string);
+		output_filename = str_from_c(arglex_value.alv_string);
 		break;
 	    }
 	    break;
@@ -1023,11 +1024,11 @@ send_main(void)
     }
     if (ascii_armor == content_encoding_none)
     {
-	ofp = output_file_binary_open(output);
+	ofp = output_file::binary_open(output_filename);
     }
     else
     {
-	ofp = output_file_text_open(output);
+	ofp = output_file::text_open(output_filename);
     }
 
     //
@@ -1098,17 +1099,17 @@ send_main(void)
 	// Fall through...
 
     case compression_algorithm_gzip:
-	ofp = new output_gzip(ofp, true);
+	ofp = output_gzip::create(ofp);
 	break;
 
     case compression_algorithm_bzip2:
-	ofp = new output_bzip2(ofp, true);
+	ofp = output_bzip2::create(ofp);
 	break;
     }
     time_t archive_mtime = 0;
     if (!undocumented_testing_flag)
 	archive_mtime = change_completion_timestamp(cp);
-    output_cpio_ty *cpio_p = new output_cpio_ty(ofp, archive_mtime);
+    output_cpio *cpio_p = new output_cpio(ofp, archive_mtime);
 
     //
     // Add the project name to the archive.
@@ -1116,7 +1117,7 @@ send_main(void)
     nstring childs_name = "etc/project-name";
     ofp = cpio_p->child(childs_name, -1);
     ofp->fprintf("%s\n", project_name_get(pp)->str_text);
-    delete ofp;
+    ofp.reset();
 
     //
     // Add the change number to the archive.
@@ -1124,9 +1125,8 @@ send_main(void)
     if (use_change_number)
     {
 	childs_name = "etc/change-number";
-	ofp = cpio_p->child(childs_name, -1);
-	ofp->fprintf("%ld\n", change_number);
-	delete ofp;
+	output::pointer op = cpio_p->child(childs_name, -1);
+	op->fprintf("%ld\n", change_number);
     }
     os_become_undo();
 
@@ -1265,13 +1265,32 @@ send_main(void)
     //
     // Scan for files to be added to the output.
     //
+    bool aeget_inventory_hide =
+        change_attributes_find_boolean(cp, "aeget:inventory:hide");
     for (j = 0;; ++j)
     {
-	fstate_src_ty   *src_data;
-
-	src_data = change_file_nth(cp, j, view_path_first);
+	fstate_src_ty *src_data = change_file_nth(cp, j, view_path_first);
 	if (!src_data)
 	    break;
+
+        //
+        // we only omit local source files from change sets which are
+        // not composed solely of omitted files.  This is so that it is
+        // possible to send a change set composed only of local sources
+        // to another site (just not via the inventory listings).
+        //
+        if
+        (
+            !aeget_inventory_hide
+        &&
+            attributes_list_find_boolean
+            (
+                src_data->attribute,
+                "local-source-hide"
+            )
+        )
+            continue;
+
 	switch (src_data->usage)
 	{
 	case file_usage_build:
@@ -1358,6 +1377,17 @@ send_main(void)
 		{
 		    continue;
 		}
+		if
+		(
+		    attributes_list_find_boolean
+		    (
+			fep->get_src()->attribute,
+			"local-source-hide"
+		    )
+		)
+		{
+		    continue;
+		}
 		switch (fep->get_src()->usage)
 		{
 		case file_usage_build:
@@ -1430,6 +1460,17 @@ send_main(void)
 		    (
 			src_data->attribute,
 			"entire-source-hide"
+		    )
+		)
+		{
+		    continue;
+		}
+                if
+		(
+		    attributes_list_find_boolean
+		    (
+			src_data->attribute,
+			"local-source-hide"
 		    )
 		)
 		{
@@ -1627,9 +1668,9 @@ send_main(void)
     os_become_orig();
     childs_name = "etc/change-set";
     ofp = cpio_p->child(childs_name, -1);
-    ofp = new output_indent_ty(ofp, true);
+    ofp = output_indent::create(ofp);
     cstate_write(ofp, change_set);
-    delete ofp;
+    ofp.reset();
     os_become_undo();
 
     //
@@ -1680,7 +1721,9 @@ send_main(void)
 	    csrc->file_name->str_text, file_action_ename(csrc->action),
 	    file_usage_ename(csrc->usage)));
 	if (csrc->move)
+        {
 	    trace(("move = \"%s\"\n", csrc->move->str_text));
+        }
 
 	//
 	// Find a source file.  Depending on the change state,
@@ -2131,7 +2174,13 @@ send_main(void)
 		    break;
 
 		//
-		// Generate the difference file.
+		// Generate the difference file only if the
+		// original_filename is *not* /dev/null.
+		//
+		// If the original_filename is /dev/null then the
+		// patch will be a full insert, causing a problem
+		// duplicating almost completly the content of the
+		// patched file.
 		//
 		assert(original_filename);
 		trace(("original_filename = \"%s\"\n",
@@ -2142,6 +2191,8 @@ send_main(void)
 		assert(diff_output_filename);
 		trace(("diff_output_filename = \"%s\"\n",
 		    diff_output_filename->str_text));
+                if (str_equal(original_filename, dev_null))
+                    break;
 		change_run_patch_diff_command
 		(
 		    cp,
@@ -2164,9 +2215,8 @@ send_main(void)
 		{
 		    childs_name =
 			nstring::format("patch/%s", csrc->file_name->str_text);
-                    ofp = cpio_p->child(childs_name, len);
-		    *ofp << ifp;
-		    delete ofp;
+                    output::pointer op = cpio_p->child(childs_name, len);
+		    op << ifp;
 		}
 		ifp.close();
 		os_become_undo();
@@ -2204,10 +2254,9 @@ send_main(void)
 	    childs_name =
 		nstring::format("src/%s", csrc->file_name->str_text);
 	    ofp = cpio_p->child(childs_name, len);
-	    *ofp << ifp;
+	    ofp << ifp;
 	    ifp.close();
-	    delete ofp;
-	    ofp = 0;
+	    ofp.reset();
 	    os_become_undo();
 	    break;
 	}

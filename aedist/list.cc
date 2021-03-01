@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller
+//	Copyright (C) 1999, 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate lists
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
@@ -43,13 +41,12 @@ list_main(void)
     cstate_ty       *change_set;
     size_t          j;
     string_ty       *ofn = 0;
-    output_ty       *head_col;
-    output_ty       *body_col;
+    output::pointer head_col;
+    output::pointer body_col;
     int             left;
-    output_ty       *usage_col;
-    output_ty       *action_col;
-    output_ty       *file_name_col;
-    col          *colp;
+    output::pointer usage_col;
+    output::pointer action_col;
+    output::pointer file_name_col;
     arglex();
     nstring ifn;
     while (arglex_token != arglex_token_eoln)
@@ -111,7 +108,7 @@ list_main(void)
     //
     // Set the listing title from the change set subject line.
     //
-    colp = col::open(ofn);
+    col::pointer colp = col::open(ofn);
     head_col = colp->create(0, 0, (const char *)0);
     body_col = colp->create(INDENT_WIDTH, 0, (const char *)0);
     colp->title("Distribution Change Set", s.c_str());
@@ -250,9 +247,7 @@ list_main(void)
 
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src_ty   *src_data;
-
-	src_data = change_set->src->list[j];
+	cstate_src_ty *src_data = change_set->src->list[j];
 	assert(src_data->file_name);
 	usage_col->fputs(file_usage_ename(src_data->usage));
 	action_col->fputs(file_action_ename(src_data->action));
@@ -282,6 +277,5 @@ list_main(void)
     }
 
     delete cpio_p;
-    delete colp;
     cstate_type.free(change_set);
 }

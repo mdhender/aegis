@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
-//	Copyright (C) 2005 Walter Franzini;
+//	Copyright (C) 2006, 2008 Peter Miller
+//	Copyright (C) 2005, 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the main class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -50,7 +48,7 @@
 enum
 {
     arglex_token_extract,
-    arglex_token_create,
+    arglex_token_create
 };
 
 static arglex_table_ty argtab[] =
@@ -156,10 +154,9 @@ cpio_create(const nstring &cwd, const nstring &archive_name,
     if (archive_exists)
         fatal_raw("target already exists: %s", archive_name.c_str());
 
-    output_ty   *ofp;
     os_become_orig();
-    ofp = output_file_binary_open(archive_name.get_ref());
-    output_cpio_ty *cpio_p = new output_cpio_ty(ofp, (time_t)0);
+    output::pointer ofp = output_file::binary_open(archive_name);
+    output_cpio *cpio_p = new output_cpio(ofp, (time_t)0);
     for (size_t n = 0; n < file_list.size(); ++n)
     {
         nstring abs_path = os_path_join(cwd, file_list[n]);
@@ -167,9 +164,8 @@ cpio_create(const nstring &cwd, const nstring &archive_name,
         trace_nstring(file_list[n]);
         input ifp = input_file_open(abs_path);
         int len = ifp->length();
-        ofp = cpio_p->child(file_list[n], len);
-        *ofp << ifp;
-        delete ofp;
+        output::pointer os = cpio_p->child(file_list[n], len);
+        os << ifp;
     }
     delete cpio_p;
     os_become_undo();
@@ -190,7 +186,7 @@ cpio_list(const nstring &, const nstring &archive, const nstring_list &)
 	if (!ifp2.is_open())
 	    break;
         printf("%s\n", ofn.c_str());
-	output_bit_bucket nowhere;
+	output::pointer nowhere = output_bit_bucket::create();
 	nowhere << ifp2;
     }
     delete cpio_p;
@@ -213,9 +209,8 @@ cpio_extract(const nstring& root, const nstring& archive, const nstring_list&)
 	    break;
         nstring abs_path = os_path_join(root, ofn);
         os_mkdir_between(root, ofn, 0755);
-        output_ty *ofp = output_file_open(abs_path);
-        *ofp << ifp2;
-        delete ofp;
+        output::pointer ofp = output_file::open(abs_path);
+        ofp << ifp2;
     }
     delete cpio_p;
     os_become_undo();

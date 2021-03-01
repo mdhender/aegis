@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,30 +17,30 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: implementation of the missing class
-//
 
-#include <libaegis/ael/column_width.h>
-#include <aedist/arglex3.h>
-#include <libaegis/arglex/project.h>
-#include <aedist/change/functor/invent_build.h>
-#include <libaegis/col.h>
 #include <common/error.h>
-#include <libaegis/help.h>
-#include <libaegis/input/file.h>
-#include <aedist/missing.h>
 #include <common/nstring/list.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/col.h>
+#include <libaegis/help.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
 #include <libaegis/os.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
 #include <libaegis/project/invento_walk.h>
-#include <aedist/replay/line.h>
-#include <common/symtab/template.h>
-#include <common/trace.h>
 #include <libaegis/url.h>
-#include <aeannotate/usage.h>
 #include <libaegis/user.h>
 
+#include <aeannotate/usage.h>
+#include <aedist/arglex3.h>
+#include <aedist/change/functor/invent_build.h>
+#include <aedist/missing.h>
+#include <aedist/replay/line.h>
 
 void
 missing_main(void)
@@ -187,12 +188,14 @@ missing_main(void)
     //
     os_become_orig();
     input ifp = input_file_open(ifn.get_ref());
+    ifp = input_bunzip2_open(ifp);
+    ifp = input_gunzip_open(ifp);
     os_become_undo();
 
     //
     // Create the output columns.
     //
-    col *colp = col::open(0);
+    col::pointer colp = col::open(0);
     string_ty *line1 =
 	str_format
 	(
@@ -204,13 +207,13 @@ missing_main(void)
     line1 = 0;
 
     int left = 0;
-    output_ty *vers_col =
+    output::pointer vers_col =
 	colp->create(left, left + VERSION_WIDTH, "Change\n-------");
     left += VERSION_WIDTH + 1;
-    output_ty *uuid_col =
+    output::pointer uuid_col =
 	colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
-    output_ty *desc_col =
+    output::pointer desc_col =
 	colp->create(left, 0, "Description\n------------");
 
     //
@@ -281,5 +284,4 @@ missing_main(void)
     colp->eoln();
     uuid_col->fprintf("Missing %d change set%s.", n, (n == 1 ? "" : "s"));
     colp->eoln();
-    delete colp;
 }

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2007 Peter Miller
+//	Copyright (C) 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@
 
 void
 change_run_annotate_diff_command(change::pointer cp, user_ty::pointer up,
-    string_ty *original, string_ty *input_file_name, string_ty *output,
+    string_ty *original, string_ty *input_file_name, string_ty *output_filename,
     string_ty *index_name, const char *diff_option)
 {
     sub_context_ty  *scp;
@@ -70,9 +70,10 @@ change_run_annotate_diff_command(change::pointer cp, user_ty::pointer up,
     //      Extra diff options supplied on the aeannotate command line.
     //
     trace(("change_run_annotate_diff_command(cp = %8.8lX, up = %8.8lX, "
-	"original = \"%s\", input_file_name = \"%s\", output = \"%s\")\n{\n",
-        (long)cp, (long)up.get(), original->str_text, input_file_name->str_text,
-        output->str_text));
+	"original = \"%s\", input_file_name = \"%s\", "
+        "output_filename = \"%s\")\n{\n", (long)cp, (long)up.get(),
+        original->str_text, input_file_name->str_text,
+        output_filename->str_text));
     if (!diff_option)
 	diff_option = "";
     assert(cp->reference_count>=1);
@@ -106,7 +107,7 @@ change_run_annotate_diff_command(change::pointer cp, user_ty::pointer up,
     else
         sub_var_set_charstar(scp, "ORiginal", "/dev/null");
     sub_var_set_string(scp, "Input", input_file_name);
-    sub_var_set_string(scp, "Output", output);
+    sub_var_set_string(scp, "Output", output_filename);
     sub_var_set_string(scp, "INDex", index_name);
     sub_var_optional(scp, "INDex");
     if (!diff_option)
@@ -133,8 +134,8 @@ change_run_annotate_diff_command(change::pointer cp, user_ty::pointer up,
     trace_string(the_command);
     change_env_set(cp, 0);
     user_ty::become scoped(up);
-    if (os_exists(output))
-	os_unlink(output);
+    if (os_exists(output_filename))
+	os_unlink(output_filename);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_SILENT, dd);
     str_free(the_command);
     trace(("}\n"));

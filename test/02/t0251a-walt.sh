@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Peter Miller
-#	Copyright (C) 2007 Walter Franzini
+#	Copyright (C) 2007, 2008 Peter Miller
+#	Copyright (C) 2007, 2008 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test aedist branch move functionality
+#	along with this program; if not, see
+#	<http://www.gnu.org/licenses/>.
 #
 #   This test was provided by Ralph Smith.
 #   It addresses a bug whereby a file, which is created and renamed within
@@ -133,7 +131,7 @@ warning()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 136"
+activity="create test directory 134"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -174,7 +172,7 @@ check_it()
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 177"
+activity="new project 175"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -182,7 +180,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="project attributes 185"
+activity="project attributes 183"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -195,7 +193,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi;
 
-activity="staff 198"
+activity="staff 196"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -203,7 +201,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 206"
+activity="new change 204"
 cat > caf << 'fubar'
 brief_description = "zero";
 cause = internal_enhancement;
@@ -213,11 +211,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 216"
+activity="develop begin 214"
 $bin/aegis -db 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 220"
+activity="new file 218"
 $bin/aegis -nf $workchan/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -240,20 +238,24 @@ link_integration_directory = true;
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 243"
+activity="build 241"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 247"
+activity="diff 245"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 251"
+activity="develop end 249"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate 255"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 10 > log 2>&1
+actitity="integrate begin"
+$bin/aegis -ib -c 10 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="integrate 257"
+$bin/aefinish -p $AEGIS_PROJECT -c 10 > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
 #
@@ -264,7 +266,7 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 # We do not use the trunk because it's special, it does not have a
 # parent, and this condition make it special also in the code.
 #
-activity="new branch 267"
+activity="new branch 269"
 $bin/aegis -nbr -p $AEGIS_PROJECT 1 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -273,7 +275,7 @@ export AEGIS_PROJECT
 
 proj=$AEGIS_PROJECT
 
-activity="new change 276"
+activity="new change 278"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -284,11 +286,11 @@ $bin/aegis -nc 10 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 workchan=$work/change-dir-10
-activity="develop begin 287"
+activity="develop begin 289"
 $bin/aegis -db 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 291"
+activity="new file 293"
 $bin/aegis -nf  $workchan/fred $workchan/barney $workchan/betty \
   -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -305,12 +307,16 @@ if test $? -ne 0 ; then no_result; fi
 echo betty-content > $workchan/betty
 if test $? -ne 0 ; then no_result; fi
 
-activity="finish 308"
+activity="finish 310"
 $bin/aefinish -c 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate 312"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 10 > log 2>&1
+activity="integrate begin 314"
+$bin/aegis -ib -c 10 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="integrate 318"
+$bin/aefinish -p $AEGIS_PROJECT -c 10 > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
 if test $? -ne 0 ; then no_result; fi
@@ -318,11 +324,11 @@ $bin/aegis -nc 20 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 workchan=$work/change-dir-20
-activity="develop begin 321"
+activity="develop begin 327"
 $bin/aegis -db 20 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="rename 325"
+activity="rename 331"
 $bin/aegis -mv  $workchan/barney $workchan/dino -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -332,27 +338,31 @@ if test $? -ne 0 ; then no_result; fi
 cp $workchan/dino dino.saved
 if test $? -ne 0 ; then no_result; fi
 
-activity="rename 335"
+activity="rename 341"
 $bin/aegis -mv  $workchan/betty $workchan/hoppy -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="finish 339"
+activity="finish 345"
 $bin/aefinish -c 20 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate 343"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 20 > log 2>&1
+activity="integrate begin 349"
+$bin/aegis -ib -c 20 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="new change 347"
+activity="integrate 353"
+$bin/aefinish -p $AEGIS_PROJECT -c 20 > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="new change 357"
 $bin/aegis -nc 30 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 351"
+activity="develop begin 361"
 $bin/aegis -db 30 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify file 355"
+activity="modify file 365"
 $bin/aegis -cp -c 30 $workchan/hoppy
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -362,28 +372,36 @@ if test $? -ne 0 ; then no_result; fi
 cp $workchan/hoppy hoppy.saved
 if test $? -ne 0 ; then no_result; fi
 
-activity="finish 365"
+activity="finish 375"
 $bin/aefinish -c 30 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate 369"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 30 > log 2>&1
+activity="integrate begin 379"
+$bin/aegis -ib -c 30 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="aedist 373"
+activity="integrate 383"
+$bin/aefinish -p $AEGIS_PROJECT -c 30 > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="aedist 387"
 $bin/aedist -send -p $AEGIS_PROJECT -bl -ndh -naa -comp_alg=none \
 	-o dist0.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="branch develop end 378"
+activity="branch develop end 392"
 $bin/aegis -de -p test -c 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="branch integrate 382"
-$bin/aeintegratq -p test  -c 1 > log 2>&1
+activity="integrate begin 396"
+$bin/aegis -ib -p test -c 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="check project content 386"
+activity="branch integrate 400"
+$bin/aefinish -p test -c 1 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="check project content 404"
 cat > ok <<EOF
 aegis.conf
 dino
@@ -400,7 +418,7 @@ if test $? -ne 0; then no_result; fi
 #
 # Part 3: start new branch, from which we export
 #
-activity="new branch 403"
+activity="new branch 421"
 $bin/aegis -nbr -p test 2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -410,7 +428,7 @@ export AEGIS_PROJECT
 proj=$AEGIS_PROJECT
 
 # make the new branch nontrivial
-activity="new change 413"
+activity="new change 431"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -421,22 +439,22 @@ $bin/aegis -nc -f caf 1 -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 workchan=$work/change-dir-1
-activity="develop begin 424"
+activity="develop begin 442"
 $bin/aegis -db 1 -dir $workchan >  log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="create file 428"
+activity="create file 446"
 $bin/aegis -nf $workchan/pebbles -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo two > $workchan/pebbles
 if test $? -ne 0 ; then no_result; fi
 
-activity="move files 435"
+activity="move files 453"
 $bin/aegis -mv $workchan/fred $workchan/wilma -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify files 439"
+activity="modify files 457"
 $bin/aegis -cp $workchan/hoppy -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -446,15 +464,19 @@ if test $? -ne 0 ; then no_result; fi
 cp $workchan/hoppy new.hoppy.saved
 if test $? -ne 0 ; then no_result; fi
 
-activity="finish 449"
+activity="finish 467"
 $bin/aefinish -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate 453"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 1 > log 2>&1
+activity="integrate begin 471"
+$bin/aegis -ib -c 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check project content 457"
+activity="integrate 475"
+$bin/aefinish -p $AEGIS_PROJECT -c 1 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="check project content 479"
 cat > ok <<EOF
 aegis.conf
 dino
@@ -470,12 +492,12 @@ if test $? -ne 0; then no_result; fi
 diff ok proj.list
 if test $? -ne 0; then no_result; fi
 
-activity="aetar 473"
+activity="aetar 495"
 $bin/aetar -send -p $AEGIS_PROJECT -bl -es -comp_alg=none -app tarred \
  > dist1.tar
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check aetar content 478"
+activity="check aetar content 500"
 cat > ok <<EOF
 tarred/aegis.conf
 tarred/dino
@@ -491,33 +513,33 @@ if test $? -ne 0; then no_result; fi
 diff ok proj.list
 if test $? -ne 0; then fail; fi
 
-activity="open aetar file 494"
+activity="open aetar file 516"
 tar xf dist1.tar
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check file 498"
+activity="check file 520"
 cmp -s tarred/dino dino.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 502"
+activity="check file 524"
 cmp -s tarred/hoppy new.hoppy.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 506"
+activity="check file 528"
 cmp -s tarred/wilma fred.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="aedist 510"
+activity="aedist 532"
 $bin/aedist -send -p $AEGIS_PROJECT -bl -es -ndh -naa -comp_alg=none \
 	-o dist1.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="aedist 515"
+activity="aedist 537"
 $bin/aedist -send -p test -c 2 -es -ndh -naa -comp_alg=none \
 	-o dist2.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the archive content 520"
+activity="check the archive content 542"
 $bin/test_cpio -list -file $work/dist1.ae > $work/content 2>&1
 if test $? -ne 0; then no_result; fi
 
@@ -535,36 +557,36 @@ EOF
 cmp $work/ok $work/content
 if test $? -ne 0; then fail; fi
 
-activity="open aedist file 538"
+activity="open aedist file 560"
 $bin/test_cpio -extract -cd $work -file $work/dist1.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check file 542"
+activity="check file 564"
 cmp -s src/dino dino.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 546"
+activity="check file 568"
 cmp -s src/hoppy new.hoppy.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 550"
+activity="check file 572"
 cmp -s src/wilma fred.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 # Part 4: import the changeset into a new project
 
-activity="new project 556"
+activity="new project 578"
 $bin/aegis -npr testx -version - -v -dir $work/projx.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=testx
 
-activity="aepa 563"
+activity="aepa 585"
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi;
 
-activity="staff 567"
+activity="staff 589"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -575,45 +597,49 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # avoid collisions
 workchan=$work/change-dirx
 
-activity="aedist -rec 578"
+activity="aedist -rec 600"
 $bin/aedist -rec -p $AEGIS_PROJECT -c 10 -f dist0.ae \
   -notroj -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="integrate 583"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 10 > log 2>&1
+activity="integrate begin 605"
+$bin/aegis -ib -c 10 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate 609"
+$bin/aefinish -p $AEGIS_PROJECT -c 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # acid test: can we receive an ES changeset?
-activity="aedist -rec 588"
+activity="aedist -rec 614"
 $bin/aedist -rec -p $AEGIS_PROJECT -c 11 -f dist1.ae \
   -troj -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 593"
+activity="check file 619"
 cmp -s $workchan/dino dino.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 597"
+activity="check file 623"
 cmp -s $workchan/hoppy new.hoppy.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="aedbu 601"
+activity="aedbu 627"
 $bin/aegis -dbu -p $AEGIS_PROJECT -c 11 \
   > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # and again, with a branch changeset
-activity="aedist -rec 607"
+activity="aedist -rec 633"
 $bin/aedist -rec -p $AEGIS_PROJECT -c 12 -f dist2.ae \
   -troj -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 612"
+activity="check file 638"
 cmp -s $workchan/dino dino.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check file 616"
+activity="check file 642"
 cmp -s $workchan/hoppy new.hoppy.saved > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -30,6 +30,7 @@
 #include <libaegis/arglex/project.h>
 #include <libaegis/cattr.h>
 #include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
 #include <libaegis/common.h>
@@ -73,36 +74,11 @@ new_change_undo_help(void)
 static void
 new_change_undo_list(void)
 {
-    string_ty	    *project_name;
-
     trace(("new_change_list()\n{\n"));
     arglex();
-    project_name = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_change_undo_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_change_undo_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_changes_in_state_mask
-    (
-	project_name,
-	1 << cstate_state_awaiting_development
-    );
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_change_undo_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_awaiting_development);
     trace(("}\n"));
 }
 

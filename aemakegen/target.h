@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2007 Peter Miller;
+//	Copyright (C) 2006-2008 Peter Miller;
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License,
-//      version 2, as published by the Free Software Foundation.
+//      version 3, as published by the Free Software Foundation.
 //
 //	This program is distributed in the hope that it will be useful,
 //	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef MAKEGEN_TARGET_H
@@ -88,6 +88,19 @@ protected:
       * Thou shalt derive from this class.
       */
     target();
+
+    /**
+      * The preprocess method is called by the process(nstring_list) for
+      * each file name in the list <i>before</i> the begin() method is
+      * called.  <b>Do not</b> generate any output from this method.
+      *
+      * @param filename
+      *     The name of the file to be processed.
+      * @note
+      *     The file name has not been resolved to an absolute path via
+      *     the vpath.  Use the resolve method for that.
+      */
+    virtual void preprocess(const nstring &filename);
 
     /**
       * The begin method is called by the process(nstring_list) method

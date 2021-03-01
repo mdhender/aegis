@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2007 Peter Miller
+//	Copyright (C) 1999, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,13 +13,12 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate unformatteds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
+#include <common/mem.h>
 #include <common/trace.h>
 #include <libaegis/col/unformatted.h>
 #include <libaegis/output/to_wide.h>
@@ -30,86 +29,38 @@
 col_unformatted::~col_unformatted()
 {
     trace(("col_unformatted::~col_unformatted(this = %08lX)\n{\n", (long)this));
-    for (size_t j = 0; j < ncolumns; ++j)
-    {
-	// The delcb() will do all the work.
-	column_ty *cp = &column[j];
-	if (cp->content_filter)
-	{
-	    delete cp->content_filter;
-	    cp->content_filter = 0;
-	}
-    }
     delete [] column;
-    if (delete_on_close)
-	wide_output_delete(deeper);
-    deeper = 0;
     trace(("}\n"));
 }
 
 
-col_unformatted::col_unformatted(wide_output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    delete_on_close(arg2),
-    separator((wchar_t)' '),
+col_unformatted::col_unformatted(const wide_output::pointer &a_deeper) :
+    deeper(a_deeper),
+    separator(L' '),
     ncolumns(0),
     ncolumns_max(0),
     column(0)
 {
-    trace(("col_unformatted::new(deeper = %08lX)\n{\n", (long)deeper));
+    trace(("col_unformatted::col_unformatted(this = %08lX, "
+        "deeper = %08lX)\n{\n", (long)this, (long)a_deeper.get()));
     trace(("}\n"));
 }
 
 
-/**
-  * The delcb_func function is used to clear out references to
-  * deleted columns.  This function is registered as a callback with
-  * wide_output_callback when the content filter is created.
-  */
-
-static void
-delcb_func(output_ty *fp, void *arg)
+col::pointer
+col_unformatted::create(const wide_output::pointer &a_deeper)
 {
-    // called just before a wide output is deleted
-    trace(("col_unformatted::delcb(fp = %08lX, arg = %08lX)\n{\n",
-	(long)fp, (long)arg));
-    col_unformatted *cp = (col_unformatted *)arg;
-    cp->delcb(fp);
-    trace(("}\n"));
+    return pointer(new col_unformatted(a_deeper));
 }
 
 
-void
-col_unformatted::delcb(output_ty *fp)
-{
-    for (size_t j = 0; j < ncolumns; ++j)
-    {
-	column_ty *cp = &column[j];
-	if (cp->content_filter == fp)
-	{
-	    cp->content = 0;
-	    cp->content_filter = 0;
-	    break;
-	}
-    }
-
-    while (ncolumns > 0 && column[ncolumns - 1].content_filter == 0)
-	--ncolumns;
-    trace(("}\n"));
-}
-
-
-output_ty *
-col_unformatted::create(int left, int right, const char *ctitle)
+output::pointer
+col_unformatted::create(int, int, const char *)
 {
     //
     // we ignore the left, right and ctitle arguments.
     //
-    trace(("col_unformatted::create(this = %08lX, left = %d, right = %d, "
-	"ctitle = %08lX)\n{\n", (long)this, left, right, (long)ctitle));
-    left = 0;
-    right = 0;
-    ctitle = 0;
+    trace(("col_unformatted::create(this = %08lX)\n{\n", (long)this));
 
     //
     // make sure we grok enough columns
@@ -131,11 +82,7 @@ col_unformatted::create(int left, int right, const char *ctitle)
     trace(("mark\n"));
     column_ty *cp = &column[ncolumns++];
     cp->content =
-	wide_output_column_open
-	(
-    	    wide_output_page_width(deeper),
-    	    wide_output_page_length(deeper)
-	);
+	wide_output_column::open(deeper->page_width(), deeper->page_length());
 
     //
     // What the client of the interface sees is a de-tabbed
@@ -143,12 +90,25 @@ col_unformatted::create(int left, int right, const char *ctitle)
     // It isn't wrapped, and it isn't truncated.
     //
     trace(("mark\n"));
-    wide_output_ty *fp4 = wide_output_expand_open(cp->content, 1);
-    cp->content_filter = new output_to_wide_ty(fp4, true);
-    cp->content_filter->delete_callback(delcb_func, this);
-    trace(("return %08lX;\n", (long)cp->content_filter));
+    wide_output::pointer fp4 = wide_output_expand::open(cp->content);
+    cp->content_filter = output_to_wide::open(fp4);
+    trace(("return %08lX;\n", (long)cp->content_filter.get()));
     trace(("}\n"));
     return cp->content_filter;
+}
+
+
+void
+col_unformatted::forget(const output::pointer &op)
+{
+    for (size_t j = 0; j < ncolumns; ++j)
+    {
+        column_ty *cp = &column[j];
+        if (cp->content_filter == op)
+            cp->clear();
+    }
+    while (ncolumns > 0 && !column[ncolumns - 1].content_filter)
+        --ncolumns;
 }
 
 
@@ -175,6 +135,7 @@ col_unformatted::eoln()
 	// flush the output first
 	//
 	column_ty *cp = &column[j];
+        assert(!cp->content == !cp->content_filter);
 	trace(("cp = %08lX;\n", (long)cp));
 	if (!cp->content_filter)
 	    continue;
@@ -184,8 +145,8 @@ col_unformatted::eoln()
 	//
 	// Find the text for this column.
 	//
-	assert(cp->content);
-	column_row_ty *crp = wide_output_column_get(cp->content, 0);
+	assert(!!cp->content);
+	column_row_ty *crp = cp->content->get(0);
 	trace(("crp = %08lX;\n", (long)crp));
 	wchar_t *wp = 0;
 	size_t wp_len = 0;
@@ -198,12 +159,12 @@ col_unformatted::eoln()
 	//
 	// Trim off leading and trailing spaces.
 	//
-	while (wp_len > 0 && *wp == (wchar_t)' ')
+	while (wp_len > 0 && *wp == L' ')
 	{
 	    ++wp;
 	    --wp_len;
 	}
-	while (wp_len > 0 && wp[wp_len - 1] == (wchar_t)' ')
+	while (wp_len > 0 && wp[wp_len - 1] == L' ')
 	    --wp_len;
 
 	//
@@ -215,18 +176,18 @@ col_unformatted::eoln()
 	if (wp_len > 0)
 	{
 	    if (colnum++)
-	       	wide_output_putwc(deeper, separator);
-	    wide_output_write(deeper, wp, wp_len);
+	       	deeper->put_wc(separator);
+	    deeper->write(wp, wp_len);
 	}
-	else if (separator != (wchar_t)' ' && colnum++)
-	    wide_output_putwc(deeper, separator);
+	else if (separator != L' ' && colnum++)
+	    deeper->put_wc(separator);
 
 	//
-	// reset content buffers
+	// clear the content buffers
 	//
-	wide_output_column_reset(cp->content);
+	cp->content->clear_buffers();
     }
-    wide_output_putwc(deeper, (wchar_t)'\n');
+    deeper->put_wc(L'\n');
     trace(("}\n"));
 }
 
@@ -235,7 +196,7 @@ void
 col_unformatted::eject()
 {
     trace(("col_unformatted::eject(this = %08lX)\n{\n", (long)this));
-    wide_output_putwc(deeper, '\n');
+    deeper->put_wc(L'\n');
     trace(("}\n"));
 }
 
@@ -251,41 +212,25 @@ col_unformatted::need(int)
 
 col_unformatted::column_ty::~column_ty()
 {
-    content = 0;
-    content_filter = 0;
+    clear();
 }
 
 
-col_unformatted::column_ty::column_ty() :
-    content(0),
-    content_filter(0)
+col_unformatted::column_ty::column_ty()
 {
 }
 
 
-col_unformatted::column_ty::column_ty(const column_ty &arg) :
-    content(arg.content),
-    content_filter(arg.content_filter)
+void
+col_unformatted::column_ty::clear()
 {
-}
-
-
-col_unformatted::column_ty &
-col_unformatted::column_ty::operator=(const column_ty &arg)
-{
-    if (&arg != this)
-    {
-	content = 0;
-	content_filter = 0;
-	content = arg.content;
-	content_filter = arg.content_filter;
-    }
-    return *this;
+    content.reset();
+    content_filter.reset();
 }
 
 
 void
 col_unformatted::flush()
 {
-    wide_output_flush(deeper);
+    deeper->flush();
 }

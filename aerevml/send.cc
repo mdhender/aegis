@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005-2007 Peter Miller
+//	Copyright (C) 2005-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -124,7 +124,7 @@ cmp(const void *va, const void *vb)
 
 
 static int
-len_printable(string_ty *s, int max)
+len_printable(string_ty *s, int len_max)
 {
     if (!s)
 	return 0;
@@ -133,14 +133,14 @@ len_printable(string_ty *s, int max)
     for (cp = s->str_text; *cp && isprint((unsigned char)*cp); ++cp)
 	;
     int result = (cp - s->str_text);
-    if (result > max)
-	result = max;
+    if (result > len_max)
+	result = len_max;
     return result;
 }
 
 
 static void
-output_attribute(output_ty *ofp, const nstring &name, const nstring &value)
+output_attribute(output::pointer ofp, const nstring &name, const nstring &value)
 {
     ofp->fputs("<attribute><name>");
     ofp->fputs(name.html_quote());
@@ -151,21 +151,23 @@ output_attribute(output_ty *ofp, const nstring &name, const nstring &value)
 
 
 static void
-output_attribute_extn(output_ty *ofp, const nstring &name, const nstring &value)
+output_attribute_extn(output::pointer ofp, const nstring &name,
+    const nstring &value)
 {
     output_attribute(ofp, "X-Aegis-" + name, value);
 }
 
 
 static void
-output_attribute_extn_bool(output_ty *ofp, const nstring &name, bool value)
+output_attribute_extn_bool(output::pointer ofp, const nstring &name, bool value)
 {
     output_attribute_extn(ofp, name, boolean_ename(value));
 }
 
 
 static void
-output_attribute_user(output_ty *ofp, const nstring &name, const nstring &value)
+output_attribute_user(output::pointer ofp, const nstring &name,
+    const nstring &value)
 {
     output_attribute(ofp, "User-" + name, value);
 }
@@ -186,7 +188,7 @@ is_x_attr(const nstring &name)
 
 
 static void
-output_attribute_list(output_ty *ofp, attributes_list_ty *alp)
+output_attribute_list(output::pointer ofp, attributes_list_ty *alp)
 {
     if (!alp)
 	return;
@@ -195,9 +197,9 @@ output_attribute_list(output_ty *ofp, attributes_list_ty *alp)
 	attributes_ty *ap = alp->list[j];
 	assert(ap);
 	assert(ap->name);
-	nstring name(str_copy(ap->name));
+	nstring name(ap->name);
 	assert(ap->value);
-	nstring value(str_copy(ap->value));
+	nstring value(ap->value);
 	if (is_x_attr(name))
 	    output_attribute(ofp, name, value);
 	else
@@ -207,7 +209,7 @@ output_attribute_list(output_ty *ofp, attributes_list_ty *alp)
 
 
 static void
-emit_time(output_ty *op, const char *name, time_t when)
+emit_time(output::pointer op, const char *name, time_t when)
 {
     // From the RevML DTD:
     // ISO-8601 format in GMT/UCT0
@@ -239,7 +241,7 @@ static aerevml_bad_state barf_adev;
 
 
 static void
-element(output_ty *ofp, const char *name, const nstring &value)
+element(output::pointer ofp, const char *name, const nstring &value)
 {
     ofp->fputc('<');
     ofp->fputs(name);
@@ -252,9 +254,9 @@ element(output_ty *ofp, const char *name, const nstring &value)
 
 
 static void
-element(output_ty *ofp, const char *name, string_ty *value)
+element(output::pointer ofp, const char *name, string_ty *value)
 {
-    element(ofp, name, nstring(str_copy(value)));
+    element(ofp, name, nstring(value));
 }
 
 
@@ -263,7 +265,7 @@ revml_send(void)
 {
     change_identifier cid;
     const char *compatibility = 0;
-    nstring output;
+    nstring output_filename;
     int description_header = -1;
     int entire_source = -1;
     content_encoding_t ascii_armor = content_encoding_unset;
@@ -322,7 +324,7 @@ revml_send(void)
 	    break;
 
 	case arglex_token_output:
-	    if (!output.empty())
+	    if (!output_filename.empty())
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -331,11 +333,11 @@ revml_send(void)
 		// NOTREACHED
 
 	    case arglex_token_stdio:
-		output = "-";
+		output_filename = "-";
 		break;
 
 	    case arglex_token_string:
-		output = arglex_value.alv_string;
+		output_filename = arglex_value.alv_string;
 		break;
 	    }
 	    break;
@@ -557,16 +559,16 @@ revml_send(void)
 	mime_header = (ascii_armor != content_encoding_none);
     }
     os_become_orig();
-    output_ty *ofp = 0;
+    output::pointer ofp;
     if
     (
 	ascii_armor == content_encoding_none
     &&
 	needs_compression != compression_algorithm_none
     )
-	ofp = output_file_binary_open(output.get_ref());
+	ofp = output_file::binary_open(output_filename);
     else
-	ofp = output_file_text_open(output.get_ref());
+	ofp = output_file::text_open(output_filename);
     assert(ofp);
     os_become_undo();
     if (mime_header)
@@ -632,11 +634,11 @@ revml_send(void)
 	// Fall through...
 
     case compression_algorithm_gzip:
-	ofp = new output_gzip(ofp, true);
+	ofp = output_gzip::create(ofp);
 	break;
 
     case compression_algorithm_bzip2:
-	ofp = new output_bzip2(ofp, true);
+	ofp = output_bzip2::create(ofp);
 	break;
     }
 
@@ -1508,10 +1510,9 @@ revml_send(void)
                     // No newline here, or it will add a bogus blank
                     // line to the start of the delta.
 		    ofp->fprintf("<delta type=\"diff-u\" encoding=\"none\">");
-		    output_ty *ofp2 = new output_revml_encode(ofp, false);
-		    *ofp2 << ifp;
-		    delete ofp2;
-		    ofp2 = 0;
+		    output::pointer ofp2 = output_revml_encode::create(ofp);
+		    ofp2 << ifp;
+		    ofp2.reset();
 		    ofp->fputs("</delta>\n");
 		}
 		ifp.close();
@@ -1536,10 +1537,9 @@ revml_send(void)
 	    ofp->fputs("<content encoding=\"none\">");
 	    input ifp = input_file_open(input_rev.get_path().get_ref());
 	    assert(ifp.is_open());
-	    output_ty *ofp2 = new output_revml_encode(ofp, false);
-	    *ofp2 << ifp;
-	    delete ofp2;
-	    ofp2 = 0;
+	    output::pointer ofp2 = output_revml_encode::create(ofp);
+	    ofp2 << ifp;
+	    ofp2.reset();
 	    ifp.close();
 	    ofp->fputs("</content>\n");
 	    os_become_undo();
@@ -1573,6 +1573,6 @@ revml_send(void)
 
     // finish writing the cpio archive
     ofp->fputs("</revml>\n");
-    delete ofp;
+    ofp.reset();
     os_become_undo();
 }

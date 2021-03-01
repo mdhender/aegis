@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,15 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the user_creat_by_dir class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <libaegis/glue.h>
 #include <libaegis/os.h>
@@ -49,13 +47,13 @@ user_ty::create_by_directory(const nstring &path)
     // Calculate the umask from bits NOT set in the directory's
     // permission mode bits, sanitized as required.
     //
-    int umask = (st.st_mode & 0777) ^ 0777;
-    umask |= 022;
-    if (umask & 1)
-        umask |= 4;
-    umask &= 027;
+    int u_mask = (st.st_mode & 0777) ^ 0777;
+    u_mask |= 022;
+    if (u_mask & 1)
+        u_mask |= 4;
+    u_mask &= 027;
 
     user_ty::pointer up = user_ty::create(st.st_uid, st.st_gid);
-    up->umask_set(umask);
+    up->umask_set(u_mask);
     return up;
 }

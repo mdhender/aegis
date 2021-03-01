@@ -1,11 +1,11 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998-2006 Peter Miller
+ *	Copyright (C) 1991-1996, 1998-2008 Peter Miller
  *	Copyright (C) 2006 Walter Franzini;
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
+ *	the Free Software Foundation; either version 3 of the License, or
  *	(at your option) any later version.
  *
  *	This program is distributed in the hope that it will be useful,
@@ -14,10 +14,9 @@
  *	GNU General Public License for more details.
  *
  *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *	along with this program. If not, see
+ *	<http://www.gnu.org/licenses/>.
  *
- * MANIFEST: project config file contents definition
  *
  * this file normally resides at "projdir"/baseline/config
  *
@@ -1273,11 +1272,35 @@ windows_filename_required = boolean;
  * need to use the ${quote} substitution around filenames in commands,
  * or risk unexpected errors.  This field defaults to true if not set.
  *
- * Setting this field to true will not enable white space characters or
- * international in filenames.  (Yeah, I know, Macintosh and WinNT make
- * this a pain.)
+ * The user must take great care to use the ${quote} substitution around
+ * all file names in commands in the project configuration.
  */
 shell_safe_filenames = boolean;
+
+/*
+ * This field may be used to allow white space characters in file names.
+ * This will allow the following characters to appear in filenames:
+ * backspace (BS, \b, 0x08), horizontal tab (HT, \t, 0x09), new line
+ * (NL, \n, 0x0A), vertical tab (VT, \v, 0x0B), form feed (FF, \f,
+ * 0x0C), and carriage return (CR, \r, 0x0D).
+ *
+ * Defaults to false if not set.
+ *
+ * The user must take great care to use the ${quote} substitution around
+ * all file names in commands in the project configuration.  And even
+ * then, substitutions which expect a space separated list of file names
+ * will have undefined results.
+ */
+allow_white_space_in_filenames = boolean;
+
+/*
+ * This field may be used to allow file names with non-ascii-printable
+ * characters in them.  Usually this would mean a UTF8 or international
+ * charset of some kind.
+ *
+ * Defaults to false if not set.
+ */
+allow_non_ascii_filenames = boolean;
 
 /*
  * This field is used to specify a list of patterns of acceptable

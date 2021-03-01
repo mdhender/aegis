@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006, 2007 Walter Franzini
-#       Copyright (C) 2007 Peter Miller
+#	Copyright (C) 2006-2008 Walter Franzini
+#       Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aedist -rec functionality
+#	along with this program; if not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -101,7 +99,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 99"
+activity="create test directory 102"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -161,14 +159,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 155"
+activity="new project 162"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj -lib $work/lib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 162"
+activity="project attributes 169"
 cat > tmp << 'end'
 description = "A bogus project created to test the aedist/aemv "
     "functionality.";
@@ -184,7 +182,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 178"
+activity="staff 185"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -197,7 +195,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 191"
+activity="new change 198"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -216,7 +214,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add new files to the change
 #
-activity="new file 210"
+activity="new file 217"
 $bin/aegis -nf  $workchan/bogus1 -nl \
         --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -259,49 +257,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 256"
+activity="build 260"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 263"
+activity="diff 267"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 270"
+activity="develop end 274"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 277"
+activity="review pass 281"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 284"
+activity="integrate begin 288"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 291"
+activity="build 295"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 298"
+activity="integrate pass 302"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -315,7 +313,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 312"
+activity="new change 316"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -327,21 +325,21 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 324"
+activity="develop begin 328"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Use the second change to move bogus1 to bogus2
 #
-activity="move files 331"
+activity="move files 335"
 $bin/aegis -c 2 -mv -baserel bogus1 bogus2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Modify bogus4
 #
-activity="modify bogus4 338"
+activity="modify bogus4 342"
 cat > $workchan/bogus2 <<EOF
 bogus1, line 1
 bogus1, line 2
@@ -359,27 +357,31 @@ if test $? -ne 0 ; then no_result; fi
 #
 # difference the change
 #
-activity="aed 356"
+activity="aed 360"
 $bin/aegis --diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the change
 #
-activity="build 363"
+activity="build 367"
 $bin/aegis -build 2 -nl -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="finish  367"
+activity="finish  371"
 $bin/aefinish -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="review pass 371"
+activity="review pass 375"
 $bin/aegis -rpass -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="integrate the change 375"
-$bin/aeintegratq -c 2 -p $AEGIS_PROJECT > log 2>&1
+activity="integrate begin 379"
+$bin/aegis -ib -c 2 -v > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
+
+activity="integrate the change 383"
+$bin/aefinish -c 2 -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
 # -----------------------------------------------------------------
@@ -387,7 +389,7 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 #
 # create a new change
 #
-activity="new change 384"
+activity="new change 392"
 cat > tmp << 'end'
 brief_description = "The third change";
 cause = internal_bug;
@@ -396,15 +398,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 3 -f tmp -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 393"
+activity="develop begin 401"
 $bin/aegis -db 3 -dir $workchan.3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="file copy 397"
+activity="file copy 405"
 $bin/aegis -cp -c 3 $workchan.3/bogus2 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify bogus2 401"
+activity="modify bogus2 409"
 cat > $workchan.3/bogus2 <<EOF
 bogus1, LINE 10
 bogus1, line 2
@@ -418,46 +420,46 @@ bogus1, line 9
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="build the change 415"
+activity="build the change 423"
 $bin/aegis -build 3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 419"
+activity="diff the change 427"
 $bin/aegis -diff 3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 423"
+activity="develop end 431"
 $bin/aegis -dev_end 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 427"
+activity="review pass 435"
 $bin/aegis -rpass 3 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 431"
+activity="integrate begin 439"
 $bin/aegis -ibegin 3 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build the change 435"
+activity="build the change 443"
 $bin/aegis -build 3 -verb -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 439"
+activity="diff the change 447"
 $bin/aegis -diff 3 -verb -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate the change 443"
+activity="integrate the change 451"
 $bin/aegis -ipass 3 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="send the change"
+activity="send the change 455"
 $bin/aedist -send -p $AEGIS_PROJECT -c 3 -o $work/c3.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=example
 export AEGIS_PROJECT
 
-activity="receive the change"
+activity="receive the change 462"
 $bin/aedist -rec -p $AEGIS_PROJECT -dir $workchan -f $work/c3.ae > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

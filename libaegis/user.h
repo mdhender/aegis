@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-2000, 2002-2007 Peter Miller
+//	Copyright (C) 1992-2000, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/user.cc
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_USER_H
@@ -620,7 +618,7 @@ public:
       * @param op
       *     Where to write the XML.
       */
-    void uconf_write_xml(struct output_ty *op);
+    void uconf_write_xml(output::pointer op);
 
     /**
       * The uconf_get method is used to get the uconf data corresponding
@@ -945,7 +943,7 @@ uconf_relative_filename_preference_ty user_relative_filename_preference(
     user_ty::pointer, uconf_relative_filename_preference_ty) DEPRECATED;
 
 // use user_ty::uconf_write_xml instead
-void user_uconf_write_xml(user_ty::pointer, struct output_ty *) DEPRECATED;
+void user_uconf_write_xml(user_ty::pointer, output::pointer) DEPRECATED;
 
 // use user_ty::uconf_get() instead
 uconf_ty *user_uconf_get(user_ty::pointer) DEPRECATED;

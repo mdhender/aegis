@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to parse and write fundamental data types
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -31,7 +29,7 @@
 
 
 void
-boolean_write(output_ty *fp, const char *name, bool this_thing, int show)
+boolean_write(output::pointer fp, const char *name, bool this_thing, int show)
 {
     if (!this_thing)
     {
@@ -47,7 +45,8 @@ boolean_write(output_ty *fp, const char *name, bool this_thing, int show)
 
 
 void
-boolean_write_xml(output_ty *fp, const char *name, bool this_thing, int show)
+boolean_write_xml(output::pointer fp, const char *name, bool this_thing,
+    int show)
 {
     if (!this_thing)
     {
@@ -61,7 +60,7 @@ boolean_write_xml(output_ty *fp, const char *name, bool this_thing, int show)
 
 
 void
-integer_write(output_ty *fp, const char *name, long this_thing, int show)
+integer_write(output::pointer fp, const char *name, long this_thing, int show)
 {
     if (this_thing == INTEGER_NOT_SET && !show)
 	return;
@@ -82,7 +81,8 @@ integer_write(output_ty *fp, const char *name, long this_thing, int show)
 
 
 void
-integer_write_xml(output_ty *fp, const char *name, long this_thing, int show)
+integer_write_xml(output::pointer fp, const char *name, long this_thing,
+    int show)
 {
     if (this_thing == INTEGER_NOT_SET && !show)
 	return;
@@ -103,7 +103,7 @@ integer_write_xml(output_ty *fp, const char *name, long this_thing, int show)
 
 
 void
-real_write(output_ty *fp, const char *name, double this_thing, int show)
+real_write(output::pointer fp, const char *name, double this_thing, int show)
 {
     if (this_thing == REAL_NOT_SET && !show)
 	return;
@@ -116,7 +116,8 @@ real_write(output_ty *fp, const char *name, double this_thing, int show)
 
 
 void
-real_write_xml(output_ty *fp, const char *name, double this_thing, int show)
+real_write_xml(output::pointer fp, const char *name, double this_thing,
+    int show)
 {
     if (this_thing == REAL_NOT_SET && !show)
 	return;
@@ -127,7 +128,7 @@ real_write_xml(output_ty *fp, const char *name, double this_thing, int show)
 
 
 void
-time_write(output_ty *fp, const char *name, time_t this_thing, int show)
+time_write(output::pointer fp, const char *name, time_t this_thing, int show)
 {
     if (this_thing == TIME_NOT_SET && !show)
 	return;
@@ -147,7 +148,8 @@ time_write(output_ty *fp, const char *name, time_t this_thing, int show)
 
 
 void
-time_write_xml(output_ty *fp, const char *name, time_t this_thing, int show)
+time_write_xml(output::pointer fp, const char *name, time_t this_thing,
+    int show)
 {
     if (this_thing == TIME_NOT_SET && !show)
 	return;
@@ -164,220 +166,128 @@ time_write_xml(output_ty *fp, const char *name, time_t this_thing, int show)
 }
 
 
-void
-string_write(output_ty *fp, const char *name, string_ty *this_thing)
+static void
+string_write(output::pointer fp, const char *name, const char *value)
 {
-    char            *s;
-    int             count;
+    if (name)
+	fp->fprintf("%s = ", name);
+    fp->fputc('"');
 
+    int nesting_depth = 0;
+    for (const char *s1 = value; *s1; ++s1)
+    {
+        switch (*s1)
+        {
+        case '(':
+        case '[':
+        case '{':
+            ++nesting_depth;
+            break;
+
+        case ')':
+        case ']':
+        case '}':
+            --nesting_depth;
+            break;
+        }
+    }
+    if (nesting_depth > 0)
+        nesting_depth = -nesting_depth;
+    else
+        nesting_depth = 0;
+    for (const char *s = value; *s; ++s)
+    {
+        unsigned char c = *s;
+        switch (c)
+        {
+        case '(':
+        case '[':
+        case '{':
+            ++nesting_depth;
+            if (nesting_depth <= 0)
+            {
+                escape:
+                if (isdigit((unsigned char)s[1]))
+                {
+                    //
+                    // I'd prefer to use "\\%03o"
+                    // but that isn't entirely
+                    // portable (the glibc people
+                    // interpreted the standard
+                    // completely differently than
+                    // everyone else on the planet).
+                    // And "\\3.3o" isn't any better
+                    // (for the exact opposite reason).
+                    //
+                    fp->fputc('\\');
+                    fp->fputc('0' + ((c>>6)&3));
+                    fp->fputc('0' + ((c>>3)&7));
+                    fp->fputc('0' + ( c    &7));
+                }
+                else
+                    fp->fprintf("\\%o", c);
+            }
+            else
+                fp->fputc(c);
+            break;
+
+        case ')':
+        case ']':
+        case '}':
+            --nesting_depth;
+            if (nesting_depth < 0)
+                goto escape;
+            fp->fputc(c);
+            break;
+
+        case '\\':
+        case '"':
+            fp->fputc('\\');
+            fp->fputc(c);
+            break;
+
+        default:
+            // always in the C locale
+            if (!isprint(c))
+            {
+                const char *cp = strchr("\bb\ff\nn\rr\tt", c);
+                if (!cp)
+                    goto escape;
+                fp->fputc('\\');
+                fp->fputc(cp[1]);
+                if (c == '\n')
+                    fp->fputs("\\\n");
+            }
+            else
+                fp->fputc(c);
+            break;
+        }
+    }
+    fp->fputc('"');
+    if (name)
+	fp->fputs(";\n");
+}
+
+
+void
+string_write(output::pointer fp, const char *name, string_ty *this_thing)
+{
     if (!this_thing && name)
 	return;
-    if (name)
-	fp->fprintf("%s = ", name);
-    fp->fputc('"');
-    if (this_thing)
-    {
-	count = 0;
-	for (s = this_thing->str_text; *s; ++s)
-	{
-	    switch (*s)
-	    {
-	    case '(':
-	    case '[':
-	    case '{':
-		++count;
-		break;
-
-	    case ')':
-	    case ']':
-	    case '}':
-		--count;
-		break;
-	    }
-	}
-	if (count > 0)
-	    count = -count;
-	else
-	    count = 0;
-	for (s = this_thing->str_text; *s; ++s)
-	{
-	    unsigned char c = *s;
-	    // always in the C locale
-	    if (!isprint(c))
-	    {
-		const char      *cp;
-
-		cp = strchr("\bb\ff\nn\rr\tt", c);
-		if (cp)
-		{
-		    fp->fputc('\\');
-		    fp->fputc(cp[1]);
-		    if (c == '\n')
-		       	fp->fputs("\\\n");
-		}
-		else
-		{
-		    escape:
-		    if (isdigit((unsigned char)s[1]))
-		    {
-			//
-			// I'd prefer to use "\\%03o"
-			// but that isn't entirely
-			// portable (the glibc people
-			// interpreted the standard
-			// completely differently to
-			// everyone else on the planet).
-			// And "\\3.3o" isn't any better
-			// (for the exact opposite reason).
-			//
-			fp->fputc('\\');
-			fp->fputc('0' + ((c>>6)&3));
-			fp->fputc('0' + ((c>>3)&7));
-			fp->fputc('0' + ( c    &7));
-		    }
-		    else
-			fp->fprintf("\\%o", c);
-		}
-	    }
-	    else
-	    {
-		switch (c)
-		{
-		case '(':
-		case '[':
-		case '{':
-		    ++count;
-		    if (count <= 0)
-			goto escape;
-		    break;
-
-		case ')':
-		case ']':
-		case '}':
-		    --count;
-		    if (count < 0)
-			goto escape;
-		    break;
-
-		case '\\':
-		case '"':
-		    fp->fputc('\\');
-		    break;
-		}
-		fp->fputc(c);
-	    }
-	}
-    }
-    fp->fputc('"');
-    if (name)
-	fp->fputs(";\n");
+    string_write(fp, name, (this_thing ? this_thing->str_text : ""));
 }
 
 
+
 void
-string_write(output_ty *fp, const char *name, const nstring &value)
+string_write(output::pointer fp, const char *name, const nstring &value)
 {
-    if (name)
-	fp->fprintf("%s = ", name);
-    fp->fputc('"');
-    int count = 0;
-    for (const char *s = value.c_str(); *s; ++s)
-    {
-	switch (*s)
-	{
-	case '(':
-	case '[':
-	case '{':
-	    ++count;
-	    break;
-
-	case ')':
-	case ']':
-	case '}':
-	    --count;
-	    break;
-	}
-    }
-    if (count > 0)
-	count = -count;
-    else
-	count = 0;
-    for (const char *s = value.c_str(); *s; ++s)
-    {
-	unsigned char c = *s;
-	// always in the C locale
-	if (!isprint(c))
-	{
-	    const char      *cp;
-
-	    cp = strchr("\bb\ff\nn\rr\tt", c);
-	    if (cp)
-	    {
-		fp->fputc('\\');
-		fp->fputc(cp[1]);
-		if (c == '\n')
-		    fp->fputs("\\\n");
-	    }
-	    else
-	    {
-		escape:
-		if (isdigit((unsigned char)s[1]))
-		{
-		    //
-		    // I'd prefer to use "\\%03o"
-		    // but that isn't entirely
-		    // portable (the glibc people
-		    // interpreted the standard
-		    // completely differently to
-		    // everyone else on the planet).
-		    // And "\\3.3o" isn't any better
-		    // (for the exact opposite reason).
-		    //
-		    fp->fputc('\\');
-		    fp->fputc('0' + ((c>>6)&3));
-		    fp->fputc('0' + ((c>>3)&7));
-		    fp->fputc('0' + ( c    &7));
-		}
-		else
-		    fp->fprintf("\\%o", c);
-	    }
-	}
-	else
-	{
-	    switch (c)
-	    {
-	    case '(':
-	    case '[':
-	    case '{':
-		++count;
-		if (count <= 0)
-		    goto escape;
-		break;
-
-	    case ')':
-	    case ']':
-	    case '}':
-		--count;
-		if (count < 0)
-		    goto escape;
-		break;
-
-	    case '\\':
-	    case '"':
-		fp->fputc('\\');
-		break;
-	    }
-	    fp->fputc(c);
-	}
-    }
-    fp->fputc('"');
-    if (name)
-	fp->fputs(";\n");
+    string_write(fp, name, value.c_str());
 }
 
 
 void
-string_write_xml(output_ty *fp, const char *name, string_ty *this_thing)
+string_write_xml(output::pointer fp, const char *name, string_ty *this_thing)
 {
     if (!this_thing && name)
 	return;
@@ -391,7 +301,7 @@ string_write_xml(output_ty *fp, const char *name, string_ty *this_thing)
 
 
 void
-string_write_xml(output_ty *fp, const char *name, const nstring &value)
+string_write_xml(output::pointer fp, const char *name, const nstring &value)
 {
     if (!name)
 	name = "string";
@@ -432,7 +342,7 @@ io_comment_append(sub_context_ty *scp, const char *fmt)
 
 
 void
-io_comment_emit(output_ty *fp)
+io_comment_emit(output::pointer fp)
 {
     size_t          j;
 

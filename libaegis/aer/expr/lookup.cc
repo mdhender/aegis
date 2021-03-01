@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 2002-2007 Peter Miller
+//	Copyright (C) 1994-1996, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -69,7 +69,9 @@ rpt_expr_lookup::evaluate()
 {
     trace(("expr_lookup::evaluate(this = %08lX)\n{\n", (long)this));
     if (get_pos())
+    {
         trace(("pos is %s\n", get_pos()->representation().c_str()));
+    }
     assert(get_nchildren() == 2);
     trace(("evaluate lhs\n"));
     rpt_value::pointer lhs = nth_child(0)->evaluate(true, false);

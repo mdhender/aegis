@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //      Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new project
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -25,17 +23,17 @@
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <aegis/aenpr.h>
 #include <common/error.h>
 #include <common/progname.h>
 #include <common/quit.h>
-#include <common/trace.h>
 #include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/project/projects.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
@@ -51,6 +49,8 @@
 #include <libaegis/sub.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
+
+#include <aegis/aenpr.h>
 
 
 static void
@@ -82,9 +82,9 @@ static void
 new_project_list(void)
 {
     arglex();
-    while (arglex_token != arglex_token_eoln)
-	generic_argument(new_project_usage);
-    list_projects(0, 0, 0);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_project_usage);
+    list_projects(cid, 0);
 }
 
 
@@ -565,10 +565,10 @@ new_project_main(void)
 	nstring s2 = up->default_project_directory();
 	assert(s2);
 	os_become_orig();
-	int max = os_pathconf_name_max(s2);
+	int name_max = os_pathconf_name_max(s2);
 	os_become_undo();
-	if (project_name_get(pp)->str_length > (size_t)max)
-	    fatal_project_name_too_long(project_name_get(pp), max);
+	if (project_name_get(pp)->str_length > (size_t)name_max)
+	    fatal_project_name_too_long(project_name_get(pp), name_max);
 	home = os_path_join(s2.get_ref(), project_name_get(pp));
 
 	project_verbose_directory(pp, home);

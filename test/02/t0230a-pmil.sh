@@ -1,11 +1,11 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2007 Peter Miller
+#	Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -14,10 +14,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aedbu functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -116,7 +114,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory"
+activity="create test directory 117"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -138,12 +136,12 @@ export AEGIS_PROJECT
 #
 # test the aedbu functionality
 #
-activity="new project 122"
+activity="new project 139"
 $bin/aegis -npr $AEGIS_PROJECT -version '' -v \
     -dir $work/$AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 126"
+activity="project attributes 144"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -154,7 +152,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 137"
+activity="staff 155"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -162,7 +160,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 145"
+activity="new change 163"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -172,11 +170,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 155"
+activity="develop begin 173"
 $bin/aegis -db 10 -dir $work/$AEGIS_PROJECT.C010 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 159"
+activity="new file 177"
 $bin/aegis -nf $work/$AEGIS_PROJECT.C010/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $work/$AEGIS_PROJECT.C010/aegis.conf << 'fubar'
@@ -197,23 +195,23 @@ develop_begin_undo_command = "echo BYE BYE";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="develop end 220"
+activity="develop end 198"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 224"
+activity="review pass 202"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 228"
+activity="integrate begin 206"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 236"
+activity="integrate pass 210"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 240"
+activity="new change 214"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -222,7 +220,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 251"
+activity="develop begin 223"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -231,7 +229,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 # within the change_run_develop_begin_undo_command function.
 # This caused aedbu to fail.
 #
-activity="develop begin undo 251"
+activity="develop begin undo 232"
 $bin/aegis -dbu 11 -v > log 2>&1
 if test $? -ne 0
 then

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller
+//	Copyright (C) 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate quoted_prints
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // From RFC 1521...
 //
@@ -181,17 +179,17 @@
 static inline char
 map_hex(int x)
 {
-    static char hex[16] =
+    static char hex_digit[16] =
     {
 	'0', '1', '2', '3', '4', '5', '6', '7',
 	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
-    return hex[x & 15];
+    return hex_digit[x & 15];
 }
 
 
 void
-output_quoted_printable_ty::eoln(bool soft)
+output_quoted_printable::eoln(bool soft)
 {
     glyph_t *cp = glyph;
     glyph_t *end = cp + pos;
@@ -214,18 +212,24 @@ output_quoted_printable_ty::eoln(bool soft)
 }
 
 
-output_quoted_printable_ty::output_quoted_printable_ty(output_ty *arg1,
-	bool arg2, bool arg3) :
-    deeper(arg1),
-    close_on_close(arg2),
-    allow_international_characters(arg3),
+output_quoted_printable::output_quoted_printable(const output::pointer &a_deep,
+	bool a_intl) :
+    deeper(a_deep),
+    allow_international_characters(a_intl),
     pos(0)
 {
 }
 
 
+output::pointer
+output_quoted_printable::create(const output::pointer &a_deep, bool a_intl)
+{
+    return pointer(new output_quoted_printable(a_deep, a_intl));
+}
+
+
 void
-output_quoted_printable_ty::eoln_partial()
+output_quoted_printable::eoln_partial()
 {
     //
     // The line is loo long.  We need to back up a few
@@ -274,7 +278,7 @@ output_quoted_printable_ty::eoln_partial()
 
 
 void
-output_quoted_printable_ty::eoln_hard()
+output_quoted_printable::eoln_hard()
 {
     //
     // We are required to quote trailing spaces or tabs.
@@ -307,7 +311,7 @@ output_quoted_printable_ty::eoln_hard()
 }
 
 
-output_quoted_printable_ty::~output_quoted_printable_ty()
+output_quoted_printable::~output_quoted_printable()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -317,14 +321,11 @@ output_quoted_printable_ty::~output_quoted_printable_ty()
 
     while (pos)
 	eoln_partial();
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
 void
-output_quoted_printable_ty::write_inner(const void *p, size_t len)
+output_quoted_printable::write_inner(const void *p, size_t len)
 {
     const unsigned char *data = (const unsigned char *)p;
     while (len > 0)
@@ -381,14 +382,14 @@ output_quoted_printable_ty::write_inner(const void *p, size_t len)
 
 
 void
-output_quoted_printable_ty::flush_inner()
+output_quoted_printable::flush_inner()
 {
     deeper->flush();
 }
 
 
-string_ty *
-output_quoted_printable_ty::filename()
+nstring
+output_quoted_printable::filename()
     const
 {
     return deeper->filename();
@@ -396,7 +397,7 @@ output_quoted_printable_ty::filename()
 
 
 long
-output_quoted_printable_ty::ftell_inner()
+output_quoted_printable::ftell_inner()
     const
 {
     return deeper->ftell();
@@ -404,7 +405,7 @@ output_quoted_printable_ty::ftell_inner()
 
 
 int
-output_quoted_printable_ty::page_width()
+output_quoted_printable::page_width()
     const
 {
     return MAX_LINE_LEN;
@@ -412,7 +413,7 @@ output_quoted_printable_ty::page_width()
 
 
 int
-output_quoted_printable_ty::page_length()
+output_quoted_printable::page_length()
     const
 {
     return deeper->page_length();
@@ -420,7 +421,7 @@ output_quoted_printable_ty::page_length()
 
 
 void
-output_quoted_printable_ty::end_of_line_inner()
+output_quoted_printable::end_of_line_inner()
 {
     if (pos)
 	eoln_hard();
@@ -428,8 +429,8 @@ output_quoted_printable_ty::end_of_line_inner()
 
 
 const char *
-output_quoted_printable_ty::type_name()
+output_quoted_printable::type_name()
     const
 {
     return "quoted_printable";
-};
+}

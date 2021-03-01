@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004-2007 Peter Miller
+#	Copyright (C) 2004-2008 Peter Miller
 #       Derived 2006 by Ralph Smith
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -17,8 +17,6 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program. If not, see
 #	<http://www.gnu.org/licenses/>.
-#
-# MANIFEST: Test the tricky symlink functionality
 #
 # DESCRIPTION: This test checks that a derived file whose name coincides
 #       with a previously removed VC file is propagated by the symlink
@@ -129,7 +127,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 133"
+activity="create test directory 130"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -180,7 +178,7 @@ AEGIS_PATH=$work/lib
 export AEGIS_PATH
 workchan=$work/change-dir
 
-activity="new project 184"
+activity="new project 181"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -189,7 +187,7 @@ AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
 
-activity="project attributes 193"
+activity="project attributes 190"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -202,7 +200,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 206"
+activity="staff 203"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -212,7 +210,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 if test "$DEBUG"; then echo "## first change:" >/tmp/aelog ; fi
 
-activity="new change 216"
+activity="new change 213"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -222,11 +220,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 10 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 226"
+activity="develop begin 223"
 $bin/aegis -db 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 230"
+activity="new file 227"
 $bin/aegis -nf $workchan/aegis.conf $workchan/fred $workchan/barney \
 	$workchan/wilma $workchan/pebbles $workchan/bammbamm \
 	$workchan/betty -v > log 2>&1
@@ -278,31 +276,31 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $workchan/bammbamm
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 282"
+activity="build 279"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 286"
+activity="diff 283"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 290"
+activity="develop end 287"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 294"
+activity="integrate begin 291"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 298"
+activity="integrate build 295"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 302"
+activity="integrate diff 299"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 306"
+activity="integrate pass 303"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -315,7 +313,7 @@ fi
 
 ##########################################
 # Part 3. remove a source file
-activity="new change 319"
+activity="new change 316"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -325,7 +323,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -p test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 329"
+activity="develop begin 326"
 $bin/aegis -db 2 -dir $workchan -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -334,48 +332,48 @@ echo "## DD contents:" >>/tmp/aelog
 ls -lR `aesub '$DD'` >>/tmp/aelog
 fi
 
-activity="check symlink 338"
+activity="check symlink 335"
 if test ! $test_flag $workchan/barney ; then no_result; fi
 
-activity="remove file 341"
+activity="remove file 338"
 $bin/aegis -rm $workchan/barney $workchan/wilma $workchan/betty -v -nl \
   > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 346"
+activity="copy file 343"
 $bin/aegis -cp $workchan/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify file 350"
+activity="modify file 347"
 sed 's/derived3/betty/' $workchan/aegis.conf >$workchan/fubar
 mv $workchan/fubar $workchan/aegis.conf
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 355"
+activity="build 352"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 359"
+activity="diff 356"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 363"
+activity="develop end 360"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 367"
+activity="integrate begin 364"
 $bin/aegis -ib 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 371"
+activity="integrate build 368"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 375"
+activity="integrate diff 372"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 379"
+activity="integrate pass 376"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -388,7 +386,7 @@ fi
 
 ##########################################
 # Part 4. produce a derived file with the previously removed name
-activity="new change 392"
+activity="new change 389"
 cat > caf << 'fubar'
 brief_description = "three";
 cause = internal_enhancement;
@@ -398,7 +396,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 3 -f caf -p test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 402"
+activity="develop begin 399"
 $bin/aegis -db 3 -dir $workchan -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -407,40 +405,40 @@ echo "## DD contents:" >>/tmp/aelog
 ls -lR `aesub '$DD'` >>/tmp/aelog
 fi
 
-activity="copy file 411"
+activity="copy file 408"
 $bin/aegis -cp $workchan/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify file 415"
+activity="modify file 412"
 sed 's/derived1/barney/' $workchan/aegis.conf >$workchan/fubar
 mv $workchan/fubar $workchan/aegis.conf
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 420"
+activity="build 417"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 424"
+activity="diff 421"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 428"
+activity="develop end 425"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 432"
+activity="integrate begin 429"
 $bin/aegis -ib 3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 436"
+activity="integrate build 433"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 440"
+activity="integrate diff 437"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 444"
+activity="integrate pass 441"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -453,7 +451,7 @@ fi
 
 # Move to a branch to check the logic more rigorously
 
-activity="new branch 457"
+activity="new branch 454"
 $bin/aegis -nbr 1 -p test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -462,7 +460,7 @@ export AEGIS_PROJECT
 
 ##########################################
 # Part 5. remove a source file
-activity="new change 466"
+activity="new change 463"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -472,7 +470,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -p test.1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 476"
+activity="develop begin 473"
 $bin/aegis -db 2 -dir $workchan -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -481,38 +479,38 @@ echo "## DD contents:" >>/tmp/aelog
 ls -lR `aesub '$DD'` >>/tmp/aelog
 fi
 
-activity="check symlink 485"
+activity="check symlink 482"
 if test ! $test_flag $workchan/barney ; then fail; fi
 
-activity="remove file 488"
+activity="remove file 485"
 $bin/aegis -rm $workchan/pebbles $workchan/bammbamm -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 492"
+activity="build 489"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 496"
+activity="diff 493"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 500"
+activity="develop end 497"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 504"
+activity="integrate begin 501"
 $bin/aegis -ib 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 508"
+activity="integrate build 505"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 512"
+activity="integrate diff 509"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 516"
+activity="integrate pass 513"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -525,7 +523,7 @@ fi
 
 ##########################################
 # Part 6. produce a derived file with the previously removed name
-activity="new change 529"
+activity="new change 526"
 cat > caf << 'fubar'
 brief_description = "three";
 cause = internal_enhancement;
@@ -535,7 +533,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 3 -f caf -p test.1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 539"
+activity="develop begin 536"
 $bin/aegis -db 3 -dir $workchan -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -544,40 +542,40 @@ echo "## DD contents:" >>/tmp/aelog
 ls -lR `aesub '$DD'` >>/tmp/aelog
 fi
 
-activity="copy file 548"
+activity="copy file 545"
 $bin/aegis -cp $workchan/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify file 552"
+activity="modify file 549"
 sed 's/derived2/pebbles/' $workchan/aegis.conf >$workchan/fubar
 mv $workchan/fubar $workchan/aegis.conf
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 557"
+activity="build 554"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 561"
+activity="diff 558"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 565"
+activity="develop end 562"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 569"
+activity="integrate begin 566"
 $bin/aegis -ib 3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 573"
+activity="integrate build 570"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 577"
+activity="integrate diff 574"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 581"
+activity="integrate pass 578"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -590,7 +588,7 @@ fi
 
 ##########################################
 # Part 7. check for availability in subsequent development
-activity="new change 594"
+activity="new change 591"
 cat > caf << 'fubar'
 brief_description = "four";
 cause = internal_enhancement;
@@ -600,18 +598,17 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 4 -f caf -p test.1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 604"
+activity="develop begin 601"
 $bin/aegis -db 4 -dir $workchan -v -nl \
   -trace libaegis/change/build/symlinks.cc > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat log >>/tmp/aelog
 
 if test "$DEBUG" ; then
 echo "## DD contents:" >>/tmp/aelog
 ls -lR `aesub '$DD'` >>/tmp/aelog
 fi
 
-activity="check symlinks 615"
+activity="check symlinks 611"
 if test ! $test_flag $workchan/barney ; then fail; fi
 if test $test_flag $workchan/wilma ; then fail; fi
 if test ! $test_flag $workchan/betty ; then fail; fi
@@ -622,27 +619,27 @@ activity="copy file 622" # just to be a nontrivial change
 $bin/aegis -cp $workchan/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="mofify file 626"
+activity="mofify file 622"
 echo two >> $workchan/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 630"
+activity="build 626"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 634"
+activity="diff 630"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 638"
+activity="develop end 634"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 642"
+activity="integrate begin 638"
 $bin/aegis -ib 4 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 646"
+activity="integrate build 642"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -651,26 +648,26 @@ echo "## IntD contents:" >>/tmp/aelog
 ls -lR `aesub '$IntD'` >>/tmp/aelog
 fi
 
-activity="find integration dir 655"
+activity="find integration dir 651"
 INTD=`$bin/aesub '$IntD'`
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check links 654"
+activity="check links 655"
 if test ! -f $INTD/barney ; then fail; fi
 if test -f $INTD/wilma ; then fail; fi
 if test ! -f $INTD/betty ; then fail; fi
 if test ! -f $INTD/pebbles ; then fail; fi
 if test -f $INTD/bammbamm ; then fail; fi
 
-activity="integrate begin undo 666"
+activity="integrate begin undo 662"
 $bin/aegis -ibu 4 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 670"
+activity="integrate begin 666"
 $bin/aegis -ib -mini 4 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 673"
+activity="integrate build 670"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -679,11 +676,11 @@ echo "## IntD (-mini) contents:" >>/tmp/aelog
 ls -lR `aesub '$IntD'` >>/tmp/aelog
 fi
 
-activity="find integration dir 683"
+activity="find integration dir 679"
 INTD=`$bin/aesub '$IntD'`
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check links 687"
+activity="check links 683"
 if test ! -f $INTD/barney ; then fail; fi
 if test -f $INTD/wilma ; then fail; fi
 if test ! -f $INTD/betty ; then fail; fi

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -27,16 +27,16 @@
 #include <common/str_list.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/emit/brief_descri.h>
+#include <libaegis/emit/edit_number.h>
 #include <libaegis/file/event.h>
 #include <libaegis/file/event/list.h>
+#include <libaegis/http.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/zero.h>
 
-#include <aeget/emit/brief_descri.h>
-#include <aeget/emit/edit_number.h>
 #include <aeget/get/command.h>
 #include <aeget/get/file/diff.h>
-#include <aeget/http.h>
 
 #define XRANGE 3
 #define YRANGE 7

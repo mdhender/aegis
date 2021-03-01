@@ -1,10 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2007 Peter Miller
+//	Copyright (C) 1999-2008 Peter Miller
+//      Copyright (C) 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -26,6 +27,7 @@
 #include <libaegis/attrlistveri.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
+#include <libaegis/change/file/list_get.h>
 #include <libaegis/change/lock_sync.h>
 #include <libaegis/fstate.h>
 #include <libaegis/input/catenate.h>
@@ -396,8 +398,180 @@ candidate(fstate_src_ty *src)
 
 
 static pconf_ty *
+pconf_read_by_usage_completed(change::pointer cp)
+{
+    trace(("pconf_read_by_usage_completed(cp = %08lX)\n{\n", (long)cp));
+
+    //
+    // Build the list of files.
+    //
+    // We use a symbol table so that we get O(n) behaviour.
+    // (The string_list_append_list_unique is O(n**2), oops.)
+    //
+    string_list_ty filename;
+
+    //
+    // Use project file list.
+    //
+    // Two reasons:
+    // 1. avoid a catch-22 of needing the pconf to know the history
+    //    commands needed to load the pconf to know the history
+    //    commands needed to ... etc.
+    // 2. it can be very slow.
+    //
+    // We may need to revisit this in future when we have change
+    // (branch) delta pinning working.
+    //
+    project_ty *pp = cp->pp;
+    while (!pp->is_a_trunk() && pp->change_get()->is_completed())
+        pp = pp->parent_get();
+    for (size_t j = 0;; ++j)
+    {
+        fstate_src_ty *src = pp->file_nth(j, view_path_extreme);
+        if (!src)
+            break;
+        if (src->usage != file_usage_config)
+            continue;
+        if (!candidate(src))
+            continue;
+        fstate_src_trace(src);
+
+        string_ty *s = project_file_path(pp, src);
+        assert(s);
+
+        //
+        // Add the filename to the list.
+        //
+        filename.push_back(s);
+        str_free(s);
+    }
+
+    //
+    // If there are no candidate files,
+    // look for files with the right name
+    // (this is the way Aegis used to do it).
+    //
+    if (filename.nstrings < 1)
+    {
+	string_ty *s = str_from_c(THE_CONFIG_FILE_NEW);
+	fstate_src_ty *src = project_file_find(pp, s, view_path_extreme);
+	str_free(s);
+
+	if (!src)
+	{
+	    s = str_from_c(THE_CONFIG_FILE_OLD);
+	    src = project_file_find(pp, s, view_path_extreme);
+	    str_free(s);
+	}
+
+	if (src)
+	{
+	    s = project_file_path(pp, src);
+	    assert(s);
+	    filename.push_back(s);
+	    str_free(s);
+
+	    //
+	    // This is a hack, but it makes transition from the old
+	    // method to the new method easier.  We change the file have
+	    // "config" usage.  At some point the file state will be
+	    // written out again, and the file will thus be quietly
+	    // converted to have "config" usage.
+	    //
+	    src->usage = file_usage_config;
+	}
+    }
+
+    //
+    // If there are no candidate files,
+    // return a NULL pointer.
+    //
+    if (filename.empty())
+    {
+	trace(("return NULL;\n}\n"));
+	return 0;
+    }
+
+    //
+    // Read the configuration information.
+    //
+    project_become(pp);
+    input ifp = input_catenate_tricky(&filename);
+    pconf_ty *result = (pconf_ty *)parse_input(ifp, &pconf_type);
+    ifp.close();
+    project_become_undo(pp);
+
+    //
+    // If there is a configuration directory specified, then all the
+    // source files in that directory are also config files.  We need
+    // to extend the list and read the catenate config again.
+    //
+    // But... aenf usually marks these files as config files, so there
+    // is a very good chance that this loop will be very fast and find
+    // nothing else to add to the file list, in which case we *dont't*
+    // re-read the project config.
+    //
+    string_ty *dir = result->configuration_directory;
+    if (dir)
+    {
+	bool more = false;
+
+        for (size_t j = 0;; ++j)
+        {
+            fstate_src_ty *src = pp->file_nth(j, view_path_extreme);
+            if (!src)
+                break;
+	    if (!os_isa_path_prefix(dir, src->file_name))
+		continue;
+	    if (src->usage == file_usage_config)
+		continue;
+	    if (!candidate(src))
+		continue;
+
+            string_ty *s = project_file_path(pp, src);
+	    assert(s);
+	    filename.push_back(s);
+	    str_free(s);
+	    more = true;
+
+	    //
+	    // This is a hack, but it makes transition from the old
+	    // method to the new method easier.  We change the file have
+	    // "config" usage.	At some point the file state will be
+	    // written out again, and the file will thus be quietly
+	    // converted to have "config" usage.
+	    //
+	    src->usage = file_usage_config;
+	}
+
+	//
+	// Only re-read of the list of files has been extended.
+	//
+	if (more)
+	{
+	    pconf_type.free((void *)result);
+
+	    project_become(pp);
+	    ifp = input_catenate_tricky(&filename);
+	    result = (pconf_ty *)parse_input(ifp, &pconf_type);
+	    // as a side-effect, parse_input will delete ifp
+	    project_become_undo(pp);
+	}
+    }
+
+    //
+    // Report success.
+    //
+    trace(("return %08lX;\n}\n", (long)result));
+    return result;
+}
+
+
+static pconf_ty *
 pconf_read_by_usage(change::pointer cp)
 {
+    if (cp->bogus || cp->is_completed())
+        return pconf_read_by_usage_completed(cp);
     trace(("pconf_read_by_usage(cp = %08lX)\n{\n", (long)cp));
 
     //
@@ -407,84 +581,44 @@ pconf_read_by_usage(change::pointer cp)
     // (The string_list_append_list_unique is O(n**2), oops.)
     //
     string_list_ty filename;
-    if (cp->bogus || cp->is_completed())
+    trace(("NOT completed\n"));
+    for (size_t j = 0;; ++j)
     {
+        fstate_src_ty *src = change_file_nth(cp, j, view_path_extreme);
+        if (!src)
+            break;
+        if (src->usage != file_usage_config)
+            continue;
+        if (!candidate(src))
+            continue;
+        fstate_src_trace(src);
+
         //
-        // Use project file list.
+        // It may be necessary to get the file out of history when we
+        // are dealing with an historical change set, and the particular
+        // file's version is not in a baseline any longer, and must be
+        // extracted from history.
         //
-        // Two reasons:
-        // 1. avoid a catch-22 of needing the pconf to know the history
-        //    commands needed to load the pconf to know the history
-        //    commands needed to ... etc.
-        // 2. it can be very slow.
-        //
-        // We may need to revisit this in future when we have change
-        // (branch) delta panning working.
-        //
-        project_ty *pp = cp->pp;
-        while (!pp->is_a_trunk() && pp->change_get()->is_completed())
-            pp = pp->parent_get();
-        for (size_t j = 0;; ++j)
+        int need_to_unlink = 0;
+        string_ty *s = change_file_version_path(cp, src, &need_to_unlink);
+        assert(s);
+        if (need_to_unlink)
         {
-            fstate_src_ty *src = pp->file_nth(j, view_path_extreme);
-            if (!src)
-                break;
-            if (src->usage != file_usage_config)
-                continue;
-            if (!candidate(src))
-                continue;
-            fstate_src_trace(src);
-
-            string_ty *s = project_file_path(pp, src);
-            assert(s);
-
             //
-            // Add the filename to the list.
+            // Remember to remove the temporary file on exit.
             //
-            filename.push_back(s);
-            str_free(s);
+            nstring path(s);
+            os_become_orig();
+            quit_action *qap = new quit_action_unlink(path);
+            os_become_undo();
+            quit_register(*qap);
         }
-    }
-    else
-    {
-        for (size_t j = 0;; ++j)
-        {
-            fstate_src_ty *src = change_file_nth(cp, j, view_path_extreme);
-            if (!src)
-                break;
-            if (src->usage != file_usage_config)
-                continue;
-            if (!candidate(src))
-                continue;
-            fstate_src_trace(src);
 
-            //
-            // It may be necessary to get the file out of history when we
-            // are dealing with an historical change set, and the particular
-            // file's version is not in a baseline any longer, and must be
-            // extracted from history.
-            //
-            int need_to_unlink = 0;
-            string_ty *s = change_file_version_path(cp, src, &need_to_unlink);
-            assert(s);
-            if (need_to_unlink)
-            {
-                //
-                // Remember to remove the temporary file on exit.
-                //
-                nstring path(str_copy(s));
-                os_become_orig();
-                quit_action *qap = new quit_action_unlink(path);
-                os_become_undo();
-                quit_register(*qap);
-            }
-
-            //
-            // Add the filename to the list.
-            //
-            filename.push_back(s);
-            str_free(s);
-        }
+        //
+        // Add the filename to the list.
+        //
+        filename.push_back(s);
+        str_free(s);
     }
 
     //
@@ -507,9 +641,9 @@ pconf_read_by_usage(change::pointer cp)
 
 	if (src)
 	{
-	    s = change_file_path(cp, src->file_name);
+	    s = change_file_path(cp, src);
 	    if (!s)
-		s = project_file_path(cp->pp, src->file_name);
+		s = project_file_path(cp->pp, src);
 	    assert(s);
 	    filename.push_back(s);
 	    str_free(s);
@@ -558,21 +692,32 @@ pconf_read_by_usage(change::pointer cp)
     if (dir)
     {
 	bool more = false;
-	for (size_t k = 0;; ++k)
+
+        //
+        // We don't use the change_file_nth function because we can
+        // exclude the majority of files using only the path name,
+        // without the need to look at the fstate content.
+        //
+        const string_list_ty *flp =
+            change_file_list_get(cp, view_path_extreme);
+	for (size_t k = 0; k < flp->size(); ++k)
 	{
-	    fstate_src_ty *src = change_file_nth(cp, k, view_path_extreme);
+            string_ty *file_name = flp->operator[](k);
+	    if (!os_isa_path_prefix(dir, file_name))
+		continue;
+
+	    fstate_src_ty *src =
+                change_file_find(cp, file_name, view_path_extreme);
 	    if (!src)
 		break;
 	    if (src->usage == file_usage_config)
 		continue;
 	    if (!candidate(src))
 		continue;
-	    if (!os_isa_path_prefix(dir, src->file_name))
-		continue;
 
-	    string_ty *s = change_file_path(cp, src->file_name);
+	    string_ty *s = change_file_path(cp, src);
 	    if (!s)
-		s = project_file_path(cp->pp, src->file_name);
+		s = project_file_path(cp->pp, src);
 	    assert(s);
 	    filename.push_back(s);
 	    str_free(s);
@@ -598,7 +743,7 @@ pconf_read_by_usage(change::pointer cp)
 	    change_become(cp);
 	    ifp = input_catenate_tricky(&filename);
 	    result = (pconf_ty *)parse_input(ifp, &pconf_type);
-	    // as a side-effect, parse_input will delete fp
+	    // as a side-effect, parse_input will delete ifp
 	    change_become_undo(cp);
 	}
     }

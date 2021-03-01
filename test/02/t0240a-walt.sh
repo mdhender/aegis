@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Walter Franzini
-#       Copyright (C) 2007 Peter Miller
+#	Copyright (C) 2006-2008 Walter Franzini
+#       Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -94,7 +94,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 98"
+activity="create test directory 97"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -141,14 +141,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 145"
+activity="new project 144"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 152"
+activity="project attributes 151"
 cat > tmp << 'end'
 description = "A bogus project created to test the "
     "aeannotate functionality.";
@@ -165,7 +165,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 169"
+activity="staff 168"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -176,7 +176,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 180"
+activity="new change 179"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -188,14 +188,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 192"
+activity="develop begin 191"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 199"
+activity="new file 198"
 $bin/aegis -nf  $workchan/bogus1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -229,56 +229,56 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 231"
+activity="build 232"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 238"
+activity="diff 239"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 245"
+activity="develop end 246"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 252"
+activity="integrate begin 253"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff the change 259"
+activity="diff the change 260"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 266"
+activity="build 267"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 273"
+activity="integrate pass 274"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change
 #
-activity="new change 280"
+activity="new change 281"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -290,11 +290,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 292"
+activity="develop begin 293"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="rename bogus1 296"
+activity="rename bogus1 297"
 $bin/aegis -cp 2 $workchan/bogus1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -307,7 +307,10 @@ if test $? -ne 0; then no_result; fi
 $bin/aefinish -c 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-$bin/aeintegratq -p $AEGIS_PROJECT -c 2 > log 2>&1
+$bin/aegis -ib -c 2 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+$bin/aefinish -p $AEGIS_PROJECT -c 2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
@@ -345,7 +348,7 @@ if test $? -ne 0; then no_result; fi
 # Hack the history:  we need this because it is possible that some
 # file's history will be accessed by file name instead of UUID.
 #
-activity="hacking the history 347"
+activity="hacking the history 351"
 cp $workproj/history/aa.uui/aa.uui/aaaabbbb.4bb/b8cccccc.cdd/ddddd1 \
     $workproj/history/bogus1
 if test $? -ne 0; then no_result; fi

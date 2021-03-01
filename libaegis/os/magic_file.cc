@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,14 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the os_magic_file class
+//	along with this program; if not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/magic.h>
 #include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
 #include <common/env.h>
 #include <libaegis/os.h>
@@ -82,6 +81,25 @@ os_magic_file(const nstring &filename)
     }
     nstring result(content_type);
     magic_close(cookie);
+    content_type = 0; // not valid after magic_close
+
+    //
+    // The BSD libmagic is weird.  It returns stuff like
+    // "text/plain charset=ascii" so we need to insert a
+    // semicolon before the space.  If there is no space,
+    // assume there is no charset either.
+    //
+    if (!strchr(result.c_str(), ';'))
+    {
+        const char *start = result.c_str();
+        const char *sp = strchr(start, ' ');
+        if (sp)
+        {
+            const char *end = start + result.size();
+            result = nstring(start, sp - start) + ";" + nstring(sp, end - sp);
+        }
+    }
+
     return result;
 }
 
@@ -90,5 +108,5 @@ nstring
 os_magic_file(string_ty *filename)
 {
     // just for compatibility
-    return os_magic_file(nstring(str_copy(filename)));
+    return os_magic_file(nstring(filename));
 }

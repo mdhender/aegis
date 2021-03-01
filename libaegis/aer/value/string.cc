@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1994, 1996, 1998, 1999, 2002-2007 Peter Miller
+//      Copyright (C) 1994, 1996, 1998, 1999, 2002-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -186,7 +186,7 @@ rpt_value_string::booleanize_or_null()
     nstring val = value.trim();
     for (const table_t *tp = table; tp < ENDOF(table); ++tp)
     {
-        if (0 == strcasecmp(tp->name, value.c_str()))
+        if (0 == strcasecmp(tp->name, val.c_str()))
             return rpt_value_boolean::create(tp->value);
     }
 

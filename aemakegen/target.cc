@@ -1,20 +1,19 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2007 Peter Miller;
+//	Copyright (C) 2006-2008 Peter Miller;
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License,
-//      version 2, as published by the Free Software Foundation.
+//      version 3, as published by the Free Software Foundation.
 //
 //      This program is distributed in the hope that it will be useful,
 //      but WITHOUT ANY WARRANTY; without even the implied warranty of
 //      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //      GNU General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public
-//      License along with this program; if not, write to the Free
-//      Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-//      MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/unistd.h>
@@ -75,6 +74,11 @@ target::exists(const nstring &path)
 void
 target::process(const nstring_list &filenames)
 {
+    for (size_t j = 0; j < filenames.size(); ++j)
+    {
+        nstring filename = filenames[j];
+	preprocess(filename);
+    }
     begin();
     for (size_t j = 0; j < filenames.size(); ++j)
     {
@@ -83,6 +87,13 @@ target::process(const nstring_list &filenames)
 	process(filename, is_a_script);
     }
     end();
+}
+
+
+void
+target::preprocess(const nstring &)
+{
+    // Do nothing.
 }
 
 

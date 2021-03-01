@@ -1,13 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2005 Walter Franzini;
-#	Copyright (C) 2006, 2007 Peter Miller
-#	All rights reserved.
+#	Copyright (C) 2005, 2007, 2008 Walter Franzini
+#	Copyright (C) 2006-2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -16,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aedist functionality
+#	along with this program; if not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -119,7 +116,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 112"
+activity="create test directory 120"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -170,14 +167,14 @@ AEGIS_PATH=$work/lib ; export AEGIS_PATH
 AEGIS_PROJECT=proj1 ; export AEGIS_PROJECT
 
 
-activity="new project 177"
+activity="new project 171"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir ${workproj}_1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 184"
+activity="project attributes 178"
 cat > tmp << 'end'
 description = "A bogus project created to test the aemv/merge "
     "functionality.";
@@ -194,7 +191,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 201"
+activity="staff 195"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -209,14 +206,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=proj2 ; export AEGIS_PROJECT
 
 
-activity="new project 216"
+activity="new project 210"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir ${workproj}_2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 223"
+activity="project attributes 217"
 cat > tmp << 'end'
 description = "A bogus project created to test the aemv/merge "
     "functionality.";
@@ -233,7 +230,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 240"
+activity="staff 234"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -251,7 +248,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 258"
+activity="new change 252"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -263,14 +260,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 270"
+activity="develop begin 264"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 277"
+activity="new file 271"
 $bin/aegis -nf  $workchan/bogus1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -314,14 +311,14 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 321"
+activity="build 315"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 328"
+activity="diff 322"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -331,22 +328,26 @@ if test $? -ne 0; then cat log; no_result; fi
 #
 # finish development of the change
 #
-activity="develop end 338"
+activity="develop end 332"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate
 #
-activity="integrate 345"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 1 > log 2>&1
+activity="integrate begin 339"
+$bin/aegis -ib -c 1 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate 343"
+$bin/aefinish -p $AEGIS_PROJECT -c 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #STEP2:
 #
 # create a new change
 #
-activity="new change 353"
+activity="new change 351"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -358,11 +359,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 365"
+activity="develop begin 363"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify bogus1 369"
+activity="modify bogus1 367"
 $bin/aegis -cp 2 $workchan/bogus1 -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -371,7 +372,7 @@ append some text
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="modify bogus2 378"
+activity="modify bogus2 376"
 $bin/aegis -cp 2 $workchan/bogus2 -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -380,31 +381,35 @@ append some text
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="diff the change 387"
+activity="diff the change 385"
 $bin/aegis -diff 2 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build the change 391"
+activity="build the change 389"
 $bin/aegis -build 2 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="develop end 395"
+activity="develop end 393"
 $bin/aegis -dev_end 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the change 399"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 2 > log 2>&1
+activity="integrate begin 397"
+$bin/aegis -ib 2 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="complete the change 401"
+$bin/aefinish -p $AEGIS_PROJECT -c 2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # end of step2
 #
 
-activity="send the change 407"
+activity="send the change 409"
 $bin/aedist -send -p $AEGIS_PROJECT -c 1 -o c11.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="send the change 411"
+activity="send the change 413"
 $bin/aedist -send -p $AEGIS_PROJECT -c 2 -o c12.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -418,12 +423,16 @@ export AEGIS_PROJECT
 #
 # step3
 #
-activity="receive the change 426"
+activity="receive the change 427"
 $bin/aedist -receive -p $AEGIS_PROJECT -f c11.ae -c 1 -no_trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the change 431"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 1 > log 2>&1
+activity="integrate begin 431"
+$bin/aegis -ib -c 1 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="complete the change 435"
+$bin/aefinish -p $AEGIS_PROJECT -c 1 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 cat > ok <<EOF
@@ -469,12 +478,16 @@ check_it ok ${workproj}_2/info/change/0/001.fs
 #
 # step4
 #
-activity="receive the change 479"
+activity="receive the change 482"
 $bin/aedist -receive -p $AEGIS_PROJECT -c 2 -f c12.ae -no_trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the change 483"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 2 > log 2>&1
+activity="integrate begin 486"
+$bin/aegis -ib -c 2 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="complete the change 490"
+$bin/aefinish -p $AEGIS_PROJECT -c 2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 cat > ok <<EOF
@@ -520,7 +533,7 @@ check_it ok ${workproj}_2/info/change/0/002.fs
 #
 # Step5
 #
-activity="new change 530"
+activity="new change 537"
 cat > tmp << 'end'
 brief_description = "The 3rd change (proj2)";
 cause = internal_bug;
@@ -532,11 +545,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 542"
+activity="develop begin 549"
 $bin/aegis -db 3 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify bogus1 546"
+activity="modify bogus1 553"
 $bin/aegis -cp 3 $workchan/bogus1 -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -545,7 +558,7 @@ append some text
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="modify bogus2 555"
+activity="modify bogus2 562"
 $bin/aegis -cp 3 $workchan/bogus2 -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -554,20 +567,24 @@ append some text
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="diff the change 564"
+activity="diff the change 571"
 $bin/aegis -diff 3 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build the change 568"
+activity="build the change 575"
 $bin/aegis -build 3 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="develop end 572"
+activity="develop end 579"
 $bin/aegis -dev_end 3 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the change 576"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 3 > log 2>&1
+activity="integrate begin 583"
+$bin/aegis -ib -c 3 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="complete the change 587"
+$bin/aefinish -p $AEGIS_PROJECT -c 3 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 
@@ -610,7 +627,7 @@ src =
 EOF
 check_it ok ${workproj}_2/info/change/0/003.fs
 
-activity="send the change 620"
+activity="send the change 631"
 $bin/aedist -send -p $AEGIS_PROJECT -c 3 -o c22.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -624,7 +641,7 @@ if test $? -ne 0; then cat log; no_result; fi
 AEGIS_PROJECT=proj1
 export AEGIS_PROJECT
 
-activity="receive the change 634"
+activity="receive the change 645"
 $bin/aedist -receive -p $AEGIS_PROJECT -c 3 -f c22.ae \
     -dir $workchan -trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
@@ -701,26 +718,30 @@ if test $? -ne 0; then no_result; fi
 
 check_it ok ${workproj}_1/info/change/0/003.fs
 
-activity="modify file 709"
+activity="modify file 722"
 cat >> $workchan/bogus2 <<EOF
 append some text, again.
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="diff the change 715"
+activity="diff the change 728"
 $bin/aegis -diff 3 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build the change 719"
+activity="build the change 732"
 $bin/aegis -build 3 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="develop end 723"
+activity="develop end 736"
 $bin/aegis -dev_end 3 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the change 727"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 3 > log 2>&1
+activity="integrate begin 740"
+$bin/aegis -ib -c 3 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="complete the change 744"
+$bin/aefinish -p $AEGIS_PROJECT -c 3 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 cat > ok <<EOF
@@ -787,7 +808,7 @@ if test $? -ne 0; then cat log; no_result; fi
 AEGIS_PROJECT=proj2
 export AEGIS_PROJECT
 
-activity="receive the change 795"
+activity="receive the change 812"
 $bin/aedist -receive -p $AEGIS_PROJECT -c 4 -dir $workchan \
     -f c13.ae -trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
@@ -852,29 +873,33 @@ EOF
 check_it ok ${workproj}_2/info/change/0/004.fs
 
 
-activity="modify file 709"
+activity="modify file 877"
 cat >> $workchan/bogus2 <<EOF
 append some text, again.
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="diff the change 715"
+activity="diff the change 883"
 $bin/aegis -diff 4 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build the change 719"
+activity="build the change 887"
 $bin/aegis -build 4 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="develop end 723"
+activity="develop end 891"
 $bin/aegis -dev_end 4 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="complete the change 727"
-$bin/aeintegratq -p $AEGIS_PROJECT -c 4 > log 2>&1
+activity="integrate begin 895"
+$bin/aegis -ib -c 4 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="send the change"
+activity="complete the change 899"
+$bin/aefinish -p $AEGIS_PROJECT -c 4 > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="send the change 903"
 $bin/aedist -send -p $AEGIS_PROJECT -c 4 -o c24.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -885,7 +910,7 @@ if test $? -ne 0; then cat log; no_result; fi
 AEGIS_PROJECT=proj1
 export AEGIS_PROJECT
 
-activity="receive the change 795"
+activity="receive the change 914"
 $bin/aedist -receive -p $AEGIS_PROJECT -c 4 -dir $workchan \
     -f c24.ae -trace receive -trojan > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi

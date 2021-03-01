@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1996, 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1991-1996, 1999, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/io.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_IO_H
@@ -26,17 +24,17 @@
 
 #include <common/main.h>
 #include <libaegis/meta_type.h>
+#include <libaegis/output.h>
 
 struct sub_context_ty; // forward
-struct output_ty; // forward
 class nstring; // forward
 
 #define INTEGER_NOT_SET 0
 #define REAL_NOT_SET 0.0
 #define TIME_NOT_SET (time_t)0
 
-void boolean_write(output_ty *, const char *, bool, int);
-void boolean_write_xml(output_ty *, const char *, bool, int);
+void boolean_write(output::pointer, const char *, bool, int);
+void boolean_write_xml(output::pointer, const char *, bool, int);
 
 /**
   * The string_write function is used to write aout a name value pair
@@ -50,7 +48,7 @@ void boolean_write_xml(output_ty *, const char *, bool, int);
   * @param value
   *     The value of the field.
   */
-void string_write(output_ty *op, const char *name, string_ty *value);
+void string_write(output::pointer op, const char *name, string_ty *value);
 
 /**
   * The string_write function is used to write aout a name value pair
@@ -64,7 +62,7 @@ void string_write(output_ty *op, const char *name, string_ty *value);
   * @param value
   *     The value of the field.
   */
-void string_write(output_ty *op, const char *name, const nstring &value);
+void string_write(output::pointer op, const char *name, const nstring &value);
 
 /**
   * The string_write _xmlfunction is used to write out an XML element
@@ -77,7 +75,7 @@ void string_write(output_ty *op, const char *name, const nstring &value);
   * @param value
   *     The value of the elsement.
   */
-void string_write_xml(output_ty *op, const char *name, string_ty *value);
+void string_write_xml(output::pointer op, const char *name, string_ty *value);
 
 /**
   * The string_write_xml function is used to write out an XML element
@@ -90,15 +88,16 @@ void string_write_xml(output_ty *op, const char *name, string_ty *value);
   * @param value
   *     The value of the elsement.
   */
-void string_write_xml(output_ty *op, const char *name, const nstring &value);
+void string_write_xml(output::pointer op, const char *name,
+    const nstring &value);
 
-void integer_write(output_ty *, const char *, long, int);
-void integer_write_xml(output_ty *, const char *, long, int);
-void real_write(output_ty *, const char *, double, int);
-void real_write_xml(output_ty *, const char *, double, int);
-void time_write(output_ty *, const char *, time_t, int);
-void time_write_xml(output_ty *, const char *, time_t, int);
+void integer_write(output::pointer , const char *, long, int);
+void integer_write_xml(output::pointer , const char *, long, int);
+void real_write(output::pointer , const char *, double, int);
+void real_write_xml(output::pointer , const char *, double, int);
+void time_write(output::pointer , const char *, time_t, int);
+void time_write_xml(output::pointer , const char *, time_t, int);
 void io_comment_append(sub_context_ty *, const char *);
-void io_comment_emit(output_ty *);
+void io_comment_emit(output::pointer );
 
 #endif // LIBAEGIS_IO_H

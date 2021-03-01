@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller
+//	Copyright (C) 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate lists
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -46,14 +44,8 @@ usage(void)
 void
 list(void)
 {
-    string_ty       *ifn;
-    patch_list_ty   *plp;
-    size_t	    j;
-    string_ty	    *ofn;
-    output_ty	    *ofp;
-
-    ifn = 0;
-    ofn = 0;
+    string_ty *ifn = 0;
+    string_ty *ofn = 0;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -107,14 +99,14 @@ list(void)
     //
     // read the input
     //
-    plp = patch_slurp(ifn);
+    patch_list_ty *plp = patch_slurp(ifn);
     assert(plp);
 
     //
     // Write the file names to the output.
     //
-    ofp = output_file_text_open(ofn);
-    for (j = 0; j < plp->length; ++j)
+    output::pointer ofp = output_file::text_open(ofn);
+    for (size_t j = 0; j < plp->length; ++j)
     {
 	assert(plp->item[j]);
 	assert(plp->item[j]->name.nstrings);
@@ -122,5 +114,4 @@ list(void)
 	ofp->fputs(plp->item[j]->name.string[0]);
 	ofp->fputc('\n');
     }
-    delete ofp;
 }

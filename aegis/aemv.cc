@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1993-1999, 2001-2008 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -19,31 +19,33 @@
 //
 
 #include <common/ac/stdio.h>
-#include <libaegis/ael/project/files.h>
 
-#include <aegis/aemv.h>
-#include <libaegis/arglex2.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/ael/project/files.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
-#include <common/error.h>
 #include <libaegis/file.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
 #include <libaegis/move_list.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <common/str_list.h>
+
+#include <aegis/aemv.h>
 
 
 static void
@@ -74,42 +76,11 @@ move_file_help(void)
 static void
 move_file_list(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-
     trace(("move_file_list()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(move_file_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, move_file_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, move_file_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_project_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(move_file_usage);
+    list_project_files(cid, 0);
     trace(("}\n"));
 }
 

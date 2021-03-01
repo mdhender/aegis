@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2007 Peter Miller
+//	Copyright (C) 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -65,7 +65,7 @@
 
 
 static int
-len_printable(string_ty *s, int max)
+len_printable(string_ty *s, int len_max)
 {
     const char      *cp;
     int             result;
@@ -76,8 +76,8 @@ len_printable(string_ty *s, int max)
     for (cp = s->str_text; *cp && isprint((unsigned char)*cp); ++cp)
 	;
     result = (cp - s->str_text);
-    if (result > max)
-	result = max;
+    if (result > len_max)
+	result = len_max;
     return result;
 }
 
@@ -113,19 +113,17 @@ patch_send(void)
     string_ty       *input_filename = 0;
     int             input_filename_unlink;
     string_ty       *output_file_name;
-    output_ty       *t1;
-    output_ty       *t2;
     string_ty       *project_name;
     long            change_number;
     const char      *branch;
     int             grandparent;
     int             trunk;
-    output_ty       *ofp;
+    output::pointer ofp;
     project_ty      *pp;
     change::pointer cp;
     user_ty::pointer up;
     cstate_ty       *cstate_data;
-    string_ty       *output;
+    string_ty       *output_filename;
     string_ty       *s;
     string_ty       *s2;
     size_t          j;
@@ -142,7 +140,7 @@ patch_send(void)
     grandparent = 0;
     project_name = 0;
     trunk = 0;
-    output = 0;
+    output_filename = 0;
     ascii_armor = content_encoding_unset;
     compression_algorithm_t needs_compression = compression_algorithm_not_set;
     delta_date = NO_TIME_SET;
@@ -199,7 +197,7 @@ patch_send(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filename)
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -208,11 +206,11 @@ patch_send(void)
 		// NOTREACHED
 
 	    case arglex_token_stdio:
-		output = str_from_c("");
+		output_filename = str_from_c("");
 		break;
 
 	    case arglex_token_string:
-		output = str_from_c(arglex_value.alv_string);
+		output_filename = str_from_c(arglex_value.alv_string);
 		break;
 	    }
 	    break;
@@ -622,9 +620,9 @@ patch_send(void)
     &&
 	needs_compression != compression_algorithm_none
     )
-	ofp = output_file_binary_open(output);
+	ofp = output_file::binary_open(output_filename);
     else
-	ofp = output_file_text_open(output);
+	ofp = output_file::text_open(output_filename);
     ofp->fputs("MIME-Version: 1.0\n");
     ofp->fputs("Content-Type: application/aegis-patch\n");
     content_encoding_header(ofp, ascii_armor);
@@ -671,11 +669,11 @@ patch_send(void)
 	// Fall through...
 
     case compression_algorithm_bzip2:
-	ofp = new output_bzip2(ofp, true);
+	ofp = output_bzip2::create(ofp);
 	break;
 
     case compression_algorithm_gzip:
-	ofp = new output_gzip(ofp, true);
+	ofp = output_gzip::create(ofp);
 	break;
     }
 
@@ -683,16 +681,17 @@ patch_send(void)
     // Add the change details to the archive.
     // This is done as a simple comment.
     //
-    t1 = new output_prefix_ty(ofp, false, "#\t");
-    t2 = output_wrap_open(t1, 1, 70);
-    os_become_undo();
-    s = change_description_get(cp);
-    os_become_orig();
-    t2->fputc('\n');
-    t2->fputs(s);
-    t2->end_of_line();
-    t2->fputc('\n');
-    delete t2;
+    {
+        output::pointer t2 = output_prefix::create(ofp, "#\t");
+        t2 = output_wrap_open(t2, 70);
+        os_become_undo();
+        s = change_description_get(cp);
+        os_become_orig();
+        t2->fputc('\n');
+        t2->fputs(s);
+        t2->end_of_line();
+        t2->fputc('\n');
+    }
     os_become_undo();
 
     if (use_meta_data)
@@ -818,14 +817,15 @@ patch_send(void)
 	//
 	os_become_orig();
 	ofp->fputs("# Aegis-Change-Set-Begin\n");
-	t1 = new output_prefix_ty(ofp, false, "# ");
-	t2 = new output_base64_ty(t1, true);
-	if (use_bzip2)
-	    t2 = new output_bzip2(t2, true);
-	else
-	    t2 = new output_gzip(t2, true);
-	cstate_write(t2, change_set);
-	delete t2;
+        {
+            output::pointer t2 = output_prefix::create(ofp, "# ");
+            t2 = output_base64::create(t2);
+            if (use_bzip2)
+                t2 = output_bzip2::create(t2);
+            else
+                t2 = output_gzip::create(t2);
+            cstate_write(t2, change_set);
+        }
 	ofp->fputs("# Aegis-Change-Set-End\n#\n");
 	os_become_undo();
 
@@ -1104,7 +1104,7 @@ patch_send(void)
 	    ofp->fputs("Index: ");
 	    ofp->fputs(csrc->file_name);
 	    ofp->fputc('\n');
-	    *ofp << ifp;
+	    ofp << ifp;
 	}
 	ifp.close();
 	os_become_undo();
@@ -1122,7 +1122,7 @@ patch_send(void)
     //
     // Mark the end of the patch.
     //
-    delete ofp;
+    ofp.reset();
     os_become_undo();
 
     // clean up and go home

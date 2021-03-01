@@ -2,11 +2,11 @@
 
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2007 Peter Miller
+ *	Copyright (C) 1991-2008 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
+ *	the Free Software Foundation; either version 3 of the License, or
  *	(at your option) any later version.
  *
  *	This program is distributed in the hope that it will be useful,
@@ -42,6 +42,9 @@
 
 /* Define to 1 if you have the `backtrace' function. */
 #undef HAVE_BACKTRACE
+
+/* Define to 1 if you have the <bits/c++locale.h> header file. */
+#undef HAVE_BITS_C__LOCALE_H
 
 /* Define to 1 if you have the <boost/shared_ptr.hpp> header file. */
 #undef HAVE_BOOST_SHARED_PTR_HPP
@@ -110,6 +113,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
+#undef HAVE_FSEEKO
+
 /* Define to 1 if you have the `getpgrp' function. */
 #undef HAVE_GETPGRP
 
@@ -149,6 +155,9 @@
 /* Define to 1 if you have the `bz2' library (-lbz2). */
 #undef HAVE_LIBBZ2
 
+/* Define to 1 if you have the `c' library (-lc). */
+#undef HAVE_LIBC
+
 /* Define to 1 if you have the `clu' library (-lclu). */
 #undef HAVE_LIBCLU
 
@@ -158,8 +167,14 @@
 /* Define to 1 if you have the `curl' library (-lcurl). */
 #undef HAVE_LIBCURL
 
+/* Define to 1 if you have the `gettext' library (-lgettext). */
+#undef HAVE_LIBGETTEXT
+
 /* Define to 1 if you have the <libgettext.h> header file. */
 #undef HAVE_LIBGETTEXT_H
+
+/* Define to 1 if you have the `iconv' library (-liconv). */
+#undef HAVE_LIBICONV
 
 /* Define to 1 if you have the `intl' library (-lintl). */
 #undef HAVE_LIBINTL
@@ -484,10 +499,22 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
+/* Define this symbol if your system has a working UUID implementation. */
+#undef UUID_OK
+
+/* Number of bits in a file offset, on hosts where this is settable. */
+#undef _FILE_OFFSET_BITS
+
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
 # undef _GNU_SOURCE
 #endif
+
+/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
+#undef _LARGEFILE_SOURCE
+
+/* Define for large files, on AIX-style hosts. */
+#undef _LARGE_FILES
 
 /* Define to 1 if on MINIX. */
 #undef _MINIX

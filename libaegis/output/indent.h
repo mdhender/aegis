@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 1999, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/indent.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_INDENT_H
@@ -25,28 +23,39 @@
 #include <libaegis/output.h>
 
 /**
-  * The output_indent_ty class is used to represent an output stream
+  * The output_indent class is used to represent an output stream
   * which automatically indents its C-like input.
   */
-class output_indent_ty:
-    public output_ty
+class output_indent:
+    public output
 {
 public:
+    typedef aegis_shared_ptr<output_indent> ipointer;
+
     /**
       * The destructor.
       */
-    virtual ~output_indent_ty();
+    virtual ~output_indent();
 
+private:
     /**
-      * The constructor.
+      * The constructor.  It is private on purpose, use the "create"
+      * class method instead.
       *
       * \param deeper
       *     the deeper output stream on which this filter writes to.
-      * \param close_on_close
-      *     whether or not the deeper output stream is to be deleted in our
-      *     destructor.
       */
-    output_indent_ty(output_ty *deeper, bool close_on_close = true);
+    output_indent(const output::pointer &deeper);
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * \param deeper
+      *     the deeper output stream on which this filter writes to.
+      */
+    static ipointer create(const output::pointer &deeper);
 
     /**
       * The indent_more method is used to increase the indenting
@@ -66,8 +75,9 @@ public:
       */
     void indent_less();
 
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     const char *type_name() const;
@@ -99,14 +109,7 @@ private:
       * The deeper instance variable is used to remember the deeper
       * output stream on which this filter writes to.
       */
-    output_ty *deeper;
-
-    /**
-      * The close_on_close instance variable is used to remember
-      * whether or not the deeper output stream is to be deleted in out
-      * destructor.
-      */
-    bool close_on_close;
+    output::pointer deeper;
 
     /**
       * The depth instance variable is used to remember the current
@@ -142,27 +145,20 @@ private:
       */
     long pos;
 
-    output_indent_ty();
-    output_indent_ty(const output_indent_ty &);
-    output_indent_ty &operator=(const output_indent_ty &);
+    /**
+      * The default constructor.  Do not use.
+      */
+    output_indent();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    output_indent(const output_indent &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    output_indent &operator=(const output_indent &);
 };
-
-inline DEPRECATED output_ty *
-output_indent(output_ty *deeper)
-{
-    return new output_indent_ty(deeper);
-}
-
-inline DEPRECATED void
-output_indent_more(output_indent_ty *op)
-{
-    op->indent_more();
-}
-
-inline DEPRECATED void
-output_indent_less(output_indent_ty *op)
-{
-    op->indent_less();
-}
 
 #endif // LIBAEGIS_OUTPUT_INDENT_H

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,36 +13,35 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate lockss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/pwd.h>
 
-#include <libaegis/ael/change/inappropriat.h>
-#include <libaegis/ael/project/inappropriat.h>
-#include <libaegis/ael/locks.h>
-#include <libaegis/col.h>
-#include <libaegis/gonzo.h>
 #include <common/itab.h>
-#include <libaegis/lock.h>
-#include <libaegis/output.h>
-#include <libaegis/project.h>
 #include <common/str.h>
 #include <common/str_list.h>
 #include <common/trace.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/locks.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/col.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/lock.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
 #include <libaegis/zero.h>
 
 
-static col	*colp;
-static output_ty *list_locks_name_col;
-static output_ty *list_locks_type_col;
-static output_ty *list_locks_project_col;
-static output_ty *list_locks_change_col;
-static output_ty *list_locks_address_col;
-static output_ty *list_locks_process_col;
+static col::pointer colp;
+static output::pointer list_locks_name_col;
+static output::pointer list_locks_type_col;
+static output::pointer list_locks_project_col;
+static output::pointer list_locks_change_col;
+static output::pointer list_locks_address_col;
+static output::pointer list_locks_process_col;
 static string_list_ty list_locks_pnames;
 static long	list_locks_count;
 
@@ -220,15 +219,15 @@ list_locks_callback(lock_walk_found *found)
 
 
 void
-list_locks(string_ty *project_name, long change_number, string_list_ty *)
+list_locks(change_identifier &cid, string_list_ty *)
 {
     //
     // check for silly arguments
     //
     trace(("list_locks()\n{\n"));
-    if (project_name)
+    if (cid.project_set())
 	list_project_inappropriate();
-    if (change_number)
+    if (cid.set())
 	list_change_inappropriate();
 
     //
@@ -255,24 +254,9 @@ list_locks(string_ty *project_name, long change_number, string_list_ty *)
     lock_walk(list_locks_callback);
     if (list_locks_count == 0)
     {
-	output_ty	*info;
-
-	info = colp->create(4, 0, (const char *)0);
+	output::pointer info = colp->create(4, 0, (const char *)0);
 	info->fputs("No locks found.");
 	colp->eoln();
     }
-    delete colp;
-
-    //
-    // clean up
-    //
-    colp = 0;
-    list_locks_name_col = 0;
-    list_locks_type_col = 0;
-    list_locks_project_col = 0;
-    list_locks_change_col = 0;
-    list_locks_address_col = 0;
-    list_locks_process_col = 0;
-    list_locks_count = 0;
     trace(("}\n"));
 }

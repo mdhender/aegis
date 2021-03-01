@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the project_identifier_subset class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_PROJECT_IDENTIFI_SUB_H
@@ -75,6 +73,16 @@ public:
       * change identified.
       */
     virtual user_ty::pointer get_up() = 0;
+
+    /**
+      * The set_user_by_name method is used to set the user name by
+      * name.  This is useful for the small set of command which accept
+      * a user name on the command line.
+      *
+      * @param login
+      *     The login name of the user.
+      */
+    virtual void set_user_by_name(nstring &login) = 0;
 
     /**
       * The parse_change_with_branch method is used to parse the

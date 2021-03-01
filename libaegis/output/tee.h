@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller
+//	Copyright (C) 2001, 2002, 2005, 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output/tee.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_TEE_H
@@ -25,36 +23,45 @@
 #include <libaegis/output.h>
 
 /**
-  * the output_tee_ty class is used to represent an output filter which
+  * the output_tee class is used to represent an output filter which
   * writes its output to two places at once.
   */
-class output_tee_ty:
-    public output_ty
+class output_tee:
+    public output
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_tee_ty();
+    virtual ~output_tee();
 
+private:
     /**
-      * The constructor.
+      * The constructor.  It is private on purpose, use the "create"
+      * class method instead.
       *
       * \param d1
       *     the deeper output stream on which this filter writes to.
-      * \param d1_close
-      *     whether or not the d1 output stream is to be deleted in our
-      *     destructor.
       * \param d2
       *     the deeper output stream on which this filter writes to.
-      * \param d2_close
-      *     whether or not the d2 output stream is to be deleted in our
-      *     destructor.
       */
-    output_tee_ty(output_ty *d1, bool d1_close, output_ty *d2, bool d2_close);
+    output_tee(const output::pointer &d1, const output::pointer &d2);
 
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * \param d1
+      *     the deeper output stream on which this filter writes to.
+      * \param d2
+      *     the deeper output stream on which this filter writes to.
+      */
+    static pointer create(const output::pointer &d1, const output::pointer &d2);
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     long ftell_inner() const;
@@ -82,7 +89,7 @@ private:
       * The d1 instance variable is used to remember the deeper output
       * stream on which this filter writes to.
       */
-    output_ty *d1;
+    output::pointer d1;
 
     /**
       * The d1_close instance variable is used to remember whether or
@@ -94,7 +101,7 @@ private:
       * The d2 instance variable is used to remember the deeper output
       * stream on which this filter writes to.
       */
-    output_ty *d2;
+    output::pointer d2;
 
     /**
       * The d2_close instance variable is used to remember whether or
@@ -105,23 +112,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    output_tee_ty();
+    output_tee();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_tee_ty(const output_tee_ty &);
+    output_tee(const output_tee &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_tee_ty &operator=(const output_tee_ty &);
+    output_tee &operator=(const output_tee &);
 };
-
-inline DEPRECATED output_ty *
-output_tee(output_ty *arg1, bool arg2, output_ty *arg3, bool arg4)
-{
-    return new output_tee_ty(arg1, arg2, arg3, arg4);
-}
 
 #endif // LIBAEGIS_OUTPUT_TEE_H

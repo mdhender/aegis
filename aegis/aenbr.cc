@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2007 Peter Miller
+//	Copyright (C) 1995-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,35 +13,35 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new branch
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/changes.h>
-#include <aegis/aenbr.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/commit.h>
 #include <libaegis/file.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
-#include <libaegis/project/verbose.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
+#include <libaegis/project/verbose.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
+
+#include <aegis/aenbr.h>
 
 
 static void
@@ -67,29 +67,11 @@ new_branch_help(void)
 static void
 new_branch_list(void)
 {
-    string_ty	    *project_name;
-
-    trace(("new_chane_list()\n{\n"));
-    project_name = 0;
+    trace(("new_branch_list()\n{\n"));
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_branch_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, new_branch_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_changes(project_name, 0, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_branch_usage);
+    list_changes(cid, 0);
     trace(("}\n"));
 }
 
@@ -103,14 +85,14 @@ new_branch_main(void)
     long	    change_number;
     user_ty::pointer up;
     string_ty	    *devdir;
-    const char      *output;
+    const char      *output_filename;
 
     trace(("new_branch_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
     devdir = 0;
-    output = 0;
+    output_filename = 0;
     string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -167,7 +149,7 @@ new_branch_main(void)
 	    break;
 
 	case arglex_token_output:
-	    if (output)
+	    if (output_filename)
 		duplicate_option(new_branch_usage);
 	    switch (arglex())
 	    {
@@ -176,11 +158,11 @@ new_branch_main(void)
 		// NOTREACHED
 
 	    case arglex_token_string:
-		output = arglex_value.alv_string;
+		output_filename = arglex_value.alv_string;
 		break;
 
 	    case arglex_token_stdio:
-		output = "";
+		output_filename = "";
 		break;
 	    }
 	    break;
@@ -203,7 +185,7 @@ new_branch_main(void)
 	}
 	arglex();
     }
-    if (change_number && output)
+    if (change_number && output_filename)
     {
 	mutually_exclusive_options
 	(
@@ -276,16 +258,16 @@ new_branch_main(void)
     // If there is an output option,
     // write the change number to the file.
     //
-    if (output)
+    if (output_filename)
     {
 	string_ty	*content;
 
 	content = str_format("%ld", magic_zero_decode(change_number));
-	if (*output)
+	if (*output_filename)
 	{
 	    string_ty	    *fn;
 
-	    fn = str_from_c(output);
+	    fn = str_from_c(output_filename);
             user_ty::become scoped(up);
 	    file_from_string(fn, content, 0644);
 	    str_free(fn);

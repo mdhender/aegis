@@ -4,11 +4,11 @@
 #
 #       tkaer - changeset review manager
 #       Copyright (C) 2000, 2001 Scott Finneran
-#       Copyright (C) 2007 Peter Miller
+#       Copyright (C) 2007, 2008 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -17,10 +17,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: tcl-tk review assist program contributed by Scott Finneran.
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 #       Makes use of tkdiff by by John M. Klassa.
 #             TkDiff Home Page: http://www.accurev.com/free/tkdiff
@@ -677,6 +675,9 @@ if { [llength $new_files_list] != 0 } {
     bind $w.files.created.listbox <Double-Button-1> {
 	review_new_file [list_selected $w.files.created.listbox]
     }
+    bind $w.files.created.listbox <KeyPress-space> {
+	review_new_file [list_selected $w.files.created.listbox]
+    }
     set c "$c\n"
 }
 
@@ -695,7 +696,17 @@ if { [llength $modified_files_list] != 0 } {
     bind $w.files.modified.listbox <Double-Button-1> {
 	review_modified_file [list_selected $w.files.modified.listbox] ""
     }
+    bind $w.files.modified.listbox <KeyPress-space> {
+	review_modified_file [list_selected $w.files.modified.listbox] ""
+    }
     bind $w.files.modified.listbox <Button-3> {
+	$w.files.modified.listbox selection clear 0 end;
+	$w.files.modified.listbox selection set \
+		[$w.files.modified.listbox nearest %y];
+	review_modified_file_against_ancestor $w %X %Y \
+		[list_selected $w.files.modified.listbox]
+    }
+    bind $w.files.modified.listbox <KeyPress-a> {
 	$w.files.modified.listbox selection clear 0 end;
 	$w.files.modified.listbox selection set \
 		[$w.files.modified.listbox nearest %y];
@@ -720,7 +731,17 @@ if { [llength $moved_files_list] != 0 } {
     bind $w.files.moved.listbox <Double-Button-1> {
 	review_moved_file [list_selected $w.files.moved.listbox] ""
     }
+    bind $w.files.moved.listbox <KeyPress-space> {
+	review_moved_file [list_selected $w.files.moved.listbox] ""
+    }
     bind $w.files.moved.listbox <Button-3> {
+	$w.files.moved.listbox selection clear 0 end;
+	$w.files.moved.listbox selection set \
+		[$w.files.moved.listbox nearest %y];
+	review_moved_file_against_ancestor $w %X %Y \
+		[list_selected $w.files.moved.listbox]
+    }
+    bind $w.files.moved.listbox <KeyPress-a> {
 	$w.files.moved.listbox selection clear 0 end;
 	$w.files.moved.listbox selection set \
 		[$w.files.moved.listbox nearest %y];
@@ -743,6 +764,9 @@ if { [llength $removed_files_list] != 0 } {
     }
     display_list $w.files.removed $removed_files_list $list_title
     bind $w.files.removed.listbox <Double-Button-1> {
+	review_removed_file [list_selected $w.files.removed.listbox]
+    }
+    bind $w.files.removed.listbox <KeyPress-space> {
 	review_removed_file [list_selected $w.files.removed.listbox]
     }
     set c "$c\n"

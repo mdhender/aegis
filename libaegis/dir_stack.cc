@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller
+//	Copyright (C) 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,15 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate dir_stacks
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <libaegis/dir_stack.h>
 #include <common/error.h>
@@ -54,7 +52,6 @@ dir_stack_find(string_list_ty *stack, size_t start_pos, string_ty *path,
     size_t          j;
     string_ty       *dir;
     string_ty       *resolved_path;
-    sub_context_ty  *scp;
     struct stat     bogus;
     string_ty       *maybe_pathname = 0;
     int             maybe_depth = 0;
@@ -107,13 +104,11 @@ dir_stack_find(string_list_ty *stack, size_t start_pos, string_ty *path,
 
 	if (errno != ENOENT)
 	{
-	    int             errno_old;
-
-	    errno_old = errno;
-	    scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", resolved_path);
-	    fatal_intl(scp, i18n("lstat $filename: $errno"));
+	    int errno_old = errno;
+	    sub_context_ty sc;
+	    sc.errno_setx(errno_old);
+	    sc.var_set_string("File_Name", resolved_path);
+	    sc.fatal_intl(i18n("lstat $filename: $errno"));
 	    // NOTREACHED
 	}
 #else

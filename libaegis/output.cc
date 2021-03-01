@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller
+//	Copyright (C) 1999, 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate outputs through a common API
+//	along with this program; if not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -29,21 +27,15 @@
 #include <common/trace.h>
 
 
-output_ty::~output_ty()
+output::~output()
 {
     //
     // Note: calling the flush() method here is pointless, because
     // the derived class has already been destroyed.
     //
     trace(("~output(this = %08lX)\n{\n", (long)this));
-    if (del_cb)
-    {
-	delete_callback_ty func = del_cb;
-	void *arg = del_cb_arg;
-	del_cb = 0;
-	del_cb_arg = 0;
-	func(this, arg);
-    }
+    callback();
+
     assert(buffer);
     delete [] buffer;
     buffer = 0;
@@ -51,9 +43,7 @@ output_ty::~output_ty()
 }
 
 
-output_ty::output_ty() :
-    del_cb(0),
-    del_cb_arg(0),
+output::output() :
     buffer(0),
     buffer_size(0),
     buffer_position(0),
@@ -67,10 +57,10 @@ output_ty::output_ty() :
 
 
 long
-output_ty::ftell()
+output::ftell()
     const
 {
-    trace(("output_ty::ftell(this = %08lX)\n{\n", (long)this));
+    trace(("output::ftell(this = %08lX)\n{\n", (long)this));
     long result = ftell_inner() + (buffer_position - buffer);
     trace(("return %ld;\n", result));
     trace(("}\n"));
@@ -79,9 +69,9 @@ output_ty::ftell()
 
 
 void
-output_ty::overflow(char c)
+output::overflow(char c)
 {
-    trace(("output_ty::overflow(this = %08lX, c = %d)\n{\n", (long)this, c));
+    trace(("output::overflow(this = %08lX, c = %d)\n{\n", (long)this, c));
     assert(buffer);
     assert(buffer_position >= buffer);
     assert(buffer_end == buffer + buffer_size);
@@ -98,9 +88,9 @@ output_ty::overflow(char c)
 
 
 void
-output_ty::fputs(const char *s)
+output::fputs(const char *s)
 {
-    trace(("output_ty::fputs(this = %08lX, s = \"%s\")\n{\n", (long)this, s));
+    trace(("output::fputs(this = %08lX, s = \"%s\")\n{\n", (long)this, s));
     size_t nbytes = strlen(s);
     if (nbytes)
 	write(s, nbytes);
@@ -109,7 +99,7 @@ output_ty::fputs(const char *s)
 
 
 void
-output_ty::fputs(string_ty *s)
+output::fputs(string_ty *s)
 {
     if (!s || !s->str_length)
 	return;
@@ -118,7 +108,7 @@ output_ty::fputs(string_ty *s)
 
 
 void
-output_ty::fputs(const nstring &s)
+output::fputs(const nstring &s)
 {
     if (!s.empty())
 	write(s.c_str(), s.length());
@@ -126,9 +116,9 @@ output_ty::fputs(const nstring &s)
 
 
 void
-output_ty::write(const void *data, size_t len)
+output::write(const void *data, size_t len)
 {
-    trace(("output_ty::write(this = %08lX, data = %08lX, len = %ld)\n\{\n",
+    trace(("output::write(this = %08lX, data = %08lX, len = %ld)\n{\n",
 	(long)this, (long)data, (long)len));
     if (len)
     {
@@ -159,9 +149,9 @@ output_ty::write(const void *data, size_t len)
 
 
 void
-output_ty::flush()
+output::flush()
 {
-    trace(("output_ty::flush(this = %08lX)\n{\n", (long)this));
+    trace(("output::flush(this = %08lX)\n{\n", (long)this));
     if (buffer_position > buffer)
     {
 	size_t nbytes = buffer_position - buffer;
@@ -174,13 +164,13 @@ output_ty::flush()
 
 
 void
-output_ty::end_of_line()
+output::end_of_line()
 {
     //
     // If possible, just stuff a newline into the buffer and bail.
     // This results in the fewest deeper calls.
     //
-    trace(("output_ty::end_of_line(this = %08lX)\n{\n", (long)this));
+    trace(("output::end_of_line(this = %08lX)\n{\n", (long)this));
     if
     (
 	buffer_position > buffer
@@ -215,7 +205,7 @@ output_ty::end_of_line()
 
 
 void
-output_fprintf(output_ty *fp, const char *fmt, ...)
+output_fprintf(output::pointer fp, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -225,7 +215,7 @@ output_fprintf(output_ty *fp, const char *fmt, ...)
 
 
 void
-output_ty::fprintf(const char *fmt, ...)
+output::fprintf(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -235,14 +225,14 @@ output_ty::fprintf(const char *fmt, ...)
 
 
 void
-output_ty::vfprintf(const char *fmt, va_list ap)
+output::vfprintf(const char *fmt, va_list ap)
 {
     //
     // We have to make a temporary copy of it, in case a deeper output
-    // stream also uses output_ty::fprintf to satisfy the virtual
-    // write_inner call via output_ty::fputs.
+    // stream also uses output::fprintf to satisfy the virtual
+    // write_inner call via output::fputs.
     //
-    // The moral is: avoid output_ty::fprintf.
+    // The moral is: avoid output::fprintf.
     //
     nstring tmp(nstring::vformat(fmt, ap));
     fputs(tmp);
@@ -250,15 +240,21 @@ output_ty::vfprintf(const char *fmt, va_list ap)
 
 
 void
-output_ty::delete_callback(output_ty::delete_callback_ty func, void *arg)
+output::register_delete_callback(functor::pointer fp)
 {
-    del_cb = func;
-    del_cb_arg = arg;
+    callback.push_back(fp);
+}
+
+
+void
+output::unregister_delete_callback(functor::pointer fp)
+{
+    callback.remove(fp);
 }
 
 
 int
-output_ty::page_width()
+output::page_width()
     const
 {
     return page_width_get(-1) - 1;
@@ -266,7 +262,7 @@ output_ty::page_width()
 
 
 int
-output_ty::page_length()
+output::page_length()
     const
 {
     return page_length_get(-1);
@@ -274,7 +270,7 @@ output_ty::page_length()
 
 
 void
-output_ty::flush_inner()
+output::flush_inner()
 {
     // Do nothing.
 }

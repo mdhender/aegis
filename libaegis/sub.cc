@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//	Copyright (C) 1991-2007 Peter Miller
+//	Copyright (C) 1991-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //      You should have received a copy of the GNU General Public License
 //      along with this program. If not, see
 //      <http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to perform command substitutions
 //
 
 #include <common/ac/errno.h>
@@ -1059,8 +1057,8 @@ sub_context_ty::subst(const wstring &s)
         inner.var_set_charstar("File_Name", file_name);
         assert(line_number);
         inner.var_set_long("Line_Number", line_number);
-        inner.var_set_string("Message", s.to_nstring());
-        inner.var_optional("Message");
+        inner.var_set_string("MeSsaGe", s.to_nstring());
+        inner.var_optional("MeSsaGe");
         inner.var_set_string("Name", "$" + tp->name_get());
         inner.var_optional("Name");
         inner.error_intl
@@ -1085,8 +1083,8 @@ sub_context_ty::subst(const wstring &s)
         inner.var_set_charstar("File_Name", file_name);
         assert(line_number);
         inner.var_set_long("Line_Number", line_number);
-        inner.var_set_string("Message", s.to_nstring());
-        inner.var_optional("Message");
+        inner.var_set_string("MeSsaGe", s.to_nstring());
+        inner.var_optional("MeSsaGe");
         inner.var_set_long("Number", error_count);
         inner.var_optional("Number");
         inner.fatal_intl
@@ -1158,8 +1156,8 @@ sub_context_ty::substitute(change::pointer acp, string_ty *s)
     trace(("substitute(acp = %08lX, s = \"%s\")\n{\n", (long)acp, s->str_text));
     assert(acp);
     subst_intl_change(acp);
-    wstring ws(s->str_text);
-    wstring result_wide = subst(ws);
+    wstring wis(s->str_text);
+    wstring result_wide = subst(wis);
     string_ty *result = wstr_to_str(result_wide.get_ref());
     trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
@@ -1173,8 +1171,8 @@ sub_context_ty::substitute_p(project_ty *app, string_ty *s)
     trace(("substitute(pp = %08lX, s = \"%s\")\n{\n", (long)app, s->str_text));
     assert(app);
     subst_intl_project(app);
-    wstring ws(s->str_text, s->str_length);
-    wstring result_wide = subst(ws);
+    wstring wis(s->str_text, s->str_length);
+    wstring result_wide = subst(wis);
     string_ty *result = wstr_to_str(result_wide.get_ref());
     trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
@@ -1318,8 +1316,8 @@ wrap(const wchar_t *s)
     progname = progname_get();
     if (!progname_width)
     {
-        wstring ws = wstr_from_c(progname);
-        progname_width = ws.column_width();
+        wstring wis = wstr_from_c(progname);
+        progname_width = wis.column_width();
     }
 
     //

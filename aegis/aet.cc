@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2007 Peter Miller
+//	Copyright (C) 1991-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -33,21 +33,22 @@
 #include <common/symtab/template.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/files.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/attribute.h>
+#include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
-#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change/test/run_list.h>
 #include <libaegis/commit.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
 #include <libaegis/os.h>
-#include <libaegis/project/file.h>
 #include <libaegis/project.h>
+#include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
 #include <libaegis/user.h>
@@ -83,42 +84,11 @@ test_help(void)
 static void
 test_list(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-
     trace(("test_list()\n{\n"));
-    project_name = 0;
-    change_number = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(test_usage);
-	    continue;
-
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, test_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, test_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_change_files(project_name, change_number, 0);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(test_usage);
+    list_change_files(cid, 0);
     trace(("}\n"));
 }
 

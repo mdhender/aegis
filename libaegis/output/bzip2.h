@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
+//	Copyright (C) 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the output_bzip2 class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_BZIP2_H
@@ -31,7 +29,7 @@
   * compresses the data before writing it to the deeper output stream.
   */
 class output_bzip2:
-    public output_ty
+    public output
 {
 public:
     /**
@@ -39,19 +37,29 @@ public:
       */
     virtual ~output_bzip2();
 
+private:
     /**
-      * The constructor.
+      * The constructor.  It is private on purpose, use the #create
+      * class method instead.
       *
       * \param deeper
       *     the output stream this filter will write its output to.
-      * \param close_on_close
-      *     whether or not the deeper output stream should be deleted on
-      *     the destructor.
       */
-    output_bzip2(output_ty *deeper, bool close_on_close);
+    output_bzip2(const output::pointer &deeper);
 
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      *
+      * \param deeper
+      *     the output stream this filter will write its output to.
+      */
+    static pointer create(const output::pointer &deeper);
+
+protected:
     // See base class for documentation.
-    string_ty *filename() const;
+    nstring filename() const;
 
     // See base class for documentation.
     long ftell_inner() const;
@@ -76,14 +84,7 @@ private:
       * The deeper instance variable is used to remember the output
       * stream this filter will write its output to.
       */
-    output_ty *deeper;
-
-    /**
-      * The close_on_close instance variable is used to remember whether
-      * or not the deeper output stream should be deleted on the
-      * destructor.
-      */
-    bool close_on_close;
+    output::pointer deeper;
 
     /**
       * The stream instance variable is used to remember somthign that

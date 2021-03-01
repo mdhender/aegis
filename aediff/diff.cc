@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -16,27 +16,26 @@
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: implementation of the diff class
-//
 
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
 #include <aediff/arglex3.h>
-#include <libaegis/arglex/project.h>
-#include <libaegis/change/identifi_sub.h>
-#include <libaegis/change/functor.h>
 #include <aediff/diff.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/trace.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/functor.h>
+#include <libaegis/change/identifi_sub.h>
 #include <libaegis/file_revision.h>
 #include <libaegis/help.h>
-#include <common/nstring/list.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
-#include <libaegis/project/identifi_sub/plain.h>
 #include <libaegis/project/identifi_sub/branch.h>
+#include <libaegis/project/identifi_sub/plain.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -230,9 +229,37 @@ diff()
     //
     // Get the two revisions of the file.
     //
-    file_revision lhs = first.get_file_revision(filename, barf_adev);
+    // We get the meta-data for the file, so we have the UUID, if the
+    // file has one.  We then use the meta-data to obtain the first and
+    // second versions of the file.
+    //
+    fstate_src_ty *src =
+        change_file_find(second.get_cp(), filename, view_path_simple);
+    if (!src)
+    {
+        src = change_file_find_fuzzy(second.get_cp(), filename.get_ref());
+        if (src)
+        {
+            sub_context_ty sc;
+            sc.var_set_string("File_Name", filename);
+            sc.var_set_string("Guess", src->file_name);
+            change_error
+            (
+                second.get_cp(),
+                &sc,
+                i18n("no $filename, closest is $guess")
+            );
+        }
+
+        sub_context_ty sc;
+        sc.var_set_string("File_Name", filename);
+        change_error(second.get_cp(), &sc, i18n("no $filename"));
+    }
+
+    file_revision lhs = first.get_file_revision(src, barf_adev);
     trace(("lhs=%s\n", lhs.get_path().c_str()));
-    file_revision rhs = second.get_file_revision(filename, barf_adev);
+
+    file_revision rhs = second.get_file_revision(src, barf_adev);
     trace(("rhs=%s\n", rhs.get_path().c_str()));
 
     //

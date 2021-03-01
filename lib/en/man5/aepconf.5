@@ -1,11 +1,11 @@
 '\" t
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 1994-1996, 1998-2007 Peter Miller
-.\"     Copyright (C) 2006 Walter Franzini
+.\"     Copyright (C) 1994-1996, 1998-2008 Peter Miller
+.\"     Copyright (C) 2006-2008 Walter Franzini
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
 .\"     it under the terms of the GNU General Public License as published by
-.\"     the Free Software Foundation; either version 2 of the License, or
+.\"     the Free Software Foundation; either version 3 of the License, or
 .\"     (at your option) any later version.
 .\"
 .\"     This program is distributed in the hope that it will be useful,
@@ -40,7 +40,7 @@ See \f[I]aenf\fP(1) for more information.
 This file contains a number of commands to be executed by Aegis.  There
 are times when the substitutions in these commands may contain shell
 special characters, which would change the meaning of the commands in
-unintended ways.  There are two main sources of these problems: filenames
+unintended ways.  There are two main sources of these problems: file names
 and architecture names.  In order to have shell special characters
 in filenames, you must set the \f[I]shell_\%safe_\%filenames\fP field
 (see below) to \f[I]false\fP.  If you do this, you will need to use the
@@ -236,7 +236,7 @@ start doing anything.  If possible, change your build system to use the
 .TP 8n
 source_file_whiteout = boolean;
 .RS
-The \f[I]source_file_whiteout\fP field mat be used to specify the
+The \f[I]source_file_whiteout\f[P] field mat be used to specify the
 presence (true) or absence (false) of white-out files, used to
 "cover up" files being removed by a change set.  These files
 contain 1kB of random data, intended to cause a syntax error
@@ -342,7 +342,7 @@ Defaults to false if not set.
 defaults to the value of that field, with a warning.]
 .PP
 If this field is false, the development directory will be populated by
-the develop begin (\f[I]aedb\fP) command, and the integration directory
+the develop begin (\f[I]aedb\f[P]) command, and the integration directory
 will be populated by the integrate begin (\f[I]aeib\fP) command.
 .RE
 .TP 8n
@@ -1802,7 +1802,7 @@ if you try to run it, compile it, or include it.
 .TP 8n
 maximum_filename_length = integer;
 .RS
-This field is used to limit the length of filenames.
+This field is used to limit the length of file names.
 All new files may not have path components longer than this.
 Existing files are not affected.
 The last component must also allow for the ",D" suffix of difference files.
@@ -1824,7 +1824,7 @@ for more information.
 posix_filename_charset = boolean;
 .RS
 This field may be used to limit the characters allowed
-in filenames to only those explicitly allowed by POSIX.
+in file names to only those explicitly allowed by POSIX.
 Defaults to false if not set.
 .PP
 For a filename to be portable across conforming implementations of
@@ -1841,38 +1841,90 @@ except non-printing characters, space characters and leading hyphens.
 .TP
 dos_filename_required = boolean;
 .br
-This field may be used to limit filenames so that they conform to
+This field may be used to limit file names so that they conform to
 the DOS 8+3 filename limits and to the DOS filename character set.
-Also denies filenames which look like devices (AUX, \f[I]etc\fP).
+Also denies file names which look like devices (AUX, \f[I]etc\f[P]).
 Defaults to false if not set.
 This field is used in combination with the other filename fields,
 it does not replace them.
 .TP
 windows_filename_required = boolean;
 .br
-This field may be used to limit filenames so that they conform to the
+This field may be used to limit file names so that they conform to the
 Windows98 and WindowsNT filename limits and character set.  Also denies
-filenames which look like devices (AUX, \f[I]etc\fP).  Defaults to false
+file names which look like devices (AUX, \f[I]etc\f[P]).  Defaults to false
 if not set.  This field is used in combination with the other filename
 fields, it does not replace them.
 .TP
 shell_safe_filenames = boolean;
-.br
-This field may be used to limit filenames so that they may not contain
+.RS
+This field may be used to limit file names so that they may not contain
 shell special characters.  If you do not set this to true, you will
-need to use the ${quote} substitution around filenames in commands,
-or risk unexpected errors.  This field defaults to true if not set.
+need to use the ${quote} substitution around file names in commands,
+or risk unexpected errors.
+.PP
+This field defaults to true if not set.
+.PP
+The white space characters (space, tab, newline, \f[I]etc\fP)
+are considered shell special characters.
+.RE
+.TP
+allow_white_space_in_filenames = boolean;
+.RS
+This field may be used to allow white space characters in file names.
+This will allow the following characters to appear in filenames:
+backspace (BS, \eb, 0x08), horizontal tab (HT, \et, 0x09), new line
+(NL, \en, 0x0A), vertical tab (VT, \ev, 0x0B), form feed (FF, \ef,
+0x0C), and carriage return (CR, \er, 0x0D).
+.PP
+Defaults to false if not set.
+.PP
+Note that this field does not override other file name filters.
+It will be necessary to explicitly set
+\f[I]shell_\%safe_\%filenames = false\fP
+as well.
+It will be necessary to set
+\f[I]dos_\%filename_\%required = false\fP
+(the default) as well.
+It will be necessary to set
+\f[I]posix_\%filename_\%charset = false\fP
+(the default) as well.
+.PP
+The user must take great care to use the ${quote} substitution around
+all file names in commands in the project configuration.  And even
+then, substitutions which expect a space separated list of file names
+will have undefined results.
+.RE
+.TP
+allow_non_ascii_filenames = boolean;
+.RS
+This field may be used to allow file names with non-ascii-printable
+characters in them.  Usually this would mean a UTF8 or international
+charset of some kind.
+.PP
+Defaults to false if not set.
+.PP
+Note that this field does not override other file name filters.
+It will be necessary to explicitly set
+\f[I]shell_\%safe_\%filenames = false\fP
+as well.  It will be necessary to set
+\f[I]dos_\%filename_\%required = false\fP
+(the default) as well.
+It will be necessary to set
+\f[I]posix_\%filename_\%charset = false\fP
+(the default) as well.
+.RE
 .TP
 filename_pattern_accept = [ string ];
 .br
-This field is used to specify a list of patterns of acceptable filenames.
+This field is used to specify a list of patterns of acceptable file names.
 The patterns are matched against each filename path element.
 The patterns are constructed from the usual shell filename wild-cards.
 Defaults to "*" if not set.
 .TP
 filename_pattern_reject = [ string ];
 .br
-This field is used to specify a list of patterns of unacceptable filenames.
+This field is used to specify a list of patterns of unacceptable file names.
 The patterns are matched against each filename path element.
 The patterns are constructed from the usual shell filename wild-cards.
 Defaults to "*,D" if not set.
@@ -1925,7 +1977,7 @@ as it allows Aegis to try different names should there be a conflict.
 If not set, defaults to "\f(CW$ddd/${left $p ${expr ${namemax
 $ddd} - ${length .$magic$c}}}.$magic$c\fP".
 .PP
-For DOS compatibility (8+3 filenames), a useful setting is
+For DOS compatibility (8+3 file names), a useful setting is
 "\f(CW$ddd/${downcase ${left ${id $p} 8}.$magic${right 0$c 2}}\fP".
 This ensures that the filename is always a valid 8.3 filename, that it
 is always lowercase, and it translates any punctuation in the project
@@ -1939,7 +1991,7 @@ All of the substitutions defined in \f[I]aesub\fP(5) are
 available.  The following substitutions is also available:
 .TP 8n
 File_Name
-The absolute pathname of the source file.
+The absolute path name of the source file.
 .PP
 Defaults to "$filename,S" if not set.
 .RE
@@ -2034,7 +2086,7 @@ File modification times are not adjusted.  This is a really bad
 idea.  Really.  Make sure that, at the very minimum,
 \f[I]project_\%file_\%command\fP touches all of the change's files,
 otherwise the build problems which ensue are going to take you
-weeks to track down and lose you mucho productivity.
+weeks to track down and lose you much productivity.
 You have been warned.
 .LP
 See also the \f[I]build_\%time_\%adjust_\%notify_\%command\fP field.
@@ -2050,6 +2102,46 @@ source projects.
 For a description of \f[CW]Signed-off-by\fP see
 http://www.ussg.iu.edu/hypermail/linux/kernel/0405.2/1301.html and
 http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
+.RE
+.TP 8n
+cache_project_file_list_for_each_delta = boolean;
+.RS
+It is possible to have Aegis cache the list of project files that
+were present at integrate pass for each delta (integrated change
+set).  This is used to optimize all project-history-based
+operations, such as \f[I]aecp -delta\fP or \f[I]aepatch\fP(1).
+.PP
+This cache will optimize many operations which would otherwise
+require time to reconstruct the project state using the
+roll-forward data available in each change set.  However, it comes
+at the cost of disk space, and not everyone can afford more and more
+disk.
+.PP
+This field defaults to true if not set.
+.RE
+.TP 8n
+clean_exceptions = [ string ];
+.RS
+It is possible to have Aegis exclude from the clean process any file
+that match one of the pattern listed in the clean_exceptions list.
+.PP
+This field default to an empty list if not set.
+.RE
+.TP 8n
+cache_project_file_list_for_each_delta = boolean;
+.RS
+It is possible to have Aegis cache the list of project files that
+were present at integrate pass for each delta (integrated change
+set).  This is used to optimize all project-history-based
+operations, such as \fIaecp -delta\fP or \fIaepatch\fP(1).
+.PP
+This cache will optimize many operations which would otherwise
+require time to reconstruct the project state using the
+roll-forward data available in each change set.  However, it comes
+at the cost of disk space, and not everyone can afford more and more
+disk.
+.PP
+This field defaults to true if not set.
 .RE
 .SH RSS FEEDS
 .RE
@@ -2230,30 +2322,6 @@ Defaults to \f[B]true\fP if not set.  This default is intentional.  It is
 important that there are no symlinks in the (new) baseline, because
 they could go stale between integrations.  If you set this field to
 false, \f[I]caveat emptor\fP.
-.RE
-.TP 8n
-cache_project_file_list_for_each_delta = boolean;
-.RS
-It is possible to have Aegis cache the list of project files that
-were present at integrate pass for each delta (integrated change
-set).  This is used to optimize all project-history-based
-operations, such as \f[I]aecp -delta\fP or \f[I]aepatch\fP(1).
-.PP
-This cache will optimize many operations which would otherwise
-require time to reconstruct the project state using the
-roll-forward data available in each change set.  However, it comes
-at the cost of disk space, and not everyone can afford more and more
-disk.
-.PP
-This field defaults to true if not set.
-.RE
-.TP 8n
-clean_exceptions = [ string ];
-.RS
-It is possible to have Aegis exclude from the clean process any file
-that match one of the pattern listed in the clean_exceptions list.
-.PP
-This field default to an empty list if not set.
 .RE
 .SH SEE ALSO
 .TP 8n

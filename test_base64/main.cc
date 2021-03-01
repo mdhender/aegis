@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller
+//	Copyright (C) 1999, 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate mains
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -110,7 +108,7 @@ static void
 test_input_bunzip(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
 
     skip_header(ifp);
 
@@ -118,8 +116,7 @@ test_input_bunzip(string_ty *ifn, string_ty *ofn)
     // filter the rest
     //
     ifp = new input_bunzip2(ifp);
-    *ofp << ifp;
-    delete ofp;
+    ofp << ifp;
 }
 
 
@@ -127,7 +124,7 @@ static void
 test_input_base64(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
 
     skip_header(ifp);
 
@@ -135,8 +132,7 @@ test_input_base64(string_ty *ifn, string_ty *ofn)
     // filter the rest
     //
     ifp = new input_base64(ifp);
-    *ofp << ifp;
-    delete ofp;
+    ofp << ifp;
 }
 
 
@@ -144,13 +140,12 @@ static void
 test_input_qp(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
 
     skip_header(ifp);
 
     ifp = new input_quoted_printable(ifp);
-    *ofp << ifp;
-    delete ofp;
+    ofp << ifp;
 }
 
 
@@ -158,13 +153,12 @@ static void
 test_input_uu(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
 
     skip_header(ifp);
 
     ifp = new input_uudecode(ifp);
-    *ofp << ifp;
-    delete ofp;
+    ofp << ifp;
 }
 
 
@@ -173,16 +167,15 @@ test_output_base64(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
     ifp = new input_crlf(ifp);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
     if (has_header)
     {
 	ofp->fputs("Content-Type: application/x-aegis-test\n");
 	ofp->fputs("Content-Transfer-Encoding: base64\n");
 	ofp->fputs("\n");
     }
-    ofp = new output_base64_ty(ofp, true);
-    *ofp << ifp;
-    delete ofp;
+    ofp = output_base64::create(ofp);
+    ofp << ifp;
 }
 
 
@@ -191,16 +184,15 @@ test_output_bzip(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
     ifp = new input_crlf(ifp);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
     if (has_header)
     {
 	ofp->fputs("Content-Type: application/x-aegis-test\n");
 	ofp->fputs("Content-Transfer-Encoding: 8bit\n");
 	ofp->fputs("\n");
     }
-    ofp = new output_bzip2(ofp, true);
-    *ofp << ifp;
-    delete ofp;
+    ofp = output_bzip2::create(ofp);
+    ofp << ifp;
 }
 
 
@@ -209,16 +201,15 @@ test_output_qp(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
     ifp = new input_crlf(ifp);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
     if (has_header)
     {
 	ofp->fputs("Content-Type: application/x-aegis-test\n");
 	ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
 	ofp->fputs("\n");
     }
-    ofp = new output_quoted_printable_ty(ofp, true, false);
-    *ofp << ifp;
-    delete ofp;
+    ofp = output_quoted_printable::create(ofp, false);
+    ofp << ifp;
 }
 
 
@@ -227,27 +218,24 @@ test_output_uu(string_ty *ifn, string_ty *ofn)
 {
     input ifp = input_file_open(ifn);
     ifp = new input_crlf(ifp);
-    output_ty *ofp = output_file_text_open(ofn);
+    output::pointer ofp = output_file::text_open(ofn);
     if (has_header)
     {
 	ofp->fputs("Content-Type: application/x-aegis-test\n");
 	ofp->fputs("Content-Transfer-Encoding: uuencode\n");
 	ofp->fputs("\n");
     }
-    ofp = new output_uuencode_ty(ofp, true);
-    *ofp << ifp;
-    delete ofp;
+    ofp = output_uuencode::create(ofp);
+    ofp << ifp;
 }
 
 
 int
 main(int argc, char **argv)
 {
-    string_ty       *ifn;
-    string_ty       *ofn;
-    void            (*ifunc)(string_ty *, string_ty *);
-    void            (*ofunc)(string_ty *, string_ty *);
-    void            (*func)(string_ty *, string_ty *);
+    void (*ifunc)(string_ty *, string_ty *);
+    void (*ofunc)(string_ty *, string_ty *);
+    void (*func)(string_ty *, string_ty *);
 
     ifunc = test_input_base64;
     ofunc = test_output_base64;
@@ -255,8 +243,8 @@ main(int argc, char **argv)
     arglex();
     os_become_init_mortal();
 
-    ifn = 0;
-    ofn = 0;
+    string_ty *ifn = 0;
+    string_ty *ofn = 0;
     func = 0;
     while (arglex_token != arglex_token_eoln)
     {

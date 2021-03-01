@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -27,13 +27,14 @@
 #include <common/str_list.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/changes.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/cattr.h>
+#include <libaegis/change.h>
 #include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
-#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change/verbose.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
@@ -82,32 +83,11 @@ new_change_help(void)
 static void
 new_change_list(void)
 {
-    string_ty       *project_name;
-
     trace(("new_chane_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(new_change_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, new_change_usage);
-            continue;
-        }
-        arglex();
-    }
-    list_changes(project_name, 0, 0);
-    if (project_name)
-        str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_change_usage);
+    list_changes(cid, 0);
     trace(("}\n"));
 }
 
@@ -150,8 +130,8 @@ new_change_main(void)
     edit_ty         edit;
     size_t          j;
     pconf_ty        *pconf_data;
-    const char      *output;
-    string_ty       *input;
+    const char      *output_filename;
+    string_ty       *inp;
 
     trace(("new_change_main()\n{\n"));
     arglex();
@@ -159,7 +139,7 @@ new_change_main(void)
     project_name = 0;
     edit = edit_not_set;
     change_number = 0;
-    output = 0;
+    output_filename = 0;
     string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -199,7 +179,7 @@ new_change_main(void)
         case arglex_token_file:
             if (cattr_data)
                 duplicate_option(new_change_usage);
-            input = 0;
+            inp = 0;
             switch (arglex())
             {
             default:
@@ -208,19 +188,19 @@ new_change_main(void)
 
             case arglex_token_string:
                 read_input_file:
-                input = str_from_c(arglex_value.alv_string);
+                inp = str_from_c(arglex_value.alv_string);
                 break;
 
             case arglex_token_stdio:
-                input = str_from_c("");
+                inp = str_from_c("");
                 break;
             }
             os_become_orig();
-            cattr_data = cattr_read_file(input);
+            cattr_data = cattr_read_file(inp);
             os_become_undo();
             assert(cattr_data);
 	    change_attributes_fixup(cattr_data);
-            change_attributes_verify(input, cattr_data);
+            change_attributes_verify(inp, cattr_data);
             break;
 
         case arglex_token_project:
@@ -258,7 +238,7 @@ new_change_main(void)
             break;
 
         case arglex_token_output:
-            if (output)
+            if (output_filename)
                 duplicate_option(new_change_usage);
             switch (arglex())
             {
@@ -267,11 +247,11 @@ new_change_main(void)
                 // NOTREACHED
 
             case arglex_token_string:
-                output = arglex_value.alv_string;
+                output_filename = arglex_value.alv_string;
                 break;
 
             case arglex_token_stdio:
-                output = "";
+                output_filename = "";
                 break;
             }
             break;
@@ -294,7 +274,7 @@ new_change_main(void)
         }
         arglex();
     }
-    if (change_number && output)
+    if (change_number && output_filename)
     {
         mutually_exclusive_options
         (
@@ -606,17 +586,17 @@ new_change_main(void)
     // If there is an output option,
     // write the change number to the file.
     //
-    if (output)
+    if (output_filename)
     {
         string_ty       *content;
 
         content = str_format("%ld", magic_zero_decode(change_number));
-        if (*output)
+        if (*output_filename)
         {
             string_ty       *fn;
 
             user_ty::become scoped(up);
-            fn = str_from_c(output);
+            fn = str_from_c(output_filename);
             file_from_string(fn, content, 0644);
             str_free(fn);
         }

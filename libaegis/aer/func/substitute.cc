@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2001, 2002, 2004-2007 Peter Miller
+//	Copyright (C) 1998, 1999, 2001, 2002, 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -148,12 +148,12 @@ rpt_func_substitute::run(const rpt_expr::pointer &ep, size_t argc,
         );
 	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring input(s2p->query());
+    nstring query_input(s2p->query());
 
     //
     // Get the count of how many times to match.
     //
-    long count = 0;
+    long maximum_matches = 0;
     if (argc >= 4)
     {
 	arg = argv[3];
@@ -176,15 +176,15 @@ rpt_func_substitute::run(const rpt_expr::pointer &ep, size_t argc,
             );
 	    return rpt_value_error::create(ep->get_pos(), s);
 	}
-	count = rip->query();
+	maximum_matches = rip->query();
     }
 
     //
     // perform the substitution
     //
     regular_expression re(lhs);
-    nstring output;
-    if (!re.match_and_substitute(rhs, input, count, output))
+    nstring result;
+    if (!re.match_and_substitute(rhs, query_input, maximum_matches, result))
     {
 	//
         // Error... probably the LHS pattern was erroneous, but it could
@@ -195,7 +195,7 @@ rpt_func_substitute::run(const rpt_expr::pointer &ep, size_t argc,
 	sub_context_ty sc(__FILE__, __LINE__);
 	sc.var_set_charstar("Function", "subst");
 	sc.var_set_long("Number", 1);
-	sc.var_set_charstar("Message", re.strerror());
+	sc.var_set_charstar("MeSsaGe", re.strerror());
 	nstring s(sc.subst_intl(i18n("$function: argument $number: $message")));
 	return rpt_value_error::create(ep->get_pos(), s);
     }
@@ -203,6 +203,6 @@ rpt_func_substitute::run(const rpt_expr::pointer &ep, size_t argc,
     //
     // build the result
     //
-    trace_nstring(output);
-    return rpt_value_string::create(output);
+    trace_nstring(result);
+    return rpt_value_string::create(result);
 }

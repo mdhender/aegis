@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2007 Peter Miller
+//	Copyright (C) 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate mains
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -57,7 +55,7 @@ struct table_ty
 {
     const char      *name;
     const char      *description;
-    void	    (*func)(string_ty *, long, output_ty *);
+    void	    (*func)(string_ty *, long, output::pointer );
 };
 
 
@@ -134,17 +132,14 @@ static void
 via_table(const char *listname, string_ty *project_name, long change_number,
     string_ty *outfile)
 {
-    size_t          nhit;
-    table_ty        *tp;
-    output_ty       *op;
-    table_ty        *hit[SIZEOF(table)];
+    output::pointer op;
     sub_context_ty  *scp;
     string_ty       *s1;
     string_ty       *s2;
-    size_t          j;
 
-    nhit = 0;
-    for (tp = table; tp < ENDOF(table); ++tp)
+    size_t nhit = 0;
+    table_ty *hit[SIZEOF(table)];
+    for (table_ty *tp = table; tp < ENDOF(table); ++tp)
     {
 	if (arglex_compare(tp->name, listname, 0))
 	    hit[nhit++] = tp;
@@ -162,8 +157,8 @@ via_table(const char *listname, string_ty *project_name, long change_number,
 	os_become_orig();
 	if (outfile && ends_with(outfile, ".gz"))
 	{
-	    op = output_file_binary_open(outfile);
-	    op = new output_gzip(op, true);
+	    op = output_file::binary_open(outfile);
+	    op = output_gzip::create(op);
 	}
 	else if
 	(
@@ -172,19 +167,19 @@ via_table(const char *listname, string_ty *project_name, long change_number,
 	    (ends_with(outfile, ".bz") || ends_with(outfile, ".bz2"))
 	)
 	{
-	    op = output_file_binary_open(outfile);
-	    op = new output_bzip2(op, true);
+	    op = output_file::binary_open(outfile);
+	    op = output_bzip2::create(op);
 	}
 	else
-	    op = output_file_text_open(outfile);
+	    op = output_file::text_open(outfile);
 	os_become_undo();
 	hit[0]->func(project_name, change_number, op);
-	delete op;
+	op.reset();
 	break;
 
     default:
 	s1 = str_from_c(hit[0]->name);
-	for (j = 1; j < nhit; ++j)
+	for (size_t j = 1; j < nhit; ++j)
 	{
 	    s2 = str_format("%s, %s", s1->str_text, hit[j]->name);
 	    str_free(s1);
@@ -206,9 +201,7 @@ via_table(const char *listname, string_ty *project_name, long change_number,
 static void
 xml_usage(void)
 {
-    const char      *progname;
-
-    progname = progname_get();
+    const char *progname = progname_get();
     fprintf(stderr, "usage: %s [ <option>... ] <xml-name>\n", progname);
     fprintf
     (
@@ -232,10 +225,6 @@ xml_help(void)
 static void
 xml_list(void)
 {
-    output_ty       *name_col = 0;
-    output_ty       *desc_col = 0;
-    table_ty        *tp;
-
     trace(("xml_list()\n{\n"));
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -245,9 +234,10 @@ xml_list(void)
     //
     // create the columns
     //
-    col *colp = col::open((string_ty *)0);
+    col::pointer colp = col::open((string_ty *)0);
     colp->title("List of Lists", (const char *)0);
-    name_col = colp->create(0, 15, "Name\n------");
+    output::pointer name_col = colp->create(0, 15, "Name\n------");
+    output::pointer desc_col;
     if (!option_terse_get())
     {
 	desc_col = colp->create(16, 0, "Description\n-------------");
@@ -256,20 +246,13 @@ xml_list(void)
     //
     // list the lists
     //
-    for (tp = table; tp < ENDOF(table); ++tp)
+    for (table_ty *tp = table; tp < ENDOF(table); ++tp)
     {
 	name_col->fputs(tp->name);
 	if (desc_col)
     	    desc_col->fputs(tp->description);
 	colp->eoln();
     }
-
-    //
-    // clean up and go home
-    //
-    delete colp;
-    colp = 0;
-
     trace(("}\n"));
 }
 

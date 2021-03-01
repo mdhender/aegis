@@ -1,22 +1,19 @@
 //
-//      aegis - project change supervisor
-//      Copyright (C) 2001-2007 Peter Miller
+// aegis - project change supervisor
+// Copyright (C) 2001-2008 Peter Miller
 //
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
-//      (at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or (at
+// your option) any later version.
 //
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate getpw_caches
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -49,8 +46,8 @@ passwd_null(void)
 #ifndef SOURCE_FORGE_HACK
     result->pw_name = 0;
     result->pw_passwd = 0;
-    result->pw_uid = ~0;
-    result->pw_gid = ~0;
+    result->pw_uid = 0;
+    result->pw_gid = 0;
     result->pw_gecos = 0;
 #ifdef HAVE_pw_comment
     result->pw_comment = 0;
@@ -148,7 +145,7 @@ getpwnam_cached(const nstring &name)
         {
             data = passwd_null();
 #ifdef SOURCE_FORGE_HACK
-            data->pw_name = mem_copy_string(name->str_text);
+            data->pw_name = mem_copy_string(name.c_str());
             data->pw_gecos = data->pw_name;
 #endif
         }

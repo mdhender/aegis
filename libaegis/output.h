@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1999, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/output.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_OUTPUT_H
@@ -25,35 +23,47 @@
 #include <common/ac/stdarg.h>
 #include <common/ac/stddef.h>
 #include <common/main.h> // for gcc attributes
+#include <common/nstring.h>
+#include <common/ac/shared_ptr.h>
+
+#include <libaegis/functor/stack.h>
 
 struct string_ty; // forward
-class nstring; // forward
 
 
 /**
-  * The output_ty class is used to describe the interface to an
-  * arbitrary output destination.  It could be a file, it could be a
-  * string, or many other things, including several filters.
+  * The output class is used to describe the interface to an arbitrary
+  * output destination.  It could be a file, it could be a string, or
+  * many other things, including several filters.
   */
-class output_ty
+class output
 {
 public:
-    typedef void (*delete_callback_ty)(output_ty *, void *);
+    /**
+      * The pointer type is used to describe a pointer to an output
+      * destination.
+      */
+    typedef aegis_shared_ptr<output> pointer;
+
+    typedef void (*delete_callback_ty)(output *, void *);
 
     /**
       * The destructor.
       */
-    virtual ~output_ty();
+    virtual ~output();
 
+protected:
     /**
       * The default constructor.
+      * May only be called by derived classes.
       */
-    output_ty();
+    output();
 
+public:
     /**
       * The filename method is used to obtain the filename of this output.
       */
-    virtual struct string_ty *filename() const = 0;
+    virtual nstring filename() const = 0;
 
     /**
       * The ftell method is used to determine the current file position
@@ -140,9 +150,9 @@ public:
     void fputs(string_ty *str);
 
     /**
-      * The fputs method is used to write a string to the output stream,
-      * encoding any XML special characters (e.g. "<" becomes "&lt;",
-      * etc).
+      * The fputs_xml method is used to write a string to the output
+      * stream, encoding any XML special characters (e.g. "<" becomes
+      * "&lt;", etc).
       *
       * @param str
       *     The string to be written out.
@@ -161,9 +171,9 @@ public:
     void fputs(const nstring &str);
 
     /**
-      * The fputs method is used to write a string to the output stream,
-      * encoding any XML special characters (e.g. "<" becomes "&lt;",
-      * etc).
+      * The fputs_xml method is used to write a string to the output
+      * stream, encoding any XML special characters (e.g. "<" becomes
+      * "&lt;", etc).
       *
       * @param str
       *     The string to be written out.
@@ -195,9 +205,16 @@ public:
     void vfprintf(const char *fmt, va_list)                   ATTR_PRINTF(2, 0);
 
     /**
-      * Set the callback function to be called by the destructor.
+      * The register_delete_callback method is used to set the callback
+      * functor to be called by the destructor.
       */
-    void delete_callback(delete_callback_ty cb, void *arg);
+    void register_delete_callback(functor::pointer fp);
+
+    /**
+      * The unregister_delete_callback method is used to
+      * forget a callback functor to be called by the destructor.
+      */
+    void unregister_delete_callback(functor::pointer fp);
 
 private:
     /**
@@ -234,17 +251,10 @@ private:
     void overflow(char c);
 
     /**
-      * The del_cb instance variable is used to remember the callback
-      * function to be called when this output stream is destroyed.
+      * The callback instance variable is used to remember the
+      * functor(s) to be called when this output stream is destroyed.
       */
-    delete_callback_ty del_cb;
-
-    /**
-      * The del_cb_arg instance variable is used to remember the
-      * argument to the callback function to be called when this output
-      * stream is destroyed.
-      */
-    void *del_cb_arg;
+    functor_stack callback;
 
     /**
       * The buffer instance variable is used to remember the base of a
@@ -274,124 +284,41 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    output_ty(const output_ty &);
+    output(const output &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_ty &operator=(const output_ty &);
+    output &operator=(const output &);
 };
 
 
-inline output_ty &
-operator<<(output_ty &os, char c)
+inline output::pointer &
+operator<<(output::pointer &os, char c)
 {
-    os.fputc(c);
+    os->fputc(c);
     return os;
 }
 
 
-inline output_ty &
-operator<<(output_ty &os, const char *s)
+inline output::pointer &
+operator<<(output::pointer &os, const char *s)
 {
-    os.fputs(s);
+    os->fputs(s);
     return os;
 }
 
 
-inline output_ty &
-operator<<(output_ty &os, const nstring &s)
+inline output::pointer &
+operator<<(output::pointer &os, const nstring &s)
 {
-    os.fputs(s);
+    os->fputs(s);
     return os;
 }
 
 
 class input; // forward
 
-output_ty &operator<<(output_ty &os, input &is);
-
-
-inline DEPRECATED void
-output_delete(output_ty *op)
-{
-    delete op;
-}
-
-inline DEPRECATED struct string_ty *
-output_filename(const output_ty *op)
-{
-    return op->filename();
-}
-
-inline DEPRECATED long
-output_ftell(const output_ty *op)
-{
-    return op->ftell();
-}
-
-inline DEPRECATED void
-output_fputc(output_ty *op, int c)
-{
-    op->fputc(c);
-}
-
-inline DEPRECATED void
-output_fputs(output_ty *op, const char *s)
-{
-    op->fputs(s);
-}
-
-inline DEPRECATED void
-output_put_str(output_ty *op, struct string_ty *s)
-{
-    op->fputs(s);
-}
-
-inline DEPRECATED void
-output_write(output_ty *op, const void *data, size_t length)
-{
-    op->write(data, length);
-}
-
-inline DEPRECATED void
-output_flush(output_ty *op)
-{
-    op->flush();
-}
-
-inline DEPRECATED int
-output_page_width(const output_ty *op)
-{
-    return op->page_width();
-}
-
-inline DEPRECATED int
-output_page_length(output_ty *op)
-{
-    return op->page_length();
-}
-
-void output_fprintf(output_ty *, const char *, ...)
-    ATTR_PRINTF(2, 3) DEPRECATED;
-
-inline DEPRECATED void
-output_vfprintf(output_ty *op, const char *fmt, va_list ap)
-{
-    op->vfprintf(fmt, ap);
-}
-
-inline DEPRECATED void
-output_end_of_line(output_ty *op)
-{
-    op->end_of_line();
-}
-
-inline DEPRECATED void
-output_delete_callback(output_ty *op, output_ty::delete_callback_ty cb,
-    void *arg)
-{
-    op->delete_callback(cb, arg);
-}
+output::pointer &operator<<(output::pointer &os, input &is);
 
 #endif // LIBAEGIS_OUTPUT_H

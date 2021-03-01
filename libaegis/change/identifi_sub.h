@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: interface of the change_identifi_sub class
 //
 
 #ifndef LIBAEGIS_CHANGE_IDENTIFI_SUB_H
@@ -127,11 +125,31 @@ public:
     void set_change();
 
     /**
-      * The get_file_revision is used to determine the path to the gioven
+      * The get_file_revision is used to determine the path to the given
       * file at the time specified by the change ID.  It must be called
       * <i>after</i> the set_change method has been called.
+      *
+      * @param filename
+      *     The name of the file in question
+      * @param bad_state
+      *     What to do if the change is in an inappropriate state for
+      *     this operation.
       */
     file_revision get_file_revision(const nstring &filename,
+	change_functor &bad_state);
+
+    /**
+      * The get_file_revision is used to determine the path to
+      * the given file at the time specified by the change ID.  It must
+      * be called <i>after</i> the set_change method has been called.
+      *
+      * @param src
+      *     The file meta data (revions, if set, will be ignored)
+      * @param bad_state
+      *     What to do if the change is in an inappropriate state for
+      *     this operation.
+      */
+    file_revision get_file_revision(fstate_src_ty *src,
 	change_functor &bad_state);
 
     /**
@@ -180,6 +198,16 @@ public:
       * change identified.
       */
     user_ty::pointer get_up() { return pid.get_up(); }
+
+    /**
+      * The set_user_by_name method is used to set the user name by
+      * name.  This is useful for the small set of command which accept
+      * a user name on the command line.
+      *
+      * @param login
+      *     The login name of the user.
+      */
+    void set_user_by_name(nstring &login) { pid.set_user_by_name(login); }
 
     /**
       * The get_cp method is used to get the change pointer for the

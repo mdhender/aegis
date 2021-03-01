@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2007 Peter Miller
+//	Copyright (C) 2007, 2008 Peter Miller
 //      Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -46,10 +46,10 @@ user_ty::full_name()
 
 
 nstring
-user_ty::full_name(const nstring &name)
+user_ty::full_name(const nstring &u_name)
 {
-    trace(("user_full_name(name = %s)\n{\n", name.quote_c().c_str()));
-    struct passwd *pw = getpwnam_cached(name);
+    trace(("user_full_name(name = %s)\n{\n", u_name.quote_c().c_str()));
+    struct passwd *pw = getpwnam_cached(u_name);
     if (!pw)
     {
         trace(("no such user\n"));
@@ -80,10 +80,10 @@ user_ty::full_name(const nstring &name)
 
 
 string_ty *
-user_full_name(string_ty *name)
+user_full_name(string_ty *u_name)
 {
-    trace(("user_full_name(name = \"%s\")\n{\n", name->str_text));
-    nstring result = user_ty::full_name(nstring(name));
+    trace(("user_full_name(name = \"%s\")\n{\n", u_name->str_text));
+    nstring result = user_ty::full_name(nstring(u_name));
     trace(("return %s;\n", result.quote_c().c_str()));
     trace(("}\n"));
     return result.get_ref();

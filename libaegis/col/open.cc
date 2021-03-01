@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
+//	Copyright (C) 2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,12 +13,11 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the col::open class method
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/mem.h>
 #include <common/trace.h>
 #include <libaegis/col/pretty.h>
 #include <libaegis/col/unformatted.h>
@@ -29,7 +28,7 @@
 #include <libaegis/wide_output/to_narrow.h>
 
 
-col *
+col::pointer
 col::open(string_ty *filename)
 {
     //
@@ -37,31 +36,27 @@ col::open(string_ty *filename)
     //
     trace(("col::open(filename = %08lX)\n{\n", (long)filename));
     os_become_must_not_be_active();
-    output_ty *narrow_fp = 0;
+    output::pointer narrow_fp;
     if (filename && filename->str_length)
     {
 	trace_string(filename->str_text);
 	os_become_orig();
-	narrow_fp = output_file_text_open(filename);
+	narrow_fp = output_file::text_open(filename);
 	os_become_undo();
     }
     else
-	narrow_fp = output_pager_open();
-    wide_output_ty *wide_fp = wide_output_to_narrow_open(narrow_fp, 1);
+	narrow_fp = output_pager::open();
+    wide_output::pointer wide_fp = wide_output_to_narrow::open(narrow_fp);
 
     //
     // pick a formatting option
     //
-    col *result = 0;
     if (option_unformatted_get())
-	result = new col_unformatted(wide_fp, true);
-    else
-	result = new col_pretty(wide_fp, true);
+    {
+        trace(("}\n"));
+	return col_unformatted::create(wide_fp);
+    }
 
-    //
-    // all done
-    //
-    trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
-    return result;
+    return col_pretty::create(wide_fp);
 }

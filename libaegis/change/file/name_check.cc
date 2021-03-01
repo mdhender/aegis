@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2007 Peter Miller
+//	Copyright (C) 1999, 2002-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -15,8 +15,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
-//
-// MANIFEST: functions to manipulate name_checks
 //
 
 #include <common/ac/ctype.h>
@@ -45,7 +43,7 @@ change_maximum_filename_length(change::pointer cp)
 }
 
 
-static int
+static bool
 contains_moronic_ms_restrictions(string_ty *fn)
 {
     static const char *const moronic[] =
@@ -63,28 +61,27 @@ contains_moronic_ms_restrictions(string_ty *fn)
 
     for (cpp = moronic; cpp < ENDOF(moronic); ++cpp)
 	if (gmatch(*cpp, fn->str_text))
-	    return 1;
-    return 0;
+	    return true;
+    return false;
 }
 
 
-static int
+static bool
 is_a_dos_filename(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     string_list_ty  wl;
-    int             result;
     size_t          j;
 
     pconf_data = change_pconf_get(cp, 0);
     if (!pconf_data->dos_filename_required)
-	return 1;
+	return true;
 
     //
     // watch out for the moronic ms restrictions
     //
     if (contains_moronic_ms_restrictions(fn))
-	return 0;
+	return false;
 
     //
     // make sure the filename
@@ -95,18 +92,17 @@ is_a_dos_filename(change::pointer cp, string_ty *fn)
     //         will think that "foo" and "foo." are the same name)
     //
     wl.split(fn, ".");
-    result = 0;
     if (wl.nstrings < 1 || wl.nstrings > 2)
-	goto done;
+	return false;
     if (wl.string[0]->str_length < 1 || wl.string[0]->str_length > 8)
-	goto done;
+	return false;
     if
     (
 	wl.nstrings > 1
     &&
 	(wl.string[1]->str_length < 1 || wl.string[1]->str_length > 3)
     )
-	goto done;
+	return false;
 
     //
     // make sure the characters are acceptable
@@ -114,50 +110,33 @@ is_a_dos_filename(change::pointer cp, string_ty *fn)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	char           *tp;
-
-	for (tp = wl.string[j]->str_text; *tp; ++tp)
+	for (const char *tp = wl.string[j]->str_text; *tp; ++tp)
 	{
 	    if (!isalnum((unsigned char)*tp))
-		goto done;
+		return false;
 	}
     }
-    result = 1;
-
-    done:
-    return result;
+    return true;
 }
 
 
-static int
+static bool
 is_a_windows_filename(change::pointer cp, string_ty *fn)
 {
-    pconf_ty        *pconf_data;
-    char            *s;
-
-    pconf_data = change_pconf_get(cp, 0);
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
     if (!pconf_data->windows_filename_required)
-	return 1;
+	return true;
 
     //
     // watch out for the moronic ms restrictions
     //
     if (contains_moronic_ms_restrictions(fn))
-	return 0;
+	return false;
 
     //
     // make sure the characters are acceptable
     //
-    for (s = fn->str_text; *s; ++s)
-    {
-	if (strchr(":\"'\\", *s))
-	    return 0;
-    }
-
-    //
-    // didn't find anything wrong
-    //
-    return 1;
+    return (0 == strpbrk(fn->str_text, ":\"'\\"));
 }
 
 
@@ -315,7 +294,7 @@ change_filename_in_charset(change::pointer cp, string_ty *fn)
 }
 
 
-static int
+static bool
 change_filename_shell_safe(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
@@ -330,16 +309,16 @@ change_filename_shell_safe(change::pointer cp, string_ty *fn)
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 0);
     if (fn->str_text[0] == '-')
-	return 0;
+	return false;
     if (!pconf_data->shell_safe_filenames)
-	return 1;
+	return true;
 
     //
     // Some shells also treat a leading tilde (~) as meaning "home
     // directory of"
     //
     if (fn->str_text[0] == '~')
-	return 0;
+	return false;
 
     //
     // The rest of the restrictions apply to all characters of
@@ -355,6 +334,9 @@ change_filename_shell_safe(change::pointer cp, string_ty *fn)
 	case 0:
 	    break;
 
+        case '\t':
+        case '\n':
+        case ' ':
 	case '!':
 	case '"':
 	case '#':
@@ -378,11 +360,145 @@ change_filename_shell_safe(change::pointer cp, string_ty *fn)
 	case '{':
 	case '|':
 	case '}':
-	    return 0;
+	    return false;
 	}
 	break;
     }
-    return 1;
+    return true;
+}
+
+
+static bool
+contains_white_space(change::pointer cp, string_ty *fn)
+{
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    if (pconf_data->allow_white_space_in_filenames)
+	return false;
+    return (0 != strpbrk(fn->str_text, "\b\t\n\v\f\r "));
+}
+
+
+static bool
+contains_non_ascii(change::pointer cp, string_ty *fn)
+{
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    if (pconf_data->allow_non_ascii_filenames)
+	return false;
+    const char *s = fn->str_text;
+    const char *end = s + fn->str_length;
+    while (s < end)
+    {
+        unsigned char c = *s++;
+        switch (c)
+        {
+        default:
+            return true;
+
+        case '\b':
+        case '\t':
+        case '\n':
+        case '\v':
+        case '\f':
+        case '\r':
+        case ' ':
+        case '!':
+        case '"':
+        case '#':
+        case '$':
+        case '%':
+        case '&':
+        case '\'':
+        case '(':
+        case ')':
+        case '*':
+        case '+':
+        case ',':
+        case '-':
+        case '.':
+        case '/':
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case ':':
+        case ';':
+        case '<':
+        case '=':
+        case '>':
+        case '?':
+        case '@':
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'E':
+        case 'F':
+        case 'G':
+        case 'H':
+        case 'I':
+        case 'J':
+        case 'K':
+        case 'L':
+        case 'M':
+        case 'N':
+        case 'O':
+        case 'P':
+        case 'Q':
+        case 'R':
+        case 'S':
+        case 'T':
+        case 'U':
+        case 'V':
+        case 'W':
+        case 'X':
+        case 'Y':
+        case 'Z':
+        case '[':
+        case '\\':
+        case ']':
+        case '^':
+        case '_':
+        case '`':
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+        case 'g':
+        case 'h':
+        case 'i':
+        case 'j':
+        case 'k':
+        case 'l':
+        case 'm':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 'q':
+        case 'r':
+        case 's':
+        case 't':
+        case 'u':
+        case 'v':
+        case 'w':
+        case 'x':
+        case 'y':
+        case 'z':
+        case '{':
+        case '|':
+        case '}':
+        case '~':
+            break;
+        }
+    }
+    return false;
 }
 
 
@@ -415,8 +531,6 @@ change_filename_shell_safe(change::pointer cp, string_ty *fn)
 string_ty *
 change_filename_check(change::pointer cp, string_ty *filename)
 {
-    int             name_max1;
-    int             name_max2;
     string_list_ty  part;
     size_t          k;
     string_ty       *result;
@@ -424,8 +538,8 @@ change_filename_check(change::pointer cp, string_ty *filename)
 
     //
     // figure the limits
-    // name_max1 is for directories
-    // name_max2 is for the basename
+    // name_max_dir is for directories
+    // name_max_fil is for the basename
     //
     // The margin of 2 on the end is for ",D" suffixes,
     // and for ",v" in RCS, "s." in SCCS, etc.
@@ -433,13 +547,13 @@ change_filename_check(change::pointer cp, string_ty *filename)
     trace(("change_filename_check(cp = %08lX, filename = \"%s\")\n{\n",
 	(long)cp, filename->str_text));
     assert(cp->reference_count >= 1);
-    name_max1 = change_maximum_filename_length(cp);
-    name_max2 = change_pathconf_name_max(cp);
-    if (name_max1 > name_max2)
-	name_max1 = name_max2;
-    name_max2 -= 2;
-    if (name_max2 > name_max1)
-	name_max2 = name_max1;
+    int name_max_dir = change_maximum_filename_length(cp);
+    int name_max_fil = change_pathconf_name_max(cp);
+    if (name_max_dir > name_max_fil)
+	name_max_dir = name_max_fil;
+    name_max_fil -= 2;
+    if (name_max_fil > name_max_dir)
+	name_max_fil = name_max_dir;
 
     //
     // break into path elements
@@ -449,12 +563,42 @@ change_filename_check(change::pointer cp, string_ty *filename)
     result = 0;
     for (k = 0; k < part.nstrings; ++k)
     {
-	int             max;
+	s2 = part.string[k];
+
+        //
+        // Check for white space characters
+        //
+        if (contains_white_space(cp, s2))
+        {
+            sub_context_ty sc;
+            sc.var_set_string("File_Name", filename);
+            result =
+                sc.subst_intl
+                (
+                    i18n("file name \"$filename\" contains illegal characters")
+                );
+            goto done;
+        }
+
+        //
+        // check for non-white-space not-ascii-printable characters
+        // (i.e. probably UTF8 or something)
+        //
+        if (contains_non_ascii(cp, s2))
+        {
+            sub_context_ty sc;
+            sc.var_set_string("File_Name", filename);
+            result =
+                sc.subst_intl
+                (
+                    i18n("file name \"$filename\" contains illegal characters")
+                );
+            goto done;
+        }
 
 	//
 	// check DOS-full-ness
 	//
-	s2 = part.string[k];
 	if (!is_a_dos_filename(cp, s2))
 	{
 	    sub_context_ty  *scp;
@@ -520,22 +664,21 @@ change_filename_check(change::pointer cp, string_ty *filename)
 	//
 	// check name length
 	//
+        int name_max = name_max_dir;
 	if (k == part.nstrings - 1)
-	    max = name_max2;
-	else
-	    max = name_max1;
-	if (s2->str_length > (size_t)max)
+	    name_max = name_max_fil;
+	if (s2->str_length > (size_t)name_max)
 	{
 	    sub_context_ty  *scp;
 	    string_ty       *s3;
 
 	    scp = sub_context_new();
 	    if (k == part.nstrings - 1)
-		s3 = abbreviate_filename(s2, max);
+		s3 = abbreviate_filename(s2, name_max);
 	    else
-		s3 = abbreviate_dirname(s2, max);
+		s3 = abbreviate_dirname(s2, name_max);
 	    sub_var_set_string(scp, "File_Name", filename);
-	    sub_var_set_long(scp, "Number", (int)(s2->str_length - max));
+	    sub_var_set_long(scp, "Number", (int)(s2->str_length - name_max));
 	    sub_var_optional(scp, "Number");
 	    sub_var_set_string(scp, "SUGgest", s3);
 	    sub_var_optional(scp, "SUGgest");
@@ -624,7 +767,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 	}
 
 	//
-	// check filename for shellspecial characters
+	// check filename for shell special characters
 	//
 	if (!change_filename_shell_safe(cp, s2))
 	{

@@ -1,10 +1,10 @@
 '\" t
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2005-2007 Peter Miller
+.\"     Copyright (C) 2005-2008 Peter Miller
 .\"
 .\"     This program is free software; you can redistribute it and/or
 .\"     modify it under the terms of the GNU General Public License as
-.\"     published by the Free Software Foundation; either version 2 of
+.\"     published by the Free Software Foundation; either version 3 of
 .\"     the License, or (at your option) any later version.
 .\"
 .\"     This program is distributed in the hope that it will be useful,
@@ -27,7 +27,7 @@ aede-policy \- check change set is ready for aede
 [
 .IR option \&...
 ][
-\fIpolicy\fP...
+\f[I]policy\fP...
 ]
 .br
 .B \*(n)
@@ -41,21 +41,21 @@ aede-policy \- check change set is ready for aede
 .SH DESCRIPTION
 The \fI\*(n)\fP command is used to verify that a change set is
 ready to end development.  This is intended to be used by the
-\fIdevelop_\%end_\%policy_\%command\fP field of the project
+\f[I]develop_\%end_\%policy_\%command\fP field of the project
 configuration file.
 .RS
 develop_end_policy_command =
     "aede-policy -p $project -c $change all";
 .RE
 If any of the pilies should fail, the \fI\*(n)\fP command will fail with
-an exit status of 1.  This, in turn, will cause the \fIaede\fP(1) command
-to leave the change in the \fIbeing developed\fP state.
+an exit status of 1.  This, in turn, will cause the \f[I]aede\fP(1) command
+to leave the change in the \f[I]being developed\fP state.
 .PP
-Note that the \fIaede\fP(1) command sets the appropriate environment
+Note that the \f[I]aede\fP(1) command sets the appropriate environment
 variables, so the \fB\-Project\fP and \fB\-Change\fP options are rarely
 necessary.
 .PP
-If no policies appear on the command line, the \fIaede-policy\fP project
+If no policies appear on the command line, the \f[I]aede-policy\fP project
 specific attribute will be checked.  If it exists, it contains a list of
 space separated policy names.
 .SS POLICIES
@@ -63,10 +63,10 @@ There are a range of policies that can be selected.
 .TP 8n
 all
 Check all of the
-\fIcopyright\fP,
-\fIcrlf\fP,
-\fIdescription\fP and
-\fIprintable\fP
+\f[I]copyright\fP,
+\f[I]crlf\fP,
+\f[I]description\fP and
+\f[I]printable\fP
 policies.
 .TP 8n
 copyright
@@ -74,14 +74,14 @@ copyright
 This policy checks that each file in the change set contains
 a copyright notice of the form
 .RS
-Copyright (C) \fByear\fP \fIsomething\fP
+Copyright (C) \fByear\fP \f[I]something\fP
 .RE
 where \fByear\fP is the current year (you can have a range of years, too).
 Binary files are ignored.
-Change sets marked with a \fIforeign-copyright=true\fP attribute are ignored,
+Change sets marked with a \f[I]foreign-copyright=true\fP attribute are ignored,
 as are files similarly marked.
-The \fIsomething\fP part is either the project specific
-\fIcopyright-owner\fP attribute, or the executing users full name.
+The \f[I]something\fP part is either the project specific
+\f[I]copyright-owner\fP attribute, or the executing users full name.
 .RE
 .TP 8n
 crlf
@@ -90,8 +90,8 @@ not DOS line termination (CRLF).
 Binary files are ignored.
 .TP 8n
 description
-This policy checks that the change set \fIbrief_description\fP and
-\fIdescription\fP attributes have been updated to something other than
+This policy checks that the change set \f[I]brief_description\fP and
+\f[I]description\fP attributes have been updated to something other than
 the defaults.
 .TP 8n
 fsf-address
@@ -100,16 +100,18 @@ up-to-date.  This is useful for Free Software projects.
 .TP 8n
 gpl-version
 .TP 8n
-gpl-version=\fInn\fP
+gpl-version=\f[I]nn\fP
 This policy checks files that cite the GNU GPL in their file headers, to
 be sure they contain the correct version of the GNU GPL.  Defaults to
 version 3 if no version number specified.
 .TP 8n
 line-length
 .TP 8n
-line-length=\fInn\fP
+line-length=\f[I]nn\fP
 This policy checks that files have this maximum line length.
 Defaults to 80 if no width is specified.
+Can be overridden per file using the
+\f[I]aede-policy-line-length\fP file attribute.
 .TP 8n
 merge-fhist
 This policy requires that there be no \f[I]fmerge\fP(1) conflict lines
@@ -134,14 +136,14 @@ over them (change the tabs in a later change set, if at all).
 .PP
 This check is not applied to files which are called \f[CW]Makefile\fP
 or similar, and it is not applied to files carrying a
-\fIaede-policy-tabs-allowed=true\fP attribute.
+\f[I]aede-policy-tabs-allowed=true\fP attribute.
 .RE
 .TP 8n
 printable
 This policy checks that each file in the change set contains only
-printable text characters and white space.  The \fIcontent-type\fP file
-attribute is taken into account; if there is no \fIcontent-type\fP file
-attribute, or there is no charset specified by the \fIcontent-type\fP
+printable text characters and white space.  The \f[I]content-type\fP file
+attribute is taken into account; if there is no \f[I]content-type\fP file
+attribute, or there is no charset specified by the \f[I]content-type\fP
 file attribute, plain 7-bit ASCII text is assumed.
 .TP 8n
 text
@@ -155,7 +157,7 @@ This policy checks that there is no white space on the ends of lines,
 that there are no blank lines at the ends of files.
 .PP
 If no policy is specified,
-only the \fIdescription\fP policy will be checked.
+only the \f[I]description\fP policy will be checked.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so

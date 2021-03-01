@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1995, 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -22,33 +22,35 @@
 #include <common/ac/string.h>
 #include <common/ac/time.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
-#include <aegis/aenbru.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
-#include <common/error.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/active.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
+
+#include <aegis/aenbru.h>
 
 
 static void
@@ -84,32 +86,11 @@ new_branch_undo_help(void)
 static void
 new_branch_undo_list(void)
 {
-    string_ty	    *project_name;
-
     trace(("new_branch_undo_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(new_branch_undo_usage);
-	    continue;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, new_branch_undo_usage);
-	    continue;
-	}
-	arglex();
-    }
-    list_changes_in_state_mask(project_name, 1 << cstate_state_being_developed);
-    if (project_name)
-	str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(new_branch_undo_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_being_developed);
     trace(("}\n"));
 }
 

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller
+//	Copyright (C) 2004-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate nets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
@@ -38,8 +36,7 @@
 
 net_ty::net_ty() :
     in(new input_stdin()),
-    out(new output_stdout()),
-    log_client(0),
+    out(output_stdout::create()),
     rooted(0),
     response_queue_length(0),
     response_queue_max(0),
@@ -47,8 +44,7 @@ net_ty::net_ty() :
     dir_info_cs(0),
     dir_info_ss(0),
     curdir(0),
-    file_info(0),
-    updating_verbose(0)
+    file_info(0)
 {
     //
     // Initialize which responses the client is capable of receiving.
@@ -72,8 +68,7 @@ net_ty::net_ty() :
 
 net_ty::~net_ty()
 {
-    delete out;
-    out = 0;
+    out.reset();
 
     if (updating_verbose)
     {
@@ -81,11 +76,7 @@ net_ty::~net_ty()
 	updating_verbose = 0;
     }
 
-    if (log_client)
-    {
-	delete log_client;
-	log_client = 0;
-    }
+    log_client.reset();
     if (dir_info_cs)
     {
 	delete dir_info_cs;
@@ -201,24 +192,21 @@ net_ty::log_to_file(string_ty *filename)
 	return;
 
     os_become_orig();
-    output_ty *op = output_file_text_open(filename);
+    output::pointer op = output_file::text_open(filename);
     os_become_undo();
-    log_client = new output_prefix_ty(op, true, "C: ");
-    output_ty *log_server = new output_prefix_ty(op, false, "S: ");
-    out = new output_tee_ty(out, true, log_server, true);
+    log_client = output_prefix::create(op, "C: ");
+    output::pointer log_server = output_prefix::create(op, "S: ");
+    out = output_tee::create(out, log_server);
 }
 
 
 void
 net_ty::log_by_env(const char *envar)
 {
-    const char      *cp;
-    string_ty       *s;
-
-    cp = getenv(envar);
+    const char *cp = getenv(envar);
     if (!cp || !*cp)
 	return;
-    s = str_from_c(cp);
+    string_ty *s = str_from_c(cp);
     log_to_file(s);
     str_free(s);
 }

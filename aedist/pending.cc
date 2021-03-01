@@ -1,11 +1,11 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Walter Franzini;
-//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2005-2007 Walter Franzini
+//	Copyright (C) 2004-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -14,32 +14,33 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the pending class
+//	along with this program.  If not, see
+//	<http://www.gnu.org/licenses/>,
 //
 
-#include <libaegis/ael/column_width.h>
-#include <aedist/arglex3.h>
-#include <libaegis/arglex/project.h>
-#include <aedist/change/functor/pendin_print.h>
-#include <libaegis/col.h>
 #include <common/error.h>
-#include <libaegis/help.h>
-#include <libaegis/input/file.h>
-#include <aedist/missing.h>
 #include <common/nstring/list.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/col.h>
+#include <libaegis/help.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
 #include <libaegis/os.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
 #include <libaegis/project/invento_walk.h>
-#include <aedist/replay/line.h>
-#include <common/symtab/template.h>
-#include <common/trace.h>
 #include <libaegis/url.h>
-#include <aeannotate/usage.h>
 #include <libaegis/user.h>
+
+#include <aedist/arglex3.h>
+#include <aedist/change/functor/pendin_print.h>
+#include <aedist/missing.h>
+#include <aedist/replay/line.h>
+#include <aedist/usage.h>
 
 
 void
@@ -175,6 +176,8 @@ pending_main(void)
     //
     os_become_orig();
     input ifp = input_file_open(ifn.get_ref());
+    ifp = input_bunzip2_open(ifp);
+    ifp = input_gunzip_open(ifp);
     os_become_undo();
 
     //

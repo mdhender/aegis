@@ -3,7 +3,7 @@ Build(Aegis)							  Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007 Peter Miller
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008 Peter Miller
 
 	The aegis program is distributed under the terms of the	GNU General
 	Public License.	 See the LICENSE section, below, for more details.
@@ -309,7 +309,7 @@ BUILDING AEGIS
 		%
 	command	and wait.  When	this finishes you should see a directory
 	called bin containing several files: aegis, aereport, aefind, aefp,
-	find_sizes and fmtgen.
+	and fmtgen.
 
 	aegis	The aegis program is a project change supervisor.
 
@@ -321,11 +321,6 @@ BUILDING AEGIS
 		The aereport program is	used to	query Aegis' database.
 
 	aefind	The aefind program is used to find files.
-
-	find_sizes
-		The find_sizes program is a utility used to build the aegis
-		package; it is not intended for	general	use and	should not be
-		installed.
 
 	fmtgen	The fmtgen program is a	utility	used to	build the aegis
 		package; it is not intended for	general	use and	should not be
@@ -677,7 +672,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version number given by
 	the
 		% aegis	-version
-		aegis version
+		aegis version 4.D021
 		...
 		%
 	command.  Please run this command to get the exact number, do not send
@@ -881,7 +876,7 @@ WINDOWS-NT
 	Do not use WinZip to unpack the	tarball.  It has a nasty habit of
 		turning	all of the newlines into CRLFs.	 This will confuse
 		lots of	utilities, especially GNU Groff.  Use the "tar xzf
-		aegis-4.23.tar.gz" command from	within Cygwin.
+		aegis-4.tar.gz"	command	from within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or later
 		(use a "groff -v" command).  Grab and install the latest from

@@ -1,10 +1,10 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2004, 2006, 2007 Peter Miller
+.\"	Copyright (C) 1997, 1998, 2004, 2006-2008 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	the Free Software Foundation; either version 3 of the License, or
 .\"	(at your option) any later version.
 .\"
 .\"	This program is distributed in the hope that it will be useful,
@@ -63,6 +63,50 @@ you will need to use the
 substitution around filenames in commands, to ensure that filenames
 containing shell special characters do not have unintended side effects.
 Weird characters in filenames may also confuse your dependency maintenance tool.
+.TP
+allow_white_space_in_filenames = boolean;
+.RS
+This field may be used to allow white space characters in file names.
+This will allow the following characters to appear in file names:
+backspace (BS, \eb, 0x08), horizontal tab (HT, \et, 0x09), new line
+(NL, \en, 0x0A), vertical tab (VT, \ev, 0x0B), form feed (FF, \ef,
+0x0C), and carriage return (CR, \er, 0x0D).
+Defaults to false if not set.
+.PP
+Note that this field does not override other file name filters.
+It will be necessary to explicitly set
+\f[I]shell_\%safe_\%filenames = false\fP
+as well.
+It will be necessary to set
+\f[I]dos_\%filename_\%required = false\fP
+(the default) as well.
+It will be necessary to set
+\f[I]posix_\%filename_\%charset = false\fP
+(the default) as well.
+.PP
+The user must take great care to use the ${quote} substitution around
+all file names in commands in the project configuration.  And even
+then, substitutions which expect a space separated list of file names
+will have undefined results.
+.RE
+.TP
+allow_non_ascii_filenames = boolean;
+.RS
+This field may be used to allow file names with non-ascii-printable
+characters in them.  Usually this would mean a UTF8 or international
+charset of some kind.
+Defaults to false if not set.
+.PP
+Note that this field does not override other file name filters.
+It will be necessary to explicitly set
+\f[I]shell_\%safe_\%filenames = false\fP
+as well.  It will be necessary to set
+\f[I]dos_\%filename_\%required = false\fP
+(the default) as well.
+It will be necessary to set
+\f[I]posix_\%filename_\%charset = false\fP
+(the default) as well.
+.RE
 .TP 8n
 filename_pattern_accept = [ string ];
 This field is used to specify a list of patterns of acceptable filenames.

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1999, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,12 +13,11 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to gzip output streams
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/mem.h>
 #include <libaegis/output/gzip.h>
 #include <libaegis/sub.h>
 
@@ -51,7 +50,7 @@ output_gzip::drop_dead(int err)
 //
 
 static void
-output_long_le(output_ty *fp, uLong x)
+output_long_le(output::pointer fp, uLong x)
 {
     for (int n = 0; n < 4; n++)
     {
@@ -105,19 +104,11 @@ output_gzip::~output_gzip()
 	deflateEnd(&stream);
     delete [] outbuf;
     outbuf = 0;
-
-    //
-    // Finish the deeper stream.
-    //
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-output_gzip::output_gzip(output_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+output_gzip::output_gzip(const output::pointer &arg) :
+    deeper(arg),
     outbuf(new Byte [Z_BUFSIZE]),
     crc(0),
     pos(0),
@@ -165,7 +156,14 @@ output_gzip::output_gzip(output_ty *arg1, bool arg2) :
 }
 
 
-string_ty *
+output::pointer
+output_gzip::create(const output::pointer &a_deeper)
+{
+    return pointer(new output_gzip(a_deeper));
+}
+
+
+nstring
 output_gzip::filename()
     const
 {

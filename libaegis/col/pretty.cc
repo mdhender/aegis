@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller
+//	Copyright (C) 1999, 2001-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,13 +13,12 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate prettys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
+#include <common/mem.h>
 #include <common/trace.h>
 #include <libaegis/col/pretty.h>
 #include <libaegis/option.h>
@@ -38,44 +37,41 @@ col_pretty::~col_pretty()
     trace(("ncolumns = %d\n", (int)ncolumns));
     for (size_t j = 0; j < ncolumns; ++j)
     {
-	// The delcb() will do all the work.
-	column_ty *cp = &column[j];
-	trace(("cp = %08lX\n", (long)cp));
-	if (cp->content_filter)
-	{
-	    delete cp->content_filter;
-	    cp->content_filter = 0;
-	}
+	column[j].clear();
     }
     trace(("column = %08lX\n", (long)column));
     delete [] column;
-    trace(("deeper = %08lX\n", (long)deeper));
-    wide_output_delete(deeper);
-    deeper = 0;
     trace(("}\n"));
 }
 
 
-static wide_output_ty *
-mangle(wide_output_ty *arg, bool doc)
+static wide_output::pointer
+mangle(wide_output::pointer arg)
 {
-    arg = wide_output_unexpand_open(arg, doc, -1);
+    wide_output::pointer arg2 = wide_output_unexpand::open(arg, -1);
     if (option_page_headers_get())
-	arg = wide_output_header_open(arg, 1);
-    return arg;
+	arg2 = wide_output_header::open(arg2);
+    return arg2;
 }
 
 
-col_pretty::col_pretty(wide_output_ty *arg1, bool arg2) :
-    deeper(mangle(arg1, arg2)),
+col_pretty::col_pretty(const wide_output::pointer &a_deeper) :
+    deeper(mangle(a_deeper)),
     need_to_emit_headers(false),
     ncolumns(0),
     ncolumns_max(0),
     column(0)
 {
     trace(("col_pretty::col_pretty(this = %08lX, deeper = %08lX)\n{\n",
-	(long)this, (long)deeper));
+	(long)this, (long)deeper.get()));
     trace(("}\n"));
+}
+
+
+col::pointer
+col_pretty::create(const wide_output::pointer &a_deeper)
+{
+    return pointer(new col_pretty(a_deeper));
 }
 
 
@@ -99,11 +95,11 @@ col_pretty::emit(size_t argc, emit_ty *argv, int minlines,
 	    if (!ep->content)
 		continue;
 	    trace(("ep = %08lX;\n", (long)ep));
-	    column_row_ty *crp = wide_output_column_get(ep->content, line);
+	    column_row_ty *crp = ep->content->get(line);
 	    if (!crp)
 		continue;
 	    trace(("crp = %08lX;\n", (long)crp));
-	    ++there_was_something_on_this_line;
+	    there_was_something_on_this_line = true;
 	    if (!crp->length)
 		continue;
 	    if (ocol > ep->left)
@@ -126,7 +122,12 @@ col_pretty::emit(size_t argc, emit_ty *argv, int minlines,
 	return;
     }
     if (lines_needed <= 5)
-	wide_output_header_need(deeper, lines_needed);
+    {
+        wide_output_header *hp =
+            dynamic_cast<wide_output_header *>(deeper.get());
+        if (hp)
+            hp->need(lines_needed);
+    }
 
     //
     // Now send the output.
@@ -144,17 +145,17 @@ col_pretty::emit(size_t argc, emit_ty *argv, int minlines,
 	    if (!ep->content)
 		continue;
 	    trace(("ep = %08lX;\n", (long)ep));
-	    column_row_ty *crp = wide_output_column_get(ep->content, line);
+	    column_row_ty *crp = ep->content->get(line);
 	    if (!crp)
 		continue;
 	    trace(("crp = %08lX;\n", (long)crp));
-	    ++there_was_something_on_this_line;
+	    there_was_something_on_this_line = true;
 	    if (!crp->length)
 		continue;
 	    if (ocol > ep->left)
 	    {
 		trace(("zzzt, ping!\n"));
-		wide_output_putwc(deeper, '\n');
+		deeper->put_wc(L'\n');
 		ocol = 0;
 	    }
 
@@ -178,7 +179,7 @@ col_pretty::emit(size_t argc, emit_ty *argv, int minlines,
 		(
 	    	    need_to_emit_headers
 		||
-		    wide_output_header_is_at_top_of_page(deeper)
+		    wide_output_header::is_at_top_of_page(deeper)
 		)
 	    )
 		emit_header();
@@ -188,7 +189,7 @@ col_pretty::emit(size_t argc, emit_ty *argv, int minlines,
 	    //
 	    while (ocol < ep->left)
 	    {
-		wide_output_putwc(deeper, ' ');
+		deeper->put_wc(L' ');
 		++ocol;
 	    }
 
@@ -196,13 +197,13 @@ col_pretty::emit(size_t argc, emit_ty *argv, int minlines,
 	    // Write the data, and adjust the column tracking
 	    // to match.
 	    //
-	    wide_output_write(deeper, crp->text, crp->length);
+	    deeper->write(crp->text, crp->length);
 	    ocol += crp->printing_width;
 	    trace(("ocol = %d\n", ocol));
 	}
 	if (!there_was_something_on_this_line)
 	    break;
-	wide_output_putwc(deeper, '\n');
+	deeper->put_wc(L'\n');
     }
     trace(("}\n"));
 }
@@ -236,7 +237,7 @@ col_pretty::emit_content()
     trace(("col_pretty::emit_content(this = %08lX)\n{\n", (long)this));
     for (size_t j = 0; j < ncolumns; ++j)
     {
-	output_ty *w = column[j].content_filter;
+	output::pointer w = column[j].content_filter;
 	w->end_of_line();
 	w->flush();
     }
@@ -244,61 +245,30 @@ col_pretty::emit_content()
     //
     // emit the relevant columns
     //
+    int argc = 0;
     emit_ty *argv = new emit_ty [ncolumns];
     for (size_t j = 0; j < ncolumns; ++j)
     {
-	argv[j].content = column[j].content;
-	argv[j].left = column[j].left;
+        if (column[j].content_filter)
+        {
+            argv[argc].content = column[j].content;
+            argv[argc].left = column[j].left;
+            ++argc;
+        }
     }
-    emit(ncolumns, argv, 1, 0);
+    emit(argc, argv, 1, 0);
     delete [] argv;
 
     //
-    // reset the content buffers
+    // clear the content buffers
     //
     for (size_t j = 0; j < ncolumns; ++j)
-	wide_output_column_reset(column[j].content);
+	column[j].content->clear_buffers();
     trace(("}\n"));
 }
 
 
-static void
-delcb_func(output_ty *fp, void *arg)
-{
-    // called just before a wide output is deleted
-    trace(("col_pretty::delcb(fp = %08lX, arg = %08lX)\n{\n",
-	(long)fp, (long)arg));
-    col_pretty *cp = (col_pretty *)arg;
-    cp->delcb(fp);
-    trace(("}\n"));
-}
-
-
-void
-col_pretty::delcb(output_ty *fp)
-{
-    for (size_t j = 0; j < ncolumns; ++j)
-    {
-	column_ty *cp = &column[j];
-	if (cp->content_filter == fp)
-	{
-	    wide_output_delete(cp->header);
-	    cp->header = 0;
-	    cp->content = 0;
-	    cp->content_filter = 0;
-	    cp->left = 0;
-	    cp->right = 0;
-	    break;
-	}
-    }
-
-    while (ncolumns > 0 && column[ncolumns - 1].content_filter == 0)
-	--ncolumns;
-    trace(("}\n"));
-}
-
-
-output_ty *
+output::pointer
 col_pretty::create(int left, int right, const char *ctitle)
 {
     //
@@ -315,7 +285,7 @@ col_pretty::create(int left, int right, const char *ctitle)
     	    left = 0;
     }
     if (right <= 0)
-	right = wide_output_page_width(deeper);
+	right = deeper->page_width();
     if (right <= left)
 	right = left + 8;
 
@@ -340,26 +310,26 @@ col_pretty::create(int left, int right, const char *ctitle)
     trace(("left = %d;\n", left));
     trace(("right = %d;\n", right));
     trace(("width = %d;\n", right - left));
-    int paglen = wide_output_page_length(deeper);
-    cp->content = wide_output_column_open(right - left, paglen);
+    int paglen = deeper->page_length();
+    cp->content = wide_output_column::open(right - left, paglen);
     cp->left = left;
     cp->right = right;
 
     //
     // We need to stash the column title specified.
     //
-    cp->header = wide_output_column_open(right - left, paglen);
+    cp->header = wide_output_column::open(right - left, paglen);
     if (ctitle && *ctitle)
     {
 	int nlines = paglen / 2;
 	if (nlines < 1)
 	    nlines = 1;
-	wide_output_ty *fp3 = wide_output_head_open(cp->header, 0, nlines);
-	wide_output_ty *fp4 = wide_output_wrap_open(fp3, 1, -1);
-	wide_output_ty *fp5 = wide_output_expand_open(fp4, 1);
-	wide_output_put_cstr(fp5, ctitle);
-	wide_output_end_of_line(fp5);
-	wide_output_delete(fp5);
+	wide_output::pointer fp3 =
+            wide_output_head::open(cp->header, nlines);
+	wide_output::pointer fp4 = wide_output_wrap::open(fp3, -1);
+	wide_output::pointer fp5 = wide_output_expand::open(fp4);
+	fp5->put_cstr(ctitle);
+	fp5->end_of_line();
 
 	//
 	// A new column with a header implies we need to emit
@@ -373,19 +343,30 @@ col_pretty::create(int left, int right, const char *ctitle)
     // filter into the column content.
     //
     cp->content_filter =
-	new output_to_wide_ty
+	output_to_wide::open
 	(
-	    wide_output_expand_open
+	    wide_output_expand::open
 	    (
-		wide_output_wrap_open(cp->content, 1, right - left),
-		1
-	    ),
-	    true
+		wide_output_wrap::open(cp->content, right - left)
+	    )
 	);
-    cp->content_filter->delete_callback(delcb_func, this);
-    trace(("return %08lX;\n", (long)cp->content_filter));
+    trace(("return %08lX;\n", (long)cp->content_filter.get()));
     trace(("}\n"));
     return cp->content_filter;
+}
+
+
+void
+col_pretty::forget(const output::pointer &op)
+{
+    for (size_t j = 0; j < ncolumns; ++j)
+    {
+        column_ty *cp = &column[j];
+        if (cp->content_filter == op)
+            cp->clear();
+    }
+    while (ncolumns > 0 && !column[ncolumns - 1].content_filter)
+        --ncolumns;
 }
 
 
@@ -407,7 +388,7 @@ col_pretty::eoln()
     (
 	need_to_emit_headers
     &&
-	!wide_output_header_is_at_top_of_page(deeper)
+	!wide_output_header::is_at_top_of_page(deeper)
     &&
 	option_page_headers_get()
     )
@@ -425,7 +406,7 @@ void
 col_pretty::eject()
 {
     trace(("col_pretty::eject(this = %08lX)\n{\n", (long)this));
-    wide_output_header_eject(deeper);
+    wide_output_header::eject(deeper);
     trace(("}\n"));
 }
 
@@ -434,7 +415,7 @@ void
 col_pretty::need(int n)
 {
     trace(("col_pretty::need(this = %08lX, n = %d)\n{\n", (long)this, n));
-    wide_output_header_need1(deeper, n);
+    wide_output_header::need1(deeper, n);
     trace(("}\n"));
 }
 
@@ -444,20 +425,18 @@ col_pretty::title(const char *s1, const char *s2)
 {
     trace(("col_pretty::title(this = %08lX, s1 = \"%s\", s2 = \"%s\")\n{\n",
 	(long)this, (s1 ? s1 : ""), (s2 ? s2 : "")));
-    wide_output_header_title(deeper, s1, s2);
+    wide_output_header::title(deeper, s1, s2);
     trace(("}\n"));
 }
 
 
 col_pretty::column_ty::~column_ty()
 {
+    clear();
 }
 
 
 col_pretty::column_ty::column_ty() :
-    header(0),
-    content(0),
-    content_filter(0),
     left(0),
     right(0)
 {
@@ -490,7 +469,18 @@ col_pretty::column_ty::operator=(const column_ty &arg)
 
 
 void
+col_pretty::column_ty::clear()
+{
+    header.reset();
+    content.reset();
+    content_filter.reset();
+    left = 0;
+    right = 0;
+}
+
+
+void
 col_pretty::flush()
 {
-    wide_output_flush(deeper);
+    deeper->flush();
 }

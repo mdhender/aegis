@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2007 Peter Miller
+//      Copyright (C) 2003-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -13,19 +13,21 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate projects
+//      along with this program.  If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
-#include <aeget/emit/project.h>
+#include <common/str_list.h>
+#include <libaegis/emit/project.h>
+#include <libaegis/http.h>
+#include <libaegis/project.h>
+
 #include <aeget/get/change.h>
-#include <aeget/get/change/list.h>
 #include <aeget/get/change/inventory.h>
+#include <aeget/get/change/list.h>
 #include <aeget/get/project.h>
 #include <aeget/get/project/aedist.h>
 #include <aeget/get/project/change_cause.h>
@@ -39,9 +41,6 @@
 #include <aeget/get/project/staff.h>
 #include <aeget/get/project/statistics.h>
 #include <aeget/get/rss.h>
-#include <aeget/http.h>
-#include <libaegis/project.h>
-#include <common/str_list.h>
 
 
 static void

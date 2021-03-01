@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//      Copyright (C) 1991-1999, 2001-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -20,7 +20,7 @@
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/sys/types.h>
-#include <sys/stat.h>
+#include <common/ac/sys/stat.h>
 
 #include <common/error.h>
 #include <common/mem.h>
@@ -28,12 +28,13 @@
 #include <common/quit.h>
 #include <common/trace.h>
 #include <libaegis/ael/change/by_state.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
-#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change/run/review_polic.h>
 #include <libaegis/change/signedoffby.h>
 #include <libaegis/commit.h>
@@ -44,8 +45,8 @@
 #include <libaegis/option.h>
 #include <libaegis/os.h>
 #include <libaegis/pattr.h>
-#include <libaegis/project/file.h>
 #include <libaegis/project.h>
+#include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
 #include <libaegis/rss.h>
 #include <libaegis/sub.h>
@@ -83,32 +84,11 @@ review_pass_help(void)
 static void
 review_pass_list(void)
 {
-    string_ty       *project_name;
-
     trace(("review_pass_list()\n{\n"));
-    project_name = 0;
     arglex();
-    while (arglex_token != arglex_token_eoln)
-    {
-        switch (arglex_token)
-        {
-        default:
-            generic_argument(review_pass_usage);
-            continue;
-
-        case arglex_token_project:
-            arglex();
-            // fall through...
-
-        case arglex_token_string:
-            arglex_parse_project(&project_name, review_pass_usage);
-            continue;
-        }
-        arglex();
-    }
-    list_changes_in_state_mask(project_name, 1 << cstate_state_being_reviewed);
-    if (project_name)
-        str_free(project_name);
+    change_identifier cid;
+    cid.command_line_parse_rest(review_pass_usage);
+    list_changes_in_state_mask(cid, 1 << cstate_state_being_reviewed);
     trace(("}\n"));
 }
 

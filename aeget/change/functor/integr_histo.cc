@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005-2007 Peter Miller
+//	Copyright (C) 2005-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -19,11 +19,12 @@
 
 #include <common/ac/stdio.h>
 
-#include <libaegis/change/branch.h>
-#include <aeget/change/functor/integr_histo.h>
 #include <common/error.h> // for assert
-#include <aeget/http.h>
 #include <common/yyyymmdd_wk.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/http.h>
+
+#include <aeget/change/functor/integr_histo.h>
 
 
 static const char *const month_name[] =
@@ -55,7 +56,7 @@ change_functor_integration_histogram::change_functor_integration_histogram(
     max_time(arg3),
     recurse(a_recurse),
     format(arg5),
-    max(0),
+    size_of_biggest_bucket(0),
     min_seen(0),
     max_seen(0)
 {
@@ -131,8 +132,8 @@ change_functor_integration_histogram::operator()(change::pointer cp)
     //
     // Track range.
     //
-    if (max < *p)
-	max = *p;
+    if (size_of_biggest_bucket < *p)
+	size_of_biggest_bucket = *p;
     str_free(key);
 }
 
@@ -154,7 +155,7 @@ change_functor_integration_histogram::print()
 	return;
     }
 
-    double dmax = 400. / max;
+    double dmax = 400. / size_of_biggest_bucket;
 
     long total = 0;
     printf("<table align=center>\n");

@@ -1,11 +1,12 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2006, 2007 Peter Miller
+//      Copyright (C) 2006-2008 Peter Miller
 //      Copyright (C) 2005 Matthew Lee;
+//      Copyright (C) 2007 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -23,6 +24,7 @@
 #include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
+#include <libaegis/os.h>
 #include <libaegis/pconf.h>
 #include <libaegis/project.h>
 #include <libaegis/rss/feed.h>
@@ -119,6 +121,8 @@ nstring
 rss_feed_attribute(project_ty *pp, const nstring &filename,
     enum rss_feed_attribute attribute)
 {
+    trace(("rss_feed_attribute(pp, \"%s\", %s)\n{\n",
+           filename.c_str(), rss_feed_attr_to_str(attribute)));
     // Get the project-specific attributes.
     pconf_ty *pconf_data = project_pconf_get(pp);
     if (pconf_data->project_specific != 0)
@@ -128,7 +132,11 @@ rss_feed_attribute(project_ty *pp, const nstring &filename,
         feed_attr_prefix += rss_feed_attr_to_str(attribute);
         feed_attr_prefix += "-";
 
-        nstring feed_attr = feed_attr_prefix + filename;
+        //
+        // Create the string for the feed_attr using os_basename since
+        // this function may receive the full path name of the xml file.
+        //
+        nstring feed_attr = feed_attr_prefix + os_basename(filename);
 
         // Search through each project-specific attribute.
         for
@@ -151,16 +159,20 @@ rss_feed_attribute(project_ty *pp, const nstring &filename,
                     strncasecmp
                     (
                         ap->name->str_text,
-                        feed_attr_prefix.c_str(),
-                        feed_attr_prefix.size()
+                        feed_attr.c_str(),
+                        feed_attr.size()
                     )
                 )
             )
             {
+                trace(("return \"%s\";\n", ap->value->str_text));
+                trace(("}\n"));
                 return nstring(ap->value);
             }
         }
     }
+    trace(("return \"\";\n"));
+    trace(("}\n"));
     return "";
 }
 

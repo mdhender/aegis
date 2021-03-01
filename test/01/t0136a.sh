@@ -1,11 +1,12 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002, 2004-2007 Peter Miller
+#	Copyright (C) 2001, 2002, 2004-2008 Peter Miller
+#	Copyright (C) 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
+#	the Free Software Foundation; either version 3 of the License, or
 #	(at your option) any later version.
 #
 #	This program is distributed in the hope that it will be useful,
@@ -14,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test patch -send functionality
+#	along with this program.  If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -405,7 +404,7 @@ X
 #	The second changeX
 #	X
 # Aegis-Change-Set-BeginX
-# QlpoOTFBWSZTWYT8SQkAAFpbgEwQUAckSgQKv+ff6jABFtWBKImU0bImnlGJ6mg0DQJUyJhE
+# QlpoMzFBWSZTWYT8SQkAAFpbgEwQUAckSgQKv+ff6jABFtWBKImU0bImnlGJ6mg0DQJUyJhE
 # 2UxpANAAAqqaammgyHqbU0NAABkVMzMwuwYfRGBVqjhkOZE3M8I0QUscIDRCeyKvjco/JJLm
 # NbcvL2EFkoIQ/RUrQpYjs+vduxVIUErKz2aavsU5JOyVzQ0UTEmRefPDEYKO6pUs+Z02tN0e
 # lak5LZPe1PNgvQaUfsyNCoukx72/ktiRvHMRlSSnwIWzFR0GKam68hChLF9ZqGUR5MmLoh+b

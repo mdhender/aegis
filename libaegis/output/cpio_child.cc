@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller
+//	Copyright (C) 1999, 2002-2006, 2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate cpio_childs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -24,7 +22,7 @@
 #include <libaegis/sub.h>
 
 
-output_cpio_child_ty::~output_cpio_child_ty()
+output_cpio_child::~output_cpio_child()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -50,11 +48,11 @@ output_cpio_child_ty::~output_cpio_child_ty()
 }
 
 
-output_cpio_child_ty::output_cpio_child_ty(output_ty *arg1, const nstring &arg2,
-	long arg3, time_t a_mtime) :
-    deeper(arg1),
-    name(arg2),
-    length(arg3),
+output_cpio_child::output_cpio_child(const output::pointer &a_deeper,
+        const nstring &a_name, long a_length, time_t a_mtime) :
+    deeper(a_deeper),
+    name(a_name),
+    length(a_length),
     pos(0),
     bol(true),
     mtime(a_mtime)
@@ -64,15 +62,23 @@ output_cpio_child_ty::output_cpio_child_ty(output_ty *arg1, const nstring &arg2,
 }
 
 
+output::pointer
+output_cpio_child::create(const output::pointer &a_deeper,
+    const nstring &a_name, long a_length, time_t a_mtime)
+{
+    return pointer(new output_cpio_child(a_deeper, a_name, a_length, a_mtime));
+}
+
+
 void
-output_cpio_child_ty::changed_size()
+output_cpio_child::changed_size()
 {
     sub_context_ty sc;
     sc.var_set_format
     (
 	"File_Name",
 	"%s(%s)",
-	deeper->filename()->str_text,
+	deeper->filename().c_str(),
 	name.c_str()
     );
     sc.fatal_intl(i18n("archive member $filename changed size"));
@@ -80,7 +86,7 @@ output_cpio_child_ty::changed_size()
 
 
 void
-output_cpio_child_ty::padding()
+output_cpio_child::padding()
 {
     long n = deeper->ftell();
     assert(n >= 0);
@@ -95,14 +101,14 @@ output_cpio_child_ty::padding()
 
 
 void
-output_cpio_child_ty::hex8(long n)
+output_cpio_child::hex8(long n)
 {
     deeper->fprintf("%8.8lx", n);
 }
 
 
 void
-output_cpio_child_ty::header()
+output_cpio_child::header()
 {
     static int ino;
     int inode = ++ino;
@@ -128,8 +134,8 @@ output_cpio_child_ty::header()
 }
 
 
-string_ty *
-output_cpio_child_ty::filename()
+nstring
+output_cpio_child::filename()
     const
 {
     return deeper->filename();
@@ -137,7 +143,7 @@ output_cpio_child_ty::filename()
 
 
 long
-output_cpio_child_ty::ftell_inner()
+output_cpio_child::ftell_inner()
     const
 {
     return pos;
@@ -145,7 +151,7 @@ output_cpio_child_ty::ftell_inner()
 
 
 void
-output_cpio_child_ty::write_inner(const void *data, size_t len)
+output_cpio_child::write_inner(const void *data, size_t len)
 {
     deeper->write(data, len);
     pos += len;
@@ -155,7 +161,7 @@ output_cpio_child_ty::write_inner(const void *data, size_t len)
 
 
 void
-output_cpio_child_ty::end_of_line_inner()
+output_cpio_child::end_of_line_inner()
 {
     if (!bol)
 	fputc('\n');
@@ -163,7 +169,7 @@ output_cpio_child_ty::end_of_line_inner()
 
 
 const char *
-output_cpio_child_ty::type_name()
+output_cpio_child::type_name()
     const
 {
     return "cpio child";

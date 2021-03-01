@@ -1,11 +1,11 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
-//      Copyright (C) 2006, 2007 Peter Miller
+//      Copyright (C) 2006-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -18,25 +18,26 @@
 //      <http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/change.h>
 #include <common/error.h> // for assert
-#include <libaegis/file.h>
 #include <common/gettime.h>
-#include <libaegis/input/file.h>
-#include <libaegis/io.h>
+#include <common/mem.h>
 #include <common/now.h>
 #include <common/nstring.h>
+#include <common/progname.h>
+#include <common/trace.h>
+#include <common/version_stmp.h>
+#include <libaegis/change.h>
+#include <libaegis/file.h>
+#include <libaegis/input/file.h>
+#include <libaegis/io.h>
 #include <libaegis/os.h>
 #include <libaegis/output/file.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/rss.h>
 #include <libaegis/rss/feed.h>
 #include <libaegis/rss/item.h>
-#include <common/trace.h>
-#include <common/version_stmp.h>
-#include <libaegis/xmltextread/by_node.h>
 #include <libaegis/xml_node.h>
+#include <libaegis/xmltextread/by_node.h>
 
 
 rss_feed::~rss_feed()
@@ -414,12 +415,11 @@ rss_feed::print()
     nstring dir(project_rss_path_get(project, 0));
     if (!os_exists(dir))
         os_mkdir(dir, 0755);
-    output_ty *op = new output_file(out_file_name, false);
+    output::pointer op = output_file::open(out_file_name, false);
 
     print(op);
 
-    delete op;
-    op = 0;
+    op.reset();
 
     //
     // Move the temporary output file to the real feed file.
@@ -431,7 +431,7 @@ rss_feed::print()
 
 
 void
-rss_feed::print(output_ty *op)
+rss_feed::print(output::pointer op)
     const
 {
     op->fputs("<?xml version=\"1.0\"?>\n");

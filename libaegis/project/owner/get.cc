@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
+//	Copyright (C) 2006-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,11 +13,11 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
-// MANIFEST: implementation of the project_ty::get_the_owner method
-//
+
+#include <common/trace.h>
 
 #include <libaegis/os.h>
 #include <libaegis/project.h>
@@ -27,12 +27,23 @@
 void
 project_ty::get_the_owner()
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
+
     //
     // If the project owner is already established,
     // don't do anything here.
     //
     if (uid >= 0 && gid >= 0)
 	return;
+
+    int err = project_is_readable(this);
+    trace(("err = %d\n", err));
+    if (err != 0)
+    {
+        off_limits = true;
+        os_become_orig_query(&uid, &gid, 0);
+        return;
+    }
 
     //
     // When checking the project home path owner, we append "/."

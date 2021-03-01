@@ -1,10 +1,10 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2007 Peter Miller
+//      Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
+//      the Free Software Foundation; either version 3 of the License, or
 //      (at your option) any later version.
 //
 //      This program is distributed in the hope that it will be useful,
@@ -16,12 +16,6 @@
 //      along with this program. If not, see
 //      <http://www.gnu.org/licenses/>.
 //
-// This class of wide output is used to store columns, in preparation for
-// assembing them ready for output.  The number fo lines in the column is
-// tracked, as is the printing width of the column.  This simplifies the
-// task of printing the columns out, particularly if a wrapping filter
-// is imposed before this one.
-//
 
 #include <common/error.h> // for assert
 #include <common/language.h>
@@ -29,112 +23,100 @@
 #include <common/str.h>
 #include <common/trace.h>
 #include <libaegis/wide_output/column.h>
-#include <libaegis/wide_output/private.h>
 
 
-struct wide_output_column_ty
+wide_output_column::~wide_output_column()
 {
-    wide_output_ty  inherited;
-
-    int             width;
-    int             length;
-
-    column_row_ty   *row;
-    size_t          nrows;
-    size_t          nrows_max;
-};
-
-
-static void
-wide_output_column_destructor(wide_output_ty *fp)
-{
-    wide_output_column_ty *this_thing;
-    size_t          j;
-
-    trace(("wide_output_column::destructor(fp = %08lX)\n{\n", (long)fp));
-    this_thing = (wide_output_column_ty *)fp;
-    for (j = 0; j < this_thing->nrows; ++j)
+    trace(("wide_output_column::destructor(this = %08lX)\n{\n", (long)this));
+    flush();
+    for (size_t j = 0; j < nrows; ++j)
     {
-	column_row_ty *rp = this_thing->row + j;
+	column_row_ty *rp = row + j;
 	if (rp->text)
 	{
 	    delete [] rp->text;
 	    rp->text = 0;
 	}
     }
-    delete [] this_thing->row;
-    this_thing->row = 0;
-    this_thing->nrows = 0;
-    this_thing->nrows_max = 0;
+    delete [] row;
+    row = 0;
+    nrows = 0;
+    nrows_max = 0;
     trace(("}\n"));
 }
 
 
-static string_ty *
-wide_output_column_filename(wide_output_ty *)
+wide_output_column::wide_output_column(int a_width, int a_length) :
+    width(a_width <= 0 ? page_width_get(-1) : a_width),
+    length(a_length <= 0 ? page_length_get(-1) : a_length),
+    row(0),
+    nrows(0),
+    nrows_max(0)
 {
-    static string_ty *s;
-
-    if (!s)
-	s = str_from_c("(column)");
-    return s;
 }
 
 
-static void
-wide_output_column_write(wide_output_ty *fp, const wchar_t *buf, size_t buflen)
+wide_output_column::cpointer
+wide_output_column::open(int a_width, int a_length)
 {
-    wide_output_column_ty *this_thing;
-    wchar_t         wc;
-    size_t          prev;
-    size_t          j;
-    column_row_ty   *rp;
+    return cpointer(new wide_output_column(a_width, a_length));
+}
 
-    trace(("wide_output_column::write(fp = %08lX, buf = %08lX, len = %ld)\n"
-        "{\n", (long)fp, (long)buf, (long)buflen));
-    this_thing = (wide_output_column_ty *)fp;
+
+nstring
+wide_output_column::filename()
+{
+    return "(column)";
+}
+
+
+void
+wide_output_column::write_inner(const wchar_t *buf, size_t buflen)
+{
+    trace(("wide_output_column::write(this = %08lX, buf = %08lX, len = %ld)\n"
+        "{\n", (long)this, (long)buf, (long)buflen));
     language_human();
     while (buflen > 0)
     {
-	wc = *buf++;
+	wchar_t wc = *buf++;
 	--buflen;
 
 	//
 	// newlines simply advance down the column
 	//
-	if (wc == '\n')
-	    this_thing->nrows++;
+	if (wc == L'\n')
+	    ++nrows;
 
 	//
 	// Make sure we have a row structure to park the
 	// character in.
 	//
-	while (this_thing->nrows >= this_thing->nrows_max)
+	while (nrows >= nrows_max)
 	{
             //
-            // The this_thing->nrows_max value can easily be beyond the
+            // The nrows_max value can easily be beyond the
             // end of the array.  For example, if the text starts with
             // a couple of newlines.  You must be careful about array
             // bounds here.
             //
-	    prev = this_thing->nrows_max;
+	    size_t prev = nrows_max;
             for (;;)
             {
-                this_thing->nrows_max = 4 + 2 * this_thing->nrows_max;
-                if (this_thing->nrows < this_thing->nrows_max)
+                nrows_max = 4 + 2 * nrows_max;
+                if (nrows < nrows_max)
                     break;
             }
 
 	    column_row_ty *new_row =
-		new column_row_ty [this_thing->nrows_max];
+		new column_row_ty [nrows_max];
 	    for (size_t k = 0; k < prev; ++k)
-		new_row[k] = this_thing->row[k];
-	    delete [] this_thing->row;
-	    this_thing->row = new_row;
+		new_row[k] = row[k];
+	    delete [] row;
+	    row = new_row;
 
-	    for (j = prev; j < this_thing->nrows_max; ++j)
+	    for (size_t j = prev; j < nrows_max; ++j)
 	    {
-		rp = this_thing->row + j;
+                column_row_ty *rp = row + j;
 		rp->length_max = 0;
 		rp->length = 0;
 		rp->text = 0;
@@ -142,13 +124,13 @@ wide_output_column_write(wide_output_ty *fp, const wchar_t *buf, size_t buflen)
 	    }
 	}
 
-	if (wc == '\n')
+	if (wc == L'\n')
 	    continue;
 
 	//
 	// Make sure we have text space enough to park the character.
 	//
-	rp = this_thing->row + this_thing->nrows;
+	column_row_ty *rp = row + nrows;
 	while (rp->length >= rp->length_max)
 	{
 	    rp->length_max = 16 + 2 * rp->length_max;
@@ -171,114 +153,59 @@ wide_output_column_write(wide_output_ty *fp, const wchar_t *buf, size_t buflen)
 }
 
 
-static int
-wide_output_column_page_width(wide_output_ty *fp)
+int
+wide_output_column::page_width()
 {
-    wide_output_column_ty *this_thing;
-
-    this_thing = (wide_output_column_ty *)fp;
-    return this_thing->width;
+    return width;
 }
 
 
-static void
-wide_output_column_flush(wide_output_ty *)
+void
+wide_output_column::flush_inner()
 {
 }
 
 
-static int
-wide_output_column_page_length(wide_output_ty *fp)
+int
+wide_output_column::page_length()
 {
-    wide_output_column_ty *this_thing;
-
-    this_thing = (wide_output_column_ty *)fp;
-    return this_thing->length;
+    return length;
 }
 
 
-static void
-wide_output_column_eoln(wide_output_ty *fp)
+void
+wide_output_column::end_of_line_inner()
 {
-    wide_output_column_ty *this_thing;
-    column_row_ty   *rp;
-
-    trace(("wide_output_column::eoln(fp = %08lX)\n{\n", (long)fp));
-    this_thing = (wide_output_column_ty *)fp;
-    if (this_thing->nrows > 0 && this_thing->nrows < this_thing->nrows_max)
+    trace(("wide_output_column::end_of_line_inner(this = %08lX)\n{\n",
+        (long)this));
+    if (nrows > 0 && nrows < nrows_max)
     {
-	rp = this_thing->row + this_thing->nrows;
+        column_row_ty *rp = row + nrows;
 	if (rp->length > 0)
-    	    wide_output_putwc(fp, (wchar_t)'\n');
+    	    put_wc(L'\n');
     }
     trace(("}\n"));
-}
-
-
-static wide_output_vtbl_ty vtbl =
-{
-    sizeof(wide_output_column_ty),
-    wide_output_column_destructor,
-    wide_output_column_filename,
-    wide_output_column_write,
-    wide_output_column_flush,
-    wide_output_column_page_width,
-    wide_output_column_page_length,
-    wide_output_column_eoln,
-    "column",
-};
-
-
-wide_output_ty *
-wide_output_column_open(int width, int length)
-{
-    wide_output_ty  *result;
-    wide_output_column_ty *this_thing;
-
-    trace(("wide_output_column::new(width = %d, length = %d)\n{\n", width,
-        length));
-    result = wide_output_new(&vtbl);
-    this_thing = (wide_output_column_ty *)result;
-    this_thing->width = (width <= 0 ? page_width_get(-1) : width);
-    this_thing->length = (length <= 0 ? page_length_get(-1) : length);
-    this_thing->row = 0;
-    this_thing->nrows = 0;
-    this_thing->nrows_max = 0;
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
 }
 
 
 column_row_ty *
-wide_output_column_get(wide_output_ty *fp, int n)
+wide_output_column::get(int n)
 {
-    wide_output_column_ty *this_thing;
-    column_row_ty   *rp;
-
-    trace(("wide_output_column::get(fp = %08lX, n = %d)\n{\n",
-	    (long)fp, n));
-    if (fp->vptr != &vtbl)
-    {
-	trace(("WRONG!  Type is %s\n", fp->vptr->type_name));
-	assert(0);
-	trace(("}\n"));
-	return 0;
-    }
+    trace(("wide_output_column::get(this = %08lX, n = %d)\n{\n",
+	    (long)this, n));
     if (n < 0)
     {
 	trace(("return NULL;\n"));
 	trace(("}\n"));
 	return 0;
     }
-    this_thing = (wide_output_column_ty *)fp;
-    if (n >= (int)this_thing->nrows_max)
+    if (n >= (int)nrows_max)
     {
 	trace(("return NULL;\n"));
 	trace(("}\n"));
 	return 0;
     }
-    rp = this_thing->row + n;
+    column_row_ty *rp = row + n;
     if (rp->length == 0)
     {
 	//
@@ -286,12 +213,12 @@ wide_output_column_get(wide_output_ty *fp, int n)
 	// If they are, pretend this row doesn't exist.
 	//
 	size_t k;
-	int end_of_the_road = 1;
-	for (k = n + 1; k < this_thing->nrows; ++k)
+	bool end_of_the_road = true;
+	for (k = n + 1; k < nrows; ++k)
 	{
-	    if (this_thing->row[k].length)
+	    if (row[k].length)
 	    {
-	       	end_of_the_road = 0;
+	       	end_of_the_road = false;
 	       	break;
 	    }
 	}
@@ -309,25 +236,22 @@ wide_output_column_get(wide_output_ty *fp, int n)
 
 
 void
-wide_output_column_reset(wide_output_ty *fp)
+wide_output_column::clear_buffers()
 {
-    wide_output_column_ty *this_thing;
-    size_t          j;
-
-    trace(("wide_output_column::reset(fp = %08lX)\n{\n", (long)fp));
-    if (fp->vptr != &vtbl)
+    trace(("wide_output_column::reset(this = %08lX)\n{\n", (long)this));
+    for (size_t j = 0; j < nrows_max; ++j)
     {
-	trace(("WRONG!  Type is %s\n", fp->vptr->type_name));
-	assert(0);
-	trace(("}\n"));
-	return;
+	row[j].length = 0;
+	row[j].printing_width = 0;
     }
-    this_thing = (wide_output_column_ty *)fp;
-    for (j = 0; j < this_thing->nrows_max; ++j)
-    {
-	this_thing->row[j].length = 0;
-	this_thing->row[j].printing_width = 0;
-    }
-    this_thing->nrows = 0;
+    nrows = 0;
     trace(("}\n"));
+}
+
+
+const char *
+wide_output_column::type_name()
+    const
+{
+    return "wide_output_column";
 }

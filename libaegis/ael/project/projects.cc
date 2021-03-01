@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 1999, 2001-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,42 +13,41 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate projectss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
 
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/inappropriat.h>
 #include <libaegis/ael/column_width.h>
 #include <libaegis/ael/project/inappropriat.h>
 #include <libaegis/ael/project/projects.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/col.h>
 #include <libaegis/option.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
-#include <common/str_list.h>
-#include <common/trace.h>
 
 
 void
-list_projects(string_ty *project_name, long change_number, string_list_ty *)
+list_projects(change_identifier &cid, string_list_ty *)
 {
     string_list_ty name;
-    output_ty *name_col = 0;
-    output_ty *dir_col = 0;
-    output_ty *desc_col = 0;
+    output::pointer name_col;
+    output::pointer dir_col;
+    output::pointer desc_col;
     size_t j;
     int left;
-    col *colp;
+    col::pointer colp;
 
     trace(("list_projects()\n{\n"));
-    if (project_name)
+    if (cid.project_set())
 	list_project_inappropriate();
-    if (change_number)
+    if (cid.set())
 	list_change_inappropriate();
 
     //
@@ -92,13 +91,13 @@ list_projects(string_ty *project_name, long change_number, string_list_ty *)
 	project_ty *pp = project_alloc(name.string[j]);
 	pp->bind_existing();
 
-    trace(("mark\n"));
+        trace(("mark\n"));
 	int err = project_is_readable(pp);
 
 	name_col->fputs(project_name_get(pp));
 	if (desc_col)
 	{
-	    if (err)
+	    if (err != 0)
 		desc_col->fputs(strerror(err));
 	    else
 	    {
@@ -119,12 +118,5 @@ list_projects(string_ty *project_name, long change_number, string_list_ty *)
     trace(("mark\n"));
 	colp->eoln();
     }
-
-    //
-    // clean up and go home
-    //
-    trace(("mark\n"));
-    delete colp;
-    colp = 0;
     trace(("}\n"));
 }

@@ -1,10 +1,10 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2007 Peter Miller
+//	Copyright (C) 1999, 2003-2008 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
+//	the Free Software Foundation; either version 3 of the License, or
 //	(at your option) any later version.
 //
 //	This program is distributed in the hope that it will be useful,
@@ -13,45 +13,38 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to output to cpio archivess
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
+#include <common/mem.h>
+#include <common/str.h>
 #include <libaegis/output/cpio.h>
 #include <libaegis/output/cpio_child.h>
 #include <libaegis/output/cpio_child2.h>
-#include <common/str.h>
 
 
-output_cpio_ty::~output_cpio_ty()
+output_cpio::~output_cpio()
 {
     //
     // Emit the archive trailer.
     // (An empty file with a magic name.)
     //
     nstring trailer("TRAILER!!!");
-    delete new output_cpio_child_ty(deeper, trailer, false, mtime);
-
-    //
-    // Finish writing the archive file.
-    //
-    delete deeper;
-    deeper = 0;
+    output_cpio_child::create(deeper, trailer, 0L, mtime);
 }
 
 
-output_cpio_ty::output_cpio_ty(output_ty *arg1, time_t a_mtime) :
+output_cpio::output_cpio(const output::pointer &arg1, time_t a_mtime) :
     deeper(arg1),
     mtime(a_mtime)
 {
 }
 
 
-string_ty *
-output_cpio_ty::filename()
+nstring
+output_cpio::filename()
     const
 {
     return deeper->filename();
@@ -59,7 +52,7 @@ output_cpio_ty::filename()
 
 
 long
-output_cpio_ty::ftell_inner()
+output_cpio::ftell_inner()
     const
 {
     return 0;
@@ -67,29 +60,29 @@ output_cpio_ty::ftell_inner()
 
 
 void
-output_cpio_ty::write_inner(const void *, size_t)
+output_cpio::write_inner(const void *, size_t)
 {
     this_is_a_bug();
 }
 
 
 void
-output_cpio_ty::end_of_line_inner()
+output_cpio::end_of_line_inner()
 {
     this_is_a_bug();
 }
 
 
 const char *
-output_cpio_ty::type_name()
+output_cpio::type_name()
     const
 {
     return "cpio archive";
 }
 
 
-output_ty *
-output_cpio_ty::child(const nstring &name, long len)
+output::pointer
+output_cpio::child(const nstring &name, long len)
 {
     if (len < 0)
     {
@@ -98,7 +91,7 @@ output_cpio_ty::child(const nstring &name, long len)
         // version, which stashes the data in memory until the end, and
         // then we can write it out with the length in the header.
 	//
-	return new output_cpio_child2_ty(deeper, name, mtime);
+	return output_cpio_child2::create(deeper, name, mtime);
     }
-    return new output_cpio_child_ty(deeper, name, len, mtime);
+    return output_cpio_child::create(deeper, name, len, mtime);
 }
