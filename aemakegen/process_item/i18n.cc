@@ -64,6 +64,13 @@ process_item_i18n::condition(const nstring &filename)
 void
 process_item_i18n::preprocess(const nstring &filename)
 {
+    if (filename.ends_with("/common.po"))
+    {
+        // Do nothing directly,
+        // it will be used indirectly by other rules.
+        return;
+    }
+
     assert(condition(filename));
     nstring mo = filename.trim_extension() + ".mo";
     data.remember_all_i18n(mo);

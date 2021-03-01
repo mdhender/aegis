@@ -1576,4 +1576,12 @@ target::process_item_yacc(const nstring &fn)
 }
 
 
+bool
+target::file_is_in_manifest(const nstring &filename)
+    const
+{
+    return manifest.member(filename);
+}
+
+
 // vim: set ts=8 sw=4 et :

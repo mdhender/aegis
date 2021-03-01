@@ -539,6 +539,13 @@ protected:
       */
     process_queue processing;
 
+    /**
+      * The file_is_in_manifest method may be used by derived classes
+      * to dtermine whether or not the fiven file name is in the file
+      * manifest.  Of most use to item processing methods.
+      */
+    bool file_is_in_manifest(const nstring &filename) const;
+
 private:
     /**
       * The process1 method is called by the #process method to perform

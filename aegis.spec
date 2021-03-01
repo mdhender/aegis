@@ -16,7 +16,7 @@
 #
 Summary: aegis
 Name: aegis
-Version: 4.25.D508
+Version: 4.25.D509
 Release: 1
 License: GPL
 Group: Development/Tools

@@ -949,6 +949,13 @@ target_make_makefile::process_item_etc_profile(const nstring &fn)
 void
 target_make_makefile::process_item_i18n(const nstring &filename)
 {
+    if (filename.ends_with("/common.po"))
+    {
+        // Do nothing directly,
+        // it will be used indirectly by other rules.
+        return;
+    }
+
     nstring mo = filename.trim_extension() + ".mo";
 
     {
@@ -968,15 +975,11 @@ target_make_makefile::process_item_i18n(const nstring &filename)
         else
             command = "$(MSGFMT) -o $@";
         command += " " + filename;
-        if (!filename.ends_with("/common.po"))
+        nstring po2 = filename.dirname() + "/common.po";
+        if (file_is_in_manifest(po2))
         {
-            nstring mo2 = mo.dirname() + "/common.mo";
-            if (data.get_all_i18n().member(mo2))
-            {
-                nstring po2 = filename.dirname() + "/common.po";
-                command += " " + po2;
-                rhs.push_back_unique(po2);
-            }
+            command += " " + po2;
+            rhs.push_back_unique(po2);
         }
         body.push_back(command);
         location_comment(__FILE__, __LINE__);

@@ -49,7 +49,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ascii\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: aegis 4.25\n"
-"POT-Creation-Date: Tue Nov 27 23:03:10 EST 2012\n"
+"POT-Creation-Date: Thu Nov 29 11:48:52 EST 2012\n"
 
 #
 # This error message is issued when an environment variable is meant to

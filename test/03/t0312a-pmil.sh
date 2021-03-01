@@ -17,12 +17,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-TEST_SUBJECT="aemakegen, vs nlsdir and i18n"
+TEST_SUBJECT="aemakegen, etc/msgfmt.sh + common.po"
 
 # load up standard prelude and test functions
 . test_funcs
 
-AEGIS_PROJECT=projname
+AEGIS_PROJECT=i18ntest
 export AEGIS_PROJECT
 
 activity="new project 28"
@@ -68,16 +68,17 @@ if test $? -ne 0 ; then cat log; no_result; fi
 activity="new file 68"
 aegis -nf \
         $work/${AEGIS_PROJECT}.C010/aegis.conf \
+        $work/${AEGIS_PROJECT}.C010/barney/main.c \
         $work/${AEGIS_PROJECT}.C010/configure.ac \
-        $work/${AEGIS_PROJECT}.C010/example/main.cc \
-        $work/${AEGIS_PROJECT}.C010/lib/en/LC_MESSAGES/example.po \
-        $work/${AEGIS_PROJECT}.C010/lib/en/LC_MESSAGES/common.po \
-        $work/${AEGIS_PROJECT}.C010/lib/fr/LC_MESSAGES/example.po \
+        $work/${AEGIS_PROJECT}.C010/etc/msgfmt.sh \
+        $work/${AEGIS_PROJECT}.C010/datadir/en/LC_MESSAGES/barney.po \
+        $work/${AEGIS_PROJECT}.C010/datadir/en/LC_MESSAGES/common.po \
         -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $work/${AEGIS_PROJECT}.C010/configure.ac << 'fubar'
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt)
+AC_CHECK_PROGS(MSGCAT, gmsgcat msgcat)
 AC_SUBST(NLSDIR)
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -105,10 +106,6 @@ project_specific =
         name = "aemakegen:debian:maintainer";
         value = "maintainer@example.com";
     },
-    {
-        name = "aemakegen:libtool";
-        value = "true";
-    },
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -117,11 +114,11 @@ TAB=`awk 'BEGIN{printf("%c", 9)}' /dev/null`
 
 # ----------  makefile  ----------------------------------------------------
 
-activity="aemakegen 118"
-aemakegen -c 10 --target=makefile > test.out
+activity="aemakegen 116"
+aemakegen -c 10 --target=makefile --flavour=aegis > test.out
 if test $? -ne 0 ; then fail; fi
 
-activity="check makefile 122"
+activity="check makefile 120"
 sed "s|{TAB}|${TAB}|g" > ok << 'fubar'
 #
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -171,17 +168,17 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_DIR = @INSTALL@ -m 0755 -d
 
 #
-# The name of the C++ compiler to use.
+# The name of the C compiler to use.
 #
-CXX = @CXX@
+CC = @CC@
 
 #
-# The C++ compiler flags to use.
+# The C compiler flags to use.
 #
-CXXFLAGS = @CXXFLAGS@
+CFLAGS = @CFLAGS@
 
 #
-# The C++ preprocessor flags to use.
+# The C preprocessor flags to use.
 #
 CPPFLAGS = @CPPFLAGS@
 
@@ -233,11 +230,6 @@ MSGFMT = @MSGFMT@
 MSGCAT = @MSGCAT@
 
 #
-# The name of the GNU Libtool command.
-#
-LIBTOOL = @LIBTOOL@
-
-#
 # extra libraries required for your system
 #
 LIBS = @LIBS@
@@ -255,25 +247,19 @@ SH = @SH@
 #
 the-default-target: all
 
-example/main.lo example/main.o: example/main.cc
-{TAB}$(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(CPPFLAGS) $(CXXFLAGS) -I. \
-{TAB}{TAB}-c example/main.cc -o example/main.lo
+barney/main.o: barney/main.c
+{TAB}$(CC) $(CPPFLAGS) $(CFLAGS) -I. -c barney/main.c
+{TAB}mv main.o $@
 
-lib/en/LC_MESSAGES/example.mo: lib/en/LC_MESSAGES/common.po \
-{TAB}{TAB}lib/en/LC_MESSAGES/example.po
-{TAB}$(MSGFMT) -o $@ lib/en/LC_MESSAGES/example.po \
-{TAB}{TAB}lib/en/LC_MESSAGES/common.po
+datadir/en/LC_MESSAGES/barney.mo: datadir/en/LC_MESSAGES/barney.po \
+{TAB}{TAB}datadir/en/LC_MESSAGES/common.po etc/msgfmt.sh
+{TAB}$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) --output=$@ \
+{TAB}{TAB}datadir/en/LC_MESSAGES/barney.po \
+{TAB}{TAB}datadir/en/LC_MESSAGES/common.po
 
-$(NLSDIR)/en/LC_MESSAGES/example.mo: .mkdir.__NLSDIR__en_LC_MESSAGES \
-{TAB}{TAB}lib/en/LC_MESSAGES/example.mo
-{TAB}$(INSTALL_DATA) lib/en/LC_MESSAGES/example.mo $@
-
-lib/fr/LC_MESSAGES/example.mo: lib/fr/LC_MESSAGES/example.po
-{TAB}$(MSGFMT) -o $@ lib/fr/LC_MESSAGES/example.po
-
-$(NLSDIR)/fr/LC_MESSAGES/example.mo: .mkdir.__NLSDIR__fr_LC_MESSAGES \
-{TAB}{TAB}lib/fr/LC_MESSAGES/example.mo
-{TAB}$(INSTALL_DATA) lib/fr/LC_MESSAGES/example.mo $@
+$(NLSDIR)/en/LC_MESSAGES/barney.mo: .mkdir.__NLSDIR__en_LC_MESSAGES \
+{TAB}{TAB}datadir/en/LC_MESSAGES/barney.mo
+{TAB}$(INSTALL_DATA) datadir/en/LC_MESSAGES/barney.mo $@
 
 .mkdir.__NLSDIR_:
 {TAB}-$(INSTALL_DIR) $(NLSDIR)
@@ -290,38 +276,27 @@ $(NLSDIR)/fr/LC_MESSAGES/example.mo: .mkdir.__NLSDIR__fr_LC_MESSAGES \
 {TAB}@-test -d $(NLSDIR)/en/LC_MESSAGES && touch $@
 {TAB}@sleep 1
 
-.mkdir.__NLSDIR__fr: .mkdir.__NLSDIR_
-{TAB}-$(INSTALL_DIR) $(NLSDIR)/fr
-{TAB}@-test -d $(NLSDIR)/fr && touch $@
-{TAB}@sleep 1
-
-.mkdir.__NLSDIR__fr_LC_MESSAGES: .mkdir.__NLSDIR__fr
-{TAB}-$(INSTALL_DIR) $(NLSDIR)/fr/LC_MESSAGES
-{TAB}@-test -d $(NLSDIR)/fr/LC_MESSAGES && touch $@
-{TAB}@sleep 1
-
 .mkdir.__bindir_:
 {TAB}-$(INSTALL_DIR) $(bindir)
 {TAB}@-test -d $(bindir) && touch $@
 {TAB}@sleep 1
 
 #
-# The example program.
+# The barney program.
 #
-example_obj = example/main.lo
+barney_obj = barney/main.o
 
-bin/example: $(example_obj) .bin
-{TAB}$(LIBTOOL) --mode=link --tag=CXX $(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ \
-{TAB}{TAB}$(example_obj) $(LDFLAGS) $(LIBS)
+bin/barney: $(barney_obj) .bin
+{TAB}$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(barney_obj) $(LDFLAGS) $(LIBS)
 
-$(bindir)/example: .mkdir.__bindir_ bin/example
-{TAB}$(LIBTOOL) --mode=install $(INSTALL_PROGRAM) bin/example $@
+$(bindir)/barney: .mkdir.__bindir_ bin/barney
+{TAB}$(INSTALL_PROGRAM) bin/barney $@
 
 all: all-bin all-i18n
 
-all-bin: bin/example
+all-bin: bin/barney
 
-all-i18n: lib/en/LC_MESSAGES/example.mo lib/fr/LC_MESSAGES/example.mo
+all-i18n: datadir/en/LC_MESSAGES/barney.mo
 
 .bin:
 {TAB}-mkdir bin
@@ -337,18 +312,17 @@ sure:
 clean: clean-bin clean-i18n clean-misc clean-obj
 
 clean-bin:
-{TAB}rm -f bin/example
+{TAB}rm -f bin/barney
 
 clean-i18n:
-{TAB}rm -f lib/en/LC_MESSAGES/example.mo lib/fr/LC_MESSAGES/example.mo
+{TAB}rm -f datadir/en/LC_MESSAGES/barney.mo
 
 clean-misc:
 {TAB}rm -f .bin .mkdir.__NLSDIR_ .mkdir.__NLSDIR__en
-{TAB}rm -f .mkdir.__NLSDIR__en_LC_MESSAGES .mkdir.__NLSDIR__fr
-{TAB}rm -f .mkdir.__NLSDIR__fr_LC_MESSAGES .mkdir.__bindir_ core
+{TAB}rm -f .mkdir.__NLSDIR__en_LC_MESSAGES .mkdir.__bindir_ core
 
 clean-obj:
-{TAB}rm -f example/main.lo example/main.o
+{TAB}rm -f barney/main.o
 
 distclean: clean distclean-directories distclean-files
 
@@ -356,18 +330,16 @@ distclean-files:
 {TAB}rm -f Makefile config.cache config.log config.status
 
 distclean-directories:
-{TAB}rm -rf bin example/.libs
+{TAB}rm -rf bin
 
 install: install-bin install-i18n
 
-install-bin: $(bindir)/example
+install-bin: $(bindir)/barney
 
-install-i18n: $(NLSDIR)/en/LC_MESSAGES/example.mo \
-{TAB}{TAB}$(NLSDIR)/fr/LC_MESSAGES/example.mo
+install-i18n: $(NLSDIR)/en/LC_MESSAGES/barney.mo
 
 uninstall:
-{TAB}rm -f $(NLSDIR)/en/LC_MESSAGES/example.mo
-{TAB}rm -f $(NLSDIR)/fr/LC_MESSAGES/example.mo $(bindir)/example
+{TAB}rm -f $(NLSDIR)/en/LC_MESSAGES/barney.mo $(bindir)/barney
 
 .PHONY: all all-bin all-i18n check clean clean-bin clean-i18n distclean \
 {TAB}{TAB}distclean-directories distclean-files install install-bin \
@@ -378,6 +350,144 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 
 diff -u ok test.out
+if test $? -ne 0 ; then fail; fi
+
+# ----------  automake  ----------------------------------------------------
+
+activity="aemakegen 355"
+aemakegen -c 10 --target=automake --flavour=aegis > test.out
+if test $? -ne 0 ; then fail; fi
+
+activity="check automake 359"
+sed "s|{TAB}|${TAB}|g" > ok << 'fubar'
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#    W   W    A    RRRR   N   N   III  N   N  III  N   N   GGG
+#    W   W   A A   R   R  NN  N    I   NN  N   I   NN  N  G   G
+#    W   W  A   A  RRRR   N N N    I   N N N   I   N N N  G
+#    W W W  AAAAA  R R    N  NN    I   N  NN   I   N  NN  G  GG
+#    W W W  A   A  R  R   N   N    I   N   N   I   N   N  G   G
+#     W W   A   A  R   R  N   N   III  N   N  III  N   N   GGG
+#
+# Warning: DO NOT send patches which fix this file. IT IS NOT the original
+# source file. This file is GENERATED from the Aegis repository file manifest.
+# If you find a bug in this file, it could well be an Aegis bug.
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+
+#
+# Tell automake to put the object file for foo/bar.cc in directory foo/
+#
+AUTOMAKE_OPTIONS = subdir-objects
+
+# executables to be installed
+bin_PROGRAMS = bin/barney
+
+# Data to be installed below $(datarootdir)/
+data_DATA = $(NLSDIR)/en/LC_MESSAGES/barney.mo
+
+# The barney program.
+bin_barney_SOURCES = barney/main.c
+
+# Additional source files to be included in the tarball.
+EXTRA_DIST = aegis.conf configure.ac etc/msgfmt.sh
+
+# vim: set ts=8 sw=8 noet :
+fubar
+if test $? -ne 0 ; then no_result; fi
+
+diff -u ok test.out
+if test $? -ne 0 ; then fail; fi
+
+# ----------  rpm-spec  ----------------------------------------------------
+
+activity="aemakegen 404"
+aemakegen -c 10 --target=rpm-spec --flavour=aegis > test.out
+if test $? -ne 0 ; then fail; fi
+
+activity="check rpm-spec 408"
+sed "s|{TAB}|${TAB}|g" > ok << 'fubar'
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#    W   W    A    RRRR   N   N   III  N   N  III  N   N   GGG
+#    W   W   A A   R   R  NN  N    I   NN  N   I   NN  N  G   G
+#    W   W  A   A  RRRR   N N N    I   N N N   I   N N N  G
+#    W W W  AAAAA  R R    N  NN    I   N  NN   I   N  NN  G  GG
+#    W W W  A   A  R  R   N   N    I   N   N   I   N   N  G   G
+#     W W   A   A  R   R  N   N   III  N   N  III  N   N   GGG
+#
+# Warning: DO NOT send patches which fix this file. IT IS NOT the original
+# source file. This file is GENERATED from the Aegis repository file manifest.
+# If you find a bug in this file, it could well be an Aegis bug.
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+Summary: i18ntest
+Name: i18ntest
+Version: C010
+Release: 1
+License: GPL
+Group: Development/Tools
+Source: http://i18ntest.sourceforge.net/%{name}-%{version}.tar.gz
+URL: http://i18ntest.sourceforge.net/
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildPrereq: diffutils, sharutils
+
+%description
+i18ntest
+
+
+%prep
+%setup -q
+
+
+%build
+%configure --sysconfdir=/etc --prefix=%{_prefix} \
+{TAB}{TAB}--with-nlsdir=%{_datadir}/locale
+make
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make DESTDIR=$RPM_BUILD_ROOT install
+
+
+%check
+true
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr (-,root,root,-)
+%doc LICENSE BUILDING README
+%{_localedir}/en/LC_MESSAGES/barney.mo
+%{_bindir}/barney
+fubar
+if test $? -ne 0 ; then no_result; fi
+
+diff -u ok test.out
+if test $? -ne 0 ; then fail; fi
+
+# ----------  debian  ------------------------------------------------------
+
+activity="aemakegen 477"
+aemakegen -c 10 --target=debian --flavour=aegis
+if test $? -ne 0 ; then fail; fi
+
+activity="check debian/i18ntest.install 481"
+sed "s|{TAB}|${TAB}|g" > ok << 'fubar'
+usr/bin/barney
+usr/share/locale/en/LC_MESSAGES/barney.mo
+fubar
+if test $? -ne 0 ; then no_result; fi
+
+diff -u ok $work/${AEGIS_PROJECT}.C010/debian/i18ntest.install
 if test $? -ne 0 ; then fail; fi
 
 #
