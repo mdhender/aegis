@@ -138,7 +138,7 @@ report_list(void (*usage)(void))
 	process(path.string[j], "report.index", result);
 	process(path.string[j], "report.local", result);
     }
-    trace(("result->length = %d;\n", result->length));
+    trace(("result->length = %zd;\n", result->length));
     qsort(result->list, result->length, sizeof(result->list[0]), cmp);
 
     //

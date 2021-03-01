@@ -77,7 +77,7 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	    int		    running_offset;
 
 	    php = pp->actions.item[j];
-	    trace(("looking for %d,%d\n",
+	    trace(("looking for %d,%lu\n",
 		php->before.start_line_number,
 		php->before.start_line_number + php->before.length - 1));
 	    found = 0;

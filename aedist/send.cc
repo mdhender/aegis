@@ -121,9 +121,9 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
     cstate_src_ty   *dst_data;
     meta_type *type_p = 0;
 
-    trace(("add \"%s\" %s %s\n", src_data->file_name->str_text,
+    trace(("add \"%s\" %s %s %d\n", src_data->file_name->str_text,
 	file_action_ename(src_data->action),
-	file_usage_ename(src_data->usage)));
+        file_usage_ename(src_data->usage), use_attr));
     if (!change_set->src)
 	change_set->src = (cstate_src_list_ty *)cstate_src_list_type.alloc();
     dst_data_p =
@@ -203,7 +203,7 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
             return;
         assert(src_data->edit_origin->revision);
         assert(fep->get_src());
-        if (!fep->get_src()->edit->revision)
+        if (!fep->get_src()->edit || !fep->get_src()->edit->revision)
             return;
         trace_string(fep->get_change()->cstate_data->uuid->str_text);
         if
@@ -2018,7 +2018,7 @@ send_main(void)
                             change_file_find
                             (
                                 fep->get_change(),
-                                csrc->file_name,
+                                csrc,
                                 view_path_first
                             );
                         assert(old_src);
@@ -2075,7 +2075,7 @@ send_main(void)
                             change_file_find
                             (
                                 fep->get_change(),
-                                csrc->file_name,
+                                csrc,
                                 view_path_first
                             );
                         assert(old_src);
@@ -2096,7 +2096,7 @@ send_main(void)
                         change_file_find
                         (
                             fep->get_change(),
-                            csrc->file_name,
+                            csrc,
                             view_path_first
                         );
                     assert(old_src);

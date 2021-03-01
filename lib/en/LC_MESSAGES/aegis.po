@@ -1868,6 +1868,10 @@ msgid	"bad rp state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"reviewed' state to pass review"
 
+#
+# This error message is issued when aerpu is invoked for a change which is
+# not in the 'awaiting integration' state.
+#
 msgid	"bad rpu state"
 msgstr	"this change is in the '$state' state, it must be in the "
 	"'awaiting integration' state to undo a review pass"
@@ -5046,7 +5050,6 @@ msgstr	"user \"$user\" has begun review"
 msgid	"review begin undo complete"
 msgstr	"review begin rescinded"
 
-#
 #
 # This progress message is issued when aerfail completes successfully.
 #

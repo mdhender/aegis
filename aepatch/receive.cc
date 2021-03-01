@@ -218,7 +218,7 @@ mangle_file_names(patch_list_ty *plp, project_ty *pp)
 	// "best" name.	 Note that we have to cope with the
 	// number of names in the patch being inconsistent.
 	//
-	trace(("%d of %d\n", j, plp->length));
+	trace(("%zd of %zd\n", j, plp->length));
 	p = plp->item[j];
 	trace(("nstrings = %d\n", (int)p->name.nstrings));
 	assert(p->name.nstrings);

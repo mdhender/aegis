@@ -53,7 +53,7 @@
 #
 msgid ""
 msgstr ""
-"POT-Creation-Date: Wed Sep 24 23:46:26 CEST 2008\n"
+"POT-Creation-Date: Thu Jun 25 17:58:37 CEST 2009\n"
 "PO-Revision-Date: 2008-01-09\n"
 "Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 "MIME-Version: 1.0\n"
@@ -622,9 +622,9 @@ msgstr "$filename: Checksumme falsch ($number1 != $number2)"
 #: libaegis/change/diff/run_diff.cc:106 libaegis/change/diff/run_diff3.cc:93
 #: libaegis/change/diff/run_merge.cc:93 libaegis/change/file/fstate.cc:168
 #: libaegis/change/file/fstate.cc:185 libaegis/change/file/fstate.cc:202
-#: libaegis/change/history/create_comma.cc:139
+#: libaegis/change/history/create_comma.cc:140
 #: libaegis/change/history/get_command.cc:115
-#: libaegis/change/history/put_command.cc:134
+#: libaegis/change/history/put_command.cc:135
 #: libaegis/change/history/query_comman.cc:72 libaegis/change/pconf/get.cc:61
 #: libaegis/change/pconf/get.cc:156 libaegis/change/pconf/get.cc:173
 #: libaegis/change/pconf/get.cc:188 libaegis/change/pconf/get.cc:203
@@ -1362,7 +1362,7 @@ msgstr "Projekt \"$name\""
 #       $Name           The name of a project.
 #       $Number         The number of a change.
 #
-#: aegis/aeca.cc:683
+#: aegis/aeca.cc:705
 msgid "Project $name, Change $number"
 msgstr "Projekt \"$name\", Change $number"
 
@@ -1551,7 +1551,7 @@ msgstr "das Attribut \"$name\" existiert nicht"
 #
 # This message is issued when an aeca is successfully completed.
 #
-#: aegis/aeca.cc:433 aegis/aeca.cc:969
+#: aegis/aeca.cc:455 aegis/aeca.cc:991
 msgid "attributes changed"
 msgstr "Attribute geändert"
 
@@ -1673,7 +1673,7 @@ msgstr "Sie können keinen partiellen Build im Status \"$state\" durchführen"
 # This error message is issued when a developer who is not an administrator
 # attempts to grant an architecture exemption to a change.
 #
-#: aegis/aeca.cc:894 aegis/aenc.cc:521
+#: aegis/aeca.cc:916 aegis/aenc.cc:521
 msgid "bad ca, no arch exempt"
 msgstr ""
 "Nur ein Projekt-Administrator kann Ausnahmen für Architekturen erlauben"
@@ -1682,7 +1682,7 @@ msgstr ""
 # This error message is issued when a user who is not an administrator
 # attempts to grant a test exemption to a change.
 #
-#: aegis/aeca.cc:833 aegis/aenc.cc:508
+#: aegis/aeca.cc:855 aegis/aenc.cc:508
 msgid "bad ca, no test exempt"
 msgstr "Nur Projekt-Administratoren können Tests für Changes abschalten"
 
@@ -1690,7 +1690,7 @@ msgstr "Nur Projekt-Administratoren können Tests für Changes abschalten"
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change's attributes.
 #
-#: aegis/aeca.cc:186 aegis/aeca.cc:368
+#: aegis/aeca.cc:187 aegis/aeca.cc:369
 msgid "bad ca, not auth"
 msgstr ""
 "Benutzer \"$user\" kann die Attribute des Changes nicht ändern; Attribute "
@@ -1702,7 +1702,7 @@ msgstr ""
 # attributes to include an architecture not named in the project
 # 'config' file.
 #
-#: aegis/aeca.cc:879 aegis/aenc.cc:538
+#: aegis/aeca.cc:901 aegis/aenc.cc:538
 msgid "bad ca, unknown architecture"
 msgstr ""
 "Architektur-Feld enthält Variationen, die nicht in der \"aegis.conf\" Datei "
@@ -1712,7 +1712,7 @@ msgstr ""
 # This error message is issued when a user attempts to set a change's
 # UUID when the change already has a UUID.
 #
-#: aegis/aeca.cc:377
+#: aegis/aeca.cc:378
 msgid "bad ca, uuid already set"
 msgstr "Die UUID dieses Changes wurde bereits festgelegt"
 
@@ -1723,7 +1723,7 @@ msgstr "Die UUID dieses Changes wurde bereits festgelegt"
 #       $Other  The version of change using the specified UUID.
 #               Optional.
 #
-#: aegis/aeca.cc:392 aegis/aenf.cc:394 aegis/aent.cc:315
+#: aegis/aeca.cc:393 aegis/aenf.cc:394 aegis/aent.cc:315
 msgid "bad ca, uuid duplicate"
 msgstr "Die angegebene UUID wird bereits von $other verwendet"
 
@@ -1752,7 +1752,7 @@ msgstr ""
 # This error message is issued when an attempt is made to clean a change
 # which is not in the 'being developed' state.
 #
-#: aegis/aeclean.cc:439
+#: aegis/aeclean.cc:438
 msgid "bad clean state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2118,7 +2118,7 @@ msgstr ""
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
-#: aediff/diff.cc:67 aepatch/send.cc:556 aerevml/send.cc:236
+#: aediff/diff.cc:67 aepatch/send.cc:556 aerevml/send.cc:237
 msgid "bad patch send state"
 msgstr ""
 "Dieser Change ist im Status $state; er muß in einem späteren Status sein um "
@@ -2225,7 +2225,7 @@ msgstr ""
 # This fatal error message is issued when there would be no files in
 # the distributed change set.
 #
-#: aedist/send.cc:1530 aepatch/send.cc:813 aerevml/send.cc:902
+#: aedist/send.cc:1530 aepatch/send.cc:813 aerevml/send.cc:898
 #: aetar/send.cc:767
 msgid "bad send no files"
 msgstr "Keine Dateien für die Distribution vorhanden"
@@ -2579,7 +2579,7 @@ msgstr "Besitz geändert von Benutzer \"$original\" zu Benutzer \"$target\""
 #
 # This message is issued when an aeclean command completes successfully.
 #
-#: aegis/aeclean.cc:771
+#: aegis/aeclean.cc:770
 msgid "clean complete"
 msgstr "Aufräumen abgeschlossen"
 
@@ -3231,7 +3231,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:574
+#: aegis/aeclean.cc:573
 msgid "file \"$filename\" does not exist"
 msgstr ""
 "Datei \"$filename\" existiert nicht, obwohl sie eine Change-Source-Datei ist"
@@ -3654,7 +3654,7 @@ msgstr ""
 #
 # $File_Name    The name of the source file.
 #
-#: libaegis/change/history/create_comma.cc:80
+#: libaegis/change/history/create_comma.cc:81
 msgid "history create $filename"
 msgstr ""
 "füge erste Version zur Versions-Geschichte der Datei \"$filename\" hinzu"
@@ -3706,7 +3706,7 @@ msgstr "History-Lock nicht verfügbar"
 #               renames, even though the history file's UUID never
 #               changes.
 #
-#: libaegis/change/history/put_command.cc:78
+#: libaegis/change/history/put_command.cc:79
 msgid "history put $filename"
 msgstr ""
 "füge weitere Version zur Versions-Geschichte der Datei \"$filename\" hinzu"
@@ -5319,7 +5319,7 @@ msgstr "Benutzer \"$user\" ist kein Integrator"
 # change which is in the being developed state, but the requesting user
 # is not the change's developer.
 #
-#: aegis/aeb.cc:258 aegis/aeclean.cc:441 aegis/aecp.cc:1214 aegis/aecpu.cc:256
+#: aegis/aeb.cc:258 aegis/aeclean.cc:440 aegis/aecp.cc:1214 aegis/aecpu.cc:256
 #: aegis/aed.cc:176 aegis/aed.cc:853 aegis/aedbu.cc:200 aegis/aede.cc:242
 #: aegis/aemt.cc:293 aegis/aemtu.cc:248 aegis/aemv.cc:456 aegis/aemvu.cc:237
 #: aegis/aenf.cc:377 aegis/aenfu.cc:262 aegis/aent.cc:298 aegis/aentu.cc:278
@@ -6934,7 +6934,7 @@ msgstr "Warnung: Kommando \"$command\" exit-Status $number"
 #       $Number         The number of files requiring merging.
 #                       (Optional)
 #
-#: aegis/aeclean.cc:643
+#: aegis/aeclean.cc:642
 msgid "warning: diffable files"
 msgstr ""
 "Warnung: es gibt $number ${plural $number Dateien Datei}, die einen Diff "
@@ -6956,7 +6956,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:621
+#: aegis/aeclean.cc:620
 msgid "warning: file \"$filename\" needs diff"
 msgstr "Warnung: Datei \"$filename\" muß gedifft werden"
 
@@ -6966,7 +6966,7 @@ msgstr "Warnung: Datei \"$filename\" muß gedifft werden"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:526
+#: aegis/aeclean.cc:525
 msgid "warning: file \"$filename\" needs merge"
 msgstr "Warnung: Datei \"$filename\" muß gemerged werden"
 
@@ -7010,7 +7010,7 @@ msgstr ""
 #       $Number         The number of files requiring merging.
 #                       (Optional)
 #
-#: aegis/aeclean.cc:635 aegis/aed.cc:1528
+#: aegis/aeclean.cc:634 aegis/aed.cc:1528
 msgid "warning: mergable files"
 msgstr ""
 "Warnung: es gibt $number ${plural $number Dateien Datei}, die gemergt werden "
@@ -7037,7 +7037,7 @@ msgstr ""
 #       $Name1          The name of a command line option.
 #       $Name2          The name of a command line option.
 #
-#: aegis/aeca.cc:637 aegis/aefa.cc:510 aegis/aeif.cc:303 aegis/aenc.cc:316
+#: aegis/aeca.cc:659 aegis/aefa.cc:510 aegis/aeif.cc:303 aegis/aenc.cc:316
 #: aegis/aepa.cc:284 aegis/aerf.cc:304
 msgid "warning: no $name1, assuming $name2"
 msgstr "Warnung: kein $name1 angegeben, nehme an, daß $name2 gewünscht ist"
@@ -7135,7 +7135,7 @@ msgstr "Warnung: unlink (löschen) \"$filename\": $errno"
 #       $Name           The name of the -File option,
 #                       assuming option names will be internationalized RSN
 #
-#: aegis/aeca.cc:480 aegis/aeif.cc:178 aegis/aenc.cc:173 aegis/aepa.cc:185
+#: aegis/aeca.cc:502 aegis/aeif.cc:178 aegis/aenc.cc:173 aegis/aepa.cc:185
 #: aegis/aerf.cc:178
 msgid "warning: use $name option"
 msgstr ""

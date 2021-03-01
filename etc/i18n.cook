@@ -131,7 +131,7 @@ lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/aegis.pot
          */
         [msgcmp] --use-fuzzy
             [resolve lib/%1/LC_MESSAGES/%.po]
-            i18n-tmp/aegis.pot;
+            [resolve i18n-tmp/aegis.pot];
 
         /*
          * Only need the timestamp, discard the file contents.

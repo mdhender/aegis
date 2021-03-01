@@ -2,6 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2005-2008 Peter Miller
+#	Copyright (C) 2008, 2009 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -104,13 +105,14 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's|; charset=us-ascii||g' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
 	if test $? -ne 0; then fail; fi
 }
 
-activity="create test directory 107"
+activity="create test directory 115"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -132,7 +134,7 @@ unset LANGUAGE
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 129"
+activity="new project 137"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -141,7 +143,7 @@ AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
 
-activity="project attributes 138"
+activity="project attributes 146"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -154,7 +156,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 151"
+activity="staff 159"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -162,7 +164,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 159"
+activity="new change 167"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -172,14 +174,19 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 169"
+activity="develop begin 177"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 173"
+activity="new file 181"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
-	$work/test.C010/barney -v > log 2>&1
+	-v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+$bin/aegis -nf $work/test.C010/barney -v > log 2>&1 \
+    -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd009
+if test $? -ne 0 ; then cat log; no_result; fi
+
 cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 
@@ -203,46 +210,42 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/test.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aegis -file-attr -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd009 \
-	$work/test.C010/barney
-if test $? -ne 0 ; then no_result; fi
-
-activity="build 204"
+activity="build 213"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="diff 208"
+activity="diff 217"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="uuid set 212"
+activity="uuid set 221"
 $bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd000 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 216"
+activity="develop end 225"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 220"
+activity="integrate begin 229"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 224"
+activity="integrate build 233"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 228"
+activity="integrate diff 237"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 232"
+activity="integrate pass 241"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # second change
 #
-activity="new change 239"
+activity="new change 248"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -251,49 +254,56 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 248"
+activity="develop begin 257"
 $bin/aegis -db 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="copy file 252"
+activity="copy file 261"
 $bin/aegis -cp $work/test.C002/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo second > $work/test.C002/barney
 if test $? -ne 0 ; then no_result; fi
 
+$bin/aegis -file-attribute file-custom-attribute=true \
+    $work/test.C002/barney -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
 $bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 262"
+$bin/aegis -ca custom-attribute=true -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="build 278"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="diff 266"
+activity="diff 282"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 270"
+activity="develop end 286"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 274"
+activity="integrate begin 290"
 $bin/aegis -ib 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 278"
+activity="integrate build 294"
 $bin/aegis -b 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 282"
+activity="integrate diff 298"
 $bin/aegis -diff -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 286"
+activity="integrate pass 302"
 $bin/aegis -ipass -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="aerevml -send 290"
+activity="aerevml -send 306"
 $bin/aerevml -send -p $AEGIS_PROJECT -c 2 -o test.out2 -cte=none \
 	-no-description-header -no-mime-header > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
@@ -301,10 +311,11 @@ if test $? -ne 0 ; then cat log; fail; fi
 sed \
 	-e 's|^<time>.*</time>$|<time>XXX</time>|' \
 	-e 's|^<rep_desc>.*</rep_desc>$|<rep_desc>XXX</rep_desc>|' \
+        -e 's|; charset=us-ascii||' \
 	< test.out2 > test.out
 if test $? -ne 0 ; then no_result; fi
 
-activity="verify revml output 301"
+activity="verify revml output 318"
 cat > test.ok << 'fubar'
 <?xml version="1.0"?>
 <!DOCTYPE revml PUBLIC "-//-//DTD REVML 0.35//EN" "revml.dtd">
@@ -328,6 +339,8 @@ cat > test.ok << 'fubar'
 <value>true</value></attribute>
 <attribute><name>X-Aegis-regression-test-exempt</name>
 <value>true</value></attribute>
+<attribute><name>User-custom-attribute</name>
+<value>true</value></attribute>
 <attribute><name>X-Aegis-uuid</name>
 <value>aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead</value></attribute>
 <rev id="aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd009">
@@ -336,7 +349,7 @@ cat > test.ok << 'fubar'
 <source_filebranch_id>no idea what this means</source_filebranch_id>
 <source_repo_id>no idea what this means</source_repo_id>
 <action>edit</action>
-<type>text/plain; charset=us-ascii</type>
+<type>text/plain</type>
 <rev_id>0</rev_id>
 <source_rev_id>no idea what this means</source_rev_id>
 <attribute><name>X-Aegis-usage</name>
@@ -345,6 +358,8 @@ cat > test.ok << 'fubar'
 <value>modify</value></attribute>
 <attribute><name>X-Aegis-executable</name>
 <value>false</value></attribute>
+<attribute><name>X-Aegis-file-custom-attribute</name>
+<value>true</value></attribute>
 <attribute><name>X-Aegis-uuid</name>
 <value>aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd009</value></attribute>
 <delta type="diff-u" encoding="none">--- barney
@@ -358,7 +373,7 @@ cat > test.ok << 'fubar'
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff test.ok test.out
+check_it test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

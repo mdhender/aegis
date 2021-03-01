@@ -1336,7 +1336,7 @@ difference_main(void)
 		// The project file we were renamed from has been removed.
 		// Treat the change file as if it was up-to-date.
 		//
-		history_version_type.free(reconstruct);
+		fstate_src_type.free(reconstruct);
 		continue;
 	    }
 	    trace
@@ -1375,7 +1375,7 @@ difference_main(void)
 		original,
 		diff_user_p
 	    );
-	    history_version_type.free(reconstruct);
+	    fstate_src_type.free(reconstruct);
 
 	    //
 	    // use the appropriate merge command

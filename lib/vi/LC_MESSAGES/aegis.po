@@ -1,10 +1,10 @@
 #
 #       aegis - project change supervisor
-#       Copyright (C) 2007, 2008 Peter Miller
+#       Copyright (C) 2007-2008 Peter Miller
 #
 # Vietnamese translation for Aegis.
 # Copyright (C) 2007, 2008 Free Software Foundation, Inc.
-# Clytie Siddall <clytie@riverland.net.au>, 2007, 2008.
+# Copyright (C) 2007, 2008 Clytie Siddall
 #
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
@@ -20,12 +20,37 @@
 #       along with this program. If not, see
 #       <http://www.gnu.org/licenses/>.
 #
+# Just A Few Notes...
+#
+#       When translating these error messages, all of the substitutions
+#       described in aesub(5) are also available.  Substitution variable
+#       names and function names may be abbreviated, in the same way
+#       that command line options are abbreviated, but abbreviation
+#       should probably be avoided.
+#
+#       While Aegis was written by an English speaker, this English
+#       localization file is necessary, to translate the "terse
+#       programmer" style error messages into something more user
+#       friendly.
+#
+#       Messages which include state names need to leave the state names
+#       untranslated, because they will probably never be translated.
+#
+#       Messages which include command line options need to leave them
+#       untranslated, because they are not yet internationalized, though
+#       they will be one day.
+#
+#       The list names (known to ael) have not been internationalized (yet).
+#
+#       Substitution names will Never be internationalized.
+#       Otherwise the substitutions will stop working, Catch-22.
+#
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"Project-Id-Version: aegis 4.20\n"
+msgstr	"Project-Id-Version: aegis 4.24\n"
 	"Report-Msgid-Bugs-To: \n"
-	"PO-Revision-Date: 2008-01-09\n"
+	"PO-Revision-Date: 2008-04-11 21:39+0930\n"
 	"Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 	"Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
 	"MIME-Version: 1.0\n"
@@ -40,7 +65,8 @@ msgstr	"Project-Id-Version: aegis 4.20\n"
 #       $Name           The name of the environment variable.
 #
 msgid	"$$$name must be positive"
-msgstr	"biến môi trường $$$name phải là một con số thập phân dương"
+msgstr	"biến môi trường $name phải là một con số thập "
+	"phân dương"
 
 #
 # This error message is issued when the parameter of the -UUid switch is
@@ -58,7 +84,7 @@ msgstr	"Tùy chọn $Name cần nhận một UUID hợp lệ"
 #       $Name           The option name
 #
 msgid	"$Name needs url"
-msgstr	"The $Name option needs to be given a valid URL"
+msgstr	"Tùy chọn $Name cần một địa chỉ URL"
 
 #
 # This error message is issued when a file has been tampered with while
@@ -84,9 +110,10 @@ msgstr	"tập tin « $filename » có thuộc tính bị sửa đổi"
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename bad nf type"
-msgstr	"Tập tin « $filename » có kiểu tập tin không thích hợp. Cho phép "
-	"bạn dùng lệnh này chỉ cho các tập tin bình thường. Các liên kết "
-	"tượng trưng và kiểu tập tin đặc biệt khác phải được tạo vào lúc "
+msgstr	"Tập tin « $filename » có kiểu tập tin không thích "
+	"hợp. Cho phép bạn dùng lệnh này chỉ cho các tập "
+	"tin bình thường. Các liên kết tượng trưng và kiểu "
+	"tập tin đặc biệt khác phải được tạo vào lúc "
 	"xây dựng."
 
 #
@@ -100,8 +127,8 @@ msgstr	"Tập tin « $filename » có kiểu tập tin không thích hợp. Cho 
 #       $ARCHitecture   The name of the architecture.
 #
 msgid	"$filename baseline fail, architecture $architecture, good"
-msgstr	"test \"$filename\" on $architecture on baseline failed (as it "
-	"should)"
+msgstr	"hàm thử « $filename » trên đường cơ bản thì "
+	"trượt, kiến trúc $architecture, tốt "
 
 #
 # This progress message is issued when a test run against the baseline
@@ -113,8 +140,8 @@ msgstr	"test \"$filename\" on $architecture on baseline failed (as it "
 #       $File_Name      The name of the test file.
 #
 msgid	"$filename baseline fail, good"
-msgstr	"hàm thử « $filename » trên đường cơ bản thì trượt (kết quả mong "
-	"đợi)"
+msgstr	"hàm thử « $filename » trên đường cơ bản thì "
+	"trượt (kết quả mong đợi)"
 
 #
 # This error message is issued when a test run against the baseline
@@ -124,8 +151,8 @@ msgstr	"hàm thử « $filename » trên đường cơ bản thì trượt (kế
 #       $ARCHitecture   The name of the architecture.
 #
 msgid	"$filename baseline pass, architecture $architecture, not good"
-msgstr	"test \"$filename\" on $architecture on baseline passed (it must "
-	"fail)"
+msgstr	"hàm thử « $filename » trên đường cơ bản đã đỗ, "
+	"kiến trúc $architecture, không tốt"
 
 #
 # This error message is issued when a test run against the baseline
@@ -134,7 +161,8 @@ msgstr	"test \"$filename\" on $architecture on baseline passed (it must "
 #       $File_Name      The name of the test file.
 #
 msgid	"$filename baseline pass, not good"
-msgstr	"hàm thử « $filename » trên đường cơ bản đã đỗ (nó phải trượt)"
+msgstr	"hàm thử « $filename » trên đường cơ bản đã đỗ "
+	"(nó phải trượt)"
 
 #
 # This error message is issued when a request is made to run a specific
@@ -154,10 +182,10 @@ msgstr	"tập tin « $filename » đang được gỡ bỏ"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"$filename changed after build"
-msgstr	"tập tin « $filename » bị sửa đổi sau lần xây dựng cuối cùng; "
-	"thay đổi này phai chạy xong một tiến trình xây dựng « aegis -"
-	"Build » $outstanding thêm nữa trước khi nó có thể rời tình trạng "
-	"« $state »"
+msgstr	"tập tin « $filename » bị sửa đổi sau lần xây "
+	"dựng cuối cùng; thay đổi này phai chạy xong một "
+	"tiến trình xây dựng « aegis -Build » $outstanding thêm "
+	"nữa trước khi nó có thể rời tình trạng « $state »"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -167,17 +195,18 @@ msgstr	"tập tin « $filename » bị sửa đổi sau lần xây dựng cuối
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename changed after diff"
-msgstr	"tập tin « $filename » bị sửa đổi sau lần khác biệt cuối cùng; "
-	"thay đổi này phải chạy xong một tiến trình khác biệt « aegis -"
-	"Diff » thêm nữa trước khi nó có thể rời tình trạng « $state »"
+msgstr	"tập tin « $filename » bị sửa đổi sau lần khác "
+	"biệt cuối cùng; thay đổi này phải chạy xong một "
+	"tiến trình khác biệt « aegis -Diff » thêm nữa "
+	"trước khi nó có thể rời tình trạng « $state »"
 
 #
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
 msgid	"$filename diff3ed"
-msgstr	"tập tin « $filename » quá cũ, xem « $filename,D » để tìm mã "
-	"nguồn đã trộn"
+msgstr	"tập tin « $filename » quá cũ, xem « $filename,D » để "
+	"tìm mã nguồn đã trộn"
 
 #
 # This error message is issued when a test against the change fails.
@@ -194,7 +223,8 @@ msgstr	"hàm thử « $filename » đã trượt"
 #       $ARCHitecture   The name of the architecture tesed on.
 #
 msgid	"$filename fail, architecture $architecture"
-msgstr	"test \"$filename\" failed on $architecture"
+msgstr	"hàm thử « $filename » đã trượt, kiến trúc "
+	"$architecture"
 
 #
 # This error message is issued when an aed is performed on a change
@@ -213,8 +243,8 @@ msgstr	"tập tin « $filename » đã tồn tại trong dự án"
 #       $File_Name      The offending file name.
 #
 msgid	"$filename is built"
-msgstr	"tập tin « $filename » đã xây dựng nên không thể sao chép nó vào "
-	"thay đổi"
+msgstr	"tập tin « $filename » đã xây dựng nên không thể sao "
+	"chép nó vào thay đổi"
 
 #
 # This error message is issued when an attempt is made to end
@@ -224,17 +254,18 @@ msgstr	"tập tin « $filename » đã xây dựng nên không thể sao chép n
 #     $File_Name      The offending file name.
 #
 msgid	"$filename is insulation"
-msgstr	"tập tin « $filename » đã được sao chép « chỉ đọc » nên cần phải "
-	"hủy sao chép nó trước khi thay đổi này có thể rời tình trạng « "
-	"$state »"
+msgstr	"tập tin « $filename » đã được sao chép « chỉ "
+	"đọc » nên cần phải hủy sao chép nó trước khi "
+	"thay đổi này có thể rời tình trạng « $state »"
 
 #
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
 msgid	"$filename merged"
-msgstr	"tập tin « $filename » quá cũ nên được trộn với phiên bản hiện "
-	"thời, xem « $filename,B » để tìm mã nguồn gốc"
+msgstr	"tập tin « $filename » quá cũ nên được trộn với "
+	"phiên bản hiện thời, xem « $filename,B » để tìm mã "
+	"nguồn gốc"
 
 #
 # This error message is issued when a change file is modified by the
@@ -244,7 +275,8 @@ msgstr	"tập tin « $filename » quá cũ nên được trộn với phiên b�
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename modified by history tool"
-msgstr	"công cụ lược sử đã sửa đổi tập tin mã nguồn « $filename »"
+msgstr	"công cụ lược sử đã sửa đổi tập tin mã nguồn "
+	"« $filename »"
 
 #
 # This error message is issued by the aedb command when it finds
@@ -258,9 +290,11 @@ msgstr	"công cụ lược sử đã sửa đổi tập tin mã nguồn « $file
 #       $Mode_New       The desirable mode of the directory (optional).
 #
 msgid	"$filename needs permissions $mode_change"
-msgstr	"directory \"$filename\" is not traversable, it currently has "
-	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
-	"$mode_change $filename\" command may be sufficient to fix this"
+msgstr	"thư mục « $filename » không thể đi qua được, nó "
+	"hiện thời có chế độ « $mode_old » nhưng cần ít "
+	"nhất « $mode_new », câu lệnh « chmod $mode_change "
+	"$filename » có thể đủ để sửa chữa trường hợp "
+	"này"
 
 #
 # This error message is issued when aet runs a test which returns a "no
@@ -269,8 +303,9 @@ msgstr	"directory \"$filename\" is not traversable, it currently has "
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename no result"
-msgstr	"hàm thử « $filename » không có kết quả; vấn đề khác đã ngăn cản "
-	"thực hiện chức năng nằm bên dưới hàm thử"
+msgstr	"hàm thử « $filename » không có kết quả; vấn đề "
+	"khác đã ngăn cản thực hiện chức năng nằm bên "
+	"dưới hàm thử"
 
 #
 # This error message is issued when aet runs a test which returns a "no
@@ -280,9 +315,9 @@ msgstr	"hàm thử « $filename » không có kết quả; vấn đề khác đ�
 #       $ARCHitecture   The name of the architecture.
 #
 msgid	"$filename no result, architecture $architecture"
-msgstr	"test \"$filename\" on $architecture returned no result; some  "
-	"other problem prevented the functionality under test from being "
-	"exercised"
+msgstr	"hàm thử « $filename » trên kiến trúc $architecture "
+	"chưa trả về kết quả; một vấn đề nào đó khác "
+	"đã ngăn cản thực hiện khả năng đang được thử"
 
 #
 # This error message is issued when aede cannot find a file in the
@@ -318,7 +353,7 @@ msgstr	"hàm thử « $filename » đã đỗ"
 #       $ARCHitecture   The name of the architecture.
 #
 msgid	"$filename pass, architecture $architecture"
-msgstr	"test \"$filename\" passed on $architecture"
+msgstr	"hàm thử « $filename » đã đỗ, kiến trúc $architecture"
 
 #
 # This progress message is issued when a test against the change decides
@@ -327,7 +362,7 @@ msgstr	"test \"$filename\" passed on $architecture"
 #       $File_Name      The name of the test file.
 #
 msgid	"$filename skipped"
-msgstr	"test \"$filename\" skipped"
+msgstr	"tập tin « $filename » bị bỏ qua"
 
 #
 # This error message is issued when a test against the change fails
@@ -337,7 +372,8 @@ msgstr	"test \"$filename\" skipped"
 #       $ARCHitecture   The name of the architecture tesed on.
 #
 msgid	"$filename skipped, architecture $architecture"
-msgstr	"test \"$filename\" skipped on $architecture"
+msgstr	"hàm thử « $filename » đã trượt thì tự bỏ qua, "
+	"kiến trúc $architecture"
 
 #
 # This error message is issued when aede discovers a file in the change
@@ -346,8 +382,7 @@ msgstr	"test \"$filename\" skipped on $architecture"
 #       $File_Name      The offending file.
 #
 msgid	"$filename unchanged"
-msgstr	"the \"$filename\" file has not been changed, it should not be "
-	"included in the change"
+msgstr	"$filename chưa thay đổi"
 
 #
 # This error message is issued when a file named on the command
@@ -356,8 +391,9 @@ msgstr	"the \"$filename\" file has not been changed, it should not be "
 #       $File_Name      The offending command line argument.
 #
 msgid	"$filename unrelated"
-msgstr	"đường dẫn « $filename » không nằm bên trong bất cứ thay đổi hay "
-	"cây thư mục dự án nào; có lẽ tùy chọn « -base-relative » sẽ giúp"
+msgstr	"đường dẫn « $filename » không nằm bên trong bất "
+	"cứ thay đổi hay cây thư mục dự án nào; có lẽ "
+	"tùy chọn « -base-relative » sẽ giúp"
 
 #
 # This fatal error message is issued by the aefa -uuid command if the
@@ -376,8 +412,8 @@ msgstr	"tập tin « $filename » đã có một UUID"
 #       $Other          the other filename using the UUID (optional)
 #
 msgid	"$filename uuid duplicate"
-msgstr	"UUID được ghi rõ cho tập tin « $filename » đang được tập tin « "
-	"$other » dùng"
+msgstr	"UUID được ghi rõ cho tập tin « $filename » đang "
+	"được tập tin « $other » dùng"
 
 #
 # This error message is issued when a substitution function is formed
@@ -403,8 +439,8 @@ msgstr	"$filename: $linenumber: hàm thay thế $${} rỗng"
 #
 msgid	"$filename: $linenumber: in substitution \"$message\" found "
 	"unused variables"
-msgstr	"$filename: $linenumber: trong hàm thay thế « $message » tìm thấy "
-	"$number biến không dùng (nên hủy bỏ)"
+msgstr	"$filename: $linenumber: trong hàm thay thế « $message » "
+	"tìm thấy $number biến không dùng (nên hủy bỏ)"
 
 #
 # This error message is issued when a substitution variable is not used
@@ -420,8 +456,8 @@ msgstr	"$filename: $linenumber: trong hàm thay thế « $message » tìm thấy
 #
 msgid	"$filename: $linenumber: in substitution \"$message\" variable "
 	"\"$name\" unused"
-msgstr	"$filename: $linenumber: trong hàm thay thế « $message » có biến "
-	"« $name » không dùng"
+msgstr	"$filename: $linenumber: trong hàm thay thế « $message » có "
+	"biến « $name » không dùng"
 
 #
 # This error message is issued when a substitution fails.  (It is VERY
@@ -436,8 +472,8 @@ msgstr	"$filename: $linenumber: trong hàm thay thế « $message » có biến 
 #       $Message        What was wrong with it.
 #
 msgid	"$filename: $linenumber: substitution $${$name} failed: $message"
-msgstr	"$filename: $linenumber: hàm thay thế $${$name} không thành công: "
-	"$message"
+msgstr	"$filename: $linenumber: hàm thay thế $${$name} không thành "
+	"công: $message"
 
 #
 # This error message is issued when a substitution function is formed
@@ -457,7 +493,8 @@ msgstr	"$filename: $linenumber: dãy $${} \\ chưa chấm dứt"
 #       $Line_Number    The line number of the message
 #
 msgid	"$filename: $linenumber: unterminated $${} quotes"
-msgstr	"$filename: $linenumber: dấu trích dẫn $${} chưa chấm dứt"
+msgstr	"$filename: $linenumber: dấu trích dẫn $${} chưa chấm "
+	"dứt"
 
 #
 # This error message is issued when a substitution function is formed
@@ -482,7 +519,8 @@ msgstr	"$filename: $message"
 #       $File_Name      The name of the offending file
 #
 msgid	"$filename: arch needs name and pattern"
-msgstr	"$filename: kiến trúc phải được ghi rõ theo cả hai tên và mẫu"
+msgstr	"$filename: kiến trúc phải được ghi rõ theo cả hai "
+	"tên và mẫu"
 
 #
 # This error message is issued when a aede-policy's white-space
@@ -492,8 +530,7 @@ msgstr	"$filename: kiến trúc phải được ghi rõ theo cả hai tên và m
 #       $Number         The number of blank lines (optional)
 #
 msgid	"$filename: blank lines at end of file"
-msgstr	"$filename: found $number blank line${plural $number s} at the "
-	"end of the file"
+msgstr	"$filename: có dòng trắng ở kết thúc của tập tin"
 
 #
 # This error message is issued when aesvt is checking a file checksum,
@@ -504,7 +541,7 @@ msgstr	"$filename: found $number blank line${plural $number s} at the "
 #       $Number2        The checksum calculated when reading the data.
 #
 msgid	"$filename: checksum mismatch ($number1 != $number2)"
-msgstr	"$filename: checksum mismatch ($number1 != $number2)"
+msgstr	"$filename: sai khớp tổng kiểm ($number1 != $number2)"
 
 #
 # This error message is issued when an Aegis database file is missing a
@@ -524,8 +561,7 @@ msgstr	"$filename: không chứa trường « $field_name »"
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename: contains tab characters"
-msgstr	"$filename: contains tab characters; to preserve the intended "
-	"code formatting, use space characters instead"
+msgstr	"$filename: chứa ký tự tab"
 
 #
 # This error message is issued when an Aegis database file has an
@@ -545,8 +581,7 @@ msgstr	"$filename: trường « $field_name » bị hỏng"
 #       $File_Name      The offending file.
 #
 msgid	"$filename: dos line termination"
-msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
-	"should use UNIX line termination (LF)"
+msgstr	"$filename: kết thúc dòng kiểu DOS"
 
 #
 # This warning is issued when an obsolete field is used.
@@ -555,19 +590,21 @@ msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
 #      $Name2          The name of the preferred field.
 #
 msgid	"$filename: field \"$name1\" obsolete, use \"$name2\" instead"
-msgstr	"$filename: trường « $name1 » quá cũ, thay thế bằng « $name2 »"
+msgstr	"$filename: trường « $name1 » quá cũ, thay thế bằng « "
+	"$name2 »"
 
 #
 # This fatal error message is issued when Aegis is checking a project's
 # ownership and finds something incorrect.
 #
 msgid	"$filename: gid $number1 invalid, must be >= $number2"
-msgstr	"$filename: tập tin này có GID (mã số nhóm) quá nhỏ ($number1), "
-	"nó phải lớn hơn hay bằng AEGIS_MIN_GID ($number2). Rất có thể là "
-	"kết quả của vấn đề khi phục hồi từ bản sao lưu. Hãy dùng lệnh « "
-	"chgrp -R <tên_nhóm> $filename » để giải quyết trường hợp này, "
-	"cho một tên nhóm thích hợp nào đó. [Bạn cần phải là người chủ "
-	"(root).]"
+msgstr	"$filename: tập tin này có GID (mã số nhóm) quá nhỏ "
+	"($number1), nó phải lớn hơn hay bằng AEGIS_MIN_GID "
+	"($number2). Rất có thể là kết quả của vấn đề "
+	"khi phục hồi từ bản sao lưu. Hãy dùng lệnh « chgrp "
+	"-R <tên_nhóm> $filename » để giải quyết trường "
+	"hợp này, cho một tên nhóm thích hợp nào đó. [Bạn "
+	"cần phải là người chủ (root).]"
 
 #
 # This error message is issued when Aegis is checking a file's group,
@@ -609,7 +646,7 @@ msgstr	"$filename: tìm $number lỗi nghiêm trọng"
 #       $File_Name      The offending file name.
 #
 msgid	"$filename: is binary"
-msgstr	"the \"$filename\" file contains binary bytes"
+msgstr	"$filename: là nhị phân"
 
 #
 # This error message is issued when aede-policy detects unprintable
@@ -620,8 +657,7 @@ msgstr	"the \"$filename\" file contains binary bytes"
 #       $Number         The line number (optional)
 #
 msgid	"$filename: is unprintable"
-msgstr	"the \"$filename\" file contains unprintable characters (line "
-	"$number)"
+msgstr	"$filename: không thể in được"
 
 #
 # This error message is issued by aesvt when the file header within a
@@ -630,7 +666,7 @@ msgstr	"the \"$filename\" file contains unprintable characters (line "
 #       $File_Name      The offending file name.
 #
 msgid	"$filename: malformed RFC 822 header line"
-msgstr	"$filename: malformed RFC 822 header line"
+msgstr	"$filename: dòng phần đầu RFC 822 dạng sai"
 
 #
 # This error message is issued by aede-policy when it detects that text
@@ -639,7 +675,7 @@ msgstr	"$filename: malformed RFC 822 header line"
 #       $File_Name      The offending file name.
 #
 msgid	"$filename: merge conflicts"
-msgstr	"$filename: this file contains unresolved merge conflicts"
+msgstr	"$filename: trộn thì xung đột"
 
 #
 # This error message is issued when Aegis is checking a file's modes,
@@ -660,8 +696,9 @@ msgstr	"$filename: chế độ là $number1, nên là $number2"
 #       $Suggest        A suggested text for the missing notice (optional).
 #
 msgid	"$filename: no current copyright notice"
-msgstr	"$filename: the file does not contain an up-to-date copyright "
-	"notice; a notice of the form \"$suggest\" would be suitable."
+msgstr	"$filename: tập tin không chứa thông báo tác quyền "
+	"hiện thời; thông báo có dạng « $suggest » là thích "
+	"hợp."
 
 #
 # This fatal error message is issued bu aede-policy when the fsf-address
@@ -672,8 +709,7 @@ msgstr	"$filename: the file does not contain an up-to-date copyright "
 #       $suggest        The correct FSF address (optional).
 #
 msgid	"$filename: old FSF address"
-msgstr	"$filename: the old FSF postal address is present in this file, "
-	"you need to replace it with \"$suggest\" instead."
+msgstr	"$filename: địa chỉ Tổ chức Phần mềm Tự do cũ"
 
 #
 # This fatal error message is issued bu aede-policy when the gpl-version
@@ -684,8 +720,7 @@ msgstr	"$filename: the old FSF postal address is present in this file, "
 #       $suggest        The correct GPL version (optional).
 #
 msgid	"$filename: old GPL version"
-msgstr	"$filename: an old GPL version number is present in this file, "
-	"you need to replace it with \"$suggest\" instead."
+msgstr	"$filename: phiên bản Giấy Phép Công Cộng GNU cũ"
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -712,12 +747,13 @@ msgstr	"$filename: quá nhiều lỗi nghiêm trọng nên hủy bỏ"
 # ownership and finds something incorrect.
 #
 msgid	"$filename: uid $number1 invalid, must be >= $number2"
-msgstr	"$filename: tập tin này có UID (mã số người dùng) quá nhỏ "
-	"($number1), nó phải lớn hơn hay bằng AEGIS_MIN_UID ($number2). "
-	"Rất có thể là kết quả của vấn đề khi phục hồi từ bản sao lưu. "
-	"Hãy dùng lệnh « chgrp -R <tên_người_dùng> $filename » để giải "
-	"quyết trường hợp này, cho một tên người dùng thích hợp nào đó. "
-	"[Bạn cần phải là người chủ (root).]"
+msgstr	"$filename: tập tin này có UID (mã số người dùng) quá "
+	"nhỏ ($number1), nó phải lớn hơn hay bằng AEGIS_MIN_UID "
+	"($number2). Rất có thể là kết quả của vấn đề "
+	"khi phục hồi từ bản sao lưu. Hãy dùng lệnh « chgrp "
+	"-R <tên_người_dùng> $filename » để giải quyết "
+	"trường hợp này, cho một tên người dùng thích hợp "
+	"nào đó. [Bạn cần phải là người chủ (root).]"
 
 #
 # This fatal error message is issued by the aesvt -checkin command if
@@ -727,7 +763,7 @@ msgstr	"$filename: tập tin này có UID (mã số người dùng) quá nhỏ "
 #       $Number         the offending version number
 #
 msgid	"$filename: version $number already exists"
-msgstr	"$filename: version \"$number\" already exists"
+msgstr	"$filename: phiên bản $number đã có"
 
 #
 # This error message is issued when aesvt -checkin finds an
@@ -737,7 +773,7 @@ msgstr	"$filename: version \"$number\" already exists"
 #       $Number         the offending version number
 #
 msgid	"$filename: version $number invalid"
-msgstr	"$filename: version number \"$number\" not appropriate"
+msgstr	"$filename: phiên bản $number không hợp lệ"
 
 #
 # This error message is issued when aesvt -checkout cannot find a
@@ -747,7 +783,7 @@ msgstr	"$filename: version number \"$number\" not appropriate"
 #       $Number         the offending version number
 #
 msgid	"$filename: version $number not found"
-msgstr	"$filename: version \"$number\" not found"
+msgstr	"$filename: không tìm thấy phiên bản $number"
 
 #
 # This error message is issued when an aede-policy's white space
@@ -756,7 +792,7 @@ msgstr	"$filename: version \"$number\" not found"
 #       $File_Name      The name of the offending file (includes line number).
 #
 msgid	"$filename: white space at end of line"
-msgstr	"$filename: white space at end of line"
+msgstr	"$filename: có khoảng trắng ở kết thúc dòng"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -776,8 +812,8 @@ msgstr	"$function: đối số $number: $message"
 #       $Number         The argument number
 #
 msgid	"$function: argument $number: cannot convert string into a time"
-msgstr	"$function: đối số $number: không thể chuyển đổi chuỗi sang một "
-	"thời gian nào đó"
+msgstr	"$function: đối số $number: không thể chuyển đổi "
+	"chuỗi sang một thời gian nào đó"
 
 #
 # This error message is issued when the sprintf function is
@@ -789,8 +825,8 @@ msgstr	"$function: đối số $number: không thể chuyển đổi chuỗi san
 #
 msgid	"$function: argument $number: integer value required (was given "
 	"$name)"
-msgstr	"$function: đối số $number: cần thiết giá trị số nguyên (đã cho "
-	"$name)"
+msgstr	"$function: đối số $number: cần thiết giá trị số "
+	"nguyên (đã cho $name)"
 
 #
 # This error message is issued when sprintf is given a precision in a
@@ -801,8 +837,8 @@ msgstr	"$function: đối số $number: cần thiết giá trị số nguyên (�
 #       $Value          The value of the offending precision.
 #
 msgid	"$function: argument $number: precision of $value is out of range"
-msgstr	"$function: đối số $number: độ chính xác của $value ở ngoại phạm "
-	"vi"
+msgstr	"$function: đối số $number: độ chính xác của $value "
+	"ở ngoại phạm vi"
 
 #
 # This error message is issued when the sprintf function is
@@ -814,7 +850,8 @@ msgstr	"$function: đối số $number: độ chính xác của $value ở ngo�
 #
 msgid	"$function: argument $number: real value required (was given "
 	"$name)"
-msgstr	"$function: đối số $number: cần thiết giá trị thật (đã cho $name)"
+msgstr	"$function: đối số $number: cần thiết giá trị thật "
+	"(đã cho $name)"
 
 #
 # This error message is issued when a function is
@@ -826,7 +863,8 @@ msgstr	"$function: đối số $number: cần thiết giá trị thật (đã ch
 #
 msgid	"$function: argument $number: string value required (was given "
 	"$name)"
-msgstr	"$function: đối số $number: cần thiết giá trị chuỗi (đã cho $name)"
+msgstr	"$function: đối số $number: cần thiết giá trị chuỗi "
+	"(đã cho $name)"
 
 #
 # This error message is issued when a function is not
@@ -838,8 +876,8 @@ msgstr	"$function: đối số $number: cần thiết giá trị chuỗi (đã c
 #
 msgid	"$function: argument $number: time value required (was given "
 	"$name)"
-msgstr	"$function: đối số $number: cần thiết giá trị thời gian (đã cho "
-	"$name)"
+msgstr	"$function: đối số $number: cần thiết giá trị thời "
+	"gian (đã cho $name)"
 
 #
 # This error message is issued when the user requests to print a value
@@ -861,7 +899,8 @@ msgstr	"$function: đối số $number: không thể in giá trị $name"
 #       $Value          The value of the offending width.
 #
 msgid	"$function: argument $number: width $value out of range"
-msgstr	"$function: đối số $number: độ rộng $value ở ngoại phạm vi"
+msgstr	"$function: đối số $number: độ rộng $value ở ngoại "
+	"phạm vi"
 
 #
 # This error message is issued when a function result is too large for
@@ -890,8 +929,8 @@ msgstr	"$function: quá ít đối số"
 #
 msgid	"$function: too many arguments ($number1 given, only $number2 "
 	"used)"
-msgstr	"$function: quá nhiều đối số ($number1 đưa ra, chỉ $number2 được "
-	"dùng)"
+msgstr	"$function: quá nhiều đối số ($number1 đưa ra, chỉ "
+	"$number2 được dùng)"
 
 #
 # This error message is issued when sprintf is given an unknown format
@@ -920,8 +959,8 @@ msgstr	"$message"
 #       $Number         The value given to the option.
 #
 msgid	"$name $number must be pos"
-msgstr	"tùy chọn $name $number ở ngoại phạm vi, tùy chọn $name cần thiết "
-	"đối số là số nguyên dương nhỏ"
+msgstr	"tùy chọn $name $number ở ngoại phạm vi, tùy chọn "
+	"$name cần thiết đối số là số nguyên dương nhỏ"
 
 #
 # This error message is issued when a command line option requires a
@@ -932,8 +971,9 @@ msgstr	"tùy chọn $name $number ở ngoại phạm vi, tùy chọn $name cần
 #       $Number         The value given to the option.
 #
 msgid	"$name $number must not be neg"
-msgstr	"tùy chọn $name $number ở ngoại phạm vi, tùy chọn $name cần thiết "
-	"đối số là số nguyên dương nhỏ hay số không"
+msgstr	"tùy chọn $name $number ở ngoại phạm vi, tùy chọn "
+	"$name cần thiết đối số là số nguyên dương nhỏ "
+	"hay số không"
 
 #
 # This error message is issued when aena is asked to add an
@@ -1002,7 +1042,8 @@ msgstr	"tùy chọn $name phải có tên tập tin theo sau"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs files"
-msgstr	"tùy chọn $name phải có một hay nhiều tên tập tin theo sau"
+msgstr	"tùy chọn $name phải có một hay nhiều tên tập tin "
+	"theo sau"
 
 #
 # This error message is issued when an option which should be followed
@@ -1086,9 +1127,9 @@ msgstr	"$value1 ** $value2: $errno"
 # turned on.
 #
 msgid	"-TRace needs DEBUG"
-msgstr	"Cảnh báo : tùy chọn « -TRace » chỉ có hiệu quả hi Aegis được "
-	"biên dịch bằng lời xác định DEBUG (gỡ lỗi) trong tập tin bao gồm "
-	"« common/main.h »."
+msgstr	"Cảnh báo : tùy chọn « -TRace » chỉ có hiệu quả hi "
+	"Aegis được biên dịch bằng lời xác định DEBUG "
+	"(gỡ lỗi) trong tập tin bao gồm « common/main.h »."
 
 #
 # This error message is issued when Aegis is misconfigured.
@@ -1098,11 +1139,12 @@ msgstr	"Cảnh báo : tùy chọn « -TRace » chỉ có hiệu quả hi Aegis �
 #
 msgid	"AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) "
 	"misconfigured"
-msgstr	"Chương trình này có cấu hình sai. Mã số nhóm của người dùng "
-	"Aegis (AEGIS_USER_GID), hiện thời xác định là $number1, phải nhỏ "
-	"hơn mã số nhóm tối thiểu (AEGIS_MIN_GID), hiện thời xác định là "
-	"$number2. Quan trọng là AEGIS_USER_GID không có khả năng sở hữu "
-	"dự án. Đây là một lỗi nghiêm trọng."
+msgstr	"Chương trình này có cấu hình sai. Mã số nhóm của "
+	"người dùng Aegis (AEGIS_USER_GID), hiện thời xác "
+	"định là $number1, phải nhỏ hơn mã số nhóm tối "
+	"thiểu (AEGIS_MIN_GID), hiện thời xác định là "
+	"$number2. Quan trọng là AEGIS_USER_GID không có khả năng "
+	"sở hữu dự án. Đây là một lỗi nghiêm trọng."
 
 #
 # This error message is issued when Aegis is misconfigured.
@@ -1112,11 +1154,12 @@ msgstr	"Chương trình này có cấu hình sai. Mã số nhóm của người 
 #
 msgid	"AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) "
 	"misconfigured"
-msgstr	"Chương trình này có cấu hình sai. Mã số người dùng của người "
-	"dùng Aegis (AEGIS_USER_UID), hiện thời xác định là $number1, "
-	"phải nhỏ hơn mã số người dùng tối thiểu (AEGIS_MIN_UID), hiện "
-	"thời xác định là $number2. Quan trọng là AEGIS_USER_UID không có "
-	"khả năng sở hữu dự án. Đây là một lỗi nghiêm trọng."
+msgstr	"Chương trình này có cấu hình sai. Mã số người "
+	"dùng của người dùng Aegis (AEGIS_USER_UID), hiện thời "
+	"xác định là $number1, phải nhỏ hơn mã số người "
+	"dùng tối thiểu (AEGIS_MIN_UID), hiện thời xác định "
+	"là $number2. Quan trọng là AEGIS_USER_UID không có khả "
+	"năng sở hữu dự án. Đây là một lỗi nghiêm trọng."
 
 #
 # This text is used to describe change 1 of a new release.
@@ -1157,7 +1200,8 @@ msgstr	"Dự án « $name », Thay đổi $number"
 #       $File_Name      The name of the file.
 #
 msgid	"Project $name, Change $number, File $filename"
-msgstr	"Dự án « $name », Thay đổi $number, Tập tin « $filename »"
+msgstr	"Dự án « $name », Thay đổi $number, Tập tin « "
+	"$filename »"
 
 #
 # This error message is issued when the ${read_file} substitution is
@@ -1180,8 +1224,9 @@ msgstr	"đang điều chỉnh các giờ sửa đổi tập tin"
 # worked on at all, this is probably not a good idea.
 #
 msgid	"aedbu, has files"
-msgstr	"thay đổi này có một số tập tin liên quan, nhưng bạn chỉ có thể "
-	"dùng lệnh này với thay đổi không có tập tin liên quan"
+msgstr	"thay đổi này có một số tập tin liên quan, nhưng "
+	"bạn chỉ có thể dùng lệnh này với thay đổi không "
+	"có tập tin liên quan"
 
 #
 # This error message is issued when the aegis -new-project command is
@@ -1189,8 +1234,8 @@ msgstr	"thay đổi này có một số tập tin liên quan, nhưng bạn chỉ
 # what to keep.
 #
 msgid	"aenpr -keep needs -dir"
-msgstr	"tùy chọn « -New-PRoject » « -Keep » của Aegis cũng cần thiết tùy "
-	"chọn « -DIRectory »"
+msgstr	"tùy chọn « -New-PRoject » « -Keep » của Aegis cũng "
+	"cần thiết tùy chọn « -DIRectory »"
 
 #
 # This fatal error message is issued if it appears that there is a
@@ -1205,7 +1250,8 @@ msgstr	"phát hiện vòng lặp bí danh"
 # message should be impossible.
 #
 msgid	"all test numbers used"
-msgstr	"có vẻ là tất cả các con số thử đã được tiêu dùng"
+msgstr	"có vẻ là tất cả các con số thử đã được tiêu "
+	"dùng"
 
 #
 # This error message is issued when an unknown substitution is
@@ -1245,8 +1291,8 @@ msgstr	"đang áp dụng thay đổi cho thư mục hợp nhất"
 #       $Name           The offending architecture name.
 #
 msgid	"architecture \"$name\" forbidden"
-msgstr	"kiến trúc « $name » bị cấm nên bạn không thể thực hiện lệnh này "
-	"trên máy này"
+msgstr	"kiến trúc « $name » bị cấm nên bạn không thể "
+	"thực hiện lệnh này trên máy này"
 
 #
 # This error message is issued when Aegis is unable to determine which
@@ -1268,8 +1314,9 @@ msgstr	"kiến trúc « $name » không rõ"
 #       $Name           The name of the offending architecture.
 #
 msgid	"architecture \"$name\" unlisted"
-msgstr	"kiến trúc « $name » xuất hiện trong danh sách các thuộc tính "
-	"thay đổi, nhưng không nằm trong tập tin cấu hình dự án"
+msgstr	"kiến trúc « $name » xuất hiện trong danh sách các "
+	"thuộc tính thay đổi, nhưng không nằm trong tập tin "
+	"cấu hình dự án"
 
 #
 # This fatal error message is issued when a file ches size while the
@@ -1278,8 +1325,8 @@ msgstr	"kiến trúc « $name » xuất hiện trong danh sách các thuộc tí
 #       $File_Name      The name of the offending file.
 #
 msgid	"archive member $filename changed size"
-msgstr	"thành phần kho $filename đã thay đổi kích cỡ trong khi xử lý nên "
-	"kết quả bị hỏng"
+msgstr	"thành phần kho $filename đã thay đổi kích cỡ trong "
+	"khi xử lý nên kết quả bị hỏng"
 
 #
 # This message is issued when an inappropriate -- is attempted.
@@ -1287,7 +1334,8 @@ msgstr	"thành phần kho $filename đã thay đổi kích cỡ trong khi xử l
 #       $Name           The type name of the offending operand.
 #
 msgid	"arithmetic type required for decrement (was given $name)"
-msgstr	"kiểu số học cần thiết cho hàm giảm dần (đã cho $name)"
+msgstr	"kiểu số học cần thiết cho hàm giảm dần (đã cho "
+	"$name)"
 
 #
 # This message is issued when an inappropriate ++ is attempted.
@@ -1295,7 +1343,8 @@ msgstr	"kiểu số học cần thiết cho hàm giảm dần (đã cho $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"arithmetic type required for increment (was given $name)"
-msgstr	"kiểu số học cần thiết cho hàm tăng dần (đã cho $name)"
+msgstr	"kiểu số học cần thiết cho hàm tăng dần (đã cho "
+	"$name)"
 
 #
 # This fatal error message is issued when a user-supplied string can't
@@ -1304,7 +1353,7 @@ msgstr	"kiểu số học cần thiết cho hàm tăng dần (đã cho $name)"
 #       $Name           The offending attribute name.
 #
 msgid	"attribute $name unknown"
-msgstr	"the attribute \"$name\" does not exist"
+msgstr	"không rõ thuộc tính $name"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1328,16 +1377,18 @@ msgstr	"chuỗi thuộc tính còn lại trong tập tin « $filename »"
 # to search within for files.
 #
 msgid	"bad aefind state"
-msgstr	"thay đổi này ở tình trạng « $state », nhưng nó phải ở tình trạng "
-	"« đang được phát triển » để đi qua cây thư mục của nó"
+msgstr	"thay đổi này ở tình trạng « $state », nhưng nó "
+	"phải ở tình trạng « đang được phát triển » "
+	"để đi qua cây thư mục của nó"
 
 #
 # This fatal error message sis issued when the aels command is used on
 # a change which is in the `aewaiting development' state.
 #
 msgid	"bad aels state"
-msgstr	"thay đổi này ở tình trạng « $state », nhưng nó phải ở tình trạng "
-	"« đang được phát triển » để liệt kê thông tin về tập tin"
+msgstr	"thay đổi này ở tình trạng « $state », nhưng nó "
+	"phải ở tình trạng « đang được phát triển » "
+	"để liệt kê thông tin về tập tin"
 
 #
 # This error message is issued when a project alias is given to aenpa
@@ -1354,18 +1405,19 @@ msgstr	"bí danh dự án « $name » không hợp lệ"
 # against a change which is in an inappropriate state.
 #
 msgid	"bad anticipate diff"
-msgstr	"thay đổi này ở tình trạng « $state », nhưng nó phải ở một của "
-	"những tình trạng « đang được xem lại », « đợi hợp nhất » hay « "
-	"đang được hợp nhất » để được trông chờ"
+msgstr	"thay đổi này ở tình trạng « $state », nhưng nó "
+	"phải ở một của những tình trạng « đang được "
+	"xem lại », « đợi hợp nhất » hay « đang được "
+	"hợp nhất » để được trông chờ"
 
 #
 # This error message is issued when a user requests a build of a branch
 # which is in the 'being developed' state.
 #
 msgid	"bad branch build"
-msgstr	"nhánh này không thể được xây dựng trực tiếp ở tình trạng « "
-	"$state »: nó phải ở tình trạng « đang được hợp nhất » để làm như "
-	"thế"
+msgstr	"nhánh này không thể được xây dựng trực tiếp ở "
+	"tình trạng « $state »: nó phải ở tình trạng « "
+	"đang được hợp nhất » để làm như thế"
 
 #
 # This error message is issued when an attempt is made to copy files
@@ -1373,65 +1425,70 @@ msgstr	"nhánh này không thể được xây dựng trực tiếp ở tình tr
 # that.
 #
 msgid	"bad branch cp"
-msgstr	"không cho phép bạn sao chép tập tin vào nhánh một cách trực "
-	"tiếp; bạn phải tạo một thay đổi, để sửa đổi tập tin"
+msgstr	"không cho phép bạn sao chép tập tin vào nhánh một "
+	"cách trực tiếp; bạn phải tạo một thay đổi, để "
+	"sửa đổi tập tin"
 
 #
 # This error message is issued when an aed command is used on a branch
 # which is not in the 'being integrated' state.
 #
 msgid	"bad branch diff"
-msgstr	"nhánh này ở tình trạng « $state »; nó phải ở tình trạng « đang "
-	"được hợp nhất » để chạy tiến trình khác biệt"
+msgstr	"nhánh này ở tình trạng « $state »; nó phải ở tình "
+	"trạng « đang được hợp nhất » để chạy tiến "
+	"trình khác biệt"
 
 #
 # This error message is issued when a user requests a build of a branch
 # which is in the 'being developed' state.
 #
 msgid	"bad branch test"
-msgstr	"không cho phép thử nhánh này một cách trực tiếp ở tình trạng « "
-	"$state »; nó phải ở tình trạng « đang được hợp nhất » để làm như "
-	"thế"
+msgstr	"không cho phép thử nhánh này một cách trực tiếp ở "
+	"tình trạng « $state »; nó phải ở tình trạng « "
+	"đang được hợp nhất » để làm như thế"
 
 #
 # This error message is issued when a user requests a build of a change
 # from the wrong state.
 #
 msgid	"bad build state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » hay « đang được hợp nhất » để chạy tiến "
-	"trình xây dựng"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » hay « đang "
+	"được hợp nhất » để chạy tiến trình xây dựng"
 
 #
 # This error message is issued when a partial integration is requested
 # for a change in the 'being integrated' state.
 #
 msgid	"bad build, partial"
-msgstr	"không cho phép bạn chạy tiến trình xây dựng bộ phận ở tình trạng "
-	"« $state »"
+msgstr	"không cho phép bạn chạy tiến trình xây dựng bộ "
+	"phận ở tình trạng « $state »"
 
 #
 # This error message is issued when a developer who is not an administrator
 # attempts to grant an architecture exemption to a change.
 #
 msgid	"bad ca, no arch exempt"
-msgstr	"chỉ quản trị dự án có quyền cấp sự miễn kiến trúc"
+msgstr	"chỉ quản trị dự án có quyền cấp sự miễn kiến "
+	"trúc"
 
 #
 # This error message is issued when a user who is not an administrator
 # attempts to grant a test exemption to a change.
 #
 msgid	"bad ca, no test exempt"
-msgstr	"chỉ quản trị dự án có quyền miễn hàm thử cho thay đổi"
+msgstr	"chỉ quản trị dự án có quyền miễn hàm thử cho "
+	"thay đổi"
 
 #
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change's attributes.
 #
 msgid	"bad ca, not auth"
-msgstr	"người dùng « %user » không có quyền sửa đổi thuộc tính của thay "
-	"đổi; chỉ quản trị dự án, hoặc nhà phát triển trong khi phát "
-	"triển, có quyền sửa đổi thuộc tính"
+msgstr	"người dùng « %user » không có quyền sửa đổi "
+	"thuộc tính của thay đổi; chỉ quản trị dự án, "
+	"hoặc nhà phát triển trong khi phát triển, có quyền "
+	"sửa đổi thuộc tính"
 
 #
 # This error message is issued when a user attempts to set change
@@ -1439,8 +1496,8 @@ msgstr	"người dùng « %user » không có quyền sửa đổi thuộc tính
 # configuration file.
 #
 msgid	"bad ca, unknown architecture"
-msgstr	"kiến trúc chứa một số biến đổi không được liệt kê trong tập tin "
-	"cấu hình của dự án"
+msgstr	"kiến trúc chứa một số biến đổi không được "
+	"liệt kê trong tập tin cấu hình của dự án"
 
 #
 # This error message is issued when a user attempts to set a change's
@@ -1464,7 +1521,8 @@ msgstr	"UUID đã ghi rõ đang được $other dùng"
 # which does not have a directory.
 #
 msgid	"bad cd, no dir"
-msgstr	"thay đổi này ở tình trạng « $state », không có thư mục có thể tới"
+msgstr	"thay đổi này ở tình trạng « $state », không có thư "
+	"mục có thể tới"
 
 #
 # This error message is issued when an attempt is made to change the
@@ -1472,24 +1530,27 @@ msgstr	"thay đổi này ở tình trạng « $state », không có thư mục c
 # state.
 #
 msgid	"bad chown state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để thay đổi chủ sở hữu"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để thay "
+	"đổi chủ sở hữu"
 
 #
 # This error message is issued when an attempt is made to clean a change
 # which is not in the 'being developed' state.
 #
 msgid	"bad clean state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để được làm sạch"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để được "
+	"làm sạch"
 
 #
 # This error message is issued when an attempt is made to copy files
 # into a change which is not in the 'being developed' state.
 #
 msgid	"bad cp state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi sửa đổi tập tin"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"sửa đổi tập tin"
 
 #
 # This error message is issued when an aecpu command is used
@@ -1498,25 +1559,26 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #       $File_Name      The name of the offending file.
 #
 msgid	"bad cp undo $filename"
-msgstr	"tập tin « $filename » đã không được thêm vào thay đổi này, dùng "
-	"lệnh « aegis -CoPy_file »"
+msgstr	"tập tin « $filename » đã không được thêm vào thay "
+	"đổi này, dùng lệnh « aegis -CoPy_file »"
 
 #
 # This error message is issued when an aecpu command is used directly on
 # a branch.  Branches may only be altered via a change.
 #
 msgid	"bad cp undo branch"
-msgstr	"không cho phép bạn gỡ bỏ tập tin khỏi nhánh một cách trực tiếp; "
-	"bạn phải tạo một thay đổi để gỡ bỏ tập tin"
+msgstr	"không cho phép bạn gỡ bỏ tập tin khỏi nhánh một "
+	"cách trực tiếp; bạn phải tạo một thay đổi để "
+	"gỡ bỏ tập tin"
 
 #
 # This error message is issued when the aecpu command is used on a change
 # which is not in the 'being developed' state.
 #
 msgid	"bad cp undo state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để có khả năng gỡ bỏ khỏi nó một tập tin "
-	"đã sao chép"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để có khả "
+	"năng gỡ bỏ khỏi nó một tập tin đã sao chép"
 
 #
 # This error message is issued when a file which is already in the
@@ -1526,8 +1588,9 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #       $File_Name      The name of the offending file.
 #
 msgid	"bad cp, file $filename dup"
-msgstr	"tập tin « $filename » đã trong thay đổi nên không ghi đè lên nó; "
-	"hãy dùng tùy chọn « -OverWriting » nếu bạn muốn ghi đè lên nó"
+msgstr	"tập tin « $filename » đã trong thay đổi nên không ghi "
+	"đè lên nó; hãy dùng tùy chọn « -OverWriting » nếu "
+	"bạn muốn ghi đè lên nó"
 
 #
 # This error message is issued when an attempt is made to begin
@@ -1535,91 +1598,99 @@ msgstr	"tập tin « $filename » đã trong thay đổi nên không ghi đè l�
 # state.
 #
 msgid	"bad db state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi "
-	"phát triển » để bắt đầu tiến trình phát triển"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đợi phát triển » để bắt đầu "
+	"tiến trình phát triển"
 
 #
 # This error message is issued when aedbu is asked to operate on
 # a change which is not in the 'being developed' state.
 #
 msgid	"bad dbu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để hủy bước bắt đầu phát triển"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để hủy "
+	"bước bắt đầu phát triển"
 
 #
 # This error message is issued when aede is invokes on a change which is
 # not in the 'being developed' state.
 #
 msgid	"bad de state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để kết thúc tiến trình phát triển"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để kết "
+	"thúc tiến trình phát triển"
 
 #
 # This error message is issued when aedeu is invoked for a change which
 # is not in the 'being reviewed' or 'awaiting integration' state.
 #
 msgid	"bad deu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được xem lại » hay « đợi hợp nhất » để hủy bước kết thúc "
-	"phát triển"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được xem lại » hay « đợi hợp "
+	"nhất » để hủy bước kết thúc phát triển"
 
 #
 # This error message is issued when an aed command used on a change
 # which is not in the 'being developed' state.
 #
 msgid	"bad diff state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để chạy tiến trình khác biệt"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để chạy "
+	"tiến trình khác biệt"
 
 #
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change file's attributes.
 #
 msgid	"bad fa, not auth"
-msgstr	"người dùng « $user » không có quyền sửa đổi thuộc tính cua thay "
-	"đổi; chỉ nhà phát triển (trong khi phát triển) có quyền sửa đổi "
-	"thuộc tính"
+msgstr	"người dùng « $user » không có quyền sửa đổi "
+	"thuộc tính cua thay đổi; chỉ nhà phát triển (trong "
+	"khi phát triển) có quyền sửa đổi thuộc tính"
 
 #
 # This error message is issued when an aeib command is used on a change
 # which is not in the 'awaiting integration' state.
 #
 msgid	"bad ib state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi "
-	"hợp nhất » để bắt đầu tiến trình hợp nhất"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đợi hợp nhất » để bắt đầu "
+	"tiến trình hợp nhất"
 
 #
 # This error message is issued when aeibu is used on a change which is
 # not in the 'being integrated' state.
 #
 msgid	"bad ibu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được hợp nhất » để hủy bước bắt đầu hợp nhất"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được hợp nhất » để hủy "
+	"bước bắt đầu hợp nhất"
 
 #
 # This error message is issued when an aed command used on a change
 # which is not in the 'being developed' or 'being integrated' state.
 #
 msgid	"bad idiff state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » hay « đang được hợp nhất » để chạy tiến "
-	"trình khác biệt"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » hay « đang "
+	"được hợp nhất » để chạy tiến trình khác biệt"
 
 #
 # This error message is issued when aeifail is invoked for a change which
 # is not in the 'being integrated' state.
 #
 msgid	"bad if state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được hợp nhất » để thất bại tiến trình hợp nhất"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được hợp nhất » để thất "
+	"bại tiến trình hợp nhất"
 
 #
 # This error message is issued when an aeipass command is invoked on a
 # change which is not in the 'being integrated' state.
 #
 msgid	"bad ip state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được hợp nhất » để hợp nhất thành công"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được hợp nhất » để hợp "
+	"nhất thành công"
 
 #
 # This error message is issued when aeipass finds a file which has not been
@@ -1629,9 +1700,9 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, build required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình xây dựng « "
-	"aegis -Build » $outstanding trước khi nó có thể hợp nhất thành "
-	"công"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình xây dựng « aegis -Build » $outstanding trước khi "
+	"nó có thể hợp nhất thành công"
 
 #
 # This error message is issued when aeipass finds a file which has not been
@@ -1641,9 +1712,10 @@ msgstr	"thay đổi này phải chạy xong thành công một tiến trình xâ
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test -bl required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình kiểm tra "
-	"đường cơ bản « aegis -Test -BaseLine » $outstanding trước khi nó "
-	"có thể hợp nhất thành công"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình kiểm tra đường cơ bản « aegis -Test -BaseLine "
+	"» $outstanding trước khi nó có thể hợp nhất thành "
+	"công"
 
 #
 # This error message is issued when aeipass finds a file which has not been
@@ -1653,9 +1725,9 @@ msgstr	"thay đổi này phải chạy xong thành công một tiến trình ki�
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test -reg required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình kiểm tra "
-	"sự đệ quy « 'aegis -Test -REGression » $outstanding trước khi nó "
-	"có thể hợp nhất thành công"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình kiểm tra sự đệ quy « 'aegis -Test -REGression » "
+	"$outstanding trước khi nó có thể hợp nhất thành công"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -1665,17 +1737,18 @@ msgstr	"thay đổi này phải chạy xong thành công một tiến trình ki�
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình kiểm tra « "
-	"aegis -Test » $outstanding trước khi nó có thể hợp nhất thành "
-	"công"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình kiểm tra « aegis -Test » $outstanding trước khi "
+	"nó có thể hợp nhất thành công"
 
 #
 # This error message is issued when aemv is asked to operate on a change
 # which is not in the 'being developed' state.
 #
 msgid	"bad mv state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi thay đổi tên của tập tin"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"thay đổi tên của tập tin"
 
 #
 # This error message is issued when an aemvu command is used
@@ -1684,16 +1757,17 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #       $File_Name      The name of the offending file.
 #
 msgid	"bad mv undo $filename"
-msgstr	"tập tin « $filename » đã không được thêm vào thay đổi này dùng "
-	"lệnh « 'aegis -MoVe_file »"
+msgstr	"tập tin « $filename » đã không được thêm vào thay "
+	"đổi này dùng lệnh « 'aegis -MoVe_file »"
 
 #
 # This error message is issued when aencu is requested of a change which
 # is not in the 'awaiting development' state.
 #
 msgid	"bad ncu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi "
-	"phát triển » để hủy một bước thay đổi mới"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đợi phát triển » để hủy một "
+	"bước thay đổi mới"
 
 #
 # This error message is issued when aenf is invoked on a branch in the
@@ -1701,16 +1775,18 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 # that.
 #
 msgid	"bad nf branch"
-msgstr	"không cho phép bạn thêm tập tin vào nhánh một cách trực tiếp; "
-	"bạn phải tạo một thay đổi để có khả năng tạo tập tin mới"
+msgstr	"không cho phép bạn thêm tập tin vào nhánh một cách "
+	"trực tiếp; bạn phải tạo một thay đổi để có "
+	"khả năng tạo tập tin mới"
 
 #
 # This error message is issued when aenf is invoked on a change which is
 # not in the 'being developed' state.
 #
 msgid	"bad nf state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi tạo tập tin mới"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"tạo tập tin mới"
 
 #
 # This error message is issued when an aenfu command is used
@@ -1719,8 +1795,8 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #       $File_Name      The name of the offending file.
 #
 msgid	"bad nf undo $filename"
-msgstr	"tập tin « filename » đã không được thêm vào thay đổi này dùng "
-	"lệnh « aegis -New_File »"
+msgstr	"tập tin « filename » đã không được thêm vào thay "
+	"đổi này dùng lệnh « aegis -New_File »"
 
 #
 # This error message is issued when aenfu is invoked on a branch in the
@@ -1728,16 +1804,18 @@ msgstr	"tập tin « filename » đã không được thêm vào thay đổi nà
 # that.
 #
 msgid	"bad nfu branch"
-msgstr	"không cho phép bạn gỡ bỏ tập tin khỏi nhánh một cách trực tiếp; "
-	"bạn phải tạo một thay đổi để có khả năng gỡ bỏ tập tin"
+msgstr	"không cho phép bạn gỡ bỏ tập tin khỏi nhánh một "
+	"cách trực tiếp; bạn phải tạo một thay đổi để "
+	"có khả năng gỡ bỏ tập tin"
 
 #
 # This error message is issued when aenfu is invoked on a change which is
 # not in the 'being developed' state.
 #
 msgid	"bad nfu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi gỡ bỏ tập tin mới"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"gỡ bỏ tập tin mới"
 
 #
 # This error message is issued when aenrls is asked to operate on a
@@ -1746,17 +1824,19 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 # branch-less style to the new branch style.
 #
 msgid	"bad nrls, too modern"
-msgstr	"Lệnh « aegis -New_ReLeaSe » chỉ có thể được dùng để chuyển đổi "
-	"dự án được tạo bởi aegis phiên bản 2.3 và cũ hơn. Dự án này là "
-	"mới hơn: hãy dùng lệnh « aegis -New_BRanch » thay vào đó."
+msgstr	"Lệnh « aegis -New_ReLeaSe » chỉ có thể được dùng "
+	"để chuyển đổi dự án được tạo bởi aegis phiên "
+	"bản 2.3 và cũ hơn. Dự án này là mới hơn: hãy dùng "
+	"lệnh « aegis -New_BRanch » thay vào đó."
 
 #
 # This error message is issued when aent is invoked fro a change which
 # is not in the 'being developed' state.
 #
 msgid	"bad nt state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi tạo một hàm thử mới"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"tạo một hàm thử mới"
 
 #
 # This error message is issued when an aentu command is used
@@ -1765,32 +1845,33 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #       $File_Name      The name of the offending file.
 #
 msgid	"bad nt undo $filename"
-msgstr	"tập tin « $filename » đã không được thêm vào thay đổi này dùng "
-	"lệnh « aegis -New_Test »"
+msgstr	"tập tin « $filename » đã không được thêm vào thay "
+	"đổi này dùng lệnh « aegis -New_Test »"
 
 #
 # This error message is issued when aentu is invoked for a change which
 # is not in the 'being developed' state.
 #
 msgid	"bad ntu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để hủy bước thử mới"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để hủy "
+	"bước thử mới"
 
 #
 # This error message is issued when aepa is given a default development
 # directory which is not an absolute path.
 #
 msgid	"bad pa, rel def dev dir"
-msgstr	"thư mục phát triển mặc định phải được ghi rõ theo dạng đường dẫn "
-	"tuyệt đối"
+msgstr	"thư mục phát triển mặc định phải được ghi rõ "
+	"theo dạng đường dẫn tuyệt đối"
 
 #
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
 msgid	"bad patch send state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng sau "
-	"hơn để được gửi"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng sau hơn để được gửi"
 
 #
 # This error message is issued when an illegal filename pattern is specified.
@@ -1814,32 +1895,36 @@ msgstr	"tên dự án « $name » không hợp lệ"
 # not in the 'awaiting review' state.
 #
 msgid	"bad rb state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi "
-	"xem lại » để bắt đầu tiến trình xem lại"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đợi xem lại » để bắt đầu tiến "
+	"trình xem lại"
 
 #
 # This error message is issued when aerbu is invoked for a change which is
 # not in the 'being reviewed' state.
 #
 msgid	"bad rbu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được xem lại » để dừng tiến trình xem lại"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được xem lại » để dừng tiến "
+	"trình xem lại"
 
 #
 # This error message is issued when a request is made to fail a review
 # of a change, but that change is not in the 'being reviewed' state.
 #
 msgid	"bad rf state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được xem lại » để thất bại tiến trình xem lại"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được xem lại » để thất bại "
+	"tiến trình xem lại"
 
 #
 # This error message is issued when aerm is invoked for a change which
 # is not in the 'being developed' state.
 #
 msgid	"bad rm state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi gỡ bỏ tập tin"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"gỡ bỏ tập tin"
 
 #
 # This error message is issued when an aermu command is used
@@ -1848,28 +1933,35 @@ msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình tr
 #       $File_Name      The name of the offending file.
 #
 msgid	"bad rm undo $filename"
-msgstr	"tập tin « $filename » đã không được thêm vào thay đổi này dùng "
-	"lệnh « aegis -ReMove_file »"
+msgstr	"tập tin « $filename » đã không được thêm vào thay "
+	"đổi này dùng lệnh « aegis -ReMove_file »"
 
 #
 # This error message is issued when aermu is invoked for a change which
 # is not in the 'being developed' state.
 #
 msgid	"bad rmu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » để hủy bước gỡ bỏ tập tin"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » để hủy "
+	"bước gỡ bỏ tập tin"
 
 #
 # This error message is issued when aerpass is invoked for a change which is
 # not in the 'being reviewed' state.
 #
 msgid	"bad rp state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được xem lại » để xem lại thành công"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được xem lại » để xem lại "
+	"thành công"
 
+#
+# This error message is issued when aerpu is invoked for a change which is
+# not in the 'awaiting integration' state.
+#
 msgid	"bad rpu state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi "
-	"hợp nhất » để hủy bước xem lại"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đợi hợp nhất » để hủy bước xem "
+	"lại"
 
 #
 # This fatal error message is issued when there would be no files in
@@ -1883,16 +1975,17 @@ msgstr	"không có tập tin cần phát hành"
 # state from which to make a distribution change set.
 #
 msgid	"bad send state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng sau "
-	"hơn để được gửi"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng sau hơn để được gửi"
 
 #
 # This error message is issued when a user requests a test of a change
 # from the wrong state.
 #
 msgid	"bad test state"
-msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « "
-	"đang được phát triển » hay « đang được hợp nhất » để chạy hàm thử"
+msgstr	"thay đổi này ở tình trạng « $state »; nó phải ở "
+	"tình trạng « đang được phát triển » hay « đang "
+	"được hợp nhất » để chạy hàm thử"
 
 #
 # This error message is issued when a version string is given to aenpr
@@ -1910,9 +2003,10 @@ msgstr	"phiên bản số « $number » không hợp lệ"
 #       $File_Name      The name of the offending file.
 #
 msgid	"baseline $filename changed"
-msgstr	"tập tin « $filename » trên đường cơ bản đã thay đổi kể từ lần "
-	"cuối cùng chạy lệnh « aegis -DIFFerence »: bạn cần phải chạy một "
-	"tiến trình trộn"
+msgstr	"tập tin « $filename » trên đường cơ bản đã thay "
+	"đổi kể từ lần cuối cùng chạy lệnh « aegis "
+	"-DIFFerence »: bạn cần phải chạy một tiến trình "
+	"trộn"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -1923,14 +2017,16 @@ msgstr	"tập tin « $filename » trên đường cơ bản đã thay đổi k�
 #       $File_Name      The name of the offending file.
 #
 msgid	"baseline $filename changed, merge in new change"
-msgstr	"Tập tin « $filename » trên đường cơ bản mẹ của nhánh này đã thay "
-	"đổi kể từ khi nó bị nhánh này sửa đổi. Để giải quyết trường hợp "
-	"này, bạn cần phải tạo một thay đổi mới trong nhánh này, sao chép "
-	"tập tin vào nó (aecp $filename) và chạy một tiến trình trộn chéo "
-	"nhánh với cái bà (aed -merge -grandparent $filename). Một khi "
-	"hợp nhất, tập tin là hiện thời với đường cơ bản mẹ của nhánh. "
-	"Xem chương « Branching » (chạy nhánh) của Sổ tay Người dùng "
-	"Aegis (Aegis User Guide) để tìm thêm thông tin."
+msgstr	"Tập tin « $filename » trên đường cơ bản mẹ của "
+	"nhánh này đã thay đổi kể từ khi nó bị nhánh này "
+	"sửa đổi. Để giải quyết trường hợp này, bạn "
+	"cần phải tạo một thay đổi mới trong nhánh này, "
+	"sao chép tập tin vào nó (aecp $filename) và chạy một "
+	"tiến trình trộn chéo nhánh với cái bà (aed -merge "
+	"-grandparent $filename). Một khi hợp nhất, tập tin là "
+	"hiện thời với đường cơ bản mẹ của nhánh. Xem "
+	"chương « Branching » (chạy nhánh) của Sổ tay Người "
+	"dùng Aegis (Aegis User Guide) để tìm thêm thông tin."
 
 #
 # This fatal error message is issued when a lock is not available.
@@ -1969,7 +2065,8 @@ msgstr	"kích cỡ cạnh xiên $number ở ngoại phạm vi (0-10)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required for arithmetic if (was given $name)"
-msgstr	"cần thiết giá trị luận lý cho số học (đã nhận $name)"
+msgstr	"cần thiết giá trị luận lý cho số học (đã nhận "
+	"$name)"
 
 #
 # This error message is issued when a ternary "if" expression (e1 ? e2 :
@@ -1978,7 +2075,8 @@ msgstr	"cần thiết giá trị luận lý cho số học (đã nhận $name)"
 #       $name   The name of the type of e1.
 #
 msgid	"boolean value required for if (was given $name)"
-msgstr	"cần thiết giá trị luận lý cho biểu thức « ?: » (đã cho $name)"
+msgstr	"cần thiết giá trị luận lý cho biểu thức « ?: » "
+	"(đã cho $name)"
 
 #
 # This message is issued when an inappropriate && is attempted.
@@ -1986,7 +2084,8 @@ msgstr	"cần thiết giá trị luận lý cho biểu thức « ?: » (đã cho
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"cần thiết giá trị luận lý cho « và » logic (đã cho $name)"
+msgstr	"cần thiết giá trị luận lý cho « và » logic (đã "
+	"cho $name)"
 
 #
 # This message is issued when an inappropriate || is attempted.
@@ -1994,7 +2093,8 @@ msgstr	"cần thiết giá trị luận lý cho « và » logic (đã cho $name)
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"cần thiết giá trị luận lý cho « hoặc » logic] (đã cho $name)"
+msgstr	"cần thiết giá trị luận lý cho « hoặc » logic] "
+	"(đã cho $name)"
 
 #
 # This error message is issued when the control expression for an "if"
@@ -2003,7 +2103,8 @@ msgstr	"cần thiết giá trị luận lý cho « hoặc » logic] (đã cho $n
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"cần thiết giá trị luận lý trong câu lệnh « nếu » (đã cho $name)"
+msgstr	"cần thiết giá trị luận lý trong câu lệnh « nếu "
+	"» (đã cho $name)"
 
 #
 # This error message is issued when an absurd branch number is given.
@@ -2012,7 +2113,8 @@ msgstr	"cần thiết giá trị luận lý trong câu lệnh « nếu » (đã 
 #       $Number         The offending branch number.
 #
 msgid	"branch $number out of range"
-msgstr	"nhánh $number ở ngoại phạm vi: nó phải là một con số dương nhỏ"
+msgstr	"nhánh $number ở ngoại phạm vi: nó phải là một con "
+	"số dương nhỏ"
 
 #
 # This error message is issued when aenbr is given an explicit branch
@@ -2022,16 +2124,18 @@ msgstr	"nhánh $number ở ngoại phạm vi: nó phải là một con số dư�
 #       $Number         The offending branch number.
 #
 msgid	"branch $number used"
-msgstr	"số hiệu nhánh $number đang được dùng: hãy chọn con số khác, hoặc "
-	"đừng ghi rõ con số nếu bạn muốn tự động cấp phát một con số"
+msgstr	"số hiệu nhánh $number đang được dùng: hãy chọn con "
+	"số khác, hoặc đừng ghi rõ con số nếu bạn muốn "
+	"tự động cấp phát một con số"
 
 #
 # This error message is issued when aenc or aenbr are issued against a
 # project branch which is no longer in the `being developed' state.
 #
 msgid	"branch completed"
-msgstr	"cho phép bạn tạo thay đổi và nhánh chỉ trên nhánh đang hoạt "
-	"động; nhánh này không phải ở tình trạng « đang được phát triển »"
+msgstr	"cho phép bạn tạo thay đổi và nhánh chỉ trên nhánh "
+	"đang hoạt động; nhánh này không phải ở tình "
+	"trạng « đang được phát triển »"
 
 #
 # This error messages is issued when aede-policy finds a change set in
@@ -2039,7 +2143,7 @@ msgstr	"cho phép bạn tạo thay đổi và nhánh chỉ trên nhánh đang ho
 # default.
 #
 msgid	"brief_description not set"
-msgstr	"the brief description has been not set"
+msgstr	"chưa đặt mô tả ngắn (brief_description)"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -2049,9 +2153,9 @@ msgstr	"the brief description has been not set"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"build required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình xây dựng « "
-	"aegis -Build » $outstanding trước khi nó có thể kết thúc tiến "
-	"trình phát triển"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình xây dựng « aegis -Build » $outstanding trước khi "
+	"nó có thể kết thúc tiến trình phát triển"
 
 #
 # This fatal error message is issued when aeipass detects that the
@@ -2062,12 +2166,14 @@ msgstr	"thay đổi này phải chạy xong thành công một tiến trình xâ
 #       $File_Name      The name of the offending file.
 #
 msgid	"build trashed $filename"
-msgstr	"có vẻ là tiến trình xây dựng đã sửa đổi tập tin mã nguồn « "
-	"$filename ». Trường hợp này thường xảy ra khi một tập tin ma "
-	"nguồn trở thành một tập tin đã tạo ra. Trong một thay đổi riêng, "
-	"bạn cần phải thay đổi cấu hình xây dựng, hoặc chạy lệnh « aerm "
-	"$filename », hoặc chạy lệnh « aerm $filename » rồi lệnh « aenf -"
-	"build $filename » trong một thay đổi theo sau."
+msgstr	"có vẻ là tiến trình xây dựng đã sửa đổi tập "
+	"tin mã nguồn « $filename ». Trường hợp này thường "
+	"xảy ra khi một tập tin ma nguồn trở thành một tập "
+	"tin đã tạo ra. Trong một thay đổi riêng, bạn cần "
+	"phải thay đổi cấu hình xây dựng, hoặc chạy lệnh "
+	"« aerm $filename », hoặc chạy lệnh « aerm $filename » "
+	"rồi lệnh « aenf -build $filename » trong một thay đổi "
+	"theo sau."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2103,8 +2209,9 @@ msgstr	"thay đổi $change: $message"
 #       $Number         The offending change's number.
 #
 msgid	"change $number not completed"
-msgstr	"thay đổi $number ở tình trạng « $state »; nó phải ở tình trạng « "
-	"hoàn tất » để dùng cùng với tùy chọn « --delta-from-change »"
+msgstr	"thay đổi $number ở tình trạng « $state »; nó phải "
+	"ở tình trạng « hoàn tất » để dùng cùng với tùy "
+	"chọn « --delta-from-change »"
 
 #
 # This error message is issued when an absurd change number is given.
@@ -2113,7 +2220,8 @@ msgstr	"thay đổi $number ở tình trạng « $state »; nó phải ở tình
 #       $Number         The offending change number.
 #
 msgid	"change $number out of range"
-msgstr	"thay đổi $number ở ngoài phạm vi, nó phải là một con số dương nhỏ"
+msgstr	"thay đổi $number ở ngoài phạm vi, nó phải là một "
+	"con số dương nhỏ"
 
 #
 # This error message is issued when aenbr is given an explicit change
@@ -2123,16 +2231,17 @@ msgstr	"thay đổi $number ở ngoài phạm vi, nó phải là một con số 
 #       $Number         The offending change number.
 #
 msgid	"change $number used"
-msgstr	"thay đổi $number đã được dùng: hãy chọn con số khác, hoặc đừng "
-	"ghi rõ con số nếu bạn muốn tự động cấp phát con số"
+msgstr	"thay đổi $number đã được dùng: hãy chọn con số "
+	"khác, hoặc đừng ghi rõ con số nếu bạn muốn tự "
+	"động cấp phát con số"
 
 #
 # This message is issued when aedist --receive cancells a change because
 # the change is alreday present in the repository.  No action required.
 #
 msgid	"change already present"
-msgstr	"Thay đổi này đã bị hủy bỏ vì tập hợp thay đổi đã nằm trong kho "
-	"lưu trữ."
+msgstr	"Thay đổi này đã bị hủy bỏ vì tập hợp thay "
+	"đổi đã nằm trong kho lưu trữ."
 
 #
 # This message is issued when an aecd command is successfully completed.
@@ -2175,8 +2284,8 @@ msgstr	"chmod(\"$filename\", $arg): $errno"
 #       $Target         The login name of the new owner.  (Optional)
 #
 msgid	"chown complete"
-msgstr	"quyền sở hữu đã thay đổi từ người dùng « $original » sang người "
-	"dùng « $target »"
+msgstr	"quyền sở hữu đã thay đổi từ người dùng « "
+	"$original » sang người dùng « $target »"
 
 #
 # This message is issued when an aeclean command completes successfully.
@@ -2256,7 +2365,8 @@ msgstr	"lệnh « $command » bị chấm dứt bởi tín hiệu $signal"
 #       $Signal         The name of the terminating signal.
 #
 msgid	"command \"$command\" terminated by $signal (core dumped)"
-msgstr	"lệnh « $command » bị chấm dứt bởi tín hiệu $signal (lõi bị đổ)"
+msgstr	"lệnh « $command » bị chấm dứt bởi tín hiệu "
+	"$signal (lõi bị đổ)"
 
 #
 # This error message is issued when the command line is too short.
@@ -2271,19 +2381,21 @@ msgstr	"dòng lệnh quá ngắn"
 #       $name           The offending compression algorithm name.
 #
 msgid	"compression algorithm \"$name\" unknown"
-msgstr	"compression algorithm \"$name\" unknown"
+msgstr	"không rõ thuật toán nén « $name »"
 
 #
 # This message is inserted into the top of the project configuration file
 # automatically created by aeimport.
 #
 msgid	"configuration file hint"
-msgstr	"Tập tin này cần phải được tùy chỉnh cho dự án này. Xem trang "
-	"hướng dẫn « aepconf(5) » để tìm mô tả về những trường trong tập "
-	"tin này. Xem « $datadir/config.example/rcs » để tìm thêm thông "
-	"tin về các lệnh lược sử. Xem « $datadir/config.example/make » để "
-	"tìm mẫu về cách cấu hình công cụ xây dựng. Khuyên bạn duyệt qua "
-	"các tập tin khác trong cùng thư mục, để tìm thêm thông tin."
+msgstr	"Tập tin này cần phải được tùy chỉnh cho dự án "
+	"này. Xem trang hướng dẫn « aepconf(5) » để tìm mô "
+	"tả về những trường trong tập tin này. Xem « "
+	"$datadir/config.example/rcs » để tìm thêm thông tin về "
+	"các lệnh lược sử. Xem « $datadir/config.example/make » "
+	"để tìm mẫu về cách cấu hình công cụ xây dựng. "
+	"Khuyên bạn duyệt qua các tập tin khác trong cùng thư "
+	"mục, để tìm thêm thông tin."
 
 #
 # This fatal error message is issued when aedist or aepatch don't
@@ -2348,8 +2460,8 @@ msgstr	"tập tin « $filename » không còn được sửa đổi lại"
 # history fierls from the old repository into the project history tree.
 #
 msgid	"copy history files"
-msgstr	"Đang sao chép các tập tin lược sử từ kho lưu trữ bên ngoài vào "
-	"cây lược sử dự án..."
+msgstr	"Đang sao chép các tập tin lược sử từ kho lưu trữ "
+	"bên ngoài vào cây lược sử dự án..."
 
 #
 # This error message is issued when a file copy fails.  Exactly which
@@ -2375,7 +2487,8 @@ msgstr	"tạo « $filename »: $errno"
 # from the development directory which point to the baseline.
 #
 msgid	"creating symbolic links to baseline"
-msgstr	"đang tạo các liên kết tượng trưng tới đường cơ bản"
+msgstr	"đang tạo các liên kết tượng trưng tới đường cơ "
+	"bản"
 
 #
 # This error message is issued when an aeib command is given, but there
@@ -2385,8 +2498,9 @@ msgstr	"đang tạo các liên kết tượng trưng tới đường cơ bản"
 #       $Number         The change number of the current integration.
 #
 msgid	"currently integrating $number"
-msgstr	"thay đổi $number là tiến trình hợp nhất đang chạy: chỉ một tiến "
-	"trình hợp nhất có thể chạy vào một lúc"
+msgstr	"thay đổi $number là tiến trình hợp nhất đang chạy: "
+	"chỉ một tiến trình hợp nhất có thể chạy vào "
+	"một lúc"
 
 #
 # This fatal error message is issued when a user-supplied string can't
@@ -2403,8 +2517,9 @@ msgstr	"chuỗi « $name » không hình như ngày tháng"
 # change at a later date.  This is Damon Poole's "time safe" property.
 #
 msgid	"date in the future"
-msgstr	"Cảnh báo : ngày tháng δ được ghi rõ nằm trong tương lai. Lệnh "
-	"này có thể làm kết quả khác khi chạy lại trong tương lai. "
+msgstr	"Cảnh báo : ngày tháng δ được ghi rõ nằm trong "
+	"tương lai. Lệnh này có thể làm kết quả khác khi "
+	"chạy lại trong tương lai. "
 
 #
 # This error message is issued when an attempt is made to reuse an
@@ -2417,8 +2532,9 @@ msgstr	"Cảnh báo : ngày tháng δ được ghi rõ nằm trong tương lai. 
 #                       delta name.
 #
 msgid	"delta $name in use"
-msgstr	"tên δ « $name » đã được gán cho δ $other; để gán lại tên này vào "
-	"δ $number, bạn phải dùng tùy chọn « -OverWriting »"
+msgstr	"tên δ « $name » đã được gán cho δ $other; để gán "
+	"lại tên này vào δ $number, bạn phải dùng tùy chọn "
+	"« -OverWriting »"
 
 #
 # This error message is issued when an absurd delta number is given.
@@ -2427,7 +2543,8 @@ msgstr	"tên δ « $name » đã được gán cho δ $other; để gán lại t
 #       $Number         The offending delta number.
 #
 msgid	"delta $number out of range"
-msgstr	"δ $number ở ngoại phạm vi; nó phải là một con số dương nhỏ"
+msgstr	"δ $number ở ngoại phạm vi; nó phải là một con số "
+	"dương nhỏ"
 
 #
 # This progress message is issued when aedn completes successfully.
@@ -2444,13 +2561,14 @@ msgstr	"δ $number giờ này được gọi như là δ « $name »"
 # default.
 #
 msgid	"description not set"
-msgstr	"the description field has not been set"
+msgstr	"chưa đặt mô tả"
 
 #
 # This progress message is issued when aedb completes successfully.
 #
 msgid	"develop begin complete"
-msgstr	"người dùng « $user » đã bắt đầu tiến trình phát triển"
+msgstr	"người dùng « $user » đã bắt đầu tiến trình phát "
+	"triển"
 
 #
 # This progress message is issued when aedbu completes successfully.
@@ -2464,7 +2582,8 @@ msgstr	"không còn được phát triển lại"
 # possible are found before aede aborts.
 #
 msgid	"develop end fail"
-msgstr	"tìm $number lỗi; thay đổi này còn lại ở tình trạng « $state »"
+msgstr	"tìm $number lỗi; thay đổi này còn lại ở tình "
+	"trạng « $state »"
 
 #
 # This progress message is issued when aedeu completes successfully.
@@ -2477,26 +2596,30 @@ msgstr	"tiến trình phát triển đã tiếp tục lại"
 # own change, and the project is configured to disallow this.
 #
 msgid	"developer may not integrate"
-msgstr	"không cho phép nhà phát triển của thay đổi cũng hợp nhất nó"
+msgstr	"không cho phép nhà phát triển của thay đổi cũng "
+	"hợp nhất nó"
 
 #
 # This error message is issued when a developer attempts to review her
 # own change, and the project is configured to disallow this.
 #
 msgid	"developer may not review"
-msgstr	"không cho phép nhà phát triển của thay đổi cũng xem lại nó"
+msgstr	"không cho phép nhà phát triển của thay đổi cũng xem "
+	"lại nó"
 
 #
 # This message is issued when development builds are completed.
 #
 msgid	"development build complete"
-msgstr	"tiến trình xây dựng kiểu phát triển đã chạy xong ${date %H:%M}"
+msgstr	"tiến trình xây dựng kiểu phát triển đã chạy xong "
+	"${date %H:%M}"
 
 #
 # This message is issued when development builds are commenced.
 #
 msgid	"development build started"
-msgstr	"tiến trình xây dựng kiểu phát triển đã khởi chạy ${date %H:%M}"
+msgstr	"tiến trình xây dựng kiểu phát triển đã khởi "
+	"chạy ${date %H:%M}"
 
 #
 # This progress message is issued when aede completes successfully.
@@ -2531,8 +2654,9 @@ msgstr	"tìm $number lỗi; chưa khác biệt tập tin"
 # integrated' states.
 #
 msgid	"diff required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình khác biệt "
-	"« aegis -Diff », trước khi nó có thể rời tình trạng « $state »"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình khác biệt « aegis -Diff », trước khi nó có "
+	"thể rời tình trạng « $state »"
 
 #
 # This progress message is issued when the aed command completes successfully.
@@ -2545,7 +2669,8 @@ msgstr	"tiến trình khác biệt đã chạy xong"
 # directory is specified as an absolute directory.
 #
 msgid	"dir must be rel"
-msgstr	"thư mục phải là tương đối (không thể bắt đầu với /)"
+msgstr	"thư mục phải là tương đối (không thể bắt đầu "
+	"với /)"
 
 #
 # This error message is issued when a directory has been named on the
@@ -2557,9 +2682,9 @@ msgstr	"thư mục phải là tương đối (không thể bắt đầu với /)
 #                       (Optional)
 #
 msgid	"directory $filename contains no relevant files"
-msgstr	"thư mục $filename chứa $number tập tin, rất có thể là ${plural "
-	"$number tập tin, tuy nhiên không có tập tin làm đối số thích hợp "
-	"với lệnh này"
+msgstr	"thư mục $filename chứa $number tập tin, rất có thể "
+	"là ${plural $number tập tin, tuy nhiên không có tập tin "
+	"làm đối số thích hợp với lệnh này"
 
 #
 # This progress message is issued when aeipass is deleting the
@@ -2580,8 +2705,9 @@ msgstr	"chia cho không"
 # option.
 #
 msgid	"don't mix old and new version options"
-msgstr	"hai tùy chọn « -MAJor » (chính) và « -MINOr » (phụ) đều không "
-	"tương thích với tùy chọn « -VERSion » (phiên bản)"
+msgstr	"hai tùy chọn « -MAJor » (chính) và « -MINOr » (phụ) "
+	"đều không tương thích với tùy chọn « -VERSion » "
+	"(phiên bản)"
 
 #
 # This error message is issued when an option is used more than one on
@@ -2590,7 +2716,8 @@ msgstr	"hai tùy chọn « -MAJor » (chính) và « -MINOr » (phụ) đều kh
 #       $Name           The name of the offending option.
 #
 msgid	"duplicate $name option"
-msgstr	"tùy chọn $name trùng, chỉ có thể đưa ra một tùy chọn"
+msgstr	"tùy chọn $name trùng, chỉ có thể đưa ra một tùy "
+	"chọn"
 
 #
 # This error message is issued when the aerpass command detects that a
@@ -2598,7 +2725,8 @@ msgstr	"tùy chọn $name trùng, chỉ có thể đưa ra một tùy chọn"
 # (This can occur when the review_policy_command is being used.)
 #
 msgid	"duplicate review"
-msgstr	"không cho phép bạn xem lại cùng một thay đổi hai lần"
+msgstr	"không cho phép bạn xem lại cùng một thay đổi hai "
+	"lần"
 
 #
 # This error message is issued when an unterminated comment is seen.
@@ -2652,9 +2780,10 @@ msgstr	"đã trượt $number hàm thử"
 # attempting to recover from an earlier fatal error.
 #
 msgid	"fatal error during fatal error recovery"
-msgstr	"Gặp lỗi nghiêm trọng khi thử phục hồi sau một lỗi nghiêm trọng "
-	"trước. Một số dữ liệu Aegis có thể đã bị hỏng. Xin hãy thông báo "
-	"nhà phát triển Aegis càng sớm càng có thể."
+msgstr	"Gặp lỗi nghiêm trọng khi thử phục hồi sau một "
+	"lỗi nghiêm trọng trước. Một số dữ liệu Aegis có "
+	"thể đã bị hỏng. Xin hãy thông báo nhà phát triển "
+	"Aegis càng sớm càng có thể."
 
 #
 # This error message is issued when Aegis fails to get file descriptor flags.
@@ -2713,8 +2842,9 @@ msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 #       $Number2        The number of tests requested by the user.
 #
 msgid	"few candidate tests"
-msgstr	"cảnh báo : có chỉ $number1 hàm thử thích hợp, tuy nhiên bạn đã "
-	"yêu cầu $number2 được đề nghị; mọi $number1 hàm thử sẽ được dùng"
+msgstr	"cảnh báo : có chỉ $number1 hàm thử thích hợp, tuy "
+	"nhiên bạn đã yêu cầu $number2 được đề nghị; "
+	"mọi $number1 hàm thử sẽ được dùng"
 
 #
 # This error message is issued when a field in an Aegis data file or
@@ -2732,8 +2862,9 @@ msgstr	"trường « $name » đã được xác định lại"
 #       $File_Name      The name of the offending file.
 #
 msgid	"file \"$filename\" bombs filters"
-msgstr	"tập tin « $filename » không thích hợp với các bộ lọc mẫu tên tập "
-	"tin (xem tập tin cấu hình của dự án)"
+msgstr	"tập tin « $filename » không thích hợp với các bộ "
+	"lọc mẫu tên tập tin (xem tập tin cấu hình của dự "
+	"án)"
 
 #
 # This error message is issued when aeclean discovers that a change
@@ -2742,8 +2873,8 @@ msgstr	"tập tin « $filename » không thích hợp với các bộ lọc mẫ
 #       $File_Name      The name of the offending file.
 #
 msgid	"file \"$filename\" does not exist"
-msgstr	"tập tin « $filename » không tồn tại, nhưng nó là một tập tin mã "
-	"nguồn thay đổi"
+msgstr	"tập tin « $filename » không tồn tại, nhưng nó là "
+	"một tập tin mã nguồn thay đổi"
 
 #
 # This error message is issued when a change file
@@ -2752,7 +2883,8 @@ msgstr	"tập tin « $filename » không tồn tại, nhưng nó là một tập
 #       $File_Name      The name of the offending file.
 #
 msgid	"file \"$filename\" is log file"
-msgstr	"tập tin « $filename » nhân đôi tên tập tin của bản ghi"
+msgstr	"tập tin « $filename » nhân đôi tên tập tin của bản "
+	"ghi"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -2763,8 +2895,8 @@ msgstr	"tập tin « $filename » nhân đôi tên tập tin của bản ghi"
 #       $Number         The change number of the change which locked the file.
 #
 msgid	"file \"$filename\" locked for change $number"
-msgstr	"tập tin « $filename » bị khoá cho thay đổi $number, hãy thử lại "
-	"sau"
+msgstr	"tập tin « $filename » bị khoá cho thay đổi $number, "
+	"hãy thử lại sau"
 
 #
 # This error message is issued when a component of a change file name is
@@ -2775,8 +2907,9 @@ msgstr	"tập tin « $filename » bị khoá cho thay đổi $number, hãy thử
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" bombs filters"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » không thích hợp "
-	"với các bộ lọc mẫu tên tập tin (xem tập tin cấu hình của dự án)"
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"không thích hợp với các bộ lọc mẫu tên tập tin "
+	"(xem tập tin cấu hình của dự án)"
 
 #
 # This error message is issued when a component of a change file name
@@ -2786,7 +2919,8 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » không thí
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" contains illegal characters"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » chứa ký tự cấm"
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"chứa ký tự cấm"
 
 #
 # This error message is issued when a component of a change file name
@@ -2797,8 +2931,8 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » chứa ký 
 #
 msgid	"file \"$filename\" part \"$part\" contains shell special "
 	"characters"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » chứa ký tự đặc "
-	"biệt trình bao"
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"chứa ký tự đặc biệt trình bao"
 
 #
 # This error message is issued when a component of a change file
@@ -2808,8 +2942,8 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » chứa ký 
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" is log file"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » nhân đôi tên tập "
-	"tin của bản ghi"
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"nhân đôi tên tập tin của bản ghi"
 
 #
 # This error message is issued when a component of a change file name
@@ -2820,8 +2954,9 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » nhân đôi
 #       $SUGgest        Suggested alternative.
 #
 msgid	"file \"$filename\" part \"$part\" not suitable for DOS"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » không thích hợp "
-	"với DOS; đề nghị dùng « $suggest » thay vào đó "
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"không thích hợp với DOS; đề nghị dùng « $suggest » "
+	"thay vào đó "
 
 #
 # This error message is issued when a component of a change file name
@@ -2831,8 +2966,8 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » không thí
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" not suitable for Windows"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » không thích hợp "
-	"với Windows"
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"không thích hợp với Windows"
 
 #
 # This error message is issued when a directory component of a change file
@@ -2846,8 +2981,9 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » không thí
 #
 msgid	"file \"$filename\" part \"$part\" too long, suggest \"$suggest\" "
 	"instead"
-msgstr	"tập tin « $filename » phần đường dẫn « $part » quá dài (theo "
-	"$number), đề nghị thay thế bằng « $suggest »"
+msgstr	"tập tin « $filename » phần đường dẫn « $part » "
+	"quá dài (theo $number), đề nghị thay thế bằng « "
+	"$suggest »"
 
 #
 # This error message is issued when the last component of a change file
@@ -2859,8 +2995,8 @@ msgstr	"tập tin « $filename » phần đường dẫn « $part » quá dài (
 #       $SUGgest        Suggested abbreviated filename (optional).
 #
 msgid	"file \"$filename\" too long, suggest \"$suggest\" instead"
-msgstr	"tập tin « $filename » quá dài (theo $number), đề nghị thay thế "
-	"bằng « $suggest »"
+msgstr	"tập tin « $filename » quá dài (theo $number), đề nghị "
+	"thay thế bằng « $suggest »"
 
 #
 # This fatal error message is issued when aenf or aent detects a directory
@@ -2870,7 +3006,8 @@ msgstr	"tập tin « $filename » quá dài (theo $number), đề nghị thay th
 #       $File_Name2     The name of the conflicting file.  (Optional)
 #
 msgid	"file $filename directory name conflict"
-msgstr	"tập tin $filename cấm vì nó làm kết quả là một tên thư mục"
+msgstr	"tập tin $filename cấm vì nó làm kết quả là một "
+	"tên thư mục"
 
 #
 # This error message is issued when a command attempts to add a new file
@@ -2897,7 +3034,8 @@ msgstr	"tập tin « $filename » chứa ký tự cấm"
 #       $File_Name      The name of the offending file.
 #
 msgid	"file name \"$filename\" contains shell special characters"
-msgstr	"tập tin « $filename » chứa ký tự đặc biệt trình bao"
+msgstr	"tập tin « $filename » chứa ký tự đặc biệt trình "
+	"bao"
 
 #
 # This error message is issued when a change file name
@@ -2907,8 +3045,8 @@ msgstr	"tập tin « $filename » chứa ký tự đặc biệt trình bao"
 #       $SUGgest        Suggested alternative file name.
 #
 msgid	"file name \"$filename\" not suitable for DOS"
-msgstr	"tập tin « $filename » không thích hợp với DOS, đề nghị thay thế "
-	"bằng « $suggest »"
+msgstr	"tập tin « $filename » không thích hợp với DOS, đề "
+	"nghị thay thế bằng « $suggest »"
 
 #
 # This error message is issued when a change file name
@@ -2944,9 +3082,10 @@ msgstr	"không rõ kiểu tập tin $name"
 #                       (Optional)
 #
 msgid	"files modified by history tool"
-msgstr	"Công cụ lược sử đã sửa đổi $number tập tin. Số tập tin nguồn "
-	"trong kho lưu trữ không còn tương ứng với số tập tin đích trong "
-	"kho lưu trữ. Công cụ lược sử đã làm hại tính nguyên vẹn để tham "
+msgstr	"Công cụ lược sử đã sửa đổi $number tập tin. "
+	"Số tập tin nguồn trong kho lưu trữ không còn tương "
+	"ứng với số tập tin đích trong kho lưu trữ. Công "
+	"cụ lược sử đã làm hại tính nguyên vẹn để tham "
 	"khảo của kho lưu trữ."
 
 #
@@ -2954,8 +3093,8 @@ msgstr	"Công cụ lược sử đã sửa đổi $number tập tin. Số tập 
 # the history information looking for change sets.
 #
 msgid	"find change sets"
-msgstr	"Đang tìm chùm thay đổi về tập tin để nội suy các tập hợp thay "
-	"đổi..."
+msgstr	"Đang tìm chùm thay đổi về tập tin để nội suy các "
+	"tập hợp thay đổi..."
 
 #
 # This error message is issued when a file fingerprint fails
@@ -2984,7 +3123,7 @@ msgstr	"câu lệnh « continue » (tiếp tục) nổi"
 # any function.
 #
 msgid	"floating \"return\" statement"
-msgstr	"câu lệnh « return » (trả lại) nổi"
+msgstr	"câu lệnh « return » (trả về) nổi"
 
 #
 # This format string is used when assembling the list of outstanding
@@ -3007,9 +3146,10 @@ msgstr	"cho các kiến trúc $name_list"
 #                       (Optional)
 #
 msgid	"found unlisted architectures"
-msgstr	"tìm thấy $number kiến trúc không được liệt kê, hãy chỉnh sửa các "
-	"thuộc tính về thay đổi để gỡ bỏ chúng, hoặc chỉnh sửa tập tin "
-	"cấu hình của dự án để thêm chúng."
+msgstr	"tìm thấy $number kiến trúc không được liệt kê, "
+	"hãy chỉnh sửa các thuộc tính về thay đổi để "
+	"gỡ bỏ chúng, hoặc chỉnh sửa tập tin cấu hình "
+	"của dự án để thêm chúng."
 
 #
 # This error message is issued when a function which requires exactly
@@ -3078,7 +3218,8 @@ msgstr	"nhóm « $name » có quá nhiều quyền"
 #                       (but sometimes not, because the real errno has it)
 #
 msgid	"gunzip $filename: $errno"
-msgstr	"trong khi giải nén dữ liệu nhập từ tập tin « $filename»: $errno"
+msgstr	"trong khi giải nén dữ liệu nhập từ tập tin « "
+	"$filename»: $errno"
 
 #
 # This fatal error message is issued when something goes wrong compressing
@@ -3097,7 +3238,8 @@ msgstr	"trong khi nén kết xuất cho tập tin « $filename »: $errno"
 # the project may have no tests at all.
 #
 msgid	"has no tests"
-msgstr	"thay đổi này cần thiết hàm thử trước khi có thể sử dụng lệnh này"
+msgstr	"thay đổi này cần thiết hàm thử trước khi có thể "
+	"sử dụng lệnh này"
 
 #
 # This information message is issued by the aeipass(1) command when it
@@ -3106,7 +3248,7 @@ msgstr	"thay đổi này cần thiết hàm thử trước khi có thể sử d�
 # $File_Name    The name of the source file.
 #
 msgid	"history create $filename"
-msgstr	"adding the first version to the history of the \"$filename\" file"
+msgstr	"tạo « $filename » lược sử"
 
 #
 # This fatal error message is issued when aeimport doesn't recognize a
@@ -3125,8 +3267,7 @@ msgstr	"không rõ định dạng lược sử « $name »"
 # $Edit         The version to be extracted (optional)
 #
 msgid	"history get $filename"
-msgstr	"historical version $edit of the \"$filename\" file being "
-	"recreated"
+msgstr	"lấy « $filename » lược sử"
 
 #
 # This information message is issued by the aeipass(1) command when it
@@ -3135,7 +3276,7 @@ msgstr	"historical version $edit of the \"$filename\" file being "
 # $File_Name    The name of the source file.
 #
 msgid	"history label $filename"
-msgstr	"history of the \"$filename\" file head revision being labeled"
+msgstr	"nhãn « $filename » lược sử"
 
 #
 # This fatal error message is issued when a lock is not available.
@@ -3152,7 +3293,7 @@ msgstr	"không có sẵn khoá lược sử"
 #               changes.
 #
 msgid	"history put $filename"
-msgstr	"adding another version to the history of the \"$filename\" file"
+msgstr	"để « $filename » lược sử"
 
 #
 # This error message is issued when the history query command returns an
@@ -3160,8 +3301,9 @@ msgstr	"adding another version to the history of the \"$filename\" file"
 # top-most version number in the history file.
 #
 msgid	"history_query_command return empty"
-msgstr	"history_query_command (lệnh truy vấn lược sử) đã trả lại chuỗi "
-	"rỗng, không phải là đáp ứng có ích"
+msgstr	"history_query_command (lệnh truy vấn lược sử) đã "
+	"trả lại chuỗi rỗng, không phải là đáp ứng có "
+	"ích"
 
 #
 # This error message is issued when an unprintable character is seen in
@@ -3187,8 +3329,8 @@ msgstr	"tính cộng cấm ($name1 + $name2)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
-msgstr	"giá trị số nguyên cần thiết cho « not » theo vị trí bit (đã cho "
-	"$name)"
+msgstr	"giá trị số nguyên cần thiết cho « not » theo vị "
+	"trí bit (đã cho $name)"
 
 #
 # This error message is issued when an illegal e!=e is attempted.
@@ -3303,7 +3445,8 @@ msgstr	"yêu cầu các khoá cấm ($name)"
 # This message is issued when an inappropriate assignment is attempted.
 #
 msgid	"illegal left hand side of assignment"
-msgstr	"bên trái cấm của hàm gán, nó phải là một biến có thể gán được"
+msgstr	"bên trái cấm của hàm gán, nó phải là một biến "
+	"có thể gán được"
 
 #
 # This message is issued when an inappropriate assignment is attempted.
@@ -3311,8 +3454,8 @@ msgstr	"bên trái cấm của hàm gán, nó phải là một biến có thể 
 #       $Name           The type name of the left hand side.
 #
 msgid	"illegal left hand side of assignment (was given $name)"
-msgstr	"bên trái cấm của hàm gán (đã nhận $name), nó phải là một biến có "
-	"thể gán được"
+msgstr	"bên trái cấm của hàm gán (đã nhận $name), nó phải "
+	"là một biến có thể gán được"
 
 #
 # This message is issued when an inappropriate ! is attempted.
@@ -3320,7 +3463,8 @@ msgstr	"bên trái cấm của hàm gán (đã nhận $name), nó phải là m�
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
-msgstr	"giá trị luận lý cần thiết cho « not » lôgic (đã cho $name)"
+msgstr	"giá trị luận lý cần thiết cho « not » lôgic (đã "
+	"cho $name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
@@ -3376,7 +3520,8 @@ msgstr	"giá trị số nguyên cần thiết cho âm (đã cho $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal positive ($name)"
-msgstr	"giá trị số nguyên cần thiết cho dương (đã cho $name)"
+msgstr	"giá trị số nguyên cần thiết cho dương (đã cho "
+	"$name)"
 
 #
 # This error message is issued when an illegal e**e is attempted.
@@ -3446,8 +3591,9 @@ msgstr	"thông tin phiên bản « $name » mơ hồ ($name_list)"
 # change.
 #
 msgid	"int must diff all"
-msgstr	"khi khác biệt một thay đổi ở tình trạng « đang được hợp nhất », "
-	"không cho phép bạn đặt tên của tập tin trên dòng lệnh"
+msgstr	"khi khác biệt một thay đổi ở tình trạng « đang "
+	"được hợp nhất », không cho phép bạn đặt tên "
+	"của tập tin trên dòng lệnh"
 
 #
 # This error message is issued when an aet command is used on a change in
@@ -3455,8 +3601,9 @@ msgstr	"khi khác biệt một thay đổi ở tình trạng « đang được h
 # You must not name files, and thus you must run all tests in the change.
 #
 msgid	"int must test all"
-msgstr	"khi kiểm tra một thay đổi ở tình trạng « đang được hợp nhất », "
-	"không cho phép bạn đặt tên của tập tin trên dòng lệnh"
+msgstr	"khi kiểm tra một thay đổi ở tình trạng « đang "
+	"được hợp nhất », không cho phép bạn đặt tên "
+	"của tập tin trên dòng lệnh"
 
 #
 # This error message is issued when a non-integer change number is
@@ -3473,8 +3620,8 @@ msgstr	"cần thiết chỉ mục số nguyên (đã cho $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"giá trị số nguyên cần thiết cho « và » theo vị trí bit (đã cho "
-	"$name)"
+msgstr	"giá trị số nguyên cần thiết cho « và » theo vị "
+	"trí bit (đã cho $name)"
 
 #
 # This message is issued when an inappropriate | is attempted.
@@ -3482,8 +3629,8 @@ msgstr	"giá trị số nguyên cần thiết cho « và » theo vị trí bit (
 #       $Name           The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"giá trị số nguyên cần thiết cho « hoặc » theo vị trí bit (đã cho "
-	"$name)"
+msgstr	"giá trị số nguyên cần thiết cho « hoặc » theo vị "
+	"trí bit (đã cho $name)"
 
 #
 # This message is issued when an inappropriate ^ is attempted.
@@ -3491,8 +3638,8 @@ msgstr	"giá trị số nguyên cần thiết cho « hoặc » theo vị trí bi
 #       $Name           The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"giá trị số nguyên cần thiết cho « xor » (hoặc loại từ) theo vị "
-	"trí bit (đã cho $name)"
+msgstr	"giá trị số nguyên cần thiết cho « xor » (hoặc "
+	"loại từ) theo vị trí bit (đã cho $name)"
 
 #
 # This progress message is issued when aeib complete successfully.
@@ -3505,14 +3652,15 @@ msgstr	"tiến trình hợp nhất đã bắt đầu"
 # successfully.
 #
 msgid	"integrate begin undo complete"
-msgstr	"mới hủy bước bắt đầu tiến trình hợp nhất: thay đổi đã trở về "
-	"tình trạng « $state »"
+msgstr	"mới hủy bước bắt đầu tiến trình hợp nhất: "
+	"thay đổi đã trở về tình trạng « $state »"
 
 #
 # This progress message is issued when aeifail completes successfully.
 #
 msgid	"integrate fail complete"
-msgstr	"tiến trình hợp nhất bị lỗi nên trở về nhà phát triển"
+msgstr	"tiến trình hợp nhất bị lỗi nên trở về nhà phát "
+	"triển"
 
 #
 # This progress message is issued when aeipass completes successfully.
@@ -3527,19 +3675,22 @@ msgstr	"tiến trình hợp nhất đã chạy thành công"
 #       $Number         Number of fatal errors found.
 #
 msgid	"integrate pass fail"
-msgstr	"tìm $number lỗi thì thay đổi này còn lại ở tình trạng « $state »"
+msgstr	"tìm $number lỗi thì thay đổi này còn lại ở tình "
+	"trạng « $state »"
 
 #
 # This message is issued when integration builds are completed.
 #
 msgid	"integration build complete"
-msgstr	"tiến trình xây dựng hợp nhất đã chạy xong ${date %H:%M}"
+msgstr	"tiến trình xây dựng hợp nhất đã chạy xong ${date "
+	"%H:%M}"
 
 #
 # This message is issued when integration builds are commenced.
 #
 msgid	"integration build started"
-msgstr	"tiến trình xây dựng hợp nhất đã khởi chạy ${date %H:%M}"
+msgstr	"tiến trình xây dựng hợp nhất đã khởi chạy ${date "
+	"%H:%M}"
 
 #
 # This error message is issued when Aegis terminates, because an
@@ -3555,7 +3706,8 @@ msgstr	"bị ngắt bởi tín hiệu $signal"
 # This message is issued when a function is called with incorrect arguments.
 #
 msgid	"invalid function arguments"
-msgstr	"lời gọi hàm này có số không đúng, hay kiểu đối số không đúng"
+msgstr	"lời gọi hàm này có số không đúng, hay kiểu đối "
+	"số không đúng"
 
 #
 # This message is issued when a non-function is called.
@@ -3563,7 +3715,8 @@ msgstr	"lời gọi hàm này có số không đúng, hay kiểu đối số kh�
 #       $Name           The type name of the non-function expression.
 #
 msgid	"invalid function name ($name)"
-msgstr	"một biểu thức kiểu $name đã được cho, còn mong đợi một tên hàm"
+msgstr	"một biểu thức kiểu $name đã được cho, còn mong "
+	"đợi một tên hàm"
 
 #
 # This error message is issued when aeipass wants to delete the
@@ -3597,7 +3750,8 @@ msgstr	"hãy rời thư mục hợp nhất"
 # the baseline to construct the integration directory.
 #
 msgid	"link baseline to integration directory"
-msgstr	"đang liên kết đường cơ bản tới thư mục hợp nhất"
+msgstr	"đang liên kết đường cơ bản tới thư mục hợp "
+	"nhất"
 
 #
 # This error message is issued when a link fails.
@@ -3655,7 +3809,7 @@ msgstr	"điều kiện vòng lặp phải là luận lý (đã cho $name)"
 #       $File_Name      The name of the offending file.
 #
 msgid	"lstat $filename: $errno"
-msgstr	"lstat $filename: $errno"
+msgstr	"$filename: $errno"
 
 #
 # This fatal error message is issued when the aemt command is asked to
@@ -3665,8 +3819,9 @@ msgstr	"lstat $filename: $errno"
 # $filename     The name of the offending file.
 #
 msgid	"make $filename transparent, fail, too deep"
-msgstr	"không thể làm cho tập tin $filename trong suốt vì nó không nằm "
-	"trên nhánh, nhưng nằm ở nhánh tổ tiên sâu hơn"
+msgstr	"không thể làm cho tập tin $filename trong suốt vì nó "
+	"không nằm trên nhánh, nhưng nằm ở nhánh tổ tiên "
+	"sâu hơn"
 
 #
 # This fatal error message is issued when the aemt command is asked to
@@ -3676,8 +3831,8 @@ msgstr	"không thể làm cho tập tin $filename trong suốt vì nó không n�
 # $filename     The name of the offending file.
 #
 msgid	"make $filename transparent, fail, too shallow"
-msgstr	"không thể làm cho tập tin $filename trong suốt vì nó không cũng "
-	"nằm trên nhánh tổ tiên sâu hơn"
+msgstr	"không thể làm cho tập tin $filename trong suốt vì nó "
+	"không cũng nằm trên nhánh tổ tiên sâu hơn"
 
 #
 # This fatal error message is issued when the aemt command is asked to
@@ -3686,16 +3841,18 @@ msgstr	"không thể làm cho tập tin $filename trong suốt vì nó không c�
 # $filename     The name of the offending file.
 #
 msgid	"make $filename transparent, fail, trunk"
-msgstr	"không thể làm cho tập tin $filename trong suốt vì nó nằm trong "
-	"thân, và bạn rất có thể muốn dùng lệnh « aerm » thay vào đó"
+msgstr	"không thể làm cho tập tin $filename trong suốt vì nó "
+	"nằm trong thân, và bạn rất có thể muốn dùng lệnh "
+	"« aerm » thay vào đó"
 
 #
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
 msgid	"make transparent bad state"
-msgstr	"thay đổi này ở tình trạng « $state », nó phải ở tình trạng « "
-	"đang được phát triển » để dùng khi làm cho tập tin trong suốt"
+msgstr	"thay đổi này ở tình trạng « $state », nó phải ở "
+	"tình trạng « đang được phát triển » để dùng khi "
+	"làm cho tập tin trong suốt"
 
 #
 # This information message is issued by the aemt command when it
@@ -3715,7 +3872,8 @@ msgstr	"đang làm cho $number tập tin trong suốt"
 #       $File_Name      Name of the file removed from the change.
 #
 msgid	"make transparent undo $filename complete"
-msgstr	"tập tin « $filename » không còn được làm lại trong suốt"
+msgstr	"tập tin « $filename » không còn được làm lại trong "
+	"suốt"
 
 #
 # This informational message is issued when the aede command makes the
@@ -3730,7 +3888,8 @@ msgstr	"đang đặt thư mục phát triển là « chỉ đọc »"
 # command make the development directory writable again.
 #
 msgid	"making dev dir writable"
-msgstr	"đang đặt thư mục phát triển là « ghi được » lần nữa"
+msgstr	"đang đặt thư mục phát triển là « ghi được » "
+	"lần nữa"
 
 #
 # This error message is issued when a number which looks like a floating
@@ -3754,7 +3913,8 @@ msgstr	"hằng thập lục dạng sai"
 #       $Name2          The type name of the second operand.
 #
 msgid	"may not assign to a list member ($name1[$name2])"
-msgstr	"không cho phép gán cho thành viên của danh sách ($name1[$name2])"
+msgstr	"không cho phép gán cho thành viên của danh sách "
+	"($name1[$name2])"
 
 #
 # This error message is issued when the user attempts to use the aerm
@@ -3791,8 +3951,8 @@ msgstr	"không cho phép dùng $name ở nền"
 #                       (Optional)
 #
 msgid	"merge complete"
-msgstr	"đã trộn với nhau $number tập tin, cần thiết tiến trình xây dựng "
-	"« aegis -Build » mới"
+msgstr	"đã trộn với nhau $number tập tin, cần thiết tiến "
+	"trình xây dựng « aegis -Build » mới"
 
 #
 # This error message is issued when there is a known but syntactically
@@ -3801,7 +3961,8 @@ msgstr	"đã trộn với nhau $number tập tin, cần thiết tiến trình x�
 #       $Name           The offending command line argument.
 #
 msgid	"misplaced \"$name\" option"
-msgstr	"tùy chọn « $name » bị để không đúng chỗ trên dòng lệnh"
+msgstr	"tùy chọn « $name » bị để không đúng chỗ trên "
+	"dòng lệnh"
 
 #
 # This error message is issued when there is an extra string on the
@@ -3810,7 +3971,8 @@ msgstr	"tùy chọn « $name » bị để không đúng chỗ trên dòng lện
 #       $File_Name      The offending command line argument.
 #
 msgid	"misplaced file name (\"$filename\")"
-msgstr	"tên tập tin bị để không đúng chỗ (\"$filename\") trên dòng lệnh"
+msgstr	"tên tập tin bị để không đúng chỗ (\"$filename\") "
+	"trên dòng lệnh"
 
 #
 # This error message is issued when there is an extra number on the
@@ -3819,7 +3981,8 @@ msgstr	"tên tập tin bị để không đúng chỗ (\"$filename\") trên dòn
 #       $Number         The offending command line argument.
 #
 msgid	"misplaced number ($number)"
-msgstr	"con số bị để không đúng chỗ ($number) trên dòng lệnh"
+msgstr	"con số bị để không đúng chỗ ($number) trên dòng "
+	"lệnh"
 
 #
 # This error message is issued when a mkdir fails.
@@ -3834,7 +3997,8 @@ msgstr	"mkdir(\"$filename\", $arg): $errno"
 # This message is issued when an inappropriate -- is attempted.
 #
 msgid	"modifiable lvalue required for decrement"
-msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm giảm dần"
+msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm "
+	"giảm dần"
 
 #
 # This message is issued when an inappropriate -- is attempted.
@@ -3842,14 +4006,16 @@ msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm giảm d
 #       $Name           The type name of the offending operand.
 #
 msgid	"modifiable lvalue required for decrement (was given $name)"
-msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm giảm dần (đã cho "
-	"$name), nó phải là một biến có thể gán được"
+msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm "
+	"giảm dần (đã cho $name), nó phải là một biến có "
+	"thể gán được"
 
 #
 # This message is issued when an inappropriate ++ is attempted.
 #
 msgid	"modifiable lvalue required for increment"
-msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm tăng dần"
+msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm "
+	"tăng dần"
 
 #
 # This message is issued when an inappropriate ++ is attempted.
@@ -3857,8 +4023,9 @@ msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm tăng d�
 #       $Name           The type name of the offending operand.
 #
 msgid	"modifiable lvalue required for increment (was given $name)"
-msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm tăng dần (đã cho "
-	"$name), nó phải là một biến có thể gán được"
+msgstr	"cần thiết giá trị lvalue có thể sửa đổi cho hàm "
+	"tăng dần (đã cho $name), nó phải là một biến có "
+	"thể gán được"
 
 #
 # This error message is issued when a modulo by zero is attempted.
@@ -3873,7 +4040,8 @@ msgstr	"môđulô cho không"
 #       $File_Name2     The name of the destination file.
 #
 msgid	"move $filename1 to $filename2 complete"
-msgstr	"tập tin « $filename1 » đã được di chuyển sang « $filename2 »"
+msgstr	"tập tin « $filename1 » đã được di chuyển sang « "
+	"$filename2 »"
 
 #
 # This progress message is issued when the aemtu command completes
@@ -3894,9 +4062,9 @@ msgstr	"tập tin « $filename » không còn được di chuyển lại"
 # idea, because io_comment_append does not automatically wrap.)
 #
 msgid	"nc dflt hint"
-msgstr	"Gợi ý: xoá mọi thứ bên dưới trường « cause » (nguyên nhân) sẽ "
-	"đặt các giá trị mặc định một cách thích hợp với nguyên nhân bạn "
-	"đã chọn."
+msgstr	"Gợi ý: xoá mọi thứ bên dưới trường « cause » "
+	"(nguyên nhân) sẽ đặt các giá trị mặc định một "
+	"cách thích hợp với nguyên nhân bạn đã chọn."
 
 #
 # This progress message is issued when aena completes successfully.
@@ -3978,8 +4146,8 @@ msgstr	"tập tin mới « $filename » bị gỡ bỏ"
 #                       (Optional)
 #
 msgid	"new file undo fail"
-msgstr	"tìm $number lỗi nghiêm trọng: không có tập tin bị gỡ bỏ khỏi "
-	"thay đổi"
+msgstr	"tìm $number lỗi nghiêm trọng: không có tập tin bị "
+	"gỡ bỏ khỏi thay đổi"
 
 #
 # This progress message is issued when aeni completes successfully.
@@ -4025,8 +4193,8 @@ msgstr	"tập tin « $filename » hàm thử mới"
 #                       (Optional)
 #
 msgid	"new test failed"
-msgstr	"tìm $number lỗi nghiêm trọng: không có hàm thử mới được thêm vào "
-	"thay đổi"
+msgstr	"tìm $number lỗi nghiêm trọng: không có hàm thử mới "
+	"được thêm vào thay đổi"
 
 #
 # This progress message is issued when aentu completes successfully.
@@ -4046,8 +4214,8 @@ msgstr	"tập tin « $filename » hàm thử hủy bước"
 #                       (Optional)
 #
 msgid	"new test undo fail"
-msgstr	"tìm $number lỗi nghiêm trọng: không có hàm thử bị gỡ bỏ khỏi "
-	"thay đổi"
+msgstr	"tìm $number lỗi nghiêm trọng: không có hàm thử bị "
+	"gỡ bỏ khỏi thay đổi"
 
 #
 # This error message is issued when an aemv command is issued with the
@@ -4057,8 +4225,8 @@ msgstr	"tìm $number lỗi nghiêm trọng: không có hàm thử bị gỡ bỏ
 #       $File_Name      The name of the offending file.
 #
 msgid	"nil move $filename"
-msgstr	"không cho phép bạn di chuyển tập tin « $filename » ở trên với "
-	"nhau"
+msgstr	"không cho phép bạn di chuyển tập tin « $filename » ở "
+	"trên với nhau"
 
 #
 # This error message is issued when an unknown name is referenced,
@@ -4068,8 +4236,8 @@ msgstr	"không cho phép bạn di chuyển tập tin « $filename » ở trên v
 #       $Guess          The closest match found for the name.
 #
 msgid	"no \"$name\", guessing \"$guess\""
-msgstr	"chưa xác định tên « $name »: đoán bạn định ghi « $guess » thay "
-	"vào đó"
+msgstr	"chưa xác định tên « $name »: đoán bạn định ghi « "
+	"$guess » thay vào đó"
 
 #
 # This error message is issued when the named file cannot be found in a
@@ -4089,7 +4257,8 @@ msgstr	"không rõ tập tin « $filename »"
 #       $File_Name      The name of the offending file.
 #
 msgid	"no $filename in baseline"
-msgstr	"tập tin « $filename » không còn nằm lại trên đường cơ bản"
+msgstr	"tập tin « $filename » không còn nằm lại trên "
+	"đường cơ bản"
 
 #
 # This error message is issued when the named file cannot be found in a
@@ -4101,7 +4270,8 @@ msgstr	"tập tin « $filename » không còn nằm lại trên đường cơ b�
 #                       the user may have meant.
 #
 msgid	"no $filename, closest is $guess"
-msgstr	"không rõ tập tin « $filename », gần nhất là tập tin « $guess »"
+msgstr	"không rõ tập tin « $filename », gần nhất là tập tin "
+	"« $guess »"
 
 #
 # This error message is issued when ael is given a list name it does not
@@ -4129,45 +4299,46 @@ msgstr	"không rõ dự án « $name »"
 #       $Guess          The closest matching project name.
 #
 msgid	"no $name project, closest is $guess"
-msgstr	"không rõ dự án « $name », gần nhất là dự án « $guess »"
+msgstr	"không rõ dự án « $name », gần nhất là dự án « "
+	"$guess »"
 
 #
 # This error message is issued if no action was specified on the aesvt
 # command line.  Exactly one is required.
 #
 msgid	"no action specified"
-msgstr	"no action specified"
+msgstr	"chưa xác định hành vi"
 
 #
 # This fatal error message is issued when an attempt is made to aechown
 # a branch.
 #
 msgid	"no branch chown"
-msgstr	"thay đổi này là một nhánh: không thể thay đổi quyền sở hữu của "
-	"nhánh"
+msgstr	"thay đổi này là một nhánh: không thể thay đổi "
+	"quyền sở hữu của nhánh"
 
 #
 # This information message is issued when aeb is invoked for a change in
 # a project which is configured to not require builds.
 #
 msgid	"no build required"
-msgstr	"no build is required for changes to this project"
+msgstr	"không cần xây dựng"
 
 #
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
 #
 msgid	"no change number"
-msgstr	"bạn phải đưa ra số hiệu thay đổi một cách dứt khoát trong câu "
-	"lệnh này"
+msgstr	"bạn phải đưa ra số hiệu thay đổi một cách dứt "
+	"khoát trong câu lệnh này"
 
 #
 # This fatal error message is issued when a user attempts to perform a
 # cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
-msgstr	"không cho phép bạn chạy tiến trình trộn chéo nhánh với một thay "
-	"đổi ở tình trạng « $state »"
+msgstr	"không cho phép bạn chạy tiến trình trộn chéo nhánh "
+	"với một thay đổi ở tình trạng « $state »"
 
 #
 # This error message is issued when an unknown delta name is requested.
@@ -4208,7 +4379,8 @@ msgstr	"chưa ghi rõ tên δ"
 # name to.
 #
 msgid	"no delta yet"
-msgstr	"chưa chạy xong tiến trình hợp nhất, vậy chưa có thể gán một tên δ"
+msgstr	"chưa chạy xong tiến trình hợp nhất, vậy chưa có "
+	"thể gán một tên δ"
 
 #
 # This error message is issued when a request is made which requires the
@@ -4216,15 +4388,15 @@ msgstr	"chưa chạy xong tiến trình hợp nhất, vậy chưa có thể gán
 # has no development directory.
 #
 msgid	"no dev dir"
-msgstr	"thay đổi ở tình trạng « $state », không có thư mục phát triển"
+msgstr	"thay đổi ở tình trạng « $state », không có thư "
+	"mục phát triển"
 
 #
 # This information message is issued when the aed command is run for a
 # change which is in a project configured not to use aed.
 #
 msgid	"no diff required"
-msgstr	"no \"aegis -diff\" command is required for this change, the "
-	"project has been configured to omit this requirement"
+msgstr	"không cần khác biệt"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4234,7 +4406,8 @@ msgstr	"no \"aegis -diff\" command is required for this change, the "
 #       $Name           The name of the -Output option.
 #
 msgid	"no dir with $name"
-msgstr	"không cho phép đặt tên của thư mục và dùng tùy chọn $name"
+msgstr	"không cho phép đặt tên của thư mục và dùng tùy "
+	"chọn $name"
 
 #
 # This error message is issued when a command which requires file names
@@ -4250,15 +4423,16 @@ msgstr	"chưa ghi rõ tên tập tin trên dòng lệnh"
 #       $Name           The name of the conflicting option.
 #
 msgid	"no file with $name"
-msgstr	"không cho phép đặt tên của tập tin và dùng tùy chọn $name"
+msgstr	"không cho phép đặt tên của tập tin và dùng tùy "
+	"chọn $name"
 
 #
 # This error message is issued when an otherwise valid command is
 # used for a change which does not yet have any files attached to it.
 #
 msgid	"no files"
-msgstr	"thay đổi này không có tập tin, bạn phải thêm tập tin trước khi "
-	"tiếp tục"
+msgstr	"thay đổi này không có tập tin, bạn phải thêm tập "
+	"tin trước khi tiếp tục"
 
 #
 # This error message is issued when an aecp command fails.  Errors are
@@ -4270,7 +4444,8 @@ msgstr	"thay đổi này không có tập tin, bạn phải thêm tập tin trư
 #                       (Optional)
 #
 msgid	"no files copied"
-msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin được sao chép"
+msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin "
+	"được sao chép"
 
 #
 # This error message is issued when an aediff command fails.  Errors are
@@ -4295,22 +4470,23 @@ msgstr "found $number fatal error${plural $number s}, no files diffed"
 #                       (Optional)
 #
 msgid	"no files uncopied"
-msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin bị gỡ bỏ khỏi "
-	"thay đổi"
+msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin "
+	"bị gỡ bỏ khỏi thay đổi"
 
 #
 # This fatal error message is issued when aesvt finds no history
 # file on the command line.
 #
 msgid	"no history file name specified"
-msgstr	"no history file name specified"
+msgstr	"chưa ghi rõ tên tập tin lược sử"
 
 #
 # This fatal error message is issued when aeimport finds no history
 # files in the directory tree specified on the command line.
 #
 msgid	"no history files found"
-msgstr	"không tìm thấy tập tin lược sử bên dưới thư mục đã ghi rõ"
+msgstr	"không tìm thấy tập tin lược sử bên dưới thư "
+	"mục đã ghi rõ"
 
 #
 # This error message is issued when an unknown information name is given
@@ -4326,7 +4502,7 @@ msgstr	"không rõ tên thông tin phiên bản « $name »"
 # given an input file name on the command line.
 #
 msgid	"no input file"
-msgstr	"no input file name specified"
+msgstr	"không có tập tin nhập vào"
 
 #
 # This error message is issued when a request is made which requires the
@@ -4334,7 +4510,8 @@ msgstr	"no input file name specified"
 # has no integration directory.
 #
 msgid	"no int dir"
-msgstr	"thay đổi này ở tình trạng « $state », không có thư mục hợp nhất"
+msgstr	"thay đổi này ở tình trạng « $state », không có thư "
+	"mục hợp nhất"
 
 #
 # This error message is issued when an aed -merge command is issued for a
@@ -4342,7 +4519,8 @@ msgstr	"thay đổi này ở tình trạng « $state », không có thư mục h
 # to fix things, and so a merge in this state is illegal.
 #
 msgid	"no int merge"
-msgstr	"không thể trộn một thay đổi ở tình trạng « đang được hợp nhất »"
+msgstr	"không thể trộn một thay đổi ở tình trạng « đang "
+	"được hợp nhất »"
 
 #
 # This error message is issued when ael is not given a list name.
@@ -4356,14 +4534,16 @@ msgstr	"chưa ghi rõ tên danh sách"
 # has no log file.
 #
 msgid	"no log file"
-msgstr	"thay đổi này ở tình trạng « $state », không có tập tin ghi lưu"
+msgstr	"thay đổi này ở tình trạng « $state », không có "
+	"tập tin ghi lưu"
 
 #
 # This error message is issued when the user gives a merge option to
 # aed, as well as the -anticipate option.
 #
 msgid	"no merge anticipate"
-msgstr	"không cho phép bạn ghi rõ tùy chọn trộn với « -ANticipate »"
+msgstr	"không cho phép bạn ghi rõ tùy chọn trộn với « "
+	"-ANticipate »"
 
 #
 # This error message is issued when aenf command fails.  Errors are
@@ -4375,21 +4555,23 @@ msgstr	"không cho phép bạn ghi rõ tùy chọn trộn với « -ANticipate �
 #                       (Optional)
 #
 msgid	"no new files"
-msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin mới được thêm"
+msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin "
+	"mới được thêm"
 
 #
 # This error message is issued if output file name was specified on the
 # aesvt -checkout command line.
 #
 msgid	"no output file"
-msgstr	"no output file name specified"
+msgstr	"không có tập tin kết xuất"
 
 #
 # This error message is issued when a command which requires an explicit
 # project name is not given one.
 #
 msgid	"no project name"
-msgstr	"bạn phải đưa ra tên dự án một cách dứt khoát tới câu lệnh nàu"
+msgstr	"bạn phải đưa ra tên dự án một cách dứt khoát "
+	"tới câu lệnh nàu"
 
 #
 # This error message is issued when an unknown report name is requested.
@@ -4434,8 +4616,8 @@ msgstr	"không có tập tin thích hợp dùng chung"
 # user name is not given one.
 #
 msgid	"no user name"
-msgstr	"bạn phải đưa ra tên người dùng một cách dứt khoát tới câu lệnh "
-	"này"
+msgstr	"bạn phải đưa ra tên người dùng một cách dứt "
+	"khoát tới câu lệnh này"
 
 #
 # This error message is issued when a command which requires a list
@@ -4453,8 +4635,8 @@ msgstr	"chưa ghi rõ tên người dùng"
 #       $Name3          The name of a command line option.
 #
 msgid	"not $name1 and $name2 and $name3 together"
-msgstr	"ba tùy chọn $name1, $name2, $name3 loại từ lẫn nhau : chỉ có thể "
-	"ghi rõ một của chúng"
+msgstr	"ba tùy chọn $name1, $name2, $name3 loại từ lẫn nhau : "
+	"chỉ có thể ghi rõ một của chúng"
 
 #
 # This error message is issued when two mutually exclusive options are
@@ -4464,8 +4646,8 @@ msgstr	"ba tùy chọn $name1, $name2, $name3 loại từ lẫn nhau : chỉ có
 #       $Name2          The name of a command line option.
 #
 msgid	"not $name1 and $name2 together"
-msgstr	"hai  tùy chọn $name1, $name2 loại từ lẫn nhau : chỉ có thể ghi "
-	"rõ một của chúng"
+msgstr	"hai  tùy chọn $name1, $name2 loại từ lẫn nhau : chỉ "
+	"có thể ghi rõ một của chúng"
 
 #
 # This fatal error message is issued when a change is used in a context
@@ -4480,35 +4662,40 @@ msgstr	"thay đổi này không phải là một nhánh"
 # developer privileges is used, and the user is not a developer.
 #
 msgid	"not a developer"
-msgstr	"người dùng « $user » không phải là một nhà phát triển"
+msgstr	"người dùng « $user » không phải là một nhà phát "
+	"triển"
 
 #
 # This error message is issued when a command which requires
 # reviewer privileges is used, and the user is not a reviewer.
 #
 msgid	"not a reviewer"
-msgstr	"người dùng « $user » không phải là một người xem lại"
+msgstr	"người dùng « $user » không phải là một người xem "
+	"lại"
 
 #
 # This error message is issued when a command which requires
 # administrator privileges is used, and the user is not an administrator.
 #
 msgid	"not an administrator"
-msgstr	"người dùng « $user » không phải là một quản trị viên"
+msgstr	"người dùng « $user » không phải là một quản trị "
+	"viên"
 
 #
 # This error message is issued when a command which requires an even
 # number of file names is not given one.
 #
 msgid	"not an even number of args"
-msgstr	"đối với câu lệnh này thì bạn phải đưa ra số chẵn các tập tin"
+msgstr	"đối với câu lệnh này thì bạn phải đưa ra số "
+	"chẵn các tập tin"
 
 #
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
 msgid	"not an integrator"
-msgstr	"người dùng « $user » không phải là một người hợp nhất"
+msgstr	"người dùng « $user » không phải là một người "
+	"hợp nhất"
 
 #
 # This error message is issued when a build request is given for a
@@ -4516,8 +4703,9 @@ msgstr	"người dùng « $user » không phải là một người hợp nhất
 # is not the change's developer.
 #
 msgid	"not developer"
-msgstr	"người dùng « $user » không phải là nhà phát triển: chỉ người "
-	"dùng « $developer » có quyền thao tác thay đổi này"
+msgstr	"người dùng « $user » không phải là nhà phát triển: "
+	"chỉ người dùng « $developer » có quyền thao tác thay "
+	"đổi này"
 
 #
 # This error message is issued when a request is made to delete the last
@@ -4533,8 +4721,9 @@ msgstr	"lúc nào cũng phải có ít nhất một quản trị viên"
 # is not the change's integrator.
 #
 msgid	"not integrator"
-msgstr	"người dùng « $user » không phải là người hợp nhất: chỉ người "
-	"dùng « $integrator » có quyền thao tác thay đổi này"
+msgstr	"người dùng « $user » không phải là người hợp "
+	"nhất: chỉ người dùng « $integrator » có quyền thao "
+	"tác thay đổi này"
 
 #
 # This error message is issued when a review pass or review fail or review
@@ -4543,8 +4732,9 @@ msgstr	"người dùng « $user » không phải là người hợp nhất: ch�
 # project attribute "develop_end_action" is set to "goto_awaiting_review".
 #
 msgid	"not reviewer"
-msgstr	"người dùng « $user » không phải là người xem lại: chỉ người dùng "
-	"« $reviewer » có quyền thao tác thay đổi này"
+msgstr	"người dùng « $user » không phải là người xem lại: "
+	"chỉ người dùng « $reviewer » có quyền thao tác thay "
+	"đổi này"
 
 #
 # This error message is issued when a substitution function is called
@@ -4568,12 +4758,13 @@ msgstr	"mở « $filename »: $errno"
 #       $File_Name      The name of the offending file.
 #
 msgid	"open $filename: no curl library"
-msgstr	"không thể mở tập tin « $filename » vì không có thư viện « -lcurl "
-	"» sẵn sàng khi xây dựng Aegis. Thư viện curl được dùng để đọc "
-	"rất nhiều kiểu địa chỉ URL khác nhau. Nếu bạn sử dụng bộ quản lý "
-	"gói phần mềm, thư viện này thường nằm trong gói « curl-devel ». "
-	"Bạn cũng cần phải cấu hình lại và xây dựng lại Aegis một khi cài "
-	"đặt nó."
+msgstr	"không thể mở tập tin « $filename » vì không có thư "
+	"viện « -lcurl » sẵn sàng khi xây dựng Aegis. Thư "
+	"viện curl được dùng để đọc rất nhiều kiểu "
+	"địa chỉ URL khác nhau. Nếu bạn sử dụng bộ quản "
+	"lý gói phần mềm, thư viện này thường nằm trong "
+	"gói « curl-devel ». Bạn cũng cần phải cấu hình "
+	"lại và xây dựng lại Aegis một khi cài đặt nó."
 
 #
 # This error message is issued by aede when attempting to end the
@@ -4591,8 +4782,8 @@ msgstr	"thay đổi này ở tình trạng « $state »"
 #       $Number         Number of changes outstanding.  (Optional)
 #
 msgid	"outstanding changes"
-msgstr	"có $number thay đổi còn lại; không cho phép bạn sử dụng câu lệnh "
-	"này nếu có thay đổi còn lại"
+msgstr	"có $number thay đổi còn lại; không cho phép bạn sử "
+	"dụng câu lệnh này nếu có thay đổi còn lại"
 
 #
 # This error message is issued when the argument to -Page_Length is absurd.
@@ -4620,31 +4811,36 @@ msgstr	"không thể hiểu được bạn muốn nói gì"
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"parse error; also virtual memory exceeded"
-msgstr	"không thể hiểu được bạn muốn nói gì, quá phức tạp để vừa bộ nhớ"
+msgstr	"không thể hiểu được bạn muốn nói gì, quá phức "
+	"tạp để vừa bộ nhớ"
 
 #
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"parse error; also virtual memory exhausted"
-msgstr	"không thể hiểu được bạn muốn nói gì, quá phức tạp để vừa bộ nhớ"
+msgstr	"không thể hiểu được bạn muốn nói gì, quá phức "
+	"tạp để vừa bộ nhớ"
 
 #
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"parser stack overflow"
-msgstr	"không thể hiểu được bạn muốn nói gì, quá phức tạp và tràn đống"
+msgstr	"không thể hiểu được bạn muốn nói gì, quá phức "
+	"tạp và tràn đống"
 
 #
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
-msgstr	"tiến trình xây dựng bộ phận đã chạy xong ${date %H:%M}"
+msgstr	"tiến trình xây dựng bộ phận đã chạy xong ${date "
+	"%H:%M}"
 
 #
 # This message is issued when partial development builds are commenced.
 #
 msgid	"partial build started"
-msgstr	"tiến trình xây dựng bộ phận đã khởi chạy ${date %H:%M}"
+msgstr	"tiến trình xây dựng bộ phận đã khởi chạy ${date "
+	"%H:%M}"
 
 #
 # This progress message is issued when aet completes, both successfully
@@ -4686,8 +4882,8 @@ msgstr	"thư mục dự án « $filename »"
 # specified, or the project may have no tests at all.
 #
 msgid	"proj has no tests"
-msgstr	"dự án này cần thiết chạy các hàm thử thích hợp trước khi có thể "
-	"sử dụng câu lệnh này"
+msgstr	"dự án này cần thiết chạy các hàm thử thích hợp "
+	"trước khi có thể sử dụng câu lệnh này"
 
 #
 # This is the format of project messages (error, fatal and verbose).
@@ -4775,8 +4971,8 @@ msgstr	"đọc « $filename »: lỗi định dạng"
 # it will use to reconstruct the changes.
 #
 msgid	"read history files"
-msgstr	"đang đọc các tập tin lược sử để tìm biết mỗi tập tin bị thay đổi "
-	"khi nào và bởi ai"
+msgstr	"đang đọc các tập tin lược sử để tìm biết mỗi "
+	"tập tin bị thay đổi khi nào và bởi ai"
 
 #
 # This error message is issued when a readlink fails.
@@ -4791,8 +4987,9 @@ msgstr	"readlink « $filename »: $errno"
 # head revision of each history file to form the baseline of the project.
 #
 msgid	"reconstruct baseline"
-msgstr	"đang xuất kiểm các bản sửa đổi HEAD của các tập tin đã nhập khẩu "
-	"để cấu tạo lại đường cơ bản của dự án"
+msgstr	"đang xuất kiểm các bản sửa đổi HEAD của các "
+	"tập tin đã nhập khẩu để cấu tạo lại đường "
+	"cơ bản của dự án"
 
 #
 # This verbose message is issued by the aecd command when a change is
@@ -4801,9 +4998,10 @@ msgstr	"đang xuất kiểm các bản sửa đổi HEAD của các tập tin đ
 # from wasting their time.
 #
 msgid	"remember to use the aerb command"
-msgstr	"Nếu bạn định xem lại thay đổi này, hãy sử dụng câu lệnh « aegis -"
-	"review-begin » càng sớm càng có thề. Hành động này đảm bảo rằng "
-	"người xem lại khác không lãng phí thì giờ quý giá."
+msgstr	"Nếu bạn định xem lại thay đổi này, hãy sử dụng "
+	"câu lệnh « aegis -review-begin » càng sớm càng có "
+	"thề. Hành động này đảm bảo rằng người xem lại "
+	"khác không lãng phí thì giờ quý giá."
 
 #
 # This progress message is issued when aera completes successfully.
@@ -4811,7 +5009,8 @@ msgstr	"Nếu bạn định xem lại thay đổi này, hãy sử dụng câu l�
 #       $Name           The name of the removed user.
 #
 msgid	"remove administrator $name complete"
-msgstr	"người dùng « $name » không còn là quản trị viên lại"
+msgstr	"người dùng « $name » không còn là quản trị viên "
+	"lại"
 
 #
 # This progress message is issued when aerd completes successfully.
@@ -4846,8 +5045,8 @@ msgstr	"tập tin « $filename » đang bị gỡ bỏ"
 #                       (Optional)
 #
 msgid	"remove file fail"
-msgstr	"tìm thấy $number lỗi nghiêm trọng nên không thêm tập tin vào "
-	"thay đổi"
+msgstr	"tìm thấy $number lỗi nghiêm trọng nên không thêm "
+	"tập tin vào thay đổi"
 
 #
 # This progress message is issued when aerm completes successfully.
@@ -4867,8 +5066,8 @@ msgstr	"tập tin « $filename » không còn bị gỡ bỏ lại"
 #                       (Optional)
 #
 msgid	"remove file undo fail"
-msgstr	"tìm thấy $number lỗi nghiêm trọng nên không gỡ bỏ tập tin khỏi "
-	"thay đổi"
+msgstr	"tìm thấy $number lỗi nghiêm trọng nên không gỡ bỏ "
+	"tập tin khỏi thay đổi"
 
 #
 # This progress message is issued when removing the integration
@@ -4883,7 +5082,8 @@ msgstr	"đang gỡ bỏ thư mục hợp nhất"
 #       $Name           The name of the removed user.
 #
 msgid	"remove integrator $name complete"
-msgstr	"người dùng « $name » không còn lạ người hợp nhất lại"
+msgstr	"người dùng « $name » không còn lạ người hợp "
+	"nhất lại"
 
 #
 # This progress message is issued when removing the old development
@@ -4924,7 +5124,8 @@ msgstr	"người dùng « $name » không còn lạ người xem lại"
 # from the development directory which point to the baseline.
 #
 msgid	"removing symbolic links to baseline"
-msgstr	"đang gỡ bỏ các liên kết tượng trưng tới đường cơ bản"
+msgstr	"đang gỡ bỏ các liên kết tượng trưng tới đường "
+	"cơ bản"
 
 #
 # This error message is issued when a rename fails.
@@ -5015,16 +5216,18 @@ msgstr	"không chấp nhận đối số"
 # them to be created.
 #
 msgid	"restart integration after upgrade"
-msgstr	"không có thay đổi nào nên ở tình trạng $state khi Aegis được "
-	"nâng cấp, vì một số tình trạng tập tin không sẵn sàng: hãy sử "
-	"dụng hai câu lệnh « aegis -ibu » rồi « aegis-ib » với thay đổi "
-	"này, để khởi chạy lại tiến trình hợp nhất"
+msgstr	"không có thay đổi nào nên ở tình trạng $state khi "
+	"Aegis được nâng cấp, vì một số tình trạng tập "
+	"tin không sẵn sàng: hãy sử dụng hai câu lệnh « "
+	"aegis -ibu » rồi « aegis-ib » với thay đổi này, để "
+	"khởi chạy lại tiến trình hợp nhất"
 
 #
 # This progress message is issued when aerb completes successfully.
 #
 msgid	"review begin complete"
-msgstr	"người dùng « $user » đã bắt đầu tiến trình xem lại"
+msgstr	"người dùng « $user » đã bắt đầu tiến trình xem "
+	"lại"
 
 #
 # This progress message is issued when aerbu completes successfully.
@@ -5033,11 +5236,11 @@ msgid	"review begin undo complete"
 msgstr	"bước bắt đầu tiến trình xem lại đã bị hủy"
 
 #
-#
 # This progress message is issued when aerfail completes successfully.
 #
 msgid	"review fail complete"
-msgstr	"tiến trình xem lại bị trượt nên trở về nhà phát triển"
+msgstr	"tiến trình xem lại bị trượt nên trở về nhà phát "
+	"triển"
 
 #
 # This progress message is issued when aerpass completes successfully.
@@ -5056,7 +5259,8 @@ msgstr	"bước đỗ tiến trình xem lại đã bị hủy"
 # a change she reviewed, and the project is configured to disallow this.
 #
 msgid	"reviewer may not integrate"
-msgstr	"người xem lại một thay đổi nào đó thì không có quyển hợp nhất nó"
+msgstr	"người xem lại một thay đổi nào đó thì không có "
+	"quyển hợp nhất nó"
 
 #
 # This progress message is issued when aeifail is removing the
@@ -5078,8 +5282,8 @@ msgstr	"rmdir « $filename »: $errno"
 # incorrectly.  See (+++) above.
 #
 msgid	"second argument must be \"Absolute\" or \"Relative\""
-msgstr	"đối số thứ hai phải là « Absolute » (tuyệt đối) hay « Relative "
-	"» (tương đối)"
+msgstr	"đối số thứ hai phải là « Absolute » (tuyệt đối) "
+	"hay « Relative » (tương đối)"
 
 #
 # This error message is issued when a setgid fails.
@@ -5105,8 +5309,8 @@ msgstr	"setuid $arg: $errno"
 #                       (Optional)
 #
 msgid	"single file with -Output"
-msgstr	"có thể ghi rõ chính xác một tập tin nguồn khi dùng tùy chọn « -"
-	"Output » (bạn đã chọn $number)"
+msgstr	"có thể ghi rõ chính xác một tập tin nguồn khi dùng "
+	"tùy chọn « -Output » (bạn đã chọn $number)"
 
 #
 # This information message is issued when aet completes with one or more
@@ -5115,7 +5319,7 @@ msgstr	"có thể ghi rõ chính xác một tập tin nguồn khi dùng tùy ch�
 #       $Number         The number of tests which were skipped.
 #
 msgid	"skipped $number tests"
-msgstr	"skipped $number test${plural $number s}"
+msgstr	"đã bỏ qua $number hàm thử"
 
 #
 # This error message is issued when an inappropriate argument is given
@@ -5124,8 +5328,8 @@ msgstr	"skipped $number test${plural $number s}"
 #       $Name           The type name of the offending argument.
 #
 msgid	"sort requires a list argument (was given $name)"
-msgstr	"hàm sort (sắp xếp) cần thiết một đối số kiểu liệt kê (đã cho "
-	"$name)"
+msgstr	"hàm sort (sắp xếp) cần thiết một đối số kiểu "
+	"liệt kê (đã cho $name)"
 
 #
 # This error message is issued when too many arguments are given to the
@@ -5134,8 +5338,8 @@ msgstr	"hàm sort (sắp xếp) cần thiết một đối số kiểu liệt k�
 #       $Number         The number of arguments given.
 #
 msgid	"sort requires exactly 1 argument (was given $number)"
-msgstr	"hàm sort (sắp xếp) cần thiết chính xác một đối số (đã cho "
-	"$number)"
+msgstr	"hàm sort (sắp xếp) cần thiết chính xác một đối "
+	"số (đã cho $number)"
 
 #
 # This error message is issued when the ${source} substitution is called
@@ -5164,7 +5368,7 @@ msgstr	"đầu ra tiêu chuẩn"
 #       $File_Name      The name of the offending file.
 #
 msgid	"stat $filename: $errno"
-msgstr	"stat $filename: $errno"
+msgstr	"$filename: $errno"
 
 #
 # This error message is issued when a symlink fails.
@@ -5181,7 +5385,8 @@ msgstr	"symlink(\"$filename1\", \"$filename2\"): $errno"
 # seen rarely.
 #
 msgid	"sync error, try again"
-msgstr	"cái gì đó đã thay đổi nên hủy bỏ thao tác, hãy thử lại"
+msgstr	"cái gì đó đã thay đổi nên hủy bỏ thao tác, hãy "
+	"thử lại"
 
 #
 # This error message is issued when yacc finds an error at parse time.
@@ -5199,7 +5404,8 @@ msgstr	"không thể hiểu được bạn muốn nói gì"
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"syntax error; also virtual memory exhausted"
-msgstr	"không thể hiểu được bạn muốn nói gì, không phức tạp để vừa bộ nhớ"
+msgstr	"không thể hiểu được bạn muốn nói gì, không "
+	"phức tạp để vừa bộ nhớ"
 
 #
 # This error message is issued when the argument to -Tab_Width is absurd.
@@ -5236,9 +5442,9 @@ msgstr	"$number $filename"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"test -bl required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình thử đường "
-	"cơ bản « aegis -Test -BaseLine » $outstanding trước khi nó có "
-	"thể kết thúc phát triển"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình thử đường cơ bản « aegis -Test -BaseLine » "
+	"$outstanding trước khi nó có thể kết thúc phát triển"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -5248,9 +5454,9 @@ msgstr	"thay đổi này phải chạy xong thành công một tiến trình th�
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"test -reg required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình thử đệ quy "
-	"« aegis -Test -REGression » $outstanding trước khi nó có thể kết "
-	"thúc phát triển"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình thử đệ quy « aegis -Test -REGression » "
+	"$outstanding trước khi nó có thể kết thúc phát triển"
 
 #
 # This error message is issued when Aegis is invoked in test mode, but
@@ -5259,8 +5465,8 @@ msgstr	"thay đổi này phải chạy xong thành công một tiến trình th�
 #       $Name   The name of the -LIBrary option.
 #
 msgid	"test mode needs $name"
-msgstr	"Chưa ghi rõ tùy chọn $name. Bắt buộc phải ghi rõ nó ở chế độ « "
-	"thử » (test)."
+msgstr	"Chưa ghi rõ tùy chọn $name. Bắt buộc phải ghi rõ nó "
+	"ở chế độ « thử » (test)."
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -5270,9 +5476,9 @@ msgstr	"Chưa ghi rõ tùy chọn $name. Bắt buộc phải ghi rõ nó ở ch�
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"test required"
-msgstr	"thay đổi này phải chạy xong thành công một tiến trình thử « "
-	"aegis -Test » $outstanding trước khi nó có thể kết thúc phát "
-	"triển"
+msgstr	"thay đổi này phải chạy xong thành công một tiến "
+	"trình thử « aegis -Test » $outstanding trước khi nó có "
+	"thể kết thúc phát triển"
 
 #
 # This message is printed when the variable named in a catch lause is
@@ -5288,7 +5494,8 @@ msgstr	"biến catch phải có thể sửa đổi được"
 #       $Name           The type name of the offending expression.
 #
 msgid	"the catch variable must be modifiable (not $name)"
-msgstr	"biến catch phải có thể sửa đổi được (đã cho $name)"
+msgstr	"biến catch phải có thể sửa đổi được (đã cho "
+	"$name)"
 
 #
 # This message is issued when a for(a in b) loop is given a sequence expression
@@ -5297,7 +5504,8 @@ msgstr	"biến catch phải có thể sửa đổi được (đã cho $name)"
 #       $Name           The type name of the offending expression.
 #
 msgid	"the loop iteration value must be a list (not $name)"
-msgstr	"giá trị lặp lại vòng lặp phải là danh sách (đã cho $name)"
+msgstr	"giá trị lặp lại vòng lặp phải là danh sách (đã "
+	"cho $name)"
 
 #
 # This message is issued when a for(a in b) loop is given a control
@@ -5305,7 +5513,8 @@ msgstr	"giá trị lặp lại vòng lặp phải là danh sách (đã cho $name
 # at compile time, the other one is determined at run time.
 #
 msgid	"the loop variable must be modifiable"
-msgstr	"giá trị vòng lặp phải là một lvalue có thể sửa đổi được"
+msgstr	"giá trị vòng lặp phải là một lvalue có thể sửa "
+	"đổi được"
 
 #
 # This message is issued when a for(a in b) loop is given a control expression
@@ -5314,8 +5523,8 @@ msgstr	"giá trị vòng lặp phải là một lvalue có thể sửa đổi đ
 #       $Name           The type name of the offending expression.
 #
 msgid	"the loop variable must be modifiable (not $name)"
-msgstr	"giá trị vòng lặp phải là một lvalue có thể sửa đổi được (đã cho "
-	"$name)"
+msgstr	"giá trị vòng lặp phải là một lvalue có thể sửa "
+	"đổi được (đã cho $name)"
 
 #
 # This message is issued when a variable name is reused.
@@ -5340,8 +5549,8 @@ msgstr	"chưa xác định tên « $name »"
 # Also used as a debug message, only visable when DEBUG is defined.
 #
 msgid	"throttling $number seconds"
-msgstr	"đang ngủ trong vòng $number giây để cho phép các thời gian sửa "
-	"đổi tập tin nhất quán với nhau"
+msgstr	"đang ngủ trong vòng $number giây để cho phép các "
+	"thời gian sửa đổi tập tin nhất quán với nhau"
 
 #
 # This message is issued whrn a throw statement is evaluated, and the
@@ -5350,7 +5559,8 @@ msgstr	"đang ngủ trong vòng $number giây để cho phép các thời gian s
 #       $Name           The type name of the offending expression.
 #
 msgid	"throw statement requires string argument (not $name)"
-msgstr	"câu lệnh throw (ném) cần thiết đối số kiểu chuỗi (đã cho $name)"
+msgstr	"câu lệnh throw (ném) cần thiết đối số kiểu "
+	"chuỗi (đã cho $name)"
 
 #
 # This warning is issued when a delta date is specified which
@@ -5360,8 +5570,9 @@ msgstr	"câu lệnh throw (ném) cần thiết đối số kiểu chuỗi (đã 
 #       $number         The offending date and time.
 #
 msgid	"time $number after branch"
-msgstr	"cảnh báo : thời gian « $number » xảy ra sau khi nhánh kết thúc, "
-	"mà không có nghĩa khi tạo lại nội dung của nhánh"
+msgstr	"cảnh báo : thời gian « $number » xảy ra sau khi nhánh "
+	"kết thúc, mà không có nghĩa khi tạo lại nội dung "
+	"của nhánh"
 
 #
 # This warning is issued when a delta date is specified which falls
@@ -5371,8 +5582,9 @@ msgstr	"cảnh báo : thời gian « $number » xảy ra sau khi nhánh kết th
 #       $number         The offending date and time.
 #
 msgid	"time $number before branch"
-msgstr	"cảnh báo : thời gian « $number » xảy ra trước khi nhánh bắt đầu, "
-	"mà không có nghĩa khi tạo lại nội dung của nhánh"
+msgstr	"cảnh báo : thời gian « $number » xảy ra trước khi "
+	"nhánh bắt đầu, mà không có nghĩa khi tạo lại nội "
+	"dung của nhánh"
 
 #
 # This error message is issued when too few files names are specified on
@@ -5479,7 +5691,8 @@ msgstr	"uname: $errno"
 #       $File_Name      The name of the file
 #
 msgid	"unfinished: chmod $arg $filename"
-msgstr	"tiến trình phục hồi chưa chạy xong: chmod $arg $filename"
+msgstr	"tiến trình phục hồi chưa chạy xong: chmod $arg "
+	"$filename"
 
 #
 # This error message is issued when there is an unfinished recovery
@@ -5489,7 +5702,8 @@ msgstr	"tiến trình phục hồi chưa chạy xong: chmod $arg $filename"
 #       $File_Name2     The name of the destination file
 #
 msgid	"unfinished: mv $filename1 $filename2"
-msgstr	"tiến trình phục hồi chưa chạy xong: mv $filename1 $filename2"
+msgstr	"tiến trình phục hồi chưa chạy xong: mv $filename1 "
+	"$filename2"
 
 #
 # This error message is issued when there is an unfinished recovery
@@ -5537,7 +5751,8 @@ msgstr	"dự án này không biết thay đổi hay nhánh có số này "
 # This fatal error message is issued when the shell cannot be determined.
 #
 msgid	"unknown shell"
-msgstr	"không thể quyết định trình bào nào đã yêu cầu sự làm xong"
+msgstr	"không thể quyết định trình bào nào đã yêu cầu "
+	"sự làm xong"
 
 #
 # This error message is issued when an unknown substitution is
@@ -5583,7 +5798,8 @@ msgstr	"hãy sử dụng câu lệnh « aegis -nbru » thay vào đó"
 #       $Name           The offending user name.
 #
 msgid	"user \"$name\" is not a developer"
-msgstr	"người dùng « $name » không phải là một nhà phát triển"
+msgstr	"người dùng « $name » không phải là một nhà phát "
+	"triển"
 
 #
 # This error message is issued when a request is made to remove a
@@ -5592,7 +5808,8 @@ msgstr	"người dùng « $name » không phải là một nhà phát triển"
 #       $Name           The offending user name.
 #
 msgid	"user \"$name\" is not a reviewer"
-msgstr	"người dùng « $name » không phải là một người xem lại"
+msgstr	"người dùng « $name » không phải là một người xem "
+	"lại"
 
 #
 # This error message is issued when a request is made to remove an
@@ -5602,7 +5819,8 @@ msgstr	"người dùng « $name » không phải là một người xem lại"
 #       $Name           The offending user name.
 #
 msgid	"user \"$name\" is not an administrator"
-msgstr	"người dùng « $name » không phải là một quản trị viên"
+msgstr	"người dùng « $name » không phải là một quản trị "
+	"viên"
 
 #
 # This error message is issued when a request is made to remove an
@@ -5612,7 +5830,8 @@ msgstr	"người dùng « $name » không phải là một quản trị viên"
 #       $Name           The offending user name.
 #
 msgid	"user \"$name\" is not an integrator"
-msgstr	"người dùng « $name » không phải là một người hợp nhất"
+msgstr	"người dùng « $name » không phải là một người "
+	"hợp nhất"
 
 #
 # This error message is issued when aena is asked to add an
@@ -5641,7 +5860,8 @@ msgstr	"không rõ người dùng « $name »"
 #       $Guess          The closest match in the /etc/passwd file.
 #
 msgid	"user $name unknown, closest is $guess"
-msgstr	"không rõ người dùng « $name », gần nhất là người dùng « $guess »"
+msgstr	"không rõ người dùng « $name », gần nhất là người "
+	"dùng « $guess »"
 
 #
 # This information message is issued when Aegis is about to execute a
@@ -5699,16 +5919,18 @@ msgstr	"đợi khoá $name"
 # baseline read lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline read lock"
-msgstr	"đợi khoá đường cơ bản dùng chung; đây là vì có một câu lệnh hợp "
-	"nhất « aegis -Integrate_PASS » đang chạy"
+msgstr	"đợi khoá đường cơ bản dùng chung; đây là vì có "
+	"một câu lệnh hợp nhất « aegis -Integrate_PASS » đang "
+	"chạy"
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline write lock"
-msgstr	"đợi khoá đường cơ bản không kể ; đây là vì có một hay nhiều câu "
-	"lệnh xây dựng « aegis -Build » đang chạy"
+msgstr	"đợi khoá đường cơ bản không kể ; đây là vì có "
+	"một hay nhiều câu lệnh xây dựng « aegis -Build » "
+	"đang chạy"
 
 #
 # This progress message is issued when Aegis is waiting for a global state
@@ -5722,8 +5944,9 @@ msgstr	"đợi khoá chỉ mục vị trí dự án"
 # history lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for history lock"
-msgstr	"đợi khoá lược sử ; đây là vì có một câu lệnh hợp nhất « aegis -"
-	"Integrate_PASS » đang chạy trên nhánh khác"
+msgstr	"đợi khoá lược sử ; đây là vì có một câu lệnh "
+	"hợp nhất « aegis -Integrate_PASS » đang chạy trên "
+	"nhánh khác"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5741,9 +5964,9 @@ msgstr	"đợi khoá"
 #       $File_Name      The name of the affected file.
 #
 msgid	"warning: $filename in baseline, copying"
-msgstr	"cảnh báo : tập tin « $filename » đã tồn tại trong dự án, nên tự "
-	"động thay đổi hành động từ « create » (tạo) thành « modify "
-	"» (sửa đổi)"
+msgstr	"cảnh báo : tập tin « $filename » đã tồn tại trong "
+	"dự án, nên tự động thay đổi hành động từ « "
+	"create » (tạo) thành « modify » (sửa đổi)"
 
 #
 # This warning message is issued when a change file is modified by the
@@ -5753,7 +5976,8 @@ msgstr	"cảnh báo : tập tin « $filename » đã tồn tại trong dự án,
 #       $File_Name      The name of the offending file.
 #
 msgid	"warning: $filename modified by history tool"
-msgstr	"cảnh báo : công cụ lược sử đã sửa đổi tập tin nguồn « $filename »"
+msgstr	"cảnh báo : công cụ lược sử đã sửa đổi tập "
+	"tin nguồn « $filename »"
 
 #
 # This warning message is issued by aedist when a patch in an incominmg
@@ -5764,9 +5988,10 @@ msgstr	"cảnh báo : công cụ lược sử đã sửa đổi tập tin nguồ
 #       $filename       The name of the offending file.
 #
 msgid	"warning: $filename patch not used"
-msgstr	"cảnh báo : không thể sử dụng đắp vá cho « $filename », nên dùng "
-	"nguồn đầy đủ đã gửi đến cho tập tin này; có lẽ bạn cần phải tự "
-	"tháo gỡ trường hợp xung đột"
+msgstr	"cảnh báo : không thể sử dụng đắp vá cho « "
+	"$filename », nên dùng nguồn đầy đủ đã gửi đến "
+	"cho tập tin này; có lẽ bạn cần phải tự tháo gỡ "
+	"trường hợp xung đột"
 
 #
 # This warning message is issued when the the old project configuration
@@ -5778,9 +6003,8 @@ msgstr	"cảnh báo : không thể sử dụng đắp vá cho « $filename », n
 #       $File_Name2     The name of the new project configuration file default.
 #
 msgid	"warning: $filename1 deprecated, use $filename2 file instead"
-msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
-	"suggested that you use the \"$filename2\" file instead.  See aenf"
-	"(1) for more information."
+msgstr	"cảnh báo : $filename1 bị phản đối nên dùng "
+	"$filename2 thay vào đó"
 
 #
 # This generic message is used to turn what would otherwise be an error
@@ -5789,7 +6013,7 @@ msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
 #       $MeSsaGe        The message to be printed as a warning.
 #
 msgid	"warning: $message"
-msgstr	"warning: $message"
+msgstr	"cảnh báo : $message"
 
 #
 # This warning message is issued when the AEGIS environment variable is
@@ -5800,8 +6024,8 @@ msgstr	"warning: $message"
 #       $Name2  The name of the AEGIS_PATH environment variable.
 #
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
-msgstr	"cảnh báo : biến môi trường $name1 quá cũ, hãy dùng biến môi "
-	"tường $name2 thay vào đó"
+msgstr	"cảnh báo : biến môi trường $name1 quá cũ, hãy dùng "
+	"biến môi tường $name2 thay vào đó"
 
 #
 # This warning is issued when an obsolete option is used.
@@ -5810,8 +6034,8 @@ msgstr	"cảnh báo : biến môi trường $name1 quá cũ, hãy dùng biến m
 #       $Name2          The name of the preferred option.
 #
 msgid	"warning: $name1 obsolete, use $name2 option"
-msgstr	"cảnh báo : tùy chọn $name1 quá cũ, sau này hãy dùng tùy chọn "
-	"$name2"
+msgstr	"cảnh báo : tùy chọn $name1 quá cũ, sau này hãy dùng "
+	"tùy chọn $name2"
 
 #
 # This warning message is issued when a chmod fails, but Aegis will continue.
@@ -5830,7 +6054,8 @@ msgstr	"cảnh báo : chmod(\"$filename\", $arg): $errno"
 #       $Number         The exit status of the child.
 #
 msgid	"warning: command \"$command\" exit status $number"
-msgstr	"cảnh báo : lệnh « $command » có trạng thái thoát $number"
+msgstr	"cảnh báo : lệnh « $command » có trạng thái thoát "
+	"$number"
 
 #
 # This warning message is issued when Aegis finds files which require
@@ -5847,11 +6072,11 @@ msgstr	"cảnh báo : có $number tập tin cần khác biệt"
 # This error message is issued when your search expression doesn't
 # do anything.
 #
-msgid	"warning: expression has no side effects, assuming you meant -"
-	"PRint"
-msgstr	"cảnh báo : biểu thức không có hiệu ứng khác nên giả sử bạn đã dự "
-	"định « -PRint » (in ra) các tập tin tương ứng với biểu thức đã "
-	"cho"
+msgid	"warning: expression has no side effects, assuming you meant "
+	"-PRint"
+msgstr	"cảnh báo : biểu thức không có hiệu ứng khác nên "
+	"giả sử bạn đã dự định « -PRint » (in ra) các "
+	"tập tin tương ứng với biểu thức đã cho"
 
 #
 # This warning message is issued when aeclean notices that a file needs
@@ -5860,7 +6085,8 @@ msgstr	"cảnh báo : biểu thức không có hiệu ứng khác nên giả s�
 #       $File_Name      The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs diff"
-msgstr	"cảnh báo : tập tin « $filename » cần thiết khác biệt"
+msgstr	"cảnh báo : tập tin « $filename » cần thiết khác "
+	"biệt"
 
 #
 # This warning message is issued when aeclean notices that a file needs
@@ -5880,8 +6106,8 @@ msgstr	"cảnh báo : tập tin « $filename » cần thiết trộn"
 #                       (Optional)
 #
 msgid	"warning: file times in future"
-msgstr	"cảnh báo : các thời gian sửa đổi tập tin có kéo dài $number giây "
-	"trong tương lai"
+msgstr	"cảnh báo : các thời gian sửa đổi tập tin có kéo "
+	"dài $number giây trong tương lai"
 
 #
 # This warning message is a summary issued when one or more change
@@ -5892,11 +6118,12 @@ msgstr	"cảnh báo : các thời gian sửa đổi tập tin có kéo dài $num
 #                       (Optional)
 #
 msgid	"warning: files modified by history tool"
-msgstr	"cảnh báo : công cụ lược sử đã sửa đổi $number tập tin nguồn. Các "
-	"tập tin nguồn trong kho lưu trữ không còn tương ứng lại với "
-	"$number tập tin đối tượng trong kho. Công cụ đã làm hại tình "
-	"trạng nguyên vẹn của kho, nếu các thay đổi không xảy ra chỉ "
-	"trong lời ghi chú."
+msgstr	"cảnh báo : công cụ lược sử đã sửa đổi $number "
+	"tập tin nguồn. Các tập tin nguồn trong kho lưu trữ "
+	"không còn tương ứng lại với $number tập tin đối "
+	"tượng trong kho. Công cụ đã làm hại tình trạng "
+	"nguyên vẹn của kho, nếu các thay đổi không xảy ra "
+	"chỉ trong lời ghi chú."
 
 #
 # This warning message is issued when Aegis finds files which require
@@ -5918,9 +6145,10 @@ msgstr	"cảnh báo : có $number tập tin cần trộn"
 #       $File_Name      The name of the affected file.
 #
 msgid	"warning: no $filename in baseline, creating"
-msgstr	"cảnh báo : tập tin « $filename » không còn nằm lại trên đường cơ "
-	"bản, nên tự động thay đổi hành động từ « modify » (sửa đổi) "
-	"thành « create » (tạo)"
+msgstr	"cảnh báo : tập tin « $filename » không còn nằm lại "
+	"trên đường cơ bản, nên tự động thay đổi hành "
+	"động từ « modify » (sửa đổi) thành « create » "
+	"(tạo)"
 
 #
 # This warning message is issued when a non-intuitive default is
@@ -5930,35 +6158,39 @@ msgstr	"cảnh báo : tập tin « $filename » không còn nằm lại trên đ
 #       $Name2          The name of a command line option.
 #
 msgid	"warning: no $name1, assuming $name2"
-msgstr	"cảnh báo : chưa ghi rõ $name1 nên giả sử $name2 đã muốn"
+msgstr	"cảnh báo : chưa ghi rõ $name1 nên giả sử $name2 đã "
+	"muốn"
 
 #
 # This warning message is issued when an aechown command attempts to
 # change the owner of a change to the current owner.
 #
 msgid	"warning: no chown"
-msgstr	"cảnh báo : không cần thay đổi chủ sở hưu ; đang được phát triển "
-	"bởi người dùng « $developer »; một thư mục phát triển mới sẽ "
-	"được cấu tạo"
+msgstr	"cảnh báo : không cần thay đổi chủ sở hưu ; đang "
+	"được phát triển bởi người dùng « $developer »; "
+	"một thư mục phát triển mới sẽ được cấu tạo"
 
 #
 # This warning is issued when a received file could have a Trojan horse
 # attack in it, but the use said to keep going.
 #
 msgid	"warning: potential trojan, proceeding anyway"
-msgstr	"Cảnh báo : thay đổi này chứa các tập tin có thể hỗ trợ sự tấn "
-	"công con ngựa thành Troa (Trojan horse). Vì bạn đã ghi rõ tùy "
-	"chọn « --no-trojan », tiến trình phát triển sẽ vẫn còn tiếp tục."
+msgstr	"Cảnh báo : thay đổi này chứa các tập tin có thể "
+	"hỗ trợ sự tấn công con ngựa thành Troa (Trojan "
+	"horse). Vì bạn đã ghi rõ tùy chọn « --no-trojan », "
+	"tiến trình phát triển sẽ vẫn còn tiếp tục."
 
 #
 # This warning is issued when a received file could have a Trojan horse
 # attack in it.
 #
 msgid	"warning: potential trojan, review before completing development"
-msgstr	"Cảnh báo : thay đổi này chứa các tập tin có thể hỗ trợ sự tấn "
-	"công con ngựa thành Troa (Trojan horse). Bạn nên xem lại trước "
-	"khi xây dựng nó hay thử nó hay làm xong tiến trình phát triển. "
-	"Thay đổi này còn lại ở tình trạng « đang được phát triển ». "
+msgstr	"Cảnh báo : thay đổi này chứa các tập tin có thể "
+	"hỗ trợ sự tấn công con ngựa thành Troa (Trojan "
+	"horse). Bạn nên xem lại trước khi xây dựng nó hay "
+	"thử nó hay làm xong tiến trình phát triển. Thay đổi "
+	"này còn lại ở tình trạng « đang được phát "
+	"triển ». "
 
 #
 # This warning message is issued when a rmdir fails, but Aegis will continue.
@@ -5988,10 +6220,11 @@ msgstr	"cảnh báo : stat \"$filename\": $errno"
 # This warning message is issued when in Aegis runs in test mode.
 #
 msgid	"warning: test mode"
-msgstr	"Cảnh báo : bản sao này đang chạy ở chế độ « test » (thử). Nó có "
-	"khả năng bị giảm do quyền hạn cũng bị giảm. Chế độ này được cung "
-	"cấp chỉ để thử nên không phải là một chế độ thao tác khuyến "
-	"khích."
+msgstr	"Cảnh báo : bản sao này đang chạy ở chế độ « "
+	"test » (thử). Nó có khả năng bị giảm do quyền "
+	"hạn cũng bị giảm. Chế độ này được cung cấp "
+	"chỉ để thử nên không phải là một chế độ thao "
+	"tác khuyến khích."
 
 #
 # This warning message is issued when an unlink fails, but Aegis will continue.
@@ -6010,8 +6243,9 @@ msgstr	"cảnh báo : bỏ liên kết « $filename »: $errno"
 #                       assuming option names will be internationalized RSN
 #
 msgid	"warning: use $name option"
-msgstr	"cảnh báo : hãy sử dụng tùy chọn $name khi ghi rõ một tập tin "
-	"thuộc tính; dạng trần truồng trở thành quá cũ"
+msgstr	"cảnh báo : hãy sử dụng tùy chọn $name khi ghi rõ "
+	"một tập tin thuộc tính; dạng trần truồng trở "
+	"thành quá cũ"
 
 #
 # This warning message is issued when a utime fails.
@@ -6026,18 +6260,20 @@ msgstr	"cảnh báo : utime \"$filename\": $errno"
 # user who was not the developer of the change being operated on.
 #
 msgid	"was not developer"
-msgstr	"người dùng « $user » đã không phải là nhà phát triển của thay "
-	"đổi này nên chỉ người dùng « $developer » có quyền hủy bước kết "
-	"thúc tiến trình phát triển"
+msgstr	"người dùng « $user » đã không phải là nhà phát "
+	"triển của thay đổi này nên chỉ người dùng « "
+	"$developer » có quyền hủy bước kết thúc tiến "
+	"trình phát triển"
 
 #
 # This error message is issued when a aerpu command is run by a
 # user who was not the reviewer of the change being operated on.
 #
 msgid	"was not reviewer"
-msgstr	"người dùng « $user » đã không phải là người xem lại của thay đổi "
-	"này nên chỉ người dùng « $developer » có quyền hủy bước chạy "
-	"tiến trình xem lại"
+msgstr	"người dùng « $user » đã không phải là người xem "
+	"lại của thay đổi này nên chỉ người dùng « "
+	"$developer » có quyền hủy bước chạy tiến trình xem "
+	"lại"
 
 #
 # This error message is issued when a file write fails
@@ -6052,7 +6288,8 @@ msgstr	"ghi « $filename »: $errno"
 # yacc to figure out.
 #
 msgid	"yacc stack overflow"
-msgstr	"không thể hiểu được bạn muốn nói gì, quá phức tạp"
+msgstr	"không thể hiểu được bạn muốn nói gì, quá phức "
+	"tạp"
 
 #
 # This error message is issued when Aegis is unable to proceed because

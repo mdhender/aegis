@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2005-2008 Peter Miller
+//	Copyright (C) 2009 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -794,11 +795,6 @@ revml_send(void)
 	//
 	time_t limit = change_completion_timestamp(cid.get_cp());
 	project_inventory_walk(cid.get_pp(), result, limit);
-    }
-    for (size_t an = 0; an < cstate_data->attribute->length; ++an)
-    {
-	attributes_ty *ap = cstate_data->attribute->list[an];
-	output_attribute_user(ofp, nstring(ap->name), nstring(ap->value));
     }
     if (cstate_data->uuid)
     {

@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 1991-1995, 1997-1999, 2001-2008 Peter Miller
-//      Copyright (C) 2007 Walter Franzini
+//      Copyright (C) 2007, 2009 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -760,7 +760,7 @@ gonzo_project_list_user(const nstring &uname, nstring_list &result)
         }
         ustate_type.free(ustate_data);
     }
-    trace(("found %d items\n", result.size()));
+    trace(("found %zd items\n", result.size()));
     trace(("}\n"));
 }
 

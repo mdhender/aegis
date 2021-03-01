@@ -33,8 +33,8 @@ wm title . Aegis
 wm maxsize . 32767 32767
 wm minsize . 200 100
 wm iconname . Aegis
-wm iconbitmap . @$datadir/aegis.icon
-wm iconmask . @$datadir/aegis.mask
+wm iconbitmap . $datadir/aegis.icon
+wm iconmask . $datadir/aegis.mask
 
 #
 # create the menu bar

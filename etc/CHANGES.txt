@@ -1,17 +1,17 @@
 
 
 
-Project "aegis.4.24.1"							  Page 1
-Branch Details						Wed Sep 24 23:48:50 2008
+Project "aegis.4.24.2"							  Page 1
+Branch Details						Thu Jun 25 18:00:27 2009
 
 NAME
-	Project "aegis.4.24", Change 1.
+	Project "aegis.4.24", Change 2.
 
 SUMMARY
-	The "aegis" program, branch 4.24.1.
+	The "aegis" program, branch 4.24.2.
 
 DESCRIPTION
-	The "aegis" program, branch 4.24.1.
+	The "aegis" program, branch 4.24.2.
 
 	This change is exempt from testing against the development directory.
 	This change is exempt from testing against the baseline.
@@ -19,7 +19,7 @@ DESCRIPTION
 BRANCH CONTENTS
 	Change	State		Description
 	------- -------		-------------
-	 500	being_		aegis-4.24.1 release
+	 500	being_		Prepare for release
 		integrated
 
 
@@ -64,8 +64,8 @@ ARCHITECTURES
 
 
 
-Project "aegis.4.24.1"							  Page 2
-Branch Details						Wed Sep 24 23:48:50 2008
+Project "aegis.4.24.2"							  Page 2
+Branch Details						Thu Jun 25 18:00:27 2009
 
 CAUSE
 	This change was caused by internal_enhancement.
@@ -76,16 +76,16 @@ STATE
 FILES
 	Type	Action	 Edit	      File Name
 	------- -------- -------      -----------
-	source	transpar    4	      lib/en/readme/new.4.24.so
+	source	transpar    8	      lib/en/readme/new.4.24.so
 		ent
 
 HISTORY
 	What		When		Who	 Comment
 	------		------		-----	 ---------
-	new_change	Mon Sep 22	walter
-			08:47:46 2008
-	develop_begin	Mon Sep 22	walter	 Elapsed time: 3.000 days.
-			08:47:46 2008
+	new_change	Thu Jun 25	walter
+			08:06:45 2009
+	develop_begin	Thu Jun 25	walter	 Elapsed time: 1.000 days.
+			08:06:45 2009
 
 
 
@@ -127,32 +127,38 @@ HISTORY
 
 
 
-Project "aegis.4.24.1", Change 500					  Page 3
-Change Details						Wed Sep 24 23:48:50 2008
+Project "aegis.4.24.2", Change 500					  Page 3
+Change Details						Thu Jun 25 18:00:27 2009
 
 NAME
-	Project "aegis.4.24.1", Delta 1, Change 500.
+	Project "aegis.4.24.2", Delta 1, Change 500.
 
 SUMMARY
-	aegis-4.24.1 release
+	Prepare for release
 
 DESCRIPTION
-	Aegis-4.24.1 has been released
+	Release 4.24.2
 
-	Signed-off-by: Walter Franzini <walter.franzini@gmail.org>
+	Signed-off-by: Walter Franzini <walter.franzini@gmail.com>
 
 	This change must pass a full regression test.  This change is exempt
 	from testing against the development directory. This change is exempt
 	from testing against the baseline.
 
+ATTRIBUTES
+	Name		Value
+	-------		-------
+	foreign-	true
+	copyright
+
 
 ARCHITECTURE
-	This change must build and test in the "linux-i486" architecture.
+	This change must build and test in the "linux-x86_64" architecture.
 
 	arch.	 host	  aeb	      aet	  aet -bl     aet -reg
 	-------- -------- ---------   ---------	  ---------   ---------
 	linux-		  required    exempt	  exempt      required
-	i486
+	x86_64
 
 CAUSE
 	This change was caused by internal_improvement.
@@ -163,39 +169,55 @@ STATE
 FILES
 	Type	Action	 Edit	      File Name
 	------- -------- -------      -----------
-	source	modify	    4	      lib/en/readme/new.4.24.so
+	source	modify	    8	      lib/en/readme/new.4.24.so
 
 HISTORY
 	What		When		Who	 Comment
 	------		------		-----	 ---------
-	new_change	Mon Sep 22	walter
-			08:48:48 2008
-	develop_begin	Mon Sep 22	walter	 Elapsed time: 3.000 days.
-			08:48:54 2008
-	develop_end_2ar Wed Sep 24	walter
-			23:08:32 2008
-	review_begin	Wed Sep 24	walter
-			23:10:39 2008
-	review_pass	Wed Sep 24	walter
-			23:11:39 2008
-	integrate_begin Wed Sep 24	walter	 Elapsed time: 0.056 days.
-			23:11:47 2008
-	integrate_fail	Wed Sep 24	walter
-			23:36:59 2008
-	develop_end_2ar Wed Sep 24	walter
-			23:38:46 2008
-	review_begin	Wed Sep 24	walter
-			23:39:05 2008
+	new_change	Thu Jun 25	walter
+			08:07:20 2009
+	develop_begin	Thu Jun 25	walter	 Elapsed time: 0.721 days.
+			08:07:43 2009
+	develop_end_2ar Thu Jun 25	walter	 Elapsed time: 0.043 days.
+			13:32:14 2009
+	develop_end_	Thu Jun 25	walter	 Elapsed time: 0.028 days.
+	undo		13:51:48 2009
+	develop_end_2ar Thu Jun 25	walter
+			14:04:23 2009
+	review_begin	Thu Jun 25	walter
+			14:12:53 2009
 
 
 
 
-Project "aegis.4.24.1", Change 500					  Page 4
-Change Details						Wed Sep 24 23:48:50 2008
+Project "aegis.4.24.2", Change 500					  Page 4
+Change Details						Thu Jun 25 18:00:27 2009
 
 	What		When		Who	 Comment
 	------		------		-----	 ---------
-	review_pass	Wed Sep 24	walter
-			23:39:30 2008
-	integrate_begin Wed Sep 24	walter
-			23:39:39 2008
+	review_pass	Thu Jun 25	walter
+			14:13:12 2009
+	integrate_begin Thu Jun 25	walter	 Elapsed time: 0.117 days.
+			14:13:18 2009
+	integrate_fail	Thu Jun 25	walter	 aet -reg failed!
+			15:06:08 2009		 Elapsed time: 0.205 days.
+	develop_end_2ar Thu Jun 25	walter	 Elapsed time: 0.023 days.
+			16:38:20 2009
+	review_begin	Thu Jun 25	walter
+			16:48:51 2009
+	review_pass	Thu Jun 25	walter
+			16:48:55 2009
+	integrate_begin Thu Jun 25	walter	 Elapsed time: 0.053 days.
+			16:49:27 2009
+	integrate_	Thu Jun 25	walter
+	begin_undo	17:13:06 2009
+	develop_end_	Thu Jun 25	walter	 Elapsed time: 0.065 days.
+	undo		17:13:11 2009
+	develop_end_2ar Thu Jun 25	walter	 Elapsed time: 0.023 days.
+			17:42:31 2009
+	review_begin	Thu Jun 25	walter
+			17:53:05 2009
+	review_pass	Thu Jun 25	walter
+			17:53:16 2009
+	integrate_begin Thu Jun 25	walter
+			17:53:31 2009

@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1998-2008 Peter Miller
-//	Copyright (C) 2006 Walter Franzini;
+//	Copyright (C) 2006, 2009 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -277,8 +277,7 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	{
 	    for (size_t i = 0; i < sip->exceptions->length; ++i)
 	    {
-		if (!gmatch(sip->exceptions->list[i]->str_text,
-			    path->str_text))
+		if (!gmatch(sip->exceptions->list[i]->str_text, s1->str_text))
 		    continue;
 
 		delete_me = false;

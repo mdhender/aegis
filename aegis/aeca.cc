@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1991-1999, 2001-2008 Peter Miller
+//	Copyright (C) 2009 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -410,7 +411,28 @@ change_attributes_uuid(void)
 	src = change_file_nth(cid.get_cp(), j, view_path_first);
 	if (!src)
 	    break;
-	change_file_fingerprint_check(cid.get_cp(), src);
+
+        //
+        // Do not check the fingerprint for derived files, to
+        // replicate exactly the aed behaviour: build files are not
+        // diffed so the fingerprint is not calculated.
+        //
+        switch (src->usage)
+        {
+        case file_usage_build:
+            continue;
+
+        case file_usage_config:
+        case file_usage_manual_test:
+        case file_usage_source:
+        case file_usage_test:
+#ifndef DEBUG
+        default:
+#endif
+            break;
+        }
+
+        change_file_fingerprint_check(cid.get_cp(), src);
     }
 
     //

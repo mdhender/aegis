@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2006-2008 Peter Miller
+.\"	Copyright (C) 2006-2009 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ You may also need to specify the module, if the module name is not the
 same as the project name.
 .SS Commit Messages
 You are able to control the commit message, by using
-the \f[CW]ae-repo-ci:commit-message\fP sttribute in the
+the \f[CW]ae-repo-ci:commit-message\fP attribute in the
 \fIproject_specific\fP field of the project configuration file.
 .PP
 The default is as if the following entry were present:
@@ -97,7 +97,7 @@ Known repository types are:
 cvs
 Concurrent version System.
 You will need to set the CVSROOT environment variable appropriately,
-and the \fB\-modue\fP option will be relative to it.
+and the \fB\-module\fP option will be relative to it.
 .TP 8n
 svn
 .RS
@@ -117,7 +117,7 @@ If present, the \f[CW]--username\fP command line option will be added to
 \fIsvn\fP(1) command lines, with this value.
 .PP
 These options can help when you can't convince Subversion to use the
-correct athorization any other way.
+correct authorization any other way.
 .RE
 .PP
 This option must be specified, there is no default.

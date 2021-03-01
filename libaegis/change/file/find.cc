@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1999, 2002-2006, 2008 Peter Miller
-//	Copyright (C) 2007 Walter Franzini
+//	Copyright (C) 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -73,16 +73,13 @@ change_file_find(change::pointer cp, const nstring &file_name,
         if (as_view_path != view_path_first && change_pfstate_get(cp2))
         {
             assert(cp2->pfstate_stp);
-            fsp =
-            (fstate_src_ty *)
-                symtab_query(cp2->pfstate_stp, file_name.get_ref());
+            fsp = (fstate_src_ty*)cp2->pfstate_stp->query(file_name);
         }
         else
         {
             change_fstate_get(cp2);
             assert(cp2->fstate_stp);
-            fsp =
-            (fstate_src_ty *)symtab_query(cp2->fstate_stp, file_name.get_ref());
+            fsp = (fstate_src_ty*)cp2->fstate_stp->query(file_name);
         }
 
 	if (fsp)
@@ -98,6 +95,7 @@ change_file_find(change::pointer cp, const nstring &file_name,
 	    //
 	    if (xpar)
 	    {
+                fstate_src_type.free(result);
 		result = 0;
 		xpar = 0;
 		goto next;
@@ -168,7 +166,8 @@ change_file_find(change::pointer cp, const nstring &file_name,
 		}
 		break;
 	    }
-	    result = fsp;
+            fstate_src_type.free(result);
+	    result = fstate_src_copy(fsp);
 	}
 
 	next:
@@ -210,8 +209,12 @@ change_file_find(change::pointer cp, const nstring &file_name,
     &&
 	result->action == file_action_remove
     )
+    {
+        fstate_src_type.free(result);
 	result = 0;
+    }
 
+    assert (!result || result->reference_count > 0);
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

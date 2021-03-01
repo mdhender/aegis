@@ -2,6 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2001-2008 Peter Miller
+#	Copyright (C) 2008 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -34,8 +35,8 @@ then
 	:
 else
 	echo ''
-	echo '  The "sccs" program is not in your command search PATH.'
-	echo '  This test is therefore -assumed- to pass.'
+	echo '	The "sccs" program is not in your command search PATH.'
+	echo '	This test is therefore -assumed- to pass.'
 	echo ''
 	exit 0
 fi
@@ -150,8 +151,8 @@ unset LANGUAGE
 mkdir src src/sub
 if test $? -ne 0 ; then no_result; fi
 
-activity="create sccs file 156"
-$bin/test_base64 -qp -i - src/s.file1 << 'fubar'
+activity="create sccs file 154"
+$bin/test_base64 -qp -nh -i - src/s.file1 << 'fubar'
 =01h10874
 =01s 00001/00000/00001
 =01d D 1.2 99/03/12 06:17:16 bogus2 2 1
@@ -168,15 +169,15 @@ $bin/test_base64 -qp -i - src/s.file1 << 'fubar'
 =01T
 =01I 1
 =01I 2
-=01lah
+blah
 =01E 2
 This is file 1.
 =01E 1
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="create sccs file 181"
-$bin/test_base64 -qp -i - src/sub/s.file2 << 'fubar'
+activity="create sccs file 179"
+$bin/test_base64 -qp -nh -i - src/sub/s.file2 << 'fubar'
 =01h11284
 =01s 00001/00000/00001
 =01d D 1.2 99/03/12 07:00:00 bogus1 2 1
@@ -203,14 +204,14 @@ if test $? -ne 0 ; then no_result; fi
 #
 # now that all the RCS files exist, read it all in and fake the changes
 #
-activity="import 209"
+activity="import 207"
 $bin/aeimport --format=sccs src -p example -dir $workproj -lib $worklib -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
 #
 # Make sure the various state files are correct.
 #
-activity="check the state file 216"
+activity="check the state file 214"
 cat > ok << 'fubar'
 next_test_number = 1;
 fubar
@@ -218,7 +219,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/state
 
-activity="check cstate 224"
+activity="check cstate 222"
 cat > ok << 'fubar'
 brief_description = "The \"example\" program, branch 1.0.";
 description = "The \"example\" program, branch 1.0.";
@@ -317,7 +318,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000
 
-activity="check fstate 322"
+activity="check fstate 333"
 cat > ok << 'fubar'
 src =
 [
@@ -408,7 +409,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.fs
 
-activity="check cstate 413"
+activity="check cstate 424"
 cat > ok << 'fubar'
 brief_description = "aegis.conf file";
 description = "Initial project `aegis.conf' file.";
@@ -466,7 +467,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/010
 
-activity="check fstate 471"
+activity="check fstate 482"
 cat > ok << 'fubar'
 src =
 [
@@ -486,7 +487,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/010.fs
 
-activity="check cstate 491"
+activity="check cstate 502"
 cat > ok << 'fubar'
 brief_description = "first";
 description = "first";
@@ -544,7 +545,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/011
 
-activity="check fstate 549"
+activity="check fstate 560"
 cat > ok << 'fubar'
 src =
 [
@@ -564,7 +565,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/011.fs
 
-activity="check cstate 569"
+activity="check cstate 580"
 cat > ok << 'fubar'
 brief_description = "second";
 description = "second";
@@ -622,7 +623,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/012
 
-activity="check fstate 627"
+activity="check fstate 638"
 cat > ok << 'fubar'
 src =
 [
@@ -652,7 +653,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/012.fs
 
-activity="check cstate 657"
+activity="check cstate 668"
 cat > ok << 'fubar'
 brief_description = "third";
 description = "third";
@@ -710,7 +711,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/013
 
-activity="check fstate 715"
+activity="check fstate 726"
 cat > ok << 'fubar'
 src =
 [
@@ -730,7 +731,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/013.fs
 
-activity="check file 735"
+activity="check file 746"
 cat > ok << 'fubar'
 blah
 This is file 1.
@@ -740,7 +741,7 @@ if test $? -ne 0 ; then no_result; fi
 diff ok $workproj/branch.1/branch.0/baseline/file1
 if test $? -ne 0 ; then fail; fi
 
-activity="check file 745"
+activity="check file 756"
 cat > ok << 'fubar'
 blah blah
 This is file 2.

@@ -1,10 +1,10 @@
 #
 #       aegis - project change supervisor
-#       Copyright (C) 2007, 2008 Peter Miller
+#       Copyright (C) 2007-2008 Peter Miller
 #
 # Vietnamese translation for Aegis.
 # Copyright (C) 2007, 2008 Free Software Foundation, Inc.
-# Clytie Siddall <clytie@riverland.net.au>, 2007, 2008.
+# Copyright (C) 2007, 2008 Clytie Siddall
 #
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
@@ -20,14 +20,39 @@
 #       along with this program. If not, see
 #       <http://www.gnu.org/licenses/>.
 #
+# Just A Few Notes...
+#
+#       When translating these error messages, all of the substitutions
+#       described in aesub(5) are also available.  Substitution variable
+#       names and function names may be abbreviated, in the same way
+#       that command line options are abbreviated, but abbreviation
+#       should probably be avoided.
+#
+#       While Aegis was written by an English speaker, this English
+#       localization file is necessary, to translate the "terse
+#       programmer" style error messages into something more user
+#       friendly.
+#
+#       Messages which include state names need to leave the state names
+#       untranslated, because they will probably never be translated.
+#
+#       Messages which include command line options need to leave them
+#       untranslated, because they are not yet internationalized, though
+#       they will be one day.
+#
+#       The list names (known to ael) have not been internationalized (yet).
+#
+#       Substitution names will Never be internationalized.
+#       Otherwise the substitutions will stop working, Catch-22.
+#
 # -------------------------------------------------------------------------
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: aegis 4.20\n"
+"Project-Id-Version: aegis 4.24\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: Wed Sep 24 23:46:26 CEST 2008\n"
-"PO-Revision-Date: 2008-01-09\n"
+"POT-Creation-Date: Thu Jun 25 17:58:37 CEST 2009\n"
+"PO-Revision-Date: 2008-04-11 21:39+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -43,7 +68,7 @@ msgstr ""
 #
 #: libaegis/user/default.cc:103
 msgid "$$$name must be positive"
-msgstr "biến môi trường $$$name phải là một con số thập phân dương"
+msgstr "biến môi trường $name phải là một con số thập phân dương"
 
 #
 # This error message is issued when the parameter of the -UUid switch is
@@ -63,7 +88,7 @@ msgstr "Tùy chọn $Name cần nhận một UUID hợp lệ"
 #
 #: libaegis/help.cc:434
 msgid "$Name needs url"
-msgstr "The $Name option needs to be given a valid URL"
+msgstr "Tùy chọn $Name cần một địa chỉ URL"
 
 #
 # This error message is issued when a file has been tampered with while
@@ -94,9 +119,9 @@ msgstr "tập tin « $filename » có thuộc tính bị sửa đổi"
 #: aegis/aenf.cc:559
 msgid "$filename bad nf type"
 msgstr ""
-"Tập tin « $filename » có kiểu tập tin không thích hợp. Cho phép bạn dùng "
-"lệnh này chỉ cho các tập tin bình thường. Các liên kết tượng trưng và kiểu "
-"tập tin đặc biệt khác phải được tạo vào lúc xây dựng."
+"Tập tin « $filename » có kiểu tập tin không thích hợp. Cho phép bạn dùng lệnh "
+"này chỉ cho các tập tin bình thường. Các liên kết tượng trưng và kiểu tập "
+"tin đặc biệt khác phải được tạo vào lúc xây dựng."
 
 #
 # This progress message is issued when a test run against the baseline
@@ -110,7 +135,9 @@ msgstr ""
 #
 #: libaegis/change/test/batch.cc:363
 msgid "$filename baseline fail, architecture $architecture, good"
-msgstr "test \"$filename\" on $architecture on baseline failed (as it should)"
+msgstr ""
+"hàm thử « $filename » trên đường cơ bản thì trượt, kiến trúc $architecture, "
+"tốt "
 
 #
 # This progress message is issued when a test run against the baseline
@@ -134,7 +161,9 @@ msgstr "hàm thử « $filename » trên đường cơ bản thì trượt (kế
 #
 #: libaegis/change/test/batch.cc:412
 msgid "$filename baseline pass, architecture $architecture, not good"
-msgstr "test \"$filename\" on $architecture on baseline passed (it must fail)"
+msgstr ""
+"hàm thử « $filename » trên đường cơ bản đã đỗ, kiến trúc $architecture, không "
+"tốt"
 
 #
 # This error message is issued when a test run against the baseline
@@ -168,8 +197,8 @@ msgstr "tập tin « $filename » đang được gỡ bỏ"
 msgid "$filename changed after build"
 msgstr ""
 "tập tin « $filename » bị sửa đổi sau lần xây dựng cuối cùng; thay đổi này "
-"phai chạy xong một tiến trình xây dựng « aegis -Build » $outstanding thêm "
-"nữa trước khi nó có thể rời tình trạng « $state »"
+"phai chạy xong một tiến trình xây dựng « aegis -Build » $outstanding thêm nữa "
+"trước khi nó có thể rời tình trạng « $state »"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -182,8 +211,8 @@ msgstr ""
 msgid "$filename changed after diff"
 msgstr ""
 "tập tin « $filename » bị sửa đổi sau lần khác biệt cuối cùng; thay đổi này "
-"phải chạy xong một tiến trình khác biệt « aegis -Diff » thêm nữa trước khi "
-"nó có thể rời tình trạng « $state »"
+"phải chạy xong một tiến trình khác biệt « aegis -Diff » thêm nữa trước khi nó "
+"có thể rời tình trạng « $state »"
 
 #
 # This progress message is issued when aed merges a file, and notifies the
@@ -211,7 +240,7 @@ msgstr "hàm thử « $filename » đã trượt"
 #
 #: libaegis/change/test/batch.cc:389
 msgid "$filename fail, architecture $architecture"
-msgstr "test \"$filename\" failed on $architecture"
+msgstr "hàm thử « $filename » đã trượt, kiến trúc $architecture"
 
 #
 # This error message is issued when an aed is performed on a change
@@ -283,9 +312,9 @@ msgstr "công cụ lược sử đã sửa đổi tập tin mã nguồn « $file
 #: libaegis/os/ck_path_trav.cc:135
 msgid "$filename needs permissions $mode_change"
 msgstr ""
-"directory \"$filename\" is not traversable, it currently has mode $mode_old "
-"but is needs at least mode $mode_new, the \"chmod $mode_change $filename\" "
-"command may be sufficient to fix this"
+"thư mục « $filename » không thể đi qua được, nó hiện thời có chế độ « "
+"$mode_old » nhưng cần ít nhất « $mode_new », câu lệnh « chmod $mode_change "
+"$filename » có thể đủ để sửa chữa trường hợp này"
 
 #
 # This error message is issued when aet runs a test which returns a "no
@@ -309,8 +338,8 @@ msgstr ""
 #: libaegis/change/test/batch.cc:480
 msgid "$filename no result, architecture $architecture"
 msgstr ""
-"test \"$filename\" on $architecture returned no result; some  other problem "
-"prevented the functionality under test from being exercised"
+"hàm thử « $filename » trên kiến trúc $architecture chưa trả về kết quả; một "
+"vấn đề nào đó khác đã ngăn cản thực hiện khả năng đang được thử"
 
 #
 # This error message is issued when aede cannot find a file in the
@@ -350,7 +379,7 @@ msgstr "hàm thử « $filename » đã đỗ"
 #
 #: libaegis/change/test/batch.cc:438
 msgid "$filename pass, architecture $architecture"
-msgstr "test \"$filename\" passed on $architecture"
+msgstr "hàm thử « $filename » đã đỗ, kiến trúc $architecture"
 
 #
 # This progress message is issued when a test against the change decides
@@ -360,7 +389,7 @@ msgstr "test \"$filename\" passed on $architecture"
 #
 #: libaegis/change/test/batch.cc:464 libaegis/change/test/batch_fake.cc:236
 msgid "$filename skipped"
-msgstr "test \"$filename\" skipped"
+msgstr "tập tin « $filename » bị bỏ qua"
 
 #
 # This error message is issued when a test against the change fails
@@ -371,7 +400,7 @@ msgstr "test \"$filename\" skipped"
 #
 #: libaegis/change/test/batch.cc:460
 msgid "$filename skipped, architecture $architecture"
-msgstr "test \"$filename\" skipped on $architecture"
+msgstr "hàm thử « $filename » đã trượt thì tự bỏ qua, kiến trúc $architecture"
 
 #
 # This error message is issued when aede discovers a file in the change
@@ -381,9 +410,7 @@ msgstr "test \"$filename\" skipped on $architecture"
 #
 #: aegis/aede.cc:312 aegis/aede.cc:321 aegis/aeip.cc:590
 msgid "$filename unchanged"
-msgstr ""
-"the \"$filename\" file has not been changed, it should not be included in "
-"the change"
+msgstr "$filename chưa thay đổi"
 
 #
 # This error message is issued when a file named on the command
@@ -452,8 +479,8 @@ msgstr "$filename: $linenumber: hàm thay thế $${} rỗng"
 msgid ""
 "$filename: $linenumber: in substitution \"$message\" found unused variables"
 msgstr ""
-"$filename: $linenumber: trong hàm thay thế « $message » tìm thấy $number "
-"biến không dùng (nên hủy bỏ)"
+"$filename: $linenumber: trong hàm thay thế « $message » tìm thấy $number biến "
+"không dùng (nên hủy bỏ)"
 
 #
 # This error message is issued when a substitution variable is not used
@@ -554,8 +581,7 @@ msgstr "$filename: kiến trúc phải được ghi rõ theo cả hai tên và m
 #
 #: aede-policy/validation/files/white_space.cc:134
 msgid "$filename: blank lines at end of file"
-msgstr ""
-"$filename: found $number blank line${plural $number s} at the end of the file"
+msgstr "$filename: có dòng trắng ở kết thúc của tập tin"
 
 #
 # This error message is issued when aesvt is checking a file checksum,
@@ -567,7 +593,7 @@ msgstr ""
 #
 #: libaegis/input/verify_check.cc:62
 msgid "$filename: checksum mismatch ($number1 != $number2)"
-msgstr "$filename: checksum mismatch ($number1 != $number2)"
+msgstr "$filename: sai khớp tổng kiểm ($number1 != $number2)"
 
 #
 # This error message is issued when an Aegis database file is missing a
@@ -586,9 +612,9 @@ msgstr "$filename: checksum mismatch ($number1 != $number2)"
 #: libaegis/change/diff/run_diff.cc:106 libaegis/change/diff/run_diff3.cc:93
 #: libaegis/change/diff/run_merge.cc:93 libaegis/change/file/fstate.cc:168
 #: libaegis/change/file/fstate.cc:185 libaegis/change/file/fstate.cc:202
-#: libaegis/change/history/create_comma.cc:139
+#: libaegis/change/history/create_comma.cc:140
 #: libaegis/change/history/get_command.cc:115
-#: libaegis/change/history/put_command.cc:134
+#: libaegis/change/history/put_command.cc:135
 #: libaegis/change/history/query_comman.cc:72 libaegis/change/pconf/get.cc:61
 #: libaegis/change/pconf/get.cc:156 libaegis/change/pconf/get.cc:173
 #: libaegis/change/pconf/get.cc:188 libaegis/change/pconf/get.cc:203
@@ -605,9 +631,7 @@ msgstr "$filename: không chứa trường « $field_name »"
 #
 #: aede-policy/validation/files/no_tabs.cc:132
 msgid "$filename: contains tab characters"
-msgstr ""
-"$filename: contains tab characters; to preserve the intended code "
-"formatting, use space characters instead"
+msgstr "$filename: chứa ký tự tab"
 
 #
 # This error message is issued when an Aegis database file has an
@@ -635,9 +659,7 @@ msgstr "$filename: trường « $field_name » bị hỏng"
 #
 #: aede-policy/validation/files/crlf.cc:79
 msgid "$filename: dos line termination"
-msgstr ""
-"the \"$filename\" file uses DOS line termination (CRLF) and it should use "
-"UNIX line termination (LF)"
+msgstr "$filename: kết thúc dòng kiểu DOS"
 
 #
 # This warning is issued when an obsolete field is used.
@@ -709,7 +731,7 @@ msgstr "$filename: tìm $number lỗi nghiêm trọng"
 #: aede-policy/validation/files/printable.cc:124
 #: aede-policy/validation/files/text.cc:77
 msgid "$filename: is binary"
-msgstr "the \"$filename\" file contains binary bytes"
+msgstr "$filename: là nhị phân"
 
 #
 # This error message is issued when aede-policy detects unprintable
@@ -721,7 +743,7 @@ msgstr "the \"$filename\" file contains binary bytes"
 #
 #: aede-policy/validation/files/printable.cc:136
 msgid "$filename: is unprintable"
-msgstr "the \"$filename\" file contains unprintable characters (line $number)"
+msgstr "$filename: không thể in được"
 
 #
 # This error message is issued by aesvt when the file header within a
@@ -731,7 +753,7 @@ msgstr "the \"$filename\" file contains unprintable characters (line $number)"
 #
 #: libaegis/rfc822.cc:457
 msgid "$filename: malformed RFC 822 header line"
-msgstr "$filename: malformed RFC 822 header line"
+msgstr "$filename: dòng phần đầu RFC 822 dạng sai"
 
 #
 # This error message is issued by aede-policy when it detects that text
@@ -742,7 +764,7 @@ msgstr "$filename: malformed RFC 822 header line"
 #: aede-policy/validation/files/merge-fhist.cc:70
 #: aede-policy/validation/files/merge-rcs.cc:70
 msgid "$filename: merge conflicts"
-msgstr "$filename: this file contains unresolved merge conflicts"
+msgstr "$filename: trộn thì xung đột"
 
 #
 # This error message is issued when Aegis is checking a file's modes,
@@ -766,8 +788,8 @@ msgstr "$filename: chế độ là $number1, nên là $number2"
 #: aede-policy/validation/files/copyright.cc:164
 msgid "$filename: no current copyright notice"
 msgstr ""
-"$filename: the file does not contain an up-to-date copyright notice; a "
-"notice of the form \"$suggest\" would be suitable."
+"$filename: tập tin không chứa thông báo tác quyền hiện thời; thông báo có "
+"dạng « $suggest » là thích hợp."
 
 #
 # This fatal error message is issued bu aede-policy when the fsf-address
@@ -779,9 +801,7 @@ msgstr ""
 #
 #: aede-policy/validation/files/fsf_address.cc:289
 msgid "$filename: old FSF address"
-msgstr ""
-"$filename: the old FSF postal address is present in this file, you need to "
-"replace it with \"$suggest\" instead."
+msgstr "$filename: địa chỉ Tổ chức Phần mềm Tự do cũ"
 
 #
 # This fatal error message is issued bu aede-policy when the gpl-version
@@ -793,9 +813,7 @@ msgstr ""
 #
 #: aede-policy/validation/files/gpl-version.cc:279
 msgid "$filename: old GPL version"
-msgstr ""
-"$filename: an old GPL version number is present in this file, you need to "
-"replace it with \"$suggest\" instead."
+msgstr "$filename: phiên bản Giấy Phép Công Cộng GNU cũ"
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -843,7 +861,7 @@ msgstr ""
 #
 #: libaegis/simpverstool/checkin.cc:135
 msgid "$filename: version $number already exists"
-msgstr "$filename: version \"$number\" already exists"
+msgstr "$filename: phiên bản $number đã có"
 
 #
 # This error message is issued when aesvt -checkin finds an
@@ -854,7 +872,7 @@ msgstr "$filename: version \"$number\" already exists"
 #
 #: libaegis/simpverstool/checkin.cc:89
 msgid "$filename: version $number invalid"
-msgstr "$filename: version number \"$number\" not appropriate"
+msgstr "$filename: phiên bản $number không hợp lệ"
 
 #
 # This error message is issued when aesvt -checkout cannot find a
@@ -865,7 +883,7 @@ msgstr "$filename: version number \"$number\" not appropriate"
 #
 #: libaegis/input/svt_checkout.cc:87
 msgid "$filename: version $number not found"
-msgstr "$filename: version \"$number\" not found"
+msgstr "$filename: không tìm thấy phiên bản $number"
 
 #
 # This error message is issued when an aede-policy's white space
@@ -875,7 +893,7 @@ msgstr "$filename: version \"$number\" not found"
 #
 #: aede-policy/validation/files/white_space.cc:107
 msgid "$filename: white space at end of line"
-msgstr "$filename: white space at end of line"
+msgstr "$filename: có khoảng trắng ở kết thúc dòng"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -1320,7 +1338,7 @@ msgstr "Dự án « $name »"
 #       $Name           The name of a project.
 #       $Number         The number of a change.
 #
-#: aegis/aeca.cc:683
+#: aegis/aeca.cc:705
 msgid "Project $name, Change $number"
 msgstr "Dự án « $name », Thay đổi $number"
 
@@ -1504,12 +1522,12 @@ msgstr "kiểu số học cần thiết cho hàm tăng dần (đã cho $name)"
 #
 #: aelock/lock.cc:92
 msgid "attribute $name unknown"
-msgstr "the attribute \"$name\" does not exist"
+msgstr "không rõ thuộc tính $name"
 
 #
 # This message is issued when an aeca is successfully completed.
 #
-#: aegis/aeca.cc:433 aegis/aeca.cc:969
+#: aegis/aeca.cc:455 aegis/aeca.cc:991
 msgid "attributes changed"
 msgstr "thuộc tính bị sửa đổi"
 
@@ -1596,8 +1614,8 @@ msgstr ""
 #: aegis/aed.cc:157 aegis/aed.cc:836
 msgid "bad branch diff"
 msgstr ""
-"nhánh này ở tình trạng « $state »; nó phải ở tình trạng « đang được hợp nhất "
-"» để chạy tiến trình khác biệt"
+"nhánh này ở tình trạng « $state »; nó phải ở tình trạng « đang được hợp nhất » "
+"để chạy tiến trình khác biệt"
 
 #
 # This error message is issued when a user requests a build of a branch
@@ -1632,7 +1650,7 @@ msgstr ""
 # This error message is issued when a developer who is not an administrator
 # attempts to grant an architecture exemption to a change.
 #
-#: aegis/aeca.cc:894 aegis/aenc.cc:521
+#: aegis/aeca.cc:916 aegis/aenc.cc:521
 msgid "bad ca, no arch exempt"
 msgstr "chỉ quản trị dự án có quyền cấp sự miễn kiến trúc"
 
@@ -1640,7 +1658,7 @@ msgstr "chỉ quản trị dự án có quyền cấp sự miễn kiến trúc"
 # This error message is issued when a user who is not an administrator
 # attempts to grant a test exemption to a change.
 #
-#: aegis/aeca.cc:833 aegis/aenc.cc:508
+#: aegis/aeca.cc:855 aegis/aenc.cc:508
 msgid "bad ca, no test exempt"
 msgstr "chỉ quản trị dự án có quyền miễn hàm thử cho thay đổi"
 
@@ -1648,19 +1666,19 @@ msgstr "chỉ quản trị dự án có quyền miễn hàm thử cho thay đổ
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change's attributes.
 #
-#: aegis/aeca.cc:186 aegis/aeca.cc:368
+#: aegis/aeca.cc:187 aegis/aeca.cc:369
 msgid "bad ca, not auth"
 msgstr ""
-"người dùng « %user » không có quyền sửa đổi thuộc tính của thay đổi; chỉ "
-"quản trị dự án, hoặc nhà phát triển trong khi phát triển, có quyền sửa đổi "
-"thuộc tính"
+"người dùng « %user » không có quyền sửa đổi thuộc tính của thay đổi; chỉ quản "
+"trị dự án, hoặc nhà phát triển trong khi phát triển, có quyền sửa đổi thuộc "
+"tính"
 
 #
 # This error message is issued when a user attempts to set change
 # attributes to include an architecture not named in the project
 # configuration file.
 #
-#: aegis/aeca.cc:879 aegis/aenc.cc:538
+#: aegis/aeca.cc:901 aegis/aenc.cc:538
 msgid "bad ca, unknown architecture"
 msgstr ""
 "kiến trúc chứa một số biến đổi không được liệt kê trong tập tin cấu hình của "
@@ -1670,7 +1688,7 @@ msgstr ""
 # This error message is issued when a user attempts to set a change's
 # UUID when the change already has a UUID.
 #
-#: aegis/aeca.cc:377
+#: aegis/aeca.cc:378
 msgid "bad ca, uuid already set"
 msgstr "UUID của thay đổi này đã được đặt"
 
@@ -1681,7 +1699,7 @@ msgstr "UUID của thay đổi này đã được đặt"
 #       $Other  The version of change using the specified UUID.
 #               Optional.
 #
-#: aegis/aeca.cc:392 aegis/aenf.cc:394 aegis/aent.cc:315
+#: aegis/aeca.cc:393 aegis/aenf.cc:394 aegis/aent.cc:315
 msgid "bad ca, uuid duplicate"
 msgstr "UUID đã ghi rõ đang được $other dùng"
 
@@ -1708,7 +1726,7 @@ msgstr ""
 # This error message is issued when an attempt is made to clean a change
 # which is not in the 'being developed' state.
 #
-#: aegis/aeclean.cc:439
+#: aegis/aeclean.cc:438
 msgid "bad clean state"
 msgstr ""
 "thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được phát "
@@ -1733,8 +1751,8 @@ msgstr ""
 #: aegis/aecpu.cc:457 aegis/aed.cc:328 aegis/aed.cc:361 aegis/aemtu.cc:441
 msgid "bad cp undo $filename"
 msgstr ""
-"tập tin « $filename » đã không được thêm vào thay đổi này, dùng lệnh « aegis "
-"-CoPy_file »"
+"tập tin « $filename » đã không được thêm vào thay đổi này, dùng lệnh « aegis -"
+"CoPy_file »"
 
 #
 # This error message is issued when an aecpu command is used directly on
@@ -1766,8 +1784,8 @@ msgstr ""
 #: aegis/aecp.cc:1500
 msgid "bad cp, file $filename dup"
 msgstr ""
-"tập tin « $filename » đã trong thay đổi nên không ghi đè lên nó; hãy dùng "
-"tùy chọn « -OverWriting » nếu bạn muốn ghi đè lên nó"
+"tập tin « $filename » đã trong thay đổi nên không ghi đè lên nó; hãy dùng tùy "
+"chọn « -OverWriting » nếu bạn muốn ghi đè lên nó"
 
 #
 # This error message is issued when an attempt is made to begin
@@ -1777,8 +1795,8 @@ msgstr ""
 #: aegis/aedb.cc:276
 msgid "bad db state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi phát triển "
-"» để bắt đầu tiến trình phát triển"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi phát triển » "
+"để bắt đầu tiến trình phát triển"
 
 #
 # This error message is issued when aedbu is asked to operate on
@@ -1807,8 +1825,8 @@ msgstr ""
 #: aegis/aedeu.cc:243 aegis/aedeu.cc:259
 msgid "bad deu state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem "
-"lại » hay « đợi hợp nhất » để hủy bước kết thúc phát triển"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem lại "
+"» hay « đợi hợp nhất » để hủy bước kết thúc phát triển"
 
 #
 # This error message is issued when an aed command used on a change
@@ -1837,8 +1855,8 @@ msgstr ""
 #: aegis/aeib.cc:863
 msgid "bad ib state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi hợp nhất » "
-"để bắt đầu tiến trình hợp nhất"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi hợp nhất » để "
+"bắt đầu tiến trình hợp nhất"
 
 #
 # This error message is issued when aeibu is used on a change which is
@@ -1890,8 +1908,8 @@ msgstr ""
 #: aegis/aeip.cc:1225
 msgid "bad ip, build required"
 msgstr ""
-"thay đổi này phải chạy xong thành công một tiến trình xây dựng « aegis -"
-"Build » $outstanding trước khi nó có thể hợp nhất thành công"
+"thay đổi này phải chạy xong thành công một tiến trình xây dựng « aegis -Build "
+"» $outstanding trước khi nó có thể hợp nhất thành công"
 
 #
 # This error message is issued when aeipass finds a file which has not been
@@ -1903,9 +1921,8 @@ msgstr ""
 #: aegis/aeip.cc:1257
 msgid "bad ip, test -bl required"
 msgstr ""
-"thay đổi này phải chạy xong thành công một tiến trình kiểm tra đường cơ bản "
-"« aegis -Test -BaseLine » $outstanding trước khi nó có thể hợp nhất thành "
-"công"
+"thay đổi này phải chạy xong thành công một tiến trình kiểm tra đường cơ bản « "
+"aegis -Test -BaseLine » $outstanding trước khi nó có thể hợp nhất thành công"
 
 #
 # This error message is issued when aeipass finds a file which has not been
@@ -1953,8 +1970,8 @@ msgstr ""
 #: aegis/aemvu.cc:425
 msgid "bad mv undo $filename"
 msgstr ""
-"tập tin « $filename » đã không được thêm vào thay đổi này dùng lệnh « 'aegis "
-"-MoVe_file »"
+"tập tin « $filename » đã không được thêm vào thay đổi này dùng lệnh « 'aegis -"
+"MoVe_file »"
 
 #
 # This error message is issued when aencu is requested of a change which
@@ -1963,8 +1980,8 @@ msgstr ""
 #: aegis/aencu.cc:182
 msgid "bad ncu state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi phát triển "
-"» để hủy một bước thay đổi mới"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi phát triển » "
+"để hủy một bước thay đổi mới"
 
 #
 # This error message is issued when aenf is invoked on a branch in the
@@ -2029,8 +2046,8 @@ msgstr ""
 #: aegis/aenrls.cc:348
 msgid "bad nrls, too modern"
 msgstr ""
-"Lệnh « aegis -New_ReLeaSe » chỉ có thể được dùng để chuyển đổi dự án được "
-"tạo bởi aegis phiên bản 2.3 và cũ hơn. Dự án này là mới hơn: hãy dùng lệnh « "
+"Lệnh « aegis -New_ReLeaSe » chỉ có thể được dùng để chuyển đổi dự án được tạo "
+"bởi aegis phiên bản 2.3 và cũ hơn. Dự án này là mới hơn: hãy dùng lệnh « "
 "aegis -New_BRanch » thay vào đó."
 
 #
@@ -2078,11 +2095,10 @@ msgstr ""
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
-#: aediff/diff.cc:67 aepatch/send.cc:556 aerevml/send.cc:236
+#: aediff/diff.cc:67 aepatch/send.cc:556 aerevml/send.cc:237
 msgid "bad patch send state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng sau hơn để được "
-"gửi"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng sau hơn để được gửi"
 
 #
 # This error message is issued when an illegal filename pattern is specified.
@@ -2110,8 +2126,8 @@ msgstr "tên dự án « $name » không hợp lệ"
 #: aegis/aerb.cc:238
 msgid "bad rb state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi xem lại » "
-"để bắt đầu tiến trình xem lại"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi xem lại » để "
+"bắt đầu tiến trình xem lại"
 
 #
 # This error message is issued when aerbu is invoked for a change which is
@@ -2120,8 +2136,8 @@ msgstr ""
 #: aegis/aerbu.cc:197
 msgid "bad rbu state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem "
-"lại » để dừng tiến trình xem lại"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem lại "
+"» để dừng tiến trình xem lại"
 
 #
 # This error message is issued when a request is made to fail a review
@@ -2130,8 +2146,8 @@ msgstr ""
 #: aegis/aerf.cc:111
 msgid "bad rf state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem "
-"lại » để thất bại tiến trình xem lại"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem lại "
+"» để thất bại tiến trình xem lại"
 
 #
 # This error message is issued when aerm is invoked for a change which
@@ -2172,20 +2188,24 @@ msgstr ""
 #: aegis/aerp.cc:109
 msgid "bad rp state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem "
-"lại » để xem lại thành công"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem lại "
+"» để xem lại thành công"
 
+#
+# This error message is issued when aerpu is invoked for a change which is
+# not in the 'awaiting integration' state.
+#
 #: aegis/aerpu.cc:238
 msgid "bad rpu state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi hợp nhất » "
-"để hủy bước xem lại"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi hợp nhất » để "
+"hủy bước xem lại"
 
 #
 # This fatal error message is issued when there would be no files in
 # the distributed change set.
 #
-#: aedist/send.cc:1530 aepatch/send.cc:813 aerevml/send.cc:902
+#: aedist/send.cc:1530 aepatch/send.cc:813 aerevml/send.cc:898
 #: aetar/send.cc:767
 msgid "bad send no files"
 msgstr "không có tập tin cần phát hành"
@@ -2197,8 +2217,7 @@ msgstr "không có tập tin cần phát hành"
 #: aedist/send.cc:964 aetar/send.cc:530
 msgid "bad send state"
 msgstr ""
-"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng sau hơn để được "
-"gửi"
+"thay đổi này ở tình trạng « $state »; nó phải ở tình trạng sau hơn để được gửi"
 
 #
 # This error message is issued when a user requests a test of a change
@@ -2376,7 +2395,7 @@ msgstr ""
 #
 #: aede-policy/validation/description.cc:60
 msgid "brief_description not set"
-msgstr "the brief description has been not set"
+msgstr "chưa đặt mô tả ngắn (brief_description)"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -2388,8 +2407,8 @@ msgstr "the brief description has been not set"
 #: aegis/aede.cc:981
 msgid "build required"
 msgstr ""
-"thay đổi này phải chạy xong thành công một tiến trình xây dựng « aegis -"
-"Build » $outstanding trước khi nó có thể kết thúc tiến trình phát triển"
+"thay đổi này phải chạy xong thành công một tiến trình xây dựng « aegis -Build "
+"» $outstanding trước khi nó có thể kết thúc tiến trình phát triển"
 
 #
 # This fatal error message is issued when aeipass detects that the
@@ -2405,8 +2424,8 @@ msgstr ""
 "có vẻ là tiến trình xây dựng đã sửa đổi tập tin mã nguồn « $filename ». "
 "Trường hợp này thường xảy ra khi một tập tin ma nguồn trở thành một tập tin "
 "đã tạo ra. Trong một thay đổi riêng, bạn cần phải thay đổi cấu hình xây "
-"dựng, hoặc chạy lệnh « aerm $filename », hoặc chạy lệnh « aerm $filename » "
-"rồi lệnh « aenf -build $filename » trong một thay đổi theo sau."
+"dựng, hoặc chạy lệnh « aerm $filename », hoặc chạy lệnh « aerm $filename » rồi "
+"lệnh « aenf -build $filename » trong một thay đổi theo sau."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2449,8 +2468,8 @@ msgstr "thay đổi $change: $message"
 #: aeannotate/annotate.cc:160 libaegis/project/change2delta.cc:42
 msgid "change $number not completed"
 msgstr ""
-"thay đổi $number ở tình trạng « $state »; nó phải ở tình trạng « hoàn tất » "
-"để dùng cùng với tùy chọn « --delta-from-change »"
+"thay đổi $number ở tình trạng « $state »; nó phải ở tình trạng « hoàn tất » để "
+"dùng cùng với tùy chọn « --delta-from-change »"
 
 #
 # This error message is issued when an absurd change number is given.
@@ -2533,13 +2552,13 @@ msgstr "chmod(\"$filename\", $arg): $errno"
 #: aegis/aechown.cc:421
 msgid "chown complete"
 msgstr ""
-"quyền sở hữu đã thay đổi từ người dùng « $original » sang người dùng « "
-"$target »"
+"quyền sở hữu đã thay đổi từ người dùng « $original » sang người dùng « $target "
+"»"
 
 #
 # This message is issued when an aeclean command completes successfully.
 #
-#: aegis/aeclean.cc:771
+#: aegis/aeclean.cc:770
 msgid "clean complete"
 msgstr "tiến trình làm sạch (clean) đã chạy xong"
 
@@ -2640,7 +2659,7 @@ msgstr "dòng lệnh quá ngắn"
 #
 #: libaegis/compres_algo.cc:63
 msgid "compression algorithm \"$name\" unknown"
-msgstr "compression algorithm \"$name\" unknown"
+msgstr "không rõ thuật toán nén « $name »"
 
 #
 # This message is inserted into the top of the project configuration file
@@ -2841,7 +2860,7 @@ msgstr "δ $number giờ này được gọi như là δ « $name »"
 #
 #: aede-policy/validation/description.cc:81
 msgid "description not set"
-msgstr "the description field has not been set"
+msgstr "chưa đặt mô tả"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -2942,8 +2961,8 @@ msgstr "tìm $number lỗi; chưa khác biệt tập tin"
 #: aegis/aede.cc:584 aegis/aeip.cc:667
 msgid "diff required"
 msgstr ""
-"thay đổi này phải chạy xong thành công một tiến trình khác biệt « aegis -"
-"Diff », trước khi nó có thể rời tình trạng « $state »"
+"thay đổi này phải chạy xong thành công một tiến trình khác biệt « aegis -Diff "
+"», trước khi nó có thể rời tình trạng « $state »"
 
 #
 # This progress message is issued when the aed command completes successfully.
@@ -3001,8 +3020,8 @@ msgstr "chia cho không"
 #: aegis/aenpr.cc:372 aegis/aenrls.cc:323
 msgid "don't mix old and new version options"
 msgstr ""
-"hai tùy chọn « -MAJor » (chính) và « -MINOr » (phụ) đều không tương thích "
-"với tùy chọn « -VERSion » (phiên bản)"
+"hai tùy chọn « -MAJor » (chính) và « -MINOr » (phụ) đều không tương thích với "
+"tùy chọn « -VERSion » (phiên bản)"
 
 #
 # This error message is issued when an option is used more than one on
@@ -3178,8 +3197,8 @@ msgstr "trường « $name » đã được xác định lại"
 #: libaegis/change/file/name_check.cc:809
 msgid "file \"$filename\" bombs filters"
 msgstr ""
-"tập tin « $filename » không thích hợp với các bộ lọc mẫu tên tập tin (xem "
-"tập tin cấu hình của dự án)"
+"tập tin « $filename » không thích hợp với các bộ lọc mẫu tên tập tin (xem tập "
+"tin cấu hình của dự án)"
 
 #
 # This error message is issued when aeclean discovers that a change
@@ -3187,11 +3206,10 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:574
+#: aegis/aeclean.cc:573
 msgid "file \"$filename\" does not exist"
 msgstr ""
-"tập tin « $filename » không tồn tại, nhưng nó là một tập tin mã nguồn thay "
-"đổi"
+"tập tin « $filename » không tồn tại, nhưng nó là một tập tin mã nguồn thay đổi"
 
 #
 # This error message is issued when a change file
@@ -3226,8 +3244,8 @@ msgstr "tập tin « $filename » bị khoá cho thay đổi $number, hãy thử
 #: libaegis/change/file/name_check.cc:818
 msgid "file \"$filename\" part \"$part\" bombs filters"
 msgstr ""
-"tập tin « $filename » phần đường dẫn « $part » không thích hợp với các bộ "
-"lọc mẫu tên tập tin (xem tập tin cấu hình của dự án)"
+"tập tin « $filename » phần đường dẫn « $part » không thích hợp với các bộ lọc "
+"mẫu tên tập tin (xem tập tin cấu hình của dự án)"
 
 #
 # This error message is issued when a component of a change file name
@@ -3262,8 +3280,7 @@ msgstr ""
 #: libaegis/change/file/name_check.cc:730
 msgid "file \"$filename\" part \"$part\" is log file"
 msgstr ""
-"tập tin « $filename » phần đường dẫn « $part » nhân đôi tên tập tin của bản "
-"ghi"
+"tập tin « $filename » phần đường dẫn « $part » nhân đôi tên tập tin của bản ghi"
 
 #
 # This error message is issued when a component of a change file name
@@ -3305,8 +3322,8 @@ msgstr ""
 msgid ""
 "file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead"
 msgstr ""
-"tập tin « $filename » phần đường dẫn « $part » quá dài (theo $number), đề "
-"nghị thay thế bằng « $suggest »"
+"tập tin « $filename » phần đường dẫn « $part » quá dài (theo $number), đề nghị "
+"thay thế bằng « $suggest »"
 
 #
 # This error message is issued when the last component of a change file
@@ -3320,8 +3337,8 @@ msgstr ""
 #: libaegis/change/file/name_check.cc:691
 msgid "file \"$filename\" too long, suggest \"$suggest\" instead"
 msgstr ""
-"tập tin « $filename » quá dài (theo $number), đề nghị thay thế bằng « "
-"$suggest »"
+"tập tin « $filename » quá dài (theo $number), đề nghị thay thế bằng « $suggest "
+"»"
 
 #
 # This fatal error message is issued when aenf or aent detects a directory
@@ -3463,7 +3480,7 @@ msgstr "câu lệnh « continue » (tiếp tục) nổi"
 #
 #: libaegis/aer/report.y:104
 msgid "floating \"return\" statement"
-msgstr "câu lệnh « return » (trả lại) nổi"
+msgstr "câu lệnh « return » (trả về) nổi"
 
 #
 # This format string is used when assembling the list of outstanding
@@ -3598,9 +3615,9 @@ msgstr "thay đổi này cần thiết hàm thử trước khi có thể sử d�
 #
 # $File_Name    The name of the source file.
 #
-#: libaegis/change/history/create_comma.cc:80
+#: libaegis/change/history/create_comma.cc:81
 msgid "history create $filename"
-msgstr "adding the first version to the history of the \"$filename\" file"
+msgstr "tạo « $filename » lược sử"
 
 #
 # This fatal error message is issued when aeimport doesn't recognize a
@@ -3621,7 +3638,7 @@ msgstr "không rõ định dạng lược sử « $name »"
 #
 #: libaegis/change/history/get_command.cc:70
 msgid "history get $filename"
-msgstr "historical version $edit of the \"$filename\" file being recreated"
+msgstr "lấy « $filename » lược sử"
 
 #
 # This information message is issued by the aeipass(1) command when it
@@ -3631,7 +3648,7 @@ msgstr "historical version $edit of the \"$filename\" file being recreated"
 #
 #: libaegis/change/history/label_commnd.cc:80
 msgid "history label $filename"
-msgstr "history of the \"$filename\" file head revision being labeled"
+msgstr "nhãn « $filename » lược sử"
 
 #
 # This fatal error message is issued when a lock is not available.
@@ -3648,9 +3665,9 @@ msgstr "không có sẵn khoá lược sử"
 #               renames, even though the history file's UUID never
 #               changes.
 #
-#: libaegis/change/history/put_command.cc:78
+#: libaegis/change/history/put_command.cc:79
 msgid "history put $filename"
-msgstr "adding another version to the history of the \"$filename\" file"
+msgstr "để « $filename » lược sử"
 
 #
 # This error message is issued when the history query command returns an
@@ -4000,8 +4017,8 @@ msgstr ""
 #: aegis/aet.cc:808
 msgid "int must test all"
 msgstr ""
-"khi kiểm tra một thay đổi ở tình trạng « đang được hợp nhất », không cho "
-"phép bạn đặt tên của tập tin trên dòng lệnh"
+"khi kiểm tra một thay đổi ở tình trạng « đang được hợp nhất », không cho phép "
+"bạn đặt tên của tập tin trên dòng lệnh"
 
 #
 # This error message is issued when a non-integer change number is
@@ -4031,8 +4048,7 @@ msgstr "giá trị số nguyên cần thiết cho « và » theo vị trí bit (
 #: aefind/tree/bitwise.cc:266 aefind/tree/bitwise.cc:286
 #: libaegis/aer/expr/bit.cc:222 libaegis/aer/expr/bit.cc:243
 msgid "integer value required for bit or (was given $name)"
-msgstr ""
-"giá trị số nguyên cần thiết cho « hoặc » theo vị trí bit (đã cho $name)"
+msgstr "giá trị số nguyên cần thiết cho « hoặc » theo vị trí bit (đã cho $name)"
 
 #
 # This message is issued when an inappropriate ^ is attempted.
@@ -4233,7 +4249,7 @@ msgstr "điều kiện vòng lặp phải là luận lý (đã cho $name)"
 #: aefind/descend.cc:77 aegis/aeip.cc:287 aels/list.cc:138 libaegis/dir.cc:62
 #: libaegis/dir_stack.cc:111
 msgid "lstat $filename: $errno"
-msgstr "lstat $filename: $errno"
+msgstr "$filename: $errno"
 
 #
 # This fatal error message is issued when the aemt command is asked to
@@ -4507,8 +4523,8 @@ msgstr "tập tin « $filename » không còn được di chuyển lại"
 #: aegis/aenc.cc:385
 msgid "nc dflt hint"
 msgstr ""
-"Gợi ý: xoá mọi thứ bên dưới trường « cause » (nguyên nhân) sẽ đặt các giá "
-"trị mặc định một cách thích hợp với nguyên nhân bạn đã chọn."
+"Gợi ý: xoá mọi thứ bên dưới trường « cause » (nguyên nhân) sẽ đặt các giá trị "
+"mặc định một cách thích hợp với nguyên nhân bạn đã chọn."
 
 #
 # This progress message is issued when aena completes successfully.
@@ -4788,7 +4804,7 @@ msgstr "không rõ dự án « $name », gần nhất là dự án « $guess »"
 #
 #: aesvt/main.cc:323
 msgid "no action specified"
-msgstr "no action specified"
+msgstr "chưa xác định hành vi"
 
 #
 # This fatal error message is issued when an attempt is made to aechown
@@ -4804,7 +4820,7 @@ msgstr "thay đổi này là một nhánh: không thể thay đổi quyền sở
 #
 #: aegis/aeb.cc:330
 msgid "no build required"
-msgstr "no build is required for changes to this project"
+msgstr "không cần xây dựng"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -4892,9 +4908,7 @@ msgstr "thay đổi ở tình trạng « $state », không có thư mục phát 
 #
 #: aegis/aed.cc:184 aegis/aed.cc:1538
 msgid "no diff required"
-msgstr ""
-"no \"aegis -diff\" command is required for this change, the project has been "
-"configured to omit this requirement"
+msgstr "không cần khác biệt"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4986,7 +5000,7 @@ msgstr ""
 #
 #: aesvt/main.cc:255
 msgid "no history file name specified"
-msgstr "no history file name specified"
+msgstr "chưa ghi rõ tên tập tin lược sử"
 
 #
 # This fatal error message is issued when aeimport finds no history
@@ -5012,7 +5026,7 @@ msgstr "không rõ tên thông tin phiên bản « $name »"
 #
 #: aesvt/main.cc:292
 msgid "no input file"
-msgstr "no input file name specified"
+msgstr "không có tập tin nhập vào"
 
 #
 # This error message is issued when a request is made which requires the
@@ -5075,7 +5089,7 @@ msgstr "tìm $number lỗi nghiêm trọng nên không có tập tin mới đư�
 #
 #: aesvt/main.cc:311
 msgid "no output file"
-msgstr "no output file name specified"
+msgstr "không có tập tin kết xuất"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -5235,15 +5249,15 @@ msgstr "người dùng « $user » không phải là một người hợp nhất
 # change which is in the being developed state, but the requesting user
 # is not the change's developer.
 #
-#: aegis/aeb.cc:258 aegis/aeclean.cc:441 aegis/aecp.cc:1214 aegis/aecpu.cc:256
+#: aegis/aeb.cc:258 aegis/aeclean.cc:440 aegis/aecp.cc:1214 aegis/aecpu.cc:256
 #: aegis/aed.cc:176 aegis/aed.cc:853 aegis/aedbu.cc:200 aegis/aede.cc:242
 #: aegis/aemt.cc:293 aegis/aemtu.cc:248 aegis/aemv.cc:456 aegis/aemvu.cc:237
 #: aegis/aenf.cc:377 aegis/aenfu.cc:262 aegis/aent.cc:298 aegis/aentu.cc:278
 #: aegis/aerm.cc:316 aegis/aermu.cc:295 aegis/aet.cc:746
 msgid "not developer"
 msgstr ""
-"người dùng « $user » không phải là nhà phát triển: chỉ người dùng « "
-"$developer » có quyền thao tác thay đổi này"
+"người dùng « $user » không phải là nhà phát triển: chỉ người dùng « $developer "
+"» có quyền thao tác thay đổi này"
 
 #
 # This error message is issued when a request is made to delete the last
@@ -5275,8 +5289,8 @@ msgstr ""
 #: aegis/aerbu.cc:218 aegis/aerf.cc:117 aegis/aerp.cc:115 aegis/aet.cc:765
 msgid "not reviewer"
 msgstr ""
-"người dùng « $user » không phải là người xem lại: chỉ người dùng « $reviewer "
-"» có quyền thao tác thay đổi này"
+"người dùng « $user » không phải là người xem lại: chỉ người dùng « $reviewer » "
+"có quyền thao tác thay đổi này"
 
 #
 # This error message is issued when a substitution function is called
@@ -5595,9 +5609,9 @@ msgstr ""
 #: aegis/aecd.cc:165
 msgid "remember to use the aerb command"
 msgstr ""
-"Nếu bạn định xem lại thay đổi này, hãy sử dụng câu lệnh « aegis -review-"
-"begin » càng sớm càng có thề. Hành động này đảm bảo rằng người xem lại khác "
-"không lãng phí thì giờ quý giá."
+"Nếu bạn định xem lại thay đổi này, hãy sử dụng câu lệnh « aegis -review-begin "
+"» càng sớm càng có thề. Hành động này đảm bảo rằng người xem lại khác không "
+"lãng phí thì giờ quý giá."
 
 #
 # This progress message is issued when aera completes successfully.
@@ -5883,7 +5897,6 @@ msgid "review begin undo complete"
 msgstr "bước bắt đầu tiến trình xem lại đã bị hủy"
 
 #
-#
 # This progress message is issued when aerfail completes successfully.
 #
 #: aegis/aerf.cc:454
@@ -5977,7 +5990,7 @@ msgstr ""
 #
 #: aegis/aet.cc:321 aegis/aet.cc:323
 msgid "skipped $number tests"
-msgstr "skipped $number test${plural $number s}"
+msgstr "đã bỏ qua $number hàm thử"
 
 #
 # This error message is issued when an inappropriate argument is given
@@ -6041,7 +6054,7 @@ msgstr "đầu ra tiêu chuẩn"
 #: libaegis/os/unlink/errok.cc:61 libaegis/os/unlink/unlink.cc:60
 #: libaegis/user/creat_by_dir.cc:41
 msgid "stat $filename: $errno"
-msgstr "stat $filename: $errno"
+msgstr "$filename: $errno"
 
 #
 # This error message is issued when a symlink fails.
@@ -6663,8 +6676,8 @@ msgstr "đợi khoá $name"
 #: libaegis/project.cc:558
 msgid "waiting for baseline read lock"
 msgstr ""
-"đợi khoá đường cơ bản dùng chung; đây là vì có một câu lệnh hợp nhất « aegis "
-"-Integrate_PASS » đang chạy"
+"đợi khoá đường cơ bản dùng chung; đây là vì có một câu lệnh hợp nhất « aegis -"
+"Integrate_PASS » đang chạy"
 
 #
 # This progress message is issued when Aegis is waiting for a project
@@ -6691,8 +6704,8 @@ msgstr "đợi khoá chỉ mục vị trí dự án"
 #: libaegis/project.cc:624
 msgid "waiting for history lock"
 msgstr ""
-"đợi khoá lược sử ; đây là vì có một câu lệnh hợp nhất « aegis -"
-"Integrate_PASS » đang chạy trên nhánh khác"
+"đợi khoá lược sử ; đây là vì có một câu lệnh hợp nhất « aegis -Integrate_PASS "
+"» đang chạy trên nhánh khác"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -6714,8 +6727,8 @@ msgstr "đợi khoá"
 #: libaegis/change/file/promote.cc:95
 msgid "warning: $filename in baseline, copying"
 msgstr ""
-"cảnh báo : tập tin « $filename » đã tồn tại trong dự án, nên tự động thay "
-"đổi hành động từ « create » (tạo) thành « modify » (sửa đổi)"
+"cảnh báo : tập tin « $filename » đã tồn tại trong dự án, nên tự động thay đổi "
+"hành động từ « create » (tạo) thành « modify » (sửa đổi)"
 
 #
 # This warning message is issued when a change file is modified by the
@@ -6753,9 +6766,7 @@ msgstr ""
 #
 #: aegis/aenf.cc:772
 msgid "warning: $filename1 deprecated, use $filename2 file instead"
-msgstr ""
-"Warning: The \"$filename1\" file has been deprecated, it is suggested that "
-"you use the \"$filename2\" file instead.  See aenf(1) for more information."
+msgstr "cảnh báo : $filename1 bị phản đối nên dùng $filename2 thay vào đó"
 
 #
 # This generic message is used to turn what would otherwise be an error
@@ -6765,7 +6776,7 @@ msgstr ""
 #
 #: libaegis/change/warning.cc:52
 msgid "warning: $message"
-msgstr "warning: $message"
+msgstr "cảnh báo : $message"
 
 #
 # This warning message is issued when the AEGIS environment variable is
@@ -6821,7 +6832,7 @@ msgstr "cảnh báo : lệnh « $command » có trạng thái thoát $number"
 #       $Number         The number of files requiring merging.
 #                       (Optional)
 #
-#: aegis/aeclean.cc:643
+#: aegis/aeclean.cc:642
 msgid "warning: diffable files"
 msgstr "cảnh báo : có $number tập tin cần khác biệt"
 
@@ -6841,7 +6852,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:621
+#: aegis/aeclean.cc:620
 msgid "warning: file \"$filename\" needs diff"
 msgstr "cảnh báo : tập tin « $filename » cần thiết khác biệt"
 
@@ -6851,7 +6862,7 @@ msgstr "cảnh báo : tập tin « $filename » cần thiết khác biệt"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeclean.cc:526
+#: aegis/aeclean.cc:525
 msgid "warning: file \"$filename\" needs merge"
 msgstr "cảnh báo : tập tin « $filename » cần thiết trộn"
 
@@ -6893,7 +6904,7 @@ msgstr ""
 #       $Number         The number of files requiring merging.
 #                       (Optional)
 #
-#: aegis/aeclean.cc:635 aegis/aed.cc:1528
+#: aegis/aeclean.cc:634 aegis/aed.cc:1528
 msgid "warning: mergable files"
 msgstr "cảnh báo : có $number tập tin cần trộn"
 
@@ -6918,7 +6929,7 @@ msgstr ""
 #       $Name1          The name of a command line option.
 #       $Name2          The name of a command line option.
 #
-#: aegis/aeca.cc:637 aegis/aefa.cc:510 aegis/aeif.cc:303 aegis/aenc.cc:316
+#: aegis/aeca.cc:659 aegis/aefa.cc:510 aegis/aeif.cc:303 aegis/aenc.cc:316
 #: aegis/aepa.cc:284 aegis/aerf.cc:304
 msgid "warning: no $name1, assuming $name2"
 msgstr "cảnh báo : chưa ghi rõ $name1 nên giả sử $name2 đã muốn"
@@ -7014,7 +7025,7 @@ msgstr "cảnh báo : bỏ liên kết « $filename »: $errno"
 #       $Name           The name of the -File option,
 #                       assuming option names will be internationalized RSN
 #
-#: aegis/aeca.cc:480 aegis/aeif.cc:178 aegis/aenc.cc:173 aegis/aepa.cc:185
+#: aegis/aeca.cc:502 aegis/aeif.cc:178 aegis/aenc.cc:173 aegis/aepa.cc:185
 #: aegis/aerf.cc:178
 msgid "warning: use $name option"
 msgstr ""
@@ -7037,9 +7048,8 @@ msgstr "cảnh báo : utime \"$filename\": $errno"
 #: aegis/aedeu.cc:261
 msgid "was not developer"
 msgstr ""
-"người dùng « $user » đã không phải là nhà phát triển của thay đổi này nên "
-"chỉ người dùng « $developer » có quyền hủy bước kết thúc tiến trình phát "
-"triển"
+"người dùng « $user » đã không phải là nhà phát triển của thay đổi này nên chỉ "
+"người dùng « $developer » có quyền hủy bước kết thúc tiến trình phát triển"
 
 #
 # This error message is issued when a aerpu command is run by a

@@ -17,6 +17,7 @@
 //	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>       // for assert
 #include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/project.h>
@@ -42,6 +43,7 @@ project_ty::change_get()
 	pcp = change_alloc(this, TRUNK_CHANGE_NUMBER);
 	change_bind_existing(pcp);
     }
+    assert(pcp->reference_count >= 1);
     trace(("return %08lX;\n}\n", (long)pcp));
     return pcp;
 }

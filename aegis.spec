@@ -8,11 +8,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.24.1
+Version: 4.24.2
 Release: 1
 License: GPL
 Group: Development/Version Control
-Source: http://aegis.sourceforge.net/aegis-4.24.1.tar.gz
+Source: http://aegis.sourceforge.net/aegis-4.24.2.tar.gz
 URL: http://aegis.sourceforge.net
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -106,8 +106,8 @@ chown -R 3 %_prefix/com/aegis && chgrp -R 3 %_prefix/com/aegis
 rm -rf %{buildroot}
 
 %changelog
-* Wed Sep 24 2008  <projadm@acer> 4.24.1-1
-- Update to 4.24.1
+* Thu Jun 25 2009  <projadm@walter-nb> 4.24.2-1
+- Update to 4.24.2
 
 * Thu Apr 03 2008 Ralph A. Smith <smithra@users.sourceforge.net> 4.24-0
 - Rationalized spec file to emulate RedHat practices.

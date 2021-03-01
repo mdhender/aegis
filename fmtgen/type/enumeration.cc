@@ -191,7 +191,7 @@ type_enumeration::gen_code()
     indent_printf("assert(name);\n");
     indent_printf
     (
-        "assert((size_t)this_thing < SIZEOF(%s_s));\n",
+        "assert(this_thing < %s_max);\n",
 	def_name().c_str()
     );
     indent_printf("fp->fputc('<');\n");

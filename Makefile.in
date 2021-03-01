@@ -9466,8 +9466,8 @@ common/rsrc_limits.$(OBJEXT): common/rsrc_limits.cc common/ac/signal.h \
 	mv rsrc_limits.$(OBJEXT) $@
 
 common/safe_strsig.$(OBJEXT): common/safe_strsig.cc common/ac/stdio.h \
-		common/config.h common/config.messy.h common/ac/string.h \
-		common/safe_strsig.h
+		common/config.h common/config.messy.h common/ac/stdlib.h \
+		common/ac/string.h common/safe_strsig.h
 	$(CXX) -I. $(CXXFLAGS) -c common/safe_strsig.cc
 	mv safe_strsig.$(OBJEXT) $@
 
@@ -14266,6 +14266,14 @@ $(DESTDIR)$(datadir)/ip.inews.sh: lib/ip.inews.sh lib/.mkdir.datadir
 
 $(DESTDIR)$(datadir)/ip.sh: lib/ip.sh lib/.mkdir.datadir
 	$(INSTALL_SCRIPT) lib/ip.sh $@
+
+lib/it/LC_MESSAGES/aegis.mo: etc/msgfmt.sh lib/it/LC_MESSAGES/aegis.po
+	$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) \
+		--output=$@ lib/it/LC_MESSAGES/aegis.po
+
+$(DESTDIR)$(NLSDIR)/it/LC_MESSAGES/aegis.mo: lib/it/LC_MESSAGES/aegis.mo \
+		lib/it/LC_MESSAGES/.mkdir.libdir
+	$(INSTALL_DATA) lib/it/LC_MESSAGES/aegis.mo $@
 
 $(DESTDIR)$(datadir)/man1/en/ae_c.1: lib/man1/en/ae_c.1 \
 		lib/man1/en/.mkdir.datadir
@@ -20172,23 +20180,23 @@ libaegis/change/file/path_by_uuid.$(OBJEXT): \
 	mv path_by_uuid.$(OBJEXT) $@
 
 libaegis/change/file/pfstate.$(OBJEXT): libaegis/change/file/pfstate.cc \
+		common/ac/string.h common/config.h common/config.messy.h \
 		common/error.h common/main.h common/symtab.h common/mem.h \
-		common/ac/stddef.h common/config.h common/config.messy.h \
-		common/ac/new.h common/nstring.h common/str.h \
-		common/ac/stdarg.h common/trace.h libaegis/change.h \
-		libaegis/cstate.h common/ac/time.h libaegis/output.h \
-		common/ac/shared_ptr.h common/ac/shared_ptr/aegis.h \
-		libaegis/functor/stack.h libaegis/functor.h \
-		libaegis/meta_lex.h libaegis/meta_parse.h \
-		libaegis/meta_type.h libaegis/aer/value.h \
-		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
-		libaegis/zero.h libaegis/user.h libaegis/uconf.h \
-		libaegis/ustate.h libaegis/change/file.h libaegis/os.h \
-		libaegis/project.h libaegis/pattr.h libaegis/pstate.h \
-		libaegis/sub.h libaegis/sub/diversion/stack.h \
-		libaegis/sub/diversion.h common/wstring.h common/wstr.h \
-		common/ac/stdlib.h libaegis/sub/functor/list.h \
-		libaegis/sub/functor.h
+		common/ac/stddef.h common/ac/new.h common/nstring.h \
+		common/str.h common/ac/stdarg.h common/trace.h \
+		libaegis/change.h libaegis/cstate.h common/ac/time.h \
+		libaegis/output.h common/ac/shared_ptr.h \
+		common/ac/shared_ptr/aegis.h libaegis/functor/stack.h \
+		libaegis/functor.h libaegis/meta_lex.h \
+		libaegis/meta_parse.h libaegis/meta_type.h \
+		libaegis/aer/value.h libaegis/fstate.h libaegis/pconf.h \
+		libaegis/view_path.h libaegis/zero.h libaegis/user.h \
+		libaegis/uconf.h libaegis/ustate.h libaegis/change/file.h \
+		libaegis/os.h libaegis/project.h libaegis/pattr.h \
+		libaegis/pstate.h libaegis/sub.h \
+		libaegis/sub/diversion/stack.h libaegis/sub/diversion.h \
+		common/wstring.h common/wstr.h common/ac/stdlib.h \
+		libaegis/sub/functor/list.h libaegis/sub/functor.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/change/file/pfstate.cc
 	mv pfstate.$(OBJEXT) $@
 
@@ -24607,10 +24615,10 @@ libaegis/os/dirname_rel.$(OBJEXT): libaegis/os/dirname_rel.cc \
 	mv dirname_rel.$(OBJEXT) $@
 
 libaegis/os/domain_name.$(OBJEXT): libaegis/os/domain_name.cc \
+		common/ac/string.h common/config.h common/config.messy.h \
 		libaegis/file.h common/nstring.h common/str.h \
-		common/ac/stddef.h common/config.h common/config.messy.h \
-		common/ac/stdarg.h common/main.h libaegis/os.h \
-		common/ac/time.h libaegis/os/domain_name.h \
+		common/ac/stddef.h common/ac/stdarg.h common/main.h \
+		libaegis/os.h common/ac/time.h libaegis/os/domain_name.h \
 		libaegis/uname.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/os/domain_name.cc
 	mv domain_name.$(OBJEXT) $@
@@ -26181,12 +26189,12 @@ libaegis/project/change/dir_path_get.$(OBJEXT): \
 	mv dir_path_get.$(OBJEXT) $@
 
 libaegis/project/change/get.$(OBJEXT): libaegis/project/change/get.cc \
-		common/trace.h common/ac/stddef.h common/config.h \
-		common/config.messy.h common/main.h libaegis/change.h \
-		libaegis/cstate.h common/ac/time.h common/str.h \
-		common/ac/stdarg.h libaegis/output.h common/nstring.h \
-		common/ac/shared_ptr.h common/ac/shared_ptr/aegis.h \
-		common/error.h libaegis/functor/stack.h \
+		common/error.h common/main.h common/trace.h \
+		common/ac/stddef.h common/config.h common/config.messy.h \
+		libaegis/change.h libaegis/cstate.h common/ac/time.h \
+		common/str.h common/ac/stdarg.h libaegis/output.h \
+		common/nstring.h common/ac/shared_ptr.h \
+		common/ac/shared_ptr/aegis.h libaegis/functor/stack.h \
 		libaegis/functor.h libaegis/meta_lex.h \
 		libaegis/meta_parse.h libaegis/meta_type.h \
 		libaegis/aer/value.h libaegis/fstate.h libaegis/pconf.h \
@@ -32027,6 +32035,14 @@ test/02/t0270a-walt.ES: test/02/t0270a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0270a-walt.sh test/02/t0270a-walt.ES
 
+test/02/t0273a-walt.ES: test/02/t0273a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0273a-walt.sh test/02/t0273a-walt.ES
+
+test/02/t0278a-walt.ES: test/02/t0278a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0278a-walt.sh test/02/t0278a-walt.ES
+
 test_base64/main.$(OBJEXT): test_base64/main.cc common/ac/stdio.h \
 		common/config.h common/config.messy.h common/ac/stdlib.h \
 		common/arglex.h common/main.h common/error.h \
@@ -32140,6 +32156,15 @@ test_getdate/main.$(OBJEXT): test_getdate/main.cc common/ac/stdio.h \
 		common/error.h common/gettime.h common/ac/time.h \
 		common/progname.h
 	$(CXX) -I. $(CXXFLAGS) -c test_getdate/main.cc
+	mv main.$(OBJEXT) $@
+
+test_magic/main.$(OBJEXT): test_magic/main.cc common/ac/stdio.h \
+		common/config.h common/config.messy.h common/ac/stdlib.h \
+		common/arglex.h common/main.h common/env.h common/error.h \
+		common/language.h common/progname.h common/nstring.h \
+		common/str.h common/ac/stddef.h common/ac/stdarg.h \
+		libaegis/help.h libaegis/os.h common/ac/time.h
+	$(CXX) -I. $(CXXFLAGS) -c test_magic/main.cc
 	mv main.$(OBJEXT) $@
 
 test_shared_ptr/main.$(OBJEXT): test_shared_ptr/main.cc \
@@ -32318,6 +32343,16 @@ lib/icon/.mkdir.datadir: lib/.mkdir.datadir
 	-@touch $@
 	@sleep 1
 
+lib/it/LC_MESSAGES/.mkdir.libdir: lib/it/.mkdir.libdir
+	-$(INSTALL) -m 0755 -d $(DESTDIR)$(NLSDIR)/it/LC_MESSAGES
+	-@touch $@
+	@sleep 1
+
+lib/it/.mkdir.libdir: lib/.mkdir.libdir
+	-$(INSTALL) -m 0755 -d $(DESTDIR)$(NLSDIR)/it
+	-@touch $@
+	@sleep 1
+
 lib/man1/en/.mkdir.datadir: lib/man1/.mkdir.datadir
 	-$(INSTALL) -m 0755 -d $(DESTDIR)$(datadir)/man1/en
 	-@touch $@
@@ -32418,12 +32453,12 @@ all-bin: bin/ae-cvs-ci$(EXEEXT) bin/ae-repo-ci$(EXEEXT) \
 		bin/test_cfn$(EXEEXT) bin/test_cpio$(EXEEXT) \
 		bin/test_execute$(EXEEXT) bin/test_felp$(EXEEXT) \
 		bin/test_funcs$(EXEEXT) bin/test_getdate$(EXEEXT) \
-		bin/test_shared_ptr$(EXEEXT) bin/test_strverscmp$(EXEEXT) \
-		bin/test_uuid$(EXEEXT) bin/test_xml$(EXEEXT) \
-		bin/test_zlib$(EXEEXT) bin/tkaeca$(EXEEXT) \
-		bin/tkaegis$(EXEEXT) bin/tkaenc$(EXEEXT) \
-		bin/tkaepa$(EXEEXT) bin/tkaer$(EXEEXT) \
-		bin/xaegis$(EXEEXT)
+		bin/test_magic$(EXEEXT) bin/test_shared_ptr$(EXEEXT) \
+		bin/test_strverscmp$(EXEEXT) bin/test_uuid$(EXEEXT) \
+		bin/test_xml$(EXEEXT) bin/test_zlib$(EXEEXT) \
+		bin/tkaeca$(EXEEXT) bin/tkaegis$(EXEEXT) \
+		bin/tkaenc$(EXEEXT) bin/tkaepa$(EXEEXT) \
+		bin/tkaer$(EXEEXT) bin/xaegis$(EXEEXT)
 
 ae-repo-ci_files = ae-repo-ci/arglex3.$(OBJEXT) \
 		ae-repo-ci/checkin.$(OBJEXT) ae-repo-ci/main.$(OBJEXT) \
@@ -33250,6 +33285,19 @@ bin/test_getdate$(EXEEXT): $(test_getdate_files) \
 $(DESTDIR)$(bindir)/$(PROGRAM_PREFIX)test_getdate$(PROGRAM_SUFFIX)$(EXEEXT): \
 		bin/test_getdate$(EXEEXT) .bindir
 	$(INSTALL_PROGRAM) bin/test_getdate$(EXEEXT) $@
+
+test_magic_files = test_magic/main.$(OBJEXT)
+
+bin/test_magic$(EXEEXT): $(test_magic_files) libaegis/libaegis.$(LIBEXT) \
+		.bin
+	@sleep 1
+	$(CXX) $(LDFLAGS) -o $@ $(test_magic_files) \
+		libaegis/libaegis.$(LIBEXT) $(LIBS)
+	@sleep 1
+
+$(DESTDIR)$(bindir)/$(PROGRAM_PREFIX)test_magic$(PROGRAM_SUFFIX)$(EXEEXT): \
+		bin/test_magic$(EXEEXT) .bindir
+	$(INSTALL_PROGRAM) bin/test_magic$(EXEEXT) $@
 
 test_shared_ptr_files = test_shared_ptr/main.$(OBJEXT)
 
@@ -34825,7 +34873,7 @@ install-man-no:
 
 po_files_yes: lib/de/LC_MESSAGES/aegis.mo lib/en/LC_MESSAGES/aegis.mo \
 		lib/es/LC_MESSAGES/aegis.mo lib/fr/LC_MESSAGES/aegis.mo \
-		lib/nl/LC_MESSAGES/aegis.mo \
+		lib/it/LC_MESSAGES/aegis.mo lib/nl/LC_MESSAGES/aegis.mo \
 		lib/pt_BR/LC_MESSAGES/aegis.mo \
 		lib/ro/LC_MESSAGES/aegis.mo lib/ru/LC_MESSAGES/aegis.mo \
 		lib/vi/LC_MESSAGES/aegis.mo
@@ -34836,6 +34884,7 @@ install-po-yes: $(DESTDIR)$(NLSDIR)/de/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/en/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/es/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/fr/LC_MESSAGES/aegis.mo \
+		$(DESTDIR)$(NLSDIR)/it/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/nl/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/pt_BR/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/ro/LC_MESSAGES/aegis.mo \
@@ -34847,6 +34896,7 @@ uninstall-po:
 		$(DESTDIR)$(NLSDIR)/en/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/es/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/fr/LC_MESSAGES/aegis.mo \
+		$(DESTDIR)$(NLSDIR)/it/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/nl/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/pt_BR/LC_MESSAGES/aegis.mo \
 		$(DESTDIR)$(NLSDIR)/ro/LC_MESSAGES/aegis.mo \
@@ -35290,7 +35340,8 @@ TestFiles = test/00/t0000a-pmil.ES test/00/t0001a.ES \
 		test/02/t0262a-walt.ES test/02/t0263a-walt.ES \
 		test/02/t0264a-walt.ES test/02/t0265a-walt.ES \
 		test/02/t0266a-walt.ES test/02/t0268a-walt.ES \
-		test/02/t0269a-walt.ES test/02/t0270a-walt.ES
+		test/02/t0269a-walt.ES test/02/t0270a-walt.ES \
+		test/02/t0273a-walt.ES test/02/t0278a-walt.ES
 
 clean-obj:
 	rm -f .bin
@@ -36035,6 +36086,9 @@ clean-obj:
 	rm -f lib/icon/aegis.gif
 	rm -f lib/icon/bigger.png
 	rm -f lib/icon/rss.gif
+	rm -f lib/it/.mkdir.libdir
+	rm -f lib/it/LC_MESSAGES/.mkdir.libdir
+	rm -f lib/it/LC_MESSAGES/aegis.mo
 	rm -f lib/man1/.mkdir.datadir
 	rm -f lib/man1/en/.mkdir.datadir
 	rm -f lib/nl/.mkdir.libdir
@@ -37300,12 +37354,15 @@ clean-obj:
 	rm -f test/02/t0268a-walt.ES
 	rm -f test/02/t0269a-walt.ES
 	rm -f test/02/t0270a-walt.ES
+	rm -f test/02/t0273a-walt.ES
+	rm -f test/02/t0278a-walt.ES
 	rm -f test_base64/main.$(OBJEXT)
 	rm -f test_cfn/main.$(OBJEXT)
 	rm -f test_cpio/main.$(OBJEXT)
 	rm -f test_execute/main.$(OBJEXT)
 	rm -f test_felp/main.$(OBJEXT)
 	rm -f test_getdate/main.$(OBJEXT)
+	rm -f test_magic/main.$(OBJEXT)
 	rm -f test_shared_ptr/main.$(OBJEXT)
 	rm -f test_strverscmp/main.$(OBJEXT)
 	rm -f test_uuid/main.$(OBJEXT)
@@ -37339,12 +37396,12 @@ clean: clean-obj
 		bin/test_cfn$(EXEEXT) bin/test_cpio$(EXEEXT) \
 		bin/test_execute$(EXEEXT) bin/test_felp$(EXEEXT) \
 		bin/test_funcs$(EXEEXT) bin/test_getdate$(EXEEXT) \
-		bin/test_shared_ptr$(EXEEXT) bin/test_strverscmp$(EXEEXT) \
-		bin/test_uuid$(EXEEXT) bin/test_xml$(EXEEXT) \
-		bin/test_zlib$(EXEEXT) bin/tkaeca$(EXEEXT) \
-		bin/tkaegis$(EXEEXT) bin/tkaenc$(EXEEXT) \
-		bin/tkaepa$(EXEEXT) bin/tkaer$(EXEEXT) \
-		bin/xaegis$(EXEEXT)
+		bin/test_magic$(EXEEXT) bin/test_shared_ptr$(EXEEXT) \
+		bin/test_strverscmp$(EXEEXT) bin/test_uuid$(EXEEXT) \
+		bin/test_xml$(EXEEXT) bin/test_zlib$(EXEEXT) \
+		bin/tkaeca$(EXEEXT) bin/tkaegis$(EXEEXT) \
+		bin/tkaenc$(EXEEXT) bin/tkaepa$(EXEEXT) \
+		bin/tkaer$(EXEEXT) bin/xaegis$(EXEEXT)
 
 install-bin: \
 		$(DESTDIR)$(bindir)/$(PROGRAM_PREFIX)ae-cvs-ci$(PROGRAM_SUFFIX)$(EXEEXT) \

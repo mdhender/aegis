@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2005-2008 Peter Miller,
-//	Copyright (C) 2004, 2005, 2007 Walter Franzini;
+//	Copyright (C) 2004, 2005, 2007-2009 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -68,22 +68,22 @@ extract_change_number_from_url(const nstring &uri)
     const char *cp = uri.c_str();
     for (;;)
     {
-	if
-       	(
-	    cp[0] == '.'
-	&&
-	    (cp[1] == 'c' || cp[1] == 'C')
-	&&
-	    isdigit((unsigned char)cp[2])
-	)
-	{
-	    return strtol(cp + 2, 0, 10);
-	}
-	if (!*cp)
-	{
-	    return 0;
-	}
-	++cp;
+        if
+        (
+            cp[0] == '.'
+        &&
+            (cp[1] == 'c' || cp[1] == 'C')
+        &&
+            isdigit((unsigned char)cp[2])
+        )
+        {
+            return strtol(cp + 2, 0, 10);
+        }
+        if (!*cp)
+        {
+            return 0;
+        }
+        ++cp;
     }
 }
 
@@ -354,7 +354,7 @@ replay_main(void)
         remote_change.push_back_unique(parts.get_url2());
     }
 
-    trace(("remote_change.size() = %d;\n", remote_change.size()));
+    trace(("remote_change.size() = %zd;\n", remote_change.size()));
 
     os_become_orig();
     nstring dot(os_curdir());
@@ -389,20 +389,20 @@ replay_main(void)
 	//
 	url_abs = fix_compatibility_modifier(url_abs, use_compat);
 
-	//
-	// If the URL contains a change number, try to use that.
-	// Otherwise, just use the next available change number.
-	//
-	long change_number = extract_change_number_from_url(url_abs);
-	if
-       	(
-	    change_number <= 0
-	||
-	    project_change_number_in_use(pp2, change_number)
-	)
-	{
-	    change_number = project_next_change_number(pp2, 1);
-	}
+        //
+        // If the URL contains a change number, try to use that.
+        // Otherwise, just use the next available change number.
+        //
+        long change_number = extract_change_number_from_url(url_abs);
+        if
+        (
+            change_number <= 0
+        ||
+            project_change_number_in_use(pp2, change_number)
+        )
+        {
+            change_number = project_next_change_number(pp2, 1);
+        }
 
 	//
 	// Start building the command.

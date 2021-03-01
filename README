@@ -3,7 +3,8 @@ Read Me(Aegis)							Read Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008 Peter Miller
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008, 2009 Peter
+	Miller
 
 	Aegis is distributed under the terms of	the GNU	General	Public
 	License.  See the LICENSE section, below, for more details.
@@ -97,11 +98,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	      #	the Aegis page
-		File:	aegis.4.24.1.README   #	Description, from tar file
-		File:	aegis.4.24.1.lsm      #	Description, in	LSM format
-		File:	aegis.4.24.1.ae	      #	the complete source, aedist format
-		File:	aegis.4.24.1.spec     #	RedHat package specification
-		File:	aegis.4.24.1.tar.gz   #	the complete source
+		File:	aegis.4.24.2.README   #	Description, from tar file
+		File:	aegis.4.24.2.lsm      #	Description, in	LSM format
+		File:	aegis.4.24.2.ae	      #	the complete source, aedist format
+		File:	aegis.4.24.2.spec     #	RedHat package specification
+		File:	aegis.4.24.2.tar.gz   #	the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +115,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.24.1.README   #	Description, from tar file
-		File:	aegis.4.24.1.lsm      #	Description, in	LSM format
-		File:	aegis.4.24.1.spec     #	RedHat package specification
-		File:	aegis.4.24.1.ae	      #	the complete source, aedist format
-		File:	aegis.4.24.1.tar.gz   #	the complete source
+		File:	aegis.4.24.2.README   #	Description, from tar file
+		File:	aegis.4.24.2.lsm      #	Description, in	LSM format
+		File:	aegis.4.24.2.spec     #	RedHat package specification
+		File:	aegis.4.24.2.ae	      #	the complete source, aedist format
+		File:	aegis.4.24.2.tar.gz   #	the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,10 +251,53 @@ RELEASE	NOTES
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
 
+   Version 4.24.2 (25-Jun-2009)
+	* The branch fstate can	contain	fake transparent entries when a	change
+	not yet	integrated modifies for	the first time in the branch a file.
+
+	It is possible that such entries cause troubles	if the project is
+	configured to write the	pfstate	file.  To avoid	such troubles the fake
+	transparent entries are	stripped on the	fly when reading the pfstate
+	file.
+
+	The way	the the	pfstate	file is	written	is not modified.
+
+	* The Italian translation of error messages is now available.
+
+	* The Vietnamese and Dutch error messages has been updated.
+
+	* The aerevml(1) command was incorrectly printing twice	user defined
+	attributes. This behavior has been fixed.
+
+	* The aeclean(1) command was incorrectly checking the patterns against
+	the absolute name of the files.	 This behavior has been	fixed.
+
+	* The aelock(1)	man page was incorrectly reporting the attribute name
+	aelock use.  This has been fixed.
+
+	* The aesub(5) man page	now reference aeuconf(5) in the	email address
+	section.
+
+	* The aedist(1)	command	is now more robust when	handling renamed
+	files.
+
+	* The t0228a-matt.sh test script has been made more robust with
+	respect	to different behavior of libmagic.
+
+	* The t0127a.sh	test script (aeimport vs. sccs)	has been fixed.
+
+	* A number of memory related bugs has been fixed.
+
+	* Some typo has	been corrected in the ae-repo-ci(1) man	page.
+
+	* The build process has	been improved to give more informative
+	messages when a	new aegis developer populate his repository for	the
+	first time.
+
    Version 4.24.1 (24-Sep-2008)
 	Security: [ #2079025 ] This update fix two security problems
-	discovered by the Debian crew (Debian #496400 and #496402) You are
-	encouraged to upgrade.
+	discovered by the Debian crew (Debian #496400 and #496402,
+	CVE-2008-4938) You are encouraged to upgrade.
 
 	Removed	functionalities: In response to	one of the two above security
 	problem, the aegis.cgi program has been	removed.

@@ -60,7 +60,7 @@ project_ty::bind_branch(change::pointer cp)
         pp->gid = gid;
 	pp->parent = project_copy(this);
 	pp->parent_bn = cp->number;
-	pp->pcp = cp;
+	pp->pcp = change_copy(cp);
 	pp->changes_path =
 	    str_format("%s.branch", change_path_get(cp->number)->str_text);
 	trace(("change path = \"%s\"\n", pp->changes_path->str_text));

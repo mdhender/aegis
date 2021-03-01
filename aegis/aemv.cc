@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2008 Peter Miller
-//	Copyright (C) 2005, 2008 Walter Franzini
+//	Copyright (C) 1993-1999, 2001-2009 Peter Miller
+//	Copyright (C) 2005, 2008, 2009 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -500,7 +500,7 @@ move_file_main(void)
         string_ty *old_name;
         string_ty *new_name;
 
-        trace(("i=%d; old = \"%s\"; new = \"%s\"; \n",
+        trace(("i=%zd; old = \"%s\"; new = \"%s\"; \n",
                i,
                wl_args.string[i]->str_text,
                wl_args.string[i+1]->str_text));

@@ -2,6 +2,10 @@
 #       aegis - project change supervisor
 #       Copyright (C) 2001-2008 Peter Miller
 #
+# Dutch translations for aegis
+#       Copyright (C) 2007 Jelle Boomstra
+#       Copyright (C) 2008 Benno Schulenberg
+#
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License as
 #       published by the Free Software Foundation; either version 3 of
@@ -44,12 +48,13 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2008-01-09\n"
-	"Last-Translator: Jelle Boomstra <nietsch@dds.nl>\n"
-	"Language-Team: Nederlands <nl@li.org>\n"
+msgstr	"PO-Revision-Date: 2008-04-12 00:35+0200\n"
+	"Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
+	"Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 	"MIME-Version: 1.0\n"
-	"Content-Type: text/plain; charset=iso-8859-1\n"
+	"Content-Type: text/plain; charset=UTF-8\n"
 	"Content-Transfer-Encoding: 8bit\n"
+	"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #
 # This error message is issued when an environment variable is meant to
@@ -58,30 +63,25 @@ msgstr	"PO-Revision-Date: 2008-01-09\n"
 #       $Name           The name of the environment variable.
 #
 msgid	"$$$name must be positive"
-msgstr	"de $name omgevings variable moet een positief decimaal nummer "
-	"zijn"
+msgstr	"de omgevingsvariabele $name moet een positief decimaal getal zijn"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when the parameter of the -UUid switch is
 # not a valid uuid.
 #
 #       $Name           The -UUid switch
 #
-#, fuzzy
 msgid	"$Name needs an uuid"
-msgstr	"The $Name option needs to be given a valid UUID"
+msgstr	"de optie $Name vereist een geldige UUID"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when the parameter of the given command
 # line option is not a valid URL.
 #
 #       $Name           The option name
 #
-#, fuzzy
 msgid	"$Name needs url"
-msgstr	"The $Name option needs to be given a valid URL"
+msgstr	"de optie $Name vereist een geldige URL"
 
 #
 # This error message is issued when a file has been tampered with while
@@ -95,12 +95,10 @@ msgid	"$filename altered"
 msgstr	"bestand \"$filename\" is gewijzigd"
 
 #
-# TRANSLATION REQUIRED
 # This message is issued when an aefa is successfully completed.
 #
-#, fuzzy
 msgid	"$filename attributes changed"
-msgstr	"file \"$filename\" attributes changed"
+msgstr	"bestandsattributen van \"$filename\" zijn gewijzigd"
 
 #
 # This error message is issued when aenf is invoked on a file which is
@@ -109,12 +107,11 @@ msgstr	"file \"$filename\" attributes changed"
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename bad nf type"
-msgstr	"het bestand \"$filename\" is geen correct type bestand.  Gebruik "
-	"alleen normale bestanden voor dit commando.  Symbolic links en "
-	"andere speciale bestand types moeten gemaakt worden bij de "
-	"compilatie."
+msgstr	"het bestand \"$filename\" is niet van een correct type; gebruik "
+	"alleen normale bestanden of mappen voor dit commando; "
+	"symbolische koppelingen en andere speciale bestanden moeten bij "
+	"de compilatie gemaakt worden"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when a test run against the baseline
 # fails.  This is what it is meant to do because either (a) it is new
@@ -125,7 +122,6 @@ msgstr	"het bestand \"$filename\" is geen correct type bestand.  Gebruik "
 #       $File_Name      The name of the test file.
 #       $ARCHitecture   The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename baseline fail, architecture $architecture, good"
 msgstr	"test \"$filename\" on $architecture on baseline failed (as it "
 	"should)"
@@ -142,7 +138,6 @@ msgstr	"test \"$filename\" on $architecture on baseline failed (as it "
 msgid	"$filename baseline fail, good"
 msgstr	"test \"$filename\" op de baseline gezakt (zoals zou moeten)"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a test run against the baseline
 # passes.  See above for why this is not good.
@@ -150,7 +145,6 @@ msgstr	"test \"$filename\" op de baseline gezakt (zoals zou moeten)"
 #       $File_Name      The name of the test file.
 #       $ARCHitecture   The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename baseline pass, architecture $architecture, not good"
 msgstr	"test \"$filename\" on $architecture on baseline passed (it must "
 	"fail)"
@@ -182,10 +176,10 @@ msgstr	"bestand \"$filename\" wordt verwijderd"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"$filename changed after build"
-msgstr	"het bestand \"$filename\" was gewijzigd na de laatste "
-	"compilatie, deze wijziging moet nogmaals gecompileerd worden met "
-	"'aegis -Build' $outstanding voor het de status '$state' kan "
-	"verlaten"
+msgstr	"het bestand \"$filename\" is gewijzigd na de laatste "
+	"compilatie; "
+	"deze wijziging moet nogmaals gecompileerd worden met 'aegis "
+	"-Build $outstanding'"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -195,17 +189,17 @@ msgstr	"het bestand \"$filename\" was gewijzigd na de laatste "
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename changed after diff"
-msgstr	"het bestand \"$filename\" was gewijzigd na de laatste "
-	"vergelijking; deze wijziging moet nogmaals vergeleken worden met "
-	"'aegis -Diff' voordat het de status '$state' kan verlaten "
+msgstr	"het bestand \"$filename\" is gewijzigd na de laatste "
+	"vergelijking; "
+	"deze wijziging moet nogmaals vergeleken worden met 'aegis -Diff'"
 
 #
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
 msgid	"$filename diff3ed"
-msgstr	"Bestand \"$filename\" was verouderd, zie \"$filename,D\" voor de "
-	"samengevoegde code"
+msgstr	"Bestand \"$filename\" was verouderd; "
+	"zie \"$filename,D\" voor de samengevoegde code"
 
 #
 # This error message is issued when a test against the change fails.
@@ -213,16 +207,14 @@ msgstr	"Bestand \"$filename\" was verouderd, zie \"$filename,D\" voor de "
 #       $File_Name      The name of the test file.
 #
 msgid	"$filename fail"
-msgstr	"test \"$filename\" gezakt"
+msgstr	"test \"$filename\" is mislukt"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a test against the change fails.
 #
 #       $File_Name      The name of the test file.
 #       $ARCHitecture   The name of the architecture tesed on.
 #
-#, fuzzy
 msgid	"$filename fail, architecture $architecture"
 msgstr	"test \"$filename\" failed on $architecture"
 
@@ -276,7 +268,6 @@ msgstr	"bestand \"$filename\" was verouderd en is samengevoegd met de "
 msgid	"$filename modified by history tool"
 msgstr	"de history tool heeft het \"$filename\" source bestand gewijzigd"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by the aedb command when it finds
 # a problem with the directory permissions above the development
@@ -288,7 +279,6 @@ msgstr	"de history tool heeft het \"$filename\" source bestand gewijzigd"
 #       $Mode_Old       The current mode of the directory (optional).
 #       $Mode_New       The desirable mode of the directory (optional).
 #
-#, fuzzy
 msgid	"$filename needs permissions $mode_change"
 msgstr	"directory \"$filename\" is not traversable, it currently has "
 	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
@@ -304,7 +294,6 @@ msgid	"$filename no result"
 msgstr	"Test \"$filename\" gaf geen resultaat; een ander probleem "
 	"verhinderde de test."
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aet runs a test which returns a "no
 # result" exit status.
@@ -312,7 +301,6 @@ msgstr	"Test \"$filename\" gaf geen resultaat; een ander probleem "
 #       $File_Name      The name of the offending file.
 #       $ARCHitecture   The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename no result, architecture $architecture"
 msgstr	"test \"$filename\" on $architecture returned no result; some  "
 	"other problem prevented the functionality under test from being "
@@ -326,7 +314,7 @@ msgstr	"test \"$filename\" on $architecture returned no result; some  "
 #       $File_Name      The name of the offending file.
 #
 msgid	"$filename not found"
-msgstr	"bestand \"$filename\" niet gevonden"
+msgstr	"bestand \"$filename\" is niet gevonden"
 
 #
 # This error message is issued when a request is made to run a specific
@@ -343,31 +331,26 @@ msgstr	"bestand \"$filename\" is geen test"
 #       $File_Name      The name of the test file.
 #
 msgid	"$filename pass"
-msgstr	"Test \"$filename\" geslaagd"
+msgstr	"Test \"$filename\" is geslaagd"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when a test against the change passes.
 #
 #       $File_Name      The name of the test file.
 #       $ARCHitecture   The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename pass, architecture $architecture"
-msgstr	"test \"$filename\" passed on $architecture"
+msgstr	"Test \"$filename\" is geslaagd op de $architecture-architectuur"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when a test against the change decides
 # to skip itself.
 #
 #       $File_Name      The name of the test file.
 #
-#, fuzzy
 msgid	"$filename skipped"
-msgstr	"test \"$filename\" skipped"
+msgstr	"Test \"$filename\" is overgeslagen"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a test against the change fails
 # decodes to skip itself.
@@ -375,46 +358,39 @@ msgstr	"test \"$filename\" skipped"
 #       $File_Name      The name of the test file.
 #       $ARCHitecture   The name of the architecture tesed on.
 #
-#, fuzzy
 msgid	"$filename skipped, architecture $architecture"
-msgstr	"test \"$filename\" skipped on $architecture"
+msgstr	"Test \"$filename\" is overgeslagen voor de "
+	"$architecture-architectuur"
 
-# TRANSLATION_REQUIRED
 #
 # This error message is issued when aede discovers a file in the change
 # that has not been altered.  (Sometimes it is a warning.)
 #
 #       $File_Name      The offending file.
 #
-#, fuzzy
 msgid	"$filename unchanged"
-msgstr	"the \"$filename\" file has not been changed, it should not be "
-	"included in the change"
+msgstr	"Het bestand \"$filename\" is niet gewijzigd; "
+	"het zou niet in de wijziging opgenomen moeten zijn"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a file named on the command
 # cannot be related to the change being operated on.
 #
 #       $File_Name      The offending command line argument.
 #
-#, fuzzy
 msgid	"$filename unrelated"
 msgstr	"path \"$filename\" is not within any change or project directory "
 	"tree; maybe the -base-relative option will help"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued by the aefa -uuid command if the
 # file already has a UUID set.
 #
 #       $File_Name      the offending filename
 #
-#, fuzzy
 msgid	"$filename uuid already set"
 msgstr	"the \"$filename\" file alreday has a UUID"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued by the aefa -uuid command if the
 # file already has a UUID set.
@@ -422,7 +398,6 @@ msgstr	"the \"$filename\" file alreday has a UUID"
 #       $File_Name      the offending filename
 #       $Other          the other filename using the UUID (optional)
 #
-#, fuzzy
 msgid	"$filename uuid duplicate"
 msgstr	"the UUID specified for the \"$filename\" file is already in use "
 	"by the \"$other\" file"
@@ -435,7 +410,7 @@ msgstr	"the UUID specified for the \"$filename\" file is already in use "
 #       $Line_Number    The line number of the message
 #
 msgid	"$filename: $linenumber: empty $${} substitution"
-msgstr	"$filename: $linenumber: lege $${} substitutie"
+msgstr	"$filename: $linenumber: lege $${}-substitutie"
 
 #
 # This error message is issued when one or more substitution variables
@@ -468,7 +443,7 @@ msgstr	"$filename: $linenumber: in substitutie \"$message\" $number "
 #
 msgid	"$filename: $linenumber: in substitution \"$message\" variable "
 	"\"$name\" unused"
-msgstr	"$filename: $linenumber: in substitutie \"$message\" variabele "
+msgstr	"$filename: $linenumber: in substitutie \"$message\" is variabele "
 	"\"$name\" ongebruikt"
 
 #
@@ -494,7 +469,7 @@ msgstr	"$filename: $linenumber: substitutie $${$name} fout: $message"
 #       $Line_Number    The line number of the message
 #
 msgid	"$filename: $linenumber: unterminated $${} \\ sequence"
-msgstr	"$filename: $linenumber:  $${} \\ substitutie zonder einde"
+msgstr	"$filename: $linenumber: $${} \\ substitutie zonder einde"
 
 #
 # This error message is issued when a substitution function is formed
@@ -511,7 +486,7 @@ msgstr	"$filename: $linenumber: ontbrekende $${} aanhalingstekens"
 # incorrectly.  See (+++) above.
 #
 msgid	"$filename: $linenumber: unterminated $${} substitution"
-msgstr	"$filename: $linenumber:  $${} substitutie zonder einde"
+msgstr	"$filename: $linenumber: $${} substitutie zonder einde"
 
 #
 # This error message is issued when a generic error in a text file is required.
@@ -523,7 +498,7 @@ msgid	"$filename: $message"
 msgstr	"$filename: $message"
 
 #
-# This error message is issued when the project config file specifies
+# This error message is issued when the project configuration file specifies
 # architecture variants incompletely.
 #
 #       $File_Name      The name of the offending file
@@ -532,7 +507,6 @@ msgid	"$filename: arch needs name and pattern"
 msgstr	"$filename: architecturen moeten zowel de naam als een patroon "
 	"opgeven"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a aede-policy's white-space
 # policy finds blank lines at the end of a file.
@@ -540,12 +514,10 @@ msgstr	"$filename: architecturen moeten zowel de naam als een patroon "
 #       $File_Name      The name of the offending file.
 #       $Number         The number of blank lines (optional)
 #
-#, fuzzy
 msgid	"$filename: blank lines at end of file"
 msgstr	"$filename: found $number blank line${plural $number s} at the "
 	"end of the file"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aesvt is checking a file checksum,
 # and finds something incorrect.
@@ -554,7 +526,6 @@ msgstr	"$filename: found $number blank line${plural $number s} at the "
 #       $Number1        The checksum in the history header.
 #       $Number2        The checksum calculated when reading the data.
 #
-#, fuzzy
 msgid	"$filename: checksum mismatch ($number1 != $number2)"
 msgstr	"$filename: checksum mismatch ($number1 != $number2)"
 
@@ -567,16 +538,14 @@ msgstr	"$filename: checksum mismatch ($number1 != $number2)"
 #       $FieLD_Name     The name of the absent field.
 #
 msgid	"$filename: contains no \"$field_name\" field"
-msgstr	"$filename: bevat geen \"$field_name\" veld"
+msgstr	"$filename: bevat geen \"$field_name\"-veld"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by aede-policy when a change file
 # contains tab characters.
 #
 #       $File_Name      The name of the offending file.
 #
-#, fuzzy
 msgid	"$filename: contains tab characters"
 msgstr	"$filename: contains tab characters; to preserve the intended "
 	"code formatting, use space characters instead"
@@ -590,28 +559,24 @@ msgstr	"$filename: contains tab characters; to preserve the intended "
 #       $FieLD_Name     The name of the absent field.
 #
 msgid	"$filename: corrupted \"$field_name\" field"
-msgstr	"$filename: onleesbaar \"$field_name\" veld"
+msgstr	"$filename: onleesbaar \"$field_name\"-veld"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aede-policy detects a file isung DOS
 # line termination when it must use UNIX line termination.
 #
 #       $File_Name      The offending file.
 #
-#, fuzzy
 msgid	"$filename: dos line termination"
 msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
 	"should use UNIX line termination (LF)"
 
-# TRANSLATION REQUIRED
 #
 # This warning is issued when an obsolete field is used.
 #
 #      $Name1          The name of the obsolete field.
 #      $Name2          The name of the preferred field.
 #
-#, fuzzy
 msgid	"$filename: field \"$name1\" obsolete, use \"$name2\" instead"
 msgstr	"$filename: the \"$name1\" field is obsolete, use the \"$name2\" "
 	"field instead"
@@ -621,11 +586,11 @@ msgstr	"$filename: the \"$name1\" field is obsolete, use the \"$name2\" "
 # ownership and finds something incorrect.
 #
 msgid	"$filename: gid $number1 invalid, must be >= $number2"
-msgstr	"$filename: het  groep ID ($number1) van dit bestand is te laag, "
-	"het moet groter of gelijk zijn aan AEGIS_MIN_GID ($number2). Dit "
+msgstr	"$filename: het groep ID ($number1) van dit bestand is te laag, "
+	"het moet groter of gelijk zijn aan AEGIS_MIN_GID ($number2); dit "
 	"is waarschijnlijk het gevolg van een fout bij het terugzetten "
-	"van een backup, gebruik \"chgrp -R <groep> $filename\" op dit op "
-	"te lossen, met een geschikte <groep> naam. [Rootrechten nodig]"
+	"van een backup.  Gebruik \"chgrp -R <groep> $filename\" met een "
+	"geschikte groepsnaam om dit op te lossen [rootrechten nodig]."
 
 #
 # This error message is issued when Aegis is checking a file's group,
@@ -660,18 +625,15 @@ msgstr	"$filename: is mee gesjoemeld (fataal)"
 msgid	"$filename: has errors"
 msgstr	"$filename: $number fatale fout${plural $number en} gevonden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aede-policy detects a binary file,
 # and you have specified a policy whis disallows such files.
 #
 #       $File_Name      The offending file name.
 #
-#, fuzzy
 msgid	"$filename: is binary"
 msgstr	"the \"$filename\" file contains binary bytes"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aede-policy detects unprintable
 # (non-ASCII) characters in a file, and you have specified a policy whis
@@ -680,28 +642,25 @@ msgstr	"the \"$filename\" file contains binary bytes"
 #       $File_Name      The offending file name.
 #       $Number         The line number (optional)
 #
-#, fuzzy
 msgid	"$filename: is unprintable"
 msgstr	"the \"$filename\" file contains unprintable characters (line "
 	"$number)"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
-#, fuzzy
+#       $File_Name      The offending file name.
+#
 msgid	"$filename: malformed RFC 822 header line"
 msgstr	"$filename: malformed RFC 822 header line"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by aede-policy when it detects that text
 # file merge conflict artifacts remain in a source file.
 #
 #       $File_Name      The offending file name.
 #
-#, fuzzy
 msgid	"$filename: merge conflicts"
 msgstr	"$filename: this file contains unresolved merge conflicts"
 
@@ -716,7 +675,6 @@ msgstr	"$filename: this file contains unresolved merge conflicts"
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: rechten zijn $number1, zouden $number2 moeten zijn"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued by the aede-policy command when a file
 # does not contain and up-to-date copyright notice.
@@ -724,12 +682,10 @@ msgstr	"$filename: rechten zijn $number1, zouden $number2 moeten zijn"
 #       $File_Name      The name of the offending file.
 #       $Suggest        A suggested text for the missing notice (optional).
 #
-#, fuzzy
 msgid	"$filename: no current copyright notice"
 msgstr	"$filename: the file does not contain an up-to-date copyright "
 	"notice; a notice of the form \"$suggest\" would be suitable."
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued bu aede-policy when the fsf-address
 # policy check finds and out-of-date Free Software Foundation postal
@@ -738,12 +694,10 @@ msgstr	"$filename: the file does not contain an up-to-date copyright "
 #       $filename       The name of the offending file
 #       $suggest        The correct FSF address (optional).
 #
-#, fuzzy
 msgid	"$filename: old FSF address"
-msgstr  "$filename: the old FSF postal address is present in this file, "
-        "you need to replace it with \"$suggest\" instead."
+msgstr	"$filename: the old FSF postal address is present in this file, "
+	"you need to replace it with \"$suggest\" instead."
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued bu aede-policy when the gpl-version
 # policy check finds and out-of-date GNU GPL version number in the first
@@ -752,10 +706,9 @@ msgstr  "$filename: the old FSF postal address is present in this file, "
 #       $filename       The name of the offending file
 #       $suggest        The correct GPL version (optional).
 #
-#, fuzzy
-msgid   "$filename: old GPL version"
-msgstr  "$filename: an old GPL version number is present in this file, "
-        "you need to replace it with \"$suggest\" instead."
+msgid	"$filename: old GPL version"
+msgstr	"$filename: an old GPL version number is present in this file, "
+	"you need to replace it with \"$suggest\" instead."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -775,7 +728,7 @@ msgstr	"$filename: eigenaar is $number1, zou $number2 moeten zijn"
 #       $File_Name      The name of the file being read or parsed.
 #
 msgid	"$filename: too many errors"
-msgstr	"$filename: te veel fatale fouten, gestopt"
+msgstr	"$filename: te veel fatale fouten -- gestopt"
 
 #
 # This fatal error message is issued when Aegis is checking a project's
@@ -784,12 +737,11 @@ msgstr	"$filename: te veel fatale fouten, gestopt"
 msgid	"$filename: uid $number1 invalid, must be >= $number2"
 msgstr	"$filename: het gebruikers ID ($number1) van dit bestand is te "
 	"laag, het moet groter of gelijk zijn aan AEGIS_MIN_UID "
-	"($number2). Dit is waarschijnlijk het gevolg van een fout bij "
-	"het terugzetten van een backup, gebruik \"chown -R <gebruiker> "
-	"$filename\" op dit op te lossen, met een geschikte <gebruikers> "
-	"naam. [Rootrechten nodig]"
+	"($number2); dit is waarschijnlijk het gevolg van een fout bij "
+	"het terugzetten van een backup.  Gebruik \"chown -R <gebruiker> "
+	"$filename\" met een geschikte gebruikersnaam om dit op te lossen "
+	"[rootrechten nodig]."
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued by the aesvt -checkin command if
 # the history file already contains a particular version.
@@ -797,11 +749,9 @@ msgstr	"$filename: het gebruikers ID ($number1) van dit bestand is te "
 #       $File_Name      the offending filename
 #       $Number         the offending version number
 #
-#, fuzzy
 msgid	"$filename: version $number already exists"
-msgstr	"$filename: version \"$number\" already exists"
+msgstr	"$filename: versie \"$number\" bestaat al"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aesvt -checkin finds an
 # inappropriate user-specified version number.
@@ -809,11 +759,9 @@ msgstr	"$filename: version \"$number\" already exists"
 #       $File_Name      the history file name
 #       $Number         the offending version number
 #
-#, fuzzy
 msgid	"$filename: version $number invalid"
-msgstr	"$filename: version number \"$number\" not appropriate"
+msgstr	"$filename: ongeldig versienummer \"$number\""
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aesvt -checkout cannot find a
 # version in the history files.
@@ -821,20 +769,17 @@ msgstr	"$filename: version number \"$number\" not appropriate"
 #       $File_Name      The name of the history file.
 #       $Number         the offending version number
 #
-#, fuzzy
 msgid	"$filename: version $number not found"
-msgstr	"$filename: version \"$number\" not found"
+msgstr	"$filename: versie \"$number\" is niet gevonden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when an aede-policy's white space
 # policy detects white space on the end of a line.
 #
 #       $File_Name      The name of the offending file (includes line number).
 #
-#, fuzzy
 msgid	"$filename: white space at end of line"
-msgstr	"$filename: white space at end of line"
+msgstr	"$filename: witruimte aan einde van regel"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -855,7 +800,7 @@ msgstr	"$function: argument $number: $message"
 #
 msgid	"$function: argument $number: cannot convert string into a time"
 msgstr	"$function: argument $number: kan de string niet omzetten in een "
-	"tijd"
+	"tijd"
 
 #
 # This error message is issued when the sprintf function is
@@ -867,7 +812,7 @@ msgstr	"$function: argument $number: kan de string niet omzetten in een "
 #
 msgid	"$function: argument $number: integer value required (was given "
 	"$name)"
-msgstr	"$function: argument $number: integer waarde nodig (kreeg $name)"
+msgstr	"$function: argument $number: integerwaarde is nodig (kreeg $name)"
 
 #
 # This error message is issued when sprintf is given a precision in a
@@ -878,7 +823,8 @@ msgstr	"$function: argument $number: integer waarde nodig (kreeg $name)"
 #       $Value          The value of the offending precision.
 #
 msgid	"$function: argument $number: precision of $value is out of range"
-msgstr	"$function: argument $number: precisie van $value is buiten bereik"
+msgstr	"$function: argument $number: precisie van $value valt buiten "
+	"bereik"
 
 #
 # This error message is issued when the sprintf function is
@@ -890,7 +836,8 @@ msgstr	"$function: argument $number: precisie van $value is buiten bereik"
 #
 msgid	"$function: argument $number: real value required (was given "
 	"$name)"
-msgstr	"$function: argument $number: real waarde nodig (kreeg $name)"
+msgstr	"$function: argument $number: reëele waarde is nodig (kreeg "
+	"$name)"
 
 #
 # This error message is issued when a function is
@@ -902,7 +849,7 @@ msgstr	"$function: argument $number: real waarde nodig (kreeg $name)"
 #
 msgid	"$function: argument $number: string value required (was given "
 	"$name)"
-msgstr	"$function: argument $number: string waarde nodig (kreeg $name)"
+msgstr	"$function: argument $number: stringwaarde is nodig (kreeg $name)"
 
 #
 # This error message is issued when a function is not
@@ -914,7 +861,7 @@ msgstr	"$function: argument $number: string waarde nodig (kreeg $name)"
 #
 msgid	"$function: argument $number: time value required (was given "
 	"$name)"
-msgstr	"$function: argument $number: tijd waarde nodig (kreeg $name)"
+msgstr	"$function: argument $number: tijdwaarde is nodig (kreeg $name)"
 
 #
 # This error message is issued when the user requests to print a value
@@ -925,7 +872,7 @@ msgstr	"$function: argument $number: tijd waarde nodig (kreeg $name)"
 #       $Name           The type name of the offending argument.
 #
 msgid	"$function: argument $number: unable to print $name value"
-msgstr	"$function: argument $number: kan $name waarde niet afdrukken"
+msgstr	"$function: argument $number: kan waarde $name niet afdrukken"
 
 #
 # This error message is issued when sprintf is given a print width in a
@@ -936,7 +883,7 @@ msgstr	"$function: argument $number: kan $name waarde niet afdrukken"
 #       $Value          The value of the offending width.
 #
 msgid	"$function: argument $number: width $value out of range"
-msgstr	"$function: argument $number: breedte $value buiten bereik"
+msgstr	"$function: argument $number: breedte $value valt buiten bereik"
 
 #
 # This error message is issued when a function result is too large for
@@ -945,7 +892,7 @@ msgstr	"$function: argument $number: breedte $value buiten bereik"
 #       $Function       The name of the function being called.
 #
 msgid	"$function: result too long"
-msgstr	"$function: resultaat te lang"
+msgstr	"$function: resultaat is te lang"
 
 #
 # This error message is issued when a function is called with
@@ -976,7 +923,7 @@ msgstr	"$function: te veel argumenten (kreeg $number1, slechts $number2 "
 #       $Name           The offending format character.
 #
 msgid	"$function: unknown format specifier '$name'"
-msgstr	"$function: onbekend formaat '$name'"
+msgstr	"$function: onbekende formateringscode '$name'"
 
 #
 # This is a generic "echo me" format string.
@@ -995,8 +942,7 @@ msgstr	"$message"
 #       $Number         The value given to the option.
 #
 msgid	"$name $number must be pos"
-msgstr	"de $name $number optie valt buiten bereik, de $name optie heeft "
-	"een kleinel positive integer als argument"
+msgstr	"optie $name vereist een klein positief argument (kreeg $number)"
 
 #
 # This error message is issued when a command line option requires a
@@ -1007,8 +953,7 @@ msgstr	"de $name $number optie valt buiten bereik, de $name optie heeft "
 #       $Number         The value given to the option.
 #
 msgid	"$name $number must not be neg"
-msgstr	"de $name $number optie valt buiten bereik, de $name optie heeft "
-	"nul of een kleine positive integer als argument"
+msgstr	"optie $name vereist een niet-negatief argument (kreeg $number)"
 
 #
 # This error message is issued when aena is asked to add an
@@ -1017,7 +962,7 @@ msgstr	"de $name $number optie valt buiten bereik, de $name optie heeft "
 #       $Name           The offending user name.
 #
 msgid	"$name already administrator"
-msgstr	"gebruiker \"$name\" is al een administrateur"
+msgstr	"gebruiker \"$name\" is al een administrator"
 
 #
 # This error message is issued when aena is asked to add a
@@ -1050,7 +995,7 @@ msgstr	"gebruiker \"$name\" is al een reviewer"
 # This fatal error message is issued when a lock is not available.
 #
 msgid	"$name lock not available"
-msgstr	"$name slot niet beschikbaar"
+msgstr	"vergrendeling $name is niet beschikbaar"
 
 #
 # This error message is issued when an option which should be followed
@@ -1059,7 +1004,7 @@ msgstr	"$name slot niet beschikbaar"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs dir"
-msgstr	"de $name optie moet worden gevolgd worden door een directory pad"
+msgstr	"optie $name moet worden gevolgd worden door een mappad"
 
 #
 # This error message is issued when an option which should be followed
@@ -1068,7 +1013,7 @@ msgstr	"de $name optie moet worden gevolgd worden door een directory pad"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs file"
-msgstr	"de $name optie moet worden gevolgd door een bestandsnaam"
+msgstr	"optie $name moet worden gevolgd door een bestandsnaam"
 
 #
 # This error message is issued when an option which should be followed
@@ -1077,7 +1022,7 @@ msgstr	"de $name optie moet worden gevolgd door een bestandsnaam"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs files"
-msgstr	"de $name optie moet worden gevolgd door een of meer bestandsnamen"
+msgstr	"optie $name moet worden gevolgd door één of meer bestandsnamen"
 
 #
 # This error message is issued when an option which should be followed
@@ -1086,7 +1031,7 @@ msgstr	"de $name optie moet worden gevolgd door een of meer bestandsnamen"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs name"
-msgstr	"de $name optie worden gevolgd door een naam"
+msgstr	"optie $name moet worden gevolgd door een naam"
 
 #
 # This error message is issued when an option which should be followed
@@ -1095,7 +1040,7 @@ msgstr	"de $name optie worden gevolgd door een naam"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs number"
-msgstr	"de $name optie moet worden gevolgd door een nummer"
+msgstr	"optie $name moet worden gevolgd door een nummer"
 
 #
 # This error message is issued when an option which should be followed
@@ -1104,7 +1049,7 @@ msgstr	"de $name optie moet worden gevolgd door een nummer"
 #       $Name           The name of the offending option.
 #
 msgid	"$name needs string"
-msgstr	"de $name optie moet worden gevolgd door een string"
+msgstr	"optie $name moet worden gevolgd door een string"
 
 #
 # This format string is used to glue together the last two items in the
@@ -1117,16 +1062,14 @@ msgid	"$name1 and $name2"
 msgstr	"$name1 en $name2"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when an option which needs to be
 # accompanied by another option, but that option is not present.
 #
 #       $Name1          The name of the offending option.
 #       $Name2          The name of the offending option.
 #
-#, fuzzy
 msgid	"$name1 needs $name2"
-msgstr	"the $name1 option must be accompanied the $name2 option"
+msgstr	"optie $name1 moet vergezeld gaan van optie $name2"
 
 #
 # This format string is used to glue together two items in the
@@ -1163,9 +1106,9 @@ msgstr	"$value1 ** $value2: $errno"
 # turned on.
 #
 msgid	"-TRace needs DEBUG"
-msgstr	"Waarschuwing: de -TRace optie werkt alleen als Aegis is "
-	"gecompileerd met de DEBUG define in het common/main.h include "
-	"bestand."
+msgstr	"Waarschuwing: de optie -TRace werkt alleen als Aegis is "
+	"gecompileerd met 'define DEBUG' in het common/main.h "
+	"include-bestand."
 
 #
 # This error message is issued when Aegis is misconfigured.
@@ -1175,11 +1118,11 @@ msgstr	"Waarschuwing: de -TRace optie werkt alleen als Aegis is "
 #
 msgid	"AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) "
 	"misconfigured"
-msgstr	"Dit programma is niet goed afgesteld. Het AEGIS_USER_GID "
-	"(momenteel gedefineerd als $number1) moet minder zijn dan "
-	"AEGIS_MIN_GID (momenteel gedefineerd als $number2).  Het is "
+msgstr	"Dit programma is niet goed afgesteld.  Het AEGIS_USER_GID "
+	"(momenteel gedefinieerd als $number1) moet lager zijn dan "
+	"AEGIS_MIN_GID (momenteel gedefinieerd als $number2).  Het is "
 	"belangrijk dat het AEGIS_USER_GID geen eigenaar kan zijn van "
-	"projecten. Dit is een onoverkomelijke fout."
+	"projecten.  Dit is een onoverkomelijke fout."
 
 #
 # This error message is issued when Aegis is misconfigured.
@@ -1189,11 +1132,11 @@ msgstr	"Dit programma is niet goed afgesteld. Het AEGIS_USER_GID "
 #
 msgid	"AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) "
 	"misconfigured"
-msgstr	"Dit programma is niet goed afgesteld. Het AEGIS_USER_UID "
-	"(momenteel gedefineerd als $number1) moet lager zijn dan het "
-	"AEGIS_MIN_UID (momenteel afgsteld als $number2). Het is "
+msgstr	"Dit programma is niet goed afgesteld.  Het AEGIS_USER_UID "
+	"(momenteel gedefinieerd als $number1) moet lager zijn dan "
+	"AEGIS_MIN_UID (momenteel gedefinieerd als $number2).  Het is "
 	"belangrijk dat het AEGIS_USER_UID geen eigenaar kan zijn van "
-	"projecten. Dit is een onoverkomelijke fout."
+	"projecten.  Dit is een onoverkomelijke fout."
 
 #
 # This text is used to describe change 1 of a new release.
@@ -1201,7 +1144,7 @@ msgstr	"Dit programma is niet goed afgesteld. Het AEGIS_USER_UID "
 #       $Name           The name of the old project.
 #
 msgid	"New release derived from $name."
-msgstr	"Nieuwe vrijgave afgeleid van $name."
+msgstr	"Nieuwe uitgave afgeleid van $name."
 
 #
 # This text is used when a project name is inserted at the top of a file
@@ -1222,10 +1165,9 @@ msgstr	"Project \"$name\""
 #       $Number         The number of a change.
 #
 msgid	"Project $name, Change $number"
-msgstr	"Project \"$name\", Wijziging $number"
+msgstr	"Project \"$name\",  Wijziging $number"
 
 #
-# TRANSLATION REQUIRED
 # This text is used when a project name, change number and file name are
 # inserted at the top of a file or listing.  Usually in the C locale,
 # so avoid non-ascii characters if at all possible.
@@ -1234,23 +1176,22 @@ msgstr	"Project \"$name\", Wijziging $number"
 #       $Number         The number of a change.
 #       $File_Name      The name of the file.
 #
-#, fuzzy
 msgid	"Project $name, Change $number, File $filename"
-msgstr	"Project \"$name\", Change $number, File \"$filename\""
+msgstr	"Project \"$name\",  Wijziging $number,  Bestand \"$filename\""
 
 #
 # This error message is issued when the ${read_file} substitution is
 # called incorrectly.  See (+++) above.
 #
 msgid	"absolute path required"
-msgstr	"absoluut pad nodig"
+msgstr	"absoluut pad is nodig"
 
 #
 # This verbose message is issued when aeipass is updating the modification
 # times of all the files in the integration directory.
 #
 msgid	"adjust file modification times"
-msgstr	"aanpassen laatste wijzigings tijden"
+msgstr	"aanpassen van laatste wijzigingstijden"
 
 #
 # This error message is issued when a project administrator attempts to
@@ -1259,8 +1200,9 @@ msgstr	"aanpassen laatste wijzigings tijden"
 # worked on at all, this is probably not a good idea.
 #
 msgid	"aedbu, has files"
-msgstr	"Aan deze wijziging zijn bestanden gekoppeld, gebruik dit "
-	"commando alleen op wijzigingen zonder gekoppelde bestanden."
+msgstr	"Aan deze wijziging zijn bestanden gekoppeld; "
+	"gebruik dit commando alleen op wijzigingen zonder gekoppelde "
+	"bestanden"
 
 #
 # This error message is issued when the aegis -new-project command is
@@ -1268,15 +1210,15 @@ msgstr	"Aan deze wijziging zijn bestanden gekoppeld, gebruik dit "
 # what to keep.
 #
 msgid	"aenpr -keep needs -dir"
-msgstr	"de aegis -New-PRoject `-Keep' optie heeft ook de  `-DIRectory' "
-	"optie nodig"
+msgstr	"bij aegis -New-PRoject heeft optie '-Keep' ook de optie "
+	"'-DIRectory' nodig"
 
 #
 # This fatal error message is issued if it appears that there is a
 # reference loop of project aliases.
 #
 msgid	"alias loop detected"
-msgstr	"alias kringloop gedetecteerd"
+msgstr	"aliaslus gedetecteerd"
 
 #
 # This error messages is issued when a user attempts to create a new
@@ -1284,21 +1226,21 @@ msgstr	"alias kringloop gedetecteerd"
 # message should be impossible.
 #
 msgid	"all test numbers used"
-msgstr	"Het lijkt er op dat alle test nummers op zijn"
+msgstr	"Het lijkt er op dat alle testnummers op zijn"
 
 #
 # This error message is issued when an unknown substitution is
 # referenced.  See (+++) above.
 #
 msgid	"ambiguous substitution name"
-msgstr	"geen eenduidige substitutie naam"
+msgstr	"geen eenduidige substitutienaam"
 
 #
 # This progress message is issued when an 'aegis -diff -anticipate'
 # command completes successfully.
 #
 msgid	"anticipated merge complete"
-msgstr	"Vooruitgelopen samenvoeging gereed"
+msgstr	"voorspelde samenvoeging is gereed"
 
 #
 # This information message is issued when Aegis appends the log to an
@@ -1307,46 +1249,46 @@ msgstr	"Vooruitgelopen samenvoeging gereed"
 #       $File_Name      The name of the log file.
 #
 msgid	"appending log to $filename"
-msgstr	"toevoegen log aan \"$filename\""
+msgstr	"toevoegen van log aan \"$filename\""
 
 #
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
 msgid	"apply change to integration directory"
-msgstr	"verplaats de wijziging naar de integratie directory"
+msgstr	"toepassen van de wijziging in de integratiemap"
 
 #
 # This fatal error message is issued when Aegis determines that the
 # architecture it is currently running on is forbidden by the (5)
-# architecture field of the project "aegis.conf" file.
+# architecture field of the project configuration file.
 #
 #       $Name           The offending architecture name.
 #
 msgid	"architecture \"$name\" forbidden"
-msgstr	"architectuur \"$name\" forbidden"
+msgstr	"architectuur \"$name\" is verboden"
 
 #
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
-# in the project "aegis.conf" file.
+# in the project configuration file.
 #
 #       $Name           The offending architecture name.
 #
 msgid	"architecture \"$name\" unknown"
-msgstr	"architectuur \"$name\" onbekend"
+msgstr	"architectuur \"$name\" is onbekend"
 
 #
 # This error message is issued when an architecture appears in the list
 # of architectures the change must apply to, but that architecture name
 # is not present in the project's architecture list in the project
-# "aegis.conf" file.
+# configuration file.
 #
 #       $Name           The name of the offending architecture.
 #
 msgid	"architecture \"$name\" unlisted"
-msgstr	"architectuur \"$name\" komt voor in de wijzigings arrtibuten, "
+msgstr	"architectuur \"$name\" komt voor in de wijzigingsarrtibuten, "
 	"maar wordt niet genoemd in het project \"aegis.conf\" bestand"
 
 #
@@ -1356,8 +1298,9 @@ msgstr	"architectuur \"$name\" komt voor in de wijzigings arrtibuten, "
 #       $File_Name      The name of the offending file.
 #
 msgid	"archive member $filename changed size"
-msgstr	"archief bestand $filename veranderde van grootte tijdens "
-	"verwerking, resultaat niet betrouwbaar"
+msgstr	"archiefbestand $filename veranderde van grootte tijdens "
+	"verwerking; "
+	"het resultaat is niet betrouwbaar"
 
 #
 # This message is issued when an inappropriate -- is attempted.
@@ -1365,7 +1308,7 @@ msgstr	"archief bestand $filename veranderde van grootte tijdens "
 #       $Name           The type name of the offending operand.
 #
 msgid	"arithmetic type required for decrement (was given $name)"
-msgstr	"rekenkundig type nodig voor aftrekken(kreeg $name)"
+msgstr	"voor aftrekken is een rekenkundig type nodig (kreeg $name)"
 
 #
 # This message is issued when an inappropriate ++ is attempted.
@@ -1373,24 +1316,22 @@ msgstr	"rekenkundig type nodig voor aftrekken(kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"arithmetic type required for increment (was given $name)"
-msgstr	"rekenkundig type nodig voor optellen (kreeg $name)"
+msgstr	"voor optellen is een rekenkundig type nodig (kreeg $name)"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when a user-supplied string can't
 # be interpreted as an attribute name.
 #
-#       $Name           The offending string.
+#       $Name           The offending attribute name.
 #
-#, fuzzy
 msgid	"attribute $name unknown"
-msgstr	"the attribute \"$name\" does not exist"
+msgstr	"attribuutnaam \"$name\" is onbekend"
 
 #
 # This message is issued when an aeca is successfully completed.
 #
 msgid	"attributes changed"
-msgstr	"attributen gewijzigd"
+msgstr	"attributen zijn gewijzigd"
 
 #
 # This error message is issued when an aenc command or aeca command
@@ -1401,19 +1342,20 @@ msgstr	"attributen gewijzigd"
 #                       offending attributes text file.
 #
 msgid	"attributes in $filename"
-msgstr	"attributen tekst staat in het \"$filename\" bestand"
+msgstr	"attributentekst staat in het bestand \"$filename\""
 
+#
+# This error message is issued when the change is not in a suitable state
+# to search within for files.
 #
 msgid	"bad aefind state"
-msgstr	"Deze wijziging heeft de status '$state', hij moet de status "
-	"'being developed' hebben om de directory boom af te lopen"
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
+	"'being developed' hebben om de mapboom af te lopen"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message sis issued when the aels command is used on
 # a change which is in the `aewaiting development' state.
 #
-#, fuzzy
 msgid	"bad aels state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to list file information"
@@ -1426,14 +1368,14 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #       $Name           The offending project alias.
 #
 msgid	"bad alias $name"
-msgstr	"project alias \"$name\" is ongeldig"
+msgstr	"projectalias \"$name\" is ongeldig"
 
 #
 # This error message is issued when an attempt is made to difference
 # against a change which is in an inappropriate state.
 #
 msgid	"bad anticipate diff"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being reviewed', 'awaiting integration' of 'being integrated' "
 	"hebben om vooruit te kunnen lopen"
 
@@ -1443,8 +1385,8 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 #
 msgid	"bad branch build"
 msgstr	"deze tak kan niet direct gecompileerd worden met de status "
-	"'$state' , hij moet de status 'being integrated' hebben om dit "
-	"te doen"
+	"'$state'; hij moet de status 'being integrated' hebben om dit te "
+	"doen"
 
 #
 # This error message is issued when an attempt is made to copy files
@@ -1452,15 +1394,15 @@ msgstr	"deze tak kan niet direct gecompileerd worden met de status "
 # that.
 #
 msgid	"bad branch cp"
-msgstr	"bestanden kunnen niet direct in een tak gekopieerd worden, maak "
-	"een wijziging aan om dit te doen"
+msgstr	"bestanden kunnen niet direct in een tak gekopieerd worden; "
+	"maak een wijziging aan om dit te doen"
 
 #
 # This error message is issued when an aed command is used on a branch
 # which is not in the 'being integrated' state.
 #
 msgid	"bad branch diff"
-msgstr	"deze tak heeft de status '$state' , hij moet de status 'being "
+msgstr	"deze tak heeft de status '$state'; hij moet de status 'being "
 	"integrated' hebben om te vergelijken"
 
 #
@@ -1476,7 +1418,7 @@ msgstr	"deze tak kan niet direct getest worden met status '$state', hij "
 # from the wrong state.
 #
 msgid	"bad build state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' of 'being integrated' hebben om te compileren"
 
 #
@@ -1484,15 +1426,15 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # for a change in the 'being integrated' state.
 #
 msgid	"bad build, partial"
-msgstr	"gedeeltelijke compilatie is niet mogelijk met de status \"$state"
-	"\""
+msgstr	"gedeeltelijke compilatie is niet mogelijk met de status "
+	"\"$state\""
 
 #
 # This error message is issued when a developer who is not an administrator
 # attempts to grant an architecture exemption to a change.
 #
 msgid	"bad ca, no arch exempt"
-msgstr	"Alleen de project administrateur mag architectuur uitzonderingen "
+msgstr	"alleen de projectadministrator mag architectuuruitzonderingen "
 	"toestaan"
 
 #
@@ -1500,8 +1442,8 @@ msgstr	"Alleen de project administrateur mag architectuur uitzonderingen "
 # attempts to grant a test exemption to a change.
 #
 msgid	"bad ca, no test exempt"
-msgstr	"alleen project administrateurs mogen wijzigingen toestaan geen "
-	"test te hebben"
+msgstr	"alleen de projectadministrator mag wijzigingen zonder testen "
+	"toestaan"
 
 #
 # This error message is issued when a user without sufficient
@@ -1510,36 +1452,31 @@ msgstr	"alleen project administrateurs mogen wijzigingen toestaan geen "
 msgid	"bad ca, not auth"
 msgstr	"gebruiker \"$user\" mag de wijzigings-attributen niet "
 	"veranderen; attributen mogen alleen gewijzigd worden door de "
-	"project administrateur, of door de ontwikkelaar tijdens "
-	"ontwikkelen"
+	"projectadministrator, of door de ontwikkelaar tijdens ontwikkelen"
 
 #
 # This error message is issued when a user attempts to set change
 # attributes to include an architecture not named in the project
-# 'config' file.
+# configuration file.
 #
 msgid	"bad ca, unknown architecture"
-msgstr	"architectuur bevat variaties niet genoemd in het project \"aegis."
-	"conf\" bestand"
+msgstr	"architectuur bevat variaties niet genoemd in het project "
+	"\"aegis.conf\" bestand"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user attempts to set a change's
 # UUID when the change already has a UUID.
 #
-#, fuzzy
 msgid	"bad ca, uuid already set"
 msgstr	"the UUID of this change has already been set"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user attempts to set a change's
 # UUID and the given UUID has already be used by another change.
 #
 #       $Other  The version of change using the specified UUID.
 #               Optional.
 #
-#, fuzzy
 msgid	"bad ca, uuid duplicate"
 msgstr	"the UUID specified is already is use by $other"
 
@@ -1548,8 +1485,8 @@ msgstr	"the UUID specified is already is use by $other"
 # which does not have a directory.
 #
 msgid	"bad cd, no dir"
-msgstr	"Deze wijziging heeft de status '$state' , er is geen directory "
-	"om naar toe te gaan"
+msgstr	"Deze wijziging heeft de status '$state'; er is geen map om naar "
+	"toe te gaan"
 
 #
 # This error message is issued when an attempt is made to change the
@@ -1557,7 +1494,7 @@ msgstr	"Deze wijziging heeft de status '$state' , er is geen directory "
 # state.
 #
 msgid	"bad chown state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om van eigenaar te veranderen"
 
 #
@@ -1565,7 +1502,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # which is not in the 'being developed' state.
 #
 msgid	"bad clean state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om opgeruimd te worden"
 
 #
@@ -1573,8 +1510,8 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # into a change which is not in the 'being developed' state.
 #
 msgid	"bad cp state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
-	"'being developed' hebben om bestanden er in te wijzigen"
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
+	"'being developed' hebben om er bestanden in te wijzigen"
 
 #
 # This error message is issued when an aecpu command is used
@@ -1591,15 +1528,15 @@ msgstr	"bestand \"$filename\" was niet toegevoegd aan deze wijziging met "
 # a branch.  Branches may only be altered via a change.
 #
 msgid	"bad cp undo branch"
-msgstr	"Betsanden kunnen niet direct uit een tak verwijderd worden maak "
-	"een wijziging aan om dit te doen"
+msgstr	"Bestanden kunnen niet direct in een tak gekopieerd worden; "
+	"maak een wijziging aan om dit te doen"
 
 #
 # This error message is issued when the aecpu command is used on a change
 # which is not in the 'being developed' state.
 #
 msgid	"bad cp undo state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om er een bestand uit te verwijderen"
 
 #
@@ -1619,7 +1556,7 @@ msgstr	"bestand \"$filename\" is al in deze wijziging, het wordt niet "
 # state.
 #
 msgid	"bad db state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'awaiting development' hebben om het ontwikkelen te beginnen"
 
 #
@@ -1627,7 +1564,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # a change which is not in the 'being developed' state.
 #
 msgid	"bad dbu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om het beginnen met ontwikkelen "
 	"ongedaan te maken"
 
@@ -1636,15 +1573,15 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # not in the 'being developed' state.
 #
 msgid	"bad de state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
-	"'being developed' hebben om het ontwikkelen te beeindigen"
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
+	"'being developed' hebben om het ontwikkelen te beëindigen"
 
 #
 # This error message is issued when aedeu is invoked for a change which
 # is not in the 'being reviewed' or 'awaiting integration' state.
 #
 msgid	"bad deu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being reviewed' of 'awaiting development' hebben om het einde "
 	"ontwikkelen ongedaan te maken"
 
@@ -1653,15 +1590,13 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # which is not in the 'being developed' state.
 #
 msgid	"bad diff state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om te vergelijken"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change file's attributes.
 #
-#, fuzzy
 msgid	"bad fa, not auth"
 msgstr	"user \"$user\" may not modify the change's attributes; "
 	"attributes may only be modified by the developer during "
@@ -1672,7 +1607,7 @@ msgstr	"user \"$user\" may not modify the change's attributes; "
 # which is not in the 'awaiting integration' state.
 #
 msgid	"bad ib state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'awaiting integration' hebben om voor beginnen integratie"
 
 #
@@ -1680,7 +1615,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # not in the 'being integrated' state.
 #
 msgid	"bad ibu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being integrated' hebben om beginnen integratie ongedaan te "
 	"maken"
 
@@ -1689,7 +1624,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # which is not in the 'being developed' or 'being integrated' state.
 #
 msgid	"bad idiff state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' of 'being integrated' hebben om te vergelijken"
 
 #
@@ -1697,7 +1632,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # is not in the 'being integrated' state.
 #
 msgid	"bad if state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being integrated' hebben om integratie af te keuren"
 
 #
@@ -1705,7 +1640,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # change which is not in the 'being integrated' state.
 #
 msgid	"bad ip state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being integrated' hebben om integratie goed te keuren"
 
 #
@@ -1716,8 +1651,8 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, build required"
-msgstr	"Deze wijziging moet compleet gecompileerd worden met 'aegis -"
-	"Build' $outstanding voordat de integratie goedgekeurd kan worden"
+msgstr	"Deze wijziging moet compleet gecompileerd worden met 'aegis "
+	"-Build' $outstanding voordat de integratie goedgekeurd kan worden"
 
 #
 # This error message is issued when aeipass finds a file which has not been
@@ -1727,8 +1662,8 @@ msgstr	"Deze wijziging moet compleet gecompileerd worden met 'aegis -"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test -bl required"
-msgstr	"Deze wijziging moet positief getest worden met 'aegis -Test -"
-	"BaseLine' $outstanding voordat de integratie goedgekeurd kan "
+msgstr	"Deze wijziging moet positief getest worden met 'aegis -Test "
+	"-BaseLine' $outstanding voordat de integratie goedgekeurd kan "
 	"worden"
 
 #
@@ -1739,8 +1674,8 @@ msgstr	"Deze wijziging moet positief getest worden met 'aegis -Test -"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test -reg required"
-msgstr	"deze wijziging moet regressief getest worden met 'aegis -Test -"
-	"REGression' $outstanding voordat de integratie goedgekeurd kan "
+msgstr	"Deze wijziging moet regressief getest worden met 'aegis -Test "
+	"-REGression' $outstanding voordat de integratie goedgekeurd kan "
 	"worden"
 
 #
@@ -1751,7 +1686,7 @@ msgstr	"deze wijziging moet regressief getest worden met 'aegis -Test -"
 #                       or empty if all are outstanding.  (Optional)
 #
 msgid	"bad ip, test required"
-msgstr	"deze wijziging moet positief getest worden met 'aegis -Test' "
+msgstr	"Deze wijziging moet positief getest worden met 'aegis -Test' "
 	"$outstanding voordat de integratie goedgekeurd kan worden"
 
 #
@@ -1759,7 +1694,7 @@ msgstr	"deze wijziging moet positief getest worden met 'aegis -Test' "
 # which is not in the 'being developed' state.
 #
 msgid	"bad mv state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om bestanden er in te hernoemen"
 
 #
@@ -1777,7 +1712,7 @@ msgstr	"bestand \"$filename\" was niet toegevoegd aan deze wijziging met "
 # is not in the 'awaiting development' state.
 #
 msgid	"bad ncu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'awaiting development' hebben om deze nieuwe wijziging ongedaan "
 	"te maken"
 
@@ -1787,15 +1722,15 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # that.
 #
 msgid	"bad nf branch"
-msgstr	"bestanden kunnen niet direct in een tak toegevoegd worden maak "
-	"een wijzigng aan om bestanden toe te voegen"
+msgstr	"Bestanden kunnen niet direct in een tak toegevoegd worden; "
+	"maak een wijziging aan om dit te doen"
 
 #
 # This error message is issued when aenf is invoked on a change which is
 # not in the 'being developed' state.
 #
 msgid	"bad nf state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om nieuwe bestanden toe te voegen"
 
 #
@@ -1814,15 +1749,15 @@ msgstr	"bestand \"$filename\" was niet toegevoegd aan deze wijziging met "
 # that.
 #
 msgid	"bad nfu branch"
-msgstr	"Bestande kunnen niet direct uit een tak verwijderd worden, maak "
-	"een wijziging aan om dit te doen"
+msgstr	"Bestanden kunnen niet direct uit een tak verwijderd worden; "
+	"maak een wijziging aan om dit te doen"
 
 #
 # This error message is issued when aenfu is invoked on a change which is
 # not in the 'being developed' state.
 #
 msgid	"bad nfu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om er nieuwe bestanden aan toe te voegen"
 
 #
@@ -1833,15 +1768,15 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 #
 msgid	"bad nrls, too modern"
 msgstr	"het commando `aegis -New_ReLeaSe' kan alleen gebruikt worden "
-	"voorprojecten gemaakt met aegis.2.3 of eerder.  Dit project is "
-	"nieuwer, gebruik het commando `aegis -New_BRanch' hiervoor."
+	"voor projecten gemaakt met aegis.2.3 of eerder; dit project is "
+	"nieuwer; gebruik hiervoor het commando `aegis -New_BRanch'"
 
 #
 # This error message is issued when aent is invoked fro a change which
 # is not in the 'being developed' state.
 #
 msgid	"bad nt state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om een nieuwe test aan te maken"
 
 #
@@ -1859,7 +1794,7 @@ msgstr	"bestand \"$filename\" was niet toegevoegd aan deze wijziging met "
 # is not in the 'being developed' state.
 #
 msgid	"bad ntu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om nieuwe testen te verwijderen"
 
 #
@@ -1867,15 +1802,13 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # directory which is not an absolute path.
 #
 msgid	"bad pa, rel def dev dir"
-msgstr	"standaard ontwikkel directory moet worden opgegeven als een "
-	"absoluut pad"
+msgstr	"de standaardontwikkelmap moet worden opgegeven als een absoluut "
+	"pad"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
-#, fuzzy
 msgid	"bad patch send state"
 msgstr	"this change is in the $state state; it must be in a later state "
 	"to be sent"
@@ -1886,7 +1819,7 @@ msgstr	"this change is in the $state state; it must be in a later state "
 #       $File_Name      The offending file name pattern.
 #
 msgid	"bad pattern $filename"
-msgstr	"bestandsnaam patroon \"$filename\" is niet toegestaan"
+msgstr	"ongeldig bestandsnaampatroon \"$filename\""
 
 #
 # This error message is issued when a project name is given to aenpr
@@ -1895,14 +1828,14 @@ msgstr	"bestandsnaam patroon \"$filename\" is niet toegestaan"
 #       $Name           The offending project name.
 #
 msgid	"bad project $name"
-msgstr	"project naam \"$name\" is niet geldig"
+msgstr	"ongeldige projectnaam \"$name\""
 
 #
 # This error message is issued when aerb is invoked for a change which is
-# not in the 'awaiting reviewed' state.
+# not in the 'awaiting review' state.
 #
 msgid	"bad rb state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'awaiting review' hebben om deze wijziging te kunnen reviewen"
 
 #
@@ -1910,7 +1843,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # not in the 'being reviewed' state.
 #
 msgid	"bad rbu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being reviewed' hebben om deze wijziging goed te keuren"
 
 #
@@ -1918,7 +1851,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # of a change, but that change is not in the 'being reviewed' state.
 #
 msgid	"bad rf state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being reviewed' hebben om deze wijziging af te keuren"
 
 #
@@ -1926,7 +1859,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # is not in the 'being developed' state.
 #
 msgid	"bad rm state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om er een bestand uit te verwijderen"
 
 #
@@ -1944,7 +1877,7 @@ msgstr	"bestand \"$filename\" was niet toegevoegd aan deze wijziging met "
 # is not in the 'being developed' state.
 #
 msgid	"bad rmu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' hebben om verwijderen bestanden ongedaan te "
 	"maken"
 
@@ -1953,11 +1886,15 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 # not in the 'being reviewed' state.
 #
 msgid	"bad rp state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being reviewed' hebben om deze wijziging goed te keuren"
 
+#
+# This error message is issued when aerpu is invoked for a change which is
+# not in the 'awaiting integration' state.
+#
 msgid	"bad rpu state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'awaiting integration' hebben om wijziging goedkeuren ongedaan "
 	"te maken"
 
@@ -1981,7 +1918,7 @@ msgstr	"Deze wijziging heeft de status $state; hij moet een latere "
 # from the wrong state.
 #
 msgid	"bad test state"
-msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
+msgstr	"Deze wijziging heeft de status '$state'; hij moet de status "
 	"'being developed' of 'being integrated' hebben om testen te doen"
 
 #
@@ -1991,7 +1928,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 #       $Number         The offending version number.
 #
 msgid	"bad version $number"
-msgstr	"versie nummer \"$number\" is niet toegestaan"
+msgstr	"ongeldig versienummer \"$number\""
 
 #
 # This error message is issued when aede finds a file which has been
@@ -2001,7 +1938,7 @@ msgstr	"versie nummer \"$number\" is niet toegestaan"
 #
 msgid	"baseline $filename changed"
 msgstr	"bestand \"$filename\" in de baseline is gewijzigd sinds de "
-	"laatste vergelijking met 'aegis -DIFFerence', het bestand moet "
+	"laatste vergelijking met 'aegis -DIFFerence'; het bestand moet "
 	"samengevoegd worden"
 
 #
@@ -2027,16 +1964,15 @@ msgstr	"Bestand \"$filename\" in stam van deze tak is gewijzigd sinds "
 # This fatal error message is issued when a lock is not available.
 #
 msgid	"baseline read lock not available"
-msgstr	"baseline lees-slot niet beschikbaar"
+msgstr	"leesvergrendeling van baseline is niet beschikbaar"
 
 #
 # This fatal error message is issued when a lock is not available.
 #
 msgid	"baseline write lock not available"
-msgstr	"baseline schrijf-slot niet beschikbaar"
+msgstr	"schrijfvergrendeling van baseline is niet beschikbaar"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued before running batch_test_command if
 # progress messages were requested
 #
@@ -2045,7 +1981,6 @@ msgstr	"baseline schrijf-slot niet beschikbaar"
 #       $Total          Total number of tests
 #       $REMaining      Estimated number of seconds remaining.
 #
-#, fuzzy
 msgid	"batch test from $current to $last of $total"
 msgstr	"batch test from $current to $last of $total, ETA $remaining"
 
@@ -2054,7 +1989,7 @@ msgstr	"batch test from $current to $last of $total, ETA $remaining"
 # or too big.
 #
 msgid	"bevel size $number out of range"
-msgstr	"rand grootte $number buiten bereik, het moet tussen 0 to 10 "
+msgstr	"randgrootte $number valt buiten bereik; het moet tussen 0 en 10 "
 	"liggen"
 
 #
@@ -2063,10 +1998,16 @@ msgstr	"rand grootte $number buiten bereik, het moet tussen 0 to 10 "
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required for arithmetic if (was given $name)"
-msgstr	"booleaanse waarde nodig voor rekenkundig als (kreeg $name)"
+msgstr	"booleaanse waarde is nodig voor rekenkundige \"if\" (kreeg $name)"
 
+#
+# This error message is issued when a ternary "if" expression (e1 ? e2 :
+# e3) expression is not given a boolean expression as for first argument (e1).
+#
+#       $name   The name of the type of e1.
+#
 msgid	"boolean value required for if (was given $name)"
-msgstr	"booleaanse waarde nodig voor ?: expressie (kreeg $name)"
+msgstr	"booleaanse waarde is nodig voor '?:'-expressie (kreeg $name)"
 
 #
 # This message is issued when an inappropriate && is attempted.
@@ -2074,7 +2015,7 @@ msgstr	"booleaanse waarde nodig voor ?: expressie (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"booleaanse waarde nodig voor logisch \"en\" (kreeg $name)"
+msgstr	"booleaanse waarde is nodig voor logische \"and\" (kreeg $name)"
 
 #
 # This message is issued when an inappropriate || is attempted.
@@ -2082,7 +2023,7 @@ msgstr	"booleaanse waarde nodig voor logisch \"en\" (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"booleaanse waarde nodig voor logisch \"of\" (kreeg $name)"
+msgstr	"booleaanse waarde is nodig voor logische \"or\" (kreeg $name)"
 
 #
 # This error message is issued when the control expression for an "if"
@@ -2091,7 +2032,7 @@ msgstr	"booleaanse waarde nodig voor logisch \"of\" (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"booleaanse waardenodig voor \"als\" statement (kreeg $name)"
+msgstr	"booleaanse waarde is nodig voor \"if\" statement (kreeg $name)"
 
 #
 # This error message is issued when an absurd branch number is given.
@@ -2100,7 +2041,8 @@ msgstr	"booleaanse waardenodig voor \"als\" statement (kreeg $name)"
 #       $Number         The offending branch number.
 #
 msgid	"branch $number out of range"
-msgstr	"tak $number buiten bereik, het moet een klein positief getal zijn"
+msgstr	"taknummer $number valt buiten bereik; het moet een klein "
+	"positief getal zijn"
 
 #
 # This error message is issued when aenbr is given an explicit branch
@@ -2110,7 +2052,7 @@ msgstr	"tak $number buiten bereik, het moet een klein positief getal zijn"
 #       $Number         The offending branch number.
 #
 msgid	"branch $number used"
-msgstr	"tak nummer $number is al in gebruik, kies een ander nummer of "
+msgstr	"taknummer $number is al in gebruik; kies een ander nummer of "
 	"geef geen nummer op om er automagisch een toegwezen te krijgen"
 
 #
@@ -2118,16 +2060,15 @@ msgstr	"tak nummer $number is al in gebruik, kies een ander nummer of "
 # project branch which is no longer in the `being developed' state.
 #
 msgid	"branch completed"
-msgstr	"wijzigingen en takken kunnen alleen aangemaakt worden op aktieve "
-	"takken, deze tak heeft niet de status 'being developed'"
+msgstr	"wijzigingen en takken kunnen alleen aangemaakt worden op actieve "
+	"takken; "
+	"deze tak heeft niet de status 'being developed'"
 
-# TRANSLATION REQUIRED
 #
 # This error messages is issued when aede-policy finds a change set in
 # which the brief description is empty, or has not been changed from the
 # default.
 #
-#, fuzzy
 msgid	"brief_description not set"
 msgstr	"the brief description has been not set"
 
@@ -2140,7 +2081,7 @@ msgstr	"the brief description has been not set"
 #
 msgid	"build required"
 msgstr	"Deze wijziging moet eerst gecompileerd worden met 'aegis -Build' "
-	"$outstanding voordat het ontwikkelen beeindigd kan worden"
+	"$outstanding voordat het ontwikkelen beëindigd kan worden"
 
 #
 # This fatal error message is issued when aeipass detects that the
@@ -2156,8 +2097,8 @@ msgstr	"De compilatie heeft het bestand \"$filename\" gewijzigd Dit kan "
 	"te lossen moet in een aparte wijziging be 'build configuration' "
 	"aangepast worden zodat dit niet gebeurd, of verwijder het "
 	"bestand (\"aerm $filename\"), of verwijder dit bestand (\"aerm "
-	"$filename\") en voeg het opnieuw toe met \"aenf -build $filename"
-	"\" in een volgende wijziging."
+	"$filename\") en voeg het opnieuw toe met \"aenf -build "
+	"$filename\" in een volgende wijziging."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2181,7 +2122,7 @@ msgstr	"cd $filename"
 # This is the format of change messages (error, fatal and verbose).
 # Some changes are actually branches.
 #
-#       $Message"       The message to be issued.
+#       $Message        The message to be issued.
 #
 msgid	"change $change: $message"
 msgstr	"wijziging $change: $message"
@@ -2193,9 +2134,9 @@ msgstr	"wijziging $change: $message"
 #       $Number         The offending change's number.
 #
 msgid	"change $number not completed"
-msgstr	"wijziging $number heeft niet de status \"$state\"; het met moet "
-	"de status \"completed\" hebben om gebruikt te kunnen worden met "
-	"de --delta-from-change optie"
+msgstr	"wijziging $number heeft niet de status \"$state\"; het moet de "
+	"status \"completed\" hebben om gebruikt te kunnen worden met de "
+	"optie --delta-from-change"
 
 #
 # This error message is issued when an absurd change number is given.
@@ -2204,8 +2145,8 @@ msgstr	"wijziging $number heeft niet de status \"$state\"; het met moet "
 #       $Number         The offending change number.
 #
 msgid	"change $number out of range"
-msgstr	"wijziging $number buiten bereik, moet een klein positief nummer "
-	"zijn"
+msgstr	"wijzigingsnummer $number valt buiten bereik; het moet een klein "
+	"positief getal zijn"
 
 #
 # This error message is issued when aenbr is given an explicit change
@@ -2215,9 +2156,9 @@ msgstr	"wijziging $number buiten bereik, moet een klein positief nummer "
 #       $Number         The offending change number.
 #
 msgid	"change $number used"
-msgstr	"wijziging nummer $number is al in gebruik, kies een ander "
-	"nummer; of specificeer geen nummer om er automagisch een "
-	"toegewezen te krijgen"
+msgstr	"wijziging nummer $number is al in gebruik; kies een ander "
+	"nummer, of geef geen nummer op om er automagisch een toegewezen "
+	"te krijgen"
 
 #
 # This message is issued when aedist --receive cancells a change because
@@ -2233,7 +2174,7 @@ msgstr	"Deze wijziging is afgebroken omdat de wijziging al in de "
 #       $File_Name      The absolute path of the directory changed to.
 #
 msgid	"change directory $filename complete"
-msgstr	"$filename gereed"
+msgstr	"$filename is huidige map"
 
 #
 # This error message is issued when a chdir fails.
@@ -2268,7 +2209,7 @@ msgstr	"chmod(\"$filename\", $arg): $errno"
 #       $Target         The login name of the new owner.  (Optional)
 #
 msgid	"chown complete"
-msgstr	"eigendom gewijzigd van gebruiker \"$original\" naar gebruiker "
+msgstr	"eigendom is gewijzigd van gebruiker \"$original\" naar gebruiker "
 	"\"$target\""
 
 #
@@ -2283,7 +2224,7 @@ msgstr	"klaar met opruimen"
 #       $ORiginal       The login the original change.  (Optional)
 #
 msgid	"clone complete"
-msgstr	"kopie van wijziging $original gereed"
+msgstr	"kopie van wijziging $original is gereed"
 
 #
 # This error message is issued when a file close fails
@@ -2291,7 +2232,7 @@ msgstr	"kopie van wijziging $original gereed"
 #       $File_Name      The name of the offending file.
 #
 msgid	"close $filename: $errno"
-msgstr	"sluiten \"$filename\": $errno"
+msgstr	"sluiten van \"$filename\": $errno"
 
 #
 # This error message is issued when a file compare fails with a system
@@ -2310,8 +2251,8 @@ msgstr	"cmp \"$filename1\" \"$filename2\": $errno"
 # range 0..255.
 #
 msgid	"color component $number out of range"
-msgstr	"kleur component $number buiten bereik, het meot tussen 0 en 255 "
-	"liggen"
+msgstr	"kleurcomponent $number valt buiten bereik; het moet tussen 0 en "
+	"255 liggen"
 
 #
 # This error message is issued when a child process stops with a
@@ -2321,7 +2262,7 @@ msgstr	"kleur component $number buiten bereik, het meot tussen 0 en 255 "
 #       $Number         The exit status of the child.
 #
 msgid	"command \"$command\" exit status $number"
-msgstr	"commando \"$command\" exit status $number"
+msgstr	"commando \"$command\" heeft afsluitwaarde $number"
 
 #
 # This error message is issued when a child process stops.
@@ -2330,7 +2271,7 @@ msgstr	"commando \"$command\" exit status $number"
 #       $Command        The offending command.
 #
 msgid	"command \"$command\" stopped"
-msgstr	"commando \"$command\" gestopt"
+msgstr	"commando \"$command\" is gestopt"
 
 #
 # This error message is issued when a child process terminates due to an
@@ -2340,7 +2281,7 @@ msgstr	"commando \"$command\" gestopt"
 #       $Signal         The name of the terminating signal.
 #
 msgid	"command \"$command\" terminated by $signal"
-msgstr	"commando \"$command\" afgebroken door $signal"
+msgstr	"commando \"$command\" is afgebroken door $signal"
 
 #
 # This error message is issued when a child process stops due to an
@@ -2350,37 +2291,33 @@ msgstr	"commando \"$command\" afgebroken door $signal"
 #       $Signal         The name of the terminating signal.
 #
 msgid	"command \"$command\" terminated by $signal (core dumped)"
-msgstr	"commando \"$command\" afgebroken door $signal (core gedumpt)"
+msgstr	"commando \"$command\" is afgebroken door $signal (core gedumpt)"
 
 #
 # This error message is issued when the command line is too short.
 #
 msgid	"command line too short"
-msgstr	"opdracht regel is te kort"
+msgstr	"opdrachtregel is te kort"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when an unrecognised compression
 # algorithm name is given on the command line (aedist, aepatch, etc).
 #
 #       $name           The offending compression algorithm name.
 #
-#, fuzzy
 msgid	"compression algorithm \"$name\" unknown"
 msgstr	"compression algorithm \"$name\" unknown"
 
 #
-# TRANSLATION REQUIRED
-# This message is inserted into the top of the project config file
+# This message is inserted into the top of the project configuration file
 # automatically created by aeimport.
 #
-#, fuzzy
 msgid	"configuration file hint"
 msgstr	"This file will need to be customized for this project.  See "
-	"aepconf(5) for a description of the fields in this file.  See\n"
-	"$datadir/config.example/rcs\n"
-	"for more information about the history commands.  See\n"
-	"$datadir/config.example/make\n"
+	"aepconf(5) for a description of the fields in this file.  See "
+	"$datadir/config.example/rcs "
+	"for more information about the history commands.  See "
+	"$datadir/config.example/make "
 	"for examples of how to configure your build tool.\tYou may want "
 	"to browse some other files in the same directory for more hints."
 
@@ -2391,35 +2328,35 @@ msgstr	"This file will need to be customized for this project.  See "
 #       $Name           The offending encoding name.
 #
 msgid	"content transfer encoding $name unknown"
-msgstr	"content transfer encoding \"$name\" onbekend"
+msgstr	"Content-Transfer-Encoding \"$name\" is onbekend"
 
 #
 # This progress message is issued for aecp file when aecp completes
 # successfully.
 #
 msgid	"copied $filename"
-msgstr	"bestand \"$filename\" gekopieerd"
+msgstr	"bestand \"$filename\" is gekopieerd"
 
 #
 # This progress message is issued when aenrls creates a copy of the
 # baseline in the new project.
 #
 msgid	"copy baseline"
-msgstr	"kopieren baseline"
+msgstr	"kopiëren van baseline"
 
 #
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
 msgid	"copy baseline to integration directory"
-msgstr	"kopieren baseline naar integratie directory"
+msgstr	"kopiëren van baseline naar integratiemap"
 
 #
 # This progress message is issued when copying the change source files
 # during an aechown command.
 #
 msgid	"copy change source files"
-msgstr	"kopieren code wijziging"
+msgstr	"kopiëren van codewijziging"
 
 #
 # This success message is issued when aecp has finished copying files
@@ -2429,10 +2366,9 @@ msgstr	"kopieren code wijziging"
 #                       (Optional)
 #
 msgid	"copy file complete"
-msgstr	"$number ${plural $number files file} gekopieerd"
+msgstr	"$number ${plural $number bestanden bestand} gekopieerd"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aecpu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -2440,16 +2376,13 @@ msgstr	"$number ${plural $number files file} gekopieerd"
 #
 #       $File_Name      Name of the file removed from the change.
 #
-#, fuzzy
 msgid	"copy file undo $filename complete"
 msgstr	"bestand \"$filename\" niet meer in wijziging"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued by aeimport when it starts to copy the
 # history fierls from the old repository into the project history tree.
 #
-#, fuzzy
 msgid	"copy history files"
 msgstr	"Copying history files from external repository into project "
 	"history tree..."
@@ -2471,14 +2404,12 @@ msgstr	"cp \"$filename1\" \"$filename2\": $errno"
 #       $File_Name      The name of the offending file.
 #
 msgid	"create $filename: $errno"
-msgstr	"aanmaken \"$filename\": $errno"
+msgstr	"aanmaken van \"$filename\": $errno"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when Aegis creates the symbolic links
 # from the development directory which point to the baseline.
 #
-#, fuzzy
 msgid	"creating symbolic links to baseline"
 msgstr	"merging files from all baselines into working directory "
 	"according to directory style"
@@ -2491,8 +2422,8 @@ msgstr	"merging files from all baselines into working directory "
 #       $Number         The change number of the current integration.
 #
 msgid	"currently integrating $number"
-msgstr	"wijziging $number wordt al geintegreerd.  Slechts een wijziging "
-	"kan per keer geintegreerd worden"
+msgstr	"wijziging $number wordt al geintegreerd; slechts één wijziging "
+	"kan per keer geïntegreerd worden"
 
 #
 # This fatal error message is issued when a user-supplied string can't
@@ -2506,12 +2437,12 @@ msgstr	"de string \"$name\" ziet er niet uit als een datum"
 #
 # This warning message is issued when aecp -delta-date is given a time
 # which is in the future.  Unlike times in the past, the answer could
-# change at a later date.
+# change at a later date.  This is Damon Poole's "time safe" property.
 #
 msgid	"date in the future"
-msgstr	"Waaschuwing: De opgegeven delta datum is in de toekomst.  Dit "
+msgstr	"Waarschuwing: de opgegeven deltadatum is in de toekomst; dit "
 	"commando kan in de toekomst andere resultaten geven dan de "
-	"huidige resultaten."
+	"huidige resultaten"
 
 #
 # This error message is issued when an attempt is made to reuse an
@@ -2524,9 +2455,8 @@ msgstr	"Waaschuwing: De opgegeven delta datum is in de toekomst.  Dit "
 #                       delta name.
 #
 msgid	"delta $name in use"
-msgstr	"de delta naam \"$name\" is al toegekend aan delta $other; "
-	"gebruik de -OverWriting optie om deze naam aan delta $number toe "
-	"te kennen "
+msgstr	"deltanaam \"$name\" is al toegekend aan delta $other; gebruik de "
+	"v -OverWriting om deze naam aan delta $number toe te kennen "
 
 #
 # This error message is issued when an absurd delta number is given.
@@ -2535,7 +2465,8 @@ msgstr	"de delta naam \"$name\" is al toegekend aan delta $other; "
 #       $Number         The offending delta number.
 #
 msgid	"delta $number out of range"
-msgstr	"delta $number buiten bereik, moet een klein positief nummer zijn"
+msgstr	"deltanummer $number valt buiten bereik; het moet een klein "
+	"positief getal zijn"
 
 #
 # This progress message is issued when aedn completes successfully.
@@ -2546,13 +2477,11 @@ msgstr	"delta $number buiten bereik, moet een klein positief nummer zijn"
 msgid	"delta name complete"
 msgstr	"delta $number kan nu delta \"$name\" genoemd worden"
 
-# TRANSLATION REQUIRED
 #
 # This error messages is issued when aede-policy finds a change set in
 # which the brief description is empty, or has not been changed from the
 # default.
 #
-#, fuzzy
 msgid	"description not set"
 msgstr	"the description field has not been set"
 
@@ -2574,21 +2503,21 @@ msgstr	"begin ontwikkelen ongedaan gemaakt"
 # possible are found before aede aborts.
 #
 msgid	"develop end fail"
-msgstr	"$number fout${plural $number en} gevonden, deze wijziging blijft "
+msgstr	"$number fout${plural $number en} gevonden; deze wijziging blijft "
 	"de status '$state' houden "
 
 #
 # This progress message is issued when aedeu completes successfully.
 #
 msgid	"develop end undo complete"
-msgstr	"ontwikkelen hervat"
+msgstr	"ontwikkelen is hervat"
 
 #
 # This error message is issued when a developer attempts to integrate her
 # own change, and the project is configured to disallow this.
 #
 msgid	"developer may not integrate"
-msgstr	"de ontwikkelaar mag niet dezelfde wijziging integreren"
+msgstr	"de ontwikkelaar mag zijn eigen wijziging niet integreren"
 
 #
 # This error message is issued when a developer attempts to review her
@@ -2601,19 +2530,19 @@ msgstr	"de ontwikkelaar mag zijn eigen wijziging niet keuren"
 # This message is issued when development builds are completed.
 #
 msgid	"development build complete"
-msgstr	"ontwikkel compilatie klaar ${date %H:%M}"
+msgstr	"ontwikkelcompilatie is voltooid ${date %H:%M}"
 
 #
 # This message is issued when development builds are commenced.
 #
 msgid	"development build started"
-msgstr	"ontwikkel compilatie gestart ${date %H:%M}"
+msgstr	"ontwikkelcompilatie is gestart ${date %H:%M}"
 
 #
 # This progress message is issued when aede completes successfully.
 #
 msgid	"development completed"
-msgstr	"ontwikkelen gereed"
+msgstr	"ontwikkelen is gereed"
 
 #
 # This information message is issued when an Aegis command automatically
@@ -2624,7 +2553,7 @@ msgstr	"ontwikkelen gereed"
 #                       directory.
 #
 msgid	"development directory \"$filename\""
-msgstr	"ontwikkel directory \"$filename\""
+msgstr	"ontwikkelmap is \"$filename\""
 
 #
 # This error message is issued when an aed command found errors in the
@@ -2634,8 +2563,8 @@ msgstr	"ontwikkel directory \"$filename\""
 #                       (Optional)
 #
 msgid	"diff fail"
-msgstr	"$number fout${plural $number en} gevonden, bestand{plural "
-	"$number en} niet vergeleken."
+msgstr	"$number fout${plural $number en} gevonden; bestand{plural "
+	"$number en} zijn niet vergeleken"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -2643,7 +2572,7 @@ msgstr	"$number fout${plural $number en} gevonden, bestand{plural "
 # integrated' states.
 #
 msgid	"diff required"
-msgstr	"Deze wijzigng moet vergeleken worden met 'aegis -Diff' voordat "
+msgstr	"deze wijzigng moet vergeleken worden met 'aegis -Diff' voordat "
 	"het de status '$state' kan verlaten"
 
 #
@@ -2657,7 +2586,7 @@ msgstr	"klaar met vergelijken "
 # directory is specified as an absolute directory.
 #
 msgid	"dir must be rel"
-msgstr	"directory moet relatief zijn (niet beginnen met / )"
+msgstr	"map moet relatief zijn (niet beginnen met '/')"
 
 #
 # This error message is issued when a directory has been named on the
@@ -2669,7 +2598,7 @@ msgstr	"directory moet relatief zijn (niet beginnen met / )"
 #                       (Optional)
 #
 msgid	"directory $filename contains no relevant files"
-msgstr	"directory \"$filename\" bevat $number mogelijk ${plural $number "
+msgstr	"map \"$filename\" bevat mogelijk $number ${plural $number "
 	"'geschikte bestanden' 'geschikt bestand'}, maar ${plural $number "
 	"'die zijn geen van allen' 'dit is niet'} een geschikt argument "
 	"voor dit commando"
@@ -2679,13 +2608,13 @@ msgstr	"directory \"$filename\" bevat $number mogelijk ${plural $number "
 # development directory and the old baseline directory.
 #
 msgid	"discard old directories"
-msgstr	"verwijderen oude directories"
+msgstr	"verwijderen van oude mappen"
 
 #
 # This error message is issued when a division by zero is attempted.
 #
 msgid	"division by zero"
-msgstr	"delen door nul"
+msgstr	"deling door nul"
 
 #
 # This error message is issued when the obsolete -major or -minor
@@ -2693,8 +2622,8 @@ msgstr	"delen door nul"
 # option.
 #
 msgid	"don't mix old and new version options"
-msgstr	"de -MAJor en -MINOr opties zijn incompatibel met de  -VERSion "
-	"optie"
+msgstr	"de opties -MAJor en -MINOr zijn incompatibel met de optie "
+	"-VERSion"
 
 #
 # This error message is issued when an option is used more than one on
@@ -2703,15 +2632,13 @@ msgstr	"de -MAJor en -MINOr opties zijn incompatibel met de  -VERSion "
 #       $Name           The name of the offending option.
 #
 msgid	"duplicate $name option"
-msgstr	"meerdere $name opties, u kunt er slechts een opgeven"
+msgstr	"meerdere opties $name; u kunt er slechts één opgeven"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when the aerpass command detects that a
 # user has already reviewed this change once since the last develop end.
 # (This can occur when the review_policy_command is being used.)
 #
-#, fuzzy
 msgid	"duplicate review"
 msgstr	"you may not review the same change twice"
 
@@ -2720,21 +2647,21 @@ msgstr	"you may not review the same change twice"
 # Comments may not span input files.
 #
 msgid	"end-of-file within comment"
-msgstr	"einde bestand binnen commentaar-sectie"
+msgstr	"einde van bestand binnen een commentaar-sectie"
 
 #
 # This error message is issued when an unterminated string is detected.
 # Strings may not span input files.
 #
 msgid	"end-of-file within string"
-msgstr	"einde bestand middenin string"
+msgstr	"einde van bestand middenin een string"
 
 #
 # This error message is issued when an unterminated string is detected.
 # Strings may not span multiple input lines.
 #
 msgid	"end-of-line within string"
-msgstr	"einde regel middenin string"
+msgstr	"einde van regel middenin een string"
 
 #
 # This error message is issued when an environment variable has not been
@@ -2743,7 +2670,7 @@ msgstr	"einde regel middenin string"
 #       $Name           The name of the offending environment variable.
 #
 msgid	"environment variable $name not set"
-msgstr	"omgevings variabele \"$name\" niet gezet"
+msgstr	"omgevingsvariabele \"$name\" is niet gezet"
 
 #
 # This fatal error message is issued when the execution of a command
@@ -2752,7 +2679,7 @@ msgstr	"omgevings variabele \"$name\" niet gezet"
 #       $File_Name      The name of the offending file.
 #
 msgid	"exec \"$filename\": $errno"
-msgstr	"uitvoeren \"$filename\": $errno"
+msgstr	"uitvoeren van \"$filename\": $errno"
 
 #
 # This error message is issued when aet completes unsuccessfully.
@@ -2767,10 +2694,10 @@ msgstr	"$number fout${plural $number en} geconstateerd"
 # attempting to recover from an earlier fatal error.
 #
 msgid	"fatal error during fatal error recovery"
-msgstr	"A fatale fout vondt plaats bij een poging bij te herstellen van "
-	"een eerdere fatale fout. Er kan Aegis data onbruikbaar zijn "
-	"geraakt. Val neer op uw knieen en bid tot St. Miller of "
-	"raadpleeg direct een Aegis guru."
+msgstr	"Een fatale fout is opgetreden tijdens een poging om van een "
+	"eerdere fatale fout te herstellen.  Er kan Aegis-data "
+	"onbruikbaar zijn geraakt.  Val op uw knieën en bid tot St. "
+	"Miller of raadpleeg direct een Aegis-goeroe."
 
 #
 # This error message is issued when Aegis fails to get file descriptor flags.
@@ -2829,7 +2756,7 @@ msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 #       $Number2        The number of tests requested by the user.
 #
 msgid	"few candidate tests"
-msgstr	"Waarschuwing er zijn maar $number1 geschikte testen, maar u "
+msgstr	"Waarschuwing: er zijn maar $number1 geschikte testen, maar u "
 	"vroeg om $number2 testen te suggereren; alle number1 testen "
 	"worden gebruikt"
 
@@ -2840,7 +2767,7 @@ msgstr	"Waarschuwing er zijn maar $number1 geschikte testen, maar u "
 #       $Name           The name of the offending field.
 #
 msgid	"field \"$name\" redefined"
-msgstr	"veld \"$name\" opnieuw gedefineerd"
+msgstr	"veld \"$name\" is opnieuw gedefineerd"
 
 #
 # This error message is issued when a change file name is not acceptable
@@ -2849,8 +2776,8 @@ msgstr	"veld \"$name\" opnieuw gedefineerd"
 #       $File_Name      The name of the offending file.
 #
 msgid	"file \"$filename\" bombs filters"
-msgstr	"bestand \"$filename\" is niet acceptabel voor de bestandsnaam "
-	"partoon filters (zie het 'config' bestand)"
+msgstr	"bestandsnaam \"$filename\" is niet acceptabel voor de "
+	"bestandsnaampartoonfilters (zie het 'config'-bestand)"
 
 #
 # This error message is issued when aeclean discovers that a change
@@ -2869,7 +2796,7 @@ msgstr	"bestand \"$filename\" bestaat niet, maar dit bestand hoort bij "
 #       $File_Name      The name of the offending file.
 #
 msgid	"file \"$filename\" is log file"
-msgstr	"bestand \"$filename\" is hetzelfde als log bestandsnaam"
+msgstr	"bestandsnaam \"$filename\" is hetzelfde als logbestandsnaam"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -2880,8 +2807,8 @@ msgstr	"bestand \"$filename\" is hetzelfde als log bestandsnaam"
 #       $Number         The change number of the change which locked the file.
 #
 msgid	"file \"$filename\" locked for change $number"
-msgstr	"bestand \"$filename\" in gebruik door wijziging $number, probeer "
-	"het later nog eens."
+msgstr	"bestand \"$filename\" is in gebruik door wijziging $number; "
+	"probeer het later nog eens"
 
 #
 # This error message is issued when a component of a change file name is
@@ -2892,8 +2819,9 @@ msgstr	"bestand \"$filename\" in gebruik door wijziging $number, probeer "
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" bombs filters"
-msgstr	"bestand \"$filename\" pad element \"$part\" is niet acceptabel "
-	"voor de bestandsnaam patroon filters (zie het 'config' bestand)"
+msgstr	"in bestandsnaam \"$filename\" is padelement \"$part\" niet "
+	"acceptabel voor de bestandsnaampatroonfilters (zie het "
+	"'config'-bestand)"
 
 #
 # This error message is issued when a component of a change file name
@@ -2903,8 +2831,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" is niet acceptabel "
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" contains illegal characters"
-msgstr	"bestand \"$filename\" pad element \"$part\" bevat niet "
-	"toegestane karakters"
+msgstr	"in bestandsnaam \"$filename\" bevat padelement \"$part\" bevat "
+	"niet-toegestane tekens"
 
 #
 # This error message is issued when a component of a change file name
@@ -2915,8 +2843,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" bevat niet "
 #
 msgid	"file \"$filename\" part \"$part\" contains shell special "
 	"characters"
-msgstr	"bestand \"$filename\" pad element \"$part\" bevat speciale shell "
-	"karakters"
+msgstr	"in bestandsnaam \"$filename\" bevat padelement \"$part\" "
+	"speciale shell-tekens"
 
 #
 # This error message is issued when a component of a change file
@@ -2926,8 +2854,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" bevat speciale shell "
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" is log file"
-msgstr	"bestand \"$filename\" pad element \"$part\" is hetzelfde als log "
-	"bestand naam"
+msgstr	"in bestandsnaam \"$filename\" is padelement \"$part\" hetzelfde "
+	"als de logbestandsnaam"
 
 #
 # This error message is issued when a component of a change file name
@@ -2938,8 +2866,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" is hetzelfde als log "
 #       $SUGgest        Suggested alternative.
 #
 msgid	"file \"$filename\" part \"$part\" not suitable for DOS"
-msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
-	"DOS, suggestie: \"$suggest\""
+msgstr	"in bestandsnaam \"$filename\" is padelement \"$part\" niet "
+	"geschikt voor DOS; suggestie: \"$suggest\""
 
 #
 # This error message is issued when a component of a change file name
@@ -2949,8 +2877,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
 #       $PArt           The directory part in question.
 #
 msgid	"file \"$filename\" part \"$part\" not suitable for Windows"
-msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
-	"Windows"
+msgstr	"in bestandsnaam \"$filename\" is padelement \"$part\" niet "
+	"geschikt voor Windows"
 
 #
 # This error message is issued when a directory component of a change file
@@ -2964,8 +2892,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" niet geschikt voor "
 #
 msgid	"file \"$filename\" part \"$part\" too long, suggest \"$suggest\" "
 	"instead"
-msgstr	"bestand \"$filename\" pad element \"$part\" te lang ($number "
-	"karakters), suggestie \"$suggest\" "
+msgstr	"in bestandsnaam \"$filename\" is padelement \"$part\" te lang "
+	"($number tekens); suggestie: \"$suggest\" "
 
 #
 # This error message is issued when the last component of a change file
@@ -2977,8 +2905,8 @@ msgstr	"bestand \"$filename\" pad element \"$part\" te lang ($number "
 #       $SUGgest        Suggested abbreviated filename (optional).
 #
 msgid	"file \"$filename\" too long, suggest \"$suggest\" instead"
-msgstr	"bestand \"$filename\" te lang ($number karakters), suggestie "
-	"\"$suggest\" "
+msgstr	"bestandsnaam \"$filename\" is te lang ($number tekenss); "
+	"suggestie: \"$suggest\" "
 
 #
 # This fatal error message is issued when aenf or aent detects a directory
@@ -2988,8 +2916,8 @@ msgstr	"bestand \"$filename\" te lang ($number karakters), suggestie "
 #       $File_Name2     The name of the conflicting file.  (Optional)
 #
 msgid	"file $filename directory name conflict"
-msgstr	"bestand \"$filename\" is niet toegestaan, het zou resulteren in "
-	"een directory naam conflict met het \"$filename2\" bestand"
+msgstr	"bestandsnaam \"$filename\" is niet toegestaan; het zou "
+	"resulteren in een mapnaamconflict met het bestand \"$filename2\""
 
 #
 # This error message is issued when a command attempts to add a new file
@@ -2998,7 +2926,7 @@ msgstr	"bestand \"$filename\" is niet toegestaan, het zou resulteren in "
 #       $File_Name      The name of the offending file.
 #
 msgid	"file $filename dup"
-msgstr	"bestand \"$filename\" is al in deze wijziging"
+msgstr	"bestand \"$filename\" zit al in deze wijziging"
 
 #
 # This error message is issued when a change file name
@@ -3007,7 +2935,7 @@ msgstr	"bestand \"$filename\" is al in deze wijziging"
 #       $File_Name      The name of the offending file.
 #
 msgid	"file name \"$filename\" contains illegal characters"
-msgstr	"bestandnaam \"$filename\" bevat niet toegestane karakters"
+msgstr	"bestandnaam \"$filename\" bevat niet-toegestane tekens"
 
 #
 # This error message is issued when a change file name
@@ -3016,7 +2944,7 @@ msgstr	"bestandnaam \"$filename\" bevat niet toegestane karakters"
 #       $File_Name      The name of the offending file.
 #
 msgid	"file name \"$filename\" contains shell special characters"
-msgstr	"bestandsnaam \"$filename\" bevat speciale shell karakters"
+msgstr	"bestandsnaam \"$filename\" bevat speciale shell-tekens"
 
 #
 # This error message is issued when a change file name
@@ -3026,7 +2954,7 @@ msgstr	"bestandsnaam \"$filename\" bevat speciale shell karakters"
 #       $SUGgest        Suggested alternative file name.
 #
 msgid	"file name \"$filename\" not suitable for DOS"
-msgstr	"bestandsnaam \"$filename\" niet geschikt voor DOS, suggestie: "
+msgstr	"bestandsnaam \"$filename\" is niet geschikt voor DOS; suggestie: "
 	"\"$suggest\" "
 
 #
@@ -3036,14 +2964,12 @@ msgstr	"bestandsnaam \"$filename\" niet geschikt voor DOS, suggestie: "
 #       $File_Name      The name of the offending file.
 #
 msgid	"file name \"$filename\" not suitable for Windows"
-msgstr	"bestandsnaam \"$filename\" niet geschikt voor Windows "
+msgstr	"bestandsnaam \"$filename\" is niet geschikt voor Windows "
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a file qualifier in a substitution
 # is an unknown name.  See (+++) above.
 #
-#, fuzzy
 msgid	"file qualifier unknown"
 msgstr	"file qualifier unknown"
 
@@ -3073,11 +2999,9 @@ msgstr	"De history tool wijzigde $number ${plural $number bestanden "
 	"repository."
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when aeimport starts going through
 # the history information looking for change sets.
 #
-#, fuzzy
 msgid	"find change sets"
 msgstr	"Looking for clusters of changes to files in order to interpolate "
 	"the change sets..."
@@ -3126,27 +3050,39 @@ msgstr	"voor de $name_list architecture${plural $number n}"
 # This error message is issued as a summary when one or more
 # architectures appear in the list of architectures the change must
 # apply to, but are not present in the project's architecture list in
-# the project "aegis.conf" file.
+# the project configuration file.
 #
 #       $Number         The number of unknown architecture(s).
 #                       (Optional)
 #
 msgid	"found unlisted architectures"
-msgstr	"$number ongenoemde architecture${plural $number n} gevonden, "
-	"werk de wijzigings attributen bij om deze te verwijderen of toe "
+msgstr	"$number ongenoemde architecture${plural $number n} gevonden; "
+	"werk de wijzigingsattributen bij om deze te verwijderen of toe "
 	"te voegen ${plural $number !}"
 
+#
+# This error message is issued when a function which requires exactly
+# one argument has been given none, or too many.
+#
+#       $name   The function name.
+#
 msgid	"function $name requires one argument"
-msgstr	"de \"$name\" functie heeft precies een argument nodig"
+msgstr	"de functie \"$name\" heeft precies één argument nodig"
 
+#
+# This error message is issued when a function which requires exactly
+# two arguments has been given too few, or too many.
+#
+#       $name   The function name.
+#
 msgid	"function $name requires two arguments"
-msgstr	"de \"$name\" functie heeft precies twee argumenten nodig"
+msgstr	"de functie \"$name\" heeft precies twee argumenten nodig"
 
 #
 # This error message is issued when a getcwd fails.
 #
 msgid	"getcwd: $errno"
-msgstr	"ophalen huidige directory: $errno"
+msgstr	"opvragen van huidige map: $errno"
 
 #
 # This error message is issued when a group from the /etc/group file, or
@@ -3155,13 +3091,13 @@ msgstr	"ophalen huidige directory: $errno"
 #       $Number         The offending group number.
 #
 msgid	"gid $number unknown"
-msgstr	"groep id $number onbekend"
+msgstr	"groeps-ID $number is onbekend"
 
 #
 # This fatal error message is issued when a lock is not available.
 #
 msgid	"global state lock not available"
-msgstr	"globaal status-slot niet beschikbaar"
+msgstr	"globale statusvergrendeling is niet beschikbaar"
 
 #
 # This error message is issued when a group from the /etc/group file, or
@@ -3170,7 +3106,7 @@ msgstr	"globaal status-slot niet beschikbaar"
 #       $Name           The offending group name.
 #
 msgid	"group \"$name\" unknown"
-msgstr	"groep \"$name\" onbekend"
+msgstr	"groep \"$name\" is onbekend"
 
 #
 # This error message is issued when aena is asked to add an
@@ -3191,7 +3127,7 @@ msgstr	"groep \"$name\" heeft te veel rechten"
 #                       (but sometimes not, because the real errno has it)
 #
 msgid	"gunzip $filename: $errno"
-msgstr	"Tijdens het uitpakken van het \"$filename\" bestand: $errno"
+msgstr	"tijdens het uitpakken van bestand \"$filename\": $errno"
 
 #
 # This fatal error message is issued when something goes wrong compressing
@@ -3202,7 +3138,7 @@ msgstr	"Tijdens het uitpakken van het \"$filename\" bestand: $errno"
 #                       (but sometimes not, because the real errno has it)
 #
 msgid	"gzip $filename: $errno"
-msgstr	"Tijdens het inpakken van het \"$filename\" bestand: $errno"
+msgstr	"tijdens het inpakken van bestand \"$filename\": $errno"
 
 #
 # This error message is issued when a request is made to run tests, but
@@ -3210,32 +3146,27 @@ msgstr	"Tijdens het inpakken van het \"$filename\" bestand: $errno"
 # the project may have no tests at all.
 #
 msgid	"has no tests"
-msgstr	"Deze wijziging heeft testen nodig voordat dit commando gebruikt "
+msgstr	"deze wijziging heeft testen nodig voordat dit commando gebruikt "
 	"kan worden"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aeipass(1) command when it
 # commits the first version of a file into the project history store.
 #
 # $File_Name    The name of the source file.
 #
-#, fuzzy
 msgid	"history create $filename"
 msgstr	"adding the first version to the history of the \"$filename\" file"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when aeimport doesn't recognize a
 # history file format name as specified on the command line.
 #
 #       $name           The offending format name.
 #
-#, fuzzy
 msgid	"history format \"$name\" unknown"
 msgstr	"history format \"$name\" unknown"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aegis when it extracts a
 # version of a file from the project history store.
@@ -3243,19 +3174,16 @@ msgstr	"history format \"$name\" unknown"
 # $File_Name    The name of the source file.
 # $Edit         The version to be extracted (optional)
 #
-#, fuzzy
 msgid	"history get $filename"
 msgstr	"historical version $edit of the \"$filename\" file being "
 	"recreated"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aeipass(1) command when it
 # is labeling the head version of a history history file.
 #
 # $File_Name    The name of the source file.
 #
-#, fuzzy
 msgid	"history label $filename"
 msgstr	"history of the \"$filename\" file head revision being labeled"
 
@@ -3263,9 +3191,8 @@ msgstr	"history of the \"$filename\" file head revision being labeled"
 # This fatal error message is issued when a lock is not available.
 #
 msgid	"history lock not available"
-msgstr	"history slot niet beschikbaar"
+msgstr	"vergrendeling van history is niet beschikbaar"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued by the aeipass(1) command when it
 # commits another version of a file into the project history store.
@@ -3274,7 +3201,6 @@ msgstr	"history slot niet beschikbaar"
 #               renames, even though the history file's UUID never
 #               changes.
 #
-#, fuzzy
 msgid	"history put $filename"
 msgstr	"adding another version to the history of the \"$filename\" file"
 
@@ -3294,7 +3220,7 @@ msgstr	"het history_query_command gaf een lege string als antwoord, dit "
 #       $Name           The offending character, as a C octal escape sequence.
 #
 msgid	"illegal '$name' character"
-msgstr	"niet toegestaan '$name' karakter"
+msgstr	"ongeldig '$name'-teken"
 
 #
 # This error message is issued when an illegal e+e is attempted.
@@ -3303,7 +3229,7 @@ msgstr	"niet toegestaan '$name' karakter"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal addition ($name1 + $name2)"
-msgstr	"niet toegestane optelling ($name1 + $name2)"
+msgstr	"ongeldige optelling ($name1 + $name2)"
 
 #
 # This message is issued when an inappropriate ~ is attempted.
@@ -3311,7 +3237,7 @@ msgstr	"niet toegestane optelling ($name1 + $name2)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
-msgstr	"integer waarde benodigd voor bit-wise \"not\" (kreeg $name)"
+msgstr	"integerwaarde is nodig voor bitgewijze \"not\" (kreeg $name)"
 
 #
 # This error message is issued when an illegal e!=e is attempted.
@@ -3320,7 +3246,7 @@ msgstr	"integer waarde benodigd voor bit-wise \"not\" (kreeg $name)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 != $name2)"
-msgstr	"niet toegestane vergelijking ($name1 != $name2)"
+msgstr	"ongeldige vergelijking ($name1 != $name2)"
 
 #
 # This error message is issued when an illegal e!~e is attempted.
@@ -3329,7 +3255,7 @@ msgstr	"niet toegestane vergelijking ($name1 != $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 !~ $name2)"
-msgstr	"niet toegestane vergelijking ($name1 !~ $name2)"
+msgstr	"ongeldige vergelijking ($name1 !~ $name2)"
 
 #
 # This error message is issued when an illegal e<e is attempted.
@@ -3338,7 +3264,7 @@ msgstr	"niet toegestane vergelijking ($name1 !~ $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 < $name2)"
-msgstr	"niet toegestane vergelijking ($name1 < $name2)"
+msgstr	"ongeldige vergelijking ($name1 < $name2)"
 
 #
 # This error message is issued when an illegal e<=e is attempted.
@@ -3347,7 +3273,7 @@ msgstr	"niet toegestane vergelijking ($name1 < $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 <= $name2)"
-msgstr	"niet toegestane vergelijking ($name1 <= $name2)"
+msgstr	"ongeldige vergelijking ($name1 <= $name2)"
 
 #
 # This error message is issued when an illegal e==e is attempted.
@@ -3356,7 +3282,7 @@ msgstr	"niet toegestane vergelijking ($name1 <= $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 == $name2)"
-msgstr	"niet toegestane vergelijking ($name1 == $name2)"
+msgstr	"ongeldige vergelijking ($name1 == $name2)"
 
 #
 # This error message is issued when an illegal e>e is attempted.
@@ -3365,7 +3291,7 @@ msgstr	"niet toegestane vergelijking ($name1 == $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 > $name2)"
-msgstr	"niet toegestane vergelijking ($name1 > $name2)"
+msgstr	"ongeldige vergelijking ($name1 > $name2)"
 
 #
 # This error message is issued when an illegal e>=e is attempted.
@@ -3374,7 +3300,7 @@ msgstr	"niet toegestane vergelijking ($name1 > $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 >= $name2)"
-msgstr	"niet toegestane vergelijking ($name1 >= $name2)"
+msgstr	"ongeldige vergelijking ($name1 >= $name2)"
 
 #
 # This error message is issued when an illegal e~~e is attempted.
@@ -3383,7 +3309,7 @@ msgstr	"niet toegestane vergelijking ($name1 >= $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal comparison ($name1 ~~ $name2)"
-msgstr	"niet toegestane vergelijking ($name1 ~~ $name2)"
+msgstr	"ongeldige vergelijking ($name1 ~~ $name2)"
 
 #
 # This error message is issued when a request to count the keys of an
@@ -3392,7 +3318,7 @@ msgstr	"niet toegestane vergelijking ($name1 ~~ $name2)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal count request ($name)"
-msgstr	"niet toegestaan count request ($name)"
+msgstr	"ongeldig sleuteltelverzoek ($name)"
 
 #
 # This error message is issued when an illegal / is attempted.
@@ -3401,7 +3327,7 @@ msgstr	"niet toegestaan count request ($name)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal division ($name1 / $name2)"
-msgstr	"niet toegestane deling ($name1 / $name2)"
+msgstr	"ongeldige deling ($name1 / $name2)"
 
 #
 # This error message is issued when an illegal e##e is attempted.
@@ -3410,7 +3336,7 @@ msgstr	"niet toegestane deling ($name1 / $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal join ($name1 ## $name2)"
-msgstr	"niet toegestane join ($name1 ## $name2)"
+msgstr	"ongeldige join ($name1 ## $name2)"
 
 #
 # This error message is issued when a request for the keys of an
@@ -3420,13 +3346,13 @@ msgstr	"niet toegestane join ($name1 ## $name2)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal keys request ($name)"
-msgstr	"niet toegestane sleutel opvraag ($name)"
+msgstr	"ongeldige sleutelopvraag ($name)"
 
 #
 # This message is issued when an inappropriate assignment is attempted.
 #
 msgid	"illegal left hand side of assignment"
-msgstr	"niet toegestane linkerzijde toekenning, moet een variabele zijn"
+msgstr	"ongeldige linkerzijde van toekenning; moet een variabele zijn"
 
 #
 # This message is issued when an inappropriate assignment is attempted.
@@ -3434,8 +3360,8 @@ msgstr	"niet toegestane linkerzijde toekenning, moet een variabele zijn"
 #       $Name           The type name of the left hand side.
 #
 msgid	"illegal left hand side of assignment (was given $name)"
-msgstr	"niet toegestane linkerzijde toekenning (kreeg $name), moet een "
-	"variabele zijn"
+msgstr	"ongeldige linkerzijde van toekenning; moet een variabele zijn "
+	"(kreeg $name)"
 
 #
 # This message is issued when an inappropriate ! is attempted.
@@ -3443,7 +3369,7 @@ msgstr	"niet toegestane linkerzijde toekenning (kreeg $name), moet een "
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
-msgstr	"booleanse waarde nodig voor logisch \"not\" (kreeg $name)"
+msgstr	"booleanse waarde is nodig voor logische \"not\" (kreeg $name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
@@ -3454,10 +3380,17 @@ msgstr	"booleanse waarde nodig voor logisch \"not\" (kreeg $name)"
 #       $Name2          The type name of the second operand.
 #
 msgid	"illegal lookup ($name1[$name2])"
-msgstr	"niet toegestane zoekaktie ($name1[$name2])"
+msgstr	"ongeldige zoekaktie ($name1[$name2])"
 
+#
+# This error message is issued when one or more of the arguments to the
+# match operator are inappropriate types.
+#
+#       $name1  The name of the type of argument 1
+#       $name2  The name of the type of argument 2
+#
 msgid	"illegal match ($name1 ~ $name2)"
-msgstr	"niet toegestane match ($name1 ~ $name2)"
+msgstr	"ongeldige match ($name1 ~ $name2)"
 
 #
 # This error message is issued when an illegal % is attempted.
@@ -3467,7 +3400,7 @@ msgstr	"niet toegestane match ($name1 ~ $name2)"
 #
 #, no-c-format
 msgid	"illegal modulo ($name1 % $name2)"
-msgstr	"niet toegestaan modulo ($name1 % $name2)"
+msgstr	"ongeldige modulo ($name1 % $name2)"
 
 #
 # This error message is issued when an illegal * is attempted.
@@ -3476,7 +3409,7 @@ msgstr	"niet toegestaan modulo ($name1 % $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal multiplication ($name1 * $name2)"
-msgstr	"niet toegestane vermenigvuldiging ($name1 * $name2)"
+msgstr	"ongeldige vermenigvuldiging ($name1 * $name2)"
 
 #
 # This message is issued when an inappropriate -e is attempted.
@@ -3484,7 +3417,7 @@ msgstr	"niet toegestane vermenigvuldiging ($name1 * $name2)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal negative ($name)"
-msgstr	"integer waarde nodig voor negatieve (kreeg $name)"
+msgstr	"ongeldige negatieve waarde (kreeg $name)"
 
 #
 # This message is issued when an inappropriate +e is attempted.
@@ -3492,7 +3425,7 @@ msgstr	"integer waarde nodig voor negatieve (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"illegal positive ($name)"
-msgstr	"integer waarde nodig voor positieve (kreeg $name)"
+msgstr	"ongeldige positieve waarde (kreeg $name)"
 
 #
 # This error message is issued when an illegal e**e is attempted.
@@ -3501,7 +3434,7 @@ msgstr	"integer waarde nodig voor positieve (kreeg $name)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal power ($name1 ** $name2)"
-msgstr	"niet toegestane macht ($name1 ** $name2)"
+msgstr	"ongeldige machtsverheffing ($name1 ** $name2)"
 
 #
 # This error message is issued when an illegal e<<e is attempted.
@@ -3510,7 +3443,7 @@ msgstr	"niet toegestane macht ($name1 ** $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal shift ($name1 << $name2)"
-msgstr	"niet toegestane rechtsverschuiving right shift ($name1 << $name2)"
+msgstr	"ongeldige linksverschuiving ($name1 << $name2)"
 
 #
 # This error message is issued when an illegal e>>e is attempted.
@@ -3519,7 +3452,7 @@ msgstr	"niet toegestane rechtsverschuiving right shift ($name1 << $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal shift ($name1 >> $name2)"
-msgstr	"niet toegestane linksverschuiving ($name1 >> $name2)"
+msgstr	"ongeldige rechtsverschuiving ($name1 >> $name2)"
 
 #
 # This error message is issued when an illegal e-e is attempted.
@@ -3528,13 +3461,11 @@ msgstr	"niet toegestane linksverschuiving ($name1 >> $name2)"
 #       $Name2          The type name of the right operand.
 #
 msgid	"illegal subtraction ($name1 - $name2)"
-msgstr	"niet toegestaan aftrekken ($name1 - $name2)"
+msgstr	"ongeldige aftrekking ($name1 - $name2)"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when aeimport completed successfully.
 #
-#, fuzzy
 msgid	"import complete"
 msgstr	"import completed successfully"
 
@@ -3545,7 +3476,7 @@ msgstr	"import completed successfully"
 #       $Name           The name of the offending command line option.
 #
 msgid	"inappropriate $name option"
-msgstr	"niet passend gebruik van $name optie"
+msgstr	"niet-passend gebruik van optie $name"
 
 #
 # This error message is issued when an ambiguous information name is given
@@ -3555,7 +3486,7 @@ msgstr	"niet passend gebruik van $name optie"
 #       $Name_List      The list of possible alternatives.
 #
 msgid	"info $name ambig ($name_list)"
-msgstr	"versie informatie naam \"$name\" niet specifiek, kies uit: "
+msgstr	"versie-informatienaam \"$name\" is niet specifiek; kies uit: "
 	"($name_list)"
 
 #
@@ -3565,8 +3496,8 @@ msgstr	"versie informatie naam \"$name\" niet specifiek, kies uit: "
 # change.
 #
 msgid	"int must diff all"
-msgstr	"Bij het vergelijken van een wijziging met de status 'being "
-	"integrated' kunnen geen bestandsnamen gespecificeerd worden"
+msgstr	"bij het vergelijken van een wijziging met de status 'being "
+	"integrated' kunnen geen bestandsnamen opgegeven worden"
 
 #
 # This error message is issued when an aet command is used on a change in
@@ -3575,7 +3506,7 @@ msgstr	"Bij het vergelijken van een wijziging met de status 'being "
 #
 msgid	"int must test all"
 msgstr	"bij het testen van een wijziging met de status 'being "
-	"integrated' kunnen geen bestands namen opgegeven worden"
+	"integrated' kunnen geen bestandsnamen opgegeven worden"
 
 #
 # This error message is issued when a non-integer change number is
@@ -3584,7 +3515,7 @@ msgstr	"bij het testen van een wijziging met de status 'being "
 #       $Name           The type name of the offending argument.
 #
 msgid	"integer index required (was given $name)"
-msgstr	"integer index nodig (kreeg $name)"
+msgstr	"integerindex is nodig (kreeg $name)"
 
 #
 # This message is issued when an inappropriate & is attempted.
@@ -3592,7 +3523,7 @@ msgstr	"integer index nodig (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"integer waarde nodig voor bit-wise \"and\" (kreeg $name)"
+msgstr	"integerwaarde is nodig voor bitgewijze \"and\" (kreeg $name)"
 
 #
 # This message is issued when an inappropriate | is attempted.
@@ -3600,7 +3531,7 @@ msgstr	"integer waarde nodig voor bit-wise \"and\" (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"integer waarde nodig voor bit-wise \"or\" (kreeg $name)"
+msgstr	"integerwaarde is nodig voor bitgewijze \"or\" (kreeg $name)"
 
 #
 # This message is issued when an inappropriate ^ is attempted.
@@ -3608,7 +3539,8 @@ msgstr	"integer waarde nodig voor bit-wise \"or\" (kreeg $name)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"integer waarde nodig voor bit-wise \"exclusief or\" (kreeg $name)"
+msgstr	"integerwaarde is nodig voor bitgewijze \"exclusive or\" (kreeg "
+	"$name)"
 
 #
 # This progress message is issued when aeib complete successfully.
@@ -3628,13 +3560,13 @@ msgstr	"integratie begin ongedaan gemaakt, wijziging is terug naar de "
 # This progress message is issued when aeifail completes successfully.
 #
 msgid	"integrate fail complete"
-msgstr	"integratie niet geslaagd, teruggestuurd naar ontwikkelaar"
+msgstr	"integratie is mislukt; teruggestuurd naar ontwikkelaar"
 
 #
 # This progress message is issued when aeipass completes successfully.
 #
 msgid	"integrate pass complete"
-msgstr	"integratie geslaagd"
+msgstr	"integratie is geslaagd"
 
 #
 # This error message is issued when aeipass fails.  Errors tend to
@@ -3643,20 +3575,20 @@ msgstr	"integratie geslaagd"
 #       $Number         Number of fatal errors found.
 #
 msgid	"integrate pass fail"
-msgstr	"$number fout${plural $number en} gevonden, deze wijziging blijft "
+msgstr	"$number fout${plural $number en} gevonden; deze wijziging blijft "
 	"de statust '$state' houden"
 
 #
 # This message is issued when integration builds are completed.
 #
 msgid	"integration build complete"
-msgstr	"integratie compilatie klaar ${date %H:%M}"
+msgstr	"integratiecompilatie is voltooid ${date %H:%M}"
 
 #
 # This message is issued when integration builds are commenced.
 #
 msgid	"integration build started"
-msgstr	"integratie compilatie gestart ${date %H:%M}"
+msgstr	"integratiecompilatie is gestart ${date %H:%M}"
 
 #
 # This error message is issued when Aegis terminates, because an
@@ -3666,13 +3598,14 @@ msgstr	"integratie compilatie gestart ${date %H:%M}"
 #       $Signal         The name of the signal which interrupted us.
 #
 msgid	"interrupted by $signal"
-msgstr	"ondebroken door $signal"
+msgstr	"onderbroken door $signal"
 
 #
 # This message is issued when a function is called with incorrect arguments.
 #
 msgid	"invalid function arguments"
-msgstr	"Deze functie aanroep heeft een fout aantal of type argumenten"
+msgstr	"functie-aanroep met een onjuist aantal of onjuiste types van "
+	"argumenten"
 
 #
 # This message is issued when a non-function is called.
@@ -3680,8 +3613,8 @@ msgstr	"Deze functie aanroep heeft een fout aantal of type argumenten"
 #       $Name           The type name of the non-function expression.
 #
 msgid	"invalid function name ($name)"
-msgstr	"een expressie van type $name werd opgegeven terwijl een functie "
-	"naam werd verwacht"
+msgstr	"een expressie van het type $name werd opgegeven terwijl een "
+	"functienaam werd verwacht"
 
 #
 # This error message is issued when aeipass wants to delete the
@@ -3690,7 +3623,7 @@ msgstr	"een expressie van type $name werd opgegeven terwijl een functie "
 # not, so it is an error.
 #
 msgid	"leave baseline"
-msgstr	"verlaat de baseline directory"
+msgstr	"verlaat eerst de baseline-map"
 
 #
 # This error message is issued when aeipass wants to delete the
@@ -3699,7 +3632,7 @@ msgstr	"verlaat de baseline directory"
 # not, so it is an error.
 #
 msgid	"leave dev dir"
-msgstr	"verlaat de ontwikkel-directory"
+msgstr	"verlaat eerst de ontwikkelmap"
 
 #
 # This error message is issued when aeibu wants to delete the
@@ -3708,14 +3641,14 @@ msgstr	"verlaat de ontwikkel-directory"
 # not, so it is an error.
 #
 msgid	"leave int dir"
-msgstr	"verlaat de integratie directory"
+msgstr	"verlaat eerst de integratiemap"
 
 #
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
 msgid	"link baseline to integration directory"
-msgstr	"linken baseline naar de integratie directory"
+msgstr	"linken van baseline naar de integratiemap"
 
 #
 # This error message is issued when a link fails.
@@ -3733,7 +3666,7 @@ msgstr	"link(\"$filename1\", \"$filename2\"): $errno"
 #       $Name_List      A list of possible interpretations.  (Optional)
 #
 msgid	"list $name ambiguous"
-msgstr	"lijst naam \"$name\" is niet specifiek: ($name_list)"
+msgstr	"lijstnaam \"$name\" is niet specifiek: ($name_list)"
 
 #
 # This message is issued when an inappropriate "in" is attempted.
@@ -3741,13 +3674,13 @@ msgstr	"lijst naam \"$name\" is niet specifiek: ($name_list)"
 #       $Name           The type name of the offending operand.
 #
 msgid	"list value required (was given $name)"
-msgstr	"lijst waarde nodig (kreeg $name)"
+msgstr	"lijstwaarde is vereist (kreeg $name)"
 
 #
 # This fatal error message is issued when a lock is not available.
 #
 msgid	"lock not available"
-msgstr	"slot niet beschikbaar"
+msgstr	"vergrendeling is niet beschikbaar"
 
 #
 # This information message is issued when Aegis begins logging to a new
@@ -3756,7 +3689,7 @@ msgstr	"slot niet beschikbaar"
 #       $File_Name      The name of the log file.
 #
 msgid	"logging to $filename"
-msgstr	"schrijf log naar \"$filename\""
+msgstr	"schrijven van log naar \"$filename\""
 
 #
 # This message is issued when a for loop is given a control expression
@@ -3765,7 +3698,7 @@ msgstr	"schrijf log naar \"$filename\""
 #       $Name           The type name of the offending expression.
 #
 msgid	"loop condition must be boolean (not $name)"
-msgstr	"lus conditie moet booleaans zijn (kreeg $name)"
+msgstr	"lusconditie moet booleaans zijn (kreeg $name)"
 
 #
 # This error message is issued when a file lstat fails
@@ -3776,67 +3709,56 @@ msgid	"lstat $filename: $errno"
 msgstr	"lstat $filename: $errno"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent which is not present the the branch, but is
 # present in a deeper ancestor branch.
 #
 # $filename     The name of the offending file.
 #
-#, fuzzy
 msgid	"make $filename transparent, fail, too deep"
 msgstr	"it is not possible to make $filename transparent because it is "
 	"not present in the branch, but is present in a deeper ancestor "
 	"branch"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent which is present the the branch, but is not
 # present in a deeper ancestor branch.
 #
 # $filename     The name of the offending file.
 #
-#, fuzzy
 msgid	"make $filename transparent, fail, too shallow"
 msgstr	"it is not possible to make $filename transparent because it is "
 	"not also present in a deeper ancestor branch"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the aemt command is asked to
 # make a file transparent, and the branch being operated on is the trunk.
 #
 # $filename     The name of the offending file.
 #
-#, fuzzy
 msgid	"make $filename transparent, fail, trunk"
 msgstr	"it is not possible to make $filename transparent because it is "
 	"in the trunk, you probably want to use the aerm command instead"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
-#, fuzzy
 msgid	"make transparent bad state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to make a file transparent with it"
 
 #
-# TRANSLATION REQUIRED
 # This information message is issued by the aemt command when it
 # successfully complete.
 #
 # $number       The number of files (optional).
 #
-#, fuzzy
 msgid	"make transparent complete"
 msgstr	"making $number ${plural $number files file} transparent"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when the aemtu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
@@ -3844,9 +3766,8 @@ msgstr	"making $number ${plural $number files file} transparent"
 #
 #       $File_Name      Name of the file removed from the change.
 #
-#, fuzzy
 msgid	"make transparent undo $filename complete"
-msgstr	"bestand \"$filename\" niet meer in wijziging"
+msgstr	"bestand \"$filename\" zit niet meer in wijziging"
 
 #
 # This informational message is issued when the aede command makes the
@@ -3854,28 +3775,28 @@ msgstr	"bestand \"$filename\" niet meer in wijziging"
 # change anything.
 #
 msgid	"making dev dir read only"
-msgstr	"ontwikkel directory wordt alleen-lezen gemaakt"
+msgstr	"ontwikkelmap wordt alleen-lezen gemaakt"
 
 #
 # This informational message is issued when the aedeu, aerfail or aeifail
 # command make the development directory writable again.
 #
 msgid	"making dev dir writable"
-msgstr	"ontwikkel directory wordt weer beschrijfbaar gemaakt"
+msgstr	"ontwikkelmap wordt weer beschrijfbaar gemaakt"
 
 #
 # This error message is issued when a number which looks like a floating
 # point constant has an incomplete exponent.
 #
 msgid	"malformed exponent"
-msgstr	"fout exponent"
+msgstr	"onjuiste exponent"
 
 #
 # This error message is issued when a number which looks like a hex
 # constant is not complete.
 #
 msgid	"malformed hex constant"
-msgstr	"foute hex constante"
+msgstr	"onjuiste hex-constante"
 
 #
 # This error message is issued when an attempt is made to assign into a
@@ -3885,11 +3806,11 @@ msgstr	"foute hex constante"
 #       $Name2          The type name of the second operand.
 #
 msgid	"may not assign to a list member ($name1[$name2])"
-msgstr	"kan niet toekennen aan een lijst-onderdeel ($name1[$name2])"
+msgstr	"kan niet toekennen aan een lijstitem ($name1[$name2])"
 
 #
 # This error message is issued when the user attempts to use the aerm
-# command to remove the project config file.  There may be other files
+# command to remove the project configuration file.  There may be other files
 # in the future, hence the variable.
 #
 #       $File_Name      The name of the offending file.
@@ -3899,7 +3820,7 @@ msgstr	"bestand \"$filename\" kan niet worden verwijderd"
 
 #
 # This error message is issued when the user attempts to use the aent
-# command to create the project config file as a test.  There may be
+# command to create the project configuration file as a test.  There may be
 # other files in the future, hence the variable.
 #
 #       $File_Name      The name of the offending file.
@@ -3922,8 +3843,8 @@ msgstr	"kan $name niet gebruiken op de achtergrond"
 #                       (Optional)
 #
 msgid	"merge complete"
-msgstr	"samenvoegen $number bestand${plural $number en} gereed, een "
-	"nieuwe compilatie met 'aegis -Build' is vereist"
+msgstr	"samenvoegen van $number bestand${plural $number en} is gereed; "
+	"een nieuwe compilatie met 'aegis -Build' is vereist"
 
 #
 # This error message is issued when there is a known but syntactically
@@ -3932,7 +3853,7 @@ msgstr	"samenvoegen $number bestand${plural $number en} gereed, een "
 #       $Name           The offending command line argument.
 #
 msgid	"misplaced \"$name\" option"
-msgstr	"misplaatste \"$name\" optie op de opdrachtregel"
+msgstr	"misplaatste optie \"$name\" op de opdrachtregel"
 
 #
 # This error message is issued when there is an extra string on the
@@ -4004,20 +3925,18 @@ msgstr	"modulo door nul"
 #       $File_Name2     The name of the destination file.
 #
 msgid	"move $filename1 to $filename2 complete"
-msgstr	"bestand \"$filename1\" hernoemd naar \"$filename2\""
+msgstr	"bestand \"$filename1\" is hernoemd naar \"$filename2\""
 
 #
-# TRANSLATION REQUIRED
-# This progress message is issued when the aemvu command completes
+# This progress message is issued when the aemtu command completes
 # successfully.  It details files which have been removed from the
 # change.  Please note: this is NOT the same as files added to the
 # change by aerm, which are to be removed BY the change.
 #
 #       $File_Name      Name of the file removed from the change.
 #
-#, fuzzy
 msgid	"move file undo $filename complete"
-msgstr	"bestand \"$filename\" niet meer in wijziging"
+msgstr	"bestand \"$filename\" zit niet meer in wijziging"
 
 #
 # This text is used when aenc -edit creates a template attributes file,
@@ -4029,7 +3948,7 @@ msgstr	"bestand \"$filename\" niet meer in wijziging"
 msgid	"nc dflt hint"
 msgstr	" \n"
 	"Hint: alles verwijderen vanaf het \"cause\" veld zal alle\n"
-	"standaard waarden goed zetten voor de gekozen reden."
+	"standaardwaarden goed zetten voor de gekozen reden."
 
 #
 # This progress message is issued when aena completes successfully.
@@ -4037,37 +3956,37 @@ msgstr	" \n"
 #       $Name           The user name of the new administrator.
 #
 msgid	"new administrator $name complete"
-msgstr	"gebruiker \"$name\" aangemeld als administrateur"
+msgstr	"gebruiker \"$name\" is aangemeld als administrator"
 
 #
 # This progress message is issued when aenrls completes successfully.
 #
 msgid	"new alias $name complete"
-msgstr	"nieuwe alias \"$name\" aangemaakt"
+msgstr	"nieuwe alias \"$name\" is aangemaakt"
 
 #
 # This progress message is issued when aenbr completes successfully.
 #
 msgid	"new branch complete"
-msgstr	"nieuwe tak gereed"
+msgstr	"nieuwe tak is gereed"
 
 #
 # This progress message is issued when aenbru completes successfully.
 #
 msgid	"new branch undo complete"
-msgstr	"nieuwe tak weer verwijderd"
+msgstr	"nieuwe tak is weer verwijderd"
 
 #
 # This progress message is issued when aenc completes successfully.
 #
 msgid	"new change complete"
-msgstr	"nieuwe wijziging gemaakt"
+msgstr	"nieuwe wijziging is gemaakt"
 
 #
 # This progress message is issued when aencu completes successfully.
 #
 msgid	"new change undo complete"
-msgstr	"nieuwe wijziging weer verwijderd"
+msgstr	"nieuwe wijziging is weer verwijderd"
 
 #
 # This progress message is issued when aend completes successfully.
@@ -4075,13 +3994,13 @@ msgstr	"nieuwe wijziging weer verwijderd"
 #       $Name           The user name of the new developer.
 #
 msgid	"new developer $name complete"
-msgstr	"Gebruiker \"$name\" aangemeld als ontwikkelaar"
+msgstr	"gebruiker \"$name\" is aangemeld als ontwikkelaar"
 
 #
 # This progress message is issued when aenf completes successfully
 #
 msgid	"new file $filename completed"
-msgstr	"bestand \"$filename\" toegevoegd"
+msgstr	"bestand \"$filename\" is toegevoegd"
 
 #
 # This fatal error message is issued when the aenf command runs a
@@ -4091,7 +4010,7 @@ msgstr	"bestand \"$filename\" toegevoegd"
 #       $File_Name      The name of the offending file.
 #
 msgid	"new file $filename not created"
-msgstr	"het bestand \"$filename\" werd niet gemaakt"
+msgstr	"bestand \"$filename\" werd niet aangemaakt"
 
 #
 # This progress message is issued when aenfu completes successfully.
@@ -4099,7 +4018,7 @@ msgstr	"het bestand \"$filename\" werd niet gemaakt"
 #       $File_Name      The name of a removed file.
 #
 msgid	"new file undo $filename complete"
-msgstr	"nieuw bestand \"$filename\" verwijderd"
+msgstr	"nieuw bestand \"$filename\" is verwijderd"
 
 #
 # This error message is issued when an aenfu command fails.  Errors are
@@ -4111,7 +4030,7 @@ msgstr	"nieuw bestand \"$filename\" verwijderd"
 #                       (Optional)
 #
 msgid	"new file undo fail"
-msgstr	"$number onoverkomelijke fout${plural $number en} gevonden, geen "
+msgstr	"$number onoverkomelijke fout${plural $number en} gevonden; geen "
 	"bestanden uit de wijziging verwijderd"
 
 #
@@ -4120,19 +4039,19 @@ msgstr	"$number onoverkomelijke fout${plural $number en} gevonden, geen "
 #       $Name           The user name of the new integrator.
 #
 msgid	"new integrator $name complete"
-msgstr	"gebruiker \"$name\" aangemeld als integrator"
+msgstr	"gebruiker \"$name\" is aangemeld als integrator"
 
 #
 # This progress message is issued when aenpr completes successfully.
 #
 msgid	"new project complete"
-msgstr	"nieuw project aangemaakt"
+msgstr	"nieuw project is aangemaakt"
 
 #
 # This progress message is issued when aenrls completes successfully.
 #
 msgid	"new release complete"
-msgstr	"nieuwe vrijgave gereed"
+msgstr	"nieuwe uitgave is gereed"
 
 #
 # This progress message is issued when aenrv completes successfully.
@@ -4140,7 +4059,7 @@ msgstr	"nieuwe vrijgave gereed"
 #       $Name           The user name of the new reviewer.
 #
 msgid	"new reviewer $name complete"
-msgstr	"gebruiker \"$name\" aangemeld als reviewer"
+msgstr	"gebruiker \"$name\" is aangemeld als reviewer"
 
 #
 # This progress message is issued when aent completes successfully.
@@ -4158,7 +4077,7 @@ msgstr	"bestand \"$filename\" is een nieuwe test"
 #                       (Optional)
 #
 msgid	"new test failed"
-msgstr	"$number onoverkomelijke fout${plural $number en} gevonden, geen "
+msgstr	"$number onoverkomelijke fout${plural $number en} gevonden; geen "
 	"nieuwe testen aan de wijziging toegevoegd"
 
 #
@@ -4179,7 +4098,7 @@ msgstr	"bestand \"$filename\" is geen nieuwe test meer"
 #                       (Optional)
 #
 msgid	"new test undo fail"
-msgstr	"$number onoverkomelijke fout${plural $number en}gevonden, geen "
+msgstr	"$number onoverkomelijke fout${plural $number en}gevonden; geen "
 	"testen uit de wijziging verwijderd"
 
 #
@@ -4200,7 +4119,8 @@ msgstr	"het bestand \"$filename\" kan niet op zichzelf gekopieerd worden"
 #       $Guess          The closest match found for the name.
 #
 msgid	"no \"$name\", guessing \"$guess\""
-msgstr	"de naam \"$name\" is niet gedefineerd, gok op \"$guess\" "
+msgstr	"de naam \"$name\" is niet gedefineerd; \"$guess\" wordt "
+	"aangenomen"
 
 #
 # This error message is issued when the named file cannot be found in a
@@ -4210,7 +4130,7 @@ msgstr	"de naam \"$name\" is niet gedefineerd, gok op \"$guess\" "
 #       $File_Name      The offending file name.
 #
 msgid	"no $filename"
-msgstr	"bestand \"$filename\" niet bekend"
+msgstr	"bestand \"$filename\" is onbekend"
 
 #
 # This error message is issued when an aed is performed on a change
@@ -4220,7 +4140,7 @@ msgstr	"bestand \"$filename\" niet bekend"
 #       $File_Name      The name of the offending file.
 #
 msgid	"no $filename in baseline"
-msgstr	"bestand \"$filename\" niet meer in de baseline"
+msgstr	"bestand \"$filename\" zit niet meer in de baseline"
 
 #
 # This error message is issued when the named file cannot be found in a
@@ -4232,7 +4152,7 @@ msgstr	"bestand \"$filename\" niet meer in de baseline"
 #                       the user may have meant.
 #
 msgid	"no $filename, closest is $guess"
-msgstr	"bestand \"$filename\" is onbekend, bedoelt u \"$guess\" ?"
+msgstr	"bestand \"$filename\" is onbekend; meest gelijken is \"$guess\""
 
 #
 # This error message is issued when ael is given a list name it does not
@@ -4241,7 +4161,7 @@ msgstr	"bestand \"$filename\" is onbekend, bedoelt u \"$guess\" ?"
 #       $Name           The offending list name.
 #
 msgid	"no $name list"
-msgstr	"lijst naam \"$name\" onbekend"
+msgstr	"lijstnaam \"$name\" is onbekend"
 
 #
 # This error message is issued when Aegis is given a project name which
@@ -4250,7 +4170,7 @@ msgstr	"lijst naam \"$name\" onbekend"
 #       $Name           The offending project name.
 #
 msgid	"no $name project"
-msgstr	"project \"$name\" onbekend"
+msgstr	"project \"$name\" is onbekend"
 
 #
 # This error message is issued when Aegis is given a project name which
@@ -4260,32 +4180,28 @@ msgstr	"project \"$name\" onbekend"
 #       $Guess          The closest matching project name.
 #
 msgid	"no $name project, closest is $guess"
-msgstr	"project \"$name\" onbekend, meest gelijkend is het project "
+msgstr	"project \"$name\" is onbekend; meest gelijkend is het project "
 	"\"$guess\" "
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued if no action was specified on the aesvt
 # command line.  Exactly one is required.
 #
-#, fuzzy
 msgid	"no action specified"
-msgstr	"no action specified"
+msgstr	"geen actie opgegeven"
 
 #
 # This fatal error message is issued when an attempt is made to aechown
 # a branch.
 #
 msgid	"no branch chown"
-msgstr	"deze wijziging is een tak; het is niet mogelijk het eigendom van "
-	"een tak te veranderen"
+msgstr	"deze wijziging is een tak; "
+	"het is niet mogelijk het eigendom van een tak te veranderen"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued when aeb is invoked for a change in
 # a project which is configured to not require builds.
 #
-#, fuzzy
 msgid	"no build required"
 msgstr	"no build is required for changes to this project"
 
@@ -4294,15 +4210,15 @@ msgstr	"no build is required for changes to this project"
 # change number is not given one.
 #
 msgid	"no change number"
-msgstr	"Geef expliciet het wijzigings nummer op voor dit commando"
+msgstr	"Geef expliciet het wijzigingsnummer op voor dit commando"
 
 #
 # This fatal error message is issued when a user attempts to perform a
 # cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
-msgstr	"Een tak-transplantatie kan niet gebeuren op een  wijziging met "
-	"de status '$state' "
+msgstr	"Een tak-transplantatie kan niet gebeuren op een wijziging met de "
+	"status '$state' "
 
 #
 # This error message is issued when an unknown delta name is requested.
@@ -4310,7 +4226,7 @@ msgstr	"Een tak-transplantatie kan niet gebeuren op een  wijziging met "
 #       $Name           The offending delta name.
 #
 msgid	"no delta $name"
-msgstr	"delta naam \"$name\" onbekend"
+msgstr	"deltanaam \"$name\" is onbekend"
 
 #
 # This error message is issued when an unknown delta name is requested.
@@ -4319,7 +4235,7 @@ msgstr	"delta naam \"$name\" onbekend"
 #       $Guess          The closest matching known delta name.
 #
 msgid	"no delta $name, closest is $guess"
-msgstr	"delta name \"$name\" onbekend, meest gelijkend is \"$guess\""
+msgstr	"deltanaam \"$name\" is onbekend; meest gelijkend is \"$guess\""
 
 #
 # This error message is issued when an unknown delta number is given.
@@ -4327,14 +4243,14 @@ msgstr	"delta name \"$name\" onbekend, meest gelijkend is \"$guess\""
 #       $Number         The offending delta number.
 #
 msgid	"no delta $number"
-msgstr	"delta $number onbekend"
+msgstr	"delta $number is onbekend"
 
 #
 # This error message is issued when a delta name should have been given
 # on the command line, and was not.
 #
 msgid	"no delta name"
-msgstr	"geen delta naam opgegeven"
+msgstr	"geen deltanaam opgegeven"
 
 #
 # This error message is issued when a user has requested that a delta
@@ -4343,8 +4259,8 @@ msgstr	"geen delta naam opgegeven"
 # name to.
 #
 msgid	"no delta yet"
-msgstr	"er zijn nog geen integraties gereed, het is nog niet mogelijk "
-	"een delta naam toe te kennen"
+msgstr	"er zijn nog geen integraties gereed; "
+	"het is nog niet mogelijk een deltanaam toe te kennen"
 
 #
 # This error message is issued when a request is made which requires the
@@ -4352,15 +4268,12 @@ msgstr	"er zijn nog geen integraties gereed, het is nog niet mogelijk "
 # has no development directory.
 #
 msgid	"no dev dir"
-msgstr	"deze wijziging heeft de status '$state', er is geen ontwikkel "
-	"directory"
+msgstr	"deze wijziging heeft de status '$state'; er is geen ontwikkelmap"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued when the aed command is run for a
 # change which is in a project configured not to use aed.
 #
-#, fuzzy
 msgid	"no diff required"
 msgstr	"no \"aegis -diff\" command is required for this change, the "
 	"project has been configured to omit this requirement"
@@ -4373,7 +4286,7 @@ msgstr	"no \"aegis -diff\" command is required for this change, the "
 #       $Name           The name of the -Output option.
 #
 msgid	"no dir with $name"
-msgstr	"directories kunnen niet samen met de $name optie gebruikt worden"
+msgstr	"mappen kunnen niet samen met de optie $name gebruikt worden"
 
 #
 # This error message is issued when a command which requires file names
@@ -4389,15 +4302,15 @@ msgstr	"geen bestanden opgegeven"
 #       $Name           The name of the conflicting option.
 #
 msgid	"no file with $name"
-msgstr	"bestanden kunnen niet samen met de $name optie opgegeven worden"
+msgstr	"bestanden kunnen niet samen met de optie $name opgegeven worden"
 
 #
 # This error message is issued when an otherwise valid command is
 # used for a change which does not yet have any files attached to it.
 #
 msgid	"no files"
-msgstr	"Deze wijziging heeft geen bestanden gekoppeld, voeg een bestand "
-	"toe om verder te kunnen gaan"
+msgstr	"Deze wijziging heeft geen bestanden gekoppeld; "
+	"voeg een bestand toe om verder te kunnen gaan"
 
 #
 # This error message is issued when an aecp command fails.  Errors are
@@ -4409,7 +4322,7 @@ msgstr	"Deze wijziging heeft geen bestanden gekoppeld, voeg een bestand "
 #                       (Optional)
 #
 msgid	"no files copied"
-msgstr	"$number onoverkomelijke fout${plural $number en} gevonden, geen "
+msgstr	"$number onoverkomelijke fout${plural $number en} gevonden; geen "
 	"bestanden gekopieerd"
 
 #
@@ -4435,24 +4348,20 @@ msgstr  "found $number fatal error${plural $number s}, no files diffed"
 #                       (Optional)
 #
 msgid	"no files uncopied"
-msgstr	"$number onoverkomelijke fout${plural $number en} geconstateerd, "
+msgstr	"$number onoverkomelijke fout${plural $number en} geconstateerd; "
 	"geen bestanden uit de wijziging verwijderd"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when aesvt finds no history
 # file on the command line.
 #
-#, fuzzy
 msgid	"no history file name specified"
 msgstr	"no history file name specified"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when aeimport finds no history
 # files in the directory tree specified on the command line.
 #
-#, fuzzy
 msgid	"no history files found"
 msgstr	"no history files found below the directory specified"
 
@@ -4463,14 +4372,12 @@ msgstr	"no history files found below the directory specified"
 #       $Name           The offending info name.
 #
 msgid	"no info $name"
-msgstr	"versie informatie naam \"$name\" onbekend"
+msgstr	"versie-informatienaam \"$name\" is onbekend"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued if the assvt -checkin command is not
 # given an input file name on the command line.
 #
-#, fuzzy
 msgid	"no input file"
 msgstr	"no input file name specified"
 
@@ -4480,8 +4387,7 @@ msgstr	"no input file name specified"
 # has no integration directory.
 #
 msgid	"no int dir"
-msgstr	"deze wijziging heeft de status '$state', er is geen integratie "
-	"directory"
+msgstr	"deze wijziging heeft de status '$state'; er is geen integratiemap"
 
 #
 # This error message is issued when an aed -merge command is issued for a
@@ -4489,14 +4395,14 @@ msgstr	"deze wijziging heeft de status '$state', er is geen integratie "
 # to fix things, and so a merge in this state is illegal.
 #
 msgid	"no int merge"
-msgstr	"een wijziging met de status 'being integrated' kan nietworden "
+msgstr	"een wijziging met de status 'being integrated' kan niet worden "
 	"samengevoegd"
 
 #
 # This error message is issued when ael is not given a list name.
 #
 msgid	"no list"
-msgstr	"geen lijst naam opgegeven"
+msgstr	"geen lijstnaam opgegeven"
 
 #
 # This error message is issued when a request is made which requires the
@@ -4504,15 +4410,14 @@ msgstr	"geen lijst naam opgegeven"
 # has no log file.
 #
 msgid	"no log file"
-msgstr	"deze wijziging heeft de status '$state', er is geen log bestand"
+msgstr	"deze wijziging heeft de status '$state', er is geen logbestand"
 
 #
 # This error message is issued when the user gives a merge option to
 # aed, as well as the -anticipate option.
 #
 msgid	"no merge anticipate"
-msgstr	"een samenvoeg optie kan niet samen gebruikt worden met -"
-	"ANticipate"
+msgstr	"een samenvoegoptie kan niet samen gebruikt worden met -ANticipate"
 
 #
 # This error message is issued when aenf command fails.  Errors are
@@ -4524,15 +4429,13 @@ msgstr	"een samenvoeg optie kan niet samen gebruikt worden met -"
 #                       (Optional)
 #
 msgid	"no new files"
-msgstr	"$number fatale fout${plural $number en} geconstateerd, geen "
+msgstr	"$number fatale fout${plural $number en} geconstateerd; geen "
 	"nieuwe bestanden toegevoegd"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued if output file name was specified on the
 # aesvt -checkout command line.
 #
-#, fuzzy
 msgid	"no output file"
 msgstr	"no output file name specified"
 
@@ -4541,7 +4444,7 @@ msgstr	"no output file name specified"
 # project name is not given one.
 #
 msgid	"no project name"
-msgstr	"Geef expliciet de project naam op bij dit commando"
+msgstr	"Geef expliciet de projectnaam op bij dit commando"
 
 #
 # This error message is issued when an unknown report name is requested.
@@ -4549,14 +4452,14 @@ msgstr	"Geef expliciet de project naam op bij dit commando"
 #       $Name           The offending report name.
 #
 msgid	"no report $name"
-msgstr	"rapport naam \"$name\" is onbekend"
+msgstr	"rapportnaam \"$name\" is onbekend"
 
 #
 # This error message is issued when aer is not given a report name on
 # the command line.
 #
 msgid	"no report name"
-msgstr	"geen rapport naam opgegeven"
+msgstr	"geen rapportnaam opgegeven"
 
 #
 # This error message is issued when aet completes unsuccessfully because
@@ -4580,7 +4483,7 @@ msgstr	"geen grootte opgegeven"
 # change, and the two files don't have any suitable files in common.
 #
 msgid	"no suitable files in common"
-msgstr	"geen schikte bestanden gemeen"
+msgstr	"geen geschikte bestanden gemeen"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -4605,8 +4508,8 @@ msgstr	"geen gebruikers opgegeven"
 #       $Name3          The name of a command line option.
 #
 msgid	"not $name1 and $name2 and $name3 together"
-msgstr	"de $name1 en $name2 en $name3 opties sluiten elkaar uit, er kan "
-	"er maar een opgeven worden"
+msgstr	"de opties $name1, $name2 en $name3 sluiten elkaar uit, er kan er "
+	"maar één opgeven worden"
 
 #
 # This error message is issued when two mutually exclusive options are
@@ -4616,8 +4519,8 @@ msgstr	"de $name1 en $name2 en $name3 opties sluiten elkaar uit, er kan "
 #       $Name2          The name of a command line option.
 #
 msgid	"not $name1 and $name2 together"
-msgstr	"de $name1 en $name2 opties sluiten elkaar uit, er kan er maar "
-	"een opgegeven worden "
+msgstr	"de opties $name1 en $name2 sluiten elkaar uit, er kan er maar "
+	"één opgegeven worden "
 
 #
 # This fatal error message is issued when a change is used in a context
@@ -4652,7 +4555,6 @@ msgstr	"gebruiker \"$user\" is niet aangemeld als administrator"
 # This error message is issued when a command which requires an even
 # number of file names is not given one.
 #
-#, fuzzy
 msgid	"not an even number of args"
 msgstr	"you must give an even number of files to this command"
 
@@ -4669,8 +4571,8 @@ msgstr	"gebruiker \"$user\" is niet aangemeld als integrator"
 # is not the change's developer.
 #
 msgid	"not developer"
-msgstr	"gebruiker \"$user\" is niet de ontwikkelaar, alleen gebruiker "
-	"\"$developer\" kan aan deze wijziging werken"
+msgstr	"gebruiker \"$user\" is niet de ontwikkelaar; "
+	"alleen gebruiker \"$developer\" kan aan deze wijziging werken"
 
 #
 # This error message is issued when a request is made to delete the last
@@ -4686,8 +4588,8 @@ msgstr	"er moet op zijn minst altijd een administrator zijn"
 # is not the change's integrator.
 #
 msgid	"not integrator"
-msgstr	"gebruiker \"$user\" is niet de integrator, alleen \"$integrator"
-	"\" kan aan deze wijziging werken"
+msgstr	"gebruiker \"$user\" is niet de integrator; "
+	"alleen \"$integrator\" kan aan deze wijziging werken"
 
 #
 # This error message is issued when a review pass or review fail or review
@@ -4696,8 +4598,8 @@ msgstr	"gebruiker \"$user\" is niet de integrator, alleen \"$integrator"
 # project attribute "develop_end_action" is set to "goto_awaiting_review".
 #
 msgid	"not reviewer"
-msgstr	"gebruiker \"$user\" is niet de juiste reviewer, alleen gebruiker "
-	"\"$reviewer\" kan aan deze wijziging werken"
+msgstr	"gebruiker \"$user\" is niet de juiste reviewer; "
+	"alleen gebruiker \"$reviewer\" kan aan deze wijziging werken"
 
 #
 # This error message is issued when a substitution function is called
@@ -4715,13 +4617,11 @@ msgid	"open $filename: $errno"
 msgstr	"open \"$filename\": $errno"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a file open fails because there was
 # no curl library available when ./configure was run.
 #
 #       $File_Name      The name of the offending file.
 #
-#, fuzzy
 msgid	"open $filename: no curl library"
 msgstr	"unable to open \"$filename\" because there was no -lcurl library "
 	"available when Aegis was built.  The curl library is used to "
@@ -4745,7 +4645,7 @@ msgstr	"deze wijziging heeft de status '$state' "
 #       $Number         Number of changes outstanding.  (Optional)
 #
 msgid	"outstanding changes"
-msgstr	"er ${plural $number zijn is} $number nog openstaande ${plural "
+msgstr	"er ${plural $number zijn is} nog $number openstaande ${plural "
 	"$number wijziging wijzigingen}; dit commando kan alleen gebruikt "
 	"worden als er geen wijzigingen meer openstaan"
 
@@ -4755,7 +4655,7 @@ msgstr	"er ${plural $number zijn is} $number nog openstaande ${plural "
 #       $Number         The offending page length.
 #
 msgid	"page length $number out of range"
-msgstr	"een pagina lengte van $number is buiten bereik"
+msgstr	"paginalengte $number valt buiten bereik"
 
 #
 # This error message is issued when the argument to -Page_Width is absurd.
@@ -4763,27 +4663,25 @@ msgstr	"een pagina lengte van $number is buiten bereik"
 #       $Number         The offending page width.
 #
 msgid	"page width $number out of range"
-msgstr	"pagina breedte is buiten bereik"
+msgstr	"paginabreedte $number valt buiten bereik"
 
 #
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"parse error"
-msgstr	"niet in staat te begrijpen wat bedoeld werd"
+msgstr	"ontledingsfout"
 
 #
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"parse error; also virtual memory exceeded"
-msgstr	"niet in staat te begrijpen wat bedoeld werd, het was te "
-	"ingewikkeld om in het geheugen te passen"
+msgstr	"ontledingsfout, en onvoldoende geheugen beschikbaar"
 
 #
 # This error message is issued when bison finds an error at parse time.
 #
 msgid	"parse error; also virtual memory exhausted"
-msgstr	"niet in staat te begrijpen wat bedoeld werd, het was te "
-	"ingewikkeld om in het geheugen te passen"
+msgstr	"ontledingsfout, en onvoldoende geheugen beschikbaar"
 
 #
 # This error message is issued when bison finds an error at parse time.
@@ -4796,13 +4694,13 @@ msgstr	"Niet in staat te begrijpen wat bedoeld werd, te ingewikkeld, "
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
-msgstr	"gedeeltelijke compilatie klaar ${date %H:%M}"
+msgstr	"gedeeltelijke compilatie is voltooid ${date %H:%M}"
 
 #
 # This message is issued when partial development builds are commenced.
 #
 msgid	"partial build started"
-msgstr	"gedeeltelijke compilatie gestart ${date %H:%M}"
+msgstr	"gedeeltelijke compilatie is gestart ${date %H:%M}"
 
 #
 # This progress message is issued when aet completes, both successfully
@@ -4830,23 +4728,19 @@ msgid	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 
 #
-# TRANSLATION REQUIRED
 # This information message is issued when aenpr automatically allocates
 # the project home directory.
 #
 #       $File_Name      The absolute path of the project home directory.
 #
-#, fuzzy
 msgid	"proj dir $filename"
-msgstr	"project directory \"$filename\""
+msgstr	"projectmap \"$filename\""
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a request is made to run regression
 # tests, but there are no files which are candidates of the options
 # specified, or the project may have no tests at all.
 #
-#, fuzzy
 msgid	"proj has no tests"
 msgstr	"this project requires relevant tests before this command may be "
 	"used"
@@ -4874,7 +4768,7 @@ msgstr	"project $message"
 #       $Name           The offending project name.
 #
 msgid	"project $name exists"
-msgstr	"project naam \"$name\" is al in gebruik"
+msgstr	"projectnaam \"$name\" is al in gebruik"
 
 #
 # This error message is issued when aenpr is given a project name which
@@ -4886,7 +4780,7 @@ msgstr	"project naam \"$name\" is al in gebruik"
 #                       (Optional)
 #
 msgid	"project $name too long"
-msgstr	"project naam \"$name\" te lang ($number karakters)"
+msgstr	"projectnaam \"$name\" is te lang ($number tekens)"
 
 #
 # This error message is issued when a user attempts to create a new
@@ -4895,7 +4789,7 @@ msgstr	"project naam \"$name\" te lang ($number karakters)"
 #       $Name           The offending project alias.
 #
 msgid	"project alias $name exists"
-msgstr	"project alias \"$name\" reeds in gebruik"
+msgstr	"projectalias \"$name\" is reeds in gebruik"
 
 #
 # This error message is issued when a user attempts to remove a
@@ -4904,13 +4798,13 @@ msgstr	"project alias \"$name\" reeds in gebruik"
 #       $Name           The offending project alias.
 #
 msgid	"project alias $name exists not"
-msgstr	"de naam \"$name\" is geen project alias"
+msgstr	"de naam \"$name\" is geen projectalias"
 
 #
 # This progress message is issued when aepa completes successfully.
 #
 msgid	"project attributes complete"
-msgstr	"attributen gewijzigd"
+msgstr	"attributen zijn gewijzigd"
 
 #
 # This error message is issued when a file read fails.
@@ -4919,7 +4813,7 @@ msgstr	"attributen gewijzigd"
 #       $File_Name      The name of the offending file.
 #
 msgid	"read $filename: $errno"
-msgstr	"read \"$filename\": $errno"
+msgstr	"lezen van \"$filename\": $errno"
 
 #
 # This error message is issued when a file read fails due to the file
@@ -4928,16 +4822,14 @@ msgstr	"read \"$filename\": $errno"
 #       $File_Name      The name of the offending file.
 #
 msgid	"read $filename: format error"
-msgstr	"read \"$filename\": formaat fout"
+msgstr	"lezen van \"$filename\": onjuiste bestandsindeling"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued by aeimport when it starts to scan
 # the directory tree specified on the command line.  It is looking for
 # history files, and reading each one to extract the history information
 # it will use to reconstruct the changes.
 #
-#, fuzzy
 msgid	"read history files"
 msgstr	"reading history files to learn when each file was changed and by "
 	"whom..."
@@ -4951,11 +4843,9 @@ msgid	"readlink $filename: $errno"
 msgstr	"readlink \"$filename\": $errno"
 
 #
-# TRANSLATION REQUIRED
 # This progress message is issued when aeimport starts to checkout the
 # head revision of each history file to form the baseline of the project.
 #
-#, fuzzy
 msgid	"reconstruct baseline"
 msgstr	"checking out head revisions of imported files to reconstruct the "
 	"project baseline..."
@@ -4963,14 +4853,14 @@ msgstr	"checking out head revisions of imported files to reconstruct the "
 #
 # This verbose message is issued by the aecd command when a change is
 # in the "awaiting review" state.  By reminding reviewers to use aerb,
-# we make ste statistics more meaningful, and also block other reviewes
+# we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
 msgid	"remember to use the aerb command"
-msgstr	"Deze wijziging heeft de status 'awaiting review'.  Als u dedze "
-	"wijziging gaat review-en, gebruik dan het commando Aegis -review-"
-	"begin, om te voorkomen dat andere ontwikkelaars dubbel review "
-	"werk gaan doen"
+msgstr	"Deze wijziging heeft de status 'awaiting review'.  Als u deze "
+	"wijziging gaat reviewen, gebruik dan het commando Aegis "
+	"-review-begin, om te voorkomen dat andere ontwikkelaars dubbel "
+	"reviewwerk gaan doen."
 
 #
 # This progress message is issued when aera completes successfully.
@@ -4978,7 +4868,7 @@ msgstr	"Deze wijziging heeft de status 'awaiting review'.  Als u dedze "
 #       $Name           The name of the removed user.
 #
 msgid	"remove administrator $name complete"
-msgstr	"gebruiker \"$name\" afgemeld als administrator"
+msgstr	"gebruiker \"$name\" is afgemeld als administrator"
 
 #
 # This progress message is issued when aerd completes successfully.
@@ -4986,14 +4876,14 @@ msgstr	"gebruiker \"$name\" afgemeld als administrator"
 #       $Name           The name of the removed user.
 #
 msgid	"remove developer $name complete"
-msgstr	"gebruiker \"$name\" afgemeld als ontwikkelaar"
+msgstr	"gebruiker \"$name\" is afgemeld als ontwikkelaar"
 
 #
 # This progress message is issued when removing the development
 # directory during an aedbu command.
 #
 msgid	"remove development directory"
-msgstr	"ontwikkel directory verwijderen..."
+msgstr	"verwijderen van ontwikkelmap"
 
 #
 # This progress message is issued when aerm completes successfully.
@@ -5001,7 +4891,7 @@ msgstr	"ontwikkel directory verwijderen..."
 #       $File_Name      The name of the file to be removed.
 #
 msgid	"remove file $filename complete"
-msgstr	"bestand \"$filename\" verwijderd uit deze wijziging"
+msgstr	"bestand \"$filename\" is verwijderd uit deze wijziging"
 
 #
 # This error message is issued when an aerm command fails.  Errors are
@@ -5013,8 +4903,8 @@ msgstr	"bestand \"$filename\" verwijderd uit deze wijziging"
 #                       (Optional)
 #
 msgid	"remove file fail"
-msgstr	"$number fatale fout${plural $number en} gevonden, geen bestanden "
-	"uit deze wijziging verwijderd"
+msgstr	"$number fatale fout${plural $number en} gevonden; "
+	"er zijn geen bestanden uit deze wijziging verwijderd"
 
 #
 # This progress message is issued when aerm completes successfully.
@@ -5022,7 +4912,8 @@ msgstr	"$number fatale fout${plural $number en} gevonden, geen bestanden "
 #       $File_Name      The name of the file to be removed.
 #
 msgid	"remove file undo $filename complete"
-msgstr	"bestand \"$filename\" niet langer verwijderd door deze wijziging"
+msgstr	"bestand \"$filename\" is niet langer verwijderd door deze "
+	"wijziging"
 
 #
 # This error message is issued when an aermu command fails.  Errors are
@@ -5034,15 +4925,15 @@ msgstr	"bestand \"$filename\" niet langer verwijderd door deze wijziging"
 #                       (Optional)
 #
 msgid	"remove file undo fail"
-msgstr	"$number fatale fout${plural $number en} gevonden, bestanden "
-	"verwijderen niet ongedaan gemaakt"
+msgstr	"$number fatale fout${plural $number en} gevonden; "
+	"\"bestanden verwijderen\" is niet ongedaan gemaakt"
 
 #
 # This progress message is issued when removing the integration
 # directory during an aeibu command.
 #
 msgid	"remove integration directory"
-msgstr	"verwijderen integratie directory"
+msgstr	"verwijderen van integratiemap"
 
 #
 # This progress message is issued when aeri completes successfully.
@@ -5050,33 +4941,33 @@ msgstr	"verwijderen integratie directory"
 #       $Name           The name of the removed user.
 #
 msgid	"remove integrator $name complete"
-msgstr	"gebruiker \"$name\" afgemeld als integrator"
+msgstr	"gebruiker \"$name\" is afgemeld als integrator"
 
 #
 # This progress message is issued when removing the old development
 # directory during an aechown command.
 #
 msgid	"remove old development directory"
-msgstr	"verwijderen oude ontwikkel directory"
+msgstr	"verwijderen van oude ontwikkelmap"
 
 #
 # This progress message is issued when aerpa completes successfully.
 #
 msgid	"remove project alias $name complete"
-msgstr	"alias \"$name\" verwijderd"
+msgstr	"alias \"$name\" is verwijderd"
 
 #
 # This progress message is issued when aermpr completes successfully.
 #
 msgid	"remove project complete"
-msgstr	"verwijderd"
+msgstr	"project is verwijderd"
 
 #
 # This progress message is issued to inform the user that the project's
 # directory is being deleted.
 #
 msgid	"remove project directory"
-msgstr	"verwijderen project directory"
+msgstr	"verwijderen van projectmap"
 
 #
 # This progress message is issued when aerrv completes successfully.
@@ -5084,14 +4975,12 @@ msgstr	"verwijderen project directory"
 #       $Name           The user name of the removed reviewer.
 #
 msgid	"remove reviewer $name complete"
-msgstr	"gebruiker \"$name\" afgemeld als reviewer"
+msgstr	"gebruiker \"$name\" is afgemeld als reviewer"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when Aegis removes the symbolic links
 # from the development directory which point to the baseline.
 #
-#, fuzzy
 msgid	"removing symbolic links to baseline"
 msgstr	"de-merging files from all baselines from working directory "
 	"according to directory style"
@@ -5103,7 +4992,7 @@ msgstr	"de-merging files from all baselines from working directory "
 #       $File_Name2     The name of the destination file or directory.
 #
 msgid	"rename(\"$filename1\", \"$filename2\"): $errno"
-msgstr	"hernoemen(\"$filename1\", \"$filename2\"): $errno"
+msgstr	"rename(\"$filename1\", \"$filename2\"): $errno"
 
 #
 # This error message is issued when an ambiguous report name is specified.
@@ -5113,7 +5002,7 @@ msgstr	"hernoemen(\"$filename1\", \"$filename2\"): $errno"
 #                       (Optional)
 #
 msgid	"report $name ambig"
-msgstr	"rapport naam \"$name\" is niet eenduidig ($name_list)"
+msgstr	"rapportnaam \"$name\" is niet eenduidig ($name_list)"
 
 #
 # This error message is issued when an error is discovered in a report
@@ -5127,28 +5016,26 @@ msgstr	"rapport afgebroken"
 # incorrectly.  See (+++) above.
 #
 msgid	"requires at least one argument"
-msgstr	"heeft op zijn minst een argument nodig "
+msgstr	"heeft minstens één argument nodig "
 
 #
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
 msgid	"requires one argument"
-msgstr	"heeft een argument nodig "
+msgstr	"heeft één argument nodig "
 
 #
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
 msgid	"requires one or two arguments"
-msgstr	"heeft een of twee argumenten nodig"
+msgstr	"heeft één of twee argumenten nodig"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) above.
 #
-#, fuzzy
 msgid	"requires three arguments"
 msgstr	"heeft drie argumenten nodig"
 
@@ -5205,36 +5092,37 @@ msgid	"review begin undo complete"
 msgstr	"begin review ongedaan gemaakt"
 
 #
+#
 # This progress message is issued when aerfail completes successfully.
 #
 msgid	"review fail complete"
-msgstr	"wijziging afgekeurd, terug naar ontwikkelaar"
+msgstr	"wijziging is afgekeurd; terug naar ontwikkelaar"
 
 #
 # This progress message is issued when aerpass completes successfully.
 #
 msgid	"review pass complete"
-msgstr	"wijziging goedgekeurd"
+msgstr	"wijziging is goedgekeurd"
 
 #
 # This progress message is issued when aerpu completes successfully.
 #
 msgid	"review pass undo complete"
-msgstr	"wijziging goedgekeurd ongedaan gemaakt"
+msgstr	"\"wijziging goedgekeurd\" is ongedaan gemaakt"
 
 #
 # This error message is issued when a reviewer attempts to integrate
 # a change she reviewed, and the project is configured to disallow this.
 #
 msgid	"reviewer may not integrate"
-msgstr	"de reviewer van een wijziging mag deze niet ook intergreren"
+msgstr	"de reviewer van een wijziging mag deze niet ook integreren"
 
 #
 # This progress message is issued when aeifail is removing the
 # integration directory.
 #
 msgid	"rm int dir"
-msgstr	"verwijderen integration directory"
+msgstr	"verwijderen van integratiemap"
 
 #
 # This error message is issued when a rmdir fails.
@@ -5275,17 +5163,15 @@ msgstr	"setuid $arg: $errno"
 #                       (Optional)
 #
 msgid	"single file with -Output"
-msgstr	"slechts een source bestand kan worden opgegeven met de -Output "
-	"option, u gaf er $number)"
+msgstr	"slechts één bronbestand kan worden opgegeven met de optie "
+	"-Output; u gaf er $number"
 
-# TRANSLATION REQUIRED
 #
 # This information message is issued when aet completes with one or more
 # skipped tests.
 #
 #       $Number         The number of tests which were skipped.
 #
-#, fuzzy
 msgid	"skipped $number tests"
 msgstr	"skipped $number test${plural $number s}"
 
@@ -5296,7 +5182,7 @@ msgstr	"skipped $number test${plural $number s}"
 #       $Name           The type name of the offending argument.
 #
 msgid	"sort requires a list argument (was given $name)"
-msgstr	"sorteren heeft een lijst nodig (kreeg $name)"
+msgstr	"sorteren heeft een lijst als argument nodig (kreeg $name)"
 
 #
 # This error message is issued when too many arguments are given to the
@@ -5305,28 +5191,28 @@ msgstr	"sorteren heeft een lijst nodig (kreeg $name)"
 #       $Number         The number of arguments given.
 #
 msgid	"sort requires exactly 1 argument (was given $number)"
-msgstr	"sorteren heeft precies een argument nodig (kreeg $number)"
+msgstr	"sorteren heeft precies één argument nodig (kreeg $number)"
 
 #
 # This error message is issued when the ${source} substitution is called
 # incorrectly.  See (+++) above.
 #
 msgid	"source file unknown"
-msgstr	"source bestand onbekend"
+msgstr	"bronbestand is onbekend"
 
 #
 # This is the name of the program's standard input.  The place input
 # from getchar (et al) comes from.
 #
 msgid	"standard input"
-msgstr	"de standaard input"
+msgstr	"standaardinvoer"
 
 #
 # This is the name of the program's standard output.  The place output
 # from putchar (et al) goes.
 #
 msgid	"standard output"
-msgstr	"de standaard output"
+msgstr	"standaarduitvoer"
 
 #
 # This error message is issued when a file stat fails
@@ -5351,30 +5237,25 @@ msgstr	"symlink(\"$filename1\", \"$filename2\"): $errno"
 # seen rarely.
 #
 msgid	"sync error, try again"
-msgstr	"er is iets gewijzigd, actie afgebroken, probeer opnieuw"
+msgstr	"er is iets gewijzigd; actie is afgebroken; probeer het opnieuw"
 
 #
 # This error message is issued when yacc finds an error at parse time.
 #
 msgid	"syntax error"
-msgstr	"niet in staat te begrijpen wat bedoelt werd"
+msgstr	"syntaxfout"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when yacc finds an error at parse time.
 #
-#, fuzzy
 msgid	"syntax error: cannot back up"
-msgstr	"niet in staat te begrijpen wat bedoelt werd"
+msgstr	"syntaxfout: kan niet terugstappen"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
-#, fuzzy
 msgid	"syntax error; also virtual memory exhausted"
-msgstr	"niet in staat te begrijpen wat bedoeld werd, het was te "
-	"ingewikkeld om in het geheugen te passen"
+msgstr	"syntaxfout, en onvoldoende geheugen beschikbaar"
 
 #
 # This error message is issued when the argument to -Tab_Width is absurd.
@@ -5385,7 +5266,6 @@ msgid	"tab width $number out of range"
 msgstr	"een tab breedte van $number is buiten bereik"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued before running test_command if
 # progress messages were requested
 #
@@ -5393,7 +5273,6 @@ msgstr	"een tab breedte van $number is buiten bereik"
 #      $Total          Total number of tests
 #      $REMaining      Estimated number of seconds remaining.
 #
-#, fuzzy
 msgid	"test $current of $total"
 msgstr	"test $current of $total, ETA $remaining"
 
@@ -5508,13 +5387,11 @@ msgid	"the name \"$name\" is undefined"
 msgstr	"de naam \"$name\" is niet gedefineerd"
 
 #
-# TRANSLATION REQUIRED
 # This information message is issued when Aegis needs to delay for a
 # number fo seconds to ensure that file modification tikmes do not extend
 # into the future.  Commonest sighting is when aeipass needs to sleep.
 # Also used as a debug message, only visable when DEBUG is defined.
 #
-#, fuzzy
 msgid	"throttling $number seconds"
 msgstr	"sleeping $number second${plural $number s} to allow file "
 	"modifications times to be consistent"
@@ -5529,27 +5406,23 @@ msgid	"throw statement requires string argument (not $name)"
 msgstr	"het throw statement heeft een string argument nodig (kreeg $name)"
 
 #
-# TRANSLATION REQUIRED
-# This warning is issed when a delta date is specified which falls before
-# the start of a branch.  This is not meaningful when recreating the
-# contents of a branch.
+# This warning is issued when a delta date is specified which
+# falls before the start of a branch.  This is not meaningful when
+# recreating the contents of a branch.
 #
 #       $number         The offending date and time.
 #
-#, fuzzy
 msgid	"time $number after branch"
 msgstr	"warning: the time \"$number\" is after the branch finished, this "
 	"is not meaningful when recreating the contents of the branch"
 
 #
-# TRANSLATION REQUIRED
-# This warning is issed when a delta date is specified which falls before
-# the start of a branch.  This is not meaningful when recreating the
-# contents of a branch.
+# This warning is issued when a delta date is specified which falls
+# before the start of a branch.  This is not meaningful when recreating
+# the contents of a branch.
 #
 #       $number         The offending date and time.
 #
-#, fuzzy
 msgid	"time $number before branch"
 msgstr	"warning: the time \"$number\" is before the branch started, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -5714,10 +5587,8 @@ msgid	"unknown change"
 msgstr	"Er is geen wijziging of tak met dit nummer bekend in dit project"
 
 #
-# TRANSLATION REQUIRED
 # This fatal error message is issued when the shell cannot be determined.
 #
-#, fuzzy
 msgid	"unknown shell"
 msgstr	"unable to determine the shell which has requested the completion"
 
@@ -5874,45 +5745,46 @@ msgstr	"versie \"$number\" is geen tak"
 #       $Name           The type name of the lock being waited for.
 #
 msgid	"waiting for $name lock"
-msgstr	"wacht op $name slot"
+msgstr	"wacht op vergrendeling $name"
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # baseline read lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline read lock"
-msgstr	"wacht op gedeelde baseline slot; Dit is omdat er een \"aegis -"
-	"Integrate_PASS\" commando bezig is "
+msgstr	"wacht op leesvergrendeling van baseline; "
+	"er is een \"aegis -Integrate_PASS\" commando bezig"
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline write lock"
-msgstr	"wacht op exclusief baseline slot; Er zijn een of meer \"aegis -"
-	"Build\" commandos bezig"
+msgstr	"wacht op schrijfvergrendeling van baseline; "
+	"er zijn één of meer \"aegis -Build\" commando's bezig"
 
 #
 # This progress message is issued when Aegis is waiting for a global state
 # lock.  The global state remembers project names and where they are.
 #
 msgid	"waiting for global state lock"
-msgstr	"wacht op project locatie index slot"
+msgstr	"wacht op globale statusvergrendeling"
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # history lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for history lock"
-msgstr	"wacht op history slot; er is een \"aegis -Integrate_PASS\" "
-	"commando bezig op een andere tak"
+msgstr	"wacht op vergrendeling van history; "
+	"er is een \"aegis -Integrate_PASS\" commando bezig op een andere "
+	"tak"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
 # This message is seen often, usually with a change or project indicator.
 #
 msgid	"waiting for lock"
-msgstr	"wacht op slot"
+msgstr	"wacht op vergrendeling"
 
 #
 # This warning message is issued when aed automatically alters the file
@@ -5923,8 +5795,8 @@ msgstr	"wacht op slot"
 #       $File_Name      The name of the affected file.
 #
 msgid	"warning: $filename in baseline, copying"
-msgstr	"waarschuwing: bestand \"$filename\" bestaat al in dit project, "
-	"actie automatisch gewijzigd van \"create\" naar \"modify\""
+msgstr	"Waarschuwing: bestand \"$filename\" bestaat al in dit project; "
+	"actie is automatisch omgezet van \"aanmaken\" naar \"wijzigen\""
 
 #
 # This warning message is issued when a change file is modified by the
@@ -5938,7 +5810,6 @@ msgstr	"Waarschuwing: de history tool heeft het \"$filename\" source "
 	"bestand veranderd"
 
 #
-# TRANSLATION REQUIRED
 # This warning message is issued by aedist when a patch in an incominmg
 # change set cannot be used (it could be malformed, it may have one or
 # more chunks that can't be applied, etc) and so the full source for
@@ -5946,14 +5817,12 @@ msgstr	"Waarschuwing: de history tool heeft het \"$filename\" source "
 #
 #       $filename       The name of the offending file.
 #
-#, fuzzy
 msgid	"warning: $filename patch not used"
 msgstr	"warning: the patch for \"$filename\" could not be used, so the "
 	"full incoming source for this file has been used; you may need "
 	"to resolve conflicts manually"
 
 #
-# TRANSLATION REQUIRED
 # This warning message is issued when the the old project configuration
 # file name if given to the aenf command, without a -config or -noconfig
 # option.  This has been obsoleted, and users are encouraged to use the
@@ -5962,34 +5831,31 @@ msgstr	"warning: the patch for \"$filename\" could not be used, so the "
 #       $File_Name1     The name of the old project configuration file.
 #       $File_Name2     The name of the new project configuration file default.
 #
-#, fuzzy
 msgid	"warning: $filename1 deprecated, use $filename2 file instead"
 msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
-	"suggested that you use the \"$filename2\" file instead.  See aenf"
-	"(1) for more information."
+	"suggested that you use the \"$filename2\" file instead.  See "
+	"aenf(1) for more information."
 
-# TRANSLATION REQUIRED
 #
 # This generic message is used to turn what would otherwise be an error
 # message into a warning message.
 #
 #       $MeSsaGe        The message to be printed as a warning.
 #
-#, fuzzy
 msgid	"warning: $message"
 msgstr	"Waarschuwing: $message"
 
 #
-# This warning message is issued when the AEGIS environment is observed.
-# This has been obsoleted, and users are encouraged to use the
-# AEGIS_PATH environment variable instead.
+# This warning message is issued when the AEGIS environment variable is
+# detected.  This has been obsoleted, and users are encouraged to use
+# the AEGIS_PATH environment variable instead.
 #
 #       $Name1  The name of the AEGIS environment variable.
 #       $Name2  The name of the AEGIS_PATH environment variable.
 #
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
-msgstr	"Waarschuwing: de $name1 omgevings variabele is verouderd, "
-	"gebruik voortaan $name2 "
+msgstr	"Waarschuwing: de omgevingsvariabele $name1 is verouderd; gebruik "
+	"voortaan $name2 "
 
 #
 # This warning is issued when an obsolete option is used.
@@ -5998,7 +5864,7 @@ msgstr	"Waarschuwing: de $name1 omgevings variabele is verouderd, "
 #       $Name2          The name of the preferred option.
 #
 msgid	"warning: $name1 obsolete, use $name2 option"
-msgstr	"waarschuwing: de $name1 optie is verouderd, gebruik voortaan "
+msgstr	"Waarschuwing: de optie $name1 is verouderd; gebruik voortaan "
 	"$name2 "
 
 #
@@ -6018,7 +5884,7 @@ msgstr	"Waarschuwing: chmod(\"$filename\", $arg): $errno"
 #       $Number         The exit status of the child.
 #
 msgid	"warning: command \"$command\" exit status $number"
-msgstr	"waarschuwing: commando \"$command\" exit status $number"
+msgstr	"Waarschuwing: commando \"$command\" had afsluitwaarde $number"
 
 #
 # This warning message is issued when Aegis finds files which require
@@ -6029,13 +5895,17 @@ msgstr	"waarschuwing: commando \"$command\" exit status $number"
 #                       (Optional)
 #
 msgid	"warning: diffable files"
-msgstr	"waarschuwing: er ${plural $number 'zijn $number bestanden die' "
-	"'is een bestand dat' } vergeleken moet worden"
+msgstr	"Waarschuwing: er ${plural $number 'zijn $number bestanden die "
+	"vergeleken moeten' 'is een bestand dat vergeleken moet'} worden"
 
-msgid	"warning: expression has no side effects, assuming you meant -"
-	"PRint"
-msgstr	"waarschuwing: expressie heeft geen bijwerking, neem aan dat "
-	"passende bestanden ge -PRint moeten worden."
+#
+# This error message is issued when your search expression doesn't
+# do anything.
+#
+msgid	"warning: expression has no side effects, assuming you meant "
+	"-PRint"
+msgstr	"Waarschuwing: expressie heeft geen bijwerking; "
+	"er wordt aangenomen dat -PRint bedoeld werd"
 
 #
 # This warning message is issued when aeclean notices that a file needs
@@ -6044,7 +5914,7 @@ msgstr	"waarschuwing: expressie heeft geen bijwerking, neem aan dat "
 #       $File_Name      The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs diff"
-msgstr	"waarschuwing: bestand \"$filename\" moet vergeleken worden"
+msgstr	"Waarschuwing: bestand \"$filename\" moet vergeleken worden"
 
 #
 # This warning message is issued when aeclean notices that a file needs
@@ -6053,7 +5923,7 @@ msgstr	"waarschuwing: bestand \"$filename\" moet vergeleken worden"
 #       $File_Name      The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs merge"
-msgstr	"waarschuwing: bestand \"$filename\" moet samengevoegd worden"
+msgstr	"Waarschuwing: bestand \"$filename\" moet samengevoegd worden"
 
 #
 # This warning message is issued when aeipass adjust file modification
@@ -6064,8 +5934,8 @@ msgstr	"waarschuwing: bestand \"$filename\" moet samengevoegd worden"
 #                       (Optional)
 #
 msgid	"warning: file times in future"
-msgstr	"waarschuwing: bestands modificatie tijden lopen $number second"
-	"${plural $number en} in de toekomst"
+msgstr	"Waarschuwing: bestandswijzigingstijden zijn $number "
+	"second${plural $number en} in de toekomst"
 
 #
 # This warning message is a summary issued when one or more change
@@ -6094,8 +5964,9 @@ msgstr	"waarschuwing: De history tool wijzigde $number source ${plural "
 #                       (Optional)
 #
 msgid	"warning: mergable files"
-msgstr	"waarschuwing: er ${plural $number 'zijn $number bestanden die' "
-	"'is een bestand dat' } samengevoegd moet worden"
+msgstr	"Waarschuwing: er ${plural $number 'zijn $number bestanden die "
+	"samengevoegd moeten' 'is een bestand dat samengevoegd moet'} "
+	"worden"
 
 #
 # This warning message is issued when aed automatically alters the file
@@ -6106,9 +5977,9 @@ msgstr	"waarschuwing: er ${plural $number 'zijn $number bestanden die' "
 #       $File_Name      The name of the affected file.
 #
 msgid	"warning: no $filename in baseline, creating"
-msgstr	"waarschuwing bestand \"$filename\" is verwijderd uit de "
-	"baseline, aktie automatisch omgezet  van \"wijzigen\" naar "
-	"\"aanmaken\""
+msgstr	"Waarschuwing: bestand \"$filename\" is verwijderd uit de "
+	"baseline; "
+	"actie is automatisch omgezet  van \"wijzigen\" naar \"aanmaken\""
 
 #
 # This warning message is issued when a non-intuitive default is
@@ -6118,7 +5989,7 @@ msgstr	"waarschuwing bestand \"$filename\" is verwijderd uit de "
 #       $Name2          The name of a command line option.
 #
 msgid	"warning: no $name1, assuming $name2"
-msgstr	"Waarschuwing:  geen $name1 opgeven, ik neem aan dat u $name2 "
+msgstr	"Waarschuwing: geen $name1 opgeven, ik neem aan dat u $name2 "
 	"bedoeld"
 
 #
@@ -6128,15 +5999,15 @@ msgstr	"Waarschuwing:  geen $name1 opgeven, ik neem aan dat u $name2 "
 msgid	"warning: no chown"
 msgstr	"Waarschuwing: eigenaar hoeft niet veranderd te worden, deze "
 	"wijziging wordt al ontwikkeld door \"$developer\", een nieuwe "
-	"ontwikkel directory wordt aangemaakt"
+	"ontwikkelmap wordt aangemaakt"
 
 #
 # This warning is issued when a received file could have a Trojan horse
 # attack in it, but the use said to keep going.
 #
 msgid	"warning: potential trojan, proceeding anyway"
-msgstr	"Waarschuwing: Deze wijziging bevat bestanden die een trojaans "
-	"paard zouden kunnen bevatten.  Omdat de --no-trojan optie werd "
+msgstr	"Waarschuwing: deze wijziging bevat bestanden die een trojaans "
+	"paard zouden kunnen bevatten.  Omdat de optie --no-trojan werd "
 	"opgegeven, gaat het ontwikkelen desondanks door."
 
 #
@@ -6144,9 +6015,9 @@ msgstr	"Waarschuwing: Deze wijziging bevat bestanden die een trojaans "
 # attack in it.
 #
 msgid	"warning: potential trojan, review before completing development"
-msgstr	"Waarschuwing: Deze wijziging bevat bestanden die een trojaans "
-	"paard zouden kunnen bevaten.  Verifieer dat dit niet zo is "
-	"voordat u compileerd, test of het ontwikkelen beeindigd.  Deze "
+msgstr	"Waarschuwing: deze wijziging bevat bestanden die een trojaans "
+	"paard zouden kunnen bevatten.  Verifieer dat dit niet zo is "
+	"voordat u compileert, test, of het ontwikkelen beëindigd.  Deze "
 	"wijziging houdt de status being_developed."
 
 #
@@ -6155,7 +6026,7 @@ msgstr	"Waarschuwing: Deze wijziging bevat bestanden die een trojaans "
 #       $File_Name      The name of the directory to be removed.
 #
 msgid	"warning: rmdir $filename: $errno"
-msgstr	"waarschuwing:  rmdir \"$filename\": $errno"
+msgstr	"Waarschuwing: rmdir \"$filename\": $errno"
 
 #
 # This warning message is issued when a setgid fails, but Aegis will continue.
@@ -6163,7 +6034,7 @@ msgstr	"waarschuwing:  rmdir \"$filename\": $errno"
 #       $Argument       The gid argument.
 #
 msgid	"warning: setgid $arg: $errno"
-msgstr	"waarschuwing: setgid $arg: $errno"
+msgstr	"Waarschuwing: setgid $arg: $errno"
 
 #
 # This warning message is issued when a state fails, but Aegis will continue.
@@ -6171,15 +6042,15 @@ msgstr	"waarschuwing: setgid $arg: $errno"
 #       $File_Name      The name of the file to be stat()ed.
 #
 msgid	"warning: stat $filename: $errno"
-msgstr	"waarschuwing: stat \"$filename\": $errno"
+msgstr	"Waarschuwing: stat \"$filename\": $errno"
 
 #
 # This warning message is issued when in Aegis runs in test mode.
 #
 msgid	"warning: test mode"
-msgstr	"waarschuwing: Deze versie werkt in \"test\" modus. Hij heeft "
-	"beperkte mogelijkheden wegens gebrek aan rechten. Deze modus is "
-	"alleen voor testen, en is niet de aanbevolen werk modus."
+msgstr	"Waarschuwing: deze versie werkt in \"test\"-modus.  Het heeft "
+	"beperkte mogelijkheden wegens gebrek aan rechten.  Deze modus is "
+	"alleen voor testen, en is niet de aanbevolen werkmodus."
 
 #
 # This warning message is issued when an unlink fails, but Aegis will continue.
@@ -6187,7 +6058,7 @@ msgstr	"waarschuwing: Deze versie werkt in \"test\" modus. Hij heeft "
 #       $File_Name      The name of the file to be unlinked.
 #
 msgid	"warning: unlink $filename: $errno"
-msgstr	"waarschuwing: unlink \"$filename\": $errno"
+msgstr	"Waarschuwing: unlink \"$filename\": $errno"
 
 #
 # This warning message is issued when a command which accepts both -Edit
@@ -6198,7 +6069,7 @@ msgstr	"waarschuwing: unlink \"$filename\": $errno"
 #                       assuming option names will be internationalized RSN
 #
 msgid	"warning: use $name option"
-msgstr	"Waaschuwing: gebruik de $name optie bij een attributen bestand"
+msgstr	"Waarschuwing: gebruik de optie $name bij een attributenbestand"
 
 #
 # This warning message is issued when a utime fails.
@@ -6206,22 +6077,22 @@ msgstr	"Waaschuwing: gebruik de $name optie bij een attributen bestand"
 #       $File_Name      The name of the file
 #
 msgid	"warning: utime $filename: $errno"
-msgstr	"waarschuwing: utime \"$filename\": $errno"
+msgstr	"Waarschuwing: utime \"$filename\": $errno"
 
 #
 # This error message is issued when a aedbu command is run by a
 # user who was not the developer of the change being operated on.
 #
 msgid	"was not developer"
-msgstr	"gebruiker \"$user\" was niet de ontwikkelaar, alleen \"$developer"
-	"\" kan onwikkelen einde ongedaan maken"
+msgstr	"Gebruiker \"$user\" is niet de ontwikkelaar; "
+	"alleen \"$developer\" kan onwikkelen einde ongedaan maken"
 
 #
 # This error message is issued when a aerpu command is run by a
 # user who was not the reviewer of the change being operated on.
 #
 msgid	"was not reviewer"
-msgstr	"gebruiker \"$user\" was niet de reviewer van deze wijziging, "
+msgstr	"Gebruiker \"$user\" was niet de reviewer van deze wijziging; "
 	"alleen \"$reviewer\" mag \"wijziging goedgekeurd\" ongedaan maken"
 
 #
@@ -6230,15 +6101,14 @@ msgstr	"gebruiker \"$user\" was niet de reviewer van deze wijziging, "
 #       $File_Name      The name of the offending file.
 #
 msgid	"write $filename: $errno"
-msgstr	"write \"$filename\": $errno"
+msgstr	"Schrijven van \"$filename\" is mislukt: $errno"
 
 #
 # This error message is issued when the input it too complicated for
 # yacc to figure out.
 #
 msgid	"yacc stack overflow"
-msgstr	"Niet in staat te begrijpen wat bedoeld werd, het is te "
-	"ingewikkeld"
+msgstr	"de invoer is te ingewikkeld"
 
 #
 # This error message is issued when Aegis is unable to proceed because
@@ -6247,4 +6117,4 @@ msgstr	"Niet in staat te begrijpen wat bedoeld werd, het is te "
 #       $File_Name      The name of the offending file
 #
 msgid	"you must create a \"$filename\" file"
-msgstr	"U moet een \"$filename\" bestand aanmaken"
+msgstr	"u dient een bestand \"$filename\" aan te maken"

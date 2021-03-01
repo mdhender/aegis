@@ -135,7 +135,12 @@ activity="build rss.gif"
 $bin/test_base64 -nh -uu -i rss.gif.uue icon/rss.gif
 if test $? -ne 0 ; then fail; fi
 
-echo "Content-Type: image/gif" > rss.expected.gif
+#
+# We need to invoke test_magic here because the behaviour of libmagic
+# change with versions and we need to replicate it exactly to have the
+# test pass.
+#
+echo "Content-Type:" `test_magic icon/rss.gif` > rss.expected.gif
 echo "Content-Length: 360" >> rss.expected.gif
 echo >> rss.expected.gif
 cat icon/rss.gif >> rss.expected.gif

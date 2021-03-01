@@ -1,7 +1,7 @@
 .\"
 .\" aegis - project change supervisor
 .\" Copyright (C) 2008 Peter Miller
-.\" Copyright (C) 2008 Walter Franzini
+.\" Copyright (C) 2008, 2009 Walter Franzini
 .\"
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -27,11 +27,92 @@
 .\" .\" Change NN
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
+.SS Version 4.24.2 (25-Jun-2009)
+.PP
+.if n *
+.if t \(bu
+.\" Change 532
+The branch fstate can contain fake transparent entries when a change
+not yet integrated modifies for the first time in the branch a file.
+.PP
+It is possible that such entries cause troubles if the project is
+configured to write the pfstate file.  To avoid such troubles the fake
+transparent entries are stripped on the fly when reading the pfstate
+file.
+.PP
+The way the the pfstate file is written is not modified.
+.PP
+.if n *
+.if t \(bu
+.\" Change 250
+The Italian translation of error messages is now available.
+.PP
+.if n *
+.if t \(bu
+.\" Change 121, 122
+The Vietnamese and Dutch error messages has been updated.
+.PP
+.if n *
+.if t \(bu
+.\" Change 558
+The \f[I]aerevml\f[P](1) command was incorrectly printing twice user
+defined attributes. This behavior has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 546
+The \f[I]aeclean\f[P](1) command was incorrectly checking the patterns
+against the absolute name of the files.  This behavior has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 540
+The \f[I]aelock\f[P](1) man page was incorrectly reporting the
+attribute name aelock use.  This has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 291
+The \f[I]aesub\f[P](5) man page now reference \f[I]aeuconf\f[P](5) in
+the email address section.
+.PP
+.if n *
+.if t \(bu
+.\" Change 549
+The \f[I]aedist\f[P](1) command is now more robust when handling renamed files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 599
+The t0228a-matt.sh test script has been made more robust with respect
+to different behavior of libmagic.
+.PP
+.if n *
+.if t \(bu
+.\" Change 543
+The t0127a.sh test script (aeimport vs. sccs) has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 557, 563, 524, 593
+A number of memory related bugs has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 281
+Some typo has been corrected in the \f[I]ae-repo-ci\f[P](1) man page.
+.PP
+.if n *
+.if t \(bu
+.\" Change 590
+The build process has been improved to give more informative messages
+when a new aegis developer populate his repository for the first
+time.
 .SS Version 4.24.1 (24-Sep-2008)
 .PP
 .B Security:
 [ #2079025 ] This update fix two security problems discovered by the
-Debian crew (Debian #496400 and #496402)
+Debian crew (Debian #496400 and #496402, CVE-2008-4938)
 You are encouraged to upgrade.
 .PP
 \f[B]Removed functionalities:\f[R]

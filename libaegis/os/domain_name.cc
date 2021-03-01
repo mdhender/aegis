@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006, 2008 Peter Miller
+//	Copyright (C) 2004-2006, 2008, 2009 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 //	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/string.h>
+
 #include <libaegis/file.h>
 #include <libaegis/os.h>
 #include <libaegis/os/domain_name.h>
@@ -26,6 +28,8 @@
 static bool
 is_a_valid_domain_string(const nstring &candidate)
 {
+    if (candidate.empty())
+        return false;
     const char *s = candidate.c_str();
     int numdots = 0;
     unsigned char state = '.';
@@ -81,10 +85,9 @@ try_etc_mailname(nstring &result)
 }
 
 
-static bool
-try_a_command(const char *cmd, nstring &result)
+static nstring
+run_a_command(const char *cmd)
 {
-    bool ok = false;
     nstring temp_file_name(os_edit_filename(0));
     nstring command(nstring(cmd) + " > " + temp_file_name + " 2> /dev/null");
     os_become_orig();
@@ -96,21 +99,39 @@ try_a_command(const char *cmd, nstring &result)
 	    OS_EXEC_FLAG_SILENT,
 	    dir.get_ref()
 	);
+    nstring result;
     if (exit_status == 0)
-    {
-	result = read_whole_file(temp_file_name);
-	ok = is_a_valid_domain_string(result);
-    }
+        result = read_whole_file(temp_file_name);
     os_unlink_errok(temp_file_name);
     os_become_undo();
-    return ok;
+    return result;
+}
+
+
+static bool
+try_a_command(const char *cmd, nstring &result)
+{
+    result = run_a_command(cmd);
+    return is_a_valid_domain_string(result);
 }
 
 
 static bool
 try_hostname_d(nstring &result)
 {
-    return try_a_command("hostname -d", result);
+     return try_a_command("hostname -d", result);
+}
+
+
+static bool
+try_hostname_fqdn(nstring &result)
+{
+    result = run_a_command("hostname");
+    const char *dot = strchr(result.c_str(), '.');
+    if (!dot)
+        return false;
+    result = nstring(dot + 1);
+    return is_a_valid_domain_string(result);
 }
 
 
@@ -139,6 +160,8 @@ os_domain_name(void)
 	    !try_etc_mailname(cached_answer)
 	&&
 	    !try_hostname_d(cached_answer)
+	&&
+	    !try_hostname_fqdn(cached_answer)
 	&&
 	    !try_dnsdomainname(cached_answer)
 	&&

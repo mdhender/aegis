@@ -127,7 +127,7 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
 	filename,
 	user_ty::create()
     );
-    history_version_type.free(reconstruct);
+    fstate_src_type.free(reconstruct);
     trace(("return \"%s\";\n", filename->str_text));
     trace(("}\n"));
     return filename;

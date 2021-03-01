@@ -359,13 +359,13 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 		nstring s;
 		if (!ifp->one_line(s))
 		{
-		    trace(("line %d: file too short\n", linum));
+		    trace(("line %zd: file too short\n", linum));
 		    assert(0);
 		    break;
 		}
 		if (nstring(lp->text) != s)
 		{
-		    trace(("line %d: lp->text %08lX != s %08lX\n", linum,
+		    trace(("line %zd: lp->text %08lX != s %08lX\n", linum,
 			(long)lp->text, (long)s.c_str()));
 		    assert(0);
 		}
@@ -376,13 +376,13 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 		nstring s;
 		if (!ifp->one_line(s))
 		{
-		    trace(("line %d: file too short\n", linum));
+		    trace(("line %zd: file too short\n", linum));
 		    assert(0);
 		    break;
 		}
 		if (nstring(lp->text) != s)
 		{
-		    trace(("line %d: lp->text %08lX != s %08lX\n", linum,
+		    trace(("line %zd: lp->text %08lX != s %08lX\n", linum,
 			(long)lp->text, (long)s));
 		    assert(0);
 		}

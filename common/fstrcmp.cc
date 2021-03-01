@@ -368,7 +368,7 @@ fstrcmp(const char *s1, const char *s2)
 #ifdef DEBUG
     for (sp = snake_table; sp < nextsnake; sp++)
     {
-	trace(("%d: line1 = %ld; line2 = %ld; count = %ld;\n",
+	trace(("%ld: line1 = %ld; line2 = %ld; count = %ld;\n",
 	    sp - snake_table, sp->line1, sp->line2, sp->count));
     }
 #endif

@@ -2,7 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 1998, 2005-2008 Peter Miller
-#	Copyright (C) 2006 Walter Franzini;
+#	Copyright (C) 2006, 2008, 2009 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ tmp=$work/tmp
 #
 # make the directories
 #
-activity="working directory 96"
+activity="working directory 94"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -117,14 +117,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 122"
+activity="new project 120"
 $bin/aegis -newpro example -version "" -dir $workproj -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change project attributes
 #
-activity="project attributes 129"
+activity="project attributes 127"
 cat > $tmp << 'TheEnd'
 description = "aegis user's guide";
 developer_may_review = true;
@@ -139,7 +139,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # create a new change
 #
-activity="new change 144"
+activity="new change 142"
 cat > $tmp << 'TheEnd'
 brief_description = "Place under aegis";
 description = "A simple calculator using native floating point precision.  \
@@ -156,21 +156,21 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add a new developer
 #
-activity="new developer 161"
+activity="new developer 159"
 $bin/aegis -newdev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # begin development of the change
 #
-activity="develop begin 168"
+activity="develop begin 166"
 $bin/aegis -devbeg 1 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the new files to the change
 #
-activity="new file 175"
+activity="new file 173"
 $bin/aegis -new_file $workchan/aegis.conf -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -182,21 +182,22 @@ history_put_command = "exit 0";
 history_query_command = "exit 0";
 diff_command = "exit 0";
 merge_command = "exit 0";
-clean_exceptions = [ "*.keep" ];
+clean_exceptions = [ "keep.*" ];
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 
 date > $workchan/junk
 if test $? -ne 0 ; then no_result; fi
 
-date > $workchan/garbage.keep
+date > $workchan/keep.garbage
 if test $? -ne 0 ; then no_result; fi
 
+activity="clean the change 195"
 $bin/aegis -clean -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 test -r $workchan/junk && fail
-test ! -r $workchan/garbage.keep && fail
+test ! -r $workchan/keep.garbage && fail
 test ! -r $workchan/aegis.conf && fail
 
 

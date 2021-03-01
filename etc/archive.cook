@@ -644,6 +644,13 @@ archive/eg_oss_%.ae: web/eg_oss_%.sh
 
 if [is_stable_branch] then
 {
+    /*
+     * The following statement needs to execute the "other branch"
+     * version of aegis because if the we added new fields to the
+     * database, the "current branch" aegis will fail.  Unless we add
+     * the definition, and only the definition, of new fields also in
+     * the current branch.
+     */
     other_branch_baseline = [collect aegis -cd -br [other_branch] -bl];
 
     /*

@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2008 Peter Miller
+//	Copyright (C) 1999-2009 Peter Miller
+//      Copyright (C) 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -162,7 +163,7 @@ change_run_history_create_command(change::pointer cp, fstate_src_ty *src)
     // gratuitously touch the file.
     //
     trace(("mark\n"));
-    os_mtime_set(name_of_encoded_file, mtime);
+    os_mtime_set_errok(name_of_encoded_file, mtime);
     str_free(the_command);
 
     //
