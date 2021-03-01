@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1995-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for libaegis/change.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1995-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for libaegis/change.c
+//
 
 #ifndef LIBAEGIS_CHANGE_H
 #define LIBAEGIS_CHANGE_H
@@ -30,24 +30,23 @@
 #include <view_path.h>
 #include <zero.h>
 
-/*
- * Name of the project configuration file,
- * relative to the baseline/devdir root.
- */
+//
+// Name of the project configuration file,
+// relative to the baseline/devdir root.
+//
 #define THE_CONFIG_FILE_OLD "config"
 #define THE_CONFIG_FILE_NEW "aegis.conf"
 
-/*
- * Define a magic number to represent the trunk transaction
- * of the project.  It has an exceptional file name.
- */
+//
+// Define a magic number to represent the trunk transaction
+// of the project.  It has an exceptional file name.
+//
 #define TRUNK_CHANGE_NUMBER ((long)((~(unsigned long)0) >> 1))
 
-struct string_list_ty; /* existence */
-struct user_ty; /* existence */
-struct sub_context_ty; /* existence */
+struct string_list_ty; // existence
+struct user_ty; // existence
+struct sub_context_ty; // existence
 
-typedef struct change_ty change_ty;
 struct change_ty
 {
 	long		reference_count;
@@ -73,12 +72,12 @@ struct change_ty
 	string_ty	*architecture_name;
 	struct string_list_ty *file_list[view_path_MAX];
 
-	/*
-	 * if you add to this structure, don't forget to update
-	 * change_alloc()     in libaegis/change/alloc.c
-	 * change_free()      in libaegis/change/free.c
-	 * change_lock_sync() in libaegis/change/lock_sync.c
-	 */
+	//
+	// if you add to this structure, don't forget to update
+	// change_alloc()     in libaegis/change/alloc.c
+	// change_free()      in libaegis/change/free.c
+	// change_lock_sync() in libaegis/change/lock_sync.c
+	//
 };
 
 change_ty *change_alloc(struct project_ty *, long);
@@ -277,4 +276,4 @@ void change_uuid_set(change_ty *cp);
   */
 void change_uuid_clear(change_ty *cp);
 
-#endif /* LIBAEGIS_CHANGE_H */
+#endif // LIBAEGIS_CHANGE_H

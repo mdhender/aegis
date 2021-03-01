@@ -34,7 +34,6 @@
 
 #define INDENT 2
 
-typedef struct known_ty known_ty;
 struct known_ty
 {
     string_ty       *filename;

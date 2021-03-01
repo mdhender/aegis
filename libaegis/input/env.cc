@@ -29,7 +29,6 @@
 #include <input/private.h>
 #include <str.h>
 
-typedef struct input_env_ty input_env_ty;
 struct input_env_ty
 {
     input_ty        inherited;

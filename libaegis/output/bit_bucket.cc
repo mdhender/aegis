@@ -25,7 +25,6 @@
 #include <output/private.h>
 #include <str.h>
 
-typedef struct output_bit_bucket_ty output_bit_bucket_ty;
 struct output_bit_bucket_ty
 {
     output_ty       inherited;

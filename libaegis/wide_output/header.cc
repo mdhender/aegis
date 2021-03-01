@@ -45,7 +45,6 @@
 // assert(PRINTER_THRESHOLD > DEFAULT_PAGE_LENGTH);
 
 
-typedef struct wide_output_header_ty wide_output_header_ty;
 struct wide_output_header_ty
 {
     wide_output_ty  inherited;

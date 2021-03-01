@@ -29,7 +29,6 @@
 static char etab[] =
            "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
 
-typedef struct output_uuencode_ty output_uuencode_ty;
 struct output_uuencode_ty
 {
     output_ty	    inherited;

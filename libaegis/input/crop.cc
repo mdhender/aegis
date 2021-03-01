@@ -26,7 +26,6 @@
 #include <trace.h>
 
 
-typedef struct input_crop_ty input_crop_ty;
 struct input_crop_ty
 {
     input_ty        inherited;

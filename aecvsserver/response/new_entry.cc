@@ -46,7 +46,6 @@
 #include <server.h>
 
 
-typedef struct response_new_entry_ty response_new_entry_ty;
 struct response_new_entry_ty
 {
     response_ty     inherited;

@@ -302,7 +302,6 @@ tree_comma_new(tree_ty *left, tree_ty *right)
 }
 
 
-typedef struct triadic_ty triadic_ty;
 struct triadic_ty
 {
     tree_ty         inherited;

@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #endif
 #endif
 
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <sys/types.h>
 #include <unistd.h>
 #endif

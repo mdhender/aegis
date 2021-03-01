@@ -27,7 +27,6 @@
 #include <server.h>
 
 
-typedef struct module_project_bogus_ty module_project_bogus_ty;
 struct module_project_bogus_ty
 {
     module_ty       inherited;

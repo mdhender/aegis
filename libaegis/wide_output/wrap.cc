@@ -37,7 +37,6 @@
 #include <wide_output/wrap.h>
 
 
-typedef struct wide_output_wrap_ty wide_output_wrap_ty;
 struct wide_output_wrap_ty
 {
     wide_output_ty  inherited;

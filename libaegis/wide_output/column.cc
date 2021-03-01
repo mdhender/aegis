@@ -36,7 +36,6 @@
 #include <wide_output/private.h>
 
 
-typedef struct wide_output_column_ty wide_output_column_ty;
 struct wide_output_column_ty
 {
         wide_output_ty  inherited;

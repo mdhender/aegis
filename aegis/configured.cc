@@ -68,6 +68,7 @@ configured(void)
     emit("sharedstatedir", configured_comdir());
     emit("libdir", configured_libdir());
     emit("mandir", configured_mandir());
+    emit("sysconfdir", configured_sysconfdir());
     emit("NLSDIR", configured_nlsdir());
     emiti("AEGIS_UID", configured_aegis_uid());
     emiti("AEGIS_GID", configured_aegis_gid());

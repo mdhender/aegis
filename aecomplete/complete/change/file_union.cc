@@ -35,7 +35,6 @@
 #include <str_list.h>
 
 
-typedef struct complete_change_file_union_ty complete_change_file_union_ty;
 struct complete_change_file_union_ty
 {
     complete_ty     inherited;

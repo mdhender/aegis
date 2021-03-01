@@ -20,153 +20,91 @@
 // MANIFEST: functions to manipulate data types
 //
 
+#pragma implementation "type_ty"
+
 #include <error.h>
 #include <mem.h>
 #include <trace.h>
 #include <type.h>
 
 
-void
-type_gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
+type_ty::~type_ty()
 {
-    trace(("type_gen_include_declarator(type = %08lX, name = \"%s\", "
-	"is_a_list = %d)\n{\n", (long)type, name->str_text, is_a_list));
-    if (type->method->gen_include_declarator)
-       	type->method->gen_include_declarator(type, name, is_a_list);
-    trace(("}\n"));
+}
+
+
+type_ty::type_ty(const nstring &a_name) :
+    name(a_name),
+    is_a_typedef(false),
+    included_flag(false)
+{
+    assert(!name.empty());
+    trace_string(name.c_str());
 }
 
 
 void
-type_gen_include(type_ty *type)
+type_ty::gen_include_declarator(const nstring &a_name, bool is_a_list)
+    const
 {
-    trace(("type_gen_include(type = %08lX)\n{\n", (long)type));
-    if (type->method->gen_include)
-       	type->method->gen_include(type);
-    trace(("}\n"));
 }
 
 
 void
-type_gen_code_declarator(type_ty *type, string_ty *name, int is_a_list,
+type_ty::gen_include()
+    const
+{
+}
+
+
+void
+type_ty::gen_code_declarator(const nstring &a_name, bool is_a_list,
+    int attributes) const
+{
+}
+
+
+void
+type_ty::gen_code_call_xml(const nstring &form_name, const nstring &member_name,
+    int show) const
+{
+}
+
+
+void
+type_ty::gen_code()
+    const
+{
+}
+
+
+void
+type_ty::gen_free_declarator(const nstring &a_name, bool is_a_list)
+    const
+{
+}
+
+
+void
+type_ty::member_add(const nstring &member_name, type_ty *member_type,
     int attributes)
 {
-    trace(("type_gen_code_declarator(type = %08lX, name = \"%s\", "
-	"is_a_list = %d)\n{\n", (long)type, name->str_text, is_a_list));
-    if (type->method->gen_code_declarator)
-       	type->method->gen_code_declarator(type, name, is_a_list, attributes);
-    trace(("}\n"));
+    //
+    // This should only be called for structure members, and
+    // type_structure_ty overloads it.  Any other call is wrong.
+    //
+    assert(0);
 }
 
 
 void
-type_gen_code_call_xml(type_ty *type, string_ty *form_name,
-    string_ty *member_name, int show)
+type_ty::in_include_file()
 {
-    trace(("type_gen_code_call_xml(type = %08lX, form_name = \"%s\", "
-	"member_name = \"%s\", show = %d)\n{\n", (long)type,
-       	form_name->str_text, member_name->str_text, show));
-    if (type->method->gen_code_call_xml)
-       	type->method->gen_code_call_xml(type, form_name, member_name, show);
-    trace(("}\n"));
+    included_flag = true;
 }
 
 
 void
-type_gen_code(type_ty *type)
+type_ty::toplevel()
 {
-    trace(("type_gen_code(type = %08lX)\n{\n", (long)type));
-    if (type->method->gen_code)
-       	type->method->gen_code(type);
-    trace(("}\n"));
-}
-
-
-void
-type_gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
-{
-    trace(("type_gen_free_declarator(type = %08lX, name = \"%s\", "
-	"is_a_list = %d)\n{\n", (long)type, name->str_text, is_a_list));
-    if (type->method->gen_free_declarator)
-	type->method->gen_free_declarator(type, name, is_a_list);
-    trace(("}\n"));
-}
-
-
-void
-type_member_add(type_ty	*type, string_ty *member_name, type_ty *member_type,
-    int attributes)
-{
-    trace(("type_member_add(type = %08lX, member_name = %08lX, "
-	"member_type = %08lX, attributes = 0x%X)\n{\n",
-	(long)type, (long)member_name, (long)member_type, attributes));
-    assert(type->method->member_add);
-    if (type->method->member_add)
-	type->method->member_add(type, member_name, member_type, attributes);
-    trace(("}\n"));
-}
-
-
-type_ty *
-type_new(type_method_ty *method, string_ty *name)
-{
-    type_ty	    *type;
-
-    trace(("type_new(method = %08lX, bane = %08lX)\n{\n", (long)method,
-	    (long)name));
-    type = (type_ty *)mem_alloc(method->size);
-    type->method = method;
-    type->name = name ? str_copy(name) : str_from_c(method->name);
-    type->c_name = 0;
-    trace_string(type->name->str_text);
-    type->is_a_typedef = 0;
-    type->included_flag = 0;
-    if (method->constructor)
-	method->constructor(type);
-    trace(("return %08lX;\n", (long)type));
-    trace(("}\n"));
-    return type;
-}
-
-
-void
-type_in_include_file(type_ty *type)
-{
-    trace(("type_in_include_file(type = %08lX)\n{\n", (long)type));
-    type->included_flag = 1;
-    if (type->method->in_include_file)
-       	type->method->in_include_file(type);
-    trace(("}\n"));
-}
-
-
-void
-type_delete(type_ty *type)
-{
-    trace(("type_delete(type = %08lX)\n{\n", (long)type));
-    if (type->method->destructor)
-       	type->method->destructor(type);
-    str_free(type->name);
-    if (type->c_name)
-    {
-	str_free(type->c_name);
-	type->c_name = 0;
-    }
-    type->method = 0; // paranoia
-    mem_free(type);
-    trace(("}\n"));
-}
-
-
-string_ty *
-type_c_name(type_ty *tp)
-{
-    assert(tp);
-    if (!tp->c_name)
-    {
-	assert(tp->method);
-	assert(tp->method->c_name);
-	tp->c_name = tp->method->c_name(tp);
-    }
-    return tp->c_name;
 }

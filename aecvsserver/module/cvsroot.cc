@@ -39,7 +39,6 @@
 #include <response/created.h>
 
 
-typedef struct module_cvsroot_ty module_cvsroot_ty;
 struct module_cvsroot_ty
 {
     module_ty       inherited;

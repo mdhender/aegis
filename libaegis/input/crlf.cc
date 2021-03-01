@@ -28,7 +28,6 @@
 #include <trace.h>
 
 
-typedef struct input_crlf_ty input_crlf_ty;
 struct input_crlf_ty
 {
     input_ty        inherited;

@@ -37,7 +37,6 @@
 #include <wide_output/private.h>
 
 
-typedef struct wide_output_unexpand_ty wide_output_unexpand_ty;
 struct wide_output_unexpand_ty
 {
     wide_output_ty  inherited;

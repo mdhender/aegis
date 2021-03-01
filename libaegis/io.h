@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1999, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1996, 1999, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <ac/time.h>
 
 #include <main.h>
-#include <type.h>
+#include <meta_type.h>
 
 struct sub_context_ty; /* existence */
 struct output_ty; /* existence */

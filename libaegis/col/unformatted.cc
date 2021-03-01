@@ -30,14 +30,12 @@
 #include <wide_output/expand.h>
 
 
-typedef struct column_ty column_ty;
 struct column_ty
 {
     wide_output_ty  *content; // actually wide_output_column_ty
     output_ty	    *content_filter;
 };
 
-typedef struct col_unformatted_ty col_unformatted_ty;
 struct col_unformatted_ty
 {
     col_ty	    inherited;

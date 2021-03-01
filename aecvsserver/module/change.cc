@@ -50,7 +50,6 @@
 #include <user.h>
 
 
-typedef struct module_change_ty module_change_ty;
 struct module_change_ty
 {
     module_ty       inherited;

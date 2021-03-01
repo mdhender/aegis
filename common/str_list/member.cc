@@ -40,7 +40,7 @@
 //
 
 int
-string_list_member(string_list_ty *wlp, string_ty *w)
+string_list_member(const string_list_ty *wlp, string_ty *w)
 {
     size_t          j;
 

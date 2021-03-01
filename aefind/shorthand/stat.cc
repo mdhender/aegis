@@ -445,7 +445,6 @@ shorthand_uid(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
 static string_ty *
 type_name_by_pattern(string_ty *abbrev)
 {
-    typedef struct table_ty table_ty;
     struct table_ty
     {
 	const char      *pattern;

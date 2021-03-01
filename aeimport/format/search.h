@@ -1,31 +1,30 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aeimport/format/search.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aeimport/format/search.c
+//
 
 #ifndef AEIMPORT_FORMAT_SEARCH_H
 #define AEIMPORT_FORMAT_SEARCH_H
 
 #include <format/version.h>
 
-typedef struct format_search_ty format_search_ty;
 struct format_search_ty
 {
     string_ty       *filename_physical;
@@ -36,8 +35,8 @@ struct format_search_ty
 format_search_ty *format_search_new(void);
 void format_search_delete(format_search_ty *);
 
-struct string_list_ty; /* forward */
+struct string_list_ty; // forward
 void format_search_staff(format_search_ty *, struct string_list_ty *);
 void format_search_validate(format_search_ty *);
 
-#endif /* AEIMPORT_FORMAT_SEARCH_H */
+#endif // AEIMPORT_FORMAT_SEARCH_H

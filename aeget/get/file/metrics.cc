@@ -39,7 +39,6 @@
 #include <symtab/keys.h>
 
 
-typedef struct row_ty row_ty;
 struct row_ty
 {
     string_ty *filename;

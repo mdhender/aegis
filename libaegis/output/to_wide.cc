@@ -34,7 +34,6 @@
 #include <wide_output.h>
 
 
-typedef struct output_to_wide_ty output_to_wide_ty;
 struct output_to_wide_ty
 {
     output_ty       inherited;

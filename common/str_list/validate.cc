@@ -24,7 +24,7 @@
 
 
 int
-string_list_validate(string_list_ty *slp)
+string_list_validate(const string_list_ty *slp)
 {
     size_t          j;
 

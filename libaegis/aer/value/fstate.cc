@@ -26,7 +26,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_value_fstate_ty rpt_value_fstate_ty;
 struct rpt_value_fstate_ty
 {
     RPT_VALUE

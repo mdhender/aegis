@@ -27,7 +27,6 @@
 #include <mem.h>
 
 
-typedef struct input_tar_child_ty input_tar_child_ty;
 struct input_tar_child_ty
 {
     input_ty	    inherited;

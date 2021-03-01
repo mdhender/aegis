@@ -36,7 +36,6 @@
 #include <server.h>
 
 
-typedef struct response_removed_ty response_removed_ty;
 struct response_removed_ty
 {
     response_ty     inherited;

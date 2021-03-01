@@ -28,7 +28,6 @@
 #include <fp/combined.h>
 #include <fp/crc32.h>
 
-typedef struct ident_ty ident_ty;
 struct ident_ty
 {
     FINGERPRINT_BASE_CLASS

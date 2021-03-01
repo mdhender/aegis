@@ -28,7 +28,6 @@
 #include <shell.h>
 
 
-typedef struct complete_user_ty complete_user_ty;
 struct complete_user_ty
 {
     complete_ty     inherited;

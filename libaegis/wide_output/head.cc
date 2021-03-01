@@ -29,7 +29,6 @@
 #include <trace.h>
 
 
-typedef struct wide_output_head_ty wide_output_head_ty;
 struct wide_output_head_ty
 {
 	wide_output_ty	inherited;

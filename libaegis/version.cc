@@ -83,7 +83,6 @@ version_usage(void)
 }
 
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;

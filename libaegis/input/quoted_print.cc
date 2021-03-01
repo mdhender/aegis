@@ -180,7 +180,6 @@
 #include <mem.h>
 
 
-typedef struct input_quoted_printable_ty input_quoted_printable_ty;
 struct input_quoted_printable_ty
 {
     input_ty	    inherited;

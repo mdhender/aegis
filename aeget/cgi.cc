@@ -28,7 +28,6 @@
 #include <http.h>
 
 
-typedef struct table_t table_t;
 struct table_t
 {
     const char      *name;

@@ -29,7 +29,6 @@
 #include <shell.h>
 
 
-typedef struct complete_change_number_ty complete_change_number_ty;
 struct complete_change_number_ty
 {
     complete_ty     inherited;

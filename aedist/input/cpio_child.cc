@@ -31,7 +31,6 @@
 #include <sub.h>
 
 
-typedef struct input_cpio_child_ty input_cpio_child_ty;
 struct input_cpio_child_ty
 {
     input_ty	    inherited;

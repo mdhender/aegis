@@ -20,75 +20,78 @@
 // MANIFEST: functions to manipulate string type
 //
 
+#pragma implementation "type_string_ty"
+
 #include <indent.h>
 #include <mem.h>
 #include <type/string.h>
 
 
-static void
-gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
+type_string_ty::~type_string_ty()
 {
-    const char      *deref;
-
-    deref = (is_a_list ? "*" : "");
-    indent_printf("%s\1%s*%s;\n", "string_ty", deref, name->str_text);
 }
 
 
-static void
-gen_code_declarator(type_ty *this_thing, string_ty *name, int is_a_list,
-    int attributes)
+type_string_ty::type_string_ty() :
+    type_ty("string")
+{
+}
+
+
+void
+type_string_ty::gen_include_declarator(const nstring &variable_name,
+    bool is_a_list) const
+{
+    const char *deref = (is_a_list ? "*" : "");
+    indent_printf("%s\1%s*%s;\n", "string_ty", deref, variable_name.c_str());
+}
+
+
+void
+type_string_ty::gen_code_declarator(const nstring &variable_name,
+    bool is_a_list, int attributes) const
 {
     indent_printf("string_write(fp, ");
     if (is_a_list)
        	indent_printf("(const char *)0");
     else
-       	indent_printf("\"%s\"", name->str_text);
-    indent_printf(", this_thing->%s);\n", name->str_text);
+	indent_printf("\"%s\"", variable_name.c_str());
+    indent_printf(", this_thing->%s);\n", variable_name.c_str());
 }
 
 
-static void
-gen_code_call_xml(type_ty *this_thing, string_ty *form_name,
-    string_ty *member_name, int attributes)
+void
+type_string_ty::gen_code_call_xml(const nstring &form_name,
+    const nstring &member_name, int attributes) const
 {
     indent_printf
     (
 	"string_write_xml(fp, \"%s\", this_thing->%s);\n",
-	form_name->str_text,
-	member_name->str_text
+	form_name.c_str(),
+	member_name.c_str()
     );
 }
 
 
-static void
-gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
+void
+type_string_ty::gen_free_declarator(const nstring &variable_name,
+    bool is_a_list) const
 {
-    indent_printf("str_free(this_thing->%s);\n", name->str_text);
+    indent_printf("str_free(this_thing->%s);\n", variable_name.c_str());
 }
 
 
-static string_ty *
-c_name(type_ty *tp)
+nstring
+type_string_ty::c_name_inner()
+    const
 {
-    return str_from_c("string_ty *");
+    return "string_ty *";
 }
 
 
-type_method_ty type_string =
+bool
+type_string_ty::has_a_mask()
+    const
 {
-    sizeof(type_ty),
-    "string",
-    0, // has a mask NOT
-    0, // constructor
-    0, // destructor
-    0, // gen_include
-    gen_include_declarator,
-    0, // gen_code
-    gen_code_declarator,
-    gen_code_call_xml,
-    gen_free_declarator,
-    0, // member_add
-    0, // in_include_file
-    c_name,
-};
+    return false;
+}

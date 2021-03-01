@@ -27,12 +27,8 @@
 void
 change_copyright_years_now(change_ty *cp)
 {
-    time_t          when;
-    struct tm       *tm;
-    int             year;
-
-    when = now();
-    tm = localtime(&when);
-    year = tm->tm_year + 1900;
+    time_t when = now();
+    struct tm *the_time = localtime(&when);
+    int year = the_time->tm_year + 1900;
     change_copyright_year_append(cp, year);
 }

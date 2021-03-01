@@ -38,7 +38,6 @@
 #include <server.h>
 
 
-typedef struct response_clear_static_dir_ty response_clear_static_dir_ty;
 struct response_clear_static_dir_ty
 {
     response_ty     inherited;

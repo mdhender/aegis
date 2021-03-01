@@ -28,7 +28,6 @@
 #include <str.h>
 
 
-typedef struct rpt_value_time_ty rpt_value_time_ty;
 struct rpt_value_time_ty
 {
 	RPT_VALUE

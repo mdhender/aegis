@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1992-1999, 2001-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/project.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1992-1999, 2001-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/project.c
+//
 
 #ifndef PROJECT_H
 #define PROJECT_H
@@ -29,12 +29,11 @@
 #include <pattr.h>
 #include <view_path.h>
 
-struct string_list_ty; /* existence */
-struct change_ty; /* existence */
-struct sub_context_ty; /* existence */
-struct fstate_src_ty; /* existence */
+struct string_list_ty; // existence
+struct change_ty; // existence
+struct sub_context_ty; // existence
+struct fstate_src_ty; // existence
 
-typedef struct project_ty project_ty;
 struct project_ty
 {
     long            reference_count;
@@ -55,11 +54,11 @@ struct project_ty
     long            parent_bn;
     struct string_list_ty *file_list[view_path_MAX];
     struct symtab_ty *file_by_uuid[view_path_MAX];
-    /*
-     * if you add anything to this structure,
-     * make sure you fix project_free in project.c
-     * and zero-out the item in project_alloc
-     */
+    //
+    // if you add anything to this structure,
+    // make sure you fix project_free in project.c
+    // and zero-out the item in project_alloc
+    //
 };
 
 project_ty *project_alloc(string_ty *name);
@@ -169,4 +168,4 @@ string_ty *project_brief_description_get(project_ty *);
   */
 struct change_ty *project_uuid_find(project_ty *pp, string_ty *uuid);
 
-#endif /* PROJECT_H */
+#endif // PROJECT_H

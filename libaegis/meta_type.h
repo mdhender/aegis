@@ -1,34 +1,33 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 2001-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/type.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1994, 2001-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/type.c
+//
 
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef LIBAEGIS_META_TYPE_H
+#define LIBAEGIS_META_TYPE_H
 
 #include <ac/stddef.h>
 
 #include <main.h>
 #include <str.h>
 
-typedef struct type_table_ty type_table_ty;
 struct type_table_ty
 {
     const char      *name;
@@ -39,7 +38,6 @@ struct type_table_ty
     string_ty       *fast_name;
 };
 
-typedef struct type_ty type_ty;
 struct type_ty
 {
     const char      *name;
@@ -55,7 +53,6 @@ struct type_ty
     int (*is_set)(void *);
 };
 
-typedef struct generic_struct_ty generic_struct_ty;
 struct generic_struct_ty
 {
     long            reference_count;
@@ -87,4 +84,4 @@ void type_enum_option_set(void);
 void type_enum_option_clear(void);
 int type_enum_option_query(void);
 
-#endif /* TYPE_H */
+#endif // LIBAEGIS_META_TYPE_H

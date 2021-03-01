@@ -23,11 +23,9 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-#include <main.h>
+#include <nstring.h>
 
-struct string_ty;
-
-void generate_code__init(struct string_ty *);
+void generate_code__init(const nstring &);
 void parse(const char *in, const char *c_out, const char *h_out);
 
 #endif /* PARSE_H */

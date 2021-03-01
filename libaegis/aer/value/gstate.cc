@@ -37,7 +37,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_value_gstate_ty rpt_value_gstate_ty;
 struct rpt_value_gstate_ty
 {
     RPT_VALUE

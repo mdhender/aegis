@@ -20,28 +20,38 @@
 // MANIFEST: functions to manipulate real type
 //
 
+#pragma implementation "type_real_ty"
+
 #include <indent.h>
 #include <mem.h>
 #include <type/real.h>
 
 
-static void
-gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
+type_real_ty::~type_real_ty()
 {
-    const char      *deref;
-
-    deref = (is_a_list ? "*" : "");
-    indent_printf("%s\1%s%s;\n", "double", deref, name->str_text);
 }
 
 
-static void
-gen_code_declarator(type_ty *type, string_ty *name, int is_a_list,
-    int attributes)
+type_real_ty::type_real_ty() :
+    type_ty("real")
 {
-    int             show;
+}
 
-    show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
+
+void
+type_real_ty::gen_include_declarator(const nstring &variable_name,
+    bool is_a_list) const
+{
+    const char *deref = (is_a_list ? "*" : "");
+    indent_printf("%s\1%s%s;\n", "double", deref, variable_name.c_str());
+}
+
+
+void
+type_real_ty::gen_code_declarator(const nstring &variable_name, bool is_a_list,
+    int attributes) const
+{
+    int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
 
     indent_printf("real_write(fp, ");
     if (is_a_list)
@@ -51,58 +61,47 @@ gen_code_declarator(type_ty *type, string_ty *name, int is_a_list,
     }
     else
     {
-	indent_printf("\"%s\"", name->str_text);
+	indent_printf("\"%s\"", variable_name.c_str());
     }
-    indent_printf(", this_thing->%s, %d);\n", name->str_text, show);
+    indent_printf(", this_thing->%s, %d);\n", variable_name.c_str(), show);
 }
 
 
-static void
-gen_code_call_xml(type_ty *type, string_ty *form_name, string_ty *member_name,
-    int attributes)
+void
+type_real_ty::gen_code_call_xml(const nstring &form_name,
+    const nstring &member_name, int attributes) const
 {
-    int             show;
-
-    show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
+    int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
     indent_printf
     (
 	"real_write_xml(fp, \"%s\", this_thing->%s, %d);\n",
-	form_name->str_text,
-	member_name->str_text,
+	form_name.c_str(),
+	member_name.c_str(),
 	show
     );
 }
 
 
-static void
-gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
+void
+type_real_ty::gen_free_declarator(const nstring &variable_name, bool is_a_list)
+    const
 {
     if (is_a_list)
        	indent_printf(";\n");
 }
 
 
-static string_ty *
-c_name(type_ty *tp)
+nstring
+type_real_ty::c_name_inner()
+    const
 {
-    return str_from_c("double");
+    return "double";
 }
 
 
-type_method_ty type_real =
+bool
+type_real_ty::has_a_mask()
+    const
 {
-    sizeof(type_ty),
-    "real",
-    1, // has a mask
-    0, // constructor
-    0, // destructor
-    0, // gen_include
-    gen_include_declarator,
-    0, // gen_code
-    gen_code_declarator,
-    gen_code_call_xml,
-    gen_free_declarator,
-    0, // member_add
-    0, // in_include_file
-    c_name,
-};
+    return true;
+}

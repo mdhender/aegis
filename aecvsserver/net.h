@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for ae-cvs-server/net.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for ae-cvs-server/net.c
+//
 
 #ifndef AE_CVS_SERVER_NET_H
 #define AE_CVS_SERVER_NET_H
@@ -62,15 +62,13 @@ enum response_code_ty
     response_code_Update_existing,
     response_code_Valid_requests,
     response_code_Wrapper_rcsOption,
-    response_code_MAX /* must be last */
+    response_code_MAX // must be last
 };
-typedef enum response_code_ty response_code_ty;
 
 /**
   * The net_ty class is used to remember the state of a network connection
   * to a client.
   */
-typedef struct net_ty net_ty;
 struct net_ty
 {
     struct input_ty *in;
@@ -83,41 +81,41 @@ struct net_ty
       */
     char response_valid[response_code_MAX];
 
-    /*
-     * The response queue, the list of responses yet to be sent to
-     * the client.
-     */
+    //
+    // The response queue, the list of responses yet to be sent to
+    // the client.
+    //
     size_t response_queue_length;
     size_t response_queue_max;
     struct response_ty **response_queue_item;
 
-    /*
-     * The set of directories accumulated by Directory requests until
-     * something eats them all, indexed by client-side path.
-     */
+    //
+    // The set of directories accumulated by Directory requests until
+    // something eats them all, indexed by client-side path.
+    //
     struct symtab_ty *dir_info_cs;
 
-    /*
-     * The set of directories accumulated by Directory requests until
-     * something eats them all, indexed by server-side path.
-     */
+    //
+    // The set of directories accumulated by Directory requests until
+    // something eats them all, indexed by server-side path.
+    //
     struct symtab_ty *dir_info_ss;
 
-    /*
-     * The most recent Directory request.
-     */
+    //
+    // The most recent Directory request.
+    //
     directory_ty *curdir;
 
-    /*
-     * The file_info field is used to remember a table of information
-     * about files, indexed by root-relative file name.
-     */
+    //
+    // The file_info field is used to remember a table of information
+    // about files, indexed by root-relative file name.
+    //
     struct symtab_ty *file_info;
 
-    /*
-     * The list of strings accumulated by Argument and Argumentx requests
-     * until something eats them all.
-     */
+    //
+    // The list of strings accumulated by Argument and Argumentx requests
+    // until something eats them all.
+    //
     string_list_ty argument_list;
 
     /**
@@ -234,4 +232,4 @@ directory_ty *net_directory_find_client_side(net_ty *, string_ty *);
   */
 directory_ty *net_directory_find_server_side(net_ty *, string_ty *);
 
-#endif /* AE_CVS_SERVER_NET_H */
+#endif // AE_CVS_SERVER_NET_H

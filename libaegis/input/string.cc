@@ -26,7 +26,6 @@
 #include <input/private.h>
 #include <str.h>
 
-typedef struct input_string_ty input_string_ty;
 struct input_string_ty
 {
     input_ty        inherited;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <config.h>
 #include <ac/stdio.h>
 
-#ifdef HAVE_MNTENT_H
+#if HAVE_MNTENT_H
 
 #include <mntent.h>
 

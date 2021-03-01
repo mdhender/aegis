@@ -138,8 +138,8 @@ Configure with <i>./configure
 Edit the generated Makefile,
 <ul>
 <li>add <tt>-DSOURCE_FORGE_HACK</tt> to the CXXFLAGS variable;
-<li>add <tt>-static</tt> to the LDFLAGS variable if you aren't building on a
-Redhat 7.3 system, like SourceForge uses.
+<li>add <tt>-static</tt> to the LDFLAGS variable, to make sure the right
+version of the libraries statically linked into the executables.
 </ul>
 <li>
 Now you can <i>make</i> as normal.
@@ -171,7 +171,7 @@ rm bin/aecvsserver bin/aeedit bin/aefind bin/aegis.cgi.i bin/aeimport
 rm bin/aeintegratq bin/aels bin/aemeasure bin/ae-sccs-put bin/aesub
 rm bin/aexml bin/tkaeca bin/tkaegis bin/tkaenc bin/tkaepa bin/tkaer
 rm bin/xaegis
-rm -r com lib man
+rm -r com lib man etc
 mkdir -p share-new/en
 mv share/en/html share-new/en
 rm -r share

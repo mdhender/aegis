@@ -28,7 +28,6 @@
 #include <str.h>
 
 
-typedef struct output_cpio_ty output_cpio_ty;
 struct output_cpio_ty
 {
 	output_ty	inherited;

@@ -40,7 +40,6 @@ enum state_ty
     state_C,
     state_human
 };
-typedef enum state_ty state_ty;
 
 static state_ty state;
 
@@ -299,6 +298,7 @@ lang_set(void)
 void
 language_check_translations()
 {
+#ifndef SOURCE_FORGE_HACK
 #if HAVE_GETTEXT
     static int      done;
 
@@ -370,5 +370,6 @@ language_check_translations()
 	    }
 	}
     }
-#endif
+#endif // HAVE_GETTEXT
+#endif // !SOURCE_FORGE_HACK
 }

@@ -46,7 +46,6 @@
 #define RESERVED     0xE0 // bits 5..7: reserved
 
 
-typedef struct input_gunzip_ty input_gunzip_ty;
 struct input_gunzip_ty
 {
     input_ty	    inherited;

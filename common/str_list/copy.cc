@@ -43,7 +43,7 @@
 //
 
 void
-string_list_copy(string_list_ty *to, string_list_ty *from)
+string_list_copy(string_list_ty *to, const string_list_ty *from)
 {
     size_t          j;
 

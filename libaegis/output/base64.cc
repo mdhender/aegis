@@ -34,7 +34,6 @@ static __inline int map64(int n) { return base64[n & 0x3F]; }
 #endif
 
 
-typedef struct output_base64_ty output_base64_ty;
 struct output_base64_ty
 {
     output_ty	    inherited;

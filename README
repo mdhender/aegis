@@ -97,11 +97,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.17.README   # Description, from	tar file
-		File:	aegis.4.17.lsm	    # Description, in LSM format
-		File:	aegis.4.17.ae	    # the complete source, aedist format
-		File:	aegis.4.17.spec	    # RedHat package specification
-		File:	aegis.4.17.tar.gz   # the complete source
+		File:	aegis.4.18.README   # Description, from	tar file
+		File:	aegis.4.18.lsm	    # Description, in LSM format
+		File:	aegis.4.18.ae	    # the complete source, aedist format
+		File:	aegis.4.18.spec	    # RedHat package specification
+		File:	aegis.4.18.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.17.README   # Description, from	tar file
-		File:	aegis.4.17.lsm	    # Description, in LSM format
-		File:	aegis.4.17.spec	    # RedHat package specification
-		File:	aegis.4.17.ae	    # the complete source, aedist format
-		File:	aegis.4.17.tar.gz   # the complete source
+		File:	aegis.4.18.README   # Description, from	tar file
+		File:	aegis.4.18.lsm	    # Description, in LSM format
+		File:	aegis.4.18.spec	    # RedHat package specification
+		File:	aegis.4.18.ae	    # the complete source, aedist format
+		File:	aegis.4.18.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,6 +250,36 @@ RELEASE	NOTES
 	same release of	Aegis.	While the database format is backwards
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
+
+   Version 4.18	(10-Jun-2004)
+	* A number of build problems have been fixed, particularly concerning
+	GCC 3.3	and later.
+
+	* The aemv(1) command has been enhanced	to accept more than two	file
+	names.	You are	now able to move serveral files	in the one command.
+
+	* The aedist -receive command has been enhanced	to process move
+	operations in a	batched	way.  This improved performance	when receiving
+	a change that renames many files.
+
+	* The ./configure script has been changed to take note of the
+	--sysconfdir option, used to specify the location of the /etc
+	directory.
+
+	* A bug	has been fixed in the aepatch(1) command.  It would SEGFAULT
+	when a non-source file was patched.
+
+	* A bug	has been fixed in the aemeasure(1) command.  It	would SEGFAULT
+	when no	files were named on the	command	line.
+
+	* The Russian error message catalogue has been updated.
+
+	* A subtle bug in the change file out-of-date tests have been fixed.
+	It did not adequately address the transition case for projects
+	containing files with and without UUIDs.
+
+	* The ./configure --sysconfdir option is now honored.  It is very
+	important to set it to /etc when you configure Aegis.
 
    Version 4.17	(3-Jun-2004)
 	* Each new change set is now assigned a	Universally Unique Identifier

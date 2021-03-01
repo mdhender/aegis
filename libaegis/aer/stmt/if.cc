@@ -29,7 +29,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_stmt_if_ty rpt_stmt_if_ty;
 struct rpt_stmt_if_ty
 {
 	RPT_STMT

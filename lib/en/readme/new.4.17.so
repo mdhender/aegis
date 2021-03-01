@@ -19,10 +19,62 @@
 .\"
 .\" MANIFEST: document describing new 4.17 features
 .\"
-.\" .PP
-.\"  .if n *
-.\" .if t \(bu
-.\" .\" change NN
+.PP
+.if n *
+.if t \(bu
+.\" change 23, 22, 21, 20, 18, 17, 15, 13
+A number of build problems have been fixed,
+particularly concerning GCC 3.3 and later.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+The \fIaemv\fP(1) command has been enhanced to accept more than two file names.
+You are now able to move serveral files in the one command.
+.PP
+.if n *
+.if t \(bu
+.\" change 30
+The \fIaedist \-receive\fP command has been enhanced to process move
+operations in a batched way.  This improved performance when
+receiving a change that renames many files.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+The \f[CW]./configure\fP script has been changed to take note of the
+\f[CW]--sysconfdir\fP option, used to specify the location of the /etc
+directory.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+A bug has been fixed in the \fIaepatch\fP(1) command.
+It would SEGFAULT when a non-source file was patched.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+A bug has been fixed in the \fIaemeasure\fP(1) command.
+It would SEGFAULT when no files were named on the command line.
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+The Russian error message catalogue has been updated.
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+A subtle bug in the change file out-of-date tests have been fixed.  It
+did not adequately address the transition case for projects containing
+files with and without UUIDs.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+The \f[CW]./configure --sysconfdir\fP option is now honored.
+It is \fIvery\fP important to set it to \fI/etc\fP when you configure Aegis.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.17 (3-Jun-2004)

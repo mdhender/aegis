@@ -26,7 +26,6 @@
 #include <sub.h>
 
 
-typedef struct rpt_value_error_ty rpt_value_error_ty;
 struct rpt_value_error_ty
 {
 	RPT_VALUE

@@ -41,7 +41,6 @@ format_delete(format_ty *fp)
 }
 
 
-typedef struct context_ty context_ty;
 struct context_ty
 {
     format_ty       *fp;

@@ -34,7 +34,6 @@
 #include <response/valid_reques.h>
 
 
-typedef struct response_valid_requests_ty response_valid_requests_ty;
 struct response_valid_requests_ty
 {
     response_ty     inherited;

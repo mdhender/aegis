@@ -60,7 +60,6 @@ enum lock_ty
     lock_gstate,
     lock_MAX
 };
-typedef enum lock_ty lock_ty;
 
 enum lock_mux_ty
 {
@@ -72,10 +71,8 @@ enum lock_mux_ty
     lock_mux_history,
     lock_mux_MAX
 };
-typedef enum lock_mux_ty lock_mux_ty;
 
 
-typedef struct lock_place_ty lock_place_ty;
 struct lock_place_ty
 {
     struct flock    location;

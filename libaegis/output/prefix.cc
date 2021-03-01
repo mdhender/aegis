@@ -24,7 +24,6 @@
 #include <output/private.h>
 #include <str.h>
 
-typedef struct output_prefix_ty output_prefix_ty;
 struct output_prefix_ty
 {
 	output_ty	inherited;

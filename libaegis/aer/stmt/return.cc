@@ -26,7 +26,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_stmt_return_ty rpt_stmt_return_ty;
 struct rpt_stmt_return_ty
 {
 	RPT_STMT

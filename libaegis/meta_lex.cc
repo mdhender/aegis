@@ -32,7 +32,7 @@
 #include <input/env.h>
 #include <input/file.h>
 #include <input/gunzip.h>
-#include <lex.h>
+#include <meta_lex.h>
 #include <mem.h>
 #include <str.h>
 #include <stracc.h>

@@ -43,7 +43,6 @@ qemail(user_ty *up)
 }
 
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char	    *name;

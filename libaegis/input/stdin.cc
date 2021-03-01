@@ -33,7 +33,6 @@
 #include <str.h>
 
 
-typedef struct input_stdin_ty input_stdin_ty;
 struct input_stdin_ty
 {
     input_ty        inherited;

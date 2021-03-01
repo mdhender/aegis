@@ -27,7 +27,6 @@
 #include <symtab.h>
 
 
-typedef struct rpt_expr_struct_assign_ty rpt_expr_struct_assign_ty;
 struct rpt_expr_struct_assign_ty
 {
     RPT_EXPR

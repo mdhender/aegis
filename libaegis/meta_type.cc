@@ -30,7 +30,7 @@
 #include <error.h>
 #include <fstrcmp.h>
 #include <trace.h>
-#include <type.h>
+#include <meta_type.h>
 #include <zero.h>
 
 

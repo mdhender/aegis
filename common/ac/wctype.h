@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1998, 2002 Peter Miller;
+ *	Copyright (C) 1996, 1998, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,11 +41,11 @@
 /*
  * Silicon Graphics
  */
-#ifdef HAVE_WIDEC_H
+#if HAVE_WIDEC_H
 #include <widec.h>
 #endif
 
-#ifdef HAVE_WCTYPE_H
+#if HAVE_WCTYPE_H
 #include <wctype.h>
 #endif
 
@@ -54,12 +54,12 @@
  * <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
  * but this is incorrect.
  */
-#ifndef HAVE_WINT_T
-#define HAVE_WINT_T
+#if !HAVE_WINT_T
+#define HAVE_WINT_T 1
 typedef wchar_t wint_t;
 #endif
 
-#ifndef HAVE_WCTYPE_H
+#if !HAVE_WCTYPE_H
 #include <main.h>
 int iswalnum(wint_t);
 int iswdigit(wint_t);
@@ -80,7 +80,7 @@ wint_t towupper(wint_t);
  * This code copes with the case where (a) it exists, (b) it is broken,
  * and (c) it is defined in <wctype.h>
  */
-#ifndef HAVE_ISWPRINT
+#if !HAVE_ISWPRINT
 
 #ifdef iswprint
 #undef iswprint

@@ -25,7 +25,6 @@
 #include <str.h>
 
 
-typedef struct output_tee_ty output_tee_ty;
 struct output_tee_ty
 {
 	output_ty	inherited;

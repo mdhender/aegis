@@ -45,7 +45,7 @@
 //
 
 string_ty      *
-wl2str(string_list_ty *wl, int start, int stop, const char *sep)
+wl2str(const string_list_ty *wl, int start, int stop, const char *sep)
 {
     int             j;
     static char     *tmp;

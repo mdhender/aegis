@@ -31,7 +31,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_stmt_for_ty rpt_stmt_for_ty;
 struct rpt_stmt_for_ty
 {
     RPT_STMT
@@ -202,7 +201,6 @@ rpt_stmt_for(rpt_expr_ty *e0,
 }
 
 
-typedef struct rpt_stmt_foreach_ty rpt_stmt_foreach_ty;
 struct rpt_stmt_foreach_ty
 {
     RPT_STMT

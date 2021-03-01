@@ -111,7 +111,6 @@ clean_list(void)
 }
 
 
-typedef struct clean_info_ty clean_info_ty;
 struct clean_info_ty
 {
     string_ty	    *dd;

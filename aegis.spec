@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.17
+Version: 4.18
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.17.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.18.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -48,7 +48,7 @@ Aegis documentation in DVI format.
 %setup
 
 %build
-./configure --prefix=/usr
+./configure --sysconfdir=/etc --prefix=/usr
 make
 
 %install

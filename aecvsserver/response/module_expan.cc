@@ -36,7 +36,6 @@
 #include <response/private.h>
 
 
-typedef struct response_module_expansion_ty response_module_expansion_ty;
 struct response_module_expansion_ty
 {
     response_ty     inherited;

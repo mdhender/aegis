@@ -385,22 +385,20 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 
 	if (long_flag)
 	{
-	    struct tm       *tm;
-	    char             buffer[100];
-
 	    printf("<td valign=top><tt>");
 	    html_encode_charstar(mode_string(st.st_mode));
 	    printf("</tt></td>\n");
 
 	    printf("<td valign=top>");
-	    tm = localtime(&st.st_mtime);
-	    strftime(buffer, sizeof(buffer), "%b %e", tm);
+	    struct tm *the_time = localtime(&st.st_mtime);
+	    char buffer[100];
+	    strftime(buffer, sizeof(buffer), "%b %e", the_time);
 	    html_encode_charstar(buffer);
 	    printf("</td><td valign=top>");
 	    if (st.st_mtime < time_split)
-		strftime(buffer, sizeof(buffer), "%Y", tm);
+		strftime(buffer, sizeof(buffer), "%Y", the_time);
 	    else
-		strftime(buffer, sizeof(buffer), "%H:%M", tm);
+		strftime(buffer, sizeof(buffer), "%H:%M", the_time);
 	    html_encode_charstar(buffer);
 	    printf("</td>\n");
 

@@ -35,7 +35,6 @@
 #include <wide_output/wrap.h>
 
 
-typedef struct column_ty column_ty;
 struct column_ty
 {
     wide_output_ty  *header; // actually wide_output_column_ty
@@ -45,7 +44,6 @@ struct column_ty
     int		    right;
 };
 
-typedef struct col_pretty_ty col_pretty_ty;
 struct col_pretty_ty
 {
     col_ty	    inherited;
@@ -98,7 +96,6 @@ destructor(col_ty *fp)
 }
 
 
-typedef struct emit_ty emit_ty;
 struct emit_ty
 {
     wide_output_ty  *content;

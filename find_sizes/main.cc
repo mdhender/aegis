@@ -29,7 +29,6 @@
 #include <error.h>
 
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;

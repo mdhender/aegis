@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/os.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/os.c
+//
 
 #ifndef OS_H
 #define OS_H
@@ -28,7 +28,7 @@
 #include <main.h>
 #include <str.h>
 
-struct string_list_ty; /* forward */
+struct string_list_ty; // forward
 
 #define OS_EXEC_FLAG_NO_INPUT 0
 #define OS_EXEC_FLAG_INPUT 1
@@ -130,7 +130,6 @@ enum edit_ty
 	edit_foreground,
 	edit_background
 };
-typedef enum edit_ty edit_ty;
 
 void os_edit(string_ty *, edit_ty);
 string_ty *os_edit_string(string_ty *, edit_ty);
@@ -174,6 +173,6 @@ void os_interrupt_ignore(void);
 int os_interrupt_has_occurred(void);
 
 int os_isa_directory(string_ty *);
-int os_isa_special_file(string_ty *); /* !S_IFREG */
+int os_isa_special_file(string_ty *); // !S_IFREG
 
-#endif /* OS_H */
+#endif // OS_H

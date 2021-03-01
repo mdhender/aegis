@@ -30,7 +30,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_stmt_try_ty rpt_stmt_try_ty;
 struct rpt_stmt_try_ty
 {
     RPT_STMT

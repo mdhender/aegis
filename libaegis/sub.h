@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/sub.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/sub.c
+//
 
 #ifndef SUB_H
 #define SUB_H
@@ -26,9 +26,9 @@
 #include <ac/time.h>
 #include <str.h>
 
-struct change_ty; /* existence */
-struct project_ty; /* existence */
-typedef struct sub_context_ty sub_context_ty;
+struct change_ty; // existence
+struct project_ty; // existence
+struct sub_context_ty; // existence
 
 sub_context_ty *sub_context_New(const char *, int);
 #define sub_context_new() sub_context_New(__FILE__, __LINE__)
@@ -68,26 +68,26 @@ struct string_ty *subst_intl(sub_context_ty *, const char *);
 void subst_intl_project(sub_context_ty *, struct project_ty *);
 void subst_intl_change(sub_context_ty *, struct change_ty *);
 
-/*
- * internationalized error messages
- * (also the keywords necessary to pull out the msgid strings)
- */
+//
+// internationalized error messages
+// (also the keywords necessary to pull out the msgid strings)
+//
 void error_intl(sub_context_ty *, const char *);
 void fatal_intl(sub_context_ty *, const char *) NORETURN;
 void verbose_intl(sub_context_ty *, const char *);
 
-/*
- * This macro does nothing by itself, but it serves as a keyword for the
- * xgettext program, when extracting internationalized msgid keys.
- */
+//
+// This macro does nothing by itself, but it serves as a keyword for the
+// xgettext program, when extracting internationalized msgid keys.
+//
 #define i18n(x) (x)
 
-/*
- * This function is only for use by functions within aegis/sub/ .c
- * files, when setting the error message.
- */
+//
+// This function is only for use by functions within aegis/sub/ .c
+// files, when setting the error message.
+//
 void sub_context_error_set(sub_context_ty *, const char *);
 struct project_ty *sub_context_project_get(sub_context_ty *);
 struct change_ty *sub_context_change_get(sub_context_ty *);
 
-#endif /* SUB_H */
+#endif // SUB_H

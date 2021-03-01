@@ -61,14 +61,12 @@
 
 #define MTIME_BLURB 0
 
-typedef struct time_map_ty time_map_ty;
 struct time_map_ty
 {
     time_t	    old;
     time_t	    becomes;
 };
 
-typedef struct time_map_list_ty time_map_list_ty;
 struct time_map_list_ty
 {
     time_map_ty	    *list;

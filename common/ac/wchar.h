@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1996-1999, 2001, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,19 +25,19 @@
 
 #include <ac/stddef.h>
 
-#ifdef HAVE_WCHAR_H
+#if HAVE_WCHAR_H
 #include <wchar.h>
 
-#ifndef HAVE_WINT_T
-#define HAVE_WINT_T
+#if !HAVE_WINT_T
+#define HAVE_WINT_T 1
 #ifndef _WINT_T
 #define _WINT_T
 typedef wchar_t wint_t;
 #endif
 #endif
 
-#ifndef HAVE_MBSTATE_T
-#define HAVE_MBSTATE_T
+#if !HAVE_MBSTATE_T
+#define HAVE_MBSTATE_T 1
 #ifndef _MBSTATE_T
 #define _MBSTATE_T
 typedef int mbstate_t;
@@ -63,7 +63,7 @@ size_t wcsrtombs(char *, const wchar_t **, size_t, mbstate_t *);
 #endif
 
 /* Solaris bug 1250837: include wchar.h before widec.h */
-#ifdef HAVE_WIDEC_H
+#if HAVE_WIDEC_H
 #include <widec.h>
 #endif
 
@@ -76,7 +76,7 @@ size_t wcsrtombs(char *, const wchar_t **, size_t, mbstate_t *);
  * This code copes with the case where (a) it exists, (b) it is broken,
  * and (c) it is defined in <wchar.h>, of all places!
  */
-#ifndef HAVE_ISWPRINT
+#if HAVE_ISWPRINT
 
 #ifdef iswprint
 #undef iswprint

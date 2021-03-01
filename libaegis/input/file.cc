@@ -38,7 +38,6 @@
 #include <str.h>
 #include <sub.h>
 
-typedef struct input_file_ty input_file_ty;
 struct input_file_ty
 {
     input_ty	    inherited;

@@ -45,7 +45,6 @@
 #include <user.h>
 
 
-typedef struct output_pager_ty output_pager_ty;
 struct output_pager_ty
 {
     output_ty	    inherited;

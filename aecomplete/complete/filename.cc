@@ -32,7 +32,6 @@
 #include <shell.h>
 
 
-typedef struct complete_filename_ty complete_filename_ty;
 struct complete_filename_ty
 {
     complete_ty     inherited;

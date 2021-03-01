@@ -35,7 +35,6 @@ static int      keyword_expected;
 static symtab_ty *stp;
 static int      error_count;
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;
@@ -152,7 +151,6 @@ enum ctab_ty
     ctab_is_semi,
     ctab_is_alpha
 };
-typedef enum ctab_ty ctab_ty;
 
 static ctab_ty ctab[] =
 {

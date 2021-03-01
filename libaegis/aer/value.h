@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 2002, 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/aer/value.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1994, 1996, 2002-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/aer/value.c
+//
 
 #ifndef AEGIS_AER_VALUE_H
 #define AEGIS_AER_VALUE_H
@@ -46,12 +46,10 @@ enum rpt_value_type_ty
     rpt_value_type_structure,
     rpt_value_type_time,
     rpt_value_type_void,
-    rpt_value_type_MAX	/* must be last */
+    rpt_value_type_MAX	// must be last
 };
-typedef enum rpt_value_type_ty rpt_value_type_ty;
 
 
-typedef struct rpt_value_method_ty rpt_value_method_ty;
 struct rpt_value_method_ty
 {
     size_t          size;
@@ -74,7 +72,6 @@ struct rpt_value_method_ty
     rpt_value_method_ty *method;		\
     long            reference_count;
 
-typedef struct rpt_value_ty rpt_value_ty;
 struct rpt_value_ty
 {
     RPT_VALUE
@@ -92,4 +89,4 @@ rpt_value_ty *rpt_value_count(rpt_value_ty *);
 const char *rpt_value_typeof(rpt_value_ty *);
 rpt_value_ty *rpt_value_undefer(rpt_value_ty *);
 
-#endif /* AEGIS_AER_VALUE_H */
+#endif // AEGIS_AER_VALUE_H

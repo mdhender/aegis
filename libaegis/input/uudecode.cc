@@ -39,7 +39,6 @@
 static char default_encoding_table[] =
 	   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
 
-typedef struct input_uudecode_ty input_uudecode_ty;
 struct input_uudecode_ty
 {
     input_ty	    inherited;

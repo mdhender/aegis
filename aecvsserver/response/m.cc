@@ -37,7 +37,6 @@
 #include <response/private.h>
 
 
-typedef struct response_m_ty response_m_ty;
 struct response_m_ty
 {
     response_ty     inherited;

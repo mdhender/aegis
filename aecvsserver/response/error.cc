@@ -43,7 +43,6 @@
 #include <response/private.h>
 
 
-typedef struct response_error_ty response_error_ty;
 struct response_error_ty
 {
     response_ty     inherited;

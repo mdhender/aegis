@@ -156,11 +156,9 @@ enum token_t
     token_operand,
     token_end_of_file,
 };
-typedef enum token_t token_t;
 
 
 static string_ty *token_value;
-
 
 
 static token_t

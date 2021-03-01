@@ -59,7 +59,6 @@
 #include <response/private.h>
 
 
-typedef struct response_update_existing_ty response_update_existing_ty;
 struct response_update_existing_ty
 {
     response_ty     inherited;

@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994-1996, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_LIMITS_H
+#if HAVE_LIMITS_H
 #include <limits.h>
 #else
 

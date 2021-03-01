@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_ZLIB_H
+#if HAVE_ZLIB_H
 #include <zlib.h>
 #else
 #error "You must have zlib installed in order to build Aegis."

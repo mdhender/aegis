@@ -27,7 +27,6 @@
 #include <str.h>
 
 
-typedef struct rpt_value_func_ty rpt_value_func_ty;
 struct rpt_value_func_ty
 {
 	RPT_VALUE

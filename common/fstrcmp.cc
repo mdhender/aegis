@@ -47,7 +47,6 @@
 #include <trace.h>
 
 
-typedef struct snake_t snake_t;
 struct snake_t
 {
     long            line1;
@@ -65,14 +64,12 @@ static long    *V2_table;
 static snake_t *nextsnake;	// next allocable snake structure
 static snake_t *snake_table;	// allocable snake structures
 
-typedef struct file file;
 struct file
 {
     const char      *f_lines;
     long            f_linecount;
 };
 
-typedef struct fc_t fc_t;
 struct fc_t
 {
     file            fileA;

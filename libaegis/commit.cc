@@ -54,9 +54,7 @@ enum what_ty
     what_rmdir_tree_errok,
     what_symlink
 };
-typedef enum what_ty what_ty;
 
-typedef struct action_ty action_ty;
 struct action_ty
 {
     what_ty         what;

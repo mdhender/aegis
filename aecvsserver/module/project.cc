@@ -37,7 +37,6 @@
 #include <symtab.h>
 
 
-typedef struct module_project_ty module_project_ty;
 struct module_project_ty
 {
     module_ty       inherited;

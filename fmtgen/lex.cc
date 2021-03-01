@@ -35,7 +35,6 @@
 #include <parse.gen.h> // must be last
 
 
-typedef struct file_ty file_ty;
 struct file_ty
 {
     FILE	    *fp;
@@ -70,7 +69,6 @@ static symtab_ty    *keyword;
 static void
 lex_initialize(void)
 {
-    typedef struct keyword_ty keyword_ty;
     struct keyword_ty
     {
 	const char      *k_name;

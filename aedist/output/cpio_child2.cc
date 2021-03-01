@@ -27,7 +27,6 @@
 #include <str.h>
 
 
-typedef struct output_cpio_child2_ty output_cpio_child2_ty;
 struct output_cpio_child2_ty
 {
 	output_ty	inheroted;

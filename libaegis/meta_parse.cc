@@ -25,9 +25,9 @@
 #include <error.h>
 #include <gram.h>
 #include <input.h>
-#include <lex.h>
 #include <mem.h>
-#include <parse.h>
+#include <meta_lex.h>
+#include <meta_parse.h>
 #include <sub.h>
 #include <trace.h>
 

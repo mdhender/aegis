@@ -278,10 +278,8 @@ str_free(string_ty *s)
 }
 
 
-#ifdef DEBUG
-
 int
-str_validate(string_ty *s)
+str_validate(const string_ty *s)
 {
     str_hash_ty     idx;
     string_ty       **spp;
@@ -296,8 +294,6 @@ str_validate(string_ty *s)
 	    return 1;
     return 0;
 }
-
-#endif
 
 
 void

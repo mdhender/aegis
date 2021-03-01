@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999, 2000 Peter Miller;
+ *	Copyright (C) 1998-2000, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,12 @@
 
 #include <config.h>
 
-#if defined(HAVE_RXPOSIX_H) && defined(HAVE_LIBRX)
+#if HAVE_RXPOSIX_H && HAVE_LIBRX
+extern "C" {
 #include <rxposix.h>
+}
 #else
-#ifdef HAVE_REGEX_H
+#if HAVE_REGEX_H
 #include <regex.h>
 #else
 

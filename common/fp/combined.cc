@@ -35,7 +35,6 @@
 #include <fp/md5.h>
 #include <fp/snefru.h>
 
-typedef struct combined_ty combined_ty;
 struct combined_ty
 {
     FINGERPRINT_BASE_CLASS

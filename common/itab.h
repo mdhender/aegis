@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1998, 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/itab.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1998, 2003, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/itab.c
+//
 
 #ifndef COMMON_ITAB_H
 #define COMMON_ITAB_H
@@ -32,7 +32,6 @@
   */
 typedef long itab_key_ty;
 
-typedef struct itab_row_ty itab_row_ty;
 struct itab_row_ty
 {
     itab_key_ty     key;
@@ -40,7 +39,6 @@ struct itab_row_ty
     itab_row_ty     *overflow;
 };
 
-typedef struct itab_ty itab_ty;
 struct itab_ty
 {
     void            (*reap)(void *);
@@ -59,4 +57,4 @@ void itab_walk(itab_ty *, void (*)(itab_ty *, itab_key_ty, void *, void *),
 	void *);
 
 /** @} */
-#endif /* COMMON_ITAB_H */
+#endif // COMMON_ITAB_H

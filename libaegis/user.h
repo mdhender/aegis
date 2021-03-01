@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1992-2000, 2002, 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/user.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1992-2000, 2002-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/user.c
+//
 
 #ifndef AEGIS_USER_H
 #define AEGIS_USER_H
@@ -27,7 +27,6 @@
 #include <ustate.h>
 #include <uconf.h>
 
-typedef struct user_ty user_ty;
 struct user_ty
 {
     long            reference_count;
@@ -46,10 +45,10 @@ struct user_ty
     string_ty       *uconf_path;
     uconf_ty        *uconf_data;
     long            lock_magic;
-    /*
-     * if you add anything to this structure,
-     * make sure you fix user_free in user.c
-     */
+    //
+    // if you add anything to this structure,
+    // make sure you fix user_free in user.c
+    //
 };
 
 
@@ -131,4 +130,4 @@ void user_uconf_write_xml(user_ty *, struct output_ty *);
   */
 uconf_ty *user_uconf_get(user_ty *);
 
-#endif /* AEGIS_USER_H */
+#endif // AEGIS_USER_H

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2003 Peter Miller;
+.\"	Copyright (C) 1992-1995, 1997-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -106,9 +106,11 @@ The \fIconfigure\fP script checks for the compression library and
 functions.  If your system does not have them, it is worth fetching
 and installing \fBGNU zlib\fP compression library before you run the
 \fIconfigure\fP script.
-(See \f(CWhttp://www.gzip.org/zlib/\fP for download.)
+(See \f[CW]http://www.gzip.org/zlib/\fP for download.)
 This is essential, becaise Aegis will not build.
-without it.  (\fBNote: this is not the same thing as \f(CWzlib\fP\f(CBc\fP
+without it.
+(\fBNote:\fP
+this is not the same thing as \f[CW]zlib\fP\f[CB]c\fP
 which does something completely different.)
 .PP
 The \fIconfigure\fP script checks for the regular expression library
@@ -127,7 +129,7 @@ source code and type
 .RS
 .ft CW
 .nf
-% \f(CB./configure\fP
+% \f[CB]./configure --sysconfdir=/etc\fP
 \fI\&...lots of output...\fP
 %
 .fi
@@ -140,7 +142,7 @@ you might need to type
 .RS
 .ft CW
 .nf
-% \f(CBsh configure\fP
+% \f[CB]sh configure --sysconfdir=/etc\fP
 \fI\&...lots of output...\fP
 %
 .fi
@@ -166,15 +168,15 @@ for example,
 .RS
 .FT CW
 .nf
-% \f(CW./configure --quiet\fP
+% \f[CB]./configure  --sysconfdir=/etc --quiet\fP
 %
 .fi
 .ft R
 .RE
 .PP
 There is a known problem with GCC 2.8.3 and HP/UX.
-You will need to set \f(CWCFLAGS = -O\fP in the generated Makefile.
-(The configure script sets it to \f(CWCFLAGS = -O2\fP.)
+You will need to set \f[CW]CFLAGS = -O\fP in the generated Makefile.
+(The configure script sets it to \f[CW]CFLAGS = -O2\fP.)
 This is because the code optimization breaks the fingerprints.
 If test 32 fails (see below) this is probably the reason.
 .PP
@@ -250,6 +252,10 @@ a network, this directory may be shared between all machines;
 .if n it MUST be mounted READ-WRITE.
 Defaults to \fI${prefix}/com/aegis\fP unless otherwise specified.
 An ``aegis'' directory will be appended if there is none in the specified path.
+.TP 8n
+\f[CW]--sysconfdir=\fP\fIPATH\fP
+Location of system configuration files.
+You should almost always use the \fI/etc\fP directory.
 .PP
 .I configure
 ignores any other arguments that you give it.
@@ -268,7 +274,8 @@ you can do that on the command line like this:
 .RS
 .ft CW
 .nf
-$ \f(CBCC='gcc -traditional' LIBS=-lposix ./configure\fP
+$ \f[CB]CC='gcc -traditional' LIBS=-lposix\fP \e
+  \f[CB]./configure --sysconfdir=/etc\fP
 \fI\&...lots of output...\fP
 $
 .fi
@@ -295,7 +302,7 @@ otherwise.
 .TP 8n
 Variable: LIBS
 Libraries to link with,
-in the form \f(CW-l\fP\fIfoo\fP \f(CW-l\fP\fIbar\fP.
+in the form \f[CW]-l\fP\fIfoo\fP \f[CW]-l\fP\fIbar\fP.
 The
 .I configure
 script will append to this,
@@ -317,7 +324,8 @@ To cope with this, you need to say
 .RS
 .ft CW
 .nf
-$ \f(CBCPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure\fP
+$ \f[CB]CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib\fP \e
+  \f[CB]./configure --sysconfdir=/etc\fP
 \fI\&...lots of output...\fP
 $
 .fi
@@ -332,7 +340,7 @@ You can extend this by using the command
 .RS
 .ft CW
 .nf
-$ \f(CBsystune ncargs 0x8000\fP
+$ \f[CB]systune ncargs 0x8000\fP
 $
 .fi
 .ft R
@@ -460,7 +468,7 @@ All you should need to do is use the
 .RS
 .ft CW
 .nf
-% \f(CBmake\fP
+% \f[CB]make\fP
 \fI\&...lots of output...\fP
 %
 .fi
@@ -521,7 +529,7 @@ source directory by using the
 .RS
 .ft CW
 .nf
-% \f(CBmake clean\fP
+% \f[CB]make clean\fP
 \fI\&...lots of output...\fP
 %
 .fi
@@ -538,7 +546,7 @@ files, use the
 .RS
 .ft CW
 .nf
-% \f(CBmake distclean\fP
+% \f[CB]make distclean\fP
 \fI\&...lots of output...\fP
 %
 .fi
@@ -633,7 +641,7 @@ If you do not, Aegis will still work, but the error messages will
 be rather terse, even for English speakers.
 (You will be able to tell if your system has the internationalization
 library and functions, because the \fIconfigure\fP script will report
-finding \f(CW-lintl\fP and \fI(CWlibintl.h\fP and \f(CWmsgfmt\fP in
+finding \f[CW]-lintl\fP and \fI(CWlibintl.h\fP and \f[CW]msgfmt\fP in
 its running commentary.)
 Please note that the GNU Gettext implementation is likely to be superior
 to the one supplied with your system, if any.
@@ -693,9 +701,9 @@ not available.)
 zlib
 This library provides access to the GNU Zip (de)compression algorithm(s).
 It is essential to have this installed before you build Aegis.
-The home page may be found at \f(CWhttp://www.gzip.org/zlib/\fP
+The home page may be found at \f[CW]http://www.gzip.org/zlib/\fP
 if you need to download it.
-Note: this is not the same as \f(CBzlib\fP\f(CBc\fP which is
+Note: this is not the same as \f[CB]zlib\fP\f[CB]c\fP which is
 Linux specific.
 .TP 8n
 tkdiff
@@ -736,7 +744,7 @@ To run this test suite, use the command
 .RS
 .ft CW
 .nf
-% \f(CBmake sure\fP
+% \f[CB]make sure\fP
 \fI\&...lots of output...\fP
 Passed All Tests
 %
@@ -787,7 +795,7 @@ Something like
 .RS
 .ft CW
 .nf
-% \f(CBsetenv AEGIS_TMP /usr/tmp\fP
+% \f[CB]setenv AEGIS_TMP /usr/tmp\fP
 %
 .fi
 .ft R
@@ -796,8 +804,8 @@ is usually sufficient if you are using C shell, or
 .RS
 .ft CW
 .nf
-$ \f(CBAEGIS_TMP=/usr/tmp\fP
-$ \f(CBexport AEGIS_TMP\fP
+$ \f[CB]AEGIS_TMP=/usr/tmp\fP
+$ \f[CB]export AEGIS_TMP\fP
 $
 .fi
 .ft R
@@ -843,7 +851,7 @@ appropriate if you are using some other prefix.)
 .RS
 .ft CW
 .nf
-# \f(CBmake install-libdir\fP
+# \f[CB]make install-libdir\fP
 mkdir /usr/local/lib/aegis
 chown 3 /usr/local/lib/aegis
 chgrp 3 /usr/local/lib/aegis
@@ -869,7 +877,7 @@ in the same manner as before.
 .RS
 .nf
 .ft CW
-% \f(CBmake sure\fP
+% \f[CB]make sure\fP
 \fI\&...lots of output...\fP
 Passed All Tests
 %
@@ -923,7 +931,7 @@ the
 package is installed under the
 .I /usr/local
 tree by default.
-Use the \f(CW--prefix=\fP\fIPATH\fP option to
+Use the \f[CW]--prefix=\fP\fIPATH\fP option to
 .I configure
 if you want some other path.
 .PP
@@ -933,7 +941,7 @@ package is to use the
 .RS
 .ft CW
 .nf
-% \f(CBmake install\fP
+% \f[CB]make install\fP
 \fI\&...lots of output...\fP
 %
 .fi
@@ -1055,7 +1063,7 @@ across Aegis upgrades.  However, this requires a corresponding
 \fIfollow-symlinks\fP setting in your web server's configuration file.
 (Use the \fIaegis.cgi.i \-s\fP option.)
 .PP
-Within the \f(CWaegis.cgi\fP script, can set the \fIAEGIS_PATH\fP
+Within the \f[CW]aegis.cgi\fP script, can set the \fIAEGIS_PATH\fP
 environment variable, if you want it to be able to see more
 projects than just the global projects.  You do this by creating a
 \fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one, by default)
@@ -1118,7 +1126,7 @@ given by the
 .RS
 .ft CW
 .nf
-% \f(CBaegis -version\fP
+% \f[CB]aegis -version\fP
 aegis version \fI\*(V)\fP
 \fI\&...\fP
 %
@@ -1166,7 +1174,7 @@ please include the version number
 reported in the
 .I common/patchlevel.h
 file,
-or \f(CW`aegis -vers`\fP if you can get it to compile.
+or \f[CW]`aegis -vers`\fP if you can get it to compile.
 .TP
 3. The Archive Site
 .br
@@ -1301,7 +1309,7 @@ file included in this distribution.
 tab(;);
 l r l.
 Peter Miller;E-Mail:;millerp@canb.auug.org.au
-\f(CW/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
+\f[CW]/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
 .TE
 .bp
 .so ../building/windows-nt.so

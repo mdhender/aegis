@@ -553,14 +553,12 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
     }
     if (when_col)
     {
-	char		buffer[100];
-	struct tm	*tm;
-
-	tm = localtime(&st->st_mtime);
+	struct tm *the_time = localtime(&st->st_mtime);
+	char buffer[100];
 	if (st->st_mtime < oldest || st->st_mtime > youngest)
-	    strftime(buffer, sizeof(buffer), "%b %d  %Y", tm);
+	    strftime(buffer, sizeof(buffer), "%b %d  %Y", the_time);
 	else
-	    strftime(buffer, sizeof(buffer), "%b %d %H:%M", tm);
+	    strftime(buffer, sizeof(buffer), "%b %d %H:%M", the_time);
 	output_fputs(when_col, buffer);
     }
 

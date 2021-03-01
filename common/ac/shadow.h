@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_SHADOW_H
+#if HAVE_SHADOW_H
 #include <shadow.h>
 #endif
 

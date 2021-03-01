@@ -39,14 +39,12 @@
 #define BAR_HEIGHT 12
 
 
-typedef struct staff_role_ty staff_role_ty;
 struct staff_role_ty
 {
     int             enabled;
     long            count;
 };
 
-typedef struct staff_member_ty staff_member_ty;
 struct staff_member_ty
 {
     staff_role_ty   developer;

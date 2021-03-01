@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aetar/header.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2002, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aetar/header.c
+//
 
 #ifndef AETAR_HEADER_H
 #define AETAR_HEADER_H
@@ -28,31 +28,30 @@
 #define TBLOCK 512
 #define NAMSIZ 100
 
-/*
- * The magic field is filled with this if uname and gname are valid.
- */
-#define	TMAGIC		"ustar  "	/* 7 chars and a null */
+//
+// The magic field is filled with this if uname and gname are valid.
+//
+#define	TMAGIC		"ustar  "	// 7 chars and a null
 
-/*
- * The linkflag defines the type of file
- */
-#define	LF_OLDNORMAL	'\0'		/* Normal disk file, Unix compat */
-#define	LF_NORMAL	'0'		/* Normal disk file */
-#define	LF_LINK		'1'		/* Link to previously dumped file */
-#define	LF_SYMLINK	'2'		/* Symbolic link */
-#define	LF_CHR		'3'		/* Character special file */
-#define	LF_BLK		'4'		/* Block special file */
-#define	LF_DIR		'5'		/* Directory */
-#define	LF_FIFO		'6'		/* FIFO special file */
-#define	LF_CONTIG	'7'		/* Contiguous file */
-#define LF_LONGNAME	'L'		/* File is actually long name
-					 * for next file in the archive. */
-#define LF_LONGLINK	'K'		/* File is actually long link
-					 * for next file in the archive. */
-/* Further link types may be defined later. */
+//
+// The linkflag defines the type of file
+//
+#define	LF_OLDNORMAL	'\0'		// Normal disk file, Unix compat
+#define	LF_NORMAL	'0'		// Normal disk file
+#define	LF_LINK		'1'		// Link to previously dumped file
+#define	LF_SYMLINK	'2'		// Symbolic link
+#define	LF_CHR		'3'		// Character special file
+#define	LF_BLK		'4'		// Block special file
+#define	LF_DIR		'5'		// Directory
+#define	LF_FIFO		'6'		// FIFO special file
+#define	LF_CONTIG	'7'		// Contiguous file
+#define LF_LONGNAME	'L'		// File is actually long name
+					// for next file in the archive.
+#define LF_LONGLINK	'K'		// File is actually long link
+					// for next file in the archive.
+// Further link types may be defined later.
 
 
-typedef struct header_ty header_ty;
 struct header_ty
 {
     char	name[NAMSIZ];
@@ -100,4 +99,4 @@ void header_devminor_set(header_ty *, long);
 long header_checksum_calculate(header_ty *);
 void header_dump(header_ty *);
 
-#endif /* AETAR_HEADER_H */
+#endif // AETAR_HEADER_H

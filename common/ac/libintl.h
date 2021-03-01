@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 /*
  * if the libintl.h include file is available, include it
  */
-#ifdef HAVE_LIBINTL_H
+#if HAVE_LIBINTL_H
 
 /*
  * On some platforms (particularly those which don't have a native GNU
@@ -38,7 +38,7 @@
 
 #include <libintl.h>
 #else
-#ifdef HAVE_LIBGETTEXT_H
+#if HAVE_LIBGETTEXT_H
 #include <libgettext.h>
 #else
 

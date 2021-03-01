@@ -24,7 +24,7 @@
 
 
 int
-string_list_subset(string_list_ty *a, string_list_ty *b)
+string_list_subset(const string_list_ty *a, const string_list_ty *b)
 {
     size_t          j, k;
 

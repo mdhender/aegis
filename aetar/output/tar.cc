@@ -27,7 +27,6 @@
 #include <str.h>
 
 
-typedef struct output_tar_ty output_tar_ty;
 struct output_tar_ty
 {
     output_ty       inherited;

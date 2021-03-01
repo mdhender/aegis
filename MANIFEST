@@ -313,8 +313,6 @@ aedist/input/cpio_child.h	interface definition for aedist/input/cpio_child.c
 aedist/list.cc	functions to manipulate lists
 aedist/list.h	interface definition for aedist/list.c
 aedist/main.cc	functions to manipulate mains
-aedist/move.cc	functions to manipulate moves
-aedist/move.h	interface definition for aedist/move.c
 aedist/open.cc	functions to manipulate opens
 aedist/open.h	interface definition for aedist/open.c
 aedist/output/cpio.cc	functions to output to cpio archivess
@@ -779,6 +777,10 @@ common/mprintf.h	interface definition for common/mprintf.c
 common/noreturn.h	careful definition of ``noreturn'' function attribute
 common/now.cc	functions to manipulate nows
 common/now.h	interface definition for common/now.c
+common/nstring.cc	implementation of the nstring class
+common/nstring.h	interface of the nstring class
+common/nstring_list.cc	implementation of the nstring_list class
+common/nstring_list.h	interface of the nstring_list class
 common/page.cc	functions to manipulate pages
 common/page.h	interface definition for common/page.c
 common/patchlevel.h	The patch level of this distribution.
@@ -895,6 +897,7 @@ etc/howtodevnbr.sh	shell script to manipulate howtodevnbrs
 etc/i18n-munge.awk	i18n-munge.awk
 etc/i18n.clean.sh	shell script to manipulate i18n.cleans
 etc/i18n.cook	instructions to cook(1), how to build internationalization files
+etc/incl-check.awk	include file check
 etc/libdir.so.in	template for the etc/libdir.so file
 etc/lint.cook	lint.cook
 etc/lint.flags.lnt	lint.flags.lnt
@@ -1305,6 +1308,7 @@ lib/en/readme/new.4.12.so	document describing new 4.12 features
 lib/en/readme/new.4.15.so	document describing new 4.15 features
 lib/en/readme/new.4.16.so	document describing new 4.16 features
 lib/en/readme/new.4.17.so	document describing new 4.17 features
+lib/en/readme/new.4.18.so	document describing new 4.18 features
 lib/en/readme/new.4.2.so	document describing new 4.2 features
 lib/en/readme/new.4.3.so	document describing new 4.3 features
 lib/en/readme/new.4.4.so	document describing new 4.4 features
@@ -2060,13 +2064,19 @@ libaegis/interval.cc	functions to manipulate intervals
 libaegis/interval.h	interface definition for aegis/interval.c
 libaegis/io.cc	functions to parse and write fundamental data types
 libaegis/io.h	interface definition for aegis/io.c
-libaegis/lex.cc	functions to perform lexical analysis on aegis' data files
-libaegis/lex.h	interface definition for libaegis/lex.c
 libaegis/lock.cc	functions to lock aegis' data
 libaegis/lock.h	interface definition for aegis/lock.c
 libaegis/log.cc	functions to open and close log files
 libaegis/log.h	interface definition for aegis/log.c
+libaegis/meta_lex.cc	functions to perform lexical analysis on aegis' data files
+libaegis/meta_lex.h	interface definition for libaegis/lex.c
+libaegis/meta_parse.cc	functions to parse aegis' data files
+libaegis/meta_parse.h	interface definition for aegis/parse.c
+libaegis/meta_type.cc	functions to manipulate types in aegis' data files
+libaegis/meta_type.h	interface definition for aegis/type.c
 libaegis/metrics.def	metrics.def
+libaegis/move_list.cc	functions to manipulate moves
+libaegis/move_list.h	interface definition for aedist/move.c
 libaegis/option.cc	functions to manipulate command line options
 libaegis/option.h	interface definition for common/option.c
 libaegis/os.h	interface definition for aegis/os.c
@@ -2163,8 +2173,6 @@ libaegis/output/uuencode.cc	functions to manipulate uuencodes
 libaegis/output/uuencode.h	interface definition for libaegis/output/uuencode.c
 libaegis/output/wrap.cc	functions to manipulate wraps
 libaegis/output/wrap.h	interface definition for libaegis/output/wrap.c
-libaegis/parse.cc	functions to parse aegis' data files
-libaegis/parse.h	interface definition for aegis/parse.c
 libaegis/patch.h	interface definition for libaegis/patch/
 libaegis/patch/apply.cc	functions to manipulate applys
 libaegis/patch/context.cc	functions to manipulate contexts
@@ -2390,8 +2398,6 @@ libaegis/sub/var/set_time.cc	functions to manipulate set_times
 libaegis/sub/zero_pad.cc	functions to manipulate zero_pads
 libaegis/sub/zero_pad.h	interface definition for aegis/sub/zero_pad.c
 libaegis/tstrslt.def	How to represent test results.
-libaegis/type.cc	functions to manipulate types in aegis' data files
-libaegis/type.h	interface definition for aegis/type.c
 libaegis/uconf.def	user config file contents definition
 libaegis/uname.cc	functions to manipulate unames
 libaegis/uname.h	interface definition for uname.c
@@ -2635,6 +2641,7 @@ test/01/t0192a.sh	Test the aecvsserver add functionality
 test/01/t0193a.sh	Test the aecvsserver remove functionality
 test/01/t0195a.sh	Test patch -send functionality
 test/01/t0196a.sh	Test the aemv/merge functionality
+test/01/t0197a.sh	Test the aemeasure functionality
 test/activity.awk	Renumber activity lines in tests
 test/activity.sh	shell script to manipulate activitys
 test_base64/main.cc	functions to manipulate mains

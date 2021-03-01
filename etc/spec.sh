@@ -92,7 +92,7 @@ fubar
 echo '%setup'
 echo ''
 echo '%build'
-echo "./configure --prefix=$prefix"
+echo "./configure --sysconfdir=/etc --prefix=$prefix"
 echo 'make'
 echo ''
 echo '%install'

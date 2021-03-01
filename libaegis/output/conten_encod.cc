@@ -31,7 +31,6 @@
 content_encoding_t
 content_encoding_grok(const char *name)
 {
-    typedef struct table_t table_t;
     struct table_t
     {
 	const char    *name;

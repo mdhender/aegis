@@ -26,7 +26,6 @@
 #include <fp/crc32.h>
 #include <fp/len.h>
 
-typedef struct cksum_ty cksum_ty;
 struct cksum_ty
 {
     FINGERPRINT_BASE_CLASS

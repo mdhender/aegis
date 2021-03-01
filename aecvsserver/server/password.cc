@@ -40,7 +40,6 @@
 #include <scramble.h>
 
 
-typedef struct server_password_ty server_password_ty;
 struct server_password_ty
 {
     server_ty       inherited;

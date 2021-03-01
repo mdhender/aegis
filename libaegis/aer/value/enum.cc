@@ -28,7 +28,6 @@
 #include <str.h>
 
 
-typedef struct rpt_value_enumeration_ty rpt_value_enumeration_ty;
 struct rpt_value_enumeration_ty
 {
 	RPT_VALUE

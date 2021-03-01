@@ -36,7 +36,6 @@
 #include <wide_output/to_narrow.h>
 
 
-typedef struct wide_output_to_narrow_ty wide_output_to_narrow_ty;
 struct wide_output_to_narrow_ty
 {
     wide_output_ty  inherited;

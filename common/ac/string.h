@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996, 1997, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,19 +25,19 @@
 
 #include <config.h>
 
-#if !defined(HAVE_STRCASECMP)
+#if !HAVE_STRCASECMP
 int strcasecmp(const char *, const char *);
 #endif
 
-#if !defined(HAVE_STRNCASECMP)
+#if !HAVE_STRNCASECMP
 int strncasecmp(const char *, const char *, size_t);
 #endif
 
-#if !defined(HAVE_STRSIGNAL)
+#if !HAVE_STRSIGNAL
 char *strsignal(int);
 #endif
 
-#if !defined(HAVE_STRVERSCMP)
+#if !HAVE_STRVERSCMP
 int strverscmp(const char *, const char *);
 #endif
 

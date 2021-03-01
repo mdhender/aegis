@@ -2269,7 +2269,6 @@ enum del_pref
     del_pref_interactive,
     del_pref_keep
 };
-typedef enum del_pref del_pref;
 
 static del_pref cmd_line_pref = del_pref_unset;
 
@@ -2310,7 +2309,6 @@ user_delete_file_argument(void (*usage)(void))
 static int
 ask(string_ty *filename, int isdir)
 {
-    typedef struct table_ty table_ty;
     struct table_ty
     {
 	const char      *name;

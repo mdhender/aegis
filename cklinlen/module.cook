@@ -38,13 +38,27 @@ cklinlen_obj =
     [arch]/common/trace.o
     ;
 
-cklinlen/.checked: [arch]/bin/cklinlen [change_files]
+cklinlen/.checked: [arch]/bin/cklinlen [change_files] etc/incl-check.awk
     set nocascade
 {
     xargs [resolve [arch]/bin/cklinlen] ;
 data
 [unsplit "\n" [resolve [sort [change_files] [project_files]]]]
 dataend
+
+    awk -f [resolve etc/incl-check.awk];
+data
+[unsplit "\n"
+    [change_files] [project_files]
+    [fromto %0%.y %0%.gen.h
+	[match_mask "%0%.y" [change_files] [project_files] ]
+    ]
+    [fromto %0%.def %0%.h
+	[match_mask "%0%.def" [change_files] [project_files] ]
+    ]
+]
+dataend
+
     date > [target]
 	set silent;
 }

@@ -30,7 +30,6 @@
 #include <trace.h>
 
 
-typedef struct output_memory_ty output_memory_ty;
 struct output_memory_ty
 {
     output_ty       inherited;

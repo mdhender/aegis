@@ -1,38 +1,37 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aecvsserver/module.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aecvsserver/module.c
+//
 
 #ifndef AECVSSERVER_MODULE_H
 #define AECVSSERVER_MODULE_H
 
 #include <str.h>
 
-struct input_ty; /* forward */
-struct server_ty; /* forward */
-struct file_info_ty; /* forward */
+struct input_ty; // forward
+struct server_ty; // forward
+struct file_info_ty; // forward
 
 /**
   * The module class is used to represent an abstract module.
   */
-typedef struct module_ty module_ty;
 struct module_ty
 {
     const struct module_method_ty *vptr;
@@ -135,28 +134,27 @@ int module_checkin(module_ty *mp, struct server_ty *sp, string_ty *client_side,
     string_ty *server_side);
 
 
-typedef struct module_options_ty module_options_ty;
 struct module_options_ty
 {
-    int             A;   /* Reset any sticky tags/date/kopts. */
-    int             C;   /* Overwrite locally modified files with clean
-                          * repository copies. */
-    string_ty       *D;  /* Set date to update from (is sticky). */
-    int             d;   /* Build directories, like checkout does. */
-    int             f;   /* Force a head revision match if tag/date not
-                          * found. */
-    string_ty       *I;  /* More files to ignore (! to reset). */
-    string_ty       *j;  /* Merge in changes made between current revision
-                          * and rev. */
-    string_ty       *k;  /* Use RCS kopt -k option on checkout. (is sticky) */
-    int             l;   /* Local directory only, no recursion. */
-    string_ty       *m;  /* Message to add to file or transction. */
-    int             P;   /* Prune empty directories. */
-    int             p;   /* Send updates to standard output (avoids
-                          * stickiness). */
-    int             R;   /* Process directories recursively. */
-    string_ty       *r;  /* Update using specified revision/tag (is sticky). */
-    string_ty       *W;  /* Wrappers specification line. */
+    int             A;   // Reset any sticky tags/date/kopts.
+    int             C;   // Overwrite locally modified files with clean
+                         // repository copies.
+    string_ty       *D;  // Set date to update from (is sticky).
+    int             d;   // Build directories, like checkout does.
+    int             f;   // Force a head revision match if tag/date not
+                         // found.
+    string_ty       *I;  // More files to ignore (! to reset).
+    string_ty       *j;  // Merge in changes made between current revision
+                         // and rev.
+    string_ty       *k;  // Use RCS kopt -k option on checkout. (is sticky)
+    int             l;   // Local directory only, no recursion.
+    string_ty       *m;  // Message to add to file or transction.
+    int             P;   // Prune empty directories.
+    int             p;   // Send updates to standard output (avoids
+                         // stickiness).
+    int             R;   // Process directories recursively.
+    string_ty       *r;  // Update using specified revision/tag (is sticky).
+    string_ty       *W;  // Wrappers specification line.
 };
 
 void module_options_constructor(module_options_ty *);
@@ -240,4 +238,4 @@ int module_remove(module_ty *mp, struct server_ty *sp, string_ty *client_side,
   */
 int is_update_prefix(string_ty *above, string_ty *below, int deep);
 
-#endif /* AECVSSERVER_MODULE_H */
+#endif // AECVSSERVER_MODULE_H

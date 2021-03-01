@@ -233,6 +233,11 @@ MM = -m@GROFF_MM_MACROS@
 MS = -m@GROFF_MS_MACROS@
 
 #
+# Where to put the system configuration directory
+#
+sysconfdir = @sysconfdir@
+
+#
 # You should not need to alter anything below this point.
 #------------------------------------------------------------
 

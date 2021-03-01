@@ -41,7 +41,6 @@
 static int
 find_response_code(const char *name)
 {
-    typedef struct table_ty table_ty;
     struct table_ty
     {
 	const char      *name;

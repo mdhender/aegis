@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997-1999, 2002, 2003 Peter Miller;
+.\"	Copyright (C) 1995, 1997-1999, 2002-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -156,13 +156,13 @@ Use the following commands
 .ne 2i
 .SS Update Linux Archive
 Transfer a copy to \f[CW]metalab.unc.edu\fP by FTP.
-Login as \f[CW]anonymous\fP and change to the \f[CW]incoming/Linux\fP directory.
+Login as \f[CW]anonymous\fP and change to the \f[CW]incoming/linux\fP directory.
 Use the following commands
 .e(
 % \f[CB]aecd -bl archive\fP
 % \f[CW]ftp metalab.unc.edu\fP
 user: \f[CB]anonymous\fP
-ftp> \f[CB]cd incoming/Linux\fP
+ftp> \f[CB]cd incoming/linux\fP
 ftp> \f[CB]binary\fP
 ftp> \f[CB]prompt\fP
 ftp> \f[CB]mput \*(n)-*\fP
@@ -191,7 +191,7 @@ ftp> \f[CB]quit\fP
 .br
 .ne 2i
 .SH NOTIFICATION
-Once the archives are ready, you can let folks know its there.
+Once the archives are ready, you can let folks know it's there.
 .LP
 Only send the notifications \fIafter\fP the files are actually available
 at the archive site.
@@ -269,6 +269,9 @@ at the archive site.
 .br
 .ne 2i
 .SS Notify Newsgroups
+It is probably preferable to use \f[CW]groups.google.com\fP to do this,
+rather than the method outlined below.
+.PP
 A variety of newsgroups are relevant to \*(N),
 so notify them that the release is available.
 .e(

@@ -46,7 +46,6 @@ static stracc_t buffer;
 static symtab_ty *stp;
 
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;

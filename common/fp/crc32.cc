@@ -35,7 +35,6 @@
 
 #define CRC32_HASH_LEN 4
 
-typedef struct crc32_ty crc32_ty;
 struct crc32_ty
 {
     FINGERPRINT_BASE_CLASS

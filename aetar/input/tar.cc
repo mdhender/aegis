@@ -27,7 +27,6 @@
 #include <str.h>
 
 
-typedef struct input_tar_ty input_tar_ty;
 struct input_tar_ty
 {
     input_ty	    inherited;

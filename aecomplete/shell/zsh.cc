@@ -34,7 +34,6 @@
 #include <str.h>
 
 
-typedef struct shell_zsh_ty shell_zsh_ty;
 struct shell_zsh_ty
 {
     shell_ty        inherited;

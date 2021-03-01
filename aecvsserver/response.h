@@ -1,37 +1,36 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for ae-cvs-server/response.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for ae-cvs-server/response.c
+//
 
 #ifndef AE_CVS_SERVER_RESPONSE_H
 #define AE_CVS_SERVER_RESPONSE_H
 
-#include <net.h> /* for response_code_ty */
+#include <net.h> // for response_code_ty
 
-struct output_ty; /* forward */
+struct output_ty; // forward
 
 /**
   * The response_ty class is an abstract base class used to represent
   * a generic response to be sent to the client.
   */
-typedef struct response_ty response_ty;
 struct response_ty
 {
     const struct response_method_ty *vptr;
@@ -65,4 +64,4 @@ int response_flushable(response_ty *);
   */
 void output_mode_string(struct output_ty *op, int mode);
 
-#endif /* AE_CVS_SERVER_RESPONSE_H */
+#endif // AE_CVS_SERVER_RESPONSE_H

@@ -27,7 +27,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_value_pconf_ty rpt_value_pconf_ty;
 struct rpt_value_pconf_ty
 {
     RPT_VALUE

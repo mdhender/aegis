@@ -745,7 +745,7 @@ change
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename a file as part of a
+aegis -MoVe file - rename one or more files as part of a
 T}	T{
 .ad l
 change
@@ -1569,13 +1569,6 @@ T}	T{
 .ad l
 File - add new files to be created by a change
 T}
-aemv(1)	\*[Page*Of*aemv(1)]	T{
-.ad r
-aegis -MoVe file - rename a
-T}	T{
-.ad l
-file as part of a change
-T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
 aegis -MoVe file Undo - undo the rename a
@@ -1672,7 +1665,7 @@ aemv(1)	\*[Page*Of*aemv(1)]	T{
 aegis -MoVe
 T}	T{
 .ad l
-file - rename a file as part of a change
+file - rename one or more files as part of a change
 T}
 aeedit(1)	\*[Page*Of*aeedit(1)]	T{
 .ad r
@@ -1680,6 +1673,13 @@ aeedit - edit a change's
 T}	T{
 .ad l
 files
+T}
+aemv(1)	\*[Page*Of*aemv(1)]	T{
+.ad r
+aegis -MoVe file - rename one or more
+T}	T{
+.ad l
+files as part of a change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
@@ -2327,10 +2327,17 @@ modify the attributes of a project
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
+aegis -MoVe file - rename one or
+T}	T{
+.ad l
+more files as part of a change
+T}
+aemv(1)	\*[Page*Of*aemv(1)]	T{
+.ad r
 aegis -
 T}	T{
 .ad l
-MoVe file - rename a file as part of a change
+MoVe file - rename one or more files as part of a change
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
@@ -2584,6 +2591,20 @@ T}	T{
 .ad l
 old-style project.
 T}
+aemv(1)	\*[Page*Of*aemv(1)]	T{
+.ad r
+aegis -MoVe file - rename
+T}	T{
+.ad l
+one or more files as part of a change
+T}
+aemv(1)	\*[Page*Of*aemv(1)]	T{
+.ad r
+aegis -MoVe file - rename one
+T}	T{
+.ad l
+or more files as part of a change
+T}
 aechown(1)	\*[Page*Of*aechown(1)]	T{
 .ad r
 aegis -Change Owner - set change
@@ -2600,7 +2621,7 @@ Owner - set change owner
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename a file as
+aegis -MoVe file - rename one or more files as
 T}	T{
 .ad l
 part of a change
@@ -3074,19 +3095,19 @@ T}	T{
 .ad l
 remove reviewers from a project
 T}
-aemv(1)	\*[Page*Of*aemv(1)]	T{
-.ad r
-aegis -MoVe file -
-T}	T{
-.ad l
-rename a file as part of a change
-T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
 aegis -MoVe file Undo - undo the
 T}	T{
 .ad l
 rename a file as part of a change
+T}
+aemv(1)	\*[Page*Of*aemv(1)]	T{
+.ad r
+aegis -MoVe file -
+T}	T{
+.ad l
+rename one or more files as part of a change
 T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r

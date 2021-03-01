@@ -34,7 +34,6 @@
 #include <sub.h>
 
 
-typedef struct output_file_ty output_file_ty;
 struct output_file_ty
 {
     output_ty       inherited;

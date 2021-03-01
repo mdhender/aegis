@@ -4138,6 +4138,14 @@ msgid	"not an administrator"
 msgstr	"gebruiker \"$user\" is niet aangemeld als administrator"
 
 #
+# This error message is issued when a command which requires an even
+# number of file names is not given one.
+#
+#, fuzzy
+msgid	"not an even number of args"
+msgstr	"you must give an even number of files to this command"
+
+#
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #

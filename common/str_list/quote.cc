@@ -24,7 +24,7 @@
 
 
 void
-string_list_quote_shell(string_list_ty *to, string_list_ty *from)
+string_list_quote_shell(string_list_ty *to, const string_list_ty *from)
 {
     size_t		j;
     string_ty	*s;

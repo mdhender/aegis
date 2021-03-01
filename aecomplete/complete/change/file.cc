@@ -29,7 +29,6 @@
 #include <str_list.h>
 
 
-typedef struct complete_change_file_ty complete_change_file_ty;
 struct complete_change_file_ty
 {
     complete_ty     inherited;

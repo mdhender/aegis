@@ -52,7 +52,6 @@
 #include <user.h>
 
 
-typedef struct column_t column_t;
 struct column_t
 {
     string_ty	    *formula;
@@ -66,7 +65,6 @@ struct column_t
 };
 
 
-typedef struct column_list_t column_list_t;
 struct column_list_t
 {
     size_t	    length;

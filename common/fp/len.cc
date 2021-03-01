@@ -25,7 +25,6 @@
 #include <fp/len.h>
 
 
-typedef struct len_ty len_ty;
 struct len_ty
 {
     FINGERPRINT_BASE_CLASS

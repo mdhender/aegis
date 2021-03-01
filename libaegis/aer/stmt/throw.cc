@@ -28,7 +28,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_stmt_throw_ty rpt_stmt_throw_ty;
 struct rpt_stmt_throw_ty
 {
 	RPT_STMT

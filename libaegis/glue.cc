@@ -99,7 +99,6 @@ enum
 };
 
 
-typedef struct proxy_ty proxy_ty;
 struct proxy_ty
 {
 	int		hash;
@@ -1383,7 +1382,6 @@ glue_copyfile(char *p1, char *p2)
 }
 
 
-typedef struct glue_file_ty glue_file_ty;
 struct glue_file_ty
 {
 	long		guard1;

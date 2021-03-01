@@ -35,6 +35,7 @@
 #include <help.h>
 #include <lock.h>
 #include <log.h>
+#include <move_list.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
@@ -308,8 +309,6 @@ static void
 move_file_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *old_name;
-    string_ty	    *new_name;
     string_ty	    *s1;
     string_ty	    *s2;
     string_ty	    *project_name;
@@ -324,16 +323,20 @@ move_file_main(void)
     string_list_ty  wl_nf;
     string_list_ty  wl_nt;
     string_list_ty  wl_rm;
+    string_list_ty  wl_args;
+    move_list_ty    ml;
     int		    based;
     string_ty	    *base;
+    size_t          j;
+    size_t          i;
 
     trace(("move_file_main()\n{\n"));
     arglex();
-    old_name = 0;
-    new_name = 0;
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
+    string_list_constructor(&wl_args);
+    move_list_constructor(&ml);
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -344,13 +347,9 @@ move_file_main(void)
 
 	case arglex_token_string:
 	    s1 = str_from_c(arglex_value.alv_string);
-	    if (!old_name)
-		old_name = s1;
-	    else if (!new_name)
-		new_name = s1;
-	    else
-		fatal_too_many_files();
-	    break;
+            string_list_append(&wl_args, s1);
+            str_free(s1);
+            break;
 
 	case arglex_token_change:
 	    arglex();
@@ -388,11 +387,20 @@ move_file_main(void)
 	}
 	arglex();
     }
-    if (!old_name || !new_name)
+
+    if (wl_args.nstrings < 2)
     {
 	error_intl(0, i18n("too few files named"));
 	move_file_usage();
     }
+    // It is an error if the user supply an odd number of
+    // files/directories.
+    if (wl_args.nstrings % 2)
+    {
+        error_intl(0, i18n("not an even number of args"));
+        move_file_usage();
+    }
+
 
     //
     // locate project data
@@ -474,146 +482,173 @@ move_file_main(void)
 	os_become_undo();
     }
 
-    //
-    // Make the old name absolute, now we know where to make it
-    // relative to.
-    //
-    if (old_name->str_text[0] != '/')
+    for (i = 0; i < (wl_args.nstrings - 1); ++i)
     {
-	s1 = os_path_join(base, old_name);
-	str_free(old_name);
-	old_name = s1;
-    }
-    user_become(up);
-    s1 = os_pathname(old_name, 1);
-    user_become_undo();
-    str_free(old_name);
-    old_name = s1;
+        string_ty *old_name;
+        string_ty *new_name;
 
-    //
-    // Find the old name, relative to the project tree.
-    //
-    s2 = 0;
-    for (k = 0; k < search_path.nstrings; ++k)
-    {
-	s2 = os_below_dir(search_path.string[k], old_name);
-	if (s2)
+        trace(("i=%d; old = \"%s\"; new = \"%s\"; \n",
+               i,
+               wl_args.string[i]->str_text,
+               wl_args.string[i+1]->str_text));
+        assert(0 == (i % 2));
+        old_name = str_copy(wl_args.string[i]);
+        new_name = str_copy(wl_args.string[++i]);
+
+        //
+        // Make the old name absolute, now we know where to make it
+        // relative to.
+        //
+        if (old_name->str_text[0] != '/')
+        {
+            s1 = os_path_join(base, old_name);
+            str_free(old_name);
+            old_name = s1;
+        }
+        user_become(up);
+        s1 = os_pathname(old_name, 1);
+        user_become_undo();
+        str_free(old_name);
+        old_name = s1;
+
+        //
+        // Find the old name, relative to the project tree.
+        //
+        s2 = 0;
+        for (k = 0; k < search_path.nstrings; ++k)
+        {
+            s2 = os_below_dir(search_path.string[k], old_name);
+            if (s2)
+                break;
+        }
+        if (!s2)
+        {
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", old_name);
+            change_fatal(cp, scp, i18n("$filename unrelated"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        str_free(old_name);
+        old_name = s2;
+
+        //
+        // Make the new name absolute, now we know where to make it
+        // relative to.
+        //
+        if (new_name->str_text[0] != '/')
+        {
+            s1 = os_path_join(base, new_name);
+            str_free(new_name);
+            new_name = s1;
+        }
+        user_become(up);
+        s1 = os_pathname(new_name, 1);
+        user_become_undo();
+        str_free(new_name);
+        new_name = s1;
+
+        //
+        // Find the new name, relative to the project tree.
+        //
+        s2 = 0;
+        for (k = 0; k < search_path.nstrings; ++k)
+        {
+            s2 = os_below_dir(search_path.string[k], new_name);
+            if (s2)
 	    break;
-    }
-    if (!s2)
-    {
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", old_name);
-	change_fatal(cp, scp, i18n("$filename unrelated"));
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-    str_free(old_name);
-    old_name = s2;
+        }
+        if (!s2)
+        {
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", new_name);
+            change_fatal(cp, scp, i18n("$filename unrelated"));
+            // NOTREACHED
+            sub_context_delete(scp);
+        }
+        str_free(new_name);
+        new_name = s2;
 
-    //
-    // Make the new name absolute, now we know where to make it
-    // relative to.
-    //
-    if (new_name->str_text[0] != '/')
-    {
-	s1 = os_path_join(base, new_name);
-	str_free(new_name);
-	new_name = s1;
-    }
-    user_become(up);
-    s1 = os_pathname(new_name, 1);
-    user_become_undo();
-    str_free(new_name);
-    new_name = s1;
+        //
+        // If the old file was a directory, then move all of its
+        // contents into the new directory.	 If the old file was not a
+        // directory, just move it.	 All checks to see if the action is
+        // valid are done in the inner function.
+        //
+        string_list_constructor(&wl_in);
+        project_file_directory_query(pp, old_name, &wl_in, 0, view_path_simple);
+        if (wl_in.nstrings)
+        {
+            for (j = 0; j < wl_in.nstrings; ++j)
+            {
+                string_ty	    *filename_old;
+                string_ty	    *filename_tail;
+                string_ty	    *filename_new;
 
-    //
-    // Find the new name, relative to the project tree.
-    //
-    s2 = 0;
-    for (k = 0; k < search_path.nstrings; ++k)
-    {
-	s2 = os_below_dir(search_path.string[k], new_name);
-	if (s2)
-	    break;
+                //
+                // Note: old_name and new_name will be empty
+                // strings if they refer to the top of the
+                // development directory tree.
+                //
+                filename_old = wl_in.string[j];
+                if (old_name->str_length)
+                {
+                    filename_tail = os_below_dir(old_name, filename_old);
+                    if (!filename_tail)
+		    this_is_a_bug();
+                }
+                else
+                {
+                    // top-level directory
+                    filename_tail = str_copy(filename_old);
+                }
+                if (new_name->str_length)
+                    filename_new = os_path_join(new_name, filename_tail);
+                else
+                    filename_new = str_copy(filename_tail);
+                str_free(filename_tail);
+
+                move_list_append_create(&ml, filename_old, filename_new);
+
+                str_free(filename_old);
+                str_free(filename_new);
+            }
+        }
+        else
+        {
+            move_list_append_create(&ml, old_name, new_name);
+        }
+        string_list_destructor(&wl_in);
+        str_free(old_name);
+        str_free(new_name);
     }
-    if (!s2)
-    {
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", new_name);
-	change_fatal(cp, scp, i18n("$filename unrelated"));
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-    str_free(new_name);
-    new_name = s2;
+
     string_list_destructor(&search_path);
 
-    //
-    // If the old file was a directory, then move all of its
-    // contents into the new directory.	 If the old file was not a
-    // directory, just move it.	 All checks to see if the action is
-    // valid are done in the inner function.
-    //
-    project_file_directory_query(pp, old_name, &wl_in, 0, view_path_simple);
     string_list_constructor(&wl_nf);
     string_list_constructor(&wl_nt);
     string_list_constructor(&wl_rm);
-    if (wl_in.nstrings)
+    if (ml.length)
     {
-	size_t		j;
-
-	for (j = 0; j < wl_in.nstrings; ++j)
-	{
-	    string_ty	    *filename_old;
-	    string_ty	    *filename_tail;
-	    string_ty	    *filename_new;
-
-	    //
-	    // Note: old_name and new_name will be empty
-	    // strings if they refer to the top of the
-	    // development directory tree.
-	    //
-	    filename_old = wl_in.string[j];
-	    if (old_name->str_length)
-	    {
-		filename_tail = os_below_dir(old_name, filename_old);
-		if (!filename_tail)
-		    this_is_a_bug();
-	    }
-	    else
-	    {
-		// top-level directory
-		filename_tail = str_copy(filename_old);
-	    }
-	    if (new_name->str_length)
-		filename_new = os_path_join(new_name, filename_tail);
-	    else
-		filename_new = str_copy(filename_tail);
-	    str_free(filename_tail);
-
-	    //
-	    // move the file
-	    //
-	    move_file_innards
-	    (
-		up,
-		cp,
-		filename_old,
-		filename_new,
-		&wl_nf,
-		&wl_nt,
-		&wl_rm
-	    );
-	    str_free(filename_old);
-	    str_free(filename_new);
-	}
+        for (j = 0; j < ml.length; ++j)
+        {
+            move_file_innards
+            (
+                up,
+                cp,
+                ml.item[j].from,
+                ml.item[j].to,
+                &wl_nf,
+                &wl_nt,
+                &wl_rm
+            );
+        }
     }
-    else
-    {
-	move_file_innards(up, cp, old_name, new_name, &wl_nf, &wl_nt, &wl_rm);
-    }
-    string_list_destructor(&wl_in);
+
+
+    if (wl_rm.nstrings != wl_nf.nstrings + wl_nt.nstrings)
+        this_is_a_bug();
+
 
     //
     // the number of files changed,
@@ -639,13 +674,15 @@ move_file_main(void)
     //
     // verbose success message
     //
-    scp = sub_context_new();
-    sub_var_set_string(scp, "File_Name1", old_name);
-    sub_var_set_string(scp, "File_Name2", new_name);
-    change_verbose(cp, scp, i18n("move $filename1 to $filename2 complete"));
-    sub_context_delete(scp);
-    str_free(old_name);
-    str_free(new_name);
+    for (j = 0; j < ml.length; ++j)
+    {
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name1", ml.item[j].from);
+        sub_var_set_string(scp, "File_Name2", ml.item[j].to);
+        change_verbose(cp, scp, i18n("move $filename1 to $filename2 complete"));
+        sub_context_delete(scp);
+    }
+    move_list_destructor(&ml);
 
     //
     // run the change file command

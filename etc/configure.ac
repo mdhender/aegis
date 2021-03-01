@@ -494,6 +494,7 @@ case "$sharedstatedir" in
 	sharedstatedir="${sharedstatedir}/aegis"
 	;;
 esac
+eval "sysconfdir=$sysconfdir"
 
 dnl support for NLSDIR option
 AC_ARG_WITH(nlsdir,
@@ -732,7 +733,6 @@ AH_BOTTOM(
 #include <config.messy.h>
 
 #endif /* COMMON_CONFIG_H */])
-
 
 AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so
 	common/libdir.cc etc/compat.2.3)

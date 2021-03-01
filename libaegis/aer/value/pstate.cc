@@ -38,7 +38,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_value_pstate_ty rpt_value_pstate_ty;
 struct rpt_value_pstate_ty
 {
     RPT_VALUE

@@ -25,7 +25,7 @@
 #include <ac/sys/clu.h>
 
 
-#ifndef HAVE_CLU_INFO
+#if !HAVE_CLU_INFO
 
 int
 clu_info(int n, ...)

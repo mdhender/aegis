@@ -63,6 +63,8 @@ lang_by_file(const char *filename)
     lang_t          **tp;
     lang_t          *lp;
 
+    if (!filename)
+	return &lang_generic;
     for (tp = table; tp < ENDOF(table); ++tp)
     {
 	lp = *tp;

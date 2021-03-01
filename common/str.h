@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/str.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/str.c
+//
 
 #ifndef STR_H
 #define STR_H
@@ -52,7 +52,6 @@ typedef unsigned long str_hash_ty;
   * <b>Thou shalt not</b> modify any member of a string struct, or the
   * forces of evil shall wreak misery in thy life.
   */
-typedef struct string_ty string_ty;
 struct string_ty
 {
     /**
@@ -524,7 +523,7 @@ string_ty *str_trim(string_ty *str);
   * \return
   *	Non-zero if valid, zero if invalid.
   */
-int str_validate(string_ty *str);
+int str_validate(const string_ty *str);
 
 /**
   * \brief
@@ -544,4 +543,4 @@ int str_validate(string_ty *str);
 int str_leading_prefix(string_ty *haystack, string_ty *needle);
 
 /** @} */
-#endif /* STR_H */
+#endif // STR_H

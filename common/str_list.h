@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1996, 1997, 2003, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/str_list.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1994, 1996, 1997, 2003, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/str_list.c
+//
 
 #ifndef COMMON_STR_LIST_H
 #define COMMON_STR_LIST_H
@@ -35,7 +35,6 @@
   * The string_list_ty type is used to represent a list of string
   * (string_ty *) values.
   */
-typedef struct string_list_ty string_list_ty;
 struct string_list_ty
 {
 	size_t		nstrings;
@@ -47,7 +46,7 @@ struct string_list_ty
   * The string_list_member function is used to test for the existence
   * of a string in a string list.  (This is an O(n) search.)
   */
-int string_list_member(string_list_ty *, string_ty *);
+int string_list_member(const string_list_ty *, string_ty *);
 
 /**
   * The wl2str function is used to convert a list of strings into a
@@ -62,7 +61,8 @@ int string_list_member(string_list_ty *, string_ty *);
   *	The index of the last string in the list to be joined (counting
   *	from one, or one past the end, counting from zero).
   */
-string_ty *wl2str(string_list_ty *slp, int start, int finish, const char *sep);
+string_ty *wl2str(const string_list_ty *slp, int start, int finish,
+    const char *sep);
 
 /**
   * The str2wl function is used to break a string up into several strings
@@ -104,7 +104,7 @@ void string_list_prepend(string_list_ty *lhs, string_ty *rhs);
   * @param rhs
   *	The string list to be added to the front of lhs.
   */
-void string_list_prepend_list(string_list_ty *lhs, string_list_ty *rhs);
+void string_list_prepend_list(string_list_ty *lhs, const string_list_ty *rhs);
 
 /**
   * The string_list_append function is used to add another string to
@@ -126,7 +126,7 @@ void string_list_append(string_list_ty *lhs, string_ty *rhs);
   * @param rhs
   *	The string list to be added to the end of lhs.
   */
-void string_list_append_list(string_list_ty *lhs, string_list_ty *rhs);
+void string_list_append_list(string_list_ty *lhs, const string_list_ty *rhs);
 
 /**
   * The string_list_append_unique function is used to add another string
@@ -150,7 +150,8 @@ void string_list_append_unique(string_list_ty *lhs, string_ty *rhs);
   * @param rhs
   *	The string list to be added to the end of lhs.
   */
-void string_list_append_list_unique(string_list_ty *lhs, string_list_ty *rhs);
+void string_list_append_list_unique(string_list_ty *lhs,
+    const string_list_ty *rhs);
 
 /**
   * The string_list_copy function is sued to replace the contents of one
@@ -158,7 +159,7 @@ void string_list_append_list_unique(string_list_ty *lhs, string_list_ty *rhs);
   * an assignment operator.  The previous contents will be discarded
   * NOT free()ed.
   */
-void string_list_copy(string_list_ty *lhs, string_list_ty *rhs);
+void string_list_copy(string_list_ty *lhs, const string_list_ty *rhs);
 
 /**
   * The string_list_remove function is used to remove a speific valued
@@ -177,7 +178,7 @@ void string_list_remove(string_list_ty *, string_ty *);
   * @param rhs
   *	The list of values to be removed from lhs.
   */
-void string_list_remove_list(string_list_ty *lhs, string_list_ty *rhs);
+void string_list_remove_list(string_list_ty *lhs, const string_list_ty *rhs);
 
 /**
   * The string_list_destructor function is used to release all resources
@@ -217,7 +218,7 @@ string_list_ty *string_list_new(void);
   *	Returns true (non-zero) if the two sets of strings are the same,
   *	false (zero) if they are not.
   */
-int string_list_equal(string_list_ty *, string_list_ty *);
+int string_list_equal(const string_list_ty *, const string_list_ty *);
 
 /**
   * The string_list_subset function is used to determine if lhs is an
@@ -227,7 +228,7 @@ int string_list_equal(string_list_ty *, string_list_ty *);
   *	Returns true (non-zero) if the two sets of strings are the same,
   *	false (zero) if they are not.
   */
-int string_list_subset(string_list_ty *lhs, string_list_ty *rhs);
+int string_list_subset(const string_list_ty *lhs, const string_list_ty *rhs);
 
 /**
   * The string_list_sort function is used to sort a list of strings.
@@ -253,14 +254,14 @@ void string_list_sort_version(string_list_ty *);
   * @param rhs
   *	The unquoted input strings.
   */
-void string_list_quote_shell(string_list_ty *lhs, string_list_ty *rhs);
+void string_list_quote_shell(string_list_ty *lhs, const string_list_ty *rhs);
 
 /**
   * The string_list_validate function is used to validate the internal
   * structure of a string list.  It is used for debugging, and shall
   * not be used when the DEBUG symbol is not defined.
   */
-int string_list_validate(string_list_ty *);
+int string_list_validate(const string_list_ty *);
 
 /** @} */
-#endif /* COMMON_STR_LIST_H */
+#endif // COMMON_STR_LIST_H

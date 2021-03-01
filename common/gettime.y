@@ -635,7 +635,7 @@ done:
 const char *
 date_string(time_t when)
 {
-    struct tm	*tm;
+    struct tm	*the_time;
     static char	buffer[32];
 
     static const char *weekday_name[] =
@@ -654,7 +654,7 @@ date_string(time_t when)
      *	(RFC1036 likes GMT, remember)
      */
     trace(("date_string(when = %ld)\n{\n", (long)when));
-    tm = gmtime(&when);
+    the_time = gmtime(&when);
 
     /*
      * build the date string
@@ -664,13 +664,13 @@ date_string(time_t when)
 	buffer,
 	sizeof(buffer),
 	"%s,%3d %s %4.4d %2.2d:%2.2d:%2.2d GMT",
-	weekday_name[tm->tm_wday],
-	tm->tm_mday,
-	month_name[tm->tm_mon],
-	tm->tm_year + 1900,
-	tm->tm_hour,
-	tm->tm_min,
-	tm->tm_sec
+	weekday_name[the_time->tm_wday],
+	the_time->tm_mday,
+	month_name[the_time->tm_mon],
+	the_time->tm_year + 1900,
+	the_time->tm_hour,
+	the_time->tm_min,
+	the_time->tm_sec
     );
     trace(("return \"%s\";\n", buffer));
     trace(("}\n"));
@@ -978,7 +978,6 @@ RelativeSpecification
  *	It is impossible to have a full list of time zones.
  */
 
-typedef struct table_t table_t;
 struct table_t
 {
     const char      *name;

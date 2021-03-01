@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996, 1998, 2002 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1998, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_STDDEF_H
+#if HAVE_STDDEF_H
 #include <stddef.h>
 #endif
 

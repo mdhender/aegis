@@ -25,7 +25,6 @@
 #include <stracc.h>
 
 
-typedef struct input_base64_ty input_base64_ty;
 struct input_base64_ty
 {
     input_ty	    inherited;

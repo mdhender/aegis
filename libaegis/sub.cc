@@ -122,10 +122,8 @@ enum getc_type
     getc_type_control,
     getc_type_data
 };
-typedef enum getc_type getc_type;
 
 
-// typedef struct sub_context_ty sub_context_ty;
 struct sub_context_ty
 {
     struct sub_diversion_ty *diversion;
@@ -143,7 +141,6 @@ struct sub_context_ty
 
 typedef wstring_ty *(*fp)(sub_context_ty *, wstring_list_ty *);
 
-typedef struct sub_table_ty sub_table_ty;
 struct sub_table_ty
 {
     const char	    *name;
@@ -156,7 +153,6 @@ struct sub_table_ty
 };
 
 
-typedef struct sub_diversion_ty sub_diversion_ty;
 struct sub_diversion_ty
 {
     long	    pos;
@@ -166,7 +162,6 @@ struct sub_diversion_ty
 };
 
 
-typedef struct collect_ty collect_ty;
 struct collect_ty
 {
     size_t	    pos;

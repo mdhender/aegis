@@ -84,8 +84,8 @@ case $file in
 		"-e '/<stdlib.h>/d'" \
 		"-e '/<stddef.h>/d'" \
 		"y.tab.c > ${stem}.gen.cc"
-	echo "	sed -e 's/[yY][yY]/${yy}_/g' -e 's/Y_TAB_H/${yy}_TAB_H/g' \
-y.tab.h > ${stem}.gen.h"
+	echo "	sed -e 's/[yY][yY]/${yy}_/g' -e 's/Y_TAB_H/${yy}_TAB_H/g'" \
+		"y.tab.h > ${stem}.gen.h"
 	echo "	rm -f y.tab.c y.tab.h"
 	;;
 
@@ -112,8 +112,8 @@ lib/*.gif.uue)
 	echo "lib/$rest: $file"
 	echo "	uudecode $file"
 	echo ""
-	echo "\$(RPM_BUILD_ROOT)\$(IconRoot)/$rest: lib/$rest \
-$dir/.mkdir.script"
+	echo "\$(RPM_BUILD_ROOT)\$(IconRoot)/$rest: lib/$rest" \
+		"$dir/.mkdir.script"
 	echo "	\$(INSTALL_DATA) $file \$@"
 	;;
 
@@ -128,16 +128,16 @@ lib/cshrc | lib/profile)
 	case $file in
 	lib/profile)
 		echo
-		echo "\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.sh: \
-\$(RPM_BUILD_ROOT)\$(datadir)/$rest"
-		echo '	-@mkdir -p $(RPM_BUILD_ROOT)/etc/profile.d'
+		echo "\$(RPM_BUILD_ROOT)\$(sysconfdir)/profile.d/aegis.sh:" \
+			"\$(RPM_BUILD_ROOT)\$(datadir)/$rest"
+		echo '	-@mkdir -p $(RPM_BUILD_ROOT)\$(sysconfdir)/profile.d'
 		echo "	-ln -s \$(datadir)/$rest \$@"
 		;;
 	lib/cshrc)
 		echo
-		echo "\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.csh: \
-\$(RPM_BUILD_ROOT)\$(datadir)/$rest"
-		echo '	-@mkdir -p $(RPM_BUILD_ROOT)/etc/profile.d'
+		echo "\$(RPM_BUILD_ROOT)\$(sysconfdir)/profile.d/aegis.csh:" \
+			"\$(RPM_BUILD_ROOT)\$(datadir)/$rest"
+		echo '	-@mkdir -p $(RPM_BUILD_ROOT)\$(sysconfdir)/profile.d'
 		echo "	-ln -s \$(datadir)/$rest \$@"
 		;;
 	*)
@@ -189,16 +189,16 @@ lib/*/man[[1-9]/*.[1-9])
 
 	echo ""
 	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem: $file $dir/.mkdir.datadir" \
-$dep
-	echo "	\$(SOELIM) -I$dir -Ietc $file | sed '/^\.lf/d' \
-> \$\${TMPDIR-/tmp}/aegis.tmp"
+		$dep
+	echo "	\$(SOELIM) -I$dir -Ietc $file | sed '/^\.lf/d'" \
+		"> \$\${TMPDIR-/tmp}/aegis.tmp"
 	echo "	\$(INSTALL_DATA) \$\${TMPDIR-/tmp}/aegis.tmp \$@"
 	echo "	-chown \$(AEGIS_UID) \$@ && chgrp \$(AEGIS_GID) \$@"
 	echo "	@rm -f \$\${TMPDIR-/tmp}/aegis.tmp"
 	echo ""
 	echo "\$(RPM_BUILD_ROOT)\$(mandir)/$part: $file" $dep .${ugly}dir
-	echo "	\$(SOELIM) -I$dir -Ietc $file | sed '/^\.lf/d' \
-> \$\${TMPDIR-/tmp}/aegis.tmp"
+	echo "	\$(SOELIM) -I$dir -Ietc $file | sed '/^\.lf/d'" \
+		"> \$\${TMPDIR-/tmp}/aegis.tmp"
 	echo "	\$(INSTALL_DATA) \$\${TMPDIR-/tmp}/aegis.tmp \$@"
 	echo "	-chown \$(AEGIS_UID) \$@ && chgrp \$(AEGIS_GID) \$@"
 	echo "	@rm -f \$\${TMPDIR-/tmp}/aegis.tmp"
@@ -243,32 +243,35 @@ lib/*/*/main.*)
 
 	echo ""
 	echo "lib/$stem2.ps: $file" $dep
-	echo "	\$(SOELIM) -I$dir -Ietc -I$dirdir/man1 -I$dirdir/man5 \
--I$dirdir/readme $file | \$(GROFF) -R -t -p $macros -mpic -mpspic > \$@"
+	echo "	\$(SOELIM) -I$dir -Ietc -I$dirdir/man1 -I$dirdir/man5" \
+		"-I$dirdir/readme $file | \$(GROFF) -R -t -p $macros -mpic" \
+		"-mpspic > \$@"
 
 	echo ""
-	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem2.ps: lib/$stem2.ps \
-lib/$stem3/.mkdir.datadir"
+	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem2.ps: lib/$stem2.ps" \
+		"lib/$stem3/.mkdir.datadir"
 	echo "	\$(INSTALL_DATA) lib/$stem2.ps \$@"
 
 	echo ""
 	echo "lib/$stem2.dvi: $file" $dep
-	echo "	\$(SOELIM) -I$dir -Ietc -I$dirdir/man1 -I$dirdir/man5 \
--I$dirdir/readme $file | \$(GROFF) -Tdvi -R -t -p $macros -mpic > \$@"
+	echo "	\$(SOELIM) -I$dir -Ietc -I$dirdir/man1 -I$dirdir/man5" \
+		"-I$dirdir/readme $file | \$(GROFF) -Tdvi -R -t -p $macros" \
+		"-mpic > \$@"
 
 	echo ""
-	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem2.dvi: lib/$stem2.dvi \
-lib/$stem3/.mkdir.datadir"
+	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem2.dvi: lib/$stem2.dvi" \
+		"lib/$stem3/.mkdir.datadir"
 	echo "	\$(INSTALL_DATA) lib/$stem2.dvi \$@"
 
 	echo ""
 	echo "lib/$stem2.txt: $file " $dep
-	echo "	-\$(SOELIM) -I$dir -Ietc -I$dirdir/man1 -I$dirdir/man5 \
--I$dirdir/readme $file | \$(GROFF) -Tascii -R -t -p $macros -mpic > \$@"
+	echo "	-\$(SOELIM) -I$dir -Ietc -I$dirdir/man1 -I$dirdir/man5" \
+		"-I$dirdir/readme $file | \$(GROFF) -Tascii -R -t -p $macros" \
+		"-mpic > \$@"
 
 	echo ""
-	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem2.txt: lib/$stem2.txt \
-lib/$stem3/.mkdir.datadir"
+	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem2.txt: lib/$stem2.txt" \
+		"lib/$stem3/.mkdir.datadir"
 	echo "	\$(INSTALL_DATA) lib/$stem2.txt \$@"
 	;;
 
@@ -300,8 +303,8 @@ test/*/*.sh)
 	stem=`echo $file | sed -e 's/\.sh$//'`
 	echo ""
 	echo "$stem.ES: $file all-bin etc/test.sh"
-	echo "	CXX=\"\$(CXX)\" \$(SH) etc/test.sh -shell \$(SH) -run $file \
-$stem.ES"
+	echo "	CXX=\"\$(CXX)\" \$(SH) etc/test.sh -shell \$(SH) -run $file" \
+		"$stem.ES"
 	;;
 
 script/*.tcl)

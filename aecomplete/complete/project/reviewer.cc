@@ -27,7 +27,6 @@
 #include <shell.h>
 
 
-typedef struct complete_project_reviewer_ty complete_project_reviewer_ty;
 struct complete_project_reviewer_ty
 {
     complete_ty     inherited;

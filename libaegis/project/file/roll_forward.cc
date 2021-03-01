@@ -286,7 +286,6 @@ change_list_get(project_ty *pp, time_t limit)
 }
 
 
-typedef struct playback_ty playback_ty;
 struct playback_ty
 {
     project_ty      *pp;
@@ -344,7 +343,6 @@ playback_when(playback_ty *pbp)
 }
 
 
-typedef struct playback_list_ty playback_list_ty;
 struct playback_list_ty
 {
     size_t          length;

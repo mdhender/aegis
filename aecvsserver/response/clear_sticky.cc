@@ -42,7 +42,6 @@
 #include <server.h>
 
 
-typedef struct response_clear_sticky_ty response_clear_sticky_ty;
 struct response_clear_sticky_ty
 {
     response_ty     inherited;

@@ -39,7 +39,6 @@
 #include <server.h>
 
 
-typedef struct response_checked_in_ty response_checked_in_ty;
 struct response_checked_in_ty
 {
     response_ty     inherited;

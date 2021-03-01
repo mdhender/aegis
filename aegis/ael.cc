@@ -71,7 +71,6 @@
 static void list_list_list(string_ty *, long, string_list_ty *); // forward
 
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
+ *	Copyright (C) 2003, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_MAGIC_H
+#if HAVE_MAGIC_H
 #include <magic.h>
 #else
 typedef void *magic_t;

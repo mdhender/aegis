@@ -39,19 +39,7 @@ find_sizes_files="\
 	common/mprintf.\$(OBJEXT) common/progname.\$(OBJEXT)		\
 	common/str.\$(OBJEXT) common/str/format.\$(OBJEXT) 		\
 	common/trace.\$(OBJEXT)"
-fmtgen_files="\
-	common/ac/libintl.\$(OBJEXT) common/ac/stdlib.\$(OBJEXT)	\
-	common/ac/string.\$(OBJEXT) common/ac/time.\$(OBJEXT)		\
-	common/ac/unistd.\$(OBJEXT) common/ac/wchar.\$(OBJEXT)		\
-	common/ac/wctype.\$(OBJEXT) common/arglex.\$(OBJEXT)		\
-	common/error.\$(OBJEXT) common/exeext.\$(OBJEXT)		\
-	common/fstrcmp.\$(OBJEXT) common/libdir.\$(OBJEXT)		\
-	common/mem.\$(OBJEXT) common/mprintf.\$(OBJEXT)			\
-	common/progname.\$(OBJEXT) common/str.\$(OBJEXT)		\
-	common/str/format.\$(OBJEXT) common/str_list/append.\$(OBJEXT)	\
-	common/str_list/constructor.\$(OBJEXT)				\
-	common/str_list/append_uniqu.\$(OBJEXT)				\
-	common/symtab.\$(OBJEXT) common/trace.\$(OBJEXT)"
+fmtgen_files=
 
 #
 # bindir - in a network, these may be shared between machines of the
@@ -67,8 +55,8 @@ fmtgen_files="\
 #	MUST BE writable.
 #
 libdir_files=
-datadir_files="\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.sh \
-	\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.csh"
+datadir_files="\$(RPM_BUILD_ROOT)\$(sysconfdir)/profile.d/aegis.sh \
+	\$(RPM_BUILD_ROOT)\$(sysconfdir)/profile.d/aegis.csh"
 comdir_files=
 man_files=
 
@@ -267,14 +255,14 @@ do
 
 	case $name in
 
-	find_sizes | fmtgen )
+	find_sizes )
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) .bin"
 		echo '	@sleep 1'
 		echo "	\$(CXX) \$(LDFLAGS) -o \$@ \$(${name}_files) \$(LIBS)"
 		echo '	@sleep 1'
 		;;
 
-	aefp )
+	aefp | fmtgen )
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
 common/common.\$(LIBEXT) .bin"
 		echo '	@sleep 1'

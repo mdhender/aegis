@@ -28,7 +28,6 @@
 #include <str_list.h>
 
 
-typedef struct complete_project_delta_ty complete_project_delta_ty;
 struct complete_project_delta_ty
 {
     complete_ty     inherited;

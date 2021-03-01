@@ -30,7 +30,6 @@
 #include <wstr_list.h>
 
 typedef string_ty *(*func_ptr)(project_ty *);
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;

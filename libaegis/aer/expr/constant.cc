@@ -26,7 +26,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_expr_constant_ty rpt_expr_constant_ty;
 struct rpt_expr_constant_ty
 {
     RPT_EXPR

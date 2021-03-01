@@ -39,7 +39,6 @@
 static int gzip_magic[2] = {0x1f, 0x8b}; // gzip magic header
 
 
-typedef struct output_gzip_ty output_gzip_ty;
 struct output_gzip_ty
 {
 	output_ty	inherited;

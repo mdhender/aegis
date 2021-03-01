@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for libaegis/input.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1999, 2002, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for libaegis/input.c
+//
 
 #ifndef LIBAEGIS_INPUT_H
 #define LIBAEGIS_INPUT_H
@@ -27,22 +27,20 @@
 
 #include <main.h>
 
-typedef struct input_ty input_ty;
 struct input_ty
 {
 	struct input_vtbl_ty *vptr;
-	/* private: */
+	// private:
 	unsigned char	*buffer;
 	size_t		buffer_size;
 	unsigned char	*buffer_position;
 	unsigned char	*buffer_end;
 };
 
-/*
- * This structure is *not* to be accessed by clients of this interface.
- * It is only present to permit optimizations.
- */
-typedef struct input_vtbl_ty input_vtbl_ty;
+//
+// This structure is *not* to be accessed by clients of this interface.
+// It is only present to permit optimizations.
+//
 struct input_vtbl_ty
 {
 	size_t size;
@@ -129,7 +127,7 @@ long input_ftell(input_ty *);
   */
 void input_fatal_error(input_ty *, const char *);
 
-struct output_ty; /* existence */
+struct output_ty; // existence
 
 /**
   * The input_to_output function is used to copy the entire contents of
@@ -181,4 +179,4 @@ struct string_ty *input_one_line(input_ty *);
   */
 void input_keepalive(input_ty *);
 
-#endif /* LIBAEGIS_INPUT_H */
+#endif // LIBAEGIS_INPUT_H

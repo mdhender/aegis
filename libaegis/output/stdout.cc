@@ -33,7 +33,6 @@
 #include <sub.h>
 
 
-typedef struct output_stdout_ty output_stdout_ty;
 struct output_stdout_ty
 {
 	output_ty	inherited;

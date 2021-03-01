@@ -189,7 +189,6 @@ static char   hex[16] = {
     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
 
-typedef struct glyph_t glyph_t;
 struct glyph_t
 {
     char	    text;
@@ -198,7 +197,6 @@ struct glyph_t
     int		    cumulative;
 };
 
-typedef struct output_quoted_printable_ty output_quoted_printable_ty;
 struct output_quoted_printable_ty
 {
     output_ty	    inherited;

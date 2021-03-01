@@ -82,10 +82,14 @@ change_file_up_to_date(project_ty *pp, fstate_src_ty *c_src_data)
     assert(c_src_data->edit_origin);
     assert(c_src_data->edit_origin->revision);
     result =
-	str_equal
 	(
-    	    p_src_data->edit->revision,
-    	    c_src_data->edit_origin->revision
+	    str_equal(p_src_data->uuid, c_src_data->uuid)
+	&&
+	    str_equal
+	    (
+		p_src_data->edit->revision,
+		c_src_data->edit_origin->revision
+	    )
 	);
     trace(("return %d;\n", result));
     trace(("}\n"));

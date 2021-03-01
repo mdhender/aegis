@@ -45,11 +45,9 @@ showtime(output_ty *fp, time_t when, int exempt)
 {
     if (when)
     {
-	struct tm	*tm;
-	char		buffer[100];
-
-	tm = localtime(&when);
-	strftime(buffer, sizeof(buffer), "%H:%M:%S %d-%b-%Y", tm);
+	struct tm *the_time = localtime(&when);
+	char buffer[100];
+	strftime(buffer, sizeof(buffer), "%H:%M:%S %d-%b-%Y", the_time);
 	output_fputs(fp, buffer);
     }
     else if (exempt)

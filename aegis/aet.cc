@@ -120,7 +120,6 @@ test_list(void)
 }
 
 
-typedef struct limit_suggestions_ty limit_suggestions_ty;
 struct limit_suggestions_ty
 {
     string_ty	    *filename;

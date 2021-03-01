@@ -27,7 +27,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_stmt_expr_ty rpt_stmt_expr_ty;
 struct rpt_stmt_expr_ty
 {
 	RPT_STMT

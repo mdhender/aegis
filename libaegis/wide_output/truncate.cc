@@ -32,7 +32,6 @@
 #include <wide_output/truncate.h>
 
 
-typedef struct wide_output_truncate_ty wide_output_truncate_ty;
 struct wide_output_truncate_ty
 {
     wide_output_ty  inherited;

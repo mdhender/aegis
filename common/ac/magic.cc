@@ -45,7 +45,6 @@ magic_close(magic_t cookie)
 const char *
 magic_file(magic_t cookie, const char *filename)
 {
-    typedef struct table_t table_t;
     struct table_t
     {
 	const char *suffix;

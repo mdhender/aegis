@@ -31,7 +31,6 @@
 #include <sub.h>
 
 
-typedef struct output_tar_child_ty output_tar_child_ty;
 struct output_tar_child_ty
 {
     output_ty	    inherited;

@@ -58,10 +58,8 @@ first_line(string_ty *s)
 static int
 extract_year(time_t t)
 {
-    struct tm	    *tm;
-
-    tm = localtime(&t);
-    return tm->tm_year + 1900;
+    struct tm *the_time = localtime(&t);
+    return the_time->tm_year + 1900;
 }
 
 

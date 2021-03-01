@@ -28,7 +28,6 @@
 #include <sub.h>
 
 
-typedef struct rpt_stmt_while_ty rpt_stmt_while_ty;
 struct rpt_stmt_while_ty
 {
 	RPT_STMT
@@ -155,7 +154,6 @@ rpt_stmt_while(rpt_expr_ty *e, rpt_stmt_ty *sub)
 }
 
 
-typedef struct rpt_stmt_do_ty rpt_stmt_do_ty;
 struct rpt_stmt_do_ty
 {
 	RPT_STMT

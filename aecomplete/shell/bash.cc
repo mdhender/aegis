@@ -75,7 +75,6 @@
 #include <str.h>
 
 
-typedef struct shell_bash_ty shell_bash_ty;
 struct shell_bash_ty
 {
     shell_ty        inherited;

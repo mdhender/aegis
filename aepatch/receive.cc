@@ -31,6 +31,7 @@
 #include <change.h>
 #include <change/attributes.h>
 #include <change/file.h>
+#include <change/lock_sync.h>
 #include <error.h>
 #include <help.h>
 #include <input/base64.h>
@@ -96,7 +97,6 @@ static string_list_ty path_prefix_remove;
 static void
 mangle_file_names(patch_list_ty *plp, project_ty *pp)
 {
-    typedef struct cmp_t cmp_t;
     struct cmp_t
     {
 	int		npaths;
@@ -631,8 +631,6 @@ receive(void)
     change_bind_existing(cp);
     dd = change_development_directory_get(cp, 0);
     dd = str_copy(dd); // will vanish when change_free();
-    change_free(cp);
-    cp = 0;
 
     os_chdir(dd);
 
@@ -706,8 +704,6 @@ receive(void)
 	if (project_file_trojan_suspect(pp, file_name))
 	    could_have_a_trojan = 1;
     }
-    project_free(pp);
-    pp = 0;
 
     //
     // add the modified files to the change
@@ -791,6 +787,9 @@ receive(void)
 	    str_free(delopt);
 	os_xargs(s, &files_source, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
     string_list_destructor(&files_source);
 
@@ -837,6 +836,9 @@ receive(void)
 	    );
 	os_xargs(s, &files_source, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
     string_list_destructor(&files_source);
 
@@ -916,6 +918,9 @@ receive(void)
 	    );
 	os_xargs(s, &files_test_auto, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
     if (files_test_manual.nstrings)
     {
@@ -929,6 +934,9 @@ receive(void)
 	    );
 	os_xargs(s, &files_test_manual, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
 
     //
@@ -947,6 +955,9 @@ receive(void)
 	    );
 	os_xargs(s, &files_source, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
     if (files_build.nstrings)
     {
@@ -960,6 +971,9 @@ receive(void)
 	    );
 	os_xargs(s, &files_build, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
     if (files_config.nstrings)
     {
@@ -973,6 +987,9 @@ receive(void)
 	    );
 	os_xargs(s, &files_config, dd);
 	str_free(s);
+
+	// change state invalid
+	change_lock_sync_forced(cp);
     }
     string_list_destructor(&files_source);
     string_list_destructor(&files_config);
@@ -984,10 +1001,6 @@ receive(void)
     // now extract each file from the input
     //
     config_seen = 0;
-    pp = project_alloc(project_name);
-    project_bind_existing(pp);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
     for (j = 0; j < plp->length; ++j)
     {
 	patch_ty	*p;

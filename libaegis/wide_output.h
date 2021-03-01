@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for libaegis/wide_output.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1999-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for libaegis/wide_output.c
+//
 
 #ifndef LIBAEGIS_WIDE_OUTPUT_H
 #define LIBAEGIS_WIDE_OUTPUT_H
@@ -28,10 +28,9 @@
 #include <ac/stddef.h>
 #include <ac/wchar.h>
 
-struct string_ty; /* existence */
-struct wstring_ty; /* existence */
+struct string_ty; // existence
+struct wstring_ty; // existence
 
-typedef struct wide_output_ty wide_output_ty;
 struct wide_output_ty
 {
 	struct wide_output_vtbl_ty *vptr;
@@ -46,11 +45,10 @@ struct wide_output_ty
 	struct wide_output_callback_record *callback;
 };
 
-/*
- * This structure is not to be used by clients of this API.  It is only
- * present to permit macro optimization of the interface.
- */
-typedef struct wide_output_vtbl_ty wide_output_vtbl_ty;
+//
+// This structure is not to be used by clients of this API.  It is only
+// present to permit macro optimization of the interface.
+//
 struct wide_output_vtbl_ty
 {
 	int		size;
@@ -63,16 +61,15 @@ struct wide_output_vtbl_ty
 	int (*page_length)(wide_output_ty *);
 	void (*end_of_line)(wide_output_ty *);
 
-	/*
-	 * By putting this last, we catch many cases where a method
-	 * pointer has been left out.
-	 */
+	//
+	// By putting this last, we catch many cases where a method
+	// pointer has been left out.
+	//
 	const char	*type_name;
 };
 
 typedef void (*wide_output_callback_ty)(wide_output_ty *, void *);
 
-typedef struct wide_output_callback_record wide_output_callback_record;
 struct wide_output_callback_record
 {
 	wide_output_callback_ty func;
@@ -95,13 +92,13 @@ void wide_output_end_of_line(wide_output_ty *);
 void wide_output_delete_callback(wide_output_ty *, wide_output_callback_ty,
 	void *);
 
-/*
- * Despite looking recursive, it isn't.  Ansi C macros do not recurse,
- * so it winds up calling the real function in the "buffer needs to
- * grow" case.
- *
- * (Sun's compiler is broken, use GCC if you have a choice.)
- */
+//
+// Despite looking recursive, it isn't.  Ansi C macros do not recurse,
+// so it winds up calling the real function in the "buffer needs to
+// grow" case.
+//
+// (Sun's compiler is broken, use GCC if you have a choice.)
+//
 #ifndef __SUNPRO_C
 #define wide_output_putwc(fp, wc)					\
 	(((fp)->buffer_position < (fp)->buffer_end)			\
@@ -109,4 +106,4 @@ void wide_output_delete_callback(wide_output_ty *, wide_output_callback_ty,
 	: wide_output_putwc((fp), (wc)))
 #endif
 
-#endif /* LIBAEGIS_WIDE_OUTPUT_H */
+#endif // LIBAEGIS_WIDE_OUTPUT_H

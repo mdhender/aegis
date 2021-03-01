@@ -33,7 +33,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_value_string_ty rpt_value_string_ty;
 struct rpt_value_string_ty
 {
 	RPT_VALUE

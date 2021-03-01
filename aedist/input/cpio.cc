@@ -27,7 +27,6 @@
 #include <str.h>
 
 
-typedef struct input_cpio_ty input_cpio_ty;
 struct input_cpio_ty
 {
 	input_ty	inherited;

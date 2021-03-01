@@ -1556,7 +1556,6 @@ snefru512(snefru512_word output[OUTPUTBLOCKSIZE], snefru512_word input[],
 
 #define SNEFRU_HASH_LEN 32
 
-typedef struct snefru_ty snefru_ty;
 struct snefru_ty
 {
     FINGERPRINT_BASE_CLASS

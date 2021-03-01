@@ -35,7 +35,6 @@
 int
 os_waitpid(int child, int *status_p)
 {
-    typedef struct ret_ty ret_ty;
     struct ret_ty
     {
 	int             pid;

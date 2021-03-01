@@ -27,7 +27,6 @@
 #include <str.h>
 
 
-typedef struct rpt_value_boolean_ty rpt_value_boolean_ty;
 struct rpt_value_boolean_ty
 {
 	RPT_VALUE

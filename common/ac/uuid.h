@@ -25,19 +25,19 @@
 
 #include <config.h>
 
-#ifdef HAVE_DCE_UUID_H
+#if HAVE_DCE_UUID_H
 #include <dce/uuid.h>
 #else
-#ifdef HAVE_UUID_H
+#if HAVE_UUID_H
 #include <uuid.h>
 #else
-#ifdef HAVE_UUID_UUID_H
+#if HAVE_UUID_UUID_H
 #include <uuid/uuid.h>
 #endif
 #endif
 #endif
 
-#ifdef HAVE_UUID_HASH
+#if HAVE_UUID_HASH
 #ifdef UUID_FLAVOR_SET
 #error Too many uuid library found
 #endif
@@ -46,7 +46,7 @@
 #define UUID_IS_DCE 1
 #endif
 
-#ifdef HAVE_UUID_LOAD
+#if HAVE_UUID_LOAD
 #ifdef UUID_FLAVOR_SET
 #error Too many uuid library found
 #endif
@@ -56,7 +56,7 @@
 #endif
 
 
-#ifdef HAVE_UUID_GENERATE
+#if HAVE_UUID_GENERATE
 #ifdef UUID_FLAVOR_SET
 #error Too many uuid library found
 #endif
@@ -65,7 +65,7 @@
 #define UUID_IS_E2FS 1
 #endif
 
-#ifdef HAVE_LINUX_UUID
+#if HAVE_LINUX_UUID
 #ifndef UUID_FLAVOR_SET
 #define UUID_IS_LINUX 1
 #endif

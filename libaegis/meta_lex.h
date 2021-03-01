@@ -20,8 +20,8 @@
  * MANIFEST: interface definition for libaegis/lex.c
  */
 
-#ifndef LEX_H
-#define LEX_H
+#ifndef LIBAEGIS_META_LEX_H
+#define LIBAEGIS_META_LEX_H
 
 #include <main.h>
 
@@ -43,4 +43,4 @@ int gram_lex(void);
   */
 struct string_ty *lex_position(void);
 
-#endif /* LEX_H */
+#endif /* LIBAEGIS_META_LEX_H */

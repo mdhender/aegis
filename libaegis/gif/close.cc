@@ -36,7 +36,6 @@ static unsigned long pack_buffer;
 static int	pack_buffer_len;
 
 
-typedef struct table_ty table_ty;
 struct table_ty
 {
     int		    emit;
@@ -49,7 +48,6 @@ enum state_ty
     state_before_clear,
     state_after_clear
 };
-typedef enum state_ty state_ty;
 
 
 static void

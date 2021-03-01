@@ -121,7 +121,7 @@ install-sh: [install-sh]
 	    LDFLAGS\=[quote [unsplit " " [ld_flags]]]
 
 	    [pathname [resolve configure]] --cache-file\=/dev/null --verbose
-	    --no-create --srcdir\=.
+	    --no-create --srcdir\=. --sysconfdir\=/etc
 
 	    && mv config.status [arch]/config.status
 	    && rm -f config.log

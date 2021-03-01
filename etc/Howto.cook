@@ -405,22 +405,7 @@ fmtgen_obj =
 		[arch]/fmtgen/%0%.o
 		[match_mask fmtgen/%0%.cc [source_files]]
 	]
-	[arch]/common/ac/string.o
-	[arch]/common/arglex.o
-	[arch]/common/error.o
-	[arch]/common/exeext.o
-	[arch]/common/fstrcmp.o
-	[arch]/common/libdir.o
-	[arch]/common/mem.o
-	[arch]/common/mprintf.o
-	[arch]/common/progname.o
-	[arch]/common/str.o
-	[arch]/common/str/format.o
-	[arch]/common/str_list/append.o
-	[arch]/common/str_list/constructor.o
-	[arch]/common/str_list/append_uniqu.o
-	[arch]/common/symtab.o
-	[arch]/common/trace.o
+	[arch]/common/common.a
 	;
 
 find_sizes_obj =
@@ -688,6 +673,7 @@ cascade aecomplete/command/aet.cc = libaegis/cstate.h;
 cascade aecomplete/complete/change/number.cc = libaegis/cstate.h;
 cascade aedist/list.cc = libaegis/cstate.h;
 cascade aedist/receive.cc = libaegis/cattr.h;
+cascade aefind/function/stat.cc = [arch]/common/config.h;
 cascade aefind/lex.cc = aefind/cmdline.gen.h;
 cascade aeget/get/change/aetar.cc = libaegis/cstate.h;
 cascade aeget/get/change/download.cc = libaegis/cstate.h;
@@ -739,23 +725,64 @@ cascade aexml/xml/change/pconf.cc = libaegis/cstate.h;
 cascade aexml/xml/project/cstate.cc = libaegis/cstate.h;
 cascade aexml/xml/project/fstate.cc = libaegis/fstate.h;
 cascade common/ac/ctype.h = [arch]/common/config.h;
+cascade common/ac/curl/curl.h = [arch]/common/config.h;
+cascade common/ac/dce/rpc.h = [arch]/common/config.h;
 cascade common/ac/errno.h = [arch]/common/config.h;
 cascade common/ac/fcntl.h = [arch]/common/config.h;
 cascade common/ac/libintl.h = [arch]/common/config.h;
+cascade common/ac/limits.h = [arch]/common/config.h;
+cascade common/ac/locale.h = [arch]/common/config.h;
+cascade common/ac/magic.h = [arch]/common/config.h;
+cascade common/ac/math.h = [arch]/common/config.h;
 cascade common/ac/mntent.h = [arch]/common/config.h;
+cascade common/ac/regex.h = [arch]/common/config.h;
+cascade common/ac/shadow.h = [arch]/common/config.h;
+cascade common/ac/signal.h = [arch]/common/config.h;
 cascade common/ac/stdarg.h = [arch]/common/config.h;
 cascade common/ac/stddef.h = [arch]/common/config.h;
 cascade common/ac/stdio.h = [arch]/common/config.h;
 cascade common/ac/stdlib.h = [arch]/common/config.h;
 cascade common/ac/string.h = [arch]/common/config.h;
+cascade common/ac/sys/clu.h = [arch]/common/config.h;
+cascade common/ac/sys/ioctl.h = [arch]/common/config.h;
+cascade common/ac/sys/prctl.h = [arch]/common/config.h;
+cascade common/ac/termios.h = [arch]/common/config.h;
 cascade common/ac/time.h = [arch]/common/config.h;
 cascade common/ac/unistd.h = [arch]/common/config.h;
+cascade common/ac/uuid.h = [arch]/common/config.h;
 cascade common/ac/wchar.h = [arch]/common/config.h;
+cascade common/ac/zlib.h = [arch]/common/config.h;
 cascade common/fp/md5.cc = [arch]/common/find_sizes.h;
 cascade common/fp/snefru.cc = [arch]/common/find_sizes.h;
 cascade common/version_stmp.cc = common/patchlevel.h;
 cascade etc/aegis.html = etc/version.so;
 cascade fmtgen/lex.cc = fmtgen/parse.gen.h;
+cascade lib/en/aoss4/main.mm = etc/version.so(exists);
+cascade lib/en/auug93/main.mm = etc/version.so(exists);
+cascade lib/en/building/main.man = etc/version.so(exists);
+cascade lib/en/cvs-comparison/main.ms = [arch]/etc/libdir.so;
+cascade lib/en/cvs-comparison/main.ms = etc/version.so(exists);
+cascade lib/en/faq/main.roff = etc/version.so(exists) lib/en/faq/toc.so;
+cascade lib/en/howto/introductio.so = [arch]/etc/libdir.so;
+cascade lib/en/howto/introductio.so = etc/version.so(exists);
+cascade lib/en/lsm/main.roff = etc/version.so;
+cascade lib/en/man1/aegis.cgi.1 = [arch]/etc/libdir.so;
+cascade lib/en/man1/aeintegratq.1 = [arch]/etc/libdir.so etc/version.so(exists);
+cascade lib/en/man1/aenpr.1 = [arch]/etc/libdir.so;
+cascade lib/en/man1/aenrls.1 = [arch]/etc/libdir.so;
+cascade lib/en/man1/aer.1 = [arch]/etc/libdir.so;
+cascade lib/en/man1/tkaegis.1 = etc/version.so(exists);
+cascade lib/en/man1/z_cr.so = etc/version.so(exists);
+cascade lib/en/man5/aegstate.5 = [arch]/etc/libdir.so;
+cascade lib/en/man5/aer.5 = [arch]/etc/libdir.so;
+cascade lib/en/man5/aerptidx.5 = [arch]/etc/libdir.so;
+cascade lib/en/man5/aeustate.5 = [arch]/etc/libdir.so;
+cascade lib/en/readme/main.man = etc/version.so(exists);
+cascade lib/en/readme/main.man = lib/en/readme/new.so;
+cascade lib/en/refman/main.man = lib/en/refman/index.so;
+cascade lib/en/refman/main.man = lib/en/refman/parts.so;
+cascade lib/en/user-guide/c1.0.so = [arch]/etc/libdir.so;
+cascade lib/en/user-guide/c1.0.so = etc/version.so(exists);
 cascade libaegis/ael/change/incomplete.cc = libaegis/cstate.h;
 cascade libaegis/ael/change/outstanding.cc = libaegis/cstate.h;
 cascade libaegis/ael/formeditnum.cc = libaegis/fstate.h;
@@ -782,6 +809,9 @@ cascade libaegis/aer/value/gstate.cc = libaegis/aer/value/pstate.h;
 cascade libaegis/aer/value/pstate.cc = libaegis/aer/value/cstate.h;
 cascade libaegis/aer/value/pstate.cc = libaegis/aer/value/fstate.h;
 cascade libaegis/aer/value/pstate.cc = libaegis/aer/value/pstate.h;
+cascade libaegis/change.h = libaegis/cstate.h;
+cascade libaegis/change.h = libaegis/fstate.h;
+cascade libaegis/change.h = libaegis/pconf.h;
 cascade libaegis/change/architecture/check.cc = libaegis/cstate.h;
 cascade libaegis/change/architecture/check.cc = libaegis/pconf.h;
 cascade libaegis/change/architecture/find_variant.h = libaegis/cstate.h;
@@ -798,9 +828,6 @@ cascade libaegis/change/cstate/improve.h = libaegis/cstate.h;
 cascade libaegis/change/develop_direct/read_write.cc = libaegis/cstate.h;
 cascade libaegis/change/file/is_config.cc = libaegis/pconf.h;
 cascade libaegis/change/file/metrics/get.cc = libaegis/metrics.h;
-cascade libaegis/change.h = libaegis/cstate.h;
-cascade libaegis/change.h = libaegis/fstate.h;
-cascade libaegis/change.h = libaegis/pconf.h;
 cascade libaegis/change/is_completed.cc = libaegis/cstate.h;
 cascade libaegis/change/pconf/get.cc = libaegis/fstate.h;
 cascade libaegis/change/test/batch.cc = libaegis/fstate.h;
@@ -810,24 +837,26 @@ cascade libaegis/change/test/batch_fake.cc = libaegis/fstate.h;
 cascade libaegis/change/test/batch_fake.cc = libaegis/tstrslt.h;
 cascade libaegis/change/test/run_list.cc = libaegis/pconf.h;
 cascade libaegis/common.cc = libaegis/common.h;
+cascade libaegis/glue.h = [arch]/common/config.h;
 cascade libaegis/gonzo.cc = libaegis/gstate.h;
 cascade libaegis/gonzo.cc = libaegis/ustate.h;
 cascade libaegis/gonzo.h = libaegis/gstate.h;
 cascade libaegis/lex.cc = libaegis/gram.gen.h;
 cascade libaegis/metrics.cc = libaegis/metrics.h;
+cascade libaegis/os/interrupt.h = [arch]/common/config.h;
 cascade libaegis/patch/read.cc = libaegis/common.h;
 cascade libaegis/project.cc = libaegis/pstate.h;
+cascade libaegis/project.h = libaegis/pattr.h;
+cascade libaegis/project.h = libaegis/pstate.h;
 cascade libaegis/project/delta2change.cc = libaegis/cstate.h;
+cascade libaegis/project/file.h = libaegis/fstate.h;
 cascade libaegis/project/file/directory/conflict.cc = libaegis/fstate.h;
 cascade libaegis/project/file/find_fuzzy.cc = libaegis/fstate.h;
-cascade libaegis/project/file.h = libaegis/fstate.h;
 cascade libaegis/project/file/nth.cc = libaegis/fstate.h;
 cascade libaegis/project/file/roll_forward.cc = libaegis/cstate.h;
 cascade libaegis/project/file/roll_forward.h = libaegis/fstate.h;
 cascade libaegis/project/file/trojan.cc = libaegis/pconf.h;
 cascade libaegis/project/file/version_path.cc = libaegis/fstate.h;
-cascade libaegis/project.h = libaegis/pattr.h;
-cascade libaegis/project.h = libaegis/pstate.h;
 cascade libaegis/project/new_branch.cc = libaegis/cstate.h;
 cascade libaegis/project/new_branch.cc = libaegis/pconf.h;
 cascade libaegis/project/pattr/edit.cc = libaegis/pattr.h;
@@ -836,11 +865,11 @@ cascade libaegis/project/pattr/set.cc = libaegis/pattr.h;
 cascade libaegis/project/pconf/get.cc = libaegis/pconf.h;
 cascade libaegis/project/sch_path_get.cc = libaegis/cstate.h;
 cascade libaegis/project/sch_path_get.cc = libaegis/fstate.h;
+cascade libaegis/sub.cc = libaegis/sub/change/state.h;
 cascade libaegis/sub/base_relativ.cc = libaegis/cstate.h;
 cascade libaegis/sub/change/delta.cc = libaegis/cstate.h;
 cascade libaegis/sub/change/number.cc = libaegis/cstate.h;
 cascade libaegis/sub/change/state.cc = libaegis/sub/change/state.h;
-cascade libaegis/sub.cc = libaegis/sub/change/state.h;
 cascade libaegis/sub/delta.cc = libaegis/cstate.h;
 cascade libaegis/sub/expr_lex.cc = libaegis/sub/expr_gram.gen.h;
 cascade libaegis/sub/plural_lex.cc = libaegis/sub/plural_gram.gen.h;
@@ -849,35 +878,13 @@ cascade libaegis/sub/source.cc = libaegis/cstate.h;
 cascade libaegis/tstrslt.cc = libaegis/tstrslt.h;
 cascade libaegis/user.h = libaegis/uconf.h;
 cascade libaegis/user.h = libaegis/ustate.h;
-cascade lib/en/aoss4/main.mm = etc/version.so(exists);
-cascade lib/en/auug93/main.mm = etc/version.so(exists);
-cascade lib/en/building/main.man = etc/version.so(exists);
-cascade lib/en/cvs-comparison/main.ms = [arch]/etc/libdir.so;
-cascade lib/en/cvs-comparison/main.ms = etc/version.so(exists);
-cascade lib/en/faq/main.roff = etc/version.so(exists) lib/en/faq/toc.so;
-cascade lib/en/howto/introductio.so = [arch]/etc/libdir.so;
-cascade lib/en/howto/introductio.so = etc/version.so(exists);
-cascade lib/en/lsm/main.roff = etc/version.so;
-cascade lib/en/man1/aegis.cgi.1 = [arch]/etc/libdir.so;
-cascade lib/en/man1/aeintegratq.1 = [arch]/etc/libdir.so etc/version.so(exists);
-cascade lib/en/man1/aenpr.1 = [arch]/etc/libdir.so;
-cascade lib/en/man1/aenrls.1 = [arch]/etc/libdir.so;
-cascade lib/en/man1/aer.1 = [arch]/etc/libdir.so;
-cascade lib/en/man1/tkaegis.1 = etc/version.so(exists);
-cascade lib/en/man1/z_cr.so = etc/version.so(exists);
-cascade lib/en/man5/aegstate.5 = [arch]/etc/libdir.so;
-cascade lib/en/man5/aer.5 = [arch]/etc/libdir.so;
-cascade lib/en/man5/aerptidx.5 = [arch]/etc/libdir.so;
-cascade lib/en/man5/aeustate.5 = [arch]/etc/libdir.so;
 /* cascade lib/en/readme/main.man = etc/proj_metric.so; */
-cascade lib/en/readme/main.man = etc/version.so(exists);
-cascade lib/en/readme/main.man = lib/en/readme/new.so;
-cascade lib/en/refman/main.man = lib/en/refman/index.so;
-cascade lib/en/refman/main.man = lib/en/refman/parts.so;
-cascade lib/en/user-guide/c1.0.so = [arch]/etc/libdir.so;
-cascade lib/en/user-guide/c1.0.so = etc/version.so(exists);
 
-[fmtgen_obj]: [arch]/common/config.h;
+if [count [common_lib]] then
+[common_lib]: [arch]/common/config.h;
+
+if [count [match_mask %0%.o [fmtgen_obj]]] then
+[match_mask %0%.o [fmtgen_obj]]: [arch]/common/config.h;
 
 /*
  * How to use yacc sources.
@@ -994,7 +1001,10 @@ dataend
 	set no-cascade
 {
 	c_incl -nc -ns -eia -nrec
-	    [stringset [cc_include_flags] [prepost "-I" "/%1" [search_list]]]
+	    [stringset
+		[prepost "-I" "/%1" [search_list]]
+		[cc_include_flags]
+	    ]
 	    -prefix "'cascade %1/%0%2.def ='"
 	    -suffix "';'"
 	    [resolve %1/%0%2.def]
@@ -1009,7 +1019,10 @@ dataend
 %1/%0%2.def,Md: %1/%0%2.def
 {
 	c_incl -nc -ns -eia
-	    [stringset [cc_include_flags] [prepost "-I" "/%1" [search_list]]]
+	    [stringset
+		[prepost "-I" "/%1" [search_list]]
+		[cc_include_flags]
+	    ]
 	    [resolve %1/%0%2.def]
 	    [addprefix -rlp\= [search_list]]
 	    -slp [arch] "'[arch]'"

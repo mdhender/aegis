@@ -52,7 +52,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2004-05-26\n"
+msgstr	"PO-Revision-Date: 2004-06-03\n"
 	"Last-Translator: Alexey Voinov <voins@voins.program.ru>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=KOI8-R\n"
@@ -71,15 +71,13 @@ msgstr	"значение переменной окружения $name должно быть положительным "
 	"десятичным числом"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when the parameter of the -UUid switch is
 # not a valid uuid.
 #
 #	$Name		The -UUid switch
 #
-#, fuzzy
 msgid	"$Name needs an uuid"
-msgstr	"The $Name option needs to be given a valid UUID"
+msgstr	"Для опции $Name требуется указание правильного UUID"
 
 #
 # This error message is issued when a file has been tampered with while
@@ -93,12 +91,10 @@ msgid	"$filename altered"
 msgstr	"файл \"$filename\" был изменён"
 
 #
-# TRANSLATION REQUIRED
 # This message is issued when an aefa is successfully completed.
 #
-#, fuzzy
 msgid  "$filename attributes changed"
-msgstr "file \"$filename\" attributes changed"
+msgstr "атрибуты файла \"$filename\" изменены"
 
 #
 # This error message is issued when aenf is invoked on a file which is
@@ -902,7 +898,6 @@ msgid	"Project $name, Change $number"
 msgstr	"Проект \"$name\", Блок изменений $number"
 
 #
-# TRANSLATION REQUIRED
 # This text is used when a project name, change number and file name are
 # inserted at the top of a file or listing.  Usually in the C locale,
 # so avoid non-ascii characters if at all possible.
@@ -911,9 +906,8 @@ msgstr	"Проект \"$name\", Блок изменений $number"
 # 	$Number		The number of a change.
 #	$File_Name	The name of the file.
 #
-#, fuzzy
 msgid	"Project $name, Change $number, File $filename"
-msgstr	"Project \"$name\", Change $number, File \"$filename\""
+msgstr	"Проект \"$name\", Блок изменений $number, Файл \"$filename\""
 
 #
 # This error message is issued when the ${read_file} substitution is
@@ -1189,25 +1183,21 @@ msgstr	"атрибут architecture блока изменений содержит варианты не "
 	"перечисленные в файле конфигурации проекта ``config''"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user attempts to set a change's
 # UUID when the change already has a UUID.
 #
-#, fuzzy
 msgid	"bad ca, uuid already set"
-msgstr	"the UUID of this change has already been set"
+msgstr	"UUID блока изменений уже установлен"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user attempts to set a change's
 # UUID and the given UUID has already be used by another change.
 #
 #	$Other	The version of change using the specified UUID.
 #		Optional.
 #
-#, fuzzy
 msgid	"bad ca, uuid duplicate"
-msgstr	"the UUID specified is already is use by $other"
+msgstr	"указанный UUID уже используется в $other"
 
 #
 # This error message is issued when an aecd is requested for a change
@@ -1326,15 +1316,13 @@ msgstr	"этот блок изменений находится в стадии '$state', для выполнения "
 	"сравнения он должен быть в стадии 'being developed'"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change file's attributes.
 #
-#, fuzzy
 msgid	"bad fa, not auth"
-msgstr	"user \"$user\" may not modify the change's attributes; "
-	"attributes may only be modified by the developer during "
-	"development"
+msgstr	"Пользователь \"$user\" не может изменять атрибуты блока "
+	"изменений; атрибуты может изменять только разработчик в процессе "
+	"разработки"
 
 #
 # This error message is issued when an aeib command is used on a change
@@ -2663,13 +2651,11 @@ msgid	"file name \"$filename\" not suitable for Windows"
 msgstr	"имя файла \"$filename\" не подходит для Windows "
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a file qualifier in a substitution
 # is an unknown name.  See (+++) below.
 #
-#, fuzzy
 msgid	"file qualifier unknown"
-msgstr	"file qualifier unknown"
+msgstr	"неизвестная категория файлов"
 
 #
 # This error message is issued when an unknown file type name is given
@@ -4168,6 +4154,14 @@ msgid	"not an administrator"
 msgstr	"пользователь \"$user\" не является администратором"
 
 #
+# This error message is issued when a command which requires an even
+# number of file names is not given one.
+#
+#, fuzzy
+msgid	"not an even number of args"
+msgstr	"you must give an even number of files to this command"
+
+#
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
@@ -5007,30 +5001,28 @@ msgstr	"для оператора throw требуется строка в качестве параметра "
 	"(передано $name)"
 
 #
-# TRANSLATION REQUIRED
 # This warning is issed when a delta date is specified which falls before
 # the start of a branch.  This is not meaningful when recreating the
 # contents of a branch.
 #
 # 	$number		The offending date and time.
 #
-#, fuzzy
 msgid	"time $number after branch"
-msgstr	"warning: the time \"$number\" is after the branch finished, this "
-	"is not meaningful when recreating the contents of the branch"
+msgstr	"предупреждение: ветвь проекта была завершена к указанному "
+	"времени \"$number\", это действие не имеет смысла при "
+	"воспроизведении состояния ветви проекта."
 
 #
-# TRANSLATION REQUIRED
 # This warning is issed when a delta date is specified which falls before
 # the start of a branch.  This is not meaningful when recreating the
 # contents of a branch.
 #
 # 	$number		The offending date and time.
 #
-#, fuzzy
 msgid	"time $number before branch"
-msgstr	"warning: the time \"$number\" is before the branch started, this "
-	"is not meaningful when recreating the contents of the branch"
+msgstr	"предупреждение: ветвь проекта не существовала к указанному "
+	"времени \"$number\", это действие не имеет смысла при "
+	"воспроизведении состояния ветви проекта."
 
 #
 # This error message is issued when too few files names are specified on

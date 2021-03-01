@@ -45,7 +45,6 @@
 #include <ustate.h>
 #include <str_list.h>
 
-typedef struct gonzo_ty gonzo_ty;
 struct gonzo_ty
 {
     string_ty	    *dir;

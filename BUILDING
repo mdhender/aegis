@@ -65,12 +65,12 @@ SITE CONFIGURATION
    Running Configure
 	Normally, you just cd to the directory containing aegis' source	code
 	and type
-		% ./configure
+		% ./configure --sysconfdir=/etc
 		...lots	of output...
 		%
 	If you're using	csh on an old version of System	V, you might need to
 	type
-		% sh configure
+		% sh configure --sysconfdir=/etc
 		...lots	of output...
 		%
 	instead	to prevent csh from trying to execute configure	itself.
@@ -79,7 +79,7 @@ SITE CONFIGURATION
 	prints some messages that tell what it is doing.  If you don't want to
 	see the	messages, run configure	with its standard output redirected to
 	/dev/null; for example,
-		% ./configure --quiet
+		% ./configure  --sysconfdir=/etc --quiet
 		%
 
 	There is a known problem with GCC 2.8.3	and HP/UX.  You	will need to
@@ -149,6 +149,10 @@ SITE CONFIGURATION
 		An ``aegis'' directory will be appended	if there is none in
 		the specified path.
 
+	--sysconfdir=PATH
+		Location of system configuration files.	 You should almost
+		always use the /etc directory.
+
 	configure ignores any other arguments that you give it.
 
 	On systems that	require	unusual	options	for compilation	or linking
@@ -156,7 +160,8 @@ SITE CONFIGURATION
 	give configure initial values for variables by setting them in the
 	environment.  In Bourne-compatible shells, you can do that on the
 	command	line like this:
-		$ CC='gcc -traditional'	LIBS=-lposix ./configure
+		$ CC='gcc -traditional'	LIBS=-lposix \
+		  ./configure --sysconfdir=/etc
 		...lots	of output...
 		$
 	Here are the make variables that you might want	to override with
@@ -185,7 +190,8 @@ SITE CONFIGURATION
 	the prefix.
 
 	To cope	with this, you need to say
-		$ CPPFLAGS=-I/usr/local/include	LDFLAGS=-L/usr/local/lib ./configure
+		$ CPPFLAGS=-I/usr/local/include	LDFLAGS=-L/usr/local/lib \
+		  ./configure --sysconfdir=/etc
 		...lots	of output...
 		$
 	when running configure.	 Substitute the	appropriate prefix if you are

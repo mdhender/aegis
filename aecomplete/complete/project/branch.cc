@@ -28,7 +28,6 @@
 #include <shell.h>
 
 
-typedef struct complete_project_branch_ty complete_project_branch_ty;
 struct complete_project_branch_ty
 {
     complete_ty     inherited;

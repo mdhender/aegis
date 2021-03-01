@@ -24,7 +24,6 @@
 #include <input/private.h>
 
 
-typedef struct input_822wrap_ty input_822wrap_ty;
 struct input_822wrap_ty
 {
     input_ty        inherit;

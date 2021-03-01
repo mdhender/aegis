@@ -51,7 +51,6 @@
 	fatal_raw("%s: %d: " function ": %s", __FILE__, __LINE__, reason);
 
 
-typedef struct input_curl_ty input_curl_ty;
 struct input_curl_ty
 {
     input_ty	    inherited;

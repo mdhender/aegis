@@ -89,7 +89,6 @@ new_release_list(void)
 }
 
 
-typedef struct copy_tree_arg_ty copy_tree_arg_ty;
 struct copy_tree_arg_ty
 {
     string_ty	    *from;

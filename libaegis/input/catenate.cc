@@ -28,7 +28,6 @@
 #include <trace.h>
 
 
-typedef struct input_catenate_ty input_catenate_ty;
 struct input_catenate_ty
 {
     input_ty        inherited;

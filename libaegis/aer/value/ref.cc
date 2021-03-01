@@ -25,7 +25,6 @@
 #include <trace.h>
 
 
-typedef struct rpt_value_reference_ty rpt_value_reference_ty;
 struct rpt_value_reference_ty
 {
     RPT_VALUE

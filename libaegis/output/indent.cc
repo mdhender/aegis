@@ -32,7 +32,6 @@
 #define INDENT 8
 
 
-typedef struct output_indent_ty output_indent_ty;
 struct output_indent_ty
 {
     output_ty	    inherited;

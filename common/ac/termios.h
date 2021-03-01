@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,10 @@
 
 #include <config.h>
 
-#ifdef HAVE_winsize_SYS_IOCTL_H
+#if HAVE_winsize_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #else
-#ifdef HAVE_winsize_TERMIOS_H
+#if HAVE_winsize_TERMIOS_H
 #include <termios.h>
 #endif /* HAVE_winsize_TERMIOS_H */
 #endif /* !HAVE_winsize_SYS_IOCTL_H */

@@ -138,3 +138,10 @@ configured_exeext(void)
 {
 	return "@EXEEXT@";
 }
+
+
+const char *
+configured_sysconfdir(void)
+{
+	return "@sysconfdir@";
+}

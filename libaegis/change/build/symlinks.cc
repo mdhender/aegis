@@ -33,7 +33,6 @@
 #include <user.h>
 
 
-typedef struct slink_info_ty slink_info_ty;
 struct slink_info_ty
 {
     string_list_ty  stack;

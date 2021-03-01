@@ -120,7 +120,6 @@ new_file_list(void)
 }
 
 
-typedef struct walker_ty walker_ty;
 struct walker_ty
 {
     user_ty	    *up;

@@ -63,7 +63,6 @@
 #include <server.h>
 
 
-typedef struct response_created_ty response_created_ty;
 struct response_created_ty
 {
     response_ty     inherited;

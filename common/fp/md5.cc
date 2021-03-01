@@ -51,7 +51,6 @@
 
 #define MD5_HASH_LEN 16
 
-typedef struct md5_ty md5_ty;
 struct md5_ty
 {
     FINGERPRINT_BASE_CLASS

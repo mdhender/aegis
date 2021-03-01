@@ -39,7 +39,6 @@
 
 
 typedef string_ty *(*func_ptr)(change_ty *, wstring_list_ty *);
-typedef struct table_ty table_ty;
 struct table_ty
 {
     const char      *name;
@@ -159,7 +158,7 @@ get_integration_directory(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 calc_date_string(time_t when, wstring_list_ty *arg)
 {
-    struct tm	    *tm;
+    struct tm	    *the_time;
     char	    buf[1000];
     size_t	    nbytes;
     wstring_ty	    *wfmt;
@@ -169,13 +168,13 @@ calc_date_string(time_t when, wstring_list_ty *arg)
     wfmt = wstring_list_to_wstring(arg, 2, 32767, (char *)0);
     fmt = wstr_to_str(wfmt);
     wstr_free(wfmt);
-    tm = localtime(&when);
+    the_time = localtime(&when);
 
     //
     // The strftime is locale dependent.
     //
     language_human();
-    nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, tm);
+    nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, the_time);
     language_C();
 
     result = str_n_from_c(buf, nbytes);

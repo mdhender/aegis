@@ -34,12 +34,11 @@
 #include <fattr.h>
 #include <help.h>
 #include <input/cpio.h>
-#include <move.h>
+#include <move_list.h>
 #include <open.h>
 #include <os.h>
 #include <output/bit_bucket.h>
 #include <output/file.h>
-#include <parse.h>
 #include <patch/list.h>
 #include <project.h>
 #include <project/file/trojan.h>
@@ -63,6 +62,31 @@ to_long(string_ty *s)
     if (*end)
 	result = 0;;
     return result;
+}
+
+static void
+move_xargs(string_ty *project_name, long change_number, string_list_ty *files,
+           string_ty *dd)
+{
+    string_ty *fmt;
+
+    if (0 != (files->nstrings % 2))
+        this_is_a_bug();
+
+    fmt =
+        str_format
+        (
+            "aegis --move-file --project=%s --change=%ld --verbose",
+            project_name->str_text,
+            change_number
+        );
+
+    //
+    // aemv needs an even number of file names, the os_xargs function
+    // run the commands with, at most, 50 args.  Thus each aemv
+    // invocation get an even number of file arguments.
+    //
+    os_xargs(fmt, files, dd);
 }
 
 
@@ -120,6 +144,7 @@ receive_main(void (*usage)(void))
     string_ty       *devdir;
     int             exec_mode;
     int             non_exec_mode;
+    string_list_ty  batch_moved;
 
     project_name = 0;
     change_number = 0;
@@ -881,7 +906,7 @@ receive_main(void (*usage)(void))
     // Now cope with files which moved.
     // They get a command each.
     //
-    os_become_orig();
+    string_list_constructor(&batch_moved);
     for (j = 0; j < files_moved.length; ++j)
     {
 	move_ty         *mp;
@@ -891,31 +916,21 @@ receive_main(void (*usage)(void))
 	{
 	    if (mp->remove)
 	    {
-		string_ty       *s1;
-		string_ty       *s2;
-		string_ty       *s3;
-
-		s1 = str_quote_shell(mp->from);
-		s2 = str_quote_shell(mp->to);
-		s3 =
-		    str_format
-		    (
-			"aegis --move-file --project=%s --change=%ld "
-			    "--verbose %s %s",
-			project_name->str_text,
-			change_number,
-			s1->str_text,
-			s2->str_text
-		    );
-		str_free(s1);
-		str_free(s2);
-		os_execute(s3, OS_EXEC_FLAG_INPUT, dd);
-		str_free(s3);
+                string_list_append(&batch_moved, mp->from);
+                string_list_append(&batch_moved, mp->to);
 	    }
 	    else
 	    {
 		string_ty       *s1;
 		string_ty       *s2;
+
+                //
+                // To maintain the order of the operation we run all
+                // the move collected.
+                //
+                move_xargs(project_name, change_number, &batch_moved, dd);
+                string_list_destructor(&batch_moved);
+                string_list_constructor(&batch_moved);
 
 		//
 		// This can happen with older versions of Aegis if
@@ -935,7 +950,9 @@ receive_main(void (*usage)(void))
 			s1->str_text
 		    );
 		str_free(s1);
-		os_execute(s2, OS_EXEC_FLAG_INPUT, dd);
+                os_become_orig();
+                os_execute(s2, OS_EXEC_FLAG_INPUT, dd);
+                os_become_undo();
 		str_free(s2);
 	    }
 	}
@@ -943,6 +960,14 @@ receive_main(void (*usage)(void))
 	{
 	    string_ty       *s1;
 	    string_ty       *s2;
+
+            //
+            // To maintain the order of the operation we run all
+            // the move collected.
+            //
+            move_xargs(project_name, change_number, &batch_moved, dd);
+            string_list_destructor(&batch_moved);
+            string_list_constructor(&batch_moved);
 
 	    //
 	    // This can happen with an older version of Aegis if the
@@ -963,12 +988,19 @@ receive_main(void (*usage)(void))
 		    s1->str_text
 		);
 	    str_free(s1);
-	    os_execute(s2, OS_EXEC_FLAG_INPUT, dd);
+            os_become_orig();
+            os_execute(s2, OS_EXEC_FLAG_INPUT, dd);
+            os_become_undo();
 	    str_free(s2);
 	}
     }
+
+    //
+    // We run any pending move.
+    //
+    move_xargs(project_name, change_number, &batch_moved, dd);
+    string_list_destructor(&batch_moved);
     move_list_destructor(&files_moved);
-    os_become_undo();
 
     //
     // now extract each file from the input

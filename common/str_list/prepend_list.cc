@@ -25,7 +25,7 @@
 
 
 void
-string_list_prepend_list(string_list_ty *wlp, string_list_ty  *arg)
+string_list_prepend_list(string_list_ty *wlp, const string_list_ty  *arg)
 {
     size_t          j;
 

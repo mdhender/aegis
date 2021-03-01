@@ -30,7 +30,6 @@
 #include <sub.h>
 
 
-typedef struct rpt_value_list_ty rpt_value_list_ty;
 struct rpt_value_list_ty
 {
 	RPT_VALUE

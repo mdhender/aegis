@@ -28,7 +28,6 @@
 #include <tree/private.h>
 
 
-typedef struct tree_constant_ty tree_constant_ty;
 struct tree_constant_ty
 {
     tree_ty         inherited;
