@@ -23,20 +23,21 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 
-#include <ael.h>
+#include <ael/project/files.h>
 #include <aerm.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
+#include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -285,6 +286,11 @@ remove_file_main()
 			user_lock_wait_argument(remove_file_usage);
 			break;
 
+		case arglex_token_whiteout:
+		case arglex_token_whiteout_not:
+			user_whiteout_argument(remove_file_usage);
+			break;
+
 		case arglex_token_base_relative:
 		case arglex_token_current_relative:
 			user_relative_filename_preference_argument(remove_file_usage);
@@ -412,7 +418,7 @@ remove_file_main()
 			++number_of_errors;
 			continue;
 		}
-		project_file_dir(pp, s2, &wl_in, 0);
+		project_file_directory_query(pp, s2, &wl_in, 0);
 		if (wl_in.nstrings)
 		{
 			int	used;
@@ -603,36 +609,16 @@ remove_file_main()
 	dd = change_development_directory_get(cp, 0);
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-		string_ty	*s3;
-		time_t		mtime_oldest;
-		time_t		mtime_youngest;
-
 		/*
 		 * Find the mod-time of the file in the project
 		 */
 		s1 = wl.string[j];
-		s3 = project_file_path(pp, s1);
-		assert(s3);
-		user_become(up);
-		os_mtime_range(s3, &mtime_oldest, &mtime_youngest);
-		str_free(s3);
 
 		/*
-		 * create a junk file in the change
+		 * Remove any existing file (this cleans up junk, and
+		 * breaks the link if we are using symlink trees).
 		 */
-		os_mkdir_between(dd, s1, 02755);
-		s2 = str_format("%S/%S", dd, s1);
-		if (os_exists(s2))
-			os_unlink(s2);
-		undo_unlink_errok(s2);
-		os_junkfile(s2, 0644 & ~change_umask(cp));
-
-		/*
-		 * update the mod-time to match the project
-		 */
-		os_mtime_set_errok(s2, mtime_oldest);
-		str_free(s2);
-		user_become_undo();
+		change_file_whiteout_write(cp, s1, up);
 	}
 
 	/*

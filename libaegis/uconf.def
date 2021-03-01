@@ -155,3 +155,11 @@ relative_filename_preference = (current, base);
  * It defaults to `whoami`@`hostname` if not set.
  */
 email_address = string;
+
+/*
+ * All of the commands which remove files (e.g. aerm, aemv) will consult
+ * this field to determine if the file should be have a dummy "whiteout"
+ * file put in the development directory.  Defaults to ``always''
+ * if not set.
+ */
+whiteout_preference = (always, never);

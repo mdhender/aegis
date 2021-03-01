@@ -80,7 +80,7 @@ extern __inline long input_length(input_ty *fp)
 extern __inline long input_ftell(input_ty *fp)
 	{ return fp->vptr->ftell(fp) - fp->pushback_len; }
 #else /* !__GNUC__ */
-#ifdef DEBUG
+#ifndef DEBUG
 #define input_name(fp) ((fp)->vptr->name(fp))
 #define input_length(fp) ((fp)->vptr->length(fp))
 #define input_ftell(fp) ((fp)->vptr->ftell(fp) - (fp)->pushback_len)

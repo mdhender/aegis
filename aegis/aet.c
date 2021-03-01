@@ -23,12 +23,12 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 
-#include <ael.h>
+#include <ael/change/files.h>
 #include <aet.h>
 #include <arglex2.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
 #include <help.h>
@@ -38,7 +38,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <r250.h>
 #include <sub.h>
@@ -749,7 +749,7 @@ test_main()
 		/*
 		 * see if they named a directory
 		 */
-		change_file_dir(cp, s2, &wl_in, 0);
+		change_file_directory_query(cp, s2, &wl_in, 0);
 		if (wl_in.nstrings)
 		{
 			int		used;
@@ -1536,7 +1536,7 @@ test_independent()
 		/*
 		 * check to see if a directory was named
 		 */
-		project_file_dir(pp, s2, &wl_in, 0);
+		project_file_directory_query(pp, s2, &wl_in, 0);
 		if (wl_in.nstrings)
 		{
 			int	used;

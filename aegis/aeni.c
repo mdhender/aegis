@@ -23,8 +23,8 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 
+#include <ael/project/integrators.h>
 #include <aeni.h>
-#include <ael.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <error.h>
@@ -34,10 +34,10 @@
 #include <progname.h>
 #include <project.h>
 #include <project_hist.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <str_list.h>
 
 
 static void new_integrator_usage _((void));

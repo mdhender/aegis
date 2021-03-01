@@ -1,0 +1,179 @@
+
+
+
+Project "aegis.3.16"						 Page 1
+List of Changes				       Tue Jun 22 21:59:13 1999
+
+Change	State		Description
+------- -------		-------------
+  10	completed	prepare for release
+  11	completed	reldirname
+  12	completed	aedist
+
+
+
+Project "aegis.3.16", Change 10					 Page 1
+Change Details				       Tue Jun 22 21:59:14 1999
+
+NAME
+	Project "aegis.3.16", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares Aegis for the next public release.
+
+	This change is exempt from testing against the baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   15 -> 16   aedist/receive.c
+	source	modify	    4 -> 5    common/ac/wchar.c
+	source	create	    1	      etc/CHANGES.3.15
+	source	modify	    9 -> 10   lib/en/man1/aedist.1
+	source	modify	    5 -> 6    lib/en/readme/new.3.15.so
+	source	create	    1	      lib/en/readme/new.3.16.so
+	test	modify	    1 -> 2    test/00/t0093a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Jun 15	pmiller
+			12:41:17 1999
+	develop_begin	Tue Jun 15	pmiller	 Elapsed time: 0.465
+			12:41:24 1999		 days.
+	develop_end	Tue Jun 15	pmiller
+			16:10:28 1999
+	review_pass	Tue Jun 15	pmiller
+			16:10:31 1999
+	integrate_begin Tue Jun 15	pmiller	 Elapsed time: 0.097
+			16:10:37 1999		 days.
+	integrate_fail	Tue Jun 15	pmiller	 test 94 has problems
+			16:54:12 1999		 Elapsed time: 0.634
+						 days.
+	develop_end	Tue Jun 15	pmiller
+			21:39:32 1999
+	review_pass	Tue Jun 15	pmiller
+			21:39:35 1999
+	integrate_begin Tue Jun 15	pmiller	 Elapsed time: 0.190
+			21:39:42 1999		 days.
+	integrate_pass	Tue Jun 15	pmiller
+			23:05:09 1999
+
+
+
+Project "aegis.3.16", Change 11					 Page 1
+Change Details				       Tue Jun 22 21:59:14 1999
+
+NAME
+	Project "aegis.3.16", Delta 2, Change 11.
+
+SUMMARY
+	reldirname
+
+DESCRIPTION
+	This change adds the $RELative_DIRectory_NAMe substitution.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   10 -> 11   lib/en/man5/aesub.5
+	source	modify	    1 -> 2    lib/en/readme/new.3.16.so
+	source	modify	   15 -> 16   libaegis/os.c
+	source	modify	    6 -> 7    libaegis/os.h
+	source	create	    1	      libaegis/os/dirname.c
+	source	create	    1	      libaegis/os/dirname_rel.c
+	source	modify	   20 -> 21   libaegis/sub.c
+	source	create	    1	      libaegis/sub/dirname.c
+	source	create	    1	      libaegis/sub/dirname.h
+	source	create	    1	      libaegis/sub/dirname_rel.c
+	source	create	    1	      libaegis/sub/dirname_rel.h
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Sat Jun 19	pmiller
+			15:58:35 1999
+	develop_begin	Sat Jun 19	pmiller	 Elapsed time: 0.351
+			15:58:50 1999		 days.
+	develop_end	Sat Jun 19	pmiller
+			18:36:59 1999
+	review_pass	Sat Jun 19	pmiller
+			18:37:34 1999
+	integrate_begin Sat Jun 19	pmiller	 Elapsed time: 0.244
+			18:37:41 1999		 days.
+	integrate_pass	Sat Jun 19	pmiller
+			20:27:27 1999
+
+
+
+Project "aegis.3.16", Change 12					 Page 1
+Change Details				       Tue Jun 22 21:59:14 1999
+
+NAME
+	Project "aegis.3.16", Delta 3, Change 12.
+
+SUMMARY
+	aedist
+
+DESCRIPTION
+	This change fixes yet another ``user permissions not set'' bug
+	in aedist.  I've changed things around so that the os_become
+	calls very very closely bracket the os_execute calls - easier
+	to keep track of them that way.
+
+	My thanks to Ole Engel <engel@tu-harburg.de> for reporting this
+	problem.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   16 -> 17   aedist/receive.c
+	source	modify	    2 -> 3    lib/en/readme/new.3.16.so
+	test	create	    1	      test/01/t0105a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Mon Jun 21	pmiller
+			09:17:43 1999
+	develop_begin	Mon Jun 21	pmiller	 Elapsed time: 1.410
+			09:17:52 1999		 days.
+	develop_end	Tue Jun 22	pmiller	 Elapsed time: 0.191
+			12:22:34 1999		 days.
+	review_pass	Tue Jun 22	pmiller
+			13:48:40 1999
+	integrate_begin Tue Jun 22	pmiller	 Elapsed time: 0.175
+			13:48:47 1999		 days.
+	integrate_pass	Tue Jun 22	pmiller
+			15:07:19 1999

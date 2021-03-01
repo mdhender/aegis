@@ -31,6 +31,7 @@
 ]
 .br
 .B \*(n)
+.B \-CLEan
 .B -Help
 .br
 .B \*(n)
@@ -43,6 +44,10 @@ from a development directory.  This can be used to obtain a ``clean''
 development directory before a final build, to ensure that a change is
 ready to end development.
 A new build will be required.
+.PP
+This command is only allowed in the ``\fIbeing developed\fP'' state,
+and only the change's developer may issue it.  It may not be applied
+to branches.
 .PP
 All symbolic links will be removed from the development directory,
 even if \fIremove_\%symlinks_\%after_\%build = false\fP in the

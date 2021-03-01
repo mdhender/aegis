@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,22 +26,23 @@
 #include <ac/fcntl.h>
 #include <ac/unistd.h>
 
-#include <ael.h>
+#include <ael/project/files.h>
 #include <aenf.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
+#include <dir.h>
 #include <error.h>
-#include <glue.h>
+#include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -139,6 +140,73 @@ new_file_list()
 	if (project_name)
 		str_free(project_name);
 	trace((/*{*/"}\n"));
+}
+
+
+typedef struct walker_ty walker_ty;
+struct walker_ty
+{
+	user_ty		*up;
+	change_ty	*cp;
+	string_list_ty	*slp;
+	string_ty	*dd;
+	int		found;
+	int		used;
+};
+
+
+static void walker _((void *, dir_walk_message_ty, string_ty *, struct stat *));
+
+static void
+walker(p, msg, path, st)
+	void		*p;
+	dir_walk_message_ty msg;
+	string_ty	*path;
+	struct stat	*st;
+{
+	walker_ty	*aux;
+	string_ty	*s;
+
+	aux = p;
+	switch (msg)
+	{
+	case dir_walk_dir_before:
+	case dir_walk_dir_after:
+		break;
+
+	case dir_walk_special:
+	case dir_walk_symlink:
+		/*
+		 * Ignore special files and symlinks.
+		 * If they need them, they can create them at build time.
+		 */
+		break;
+
+	case dir_walk_file:
+		/*
+		 * Ignore files we already know about.
+		 * Ignore files the change already knows about.
+		 * Ignore files the project already knows about.
+		 */
+		aux->found++;
+		s = os_below_dir(aux->dd, path);
+		user_become_undo();
+		if
+		(
+			!string_list_member(aux->slp, s)
+		&&
+			!change_file_find(aux->cp, s)
+		&&
+			!project_file_find(aux->cp->pp, s)
+		)
+		{
+			string_list_append(aux->slp, s);
+			aux->used++;
+		}
+		user_become(aux->up);
+		str_free(s);
+		break;
+	}
 }
 
 
@@ -395,15 +463,168 @@ new_file_main()
 	wl = wl2;
 
 	/*
+	 * check that each filename is OK
+	 *
+	 * If a directory is named, extract the files from beneathit.
+	 */
+	dd = change_development_directory_get(cp, 0);
+	config_name = str_from_c(THE_CONFIG_FILE);
+	string_list_constructor(&wl2);
+	for (j = 0; j < wl.nstrings; ++j)
+	{
+		string_ty	*fn;
+		string_ty	*ffn;
+		string_ty	*e;
+
+		fn = wl.string[j];
+		if (generated && str_equal(fn, config_name))
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", fn);
+			change_error(cp, scp, i18n("may not build $filename"));
+			sub_context_delete(scp);
+			++nerrs;
+		}
+		user_become(up);
+		ffn = os_path_cat(dd, fn);
+		if (os_isa_directory(ffn))
+		{
+			walker_ty	aux;
+
+			aux.up = up;
+			aux.cp = cp;
+			aux.slp = &wl;
+			aux.dd = dd;
+			aux.found = 0;
+			aux.used = 0;
+			dir_walk(ffn, walker, &aux);
+
+			/*
+			 * It's an error if there is nothing to do for
+			 * this directory.
+			 */
+			if (!aux.used)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				if (fn->str_length)
+					sub_var_set(scp, "File_Name", "%S", fn);
+				else
+					sub_var_set(scp, "File_Name", ".");
+				sub_var_set(scp, "Number", "%d", aux.found);
+				sub_var_optional(scp, "Number");
+				change_error
+				(
+					cp,
+					scp,
+			  i18n("directory $filename contains no relevant files")
+				);
+				sub_context_delete(scp);
+				++nerrs;
+			}
+			user_become_undo();
+			str_free(ffn);
+			continue;
+		}
+		if (os_isa_special_file(ffn))
+		{
+			/*
+			 * If the file exists, and isn't a normal file,
+			 * and isn't a directory, you can't add it as
+			 * a source file.
+			 */
+			sub_context_ty	*scp;
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", fn);
+			change_error(cp, scp, i18n("$filename bad nf type"));
+			sub_context_delete(scp);
+			++nerrs;
+			user_become_undo();
+			str_free(ffn);
+			continue;
+		}
+		str_free(ffn);
+		user_become_undo();
+		e = change_filename_check(cp, fn, 1);
+		if (e)
+		{
+			sub_context_ty	*scp;
+
+			/*
+			 * no internationalization of the error string
+			 * required, this is done inside the
+			 * change_filename_check function.
+			 */
+			scp = sub_context_new();
+			sub_var_set(scp, "Message", "%S", e);
+			change_error(cp, scp, i18n("$message"));
+			sub_context_delete(scp);
+			++nerrs;
+			str_free(e);
+			break;
+		}
+
+		/*
+		 * Remember this one.
+		 */
+		string_list_append(&wl2, fn);
+	}
+	str_free(config_name);
+	if (nerrs)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Number", "%d", nerrs);
+		sub_var_optional(scp, "Number");
+		change_fatal(cp, scp, i18n("no new files"));
+		sub_context_delete(scp);
+	}
+	string_list_destructor(&wl);
+	wl = wl2;
+
+	/*
 	 * ensure that each file
 	 * 1. is not already part of the change
 	 * 2. is not already part of the baseline
+	 * 3. does not have a directory conflict
 	 */
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 		fstate_src	src_data;
 
 		s1 = wl.string[j];
+		s2 = change_file_directory_conflict(cp, s1);
+		if (s2)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set(scp, "File_Name2", "%S", s2);
+			sub_var_optional(scp, "File_Name2");
+			change_error(cp, scp, i18n("file $filename directory name conflict"));
+			sub_context_delete(scp);
+			++nerrs;
+			continue;
+		}
+		s2 = project_file_directory_conflict(pp, s1);
+		if (s2)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set(scp, "File_Name2", "%S", s2);
+			sub_var_optional(scp, "File_Name2");
+			project_error(pp, scp, i18n("file $filename directory name conflict"));
+			sub_context_delete(scp);
+			++nerrs;
+			continue;
+		}
 		if (change_file_find(cp, s1))
 		{
 			sub_context_ty	*scp;
@@ -443,119 +664,14 @@ new_file_main()
 	}
 
 	/*
-	 * check that each filename is OK
-	 */
-	config_name = str_from_c(THE_CONFIG_FILE);
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-		string_ty	*e;
-
-		if (generated && str_equal(wl.string[j], config_name))
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
-			change_error(cp, scp, i18n("may not build $filename"));
-			sub_context_delete(scp);
-			++nerrs;
-		}
-		e = change_filename_check(cp, wl.string[j], 1);
-		if (e)
-		{
-			sub_context_ty	*scp;
-
-			/*
-			 * no internationalization if the error string
-			 * required, this is done inside the
-			 * change_filename_check function.
-			 */
-			scp = sub_context_new();
-			sub_var_set(scp, "Message", "%S", e);
-			change_error(cp, scp, i18n("$message"));
-			sub_context_delete(scp);
-			++nerrs;
-			str_free(e);
-		}
-	}
-	str_free(config_name);
-	if (nerrs)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nerrs);
-		sub_var_optional(scp, "Number");
-		change_fatal(cp, scp, i18n("no new files"));
-		sub_context_delete(scp);
-	}
-
-	/*
 	 * Create each file in the development directory,
 	 * if it does not already exist.
 	 * Create any necessary directories along the way.
 	 */
-	dd = change_development_directory_get(cp, 0);
-	user_become(up);
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-		s1 = wl.string[j];
-		trace(("does %s exist?\n", s1->str_text));
-		os_mkdir_between(dd, s1, 02755);
-		s2 = str_format("%S/%S", dd, s1);
-		if (os_symlink_query(s2))
-			os_unlink(s2);
-		if (!os_exists(s2))
-		{
-			int		fd;
-			string_ty	*template;
-
-			trace(("create %s\n", s2->str_text));
-			user_become_undo();
-			template = change_file_template(cp, s1);
-			user_become(up);
-			fd = glue_creat(s2->str_text, 0666);
-			if (fd < 0)
-			{
-				sub_context_ty	*scp;
-
-				scp = sub_context_new();
-				sub_errno_set(scp);
-				sub_var_set(scp, "File_Name", "%S", s2);
-				fatal_intl(scp, i18n("create $filename: $errno"));
-				/* NOTREACHED */
-				sub_context_delete(scp);
-			}
-			if (template)
-			{
-				glue_write
-				(
-					fd,
-					template->str_text,
-					template->str_length
-				);
-				if
-				(
-					template->str_length
-				&&
-					(
-						template->str_text
-						[
-							template->str_length - 1
-						]
-					!=
-						'\n'
-					)
-				)
-					glue_write(fd, "\n", 1);
-				str_free(template);
-			}
-			glue_close(fd);
-			os_chmod(s2, 0644 & ~change_umask(cp));
-		}
-		str_free(s2);
+		change_file_template(cp, wl.string[j], up);
 	}
-	user_become_undo();
 
 	/*
 	 * Add each file to the change file,

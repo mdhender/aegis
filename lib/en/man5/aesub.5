@@ -174,6 +174,12 @@ option when Aegis was built.  This is where most of the Aegis executable
 programs are installed.
 .\" -------------------- C --------------------
 .TP 8n
+CAPitalize
+.br
+This substitution takes one argument.  The value of the substitution
+will be the argument with the first letter of each word forced to upper
+case and the rest forced to lower case.
+.TP 8n
 Change
 .br
 The change number.
@@ -258,6 +264,17 @@ the last element of the pathname.
 This is similar to the
 .IR dirname (1)
 command.
+.TP 8n
+Dirname_RELative
+.br
+This substitution takes one argument,
+a pathname.
+The value of the substitution will be everything but
+the last element of the pathname.
+This is similar to the
+.I dirname
+substitution, except that if there are no directory components, it
+returns dot (``.'').
 .TP 8n
 DownCase
 .br
@@ -448,6 +465,15 @@ STate
 .br
 The state the current change is in.
 It is an error if the substitution does not refer to a change.
+.TP 8n
+.SUBSTitute
+.br
+Regular expression substitution.  The first argument is the mattern to
+match, the second argument is the replacement string.  The third and
+subsequent arguments are modified as specified by the first two arguments.
+The search is not anchored, and the replacement will happen
+as many times as possible.
+Use ``^'' to match the beginning, and ``$'' to match the end.
 .\" -------------------- T --------------------
 .TP 8n
 Trim_DIRectory
@@ -597,4 +623,8 @@ time zone abbreviation
 Using an undefined format specifier will
 produce random results,
 depending on the version of UNIX you are on.
+.SH SEE ALSO
+.TP 8n
+\fBaesub\fP(1)
+Substiture and print strings.
 .so ../man1/z_cr.so

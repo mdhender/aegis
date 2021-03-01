@@ -301,6 +301,9 @@ subscribe aegis-users \fIaddress\fP
 .RE
 where \fIaddress\fP is an email address to which
 you want messages sent.
+.SS Archive
+The mailing list is archived at eGroups.
+The URL is \f(CWhttp://www.egroups.com/list/aegis-users/info.html\fP
 .SS No Files By EMail
 The software which handles this mailing list
 .if n CANNOT

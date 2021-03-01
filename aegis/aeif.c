@@ -28,10 +28,10 @@
 #include <sys/stat.h>
 
 #include <aeif.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h>
 #include <file.h>
 #include <help.h>
@@ -40,7 +40,7 @@
 #include <progname.h>
 #include <os.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -70,7 +70,7 @@ static void integrate_fail_help _((void));
 static void
 integrate_fail_help()
 {
-	help("aeif", integrate_fail_usage);
+	help("aeifail", integrate_fail_usage);
 }
 
 

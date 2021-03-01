@@ -26,11 +26,11 @@
 #include <ac/libintl.h>
 
 #include <aecpu.h>
-#include <ael.h>
+#include <ael/change/files.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h>
 #include <file.h>
 #include <help.h>
@@ -39,7 +39,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -381,7 +381,7 @@ copy_file_undo_main()
 			++number_of_errors;
 			continue;
 		}
-		change_file_dir(cp, s2, &wl_in, 0);
+		change_file_directory_query(cp, s2, &wl_in, 0);
 		if (wl_in.nstrings)
 		{
 			int	used;

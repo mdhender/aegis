@@ -29,7 +29,7 @@
 #include <sys/stat.h>
 
 #include <aedb.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <change.h>
 #include <col.h>

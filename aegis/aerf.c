@@ -26,10 +26,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <aerf.h>
 #include <arglex2.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
 #include <file.h>
@@ -39,7 +39,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -69,7 +69,7 @@ static void review_fail_help _((void));
 static void
 review_fail_help()
 {
-	help("aerf", review_fail_usage);
+	help("aerfail", review_fail_usage);
 }
 
 

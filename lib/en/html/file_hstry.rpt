@@ -143,7 +143,7 @@ for (file in sort(keys(hist)))
 		print(fh.edit);
 		print("</td><td valign=top>");
 		auto part;
-		for (part in wrap_html(quote_html(fh.description)))
+		for (part in wrap_html(quote_html(fh.description), 80))
 			print(part);
 		if (fh.move != "")
 		{

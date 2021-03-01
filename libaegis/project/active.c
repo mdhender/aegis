@@ -58,6 +58,9 @@ project_active(pp, active_branch_ok)
 			if (!active_branch_ok && !n)
 			{
 				/*
+				 * active_branch_ok is used when deleting
+				 * whole projects.
+			         *
 				 * Logically, we should say this all
 				 * the time, however only saying it if
 				 * there are no active changes seems
@@ -73,7 +76,13 @@ project_active(pp, active_branch_ok)
 			switch (cstate_data->state)
 			{
 			case cstate_state_awaiting_development:
-				break;
+				/*
+				 * active_branch_ok is used when deleting
+				 * whole projects.
+				 */
+				if (active_branch_ok)
+					break;
+				/* fall through... */
 
 			case cstate_state_being_developed:
 			case cstate_state_being_reviewed:

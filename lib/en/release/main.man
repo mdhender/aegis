@@ -121,7 +121,7 @@ command.  This builds a RedHat package manager file.  It is a fairly
 vigorous test of the build and install, though highly Linux specific.
 Fix any problems encountered.
 .PP
-Take the \f(CWarchive/\*(n).\*(v).tar.gz\fP file  from the current
+Take the \f[CW]archive/\*(n).\*(v).tar.gz\fP file from the current
 baseline.
 Unpack it and verify that it configures and builds on one of the
 Solaris boxes.
@@ -145,37 +145,37 @@ it will contain the appropriate version numbers for release.
 .SH ARCHIVES
 Once a viable release is ready, it is necessary to upload it to the archives.
 .SS Update Primary Archive
-Transfer a copy to \f(CWftp.canb.auug.org.au\fP by FTP.
-Login as \f(CWmillerp\fP and change to the \f[CW]WWW\fP directory
-(this corresponds to the \f[CW]/~millerp/\fP directory for WWW clients).
+Transfer a copy to \f[CW]ftp.canb.auug.org.au\fP by FTP.
+Login as \f[CW]millerp\fP and change to the \f[CW]WWW/aegis\fP directory
+(this corresponds to the \f[CW]/~millerp/aegis/\fP directory for WWW clients).
 Use the following commands
 .e(
-% \f(CBaecd -bl archive\fP
-% \f(CWftp ftp.canb.auug.org.au\fP
-user: \f(CBmillerp\fP
-ftp> \f(CBcd WWW\fP
-ftp> \f(CBbinary\fP
-ftp> \f(CBprompt\fP
-ftp> \f(CBmdel \*(n)*\fP
-ftp> \f(CBmput \*(n)*\fP
-ftp> \f(CBquit\fP
+% \f[CB]aecd -bl archive\fP
+% \f[CW]ftp ftp.canb.auug.org.au\fP
+user: \f[CB]millerp\fP
+ftp> \f[CB]cd WWW/aegis\fP
+ftp> \f[CB]binary\fP
+ftp> \f[CB]prompt\fP
+ftp> \f[CB]mdel \*(n)-*\fP
+ftp> \f[CB]mput \*(n)*\fP
+ftp> \f[CB]quit\fP
 %
 .e)
 .br
 .ne 2i
 .SS Update Linux Archive
-Transfer a copy to \f(CWsunsite.unc.edu\fP by FTP.
-Login as \f(CWanonymous\fP and change to the \f(CWincoming/Linux\fP directory.
+Transfer a copy to \f[CW]sunsite.unc.edu\fP by FTP.
+Login as \f[CW]anonymous\fP and change to the \f[CW]incoming/Linux\fP directory.
 Use the following commands
 .e(
-% \f(CBaecd -bl archive\fP
-% \f(CWftp sunsite.unc.edu\fP
-user: \f(CBanonymous\fP
-ftp> \f(CBcd incoming/Linux\fP
-ftp> \f(CBbinary\fP
-ftp> \f(CBprompt\fP
-ftp> \f(CBmput \*(n)-*\fP
-ftp> \f(CBquit\fP
+% \f[CB]aecd -bl archive\fP
+% \f[CW]ftp sunsite.unc.edu\fP
+user: \f[CB]anonymous\fP
+ftp> \f[CB]cd incoming/Linux\fP
+ftp> \f[CB]binary\fP
+ftp> \f[CB]prompt\fP
+ftp> \f[CB]mput \*(n)-*\fP
+ftp> \f[CB]quit\fP
 %
 .e)
 .PP
@@ -204,14 +204,14 @@ with as little disruption as possible.
 .sp
 You are invited to visit
 .ce 1
-http://www.canb.auug.org.au/~millerp/\*(n).html
+http://www.canb.auug.org.au/~millerp/\*(n)/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
 For information about what new features are available in this 
 release, please see the README file available at the above site.
 .sp
-\fIput your \f(CW.sig\fI file here
+\fIput your \f[CW].sig\fI file here
 .e)
 .PP
 Only send this notification \fIafter\fP the files are actually available
@@ -253,7 +253,7 @@ with as little disruption as possible.
 .sp
 You are invited to visit
 .ce 1
-http://www.canb.auug.org.au/~millerp/\*(n).html
+http://www.canb.auug.org.au/~millerp/\*(n)/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
@@ -262,7 +262,7 @@ release, please see the README file available at the above site.
 .sp
 insert \fI.sig\fP file here
 .e)
-Please note that the \f(CWNewsgroups:\fP line may not actually wrap,
+Please note that the \f[CW]Newsgroups:\fP line may not actually wrap,
 or have spaces around the commas.
 .br
 .ne 2i
@@ -285,21 +285,21 @@ with as little disruption as possible.
 .sp
 You are invited to visit
 .ce 1
-http://www.canb.auug.org.au/~millerp/\*(n).html
+http://www.canb.auug.org.au/~millerp/\*(n)/
 for a more complete description of what \*(N) is, and access to the
 download files.
 .sp
 For information about what new features are available in this 
 release, please see the README file available at the above site.
 .sp
-\fIput your \f(CW.sig\fI file here
+\fIput your \f[CW].sig\fI file here
 .e)
 .PP
 Only send this notification \fIafter\fP the files are actually available
 at the archive site.
 .SS Notify Web
-\(bu) Notify \f(CWwww.freshmeat.net\fP that a new release of Aegis is available.
+\(bu) Notify \f[CW]www.freshmeat.net\fP that a new release of Aegis is available.
 Search for ``aegis'' as there is already an application record.
 .PP
-\(bu Notify \f(CWwww.cmtoday.com\fP that a new release of Aegis is available.
+\(bu Notify \f[CW]www.cmtoday.com\fP that a new release of Aegis is available.
 .so ../man1/z_cr.so

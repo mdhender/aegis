@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 #include <aer/func/quote.h>
 #include <aer/value/error.h>
 #include <aer/value/string.h>
-#include <mem.h>
+#include <stracc.h>
 #include <sub.h>
 
 
@@ -53,10 +53,9 @@ quote_url_run(ep, argc, argv)
 	rpt_value_ty	*result;
 	string_ty	*s;
 	char		*sp;
-	size_t		pos;
-	static size_t	max;
-	static char	*buffer;
+	stracc_t	sa;
 
+	stracc_constructor(&sa);
 	a1 = rpt_value_stringize(argv[0]);
 	if (a1->method->type != rpt_value_type_string)
 	{
@@ -81,18 +80,13 @@ quote_url_run(ep, argc, argv)
 	s = str_copy(rpt_value_string_query(a1));
 	rpt_value_free(a1);
 
-	pos = 0;
+	stracc_open(&sa);
 	sp = s->str_text;
 	for (;;)
 	{
 		int c = (unsigned char)*sp++;
 		if (!c)
 			break;
-		if (pos + 3 > max)
-		{
-			max = max * 2 + 16;
-			buffer = mem_change_size(buffer, max);
-		}
 		/* C locale */
 		if (!isprint(c) || strchr(" \"#%&'+:=?~", c))
 		{
@@ -107,21 +101,22 @@ quote_url_run(ep, argc, argv)
 			 *		shell scripts.
 			 */
 			static char hex[] = "0123456789ABCDEF";
-			buffer[pos++] = '%';
-			buffer[pos++] = hex[(c >> 4) & 15];
-			buffer[pos++] = hex[c & 15];
+			stracc_char(&sa, '%');
+			stracc_char(&sa, hex[(c >> 4) & 15]);
+			stracc_char(&sa, hex[c & 15]);
 		}
 		else
-			buffer[pos++] = c;
+			stracc_char(&sa, c);
 	}
 	str_free(s);
-	s = str_n_from_c(buffer, pos);
+	s = stracc_close(&sa);
 	result = rpt_value_string(s);
 	str_free(s);
 
 	/*
 	 * clean up and go home
 	 */
+	stracc_destructor(&sa);
 	return result;
 }
 
@@ -183,10 +178,9 @@ unquote_url_run(ep, argc, argv)
 	char		*sp;
 	int		c;
 	int		n1, n2;
-	size_t		pos;
-	static size_t	max;
-	static char	*buffer;
+	stracc_t	sa;
 
+	stracc_constructor(&sa);
 	a1 = rpt_value_stringize(argv[0]);
 	if (a1->method->type != rpt_value_type_string)
 	{
@@ -211,7 +205,7 @@ unquote_url_run(ep, argc, argv)
 	s = str_copy(rpt_value_string_query(a1));
 	rpt_value_free(a1);
 
-	pos = 0;
+	stracc_open(&sa);
 	sp = s->str_text;
 	for (;;)
 	{
@@ -230,21 +224,17 @@ unquote_url_run(ep, argc, argv)
 			c = (n1 << 4) + n2;
 			sp += 2;
 		}
-		if (pos >= max)
-		{
-			max = max * 2 + 16;
-			buffer = mem_change_size(buffer, max);
-		}
-		buffer[pos++] = c;
+		stracc_char(&sa, c);
 	}
 	str_free(s);
-	s = str_n_from_c(buffer, pos);
+	s = stracc_close(&sa);
 	result = rpt_value_string(s);
 	str_free(s);
 
 	/*
 	 * clean up and go home
 	 */
+	stracc_destructor(&sa);
 	return result;
 }
 
@@ -280,10 +270,9 @@ quote_html_run(ep, argc, argv)
 	rpt_value_ty	*result;
 	string_ty	*s;
 	char		*sp;
-	size_t		pos;
-	static size_t	max;
-	static char	*buffer;
+	stracc_t	sa;
 
+	stracc_constructor(&sa);
 	a1 = rpt_value_stringize(argv[0]);
 	if (a1->method->type != rpt_value_type_string)
 	{
@@ -308,35 +297,19 @@ quote_html_run(ep, argc, argv)
 	s = str_copy(rpt_value_string_query(a1));
 	rpt_value_free(a1);
 
-	pos = 0;
+	stracc_open(&sa);
 	sp = s->str_text;
 	for (;;)
 	{
 		int c = (unsigned char)*sp++;
 		if (!c)
 			break;
-		if (pos + 5 > max)
-		{
-			max = max * 2 + 16;
-			buffer = mem_change_size(buffer, max);
-		}
 		if (c == '<')
-		{
-			buffer[pos++] = '&';
-			buffer[pos++] = 'l';
-			buffer[pos++] = 't';
-			buffer[pos++] = ';';
-		}
+			stracc_chars(&sa, "&lt;", 4);
 		else if (c == '&')
-		{
-			buffer[pos++] = '&';
-			buffer[pos++] = 'a';
-			buffer[pos++] = 'm';
-			buffer[pos++] = 'p';
-			buffer[pos++] = ';';
-		}
+			stracc_chars(&sa, "&amp;", 5);
 		else if (isspace(c) || isprint(c))
-			buffer[pos++] = c;
+			stracc_char(&sa, c);
 		else
 		{
 			/*
@@ -352,23 +325,25 @@ quote_html_run(ep, argc, argv)
 			 * Decimal!  Why didn't these guys just use the
 			 * one escape mechanism twice.  Sheesh.
 			 */
-			buffer[pos++] = '&';
+			stracc_char(&sa, '&');
+			stracc_char(&sa, '#');
 			if (c >= 100)
-				buffer[pos++] = '0' + (c / 100) % 10;
+				stracc_char(&sa, '0' + (c / 100) % 10);
 			if (c >= 10)
-				buffer[pos++] = '0' + (c / 10) % 10;
-			buffer[pos++] = '0' + c % 10;
-			buffer[pos++] = ';';
+				stracc_char(&sa, '0' + (c / 10) % 10);
+			stracc_char(&sa, '0' + c % 10);
+			stracc_char(&sa, ';');
 		}
 	}
 	str_free(s);
-	s = str_n_from_c(buffer, pos);
+	s = stracc_close(&sa);
 	result = rpt_value_string(s);
 	str_free(s);
 
 	/*
 	 * clean up and go home
 	 */
+	stracc_destructor(&sa);
 	return result;
 }
 
@@ -379,4 +354,98 @@ rpt_func_ty rpt_func_quote_html =
 	1, /* optimizable */
 	quote_html_verify,
 	quote_html_run
+};
+
+
+static int quote_tcl_verify _((rpt_expr_ty *));
+
+static int
+quote_tcl_verify(ep)
+	rpt_expr_ty	*ep;
+{
+	return (ep->nchild == 1);
+}
+
+
+static rpt_value_ty *quote_tcl_run _((rpt_expr_ty *, size_t, rpt_value_ty **));
+
+static rpt_value_ty *
+quote_tcl_run(ep, argc, argv)
+	rpt_expr_ty	*ep;
+	size_t		argc;
+	rpt_value_ty	**argv;
+{
+	rpt_value_ty	*a1;
+	rpt_value_ty	*result;
+	string_ty	*s;
+	char		*sp;
+	stracc_t	sa;
+
+	stracc_constructor(&sa);
+	a1 = rpt_value_stringize(argv[0]);
+	if (a1->method->type != rpt_value_type_string)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		rpt_value_free(a1);
+		sub_var_set(scp, "Function", "quote_tcl");
+		sub_var_set(scp, "Number", "1");
+		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		s =
+			subst_intl
+			(
+				scp,
+    i18n("$function: argument $number: string value required (was given $name)")
+			);
+		sub_context_delete(scp);
+		result = rpt_value_error(ep->pos, s);
+		str_free(s);
+		return result;
+	}
+	s = str_copy(rpt_value_string_query(a1));
+	rpt_value_free(a1);
+
+	stracc_open(&sa);
+	sp = s->str_text;
+	for (;;)
+	{
+		int c = (unsigned char)*sp++;
+		if (!c)
+			break;
+		/* C locale */
+		if (!isspace(c) && !isprint(c))
+		{
+			stracc_char(&sa, '\\');
+			stracc_char(&sa, '0' + ((c >> 6) & 3));
+			stracc_char(&sa, '0' + ((c >> 3) & 7));
+			stracc_char(&sa, '0' + (c & 7));
+		}
+		else if (strchr("\\\"[]{}", c))
+		{
+			stracc_char(&sa, '\\');
+			stracc_char(&sa, c);
+		}
+		else
+			stracc_char(&sa, c);
+	}
+	str_free(s);
+	s = stracc_close(&sa);
+	result = rpt_value_string(s);
+	str_free(s);
+
+	/*
+	 * clean up and go home
+	 */
+	stracc_destructor(&sa);
+	return result;
+}
+
+
+rpt_func_ty rpt_func_quote_tcl =
+{
+	"quote_tcl",
+	1, /* optimizable */
+	quote_tcl_verify,
+	quote_tcl_run
 };

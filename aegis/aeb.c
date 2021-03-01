@@ -28,13 +28,13 @@
 #include <ac/time.h>
 
 #include <aeb.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <col.h>
 #include <commit.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h>
 #include <help.h>
 #include <lock.h>
@@ -305,6 +305,39 @@ build_main()
 	lock_take();
 	cstate_data = change_cstate_get(cp);
 
+	/*
+	 * Extract the appropriate row of the change table.
+	 * It is an error if the change is not in the in-development state.
+	 * It is an error if the change is not assigned to the current user.
+	 * It is an error if the change has no files assigned.
+	 */
+	switch (cstate_data->state)
+	{
+	default:
+		change_fatal(cp, 0, i18n("bad build state"));
+		break;
+
+	case cstate_state_being_developed:
+		if (change_is_a_branch(cp))
+			change_fatal(cp, 0, i18n("bad branch build"));
+		if (!str_equal(change_developer_name(cp), user_name(up)))
+			change_fatal(cp, 0, i18n("not developer"));
+		if (!change_file_nth(cp, (size_t)0))
+			change_fatal(cp, 0, i18n("no files"));
+		break;
+
+	case cstate_state_being_integrated:
+		if (!str_equal(change_integrator_name(cp), user_name(up)))
+			change_fatal(cp, 0, i18n("not integrator"));
+		if (partial.nstrings)
+			change_fatal(cp, 0, i18n("bad build, partial"));
+		break;
+	}
+
+	/*
+	 * Resolve relative filenames into project filenames.
+	 * Do this after we know the change is in a buildable state.
+	 */
 	if (partial.nstrings)
 	{
 		string_list_ty	search_path;
@@ -411,35 +444,6 @@ build_main()
 		}
 		string_list_destructor(&partial);
 		partial = wl2;
-	}
-
-	/*
-	 * Extract the appropriate row of the change table.
-	 * It is an error if the change is not in the in-development state.
-	 * It is an error if the change is not assigned to the current user.
-	 * It is an error if the change has no files assigned.
-	 */
-	switch (cstate_data->state)
-	{
-	default:
-		change_fatal(cp, 0, i18n("bad build state"));
-		break;
-
-	case cstate_state_being_developed:
-		if (change_is_a_branch(cp))
-			change_fatal(cp, 0, i18n("bad branch build"));
-		if (!str_equal(change_developer_name(cp), user_name(up)))
-			change_fatal(cp, 0, i18n("not developer"));
-		if (!change_file_nth(cp, (size_t)0))
-			change_fatal(cp, 0, i18n("no files"));
-		break;
-
-	case cstate_state_being_integrated:
-		if (!str_equal(change_integrator_name(cp), user_name(up)))
-			change_fatal(cp, 0, i18n("not integrator"));
-		if (partial.nstrings)
-			change_fatal(cp, 0, i18n("bad build, partial"));
-		break;
 	}
 
 	/*

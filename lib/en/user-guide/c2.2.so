@@ -47,6 +47,9 @@ Every file which is to be added to the baseline,
 removed from the baseline,
 or changed in some way,
 has a corresponding "comma D" file.
+.nh 3 "Before You Start"
+Have you configured your account to use Aegis?  See the \fIUser Setup\fP
+section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
 .LP
 Robyn finds out what changes are available for review

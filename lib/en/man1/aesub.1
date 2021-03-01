@@ -1,0 +1,64 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aesub command.
+.\"
+.so z_name.so
+.ds n) aesub
+.TH "aesub" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aesub \- substitute and echo strings
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+string \&...
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I \*(n)
+command is used to perform the usual \fIaesub\fP(5) substitutions on
+its command line arguments, and then echo them to the standard output.
+.SS Shell Script Quoting
+The \fIaesub\fP(1) command is often used in shell scripts.  It is
+important to remember that the shell will do its own substitutions on the
+command line argument \fIbefore\fP it invokes the \fIaesub\fP(1) command.
+Usually, you don't want this to happen, so you need to use \fIsingle\fP
+(\f(CW'\fP) quotes to do this.  (The shell continues to substitute inside
+double (\f(CW"\fP) quotes.)
+.PP
+Quote \fIaesub\fP(1) arguments using \f(CW'\fP \fIsingle\fP \f(CW'\fP quotes.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_project.so
+.so o__rules.so
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+\fBaesub\fP(5)
+Available string substitutions.
+.so z_cr.so

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,12 +79,22 @@ This can sometimes be slow to generate.";
 		filename = "report/proj_lists.rpt";
 	},
 	{
+		name = "Project_Branches";
+		description = "Report all branches below the project.";
+		filename = "report/proj_bran.rpt";
+	},
+	{
+		name = "Project_Active_Branches";
+		description = "Report all active branches below the project.";
+		filename = "report/proj_brana.rpt";
+	},
+	{
 		name = "Project_Files";
 		description = "Report all files in the baseline of a project";
 		filename = "report/proj_files.rpt";
 	},
 	{
-		name = "Project_Statistics";
+		name = "Project_STATistics";
 		description = "Report various statistics about a project";
 		filename = "report/proj_stats.rpt";
 	},
@@ -99,7 +109,7 @@ This can sometimes be slow to generate.";
 		filename = "report/proj_rvwrs.rpt";
 	},
 	{
-		name = "Project_Staff";
+		name = "Project_STAFf";
 		description = "Report the staff assigned to a project";
 		filename = "report/proj_staff.rpt";
 	},

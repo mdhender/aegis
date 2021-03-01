@@ -25,7 +25,7 @@
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
-#include <ael.h>
+#include <ael/project/projects.h>
 #include <aenbr.h>
 #include <aenpr.h>
 #include <arglex2.h>
@@ -233,9 +233,14 @@ new_project_main()
 
 			case arglex_token_number:
 			case arglex_token_string:
+				version_string =
+					str_from_c(arglex_value.alv_string);
+				break;
+
+			case arglex_token_stdio:
+				version_string = str_from_c("");
 				break;
 			}
-			version_string = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_wait:
@@ -455,6 +460,14 @@ new_project_main()
 	/*
 	 * it is an error if the name is already in use
 	 */
+	if (gonzo_alias_to_actual(project_name))
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name);
+		fatal_intl(scp, i18n("project alias $name exists"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	if (keep)

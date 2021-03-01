@@ -53,6 +53,7 @@
 #include <aenf.h>
 #include <aenfu.h>
 #include <aeni.h>
+#include <aenpa.h>
 #include <aenpr.h>
 #include <aenrls.h>
 #include <aenrv.h>
@@ -68,6 +69,7 @@
 #include <aermpr.h>
 #include <aermu.h>
 #include <aerp.h>
+#include <aerpa.h>
 #include <aerpu.h>
 #include <aerrv.h>
 #include <aet.h>
@@ -278,6 +280,14 @@ main(argc, argv)
 
 		case arglex_token_project_attributes:
 			project_attributes();
+			break;
+
+		case arglex_token_project_alias_create:
+			project_alias_create();
+			break;
+
+		case arglex_token_project_alias_remove:
+			project_alias_remove();
 			break;
 
 		case arglex_token_remove_administrator:

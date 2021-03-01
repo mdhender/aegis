@@ -23,7 +23,7 @@
 #include <ac/stdio.h>
 
 #include <aedn.h>
-#include <ael.h>
+#include <ael/project/history.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <error.h>

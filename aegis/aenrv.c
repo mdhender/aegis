@@ -23,7 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 
-#include <ael.h>
+#include <ael/project/reviewers.h>
 #include <aenrv.h>
 #include <arglex2.h>
 #include <commit.h>

@@ -57,6 +57,17 @@ msgid	"$filename altered"
 msgstr	"file \"$filename\" has been altered"
 
 #
+# This error message is issued when aenf is invoked on a file which is
+# not a normal file and not a directory.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename bad nf type"
+msgstr	"The \"$filename\" file is a inappropriate type of file.  You may "
+	"only use this command for normal files.  Symbolic links and "
+	"other special file types must be created at build time."
+
+#
 # This progress message is issued when a test run against the baseline
 # fails.  This is what it is meant to do because either (a) it is new
 # functionality, and will fail because it is not in the baseline, or (b)
@@ -321,7 +332,7 @@ msgid	"Project $name, Change $number"
 msgstr	"Project \"$name\", Change $number"
 
 #
-# This verbose message is issued when aeip is updating the modification
+# This verbose message is issued when aeipass is updating the modification
 # times of all the files in the integration directory.
 #
 msgid	"adjust file modification times"
@@ -384,6 +395,16 @@ msgstr	"attributes modified"
 #
 msgid	"attributes in $filename"
 msgstr	"attributes text left in the \"$filename\" file"
+
+#
+# This error message is issued when a project alias is given to aenpa
+# which contains unprintable characters or spaces, or looks like a
+# branch specifier.
+#
+#	$Name		The offending project alias.
+#
+msgid	"bad alias $name"
+msgstr	"project alias \"$name\" is invalid"
 
 #
 # This error message is issued when an attempt is made to difference
@@ -619,7 +640,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' or 'being integrated' state to do a difference"
 
 #
-# This error message is issued when aeif is invoked for a change which
+# This error message is issued when aeifail is invoked for a change which
 # is not in the 'being integrated' state.
 #
 msgid	"bad if state"
@@ -819,7 +840,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to undo remove files"
 
 #
-# This error message is issued when aerp is invoked for a change which is
+# This error message is issued when aerpass is invoked for a change which is
 # not in the 'being reviewed' state.
 #
 msgid	"bad rp state"
@@ -968,14 +989,6 @@ msgstr	"copying change source files"
 #
 msgid	"copy file complete"
 msgstr	"copied $number ${plural $number files file}"
-
-#
-# This error message is issued when a file create fails
-#
-#	$File_Name	The name of the offending file.
-#
-msgid	"create $filename: $errno"
-msgstr	"create \"$filename\": $errno"
 
 #
 # This error message is issued when an aeib command is given, but there
@@ -1198,6 +1211,17 @@ msgid	"file \"$filename\" locked for change $number"
 msgstr	"file \"$filename\" locked for change $number, try again later"
 
 #
+# This fatal error message is issued when aenf or aent detects a directory
+# name conflict with a proposed new file name.
+#
+#	$File_Name	The name of the offending file.
+#	$File_Name2	The name of the conflicting file.  (Optional)
+#
+msgid	"file $filename directory name conflict"
+msgstr	"file \"$filename\" is illegal, because it would result in a "
+	"directory name conflict with the \"$filename2\" file"
+
+#
 # This error message is issued when a command attempts to add a new file
 # to a change, but the file is already part of the change.
 #
@@ -1223,15 +1247,6 @@ msgstr	"group \"$name\" is too privileged"
 #
 msgid	"has no tests"
 msgstr	"this change requires tests before this command may be used"
-
-#
-# This error message is issued when a command is given an inappropriate
-# command line option.
-#
-#	$Name		The name of the offending command line option.
-#
-msgid	"inappropriate $name option"
-msgstr	"inappropriate $name option"
 
 #
 # This error message is issued when an ambiguous information name is given
@@ -1423,6 +1438,12 @@ msgstr	" \n"
 #
 msgid	"new administrator $name complete"
 msgstr	"user \"$name\" is now an administrator"
+
+#
+# This progress message is issued when aenrls completes successfully.
+#
+msgid	"new alias $name complete"
+msgstr	"new alias \"$name\" created"
 
 #
 # This progress message is issued when aenbr completes successfully.
@@ -1890,6 +1911,24 @@ msgid	"project $message"
 msgstr	"project $message"
 
 #
+# This error message is issued when a user attempts to create a new
+# project alias, using a project name which already exists.
+#
+#	$Name		The offending project alias.
+#
+msgid	"project alias $name exists"
+msgstr	"project alias \"$name\" already in use"
+
+#
+# This error message is issued when a user attempts to remove a
+# non-existent project alias.
+#
+#	$Name		The offending project alias.
+#
+msgid	"project alias $name exists not"
+msgstr	"the name \"$name\" is not a project alias"
+
+#
 # This progress message is issued when aepa completes successfully.
 #
 msgid	"project attributes complete"
@@ -1983,6 +2022,12 @@ msgid	"remove old development directory"
 msgstr	"removing old development directory"
 
 #
+# This progress message is issued when aerpa completes successfully.
+#
+msgid	"remove project alias $name complete"
+msgstr	"alias \"$name\" removed"
+
+#
 # This progress message is issued when aermpr completes successfully.
 #
 msgid	"remove project complete"
@@ -2004,7 +2049,7 @@ msgid	"remove reviewer $name complete"
 msgstr	"user \"$name\" is no longer a reviewer"
 
 #
-# This error message is issued by aeip when a change was being
+# This error message is issued by aeipass when a change was being
 # integrated when aegis was upgraded from 2.3 to 3.0.  The file
 # fingerprints are absent, and restarting the integration will cause
 # them to be created.
@@ -2016,13 +2061,13 @@ msgstr	"no change should be in the $state state when Aegis is upgraded "
 	"integration"
 
 #
-# This progress message is issued when aerf completes successfully.
+# This progress message is issued when aerfail completes successfully.
 #
 msgid	"review fail complete"
 msgstr	"failed review, returned to developer"
 
 #
-# This progress message is issued when aerp completes successfully.
+# This progress message is issued when aerpass completes successfully.
 #
 msgid	"review pass complete"
 msgstr	"passed review"
@@ -2340,7 +2385,8 @@ msgstr	"warning: no $name1 specified, assuming $name2 desired"
 #
 msgid	"warning: no chown"
 msgstr	"warning: no need to change owner, already being developed by "
-	"user \"$user\", a new development directory will be constructed"
+	"user \"$developer\", a new development directory will be "
+	"constructed"
 
 #
 # This warning message is issued when a command which accepts both -Edit

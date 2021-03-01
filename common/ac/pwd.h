@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,15 +23,7 @@
 #ifndef COMMON_AC_PWD_H
 #define COMMON_AC_PWD_H
 
-/*
- * Need to define __USE_SVID on Linux in order to get the setpwent and
- * getpwent prototypes.
- */
-#ifdef __linux__
-#ifndef __USE_SVID
-#define __USE_SVID
-#endif
-#endif
+#include <config.h>
 
 #include <pwd.h>
 

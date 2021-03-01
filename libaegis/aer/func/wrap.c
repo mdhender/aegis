@@ -228,7 +228,7 @@ wrap_run(ep, argc, argv)
 		sp = end_p;
 		if (*sp == '\n')
 			++sp;
-		while (isspace((unsigned char)*sp))
+		while (isspace((unsigned char)*sp) && *sp != '\n')
 			++sp;
 	}
 

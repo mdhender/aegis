@@ -107,3 +107,4 @@ the sections which follow.
 .so c3.1.so
 .so c3.2.so
 .so c3.3.so
+.so c3.4.so

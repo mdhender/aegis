@@ -36,7 +36,7 @@ Please report \fItkaegis\fP bugs and suggestions to Graham.
 The integrate pass command has been enhanced to cope with RCS and SCCS
 expanding keywords in source files (modifying the repository) on check-in.
 This can be ignored, or a warning can be issued, or it can be a fatal
-error (this is the default).  See \fIaeip\fP(1) for more information.
+error (this is the default).  See \fIaeipass\fP(1) for more information.
 .PP
 .if n *
 .if t \(bu

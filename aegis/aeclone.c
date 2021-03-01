@@ -23,12 +23,12 @@
 #include <ac/stdio.h>
 
 #include <aeclone.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <aenc.h>
 #include <arglex2.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
 #include <file.h>
@@ -37,7 +37,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -97,7 +97,11 @@ clone_list()
 		}
 		arglex();
 	}
-	list_changes(project_name, 1 << cstate_state_being_developed);
+	list_changes_in_state_mask
+	(
+		project_name,
+		~(1 << cstate_state_awaiting_development)
+	);
 	if (project_name)
 		str_free(project_name);
 	trace((/*{*/"}\n"));
@@ -221,6 +225,10 @@ clone_main()
 			case arglex_token_string:
 				branch = arglex_value.alv_string;
 				break;
+
+			case arglex_token_stdio:
+				branch = "";
+				break;
 			}
 			break;
 
@@ -239,6 +247,11 @@ clone_main()
 		case arglex_token_wait:
 		case arglex_token_wait_not:
 			user_lock_wait_argument(clone_usage);
+			break;
+
+		case arglex_token_whiteout:
+		case arglex_token_whiteout_not:
+			user_whiteout_argument(clone_usage);
 			break;
 
 		case arglex_token_output:
@@ -514,8 +527,12 @@ clone_main()
 			)
 				p_src_data = 0;
 		}
-		if (!p_src_data && src_data2->action == file_action_remove)
-			continue;
+		if (!p_src_data)
+		{
+			if (src_data2->action == file_action_remove)
+				continue;
+			src_data2->action = file_action_create;
+		}
 
 		/*
 		 * create the file in the new change
@@ -523,6 +540,16 @@ clone_main()
 		src_data = change_file_new(cp, src_data2->file_name);
 		src_data->action = src_data2->action;
 		src_data->usage = src_data2->usage;
+
+		/*
+		 * removed files aren't copied,
+		 * they have whiteout instead.
+		 */
+		if (src_data->action == file_action_remove)
+		{
+			change_file_whiteout_write(cp, src_data->file_name, up);
+			continue;
+		}
 
 		/*
 		 * If the change has already been completed, get the

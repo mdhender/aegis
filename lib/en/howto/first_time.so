@@ -1,0 +1,109 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/first_times
+.\"
+.nh 1 "How to Start Using Aegis"
+.LP
+For the first-time user, Aegis can appear to be very daunting.
+It has a huge number of configuration alternatives for each project,
+and it is difficult to know where to begin.
+.LP
+It is assumed that you already have Aegis installed.  If you do not, see
+the section of the \fIReference Manual\fP called \fIThe BUILDING File\fP.
+This reproduces the \f[CW]BUILDING\fP file included in the Aegis source
+distribution.
+.\" -----------------------------------------------------------------------
+.nh 2 "First, Create The Project"
+.LP
+You need to create a new project.  Follow the instructions in the \fIHow
+to Create a New Project\fP section, and then return here.
+.\" -----------------------------------------------------------------------
+.nh 2 "Second, Use a Template Project"
+.LP
+The very first time you use Aegis, it will be easiest if you download
+one of the template projects.  This gives you a project which (almost
+always) works correctly the first time ``out of the box''.
+.IP \(bu 2n
+The template projects can be found on the Aegis home page:
+\f[CW]http://www.canb.auug.org.au/\%~millerp/\%aegis/\fP
+.IP \(bu 2n
+If you are a long-time GNU Make user, you probably want the Make-RCS
+template, at least to start with.
+.IP \(bu 2n
+Follow the instructions found on the web page
+and you will have a working Aegis project, complete with self tests.
+.IP \(bu 2n
+From this starting point, create changes (the \fItkaenc\fP command is good
+for this, as it gives you a simple GUI) and try modifying the calculator,
+or adding more programs to the project.
+.IP \(bu 2n
+The template projects is intended to be generally useful.  Many users
+have simply retained this format and inserted their own projects into it.
+(Use a change to delete the calculator and its tests.)
+.\" -----------------------------------------------------------------------
+.nh 2 "Second, Copy a Template Project"
+.LP
+If this isn't the very first time, you may wish to get more adventurous,
+and try copying the relevant bits out of a working project.  Usually,
+when sites first try this, the working project will be one of the template
+projects from the previous section.
+.IP \(bu 2n
+Create a new project.
+For this exersize, you probably want a single user project.
+.IP \(bu 2n
+Create a new change
+.IP \(bu 2n
+Copy the project \fIconfig\fP file, and and files referenced by it, such
+as the new file templates and the build configuration file (\fIMakefile\fP
+or \fIHowto.cook\fP, depending).
+.IP \(bu 2n
+Copy the sources of the existing project into the development directory.
+If you have several levels of directories, reproduce this, too.
+.IP \(bu 2n
+Remove files which are not primary sources (\fIe.g.\fP the generated C
+sources of you have yacc input files).
+.IP \(bu 2n
+Using the ``\fIaenf \&.\fP'' command (yes, that's a dot, meaning ``the
+current directory'') you can tell Aegis to add all of the source files
+in the development directory to the change set.
+.IP \(bu 2n
+You will probably need to modify your build method to meet
+Aegis' expectations.  Rather than do this immediately, change
+the \fIbuild_command\fP in the project \fIconfig\fP file to read
+``\f[CW]build_command = "exit 0";\fP'' and fix it in the next change set.
+.IP \(bu 2n
+Now, build, develop end, review and integrate, as found in the
+\fIUser Guide\fP worked example.  (Except, of course, there is only one
+member of staff.)
+.IP \(bu 2n
+Create a second change, and copy the project \fIconfig\fP file, and the
+build config file (probably \fIMakefile\fP or \fIHowto.cook\fP)
+into the change.
+.IP \(bu 2n
+This would be a good time to read the \fIDependency Maintenance Tool\fP
+chapter of the Aegis User Guide, and also \fIRecursive Make Considered
+Harmful\fP (see the author's web site) if you haven't already.
+.IP \(bu 2n
+Edit the build config, try the \fIaeb\fP command;
+it will probably fail.
+Iterate until things build correctly.
+.IP \(bu 2n
+develop end, review and integrate as normal.
+Your project is now under Aegis.

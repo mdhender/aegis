@@ -29,6 +29,9 @@ if a change being integrated is defective,
 it is simply failed back to the developer.
 This documented example has no such failures,
 in order to keep it manageably small.
+.nh 3 "Before You Start"
+Have you configured your account to use Aegis?  See the \fIUser Setup\fP
+section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
 .LP
 The first change of a project is often the trickiest,

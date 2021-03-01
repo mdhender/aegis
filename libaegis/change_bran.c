@@ -23,7 +23,7 @@
 #include <ac/stdlib.h>
 
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h>
 #include <fstrcmp.h>
 #include <interval.h>
@@ -1873,6 +1873,8 @@ change_branch_delta_date_to_edit(pp, delta_date, file_name)
 	bp = cstate_data->branch;
 	assert(bp);
 	first_time_seen = 1;
+	if (!bp->history)
+		bp->history = cstate_branch_history_list_type.alloc();
 	for (j = 0; j < bp->history->length; ++j)
 	{
 		cstate_branch_history hp;

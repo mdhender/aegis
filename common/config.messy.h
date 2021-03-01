@@ -95,4 +95,13 @@
 #endif
 #endif
 
+/*
+ * The SINGLE_USER define may be exploited to create a single-user version
+ * of Aegis.  It is mostly used for testing, but also for Windows NT,
+ * as the security there is stuffed.
+ */
+#if defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(__NUTC__)
+#define SINGLE_USER
+#endif
+
 #endif /* COMMON_CONFIG_MESSY_H */

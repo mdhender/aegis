@@ -26,11 +26,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <aerp.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
@@ -41,7 +41,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -69,7 +69,7 @@ static void review_pass_help _((void));
 static void
 review_pass_help()
 {
-	help("aerp", review_pass_usage);
+	help("aerpass", review_pass_usage);
 }
 
 

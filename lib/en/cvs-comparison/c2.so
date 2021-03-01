@@ -1,0 +1,182 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/cvs-comparison/c2s
+.\"
+.bp
+.nh 1 "Aegis Commands for unreconstructed CVS users"
+.LP
+This section compares Aegis commands and CVS commands.  There can be
+no exact correspondence, because they are each actually attempting to
+achieve something different.
+.TS
+tab(;);
+lw(1.8i) lw(1.8i)f(CW) lw(1.8i)f(CW).
+_
+T{
+Create a new project.
+(In both cases, you then have to add content.)
+T};T{
+aenpr
+T};T{
+cvs init
+T}
+_
+T{
+Create a new work area.
+T};T{
+aenc;aedb
+.br
+\fIor\fP tkaenc
+T};T{
+mkdir
+T}
+_
+T{
+Copy files into a work area
+T};T{
+aecp
+T};T{
+cvs checkout
+T}
+_
+T{
+Add a new file
+T};T{
+aenf \fIfilename\fP
+T};T{
+cvs add \fIfilename\fP
+T}
+_
+T{
+Add a whole directory tree as new files.
+T};T{
+aenf .
+T};T{
+cvs import
+T}
+_
+T{
+Remove a file 
+T};T{
+aerm \fIfilename\fP
+T};T{
+cvs remove \fIfilename\fP
+T}
+_
+T{
+Build in a work area.
+T};T{
+aeb
+T};T{
+make
+T}
+_
+T{
+Bring a work area up-to-date with the repository.
+T};T{
+aem
+.br
+\fI(however, merging (the ``m'' in aem) is required much less often)\fP
+T};T{
+cvs update
+T}
+_
+T{
+Finish development of a change.
+T};T{
+aede
+.br
+\fI(and then it needs to be reviewed and integrated)
+T};T{
+cvs commit
+T}
+_
+T{
+Rename a source file
+T};T{
+aemv \fIold-name\fP \fInew-name\fP
+T};T{
+mv; cvs remove; cvs add
+T}
+_
+T{
+Show the differences between the work area and the repository.
+T};T{
+aed
+T};T{
+cvs diff
+T}
+_
+T{
+Partial commits are forbidden in Aegis.
+However, it is possible to do something very similar.
+T};T{
+aeclone
+.br
+\fIThis clones the whole complete change.  Now use\fP aecpu \fPetc, in
+the cloned change to get rid of the files you dont want to commit yet.\fP
+T};T{
+cvs commit \fIfilename\fP
+T}
+_
+T{
+How do I browse the sources?
+.sp 0.5
+Please note that Aegis has a copy sitting there already.
+With CVS you have to create one first.
+T};T{
+aecd -bl
+.br
+\fInow look around\fP
+T};T{
+mkdir \fIsomewhere\fP
+.br
+cd \fIsomewhere\fP
+.br
+cvs checkout
+.br
+\fInow look around\fP
+T}
+_
+T{
+How do I find stuff in source files?
+T};T{
+aefind | grep
+T};T{
+find | grep
+T}
+_
+T{
+Clean out everything but primary source files from a work area.
+T};T{
+aeclean
+T};T{
+make clean
+T}
+_
+T{
+Make a separate copy of sources in the repository.
+T};T{
+aecp -independent
+T};T{
+cvs export
+T}
+_
+.TE

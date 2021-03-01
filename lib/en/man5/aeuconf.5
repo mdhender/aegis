@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -243,6 +243,12 @@ email_address = string;
 This field may be used to set the preferred email address.  Defaults to
 \&\fI`whoami`@`hostname`\fP if not set, which is usually not what is
 required, particularly if you are behind a firewall.
+.TP 8n
+whiteout_preference = (always, never);
+All of the commands which cause a change to remove files will consult
+this field to determine if the file should be have a dummy "whiteout"
+file put in the development directory.  Defaults to ``always''
+if not set.
 .SH SEE ALSO
 .TP 8n
 .IR aegis (5)

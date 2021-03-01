@@ -143,6 +143,62 @@ pconf_improve(cp, d, filename)
 		d->shell_safe_filenames = 1;
 		d->mask |= pconf_shell_safe_filenames_mask;
 	}
+	if (d->file_template)
+	{
+		size_t		j;
+
+		for (j = 0; j < d->file_template->length; ++j)
+		{
+			pconf_file_template tp;
+
+			tp = d->file_template->list[j];
+			if (!tp->pattern || !tp->pattern->length)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_set(scp, "FieLD_Name",
+					"file_template.pattern");
+				change_fatal
+				(
+					cp,
+					scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+			if (!tp->body && !tp->body_command)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_set(scp, "FieLD_Name",
+					"file_template.body");
+				change_fatal
+				(
+					cp,
+					scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+			if (tp->body && tp->body_command)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_set(scp, "FieLD_Name",
+					"file_template.body");
+				change_fatal
+				(
+					cp,
+					scp,
+			      i18n("$filename: corrupted \"$field_name\" field")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+		}
+	}
 }
 
 
@@ -291,7 +347,7 @@ change_pconf_get(cp, required)
 				cp->pconf_data->maximum_filename_length = 255;
 		}
 		else
-			cp->pconf_data->maximum_filename_length = 14;
+			cp->pconf_data->maximum_filename_length = 255;
 
 		/*
 		 * set the filename_pattern_accept default

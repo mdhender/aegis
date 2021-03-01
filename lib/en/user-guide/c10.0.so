@@ -31,6 +31,7 @@ While many Open Source projects on the Internet typify such development,
 this chapter will also describe techniques suitable for commercial
 enterprises who do not wish to compromise their intellectual property.
 .nh 2 "Introduction"
+.LP
 The core of the distribution method is the \fIaedist\fP(1) command.
 In its simplest form, the command
 .E(

@@ -52,6 +52,11 @@ create a new project.
 The project is created as an empty directory structure
 with no staff except the administrator, no changes,
 and branches to implement the version specified.
+.PP
+Please note: unless you specify a version (see the \fB\-version\fP option,
+below) this command will default to creating branches to support version
+1.0.  If you discovered this too late, all is not lost: you can use the
+\fIaenbru\fP(1) command to get rid of the branches you didn't want.
 .SS Directory
 The project directory,
 under which the project baseline and history and
@@ -113,8 +118,8 @@ You may have any depth of version numbers you like.
 Both methods of specifying version numbers may be used,
 and they will be combined.
 If you want no version numbers at all,
-use -version with the empty string as an argument,
-as in ``-version ""''
+use \fB\-version\fP with a single dash as the argument,
+as in ``\f(CW\-version \-\fP''
 .PP
 If no version number is given,
 either explicitly or implicitly,
@@ -142,8 +147,8 @@ This option may be used to re-attach a project detached using \fIaermpr
 \fB-VERSion\fP \fInumber\fP
 This option may be used to specify the version number
 for the project.
-Version number are implemented as branches.
-Use the empty string as the argument
+Version numbers are implemented as branches.
+Use a single dash (``\f(CW\-\fP'') as the argument
 if you want no version branches created.
 .so o_wait.so
 .so o__rules.so
@@ -173,6 +178,10 @@ option.
 .TP 8n
 .IR aena (1)
 add a new administrator to a project
+.TP 8n
+.IR aenbru (1)
+Remove a new branch.  This can often be useful if \fIaenpr\fP(1) created
+some default branches for you, and now you want to get rid of them.
 .TP 8n
 .IR aenc (1)
 add a new change to a project

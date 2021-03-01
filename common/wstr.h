@@ -50,6 +50,7 @@ wstring_ty *wstr_cat_three _((const wstring_ty *, const wstring_ty *,
 	const wstring_ty *));
 wstring_ty *wstr_to_upper _((const wstring_ty *));
 wstring_ty *wstr_to_lower _((const wstring_ty *));
+wstring_ty *wstr_capitalize _((const wstring_ty *));
 wstring_ty *wstr_to_ident _((const wstring_ty *));
 void wstr_to_mbs _((const wstring_ty *, char **, size_t *));
 int wstr_equal _((const wstring_ty *, const wstring_ty *));
@@ -63,5 +64,6 @@ struct string_ty *wstr_to_str _((const wstring_ty *));
 wstring_ty *str_to_wstr _((const struct string_ty *));
 
 wstring_ty *wstr_quote_shell _((wstring_ty *));
+int wstr_column_width _((wstring_ty *));
 
 #endif /* COMMON_WSTR_H */

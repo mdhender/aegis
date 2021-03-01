@@ -1,0 +1,156 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing file whiteout
+.\"
+.SH WHITEOUT
+Aegis provides you with what is often called a ``view path'' which
+indicates to development tools (compilers, build systems, \fIetc\fP)
+look first in the development directory, then in the branch baseline,
+and so on up to the trunk baseline.
+.PP
+The problem with view paths is that in order to remove files, you
+need some kind of "whiteout" to say ``stop looking, it's been
+removed.''
+.PP
+When you user the \fIaerm\fP(1) or \fIaemv\fP(1) commands, this means
+"add information to this change which will remove the file from the
+baseline when this change is integrated".  \fII.e.\fP while the change
+is in the \fIbeing developed\fP state, the file is only "removed"
+in the development directory \- it's still present in the baseline,
+and will be until the change is successfully integrated.
+.PP
+When you use the \fIaerm\fP(1) or \fIaemv\fP(1) commands, Aegis will
+create a 1K file to act as the whiteout.  It's contents are rather ugly
+so that if you compile or include the "removed" file accidentally, you
+get a fatal error.  This will remind you to remove obsolete references.
+.PP
+When the change in integrated, the removed file is \fInot\fP copied/linked
+from the baseline to the integration directory, and is \fInot\fP copied
+from the development directory.  At this time it is physically gone (no
+whiteout).  It is assumed that because of the error inducing whiteout
+all old references were found and fixed while the change was in the
+\fIbeing developed\fP state.
+.SS File Manifests
+When generating list of files to be compiled or linked, it is important
+that the file manifest be generated from information known by Aegis,
+rather than from the file system.  This is for several reasons:
+.TP 4m
+(a)
+Aegis knows exactly what (source) files are where, whereas everything
+else is inferring Aegis' knowledge; and
+.TP 4m
+(b)
+looking in the file system is hard when the view path is longer that 2
+directories (and Aegis' branching method can make it arbitrarily long); and
+.TP 4m
+(c)
+The whiteout files, and anything else left ``lying around'', will confuse
+any method which interrogates the file system.
+.PP
+The easiest way to use Aegis' file knowledge is with something like
+an \fIawk\fP(1) script processing the Aegis file lists.  For example,
+you can do this with \fImake\fP(1) as follows:
+.RS
+.nf
+.ta 0.5i
+.ft CW
+# generate the file manifest
+manifest.make.inc: manifest.make.awk
+	( aegis -l cf -ter ; aegis -l pf -ter ) | \		
+	awk -f manifest.make.awk > manifest.make.inc
+# now include the file manifest
+include manifest.make.inc
+.ft R
+.fi
+.RE
+Note: this would be inefficient of you did it once per directory,
+but there is nothing stopping you writing numerous assignments
+into the \fImanifest.make.inc\fP file, all in one pass.
+.PP
+It is possible to do the same thing with Aegis' report generator (see
+\fIaer\fP(1) for more information), but this is more involved than the
+\fIawk\fP(1) script.  However, with the information "straight from the
+horse's mouth" as it were, it can also be much smarter.
+.PP
+This file manifest would become out-of-date without an interlock to
+Aegis' file operations commands.  By using the \fIproject-file_command\fP
+and \fIchange_file_command\fP fields of the project \fIconfig\fP file
+(see \fIaepconf\fP(5) for more information), you can delete this file
+at strategic times.
+.RS
+.nf
+.ft CW
+/* run when the change file manifest is altered */
+change_file_command = "rm -f manifest.make.inc";
+/* run when the project file manifest is altered */
+project_file_command = "rm -f manifest.make.inc";
+.ft R
+.fi
+.RE
+The new file manifest will thus be re-built during the next \fIaeb\fP(1)
+command.
+.SS Options and Preferences
+There is a \fB\-No-WhiteOut\fP option, which may be used to suppress
+whiteout files when you use the \fIaerm\fP(1) and \fIaemv\fP(1) commands.
+There is a corresponding \fB\-WhiteOut\fP option, which is usually
+the default.
+.PP
+There is a \fIwhiteout_preference\fP field in the user preferences file
+(see \fIaeuconf\fP(5) for more information) if you want to set this
+option more permanently.
+.SS Whiteout File Templates
+The \fIwhiteout_template\fP field of the project \fIconfig\fP file may be
+used to produce language-specific error files.  If no whiteout template
+entry matches, a very ugly 1KB file will be produced \- it should induce
+compiler errors for just about any language.
+.PP
+If you want a more human-readable error message, entries such as
+.RS
+.nf
+.ft CW
+whiteout_template =
+[
+	{
+		pattern = [ "*.[ch]" ];
+		body = "#error This file has been removed.";
+	}
+];
+.ft R
+.fi
+.RE
+can be very effective (this example assumes \fIgcc\fP(1) is being used).
+.PP
+If it is essential that \fIno\fP whiteout file be produced, say for C
+source files, you could use a whiteout template such as
+.RS
+.nf
+.ft CW
+whiteout_template =
+[
+	{ pattern = [ "*.c" ]; }
+];
+.ft R
+.fi
+.RE
+because an absent \fIbody\fP sub-field means generate no whiteout file at all.
+.PP
+You may have more than one whiteout template entry, but note that the
+order of the entries is important.  The first entry which matches will
+be used.

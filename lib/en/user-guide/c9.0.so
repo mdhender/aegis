@@ -100,17 +100,17 @@ T}
 T{
 aenpr foo -vers 2.4.1
 T};T{
-foo, foo.2, foo.1.4, foo.2.4.1
+foo, foo.2, foo.2.4, foo.2.4.1
 T}
 aenpr foo.7;T{
 foo, foo.7
 T}
 T{
-aenpr foo -vers ""
+aegis -npr foo -vers ""
 T};foo
 .TE
-The last is a special case, to enable a project to be created
-with no default branches.
+The last is a special case, to enable a project to be created with no
+default branches (it's also hard to get the empty string past the alias).
 .nh 2 "Transition Using aenrls"
 .LP
 To convert a project from the old-style to the new branching style,
@@ -162,3 +162,4 @@ branch, however this may not be effective in the branch immediately.
 An alternative is to use the \fIaegis -clone\fP command, which can be
 used to identically reproduce a change on another branch.
 .so c9.1.so
+.so c9.2.so

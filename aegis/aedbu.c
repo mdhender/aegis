@@ -29,11 +29,11 @@
 #include <sys/stat.h>
 
 #include <aedbu.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>

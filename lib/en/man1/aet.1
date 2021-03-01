@@ -145,10 +145,16 @@ The following options are understood:
 .so o_baselin.so
 .so o_baserel.so
 .so o_change.so
+.TP 8n
+.B -FOrce
+This option may be used to specify that all tests should be run,
+even if the status of the last test run indicates that there is no
+need to run a specific test.
 .so o_help.so
 .so o_indep.so
 .so o_list.so
 .so o_manual.so
+.so o_nolog.so
 .TP 8n
 .B -PErsevere
 This option may be used to specify that all tests should be run,
@@ -189,11 +195,6 @@ The number is a percentage of noise to be injected.
 Defaults to 10 if not specified.
 The injection of noise ensures that a variety of tests are run
 on subsequent runs, and also some from left-field as a sanity check.
-.TP 8n
-.B -FOrce
-This option may be used to specify that all tests should be run,
-even if the status of the last test run indicates that there is no
-need to run a specific test.
 .so o_terse.so
 .so o_verbose.so
 .so o_wait.so

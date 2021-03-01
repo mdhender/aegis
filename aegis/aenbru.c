@@ -28,16 +28,17 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <aenbru.h>
 #include <arglex2.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
+#include <gonzo.h>
 #include <help.h>
 #include <lock.h>
 #include <os.h>
@@ -146,6 +147,7 @@ new_branch_undo_main()
 	change_ty	*cp;
 	cstate		cstate_data;
 	string_ty	*dd;
+	string_ty	*s;
 
 	trace(("new_branch_undo_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -247,6 +249,7 @@ new_branch_undo_main()
 	 * table.  Take an advisory write lock on the appropriate row of the
 	 * user table.  Block until can get both simultaneously.
 	 */
+	gonzo_gstate_lock_prepare_new();
 	project_pstate_lock_prepare(pp);
 	change_cstate_lock_prepare(cp);
 	user_ustate_lock_prepare(up);
@@ -280,7 +283,7 @@ new_branch_undo_main()
 	if (user_delete_file_query(up, dd, 1))
 	{
 		change_verbose(cp, 0, i18n("remove development directory"));
-		user_become(up);
+		project_become(pp);
 		commit_rmdir_tree_errok(dd);
 		user_become_undo();
 	}
@@ -301,11 +304,20 @@ new_branch_undo_main()
 	project_become_undo();
 
 	/*
+	 * Remove aliases of this branch.
+	 *	(Punctuation?)
+	 */
+	s = str_format("%S.%ld", project_name_get(pp), change_number);
+	gonzo_alias_delete(s);
+	str_free(s);
+
+	/*
 	 * Update change table row (and change history table).
 	 * Update user table row.
 	 * Release advisory write locks.
 	 */
 	project_pstate_write(pp);
+	gonzo_gstate_write();
 	commit();
 	lock_release();
 

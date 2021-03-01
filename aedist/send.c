@@ -25,7 +25,7 @@
 
 #include <arglex3.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h> /* for assert */
 #include <help.h>
 #include <input/file.h>
@@ -37,7 +37,7 @@
 #include <output/gzip.h>
 #include <output/indent.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <send.h>
 #include <str.h>

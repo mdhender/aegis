@@ -24,12 +24,12 @@
 #include <ael/column_width.h>
 #include <ael/formeditnum.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <error.h> /* for assert */
 #include <option.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <trace.h>
 #include <user.h>
 

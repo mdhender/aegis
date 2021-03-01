@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1995, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -69,12 +69,16 @@ known to work with aegis.
 describes the project attributes
 and how the various parameters may be used for particular projects.
 .IP "Chapter 8"
-describes the branching mechanism used in Aegis.
+describes managing tests and testing with Aegis.
 .IP "Chapter 9"
+describes the branching mechanism used in Aegis.
+.IP "Chapter 10"
 is a collection of helpful hints on how to use aegis effectively,
 based on real-world experience.
 This is of most use when initially placing projects under the supervision
 of the aegis program.
+.IP "Chapter 11"
+describes how to manage geographically distributed development using Aegis.
 .IP "Appendix A"
 is a quick reference for placing an existing project under aegis.
 .IP "Appendix B"

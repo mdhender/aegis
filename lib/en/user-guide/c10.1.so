@@ -155,6 +155,7 @@ configurations file, build files and test files.  All of these contain
 executable commands \fIthat will be executed\fP.  Caveat emptor.
 Make sure you trust the source.
 .nh 2 "Sneaker Net"
+.LP
 Another common method of transporting data, sometimes quite large amount
 of it, is to write it onto transportable media and carry it.
 .LP

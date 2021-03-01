@@ -51,9 +51,10 @@ AC_MINIX
 AC_ISC_POSIX
 AC_OBJEXT
 AC_EXEEXT
-AC_HAVE_LIBRARY(intl)
-AC_HAVE_LIBRARY(w)
-AC_HAVE_LIBRARY(socket)
+dnl Solaris 2.5.1 and below wide-character support
+AC_CHECK_FUNC(wschr, , AC_CHECK_LIB(w, wschr))
+AC_CHECK_FUNC(gettext, , AC_CHECK_LIB(intl, gettext))
+AC_CHECK_FUNC(setsockopt, , AC_CHECK_LIB(socket, setsockopt))
 AC_HAVE_LIBRARY(m)
 AC_HAVE_LIBRARY(rx)
 AC_HAVE_LIBRARY(z)
@@ -142,7 +143,7 @@ AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(getpgrp gettext iswctype pathconf  regcomp seteuid setlocale \
 	setresuid setreuid strcasecmp strerror strftime strsignal strtoul \
-	tcgetpgrp wcslen)
+	tcgetpgrp wcslen wcwidth)
 
 dnl
 dnl	Check to see if wint_t is defined.
@@ -435,10 +436,9 @@ else
   HAVE_GROFF=no
   AC_MSG_RESULT([])
   AC_MSG_RESULT([	The Aegis documentation set and manual pages will])
-  AC_MSG_RESULT([	be formatted and installed installed if you first])
-  AC_MSG_RESULT([	install GNU Groff and then re-run this ./configure])
-  AC_MSG_RESULT([	script.  Remember to use \`\`rm config.cache''])
-  AC_MSG_RESULT([	before you do.])
+  AC_MSG_RESULT([	be formatted and installed if you first install])
+  AC_MSG_RESULT([	GNU Groff and then re-run this ./configure script.])
+  AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
   AC_MSG_RESULT([])
 fi
 AC_SUBST(HAVE_GROFF)

@@ -37,8 +37,7 @@
 #include <arglex.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
-#include <column_width.h>
+#include <change/file.h>
 #include <error.h>
 #include <file.h>
 #include <gonzo.h>
@@ -48,26 +47,37 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <str_list.h>
 #include <sub.h>
 #include <sub/addpathsuffi.h>
 #include <sub/basename.h>
 #include <sub/binary_direc.h>
+#include <sub/capitalize.h>
 #include <sub/comment.h>
 #include <sub/data_directo.h>
+#include <sub/dirname.h>
+#include <sub/dirname_rel.h>
 #include <sub/dollar.h>
+#include <sub/downcase.h>
 #include <sub/expr.h>
 #include <sub/left.h>
 #include <sub/length.h>
 #include <sub/librar_direc.h>
 #include <sub/namemax.h>
 #include <sub/project.h>
+#include <sub/project/adminis_list.h>
+#include <sub/project/baseline.h>
+#include <sub/project/develop_list.h>
+#include <sub/project/integra_list.h>
+#include <sub/project/reviewe_list.h>
 #include <sub/quote.h>
 #include <sub/right.h>
+#include <sub/substitute.h>
 #include <sub/trim_directo.h>
 #include <sub/trim_extensi.h>
+#include <sub/upcase.h>
 #include <sub/user.h>
 #include <sub/zero_pad.h>
 #include <trace.h>
@@ -214,126 +224,6 @@ sub_context_project_get(scp)
 	sub_context_ty	*scp;
 {
 	return scp->pp;
-}
-
-
-/*
- * NAME
- *	sub_administrator_list - the administrator_list substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_administrator_list(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_administrator_list function implements the administrator_list
- * 	substitution.  The administrator_list substitution is replaced by
- *	a space separated list of project administrators.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_administrator_list _((sub_context_ty *,
-	wstring_list_ty *));
-
-static wstring_ty *
-sub_administrator_list(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	pstate		pstate_data;
-	long		j;
-
-	trace(("sub_administrator_list()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->pp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		string_list_ty		wl;
-		string_ty	*s;
-
-		/*
-		 * build a string containing all of the project administrators
-		 */
-		pstate_data = project_pstate_get(scp->pp);
-		string_list_constructor(&wl);
-		for (j = 0; ; ++j)
-		{
-			s = project_administrator_nth(scp->pp, j);
-			if (!s)
-				break;
-			string_list_append(&wl, s);
-		}
-		s = wl2str(&wl, 0, wl.nstrings, " ");
-		trace(("s = \"%s\"\n", s->str_text));
-		string_list_destructor(&wl);
-		result = str_to_wstr(s);
-		str_free(s);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_baseline - the baseline substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_baseline(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_baseline function implements the baseline substitution.
- *	The baseline substitution is used to insert the absolute path
- *	of the baseline.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_baseline _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_baseline(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_baseline()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->pp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-		result = str_to_wstr(project_baseline_path_get(scp->pp, 0));
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
 }
 
 
@@ -688,74 +578,6 @@ sub_developer(scp, arg)
 
 /*
  * NAME
- *	sub_developer_list - the developer_list substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_developer_list(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_developer_list function implements the developer_list
- *	substitution.  The developer_list substitution is replaced by a
- *	space separated list of the project's developers.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_developer_list _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_developer_list(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	long		j;
-	string_list_ty		wl;
-	string_ty	*s;
-
-	trace(("sub_developer_list()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->pp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		/*
-		 * build a string containing all of the project developers
-		 */
-		assert(scp->pp);
-		string_list_constructor(&wl);
-		for (j = 0; ; ++j)
-		{
-			s = project_developer_nth(scp->pp, j);
-			if (!s)
-				break;
-			string_list_append(&wl, s);
-		}
-		s = wl2str(&wl, 0, wl.nstrings, " ");
-		string_list_destructor(&wl);
-		result = str_to_wstr(s);
-		str_free(s);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
  *	sub_development_directory - the development_directory substitution
  *
  * SYNOPSIS
@@ -813,60 +635,6 @@ sub_development_directory(scp, arg)
 			(
 				change_development_directory_get(scp->cp, 0)
 			);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_dirname - the dirname substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_dirname(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_dirname function implements the dirname substitution.
- *	The dirname substitution is replaced by the dirname of
- *	the argument path, similar to the dirname(1) command.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_dirname _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_dirname(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_dirname()\n{\n"/*}*/));
-	if (arg->nitems != 2)
-	{
-		scp->suberr = i18n("requires one argument");
-		result = 0;
-	}
-	else
-	{
-		string_ty	*s1;
-		string_ty	*s2;
-
-		s1 = wstr_to_str(arg->item[1]);
-		os_become_orig();
-		s2 = os_dirname(s1);
-		os_become_undo();
-		str_free(s1);
-		result = str_to_wstr(s2);
-		str_free(s2);
 	}
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
@@ -960,51 +728,6 @@ sub_errno(scp, arg)
 		else
 			result = wstr_from_c(strerror(scp->errno_sequester));
 	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_downcase - the downcase substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_downcase(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_downcase function implements the downcase substitution.
- *	The downcase substitution is replaced by the single argument
- *	mapped to lower case.
- *
- *	Requires exactly one argument.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_downcase _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_downcase(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_downcase()\n{\n"/*}*/));
-	if (arg->nitems != 2)
-	{
-		scp->suberr = i18n("requires one argument");
-		result = 0;
-	}
-	else
-		result = wstr_to_lower(arg->item[1]);
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
 	return result;
@@ -1173,73 +896,6 @@ sub_integrator(scp, arg)
 }
 
 
-/*
- * NAME
- *	sub_integrator_list - the integrator_list substitution
- *
- * SYNOPSIS
- *	string_ty *sub_integrator_list(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_integrator_list function implements the integrator_list
- *	substitution.  The integrator_list substitution is replaced by
- *	a space separated list of the project's integrators.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_integrator_list _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_integrator_list(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	long		j;
-	string_list_ty		wl;
-	string_ty	*s;
-
-	trace(("sub_integrator_list()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->pp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		/*
-		 * build a string containing all of the project integrators
-		 */
-		string_list_constructor(&wl);
-		for (j = 0; ; ++j)
-		{
-			s = project_integrator_nth(scp->pp, j);
-			if (!s)
-				break;
-			string_list_append(&wl, s);
-		}
-		s = wl2str(&wl, 0, wl.nstrings, " ");
-		string_list_destructor(&wl);
-		result = str_to_wstr(s);
-		str_free(s);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
 static wstring_ty *sub_plural _((sub_context_ty *, wstring_list_ty *));
 
 static wstring_ty *
@@ -1390,73 +1046,6 @@ sub_reviewer(scp, arg)
 			goto yuck;
 		result = str_to_wstr(s);
 		/* do not free s */
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_reviewer_list - the reviewer_list substitution
- *
- * SYNOPSIS
- *	string_ty *sub_reviewer_list(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_reviewer_list function implements the reviewer_list
- *	substitution.  The reviewer_list substitution is replaced by a
- *	space separated list of the project's reviewers.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_reviewer_list _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_reviewer_list(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	long		j;
-	string_list_ty		wl;
-	string_ty	*s;
-
-	trace(("sub_reviewer_list()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->pp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		/*
-		 * build a string containing all of the project reviewers
-		 */
-		string_list_constructor(&wl);
-		for (j = 0; ; ++j)
-		{
-			s = project_reviewer_nth(scp->pp, j);
-			if (!s)
-				break;
-			string_list_append(&wl, s);
-		}
-		s = wl2str(&wl, 0, wl.nstrings, " ");
-		string_list_destructor(&wl);
-		result = str_to_wstr(s);
-		str_free(s);
 	}
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
@@ -1812,51 +1401,6 @@ sub_architecture(scp, arg)
 
 /*
  * NAME
- *	sub_upcase - the upcase substitution
- *
- * SYNOPSIS
- *	string_ty *sub_upcase(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_upcase function implements the upcase substitution.
- *	The upcase substitution is replaced by the single argument
- *	mapped to upper case.
- *
- *	Requires exactly one argument.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_upcase _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_upcase(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_upcase()\n{\n"/*}*/));
-	if (arg->nitems != 2)
-	{
-		scp->suberr = i18n("requires one argument");
-		result = 0;
-	}
-	else
-		result = wstr_to_upper(arg->item[1]);
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
  *	sub_version - the version substitution
  *
  * SYNOPSIS
@@ -1925,6 +1469,7 @@ static sub_table_ty table[] =
 	{ "BaseLine",			sub_baseline,			},
 	{ "Basename",			sub_basename,			},
 	{ "BINary_DIRectory",		sub_binary_directory,		},
+	{ "CAPitalize",			sub_capitalize,			},
 	{ "Change",			sub_change,			},
 	{ "Copyright_Years",		sub_copyright_years,		},
 	{ "COMment",			sub_comment,			},
@@ -1936,6 +1481,7 @@ static sub_table_ty table[] =
 	/* Default_Development_Directory				*/
 	{ "Development_Directory",	sub_development_directory,	},
 	{ "Dirname",			sub_dirname,			},
+	{ "Dirname_RELative",		sub_dirname_relative,		},
 	{ "DownCase",			sub_downcase,			},
 	{ "DOLlar",			sub_dollar,			},
 	/* Edit								*/
@@ -1973,6 +1519,7 @@ static sub_table_ty table[] =
 	{ "SHell",			sub_shell,			},
 	{ "Source",			sub_source,			},
 	{ "STate",			sub_state,			},
+	{ "SUBSTitute",			sub_substitute,			},
 	{ "Trim_DIRectory",		sub_trim_directory,		},
 	{ "Trim_EXTension",		sub_trim_extension,		},
 	{ "UName", /* undocumented */	sub_architecture,		},
@@ -3399,7 +2946,7 @@ wrap(s)
 		wstring_ty	*ws;
 
 		ws = wstr_from_c(progname);
-		progname_width = wcs_column_width(ws->wstr_text);
+		progname_width = wstr_column_width(ws);
 		wstr_free(ws);
 	}
 
@@ -3454,7 +3001,7 @@ wrap(s)
 				c = '?';
 			nbytes = wctomb(dummy, c);
 
-			cw = column_width(c);
+			cw = wcwidth(c);
 			if (nbytes <= 0)
 			{
 				/*

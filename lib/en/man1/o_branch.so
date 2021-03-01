@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996 Peter Miller;
+.\"	Copyright (C) 1996, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,3 +24,4 @@
 This option may be used to specify a
 different branch for the origin file,
 rather than the baseline.
+(See also \fB\-TRunk\fP option.\)

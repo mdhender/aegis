@@ -26,7 +26,7 @@
 #include <gmatch.h>
 #include <os.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -59,11 +59,15 @@ csltbl1(p, msg, path, st)
 	string_ty	*s2;
 	long		j;
 	pconf_symlink_exceptions_list lp;
+	fstate_src	p_src;
+	int		p_src_set;
 
 	sip = p;
 	s1 = os_below_dir(sip->bl, path);
 	assert(s1);
 	s2 = os_path_cat(sip->dd, s1);
+	p_src = 0;
+	p_src_set = 0;
 	switch (msg)
 	{
 	case dir_walk_dir_before:
@@ -94,9 +98,10 @@ csltbl1(p, msg, path, st)
 			int	not_a_project_source_file;
 
 			user_become_undo();
-			not_a_project_source_file =
-				!project_file_find(sip->cp->pp, s1);
+			p_src = project_file_find(sip->cp->pp, s1);
+			p_src_set = 1;
 			user_become(sip->up);
+			not_a_project_source_file = !p_src;
 			if (not_a_project_source_file)
 				break;
 		}
@@ -119,6 +124,19 @@ csltbl1(p, msg, path, st)
 				break;
 		}
 		if (j < lp->length)
+			break;
+
+		/*
+		 * avoid removed files
+		 */
+		if (!p_src_set)
+		{
+			user_become_undo();
+			p_src = project_file_find(sip->cp->pp, s1);
+			p_src_set = 1;
+			user_become(sip->up);
+		}
+		if (p_src && p_src->action == file_action_remove)
 			break;
 
 		/*

@@ -24,9 +24,9 @@
 #include <mem.h>
 
 
-#ifndef __GNUC__
-#ifndef DEBUG
-
+#ifdef input_name
+#undef input_name
+#endif
 
 const char *
 input_name(fp)
@@ -36,6 +36,10 @@ input_name(fp)
 }
 
 
+#ifdef input_length
+#undef input_length
+#endif
+
 long
 input_length(fp)
 	input_ty	*fp;
@@ -43,6 +47,10 @@ input_length(fp)
 	return fp->vptr->length(fp);
 }
 
+
+#ifdef input_ftell
+#undef input_ftell
+#endif
 
 long
 input_ftell(fp)
@@ -52,8 +60,9 @@ input_ftell(fp)
 }
 
 
-#endif /* !DEBUG */
-
+#ifdef input_read
+#undef input_read
+#endif
 
 long
 input_read(fp, data, len)
@@ -73,6 +82,10 @@ input_read(fp, data, len)
 }
 
 
+#ifdef input_getc
+#undef input_getc
+#endif
+
 int
 input_getc(fp)
 	input_ty	*fp;
@@ -86,8 +99,9 @@ input_getc(fp)
 }
 
 
-#endif /* !__GNUC__ */
-
+#ifdef input_ungetc
+#undef input_ungetc
+#endif
 
 void
 input_ungetc(fp, c)

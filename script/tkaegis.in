@@ -1,4 +1,4 @@
-#!@WISH@ -f
+#!/bin/sh
 #
 #	aegis - project change supervisor
 #	Copyright (C) 1995, 1999 Graham Wheeler
@@ -20,6 +20,9 @@
 # MANIFEST: tkaegis.wish
 #
 #	@configure_input@
+#
+# comments wrap in Tcl, but not in sh \
+exec wish $0 ${1+"$@"}
 #
 # written by Graham Wheeler <gram@cdsec.com> Citadel Data Security
 #

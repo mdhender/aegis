@@ -22,7 +22,7 @@
 
 #include <change.h>
 #include <change/env_set.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h> /* for assert */
 #include <os.h>
 #include <project.h>

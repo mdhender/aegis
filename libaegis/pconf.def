@@ -48,6 +48,14 @@ build_command = string;
 development_build_command = string;
 
 /*
+ * This command is run when Aegis adjusts the last-time-modified
+ * timestamp on files in the integration directory.  If the build tool
+ * uses additional information to supplement file modification times, this
+ * command gives you the opportunity to re-sync the associated database.
+ */
+build_time_adjust_notify_command = string;
+
+/*
  * Executed whenever the files in the change, change.
  *
  * All of the substitutions described in aesub(5) are available.
@@ -332,8 +340,25 @@ architecture =
 
 /*
  * new file templates
+ *	(Body and body_command are mutually exclusive.)
  */
 file_template =
+[
+	{
+		pattern = [ string ];
+		body = string;
+		body_command = string;
+	}
+];
+
+/*
+ * Whiteout templates are used to produce ``whiteout'' files in the
+ * development directory when a file has been removed.  The idea is that
+ * if it is referenced during the build, it will result in compile errors.
+ * If no patters match, 1 1K junk file will be used instead.  An *absent*
+ * body field means don't create any whiteout.
+ */
+whiteout_template =
 [
 	{
 		pattern = [ string ];
@@ -347,7 +372,7 @@ file_template =
  * affected.  The last component must also allow for the ",D" suffix of
  * difference files.  Where this value is larger than the file system
  * allows, the file system limit will be imposed.
- * Defaults to 14 if not set.
+ * Defaults to 255 if not set.
  */
 maximum_filename_length = integer;
 

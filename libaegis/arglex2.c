@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -286,6 +286,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_new_project,
 	},
 	{
+		"-New_Project_Alias",
+		(arglex_token_ty)arglex_token_project_alias_create,
+	},
+	{
 		"-New_ReLeaSe",
 		(arglex_token_ty)arglex_token_new_release,
 	},
@@ -370,7 +374,7 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_read_only,
 	},
 	{
-		"-REAson",
+		"-REASon",
 		(arglex_token_ty)arglex_token_reason,
 	},
 	{
@@ -400,6 +404,10 @@ static arglex_table_ty argtab[] =
 	{
 		"-ReMove_PRoject",
 		(arglex_token_ty)arglex_token_remove_project,
+	},
+	{
+		"-Remove_Project_Alias",
+		(arglex_token_ty)arglex_token_project_alias_remove,
 	},
 	{
 		"-Remove_ReViewer",
@@ -472,6 +480,14 @@ static arglex_table_ty argtab[] =
 	{
 		"-Not_Wait",
 		(arglex_token_ty)arglex_token_wait_not,
+	},
+	{
+		"-WhiteOut",
+		(arglex_token_ty)arglex_token_whiteout,
+	},
+	{
+		"-Not_WhiteOut",
+		(arglex_token_ty)arglex_token_whiteout_not,
 	},
 
 	ARGLEX_END_MARKER

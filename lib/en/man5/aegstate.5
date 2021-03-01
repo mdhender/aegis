@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1995, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,13 @@ The name of a project.
 directory = string;
 .br
 Absolute path of the project's directory.
+(Only set of \fIaelias_for\fP is not set.)
+.TP 8n
+alias_for = string;
+.br
+This is the name of another project, possibly including branch numbers.
+It allows you to have shorter or more meaningful project names.
+(Only set if \fIdirectory\fP is not set.)
 .RE
 .SH SEE ALSO
 .TP 8n

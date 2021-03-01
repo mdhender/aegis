@@ -28,7 +28,7 @@
 #include <arglex2.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
 #include <fstrcmp.h>
@@ -773,12 +773,15 @@ project_bind_existing(pp)
 {
 	string_ty	*s;
 	string_ty	*parent_name;
+	int		alias_retry_count;
 
 	/*
 	 * make sure project exists
 	 */
 	trace(("project_bind_existing(pp = %08lX)\n{\n"/*}*/, pp));
 	assert(!pp->home_path);
+	alias_retry_count = 0;
+	alias_retry:
 	s = gonzo_project_home_path_from_name(pp->name);
 
 	/*
@@ -819,6 +822,32 @@ project_bind_existing(pp)
 				)
 			);
 		return;
+	}
+
+	/*
+	 * If the name was not found, try to find an alias match for it.
+	 * Loop if an alias is found.
+	 */
+	if (!s)
+	{
+		string_ty	*other;
+
+		other = gonzo_alias_to_actual(pp->name);
+		if (other)
+		{
+			if (++alias_retry_count > 5)
+			{
+				project_fatal
+				(
+					pp,
+					0,
+					i18n("alias loop detected")
+				);
+			}
+			str_free(pp->name);
+			pp->name = str_copy(other);
+			goto alias_retry;
+		}
 	}
 
 	/*
@@ -2013,92 +2042,6 @@ project_compress_database_set(pp, n)
 
 	cp = project_change_get(pp);
 	change_branch_compress_database_set(cp, n);
-}
-
-
-void
-project_list_get(wlp)
-	string_list_ty		*wlp;
-{
-	size_t		j;
-
-	/*
-	 * get the top-level project list
-	 */
-	trace(("project_list_get()\n{\n"/*}*/));
-	gonzo_project_list(wlp);
-
-	/*
-	 * chase down each one, looking for branches
-	 *
-	 * This list will get longer as we search.  It is bounded by the
-	 * finite nature of the branch tree.
-	 */
-	for (j = 0; j < wlp->nstrings; ++j)
-	{
-		string_ty	*name;
-		project_ty	*pp;
-		int		err;
-
-		name = wlp->string[j];
-		trace(("name = \"%s\"\n", name->str_text));
-		pp = project_alloc(name);
-		project_bind_existing(pp);
-
-		/*
-		 * watch out for permissions
-		 * (returns errno of attempt to read project state)
-		 */
-		err = project_is_readable(pp);
-
-		if (!err)
-		{
-			change_ty	*cp;
-			long		*lp;
-			size_t		len;
-			long		k;
-
-			/*
-			 * check each change
-			 * add it to the list if it is a branch
-			 */
-			trace(("readable\n"));
-			cp = project_change_get(pp);
-			change_branch_sub_branch_list_get(cp, &lp, &len);
-			for (k = 0; k < len; ++k)
-			{
-				long		cn;
-				change_ty	*cp2;
-
-				cn = lp[k];
-				trace(("cn = %ld\n", cn));
-				cp2 = change_alloc(pp, cn);
-				change_bind_existing(cp2);
-				/* active only */
-				if (change_is_a_branch(cp2))
-				{
-					string_ty	*s;
-
-					/* punctuation (needs cp2) */
-					trace(("is a branch\n"));
-					s = str_format("%S.%ld", name, magic_zero_decode(cn));
-					string_list_append(wlp, s);
-					str_free(s);
-				}
-				change_free(cp2);
-			}
-			/* do NOT free ``lp'' */
-			/* do NOT free ``cp'' */
-		}
-		project_free(pp);
-	}
-
-	/*
-	 * sort the list of names
-	 * (C locale)
-	 */
-	string_list_sort(wlp);
-	trace((/*{*/"}\n"));
 }
 
 

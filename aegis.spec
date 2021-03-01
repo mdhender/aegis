@@ -1,10 +1,10 @@
 Summary: project change supervisor
 Name: aegis
-Version: 3.15
+Version: 3.20
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-3.15.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-3.20.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.gif
@@ -56,6 +56,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(4755,root,bin) /usr/bin/aegis
 %attr(0755,root,bin) /usr/bin/aerect
 %attr(0755,root,bin) /usr/bin/aereport
+%attr(0755,root,bin) /usr/bin/aesub
 %attr(0755,root,bin) /home/httpd/cgi-bin/aegis.cgi
 %attr(0755,root,bin) /usr/share/aegis/db_forced.sh
 %attr(0755,root,bin) /usr/share/aegis/de.inews.sh
@@ -83,6 +84,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/config.example/architecture
 %attr(0644,root,bin) /usr/share/aegis/config.example/cake
 %attr(0644,root,bin) /usr/share/aegis/config.example/cook
+%attr(0644,root,bin) /usr/share/aegis/config.example/diff
 %attr(0644,root,bin) /usr/share/aegis/config.example/fhist
 %attr(0644,root,bin) /usr/share/aegis/config.example/make
 %attr(0644,root,bin) /usr/share/aegis/config.example/rcs
@@ -93,6 +95,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aegis.mo
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aerect.mo
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aereport.mo
+%attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aesub.mo
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_awdev.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_awint.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_bedev.rpt
@@ -163,10 +166,10 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aeib.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aeibu.1
 %attr(0644,root,bin) /usr/man/man1/aeibu.1
-%attr(0644,root,bin) /usr/share/aegis/en/man1/aeif.1
-%attr(0644,root,bin) /usr/man/man1/aeif.1
-%attr(0644,root,bin) /usr/share/aegis/en/man1/aeip.1
-%attr(0644,root,bin) /usr/man/man1/aeip.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aeifail.1
+%attr(0644,root,bin) /usr/man/man1/aeifail.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aeipass.1
+%attr(0644,root,bin) /usr/man/man1/aeipass.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/ael.1
 %attr(0644,root,bin) /usr/man/man1/ael.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aelic.1
@@ -191,6 +194,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aenfu.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aeni.1
 %attr(0644,root,bin) /usr/man/man1/aeni.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aenpa.1
+%attr(0644,root,bin) /usr/man/man1/aenpa.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aenpr.1
 %attr(0644,root,bin) /usr/man/man1/aenpr.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aenrls.1
@@ -211,8 +216,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aerd.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aerect.1
 %attr(0644,root,bin) /usr/man/man1/aerect.1
-%attr(0644,root,bin) /usr/share/aegis/en/man1/aerf.1
-%attr(0644,root,bin) /usr/man/man1/aerf.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aerfail.1
+%attr(0644,root,bin) /usr/man/man1/aerfail.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aeri.1
 %attr(0644,root,bin) /usr/man/man1/aeri.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aerm.1
@@ -221,18 +226,26 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aermpr.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aermu.1
 %attr(0644,root,bin) /usr/man/man1/aermu.1
-%attr(0644,root,bin) /usr/share/aegis/en/man1/aerp.1
-%attr(0644,root,bin) /usr/man/man1/aerp.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aerpa.1
+%attr(0644,root,bin) /usr/man/man1/aerpa.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aerpass.1
+%attr(0644,root,bin) /usr/man/man1/aerpass.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aerpu.1
 %attr(0644,root,bin) /usr/man/man1/aerpu.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aerrv.1
 %attr(0644,root,bin) /usr/man/man1/aerrv.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aesub.1
+%attr(0644,root,bin) /usr/man/man1/aesub.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aet.1
 %attr(0644,root,bin) /usr/man/man1/aet.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aev.1
 %attr(0644,root,bin) /usr/man/man1/aev.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/tkaeca.1
+%attr(0644,root,bin) /usr/man/man1/tkaeca.1
 %attr(0644,root,bin) /usr/share/aegis/en/man1/tkaegis.1
 %attr(0644,root,bin) /usr/man/man1/tkaegis.1
+%attr(0644,root,bin) /usr/share/aegis/en/man1/tkaenc.1
+%attr(0644,root,bin) /usr/man/man1/tkaenc.1
 %attr(0644,root,bin) /usr/share/aegis/en/man5/aecattr.5
 %attr(0644,root,bin) /usr/man/man5/aecattr.5
 %attr(0644,root,bin) /usr/share/aegis/en/man5/aecstate.5
@@ -245,6 +258,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man5/aegis.5
 %attr(0644,root,bin) /usr/share/aegis/en/man5/aegstate.5
 %attr(0644,root,bin) /usr/man/man5/aegstate.5
+%attr(0644,root,bin) /usr/share/aegis/en/man5/aelock.5
+%attr(0644,root,bin) /usr/man/man5/aelock.5
 %attr(0644,root,bin) /usr/share/aegis/en/man5/aemetrics.5
 %attr(0644,root,bin) /usr/man/man5/aemetrics.5
 %attr(0644,root,bin) /usr/share/aegis/en/man5/aepattr.5
@@ -274,6 +289,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/report/file_cflct.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/file_hstry.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_admin.rpt
+%attr(0644,root,bin) /usr/share/aegis/report/proj_bran.rpt
+%attr(0644,root,bin) /usr/share/aegis/report/proj_brana.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_devel.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_files.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_integ.rpt
@@ -282,12 +299,17 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/report/proj_staff.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_stats.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/recursive.rpt
+%attr(0644,root,bin) /usr/share/aegis/wish/chan_attr.rpt
+%attr(0644,root,bin) /usr/share/aegis/wish/chan_list.rpt
+%attr(0644,root,bin) /usr/share/aegis/wish/proj_list.rpt
 
 %files txtdocs
 %attr(0644,root,bin) /usr/share/aegis/en/auug93.txt
 %attr(0644,root,bin) /usr/share/aegis/en/auug96.txt
 %attr(0644,root,bin) /usr/share/aegis/en/auug97.txt
+%attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.txt
 %attr(0644,root,bin) /usr/share/aegis/en/faq.txt
+%attr(0644,root,bin) /usr/share/aegis/en/howto.txt
 %attr(0644,root,bin) /usr/share/aegis/en/refman.txt
 %attr(0644,root,bin) /usr/share/aegis/en/user-guide.txt
 
@@ -295,7 +317,9 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/auug93.ps
 %attr(0644,root,bin) /usr/share/aegis/en/auug96.ps
 %attr(0644,root,bin) /usr/share/aegis/en/auug97.ps
+%attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.ps
 %attr(0644,root,bin) /usr/share/aegis/en/faq.ps
+%attr(0644,root,bin) /usr/share/aegis/en/howto.ps
 %attr(0644,root,bin) /usr/share/aegis/en/refman.ps
 %attr(0644,root,bin) /usr/share/aegis/en/user-guide.ps
 
@@ -303,7 +327,9 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/auug93.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/auug96.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/auug97.dvi
+%attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/faq.dvi
+%attr(0644,root,bin) /usr/share/aegis/en/howto.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/refman.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/user-guide.dvi
 

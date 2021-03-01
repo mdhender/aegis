@@ -119,14 +119,14 @@ ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	      #	the Aegis page
-		File:	aegis.3.15.README     #	Description, from tar file
-		File:	aegis.3.15.lsm	      #	Description, in	LSM format
-		File:	aegis.3.15.ae	      #	the complete source, aedist format
-		File:	aegis.3.15.spec	      #	RedHat package specification
-		File:	aegis.3.15.tar.gz     #	the complete source
-		File:	aegis.3.15.faq	      #	Frequently Asked Questions
-		File:	aegis.3.15.rm.ps.gz   #	the Reference Manual, in PostScript
-		File:	aegis.3.15.ug.ps.gz   #	the User Guide,	in PostScript
+		File:	aegis.3.20.README     #	Description, from tar file
+		File:	aegis.3.20.lsm	      #	Description, in	LSM format
+		File:	aegis.3.20.ae	      #	the complete source, aedist format
+		File:	aegis.3.20.spec	      #	RedHat package specification
+		File:	aegis.3.20.tar.gz     #	the complete source
+		File:	aegis.3.20.faq	      #	Frequently Asked Questions
+		File:	aegis.3.20.rm.ps.gz   #	the Reference Manual, in PostScript
+		File:	aegis.3.20.ug.ps.gz   #	the User Guide,	in PostScript
 
 	This directory also contains a few other pieces	of
 	software written by me.	 Some are referred to in the
@@ -141,14 +141,14 @@ ARCHIVE	SITE
 	archives.  You will be able to find Aegis on any of its
 	mirrors.
 		URL:	ftp://sunsite.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.3.15.README     #	Description, from tar file
-		File:	aegis.3.15.lsm	      #	Description, in	LSM format
-		File:	aegis.3.15.spec	      #	RedHat package specification
-		File:	aegis.3.15.ae	      #	the complete source, aedist format
-		File:	aegis.3.15.tar.gz     #	the complete source
-		File:	aegis.3.15.faq	      #	Frequently Asked Questions
-		File:	aegis.3.15.rm.ps.gz   #	the Reference Manual, in PostScript
-		File:	aegis.3.15.ug.ps.gz   #	the User Guide,	in PostScript
+		File:	aegis.3.20.README     #	Description, from tar file
+		File:	aegis.3.20.lsm	      #	Description, in	LSM format
+		File:	aegis.3.20.spec	      #	RedHat package specification
+		File:	aegis.3.20.ae	      #	the complete source, aedist format
+		File:	aegis.3.20.tar.gz     #	the complete source
+		File:	aegis.3.20.faq	      #	Frequently Asked Questions
+		File:	aegis.3.20.rm.ps.gz   #	the Reference Manual, in PostScript
+		File:	aegis.3.20.ug.ps.gz   #	the User Guide,	in PostScript
 	This site is extensively mirrored around the world, so
 	look for a copy	near you (you will get much better
 	response).
@@ -181,6 +181,10 @@ Read Me(Aegis)					   Read	Me(Aegis)
 		subscribe aegis-users address
 	where address is an email address to which you want
 	messages sent.
+
+   Archive
+	The mailing list is archived at	eGroups.  The URL is
+	http://www.egroups.com/list/aegis-users/info.html
 
    No Files By EMail
 	The software which handles this	mailing	list CANNOT send
@@ -224,13 +228,14 @@ SOME HISTORY
 	job is "cook", my dependency maintenance tool.	Cook had
 	existed	for 3 years before Aegis appeared on the scene,
 	and I used it daily.  When I placed cook under Aegis, I
-	found 6	bugs!  Since then I have found a few more.  Not
-	only are there now fewer bugs, but they	never come back,
-	because	the regression test suite always grows.
 
 Reference Manual	      Aegis				4
 
 Read Me(Aegis)					   Read	Me(Aegis)
+
+	found 6	bugs!  Since then I have found a few more.  Not
+	only are there now fewer bugs, but they	never come back,
+	because	the regression test suite always grows.
 
    Branching
 	In 1997	the full branching support was released	(it took
@@ -282,14 +287,15 @@ LICENSE
 	later version.
 
 	Aegis is distributed in	the hope that it will be useful,
-	but WITHOUT ANY	WARRANTY; without even the implied
-	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-	PURPOSE.  See the GNU General Public License for more
-	details.
 
 Reference Manual	      Aegis				5
 
 Read Me(Aegis)					   Read	Me(Aegis)
+
+	but WITHOUT ANY	WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	PURPOSE.  See the GNU General Public License for more
+	details.
 
 	You should have	received a copy	of the GNU General Public
 	License	along with this	program; if not, write to the
@@ -313,6 +319,174 @@ RELEASE	NOTES
 	etc/CHANGES.*  files included in this distribution.  A
 	number of features have	been added to Aegis with this
 	release.  A few	of them	are detailed here:
+
+   Version 3.20
+	* The aeib command is now more robust about ``foreign''
+	files in the baseline (e.g. root-owned core files).
+
+	* A bug	has been fixed in the ${administrator_list}
+	substitution.
+
+	* A bug	has been fixed in the aedist --delta option, whch
+	caused it to dumpo core.
+
+	* There	is now a section in the	History	Tool chapter of
+	the User Guide describing how to add checksums to your
+	history	files, in order	to detect file corruptions.  It
+	is a general technique which applies to	most history
+	tools (including RCS).
+
+	* A bug	has been fixed which caused aeclone to misbehave
+	badly when dealing with	removed	files.
+
+	* There	is now an embryonic ``How To'' document	for
+	Aegis.	Please feel free to contribute subjects.
+
+	* You can now say ``-BRanch -''	as a synonym for the
+	``-TRunk option, for those commands which accept it.
+
+	* The report generator now copes with more types of empty
+	lists.
+
+	* A bug	has been fixed which caused a core dump	instead
+	of a useful error message if you tried to create an alias
+	with an	illegal	name.
+
+	* A bug	has been removed which left undeletable	branch
+	aliases	if a branch was	removed.
+
+	* A bug	has been fixed in aenbru which failed to remove
+	the branch development directory .
+
+	* The aenf(1) command now behaves better when you do
+	horrible things	like turn the files you	created	into
+	directories without telling Aegis first.
+
+	* A couple of small bugs have been fixed in the	aenpa(1)
+	command, both in error situations.
+
+	* A bug	with the -interactive option has been fixed.  It
+	will actually ask you, now.
+
+Reference Manual	      Aegis				7
+
+Read Me(Aegis)					   Read	Me(Aegis)
+
+   Version 3.19
+	* You can now run a command to generate	new file
+	templates if you want, rather than using a simple string
+	substitution.  See aenf(1), aent(1) and	aepconf(5) for
+	more information.  The existing	functionality is still
+	there.
+
+	* There	is a new ${SUBSTitute} substitution, which
+	provides regular expression substitutions.  This is
+	useful in new file templates.
+
+	* A bug	has been fixed which allowed aede of a branch
+	when there were	some kinds of outstanding changes.
+
+	* The automatic	change number guessing has been	improved
+	slightly, and will cope	with some more variation in the
+	development_directory_template field.
+
+	* There	are two	new commands, aenpa(1) and aerpa(1) for
+	creating and removing project aliases.	This means that
+	you can	give project branches more meaningful names.
+
+	* There	is a new aesub(1) command.  It substitutes its
+	arguments and prints them, rather like the echo(1)
+	command.  This is useful when you need access to the
+	Aegis substitutions in a script.
+
+	* The command line option ``--'' is now	understood.  It
+	means ``the rest of the	arguments on the command line are
+	filenames or strings''.	 Because this makes the	options
+	on the command line more "order	sensitive" than	usual,
+	use with care.
+
+	* There	is a new tkaenc(1) command, allowing you to
+	create new change via a	Tcl/Tk GUI.  (And a problem with
+	TCL special characters in description text has been
+	fixed.)
+
+	* The aenf(1) command now does the right thing with
+	directories named on the command line.	In particular,
+	you can	now use	``aenf .'' to import whole directory
+	trees.
+
+	* There	is a new State-File-Name list type, useful when
+	writing	cookbooks or makefiles to keep a web page in sync
+	with a change.
+
+	* There	is a new ${capitalize} substitution, useful for
+	putting	in new file templates.
+
+	* A bug	has been fixed which caused aeclean to delete the
+	development directory of changes with no files.
+
+Reference Manual	      Aegis				8
+
+Read Me(Aegis)					   Read	Me(Aegis)
+
+   Version 3.18
+	* A bug	has been fixed which caused aecp -delta	to dump
+	core in	some cases.
+
+	* A bug	has been fixed which caused the	create-symlinks-
+	before-build functionality to create symlinks to deleted
+	files.
+
+	* Still	more typos and minor errors have been corrected
+	in the documentation.
+
+	* The aerp(1) man page has been	moved to aerpass(1).
+	Similarly for aerfail(1), aeipass(1) and aeifail(1).
+	This should make things	easier for users to find the man
+	pages.
+
+   Version 3.17
+	* Another aedist bug has been fixed - unfortunately it
+	was introduced while trying to fix the last one.
+
+	* A Cygwin 20.1	portability bug	has been fixed.
+
+	* There	is a new ${dirname_relative} substitution.  This
+	is useful in new file templates, and also some configured
+	commands.
+
+   Version 3.16
+	* There	is a new tkaeca	command.  It is	a GUI interface
+	to the aeca(1) command,	using Tcl/Tk.
+
+	* There	are two	new reports available: the Project-
+	Branches and Project-Active-Branches reports may be used
+	to query about branches	within a project.
+
+	* A bug	has been fixed in the aedist -receive duplicate
+	suppression code.  It was complaining about user
+	permissions.
+
+	* A bug	has been fixed in aeb(1), which	did strange
+	things if you tried to build an	unbuildable change.
+
+	* There	is a new -No-WhiteOut option for the aerm(1) and
+	aemv(1)	commands, letting you suppress the ``whiteout''
+	files, along with some explanation in the man page about
+	why they are there.  See aerm(1) for more information.
+
+	* The default value of the ``maximum_filename_length''
+	field of the project config file has been raised from 14
+	to 255.	 If your project depends on the	old default
+	value, you will	need to	set it explicitly.
+
+	* The aedist -receive command now accepts a -directory
+	option,	so you can specifiy the	location of the
+	development directory.
+
+Reference Manual	      Aegis				9
+
+Read Me(Aegis)					   Read	Me(Aegis)
 
    Version 3.15
 	* The ``aedist -receive'' command now accepts a	-delta
@@ -359,7 +533,7 @@ RELEASE	NOTES
 
    Version 3.12
 
-Reference Manual	      Aegis				7
+Reference Manual	      Aegis			       10
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -417,7 +591,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	and a --no-trojan option which treats the incoming change
 	set as benign.
 
-Reference Manual	      Aegis				8
+Reference Manual	      Aegis			       11
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -476,7 +650,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	-output	option,	a file to contain the automatically
 	generated change number.  This greatly assists in writing
 
-Reference Manual	      Aegis				9
+Reference Manual	      Aegis			       12
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -510,7 +684,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	with RCS and SCCS expanding keywords in	source files
 	(modifying the repository) on check-in.	 This can be
 	ignored, or a warning can be issued, or	it can be a fatal
-	error (this is the default).  See aeip(1) for more
+	error (this is the default).  See aeipass(1) for more
 	information.
 
 	* The worked example in	the User Guide has (finally!)
@@ -534,7 +708,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	wins.  Mention of this is now also present in aedb(1),
 	etc; Linux UMSDOS is highlighted as problematic.
 
-Reference Manual	      Aegis			       10
+Reference Manual	      Aegis			       13
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -580,11 +754,11 @@ Read Me(Aegis)					   Read	Me(Aegis)
 
    Version 3.7
 
-Reference Manual	      Aegis			       11
+Reference Manual	      Aegis			       14
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
-	* The aeif(1) and aerf(1) commands now have a new
+	* The aeifail(1) and aerfail(1)	commands now have a new
 	--reason option, to specify the	failure	reason on the
 	command	line, rather than in a file.
 
@@ -639,7 +813,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	project	config file.  This field controls whether
 	filenames are required to be free of shell special
 
-Reference Manual	      Aegis			       12
+Reference Manual	      Aegis			       15
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -681,7 +855,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 
    Version 3.3
 
-Reference Manual	      Aegis			       13
+Reference Manual	      Aegis			       16
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -735,7 +909,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	incarnations.  Version 3.1 is the first	completely stable
 	version	since adding full branching support.
 
-Reference Manual	      Aegis			       14
+Reference Manual	      Aegis			       17
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -793,7 +967,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	(for English) if you have not set it; otherwise	ther
 	error messages would be	terse and uninformative.
 
-Reference Manual	      Aegis			       15
+Reference Manual	      Aegis			       18
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -851,7 +1025,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	on a test, and Aegis only runs those that have not yet
 	passed.
 
-Reference Manual	      Aegis			       16
+Reference Manual	      Aegis			       19
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -885,13 +1059,13 @@ Read Me(Aegis)					   Read	Me(Aegis)
 
 	* The aecp(1) and aed(1) commands now take a baseline
 	read lock, to be more symetric with the	aeb(1) command
-	which has always done so.  The aeip(1) command takes the
-	complementary baseline write lock, ensuring the	the
+	which has always done so.  The aeipass(1) command takes
+	the complementary baseline write lock, ensuring	the the
 	baseline remains constant for the duration of builds,
 	file copies, differences and merges.  The manual entries
 	for these commands have	all been improved to document
-	this behaviour.	 See aeb(1), aecp(1), aed(1) and aeip(1)
-	for more information.
+	this behaviour.	 See aeb(1), aecp(1), aed(1) and
+	aeipass(1) for more information.
 
 	* There	are now	some reminder scripts in the library,
 	which can be run from crontab(1).  These are installed
@@ -910,7 +1084,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 
 	* The aecp(1) command now accepts a -Read_Only option,
 
-Reference Manual	      Aegis			       17
+Reference Manual	      Aegis			       20
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -969,7 +1143,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* Four more functions have been	added to the report
 	language: length, split, substr	and wrap.  See aer(5) for
 
-Reference Manual	      Aegis			       18
+Reference Manual	      Aegis			       21
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -1028,7 +1202,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 
 	* Filename lengths are now configurable.  The 14
 
-Reference Manual	      Aegis			       19
+Reference Manual	      Aegis			       22
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -1078,7 +1252,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	changes	to specific developers.	 See aedb(1) for more
 	information.
 
-Reference Manual	      Aegis			       20
+Reference Manual	      Aegis			       23
 
 Read Me(Aegis)					   Read	Me(Aegis)
 
@@ -1134,4 +1308,4 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* The command substitutions have been vastly improved,
 	and are	now documented.
 
-Reference Manual	      Aegis			       21
+Reference Manual	      Aegis			       24

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,29 +25,6 @@
 
 #include <main.h>
 
-struct string_ty;
-
 void list _((void));
-
-void list_administrators _((struct string_ty *, long));
-void list_change_details _((struct string_ty *, long));
-void list_change_files _((struct string_ty *, long));
-void list_change_history _((struct string_ty *, long));
-void list_changes_in_state_mask _((struct string_ty *, int state_mask));
-void list_changes _((struct string_ty *, long));
-void list_default_change _((struct string_ty *, long));
-void list_default_project _((struct string_ty *, long));
-void list_developers _((struct string_ty *, long));
-void list_integrators _((struct string_ty *, long));
-void list_list_list _((struct string_ty *, long));
-void list_locks _((struct string_ty *, long));
-void list_outstanding_changes _((struct string_ty *, long));
-void list_outstanding_changes_all _((struct string_ty *, long));
-void list_project_files _((struct string_ty *, long));
-void list_project_history _((struct string_ty *, long));
-void list_projects _((struct string_ty *, long));
-void list_reviewers _((struct string_ty *, long));
-void list_user_changes _((struct string_ty *, long));
-void list_version _((struct string_ty *, long));
 
 #endif /* AEGIS_AEL_H */

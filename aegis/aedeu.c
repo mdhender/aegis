@@ -29,10 +29,10 @@
 #include <sys/stat.h>
 
 #include <aedeu.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>
@@ -42,7 +42,7 @@
 #include <progname.h>
 #include <os.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>

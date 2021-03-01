@@ -27,6 +27,9 @@ and bugs are fixed.
 This example shows only the addition of new functionality,
 but usually as modifications of existing code,
 similar to bug-fixing activity.
+.nh 3 "Before You Start"
+Have you configured your account to use Aegis?  See the \fIUser Setup\fP
+section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
 .LP
 While the units of change, unoriginally, are called "changes",

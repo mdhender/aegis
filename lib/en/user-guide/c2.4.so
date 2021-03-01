@@ -51,6 +51,9 @@ but when a project is created the user who created the project
 is set to be the administrator of that project.
 .LP
 All of these things will be examined 
+.nh 3 "Before You Start"
+Have you configured your account to use Aegis?  See the \fIUser Setup\fP
+section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
 .LP
 Many things need to happen before
@@ -58,23 +61,14 @@ development can begin on
 the first change;
 the project must be created,
 the staff but be given access permissions,
+the branches created, and
 the change must be created.
 .E(
-alex% \f(CBaenpr example -dir /projects/example\fP
+alex% \f(CBaenpr example -dir /projects/example -version -\fP
 aegis: project "example": project directory "/projects/example"
-aegis: project "example.1": project directory "/projects/example/
-	branch.1"
-aegis: project "example.1.0": project directory "/projects/example/
-	branch.1/branch.0"
 aegis: project "example": created
-aegis: project "example.1": created
-aegis: project "example.1.0": created
 alex%
 .E)
-You will notice that Aegis has also created two branches, the ``1''
-branch, and the ``1.0'' branch.  This is for versioning; see the
-\fIBranching\fP chapter for more information.  For the moment, we will
-simply work on branch 1.0.
 .LP
 Once the project has been created,
 the project attributes are set.
@@ -94,9 +88,59 @@ reviewer_may_integrate = false;
 .E)
 The project attributes are set as follows:
 .E(
-alex% \f(CBaepa -edit -p example.1.0\fP
+alex% \f(CBaepa -edit -p example\fP
 \fI\&...edit as above...\fP
 aegis: project "example.1.0": attributes changed
+alex% \f(CBael p\fP
+List of Projects
+
+Project     Directory           Description
+-------     -----------         -------------
+example     /projects/example   Aegis Documentation Example
+                                Project
+alex%
+.E)
+The various staff must be added to the project.
+Developers are the only staff who may actually edit files.
+.E(
+alex% \f(CBaend pat jan sam -p example\fP
+aegis: project "example": user "pat" is now a developer
+aegis: project "example": user "jan" is now a developer
+aegis: project "example": user "sam" is now a developer
+alex%
+.E)
+Reviewers may veto a change.
+There may be overlap between the various categories,
+as show here for Jan:
+.E(
+alex% \f(CBaenrv robyn jan -p example\fP
+aegis: project "example": user "robyn" is now a reviewer
+aegis: project "example": user "jan" is now a reviewer
+alex%
+.E)
+The next role we need to fill is an integrator.
+.E(
+alex% \f(CBaeni isa -p example\fP
+aegis: project "example": user "isa" is now an integrator
+alex%
+.E)
+Once the staff have been given access,
+it is time to create the working branch.
+Branches inherit their attributes and staff lists from their parent
+branches when they are first created, which is why we set all that
+stuff first.
+.E(
+alex% \f(CBaegis -nbr example 1\fP
+aegis: project "example.1": created
+alex% \f(CBaegis -nbr example.1 0\fP
+aegis: project "example.1.0": created
+alex%
+.E)
+This is for versioning; see the \fIBranching\fP chapter for more
+information.  For the moment, we will simply work on branch 1.0.
+Notice how the branches appear as projects in the project listing;
+in general branches can be used interchangably with projects.
+.E(
 alex% \f(CBael p\fP
 List of Projects
 
@@ -110,31 +154,7 @@ example.1.0 /projects/example/  Aegis Documentation Example
             branch.1/branch.0   Project, branch.1.0.
 alex%
 .E)
-The various staff must be added to the project.
-Developers are the only staff who may actually edit files.
-.E(
-alex% \f(CBaend pat jan sam -p example.1.0\fP
-aegis: project "example.1.0": user "pat" is now a developer
-aegis: project "example.1.0": user "jan" is now a developer
-aegis: project "example.1.0": user "sam" is now a developer
-alex%
-.E)
-Reviewers may veto a change.
-There may be overlap between the various categories,
-as show here for Jan:
-.E(
-alex% \f(CBaenrv robyn jan -p example.1.0\fP
-aegis: project "example.1.0": user "robyn" is now a reviewer
-aegis: project "example.1.0": user "jan" is now a reviewer
-alex%
-.E)
-The next role we need to fill is an integrator.
-.E(
-alex% \f(CBaeni isa -p example.1.0\fP
-aegis: project "example.1.0": user "isa" is now an integrator
-alex%
-.E)
-Once the staff have been given access,
+Once the working branch has been created,
 Alex creates the first change.
 The
 .B -Edit
@@ -163,6 +183,11 @@ Notice that the first change number is ``10''.  This is done so that
 changes 1 to 9 could be bused as bug-fix branches at some future time.
 See the \fIBranching\fP chapter for more information.
 You can over-ride this is you need to.
+.LP
+The above was written almost a decade ago.  There is a newer command,
+\fItkaenc\fP, which uses a GUI and is much easier to use, with a much
+less fiddly interface.  You may want to try that command, instead,
+for most routine change creation.
 .LP
 At this point,
 Alex walks down the hall to Pat's office,

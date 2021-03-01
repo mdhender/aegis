@@ -26,10 +26,10 @@
 #include <ac/unistd.h>
 
 #include <aed.h>
-#include <ael.h>
+#include <ael/change/files.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
 #include <error.h>
@@ -39,7 +39,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -717,6 +717,10 @@ difference_main()
 			case arglex_token_string:
 				branch = arglex_value.alv_string;
 				break;
+
+			case arglex_token_stdio:
+				branch = "";
+				break;
 			}
 			break;
 
@@ -986,7 +990,7 @@ difference_main()
 			string_list_ty		wl_in;
 
 			s1 = wl.string[j];
-			change_file_dir(cp, s1, &wl_in, 0);
+			change_file_directory_query(cp, s1, &wl_in, 0);
 			if (wl_in.nstrings)
 				string_list_append_list_unique(&wl2, &wl_in);
 			else if (change_file_find(cp, s1))

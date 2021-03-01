@@ -20,6 +20,7 @@
  * MANIFEST: functions for manipulating global state data
  */
 
+#include <ac/ctype.h>
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
@@ -134,7 +135,7 @@ gonzo_library_append(s)
 	/*
 	 * resolve the pathname
 	 */
-	trace(("gonzo_library_append(s = \"%s\")\n{\n"/*}*/, s));
+	trace(("gonzo_library_append(s = \"%s\")\n{\n", s));
 	assert(s);
 	assert(!done_tail);
 	tmp = str_from_c(s);
@@ -162,7 +163,7 @@ gonzo_library_append(s)
 		gonzo = mem_change_size(gonzo, nbytes);
 	}
 	gonzo[ngonzos++] = gp;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -174,7 +175,7 @@ lock_sync(gp)
 {
 	long		n;
 
-	trace(("lock_sync(gp = %08lX)\n{\n"/*}*/, gp));
+	trace(("lock_sync(gp = %08lX)\n{\n", gp));
 	n = lock_magic();
 	if (gp->lock_magic == n)
 		goto ret;
@@ -187,7 +188,7 @@ lock_sync(gp)
 		gp->gstate_data = 0;
 	}
 	ret:
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -198,7 +199,7 @@ static gstate
 gonzo_gstate_get(gp)
 	gonzo_ty	*gp;
 {
-	trace(("gonzo_gstate_get(gp = %08lX)\n{\n"/*}*/, gp));
+	trace(("gonzo_gstate_get(gp = %08lX)\n{\n", gp));
 	lock_sync(gp);
 	if (!gp->gstate_data)
 	{
@@ -225,7 +226,7 @@ gonzo_gstate_get(gp)
 		gonzo_become_undo();
 	}
 	trace(("return %08lX;\n", gp->gstate_data));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return gp->gstate_data;
 }
 
@@ -346,7 +347,7 @@ gonzo_gstate_write_sub(gp)
 
 	if (!gp->modified)
 		return;
-	trace(("gonzo_gstate_write_sub()\n{\n"/*}*/));
+	trace(("gonzo_gstate_write_sub()\n{\n"));
 	assert(gp->gstate_data);
 	assert(gp->gstate_filename);
 	filename_new = str_format("%S,%d", gp->gstate_filename, ++count);
@@ -375,7 +376,7 @@ gonzo_gstate_write_sub(gp)
 	str_free(filename_new);
 	str_free(filename_old);
 	gp->modified = 0;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -400,7 +401,7 @@ do_tail()
 	/*
 	 * fetch the environment variable
 	 */
-	trace(("do_tail()\n{\n"/*}*/));
+	trace(("do_tail()\n{\n"));
 	cp = getenv("AEGIS_PATH");
 	if (!cp)
 	{
@@ -434,7 +435,7 @@ do_tail()
 		string_list_destructor(&path);
 	}
 
-#ifndef PERSONAL
+#ifndef SINGLE_USER
 	if (os_testing_mode())
 	{
 		if (!ngonzos)
@@ -484,7 +485,7 @@ do_tail()
 	 * do not repeat
 	 */
 	done_tail = 1;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -496,14 +497,14 @@ gonzo_nth(j)
 {
 	gonzo_ty	*result;
 
-	trace(("gonzo_nth(j = %ld)\n{\n"/*}*/, j));
+	trace(("gonzo_nth(j = %ld)\n{\n", j));
 	do_tail();
 	if (j >= ngonzos)
 		result = 0;
 	else
 		result = gonzo[j];
 	trace(("return %08lX;\n", result));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
 }
 
@@ -514,7 +515,7 @@ gonzo_gstate_write()
 	size_t		j;
 	gonzo_ty	*gp;
 
-	trace(("gonzo_gstate_write()\n{\n"/*}*/));
+	trace(("gonzo_gstate_write()\n{\n"));
 	for (j = 0; ; ++j)
 	{
 		gp = gonzo_nth(j);
@@ -522,7 +523,7 @@ gonzo_gstate_write()
 			break;
 		gonzo_gstate_write_sub(gp);
 	}
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -540,7 +541,7 @@ gonzo_project_home_path_sub(gp, name)
 	/*
 	 * find the project in the gstate
 	 */
-	trace(("gonzo_project_home_path_sub(gp = %08lX, name = \"%s\")\n{\n"/*}*/, gp, name->str_text));
+	trace(("gonzo_project_home_path_sub(gp = %08lX, name = \"%s\")\n{\n", gp, name->str_text));
 	gstate_data = gonzo_gstate_get(gp);
 	assert(gstate_data->where);
 	result = 0;
@@ -549,6 +550,8 @@ gonzo_project_home_path_sub(gp, name)
 		gstate_where	addr;
 
 		addr = gstate_data->where->list[j];
+		if (addr->alias_for)
+			continue;
 		if (str_equal(addr->project_name, name))
 		{
 			result = addr->directory;
@@ -556,7 +559,7 @@ gonzo_project_home_path_sub(gp, name)
 		}
 	}
 	trace(("return \"%s\";\n", (result ? result->str_text : "")));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
 }
 
@@ -573,7 +576,7 @@ gonzo_project_home_path_from_name(name)
 	/*
 	 * find the project in the gstate list
 	 */
-	trace(("gonzo_project_home_path_from_name(name = \"%s\")\n{\n"/*}*/, name->str_text));
+	trace(("gonzo_project_home_path_from_name(name = \"%s\")\n{\n", name->str_text));
 	result = 0;
 	for (j = 0; ; ++j)
 	{
@@ -588,21 +591,91 @@ gonzo_project_home_path_from_name(name)
 		}
 	}
 	trace(("return \"%s\";\n", (result ? result->str_text : "")));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
+	return result;
+}
+
+
+static string_ty *gonzo_alias_to_actual_sub _((gonzo_ty *, string_ty *));
+
+static string_ty *
+gonzo_alias_to_actual_sub(gp, name)
+	gonzo_ty	*gp;
+	string_ty	*name;
+{
+	gstate		gstate_data;
+	size_t		j;
+	string_ty	*result;
+
+	/*
+	 * find the project in the gstate
+	 */
+	trace(("gonzo_alias_to_actual_sub(gp = %08lX, name = \"%s\")\n{\n",
+		gp, name->str_text));
+	gstate_data = gonzo_gstate_get(gp);
+	assert(gstate_data->where);
+	result = 0;
+	for (j = 0; j < gstate_data->where->length; ++j)
+	{
+		gstate_where	addr;
+
+		addr = gstate_data->where->list[j];
+		if (!addr->alias_for)
+			continue;
+		if (str_equal(addr->project_name, name))
+		{
+			result = addr->alias_for;
+			break;
+		}
+	}
+	trace(("return \"%s\";\n", (result ? result->str_text : "")));
+	trace(("}\n"));
+	return result;
+}
+
+
+string_ty *
+gonzo_alias_to_actual(name)
+	string_ty	*name;
+{
+	gonzo_ty	*gp;
+	size_t		j;
+	string_ty	*result;
+	string_ty	*s;
+
+	/*
+	 * find the project in the gstate list
+	 */
+	trace(("gonzo_alias_to_actual(name = \"%s\")\n{\n", name->str_text));
+	result = 0;
+	for (j = 0; ; ++j)
+	{
+		gp = gonzo_nth(j);
+		if (!gp)
+			break;
+		s = gonzo_alias_to_actual_sub(gp, name);
+		if (s)
+		{
+			result = s;
+			break;
+		}
+	}
+	trace(("return \"%s\";\n", (result ? result->str_text : "")));
+	trace(("}\n"));
 	return result;
 }
 
 
 void
 gonzo_project_list(result)
-	string_list_ty		*result;
+	string_list_ty	*result;
 {
 	size_t		n;
 	size_t		j;
 	gonzo_ty	*gp;
 	gstate		gstate_data;
 
-	trace(("gonzo_project_list(result = %08lX)\n{\n"/*}*/, result));
+	trace(("gonzo_project_list(result = %08lX)\n{\n", result));
 	string_list_constructor(result);
 	for (n = 0; ; ++n)
 	{
@@ -621,14 +694,63 @@ gonzo_project_list(result)
 		assert(gstate_data->where);
 		for (j = 0; j < gstate_data->where->length; ++j)
 		{
+			gstate_where	addr;
+
+			addr = gstate_data->where->list[j];
+			if (addr->alias_for)
+				continue;
 			string_list_append_unique
 			(
 				result,
-				gstate_data->where->list[j]->project_name
+				addr->project_name
 			);
 		}
 	}
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
+}
+
+
+void
+gonzo_alias_list(result)
+	string_list_ty	*result;
+{
+	size_t		n;
+	size_t		j;
+	gonzo_ty	*gp;
+	gstate		gstate_data;
+
+	trace(("gonzo_project_list(result = %08lX)\n{\n", result));
+	string_list_constructor(result);
+	for (n = 0; ; ++n)
+	{
+		gp = gonzo_nth(n);
+		if (!gp)
+			break;
+
+		/*
+		 * read the gstate file
+		 */
+		gstate_data = gonzo_gstate_get(gp);
+	
+		/*
+		 * list the projects
+		 */
+		assert(gstate_data->where);
+		for (j = 0; j < gstate_data->where->length; ++j)
+		{
+			gstate_where	addr;
+
+			addr = gstate_data->where->list[j];
+			if (!addr->alias_for)
+				continue;
+			string_list_append_unique
+			(
+				result,
+				addr->project_name
+			);
+		}
+	}
+	trace(("}\n"));
 }
 
 
@@ -641,7 +763,7 @@ gonzo_project_list_user(uname, result)
 	size_t		j;
 
 	trace(("gonzo_project_list_user(uname = \"%s\", \
-result = %08lX)\n{\n"/*}*/, uname->str_text, result));
+result = %08lX)\n{\n", uname->str_text, result));
 	string_list_constructor(result);
 	for (n = 0; ; ++n)
 	{
@@ -689,7 +811,7 @@ result = %08lX)\n{\n"/*}*/, uname->str_text, result));
 		ustate_type.free(ustate_data);
 	}
 	trace(("found %d items\n", result->nstrings));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -703,7 +825,7 @@ gonzo_project_add(pp)
 	gonzo_ty	*gp;
 	type_ty		*type_p;
 
-	trace(("gonzo_project_add(pp = %08lX)\n{\n"/*}*/, pp));
+	trace(("gonzo_project_add(pp = %08lX)\n{\n", pp));
 	gp = gonzo_nth(0);
 	gstate_data = gonzo_gstate_get(gp);
 	addr_p =
@@ -719,7 +841,38 @@ gonzo_project_add(pp)
 	addr->project_name = str_copy(project_name_get(pp));
 	addr->directory = str_copy(project_home_path_get(pp));
 	gp->modified = 1;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
+}
+
+
+void
+gonzo_alias_add(pp, name)
+	project_ty	*pp;
+	string_ty	*name;
+{
+	gstate		gstate_data;
+	gstate_where	*addr_p;
+	gstate_where	addr;
+	gonzo_ty	*gp;
+	type_ty		*type_p;
+
+	trace(("gonzo_alias_add(pp = %08lX)\n{\n", pp));
+	gp = gonzo_nth(0);
+	gstate_data = gonzo_gstate_get(gp);
+	addr_p =
+		gstate_where_list_type.list_parse
+		(
+			gstate_data->where,
+			&type_p
+		);
+	assert(type_p == &gstate_where_type);
+	addr = (gstate_where)gstate_where_type.alloc();
+	*addr_p = addr;
+	trace_pointer(addr);
+	addr->project_name = str_copy(name);
+	addr->alias_for = str_copy(project_name_get(pp));
+	gp->modified = 1;
+	trace(("}\n"));
 }
 
 
@@ -737,7 +890,7 @@ gonzo_project_delete_sub(gp, pp)
 	/*
 	 * find the project in the gstate
 	 */
-	trace(("gonzo_project_delete_sub(gp = %08lX, pp = %08lX)\n{\n"/*}*/,
+	trace(("gonzo_project_delete_sub(gp = %08lX, pp = %08lX)\n{\n",
 		gp, pp));
 	gstate_data = gonzo_gstate_get(gp);
 	assert(gstate_data->where);
@@ -748,6 +901,8 @@ gonzo_project_delete_sub(gp, pp)
 		long		k;
 
 		addr = gstate_data->where->list[j];
+		if (addr->alias_for)
+			continue;
 		if (!str_equal(addr->project_name, project_name_get(pp)))
 			continue;
 
@@ -772,8 +927,81 @@ gonzo_project_delete_sub(gp, pp)
 		break;
 	}
 	trace(("return %d;\n", result));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
+}
+
+
+static int is_leading_prefix _((string_ty *, string_ty *));
+
+static int
+is_leading_prefix(s1, s2)
+	string_ty	*s1;
+	string_ty	*s2;
+{
+	if (str_equal(s1, s2))
+		return 1;
+	return
+	(
+		s1->str_length < s2->str_length
+	&&
+		ispunct((unsigned char)s2->str_text[s1->str_length])
+	&&
+		!memcmp(s1->str_text, s2->str_text, s1->str_length)
+	);
+}
+
+
+static void gonzo_alias_delete_destination_sub _((gonzo_ty *, string_ty *));
+
+static void 
+gonzo_alias_delete_destination_sub(gp, name)
+	gonzo_ty	*gp;
+	string_ty	*name;
+{
+	gstate		gstate_data;
+	size_t		j;
+	int		result;
+
+	/*
+	 * find the project in the gstate
+	 */
+	trace(("gonzo_alias_delete_destination_sub(gp = %08lX, pp = %08lX)\n{\n",
+		gp, pp));
+	gstate_data = gonzo_gstate_get(gp);
+	assert(gstate_data->where);
+	result = 0;
+	for (j = 0; j < gstate_data->where->length; ++j)
+	{
+		gstate_where	addr;
+		long		k;
+
+		addr = gstate_data->where->list[j];
+		if (!addr->alias_for)
+			continue;
+		if (!is_leading_prefix(addr->alias_for, name))
+			continue;
+
+		/*
+		 * delete the item from the list
+		 */
+		for (k = j + 1; k < gstate_data->where->length; ++k)
+			gstate_data->where->list[k - 1] =
+				gstate_data->where->list[k];
+		gstate_data->where->length--;
+		--j;
+
+		/*
+		 * free the item
+		 */
+		gstate_where_type.free(addr);
+
+		/*
+		 * mark this gstate file as modified
+		 */
+		gp->modified = 1;
+	}
+	trace(("}\n"));
 }
 
 
@@ -784,16 +1012,94 @@ gonzo_project_delete(pp)
 	gonzo_ty	*gp;
 	long		j;
 
-	trace(("gonzo_project_delete(pp = %08lX)\n{\n"/*}*/, pp));
+	trace(("gonzo_project_delete(pp = %08lX)\n{\n", pp));
 	for (j = 0; ; ++j)
 	{
 		gp = gonzo_nth(j);
 		if (!gp)
 			break;
+		gonzo_alias_delete_destination_sub(gp, project_name_get(pp));
 		if (gonzo_project_delete_sub(gp, pp))
 			break;
 	}
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
+}
+
+
+static int gonzo_alias_delete_sub _((gonzo_ty *, string_ty *));
+
+static int 
+gonzo_alias_delete_sub(gp, name)
+	gonzo_ty	*gp;
+	string_ty	*name;
+{
+	gstate		gstate_data;
+	size_t		j;
+	int		result;
+
+	/*
+	 * find the project in the gstate
+	 */
+	trace(("gonzo_alias_delete_sub(gp = %08lX, anme = \"%s\")\n{\n",
+		gp, name->str_text));
+	gstate_data = gonzo_gstate_get(gp);
+	assert(gstate_data->where);
+	result = 0;
+	for (j = 0; j < gstate_data->where->length; ++j)
+	{
+		gstate_where	addr;
+		long		k;
+
+		addr = gstate_data->where->list[j];
+		if (!addr->alias_for)
+			continue;
+		if (!str_equal(addr->project_name, name))
+			continue;
+
+		/*
+		 * delete the item from the list
+		 */
+		for (k = j + 1; k < gstate_data->where->length; ++k)
+			gstate_data->where->list[k - 1] =
+				gstate_data->where->list[k];
+		gstate_data->where->length--;
+
+		/*
+		 * free the item
+		 */
+		gstate_where_type.free(addr);
+
+		/*
+		 * mark this gstate file as modified
+		 */
+		gp->modified = 1;
+		result = 1;
+		break;
+	}
+	trace(("return %d;\n", result));
+	trace(("}\n"));
+	return result;
+}
+
+
+void
+gonzo_alias_delete(name)
+	string_ty	*name;
+{
+	gonzo_ty	*gp;
+	long		j;
+
+	trace(("gonzo_alias_delete(name = \"%s\")\n{\n", name->str_text));
+	for (j = 0; ; ++j)
+	{
+		gp = gonzo_nth(j);
+		if (!gp)
+			break;
+		gonzo_alias_delete_destination_sub(gp, name);
+		if (gonzo_alias_delete_sub(gp, name))
+			break;
+	}
+	trace(("}\n"));
 }
 
 
@@ -813,9 +1119,9 @@ waiting_callback(p)
 void
 gonzo_gstate_lock_prepare_new()
 {
-	trace(("gonzo_gstate_lock_prepare_new()\n{\n"/*}*/));
+	trace(("gonzo_gstate_lock_prepare_new()\n{\n"));
 	lock_prepare_gstate(waiting_callback, 0);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -825,7 +1131,7 @@ gonzo_lockpath_get()
 	static string_ty *path;
 	gonzo_ty	*gp;
 
-	trace(("gonzo_lockpath_get()\n{\n"/*}*/));
+	trace(("gonzo_lockpath_get()\n{\n"));
 	if (!path)
 	{
 		do_tail();
@@ -834,7 +1140,7 @@ gonzo_lockpath_get()
 		path = str_format("%S/lockfile", gp->dir);
 	}
 	trace(("return \"%s\";\n", path->str_text));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return path;
 }
 
@@ -853,7 +1159,7 @@ gonzo_ustate_path_sub(gp, project_name)
 	/*
 	 * find the project in the gstate
 	 */
-	trace(("gonzo_ustate_path_sub(gp = %08lX)\n{\n"/*}*/, gp));
+	trace(("gonzo_ustate_path_sub(gp = %08lX)\n{\n", gp));
 	gstate_data = gonzo_gstate_get(gp);
 	assert(gstate_data->where);
 	result = 0;
@@ -862,6 +1168,8 @@ gonzo_ustate_path_sub(gp, project_name)
 		gstate_where	addr;
 
 		addr = gstate_data->where->list[j];
+		if (addr->alias_for)
+			continue;
 		if (str_equal(addr->project_name, project_name))
 		{
 			result = 1;
@@ -869,7 +1177,7 @@ gonzo_ustate_path_sub(gp, project_name)
 		}
 	}
 	trace(("return %d;\n", result));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
 }
 
@@ -889,7 +1197,7 @@ gonzo_ustate_path(project_name, login_name)
 	 *	the user state file contains an index into the project files
 	 *	and is thus kept in the same directory
 	 */
-	trace(("gonzo_ustate_path(project_name = \"%s\", login_name = \"%s\")\n{\n"/*}*/, project_name->str_text, login_name->str_text));
+	trace(("gonzo_ustate_path(project_name = \"%s\", login_name = \"%s\")\n{\n", project_name->str_text, login_name->str_text));
 	for (j = 0; ; ++j)
 	{
 		gp = gonzo_nth(j);
@@ -926,7 +1234,7 @@ gonzo_ustate_path(project_name, login_name)
 	 */
 	result = str_format("%S/user/%S", gp->dir, login_name);
 	trace(("return \"%s\";\n", result->str_text));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
 }
 
@@ -934,18 +1242,18 @@ gonzo_ustate_path(project_name, login_name)
 void
 gonzo_become()
 {
-	trace(("gonzo_become()\n{\n"/*}*/));
+	trace(("gonzo_become()\n{\n"));
 	user_become(gonzo_user());
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
 void
 gonzo_become_undo()
 {
-	trace(("gonzo_become_undo()\n{\n"/*}*/));
+	trace(("gonzo_become_undo()\n{\n"));
 	user_become_undo();
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -969,4 +1277,38 @@ gonzo_report_path(p)
 	s = str_from_c(configured_datadir());
 	string_list_append_unique(p, s);
 	str_free(s);
+}
+
+
+int
+gonzo_alias_acceptable(name)
+	string_ty	*name;
+{
+	char		*cp;
+
+	/*
+	 * reject the empty string
+	 */
+	if (name->str_length == 0)
+		return 0;
+
+	/*
+	 * If it ends in [:punct:][0-9][0-9]*
+	 * then reject it (because it looks like a branch specifier).
+	 * (Also rejects /^[0-9][0-9]*$/ because it looks like a change.)
+	 */
+	if (name->str_length == 0)
+		return 0;
+	for (cp = name->str_text + name->str_length; cp > name->str_text; --cp)
+		if (!isdigit((unsigned char)cp[-1]))
+			break;
+	if (!*cp)
+		return 1;
+	if (cp <= name->str_text || ispunct((unsigned char)cp[-1]))
+		return 0;
+
+	/*
+	 * looks OK, I suppose
+	 */
+	return 1;
 }

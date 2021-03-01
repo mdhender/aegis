@@ -88,7 +88,7 @@ exeext(s)
 	n = look_for_suffix(s, cfg);
 	if (n >= 0)
 		return n;
-#if defined(__CYGWIN__) || defined(__CYGWIN32__)
+#if defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(__NUTC__)
 	n = look_for_suffix(s, ".exe");
 	if (n >= 0)
 		return n;

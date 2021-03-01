@@ -1,0 +1,114 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/user-guide/c9.2s
+.\"
+.nh 2 "Conflict Resolution"
+.LP
+A development directory becomes out of date, compared to the project,
+when another change is integrated which has a file in common.  This
+situation is delected automatically by \fIaede\fP(1) and you resolve it
+using \fIaed\fP(1), usually with something like the \fI--merge-only\fP
+option.  Aditionally, you can see if you have an out-of-date file from
+the \fIchange files\fP listing, because it will show you the current
+baseline version in parentheses if you are out-of-date.
+.LP
+Aegis implements branches as very long changes, with sub-changes.
+A side effect of this is that a branch can become out-of-date in the
+same way that a development director becomes out of date.  When it
+comes to to \fIaede\fP(1) the branch, you will be told if there are
+any out-of-date files.  Additionally, the \fIproject files\fP listing
+will show out of date files in exactly the same way that the \fIchange
+file\fP listing does.
+.nh 3 "Cross Branch Merge"
+However, unlike a simple change, if you attempt to use the \fIaed
+--merge-only\fP command in the branch baseline, you will get an error
+message!  Howm, then, do you resolve the apparrent impasse?
+.LP
+The \fIaed\fP(1) command has a number of options designed for just
+this purpose.
+.IP \(bu 2n
+The \fI--branch\fP option may be used to specify another branch of
+the same project, as a source of the file to be differenced against.
+This is almost what you need.
+.IP \(bu 2n
+The \fI--grandparent\fP option is a special case of the \fI--branch\fP
+option, and it means the parent branch of project.
+.IP \(bu 2n
+The \fI--trunk\fP option is also a special case of the \fI--branch\fP
+option, and it means the base branch from which the entire branch tree springs.
+.LP
+By creating a new change on the out-of-date branch, and copying in the
+out-of-date files, you have almost everything required.  All that is
+necessary is to performa cross-branch merge against the project grandparenmt,
+and the necessary merging will be performed.  \fBIn addition\fP Aegis
+will remember that it was a cross-branch merge, and once \fIaeipass\fP
+completes successfully, the branch will be up-to-date once more.
+.IP \(sq 3n
+Create a new change on the out-of-date branch
+.IP \(sq 3n
+Use a simple \fIaecp\fP command to copy the out-of-date files.
+(Do \fInot\fP use any \fI--branch\fP or \fI--delta\fP options.)
+.IP \(sq 3n
+Use the ``\fIaed --merge-only --grandparent\fP'' command to perform the merge.
+.IP \(sq 3n
+As usualy, use yout favourite editor to check the merge results,
+and resolve any conflicts.
+.IP \(sq 3n
+Build and test as usual.
+.IP \(sq 3n
+Complete the change as usual.
+.IP \(sq 3n
+Once \fIaeipass\fP is successful, the branch will be up-to-date (for
+the files in the change).
+.nh 3 "Insulation"
+.LP
+One of the stated benefits of using a branch is the insulating effects
+which branches can provide.  However, when you have multiple simultaneous
+active branches, that insulation will inevitabley lead to out-of-date
+branch files.  Now that \fIhow\fP to merge them has been describes,
+\fIwhen\fP should you merge?
+.LP
+In a simple change's development directory, there are times when an
+\fIaeipass\fP will result in all developers needing to recompile.
+Depending on what files you are working on, it may be that you need to
+merge some of your change files immediately, or \fIaecp\fP an earlier
+version of the files which changed in the project.
+.LP
+Branches can also suffer from exactly the same problems, and are
+mended by exactly the same alteratives.
+.nh 4 "Branch Insulated Against Project"
+.LP
+If you created a branch to insulate the work being done on the branch
+from other activities in the project, it follows that when such build
+problems occurred, you would use an ``\fIaecp -delta'' command to
+continue insulating.
+.LP
+This action deferes the labour of merging until towards the end of the
+branch development, sometimes with a quite visable shedule impact.
+.nh 4 "Project Insulated Against Branch"
+.LP
+If you created a branch to insulate the project from work
+being done in the branch, it follows that you would do a cross branch immediately.
+.LP
+This action amortizes the labour of merging across the life of the branch,
+often with a number of small delays and less schedule impact.
+.nh 4 "Mix 'n' Match"
+Of course, we usually have both these motives, and some more
+besides, so the answer is usually ``it depends''.

@@ -134,9 +134,12 @@ int change_run_test_command _((change_ty *, struct user_ty *, string_ty *,
 int change_run_development_test_command _((change_ty *, struct user_ty *,
 	string_ty *, string_ty *, int));
 void change_run_build_command _((change_ty *));
+void change_run_build_time_adjust_notify_command _((change_ty *));
 void change_run_development_build_command _((change_ty *, struct user_ty *,
 	struct string_list_ty *));
-string_ty *change_file_template _((change_ty *, string_ty *));
+void change_file_template _((change_ty *, string_ty *, struct user_ty *));
+string_ty *change_file_whiteout _((change_ty *, string_ty *));
+void change_file_whiteout_write _((change_ty *, string_ty *, struct user_ty *));
 void change_become _((change_ty *));
 void change_become_undo _((void));
 int change_umask _((change_ty *));

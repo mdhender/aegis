@@ -27,12 +27,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <ael.h>
+#include <ael/project/projects.h>
 #include <aenbr.h>
 #include <aenrls.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
@@ -45,7 +45,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>

@@ -24,11 +24,11 @@
 #include <ac/stdlib.h>
 #include <ac/unistd.h>
 
-#include <ael.h>
+#include <ael/change/files.h>
 #include <aentu.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
 #include <error.h>
@@ -39,10 +39,10 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <str_list.h>
 
 
 static void new_test_undo_usage _((void));
@@ -350,7 +350,7 @@ new_test_undo_main()
 			++number_of_errors;
 			continue;
 		}
-		change_file_dir(cp, s2, &wl_in, 0);
+		change_file_directory_query(cp, s2, &wl_in, 0);
 		if (wl_in.nstrings)
 		{
 			int	used;

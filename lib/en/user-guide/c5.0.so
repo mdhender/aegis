@@ -159,7 +159,7 @@ They are installed into the
 .I /usr/local/lib/aegis
 directory, by default;
 the actual installed directory at your site is available as the
-.I ${LIBrary}
+.I ${DATa_DIRectory}
 substitution.
 The entries in the project attribute file look like this:
 .E(
@@ -193,7 +193,7 @@ They are installed into the
 .I /usr/local/lib/aegis
 directory, by default;
 the actual installed directory at your site is available as the
-.I ${LIBrary}
+.I ${DATa_DIRectory}
 substitution.
 The entries in the project attribute file look like this:
 .E(

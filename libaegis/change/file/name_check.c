@@ -27,7 +27,7 @@
 #include <change.h>
 #include <error.h> /* for assert */
 #include <gmatch.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <str.h>
 #include <str_list.h>
 #include <sub.h>

@@ -45,6 +45,7 @@ static	char		**argv;
 	arglex_token_ty	arglex_token;
 static	arglex_table_ty	*utable;
 static	const char	*partial;
+static	int		strings_only_mode;
 
 
 /*
@@ -411,6 +412,7 @@ arglex()
 	}
 	else
 	{
+		get_another:
 		if (argc <= 0)
 		{
 			arglex_token = arglex_token_eoln;
@@ -420,6 +422,21 @@ arglex()
 		arg = argv[0];
 		argc--;
 		argv++;
+
+		/*
+		 * The ``--'' option means the rest of the arguments on
+		 * the command line are only strings.
+		 */
+		if (strings_only_mode)
+		{
+			arglex_token = arglex_token_string;
+			goto done;
+		}
+		if (arg[0] == '-' && arg[1] == '-' && !arg[2])
+		{
+			strings_only_mode = 1;
+			goto get_another;
+		}
 
 		/*
 		 * See if it looks like a GNU "-foo=bar" option.

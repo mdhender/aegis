@@ -1,0 +1,215 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/user-guide/c11.1s
+.\"
+.nh 2 "Why Bother?"
+.LP
+Writing tests is extra work, compared to the way many small (and some
+not-so-small) software shops operate.
+For this reason, the testing requirement may  be turned off.
+.LP
+The win is that the tests hang around forever,
+catching minor and major slips before they become
+embarrassing "features" in a released product.
+Prevention is cheaper than cure in this case,
+the tests save work down the track.
+.LP
+All of the "extra work" of writing tests is a long-term win,
+where old problems never again reappear.
+All of the "extra work" of reviewing changes means that another pair of eyes
+sights the code and finds potential problems before they manifest
+themselves in shipped product.
+All of the "extra work" of integration ensures that the baseline always works,
+and is always self-consistent.
+All of the "extra work" of having a baseline and separate
+development directories allows multiple parallel development,
+with no inter-developer interference;
+and the baseline always works, it is never in an "in-between" state.
+In each case,
+not doing this "extra work" is a false economy.
+.LP
+The existence of these tests, though,
+is what determines which projects are most suited to aegis and which are not.
+It should be noted that suitability is a continuous scale,
+not black-and-white.
+With effort and resources,
+almost anything fits.
+.nh 3 "Projects for which Aegis' Testing is Most Suitable"
+.LP
+Projects most suited to supervision by aegis are straight programs.
+What the non-systems-programmers out there call "tools" and
+sometimes "applications".
+These are programs which take a pile of input,
+chew on it,
+and emit a pile of output.
+The tests can then compare actual outputs with expected outputs.
+.LP
+As an example,
+you could be writing a
+.I sed (1)
+look-alike,
+a public domain clone of the 
+.UX
+sed utility.
+You could write tests which exercise every feature (insertion, deletion, etc.)
+and generate the expected output with the real
+.UX
+sed.
+You write the code,
+and run the tests;
+you can immediately see if the output matches expectations.
+.LP
+This is a simple example.
+More complex examples exist,
+such as aegis itself.
+The aegis program is used to supervise its own development.
+Tests consist of sequences of commands and expected results
+are tested for.
+.LP
+Other types of software have been developed using aegis:
+compilers and interpreters,
+client-server model software,
+magnetic tape utilities,
+graphics software such as a ray-tracer.
+The range is vast, but it is not all types of software.
+.nh 3 "Projects for which Aegis' Testing is Useful"
+.LP
+For many years there have been full-screen applications on
+text terminals.
+In more recent times there is increasing use of graphical interfaces.
+.LP
+In developing these types of programs it is still possible to use aegis,
+but several options need to be explored.
+.nh 4 "Testing Via Emulators"
+.LP
+There are screen emulators for both full-screen text and X11 available.
+Using these emulators,
+it is possible to test the user interface,
+and test via the user interface.
+As yet,
+the author knows on no freely available emulators suitable for
+testing via aegis.
+If you find one,
+please let me know.
+.nh 4 "Limited Testing"
+.LP
+You may choose to use aegis simply for its ability to provide
+controlled access to a large source.
+You still get the history and change mechanisms,
+the baseline model,
+the enforced review.
+You simply don't test all changes,
+because figuring out what is on the screen,
+and testing it against expectations, is too hard.
+.LP
+If the program has a command line interface,
+in addition to the full-screen or GUI interface,
+the functionality accessible from the command line may be tested using aegis.
+.LP
+It is possible that "limited testing" actually means "no testing",
+if you have no functionality accessible from the command line.
+.nh 4 "Testing Mode"
+.LP
+Another alternative is to provide hooks into your program
+allowing you to substitute a file for user input,
+and to be able to trigger the dump of a "screen image".
+The simulated user input can then be fed to the program,
+and the screen dump (in some terminal-independent form)
+can be compared against expectations.
+.LP
+This is easier for full-screen applications,
+than for X11 applications.
+You need to judge the cost-benefit trade-off.
+Cost of development,
+cost of storage space for X11 images,
+cost of
+.I not
+testing.
+.nh 4 "Manual Tests"
+.LP
+The aegis program provides a manual test facility.
+It was originally intended for programs which required
+some physical action from a user,
+such as "unplug ethernet cable now" or "mount tape XG356B now".
+It can also be used to have a user confirm that some
+on-screen activity has happened.
+.LP
+The problem with manual tests is that they simply don't happen.
+It is far more pleasant to say "run the automatic tests" and go for
+a cup of coffee,
+than to wait while the computer thinks of mindless things to ask you to do.
+This is human nature:
+if it can be automated, it is more likely to happen.
+.nh 3 "Projects for which Aegis' Testing is Least Useful"
+.LP
+Another class of software is things like operating system kernels
+and firmware;
+things which are "stand alone".
+This isolated nature makes it the most difficult to test:
+to test it you want to provide physical input and watch the physical output.
+By its very nature,
+it is hard to put into a shell script,
+and thus hard to write an Aegis test for.
+.LP
+The above chapter was written in 1991.  At this writing (1999) there are
+projects like \(muLinux and operating systems like vxWorks.  These are
+all embedded, and all have excellent network and download support.
+It is entirely possible (with design support!) to write automatically
+testable embedded systems.
+.nh 4 "Operating Systems"
+.LP
+It is not impossible,
+just that few of us have the resources to do it.
+You need to have a test system and a testing system:
+the test system has all of its input and outputs connected
+to the outputs and inputs of the testing system.
+That is,
+the testing system controls and drives the test system,
+and watches what happens.
+.LP
+For example,
+many operating system vendors test their products by
+using computers connected to each serial line to simulate "user input".
+The system can be rebooted this way,
+and using dual-ported disks
+allows different versions of a kernel to be tried,
+or other test conditions created.
+.LP
+For software houses which write kernels,
+or device drivers for kernels,
+or some other kernel work,
+this is bad news:
+the aegis program is probably not for you.
+It is possible,
+but there may be more cost-effective development strategies.
+Of course, you could always use the rest of aegis,
+and ignore the testing part.
+.nh 4 "Firmware"
+.LP
+Firmware is a similar deal:
+you need some way to download the code to be tested into the test system,
+and write-protect it to simulate ROM,
+and have the necessary hardware to drive the inputs and watch the outputs.
+.LP
+As you can see,
+this is generally not available to run-of-the-mill software houses,
+but then they rarely write firmware, either.
+Those that do write firmware usually have the download capabilities,
+and some kind of remote operation facility.

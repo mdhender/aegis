@@ -102,6 +102,9 @@ uconf_log_file_preference_ty user_log_file_preference _((user_ty *,
 void user_lock_wait_argument _((void(*)(void)));
 int user_lock_wait _((user_ty *));
 
+void user_whiteout_argument _((void(*)(void)));
+int user_whiteout _((user_ty *));
+
 void user_symlink_pref_argument _((void(*)(void)));
 int user_symlink_pref _((user_ty *, int));
 

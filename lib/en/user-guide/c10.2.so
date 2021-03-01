@@ -50,7 +50,7 @@ substitution to decide who to send the change to.
 \fIwrite this section\fP
 .LP
 You need to set up an e-mail alias, with a wrapper around it - you
-probably \dIdon't\fP want "daemon" as a registered developer.
+probably \fIdon't\fP want "daemon" as a registered developer.
 .LP
 While \fIaedist\fP(1) makes every attempt to spot potential trojan attacks,
 you really, \fIreally\fP want PGP validation (or similar industrial

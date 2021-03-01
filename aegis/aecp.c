@@ -26,11 +26,11 @@
 #include <ac/libintl.h>
 
 #include <aecp.h>
-#include <ael.h>
+#include <ael/project/files.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h>
 #include <file.h>
 #include <gettime.h>
@@ -40,7 +40,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -282,6 +282,10 @@ copy_file_independent()
 			case arglex_token_string:
 				branch = arglex_value.alv_string;
 				break;
+
+			case arglex_token_stdio:
+				branch = "";
+				break;
 			}
 			break;
 
@@ -461,7 +465,7 @@ copy_file_independent()
 			++number_of_errors;
 			continue;
 		}
-		project_file_dir(pp2, s2, &wl_in, &wl_out);
+		project_file_directory_query(pp2, s2, &wl_in, &wl_out);
 		if (delta_date != (time_t)-1)
 			string_list_append_list(&wl_in, &wl_out);
 		if (wl_in.nstrings)
@@ -900,6 +904,10 @@ copy_file_main()
 			case arglex_token_string:
 				branch = arglex_value.alv_string;
 				break;
+
+			case arglex_token_stdio:
+				branch = "";
+				break;
 			}
 			break;
 
@@ -1146,7 +1154,7 @@ copy_file_main()
 			++number_of_errors;
 			continue;
 		}
-		project_file_dir(pp2, s2, &wl_in, &wl_out);
+		project_file_directory_query(pp2, s2, &wl_in, &wl_out);
 		if (delta_date != (time_t)-1)
 			string_list_append_list(&wl_in, &wl_out);
 		if (wl_in.nstrings)

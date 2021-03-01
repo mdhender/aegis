@@ -28,11 +28,11 @@
 #include <sys/stat.h>
 
 #include <aeibu.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <dir.h>
 #include <error.h>
 #include <file.h>

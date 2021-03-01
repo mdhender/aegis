@@ -1,0 +1,139 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man5/aelock command.
+.\"
+.so z_name.so
+.TH "\*(n) locking" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) locks \- how locking works, and which command use them
+.XX "aelock(5)" " how locking works, and which command use them"
+.SH DESCRIPTION
+Aegis maintains a database of information about the projects in its care,
+and the various changes, both completed and in progress.  In order to
+ensure the integrity of this database, and also your project repository,
+it uses locks.
+.P
+From time to time, these locks are visible to the users, because they
+will be told that a command is waiting for a particular lock.
+For some transactions, this can be a long wait.
+.SS Dining Philosophers
+While UNIX supplies locks in various flavors, if you need an entire
+set of locks simultaneously, there is no elegant ``all or nothing''
+interface available.  This is unsurprising, as this is one of the classic
+computer science problems, known as the Dining Philosophers problem.
+.P
+The master lock is used to solve the Dining Philosophers problem,
+and is meant to be very transient.  It is only held while the other
+locks which are required (frequently two or more, hence the problem)
+are requested - non-blocking.  Once they are all obtained (or not, and
+any partials given back) the master lock is released.  It is usually held
+for \fImuch\fP less than a second.  If you notice the master lock being
+held, it is almost always a symptom of the NFS lock daemon misbehaving.
+.P
+If the lock(s) could not be obtained, the blocking lock is waited
+on (without the master).  This is when the "waiting for" message
+is issued.  When obtained, it is \fIreleased\fP and the whole cycle
+starts again.  This is why you occasionally see a series of "waiting
+for" messages.  (This could maybe be optimized some, but it is
+still possible to block on yet another lock, and they you have to
+release all and wait again.  As yet, I'm not convinced the extra
+code complexity is required.)
+.SS Listing Locks
+There is a command available to list the current Aegis locks.
+.RS
+aegis -list locks
+.RE
+Note that the project names are change numbers are \fIguesses\fP as the
+locks are hashed over a 16-bit range, and range overlaps are possible.
+Collisions are also possible, but fortunately rarer.
+.SH COMMANDS
+The following table shows the locks taken by the various commands.
+Note that theoretically some of the commands take too \fIfew\fP locks,
+but this has yet to prove to be a problem in practice.  Also, "project
+state file" and "change state file" are the same thing for branches,
+it just depends which way you are looking at them at the time.
+.TS
+tab(;);
+le le le le le le le.
+Command;T{
+Global State File
+T};T{
+Project State File
+T};T{
+Project Baseline
+T};T{
+Ancestor Baselines
+T};T{
+Change State File
+T};T{
+User State File
+T}
+_
+aeb (dev);\&.;\&.;shared;shared;exclusive;\&.
+aeb (int);\&.;\&.;\&.;shared;exclusive;\&.
+aeca;\&.;\&.;\&.;\&.;exclusive;\&.
+aechown;\&.;\&.;\&.;\&.;exclusive;exclusive
+aeclean;\&.;\&.;\&.;\&.;exclusive;\&.
+aeclone;\&.;exclusive;\&.;\&.;exclusive;exclusive
+aecp;\&.;,;,;,;exclusive;\&.
+aecpu;\&.;\&.;\&.;\&.;exclusive;\&.
+aed;\&.;,;,;,;exclusive;\&.
+aedb;\&.;\&.;\&.;\&.;exclusive;exclusive
+aedbu;\&.;\&.;\&.;\&.;exclusive;exclusive
+aede;\&.;,;\&.;\&.;exclusive;exclusive
+aedeu;\&.;\&.;\&.;\&.;exclusive;exclusive
+aedn;\&.;exclusive;\&.;\&.;\&.;\&.
+aeib;\&.;exclusive;\&.;\&.;exclusive;exclusive
+aeibu;\&.;exclusive;\&.;\&.;exclusive;exclusive
+aeifail;\&.;exclusive;\&.;\&.;exclusive;exclusive
+aeipass;\&.;exclusive;exclusive;\&.;exclusive;exclusive
+aemv;\&.;,;,;,;exclusive;\&.
+aena;\&.;exclusive;\&.;\&.;\&.;\&.
+aenbr;\&.;exclusive;\&.;\&.;\&.;\&.
+aenbru;exclusive;exclusive;\&.;\&.;\&.;\&.
+aenc;\&.;exclusive;\&.;\&.;\&.;\&.
+aencu;\&.;exclusive;\&.;\&.;\&.;\&.
+aend;\&.;exclusive;\&.;\&.;\&.;\&.
+aenf;\&.;\&.;\&.;\&.;exclusive;\&.
+aenfu;\&.;\&.;\&.;\&.;exclusive;\&.
+aeni;\&.;exclusive;\&.;\&.;\&.;\&.
+aenpa;exclusive;\&.;\&.;\&.;\&.;\&.
+aenpr;exclusive;\&.;\&.;\&.;\&.;\&.
+aenrv;\&.;exclusive;\&.;\&.;\&.;\&.
+aent;\&.;exclusive;\&.;\&.;exclusive;\&.
+aentu;\&.;\&.;\&.;\&.;exclusive;\&.
+aepa;\&.;exclusive;\&.;\&.;\&.;\&.
+aera;\&.;exclusive;\&.;\&.;\&.;\&.
+aerd;\&.;exclusive;\&.;\&.;\&.;\&.
+aerfail;\&.;\&.;\&.;\&.;exclusive;exclusive
+aeri;\&.;exclusive;\&.;\&.;\&.;\&.
+aerm;\&.;,;\&.;\&.;exclusive;\&.
+aermu;\&.;\&.;\&.;\&.;exclusive;\&.
+aermpr;exclusive;\&.;\&.;\&.;\&.;\&.
+aerpa;exclusive;\&.;\&.;\&.;\&.;\&.
+aerpass;\&.;\&.;\&.;\&.;exclusive;\&.
+aerpu;\&.;\&.;\&.;\&.;exclusive;\&.
+aerrv;\&.;exclusive;\&.;\&.;\&.;\&.
+aet;\&.;\&.;,;,;exclusive;\&.
+.TE
+.SH SEE ALSO
+You may wish to see the manual pages of all of the above commands.
+Many have descriptions of the locking interactions.
+.so ../man1/z_cr.so

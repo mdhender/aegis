@@ -38,6 +38,6 @@ but fails with mysterious errors in the more limited environments.
 If your development directories are routinely on a Linux
 UMSDOS filesystem, you would probably be better off setting
 \fIdos_filename_required = true\fP,
-and also changing the \fIdevelopment_directory_template\fI field.
+and also changing the \fIdevelopment_directory_template\fP field.
 Heterogenous development with various Windows environments may
 also require this.

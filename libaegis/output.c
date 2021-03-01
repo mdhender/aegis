@@ -35,9 +35,9 @@ output_delete(fp)
 }
 
 
-#ifndef __GNUC__
-#ifdef DEBUG
-
+#ifdef output_filename
+#undef output_filename
+#endif
 
 const char *
 output_filename(fp)
@@ -47,6 +47,10 @@ output_filename(fp)
 }
 
 
+#ifdef output_ftell
+#undef output_ftell
+#endif
+
 long
 output_ftell(fp)
 	output_ty	*fp;
@@ -54,6 +58,10 @@ output_ftell(fp)
 	return fp->vptr->ftell(fp);
 }
 
+
+#ifdef output_fputc
+#undef output_fputc
+#endif
 
 void
 output_fputc(fp, c)
@@ -64,6 +72,10 @@ output_fputc(fp, c)
 }
 
 
+#ifdef output_fputs
+#undef output_fputs
+#endif
+
 void
 output_fputs(fp, s)
 	output_ty	*fp;
@@ -73,6 +85,10 @@ output_fputs(fp, s)
 }
 
 
+#ifdef output_write
+#undef output_write
+#endif
+
 void
 output_write(fp, data, len)
 	output_ty	*fp;
@@ -81,10 +97,6 @@ output_write(fp, data, len)
 {
 	fp->vptr->write(fp, data, len);
 }
-
-
-#endif /* !DEBUG */
-#endif /* !__GNUC__ */
 
 
 void

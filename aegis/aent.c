@@ -26,11 +26,11 @@
 #include <ac/fcntl.h>
 #include <ac/unistd.h>
 
-#include <ael.h>
+#include <ael/project/files.h>
 #include <aent.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <col.h>
 #include <commit.h>
 #include <error.h>
@@ -41,7 +41,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -151,7 +151,6 @@ new_test_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
-	int		mode;
 	long		n;
 	string_list_ty	wl;
 	size_t		j, k;
@@ -503,18 +502,48 @@ new_test_main()
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 		string_ty	*e;
+		string_ty	*file_name;
+		string_ty	*other;
 
-		if (str_equal(wl.string[j], config_name))
+		file_name = wl.string[j];
+		if (str_equal(file_name, config_name))
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set(scp, "File_Name", "%S", file_name);
 			change_error(cp, scp, i18n("may not test $filename"));
 			sub_context_delete(scp);
 			++nerrs;
 		}
-		e = change_filename_check(cp, wl.string[j], 1);
+		other = change_file_directory_conflict(cp, file_name);
+		if (other)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", file_name);
+			sub_var_set(scp, "File_Name2", "%S", other);
+			sub_var_optional(scp, "File_Name2");
+			change_error(cp, scp, i18n("file $filename directory name conflict"));
+			sub_context_delete(scp);
+			++nerrs;
+			continue;
+		}
+		other = project_file_directory_conflict(pp, file_name);
+		if (other)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", file_name);
+			sub_var_set(scp, "File_Name2", "%S", other);
+			sub_var_optional(scp, "File_Name2");
+			project_error(pp, scp, i18n("file $filename directory name conflict"));
+			sub_context_delete(scp);
+			++nerrs;
+		}
+		e = change_filename_check(cp, file_name, 1);
 		if (e)
 		{
 			sub_context_ty	*scp;
@@ -554,27 +583,10 @@ new_test_main()
 	/*
 	 * create the files
 	 */
-	mode = 0644 & ~change_umask(cp);
-	user_become(up);
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-		s1 = wl.string[j];
-
-		os_mkdir_between(dd, s1, 02755);
-		s2 = str_format("%S/%S", dd, s1);
-		if (!os_exists(s2))
-		{
-			string_ty	*template;
-	
-			user_become_undo();
-			template = change_file_template(cp, s1);
-			user_become(up);
-			undo_unlink_errok(s2);
-			file_from_string(s2, template, mode);
-		}
-		str_free(s2);
+		change_file_template(cp, wl.string[j], up);
 	}
-	user_become_undo();
 
 	/*
 	 * Add the files to the change.

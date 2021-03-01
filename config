@@ -41,6 +41,14 @@ link_integration_directory = true;
 integrate_begin_exceptions = [ "linux-i486/bin/*" ];
 
 /*
+ * At integrate pass time, the modification times of the files are
+ * updated.  This commands gives cook a channce to get the fingerprints
+ * back in sync, which in turn speeds up development builds.
+ */
+build_time_adjust_notify_command =
+	"set +e; find . -name .cook.fp -print | xargs rm; cook -nl -st --fp-update";
+
+/*
  * create a new history
  * always executed as the project owner
  */
@@ -103,14 +111,19 @@ windows_filename_required = true;
 
 /*
  * watch out for these
- * /
+ */
 trojan_horse_suspect =
 [
 	"*.awk",
 	"*.cook",
 	"*.sh",
 ];
- * /
+
+/*
+ * Limit filename to 14 chanracters for maximim portability.
+ */
+maximum_filename_length = 14;
+posix_filename_charset = true;
 
 /*
  * new file templates
@@ -159,7 +172,6 @@ develop_begin_command = "ln -s $baseline bl";
  */
 integrate_begin_command =
 	"rm -f \
-.cook.fp \
 etc/cook/change_files* \
 etc/cook/project_files* \
 etc/version.so \

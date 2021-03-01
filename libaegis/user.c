@@ -970,6 +970,16 @@ user_uconf_get(up)
 		}
 		if (!data->email_address && tmp->email_address)
 			data->email_address = str_copy(tmp->email_address);
+		if
+		(
+			!(data->mask & uconf_whiteout_preference_mask)
+		&&
+			(tmp->mask & uconf_whiteout_preference_mask)
+		)
+		{
+			data->whiteout_preference = tmp->whiteout_preference;
+			data->mask |= uconf_whiteout_preference_mask;
+		}
 		uconf_type.free(tmp);
 	}
 	trace(("return %08lX;\n", up->uconf_data));
@@ -1568,7 +1578,7 @@ project_dot_change(s, p)
 	||
 		memcmp(s->str_text, p->str_text, p->str_length)
 	||
-		s->str_text[p->str_length] != '.'
+		!ispunct((unsigned char)s->str_text[p->str_length])
 	)
 		return 0;
 	suffix = s->str_text + p->str_length + 1;
@@ -2160,7 +2170,7 @@ ask(filename, isdir)
 		(
 			"Delete the \"%s\" %s? ",
 			filename->str_text,
-			(isdir ? "directory" : "file")
+			(isdir ? "directory and everything below it" : "file")
 		);
 		fflush(stdout);
 
@@ -2231,7 +2241,7 @@ user_delete_file_query(up, filename, isdir)
 	(
 		cmd_line_pref == del_pref_interactive
 	&&
-		(!isatty(0) || !isatty(1) || os_background())
+		(!isatty(0) || os_background())
 	)
 		cmd_line_pref = del_pref_no_keep;
 
@@ -2361,6 +2371,52 @@ user_lock_wait(up)
 			(result == uconf_lock_wait_preference_always);
 	}
 	return uconf_lock_wait_option;
+}
+
+
+static int uconf_whiteout_option = -1;
+
+
+void
+user_whiteout_argument(usage)
+	void		(*usage)_((void));
+{
+	if (uconf_whiteout_option >= 0)
+		duplicate_option(usage);
+	switch (arglex_token)
+	{
+	default:
+		assert(0);
+		return;
+
+	case arglex_token_whiteout:
+		uconf_whiteout_option = 1;
+		break;
+
+	case arglex_token_whiteout_not:
+		uconf_whiteout_option = 0;
+		break;
+	}
+}
+
+
+int
+user_whiteout(up)
+	user_ty		*up;
+{
+	if (uconf_whiteout_option < 0)
+	{
+		uconf		uconf_data;
+		uconf_whiteout_preference_ty result;
+
+		if (!up)
+			up = user_executing((project_ty *)0);
+		uconf_data = user_uconf_get(up);
+		result = uconf_data->whiteout_preference;
+		uconf_whiteout_option =
+			(result == uconf_whiteout_preference_always);
+	}
+	return uconf_whiteout_option;
 }
 
 

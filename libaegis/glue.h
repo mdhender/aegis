@@ -34,7 +34,6 @@ struct flock;
 
 int copyfile _((char *src, char *dst));
 int catfile _((char *path));
-int junkfile _((char *path));
 int read_whole_dir _((char *path, char **data, long *datalen));
 int file_compare _((char *, char *));
 int file_fingerprint _((char *path, char *buf, int max));
@@ -58,7 +57,6 @@ int glue_fgetc _((FILE *));
 FILE *glue_fopen _((char *path, char *mode));
 int glue_fputc _((int, FILE *));
 char *glue_getcwd _((char *buf, int max));
-int glue_junkfile _((char *path));
 int glue_link _((char *p1, char *p2));
 int glue_lstat _((char *path, struct stat *st));
 int glue_mkdir _((char *path, int mode));
@@ -104,7 +102,6 @@ int glue_fwrite _((char *, long, long, FILE *));
 #define	glue_fopen	fopen
 #define	glue_fputc	putc
 #define	glue_getcwd	getcwd
-#define	glue_junkfile	junkfile
 #define	glue_link	link
 #define	glue_lstat	lstat
 #define	glue_mkdir	mkdir

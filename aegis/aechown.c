@@ -25,12 +25,12 @@
 #include <ac/libintl.h>
 
 #include <aechown.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <error.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <cstate.h>
 #include <file.h>
@@ -109,7 +109,7 @@ change_owner_list()
 		}
 		arglex();
 	}
-	list_changes(project_name, 1 << cstate_state_being_developed);
+	list_changes_in_state_mask(project_name, 1 << cstate_state_being_developed);
 	if (project_name)
 		str_free(project_name);
 	trace((/*{*/"}\n"));

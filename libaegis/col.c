@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,6 @@
 #include <ac/wctype.h>
 
 #include <col.h>
-#include <column_width.h>
 #include <error.h>
 #include <fopen_nfs.h>
 #include <glue.h>
@@ -838,7 +837,7 @@ col_emit_wchar(c)
 			++out_col;
 		}
 		col_emit_wchar_inner(c);
-		in_col += column_width(c);
+		in_col += wcwidth(c);
 		out_col = in_col;
 		break;
 	}
@@ -939,11 +938,11 @@ col_eoln_sub()
 				 * and a 2-position wide character.
 				 * (Or other variations on the same theme.)
 				 */
-				s_wid += column_width(*s++);
+				s_wid += wcwidth(*s++);
 			}
 			while (*s && *s != '\n')
 			{
-				c_wid = s_wid + column_width(*s);
+				c_wid = s_wid + wcwidth(*s);
 				if (c_wid > width)
 					break;
 				++s;
@@ -1057,7 +1056,7 @@ wstr_subset_of_max_width(ws, max)
 	s_wid = 0;
 	while (*s)
 	{
-		c_wid = s_wid + column_width(*s);
+		c_wid = s_wid + wcwidth(*s);
 		if (c_wid > max)
 			break;
 		++s;
@@ -1091,16 +1090,6 @@ wstr_spaces(n)
 	mem_free(buffer);
 	trace(("mark\n"));
 	return result;
-}
-
-
-static int wstr_column_width _((wstring_ty *));
-
-static int
-wstr_column_width(ws)
-	wstring_ty	*ws;
-{
-	return wcs_column_width(ws->wstr_text);
 }
 
 
@@ -1335,7 +1324,7 @@ col_eoln()
 			s_wid = 0;
 			while (*ep && *ep != '\n')
 			{
-				c_wid = s_wid + column_width(*ep);
+				c_wid = s_wid + wcwidth(*ep);
 				if (c_wid > page_width)
 					break;
 				++ep;

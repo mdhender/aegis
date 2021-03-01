@@ -10,7 +10,6 @@
 2.1.   Changing Makefile and common/config.h
 2.2.   RCS
 2.3.   SCCS
-2.4.   Why does aenf limit file names to 14 characters?
 3.   Testing
 3.1.   Can I use something besides a shell script?
 3.2.   Testing curses programs

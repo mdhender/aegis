@@ -22,6 +22,8 @@
 
 %{
 
+#include <ac/stdio.h>
+
 #include <aer/expr/assign.h>
 #include <aer/expr/bit.h>
 #include <aer/expr/constant.h>

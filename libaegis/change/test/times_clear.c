@@ -23,7 +23,7 @@
 #include <change.h>
 #include <change/architecture/find_variant.h>
 #include <error.h> /* for assert */
-#include <change_file.h>
+#include <change/file.h>
 
 
 /*

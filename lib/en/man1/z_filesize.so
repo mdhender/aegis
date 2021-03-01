@@ -31,7 +31,8 @@ The most significant are briefly described here:
 maximum_filename_length = integer;
 This field is used to limit the length of filenames.
 All new files may not have path components longer than this.
-Defaults to 14 if not set, for maximum portability.
+Defaults to 255 if not set.
+For maximum portability you should set this to 14.
 .TP 8n
 posix_filename_charset = boolean;
 This field may be used to limit the characters allowed
@@ -40,6 +41,7 @@ Defaults to
 .I false
 if not set, meaning whatever your operating system will tolerate,
 except white space and high-bit-on characters.
+For maximum portability you should set this to \fItrue\fP.
 .TP 8n
 dos_filename_required = boolean;
 This field may be used to limit filenames so that they conform to

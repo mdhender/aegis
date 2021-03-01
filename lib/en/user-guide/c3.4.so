@@ -1,0 +1,106 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/user-guide/c3.4s
+.\"
+.bp
+.nh 2 "Detecting File Corruption"
+.LP
+When you have files which exist for long periods of time, particularly
+files such as the ones typically used by history tools, which are
+generally appended to, without modification of the bulk of the file, there
+is a very real possibility that a block of the file could become corrupted
+over the years.  Unless you access the file versions contained within that
+block, you have no way of knowing whether or not the history file is OK.
+(Arguably, the operating system should check for this, but many do not,
+and in any case the error may not be detectable at that level.)
+.LP
+Using Aegis, you can add a simple checksum to your history files which
+will detect many cases of corruption such as this, for all of the commonly
+used history tools.  Note: it cannot detect all corruptions (nothing can)
+but it will detect more than many operating systems will.
+.LP
+You don't need to use this technique with SCCS, it already has a checksum
+in its files.
+.nh 3 "General Method"
+.LP
+In general, you need to do three things:
+.IP 1. 3n
+You need to create some kind of checksum of your history file each time
+you modify it.  Something like \fImd5sum\fP(1) from the GNU Fileutils
+would be good.  Store the checksum in a file next to the history file.
+This would be done in the
+\fIhistory_\%create_\%command\fP and
+\fIhistory_\%put_\%command\fP fields of the project \fIconfig\fP file.
+.IP 2. 3n
+Each time the file is read, you need to verify the file's checksum.
+Use the same checksum utility as before, and then compare it using, say,
+\fIcmp\fP(1); it it fails (either an IO error, or the checksum doesn't
+compare equal) then don't proceed with the history file access.  You may
+need to repair or replace the disk.  You will need to restore from backup
+(yesterday's backup, see below).  This would be done at the beginning
+of the \fIhistory_\%create_\%command\fP, \fIhistory_\%put_\%command\fP,
+\fIhistory_\%get_\%command\fP and \fIhistory_\%query_\%command\fP fields
+of the project \fIconfig\fP file.
+.IP 3. 3n
+Because you may not actually interact with the file for years at a time,
+you need to check the file fingerprints much more often.  Daily or at
+least weekly is suggested.  You do this with a \fIcron\fP(1) job run
+nightly which compares all of the history files with their \fImd5sum\fP(1)
+checksums.  Email failures to the system administrator and the project
+administrators.  By doing this nightly, you not only avoid backing-up
+corrupted files, you will always know on which backup tape the good copy
+resides - yesterday's.
+.nh 3 "Configuration Commands"
+.LP
+In order to implement this,
+you need to modify some fields of your project \fIconfig\fP file as follows:
+.IP history_create_command 8n
+You need to test if the history file and its checksum file exist, and
+check the checksum if this is the case.  Then, use whichever history tool
+you choose (see the previous sections of this chapter).  If it succeeds,
+run \fImd5sum\fP(1) over the history file (\fInot\fP the source file)
+and store the checksum in a file next to the history tool's file.
+Using the same filename plus a \f[CW]\&.md5sum\fP extension makes the
+\fIcron\fP(1) job easier to write.
+.IP history_put_command 8n
+You need to test if the file exists (it may, for example, be an old
+project to which you have recently added this technique) and check the
+checksum if this is the case.  Then, use your history tool as normal.
+If it succeeds, run \fImd5sum\fP(1) over the history file (\fInot\fP
+the source file) as in the create case.
+.IP history_get_command 8n
+You need to test if the file exists (it may, for example, be an old
+project to which you have recently added this technique) and check the
+checksum if this is the case.  Then use your history tool as normal.
+.IP history_head_command 8n
+This command is only used at \fIaeipass\fP file, immediately after one
+of the \fIhistory_\%create_\%command\fP or \fIhistory_\%put_\%command\fP
+commands.  It is up to you whether you think you need to add a guard as
+for the \fIhistory_\%get_\%command field.
+.nh 3 "Aegis' Database"
+.LP
+In addition to your history files, Aegis maintains a database of file
+meta-data.  In order to add a checksum to the various file making up
+the database, turn on the \fIcompressed_database\fP project attribute.
+In addition to compressing the database (a minor savings) it also adds
+an Adler32 checksum.
+.LP
+You can check this in the \fIcron\fP(1) job by using \fIgzcat\fP(1)
+sent to \fI/dev/null\fP.

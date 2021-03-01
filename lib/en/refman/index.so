@@ -106,6 +106,13 @@ T}	T{
 .ad l
 ae p - set project name
 T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis - GUI interface for
+T}	T{
+.ad l
+aeca, using TCL/TK
+T}
 aecattr(5)	\*[Page*Of*aecattr(5)]	T{
 .ad r
 
@@ -183,6 +190,13 @@ T}	T{
 .ad l
 aemetrics - metrics values file format
 T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis - GUI interface for
+T}	T{
+.ad l
+aenc, using TCL/TK
+T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
 
@@ -232,6 +246,13 @@ T}	T{
 .ad l
 aesub - available command substitutions
 T}
+aesub(1)	\*[Page*Of*aesub(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aesub - substitute and echo strings
+T}
 aeuconf(5)	\*[Page*Of*aeuconf(5)]	T{
 .ad r
 
@@ -245,6 +266,34 @@ aeustate(5)	\*[Page*Of*aeustate(5)]	T{
 T}	T{
 .ad l
 aeustate - user state file
+T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -New Project Alias - create a new project
+T}	T{
+.ad l
+alias
+T}
+aerpa(1)	\*[Page*Of*aerpa(1)]	T{
+.ad r
+aegis -Remove Project Alias - remove a project
+T}	T{
+.ad l
+alias
+T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -New Project
+T}	T{
+.ad l
+Alias - create a new project alias
+T}
+aerpa(1)	\*[Page*Of*aerpa(1)]	T{
+.ad r
+aegis -Remove Project
+T}	T{
+.ad l
+Alias - remove a project alias
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
@@ -589,14 +638,14 @@ T}	T{
 .ad l
 change from a project
 T}
-aeif(1)	\*[Page*Of*aeif(1)]	T{
+aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
 aegis -Integrate Fail - fail a
 T}	T{
 .ad l
 change integration
 T}
-aeip(1)	\*[Page*Of*aeip(1)]	T{
+aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
 aegis -Integrate Pass - pass a
 T}	T{
@@ -624,14 +673,14 @@ T}	T{
 .ad l
 Change Owner - set change owner
 T}
-aerf(1)	\*[Page*Of*aerf(1)]	T{
+aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
 aegis -Review FAIL - fail a
 T}	T{
 .ad l
 change review
 T}
-aerp(1)	\*[Page*Of*aerp(1)]	T{
+aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
 aegis -Review PASS - pass a
 T}	T{
@@ -708,6 +757,13 @@ T}	T{
 .ad l
 command substitutions
 T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks - how locking works, and which
+T}	T{
+.ad l
+command use them
+T}
 aede(1)	\*[Page*Of*aede(1)]	T{
 .ad r
 aegis -Develop End -
@@ -770,6 +826,13 @@ aegis -New PRoject -
 T}	T{
 .ad l
 create a new project
+T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -New Project Alias -
+T}	T{
+.ad l
+create a new project alias
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
@@ -967,6 +1030,13 @@ T}	T{
 .ad l
 draw a rectangle
 T}
+aesub(1)	\*[Page*Of*aesub(1)]	T{
+.ad r
+aesub - substitute and
+T}	T{
+.ad l
+echo strings
+T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
 aegis -Develop Begin Undo - undo the
@@ -995,28 +1065,28 @@ T}	T{
 .ad l
 exact copy of a change
 T}
-aeif(1)	\*[Page*Of*aeif(1)]	T{
+aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
 aegis -Integrate
 T}	T{
 .ad l
 Fail - fail a change integration
 T}
-aerf(1)	\*[Page*Of*aerf(1)]	T{
+aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
 aegis -Review
 T}	T{
 .ad l
 FAIL - fail a change review
 T}
-aeif(1)	\*[Page*Of*aeif(1)]	T{
+aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
 aegis -Integrate Fail -
 T}	T{
 .ad l
 fail a change integration
 T}
-aerf(1)	\*[Page*Of*aerf(1)]	T{
+aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
 aegis -Review FAIL -
 T}	T{
@@ -1240,12 +1310,26 @@ T}	T{
 .ad l
 fingerprint
 T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis - GUI interface
+T}	T{
+.ad l
+for aeca, using TCL/TK
+T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
 aegis - GUI interface
 T}	T{
 .ad l
 for Aegis, using TCL/TK
+T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis - GUI interface
+T}	T{
+.ad l
+for aenc, using TCL/TK
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
@@ -1373,6 +1457,13 @@ T}	T{
 .ad l
 give version information
 T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+GUI interface for aeca, using TCL/TK
+T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
 aegis -
@@ -1380,12 +1471,26 @@ T}	T{
 .ad l
 GUI interface for Aegis, using TCL/TK
 T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+GUI interface for aenc, using TCL/TK
+T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
 aegis - search for files in directory
 T}	T{
 .ad l
 hierarchy
+T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks -
+T}	T{
+.ad l
+how locking works, and which command use them
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
@@ -1422,14 +1527,14 @@ T}	T{
 .ad l
 Integrate Begin Undo - reverse the aeib command
 T}
-aeif(1)	\*[Page*Of*aeif(1)]	T{
+aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
 aegis -
 T}	T{
 .ad l
 Integrate Fail - fail a change integration
 T}
-aeip(1)	\*[Page*Of*aeip(1)]	T{
+aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
 aegis -
 T}	T{
@@ -1443,14 +1548,14 @@ T}	T{
 .ad l
 integrating a change
 T}
-aeif(1)	\*[Page*Of*aeif(1)]	T{
+aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
 aegis -Integrate Fail - fail a change
 T}	T{
 .ad l
 integration
 T}
-aeip(1)	\*[Page*Of*aeip(1)]	T{
+aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
 aegis -Integrate Pass - pass a change
 T}	T{
@@ -1492,12 +1597,26 @@ T}	T{
 .ad l
 interesting things
 T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis - GUI
+T}	T{
+.ad l
+interface for aeca, using TCL/TK
+T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
 aegis - GUI
 T}	T{
 .ad l
 interface for Aegis, using TCL/TK
+T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis - GUI
+T}	T{
+.ad l
+interface for aenc, using TCL/TK
 T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
@@ -1526,6 +1645,20 @@ aegis -List -
 T}	T{
 .ad l
 list (possibly) interesting things
+T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks - how
+T}	T{
+.ad l
+locking works, and which command use them
+T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis
+T}	T{
+.ad l
+locks - how locking works, and which command use them
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
@@ -1716,6 +1849,20 @@ T}	T{
 .ad l
 New PRoject - create a new project
 T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -New Project Alias - create a
+T}	T{
+.ad l
+new project alias
+T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+New Project Alias - create a new project alias
+T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
 aegis -New ReLeaSe - create a
@@ -1821,28 +1968,28 @@ T}	T{
 .ad l
 pass
 T}
-aeip(1)	\*[Page*Of*aeip(1)]	T{
+aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
 aegis -Integrate
 T}	T{
 .ad l
 Pass - pass a change integration
 T}
-aerp(1)	\*[Page*Of*aerp(1)]	T{
+aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
 aegis -Review
 T}	T{
 .ad l
 PASS - pass a change review
 T}
-aeip(1)	\*[Page*Of*aeip(1)]	T{
+aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
 aegis -Integrate Pass -
 T}	T{
 .ad l
 pass a change integration
 T}
-aerp(1)	\*[Page*Of*aerp(1)]	T{
+aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
 aegis -Review PASS -
 T}	T{
@@ -1975,6 +2122,34 @@ T}	T{
 .ad l
 PRoject - remove project
 T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -New Project Alias - create a new
+T}	T{
+.ad l
+project alias
+T}
+aerpa(1)	\*[Page*Of*aerpa(1)]	T{
+.ad r
+aegis -Remove Project Alias - remove a
+T}	T{
+.ad l
+project alias
+T}
+aenpa(1)	\*[Page*Of*aenpa(1)]	T{
+.ad r
+aegis -New
+T}	T{
+.ad l
+Project Alias - create a new project alias
+T}
+aerpa(1)	\*[Page*Of*aerpa(1)]	T{
+.ad r
+aegis -Remove
+T}	T{
+.ad l
+Project Alias - remove a project alias
+T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
 aepattr -
@@ -2073,6 +2248,13 @@ T}	T{
 .ad l
 remove a new change from a project
 T}
+aerpa(1)	\*[Page*Of*aerpa(1)]	T{
+.ad r
+aegis -Remove Project Alias -
+T}	T{
+.ad l
+remove a project alias
+T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
 aegis -
@@ -2164,6 +2346,13 @@ T}	T{
 .ad l
 ReMove PRoject - remove project
 T}
+aerpa(1)	\*[Page*Of*aerpa(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+Remove Project Alias - remove a project alias
+T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
 aegis -
@@ -2234,21 +2423,21 @@ T}	T{
 .ad l
 reverse the aeib command
 T}
-aerf(1)	\*[Page*Of*aerf(1)]	T{
+aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
 aegis -Review FAIL - fail a change
 T}	T{
 .ad l
 review
 T}
-aerp(1)	\*[Page*Of*aerp(1)]	T{
+aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
 aegis -Review PASS - pass a change
 T}	T{
 .ad l
 review
 T}
-aerf(1)	\*[Page*Of*aerf(1)]	T{
+aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
 aegis -
 T}	T{
@@ -2262,7 +2451,7 @@ T}	T{
 .ad l
 review pass
 T}
-aerp(1)	\*[Page*Of*aerp(1)]	T{
+aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
 aegis -
 T}	T{
@@ -2381,6 +2570,13 @@ T}	T{
 .ad l
 state file
 T}
+aesub(1)	\*[Page*Of*aesub(1)]	T{
+.ad r
+aesub - substitute and echo
+T}	T{
+.ad l
+strings
+T}
 aedir(5)	\*[Page*Of*aedir(5)]	T{
 .ad r
 aedir - aegis directory
@@ -2394,6 +2590,13 @@ aegis -New ReLeaSe - create a new project from an old-
 T}	T{
 .ad l
 style project.
+T}
+aesub(1)	\*[Page*Of*aesub(1)]	T{
+.ad r
+aesub -
+T}	T{
+.ad l
+substitute and echo strings
 T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
@@ -2419,6 +2622,20 @@ T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
 aegis - GUI interface for Aegis, using
+T}	T{
+.ad l
+TCL/TK
+T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis - GUI interface for aeca, using
+T}	T{
+.ad l
+TCL/TK
+T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis - GUI interface for aenc, using
 T}	T{
 .ad l
 TCL/TK
@@ -2465,6 +2682,13 @@ T}	T{
 .ad l
 tests from a change
 T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks - how locking works, and which command use
+T}	T{
+.ad l
+them
+T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
 aegis -List - list (possibly) interesting
@@ -2475,6 +2699,20 @@ T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
 aegis - GUI interface for Aegis, using TCL/
+T}	T{
+.ad l
+TK
+T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis - GUI interface for aeca, using TCL/
+T}	T{
+.ad l
+TK
+T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis - GUI interface for aenc, using TCL/
 T}	T{
 .ad l
 TK
@@ -2556,6 +2794,13 @@ T}	T{
 .ad l
 undo the effects of aedb
 T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks - how locking works, and which command
+T}	T{
+.ad l
+use them
+T}
 aeuconf(5)	\*[Page*Of*aeuconf(5)]	T{
 .ad r
 aeuconf -
@@ -2573,6 +2818,20 @@ T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
 aegis - GUI interface for Aegis,
+T}	T{
+.ad l
+using TCL/TK
+T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+aegis - GUI interface for aeca,
+T}	T{
+.ad l
+using TCL/TK
+T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+aegis - GUI interface for aenc,
 T}	T{
 .ad l
 using TCL/TK
@@ -2597,6 +2856,20 @@ aegis -VERSion - give
 T}	T{
 .ad l
 version information
+T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks - how locking works, and
+T}	T{
+.ad l
+which command use them
+T}
+aelock(5)	\*[Page*Of*aelock(5)]	T{
+.ad r
+aegis locks - how locking
+T}	T{
+.ad l
+works, and which command use them
 T}
 .TE
 .ad b

@@ -25,7 +25,7 @@
 #include <ac/libintl.h>
 
 #include <aecd.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <change.h>
 #include <change_bran.h>
@@ -216,6 +216,10 @@ change_directory_main()
 			case arglex_token_number:
 			case arglex_token_string:
 				branch = arglex_value.alv_string;
+				break;
+
+			case arglex_token_stdio:
+				branch = "";
 				break;
 			}
 			break;

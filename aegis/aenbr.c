@@ -22,7 +22,7 @@
 
 #include <ac/stdio.h>
 
-#include <ael.h>
+#include <ael/change/changes.h>
 #include <aenbr.h>
 #include <arglex2.h>
 #include <change.h>

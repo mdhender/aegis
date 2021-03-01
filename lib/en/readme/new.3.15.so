@@ -19,9 +19,46 @@
 .\"
 .\" MANIFEST: document describing new 3.15 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
+.PP
+.if n *
+.if t \(bu
+There is a new \fItkaeca\fP command.  It is a GUI interface to the
+\fIaeca\fP(1) command, using Tcl/Tk.
+.PP
+.if n *
+.if t \(bu
+There are two new reports available: the \fIProject-Branches\fP and
+\fIProject-Active-Branches\fP reports may be used to query about branches
+within a project.
+.PP
+.if n *
+.if t \(bu
+A bug has been fixed in the \fIaedist \-receive\fP duplicate suppression code.
+It was complaining about user permissions.
+.PP
+.if n *
+.if t \(bu
+A bug has been fixed in \fIaeb\fP(1), which did strange things if you
+tried to build an unbuildable change.
+.PP
+.if n *
+.if t \(bu
+There is a new \fI\-No-WhiteOut\fP option for the \fIaerm\fP(1) and
+\fIaemv\fP(1) commands, letting you suppress the ``whiteout'' files,
+along with some explanation in the man page about why they are there.
+See \fIaerm\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+The default value of the ``\fImaximum_\%filename_\%length\fP'' field
+of the project \fIconfig\fP file has been raised from 14 to 255.
+If your project depends on the old default value, you will need to set
+it explicitly.
+.PP
+.if n *
+.if t \(bu
+The \fIaedist \-receive\fP command now accepts a \fI-directory\fP option,
+so you can specifiy the location of the development directory.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 3.15

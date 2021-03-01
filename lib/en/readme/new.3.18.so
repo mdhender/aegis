@@ -1,0 +1,106 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.18 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+You can now run a command to generate new file templates if you want,
+rather than using a simple string substitution.
+See \fIaenf\fP(1), \fIaent\fP(1) and \fIaepconf\fP(5) for more information.
+The existing functionality is still there.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+There is a new ${SUBSTitute} substitution, which provides regular
+expression substitutions.  This is useful in new file templates.
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+A bug has been fixed which allowed \fIaede\fP of a branch when there
+were some kinds of outstanding changes.
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+The automatic change number guessing has been improved slightly, and will
+cope with some more variation in the \fIdevelopment_directory_template\fP
+field.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+There are two new commands, \fIaenpa\fP(1) and \fIaerpa\fP(1) for
+creating and removing project aliases.  This means that you can give
+project branches more meaningful names.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+There is a new \fIaesub\fP(1) command.  It substitutes its arguments and
+prints them, rather like the \fIecho\fP(1) command.  This is useful when
+you need access to the Aegis substitutions in a script.
+.PP
+.if n *
+.if t \(bu
+The command line option ``\f(CW\-\-\fP'' is now understood.  It means
+``the rest of the arguments on the command line are filenames or
+strings''.  Because this makes the options on the command line more
+"order sensitive" than usual, use with care.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+There is a new \fItkaenc\fP(1) command, allowing you to create new
+change via a Tcl/Tk GUI.
+.\" change 17
+(And a problem with TCL special characters in
+description text has been fixed.)
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+The \fIaenf\fP(1) command now does the right thing with directories named
+on the command line.  In particular, you can now use ``aenf .'' to import
+whole directory trees.
+.PP
+.if n *
+.if t \(bu
+.\" change 16
+There is a new \fIState-File-Name\fP list type, useful when writing
+cookbooks or makefiles to keep a web page in sync with a change.
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+There is a new ${capitalize} substitution, useful for putting in new
+file templates.
+.PP
+.if n *
+.if t \(bu
+.\" change 10
+A bug has been fixed which caused \fIaeclean\fP to delete the development
+directory of changes with no files.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.18

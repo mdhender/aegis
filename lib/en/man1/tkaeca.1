@@ -1,0 +1,69 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the tkaeca command.
+.\"
+.so z_name.so
+.ds n) tkaeca
+.TH "\*(n) -Glup" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- GUI interface for aeca, using TCL/TK
+.XX "tkaeca(1)" "GUI interface for aeca, using TCL/TK"
+.SH SYNOPSIS
+.B \*(n)
+.SH DESCRIPTION
+The 
+.I "\*(n)"
+command is used to provide a GUI interface to \fIaeca\fP(1).  Its use
+should be self-evident to anyone familiar with Aegis.
+.PP
+The top line of the screen contains button for selecting the project
+and the change.  They will be defaulted whenever, using the usual Aegis
+defaulting rules.  Click on the buttons to obtain a pick list if you
+want to change; then double-click an item to select it.  (I would have
+used tk_optionMenu, but it doesn't have a scroll bar, even when all the
+items don't fit on the screen.)
+.PP
+The middle section contains text entry areas, for editing the
+\fIbrief_description\fP and \fIdescription\fP fields of the change
+attributes.  The text wraps in a natural way, both here and in (say)
+the ``\fI\*(n) -list chand details\fP'' listing, so only use newlines
+to indicate end-of-paragraph.
+.PP
+The lower section contains two boxes.  The first is the testing required
+for the change \- select as many or as few as is appropriate.  The second
+a set of radio buttons to select the change cause \- pick one.
+.PP
+The ``OK'' and ``Cancel'' buttons do what you expect.  The cancel
+button simply quits.  The OK button runs the \fIaeca\fP(1) command \-
+if anything goes wrong (\fIe.g.\fP asking for testing exemptions you
+can't have) then the error message will be displayed in the message area
+at the bottom of the window.
+.SH OPTIONS
+There are no command line options.
+It is best to run this command in the background.
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+.IR aeca (1)
+View and edit change attributes, from the command line.
+.TP 8n
+.IR tkaegis (1)
+GUI interface for Aegis, using TCL/TK
+.so z_cr.so

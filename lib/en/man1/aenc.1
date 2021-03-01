@@ -86,6 +86,8 @@ See
 and
 .IR aepattr (5)
 for more information.
+.PP
+You \fBmust\fP give the \fB\-Project\fP option, see below.
 .SH OPTIONS
 The following options are understood:
 .so o_edit.so
@@ -96,7 +98,17 @@ The following options are understood:
 \fB\-Output\fP \fIfilename\fP
 This option may be used to specify a filename which is to be written with
 the automatically determined change number.  Useful for writing scripts.
-.so o_project.so
+.TP 8n
+\fB-Project\fP \fIname\fP
+.RS
+This option is used to select the project for the new change.
+.PP
+You \fBmust\fP supply the \fB\-Project\fP option to this command.
+Experience has shown that when a site has a number of active projects
+or several active branches on a project, new changes are frequently
+created against the wrong project or the wrong branch.  Making the
+project explicit reduces this problem.
+.RE
 .so o_terse.so
 .so o_verbose.so
 .so o_wait.so
@@ -120,6 +132,9 @@ for more information.)
 .br
 .ne 1i
 .SH SEE ALSO
+.TP 8n
+.IR tkaenc (1)
+GUI interface to the \fIaenc\fP(1) command.
 .TP 8n
 .IR aeca (1)
 modify the attributes of a change

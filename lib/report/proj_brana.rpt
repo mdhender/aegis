@@ -1,0 +1,70 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1999 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the brances in a project
+ */
+title("The Active Branches Report", sprintf("Project \"%s\"", project_name()));
+columns
+(
+	{ name = "Project Branch\n---------------"; width = 15; },
+	{ name = "Description\n-----------"; right = 0; }
+);
+
+auto pn;
+pn = project_name();
+auto stack, stack_top;
+stack_top = 1;
+stack[stack_top] = pn;
+
+while (stack_top > 0)
+{
+	pn = stack[stack_top];
+	stack_top = stack_top - 1;
+
+	auto p;
+	p = project[pn].state;
+	print(pn, p.brief_description);
+
+	/*
+	 * Need to push the branches onto the stack backwards, so they
+	 * are reported forwards.
+	 */
+	auto ps;
+	ps = p.branch;
+	auto tmp;
+	tmp = sort(keys(ps.change));
+	auto t;
+	for (t = count(tmp) - 1; t >= 0; t = t - 1)
+	{
+		auto cn;
+		cn = tmp[t];
+		auto cs;
+		cs = ps.change[cn];
+		/*
+		 * A change is a branch if its change state has a
+		 * "branch" member.  A branch is active if it is being
+		 * developed.
+		 */
+		if ("branch" in keys(cs) && cs.state == being_developed)
+		{
+			stack_top = stack_top + 1;
+			stack[stack_top] = pn ## "." ## cn;
+		}
+	}
+}

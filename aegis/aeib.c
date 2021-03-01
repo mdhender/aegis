@@ -30,12 +30,12 @@
 #include <sys/stat.h>
 
 #include <aeib.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <change.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <dir.h>
 #include <error.h>
 #include <file.h>
@@ -46,7 +46,7 @@
 #include <progname.h>
 #include <os.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -278,9 +278,29 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		trace(("ln %s %s\n", path->str_text, s2->str_text));
 		os_link(path, s2);
 		if (!project_file_find(cp->pp, s1))
-			os_chmod(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
+		{
+			/*
+			 * If it is not a source file, it could be owned
+			 * by some other user, and we have no control
+			 * over its owner or mode.  Report a warning if
+			 * we can't change the mode.
+			 *
+			 * Also, we leave it writable if it is already.
+			 * This is normal for generated files.
+			 */
+			os_chmod_errok(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
+		}
 		else
+		{
+			/*
+			 * Source files, on the other hand, should always
+			 * be owned by us, and thus always chmod(2)able
+			 * by us.  Have a hissy-fit if they aren't.
+			 * 
+			 * Also, source files should be read-only.
+			 */
 			os_chmod(s2, (st->st_mode | 0444) & ~0222 & ~change_umask(cp));
+		}
 
 		/*
 		 * Update the modify time of the linked file.  On a
@@ -393,9 +413,29 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 */
 		os_link(path, s2);
 		if (!src)
-			os_chmod(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
+		{
+			/*
+			 * If it is not a source file, it could be owned
+			 * by some other user, and we have no control
+			 * over its owner or mode.  Report a warning if
+			 * we can't change the mode.
+			 *
+			 * Also, we leave it writable if it is already.
+			 * This is normal for generated files.
+			 */
+			os_chmod_errok(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
+		}
 		else
+		{
+			/*
+			 * Source files, on the other hand, should always
+			 * be owned by us, and thus always chmod(2)able
+			 * by us.  Have a hissy-fit if they aren't.
+			 * 
+			 * Also, source files should be read-only.
+			 */
 			os_chmod(s2, (st->st_mode | 0444) & ~0222 & ~change_umask(cp));
+		}
 
 		/*
 		 * Update the modify time of the linked file.  On a

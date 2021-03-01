@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -249,14 +249,14 @@ foreach_run(sp, rp)
 	/*
 	 * evaluate the initializing expression
 	 */
-	trace(("foreach::run()\n{\n"/*}*/));
+	trace(("foreach::run()\n{\n"));
 	this = (rpt_stmt_foreach_ty *)sp;
 	lhs = rpt_expr_evaluate(this->e[0], 0);
 	if (lhs->method->type == rpt_value_type_error)
 	{
 		rp->status = rpt_stmt_status_error;
 		rp->thrown = lhs;
-		trace((/*{*/"}\n"));
+		trace(("}\n"));
 		return;
 	}
 	if (lhs->method->type != rpt_value_type_reference)
@@ -277,16 +277,30 @@ foreach_run(sp, rp)
 		rp->status = rpt_stmt_status_error;
 		rp->thrown = rpt_value_error(this->e[0]->pos, s);
 		str_free(s);
-		trace((/*{*/"}\n"));
+		trace(("}\n"));
 		return;
 	}
 
 	rhs = rpt_expr_evaluate(this->e[1], 1);
 	if (rhs->method->type == rpt_value_type_error)
 	{
+		rpt_value_free(lhs);
 		rp->status = rpt_stmt_status_error;
 		rp->thrown = rhs;
-		trace((/*{*/"}\n"));
+		trace(("}\n"));
+		return;
+	}
+	if (rhs->method->type == rpt_value_type_nul)
+	{
+		/*
+		 * pretend nul is the empty list, and do nothing
+		 */
+		trace(("loop list nul\n"));
+		rpt_value_free(lhs);
+		rpt_value_free(rhs);
+		rp->status = rpt_stmt_status_normal;
+		rp->thrown = 0;
+		trace(("}\n"));
 		return;
 	}
 	if (rhs->method->type != rpt_value_type_list)
@@ -294,6 +308,7 @@ foreach_run(sp, rp)
 		sub_context_ty	*scp;
 		string_ty	*s;
 
+		rpt_value_free(lhs);
 		scp = sub_context_new();
 		sub_var_set(scp, "Name", "%s", rhs->method->name);
 		rpt_value_free(rhs);
@@ -307,7 +322,7 @@ foreach_run(sp, rp)
 		rp->status = rpt_stmt_status_error;
 		rp->thrown = rpt_value_error(this->e[1]->pos, s);
 		str_free(s);
-		trace((/*{*/"}\n"));
+		trace(("}\n"));
 		return;
 	}
 
@@ -338,7 +353,7 @@ foreach_run(sp, rp)
 			trace(("loop exit\n"));
 			rpt_value_free(rhs);
 			rpt_value_free(lhs);
-			trace((/*{*/"}\n"));
+			trace(("}\n"));
 			return;
 
 		case rpt_stmt_status_normal:
@@ -363,7 +378,7 @@ foreach_run(sp, rp)
 	rpt_value_free(lhs);
 	rp->status = rpt_stmt_status_normal;
 	rp->thrown = 0;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 

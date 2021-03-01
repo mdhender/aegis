@@ -1,0 +1,78 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/man1/z_templates
+.\"
+.SS File Templates
+When a new file is created in the development directory the project
+\fIconfig\fP file is searched for a template for the new file.  If a
+template is found, the new file will be initialized to the template,
+otherwise it will be created empty.
+See \fIaepconf\fP(5) for more information.
+.PP
+The simplest form is to use template files, such as
+.RS
+.ft CW
+.nf
+.ta 8n 16n 24n 32n
+file_template =
+[
+	{
+		pattern = [ "*.c" ];
+		body = "${read_file ${source template/c abs}}";
+	},
+	{
+		pattern = [ "test/*/.sh" ];
+		body = "${read_file ${source template/test abs}}";
+	},
+];
+.fi
+.ft R
+.RE
+As you can see, the template files are part of the project source, so
+you can add the appropriate copyright notices, and wrappers, \fIetc\fP.
+The \fI$source\fP substitution locates them, if they are not part of
+the current change (and they usually are not).
+.PP
+The template files themselves contain substitutions.  The \fI$filename\fP
+substitution is available, and contains the name of the file being
+created.  This can be manipulated in various ways when constructing
+the appropriate file contents.  See \fIaesub\fP(5) for more information
+about substitutions.
+.PP
+It is also possible to run a command to create the new file.
+You can do this instead of specifying a body string, \fIviz:\fP
+.RS
+.ft CW
+.nf
+.ta 8n 16n 24n 32n
+file_template =
+[
+	{
+		pattern = [ "*" ];
+		body_command = "perl ${source template.pl abs} $filename";
+	},
+];
+.fi
+.ft R
+.RE
+The command is run with a current directory set to the top of the
+development directory.  It is an error if the command fails to create
+the file.  You can mix-and-match the two techniques, \fIbody\fP string
+and \fIbody_command\fP, if you want.

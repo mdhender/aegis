@@ -95,6 +95,7 @@ lex_open_input(ifp)
 	input_ty	*ifp;
 {
 	input = ifp;
+	line_number = 1;
 }
 
 

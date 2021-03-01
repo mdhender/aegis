@@ -25,8 +25,8 @@
 #include <ac/time.h>
 
 #include <aeca.h>
+#include <ael/change/changes.h>
 #include <aenc.h>
-#include <ael.h>
 #include <arglex2.h>
 #include <cattr.h>
 #include <change.h>
@@ -43,10 +43,10 @@
 #include <progname.h>
 #include <project.h>
 #include <project_hist.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <str_list.h>
 
 
 static void new_change_usage _((void));

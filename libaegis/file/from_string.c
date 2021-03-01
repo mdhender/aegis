@@ -49,20 +49,10 @@ file_from_string(filename, content, mode)
 		/* NOTREACHED */
 		sub_context_delete(scp);
 	}
-	if (content)
+	if (content && content->str_length)
 	{
-		glue_write
-		(
-			fd,
-			content->str_text,
-			content->str_length
-		);
-		if
-		(
-			content->str_length
-		&&
-			(content->str_text[content->str_length - 1] != '\n')
-		)
+		glue_write(fd, content->str_text, content->str_length);
+		if (content->str_text[content->str_length - 1] != '\n')
 			glue_write(fd, "\n", 1);
 	}
 	glue_close(fd);

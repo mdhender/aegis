@@ -434,7 +434,7 @@ All you should need to do is use the
 command and wait.
 When this finishes you should see a directory called
 .I bin
-containing three files:
+containing several files:
 .IR aegis ,
 .IR aereport ,
 .IR aefind ,
@@ -452,6 +452,8 @@ program is a project change supervisor.
 The
 .I aefp
 program may be used to ``fingerprint'' files.
+It is used to test Aegis (see the testing section, below) but it isn't
+installed.
 .TP 8n
 aereport
 The
@@ -1230,3 +1232,5 @@ l r l.
 Peter Miller;E-Mail:;millerp@canb.auug.org.au
 \f(CW/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
 .TE
+.bp
+.so ../building/windows-nt.so

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -90,7 +90,7 @@ long build times, it became evident that a number of
 apparently unrelated problems combine to produce the delay,
 but on analysis all have the same root cause.
 .sp 0.5
-This paper explores an number of problems regarding the use of
+This paper explores a number of problems regarding the use of
 recursive
 .I make,
 and shows that they are all symptoms of the same

@@ -417,6 +417,17 @@ wstr_to_mbs(s, result_p, result_length_p)
 	size_t		buflen;
 
 	/*
+	 * For reasons I don't understand, the MB_CUR_MAX symbol (wich is
+	 * defined as a reference to __mb_cur_max) does not get resolved
+	 * at link time, despite being present in libc.  It's easier to
+	 * just dodge the question.
+	 */
+#ifdef __CYGWIN__
+#undef MB_CUR_MAX
+#define MB_CUR_MAX 8
+#endif
+
+	/*
 	 * Do the conversion "long hand".  This is because the wcstombs
 	 * function barfs when it sees an invalid wchar_t.  This
 	 * function treats them literally and keeps going.
@@ -753,6 +764,48 @@ wstr_cat_three(s1, s2, s3)
 	);
 	s = wstr_n_from_wc(tmp, length);
 	return s;
+}
+
+
+wstring_ty *
+wstr_capitalize(ws)
+	const wstring_ty *ws;
+{
+	static wchar_t	*buffer;
+	static size_t	buflen;
+	size_t		j;
+	int		prev_was_alpha;
+
+	if (ws->wstr_length > buflen)
+	{
+		buflen = ws->wstr_length;
+		buffer = mem_change_size(buffer, buflen * sizeof(wchar_t));
+	}
+	language_human();
+	prev_was_alpha = 0;
+	for (j = 0; j < ws->wstr_length; ++j)
+	{
+		wchar_t		c;
+
+		c = ws->wstr_text[j];
+		if (iswlower(c))
+		{
+			if (!prev_was_alpha)
+				c = towupper(c);
+			prev_was_alpha = 1;
+		}
+		else if (iswupper(c))
+		{
+			if (prev_was_alpha)
+				c = towlower(c);
+			prev_was_alpha = 1;
+		}
+		else
+			prev_was_alpha = 0;
+		buffer[j] = c;
+	}
+	language_C();
+	return wstr_n_from_wc(buffer, ws->wstr_length);
 }
 
 

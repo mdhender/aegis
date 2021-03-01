@@ -22,11 +22,11 @@
 
 #include <ac/stdio.h>
 
-#include <ael.h>
+#include <ael/project/files.h>
 #include <aemv.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
 #include <file.h>
@@ -36,7 +36,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -324,18 +324,14 @@ move_file_innards(up, cp, old_name, new_name)
 	if (os_exists(to))
 		os_unlink(to);
 	copy_whole_file(from, to, 0);
-	str_free(from);
-	os_mkdir_between(dd, old_name, 02755);
-	user_become_undo();
-	from = change_file_path(cp, old_name);
-	user_become(up);
-	undo_unlink_errok(from);
-	if (os_exists(from))
-		os_unlink(from);
-	os_junkfile(from, mode);
 	user_become_undo();
 	str_free(from);
 	str_free(to);
+
+	/*
+	 * remove the old file
+	 */
+	change_file_whiteout_write(cp, old_name, up);
 }
 
 
@@ -427,6 +423,11 @@ move_file_main()
 		case arglex_token_wait:
 		case arglex_token_wait_not:
 			user_lock_wait_argument(move_file_usage);
+			break;
+
+		case arglex_token_whiteout:
+		case arglex_token_whiteout_not:
+			user_whiteout_argument(move_file_usage);
 			break;
 		}
 		arglex();
@@ -538,7 +539,7 @@ move_file_main()
 	 * directory, just move it.  All checks to see if the action is
 	 * valid are done in the inner function.
 	 */
-	project_file_dir(pp, old_name, &wl_in, 0);
+	project_file_directory_query(pp, old_name, &wl_in, 0);
 	if (wl_in.nstrings)
 	{
 		size_t		j;

@@ -21,23 +21,29 @@
  */
 
 #include <change.h>
+#include <change/env_set.h>
 #include <error.h> /* for assert */
+#include <file.h>
 #include <gmatch.h>
+#include <os.h>
 #include <sub.h>
 #include <trace.h>
+#include <user.h>
 
 
-string_ty *
-change_file_template(cp, name)
+static pconf_file_template find _((change_ty *, string_ty *));
+
+static pconf_file_template
+find(cp, file_name)
 	change_ty	*cp;
-	string_ty	*name;
+	string_ty	*file_name;
 {
-	string_ty	*result;
+	pconf_file_template result;
 	size_t		j, k;
 	pconf		pconf_data;
 
-	trace(("change_file_template(name = \"%s\")\n{\n"/*}*/,
-		name->str_text));
+	trace(("change_file_template_string(file_name = \"%s\")\n{\n",
+		file_name->str_text));
 	assert(cp->reference_count >= 1);
 	result = 0;
 	pconf_data = change_pconf_get(cp, 0);
@@ -56,7 +62,7 @@ change_file_template(cp, name)
 			string_ty	*s;
 
 			s = ftp->pattern->list[k];
-			m = gmatch(s->str_text, name->str_text);
+			m = gmatch(s->str_text, file_name->str_text);
 			if (m < 0)
 			{
 				sub_context_ty	*scp;
@@ -68,12 +74,10 @@ change_file_template(cp, name)
 				sub_context_delete(scp);
 			}
 			if (m)
-				break;
-		}
-		if (k < ftp->pattern->length)
-		{
-			result = str_copy(ftp->body);
-			break;
+			{
+				result = ftp;
+				goto done;
+			}
 		}
 	}
 
@@ -81,19 +85,120 @@ change_file_template(cp, name)
 	 * here for all exits
 	 */
 	done:
-	if (result)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", name);
-		sub_var_optional(scp, "File_Name");
-		s = substitute(scp, cp, result);
-		sub_context_delete(scp);
-		str_free(result);
-		result = s;
-	}
-	trace((/*{*/"}\n"));
+	trace(("return %08lX;\n", (long)result));
+	trace(("}\n"));
 	return result;
+}
+
+
+void
+change_file_template(cp, filename, up)
+	change_ty	*cp;
+	string_ty	*filename;
+	user_ty		*up;
+{
+	int		ok;
+	string_ty	*dd;
+	string_ty	*path;
+	pconf_file_template tp;
+	sub_context_ty	*scp;
+
+	/*
+	 * figure the absolute path of the file
+	 */
+	trace(("change_file_template(name = \"%s\")\n{\n",
+		name->str_text));
+	assert(cp->reference_count >= 1);
+	dd = change_development_directory_get(cp, 0);
+	path = str_format("%S/%S", dd, filename);
+
+	/*
+	 * If the file exists, do not over-write what the user has
+	 * already written.
+	 */
+	user_become(up);
+	os_mkdir_between(dd, filename, 02755);
+	if (os_symlink_query(path))
+		os_unlink(path);
+	ok = os_exists(path);
+	user_become_undo();
+	if (!ok)
+	{
+		/*
+		 * Find the template to be used to construct the new file.
+		 */
+		tp = find(cp, filename);
+		if (tp && tp->body_command)
+		{
+			int		flags;
+			string_ty	*the_command;
+
+			/*
+			 * Build the command to be executed.
+			 */
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", filename);
+			the_command = substitute(scp, cp, tp->body_command);
+			sub_context_delete(scp);
+
+			/*
+			 * Execute the command. 
+			 */
+			flags = OS_EXEC_FLAG_NO_INPUT;
+			change_env_set(cp, 1);
+			user_become(up);
+			os_execute(the_command, flags, dd);
+			ok = os_exists(path);
+			user_become_undo();
+			str_free(the_command);
+
+			/*
+			 * It is an error if the command didn't create
+			 * the file.
+			 */
+			if (!ok)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", filename);
+				change_fatal
+				(
+					cp,
+					scp,
+					i18n("new file $filename not created")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+		}
+		else
+		{
+			string_ty	*body;
+			int		mode;
+
+			/*
+			 * There is no command, it must be a string template.
+			 */
+			if (!tp)
+				body = str_from_c("");
+			else
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_optional(scp, "File_Name");
+				body = substitute(scp, cp, tp->body);
+				sub_context_delete(scp);
+			}
+
+			/*
+			 * Now we have the string, write it to the file.
+			 */
+			mode = 0644 & ~change_umask(cp);
+			user_become(up);
+			file_from_string(path, body, mode);
+			user_become_undo();
+			str_free(body);
+		}
+	}
+	str_free(path);
+	trace(("}\n"));
 }

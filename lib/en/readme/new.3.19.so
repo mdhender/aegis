@@ -1,0 +1,109 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.19 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+The \fIaeib\fP command is now more robust about ``foreign'' files in
+the baseline (\fIe.g.\fP root-owned core files).
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+A bug has been fixed in the \fI${administrator_list}\fP substitution.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+A bug has been fixed in the \fIaedist --delta\fP option, whch caused it
+to dumpo core.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+There is now a section in the \fIHistory Tool\fP chapter of the User Guide
+describing how to add checksums to your history files, in order to
+detect file corruptions.  It is a general technique which applies to
+most history tools (including RCS).
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+A bug has been fixed which caused \fIaeclone\fP to misbehave badly when
+dealing with removed files.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+There is now an embryonic ``How To'' document for Aegis.
+Please feel free to contribute subjects.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+You can now say ``\fB\-BRanch -\fP'' as a synonym for the ``\fB\-TRunk\fP
+option, for those commands which accept it.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+The report generator now copes with more types of empty lists.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+A bug has been fixed which caused a core dump instead of a useful error
+message if you tried to create an alias with an illegal name.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+A bug has been removed which left undeletable branch aliases if a branch
+was removed.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+A bug has been fixed in \fIaenbru\fP which failed to remove the branch
+development directory .
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+The \fIaenf\fP(1) command now behaves better when you do horrible things
+like turn the files you created into directories without telling Aegis
+first.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A couple of small bugs have been fixed in the \fIaenpa\fP(1) command,
+both in error situations.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+A bug with the \fB\-interactive\fP option has been fixed.
+It will actually ask you, now.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.19

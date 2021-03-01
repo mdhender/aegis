@@ -68,6 +68,12 @@ All of the substitutions described by
 .IR aesub (5)
 are available.
 .TP 8n
+build_time_adjust_notify_command = string;
+This command is run when Aegis adjusts the last-time-modified
+time-stamp on files in the integration directory.  If the build tool
+uses additional information to supplement file modification times, this
+command gives you the opportunity to re-sync the associated database.
+.TP 8n
 create_symlinks_before_build = boolean;
 .br
 This flag is true if Aegis should create symlinks from the
@@ -199,7 +205,7 @@ history_create_command = string;
 This field is used to create a new history.
 The command is always executed as the project owner.
 Used by the
-.IR aeip (1)
+.IR aeipass (1)
 command.
 All of the substitutions described by
 .IR aesub (5)
@@ -229,7 +235,7 @@ history_get_command = string;
 This field is used to get a file from history.
 The command may be executed by developers.
 Used by the
-.IR aeip (1)
+.IR aeipass (1)
 and
 .IR aecp (1)
 commands.
@@ -263,7 +269,7 @@ history_put_command = string;
 This field is used to add a new change to the history.
 The command is always executed as the project owner.
 Used by the
-.IR aeip (1)
+.IR aeipass (1)
 command.
 All of the substitutions described by
 .IR aesub (5)
@@ -294,7 +300,7 @@ This field is used to query the topmost edit of a history file.
 Result to be printed on the standard output.
 This command may be executed by developers.
 Used by the
-.IR aeip (1)
+.IR aeipass (1)
 and
 .IR aecp (1)
 commands.
@@ -530,8 +536,42 @@ The file template is consulted whenever a new file is created,
 by one of the
 .IR aenf (1)
 or
-.IT aent (1)
+.IR aent (1)
 commands.
+Each list item has the form:
+.RS
+.TP 8n
+pattern = [ string ];
+The name of the file,
+relative to the development directory.
+Each string is a shell file name pattern;
+see
+.IR sh (1)
+for more information.
+.TP 8n
+body_command = string;
+Command to run to initialize the body of the file.
+.TP 8n
+body = string;
+What to initialize the body of the file to.
+.PP
+All of the substitutions described in
+.IR aesub (5)
+are available for the \fIbody\fP and \fIbody_command\fP strings.
+(Only specify one of them.)
+In addition:
+.TP 8n
+${File_Name}
+.br
+will be replaced by the name of the new file.
+.RE
+.TP 8n
+whiteout_template = [ { ... } ];
+.br
+The file template is consulted whenever a file is removed, by one of
+the \fIaerm\fP(1) or \fIaemv\fP(1) commands.  It is used to place a
+\&``whiteout'' entry in the development directory, in order to induce
+compile errors of the removed file is referenced during the build.
 Each list item has the form:
 .RS
 .TP 8n
@@ -545,7 +585,8 @@ for more information.
 .TP 8n
 body = string;
 What to initialize the body of the file to.
-There are no substitutions.
+If not present, no whiteout file will be created;
+if the empty string, a zero-length whiteout file will be created.
 .PP
 All of the substitutions described in
 .IR aesub (5)
@@ -554,7 +595,10 @@ In addition:
 .TP 8n
 ${File_Name}
 .br
-will be replaced by the name of the new file.
+will be replaced by the name of the removed file.
+.PP
+If the name of the file being renmoved does not match any of the filename
+patterns, a file consisting of 1KB of very ugly garbage will be generated.
 .RE
 .TP 8n
 maximum_filename_length = integer;
@@ -565,7 +609,7 @@ Existing files are not affected.
 The last component must also allow for the ",D" suffix of difference files.
 Where this value is larger than the file system allows,
 the file system limit will be imposed.
-Defaults to 14 if not set.
+Defaults to 255 if not set.
 Legal values range from 9 to 255.
 .PP
 The file name lengths of project files will be checked
@@ -771,7 +815,7 @@ end development of a change
 .IR aeib (1)
 begin integration of a change
 .TP 8n
-.IR aeip (1)
+.IR aeipass (1)
 pass integration of a change
 .TP 8n
 .IR aemv (1)

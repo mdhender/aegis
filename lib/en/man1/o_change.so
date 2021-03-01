@@ -30,7 +30,7 @@ the
 environment variable is consulted.
 If that does not exist,
 the user's
-.I $HOME/.\*(n)rc
+.I $HOME/.aegisrc
 file is examined for a default change field (see
 .IR aeuconf (5)
 for more information).

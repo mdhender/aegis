@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: document describing lib/en/user-guide/c9.1s
+.\" MANIFEST: User Guide, Branching, Hierarchy of Projects
 .\"
 .nh 2 "Hierarchy of Projects"
 .LP
@@ -36,7 +36,7 @@ After reading
 .I "Transaction Oriented Configuration Management: A Case Study"
 Peter Fieler, Grace Downey, CMU/SEI-90-TR-23,
 this is not a new idea.
-It also provides some ideas for how to do branching sensably,
+It also provides some ideas for how to do branching sensibly,
 and was influential in the design of Aegis' branching.
 .nh 3 "Fundamentals"
 .LP
@@ -51,7 +51,7 @@ project "gizmo.0.1": created
 %
 .E)
 .LP
-Now, for each of your desired sub-projects, create another banch
+Now, for each of your desired sub-projects, create another branch
 .E(
 aenbr gizmo.0.1 1 # \fIfor the foo project\fP
 aenbr gizmo.0.1 2 # \fIfor the bar project\fP
@@ -68,7 +68,7 @@ It helps if you design and implement the build system first.  You do this
 as a change set on the common parent branch.  Once it is completed each
 branch can inherit it from the common parent.  This makes integration
 easier, when it comes time to integrate the sub-projects together.
-.nh 3 "Incrimental Integration"
+.nh 3 "Incremental Integration"
 .LP
 It is very common that not all of the sub-projects will be ready to be
 integrated at the same time.
@@ -80,17 +80,17 @@ internal data structures.  Just as each change gets its own development
 directory, each branch gets its own baseline.  Just as a development
 directory inherits everything its doesn't have from the baseline, so
 branches inherit everything \fIthey\fP don't have from their parent
-branch (or ultimately from the trunk).  Just as you incrimentally
+branch (or ultimately from the trunk).  Just as you incrementally
 integrate changes into a branch, you incrementally integrate branches
 into their parent.
 .LP
 The branches only influence each other when they are integrated,
-just as changes only influnce each other when they are integrated.
+just as changes only influence each other when they are integrated.
 .LP
 There are times when a branch being integrated into its parent is found
 to be inadequate.  Aegis provides a simple mechanism to ``bounce''
 a branch integration.  Recall that, for Aegis, branches are the same
-as changes.  Just as you ``develop end'' a change (aee \fIaede\fP(1)
+as changes.  Just as you ``develop end'' a change (see \fIaede\fP(1)
 for more information) you also \fIaede\fP a branch when development on
 it is completed.
 .LP
@@ -129,7 +129,7 @@ being anything to you want - see the \fItest_command\fP field in
 \fIaepconf\fP(5).  Or run the test tool from the shell script.  If the
 integration tests can be automated, it makes sense to preserve them in
 the repository \- they are some of the most valuable regression tests
-for developers, because they describe correct behaviour outside the
+for developers, because they describe correct behavior outside the
 \&``box'' the developer usually works in.
 .nh 3 "The Next Cycle"
 .LP

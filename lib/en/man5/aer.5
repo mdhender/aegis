@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -729,6 +729,11 @@ This function quotes its argument string to insulate HTML special
 characters; these include ``less than'' (\fC<\fP), ``ampersand'' (\fC&\fP)
 and non-printing characters.  This is most often used to generate suitable
 text for web pages.
+.TP 8n
+quote_tcl
+This function quotes its argument string to insulate TCL special
+characters; these include ``[]'' and non-printing characters.
+This is most often used to generate suitable text for TCL interface scripts.
 .TP 8n
 quote_url
 This function quotes its argument string to insulate URL special

@@ -130,16 +130,6 @@ This is the default, except for the \fI\-BaseLine\fP option.
 \fB\-Output\fP \fIfilename\fP
 This option may be used to direct the output into the specified file.
 Output is sent to the standard output by default.
-.TP 8n
-\fB\-Trojan\fP
-This option may be used to treat the change set as if it had a Trojan
-horse attack in it.
-.TP 8n
-\fB\-No_Trojan\fP
-This option may be used to treat the change set as if it definitely does
-not have a Trojan horse attack in it.  \fIUse with extreme care.\fP  You
-need to have authenticated the message with something like PGP first
-\fBand\fP know the the author well.
 .so o_project.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
@@ -166,6 +156,7 @@ This option may be used to specify a particular
 delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
+.so o_dir.so
 .TP 8n
 \fB\-File\fP \fIfilename\fP
 Read the change set from the specified file.
@@ -175,6 +166,16 @@ The default is to read it from the standard input.
 This option may be used to set the project name.
 If not specified, the project name in the input package will be used,
 rather than the usual project name defaulting mechanism.
+.TP 8n
+\fB\-Trojan\fP
+This option may be used to treat the change set as if it had a Trojan
+horse attack in it.
+.TP 8n
+\fB\-No_Trojan\fP
+This option may be used to treat the change set as if it definitely does
+not have a Trojan horse attack in it.  \fIUse with extreme care.\fP  You
+need to have authenticated the message with something like PGP first
+\fBand\fP know the the author well.
 .SS Security
 Receiving changes by e-mail, and automatically committing them to the
 baseline without checking them, would be a recipe for disaster.

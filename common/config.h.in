@@ -172,6 +172,9 @@
 /* Define if you have the wcslen function.  */
 #undef HAVE_WCSLEN
 
+/* Define if you have the wcwidth function.  */
+#undef HAVE_WCWIDTH
+
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
 

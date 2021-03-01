@@ -28,11 +28,11 @@
 #include <sys/stat.h>
 
 #include <aeip.h>
-#include <ael.h>
+#include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <dir.h>
 #include <error.h>
 #include <file.h>
@@ -44,7 +44,7 @@
 #include <progname.h>
 #include <os.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <str_list.h>
 #include <sub.h>
@@ -102,7 +102,7 @@ static void integrate_pass_help _((void));
 static void
 integrate_pass_help()
 {
-	help("aeip", integrate_pass_usage);
+	help("aeipass", integrate_pass_usage);
 }
 
 
@@ -1589,6 +1589,13 @@ integrate_pass_main()
 #endif
 	dir_walk(id, time_map_set, &tml);
 	project_become_undo();
+
+	/*
+	 * Give the user a chance to re-sync any database associated
+	 * with the build tool.  (This is different to the integrate
+	 * pass notify command.)
+	 */
+	change_run_build_time_adjust_notify_command(cp);
 
 	/*
 	 * Write the change table row.

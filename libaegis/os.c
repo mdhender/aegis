@@ -358,42 +358,6 @@ os_rmdir_tree(path)
 
 
 void
-os_mkdir_between(top, extn, mode)
-	string_ty	*top;
-	string_ty	*extn;
-	int		mode;
-{
-	char		*cp;
-	string_ty	*s1;
-	string_ty	*s2;
-
-	trace(("os_mkdir_between(top = %08lX, extn = %08lX, \
-mode = 0%o)\n{\n"/*}*/, top, extn, mode));
-	trace_string(top->str_text);
-	trace_string(extn->str_text);
-	assert(top->str_text[0] == '/');
-	assert(extn->str_text[0] != '/');
-	assert(extn->str_text[extn->str_length - 1] != '/');
-	assert(extn->str_length);
-	for (cp = extn->str_text; *cp; ++cp)
-	{
-		if (*cp != '/')
-			continue;
-		s1 = str_n_from_c(extn->str_text, cp - extn->str_text);
-		s2 = str_format("%S/%S", top, s1);
-		if (!os_exists(s2))
-		{
-			os_mkdir(s2, mode);
-			undo_rmdir_errok(s2);
-		}
-		str_free(s1);
-		str_free(s2);
-	}
-	trace((/*{*/"}\n"));
-}
-
-
-void
 os_rename(a, b)
 	string_ty	*a;
 	string_ty	*b;
@@ -573,49 +537,6 @@ os_entryname(path)
 	else
 		path = str_copy(s);
 	str_free(s);
-	trace_string(path->str_text);
-	trace((/*{*/"}\n"));
-	return path;
-}
-
-
-/*
- * NAME
- *	os_dirname - take path apart
- *
- * SYNOPSIS
- *	string_ty *os_dirname(string_ty *path);
- *
- * DESCRIPTION
- *	Os_dirname is used to extract the directory part
- *	of a pathname.
- *
- * RETURNS
- *	pointer to dynamically allocated string.
- *
- * CAVEAT
- *	Use str_free() when you are done with the value returned.
- */
-
-string_ty *
-os_dirname(path)
-	string_ty	*path;
-{
-	string_ty	*s;
-	char		*cp;
-
-	trace(("os_dirname(path = %08lX)\n{\n"/*}*/, path));
-	trace_string(path->str_text);
-	s = os_pathname(path, 1);
-	cp = strrchr(s->str_text, '/');
-	assert(cp);
-	if (cp > s->str_text)
-	{
-		path = str_n_from_c(s->str_text, cp - s->str_text);
-		str_free(s);
-	}
-	else
-		path = s;
 	trace_string(path->str_text);
 	trace((/*{*/"}\n"));
 	return path;
@@ -997,6 +918,7 @@ os_mtime_set(path, when)
 	time_t		when;
 {
 	struct utimbuf	utb;
+	int		err;
 
 	trace(("os_mtime_set(path = %08lX, when = %ld)\n{\n"/*}*/, path, when));
 	os_become_must_be_active();
@@ -1004,7 +926,12 @@ os_mtime_set(path, when)
 	trace(("when = %s", ctime(&when)));
 	utb.actime = when;
 	utb.modtime = when;
-	if (glue_utime(path->str_text, &utb))
+	err = glue_utime(path->str_text, &utb);
+#ifdef __CYGWIN__
+	if (err && errno == EACCES)
+		err = 0;
+#endif
+	if (err)
 	{
 		sub_context_ty	*scp;
 
@@ -1309,6 +1236,11 @@ os_become_init()
 	become_orig_umask = umask(DEFAULT_UMASK);
 	become_orig_uid = getuid();
 	become_orig_gid = getgid();
+#ifdef SINGLE_USER
+	become_testing = -1;
+	become_active_uid = become_orig_uid;
+	become_active_gid = become_orig_gid;
+#else
 	if (setuid(0))
 	{
 		become_testing = 1;
@@ -1317,6 +1249,7 @@ os_become_init()
 	}
 	else
 		setgid(0);
+#endif
 	become_inited = 1;
 }
 
@@ -1866,8 +1799,10 @@ pathconf_inner(path, arg)
 #else
 	/*
 	 * This system does not have the pathconf system call.
+	 * (Return EINVAL rather than ENOSYS, because the outer wrapper
+	 * expects EINVAL.)
 	 */
-	errno = ENOSYS;
+	errno = EINVAL;
 	return -1;
 #endif
 }
@@ -2052,36 +1987,6 @@ os_symlink_query(path)
 	trace(("return %d;\n", result));
 	trace((/*{*/"}\n"));
 	return result;
-}
-
-
-void
-os_junkfile(path, mode)
-	string_ty	*path;
-	int		mode;
-{
-	os_become_must_be_active();
-	if (glue_junkfile(path->str_text))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		fatal_intl(scp, i18n("junkfile $filename: $errno"));
-		sub_context_delete(scp);
-	}
-	if (glue_chmod(path->str_text, mode))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%5.5o", mode);
-		fatal_intl(scp, i18n("chmod(\"$filename\", $arg): $errno"));
-		/* NOTREACHED */
-	}
 }
 
 

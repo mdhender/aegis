@@ -1,0 +1,130 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/introductios
+.\"
+.\"
+.\" MANIFEST: Howto, Introduction
+.\"
+\&.
+.sp 2i
+.ps 24
+.vs 26
+.ce 2
+Aegis
+A Project Change Supervisor
+.sp 0.5i
+.ps 28
+.vs 30
+.ce 1
+HOWTO
+.sp 1i
+.ps 18
+.vs 20
+.ce 1
+Peter Miller
+.ft I
+.ce 1
+millerp@canb.auug.org.au
+.ft P
+.OH 'Aegis''Howto'
+.EH 'Howto''Aegis'
+.bp
+.OF 'Peter Miller'\\\\s-3(\\\\n(.F)\\\\s+3'Page %'
+.EF 'Page %'\\\\s-3(\\\\n(.F)\\\\s+3'Peter Miller'
+.ps 12
+.vs 14
+\&.
+.\" .sp 1i
+.\" .ce 1
+.\" DEDICATION
+.\" .sp
+.\" .ce 4
+.\" This user guide is dedicated to
+.sp 1i
+.so version.so
+.so libdir.so
+This document describes Aegis version \*(v)
+.br
+and was prepared \*(DY.
+.br
+.sp 1i
+.if n .ds C) (C)
+.if t .ds C) \(co
+This document describing the Aegis program,
+and the Aegis program itself,
+are
+.br
+Copyright \*(C) \*(Y) Peter Miller;
+All rights reserved.
+.sp
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+.sp
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+.sp
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.ps 10
+.vs 12
+.bp
+.if t .2C
+.nh 1 "Introduction"
+.LP
+This manual contains a series of brief lessons or ``How To'' guides for
+using Aegis.  Each is arranged to cover two pages, so that when the manual
+lies open on the desk, the whole subject is easily visable in front of you.
+.LP
+When printing this manual, it is essential to print it double sided,
+or the ``subject at once'' effect will not occur.
+.LP
+The table of contents will be printed last.
+Insert it (there should be two pages, on one sheet of paper) before this page.
+.nh 2 "Assumed Knowledge"
+.LP
+Many of thes sections are written for use by beginners, so there is a
+fairly low level of assumed knowledge.  However, you may want to have
+\fIThe Aegis User Guide\fP, and \fIThe Aegis Reference Manual\fP very
+close by, as all of the material convered here is available in a more
+expended or detailed form on those manuals.
+.nh 2 "Howto Install Aegis"
+.LP
+The description of how to build, test and install Aegis may be found
+in the Reference Manual, under the heading \fIThe BUILDING File\fP,
+which reproduces the \f[CW]BUILDING\fP file included in the Aegis source
+distribution.
+.LP
+If you installed Aegis using a RedHat or Debian package, this will not
+be at all relevant to you, simply ignore it.
+.nh 2 "Howto Contribute"
+.LP
+If you would like to see other ``How To'' subjects, please drop me an e-mail.
+Better yet, write one and e-mail it to me.
+.\"
+.\" ,---------------------------------------------------------------------.
+.\" |                                                                     |
+.\" | NOTE: This introduction is meant to be an ODD number of pages long. |
+.\" |                                           ~~~                       |
+.\" `---------------------------------------------------------------------'

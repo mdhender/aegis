@@ -514,7 +514,11 @@ lock_take()
 	wait_for_locks = user_lock_wait(0);
 
 	gonzo_become();
+#ifdef __CYGWIN__
+	fd = glue_open(path->str_text, O_RDWR | O_CREAT | O_TRUNC, 0666);
+#else
 	fd = glue_open(path->str_text, O_RDWR | O_CREAT | O_TRUNC, 0600);
+#endif
 	if (fd < 0)
 	{
 		sub_context_ty	*scp;
@@ -791,6 +795,7 @@ lock_release()
 {
 	struct flock	p;
 	int		fildes;
+	int		err;
 
 	/*
 	 * set the file descriptor to -1
@@ -814,7 +819,20 @@ lock_release()
 	 * but some operating systems hang onto them if we don't.
 	 */
 	flock_construct(&p, F_UNLCK, 0L, 0x7FFFFFFF);
-	if (glue_fcntl(fildes, F_SETLKW, &p))
+	err = glue_fcntl(fildes, F_SETLKW, &p);
+#ifdef __CYGWIN__
+	if (err && errno == EACCES)
+	{
+		/*
+		 * For some reason Cygwin gives an error if you attempt
+		 * to release all locks when you have no locks taken.
+		 * Unix implementations, on the other hand, simply
+		 * return success.
+		 */
+		err = 0;
+	}
+#endif
+	if (err)
 	{
 		sub_context_ty	*scp;
 

@@ -62,7 +62,6 @@
 #include <lock.h> /* for lock_release_child */
 #include <mem.h>
 #include <os.h>
-#include <r250.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -83,7 +82,6 @@ enum
 	command_file_compare,
 	command_file_fingerprint,
 	command_getcwd,
-	command_junkfile,
 	command_link,
 	command_lstat,
 	command_mkdir,
@@ -151,7 +149,6 @@ command_name(n)
 	case command_file_compare: return "file_compare";
 	case command_file_fingerprint: return "file_fingerprint";
 	case command_getcwd:	return "getcwd";
-	case command_junkfile:	return "junkfile";
 	case command_link:	return "link";
 	case command_lstat:	return "lstat";
 	case command_mkdir:	return "mkdir";
@@ -560,14 +557,6 @@ proxy(rd_fd, wr_fd)
 			else
 				put_binary(reply, path1, result);
 			mem_free(path1);
-			break;
-
-		case command_junkfile:
-			path = get_string(command);
-			result = junkfile(path);
-			if (result)
-				result = errno;
-			put_int(reply, result);
 			break;
 
 		case command_link:
@@ -1269,30 +1258,6 @@ glue_unlink(path)
 	trace(("glue_unlink()\n{\n"/*}*/));
 	pp = proxy_find();
 	fputc(command_unlink, pp->command);
-	put_string(pp->command, path);
-	end_of_command(pp);
-	result = get_int(pp->reply);
-	if (result)
-	{
-		errno = result;
-		result = -1;
-	}
-	trace(("return %d; /* errno = %d */\n", result, errno));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-int
-glue_junkfile(path)
-	char		*path;
-{
-	proxy_ty	*pp;
-	int		result;
-
-	trace(("glue_junkfile()\n{\n"/*}*/));
-	pp = proxy_find();
-	fputc(command_junkfile, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -2461,86 +2426,6 @@ copyfile(src, dst)
 	 * here for all exits
 	 */
 	done:
-	trace(("return %d; /* errno = %d */\n", result, errno));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	junkfile - junk a file
- *
- * SYNOPSIS
- *	int junkfile(char *src, char *dst);
- *
- * DESCRIPTION
- *	The junkfile function creates a file and fills it
- *	with 1K of garbage.  This is (mostly) to ensure that if
- *	removed files are used during development build,
- *	they will generate errors.
- *
- * ARGUMENTS
- *	path	- pathname of junk file
- *
- * RETURNS
- *	0	on success
- *	-1	on error, setting errno appropriately
- */
-
-int
-junkfile(path)
-	char		*path;
-{
-	static char	junk[] = "!#$%&()*+,-./:;<=>?@[]^_`{|}~";
-	char		buffer[1024];
-	char		*bp;
-	int		fd;
-	int		err;
-	int		result;
-	int		jlen;
-	long		nbytes;
-
-	/*
-	 * create a buffer full of gibberish
-	 */
-	trace(("junkfile(\"%s\")\n{\n"/*}*/, path));
-	os_interrupt_cope();
-	jlen = strlen(junk);
-	for (bp = buffer; bp < ENDOF(buffer); ++bp)
-	{
-		if (((bp - buffer) % 64) == 63)
-			*bp = '\n';
-		else
-			*bp = junk[r250() % jlen];
-	}
-	buffer[SIZEOF(buffer) - 1] = '\n';
-
-	fd = creat(path, 0666);
-	if (fd >= 0)
-	{
-		err = 0;
-		nbytes = write(fd, buffer, sizeof(buffer));
-		if (nbytes < 0)
-			err = errno;
-		if (nbytes == 0)
-			err = EIO; /* weird device, probably */
-		if (close(fd) && !err)
-			err = errno;
-		if (err)
-		{
-			errno = err;
-			result = -1;
-		}
-		else
-			result = 0;
-	}
-	else
-		result = -1;
-
-	/*
-	 * here for all exits
-	 */
 	trace(("return %d; /* errno = %d */\n", result, errno));
 	trace((/*{*/"}\n"));
 	return result;

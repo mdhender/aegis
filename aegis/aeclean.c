@@ -27,10 +27,10 @@
 #include <ac/unistd.h>
 
 #include <aeclean.h>
-#include <ael.h>
+#include <ael/change/files.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
@@ -40,7 +40,7 @@
 #include <log.h>
 #include <os.h>
 #include <progname.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -163,6 +163,17 @@ clean_out_the_garbage(p, msg, path, st)
 		break;
 
 	case dir_walk_dir_after:
+		/*
+		 * Try to remove each directory.  This makes directories
+		 * where we deleted everything else go away, which is
+		 * usually what is desired.  It isn't an error if the
+		 * rmdir fails because it isn't empty, so quietly ignore
+		 * those errors.
+		 *
+		 * Exception: Don't remove the development directory!
+		 */
+		if (str_equal(path, sip->dd))
+			break;
 		if (glue_rmdir(path->str_text) && errno != ENOTEMPTY)
 		{
 			sub_context_ty  *scp;

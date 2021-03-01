@@ -22,6 +22,7 @@
 
 %{
 
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 
 #include <gram.h>

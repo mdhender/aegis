@@ -47,6 +47,7 @@ string_ty *os_path_cat _((string_ty *, string_ty *));
 string_ty *os_path_rel2abs _((string_ty *, string_ty *));
 string_ty *os_pathname _((string_ty *, int));
 string_ty *os_dirname _((string_ty *));
+string_ty *os_dirname_relative _((string_ty *));
 string_ty *os_entryname _((string_ty *));
 string_ty *os_below_dir _((string_ty *, string_ty *));
 void os_chdir _((string_ty *));
@@ -106,7 +107,6 @@ int os_pathconf_path_max _((string_ty *));
 void os_symlink _((string_ty *, string_ty *));
 string_ty *os_readlink _((string_ty *));
 int os_symlink_query _((string_ty *));
-void os_junkfile _((string_ty *path, int mode));
 void os_throttle _((void));
 void os_owner_query _((string_ty *, int *, int *));
 string_ty *os_fingerprint _((string_ty *));
@@ -115,5 +115,8 @@ void os_interrupt_register _((void));
 void os_interrupt_cope _((void));
 void os_interrupt_ignore _((void));
 int os_interrupt_has_occurred _((void));
+
+int os_isa_directory _((string_ty *));
+int os_isa_special_file _((string_ty *)); /* !S_IFREG */
 
 #endif /* OS_H */

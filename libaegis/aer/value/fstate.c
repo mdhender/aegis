@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <aer/value/fstate.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h>
 #include <trace.h>
 

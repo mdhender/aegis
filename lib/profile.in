@@ -139,11 +139,11 @@ aedeu()
 }
 aedless()
 {
-	less `find . -type f -name "*,D" -print | sort`
+	less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
 aedmore()
 {
-	more `find . -type f -name "*,D" -print | sort`
+	more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
 aedn()
 {
@@ -213,6 +213,10 @@ aeni()
 {
 	aegis -ni $* -v
 }
+aenpa()
+{
+	aegis -new-project-alias $* -v
+}
 aenpr()
 {
 	aegis -npr $* -v
@@ -272,6 +276,10 @@ aermu()
 aerpass()
 {
 	aegis -rpass $* -v
+}
+aerpa()
+{
+	aegis -remove-project-alias $* -v
 }
 aerpu()
 {

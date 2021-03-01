@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -38,13 +38,13 @@ This is a non-exclusive lock,
 so the concurrent development of changes is not hindered.
 .PP
 The command which modifies the baseline,
-.IR aeip (1),
+.IR aeipass (1),
 takes a baseline
 .I write
 lock.
 This is an exclusive lock,
 forcing 
-.IR aeip (1)
+.IR aeipass (1)
 to block until there are no active baseline read locks.
 .PP
 It is possible that

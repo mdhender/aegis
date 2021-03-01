@@ -50,15 +50,6 @@ The
 command is used to
 add a new test to a change.
 A new file is created in the development directory.
-The
-.I config
-file will be searched for a template for the new file.
-If a template is found,
-the new file will be initialized to the template,
-otherwise it will be created empty.
-See
-.IR aepconf (5)
-for more information.
 .PP
 New tests default to ``automatic'' unless otherwise specified.
 .so z_intuit.so
@@ -94,6 +85,10 @@ with the
 command.
 Tests are treated just like any other source file,
 and are subject to the same process.
+.so z_template.so
+.PP
+Be careful to make sure that the test filename template pattern matches
+the \fInew_test_filename\fP field.
 .so z_filesize.so
 .so z_test_rtnl.so
 .so z_test_corr.so

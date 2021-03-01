@@ -17,13 +17,13 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: functions to manipulate receives
+ * MANIFEST: functions to receive change sets
  */
 
 #include <arglex3.h>
 #include <cattr.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h> /* for assert */
 #include <help.h>
 #include <input/cpio.h>
@@ -33,7 +33,7 @@
 #include <parse.h>
 #include <project.h>
 #include <project/file/trojan.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <project_hist.h>
 #include <receive.h>
 #include <str.h>
@@ -97,12 +97,14 @@ receive_main(usage)
 	string_list_ty	wl;
 	string_ty	*dot;
 	const char	*delta;
+	string_ty	*devdir;
 
 	project_name = 0;
 	change_number = 0;
 	ifn = 0;
 	trojan = -1;
 	delta = 0;
+	devdir = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -184,6 +186,26 @@ receive_main(usage)
 				delta = arglex_value.alv_string;
 				break;
 			}
+			break;
+
+		case arglex_token_directory:
+			if (devdir)
+			{
+				duplicate_option(usage);
+				/* NOTREACHED */
+			}
+			if (arglex() != arglex_token_string)
+			{
+				option_needs_dir(arglex_token_directory, usage);
+				/* NOTREACHED */
+			}
+			devdir =
+				str_format
+				(
+					" --directory %s",
+					arglex_value.alv_string
+				);
+			break;
 		}
 		arglex();
 	}
@@ -321,9 +343,10 @@ receive_main(usage)
 	s =
 		str_format
 		(
-			"aegis --develop-begin %ld --project=%S --verbose",
+			"aegis --develop-begin %ld --project %S --verbose%s",
 			change_number,
-			project_name
+			project_name,
+			(devdir ? devdir->str_text : "")
 		);
 	os_execute(s, OS_EXEC_FLAG_INPUT, dot);
 	str_free(s);
@@ -447,7 +470,9 @@ receive_main(usage)
 		if (delopt)
 			str_free(delopt);
 		str_free(s2);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 	string_list_destructor(&files_source);
@@ -486,7 +511,9 @@ receive_main(usage)
 				change_number
 			);
 		str_free(s2);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 	string_list_destructor(&files_source);
@@ -532,7 +559,6 @@ receive_main(usage)
 		}
 	}
 
-	os_become_orig();
 	if (files_build.nstrings)
 	{
 		string_list_quote_shell(&wl, &files_build);
@@ -547,7 +573,9 @@ receive_main(usage)
 				change_number
 			);
 		str_free(s2);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 	if (files_test_auto.nstrings)
@@ -564,7 +592,9 @@ receive_main(usage)
 				change_number
 			);
 		str_free(s2);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 	if (files_test_manual.nstrings)
@@ -581,7 +611,9 @@ receive_main(usage)
 				change_number
 			);
 		str_free(s2);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 	/*
@@ -602,7 +634,9 @@ receive_main(usage)
 				change_number
 			);
 		str_free(s2);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 	string_list_destructor(&files_source);
@@ -615,6 +649,7 @@ receive_main(usage)
 	 */
 	config_seen = 0;
 	the_config_file = str_from_c(THE_CONFIG_FILE);
+	os_become_orig();
 	for (j = 0; j < change_set->src->length; ++j)
 	{
 		cstate_src	src_data;
@@ -669,6 +704,7 @@ receive_main(usage)
 	if (ifp)
 		input_format_error(cpio_p);
 	input_delete(cpio_p);
+	os_become_undo();
 
 	/*
 	 * Un-copy any files which did not change.
@@ -685,19 +721,19 @@ receive_main(usage)
 				change_number,
 				project_name
 			);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	
 		/*
 		 * If there are no files left, we already have this change.
 		 */
-		os_become_undo();
 		if (number_of_files(project_name, change_number) == 0)
 		{
 			/*
 			 * get out of there
 			 */
-			os_become_orig();
 			os_chdir(dot);
 
 			/*
@@ -710,6 +746,7 @@ receive_main(usage)
 					change_number,
 					project_name
 				);
+			os_become_orig();
 			os_execute(s, OS_EXEC_FLAG_INPUT, dot);
 			str_free(s);
 	
@@ -724,18 +761,21 @@ receive_main(usage)
 					project_name
 				);
 			os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+			os_become_undo();
 			str_free(s);
 	
 			/*
 			 * run away, run away!
 			 */
-			os_become_undo();
 			error_intl(0, i18n("change already present"));
 			return;
 		}
-		os_become_orig();
 	}
 
+	/*
+	 * If the change could have a trojan horse in it, stop here with
+	 * a warning.  The user needs to look at it and check.
+	 */
 	if (trojan > 0)
 		could_have_a_trojan = 1;
 	else if (trojan == 0)
@@ -777,7 +817,9 @@ receive_main(usage)
 			change_number,
 			project_name
 		);
+	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
 	str_free(s);
 
 	/*
@@ -804,7 +846,9 @@ receive_main(usage)
 			change_number,
 			project_name
 		);
+	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
 	str_free(s);
 
 	/*
@@ -819,6 +863,7 @@ receive_main(usage)
 				change_number,
 				project_name
 			);
+		os_become_orig();
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 		str_free(s);
 
@@ -830,6 +875,7 @@ receive_main(usage)
 				project_name
 			);
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+		os_become_undo();
 		str_free(s);
 	}
 
@@ -845,13 +891,10 @@ receive_main(usage)
 			change_number,
 			project_name
 		);
+	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
 	str_free(s);
 
 	/* verbose success message here? */
-
-	/*
-	 * clean up and go home
-	 */
-	os_become_undo();
 }

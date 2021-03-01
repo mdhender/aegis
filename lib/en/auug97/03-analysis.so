@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -192,7 +192,7 @@ And the equivalent DAG changes to look like this:
 .so 03.figure7.so
 .LP
 This change has a simple effect: if \f(CWparse.y\fP is edited,
-\f(CWmain.o\fP will \fBnot\fP be constructed correctly.  The is because the
+\f(CWmain.o\fP will \fBnot\fP be constructed correctly.  This is because the
 DAG for
 \f(CWant\fP knows about only some of the dependencies of \f(CWmain.o\fP,
 and the DAG for \f(CWbee\fP knows none of them.

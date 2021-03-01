@@ -26,14 +26,14 @@
 .XX "aenbru(1)" "remove a branch"
 .SH SYNOPSIS
 .B \*(n)
-.B -New_Branch_Undo
+.B -New_BRanch_Undo
 .I number
 [
 .IR option \&...
 ]
 .br
 .B \*(n)
-.B -New_Branch_Undo
+.B -New_BRanch_Undo
 .B -Help
 .SH DESCRIPTION
 The
@@ -42,6 +42,18 @@ command is used to
 remove a branch created with the
 .IR aenbr (1)
 command.
+.PP
+.B Note:
+This command will completely remove all trace of the branch from Aegis'
+database.  This includes all changes performed on the branch and all
+of its sub-branches.  (This history remains in the history files, but
+is inaccessable.)
+.PP
+If you wish to finish development of a branch, and commit all of its
+changes to the parent branch, use the \fIaede\fP(1) command, instead.
+.PP
+If you wish to stop anyone from developing more changes on the branch,
+use the \fIaerd\fP(1) command to remove all the developers.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so

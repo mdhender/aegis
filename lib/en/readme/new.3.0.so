@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1996, 1997 Peter Miller;
+.\"	Copyright (C) 1995, 1996, 1997, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -244,7 +244,7 @@ to be more symetric with the
 .IR aeb (1)
 command which has always done so.
 The
-.IR aeip (1)
+.IR aeipass (1)
 command takes the complementary baseline write lock,
 ensuring the the baseline remains constant for the duration
 of builds, file copies, differences and merges.
@@ -255,7 +255,7 @@ See
 .IR aecp (1),
 .IR aed (1)
 and
-.IR aeip (1)
+.IR aeipass (1)
 for more information.
 .PP
 .if n *

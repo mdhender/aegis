@@ -22,7 +22,7 @@
 
 #include <ac/stdio.h>
 
-#include <ael.h>
+#include <ael/project/projects.h>
 #include <aermpr.h>
 #include <arglex2.h>
 #include <change.h>
@@ -142,7 +142,6 @@ remove_project_main()
 		remove_project_usage();
 	}
 	pp = project_alloc(project_name);
-	str_free(project_name);
 	project_bind_existing(pp);
 
 	/*
@@ -151,6 +150,20 @@ remove_project_main()
 	 */
 	if (pp->parent)
 		project_fatal(pp, 0, i18n("use aenbru instead"));
+
+	/*
+	 * make sure it's not an alias
+	 */
+	if (gonzo_alias_to_actual(project_name))
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name);
+		project_fatal(pp, scp, i18n("project alias $name exists"));
+		/* NOTREACHED */
+	}
+	str_free(project_name);
 
 	/*
 	 * see if the user already deleted it

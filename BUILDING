@@ -293,13 +293,14 @@ BUILDING AEGIS
 		...lots	of output...
 		%
 	command	and wait.  When	this finishes you should see a
-	directory called bin containing	three files: aegis,
+	directory called bin containing	several	files: aegis,
 	aereport, aefind, aefp,	find_sizes and fmtgen.
 
 	aegis	The aegis program is a project change supervisor.
 
 	aefp	The aefp program may be	used to	``fingerprint''
-		files.
+		files.	It is used to test Aegis (see the testing
+		section, below)	but it isn't installed.
 
 	aereport
 		The aereport program is	used to	query Aegis'
@@ -340,12 +341,12 @@ OTHER USEFUL SOFTWARE
 	some cases, and	because	it is generally	useful in others.
 
 	cook	This is	a dependency maintenance tool (DMT).  An
-		example	of a well-known	DMT is make(1),	however
 
 Reference Manual	      Aegis				6
 
 Build(Aegis)					     Build(Aegis)
 
+		example	of a well-known	DMT is make(1),	however
 		this old faithful is mostly not	sufficiently
 		capable	to meet	the demands placed on it by the
 		aegis program, but cook	certainly is.  The cook
@@ -399,12 +400,12 @@ Build(Aegis)					     Build(Aegis)
 		into /usr/local	(for example) you must ensure
 		that the Aegis ./configure script is told to also
 		look in	/usr/local/include for include files
-		(CFLAGS), and /usr/local/lib for library files
 
 Reference Manual	      Aegis				7
 
 Build(Aegis)					     Build(Aegis)
 
+		(CFLAGS), and /usr/local/lib for library files
 		(LDFLAGS).  Otherwise the not been installed.
 
 	GNU Groff
@@ -458,11 +459,12 @@ Build(Aegis)					     Build(Aegis)
 	programs may be	in optional packages.  (This is
 	especially true	of Linux.)  You	need to	ensure that these
 	programs are correctly installed before	you run	the
-	tests.
 
 Reference Manual	      Aegis				8
 
 Build(Aegis)					     Build(Aegis)
+
+	tests.
 
 TESTING	AEGIS
 	The Aegis program comes	with a test suite.  To run this
@@ -678,7 +680,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version 3.15
+		aegis version 3.20
 		...
 		%
 	command.  Please run this command to get the exact
@@ -826,3 +828,204 @@ AUTHOR
 	/\/\*		  WWW:	 http://www.canb.auug.org.au/~millerp/
 
 Reference Manual	      Aegis			       15
+
+Build(Aegis)					     Build(Aegis)
+
+WINDOWS-NT
+	It is possible to build	Aegis for Windows-NT.  I have
+	only done this using the Cygnus	freeware CygWin32 system,
+	though it may be possible with other Unix porting layers
+	also.
+
+   Caveat
+	This document only describes a single user port	of Aegis
+	to Windows NT.
+
+	Aegis depends on the underlying	security provided by the
+	operating system (rather than re-invent	yet another
+	security mechanism).  However, in order	to do this, Aegis
+	uses the POSIX seteuid(2) system call, which has no
+	direct equivalent on Windows NT.  This makes porting
+	difficult.  Single user	ports are possible (e.g. using
+	Cygwin (http://sourceware.cygnus.com/cygwin/), but are
+	not usually what folks want.
+
+	Compounding this is the	fact that many sites want to
+	develop	their software for both	Unix and Windows NT
+	simultaneously.	 This means that the security of the
+	repository needs to be guaranteed to be	handled	in the
+	same way by both operating systems, otherwise one can act
+	as a ``back door'' into	the repository.	 Many sites do
+	not have the same users	and permissions	(sourced from the
+	same network register of users)	on both	Unix and Windows
+	NT, making the mapping almost impossible even if the
+	security models	did actually correspond.
+
+	Most sites using Aegis and Windows NT together do so by
+	running	Aegis on the Unix systems, but building	and
+	testing	on the NT systems.  The	work areas and repository
+	are accessed via Samba or NFS.
+
+   The Source
+	You need to FTP	the Cygwin system from Cygnus.	It can be
+	found at
+		http://sourceware.cygnus.com/cygwin/
+	and then follow	the links.  The	version	I used was B20.1.
+
+	It is absolutely essential to run the mkpasswd and
+	mkgroup	commands, otherwise Aegis will give fatal errors
+	about unknown users and	groups.	 See the Cygwin	README
+	for instructions.
+
+   Mounting Things
+	You need to mount a directory onto /tmp, or lots of
+	things,	and especially bash(1),	don't work.  If	you are
+	in a heavily networked environment, like me, you need to
+	know that using	a networked drive for /tmp just	doesn't
+	work.  I have no idea why.  Use
+		mount C:/temp /tmp
+	instead.  (Or some other local drive.)
+
+Reference Manual	      Aegis			       16
+
+Build(Aegis)					     Build(Aegis)
+
+	Just a tip for all of you who, like me,	know Unix much
+	better than you	know Windows-NT: the left-hand mount
+	argument needs to be specified with a drive letter (e.g.
+	C:) rather than	with a double slash (e.g. not //C) unless
+	its Windows-NT name starts with	\\.
+
+	You need to follow the install instructions about
+	/bin/sh, otherwise shell scripts that start with
+	#!/bin/sh don't	work, among other things.  This	includes
+	the ./configure	script,	and the	scripts	it writes (e.g.
+	config.status).
+
+	You will want to mount your various network drives onto
+	the same places	they appear on your Unix hosts.	 This way
+	you don't need to learn	two names for all your files.
+
+	Mounts persist across Cygwin sessions.	They are stored
+	in a registry file somewhere.  You will	not need to do
+	all this every time!
+
+   Too Much Administrator
+	If you have administrator privelege on your Windows NT
+	box, you need to get rid of it.	 (Have a second	admin
+	account	instead.)  This	is because Windows NT will make
+	the files belong to the	wrong user for files on	some
+	partitions, like /tmp.	(This took me days to work out!)
+	This confuses both Aegis and RCS.
+
+	If you get weird ``Permission denied'' error from
+	amazingly unlikely causes, this	is probably why.
+
+   Before You Start
+	There are several pieces of software you need before you
+	can build Aegis	on Cygwin.
+
+	util-linux
+		You need to get	GNU rx,	but to make it work you
+		have to	find a tsort command, so that GNU rx's
+		./configure script works.  Try the latest copy of
+		system/misc/util-linux-?.?.tar.gz from the
+		sunsite.unc.edu	Linux archive (or a mirror).
+		Simply build and install misc-utils/tsort.c by
+		hand.
+
+	GNU rx	Once you have tsort installed, you will	be able
+		to get GNU rx configured.  Get a copy from your
+		local GNU mirror.
+
+	zlib	You need to grab a copy	of zlib; the same source
+		as works for Unix will work for	Cygwin.	 It will
+		install	as a static library.
+
+	GNU diffutils
+		You need GNU diffults, because when you	come to
+
+Reference Manual	      Aegis			       17
+
+Build(Aegis)					     Build(Aegis)
+
+		configure GNU RCS (next) it would otherwise
+		complain about a stupid	diff and a missing diff3
+		command.  The install-sh script	is broken, so
+		you'll need to do the final step in the	install
+		by hand.
+
+	GNU RCS	All of Aegis' tests assume RCS is present.  Also,
+		you are	going to need something	for a history
+		tool.  The install-sh script is	broken,	so you'll
+		need to	do the final step in the install by hand.
+
+   Configure
+	The configure and build	step should be the same	as for
+	Unix, as described above.  All the problems I encountered
+	were to	do with	getting	the mounts just	right.	(But
+	expect it to be	dog slow compared to Linux or FreeBSD on
+	the same box.)
+
+	The configure step is almost the same as for Unix.  I
+	know you are itching to	get typing, but	read throught to
+	the install section before you configure anything.
+		bash$ ./configure
+		...lots	of output...
+		bash$
+
+   Build
+	The build step is exactly the same as for Unix,	and you
+	shouldn't notice any difference...
+		bash$ make
+		bash$
+
+   Test
+	The tests are run in the same way as the Unix tests, but
+	you don't need to run the set-uid-root variants, because
+	no such	thing exists under Windows NT.
+		bash$ make sure
+		...lots	of output...
+		Passed All Tests
+		bash$
+
+	Unfortunately, it isn't	that simple.  There are	a number
+	of things you will see go wrong...
+
+	+o Several tests	fail because uudecode isn't there.
+
+	+o Several tests	fail because ed	isn't there.
+
+	+o Several tests	fail because ci	(RCS 5.7) dumps	core much
+	  too often for	my liking.
+
+	+o A couple of tests fail because they don't expect the
+	  ``.exe'' extension on	executable files.
+
+	+o A couple of tests (notably, the aedist tests)	fail
+
+Reference Manual	      Aegis			       18
+
+Build(Aegis)					     Build(Aegis)
+
+	  because of the CRLF vs NL dichotomy.	This means that
+	  the expectd results don't match, not that it isn't
+	  working.
+
+	Despite	all the	bad news, the vast majority of tests
+	pass, and the others have good excuses.
+
+   Install
+	Installing the software	works as usual,	though you need
+	to make	some choices right at the start	(I told	you to
+	read this all the way through first).  If you want to use
+	the ``/usr/local'' prefix (or any other	install	prefix)
+	you mount it right at the start.  For anything other than
+	the ``/usr/local'' default prefix, you also needed to
+	give a ``--prefix=blahblah'' argument to the configure
+	script,	right at the start.
+		bash$ make install
+		...lots	of output...
+		bash$
+
+Reference Manual	      Aegis			       19

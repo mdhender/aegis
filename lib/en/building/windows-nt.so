@@ -1,0 +1,204 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing how to build Aegis for Windows-NT
+.\"
+.SH WINDOWS-NT
+.XX "" "\ \ \ \ Windows NT"
+It is possible to build Aegis for Windows-NT.
+I have only done this using the Cygnus freeware CygWin32 system,
+though it may be possible with other Unix porting layers also.
+.SS Caveat
+This document only describes a \fBsingle user\fP port of Aegis to Windows NT.
+.PP
+Aegis depends on the underlying security provided by the operating system
+(rather than re-invent yet another security mechanism).  However, in
+order to do this, Aegis uses the POSIX \fIseteuid\fP(2) system call,
+which has no direct equivalent on Windows NT.  This makes porting
+difficult.  \fBSingle user\fP ports are possible (\fIe.g.\fP using
+Cygwin (http://sourceware.cygnus.com/cygwin/), but are not usually what
+folks want.
+.PP
+Compounding this is the fact that many sites want to develop their
+software for both Unix and Windows NT simultaneously.  This means that
+the security of the repository needs to be guaranteed to be handled
+in the same way by both operating systems, otherwise one can act as a
+``back door'' into the repository.  Many sites do not have the same
+users and permissions (sourced from the same network register of users)
+on both Unix and Windows NT, making the mapping almost impossible even
+if the security models did actually correspond.
+.PP
+Most sites using Aegis and Windows NT together do so by running 
+Aegis on the Unix systems, but building and testing on the NT
+systems.  The work areas and repository are accessed via Samba or
+NFS.
+.SS The Source
+You need to FTP the Cygwin system from Cygnus.
+It can be found at
+.RS
+http://sourceware.cygnus.com/cygwin/
+.RE
+and then follow the links.  The version I used was B20.1.
+.PP
+It is \fIabsolutely essential\fP to run the \fImkpasswd\fP and
+\fImkgroup\fP commands, otherwise Aegis will give fatal errors about
+unknown users and groups.  See the Cygwin README for instructions.
+.SS Mounting Things
+You need to mount a directory onto \f(CW/tmp\fP, or lots of things, and
+especially \fIbash\fP(1), don't work.  If you are in a heavily networked
+environment, like me, you need to know that using a networked drive for
+\f(CW/tmp\fP just doesn't work.  I have no idea why.  Use
+.RS
+mount C:/temp /tmp
+.RE
+instead.  (Or some other local drive.)
+.PP
+Just a tip for all of you who, like me, know Unix much better than you
+know Windows-NT: the left-hand mount argument needs to be specified
+with a drive letter (\fIe.g. \f(CWC:\fP) rather than with a double slash
+(\fIe.g.\fP not \f(CW//C\fP) unless its Windows-NT name starts with \e\e.
+.PP
+You need to follow the install instructions about \fI/bin/sh\fP, otherwise
+shell scripts that start with \f(CW#!/bin/sh\fP don't work, among other
+things.  This includes the \f(CW./configure\fP script, and the scripts
+it writes (\fIe.g.\fP \f(CWconfig.status\fP).
+.PP
+You will want to mount your various network drives onto the same places
+they appear on your Unix hosts.  This way you don't need to learn two
+names for all your files.
+.PP
+Mounts persist across Cygwin sessions.  They are stored in a registry
+file somewhere.  You will not need to do all this every time!
+.SS Too Much Administrator
+If you have administrator privelege on your Windows NT box, you need to
+get rid of it.  (Have a second admin account instead.)  This is because
+Windows NT will make the files belong to the wrong user for files on
+\fIsome\fP partitions, like \fI/tmp\fP.  (This took me days to work out!)
+This confuses both Aegis \fIand\fP RCS.
+.PP
+If you get weird ``Permission denied'' error from amazingly unlikely
+causes, this is probably why.
+.SS Before You Start
+There are several pieces of software you need before you can build Aegis
+on Cygwin.
+.TP 8n
+util-linux
+You need to get GNU rx, but to make it work you have to find a
+\fItsort\fP command, so that GNU rx's \fI./configure\fP script works.
+Try the latest copy of \f(CWsystem/misc/util-linux-?.?.tar.gz\fP from
+the \f(CWsunsite.unc.edu\fP Linux archive (or a mirror).  Simply build
+and install \fImisc-utils/tsort.c\fP by hand.
+.TP 8n
+GNU rx
+Once you have \fItsort\fP installed, you will be able to get GNU rx
+configured.  Get a copy from your local GNU mirror.
+.TP 8n
+zlib
+You need to grab a copy of \gIzlib\fP; the same source as works for Unix
+will work for Cygwin.  It will install as a static library.
+.TP 8n
+GNU diffutils
+You need GNU diffults, because when you come to configure GNU RCS (next)
+it would otherwise complain about a stupid \fIdiff\fP and a missing
+\fIdiff3\fP command.  The \fIinstall-sh\fP script is broken, so you'll
+need to do the final step in the install by hand.
+.TP 8n
+GNU RCS
+All of Aegis' tests assume RCS is present.  Also, you are going to need
+\fIsomething\fP for a history tool.  The \fIinstall-sh\fP script is
+broken, so you'll need to do the final step in the install by hand.
+.SS Configure
+The configure and build step should be the same as for Unix, as described
+above.  All the problems I encountered were to do with getting the mounts
+just right.
+(But expect it to be dog slow compared to Linux or FreeBSD on the same box.)
+.PP
+The configure step is almost the same as for Unix.  I know you are
+itching to get typing, but read throught to the install section before
+you configure anything.
+.RS
+.ft CW
+.nf
+\f(CBbash$\fP ./configure
+\fI\&...lots of output...\fP
+\f(CBbash$\fP
+.fi
+.ft R
+.RE
+.SS Build
+The build step is exactly the same as for Unix, and you shouldn't notice
+any difference...
+.RS
+.nf
+\f(CBbash$\fP make
+\f(CBbash$\fP
+.fi
+.RE
+.SS Test
+The tests are run in the same way as the Unix tests, but you don't need
+to run the set-uid-root variants, because no such thing exists under
+Windows NT.
+.RS
+.nf
+\f(CBbash$\fP make sure
+\fI\&...lots of output...\fP
+\f(CBPassed All Tests\fP
+\f(CBbash$\fP
+.fi
+.RE
+.PP
+Unfortunately, it isn't that simple.
+There are a number of things you will see go wrong...
+.TP 2n
+\(bu
+Several tests fail because \fIuudecode\fP isn't there.
+.TP 2n
+\(bu
+Several tests fail because \fIed\fP isn't there.
+.TP 2n
+\(bu
+Several tests fail because \fIci\fP (RCS 5.7) dumps core
+much too often for my liking.
+.TP 2n
+\(bu
+A couple of tests fail because they don't expect the ``.exe'' extension
+on executable files.
+.TP 2n
+\(bu
+A couple of tests (notably, the \fIaedist\fP tests) fail because of the
+CRLF \fIvs\fP NL dichotomy.
+This means that the expectd results don't match, not that it isn't working.
+.PP
+Despite all the bad news, the vast majority of tests pass,
+and the others have good excuses.
+.SS Install
+Installing the software works as usual, though you need to make some
+choices right at the start (I told you to read this all the way through
+first).  If you want to use the ``\fI/usr/local\fP'' prefix (or any other
+install prefix) you mount it right at the start.  For anything other
+than the ``\fI/usr/local\fP'' default prefix, you also needed to give
+a ``\f(CB--prefix=\fP\fIblahblah\fI'' argument to the \fIconfigure\fP
+script, right at the start.
+.RS
+.nf
+\f(CBbash$\fP make install
+\fI\&...lots of output...\fP
+\f(CBbash$\fP
+.fi
+.RE

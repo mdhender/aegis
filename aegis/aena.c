@@ -24,7 +24,7 @@
 #include <ac/stdlib.h>
 
 #include <aena.h>
-#include <ael.h>
+#include <ael/project/administrato.h>
 #include <arglex2.h>
 #include <commit.h>
 #include <error.h>

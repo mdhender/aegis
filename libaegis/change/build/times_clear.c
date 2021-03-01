@@ -21,7 +21,7 @@
  */
 
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <error.h> /* for assert */
 
 

@@ -23,7 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 
-#include <ael.h>
+#include <ael/project/integrators.h>
 #include <aeri.h>
 #include <arglex2.h>
 #include <commit.h>

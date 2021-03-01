@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,6 +74,7 @@ static rpt_func_ty *table[] =
 	&rpt_func_project_name,
 	&rpt_func_project_name_set,
 	&rpt_func_quote_html,
+	&rpt_func_quote_tcl,
 	&rpt_func_quote_url,
 	&rpt_func_round,
 	&rpt_func_sort,

@@ -246,7 +246,7 @@ export PATH
 # now receive it
 #
 activity="aedist -receive 241"
-$bin/aedist -receive -f test.out > log 2>&1
+$bin/aedist -receive -f test.out -dir $workchan.2 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #

@@ -23,11 +23,11 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 
-#include <ael.h>
+#include <ael/change/files.h>
 #include <aermu.h>
 #include <arglex2.h>
 #include <change_bran.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <commit.h>
 #include <error.h>
 #include <help.h>
@@ -36,7 +36,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -406,7 +406,7 @@ remove_file_undo_main()
 			++number_of_errors;
 			continue;
 		}
-		change_file_dir(cp, s2, &wl_in, 0);
+		change_file_directory_query(cp, s2, &wl_in, 0);
 		if (wl_in.nstrings)
 		{
 			int	used;

@@ -31,7 +31,7 @@
 #include <aer/value/string.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_file.h>
+#include <change/file.h>
 #include <cmdline.h>
 #include <descend.h>
 #include <error.h>
@@ -42,7 +42,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
-#include <project_file.h>
+#include <project/file.h>
 #include <shorthand/name.h>
 #include <shorthand/path.h>
 #include <shorthand/print.h>

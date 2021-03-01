@@ -1,0 +1,73 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aenpa command.
+.\"
+.so z_name.so
+.TH "\*(n) -New_Project_Alias" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) -New_Project_Alias \- create a new project alias
+.XX "aenpa(1)" "create a new project alias"
+.SH SYNOPSIS
+.B \*(n)
+.B \-New_Project_Alias
+[
+.IR option \&...
+]
+.I project-name
+.I alias-name
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n) -New_Project_Alias"
+command is used to
+create a projects alias, so that branches of projects may be referred
+by a shorter or more specific name.
+.PP
+The project name \fImust\fP be given on the command line;
+the default project is not sufficient.
+The project named may be a top-level project, or it may be a branch
+(to any depth of branch).
+.PP
+The new alias name must also be given on the command line,
+and it must be the \fIsecond\fP name.
+.so z_alias.so
+.SH OPTIONS
+The following options are understood:
+.so o_help.so
+.so o__rules.so
+.SH ERRORS
+It is an error if the old project does not exist.
+.br
+It is an error if the current user is not a project administrator.
+.br
+It is an error if the new alias name look like a branch name.
+.br
+It is an error if the new alias contains unprintable characters.
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+\fIaerpa\fP(1)
+Remove project alias.
+.so z_cr.so

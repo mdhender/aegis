@@ -1,0 +1,80 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1999 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: write tcl assignments for change attributes 
+ */
+columns({ width = 1000; });
+auto ps;
+ps = project[project_name()].state.branch;
+auto cs;
+cs = ps.change[change_number()];
+
+auto paras, para_len, para_n;
+paras = split(cs.brief_description, "\n");
+para_len = count(paras);
+if (para_len < 1)
+	para_len = 1;
+while (para_len >= 2 && paras[para_len - 1] == "")
+	para_len = para_len - 1;
+for (para_n = 0; para_n < para_len; para_n = para_n + 1)
+{
+	auto para_begin, para_end;
+	para_begin = (para_n == 0 ? "set brief_description \"" : "");
+	para_end = (para_n == (para_len - 1) ? "\"" : "");
+	auto lines, line_len, line_n;
+	lines = wrap(quote_tcl(paras[para_n]), 75);
+	line_len = count(lines);
+	if (line_len < 1)
+		line_len = 1;
+	for (line_n = 0; line_n < line_len; line_n = line_n + 1)
+	{
+		auto line_begin, line_end;
+		line_begin = (line_n == 0 ? para_begin : "");
+		line_end = (line_n == (line_len - 1) ? para_end : "\\");
+		print(line_begin ## lines[line_n] ## line_end);
+	}
+}
+
+paras = split(cs.description, "\n");
+para_len = count(paras);
+if (para_len < 1)
+	para_len = 1;
+while (para_len >= 2 && paras[para_len - 1] == "")
+	para_len = para_len - 1;
+for (para_n = 0; para_n < para_len; para_n = para_n + 1)
+{
+	para_begin = (para_n == 0 ? "set description \"" : "");
+	para_end = (para_n == (para_len - 1) ? "\"" : "");
+	lines = wrap(quote_tcl(paras[para_n]), 75);
+	line_len = count(lines);
+	if (line_len < 1)
+		line_len = 1;
+	for (line_n = 0; line_n < line_len; line_n = line_n + 1)
+	{
+		line_begin = (line_n == 0 ? para_begin : "");
+		line_end = (line_n == (line_len - 1) ? (para_end) : "\\");
+		print(line_begin ## lines[line_n] ## line_end);
+	}
+}
+
+print("set state " ## cs.state);
+print("set cause " ## cs.cause);
+print("set test_nor " ## (cs.test_exempt ? 0 : 1));
+print("set test_bas " ## (cs.test_baseline_exempt ? 0 : 1));
+print("set test_reg " ## (cs.regression_test_exempt ? 0 : 1));
