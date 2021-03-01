@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -77,6 +77,22 @@
 #endif
 #if defined(HAVE_WIDEC_H) && !defined(HAVE_WCTYPE_H)
 # undef HAVE_WIDEC_H
+#endif
+
+/*
+ * Need to define _POSIX_SOURCE on Linux, in order to get the fdopen,
+ * fileno, popen and pclose function prototypes.
+ */
+#ifdef __linux__
+#ifndef _POSIX_SOURCE
+#define _POSIX_SOURCE
+#endif
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#ifndef _BSD_SOURCE
+#define _BSD_SOURCE
+#endif
 #endif
 
 #endif /* COMMON_CONFIG_MESSY_H */

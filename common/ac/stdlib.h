@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,17 @@ typedef int wchar_t;
 #define MB_CUR_MAX 1
 #endif
 
+#endif
+
+/*
+ * On Linux, the proptotype for exit isn't quite correct.
+ */
+#ifdef __linux__
+#ifdef __NORETURN
+#ifdef __NORETURN2
+extern __NORETURN void exit __P((int)) __NORETURN2;
+#endif
+#endif
 #endif
 
 #endif /* COMMON_AC_STDLIB_H */

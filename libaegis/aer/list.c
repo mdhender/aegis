@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * MANIFEST: functions to manipulate report lists
  */
 
-#include <errno.h>
-#include <stdio.h>
+#include <ac/errno.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 

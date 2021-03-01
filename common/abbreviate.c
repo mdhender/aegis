@@ -288,6 +288,43 @@ abbreviate_filename(s, max)
 }
 
 
+static int contains_moronic_ms_restrictions _((string_ty *));
+
+static int
+contains_moronic_ms_restrictions(fn)
+	string_ty       *fn;
+{
+	static char     *moronic[] =
+	{
+		"aux",
+		"com1",
+		"com2",
+		"com3",
+		"com4",
+		"con",
+		"nul",
+	};
+	char		**cpp;
+	string_ty	*fn2;
+	static string_list_ty wl;
+	int		result;
+	
+	if (wl.nstrings == 0)
+	{
+		for (cpp = moronic; cpp < ENDOF(moronic); ++cpp)
+		{
+			fn2 = str_from_c(*cpp);
+			string_list_append(&wl, fn2);
+			str_free(fn2);
+		}
+	}
+
+	fn2 = str_downcase(fn);
+	result = string_list_member(&wl, fn2);
+	str_free(fn2);
+	return result;
+}
+
 string_ty *
 abbreviate_8dos3(s)
 	string_ty	*s;
@@ -310,7 +347,14 @@ abbreviate_8dos3(s)
 		s2 = str_n_from_c(s1->str_text, cp - s1->str_text);
 		++cp;
 		s2a = abbreviate(s2, 8, 0);
-		if (s2a->str_length == 0 || !isalpha(s2a->str_text[0]))
+		if
+		(
+			s2a->str_length == 0
+		||
+			!isalpha(s2a->str_text[0])
+		||
+			contains_moronic_ms_restrictions(s2a)
+		)
 		{
 			string_ty	*s4;
 

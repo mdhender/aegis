@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -345,6 +345,21 @@ branch =
 	default_test_exemption = boolean;
 
 	/*
+	 * This field may be set to true if you want to skip various
+	 * unlucky numbers for changes, branches and tests.  Various
+	 * traditions are avoided, both Eastern and Western.  Defaults to
+	 * false if not set.
+	 */
+	skip_unlucky = boolean; 
+
+	/*
+	 * This field may be set to true if you want to compress the
+	 * database on writing.  (It is always uncompress on reading
+	 * if necessary.)
+	 */
+	compress_database = boolean;
+
+	/*
 	 * This field contains a history of integrations for the branch.
 	 * Update by each successful 'aegis -Integrate_Pass' command.
 	 */
@@ -421,6 +436,18 @@ branch =
 	 * not set, may not be less than 1.
 	 */
 	minimum_change_number = integer;
+
+	/* 
+	 * This controls whether the automatically selected aenc(1) change
+	 * numbers ``fill in'' any gaps.  Defaults to true if not set.
+	 */
+	reuse_change_numbers = boolean; 
+
+	/*
+	 * The minimum branchhange number for aebr, if no branch number is
+	 * specified.  Defaults to 1 if not set.
+	 */
+	minimum_branch_number = integer;
 };
 
 /************************ OBSOLETE FIELDS ************************/

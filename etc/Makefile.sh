@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -22,21 +22,31 @@
 #
 aefp_files=
 aegis_files=
-clean_files="core bin/find_sizes bin/fmtgen libaegis/libaegis.a \
-	common/common.a .bin .bindir .po_files .man1dir .man3dir .man5dir \
-	.comdir"
+clean_files="core bin/find_sizes\$(EXEEXT) bin/fmtgen\$(EXEEXT)		\
+	libaegis/libaegis.\$(LIBEXT) common/common.\$(LIBEXT) .bin	\
+	.bindir .po_files .man1dir .man3dir .man5dir .comdir"
 common_files=
 libaegis_files=
-find_sizes_files="common/arglex.o common/error.o common/mem.o \
-        common/mprintf.o common/progname.o common/str.o common/trace.o \
-	common/ac/libintl.o \
-	common/ac/stdlib.o common/ac/string.o common/ac/time.o \
-	common/ac/unistd.o common/ac/wchar.o common/ac/wctype.o"
-fmtgen_files="common/arglex.o common/error.o common/fstrcmp.o \
-	common/mem.o common/mprintf.o common/progname.o common/str.o \
-	common/symtab.o common/trace.o common/str_list.o common/ac/libintl.o \
-	common/ac/stdlib.o common/ac/string.o common/ac/time.o \
-	common/ac/unistd.o common/ac/wchar.o common/ac/wctype.o"
+find_sizes_files="\
+	common/ac/libintl.\$(OBJEXT) common/ac/stdlib.\$(OBJEXT)	\
+	common/ac/string.\$(OBJEXT) common/ac/time.\$(OBJEXT)		\
+	common/ac/unistd.\$(OBJEXT) common/ac/wchar.\$(OBJEXT)		\
+	common/ac/wctype.\$(OBJEXT) common/arglex.\$(OBJEXT)		\
+	common/error.\$(OBJEXT) common/exeext.\$(OBJEXT)		\
+	common/libdir.\$(OBJEXT) common/mem.\$(OBJEXT)			\
+	common/mprintf.\$(OBJEXT) common/progname.\$(OBJEXT)		\
+	common/str.\$(OBJEXT) common/trace.\$(OBJEXT)"
+fmtgen_files="\
+	common/ac/libintl.\$(OBJEXT) common/ac/stdlib.\$(OBJEXT)	\
+	common/ac/string.\$(OBJEXT) common/ac/time.\$(OBJEXT)		\
+	common/ac/unistd.\$(OBJEXT) common/ac/wchar.\$(OBJEXT)		\
+	common/ac/wctype.\$(OBJEXT) common/arglex.\$(OBJEXT)		\
+	common/error.\$(OBJEXT) common/exeext.\$(OBJEXT)		\
+	common/fstrcmp.\$(OBJEXT) common/libdir.\$(OBJEXT)		\
+	common/mem.\$(OBJEXT) common/mprintf.\$(OBJEXT)			\
+	common/progname.\$(OBJEXT) common/str.\$(OBJEXT)		\
+	common/str_list.\$(OBJEXT) common/symtab.\$(OBJEXT)		\
+	common/trace.\$(OBJEXT)"
 
 #
 # bindir - in a network, these may be shared between machines of the
@@ -65,6 +75,7 @@ install_web=
 commands=
 commands_bin=
 commands_install=
+scripts=
 
 #
 # The mkdir could all be done with install,
@@ -109,6 +120,8 @@ recursive_mkdir()
 for file in $*
 do
 	case $file in
+	script/*.in)
+		;;
 	*.in)
 		file=`echo $file | sed 's/[.]in$//'`
 		;;
@@ -117,16 +130,24 @@ do
 	esac
 
 	case $file in
+	script/*.in)
+		name=`echo $file | sed -e 's|.*/||' -e 's|\.in$||'`
+		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
+		scripts="$scripts $name"
+		commands_install="$commands_install \$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
+		;;
 	*/main.c)
 		name=`echo $file | sed 's|/.*||'`
 		commands="$commands $name"
-		commands_bin="$commands_bin bin/$name"
+		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
 
 		case $name in
 		aefp | fmtgen | find_sizes )
 			;;
+		test_*)
+			;;
 		*)
-			commands_install="$commands_install \$(RPM_BUILD_ROOT)\$(bindir)/$name"
+			commands_install="$commands_install \$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
 			;;
 		esac
 		;;
@@ -139,23 +160,23 @@ do
 	*/*.c)
 		dir=`echo $file | sed 's|/.*||'`
 		stem=`echo $file | sed 's/\.c$//'`
-		eval "${dir}_files=\"\$${dir}_files ${stem}.o\""
-		clean_files="$clean_files ${stem}.o"
+		eval "${dir}_files=\"\$${dir}_files ${stem}.\\\$(OBJEXT)\""
+		clean_files="$clean_files ${stem}.\$(OBJEXT)"
 		;;
 
 	*/*.def)
 		dir=`echo $file | sed 's|/.*||'`
 		stem=`echo $file | sed 's/\.def$//'`
-		eval "${dir}_files=\"\$${dir}_files ${stem}.o\""
-		clean_files="$clean_files ${stem}.o ${stem}.c ${stem}.h"
+		eval "${dir}_files=\"\$${dir}_files ${stem}.\\\$(OBJEXT)\""
+		clean_files="$clean_files ${stem}.\$(OBJEXT) ${stem}.c ${stem}.h"
 		;;
 
 	*/*.y)
 		dir=`echo $file | sed 's|/.*||'`
 		stem=`echo $file | sed 's/\.y$//'`
 		clean_files="$clean_files ${stem}.gen.c ${stem}.gen.h"
-		eval "${dir}_files=\"\$${dir}_files ${stem}.gen.o\""
-		clean_files="$clean_files ${stem}.gen.o"
+		eval "${dir}_files=\"\$${dir}_files ${stem}.gen.\\\$(OBJEXT)\""
+		clean_files="$clean_files ${stem}.gen.\$(OBJEXT)"
 		;;
 
 	lib/*/libaegis.po)
@@ -225,35 +246,35 @@ do
 	esac
 done
 
-echo
+echo ''
 echo "all-bin:" $commands_bin
 
 for name in $commands
 do
-	echo
+	echo ''
 	eval "echo \"${name}_files =\" \${${name}_files}"
-	echo
+	echo ''
 
 	case $name in
 
 	find_sizes | fmtgen )
-		echo "bin/$name: \$(${name}_files) .bin"
+		echo "bin/$name\$(EXEEXT): \$(${name}_files) .bin"
 		echo '	@sleep 1'
 		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) \$(LIBS)"
 		echo '	@sleep 1'
 		;;
 
 	aefp)
-		echo "bin/$name: \$(${name}_files) common/common.a .bin"
+		echo "bin/$name\$(EXEEXT): \$(${name}_files) common/common.\$(LIBEXT) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) common/common.a \$(LIBS)"
+		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) common/common.\$(LIBEXT) \$(LIBS)"
 		echo '	@sleep 1'
 		;;
 
 	*)
-		echo "bin/$name: \$(${name}_files) libaegis/libaegis.a .bin"
+		echo "bin/$name\$(EXEEXT): \$(${name}_files) libaegis/libaegis.\$(LIBEXT) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) libaegis/libaegis.a \$(LIBS)"
+		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) libaegis/libaegis.\$(LIBEXT) \$(LIBS)"
 		case $name in
 		aegis)
 			echo '	-chown root $@ && chmod 4755 $@'
@@ -263,9 +284,9 @@ do
 		;;
 	esac
 
-	echo
-	echo "\$(RPM_BUILD_ROOT)\$(bindir)/$name: bin/$name .bindir"
-	echo "	\$(INSTALL_PROGRAM) bin/$name \$@"
+	echo ''
+	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
+	echo "	\$(INSTALL_PROGRAM) bin/$name\$(EXEEXT) \$@"
 	case $name in
 	aegis)
 		echo '	-chown root $@ && chmod 4755 $@'
@@ -273,32 +294,53 @@ do
 	esac
 done
 
-echo
+for name in $scripts
+do
+	echo ''
+	echo "bin/$name\$(EXEEXT): script/${name}.in .bin"
+	echo '	@sleep 1'
+	echo "	CONFIG_FILES=\$@:script/${name}.in CONFIG_HEADERS= ./config.status"
+	echo '	chmod a+rx $@'
+	echo '	@sleep 1'
+
+	echo ''
+	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
+	echo "	\$(INSTALL_PROGRAM) bin/$name\$(EXEEXT) \$@"
+done
+
+echo ''
 echo "CommonFiles =" $common_files
-echo
+echo ''
 echo "LibAegisFiles =" $libaegis_files $common_files
-echo
+echo ''
 echo "LibFiles =" $libdir_files
+echo ''
 echo "DataFiles =" $datadir_files
-echo
+echo ''
 echo "install-man-yes:" $man_files
+echo ''
 echo "install-man-no:"
-echo
+echo ''
 echo "po_files_yes:" $po_files
+echo ''
 echo "po_files_no:"
-echo
+echo ''
 echo "install-po-yes:" $install_po_files
+echo ''
 echo "install-po-no:"
-echo
+echo ''
 echo "doc_files_yes:" $doc_files
+echo ''
 echo "doc_files_no:"
-echo
+echo ''
 echo "install-doc-yes:" $install_doc_files
+echo ''
 echo "install-doc-no:"
-echo
+echo ''
 echo "install-web-yes:" $install_web
+echo ''
 echo "install-web-no:"
-echo
+echo ''
 echo "TestFiles =" $test_files
 
 #
@@ -315,33 +357,33 @@ echo $clean_files | tr ' ' '\12' | gawk '{
 }
 END { if (pos) printf "\n"; }'
 
-echo
+echo ''
 echo 'clean: clean-obj'
 echo "	rm -f $commands_bin bin/xaegis"
 
-echo
+echo ''
 echo "install-bin:" $commands_install
 
 cat << 'fubar'
 
 .bindir:
 	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(bindir)
-	@touch $@
+	-@touch $@
 	@sleep 1
 
 .man1dir:
 	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(mandir)/man1
-	@touch $@
+	-@touch $@
 	@sleep 1
 
 .man3dir:
 	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(mandir)/man3
-	@touch $@
+	-@touch $@
 	@sleep 1
 
 .man5dir:
 	-$(INSTALL) -m 0755 -d $(RPM_BUILD_ROOT)$(mandir)/man5
-	@touch $@
+	-@touch $@
 	@sleep 1
 
 .comdir:
@@ -349,7 +391,7 @@ cat << 'fubar'
 	-chown $(AEGIS_UID) $(RPM_BUILD_ROOT)$(comdir) && \
 		chgrp $(AEGIS_GID) $(RPM_BUILD_ROOT)$(comdir)
 	$(SH) etc/compat.2.3
-	@touch $@
+	-@touch $@
 	@sleep 1
 
 .po_files: po_files_$(HAVE_MSGFMT)
@@ -365,17 +407,17 @@ distclean: clean
 
 .bin:
 	-mkdir bin
-	@touch $@
+	-@touch $@
 
-common/common.a: $(CommonFiles)
-	rm -f common/common.a
-	$(AR) qc common/common.a $(CommonFiles)
-	$(RANLIB) common/common.a
+common/common.$(LIBEXT): $(CommonFiles)
+	rm -f $@
+	$(AR) qc $@ $(CommonFiles)
+	$(RANLIB) $@
 
-libaegis/libaegis.a: $(LibAegisFiles)
-	rm -f libaegis/libaegis.a
-	$(AR) qc libaegis/libaegis.a $(LibAegisFiles)
-	$(RANLIB) libaegis/libaegis.a
+libaegis/libaegis.$(LIBEXT): $(LibAegisFiles)
+	rm -f $@
+	$(AR) qc $@ $(LibAegisFiles)
+	$(RANLIB) $@
 
 sure: $(TestFiles) etc/test.sh
 	@$(SH) etc/test.sh -summary $(TestFiles)
@@ -384,16 +426,16 @@ sure: $(TestFiles) etc/test.sh
 # This looks at the various integral type sizes
 # and constructs a suitable include file
 #
-common/find_sizes.h: bin/find_sizes
-	bin/find_sizes > common/find_sizes.h
+common/find_sizes.h: bin/find_sizes$(EXEEXT)
+	bin/find_sizes$(EXEEXT) > common/find_sizes.h
 	@sleep 1
 
 #
 # This target is used when preparing for the second
 # pass of testing, when aegis is set-uid-root.
 #
-install-libdir: .libdir .comdir install-po
-	-chown root bin/aegis && chmod 4755 bin/aegis
+install-libdir: lib/.mkdir.datadir lib/.mkdir.libdir .comdir install-po
+	-chown root bin/aegis$(EXEEXT) && chmod 4755 bin/aegis$(EXEEXT)
 
 install-lib: $(LibFiles) $(DataFiles) .comdir
 

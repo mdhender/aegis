@@ -76,7 +76,7 @@ to their limits).
 .ds HP 12 12 12 12 12 12 12
 .nr Hb 1
 .nr Hs 1
-.2C
+.if t .2C
 .H 1 Introduction
 Aegis performs some of the tasks increasingly referred to
 as software configuration management (SCM).

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -236,6 +236,8 @@ branch =
 	integrate_pass_notify_command = "sh ${source lib/ip.sh} $project $change $developer $reviewer $integrator";
 	integrate_fail_notify_command = "sh ${source lib/if.sh} $project $change $developer $reviewer $integrator";
 	default_test_exemption = true;
+	skip_unlucky = false;
+	compress_database = false;
 	history =
 	[
 		{
@@ -308,6 +310,7 @@ branch =
 	[
 		"USER",
 	];
+	reuse_change_numbers = true;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi

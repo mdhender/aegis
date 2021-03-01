@@ -1,0 +1,40 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing metrics
+.\"
+.SH METRICS
+Aegis is capable of recording metrics as part of the file attributes of
+a change.  This allows various properties of files to be recorded for
+later trend analysis, or other uses.
+.PP
+The specific metrics are not dictated by Aegis.  It is expected that
+the integration build will create a metrics file for each of the source
+files the change.  These metrics files must be in the format specified
+by \fIaemetrics\fP(5).
+.PP
+The name of the metrics file defaults to ``\fIfilename\fP\fB,S\fP'',
+however it may be varied, by setting the \fImetrics_\%filename_\%pattern\fP
+field of the project \fIconfig\fP file.  See \fIaepconf\fP(5) for more
+information.
+.PP
+If such a metrics file exists, for each source file in a change, it will
+be read and remembered at integrate pass time.  If it does not exist,
+Aegis assumes there are no relevant metrics for that file, and proceeds
+silently; it is not an error.

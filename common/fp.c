@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate fingerprints
  */
 
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/fcntl.h>
 #include <ac/unistd.h>
 
@@ -47,7 +47,7 @@ fingerprint_delete(fp)
 {
 	fp->method->destructor(fp);
 	mem_free(fp);
-};
+}
 
 
 static int fingerprint_scan _((fingerprint_ty *, char *));

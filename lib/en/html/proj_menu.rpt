@@ -34,25 +34,25 @@ if (script_name == "")
 	script_name = "http://localhost/cgi-bin/aegis.cgi";
 
 print("<html><head><title>");
-print("Project " ## pn);
+print("Project " ## quote_html(pn));
 print("</title></head><body><h1><center>");
-print("Project ``" ## pn ## "''");
+print("Project ``" ## quote_html(pn) ## "''");
 print("</center></h1>");
 
 print("<h2>Brief Description</h2>");
 auto part;
-for (part in wrap_html(p.state.brief_description, 80))
+for (part in wrap_html(quote_html(p.state.brief_description), 80))
 	print(part);
 
 print("<h2>Description</h2>");
-for (part in wrap_html(p.state.description, 80))
+for (part in wrap_html(quote_html(p.state.description), 80))
 	print(part);
 
 print("<h2>Information Available</h2>");
 print("<dl>");
 auto href;
 
-href = script_name ## "?file@chan_list+project@" ## pn;
+href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Changes");
 print("</a><dd>");
@@ -62,21 +62,21 @@ print("progress, and those which have been completed.");
 print("<p>");
 print("Change lists are also available broken down by change state:");
 print("<ul>");
-href = script_name ## "?file@chan_awdev+project@" ## pn;
+href = script_name ## "?file@chan_awdev+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">awaiting development</a>");
-href = script_name ## "?file@chan_bedev+project@" ## pn;
+href = script_name ## "?file@chan_bedev+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">being developed</a>");
-href = script_name ## "?file@chan_berev+project@" ## pn;
+href = script_name ## "?file@chan_berev+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">being reviewed</a>");
-href = script_name ## "?file@chan_awint+project@" ## pn;
+href = script_name ## "?file@chan_awint+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">awaiting integration</a>");
-href = script_name ## "?file@chan_beint+project@" ## pn;
+href = script_name ## "?file@chan_beint+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">being integrated</a>");
-href = script_name ## "?file@proj_hstry+project@" ## pn;
+href = script_name ## "?file@proj_hstry+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">completed</a>");
 print("</ul>");
 
-href = script_name ## "?file@proj_staff+project@" ## pn;
+href = script_name ## "?file@proj_staff+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Staff");
 print("</a><dd>");
@@ -84,7 +84,7 @@ print("This item will provide you with a list of staff involved in");
 print("the project, both past and present.  The list includes some");
 print("statistics about the activities performed by the staff.");
 
-href = script_name ## "?file@proj_stats+project@" ## pn;
+href = script_name ## "?file@proj_stats+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Statistics");
 print("</a><dd>");
@@ -92,7 +92,7 @@ print("This item will provide you with some statistics about changes");
 print("within the project.  The statistics include change causes,");
 print("file activity and file types.");
 
-href = script_name ## "?file@proj_files+project@" ## pn;
+href = script_name ## "?file@proj_files+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Files");
 print("</a><dd>");
@@ -100,7 +100,7 @@ print("This item will provide you with a listing of the files which");
 print("are the project master source.	Links are provided to individual");
 print("file information.");
 
-href = script_name ## "?file@file_activ+project@" ## pn;
+href = script_name ## "?file@file_activ+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("File Activity");
 print("</a><dd>");
@@ -112,14 +112,14 @@ print("against the file.");
 
 print("<dt>");
 href = script_name ## "?file@file_cflct";
-href ##= "+project@" ## pn;
+href ##= "+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">File Conflict</a>");
 print("<dd>");
 print("This item will provide you with a listing of changes which are");
 print("actively modifying files <b>if</b> more than <i>one</i> change");
 print("is modifying the file at the same time.");
 
-href = script_name ## "?file@file_hstry+project@" ## pn;
+href = script_name ## "?file@file_hstry+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("File History");
 print("</a><dd>");
@@ -127,28 +127,28 @@ print("This item will provide you with a listing of files and the order");
 print("in which all completed changes affected them.");
 print("This report can take a long time to generate.");
 
-href = script_name ## "?file@proj_hstry+project@" ## pn;
+href = script_name ## "?file@proj_hstry+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("History");
 print("</a><dd>");
 print("This item will provide you with a listing of completed changes");
 print("in the order in which they were completed.");
 
-href = script_name ## "?file@proj_hstgm+project@" ## pn;
+href = script_name ## "?file@proj_hstgm+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Integration Histogram");
 print("</a><dd>");
 print("This item will provide you with a histogram of changes completed");
 print("over time.");
 
-href = script_name ## "?file@proj_cch1+project@" ## pn;
+href = script_name ## "?file@proj_cch1+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Change Cause Histogram");
 print("</a><dd>");
 print("This item will provide you with a histogram of change causes");
 print("over time.  Only completed changes are shown.");
 
-href = script_name ## "?file@file_densi+project@" ## pn;
+href = script_name ## "?file@file_densi+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Change Cause by File");
 print("</a><dd>");

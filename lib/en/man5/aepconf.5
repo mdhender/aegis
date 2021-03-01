@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,7 @@ reversing the actions of the create_symlinks_before_build field.
 Defaults to false if not set.
 .TP 8n
 symlink_exceptions = [ string ];
-This field is used to name specific files for which symbolic links
+This field is used to list filename patterns for which symbolic links
 must not be made between the development directory and the baseline.
 These are usually state files for various tools.
 .TP 8n
@@ -186,6 +186,14 @@ Used by the
 .IR aeib (1)
 command.
 .TP 8n
+integrate_begin_exceptions = [ string ];
+This field may be used to specify a list of file names (and file name
+patterns) which are to be omitted from the copy (link) of the baseline
+when creating the integration directory.
+Used by the
+.IR aeib (1)
+command.
+.TP 8n
 history_create_command = string;
 .RS 8n
 This field is used to create a new history.
@@ -210,6 +218,10 @@ This may need to be reworked with the
 and
 .I Basename
 substitutions to yield a string suitable for the history tool in question.
+.PP
+See also the
+.I history_put_trashes_file
+field, below.
 .RE
 .TP 8n
 history_get_command = string;
@@ -270,6 +282,10 @@ This may need to be reworked with the
 and
 .I Basename
 substitutions to yield a string suitable for the history tool in question.
+.PP
+See also the
+.I history_put_trashes_file
+field, below.
 .RE
 .TP 8n
 history_query_command = string;
@@ -295,6 +311,30 @@ This may need to be reworked with the
 and
 .I Basename
 substitutions to yield a string suitable for the history tool in question.
+.RE
+.TP 8n
+history_put_trashes_file = (fatal, warn, ignore);
+.RS
+Many history tools (e.g. RCS) can modify the contents of the file
+when it is committed.  While there are usually options to turn this
+off, they are seldom used.  The problem is: if the commit changes the
+file, the source in the repository now no longer matches the object
+file in the repository - i.e. the history tool has compromised the
+referential integrity of the repository.
+.TP 4n
+fatal
+Emit a fatal error if one or more source files are modified by a
+.I history_put_command
+or
+.IR history_create_command .
+This is the default.
+.TP 4n
+warn
+Emit a warning if a source file is modified.
+.TP 4n
+ignore
+Ignore a source file changing.
+You sure better hope it was only in a comment!
 .RE
 .TP 8n
 diff_command = string;
@@ -560,9 +600,18 @@ dos_filename_required = boolean;
 .br
 This field may be used to limit filenames so that they conform to
 the DOS 8+3 filename limits and to the DOS filename character set.
+Also denies filenames which look like devices (AUX, \fIetc\fP).
 Defaults to false if not set.
 This field is used in combination with the other filename fields,
 it does not replace them.
+.TP
+windows_filename_required = boolean;
+.br
+This field may be used to limit filenames so that they conform to the
+Windows98 and WindowsNT filename limits and character set.  Also denies
+filenames which look like devices (AUX, \fIetc\fP).  Defaults to false
+if not set.  This field is used in combination with the other filename
+fields, it does not replace them.
 .TP
 shell_safe_filenames = boolean;
 .br
@@ -617,7 +666,8 @@ The test type: "automatic" or "manual", optional
 development_directory_template = string;
 .RS
 This field is used to determine the name of the development directory
-at develop begin.  All of the substitutions defined in aesub(5) are
+at develop begin.
+All of the substitutions defined in aesub(5) are
 available.  The following substitutions is also available:
 .TP 8n
 Default_Development_Directory
@@ -628,16 +678,34 @@ Magic
 A single letter, starting from ``C'', which can be inserted.
 This must be used,
 as it allows Aegis to try different names should there be a conflict.
-.LP
+.PP
 If not set, defaults to
 "\f(CW$ddd/${left $p ${expr ${namemax $ddd} - ${length .$magic$c}}}.$magic$c\fP".
-.LP
+.PP
 For DOS compatibility (8+3 filenames), a useful setting is
 "\f(CW$ddd/${downcase ${left ${id $p} 8}.$magic${right 0$c 2}}\fP".
 This ensures that the filename is always a valid 8.3 filename, that it
 is always lowercase, and it translates any punctuation in the project
 name into underscores.
 .RE
+.TP 8n
+metrics_filename_pattern = string;
+.RS
+This field is used to form the name of the metrics file, given a source file.
+All of the substitutions defined in aesub(5) are
+available.  The following substitutions is also available:
+.TP 8n
+File_Name
+The absolute pathname of the source file.
+.PP
+Defaults to "$filename,S" if not set.
+.RE
+.TP 8n
+trojan_horse_suspect = [ string ];
+This list of filename patterns is consulted by aedist --receive when it
+is checking for files which could be used to host Trojan horse attacks.
+This will be different for different projects, so you will need to
+update this youself.
 .SH OBSOLETE FIELDS
 There are some obsolete fields in the file.
 They are provided for backwards compatibility only, and should not be used.

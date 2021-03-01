@@ -1,0 +1,57 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Geographically Distributed Development, Automatic Operation
+.\"
+.nh 2 "Automatic Operation"
+.LP
+This section describes how to use \fIaedist\fP to automatically send
+change sets via e-mail.
+.nh 3 "Sending"
+.LP
+Change sets can be sent automatically when a change passes integration.
+You do this by setting the \fIintegrate_\%pass_\%notify_\%command\fP
+field of the project attributes.
+.LP
+In this example, the ``example'' project sends all integrations to all
+the addresses on the \f(CWexample-developers\fP mailing list.  (The
+mailing list is maintained outside of Aegis, \fIe.g.\fP by Majordomo.)
+The relevant attribute (editted by using the \fIaepa\fP(1) command)
+looks like this:
+.E(
+integrate_pass_notify_command =
+  "aedist -p $project -c $change | \e
+  mail example-users";
+.E)
+.LP
+Please note that project attributes are inherited by branches when they
+are created.  If you don't want all branches to broadcast all changes,
+you need to remember to clear this project attribute \fIfrom the branch\fP
+once the branch has been created.  Alternatively, use the \f(CW$version\fP
+substitution to decide who to send the change to.
+.nh 3 "Receiving"
+.LP
+\fIwrite this section\fP
+.LP
+You need to set up an e-mail alias, with a wrapper around it - you
+probably \dIdon't\fP want "daemon" as a registered developer.
+.LP
+While \fIaedist\fP(1) makes every attempt to spot potential trojan attacks,
+you really, \fIreally\fP want PGP validation (or similar industrial
+strength digital signatures) before you accept this kind of input.

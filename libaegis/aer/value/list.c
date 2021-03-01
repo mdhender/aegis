@@ -23,7 +23,7 @@
 #include <aer/value/error.h>
 #include <aer/value/integer.h>
 #include <aer/value/list.h>
-#include <aer/value/nul.h>
+#include <aer/value/null.h>
 #include <aer/value/real.h>
 #include <error.h>
 #include <mem.h>

@@ -1,0 +1,161 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Geographically Distributed Development
+.\"
+.bp
+.if t .2C
+.nh 1 "Geographically Distributed Development"
+.LP
+This chapter describes various methods of collaboratively developing
+software using Aegis, where the collaborating sites are separated by
+administrative domains or even large physical distances.
+.LP
+While many Open Source projects on the Internet typify such development,
+this chapter will also describe techniques suitable for commercial
+enterprises who do not wish to compromise their intellectual property.
+.nh 2 "Introduction"
+The core of the distribution method is the \fIaedist\fP(1) command.
+In its simplest form, the command
+.E(
+aedist -send | aedist -receive
+.E)
+will clone a change set locally.
+This may appear less than useful (after all, the \fIaeclone\fP(1)
+command already exists) until you consider situations such as
+.E(
+aedist -send | \fIe-mail\fP | aedist -receive
+.E)
+where \fIe-mail\fP represents the sending, transport and receiving of e-mail.
+In this example, the change set would be reproduced on the e-mail
+recipient's system, rather than locally.
+Similar mechanisms are also possible for web distribution.
+.nh 3 "Risk Reduction"
+.LP
+Receiving change sets in the mail, however, comes with a number of risks:
+.IP \(bu 3n
+You can't just commit it to your repository, because it may not even
+compile.
+.IP \(bu 3n
+Even if it does compile, you want to run some tests on it first, to make
+sure it is working and doesn't break anything.
+.IP \(bu 3n
+Finally, you would always check it out, to make sure it was appropriate,
+and didn't do more subtle damage to the source.
+.LP
+While these are normal concerns for distributing source over the
+Internet, and also internally within companies, they are the heart of
+the process employed by Aegis.  All of these checks and balances are
+already present.  The receive side simply creates a normal Aegis change,
+and applies the normal Aegis process to it.
+.IP \(bu 3n
+The change set format is unpacked into a private work area, not directly
+into the repository.  This is a normal Aegis function.
+.IP \(bu 3n
+The change set is then confirmed to build against the repository.
+All implications flowing from the change are exersized.
+Build inconsistencies will flag the change for attention by a human,
+and the change set will not be committed to the repository.
+This is a normal Aegis function.
+.IP \(bu 3n
+The change set is tested.  If it came accompanied by tests, these are run.
+Also, relevant tests  from the repository are run.
+Test inconsistencies will flag the change for attention by a human,
+and the change set will not be committed to the repository.
+This is a normal Aegis function.
+.IP \(bu 3n
+Once the change set satisfies these requirements, it must still be
+reviewed by a human before being committed, to validate the change set
+for suitability and completeness.  This is a normal Aegis function.
+.nh 3 "What to Send"
+.LP
+While there are many risks involved inreceiving change sets,
+there also problems in figuring out what to send.
+.LP
+At the core of Aegis' design is a transaction.  Think of the source files
+as fows in a database table, and each change-set as a transaction against
+thattable.  The build step represents maintaining referential integrity
+of the database, but also represents an input validation step, as does
+the review.  And like databases, the transactions are all-or-nothing
+affairs, it is not possible to commit ``half'' a transaction.
+.LP
+As you can see, Aegis changes are already elegantly validated, recorded
+and tracked, and ideally suited to being packaged and sent to remote
+repositories.
+.nh 3 "Methods and Topologies"
+.LP
+In distributed systems such as described in this chapter,
+there are two clear methods of distribution:
+.IP \(bu 2n
+The ``push'' method has the change set producer automatically send the
+change-set to a registered list of interested consumers.
+This is supported by Aegis and \fIaedist\fP.
+.IP \(bu 2n
+The ``pull'' method has the change set producer make the change sets
+available for interested consumers to come and collect.
+This is supported by Aegis and \fIaedist\fP.
+.LP
+These are two ends of a continuum, and it is possible and common for a
+mix-and-match approach to be taken.
+.LP
+There are also many ways of arranging how distribution is accomplished,
+and many of the distribution arrangements (common called topologies,
+when you draw the graphs) are supported by Aegis and \fIaedist\fP:
+.IP \(bu 2n
+The star topology has a central master repository, surrounded by
+contributing satelite repositories.  The satelites are almost always
+``push'' model, however the central master could be either ``push'' or
+``pull'' model.
+.IP \(bu 2n
+The snowflake topology is like a heirarchical star topology, with
+contributors feeding staging posts, which eventually feed the master
+repository.  Common for large Open Sourec Internet projects.  Towards the
+master repository is almost always ``push'' model, and away from the
+master is almost always ``pull'' model.
+.IP \(bu 2n
+The network topology is your basic anarchic autonomous collective,
+with change sets flying about peer-to-peer with no particular structure.
+Often done as a ``push'' model through an e-mail mailing list.
+.LP
+All of these topologies, and any mixture you can dream up, are supported
+by Aegis and \fIaedist\fP.  The choice of the right topology depends on
+your project and your team.
+.nh 3 "The Rest of this Chapter"
+.LP
+Aegis is the ideal medium for hosting distributed projects, for all
+the above reasons, and the rest of this chapter describes a number of
+different ways of doing this:
+.IP \(sq 3n
+The second section will
+describe how to perform these actions manually, both send and receive,
+as this demonstrates the method efficiently, and represents a majority
+of the use made of the mechanism.
+.IP \(sq 3n
+The third section will show how to automate e-mail distribution and receipt.
+Automated e-mail distribution is probably the next most common use.
+.IP \(sq 3n
+The fourth section will show how to configure distribution and receipt
+using World Wide Web servers and browsers.
+.IP \(sq 3n
+The fifth section deals with security issues, such as validating messages
+and coping with duplicate storms.
+.so c10.1.so
+.so c10.2.so
+.so c10.3.so
+.so c10.4.so

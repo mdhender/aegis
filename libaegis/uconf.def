@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -149,3 +149,9 @@ symbolic_link_preference = (verify, assume);
  * -current-relative command line options.
  */
 relative_filename_preference = (current, base);
+
+/*
+ * This field is used to set the user's preferred e-mail address.
+ * It defaults to `whoami`@`hostname` if not set.
+ */
+email_address = string;

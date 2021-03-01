@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -153,6 +153,7 @@ clone_main()
 	int		trunk;
 	int		grandparent;
 	int		mode;
+	char		*output;
 
 	trace(("clone_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -163,6 +164,7 @@ clone_main()
 	branch = 0;
 	trunk = 0;
 	grandparent = 0;
+	output = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -238,11 +240,39 @@ clone_main()
 		case arglex_token_wait_not:
 			user_lock_wait_argument(clone_usage);
 			break;
+
+		case arglex_token_output:
+			if (output)
+				duplicate_option(clone_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_file(arglex_token_output, clone_usage);
+				/* NOTREACHED */
+
+			case arglex_token_string:
+				output = arglex_value.alv_string;
+				break;
+
+			case arglex_token_stdio:
+				output = "";
+				break;
+			}
+			break;
 		}
 		arglex();
 	}
 	if (!change_number2)
 		fatal_intl(0, i18n("no change number"));
+	if (change_number && output)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_change,
+			arglex_token_output,
+			clone_usage
+		);
+	}
 	if (grandparent)
 	{
 		if (branch)
@@ -287,6 +317,12 @@ clone_main()
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
+
+	/*
+	 * make sure this branch of the project is still active
+	 */
+	if (!change_is_a_branch(project_change_get(pp)))
+		project_fatal(pp, 0, i18n("branch completed"));
 
 	/*
 	 * locate user data
@@ -375,11 +411,32 @@ clone_main()
 	change_copyright_years_merge(cp, cp2);
 
 	/*
-	 * add to history for state change
+	 * add to history for change creation
 	 */
 	cstate_data->state = cstate_state_awaiting_development;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_new_change;
+
+	/*
+	 * Construct the name of the development directory.
+	 *
+	 * (Do this before the state advances to being developed,
+	 * it tries to find the config file in the as-yet
+	 * non-existant development directory.)
+	 */
+	if (!devdir)
+	{
+		scp = sub_context_new();
+		devdir = change_development_directory_template(cp, up);
+		sub_var_set(scp, "File_Name", "%S", devdir);
+		change_verbose(cp, scp, i18n("development directory \"$filename\""));
+		sub_context_delete(scp);
+	}
+	change_development_directory_set(cp, devdir);
+
+	/*
+	 * add to history for develop begin
+	 */
 	cstate_data->state = cstate_state_being_developed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_begin;
@@ -396,19 +453,6 @@ clone_main()
 	 * Assign the new change to the user.
 	 */
 	user_own_add(up, project_name_get(pp), change_number);
-
-	/*
-	 * Construct the name of the development directory.
-	 */
-	if (!devdir)
-	{
-		scp = sub_context_new();
-		devdir = change_development_directory_template(cp, up);
-		sub_var_set(scp, "File_Name", "%S", devdir);
-		change_verbose(cp, scp, i18n("development directory \"$filename\""));
-		sub_context_delete(scp);
-	}
-	cstate_data->development_directory = devdir;
 
 	/*
 	 * Create the development directory.
@@ -610,6 +654,30 @@ clone_main()
 	 * and write pstate back out.
 	 */
 	project_change_append(pp, change_number, 0);
+
+	/*
+	 * If there is an output option,
+	 * write the change number to the file.
+	 */
+	if (output)
+	{
+		string_ty	*content;
+
+		content = str_format("%ld", magic_zero_decode(change_number));
+		if (*output)
+		{
+			string_ty	*fn;
+			
+			user_become(up);
+			fn = str_from_c(output);
+			file_from_string(fn, content, 0644);
+			str_free(fn);
+			user_become_undo();
+		}
+		else
+			cat_string_to_stdout(content);
+		str_free(content);
+	}
 
 	/*
 	 * Write the change table row.

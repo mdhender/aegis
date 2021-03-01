@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,13 @@
 
 #include <ac/stdio.h>
 #include <ac/ctype.h>
-#include <errno.h>
+#include <ac/errno.h>
 
 #include <error.h>
 #include <file.h>
 #include <fopen_nfs.h>
 #include <glue.h>
+#include <input/file_text.h>
 #include <mem.h>
 #include <os.h>
 #include <sub.h>
@@ -142,45 +143,28 @@ read_whole_file(fn)
 	char		*text;
 	string_ty	*s;
 	int		c;
-	FILE		*fp;
+	input_ty	*fp;
 
 	os_become_must_be_active();
 	length_max = 1000;
 	length = 0;
 	text = mem_alloc(length_max);
-	fp = fopen_with_stale_nfs_retry(fn, "r");
-	if (!fp)
+	fp = input_file_text_open(fn);
+	for (;;)
 	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", fn);
-		fatal_intl(scp, i18n("open $filename: $errno"));
-		/* NOTREACHED */
-	}
-	while ((c = glue_fgetc(fp)) != EOF)
-	{
+		c = input_getc(fp);
+		if (c == EOF)
+			break;
 		if (length >= length_max)
 		{
-			length_max *= 2;
+			length_max = length_max * 2 + 16;
 			text = mem_change_size(text, length_max);
 		}
 		text[length++] = c;
 	}
-	if (glue_ferror(fp))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", fn);
-		fatal_intl(scp, i18n("read $filename: $errno"));
-		/* NOTREACHED */
-	}
 	while (length > 0 && isspace(text[length - 1]))
 		--length;
-	glue_fclose(fp);
+	input_delete(fp);
 	s = str_n_from_c(text, length);
 	mem_free(text);
 	return s;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,20 +24,21 @@
 #define ERROR_H
 
 #include <main.h>
+#include <noreturn.h>
 
 #define error @!@!@
-void error_raw _((char *, ...));
+void error_raw _((const char *, ...));
 #define fatal @!@!@
-void fatal_raw _((char *, ...));
+void fatal_raw _((const char *, ...)) NORETURN;
 
-void nerror _((char *, ...));
-void nfatal _((char *, ...));
+void nerror _((const char *, ...));
+void nfatal _((const char *, ...)) NORETURN;
 
 typedef void (*quit_ty)_((int));
 void quit_register _((quit_ty));
-void quit _((int));
+void quit _((int)) NORETURN;
 
-int assert_failed _((char *condition, char *file, int line));
+int assert_failed _((const char *condition, const char *file, int line)) NORETURN;
 #ifdef DEBUG
 # if defined(__STDC__) || defined(__stdc__)
 #  define assert(c) ((void)((c) != 0 || assert_failed(#c, __FILE__, __LINE__)))

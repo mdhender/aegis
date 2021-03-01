@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions for manipulating global state data
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/unistd.h>
@@ -356,7 +356,7 @@ gonzo_gstate_write_sub(gp)
 		construct_library_directory(gp);
 		gonzo_become();
 		undo_unlink_errok(filename_new);
-		gstate_write_file(filename_new->str_text, gp->gstate_data);
+		gstate_write_file(filename_new->str_text, gp->gstate_data, 0);
 		commit_rename(filename_new, gp->gstate_filename);
 		os_chmod(filename_new, 0644);
 		gonzo_become_undo();
@@ -365,7 +365,7 @@ gonzo_gstate_write_sub(gp)
 	{
 		gonzo_become();
 		undo_unlink_errok(filename_new);
-		gstate_write_file(filename_new->str_text, gp->gstate_data);
+		gstate_write_file(filename_new->str_text, gp->gstate_data, 0);
 		commit_rename(gp->gstate_filename, filename_old);
 		commit_rename(filename_new, gp->gstate_filename);
 		commit_unlink_errok(filename_old);

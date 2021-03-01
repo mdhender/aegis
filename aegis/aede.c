@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement develop end
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/time.h>
@@ -42,6 +42,7 @@
 #include <progname.h>
 #include <os.h>
 #include <project.h>
+#include <project/active.h>
 #include <project_file.h>
 #include <project_hist.h>
 #include <sub.h>
@@ -345,9 +346,13 @@ develop_end_main()
 		{
 			if (!c_src_data->file_fp)
 				c_src_data->file_fp = fingerprint_type.alloc();
+			assert(c_src_data->file_fp->youngest >= 0);
+			assert(c_src_data->file_fp->oldest >= 0);
 			user_become(up);
-			same = change_fingerprint_same(c_src_data->file_fp, path);
+			same = change_fingerprint_same(c_src_data->file_fp, path, 0);
 			user_become_undo();
+			assert(c_src_data->file_fp->youngest > 0);
+			assert(c_src_data->file_fp->oldest > 0);
 			trace(("same = %d\n", same));
 
 			if
@@ -409,7 +414,7 @@ develop_end_main()
 			if (!c_src_data->diff_file_fp)
 				c_src_data->diff_file_fp = fingerprint_type.alloc();
 			user_become(up);
-			same_d = change_fingerprint_same(c_src_data->diff_file_fp, path_d);
+			same_d = change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
 			user_become_undo();
 			trace(("same_d = %d\n", same_d));
 			str_free(path_d);
@@ -693,53 +698,7 @@ develop_end_main()
 	 * changes outstanding on the branch.
 	 */
 	if (is_a_branch)
-	{
-		project_ty	*sub_pp;
-		int		num_err;
-
-		trace(("mark\n"));
-		sub_pp = project_bind_branch(pp, change_copy(cp));
-		num_err = 0;
-		trace(("mark\n"));
-		for (j = 0; ; ++j)
-		{
-			long            sub_cn;
-			change_ty       *sub_cp;
-			cstate          sub_cstate_data;
-		
-			if (!project_change_nth(sub_pp, j, &sub_cn))
-				break;
-			trace(("mark\n"));
-			sub_cp = change_alloc(sub_pp, sub_cn);
-			change_bind_existing(sub_cp);
-			sub_cstate_data = change_cstate_get(sub_cp);
-			if (sub_cstate_data->state != cstate_state_completed)
-			{
-				change_error
-				(
-					sub_cp,
-					0,
-					i18n("outstanding change")
-				);
-				++num_err;
-			}
-			change_free(sub_cp);
-			trace(("mark\n"));
-		}
-		trace(("mark\n"));
-		if (num_err)
-		{
-			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%d", num_err);
-			sub_var_optional(scp, "Number");
-			fatal_intl(scp, i18n("outstanding changes"));
-			/* NOTREACHED */
-		}
-		trace(("mark\n"));
-		project_free(sub_pp);
-		trace(("mark\n"));
-	}
-	trace(("mark\n"));
+		project_active_check_branch(cp, 0);
 
 	/*
 	 * if the config file changes,

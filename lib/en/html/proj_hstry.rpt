@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ print("");
 print("<html><head><title>");
 print("Project History Report");
 print("</title></head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',");
+print("Project ``" ## quote_html(project_name()) ## "'',");
 print("<br>History");
 print("</center></h1>");
 
@@ -43,7 +43,7 @@ ps = project[project_name()].state;
  * for any of the named files
  */
 print("<center><table><tr><th>Delta</th><th>When</th>");
-print("<th>Change</th><th>Description</th></tr>");
+print("<th>Change</th><th>Description</th><th></th></tr>");
 auto ph;
 for (ph in ps.branch.history)
 {
@@ -56,22 +56,27 @@ for (ph in ps.branch.history)
 	print("</td><td valign=top align=right>");
 	auto href;
 	href = script_name ## "?file@chan_menu";
-	href ##= "+project@" ## project_name();
+	href ##= "+project@" ## quote_url(project_name());
 	href ##= "+change@" ## ph.change_number;
 	print("<a href=\"" ## href ## "\">");
 	print(ph.change_number ## "</a>");
 	print("</td><td valign=top>");
 	auto part;
-	for (part in wrap_html(cs.brief_description, 80))
+	for (part in wrap_html(quote_html(cs.brief_description), 80))
 		print(part);
+	print("</td><td valign=top>");
+	href = script_name ## "?file@aedist";
+	href ##= "+project@" ## quote_url(project_name());
+	href ##= "+change@" ## ph.change_number;
+	print("<a href=\"" ## href ## "\"><i>Download</i></a>");
 	print("</td></tr>");
 }
 print("</table></center>");
 print("Listed " ## count(ps.branch.history) ## " integrations.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with one of");
-print("<blockquote><pre>ael proj_history -p " ## project_name());
-print("aer proj_history -p " ## project_name() ## "</pre></blockquote>");
+print("<blockquote><pre>ael proj_history -p " ## quote_html(project_name()));
+print("aer proj_history -p " ## quote_html(project_name()) ## "</pre></blockquote>");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995 Peter Miller;
+#	Copyright (C) 1994, 1995, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MANIFEST: shell script to notify 'aedb -User' events
 #
 # Suggested project attribute:
-# forced_develop_begin_notify_command = "$lib/db_forced.sh $p $c $developer";
+# forced_develop_begin_notify_command = "$datadir/db_forced.sh $p $c $developer";
 #
 aegis=aegis
 case $# in

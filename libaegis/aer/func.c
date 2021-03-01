@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,11 +34,13 @@
 #include <aer/func/page_width.h>
 #include <aer/func/print.h>
 #include <aer/func/project.h>
+#include <aer/func/quote.h>
 #include <aer/func/round.h>
 #include <aer/func/sort.h>
 #include <aer/func/split.h>
 #include <aer/func/sprintf.h>
 #include <aer/func/strftime.h>
+#include <aer/func/substitute.h>
 #include <aer/func/substr.h>
 #include <aer/func/terse.h>
 #include <aer/func/title.h>
@@ -71,16 +73,20 @@ static rpt_func_ty *table[] =
 	&rpt_func_print,
 	&rpt_func_project_name,
 	&rpt_func_project_name_set,
+	&rpt_func_quote_html,
+	&rpt_func_quote_url,
 	&rpt_func_round,
 	&rpt_func_sort,
 	&rpt_func_split,
 	&rpt_func_sprintf,
 	&rpt_func_strftime,
+	&rpt_func_substitute,
 	&rpt_func_substr,
 	&rpt_func_terse,
 	&rpt_func_title,
 	&rpt_func_trunc,
 	&rpt_func_typeof,
+	&rpt_func_unquote_url,
 	&rpt_func_working_days,
 	&rpt_func_wrap,
 	&rpt_func_wrap_html,

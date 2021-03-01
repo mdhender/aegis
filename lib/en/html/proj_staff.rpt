@@ -33,7 +33,7 @@ print("");
 print("<html><head><title>");
 print("Project Staff");
 print("</title></head><body><h1><center>");
-print("Project ``" ## pn ## "'',<br>");
+print("Project ``" ## quote_html(pn) ## "'',<br>");
 print("List of Staff");
 print("</center></h1>");
 auto p, ps, name, staff;
@@ -103,7 +103,7 @@ for (name in sort(keys(staff)))
 	auto href;
 	href = "mailto:" ## name;
 	print("<a href=\"" ## href ## "\">");
-	print(passwd[name].pw_comment ## "</a>");
+	print(quote_html(passwd[name].pw_comment) ## "</a>");
 	print("</td><td valign=top>");
 	print(s.developer ? "Yes" : "No");
 	print("</td><td valign=top align=right>");

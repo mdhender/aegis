@@ -1,0 +1,39 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Geographically Distributed Development, World Wide Web
+.\"
+.nh 2 "World Wide Web"
+.LP
+This section describes how to use \fIaedist\fP to transport change sets
+using the World Wide Web.  This requires configuration of the web server
+to package and send the change sets, and configuration of the browser
+to receive and unpack the change sets.
+.nh 3 "Server"
+.LP
+\fIwrite this section\fP
+.LP
+You have a CGI script which invokes \fIaedist\fP(1).
+There is no need to the base64 in this case, so use the appropriate option.
+.nh 3 "Browser"
+.LP
+\fIwrite this section\fP
+.LP
+You need to se t the appropriate mailcap entry, so that
+\f(CWapplication/aegis-change-set\fP is handled by \fIaedist --receive\fP.

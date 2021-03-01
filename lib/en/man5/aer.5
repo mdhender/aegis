@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+.\"	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -723,6 +723,17 @@ project name was set by the
 command line option.
 The return value is a boolean.
 .\" ------------------------------ Q ------------------------------
+.TP 8n
+quote_html
+This function quotes its argument string to insulate HTML special
+characters; these include ``less than'' (\fC<\fP), ``ampersand'' (\fC&\fP)
+and non-printing characters.  This is most often used to generate suitable
+text for web pages.
+.TP 8n
+quote_url
+This function quotes its argument string to insulate URL special
+characters; these include ``?+#:&='' and non-printing characters.
+This is most often used to generate suitable text for web pages.
 .\" ------------------------------ R ------------------------------
 .TP 8n
 ceil
@@ -752,6 +763,14 @@ The first argument is the format string, the second argument is a time.
 See the
 .IR strftime (3)
 man page for more the format specifiers.
+.TP 8n
+subst
+This function is used to substitute strings by regular expression.
+The first argument is the pattern to match,
+the second argument is the substitution pattern,
+the third argument is the input string to be substituted.
+The option fourth argument is the number of substitutions to perform;
+the default is as many as possible.
 .TP 8n
 substr
 This function is used to extract substrings from strings.
@@ -783,6 +802,12 @@ The return type is a string
 containing the name of the type,
 as described in the
 .\" ------------------------------ U ------------------------------
+.TP 8n
+unquote_url
+This function will remove URL quoting from the argument string.
+URL quoting takes the form of a percent sign (%) followed by two
+hex digits.  This is replaced by a single character with the value
+represented by the hex digits.
 .\" ------------------------------ V ------------------------------
 .\" ------------------------------ W ------------------------------
 .TP 8n

@@ -34,6 +34,16 @@ and
 .IR trim_extension ,
 which are useful for constructing file templates.  These can be
 very useful in constructing skeletons of C++ classes.
+.PP
+.if n *
+.if t \(bu
+Some changes have been made to pathname handling to better cope with
+automounters.  See \fIaegis\fP(1) for more information (see discussion
+of the AEGIS_\%AUTOMOUNT_\%POINTS environment variable).  This assumes
+that paths below the automounter's mount directory are echoes of paths
+without it (\fIe.g.\fP \f[CW]/home\fP is the trigger, and
+\f[CW]/tmp_mnt/home\fP is where the NFS mount is performed, with
+\f[CW]/home\fP appearing to be a symlink).
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 3.7

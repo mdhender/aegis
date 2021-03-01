@@ -51,7 +51,7 @@ if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 no_result()
 {
 	set +x
-	echo 'NO RESULT for test of basic report language' 1>&2
+	echo "NO RESULT for test of basic report language ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -60,7 +60,7 @@ no_result()
 fail()
 {
 	set +x
-	echo 'FAILED test of basic report language' 1>&2
+	echo "FAILED test of basic report language ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -77,6 +77,7 @@ pass()
 }
 trap \"no_result\" 1 2 3 15
 
+activity="working directory 81"
 mkdir $work
 if test $? -ne 0 ; then no_result; fi
 cd $work
@@ -104,6 +105,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # test the basic report language
 #
+activity="basic report language 109"
 cat > test.in << 'fubar'
 title("Just A Test", "delete this line");
 columns({name = "First"; width = 15;}, {name = "Second"; });
@@ -141,6 +143,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # test the binary + operator
 #
+activity="binary + operator 147"
 cat > test.in << 'fubar'
 title("Binary Plus", "delete this line");
 columns("r+r\n-------", "r+i\n-------", "i+r\n-------", "i+i\n-------");
@@ -173,6 +176,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # test the variable functionality
 #
+activity="variables 180"
 cat > test.in << 'fubar'
 title("Variables", "delete this line");
 columns("N\n-------", "N^2\n-------", "<", "<=", ">", ">=", "==", "!=",
@@ -231,6 +235,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # test the sprintf functionality
 #
+activity="sprintf function 239"
 cat > test.in << 'fubar'
 title("sprintf", "delete this line");
 columns("%2d", "%c", "%5.2f", { name = "%.5e"; width = 15;}, "%-2s%2s", "%2X");
@@ -300,6 +305,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # test the passwd functionality
 #
+activity="passwd array 309"
 cat > test.in << 'fubar'
 title("The Password File", "");
 columns
@@ -337,6 +343,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # test the ``projects variable'' functionality
 #
+activity="projects variable 347"
 cat > test.in << 'fubar'
 title("List of Projects", "");
 columns

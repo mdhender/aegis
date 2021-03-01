@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,31 +22,33 @@
 
 integration-build-targets:
 	/* archive/Part.01.gz */
-	archive/[project_minus].tar.gz
 	/* archive/[project_minus].patch.gz */
-	archive/[project_minus].ug.ps.gz
-	archive/[project_minus].rm.ps.gz
+	archive/[project_minus].README
+	archive/[project_minus].ae
 	archive/[project_minus].faq
 	archive/[project_minus].lsm
-	archive/[project_minus].README
+	archive/[project_minus].rm.ps.gz
 	archive/[project_minus].spec
-	archive/[project_short].html
+	archive/[project_minus].tar.gz
+	archive/[project_minus].ug.ps.gz
 	archive/[project_short].gif
+	archive/[project_short].html
 	;
 
 etc/[project_short].html.d: etc/[project_short].html
-	etc/version.so
+	set no-cascade
 {
-	c_incl -nc -ns -eia -r
+	c_incl -nc -ns -eia -r -nrec
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
-		-prefix "'"[target]" archive/"[project_short]".html: etc/"[project_short]".html'"
-		-suffix "'set nodefault;'" [resolve etc/aegis.html]
+		-prefix "'cascade etc/"[project_short]".html ='"
+		-suffix "';'"
+		[resolve etc/[project_short].html]
 		[prepost "-rlp=" "" [search_list]] /* remove leading path */
 		-slp [arch] "'[arch]'" /* substitute leading path */
 		-o [target];
 }
-#include-cooked-nowarn etc/aegis.html.d
+#include-cooked-nowarn etc/[project_short].html.d
 
 archive/[project_short].html: etc/[project_short].html etc/ssp.awk
 	set shallow
@@ -239,11 +241,13 @@ RPM: archive/[project_minus]-1.i386.rpm;
 
 archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
 		archive/[project_minus].tar.gz etc/rpm-build.sh
+		archive/[project_short].gif
 	set shallow
 {
 	sh [resolve etc/rpm-build.sh]
 		RPM-temporary
 		[resolve archive/[project_minus].tar.gz]
+		[resolve archive/[project_short].gif]
 		;
 	mv RPM-temporary/RPMS/i386/[project_minus]-1.i386.rpm
 		archive/[project_minus]-1.i386.rpm
@@ -257,4 +261,12 @@ archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
 LICENSE: lib/en/cat1/aelic.1
 {
 	cat [resolve [need]] > [target];
+}
+
+archive/[project_minus].ae: [source_files] [arch]/bin/aedist
+{
+	[resolve [arch]/bin/aedist]
+		--send --entire-source -ndh -naa
+		-p\=[project] -c\=[change]
+		-o [target];
 }

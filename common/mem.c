@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include <ac/stddef.h>
 #include <ac/string.h>
 #include <ac/stdlib.h>
-#include <errno.h>
+#include <ac/errno.h>
 
 #include <mem.h>
 #include <error.h>
@@ -209,7 +209,7 @@ mem_free(cp)
 
 char *
 mem_copy_string(s)
-	char		*s;
+	const char	*s;
 {
 	char		*cp;
 

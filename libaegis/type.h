@@ -61,8 +61,9 @@ struct generic_struct_ty
 };
 
 extern type_ty integer_type;
-extern type_ty time_type;
+extern type_ty real_type;
 extern type_ty string_type;
+extern type_ty time_type;
 
 void *generic_struct_parse _((void *, string_ty *, type_ty **, unsigned long *,
 	type_table_ty *, size_t));

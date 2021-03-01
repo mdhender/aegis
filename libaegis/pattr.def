@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1996 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,10 +19,20 @@
  *
  * MANIFEST: project attributes file contents definition
  *
- * if you change this file, don't forget to change
- *	man5/aepattr.so
- *	aegis/pattr_ed.c
- *	aegis/new_rele.c
+ * If you add a new project attribute, you must edit all of these files...
+ *	aegis/aenbr.c		Where it is copied
+ *	aegis/aenpr.c		Where it is defaulted (if not zero)
+ *	aegis/aenrls.c		Where it is defaulted (if not zero)
+ *	aegis/aepa.c		Where it is edited
+ *	lib/en/man5/aecstate.5	Where it is documented
+ *	lib/en/man5/aepattr.5	Where it is documented
+ *	libaegis/change/cstate/improve.c	Where it is defaulted
+ *	libaegis/change_bran.c	Where it is set&get
+ *	libaegis/change_bran.h	Where it is in a prototype
+ *	libaegis/cstate.def	Where it is defined
+ *	libaegis/pattr.def	Where it is defined
+ *	libaegis/project.c	Where it is set&get
+ *	libaegis/project.h	Where it is in a prototype
  */
 
 #include <common.def>
@@ -180,3 +190,28 @@ copyright_years = [ integer ];
  * than 1.
  */
 minimum_change_number = integer;
+
+/*
+ * This attribute is used to control the reuse of change numbers to fill
+ * in gaps caused by using aencu.  Defaults to true if not set.
+ */
+reuse_change_numbers = boolean;
+
+/*
+ * The minimum branch number for aenbr, if no branch number is specified.
+ * Defaults to 1 if not set.
+ */
+minimum_branch_number = integer;
+
+/*
+ * This field may be set to true if you want to skip various unlucky
+ * numbers for changes, branches and tests.  Various traditions are
+ * avoided, both Eastern and Western.  Defaults to false if not set.
+ */
+skip_unlucky = boolean;
+
+/*
+ * This field may be set to true if you want to compress the database
+ * on writing.  (It is always uncompressed on reading if necessary.)
+ */
+compress_database = boolean;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -115,7 +115,7 @@ gen_include(type)
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write _((char *, %s_ty));\n",
+		"void %s_write _((struct output_ty *, const char *, %s_ty));\n",
 		this->name->str_text,
 		this->name->str_text
 	);
@@ -189,9 +189,10 @@ gen_code(type)
 
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s_write(name, this)\n", this->name->str_text);
+	indent_printf("%s_write(fp, name, this)\n", this->name->str_text);
 	indent_more();
-	indent_printf("%s\1*name;\n", "char");
+	indent_printf("%s\1*fp;\n", "output_ty");
+	indent_printf("%s\1*name;\n", "const char");
 	indent_printf("%s_ty\1this;\n", this->name->str_text);
 	indent_less();
 	indent_printf("{\n"/*}*/);
@@ -201,16 +202,16 @@ gen_code(type)
 	indent_more();
 	indent_printf("return;\n");
 	indent_less();
-	indent_printf("indent_printf(\"%%s = \", name);\n");
+	indent_printf("output_fprintf(fp, \"%%s = \", name);\n");
 	indent_printf(/*{*/"}\n");
 	indent_printf
 	(
-		"indent_printf(\"%%s\", %s_s[this]);\n",
+		"output_fprintf(fp, \"%%s\", %s_s[this]);\n",
 		this->name->str_text
 	);
 	indent_printf("if (name)\n");
 	indent_more();
-	indent_printf("indent_printf(\";\\n\");\n");
+	indent_printf("output_fprintf(fp, \";\\n\");\n");
 	indent_less();
 	indent_printf(/*{*/"}\n");
 
@@ -334,7 +335,7 @@ gen_code_declarator(type, variable_name, is_a_list)
 	string_ty	*variable_name;
 	int		is_a_list;
 {
-	indent_printf("%s_write("/*)*/, type->name->str_text);
+	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
 	if (is_a_list)
 		indent_printf("(char *)0");
 	else
@@ -386,5 +387,6 @@ type_method_ty type_enumeration =
 	gen_code,
 	gen_code_declarator,
 	gen_free_declarator,
-	member_add
+	member_add,
+	0, /* in_include_file */
 };

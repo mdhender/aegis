@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,16 @@
  * don't forget to update man1/ael.1
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/string.h>
 #include <ac/stdlib.h>
 #include <ac/time.h>
 #include <ac/pwd.h>
 
 #include <ael.h>
+#include <ael/change/files.h>
+#include <ael/column_width.h>
+#include <ael/formeditnum.h>
 #include <aer/func/now.h>
 #include <arglex2.h>
 #include <col.h>
@@ -50,30 +53,6 @@
 #include <trace.h>
 #include <user.h>
 #include <str_list.h>
-
-#define ELAPSED_TIME_THRESHOLD (10L * 60L) /* ten minutes */
-
-/*
- * widths of the various columns
- *
- * (Many are 8n-1; this does nice things with tabs.)
- */
-#define USAGE_WIDTH	7	/* strlen("manual_") = 7 */
-#define ACTION_WIDTH	8	/* strlen("insulate") = 8 */
-#define EDIT_WIDTH	12	/* strlen("1.23 (4.56)") = 11,
-				   strlen("1.23 -> 4.56") = 12 */
-#define LOGIN_WIDTH	8	/* login names will be <= 8 */
-#define WHAT_WIDTH	15	/* widest is 20, worst is 10 */
-#define WHEN_WIDTH	15	/* ctime fits in 2 lines */
-#define WHO_WIDTH	LOGIN_WIDTH
-#define	CHANGE_WIDTH	7
-#define	STATE_WIDTH	15	/* widest is 20, worst is 11 */
-#define ARCH_WIDTH	8
-#define HOST_WIDTH	8
-#define TIME_WIDTH	9	/* strlen("99-Oct-99") = 9 */
-#define INDENT_WIDTH	8	/* used for change_details */
-#define PROJECT_WIDTH	15
-#define DIRECTORY_WIDTH 23
 
 
 typedef struct table_ty table_ty;
@@ -336,6 +315,8 @@ list_main()
 		sub_context_delete(scp);
 		break;
 	}
+	if (project_name)
+		str_free(project_name);
 	trace((/*{*/"}\n"));
 }
 
@@ -469,79 +450,6 @@ list_projects(project_name, change_number)
 }
 
 
-static void format_edit_number _((int, fstate_src));
-
-static void
-format_edit_number(edit_col, src_data)
-	int		edit_col;
-	fstate_src	src_data;
-{
-	if
-	(
-		src_data->edit_number_origin
-	&&
-		src_data->edit_number
-	)
-	{
-		/*
-		 * We have both the original version copied, and the
-		 * current head revision.  Print them both, with a
-		 * notation implying ``from the old one to the new one''
-		 * if they differ.  Only print one if thay are the same.
-		 */
-		col_printf
-		(
-			edit_col,
-			"%4s",
-			src_data->edit_number_origin->str_text
-		);
-		if
-		(
-			str_equal
-			(
-				src_data->edit_number,
-				src_data->edit_number_origin
-			)
-		)
-			return;
-		col_printf
-		(
-			edit_col,
-			" -> %s",
-			src_data->edit_number->str_text
-		);
-		return;
-	}
-
-	if (src_data->edit_number_origin)
-	{
-		/*
-		 * The "original version" copied.
-		 */
-		col_printf
-		(
-			edit_col,
-			"%4s",
-			src_data->edit_number_origin->str_text
-		);
-	}
-	if (src_data->edit_number)
-	{
-		/*
-		 * For active branches, the current
-		 * head revision.  For completed changes
-		 * and branches, the revision at aeipass.
-		 */
-		col_printf
-		(
-			edit_col,
-			"%4s",
-			src_data->edit_number->str_text
-		);
-	}
-}
-
-
 void
 list_project_files(project_name, change_number)
 	string_ty	*project_name;
@@ -563,6 +471,8 @@ list_project_files(project_name, change_number)
 	trace(("list_project_files()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -653,7 +563,7 @@ list_project_files(project_name, change_number)
 				usage_col,
 				file_usage_ename(src_data->usage)
 			);
-			format_edit_number(edit_col, src_data);
+			list_format_edit_number(edit_col, src_data);
 			if
 			(
 				pp->parent
@@ -782,6 +692,8 @@ list_administrators(project_name, change_number)
 	 */
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -831,223 +743,6 @@ list_administrators(project_name, change_number)
 
 
 void
-list_change_files(project_name, change_number)
-	string_ty	*project_name;
-	long		change_number;
-{
-	cstate		cstate_data;
-	project_ty	*pp;
-	change_ty	*cp;
-	user_ty		*up;
-	int		usage_col = 0;
-	int		action_col = 0;
-	int		edit_col = 0;
-	int		file_name_col = 0;
-	int		j;
-	string_ty	*line1;
-	int		left;
-
-	/*
-	 * locate project data
-	 */
-	trace(("list_change_files()\n{\n"/*}*/));
-	if (!project_name)
-		project_name = user_default_project();
-	pp = project_alloc(project_name);
-	str_free(project_name);
-	project_bind_existing(pp);
-
-	/*
-	 * locate user data
-	 */
-	up = user_executing(pp);
-
-	/*
-	 * locate change data
-	 */
-	if (!change_number)
-		change_number = user_default_change(up);
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
-
-	cstate_data = change_cstate_get(cp);
-	assert(change_file_nth(cp, 0));
-
-	/*
-	 * create the columns
-	 */
-	col_open((char *)0);
-	line1 =
-		str_format
-		(
-			"Project \"%S\"  Change %ld",
-			project_name_get(pp),
-			magic_zero_decode(change_number)
-		);
-	col_title(line1->str_text, "List of Change's Files");
-	str_free(line1);
-
-	left = 0;
-	if (!option_terse_get())
-	{
-		usage_col = col_create(left, left + USAGE_WIDTH);
-		left += USAGE_WIDTH + 1;
-		col_heading(usage_col, "Type\n-------");
-
-		action_col = col_create(left, left + ACTION_WIDTH);
-		left += ACTION_WIDTH + 1;
-		col_heading(action_col, "Action\n--------");
-
-		edit_col = col_create(left, left + EDIT_WIDTH);
-		left += EDIT_WIDTH + 1;
-		col_heading(edit_col, "Edit\n-------");
-	}
-	file_name_col = col_create(left, 0);
-	col_heading(file_name_col, "File Name\n-----------");
-
-	/*
-	 * list the change's files
-	 */
-	for (j = 0; ; ++j)
-	{
-		fstate_src	src_data;
-
-		src_data = change_file_nth(cp, j);
-		if (!src_data)
-			break;
-		assert(src_data->file_name);
-		if (option_terse_get())
-		{
-			if (src_data->action == file_action_remove)
-				continue;
-		}
-		else
-		{
-			col_puts
-			(
-				usage_col,
-				file_usage_ename(src_data->usage)
-			);
-			col_puts
-			(
-				action_col,
-				file_action_ename(src_data->action)
-			);
-			format_edit_number(edit_col, src_data);
-			if
-			(
-			      cstate_data->state == cstate_state_being_developed
-			&&
-				!change_file_up_to_date(pp, src_data)
-			)
-			{
-				fstate_src	psrc_data;
-
-				/*
-				 * The current head revision of the
-				 * branch may not equal the version
-				 * ``originally'' copied.
-				 */
-				psrc_data =
-					project_file_find
-					(
-						pp,
-						src_data->file_name
-					);
-				if (psrc_data && psrc_data->edit_number)
-				{
-					col_printf
-					(
-						edit_col,
-						" (%s)",
-						psrc_data->edit_number->str_text
-					);
-				}
-			}
-			if (src_data->edit_number_origin_new)
-			{
-				/*
-				 * The ``cross branch merge'' version.
-				 */
-				col_bol(edit_col);
-				col_printf
-				(
-					edit_col,
-					"{cross %4s}",
-				      src_data->edit_number_origin_new->str_text
-				);
-			}
-		}
-		col_puts
-		(
-			file_name_col,
-			src_data->file_name->str_text
-		);
-		if (src_data->about_to_be_created_by)
-		{
-			col_bol(file_name_col);
-			col_printf
-			(
-				file_name_col,
-				"About to be created by change %ld.",
-				magic_zero_decode(src_data->about_to_be_created_by)
-			);
-		}
-		if (src_data->deleted_by)
-		{
-			col_bol(file_name_col);
-			col_printf
-			(
-				file_name_col,
-				"Deleted by change %ld.",
-				magic_zero_decode(src_data->deleted_by)
-			);
-		}
-		if (src_data->locked_by)
-		{
-			col_bol(file_name_col);
-			col_printf
-			(
-				file_name_col,
-				"Locked by change %ld.",
-				magic_zero_decode(src_data->locked_by)
-			);
-		}
-		if (src_data->about_to_be_copied_by)
-		{
-			col_bol(file_name_col);
-			col_printf
-			(
-				file_name_col,
-				"About to be copied by change %ld.",
-				magic_zero_decode(src_data->about_to_be_copied_by)
-			);
-		}
-		if (src_data->move)
-		{
-			col_bol(file_name_col);
-			col_puts(file_name_col, "Moved ");
-			if (src_data->action == file_action_create)
-				col_puts(file_name_col, "from ");
-			else
-				col_puts(file_name_col, "to ");
-			col_puts(file_name_col, src_data->move->str_text);
-		}
-		col_eoln();
-	}
-
-	/*
-	 * clean up and go home
-	 */
-	col_close();
-	project_free(pp);
-	change_free(cp);
-	user_free(up);
-	trace((/*{*/"}\n"));
-}
-
-
-void
 list_change_history(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
@@ -1070,6 +765,8 @@ list_change_history(project_name, change_number)
 	trace(("list_change_history()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1230,6 +927,8 @@ list_changes_in_state_mask(project_name, state_mask)
 		state_mask));
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1469,6 +1168,8 @@ list_developers(project_name, change_number)
 	 */
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1546,6 +1247,8 @@ list_integrators(project_name, change_number)
 	 */
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1623,6 +1326,8 @@ list_reviewers(project_name, change_number)
 	 */
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1703,6 +1408,8 @@ list_project_history(project_name, change_number)
 	 */
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1834,6 +1541,8 @@ list_version(project_name, change_number)
 	trace(("list_version()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1968,6 +1677,8 @@ list_change_details(project_name, change_number)
 	trace(("list_change_details()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -2362,7 +2073,7 @@ list_change_details(project_name, change_number)
 				action_col,
 				file_action_ename(src_data->action)
 			);
-			format_edit_number(edit_col, src_data);
+			list_format_edit_number(edit_col, src_data);
 			if
 			(
 			      cstate_data->state == cstate_state_being_developed
@@ -3056,6 +2767,8 @@ list_default_change(project_name, change_number)
 	 */
 	if (!project_name)
 		project_name = user_default_project();
+	else
+		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);

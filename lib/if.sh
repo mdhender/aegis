@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #
 # Suggested project attribute:
 # integrate_fail_notify_command =
-#	"$lib/if.sh $p $c $developer $reviewer $integrator";
+#	"$datadir/if.sh $p $c $developer $reviewer $integrator";
 #
 aegis=aegis
 case $# in

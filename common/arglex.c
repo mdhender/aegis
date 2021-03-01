@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ static	char		**argv;
 	arglex_value_ty	arglex_value;
 	arglex_token_ty	arglex_token;
 static	arglex_table_ty	*utable;
-static	char		*partial;
+static	const char	*partial;
 
 
 /*
@@ -131,12 +131,12 @@ arglex_init(ac, av, tp)
 
 int
 arglex_compare(formal, actual)
-	char	*formal;
-	char	*actual;
+	const char	*formal;
+	const char	*actual;
 {
-	char	fc;
-	char	ac;
-	int	result;
+	char		fc;
+	char		ac;
+	int		result;
 
 	trace(("arglex_compare(formal = \"%s\", actual = \"%s\")\n{\n",
 		formal, actual));
@@ -502,7 +502,7 @@ arglex()
 		one:
 		arglex_token = hit[0]->t_token;
 		if (partial)
-			arg = partial;
+			arg = (char *)partial; /* const-ness hack */
 		else
 			arg = hit[0]->t_name;
 		break;
@@ -532,7 +532,7 @@ arglex()
 		}
 		fatal_raw
 		(
-			"option \"%s\" abmiguous (%s)",
+			"option \"%s\" ambiguous (%s)",
 			arg,
 			s1->str_text
 		);

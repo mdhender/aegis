@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -125,6 +125,18 @@ type_new(method, name)
 	trace(("return %08lX;\n", (long)type));
 	trace((/*{*/"}\n"));
 	return type;
+}
+
+
+void
+type_in_include_file(type)
+	type_ty	*type;
+{
+	trace(("type_in_include_file(type = %08lX)\n{\n"/*}*/, (long)type));
+	type->included_flag = 1;
+	if (type->method->in_include_file)
+		type->method->in_include_file(type);
+	trace((/*{*/"}\n"));
 }
 
 

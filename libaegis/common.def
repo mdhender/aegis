@@ -1,6 +1,6 @@
 /*	
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *	
  *	This program is free software; you can redistribute it and/or modify
@@ -83,3 +83,18 @@ type change_cause =
 );
 type file_action = (create, modify, remove, insulate);
 type file_usage = (source, build, test, manual_test);
+
+type metric =
+[
+	{
+		/*
+		 * The name of the metric.
+		 */
+		name = string;
+
+		/*
+		 * The value of the metric.
+		 */
+		value = real;
+	}
+];

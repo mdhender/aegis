@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement new change
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/time.h>
 
@@ -35,6 +35,7 @@
 #include <commit.h>
 #include <common.h>
 #include <error.h>
+#include <file.h>
 #include <help.h>
 #include <io.h>
 #include <lock.h>
@@ -138,7 +139,7 @@ cattr_defaults(a, pp, pc)
 	(
 		a->cause == change_cause_internal_improvement
 	||
-		a->cause == change_cause_internal_improvement
+		a->cause == change_cause_external_improvement
 	)
 	{
 		if (!(a->mask & cattr_test_exempt_mask))
@@ -250,15 +251,17 @@ new_change_main()
 	edit_ty		edit;
 	long		j;
 	pconf		pconf_data;
-	string_list_ty		carch;
-	string_list_ty		darch;
-	string_list_ty		parch;
+	string_list_ty	carch;
+	string_list_ty	darch;
+	string_list_ty	parch;
+	char		*output;
 
 	trace(("new_change_main()\n{\n"/*}*/));
 	cattr_data = 0;
 	project_name = 0;
 	edit = edit_not_set;
 	change_number = 0;
+	output = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -345,8 +348,36 @@ new_change_main()
 		case arglex_token_wait_not:
 			user_lock_wait_argument(new_change_usage);
 			break;
+
+		case arglex_token_output:
+			if (output)
+				duplicate_option(new_change_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_file(arglex_token_output, new_change_usage);
+				/* NOTREACHED */
+
+			case arglex_token_string:
+				output = arglex_value.alv_string;
+				break;
+
+			case arglex_token_stdio:
+				output = "";
+				break;
+			}
+			break;
 		}
 		arglex();
+	}
+	if (change_number && output)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_change,
+			arglex_token_output,
+			new_change_usage
+		);
 	}
 	if (edit != edit_not_set && cattr_data)
 	{
@@ -474,9 +505,26 @@ new_change_main()
 	cstate_data = change_cstate_get(cp);
 	cstate_data->state = cstate_state_awaiting_development;
 	pconf_data = change_pconf_get(cp, 0);
-	if (project_change_nth(pp, 0L, &j) == 0)
+	if (!pconf_data->build_command)
 	{
-		/* this is the first change */
+		/*
+		 * There is no build command.  This means that the project
+		 * does not yet have a ``config'' file.  From this,
+		 * infer that this is the first change of the project.
+		 *
+		 * It has to be the first change because: aeb will fail
+		 * when it can't find a build_command in the non-existent
+		 * config file, so you can't aede until there is a
+		 * valid config file, so you can't have a baseline with
+		 * *anything* in it unless it also has a valid config
+		 * file.  Ergo, there have been no integrations yet;
+		 * we must be the first change.
+		 *
+		 * There could be a couple of changes created before one
+		 * of them is sucessfully integrated, but it doesn't
+		 * happen all that often, so I'm not going to worry
+		 * about it.
+		 */
 		cattr_data->cause = change_cause_internal_enhancement;
 		cattr_data->test_baseline_exempt = 1;
 		cattr_data->mask |= cattr_test_baseline_exempt_mask;
@@ -490,8 +538,16 @@ new_change_main()
 	 * they may not give themselves a testing exemption,
 	 * or a architecture exemption,
 	 * only administrators may do that.
+	 *
+	 * Don't worry about this stuff for the very first change of
+	 * a project.
 	 */
-	if (!project_administrator_query(pp, user_name(up)))
+	if
+	(
+		pconf_data->build_command
+	&&
+		!project_administrator_query(pp, user_name(up))
+	)
 	{
 		/*
 		 * If they are asking for default behaviour, don't complain.
@@ -619,6 +675,30 @@ new_change_main()
 	 * and write pstate back out.
 	 */
 	project_change_append(pp, change_number, 0);
+
+	/*
+	 * If there is an output option,
+	 * write the change number to the file.
+	 */
+	if (output)
+	{
+		string_ty	*content;
+
+		content = str_format("%ld", magic_zero_decode(change_number));
+		if (*output)
+		{
+			string_ty	*fn;
+			
+			user_become(up);
+			fn = str_from_c(output);
+			file_from_string(fn, content, 0644);
+			str_free(fn);
+			user_become_undo();
+		}
+		else
+			cat_string_to_stdout(content);
+		str_free(content);
+	}
 
 	/*
 	 * Unlock the pstate file.

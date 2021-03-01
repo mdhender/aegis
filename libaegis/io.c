@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,60 +23,79 @@
 #include <ac/ctype.h>
 #include <ac/string.h>
 
-#include <indent.h>
 #include <io.h>
+#include <output.h>
 #include <sub.h>
 #include <str_list.h>
 #include <zero.h>
 
 
 void
-integer_write(name, this)
-	char		*name;
+integer_write(fp, name, this)
+	output_ty	*fp;
+	const char	*name;
 	long		this;
 {
 	if (this == INTEGER_NOT_SET && name)
 		return;
 	if (name)
-		indent_printf("%s = ", name);
+		output_fprintf(fp, "%s = ", name);
 	if (name && !strcmp(name, "umask"))
-		indent_printf("0%lo", this & 07777);
+		output_fprintf(fp, "0%lo", this & 07777);
 	else
 	{
 		if (this == MAGIC_ZERO)
-			indent_printf("ZERO");
+			output_fputs(fp, "ZERO");
 		else
-			indent_printf("%ld", this);
+			output_fprintf(fp, "%ld", this);
 	}
 	if (name)
-		indent_printf(";\n");
+		output_fputs(fp, ";\n");
 }
 
 
 void
-time_write(name, this)
-	char		*name;
+real_write(fp, name, this)
+	output_ty	*fp;
+	const char	*name;
+	double		this;
+{
+	if (this == REAL_NOT_SET && name)
+		return;
+	if (name)
+		output_fprintf(fp, "%s = ", name);
+	output_fprintf(fp, "%g", this);
+	if (name)
+		output_fputs(fp, ";\n");
+}
+
+
+void
+time_write(fp, name, this)
+	output_ty	*fp;
+	const char	*name;
 	time_t		this;
 {
 	if (this == TIME_NOT_SET && name)
 		return;
 	if (name)
-		indent_printf("%s = ", name);
+		output_fprintf(fp, "%s = ", name);
 	/*
 	 * Time is always an arithmetic type, never a structure.
 	 * This works on every system the author has seen,
 	 * without loss of precision.
 	 * (Loss of fractions of a second is acceptable.)
 	 */
-	indent_printf("%ld", (long)this);
+	output_fprintf(fp, "%ld", (long)this);
 	if (name)
-		indent_printf("; /* %.24s */\n", ctime(&this));
+		output_fprintf(fp, "; /* %.24s */\n", ctime(&this));
 }
 
 
 void
-string_write(name, this)
-	char		*name;
+string_write(fp, name, this)
+	output_ty	*fp;
+	const char	*name;
 	string_ty	*this;
 {
 	char		*s;
@@ -85,8 +104,8 @@ string_write(name, this)
 	if (!this && name)
 		return;
 	if (name)
-		indent_printf("%s = ", name);
-	indent_putchar('"');
+		output_fprintf(fp, "%s = ", name);
+	output_fputc(fp, '"');
 	if (this)
 	{
 		count = 0;
@@ -124,19 +143,19 @@ string_write(name, this)
 				cp = strchr("\bb\ff\nn\rr\tt", c);
 				if (cp)
 				{
-					indent_putchar('\\');
-					indent_putchar(cp[1]);
+					output_fputc(fp, '\\');
+					output_fputc(fp, cp[1]);
 					if (c == '\n')
-						indent_printf("\\\n");
+						output_fputs(fp, "\\\n");
 				}
 				else
 				{
 					escape:
 					if (isdigit(s[1]))
 						/* not entirely portable */
-						indent_printf("\\%03o", c);
+						output_fprintf(fp, "\\%03o", c);
 					else
-						indent_printf("\\%o", c);
+						output_fprintf(fp, "\\%o", c);
 				}
 			}
 			else
@@ -161,16 +180,16 @@ string_write(name, this)
 	
 				case '\\':
 				case '"':
-					indent_putchar('\\');
+					output_fputc(fp, '\\');
 					break;
 				}
-				indent_putchar(c);
+				output_fputc(fp, c);
 			}
 		}
 	}
-	indent_putchar('"');
+	output_fputc(fp, '"');
 	if (name)
-		indent_printf(";\n");
+		output_fputs(fp, ";\n");
 }
 
 
@@ -180,7 +199,7 @@ static string_list_ty comment;
 void
 io_comment_append(scp, fmt)
 	sub_context_ty	*scp;
-	char		*fmt;
+	const char	*fmt;
 {
 	string_ty	*s;
 	string_list_ty		wl;
@@ -201,15 +220,16 @@ io_comment_append(scp, fmt)
 
 
 void
-io_comment_emit()
+io_comment_emit(fp)
+	output_ty	*fp;
 {
 	size_t		j;
 
 	if (!comment.nstrings)
 		return;
-	indent_printf("/*\n");
+	output_fputs(fp, "/*\n");
 	for (j = 0; j < comment.nstrings; ++j)
-		indent_printf("** %s\n", comment.string[j]->str_text);
-	indent_printf("*/\n");
+		output_fprintf(fp, "** %s\n", comment.string[j]->str_text);
+	output_fputs(fp, "*/\n");
 	string_list_destructor(&comment);
 }

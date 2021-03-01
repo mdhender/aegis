@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,12 @@
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: csh user config for aegis
+#
+# @configure_input@
+#
+# Please Note: this file will be over-written by the next installation
+# of Aegis.  If you make local modifications, you will need to remember
+# to make them again after the next upgrade.
 #
 if ( -d $HOME/lib/aegis/. ) then
 	setenv AEGIS_PATH $HOME/lib/aegis
@@ -40,9 +46,39 @@ endif
 # manual pages in the user's preferred language.
 #
 if ( ! $?MANPATH ) then
-	setenv MANPATH /usr/man
+	if ( "`uname`" == "Linux" ) then
+		setenv MANPATH `man -w`
+	else
+		setenv MANPATH /usr/man
+	endif
 endif
 setenv MANPATH ${MANPATH}:@mandir@:@datadir@
+
+#
+# Set the AEGIS_AUTOMOUNT_POINTS environment variable to the names
+# of the directories which the automounter uses to temporarily mount
+# file systems.  Use with extreme caution as this distorts Aegis' idea
+# of the shape of the filesystem.
+#
+#	/tmp_mnt is typical of Sun automounters
+#	/a is the default for amd, an OpenSource automounter
+#	/.automount is typical of amd on Linux
+#
+# The automounters need to be configured so that the path below the
+# automount point is *identical* to the path without it - because all
+# Aegis tries to do is remove the automount prefix *if* the file
+# stat()s the same with and without it.  This is the default for the
+# Sun automounter, but not typical in the examples in the amd user guide.
+#
+#	This assignment should really be bracketed by a conditional, but
+#	many (all?) cshells have a limit of 20 characters in a variable
+#	name (but not environment variables) making the $?name thing
+#	barf because it checks for a variable *before* it checks for an
+#	environment variable.
+#
+#if ( ! $?AEGIS_AUTOMOUNT_POINTS ) then
+	setenv AEGIS_AUTOMOUNT_POINTS "/tmp_mnt:/a:/.automount"
+#endif
 
 #
 # Each of the Aegis commands has its own alias This is essential for

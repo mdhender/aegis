@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,11 +58,11 @@
 
 int
 gmatch(formal, actual)
-	char	*formal;
-	char	*actual;
+	const char	*formal;
+	const char	*actual;
 {
-	char	*cp;
-	int	 result;
+	const char	*cp;
+	int		 result;
 
 	trace(("gmatch(formal = %8.8lX, actual = %8.8lX)\n{\n"/*}*/,
 		formal, actual));

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <ac/string.h>
 
+#include <exeext.h>
 #include <progname.h>
 
 
@@ -47,6 +48,13 @@ progname_set(s)
 		 */
 		if (!progname)
 		{
+			/*
+			 * Nuke any ugly progname suffix
+			 * if it has one.
+			 */
+			int n = exeext(s);
+			if (n > 0)
+				s[n] = 0;
 			progname = s;
 			break;
 		}

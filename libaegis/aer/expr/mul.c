@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate mul expressions
  */
 
-#include <math.h>
+#include <ac/math.h>
 
 #include <aer/expr/mul.h>
 #include <aer/value/error.h>

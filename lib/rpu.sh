@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MANIFEST: command used to notify by email that a change review passed is rescinded
 #
 # Suggested project attribute:
-# review_pass_undo_notify_command = "$lib/de.inews.sh $p $c $developer"
+# review_pass_undo_notify_command = "$datadir/de.inews.sh $p $c $developer"
 #
 aegis=aegis
 case $# in

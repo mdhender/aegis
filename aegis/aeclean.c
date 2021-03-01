@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: clean a change development directory
  */
 
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/time.h>
@@ -490,7 +490,7 @@ clean_main()
 		 * See if we need to diff the file
 		 */
 		user_become(up);
-		ignore = change_fingerprint_same(c_src_data->diff_file_fp, path_d);
+		ignore = change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
 		user_become_undo();
 		if (!ignore)
 		{

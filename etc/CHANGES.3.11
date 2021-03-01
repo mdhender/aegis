@@ -1,0 +1,729 @@
+
+
+
+Project "aegis.3.11"						 Page 1
+List of Changes				       Fri Mar 26 07:47:12 1999
+
+Change	State		Description
+------- -------		-------------
+  10	completed	prepare for release
+  11	completed	apache changes
+  12	completed	aedist -rec robustness
+  15	completed	aedist list/receive bug
+  16	completed	wctype portability
+  17	completed	aedist to avoid nonexistent files
+  18	completed	zlib
+  19	completed	MANPATH
+  20	completed	aedist cgi robustness
+  21	completed	aedist -send robustness
+  22	completed	symlink exception patterns
+  23	completed	aedist -rec/-list common
+  25	completed	gcc 2.8
+
+
+
+Project "aegis.3.11", Change 10					 Page 1
+Change Details				       Fri Mar 26 07:47:12 1999
+
+NAME
+	Project "aegis.3.11", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares Aegis for the next public release.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	create	    1	      etc/CHANGES.3.10
+	source	modify	    6 -> 7    lib/en/readme/new.3.10.so
+	source	create	    1	      lib/en/readme/new.3.11.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Mar 17	pmiller
+			21:10:33 1999
+	develop_begin	Wed Mar 17	pmiller	 Elapsed time: 0.056
+			21:11:06 1999		 days.
+	develop_end	Wed Mar 17	pmiller
+			21:36:23 1999
+	review_pass	Wed Mar 17	pmiller
+			21:36:28 1999
+	integrate_begin Wed Mar 17	pmiller	 Elapsed time: 0.134
+			21:36:35 1999		 days.
+	integrate_pass	Wed Mar 17	pmiller
+			22:36:59 1999
+
+
+
+Project "aegis.3.11", Change 11					 Page 1
+Change Details				       Fri Mar 26 07:47:13 1999
+
+NAME
+	Project "aegis.3.11", Delta 2, Change 11.
+
+SUMMARY
+	apache changes
+
+DESCRIPTION
+	This change updates the httpd support to cope with apache 1.3
+	config changes.
+
+	My thanks to Walter Franzini <walter@sys-net.it> for reporting
+	this problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   14 -> 15   etc/configure.in
+	source	modify	    4 -> 5    lib/en/lsm/main.roff
+	source	modify	    9 -> 10   lib/en/readme/main.man
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Mar 19	pmiller
+			08:38:47 1999
+	develop_begin	Fri Mar 19	pmiller	 Elapsed time: 0.081
+			08:38:56 1999		 days.
+	develop_end	Fri Mar 19	pmiller	 Elapsed time: 0.285
+			09:15:17 1999		 days.
+	review_pass	Fri Mar 19	pmiller
+			11:23:40 1999
+	integrate_begin Fri Mar 19	pmiller	 Elapsed time: 0.798
+			11:23:45 1999		 days.
+	integrate_pass	Fri Mar 19	pmiller
+			17:22:51 1999
+
+
+
+Project "aegis.3.11", Change 12					 Page 1
+Change Details				       Fri Mar 26 07:47:13 1999
+
+NAME
+	Project "aegis.3.11", Delta 13, Change 12.
+
+SUMMARY
+	aedist -rec robustness
+
+DESCRIPTION
+	This change adds more robustness to the aedist -receive,
+	particularly to make it able to cope when there are not 822
+	headers present.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    2 -> 3    aedist/header.c
+	source	modify	    2 -> 3    aedist/input/822wrap.c
+	source	modify	    1 -> 2    aedist/input/822wrap.h
+	source	modify	    3 -> 4    aedist/list.c
+	source	modify	    1 -> 2    aedist/open.c
+	source	modify	    1 -> 2    common/stracc.c
+	source	modify	    6 -> 7    libaegis/input.c
+	source	modify	    6 -> 7    libaegis/input/crlf.c
+	source	modify	    3 -> 4    libaegis/input/gunzip.c
+	test	create	    1	      test/00/t0098a.sh
+	test	create	    1	      test/00/t0099a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Sat Mar 20	pmiller
+			21:59:46 1999
+	develop_begin	Sat Mar 20	pmiller	 Elapsed time: 4.161
+			21:59:55 1999		 days.
+	develop_end	Thu Mar 25	pmiller	 Elapsed time: 0.195
+			23:12:23 1999		 days.
+	review_pass	Fri Mar 26	pmiller
+			00:40:21 1999
+	integrate_begin Fri Mar 26	pmiller	 Elapsed time: 0.153
+			00:40:44 1999		 days.
+	integrate_pass	Fri Mar 26	pmiller
+			01:49:26 1999
+
+
+
+Project "aegis.3.11", Change 15					 Page 1
+Change Details				       Fri Mar 26 07:47:13 1999
+
+NAME
+	Project "aegis.3.11", Delta 5, Change 15.
+
+SUMMARY
+	aedist list/receive bug
+
+DESCRIPTION
+	This change corrects a bug which was observed when the
+	compressed data stream (non-base64 file) just happened to
+	contain a CRLF sequence.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    1 -> 2    aedist/header.c
+	source	modify	    1 -> 2    aedist/input/822wrap.c
+	source	modify	    1 -> 2    aedist/list.c
+	source	modify	   11 -> 12   aedist/receive.c
+	source	modify	    8 -> 9    aedist/send.c
+	source	modify	    7 -> 8    aegis/aede.c
+	source	modify	    5 -> 6    libaegis/input/crlf.c
+	source	modify	    1 -> 2    libaegis/input/crlf.h
+	source	modify	    4 -> 5    libaegis/input/env.c
+	source	modify	    1 -> 2    libaegis/input/file_text.c
+	source	modify	    3 -> 4    libaegis/input/private.h
+	source	create	    1	      libaegis/input/pushba_trans.c
+	source	modify	    8 -> 9    libaegis/lex.c
+	source	modify	    2 -> 3    test_base64/main.c
+	source	modify	    2 -> 3    test_zlib/main.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Mon Mar 22	pmiller
+			16:55:13 1999
+	develop_begin	Mon Mar 22	pmiller	 Elapsed time: 0.082
+			16:55:18 1999		 days.
+	develop_end	Mon Mar 22	pmiller
+			17:32:06 1999
+	review_pass	Mon Mar 22	pmiller	 Elapsed time: 0.667
+			17:32:12 1999		 days.
+	develop_end_	Mon Mar 22	pmiller	 Elapsed time: 0.492
+	undo		22:32:16 1999		 days.
+	develop_end	Tue Mar 23	pmiller
+			02:13:34 1999
+
+
+
+Project "aegis.3.11", Change 15					 Page 2
+Change Details				       Fri Mar 26 07:47:13 1999
+
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	review_pass	Tue Mar 23	pmiller
+			02:15:53 1999
+	integrate_begin Tue Mar 23	pmiller	 Elapsed time: 0.604
+			02:16:01 1999		 days.
+	integrate_pass	Tue Mar 23	pmiller
+			06:47:40 1999
+
+
+
+Project "aegis.3.11", Change 16					 Page 1
+Change Details				       Fri Mar 26 07:47:13 1999
+
+NAME
+	Project "aegis.3.11", Delta 4, Change 16.
+
+SUMMARY
+	wctype portability
+
+DESCRIPTION
+	This change adds additional wctype.h insulation.
+
+	My thanks to John Huddleston <jhudd@cody.itc.nrcs.usda.gov> for
+	reporting this problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    9 -> 10   common/ac/wctype.h
+	source	modify	    8 -> 9    etc/aegis.html
+	source	modify	   13 -> 14   lib/en/building/main.man
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Mon Mar 22	pmiller
+			16:43:33 1999
+	develop_begin	Mon Mar 22	pmiller	 Elapsed time: 0.087
+			16:43:37 1999		 days.
+	develop_end	Mon Mar 22	pmiller
+			17:22:58 1999
+	review_pass	Mon Mar 22	pmiller
+			17:25:11 1999
+	integrate_begin Mon Mar 22	pmiller	 Elapsed time: 0.634
+			17:25:29 1999		 days.
+	integrate_	Mon Mar 22	pmiller	 Elapsed time: 0.124
+	begin_undo	22:10:51 1999		 days.
+	integrate_begin Mon Mar 22	pmiller	 Elapsed time: 0.130
+			23:06:43 1999		 days.
+	integrate_pass	Tue Mar 23	pmiller
+			00:05:15 1999
+
+
+
+Project "aegis.3.11", Change 17					 Page 1
+Change Details				       Fri Mar 26 07:47:13 1999
+
+NAME
+	Project "aegis.3.11", Delta 3, Change 17.
+
+SUMMARY
+	aedist to avoid nonexistent files
+
+DESCRIPTION
+	This change corrects aedist to avoid project files which do not
+	yet exist.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    7 -> 8    aedist/send.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Mon Mar 22	pmiller
+			22:09:00 1999
+	develop_begin	Mon Mar 22	pmiller	 Elapsed time: 0.051
+			22:09:18 1999		 days.
+	develop_end	Mon Mar 22	pmiller
+			22:32:24 1999
+	review_pass	Mon Mar 22	pmiller
+			22:32:56 1999
+	integrate_begin Mon Mar 22	pmiller
+			22:33:40 1999
+	integrate_	Mon Mar 22	pmiller
+	begin_undo	22:37:13 1999
+	develop_end_	Mon Mar 22	pmiller
+	undo		22:37:18 1999
+	develop_end	Mon Mar 22	pmiller
+			22:39:27 1999
+	review_pass	Mon Mar 22	pmiller
+			22:39:28 1999
+	integrate_begin Mon Mar 22	pmiller	 Elapsed time: 0.057
+			22:39:32 1999		 days.
+	integrate_pass	Mon Mar 22	pmiller
+			23:05:00 1999
+
+
+
+Project "aegis.3.11", Change 18					 Page 1
+Change Details				       Fri Mar 26 07:47:14 1999
+
+NAME
+	Project "aegis.3.11", Delta 8, Change 18.
+
+SUMMARY
+	zlib
+
+DESCRIPTION
+	This change corrects the use of zutil.h to use zlib.h like your
+	supposed to.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	create	    1	      common/ac/zlib.c
+	source	create	    1	      common/ac/zlib.h
+				      Moved from common/ac/zutil.h
+	source	remove	    1	      common/ac/zutil.h
+				      Moved to common/ac/zlib.h
+	source	modify	   15 -> 16   etc/configure.in
+	source	modify	    3 -> 4    etc/i18n.cook
+	source	modify	    2 -> 3    libaegis/input/gunzip.c
+	source	modify	    2 -> 3    libaegis/output/gzip.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Mar 23	pmiller
+			06:40:44 1999
+	develop_begin	Tue Mar 23	pmiller	 Elapsed time: 1.000
+			06:40:53 1999		 days.
+	develop_end	Tue Mar 23	pmiller
+			21:51:28 1999
+	review_pass	Tue Mar 23	pmiller
+			21:54:27 1999
+	integrate_begin Tue Mar 23	pmiller	 Elapsed time: 0.289
+			21:54:33 1999		 days.
+	integrate_pass	Wed Mar 24	pmiller
+			00:04:32 1999
+
+
+
+Project "aegis.3.11", Change 19					 Page 1
+Change Details				       Fri Mar 26 07:47:14 1999
+
+NAME
+	Project "aegis.3.11", Delta 7, Change 19.
+
+SUMMARY
+	MANPATH
+
+DESCRIPTION
+	This change improves the way MANPATH is set in the profile and
+	cshrc files.
+
+	My thanks to Walter Franzini <walter@sys-net.it> for reporting
+	this problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    9 -> 10   lib/cshrc.in
+	source	modify	    6 -> 7    lib/profile.in
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Mar 23	pmiller
+			06:47:23 1999
+	develop_begin	Tue Mar 23	pmiller	 Elapsed time: 1.000
+			06:47:32 1999		 days.
+	develop_end	Tue Mar 23	pmiller
+			17:24:43 1999
+	review_pass	Tue Mar 23	pmiller
+			17:24:47 1999
+	integrate_begin Tue Mar 23	pmiller	 Elapsed time: 0.438
+			17:24:53 1999		 days.
+	integrate_pass	Tue Mar 23	pmiller
+			20:42:12 1999
+
+
+
+Project "aegis.3.11", Change 20					 Page 1
+Change Details				       Fri Mar 26 07:47:14 1999
+
+NAME
+	Project "aegis.3.11", Delta 6, Change 20.
+
+SUMMARY
+	aedist cgi robustness
+
+DESCRIPTION
+	This change adds more robustness to the aedist CGI interface.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    5 -> 6    lib/aegis.cgi.in
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Mar 23	pmiller
+			07:00:55 1999
+	develop_begin	Tue Mar 23	pmiller	 Elapsed time: 0.036
+			07:01:00 1999		 days.
+	develop_end	Tue Mar 23	pmiller
+			07:16:59 1999
+	review_pass	Tue Mar 23	pmiller
+			07:17:06 1999
+	integrate_begin Tue Mar 23	pmiller	 Elapsed time: 1.000
+			07:17:10 1999		 days.
+	integrate_pass	Tue Mar 23	pmiller
+			17:23:56 1999
+
+
+
+Project "aegis.3.11", Change 21					 Page 1
+Change Details				       Fri Mar 26 07:47:14 1999
+
+NAME
+	Project "aegis.3.11", Delta 9, Change 21.
+
+SUMMARY
+	aedist -send robustness
+
+DESCRIPTION
+	This change adds a Content-name field to the generated aedist
+	headers.  Hopefully, this will give the web interface a name to
+	save it as, rather than the name of the CGI script.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    9 -> 10   aedist/send.c
+	test	modify	    1 -> 2    test/00/t0089a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Mar 24	pmiller
+			06:49:00 1999
+	develop_begin	Wed Mar 24	pmiller	 Elapsed time: 0.040
+			06:49:04 1999		 days.
+	develop_end	Wed Mar 24	pmiller	 Elapsed time: 0.041
+			07:06:57 1999		 days.
+	review_pass	Wed Mar 24	pmiller
+			07:25:24 1999
+	integrate_begin Wed Mar 24	pmiller	 Elapsed time: 0.313
+			07:25:32 1999		 days.
+	integrate_pass	Wed Mar 24	pmiller
+			09:46:28 1999
+
+
+
+Project "aegis.3.11", Change 22					 Page 1
+Change Details				       Fri Mar 26 07:47:14 1999
+
+NAME
+	Project "aegis.3.11", Delta 11, Change 22.
+
+SUMMARY
+	symlink exception patterns
+
+DESCRIPTION
+	There are two config entries: symlink_exceptions and integrate_
+	begin_exceptions.  integrate_begin_exceptions allows patterns.
+	symlink_exceptions does not allow patterns.  Even so, you
+	specify patterns in the sample project.	 I will try changing
+	the str_equal to a gmatch (and swapping the arguments) in the
+	build symlink routine.
+
+	My thanks to David Brown <davidb@qualcomm.com> for reporting
+	this problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   12 -> 13   lib/en/man5/aepconf.5
+	source	modify	    1 -> 2    libaegis/change/build/symlinks.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Mar 24	pmiller
+			06:30:08 1999
+	develop_begin	Wed Mar 24	pmiller	 Elapsed time: 1.102
+			06:30:17 1999		 days.
+	develop_end	Thu Mar 25	pmiller
+			07:16:04 1999
+	review_pass	Thu Mar 25	pmiller
+			07:16:31 1999
+	integrate_begin Thu Mar 25	pmiller	 Elapsed time: 0.685
+			07:17:30 1999		 days.
+	integrate_pass	Thu Mar 25	pmiller
+			12:25:44 1999
+
+
+
+Project "aegis.3.11", Change 23					 Page 1
+Change Details				       Fri Mar 26 07:47:15 1999
+
+NAME
+	Project "aegis.3.11", Delta 10, Change 23.
+
+SUMMARY
+	aedist -rec/-list common
+
+DESCRIPTION
+	This change factors out the common portion of aedist -list and
+	aedist -receive, to keep them in sync.
+
+	This change must pass a full regression test.  This change is
+	exempt from testing against the development directory.	This
+	change is exempt from testing against the baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    2 -> 3    aedist/list.c
+	source	create	    1	      aedist/open.c
+	source	create	    1	      aedist/open.h
+	source	modify	   12 -> 13   aedist/receive.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Mar 24	pmiller
+			06:55:57 1999
+	develop_begin	Wed Mar 24	pmiller	 Elapsed time: 0.786
+			06:56:04 1999		 days.
+	develop_end	Wed Mar 24	pmiller	 Elapsed time: 0.064
+			12:49:45 1999		 days.
+	review_pass	Wed Mar 24	pmiller
+			13:18:34 1999
+	integrate_begin Wed Mar 24	pmiller	 Elapsed time: 0.175
+			13:18:41 1999		 days.
+	integrate_pass	Wed Mar 24	pmiller
+			14:37:17 1999
+
+
+
+Project "aegis.3.11", Change 25					 Page 1
+Change Details				       Fri Mar 26 07:47:15 1999
+
+NAME
+	Project "aegis.3.11", Delta 12, Change 25.
+
+SUMMARY
+	gcc 2.8
+
+DESCRIPTION
+	This change corrects a problem where stdarg.h is not correctly
+	detected for gcc 2.8, due to a change in the handling of -ansi.
+
+	My thanks to Fabien Campagne <campagne@Inka.MSSM.EDU> for
+	reporting this problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   16 -> 17   etc/configure.in
+	source	modify	    1 -> 2    lib/en/readme/new.3.11.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Thu Mar 25	pmiller
+			06:29:50 1999
+	develop_begin	Thu Mar 25	pmiller	 Elapsed time: 1.000
+			06:29:58 1999		 days.
+	develop_end	Thu Mar 25	pmiller
+			21:35:54 1999
+	review_pass	Thu Mar 25	pmiller
+			21:35:57 1999
+	integrate_begin Thu Mar 25	pmiller	 Elapsed time: 0.409
+			21:36:03 1999		 days.
+	integrate_pass	Fri Mar 26	pmiller
+			00:40:03 1999

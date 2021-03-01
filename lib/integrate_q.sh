@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1998 Peter Miller;
+#	Copyright (C) 1995, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ tmp=/tmp/intq.$$
 cat > $tmp.dev << 'fubar'
 	columns(80);
 	auto cs;
-	cs = project[project_name()].state.change[change_number()];
+	cs = project[project_name()].state.branch.change[change_number()];
 	auto developer;
 	developer = "nobody";
 	auto h;
@@ -73,7 +73,7 @@ tmp=/tmp/intq.$$
 cat > $tmp.test << 'fubar'
 	columns(80);
 	auto cs;
-	cs = project[project_name()].state.change[change_number()];
+	cs = project[project_name()].state.branch.change[change_number()];
 	print("test=" ## !cs.test_exempt ## ";");
 	print("test_baseline=" ## !cs.test_baseline_exempt ## ";");
 	print("regression_test=" ## !cs.regression_test_exempt ## ";");

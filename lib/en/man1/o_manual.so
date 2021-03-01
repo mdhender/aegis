@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,5 +23,5 @@
 .B -MANual
 This option may be used to specify manual tests.
 Manual tests require some human intervention,  e.g.:
-confirmation of some screen behaviour (X11, for instance),
+confirmation of some screen behavior (X11, for instance),
 or some user action, "unplug ethernet cable now".

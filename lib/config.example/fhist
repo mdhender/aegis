@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, 1996, 1998 Peter Miller.
+ *	This file is in the Public Domain, 1999 Peter Miller.
  *
  * MANIFEST: example use of fhist in the project config file
  *
@@ -19,9 +19,9 @@
  * intentionally identical.  This minimizes problems when using
  * branches.
  *
- * The ${quote ...} construct is used to quote filesnames whicg contain
+ * The ${quote ...} construct is used to quote filenames which contain
  * shell special characters.  A minimum of quoting is performed, so if
- * the filenames do not contail shell special characters, no quotes will
+ * the filenames do not contain shell special characters, no quotes will
  * be used.
  */
 
@@ -95,7 +95,7 @@ history_put_command =
  */
 history_query_command =
 	"fhist ${quote ${basename $history}} -l 0 \
--p ${quote ${dirname $history} -q";
+-p ${quote ${dirname $history}} -q";
 
 /*
  * Compare two files using fcomp.  The -w option produces an output of
@@ -161,6 +161,6 @@ diff_command =
  * they usually do).  An exit status which is non-zero means something
  * is wrong.
  */
-diff3_command =
+merge_command =
 	"fmerge ${quote $original} ${quote $MostRecent} ${quote $input} \
 -o ${quote $output} -c /dev/null";

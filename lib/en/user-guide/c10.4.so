@@ -1,0 +1,120 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Geographically Distributed Development, Security
+.\"
+.nh 2 "Security"
+.LP
+This section deals with security issues.
+Security isn't just ``keep the bad guys out'', it actually covers
+\fIavailability\fP, \fIintegrity\fP and \fIconfidentiality\fP.
+.IP Availability: 8n
+refers to the system being available for use by authorised users.
+Denial of service and crashes are examples of bad things in this area.
+.IP Integrity: 8n
+refers to the system being in a known good state.  Corrupted change sets
+and un-buildable repositories are examples of bad things in this area.
+.IP Confidentiality: 8n
+refers to the system being available \fIonly\fP to authorised users.
+For many Open Source projects, this isn't a large concern, but for
+corporate users of Aegis, non-disclosure of change-sets as they cross
+the Internet is a serious requirement.
+.LP
+As you can see, a strategy of ``keep the bad guys out'' is necessary,
+but not sufficient, to satisfy security.
+.LP
+This section covers the above security issues, as applied to the use of
+\fIaedist\fP to move change sets around.
+.nh 3 "Trojan Horses"
+.LP
+``A Trojan horse is an apparently useful program containing hidden
+functions that can exploit the privileges of the user [running the
+program], with a resulting security threat.  A Trojan horse does things
+that the program user did not intend\**.''
+.FS
+Summers, Rita C.,
+\fISecure Computing Threats and Safeguards\fP,
+McGraw-Hill, 1997.
+.FE
+.LP
+In order to forestall this threat, \fIaedist\fP will cease development
+of the change if it detects the potential for a Trojan horse.
+These include...
+.IP \(bu 2n
+Changing the project \fIconfig\fP file.
+This file contains the build command and the difference commands,
+both of which would be run before a reviewer saw them to confirm they
+were acceptable.
+.IP \(bu 2n
+Changing any of the files named in the \fItrojan_horse_suspect\fP field
+of the project \fIconfig\fP file.  This lets you cover things like the
+build tool's configuration file (\fIe.g.\fP the Makefile or the cookbook),
+and any scripts or code generators which would be run by the build.
+.LP
+This isn't exhaustive protection, and it depends on keeping the \fItrojan
+horse suspect\fP list up-to-date.  (It accepts patterns, so it's not
+too onerous.)  For better protection, you need to validate the sender
+and the message.
+.nh 3 "PGP"
+.LP
+\fIanyone want to advise me what to put here?\fP
+.nh 3 "Sorcerer's Apprentice"
+.LP
+In a push system, with a central master server and a collection of
+contributors, all of which are using automatic send, as described above,
+a potential explosion of redundant messages is possible.  Viz:
+.IP \(bu 2n
+Contributor integrates a change, which is dispatched to the master server.
+.IP \(bu 2n
+Maintainer integrates the change set into the master repository.
+.IP \(bu 2n
+Master repository automatically dispatches the change set to all of
+the contributors.
+.IP \(bu 2n
+Each of the contributors receives and integrates the change,
+each of which are dispatched to the master server.
+.IP \(bu 2n
+The master server is inundated with change sets it already has.
+.IP \(bu 2n
+If these change sets were to be integrated, the storm repeats, growing
+exponentially every time it goes around the loop.
+.LP
+To prevent this, \fIaedist\fP does several things...
+.IP \(bu 2n
+Before the change is built, an \fIaecpu --unchanged\fP is run.  If there
+is nothing left, the change is abandoned, because you already have it.
+(This doesn't always work, because propagation delays may try to
+\fIreverse\fP a subsequent local change.)
+.IP \(bu 2n
+When a change set is sent, an RFC 822 style header is added to the
+description.  This includes From and Date.  When a change set is received,
+a Received line is added.  Too many Received lines causes the change set
+to be dropped \- for for a star topology the maximum is 2.
+(This doesn't always work, because the description could be edited to rip
+it off again.)
+(This doesn't always work, because the maintainer may edit it in some
+ways before comitting it, and forget to rip off (enough of) the header.)
+(This doesn't always work, because hierachical topologies will group
+change sets together.)
+(This doesn't always work, because a baseline pull will group change
+sets together.)
+.IP \(bu 2n
+Set the description to indicate it was received by aedist?
+Use this to influence the decision to send it off again at integrate pass?
+How?

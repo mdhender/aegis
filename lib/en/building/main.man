@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -79,6 +79,7 @@ that you can run in the future to recreate the current configuration.
 Before you start configuring,
 it is worth reading the \fIOTHER USEFUL SOFTWARE\fP section,
 below.
+.PP
 The \fIconfigure\fP script checks for the internationalization library
 and functions.
 If your system does not have them,
@@ -92,6 +93,22 @@ You must do the GNU gettext install \fIbefore\fP running the
 even for English speakers, will be terse and uninformative.
 Remember to use the GNU gettext configure \fI--with-gnu-gettext\fP option
 if your system has native gettext tools.
+.PP
+The \fIconfigure\fP script checks for the compression library and
+functions.  If your system does not have them, it is worth fetching
+and installing \fBGNU zlib\fP compression library before you run the
+\fIconfigure\fP script.
+(See \f(CWhttp://www.cdrom.com/pub/infozip/zlib/\fP for download.)
+This is essential, becaise Aegis will not build.
+without it.  (\fBNote: this is not the same thing as \f(CWzlib\fP\f(CBc\fP
+which does something completely different.)
+.PP
+The \fIconfigure\fP script checks for the regular expression library
+and functions.  If your system does not have them, it is worth fetching
+and installing \fBGNU rx\fP compression library before you run the
+\fIconfigure\fP script.
+(Note: test 81 will fail if the POSIX regular expression functions are
+not available.)
 .SS Running Configure
 Normally,
 you just
@@ -271,6 +288,25 @@ the author encourages you to figure out how
 could check whether to do them,
 and mail diffs or instructions to the author
 so that they can be included in the next release.
+.SS Common Problem
+It is very common that other packages, such as \fIgettext\fP, \fIrx\fP
+and \fIzlib\fP are installed using \fI/usr/local\fP as the prefix.
+However, the configure script can't work this out, even when it, too,
+is using \fI/usr/local\fP as the prefix.
+.PP
+To cope with this, you need to say
+.RS
+.ft CW
+.nf
+$ \f(CBCFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure\fP
+\fI\&...lots of output...\fP
+$
+.fi
+.ft R
+.RE
+when running configure.  Substitute the appropriate prefix if you are
+using something other than \fI/usr/local\fP.
+Watch the output... it should now find your installed packages correctly.
 .SS PRIVILEGES
 There are a number of items in the generated
 .I Makefile
@@ -542,6 +578,7 @@ because the RCS configuration hard-codes the pathnames of the GNU diff
 utilities it needs into the RCS executables.)
 .TP 8n
 GNU Gettext
+.RS
 Many systems do not yet supply the \fIgettext\fP(3) function.
 Aegis uses this function to internationalize its error messages.
 If your system does not have this function,
@@ -551,11 +588,20 @@ If you do not, Aegis will still work, but the error messages will
 be rather terse, even for English speakers.
 (You will be able to tell if your system has the internationalization
 library and functions, because the \fIconfigure\fP script will report
-finding \f(CW-lintl\fP and \f(CWgettext\fP in its running commentary.)
+finding \f(CW-lintl\fP and \fI(CWlibintl.h\fP and \f(CWmsgfmt\fP in
+its running commentary.)
 Please note that the GNU Gettext implementation is likely to be superior
 to the one supplied with your system, if any.
 Remember to use the GNU gettext configure \fI--with-gnu-gettext\fP option
 if your system has native gettext tools.
+.PP
+Please note: if you install GNU gettext package into \fI/usr/local\fP
+(for example) you must ensure that the Aegis \fI./configure\fP script is
+told to also look in \fI/usr/local/include\fP for include files (CFLAGS),
+and \fI/usr/local/lib\fP for library files (LDFLAGS).  Otherwise the
+\fI./configure\fP script will incorrecly conclude that GNU Gettext has
+not been installed.
+.RE
 .TP 8n
 GNU Groff
 This GNU software replaces the
@@ -603,6 +649,20 @@ This copy is enhanced and maintained by the same author as
 .IR aegis ,
 and may be found at the same archive site,
 in the same directory.
+.TP 8n
+rx
+This library provides POSIX regular expressions,
+for systems which don't have them.
+(Note: test 81 will fail if the POSIX regular expression functions are
+not available.)
+.TP 8n
+zlib
+This library provides access to the GNU Zip (de)compression algorithm(s).
+It is essential to have this installed before you build Aegis.
+The home page may be found at \f(CWhttp://www.cdrom.com/pub/infozip/zlib/\fP
+if you need to download it.
+Note: this is not the same as \f(CBzlib\fP\f(CBc\fP which is
+Linux specific.
 .PP
 The tests also depend on the presence of a number of common UNIX programs,
 including but not limited to:
@@ -706,6 +766,10 @@ Similarly for "group too privileged",
 although this is rarer.
 This error message will also occur if you run the tests as root:
 the tests must be run as a mortal each time.
+.PP
+If the POSIX regular expression functions are not available, test
+81 will fail.  The GNU rx library provides these.  Installing it and
+re-configuring and re-building Aegis will solve the problem.
 .br
 .ne 1i
 .SH TESTING SET-UID-ROOT
@@ -877,6 +941,7 @@ source /usr/local/lib/aegis/cshrc
 to the end of their
 .I .cshrc
 file for the recommended aliases.
+(This may be in a different place, if you specified a --prefix option.)
 .PP
 There is also a
 .I profile
@@ -900,7 +965,7 @@ The
 file contains pointers to "system" projects.
 Users may add their own project pointers (to their own projects)
 by putting a search path into the
-.I AEGIS
+.I AEGIS_PATH
 environment variable.
 The system part is always automatically appended by
 .IR Aegis .
@@ -920,6 +985,13 @@ They are not kept under the
 .I /usr/local/lib/aegis
 directory,
 this directory only contains pointers.
+.PP
+If you have a Web server, and the \f(CWaegis.cgi\fP was installed, you
+can set its \fIAEGIS_PATH\fP environment variable, if you want it to be
+able to see more projects than just the global projects.  You do this by
+creating a \fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one,
+by default) and setting the \fIAEGIS_PATH\fP environment variable in it.
+This is a fragment of Bourne shell script, not just the name.
 .br
 .ne 1i
 .SH PRINTED MANUALS

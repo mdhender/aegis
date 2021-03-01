@@ -1,0 +1,69 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.11 features
+.\"
+.PP
+.if n *
+.if t \(bu
+The way the Apache config files are scanned for and read has been changed,
+to adapt to recent Apache changes.  The \fI./configure\fP script will
+now find it more often.
+.PP
+.if n *
+.if t \(bu
+The ``\fIaedist -receive\fP'' command has been enhanced to be more robust
+about change sets without headers (some browsers \fIgenerously\fP strip
+them all off.
+.PP
+.if n *
+.if t \(bu
+A bug has been fixed in the ``\fIaedist -receive\fP'' command which
+sometimes caused decompression failures.  An unfortunate interaction with
+the Windows NT support caused CRLF sequences in the compressed data to
+be mangled in some cases.
+.PP
+.if n *
+.if t \(bu
+The wrong include file was being used for \fPzlib\fP.
+This has been fixed, so it should build more easily now.
+.PP
+.if n *
+.if t \(bu
+The way MANPATH is handled on Linux has been improved in the \fIchsrc\fP
+and \fIprofile\fP commands.  It will not over-ride \fI/etc/man.config\fP
+now.
+.PP
+.if n *
+.if t \(bu
+The \fIaegis.cgi\fP script has been made more robust in coping with
+\fIaedist\fP errors.
+.PP
+.if n *
+.if t \(bu
+The \fIsymlink_exception\fP field of the project \fIconfig\fP file now
+accepts filename patterns, not simply literal filenames.
+.PP
+.if n *
+.if t \(bu
+There was a problem compiling with gcc 2.8, involving the <stdarg.h> header.
+This has been fixed.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.11

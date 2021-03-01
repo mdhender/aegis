@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -203,6 +203,8 @@ branch =
 	reviewer_may_integrate = false;
 	developers_may_create_changes = false;
 	default_test_exemption = false;
+	skip_unlucky = false;
+	compress_database = false;
 	change =
 	[
 	];
@@ -210,6 +212,7 @@ branch =
 	[
 		"USER",
 	];
+	reuse_change_numbers = true;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -238,6 +241,10 @@ developers_may_create_changes = false;
 umask = 022;
 default_test_exemption = false;
 minimum_change_number = 10;
+reuse_change_numbers = true;
+minimum_branch_number = 1;
+skip_unlucky = false;
+compress_database = false;
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it test.out ok
@@ -490,7 +497,7 @@ if test ! -r $workproj/info/change/0/001 ; then fail ; fi
 #
 # finish development of the change
 #
-aectivity="develop end 444"
+activity="develop end 495"
 $bin/aegis -dev_end -list -lib $worklib -p foo > test.out
 if test $? -ne 0 ; then fail; fi
 $bin/aegis -dev_end -lib $worklib -p foo
@@ -956,6 +963,8 @@ branch =
 	reviewer_may_integrate = true;
 	developers_may_create_changes = false;
 	default_test_exemption = false;
+	skip_unlucky = false;
+	compress_database = false;
 	history =
 	[
 		{
@@ -985,6 +994,7 @@ branch =
 		"USER",
 	];
 	minimum_change_number = 1;
+	reuse_change_numbers = true;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -1114,7 +1124,7 @@ if test $? -ne 0 ; then cat test.out; fail; fi
 cat > ok << 'fubar'
 brief_description = "This change was added to make the various listings much more interesting.";
 description = "This change was added to make the various listings much more interesting.";
-cause = internal_bug;
+cause = internal_enhancement;
 test_exempt = false;
 test_baseline_exempt = false;
 regression_test_exempt = true;
@@ -1184,10 +1194,11 @@ if test $? -ne 0 ; then cat test.out; fail; fi
 activity="integrate pass 1174"
 $bin/aegis -intpass -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
+activity="integrate pass 1193"
 cat > ok << 'fubar'
 brief_description = "This change was added to make the various listings much more interesting.";
 description = "This change was added to make the various listings much more interesting.";
-cause = internal_bug;
+cause = internal_enhancement;
 test_exempt = false;
 test_baseline_exempt = false;
 regression_test_exempt = true;
@@ -1238,6 +1249,7 @@ history =
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/change/0/002 ok
+activity="integrate pass 1248"
 cat > ok << 'fubar'
 src =
 [
@@ -1258,11 +1270,13 @@ src =
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/change/0/002.fs ok
+activity="integrate pass 1269"
 cat > ok << 'fubar'
 next_test_number = 3;
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/state ok
+activity="integrate pass 1275"
 cat > ok << 'fubar'
 brief_description = "A bogus project created to test things.";
 description = "The \"foo\" program.";
@@ -1314,6 +1328,8 @@ branch =
 	reviewer_may_integrate = true;
 	developers_may_create_changes = false;
 	default_test_exemption = false;
+	skip_unlucky = false;
+	compress_database = false;
 	history =
 	[
 		{
@@ -1347,10 +1363,12 @@ branch =
 		"USER",
 	];
 	minimum_change_number = 1;
+	reuse_change_numbers = true;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/trunk ok
+activity="integrate pass 1367"
 cat > ok << 'fubar'
 src =
 [
@@ -1434,6 +1452,7 @@ src =
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/trunk.fs ok
+activity="integrate pass 1451"
 cat > ok << 'fubar'
 own =
 [

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,11 +31,11 @@ print("");
 print("<html><head><title>");
 print("File History Report");
 print("</title></head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',");
+print("Project ``" ## quote_html(project_name()) ## "'',");
 if (change_number_set())
 	print("Change " ## change_number() ## ",");
 if (count(arg) == 1)
-	print("File ``" ## arg[0] ## "'',");
+	print("File ``" ## quote_html(arg[0]) ## "'',");
 print("<br>File History");
 print("</center></h1>");
 
@@ -107,12 +107,12 @@ auto fh, actions, usages;
 for (file in sort(keys(hist)))
 {
 	auto href;
-	href = script_name ## "?file@file_menu+" ## file;
-	href ##= "+project@" ## project_name();
+	href = script_name ## "?file@file_menu+" ## quote_url(file);
+	href ##= "+project@" ## quote_url(project_name());
 
 	print("<dt>");
 	print("<a href=\"" ## href ## "\">");
-	print("<tt>" ## file ## "</tt></a>");
+	print("<tt>" ## quote_html(file) ## "</tt></a>");
 	print("<dd>");
 
 	print("<table>");
@@ -135,18 +135,20 @@ for (file in sort(keys(hist)))
 		print(fh.when);
 		print("</td><td valign=top align=right>");
 		href = script_name ## "?file@chan_menu";
-		href ##= "+project@" ## project_name();
+		href ##= "+project@" ## quote_url(project_name());
 		href ##= "+change@" ## fh.change;
 		print("<a href=\"" ## href ## "\">");
 		print(fh.change ## "</a>");
 		print("</td><td valign=top align=right>");
 		print(fh.edit);
 		print("</td><td valign=top>");
-		print(fh.description);
+		auto part;
+		for (part in wrap_html(quote_html(fh.description)))
+			print(part);
 		if (fh.move != "")
 		{
-			href = script_name ## "?file@file_menu+" ## fh.move;
-			href ##= "+project@" ## project_name();
+			href = script_name ## "?file@file_menu+" ## quote_url(fh.move);
+			href ##= "+project@" ## quote_url(project_name());
 
 			print("<br>Moved");
 			if (fh.action == create)
@@ -154,7 +156,7 @@ for (file in sort(keys(hist)))
 			else
 				print("to");
 			print("<a href=\"" ## href ## "\">");
-			print("<tt>" ## fh.move ## "</tt></a>");
+			print("<tt>" ## quote_html(fh.move) ## "</tt></a>");
 		}
 		print("</td></tr>");
 		actions = fh.action;
@@ -167,7 +169,7 @@ print("Listed " ## count(keys(hist)) ## " files.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with");
 print("<blockquote><tt>aer file_history [ <i>filename</i> ] -p " ##
-	project_name() ## "</tt></blockquote>");
+	quote_html(project_name()) ## "</tt></blockquote>");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

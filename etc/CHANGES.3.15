@@ -1,0 +1,67 @@
+
+
+
+Project "aegis.3.15"						 Page 1
+List of Changes				       Mon May	3 00:38:33 1999
+
+Change	State		Description
+------- -------		-------------
+  10	being_		prepare for release
+	integrated
+	pmiller
+
+
+
+Project "aegis.3.15", Change 10					 Page 1
+Change Details				       Mon May	3 00:38:34 1999
+
+NAME
+	Project "aegis.3.15", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares Aegis for the next public release.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+	arch.	 host	  aeb	      aet	  aet -bl     aet -reg
+	-------- -------- ---------   ---------	  ---------   ---------
+	linux-		  required    exempt	  exempt      exempt
+	i486
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+STATE
+	This change is in the 'being_integrated' state.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	create		      etc/CHANGES.3.12
+	source	modify	    6	      lib/en/man1/aenpr.1
+	source	modify	    6	      lib/en/readme/new.3.12.so
+	source	create		      lib/en/readme/new.3.15.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Sun May	 2	pmiller
+			20:58:34 1999
+	develop_begin	Sun May	 2	pmiller	 Elapsed time: 0.446
+			20:58:49 1999		 days.
+	develop_end	Mon May	 3	pmiller
+			00:19:36 1999
+	review_pass	Mon May	 3	pmiller
+			00:19:49 1999
+	integrate_begin Mon May	 3	pmiller	 Elapsed time: 0.041
+			00:19:59 1999		 days.

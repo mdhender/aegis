@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -39,25 +39,25 @@ How Alex created this change will be detailed in the "Administrator" section,
 later in this chapter.
 Pat then acquires the change and starts work.
 .E(
-pat% \f(CBaedb -l -p example\fP
-Project "example"
+pat% \f(CBaedb -l -p example.1.0\fP
+Project "example.1.0"
 List of Changes
 .E)
 .E(
 Change  State           Description
 ------- -------         -------------
-   1    awaiting_       Create initial skeleton.
+  10    awaiting_       Create initial skeleton.
         development
-pat% \f(CBaedb example 1\fP
-aegis: project "example": change 1: development directory "/u/pat/
-        example.001"
-aegis: project "example": change 1: user "pat" has begun development
+pat% \f(CBaedb example.1.0 10\fP
+aegis: project "example.1.0": change 10: development directory "/u/pat/
+        example.1.0.C010"
+aegis: project "example.1.0": change 10: user "pat" has begun development
 pat% \f(CBaecd\fP
-aegis: project "example": change 1: /u/pat/example.001
+aegis: project "example.1.0": change 10: /u/pat/example.1.0.C010
 pat%
 .E)
 .LP
-At this point aegis has created a development directory for the change
+At this point Aegis has created a development directory for the change
 and Pat has changed directory to the development directory\**.
 .FS
 The default directory in which to place new development directories
@@ -67,11 +67,11 @@ is configurable for each user.
 Five files will be created by this change.
 .E(
 pat% \f(CBaenf config Howto.cook gram.y lex.l main.c\fP
-aegis: project "example": change 1: file "Howto.cook" added
-aegis: project "example": change 1: file "config" added
-aegis: project "example": change 1: file "gram.y" added
-aegis: project "example": change 1: file "lex.l" added
-aegis: project "example": change 1: file "main.c" added
+aegis: project "example.1.0": change 10: file "Howto.cook" added
+aegis: project "example.1.0": change 10: file "config" added
+aegis: project "example.1.0": change 10: file "gram.y" added
+aegis: project "example.1.0": change 10: file "lex.l" added
+aegis: project "example.1.0": change 10: file "main.c" added
 pat%
 .fi
 .E)
@@ -99,7 +99,7 @@ chapter.
 .LP
 The file
 .I main.c
-will have been created by aegis
+will have been created by Aegis
 as an empty file.
 Pat edits it to look like this
 .E(
@@ -129,7 +129,7 @@ main(argc, argv)
 The file
 .I gram.y
 describes the grammar accepted by the calculator.
-This file was also created empty by aegis,
+This file was also created empty by Aegis,
 and Pat edits it to look like this:
 .E(
 %token  DOUBLE
@@ -147,9 +147,9 @@ and Pat edits it to look like this:
 %type <lv_int> NAME
 .E)
 .E(
-%prec '+' '-'
-%prec '*' '/'
-%prec UNARY
+%left '+' '-'
+%left '*' '/'
+%right UNARY
 .E)
 .E(
 %%
@@ -157,9 +157,11 @@ and Pat edits it to look like this:
 .E(
 example
         : /* empty */
-        | example command
+        | example command '\en'
+                { yyerrflag = 0; fflush(stderr); fflush(stdout); }
 command
         : expr
+		{ printf("%g\en", $1); }
         | error
 expr
         : DOUBLE
@@ -224,8 +226,8 @@ command;
 this is known as
 .I building
 a change.
-This is done through aegis
-so that aegis can know the success or failure of the build.
+This is done through Aegis
+so that Aegis can know the success or failure of the build.
 (Build success is a precondition for a change to leave
 the
 .I "being developed"
@@ -242,19 +244,19 @@ This file describes the commands and dependencies for the various
 processing, compiling and linking.
 .E(
 pat% \f(CBaeb\fP
-aegis: project "example": change 1: development build started
-aegis: cook -b Howto.cook project=example change=1
-        version=1.0.C001 -nl
+aegis: project "example.1.0": change 10: development build started
+aegis: cook -b Howto.cook project=example.1.0 change=10
+        version=1.0.C010 -nl
 cook: yacc -d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
-cook: cc -I. -I/projects/example/baseline -O -c gram.c
+cook: cc -I. -I/projects/example/branch.1./branch0/baseline -O -c gram.c
 cook: lex lex.l
 cook: mv lex.yy.c lex.c
-cook: cc -I. -I/projects/example/baseline -O -c lex.c
+cook: cc -I. -I/projects/example/branch.1/branch.0/baseline -O -c lex.c
 cook: cc -I. -I/projects/example/baseline -O -c main.c
 cook: cc -o example gram.o lex.o main.o -ll -ly
-aegis: project "example": change 1: development build complete
+aegis: project "example.1.0": change 10: development build complete
 pat%
 .E)
 .LP
@@ -268,17 +270,17 @@ pat%
 .E)
 .LP
 At this point the change is apparently finished.
-The command to tell aegis this is the
+The command to tell Aegis this is the
 .I "develop end"
 command:
 .E(
 pat% \f(CBaede\fP
-aegis: project "example": change 1: no current 'aegis -DIFFerence'
+aegis: project "example.1.0": change 10: no current 'aegis -DIFFerence'
         registration
 pat%
 .E)
 .LP
-It didn't work, because aegis thinks you have missed the difference step.
+It didn't work, because Aegis thinks you have missed the difference step.
 .LP
 The difference step is used to produce files useful for reviewing changes,
 mostly in the form of context difference files between the project baseline
@@ -288,17 +290,17 @@ and not have to try to track them down and inevitably miss obscure
 but important edits to large or complex files.
 .E(
 pat% \f(CBaed\fP
-aegis: set +e; diff -c /dev/null /u/pat/example.001/Howto.cook >
-        /u/pat/example.001/Howto.cook,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.001/config >
-        /u/pat/example.001/config,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.001/gram.y >
-        /u/pat/example.001/gram.y,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.001/lex.l >
-        /u/pat/example.001/lex.l,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.001/main.c >
-        /u/pat/example.001/main.c,D; test $? -eq 0 -o $? -eq 1
-aegis: project "example": change 1: difference complete
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/Howto.cook >
+        /u/pat/example.1.0.C010/Howto.cook,D; test $? -eq 0 -o $? -eq 1
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/config >
+        /u/pat/example.1.0.C010/config,D; test $? -eq 0 -o $? -eq 1
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/gram.y >
+        /u/pat/example.1.0.C010/gram.y,D; test $? -eq 0 -o $? -eq 1
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/lex.l >
+        /u/pat/example.1.0.C010/lex.l,D; test $? -eq 0 -o $? -eq 1
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/main.c >
+        /u/pat/example.1.0.C010/main.c,D; test $? -eq 0 -o $? -eq 1
+aegis: project "example.1.0": change 10: difference complete
 pat%
 .E)
 .LP
@@ -312,7 +314,7 @@ This is especially true when you use a tool
 such as \fIfcomp\fP(1)
 which gives a complete file listing with the
 inserts and deletes marked in the margin.
-This tool is also available from the author of aegis.
+This tool is also available from the author of Aegis.
 .FE
 .LP
 So that reviewers,
@@ -338,13 +340,13 @@ command.
 So now Pat is done, let's try to sign off again:
 .E(
 pat% \f(CBaede\fP
-aegis: project "example": change 1: no current 'aegis -Test'
+aegis: project "example.1.0": change 10: no current 'aegis -Test'
         registration
 pat%
 .E)
 .LP
 It didn't work, again.
-This time aegis is reminding Pat that
+This time Aegis is reminding Pat that
 every change must be accompanied by at least one test.
 This is so that the project team can be confident at all times
 that a project works\**.
@@ -364,16 +366,16 @@ before it can ever be reviewed.
 Pat adds the truant test:
 .E(
 pat% \f(CBaent\fP
-aegis: project "example": change 1: file "test/00/t0001a.sh" new
+aegis: project "example.1.0": change 10: file "test/00/t0001a.sh" new
         test
 pat%
 .E)
 .LP
 The test file is in a weird place, eh?
-This is because many flavours of
+This is because many flavors of
 .UX
 are slow at searching
-directories, and so aegis limits itself to 100 tests per directory.
+directories, and so Aegis limits itself to 100 tests per directory.
 Whatever the name, Pat edits the test file to look like this:
 .E(
 #!/bin/sh
@@ -460,14 +462,14 @@ There are several things to notice about this test file:
 \(bu It is a Bourne shell script.
 All test files are Bourne shell scripts because they are the most portable.\**
 .FS
-Portable for aegis' point of view:
+Portable for Aegis' point of view:
 Bourne shell is the most widely available shell.
 Of course,
 if you are writing code to publish on USENET or for FTP,
 portability
 of the tests will be important from the developer's point of view also.
 .FE
-(Actually, aegis likes test files not to be executable,
+(Actually, Aegis likes test files not to be executable,
 it passes them to the Bourne shell explicitly when running them.)
 .XP
 \(bu It makes the assumption that the current directory is
@@ -552,10 +554,10 @@ As you have already guessed,
 Pat now runs the test like this:
 .E(
 pat% \f(CBaet\fP
-aegis: sh /u/pat/example.001/test/00/t0001a.sh
-aegis: project "example": change 1: test "test/00/t0001a.sh"
+aegis: sh /u/pat/example.1.0.C010/test/00/t0001a.sh
+aegis: project "example.1.0": change 10: test "test/00/t0001a.sh"
         passed
-aegis: project "example": change 1: passed 1 test
+aegis: project "example.1.0": change 10: passed 1 test
 pat%
 .E)
 .LP
@@ -566,15 +568,15 @@ and tested it.
 It is now ready for sign off.
 .E(
 pat% \f(CBaede\fP
-aegis: project "example": change1: no current 'aegis -Build'
+aegis: project "example.1.0": change 10: no current 'aegis -Build'
         registration
 pat%
 .E)
 .LP
 Say what?
-The problem is that the use of \fIaent\fP cancelled the
+The problem is that the use of \fIaent\fP canceled the
 previous build registration.
-This was because aegis is decoupled from the dependency maintenance tool
+This was because Aegis is decoupled from the dependency maintenance tool
 (\fIcook\fP in this case),
 and thus has no way of knowing whether or not the new file in the
 change would affect the success or failure of a build\**.
@@ -593,27 +595,27 @@ re-difference (yes, the test gets differenced, too)
 and sign off.
 .E(
 pat% \f(CBaeb\fP
-aegis: logging to "/u/pat/example.001/aegis.log"
-aegis: project "example": change 1: development build started
-aegis: cook -b Howto.cook project=example change=1
+aegis: logging to "/u/pat/example.1.0.C010/aegis.log"
+aegis: project "example.1.0": change 10: development build started
+aegis: cook -b Howto.cook project=example.1.0 change=10
         version=1.0.C001 -nl
 cook: "all" is up-to-date
-aegis: project "example": change 1: development build complete
+aegis: project "example.1.0": change 10: development build complete
 pat% \f(CBaet\fP
-aegis: logging to "/u/pat/example.001/aegis.log"
-aegis: sh /u/pat/example.001/test/00/t0001a.sh
-aegis: project "example": change 1: test "test/00/t0001a.sh"
+aegis: logging to "/u/pat/example.1.0.C010/aegis.log"
+aegis: sh /u/pat/example..1.0.C010/test/00/t0001a.sh
+aegis: project "example.1.0": change 10: test "test/00/t0001a.sh"
         passed
-aegis: project "example": change 1: passed 1 test
+aegis: project "example.1.0": change 10: passed 1 test
 pat% \f(CBaed\fP
-aegis: logging to "/u/pat/example.001/aegis.log"
-aegis: set +e; diff -c /dev/null /u/pat/example.001/test/00/
-        t0001a.sh > /u/pat/example.001/test/00/t0001a.sh,D; test
+aegis: logging to "/u/pat/example.1.0.C010/aegis.log"
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/test/00/
+        t0001a.sh > /u/pat/example.1.0.C010/test/00/t0001a.sh,D; test
         $? -eq 0 -o $? -eq 1
-aegis: project "example": change 1: difference complete
+aegis: project "example.1.0": change 10: difference complete
 pat% \f(CBaede\fP
-aegis: sh /usr/local/lib/aegis/de.sh example 1 pat
-aegis: project "example": change 1: development completed
+aegis: sh /usr/local/lib/aegis/de.sh example.1.0 10 pat
+aegis: project "example.1.0": change 10: development completed
 pat%
 .E)
 .LP
@@ -634,31 +636,31 @@ When Jan arrived for work,
 and lists the changes awaiting development,
 the following list appeared:
 .E(
-jan% \f(CBaedb -l -p example\fP
-Project "example"
+jan% \f(CBaedb -l -p example.1.0\fP
+Project "example.1.0"
 List of Changes
 .E)
 .E(
 Change  State           Description
 ------  ------          ------------
-   2    awaiting_       Add input and output file names to the
+  11    awaiting_       Add input and output file names to the
         development     command line.
-   3    awaiting_       add variables
+  12    awaiting_       add variables
         development
-   4    awaiting_       add powers
+  13    awaiting_       add powers
         development
 jan%
 .E)
 .LP
 The first on the list is chosen.
 .E(
-jan% \f(CBaedb -c 2 -p example\fP
-aegis: project "example": change 2: development directory "/u/
-        jan/example.002"
-aegis: project "example": change 2: user "jan" has begun
+jan% \f(CBaedb -c 11 -p example.1.0\fP
+aegis: project "example.1.0": change 11: development directory "/u/
+        jan/example.1.0.C011"
+aegis: project "example.1.0": change 11: user "jan" has begun
         development
 jan% \f(CBaecd\fP
-aegis: project "example": change 2: /u/jan/example.002
+aegis: project "example.1.0": change 11: /u/jan/example.002
 jan%
 .E)
 .LP
@@ -666,12 +668,12 @@ The best way to get details about a change is to used the "change details"
 listing.
 .E(
 jan% \f(CBael cd\fP
-Project "example", Change 2
+Project "example.1.0", Change 11
 Change Details
 .E)
 .E(
 NAME
-        Project "example", Change 2.
+        Project "example.1.0", Change 11.
 .E)
 .E(
 SUMMARY
@@ -712,7 +714,7 @@ file is the one to be modified.
 This file is copied into the change:
 .E(
 jan% \f(CBaecp main.c\fP
-aegis: project "example": change 2: file "main.c" copied
+aegis: project "example.1.0": change 11: file "main.c" copied
 jan%
 .E)
 .LP
@@ -773,7 +775,7 @@ main(argc, argv)
 A new test is also required,
 .E(
 jan% \f(CBaent\fP
-aegis: project "example": change 2: file "test/00/t0002a.sh" new
+aegis: project "example.1.0": change 11: file "test/00/t0002a.sh" new
         test
 jan%
 .E)
@@ -879,31 +881,31 @@ this works first time,
 and here is how it goes:
 .E(
 jan% \f(CBaeb\fP
-aegis: logging to "/u/pat/example.002/aegis.log"
-aegis: project "example": change 2: development build started
+aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
+aegis: project "example.1.0": change 11: development build started
 aegis: cook -b /projects/example/baseline/Howto.cook
-        project=example change=2 version=1.0.C002 -nl
+        project=example.1.0 change=11 version=1.0.C011 -nl
 cook: cc -I. -I/projects/example/baseline -O -c main.c
 cook: cc -o example main.o /projects/example/baseline/gram.o
         /projects/example/baseline/lex.o -ll -ly
-aegis: project "example": change 2: development build complete
+aegis: project "example.1.0": change 11: development build complete
 jan% \f(CBaet\fP
-aegis: logging to "/u/pat/example.002/aegis.log"
-aegis: sh /u/jan/example.002/test/00/t0002a.sh
-aegis: project "example": change 2: test "test/00/t0002a.sh"
+aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
+aegis: sh /u/jan/example.1.0.C011/test/00/t0002a.sh
+aegis: project "example.1.0e": change 11: test "test/00/t0002a.sh"
         passed
-aegis: project "example": change 2: passed 1 test
+aegis: project "example.1.0": change 11: passed 1 test
 jan%
 .E)
 .LP
 All that remains if to difference the change and sign off.
 .E(
 jan% \f(CBaed\fP
-aegis: logging to "/u/pat/example.002/aegis.log"
+aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
 aegis: set +e; diff -c /projects/example/main.c /u/jan/
-        example.002/main.c > /u/jan/example.002/main.c,D; test $?
+        example.1.0.C011/main.c > /u/jan/example.1.0.C011/main.c,D; test $?
         -eq 0 -o $? -eq 1
-aegis: project "example": change 2: difference complete
+aegis: project "example.1.0": change 11: difference complete
 jan% \f(CBaedmore\fP
 \fI\&.\&.\&.examines the file.\&.\&.\fP
 jan%
@@ -912,7 +914,7 @@ Note how the context difference shows exactly what has changed.
 And now the sign-off:
 .E(
 jan% \f(CBaede\fP
-aegis: project "example": change 2: no current 'aegis -Test
+aegis: project "example.1.0": change 11: no current 'aegis -Test
         -BaseLine' registration
 jan%
 .E)
@@ -935,30 +937,30 @@ Jan needs to use a variant of the
 command.
 .E(
 jan% \f(CBaet -bl\fP
-aegis: sh /u/jan/example.002/test/00/t0002a.sh
+aegis: sh /u/jan/example.1.0.C011/test/00/t0002a.sh
 usage: example
 FAILED
-aegis: project "example": change 2: test "test/00/t0002a.sh" on
+aegis: project "example.1.0": change 11: test "test/00/t0002a.sh" on
         baseline failed (as it should)
-aegis: project "example": change 2: passed 1 test
+aegis: project "example.1.0": change 11: passed 1 test
 jan%
 .E)
 Running the regression tests is also a good idea
 .E(
 jan% \f(CBaet -reg\fP
-aegis: logging to "/u/pat/example.002/aegis.log"
+aegis: logging to "/u/pat/example.1.0.C011/aegis.log"
 aegis: sh /projects/example/baseline/test/00/t0001a.sh
-aegis: project "example": change 2: test "test/00/t0001a.sh"
+aegis: project "example.1.0": change 11: test "test/00/t0001a.sh"
         passed
-aegis: project "example": change 2: passed 1 test
+aegis: project "example.1.0": change 11: passed 1 test
 jan%
 .E)
 .LP
-Now aegis will be satisfied
+Now Aegis will be satisfied
 .E(
 jan% \f(CBaede\fP
-aegis: sh /usr/local/lib/aegis/de.sh example 2 jan
-aegis: project "example": change 2: development completed
+aegis: sh /usr/local/lib/aegis/de.sh example.1.0 11 jan
+aegis: project "example.1.0": change 11: development completed
 jan%
 .E)
 .LP
@@ -975,22 +977,22 @@ First Sam looks for a change to work on and starts,
 like this:
 .E(
 sam% \f(CBaedb -l\fP
-Project "example"
+Project "example.1.0"
 List of Changes
  
 Change  State           Description
 ------- -------         -------------
-   3    awaiting_       add powers
+  12    awaiting_       add powers
         development
-   4    awaiting_       add variables
+  13    awaiting_       add variables
         development
-sam% \f(CBaedb 3\fP
-aegis: project "example": change 3: development directory "/u/
-        sam/example.003"
-aegis: project "example": change 3: user "sam" has begun
+sam% \f(CBaedb 12\fP
+aegis: project "example.1.0": change 12: development directory "/u/
+        sam/example.1.0.C012"
+aegis: project "example.1.0": change 12: user "sam" has begun
         development
 sam% \f(CBaecd\fP
-aegis: project "example": change 3: /u/sam/example.003
+aegis: project "example.1.0": change 12: /u/sam/example.1.0.C012
 sam%
 .E)
 .LP
@@ -1000,7 +1002,7 @@ grammar file needs to be altered,
 so it is copied into the change.
 .E(
 sam% \f(CBaecp gram.y\fP
-aegis: project "example": change 3: file "gram.y" copied
+aegis: project "example.1.0": change 12: file "gram.y" copied
 sam%
 .E)
 .LP
@@ -1062,11 +1064,11 @@ The changes are very small.
 Sam checks to make sure using the difference command:
 .E(
 sam% \f(CBaed\fP
-aegis: logging to "/u/sam/example.003/aegis.log"
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: set +e; diff -c /projects/example/baseline/gram.y /u/sam/
-        example.003/gram.y > /u/sam/example.003/gram.y,D; test $?
+        example.1.0.C012/gram.y > /u/sam/example.1.0.C012/gram.y,D; test $?
         -eq 0 -o $? -eq 1
-aegis: project "example": change 3: difference complete
+aegis: project "example.1.0": change 12: difference complete
 sam% \f(CBaedmore\fP
 \fI\&.\&.\&.examines the file.\&.\&.\fP
 sam%
@@ -1074,7 +1076,7 @@ sam%
 The difference file looks like this
 .E(
 *** /projects/example/baseline/gram.y
---- /u/sam/example.003/gram.y
+--- /u/sam/example.1.0.C012/gram.y
 ***************
 *** 1,5 ****
 --- 1,6 ----
@@ -1118,7 +1120,7 @@ All good software developers create the tests first,
 don't they?
 .E(
 sam% \f(CBaent\fP
-aegis: project "example": change 3: file "test/00/t0003a.sh" new
+aegis: project "example.1.0": change 12: file "test/00/t0003a.sh" new
         test
 sam%
 .E)
@@ -1197,10 +1199,10 @@ Now the change can be built and tested,
 just like the earlier changes.
 .E(
 sam% \f(CBaeb\fP
-aegis: logging to "/u/sam/example.003/aegis.log"
-aegis: project "example": change 3: development build started
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
+aegis: project "example1.0": change 12: development build started
 aegis: cook -b /projects/example/baseline/Howto.cook
-        project=example change=3 version=1.0.C003 -nl
+        project=example.1.0 change=12 version=1.0.C012 -nl
 cook: yacc -d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
@@ -1236,11 +1238,11 @@ directives, rather then the double quote form.
 Now the change is tested.
 .E(
 sam% \f(CBaet\fP
-aegis: logging to "/u/sam/example.003/aegis.log"
-aegis: sh /u/sam/example.003/test/00/t0003a.sh
-aegis: project "example": change 3: test "test/00/t0003a.sh"
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
+aegis: sh /u/sam/example.1.0.C012/test/00/t0003a.sh
+aegis: project "example.1.0": change 12: test "test/00/t0003a.sh"
         passed
-aegis: project "example": change 3: passed 1 test
+aegis: project "example.1.0": change 12: passed 1 test
 sam%
 .E)
 .LP
@@ -1248,8 +1250,8 @@ The change must also be tested against the baseline, and fail.
 Sam knows this, and does it here.
 .E(
 sam% \f(CBaet -bl\fP
-aegis: logging to "/u/sam/example.003/aegis.log"
-aegis: sh /u/sam/example.003/test/00/t0003a.sh
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
+aegis: sh /u/sam/example.1.0.C012/test/00/t0003a.sh
 1,3c1,6
 < 1
 < 2
@@ -1262,9 +1264,9 @@ aegis: sh /u/sam/example.003/test/00/t0003a.sh
 > syntax error
 > 27
 FAILED
-aegis: project "example": change 3: test "test/00/t0003a.sh" on
+aegis: project "example.1.0": change 12: test "test/00/t0003a.sh" on
         baseline failed (as it should)
-aegis: project "example": change 3: passed 1 test
+aegis: project "example.1.0": change 12: passed 1 test
 sam%
 .E)
 .LP
@@ -1272,14 +1274,14 @@ Running the regression tests
 is also a good idea.
 .E(
 sam% \f(CBaet -reg\fP
-aegis: logging to "/u/sam/example.003/aegis.log"
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: sh /projects/example/baseline/test/00/t0001a.sh
-aegis: project "example": change 3: test "test/00/t0001a.sh"
+aegis: project "example.1.0": change 12: test "test/00/t0001a.sh"
         passed
 aegis: sh /projects/example/baseline/test/00/t0002a.sh
-aegis: project "example": change 3: test "test/00/t0002a.sh"
+aegis: project "example.1.0": change 12: test "test/00/t0002a.sh"
         passed
-aegis: project "example": change 3: passed 2 tests
+aegis: project "example.1.0": change 12: passed 2 tests
 sam%
 .E)
 .LP
@@ -1290,26 +1292,26 @@ Pat arrived for work a little after Sam,
 and also looked for a change to work on.
 .E(
 pat% \f(CBaedb -l\fP
-Project "example"
+Project "example.1.0"
 List of Changes
  
 Change  State           Description
 ------- -------         -------------
-   4    awaiting_       add variables
+  13    awaiting_       add variables
         development
 pat%
 .E)
 .LP
 With such a wide choice,
-Pat selected change 4.
+Pat selected change 13.
 .E(
 pat% \f(CBaedb 4\fP
-aegis: project "example": change 4: development directory "/u/
-        pat/example.004"
-aegis: project "example": change 4: user "pat" has begun
+aegis: project "example.1.0": change 13: development directory "/u/
+        pat/example.1.0.C013"
+aegis: project "example.1.0": change 13: user "pat" has begun
         development
 pat% \f(CBaecd\fP
-aegis: project "example": change 4: /u/pat/example.004
+aegis: project "example.1.0": change 13: /u/pat/example.1.0.C013
 pat%
 .E)
 .LP
@@ -1317,12 +1319,12 @@ To get more information about the change,
 Pat then uses the "change details" listing:
 .E(
 pat% \f(CBael cd\fP
-Project "example", Change 4
+Project "example.1.0", Change 13
 Change Details
 .E)
 .E(
 NAME
-        Project "example", Change 4.
+        Project "example.1.0", Change 13.
 .E)
 .E(
 SUMMARY
@@ -1361,13 +1363,13 @@ and a new file for remembering and recalling the values of the
 variables needs to be added.
 .E(
 pat% \f(CBaecp gram.y\fP
-aegis: project "example": change 4: file "gram.y" copied
+aegis: project "example.1.0": change 13: file "gram.y" copied
 pat% \f(CBaenf var.c\fP
-aegis: project "example": change 4: file "var.c" added
+aegis: project "example.1.0": change 13: file "var.c" added
 pat%
 .E)
 .LP
-Notice how aegis raises no objection to both Jan and Pat
+Notice how Aegis raises no objection to both Jan and Pat
 having a copy of the
 .I gram.y
 file.
@@ -1378,22 +1380,22 @@ Pat now edits the grammar file.
 pat% \f(CBvi gram.y\fP
 \fI\&.\&.\&.edit the file.\&.\&.\fP
 pat% \f(CBaed\fP
-aegis: logging to "/u/pat/example.004/aegis.log"
+aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
 aegis: set +e; diff -c /projects/example/baseline/gram.y /u/pat/
-        example.004/gram.y > /u/pat/example.004/gram.y,D; test $?
+        example.1.0.C013/gram.y > /u/pat/example.1.0.C013/gram.y,D; test $?
         -eq 0 -o $? -eq 1
-aegis: project "example": change 4: difference complete
+aegis: project "example.1.0": change 13: difference complete
 pat%
 .E)
 .LP
 The difference file looks like this
 .E(
-\&...
+\&...\fIhey, someone fill me in!...\fP
 .E)
 .LP
 The new
 .I var.c
-file was created empty by aegis,
+file was created empty by Aegis,
 and Pat edits it to look like this:
 .E(
 static double memory[26];
@@ -1419,9 +1421,9 @@ recall(name)
 Little remains except to build the change.
 .E(
 pat% \f(CBaeb\fP
-aegis: logging to "/u/pat/example.004/aegis.log"
-aegis: cook -b /tmp/8508/example.proj/baseline/Howto.cook
-        project=example change=4 version=1.0.C004 -nl
+aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
+aegis: cook -b /example.proj/baseline/Howto.cook
+        project=example.1.0 change=13 version=1.0.C013 -nl
 cook: yacc -d gram.y
 cook: mv y.tab.c gram.c
 cook: mv y.tab.h gram.h
@@ -1431,7 +1433,7 @@ cook: cc -I. -I/projects/example/baseline -O -c /projects/
 cook: cc -I. -I/projects/example/baseline -O -c var.c
 cook: cc -o example gram.o lex.o /projects/example/baseline/
         main.o var.o -ll -ly -lm
-aegis: project "example": change 4: development build complete
+aegis: project "example.1.0": change 13: development build complete
 pat%
 .E)
 .LP
@@ -1504,16 +1506,16 @@ pass
 The new files are then differenced:
 .E(
 pat% \f(CBaed\fP
-aegis: logging to "/u/pat/example.004/aegis.log"
+aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
 aegis: set +e; diff -c /projects/example/baseline/gram.y /u/pat/
-        example.004/gram.y > /u/pat/example.004/gram.y,D; test $?
+        example.1.0.C013/gram.y > /u/pat/example.1.0.C013/gram.y,D; test $?
         -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.004/test/00/
-        t0004a.sh > /u/pat/example.004/test/00/t0004a.sh,D; test
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C013/test/00/
+        t0004a.sh > /u/pat/example.1.0.C013/test/00/t0004a.sh,D; test
         $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.004/var.c > /u/
-        pat/example.004/var.c,D; test $? -eq 0 -o $? -eq 1
-aegis: project "example": change 4: difference complete
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C013/var.c > /u/
+        pat/example.1.0.C013/var.c,D; test $? -eq 0 -o $? -eq 1
+aegis: project "example.1.0": change 13: difference complete
 pat%
 .E)
 .LP
@@ -1525,19 +1527,19 @@ and so is not run again.
 The change is tested.
 .E(
 pat% \f(CBaet\fP
-aegis: logging to "/u/pat/example.004/aegis.log"
-aegis: sh /u/pat/example.004/test/00/t0001a.sh
-aegis: project "example": change 4: test "test/00/t0004a.sh"
+aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
+aegis: sh /u/pat/example.1.0.C013/test/00/t0001a.sh
+aegis: project "example.1.0": change 13: test "test/00/t0004a.sh"
         passed
-aegis: project "example": change 4: passed 2 tests
+aegis: project "example.1.0": change 13: passed 2 tests
 pat%
 .E)
 .LP
 The change is tested against the baseline.
 .E(
 pat% \f(CBaet -bl\fP
-aegis: logging to "/u/pat/example.004/aegis.log"
-aegis: sh /u/pat/example.004/test/00/t0001a.sh
+aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
+aegis: sh /u/pat/example.1.0.C013/test/00/t0001a.sh
 1,2c1,4
 < 2
 < 9
@@ -1547,7 +1549,7 @@ aegis: sh /u/pat/example.004/test/00/t0001a.sh
 > syntax error
 > syntax error
 FAILED
-aegis: project "example": change 4: test "test/00/t0004a.sh" on
+aegis: project "example.1.0": change 13: test "test/00/t0004a.sh" on
         baseline failed (as it should)
 pat%
 .E)
@@ -1555,14 +1557,14 @@ pat%
 And the regression tests
 .E(
 pat% \f(CBaet -reg\fP
-aegis: logging to "/u/pat/example.004/aegis.log"
+aegis: logging to "/u/pat/example.1.0.C013/aegis.log"
 aegis: sh /projects/example/baseline/test/00/t0001a.sh
-aegis: project "example": change 4: test "test/00/t0001a.sh"
+aegis: project "example.1.0": change 13: test "test/00/t0001a.sh"
         passed
 aegis: sh /projects/example/baseline/test/00/t0002a.sh
-aegis: project "example": change 4: test "test/00/t0002a.sh"
+aegis: project "example.1.0": change 13: test "test/00/t0002a.sh"
         passed
-aegis: project "example": change 4: passed 2 tests
+aegis: project "example.1.0": change 13: passed 2 tests
 pat%
 .E)
 .LP
@@ -1574,8 +1576,8 @@ and is not yet integrated with the baseline.
 All is finished for this change,
 .E(
 pat% \f(CBaede\fP
-aegis: sh /usr/local/lib/aegis/de.sh example 4 pat
-aegis: project "example": change 4: development completed
+aegis: sh /usr/local/lib/aegis/de.sh example.1.0 13 pat
+aegis: project "example.1.0": change 13: development completed
 pat%
 .E)
 .LP
@@ -1585,47 +1587,49 @@ but more of that in the next section.
 .LP
 Some time later,
 Jan returns from aerobics feeling much improved.
-All that is required for change 3 is
+All that is required for change 12 is
 to do develop end, or is it?
 .E(
 jan% \f(CBaede\fP
-aegis: project "example": change 3: file "gram.y" in baseline
+aegis: project "example.1.0": change 12: file "gram.y" in baseline
         has changed since last 'aegis -DIFFerence' command
 jan%
 .E)
 .LP
-A little sleuthing on Jan's part with the aegis list command
+A little sleuthing on Jan's part with the Aegis list command
 will reveal how this came about.
-The way to resolve this problem is with the difference command.
+The way to resolve this problem is with the difference command,
+but the merge variant - this will merge the new baseline version, and
+Jan's edit together.
 .E(
-jan% \f(CBaed\fP
-aegis: logging to "/u/pat/example.003/aegis.log"
+jan% \f(CBaem\fP
+aegis: logging to "/u/pat/example.1.0.C012/aegis.log"
 aegis: co -u'1.1' -p /projects/example/history/gram.y,v > /tmp/
         aegis.14594
 /projects/example/history/gram.y,v  -->  stdout revision 1.1 (unlocked)
 aegis: (diff3 -e /projects/example/baseline/gram.y /tmp/
         aegis.14594 /u/jan/example.003/gram.y | sed -e '/^w$/d'
         -e '/^q$/d'; \techo '1,$p' ) | ed - /projects/example/
-        baseline/gram.y > /u/jan/example.003/gram.y,D
-aegis: project "example": change 3: difference complete
-aegis: project "example": change 3: file "gram.y" was out of
-        date, see "gram.y,D" for details
+        baseline/gram.y,B > /u/jan/example.003/gram.y
+aegis: project "example.1.0": change 12: merge complete
+aegis: project "example.1.0": change 12: file "gram.y" was out of
+        date and has been merged, see "gram.y,B" for original source
 aegis: new 'aegis -Build' required
 jan%
 .E)
 .LP
-This was caused by the conflict between change 4,
+This was caused by the conflict between change 13,
 which is now integrated,
-and change 3;
+and change 12;
 both of which are editing the
 .I gram.y
 file.
 Jan examines the
-.I gram.y,D
+.I gram.y
 file,
-and discovers that it contains an accurate merge of
-the edit done by change 4 and the edits for this change.
-The difference file looks like this:
+and is satisfied that it contains an accurate merge of
+the edit done by change 13 and the edits for this change.
+The merged source file looks like this:
 .E(
 %{
 #include <stdio.h>
@@ -1686,25 +1690,21 @@ expr
                 { $$ = $1 - $3; }
         ;
 .E)
-This is because most such conflicts are actually working
+The automatic merge worked
+because most such conflicts are actually working
 on logically separate portions of the file.
 Two different areas of the grammar in this case.
 In practice,
 there is rarely a real conflict,
 and it is usually small enough to detect fairly quickly.
-Notice that aegis did not automatically put the merge in
-place of your edited file,
-for just this reason.
 .LP
-Jan simply copies the difference file on top of the
-original, and rebuilds:
+Jan now rebuilds:
 .E(
-jan% \f(CBmv gram.y,D gram.y\fP
 jan% \f(CBaeb\fP
-aegis: logging to "/u/jan/example.003/aegis.log"
-aegis: project "example": change 3: development build started
-aegis: cook -b /tmp/13906/example.proj/baseline/Howto.cook
-        project=example change=3 version=1.0.C003 -nl
+aegis: logging to "/u/jan/example.1.0.C012/aegis.log"
+aegis: project "example.1.0": change 12: development build started
+aegis: cook -b /projects/example/baseline/Howto.cook
+        project=example.1.0 change=12 version=1.0.C012 -nl
 cook: rm gram.c
 cook: rm gram.h
 cook: yacc -d gram.y
@@ -1718,7 +1718,7 @@ cook: cc -I. -I/projects/example/baseline -O -c /projects/
 cook: rm example
 cook: cc -o example gram.o lex.o /projects/example/baseline/
         main.o /projects/example/baseline/var.o -ll -ly -lm
-aegis: project "example": change 3: development build complete
+aegis: project "example.1.0": change 12: development build complete
 jan%
 .E)
 .LP
@@ -1729,16 +1729,16 @@ without any extra work by Jan.
 All that remains is to test the change again.
 .E(
 jan% \f(CBaet\fP
-aegis: /bin/sh /tmp/13906/example.chan.3/test/00/t0003a.sh
-aegis: project "example": change 3: test "test/00/t0003a.sh"
+aegis: /bin/sh /u/jan/example.1.0.C012/test/00/t0003a.sh
+aegis: project "example.1.0": change 12: test "test/00/t0003a.sh"
         passed
-aegis: project "example": change 3: passed 1 test
+aegis: project "example.1.0": change 12: passed 1 test
 jan%
 .E)
 And test against the baseline,
 .E(
 jan% \f(CBaet -bl\fP
-aegis: /bin/sh /tmp/13906/example.chan.3/test/00/t0003a.sh
+aegis: /bin/sh /u/jan/example.1.0.C012/test/00/t0003a.sh
 1,3c1,6
 < 1
 < 2
@@ -1751,9 +1751,9 @@ aegis: /bin/sh /tmp/13906/example.chan.3/test/00/t0003a.sh
 > syntax error
 > 27
 FAILED
-aegis: project "example": change 3: test "test/00/t0003a.sh" on
+aegis: project "example.1.0": change 12: test "test/00/t0003a.sh" on
         baseline failed (as it should)
-aegis: project "example": change 3: passed 1 test
+aegis: project "example.1.0": change 12: passed 1 test
 jan%
 .E)
 .LP
@@ -1764,26 +1764,26 @@ of the code
 you merged with.
 .E(
 jan% \f(CBaet -reg\fP
-aegis: logging to "/u/jan/example.003/aegis.log"
+aegis: logging to "/u/jan/example.1.0.C012/aegis.log"
 aegis: /bin/sh /projects/example/baseline/test/00/
         t0001a.sh
-aegis: project "example": change 3: test "test/00/t0001a.sh"
+aegis: project "example.1.0": change 12: test "test/00/t0001a.sh"
         passed
 aegis: /bin/sh /projects/example/baseline/test/00/
         t0002a.sh
-aegis: project "example": change 3: test "test/00/t0002a.sh"
+aegis: project "example.1.0": change 12: test "test/00/t0002a.sh"
         passed
 aegis: /bin/sh /projects/example/baseline/test/00/
         t0004a.sh
-aegis: project "example": change 3: test "test/00/t0004a.sh"
+aegis: project "example.1.0": change 12: test "test/00/t0004a.sh"
         passed
-aegis: project "example": change 3: passed 3 tests
+aegis: project "example.1.0": change 12: passed 3 tests
 jan%
 .E)
 All done, or are we?
 .E(
 jan% \f(CBaede\fP
-aegis: project "example": change 3: no current 'aegis -Diff'
+aegis: project "example.1.0": change 12: no current 'aegis -Diff'
         registration
 jan%
 .E)
@@ -1793,16 +1793,17 @@ does not show the differences since the two changes were
 merged, and possibly further edited.
 .E(
 jan% \f(CBaed\fP
-aegis: logging to "/u/jan/example.003/aegis.log"
+aegis: logging to "/u/jan/example.1.0.C012/aegis.log"
 aegis: set +e; diff /projects/example/baseline/gram.y /u/pat/
-        example.003/gram.y > /u/pat/example.003/gram.y,D; test $? -le 1
-aegis: project "example": change 3: difference complete
+        example.1.0.C012/gram.y > /u/pat/example.1.0.C012/gram.y,D;
+	test $? -le 1
+aegis: project "example.1.0": change 12: difference complete
 jan%
 .E)
 This time everything will run smoothly, 
 .E(
 jan% \f(CBaede\fP
-aegis: project "example": change 3: development completed
+aegis: project "example.1.0": change 12: development completed
 jan%
 .E)
 Some time soon
@@ -1810,16 +1811,16 @@ Jan will receive email that this change passed review,
 and later that it passed integration.
 .LP
 Within the scope of a limited example,
-you have seen most of what aegis can do.
+you have seen most of what Aegis can do.
 To get a true feeling for the program
 you need to try it in a similarly simple case.
 You could even try doing this example manually.
 .bp
 .nh 3 "Developer Command Summary"
 .LP
-Only a few of the aegis commands available to developers
+Only a few of the Aegis commands available to developers
 have been used in the example.
-The following table (very tersely) describes the aegis commands most
+The following table (very tersely) describes the Aegis commands most
 useful to developers.
 .TS
 center,tab(;);
@@ -1829,6 +1830,8 @@ _
 aeb;Build
 aeca;edit Change Attributes
 aecd;Change Directory
+aeclean;Clean a development directory
+aeclone;copy a whole change
 aecp;Copy File
 aecpu;Copy File Undo
 aed;Difference
@@ -1847,14 +1850,14 @@ aet;Test
 .TE
 .LP
 You will want to read the manual entries for all of these commands.
-Note that all aegis commands have a
+Note that all Aegis commands have a
 .I \-Help
 option,
 which will give a result very similar to the
 corresponding
 .I man (1)
 output.
-Most aegis commands also have a
+Most Aegis commands also have a
 .I \-List
 option,
 which usually lists interesting context sensitive information.

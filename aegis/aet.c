@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement test
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 
 #include <ael.h>
@@ -371,6 +371,8 @@ test_main()
 	int		suggest_noise;
 	int		based;
 	string_ty	*base;
+	int		exempt;
+	int		force;
 
 	trace(("test_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -379,6 +381,7 @@ test_main()
 	regression_flag = 0;
 	manual_flag = 0;
 	automatic_flag = 0;
+	force = 0;
 	log_style = log_style_snuggle_default;
 	string_list_constructor(&wl);
 	string_list_constructor(&cfile);
@@ -432,6 +435,12 @@ test_main()
 			if (automatic_flag)
 				duplicate_option(test_usage);
 			automatic_flag = 1;
+			break;
+
+		case arglex_token_force:
+			if (force)
+				duplicate_option(test_usage);
+			force = 1;
 			break;
 
 		case arglex_token_file:
@@ -1016,8 +1025,29 @@ test_main()
 	/*
 	 * make sure we are actually doing something
 	 */
+	if (suggest)
+		exempt = 0;
+	else if (wl.nstrings)
+		exempt = 0;
+	else if (regression_flag)
+	{
+		assert(!cfile.nstrings);
+		exempt = cstate_data->regression_test_exempt;
+	}
+	else
+	{
+		assert(!pfile.nstrings);
+		if (baseline_flag)
+			exempt = cstate_data->test_baseline_exempt;
+		else
+			exempt = cstate_data->test_exempt;
+	}
 	if (!cfile.nstrings && !pfile.nstrings)
+	{
+		if (exempt)
+			quit(0);
 		change_fatal(cp, 0, i18n("has no tests"));
+	}
 
 	/*
 	 * It is an error if the change attributes include architectures
@@ -1076,13 +1106,20 @@ test_main()
 		 * Check the file time.  This will clear the file test
 		 * time stamps if the file has changed.
 		 */
+		assert(!c_src_data->file_fp || c_src_data->file_fp->oldest >= 0);
+		assert(!c_src_data->file_fp || c_src_data->file_fp->youngest >= 0);
 		if (!integrating)
+		{
 			change_file_fingerprint_check(cp, c_src_data);
+			assert(c_src_data->file_fp);
+			assert(c_src_data->file_fp->oldest >= 0);
+			assert(c_src_data->file_fp->youngest >= 0);
+		}
 
 		/*
 		 * Check to see if we need to run the test at all.
 		 */
-		if (!integrating)
+		if (!force && !integrating)
 		{
 			time_t		last_time;
 
@@ -1091,7 +1128,8 @@ test_main()
 			else
 				last_time = change_file_test_time_get(cp, c_src_data);
 			assert(c_src_data->file_fp);
-			assert(c_src_data->file_fp->oldest);
+			assert(c_src_data->file_fp->youngest >= 0);
+			assert(c_src_data->file_fp->oldest >= 0);
 			if (last_time && c_src_data->file_fp->oldest < last_time)
 			{
 				str_free(s2);

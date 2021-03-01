@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,14 +29,17 @@
 #include <type.h>
 
 struct sub_context_ty; /* existence */
+struct output_ty; /* existence */
 
 #define INTEGER_NOT_SET 0
+#define REAL_NOT_SET 0.0
 #define TIME_NOT_SET (time_t)0
 
-void string_write _((char *, string_ty *));
-void integer_write _((char *, long));
-void time_write _((char *, time_t));
-void io_comment_append _((struct sub_context_ty *, char *));
-void io_comment_emit _((void));
+void string_write _((struct output_ty *, const char *, string_ty *));
+void integer_write _((struct output_ty *, const char *, long));
+void real_write _((struct output_ty *, const char *, double));
+void time_write _((struct output_ty *, const char *, time_t));
+void io_comment_append _((struct sub_context_ty *, const char *));
+void io_comment_emit _((struct output_ty *));
 
 #endif /* AEGIS_IO_H */

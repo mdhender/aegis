@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,15 +23,7 @@
 #ifndef COMMON_AC_STDIO_H
 #define COMMON_AC_STDIO_H
 
-/*
- * Need to define _POSIX_SOURCE on Linux, in order to get the fdopen,
- * fileno, popen and pclose function prototypes.
- */
-#ifdef __linux__
-#ifndef _POSIX_SOURCE
-#define _POSIX_SOURCE
-#endif
-#endif
+#include <config.h>
 
 #include <stdio.h>
 

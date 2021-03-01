@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 #include <error.h>
 #include <gram.h>
+#include <input.h>
 #include <lex.h>
 #include <mem.h>
 #include <parse.h>
@@ -91,6 +92,35 @@ parse_env(name, type)
 }
 
 
+void *
+parse_input(ifp, type)
+	input_ty	*ifp;
+	type_ty		*type;
+{
+	void		*addr;
+
+	trace(("parse_input(ifp = %08lX, type = %08lx)\n{\n"/*}*/,
+		(long)ifp, (long)type));
+	lex_open_input(ifp);
+	assert(type);
+	assert(type->alloc);
+	assert(type->struct_parse);
+	addr = type->alloc();
+	sem_push(type, addr);
+
+	trace(("gram_parse()\n{\n"/*}*/));
+	gram_parse();
+	trace((/*{*/"}\n"));
+
+	while (sem_root)
+		sem_pop();
+	lex_close();
+	trace(("return %08lX;\n", (long)addr));
+	trace((/*{*/"}\n"));
+	return addr;
+}
+
+
 void
 sem_push(type, addr)
 	type_ty		*type;
@@ -117,6 +147,9 @@ sem_pop()
 	trace(("sem_pop()\n{\n"/*}*/));
 	x = sem_root;
 	sem_root = x->next;
+	x->type = 0;
+	x->addr = 0;
+	x->next = 0;
 	mem_free((char *)x);
 	trace((/*{*/"}\n"));
 }
@@ -131,12 +164,50 @@ sem_integer(n)
 		/* do nothing */;
 	else if (sem_root->type == &integer_type)
 		*(long *)sem_root->addr = n;
+	else if (sem_root->type == &real_type)
+		*(double *)sem_root->addr = n;
 	else if (sem_root->type == &time_type)
 	{
 		/*
 		 * Time is always arithmetic, never a structure.
 		 * This works on every system the author has seen,
 		 * without loss of precision.
+		 */
+		*(time_t *)sem_root->addr = n;
+		trace(("time is %s", ctime((time_t *)sem_root->addr)));
+	}
+	else
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		lex_error(scp, i18n("value of type $name required"));
+		sub_context_delete(scp);
+	}
+	trace((/*{*/"}\n"));
+}
+
+
+void
+sem_real(n)
+	double	n;
+{
+	trace(("sem_real(n = %g)\n{\n"/*}*/, n));
+	if (!sem_root->type)
+		/* do nothing */;
+	else if (sem_root->type == &integer_type)
+	{
+		/* Precision may be lost. */
+		*(long *)sem_root->addr = n;
+	}
+	else if (sem_root->type == &real_type)
+		*(double *)sem_root->addr = n;
+	else if (sem_root->type == &time_type)
+	{
+		/*
+		 * Time is always arithmetic, never a structure.
+		 * Precision may be lost.
 		 */
 		*(time_t *)sem_root->addr = n;
 	}

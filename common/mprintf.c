@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * MANIFEST: functions to printf into memory
  */
 
-#include <errno.h>
-#include <stdio.h>
+#include <ac/errno.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
@@ -174,7 +174,7 @@ build_fake(fake, flag, width, precision, qualifier, specifier)
 
 char *
 vmprintf_errok(fmt, ap)
-	char		*fmt;
+	const char	*fmt;
 	va_list		ap;
 {
 	int		width;
@@ -182,7 +182,7 @@ vmprintf_errok(fmt, ap)
 	int		prec;
 	int		prec_set;
 	int		c;
-	char		*s;
+	const char	*s;
 	int		qualifier;
 	int		flag;
 	char		fake[QUANTUM - 1];
@@ -667,7 +667,7 @@ vmprintf_errok(fmt, ap)
 
 char *
 mprintf_errok(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	char		*result;
@@ -709,7 +709,7 @@ mprintf_errok(fmt sva_last)
 
 char *
 vmprintf(fmt, ap)
-	char		*fmt;
+	const char	*fmt;
 	va_list		ap;
 {
 	char		*result;
@@ -750,7 +750,7 @@ vmprintf(fmt, ap)
 
 char *
 mprintf(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	char		*result;
@@ -791,7 +791,7 @@ mprintf(fmt sva_last)
 
 string_ty *
 vmprintf_str(fmt, ap)
-	char		*fmt;
+	const char	*fmt;
 	va_list		ap;
 {
 	if (!vmprintf_errok(fmt, ap))

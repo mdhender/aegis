@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -64,19 +64,37 @@ The history is updated using the
 .I history_create_command
 and
 .I history_put_command
-from the project
+fields of the project
 .I config
 file (see
 .IR aepconf (5)
-for more information.  The integrate pass will abort with an error if
-one of these history commands should fail, e.g. by running out of disk
+for more information).  The integrate pass will abort with an error if
+one of these history commands should fail, \fIe.g.\fP by running out of disk
 space.  If this should happen, the change will remain in the
 .I "being integrated"
 state, and the integration directory is unaltered.
 .PP
-The integration directory is renamed as the baseline directory, and the
-baseline directory is deleted.  The modification times of all files
-modified since the beginning of integration (see
+Many history tools (\fIe.g.\fP RCS and SCCS) can modify the contents of
+the file when it is committed.  This usually requies the use of specific
+\&``keyword'' strings, and there are usually options to turn this behavior
+off, but users familiar with version control tools (as opposed to
+configuration management systems) will often use these features.
+The problem is that if the commit changes the file, the source file in
+the repository now no longer matches the object file in the repository.
+.I I.e.
+the history tool has compromised the referential integrity of the
+repository.  By default, a fatal error is emitted if the file is changed
+by the check-in, however this can be modified to a be warning or even
+ignored completely; see the
+.I history_\%put_\%trashes_\%file\fP
+field of
+.IR aepconf (5)
+for more information.
+.PP
+Once the history has been updated, the integration directory is renamed
+as the baseline directory, and the old baseline directory is deleted.
+The modification times of all files modified since the beginning of
+integration (see
 .IR aeib (1)
 for more information) are updated to be since the beginning of integrate
 pass.  The order of modification times will be preserved, however the
@@ -97,6 +115,7 @@ taken by integrate pass to ensure that only one branch is
 updating the file history at a time,
 thus preventing history file corruption.
 .so z_test_corr.so
+.so z_metrics.so
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -148,6 +167,9 @@ begin integration of a change
 .TP 8n
 .IR aeif (1)
 fail integration of a change
+.TP 8n
+.IR aemetrics (5)
+metrics values file format
 .TP 8n
 .IR aeuconf (5)
 user configuration file format

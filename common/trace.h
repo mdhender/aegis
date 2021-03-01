@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,10 +60,10 @@
 static int trace_pretest_result;
 #endif
 
-int trace_pretest _((char *file, int *result));
-void trace_where _((char *file, int line));
-void trace_printf _((char *, ...));
-void trace_enable _((char *));
+int trace_pretest _((const char *file, int *result));
+void trace_where _((const char *file, int line));
+void trace_printf _((const char *, ...));
+void trace_enable _((const char *));
 void trace_indent_reset _((void));
 
 
@@ -73,16 +73,16 @@ void trace_indent_reset _((void));
 #define trace_stringize(x) "x"
 #endif
 
-void trace_char_real _((char *, char *));
-void trace_char_unsigned_real _((char *, unsigned char *));
-void trace_int_real _((char *, int *));
-void trace_int_unsigned_real _((char *, unsigned *));
-void trace_long_real _((char *, long *));
-void trace_long_unsigned_real _((char *, unsigned long *));
-void trace_pointer_real _((char *, void *));
-void trace_short_real _((char *, short *));
-void trace_short_unsigned_real _((char *, unsigned short *));
-void trace_string_real _((char *, char *));
+void trace_char_real _((const char *, const char *));
+void trace_char_unsigned_real _((const char *, const unsigned char *));
+void trace_int_real _((const char *, const int *));
+void trace_int_unsigned_real _((const char *, const unsigned *));
+void trace_long_real _((const char *, const long *));
+void trace_long_unsigned_real _((const char *, const unsigned long *));
+void trace_pointer_real _((const char *, const void *));
+void trace_short_real _((const char *, const short *));
+void trace_short_unsigned_real _((const char *, const unsigned short *));
+void trace_string_real _((const char *, const char *));
 
 #ifdef DEBUG
 

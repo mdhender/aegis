@@ -141,12 +141,26 @@ T}	T{
 .ad l
 aedir - aegis directory structures
 T}
+aedist(1)	\*[Page*Of*aedist(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aedist - remotely distribute a change
+T}
 aefstate(5)	\*[Page*Of*aefstate(5)]	T{
 .ad r
 
 T}	T{
 .ad l
 aefstate - aegis file state file
+T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis - GUI interface for
+T}	T{
+.ad l
+Aegis, using TCL/TK
 T}
 aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 .ad r
@@ -161,6 +175,13 @@ aegis -Integrate Begin Undo - reverse the
 T}	T{
 .ad l
 aeib command
+T}
+aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
+.ad r
+
+T}	T{
+.ad l
+aemetrics - metrics values file format
 T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
@@ -406,6 +427,13 @@ aegis -
 T}	T{
 .ad l
 calculate file fingerprint
+T}
+aedist(1)	\*[Page*Of*aedist(1)]	T{
+.ad r
+aedist - remotely distribute a
+T}	T{
+.ad l
+change
 T}
 aeb(1)	\*[Page*Of*aeb(1)]	T{
 .ad r
@@ -925,6 +953,13 @@ T}	T{
 .ad l
 directory structures
 T}
+aedist(1)	\*[Page*Of*aedist(1)]	T{
+.ad r
+aedist - remotely
+T}	T{
+.ad l
+distribute a change
+T}
 aerect(1)	\*[Page*Of*aerect(1)]	T{
 .ad r
 aerect -
@@ -1100,6 +1135,13 @@ T}	T{
 .ad l
 file format
 T}
+aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
+.ad r
+aemetrics - metrics values
+T}	T{
+.ad l
+file format
+T}
 aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 .ad r
 aerptidx - report index
@@ -1198,6 +1240,13 @@ T}	T{
 .ad l
 fingerprint
 T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis - GUI interface
+T}	T{
+.ad l
+for Aegis, using TCL/TK
+T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
 aegis - search
@@ -1215,6 +1264,13 @@ T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
 aegis - file
+T}	T{
+.ad l
+format
+T}
+aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
+.ad r
+aemetrics - metrics values file
 T}	T{
 .ad l
 format
@@ -1316,6 +1372,13 @@ aegis -VERSion -
 T}	T{
 .ad l
 give version information
+T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+GUI interface for Aegis, using TCL/TK
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
@@ -1429,6 +1492,13 @@ T}	T{
 .ad l
 interesting things
 T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis - GUI
+T}	T{
+.ad l
+interface for Aegis, using TCL/TK
+T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
 aegis -CoPy file - copy a file
@@ -1463,6 +1533,13 @@ aegis -clone -
 T}	T{
 .ad l
 make an exact copy of a change
+T}
+aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
+.ad r
+aemetrics -
+T}	T{
+.ad l
+metrics values file format
 T}
 aeca(1)	\*[Page*Of*aeca(1)]	T{
 .ad r
@@ -1975,6 +2052,13 @@ T}	T{
 .ad l
 ReLeaSe - create a new project from an old-style project.
 T}
+aedist(1)	\*[Page*Of*aedist(1)]	T{
+.ad r
+aedist -
+T}	T{
+.ad l
+remotely distribute a change
+T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
 aegis -New BRanch Undo -
@@ -2332,6 +2416,13 @@ T}	T{
 .ad l
 symbolic name to a project delta
 T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis - GUI interface for Aegis, using
+T}	T{
+.ad l
+TCL/TK
+T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
 aegis -New
@@ -2380,6 +2471,13 @@ aegis -List - list (possibly) interesting
 T}	T{
 .ad l
 things
+T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis - GUI interface for Aegis, using TCL/
+T}	T{
+.ad l
+TK
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
@@ -2471,6 +2569,20 @@ aeustate -
 T}	T{
 .ad l
 user state file
+T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+aegis - GUI interface for Aegis,
+T}	T{
+.ad l
+using TCL/TK
+T}
+aemetrics(5)	\*[Page*Of*aemetrics(5)]	T{
+.ad r
+aemetrics - metrics
+T}	T{
+.ad l
+values file format
 T}
 aev(1)	\*[Page*Of*aev(1)]	T{
 .ad r

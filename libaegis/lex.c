@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,83 +21,80 @@
  */
 
 #include <ac/ctype.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/stdarg.h>
-#include <errno.h>
+#include <ac/errno.h>
 
 #include <error.h>
+#include <input/crlf.h>
+#include <input/env.h>
+#include <input/file.h>
+#include <input/gunzip.h>
 #include <lex.h>
-#include <lex/file.h>
-#include <lex/env.h>
 #include <mem.h>
 #include <str.h>
+#include <stracc.h>
 #include <gram.gen.h>	/* must be after <str.h> */
 #include <sub.h>
 #include <trace.h>
 #include <zero.h>
 
 
-static	lex_input_ty	*input;
+static	input_ty	*input;
 static	int		line_number;
 static	int		line_number_start;
 static	int		error_count;
 extern	gram_STYPE	gram_lval;
-static	char		*buffer_xxx;
-static	size_t		buffer_pos;
-static	size_t		buffer_max;
-
-
-static void buffer_rewind _((void));
-
-static void
-buffer_rewind()
-{
-	buffer_pos = 0;
-}
-
-
-static void buffer_putc _((int));
-
-static void
-buffer_putc(c)
-	int	c;
-{
-	if (buffer_pos >= buffer_max)
-	{
-		buffer_max = buffer_max * 2 + 32;
-		buffer_xxx = mem_change_size(buffer_xxx, buffer_max);
-	}
-	buffer_xxx[buffer_pos++] = c;
-}
-
-
-static string_ty *buffer_string _((void));
-
-static string_ty *
-buffer_string()
-{
-	return str_n_from_c(buffer_xxx, buffer_pos);
-}
+static	stracc_t	buffer;
 
 
 void
 lex_open(s)
-	char		*s;
+	const char	*s;
 {
-	input = lex_input_file_open(s);
-	line_number = 1;
-	error_count = 0;
+	input_ty	*fp;
+
+	/*
+	 * Open the underlying binary file.
+	 */
+	fp = input_file_open(s);
+
+	/*
+	 * Decompress the input stream.  If it *isn't* compressed, this
+	 * incurs NO overhead, because the gunzip code gets itself out
+	 * of the way, and returns the original fp.
+	 */
+	fp = input_gunzip(fp);
+
+	/*
+	 * Get rid of CRLF sequences in the input.
+	 * This happens, for instance, when the file is created on
+	 * windows nt, but used on Unix.
+	 */
+	fp = input_crlf(fp, 1);
+
+	/*
+	 * Now that we've completely messed with your mind, parse the
+	 * resulting input stream.
+	 */
+	lex_open_input(fp);
 }
 
 
 void
 lex_open_env(s)
-	char		*s;
+	const char	*s;
 {
-	input = lex_input_env_open(s);
-	line_number = 1;
-	error_count = 0;
+	lex_open_input(input_env_open(s));
+}
+
+
+void
+lex_open_input(ifp)
+	input_ty	*ifp;
+{
+	input = ifp;
 }
 
 
@@ -109,13 +106,13 @@ lex_close()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", input->method.name(input));
+		sub_var_set(scp, "File_Name", "%s", input_name(input));
 		sub_var_set(scp, "Number", "%d", error_count);
 		sub_var_optional(scp, "Number");
 		fatal_intl(scp, i18n("$filename: has errors"));
 		/* NOTREACHED */
 	}
-	input->method.destruct(input);
+	input_delete(input);
 	input = 0;
 }
 
@@ -127,7 +124,7 @@ lex_getc()
 {
 	int		c;
 
-	c = input->method.get(input);
+	c = input_getc(input);
 	switch (c)
 	{
 	case EOF:
@@ -163,7 +160,7 @@ static void
 lex_getc_undo(c)
 	int		c;
 {
-	input->method.unget(input, c);
+	input_ungetc(input, c);
 	if (c == '\n')
 		--line_number;
 }
@@ -174,6 +171,7 @@ gram_lex()
 {
 	sub_context_ty	*scp;
 	int		c;
+	int		ndigits;
 
 	for (;;)
 	{
@@ -187,40 +185,30 @@ gram_lex()
 			break;
 
 		case '0':
-			gram_lval.lv_integer = 0;
+			stracc_open(&buffer);
+			stracc_char(&buffer, '0');
 			c = lex_getc();
 			if (c == 'x' || c == 'X')
 			{
-				int	ndigits;
-				int	n;
-
+				stracc_char(&buffer, c);
 				ndigits = 0;
-				n = 0;
 				for (;;)
 				{
-					++ndigits;
 					c = lex_getc();
 					switch (c)
 					{
 					case '0': case '1': case '2': case '3':
 					case '4': case '5': case '6': case '7':
 					case '8': case '9':
-						n = 16 * n + c - '0';
-						continue;
-	
 					case 'A': case 'B': case 'C': case 'D':
 					case 'E': case 'F': 
-						n = 16 * n + c - 'A' + 10;
-						continue;
-	
 					case 'a': case 'b': case 'c': case 'd':
 					case 'e': case 'f': 
-						n = 16 * n + c - 'a' + 10;
+						++ndigits;
+						stracc_char(&buffer, c);
 						continue;
 	
 					default:
-						--ndigits;
-						lex_getc_undo(c);
 						break;
 					}
 					break;
@@ -229,69 +217,129 @@ gram_lex()
 				{
 					gram_error(i18n("malformed hex constant"));
 					gram_lval.lv_integer = 0;
-					trace(("%s: %d: INTEGER 0\n",
-						input->method.name(input),
-						line_number));
-					return INTEGER;
+					goto integer_return;
 				}
-				gram_lval.lv_integer = n;
-				trace(("%s: %d: INTEGER %ld\n",
-					input->method.name(input),
-					line_number, n));
-				return INTEGER;
+				lex_getc_undo(c);
+				stracc_char(&buffer, ' ');
+				gram_lval.lv_integer =
+					strtoul(buffer.buffer, (char **)0,  16);
+				goto integer_return;
 			}
+			if (c == '.')
+			{
+				stracc_char(&buffer, c);
+				goto fraction;
+			}
+			if (c == 'e' || c == 'E')
+				goto exponent;
 			for (;;)
 			{
 				switch (c)
 				{
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
-					gram_lval.lv_integer =
-					     8 * gram_lval.lv_integer + c - '0';
+					stracc_char(&buffer, c);
 					c = lex_getc();
 					continue;
 
 				default:
-					lex_getc_undo(c);
 					break;
 				}
 				break;
 			}
-			trace(("%s: %d: INTEGER %ld\n",
-				input->method.name(input),
-				line_number, gram_lval.lv_integer));
-			return INTEGER;
+			lex_getc_undo(c);
+			stracc_char(&buffer, ' ');
+			gram_lval.lv_integer =
+				strtoul(buffer.buffer, (char **)0, 8);
+			goto integer_return;
 
 		case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9': 
-			gram_lval.lv_integer = 0;
+			stracc_open(&buffer);
 			for (;;)
 			{
-				gram_lval.lv_integer =
-					10 * gram_lval.lv_integer + c - '0';
+				stracc_char(&buffer, c);
 				c = lex_getc();
-				switch (c)
-				{
-				case '0': case '1': case '2': case '3':
-				case '4': case '5': case '6': case '7':
-				case '8': case '9': 
-					continue;
-
-				default:
-					lex_getc_undo(c);
+				if (!isdigit(c))
 					break;
-				}
-				break;
 			}
+			if (c == '.')
+			{
+				stracc_char(&buffer, c);
+				goto fraction;
+			}
+			if (c == 'e' || c == 'E')
+				goto exponent;
+			lex_getc_undo(c);
+			stracc_char(&buffer, ' ');
+			gram_lval.lv_integer =
+				strtoul(buffer.buffer, (char **)0, 10);
+			assert(gram_lval.lv_integer >= 0);
 			integer_return:
 			trace(("%s: %d: INTEGER %ld\n",
-				input->method.name(input), line_number,
+				input_name(input), line_number,
 				gram_lval.lv_integer));
 			return INTEGER;
 
+		case '.':
+			c = lex_getc();
+			if (!isdigit(c))
+			{
+				lex_getc_undo(c);
+				return '.';
+			}
+			stracc_open(&buffer);
+			stracc_char(&buffer, '0');
+			stracc_char(&buffer, '.');
+			stracc_char(&buffer, c);
+			fraction:
+			for (;;)
+			{
+				c = lex_getc();
+				if (!isdigit(c))
+					break;
+				stracc_char(&buffer, c);
+			}
+			if (c == 'e' || c == 'E')
+			{
+				exponent:
+				stracc_char(&buffer, c);
+				c = lex_getc();
+				if (c == '+' || c == '-')
+				{
+					stracc_char(&buffer, c);
+					c = lex_getc();
+				}
+				ndigits = 0;
+				for (;;)
+				{
+					c = lex_getc();
+					if (!isdigit(c))
+						break;
+					++ndigits;
+					stracc_char(&buffer, c);
+				}
+				if (!ndigits)
+				{
+					gram_error(i18n("malformed exponent"));
+					gram_lval.lv_real = 0;
+					trace(("%s: %d: REAL 0\n",
+						input_name(input),
+						line_number));
+					return REAL;
+				}
+			}
+			lex_getc_undo(c);
+			stracc_char(&buffer, 0);
+			gram_lval.lv_real = atof(buffer.buffer);
+			trace(("%s: %d: REAL %g\n",
+				input_name(input), line_number,
+				gram_lval.lv_real));
+			return REAL;
+
 		case '"':
 			line_number_start = line_number;
-			buffer_rewind();
+			stracc_open(&buffer);
 			for (;;)
 			{
 				c = lex_getc();
@@ -329,28 +377,28 @@ gram_lex()
 						goto str_eof;
 
 					case 'b':
-						buffer_putc('\b');
+						stracc_char(&buffer, '\b');
 						break;
 
 					case 'n':
-						buffer_putc('\n');
+						stracc_char(&buffer, '\n');
 						break;
 
 					case 'r':
-						buffer_putc('\r');
+						stracc_char(&buffer, '\r');
 						break;
 
 					case 't':
-						buffer_putc('\t');
+						stracc_char(&buffer, '\t');
 						break;
 
 					case 'f':
-						buffer_putc('\f');
+						stracc_char(&buffer, '\f');
 						break;
 
 					case '"':
 					case '\\':
-						buffer_putc(c);
+						stracc_char(&buffer, c);
 						break;
 
 					case '0': case '1': case '2': case '3':
@@ -382,17 +430,17 @@ gram_lex()
 								}
 								break;
 							}
-							buffer_putc(v);
+							stracc_char(&buffer, v);
 						}
 						break;
 					}
 				}
 				else
-					buffer_putc(c);
+					stracc_char(&buffer, c);
 			}
-			gram_lval.lv_string = buffer_string();
+			gram_lval.lv_string = stracc_close(&buffer);
 			trace(("%s: %d: STRING \"%s\"\n",
-				input->method.name(input), line_number,
+				input_name(input), line_number,
 				gram_lval.lv_string->str_text));
 			return STRING;
 
@@ -406,10 +454,10 @@ gram_lex()
 		case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
 		case 's': case 't': case 'u': case 'v': case 'w': case 'x':
 		case 'y': case 'z': 
-			buffer_rewind();
+			stracc_open(&buffer);
 			for (;;)
 			{
-				buffer_putc(c);
+				stracc_char(&buffer, c);
 				c = lex_getc();
 				switch (c)
 				{
@@ -438,14 +486,14 @@ gram_lex()
 				}
 				break;
 			}
-			if (buffer_pos == 4 && !memcmp(buffer_xxx, "ZERO", 4))
+			if (buffer.length == 4 && !memcmp(buffer.buffer, "ZERO", 4))
 			{
 				gram_lval.lv_integer = MAGIC_ZERO;
 				goto integer_return;
 			}
-			gram_lval.lv_string = buffer_string();
+			gram_lval.lv_string = stracc_close(&buffer);
 			trace(("%s: %d: NAME \"%s\"\n",
-				input->method.name(input), line_number,
+				input_name(input), line_number,
 				gram_lval.lv_string->str_text));
 			return NAME;
 
@@ -456,7 +504,7 @@ gram_lex()
 			{
 				lex_getc_undo(c);
 				trace(("%s: %d: '/'\n",
-					input->method.name(input),
+					input_name(input),
 					line_number));
 				return '/';
 			}
@@ -490,11 +538,11 @@ gram_lex()
 
 		case EOF:
 			trace(("%s: %d: end of file\n",
-				input->method.name(input), line_number));
+				input_name(input), line_number));
 			return 0;
 
 		default:
-			trace(("%s: %d: '%c'\n", input->method.name(input),
+			trace(("%s: %d: '%c'\n", input_name(input),
 				line_number, c));
 			return c;
 		}
@@ -504,7 +552,7 @@ gram_lex()
 
 void
 gram_error(s)
-	char	*s;
+	const char	*s;
 {
 	sub_context_ty	*scp;
 
@@ -517,7 +565,7 @@ gram_error(s)
 void
 lex_error(scp, s)
 	sub_context_ty	*scp;
-	char		*s;
+	const char	*s;
 {
 	string_ty	*msg;
 
@@ -525,14 +573,14 @@ lex_error(scp, s)
 
 	/* re-use substitution context */
 	sub_var_set(scp, "Message", "%S", msg);
-	sub_var_set(scp, "File_Name", "%s", input->method.name(input));
+	sub_var_set(scp, "File_Name", "%s", input_name(input));
 	sub_var_set(scp, "Number", "%d", line_number);
 	error_intl(scp, i18n("$filename: $number: $message"));
 	str_free(msg);
 	if (++error_count >= 20)
 	{
 		/* re-use substitution context */
-		sub_var_set(scp, "File_Name", "%s", input->method.name(input));
+		sub_var_set(scp, "File_Name", "%s", input_name(input));
 		fatal_intl(scp, i18n("$filename: too many errors"));
 	}
 }

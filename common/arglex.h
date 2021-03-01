@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@ extern arglex_value_ty arglex_value;
 
 void arglex_init _((int, char **, arglex_table_ty *));
 arglex_token_ty arglex _((void));
-int arglex_compare _((char *formal, char *actual));
+int arglex_compare _((const char *formal, const char *actual));
 char *arglex_token_name _((arglex_token_ty));
 
 arglex_table_ty *arglex_table_catenate _((arglex_table_ty *,

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,9 @@ os_path_cat(s1, s2)
 	string_ty	*s2;
 {
 	static string_ty *dot;
+	size_t		s1len;
+	char		*cp2;
+	size_t		cp2len;
 
 	if (!dot)
 		dot = str_from_c(".");
@@ -40,7 +43,18 @@ os_path_cat(s1, s2)
 		return str_copy(s2);
 	if (str_equal(s2, dot))
 		return str_copy(s1);
-	return str_format("%S/%S", s1, s2);
+	for
+	(
+		s1len = s1->str_length;
+		s1len > 0 && s1->str_text[s1len - 1] == '/';
+		--s1len
+	)
+		;
+	cp2 = s2->str_text;
+	cp2len = s2->str_length;
+	while (cp2len > 0 && *cp2 == '/')
+		cp2++, cp2len--;
+	return str_format("%.*S/%.*s", (int)s1len, s1, (int)cp2len, cp2);
 }
 
 

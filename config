@@ -37,6 +37,9 @@ change=$change version=$version arch=$uname -nl -st search_path=$search_path";
  */
 link_integration_directory = true;
 
+/* don't link/copy the bin dir */
+integrate_begin_exceptions = [ "linux-i486/bin/*" ];
+
 /*
  * create a new history
  * always executed as the project owner
@@ -86,8 +89,28 @@ merge_command =
 /*
  * whenever files are added to or removed from the change,
  * execute the following command.
+ *
+ * The project files are wiped, too, because a removed file will alter
+ * the project file list.
  */
-change_file_command = "rm -f .c_inclrc";
+change_file_command = "rm -f etc/cook/change_files.$version etc/cook/project_files.$version";
+project_file_command = "rm -f etc/cook/project_files.$version";
+
+/*
+ * make sure the filenames are OK with Windows.
+ */
+windows_filename_required = true;
+
+/*
+ * watch out for these
+ * /
+trojan_horse_suspect =
+[
+	"*.awk",
+	"*.cook",
+	"*.sh",
+];
+ * /
 
 /*
  * new file templates
@@ -131,11 +154,18 @@ file_template =
 develop_begin_command = "ln -s $baseline bl";
 
 /*
- * This command is run at the beginning of an integration.
- * The etc/Howto.cook file assumes this has been done.
+ * Remove these files before we start integrating, to ensure that they
+ * will be rebuild containing the correct version information.
  */
 integrate_begin_command =
-       "rm -f .cook.fp common/patchlevel.h etc/new.so etc/version.so aegis.log";
+	"rm -f \
+.cook.fp \
+etc/cook/change_files* \
+etc/cook/project_files* \
+etc/version.so \
+common/patchlevel.h \
+bl blbl blblbl blblblbl \
+";
 
 /*
  * list of architectures on which each change must build and test

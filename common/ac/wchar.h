@@ -54,6 +54,11 @@ size_t wcsrtombs _((char *, const wchar_t **, size_t, mbstate_t *));
 
 #endif
 
+/* Solaris bug 1250837: include wchar.h before widec.h */
+#ifdef HAVE_WIDEC_H
+#include <widec.h>
+#endif
+
 
 /*
  * HAVE_ISWPRINT is only set if (a) there is a have_iswprint function,

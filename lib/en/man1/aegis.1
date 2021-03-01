@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -590,6 +590,25 @@ Specifies the number of seconds to delay execution within commands
 which set timestamps.
 This is intended to be used within the tests distributed with aegis,
 but can also be of use within some shell scripts.
+.TP 8n
+AEGIS_AUTOMOUNT_POINTS
+.RS
+A colon-separated list of directories which the automounter may use
+to mount file systems.  Use with extreme care, as this distorts Aegis'
+idea of the shape of the filesystem.
+.PP
+This feature assumes
+that paths below the automounter's mount directory are echoes of paths
+without it.
+\fIE.g.\fP When \f[CW]/home\fP is the trigger, and
+\f[CW]/tmp_mnt/home\fP is where the on-demand NFS mount is performed, with
+\f[CW]/home\fP appearing to processes to be a symlink.
+.PP
+This is the behavior of the Sun automounter.  The AMD automounter is
+capable of being configured in this way, though it is not typical of the
+examples in the manual.  Nor is it typical of the out-of-the-box Linux
+AMD configuration in many distributions.
+.RE
 .TP 8n
 COLS
 Specifies the page width for errors and listings.

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,9 @@
  */
 
 #include <ac/ctype.h>
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/stddef.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/libintl.h>
@@ -52,18 +52,18 @@
  *	Line length is assumed to be 80 characters.
  */
 
-static void wrap _((char *));
+static void wrap _((const char *));
 
 static void
 wrap(s)
-	char	*s;
+	const char	*s;
 {
-	char	*progname;
-	static char escapes[] = "\rr\nn\ff\bb\tt";
-	int	page_width;
-	char	tmp[200];
-	int	first_line;
-	char	*tp;
+	char		*progname;
+	static char	escapes[] = "\rr\nn\ff\bb\tt";
+	int		page_width;
+	char		tmp[200];
+	int		first_line;
+	char		*tp;
 
 	if (fflush(stdout) || ferror(stdout))
 		nfatal("(stdout)");
@@ -73,8 +73,8 @@ wrap(s)
 	first_line = 1;
 	while (*s)
 	{
-		char	*ep;
-		int	ocol;
+		const char	*ep;
+		int		ocol;
 
 		/*
 		 * Work out how many characters fit on the line.
@@ -103,9 +103,9 @@ wrap(s)
 		 */
 		if (*ep && *ep != ' ')
 		{
-			char	*mp;
-			char	*bp_space;
-			char	*bp_slash;
+			const char	*mp;
+			const char	*bp_space;
+			const char	*bp_slash;
 
 			bp_space = 0;
 			for (mp = ep; mp > s; --mp)
@@ -185,7 +185,7 @@ wrap(s)
 			}
 			else
 			{
-				char	*esc;
+				const char	*esc;
 
 				esc = strchr(escapes, c);
 				if (esc)
@@ -247,11 +247,11 @@ double_jeopardy()
 }
 
 
-static char *copy_string _((char *));
+static char *copy_string _((const char *));
 
 static char *
 copy_string(s)
-	char		*s;
+	const char	*s;
 {
 	char		*cp;
 
@@ -289,7 +289,7 @@ copy_string(s)
 
 void
 error_raw(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	va_list		ap;
@@ -326,7 +326,7 @@ error_raw(fmt sva_last)
 
 void
 nerror(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	char		*s1;
@@ -370,7 +370,7 @@ nerror(fmt sva_last)
 /*VARARGS1*/
 void
 nfatal(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	char		*s1;
@@ -412,7 +412,7 @@ nfatal(fmt sva_last)
 
 void
 fatal_raw(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	va_list		ap;
@@ -451,14 +451,13 @@ fatal_raw(fmt sva_last)
 
 int
 assert_failed(s, file, line)
-	char	*s;
-	char	*file;
-	int	line;
+	const char	*s;
+	const char	*file;
+	int		line;
 {
 	error_raw("%s: %d: assertion \"%s\" failed (bug)", file, line, s);
 	abort();
 	exit(1); /* incase abort() comes back */
-	return 0; /* to silence lint */
 }
 
 

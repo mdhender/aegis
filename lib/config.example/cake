@@ -6,7 +6,7 @@
  *
  * The cake package was published in the comp.sources.unix USENET newsgroup,
  * volume 12, around February 1988, and is thus easily accessible from the many
- * archives around the internet.
+ * archives around the Internet.
  *
  * It does not have a search path of any form, not even something like VPATH.
  * It does, however, have facilities for dynamic include file dependencies.
@@ -24,7 +24,7 @@ build_command =
 
 /*
  * The rules used in the User Guide all remove their targets before
- * constructing them, which qualifies them for the follwoing entry in the
+ * constructing them, which qualifies them for the following entry in the
  * config file.  The targets must be removed first, otherwise the baseline
  * would cease to be self-consistent.
  */
@@ -32,8 +32,8 @@ link_integration_directory = true;
 
 /*
  * Another field to be set in the config file is one which tells aegis to
- * maintain symbolic links between the development directory and the basline.
- * This also requires that rules remove their targest before constructing them,
+ * maintain symbolic links between the development directory and the baseline.
+ * This also requires that rules remove their target before constructing them,
  * to ensure that development builds do not attempt to write their results onto
  * the read-only versions in the baseline.
  */

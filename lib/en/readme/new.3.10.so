@@ -1,0 +1,94 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.10 features
+.\"
+.PP
+.if n *
+.if t \(bu
+The \fIaet\fP(1) command now accepts a \f(CW--force\fP option,
+forcing tests to be run, even if Aegis doesn't think they need to.
+.PP
+.if n *
+.if t \(bu
+The Aegis CGI interface has been enhanced so that you can download
+changes from the generated web pages listing the changes,
+using the \fIaedist\fP command.
+.PP
+.if n *
+.if t \(bu
+The \fIaedist --send\fP command now accepts a \f(CW--no-ascii-armor\fP
+option, which leaves off the MIME base 64 encoding.  Useful for binary
+distributions and web servers.
+.PP
+.if n *
+.if t \(bu
+There is a new \fItrojan_horse_suspect\fP field in the project
+\fIconfig\fP file.  This is used by \fIaedist --receive\fP to check for files
+which could be abused to carry Trojan horse attacks.
+.PP
+.if n *
+.if t \(bu
+The \fIaedist --receive\fP command now accepts a \f(CW--trojan\fP
+option which treats the incoming change set as suspect, and
+a \f(CW--no-trojan\fP option which treats the incoming change set as benign.
+.PP
+.if n *
+.if t \(bu
+The \fIaedist --receive\fP command now quotes filenames (if necessary)
+when executing commands, thus defending against filenames which contain
+semicolons.
+.PP
+.if n *
+.if t \(bu
+The \fIaenbru\fP(1) command has been implemented at last.
+At last!
+You no longer need to use the \fIaedbu\fP work-around.
+.PP
+.if n *
+.if t \(bu
+The \fIaedbu\fP(1) command now gives an error if you attempt to apply
+it to a branch.
+.PP
+.if n *
+.if t \(bu
+The \fIaermpr\fP(1) command may now be applied to a project with active
+branches, and will remove the branches as well (provided there are no
+active changes on any of the branches).
+.PP
+.if n *
+.if t \(bu
+The \f(CWdos_\%filename_\%required\fP and
+\f(CWwindows_\%filename_\%required\fP fields of the project \fIconfig\fP
+file have been enhanced to reject the brain-dead Windows special filenames
+such as ``aux'' \fIet al\fP.
+.PP
+.if n *
+.if t \(bu
+The \f(CW${user}\fP and \f(CW${project}\fP substitutions have been
+enhanced to provide additional information when given an additional argument.
+Useful for file templates.  See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+Several portability enhacements, notably the Windows filename
+incompatibility has been fixed, and also the Linux \fIstdlib.h\fP problem.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.10

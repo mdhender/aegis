@@ -53,4 +53,6 @@ int string_list_equal _((string_list_ty *, string_list_ty *));
 int string_list_subset _((string_list_ty *, string_list_ty *));
 void string_list_sort _((string_list_ty *));
 
+void string_list_quote_shell _((string_list_ty *, string_list_ty *));
+
 #endif /* COMMON_STR_LIST_H */

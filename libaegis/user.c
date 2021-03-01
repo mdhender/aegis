@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,9 +40,11 @@
 #include <os.h>
 #include <project.h>
 #include <project_hist.h>
+#include <stracc.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
+#include <uname.h>
 #include <undo.h>
 #include <str_list.h>
 #include <zero.h>
@@ -601,6 +603,17 @@ user_name(up)
 }
 
 
+string_ty *
+user_name2(up)
+	user_ty		*up;
+{
+	trace(("user_name2(up = %08lX)\n{\n"/*}*/, up));
+	trace(("return \"%s\";\n", up->name->str_text));
+	trace((/*{*/"}\n"));
+	return up->full_name;
+}
+
+
 /*
  * NAME
  *	user_id
@@ -955,6 +968,8 @@ user_uconf_get(up)
 			data->lock_wait_preference = tmp->lock_wait_preference;
 			data->mask |= uconf_lock_wait_preference_mask;
 		}
+		if (!data->email_address && tmp->email_address)
+			data->email_address = str_copy(tmp->email_address);
 		uconf_type.free(tmp);
 	}
 	trace(("return %08lX;\n", up->uconf_data));
@@ -1106,13 +1121,13 @@ user_ustate_write(up)
 	if (up->ustate_is_new)
 	{
 		undo_unlink_errok(filename_new);
-		ustate_write_file(filename_new->str_text, up->ustate_data);
+		ustate_write_file(filename_new->str_text, up->ustate_data, 0);
 		commit_rename(filename_new, up->ustate_path);
 	}
 	else
 	{
 		undo_unlink_errok(filename_new);
-		ustate_write_file(filename_new->str_text, up->ustate_data);
+		ustate_write_file(filename_new->str_text, up->ustate_data, 0);
 		commit_rename(up->ustate_path, filename_old);
 		commit_rename(filename_new, up->ustate_path);
 		commit_unlink_errok(filename_old);
@@ -2448,4 +2463,93 @@ user_relative_filename_preference(up, dflt)
 		user_relative_filename_preference_option = dflt;
 	}
 	return user_relative_filename_preference_option;
+}
+
+
+/*
+ * NAME
+ *	clean_up
+ *
+ * SYNOPSIS
+ *	string_ty *clean_up(string_ty *);
+ *
+ * DESCRIPTION
+ *	The clean_up function is used to clean up a user's full name
+ *	into an rfc822-acceptable string, suitable for use within an
+ *	email address.
+ *
+ * RETURNS
+ *	string_ty *; use str_free when finished with
+ */
+
+static string_ty *clean_up _((string_ty *));
+
+static string_ty *
+clean_up(s)
+	string_ty	*s;
+{
+	stracc_t	buf;
+	const char	*cp;
+	int		c;
+	string_ty	*result;
+	int		prev;
+
+	stracc_constructor(&buf);
+	stracc_open(&buf);
+	prev = ' ';
+	for (cp = s->str_text; *cp; ++cp)
+	{
+		c = (unsigned char)*cp;
+		if (isspace(c) || strchr("@,<>()[]{}'\"", c) || !isprint(c))
+			c = ' ';
+		if (c != ' ' || prev != ' ')
+			stracc_char(&buf, c);
+		prev = c;
+	}
+	while (buf.length > 0 && buf.buffer[buf.length - 1] == ' ')
+		buf.length--;
+	result = stracc_close(&buf);
+	stracc_destructor(&buf);
+	return result;
+}
+
+
+/*
+ * NAME
+ *	user_email_address
+ *
+ * SYNOPSIS
+ *	string_ty *user_email_address(user_ty *);
+ *
+ * DESCRIPTION
+ *	The user_email_address is used to read the user's preferences
+ *	for her email address.	Defaults to full name from /etc/passwd,
+ *	then login name at hostname (not generally useful).
+ *
+ * RETURNS
+ *	string_ty *; DO NOT use str_free when finished
+ */
+
+string_ty *
+user_email_address(up)
+	user_ty		*up;
+{
+	uconf		uconf_data;
+	string_ty	*full_name;
+
+	uconf_data = user_uconf_get(up);
+	if (!uconf_data->email_address)
+	{
+		full_name = clean_up(user_name2(up));
+		uconf_data->email_address =
+			str_format
+			(
+				"%S <%S@%S>",
+				full_name,
+				user_name(up),
+				uname_node_get()
+			);
+		str_free(full_name);
+	}
+	return uconf_data->email_address;
 }

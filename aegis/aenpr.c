@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <ac/ctype.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
@@ -35,10 +35,14 @@
 #include <error.h>
 #include <gonzo.h>
 #include <help.h>
+#include <io.h>
 #include <lock.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <project/pattr/edit.h>
+#include <project/pattr/get.h>
+#include <project/pattr/set.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -101,14 +105,19 @@ new_project_main()
 	int		version_number_length;
 	project_ty	*version_pp[SIZEOF(version_number)];
 	string_ty	*version_string;
-	string_ty	*s;
 	long		j;
+	int		keep;
+	pattr		pattr_data;
+	edit_ty		edit;
 
 	trace(("new_project_main()\n{\n"/*}*/));
 	project_name = 0;
 	home = 0;
 	version_number_length = 0;
 	version_string = 0;
+	keep = -1;
+	pattr_data = 0;
+	edit = edit_not_set;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -141,6 +150,41 @@ new_project_main()
 			 * is done on this "system idea" of the pathname.
 			 */
 			home = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_edit:
+			if (edit == edit_foreground)
+				duplicate_option(new_project_usage);
+			if (edit != edit_not_set)
+			{
+				too_many_edits:
+				mutually_exclusive_options
+				(
+					arglex_token_edit,
+					arglex_token_edit_bg,
+					new_project_usage
+				);
+			}
+			edit = edit_foreground;
+			break;
+
+		case arglex_token_edit_bg:
+			if (edit == edit_background)
+				duplicate_option(new_project_usage);
+			if (edit != edit_not_set)
+				goto too_many_edits;
+			edit = edit_background;
+			break;
+
+		case arglex_token_file:
+			if (pattr_data)
+				duplicate_option(new_project_usage);
+			if (arglex() != arglex_token_string)
+				option_needs_file(arglex_token_file, new_project_usage);
+			os_become_orig();
+			pattr_data = pattr_read_file(arglex_value.alv_string);
+			os_become_undo();
+			assert(pattr_data);
 			break;
 
 		case arglex_token_major:
@@ -198,9 +242,35 @@ new_project_main()
 		case arglex_token_wait_not:
 			user_lock_wait_argument(new_project_usage);
 			break;
+
+		case arglex_token_keep:
+			if (keep > 0)
+				duplicate_option(new_project_usage);
+			if (keep >= 0)
+			{
+				mut_exc_keep:
+				mutually_exclusive_options
+				(
+					arglex_token_no_keep,
+					arglex_token_keep,
+					new_project_usage
+				);
+			}
+			keep = 1;
+			break;
+
+		case arglex_token_no_keep:
+			if (keep == 0)
+				duplicate_option(new_project_usage);
+			if (keep >= 0)
+				goto mut_exc_keep;
+			keep = 0;
+			break;
 		}
 		arglex();
 	}
+	if (keep < 0)
+		keep = 0;
 	if (!project_name)
 	{
 		error_intl(0, i18n("no project name"));
@@ -212,6 +282,21 @@ new_project_main()
 		{
 			error_intl(0, i18n("don't mix old and new version options"));
 			new_project_usage();
+		}
+		if (keep)
+		{
+			mutually_exclusive_options
+			(
+				arglex_token_keep,
+				(
+					version_number_length < 2
+				?
+					arglex_token_major
+				:
+					arglex_token_minor
+				),
+				new_project_usage
+			);
 		}
 		while (version_number_length < 2)
 			version_number[version_number_length++] = 0;
@@ -233,7 +318,7 @@ new_project_main()
 		/* NOTREACHED */
 		sub_context_delete(scp);
 	}
-	if (!version_number_length && !version_string)
+	if (!keep && !version_number_length && !version_string)
 	{
 		/*
 		 * Only do this if there is no version number implicit
@@ -251,6 +336,15 @@ new_project_main()
 	{
 		int	err;
 
+		if (keep)
+		{
+			mutually_exclusive_options
+			(
+				arglex_token_keep,
+				arglex_token_version,
+				new_project_usage
+			);
+		}
 		err =
 			break_up_version_string
 			(
@@ -269,6 +363,63 @@ new_project_main()
 			sub_context_delete(scp);
 		}
 	}
+	if (keep && edit == edit_foreground)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_edit,
+			arglex_token_keep,
+			new_project_usage
+		);
+	}
+	if (keep && edit == edit_background)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_edit_bg,
+			arglex_token_keep,
+			new_project_usage
+		);
+	}
+	if (keep && pattr_data)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_file,
+			arglex_token_keep,
+			new_project_usage
+		);
+	}
+	if (!pattr_data)
+		pattr_data = pattr_type.alloc(); 
+	if (!pattr_data->description)
+		pattr_data->description =
+			str_format("The \"%S\" program.", project_name);
+	if (!(pattr_data->mask & pattr_reuse_change_numbers_mask))
+	{
+		pattr_data->reuse_change_numbers = 1;
+		pattr_data->mask |= pattr_reuse_change_numbers_mask;
+	}
+	if (edit != edit_not_set)
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name);
+		io_comment_append(scp, "Project $name");
+		sub_context_delete(scp);
+		project_pattr_edit(&pattr_data, edit);
+
+		/*
+		 * You can't have no description.
+		 */
+		if (!pattr_data->description)
+			pattr_data->description =
+				str_format("The \"%S\" program.", project_name);
+		if (!(pattr_data->mask & pattr_reuse_change_numbers_mask))
+		{
+			pattr_data->reuse_change_numbers = 1;
+			pattr_data->mask |= pattr_reuse_change_numbers_mask;
+		}
+	}
 
 	/*
 	 * locate user data
@@ -276,7 +427,7 @@ new_project_main()
 	up = user_executing((project_ty *)0);
 
 	/*
-	 * read in the table
+	 * read in the project table
 	 */
 	gonzo_gstate_lock_prepare_new();
 	lock_take();
@@ -306,7 +457,26 @@ new_project_main()
 	 */
 	pp = project_alloc(project_name);
 	str_free(project_name);
-	project_bind_new(pp);
+	if (keep)
+	{
+		if (gonzo_project_home_path_from_name(project_name))
+		{
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%S", pp->name);
+			fatal_intl(scp, i18n("project $name exists"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
+		if (!home)
+		{
+			error_intl(0, i18n("aenpr -keep needs -dir"));
+			new_project_usage();
+			/* NOTREACHED */
+		}
+		project_home_path_set(pp, home);
+	}
+	else
+		project_bind_new(pp);
 
 	/*
 	 * the user who ran the command is the project administrator.
@@ -345,7 +515,8 @@ new_project_main()
 		project_verbose(pp, scp, i18n("proj dir $filename"));
 		sub_context_delete(scp);
 	}
-	project_home_path_set(pp, home);
+	if (!keep)
+		project_home_path_set(pp, home);
 	str_free(home);
 
 	/*
@@ -356,16 +527,19 @@ new_project_main()
 	bl = project_baseline_path_get(pp, 0);
 	hp = project_history_path_get(pp);
 	ip = project_info_path_get(pp);
-	project_become(pp);
-	os_mkdir(home, 02755);
-	undo_rmdir_errok(home);
-	os_mkdir(bl, 02755);
-	undo_rmdir_errok(bl);
-	os_mkdir(hp, 02755);
-	undo_rmdir_errok(hp);
-	os_mkdir(ip, 02755);
-	undo_rmdir_errok(ip);
-	project_become_undo();
+	if (!keep)
+	{
+		project_become(pp);
+		os_mkdir(home, 02755);
+		undo_rmdir_errok(home);
+		os_mkdir(bl, 02755);
+		undo_rmdir_errok(bl);
+		os_mkdir(hp, 02755);
+		undo_rmdir_errok(hp);
+		os_mkdir(ip, 02755);
+		undo_rmdir_errok(ip);
+		project_become_undo();
+	}
 
 	/*
 	 * add a row to the table
@@ -373,17 +547,17 @@ new_project_main()
 	gonzo_project_add(pp);
 
 	/*
-	 * copy the description into the change state
+	 * copy the attributes into the project
 	 */
-	s = str_format("The \"%S\" program.", project_name_get(pp));
-	project_description_set(pp, s);
-	str_free(s);
+	if (!keep)
+		project_pattr_set(pp, pattr_data);
+	pattr_type.free(pattr_data);
 
 	/*
 	 * create each of the branches
 	 */
 	ppp = pp;
-	for (j = 0; j < version_number_length; ++j)
+	for (j = 0; !keep && j < version_number_length; ++j)
 	{
 		long		change_number;
 

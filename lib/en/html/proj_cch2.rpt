@@ -53,7 +53,7 @@ print("");
 print("<html><head><title>");
 print("Project Change Cause Histogram");
 print("</title><head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',<br>");
+print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 print("Change Cause Histogram<br>");
 print(year);
 print("</center></h1>");
@@ -106,7 +106,7 @@ for (month = 1; month <= 12; ++month)
 	if (n > 0)
 	{
 		href = script_name ## "?file@proj_cch3";
-		href ##= "+project@" ## project_name();
+		href ##= "+project@" ## quote_url(project_name());
 		href ##=  "+" ## strftime("1-%b-%Y", t);
 		print("<a href=\"" ## href ## "\">");
 	}

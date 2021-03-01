@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,9 @@ print("");
 print("<html><head><title>");
 auto pn;
 pn = project_name();
-print("Project " ## pn ## " Changes"); 
+print("Project " ## quote_html(pn) ## " Changes"); 
 print("</title></head><body><h1><center>");
-print("Project ``" ## pn ## "'',<br>");
+print("Project ``" ## quote_html(pn) ## "'',<br>");
 print("List of Changes<br>");
 print("Awaiting Development"); 
 print("</center></h1>");
@@ -53,11 +53,11 @@ for (cn in sort(keys(ps.change)))
 	++total;
 	print("<tr><td valign=top align=right>");
 	auto href, junk;
-	href = "file@chan_menu+project@" ## pn ## "+change@" ## cn;
+	href = "file@chan_menu+project@" ## quote_url(pn) ## "+change@" ## cn;
 	try
 	{
 		if (count(keys(cs.branch)))
-			href = "file@proj_menu+project@" ## pn ## "." ## cn;
+			href = "file@proj_menu+project@" ## quote_url(pn) ## "." ## cn;
 	}
 	catch (junk)
 		;
@@ -67,14 +67,14 @@ for (cn in sort(keys(ps.change)))
 	print(cs.state);
 	print("</td><td valign=top>");
 	auto part;
-	for (part in wrap_html(cs.brief_description, 80))
+	for (part in wrap_html(quote_html(cs.brief_description), 80))
 		print(part);
 	print("</td></tr>");
 }
 print("</table></center>");
 print("Listed " ## total ## " changes.");
 print("<hr>A similar report may be obtained from the command line, with");
-print("<blockquote><tt>aedb -l -p " ## pn ## "</tt></blockquote>");
+print("<blockquote><tt>aedb -l -p " ## quote_html(pn) ## "</tt></blockquote>");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

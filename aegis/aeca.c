@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to list and modify change attributes
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/libintl.h>
 
@@ -273,7 +273,7 @@ change_attributes_list()
 	/*
 	 * print the cattr data
 	 */
-	cattr_write_file((char *)0, cattr_data);
+	cattr_write_file((char *)0, cattr_data, 0);
 	cattr_type.free(cattr_data);
 	project_free(pp);
 	change_free(cp);
@@ -329,7 +329,7 @@ cattr_edit(dp, et)
 	assert(d);
 	filename = os_edit_filename(1);
 	os_become_orig();
-	cattr_write_file(filename->str_text, d);
+	cattr_write_file(filename->str_text, d, 0);
 	cattr_type.free(d);
 
 	/*

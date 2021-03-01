@@ -20,10 +20,10 @@
  * MANIFEST: functions to manipulate ${basename $fn .c}s
  */
 
-#include <${id ${basename $fn .c}}.h>
+#include <${trim_directory ${trim_extension $fn}.h}>
 
 
 void
-${id ${basename $fn .c}}()
+${id ${trim_directory ${trim_extension $fn}}}()
 {
 }

@@ -20,36 +20,10 @@
  * MANIFEST: functions to implement the quote substitution
  */
 
-#include <ac/wchar.h>
-#include <ac/wctype.h>
-
-#include <mem.h>
 #include <sub.h>
 #include <sub/quote.h>
 #include <trace.h>
 #include <wstr_list.h>
-
-static wchar_t	*buffer;
-static size_t	buf_max;
-static size_t	buf_pos;
-
-
-static void stash _((wint_t));
-
-static void
-stash(c)
-	wint_t	c;
-{
-	if (buf_pos >= buf_max)
-	{
-		size_t	nbytes;
-
-		buf_max = buf_max * 2 + 8;
-		nbytes = buf_max * sizeof(wchar_t);
-		buffer = mem_change_size(buffer, nbytes);
-	}
-	buffer[buf_pos++] = c;
-}
 
 
 wstring_ty *
@@ -58,8 +32,7 @@ sub_quote(scp, arg)
 	wstring_list_ty	*arg;
 {
 	wstring_ty	*s;
-	wchar_t		*wcp;
-	int		needs_quoting;
+	wstring_ty	*result;
 
 	/*
 	 * Convert the work list to a single string.
@@ -68,83 +41,15 @@ sub_quote(scp, arg)
 	s = wstring_list_to_wstring(arg, (size_t)1, arg->nitems, (char *)0);
 
 	/*
-	 * Work out if the string needs quoting.
-	 *
-	 * The empty string is not quoted, even though it could be argued
-	 * that it needs to be.  It has proven more useful in the present
-	 * form, because it allows empty filename lists to pass through
-	 * and remain empty.
+	 * quote the string as required
 	 */
-	needs_quoting = 0;
-	for (wcp = s->wstr_text; *wcp; ++wcp)
-	{
-		if (iswspace(*wcp))
-		{
-			needs_quoting = 1;
-			break;
-		}
-		switch (*wcp)
-		{
-		default:
-			continue;
-
-		case (wchar_t)'!': case (wchar_t)'"': case (wchar_t)'#':
-		case (wchar_t)'$': case (wchar_t)'&': case (wchar_t)'\'':
-		case (wchar_t)'(': case (wchar_t)')': case (wchar_t)'*':
-		case (wchar_t)':': case (wchar_t)';': case (wchar_t)'<':
-		case (wchar_t)'=': case (wchar_t)'>': case (wchar_t)'?':
-		case (wchar_t)'[': case (wchar_t)'\\': case (wchar_t)']':
-		case (wchar_t)'^': case (wchar_t)'`': case (wchar_t)'{':
-		case (wchar_t)'|': case (wchar_t)'}': case (wchar_t)'~':
-			needs_quoting = 1;
-			break;
-		}
-		break;
-	}
+	result = wstr_quote_shell(s);
 
 	/*
-	 * If it doesn't need quoting, return immediately.
+	 * clean up and return
 	 */
-	if (!needs_quoting)
-	{
-		trace(("return %8.8lX;\n", (long)s));
-		trace((/*{*/"}\n"));
-		return s;
-	}
-
-	/*
-	 * Form the quoted string, using the minimum number of escapes.
-	 *
-	 * The gotcha here is the backquote: the `blah` substitution is
-	 * still active within double quotes.
-	 */
-	buf_pos = 0;
-	stash((wchar_t)'"');
-	for (wcp = s->wstr_text; *wcp; ++wcp)
-	{
-		switch (*wcp)
-		{
-		case (wchar_t)'\n':
-		case (wchar_t)'!':
-		case (wchar_t)'"':
-		case (wchar_t)'\\':
-		case (wchar_t)'`':
-			stash((wchar_t)'\\');
-			/* fall through... */
-
-		default:
-			stash(*wcp);
-			break;
-		}
-	}
-	stash((wchar_t)'"');
 	wstr_free(s);
-
-	/*
-	 * Turn the buffer back into a wide string, and return it.
-	 */
-	s = wstr_n_from_wc(buffer, buf_pos);
-	trace(("return %8.8lX;\n", (long)s));
+	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
-	return s;
+	return result;
 }

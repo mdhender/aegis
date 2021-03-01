@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ All symbolic links will be removed from the development directory,
 even if \fIremove_\%symlinks_\%after_\%build = false\fP in the
 project \fIconfig\fP file.  The symbolic links will be re-installed,
 if \fIcreate_\%symlinks_\%before_\%build = true\fP.  This is to ensure
-that the symlinks are accurate, and that unnecassary ones are removed.
+that the symlinks are accurate, and that unnecessary ones are removed.
 .PP
 All special device files, pipes and sockets will be removed.  These files
 cannot be source files, and it is expected that the following build will
@@ -90,9 +90,9 @@ This is useful if you want to simulate something like \fIaeib -minimum\fP
 in the development directory.  This option is not meaningful if symbolic
 links are not being used.
 .PP
-This option also says not to remove normals files which occlude project
+This option also says not to remove normal files which occlude project
 source files.  This is a common technique used to temporarily over-ride
-a project source files.  The ``\fIaecp -read-only'' command would have
+project source files.  The ``\fIaecp -read-only'' command would have
 been more appropriate.
 .RE
 .so o_project.so

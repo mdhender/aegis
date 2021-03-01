@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998 Peter Miller;
+.\"	Copyright (C) 1995, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -55,9 +55,9 @@ the lowest available positive number (1 or more) will be used.
 .PP
 The new branch will be a special sort of change.
 It will be in the '\fIbeing developed\fP' state,
-but the usual commands in that stat (build, diff, etc) will not woek.
+but the usual commands in that stat (build, diff, etc) will not work.
 Instead, you must create changes on the branch,
-and when those changes are intgrated into the branch,
+and when those changes are integrated into the branch,
 this is the equivalent of build, diff, etc, on the branch.
 Once the branch is completed,
 the
@@ -72,8 +72,11 @@ state for any reason,
 it will once again require sub-changes to alter anything.
 .SH OPTIONS
 The following options are understood:
-.so o_dir.so
 .so o_help.so
+.TP 8n
+\fB\-Output\fP \fIfilename\fP
+This option may be used to specify a filename which is to be written with
+the automatically determined branch number.  Useful for writing scripts.
 .so o_wait.so
 .so o__rules.so
 .so z_exit.so

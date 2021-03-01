@@ -29,6 +29,17 @@
  */
 #include <ac/ctype.h>
 
+/*
+ * Often needed, particularly to implement the dummy functions if real
+ * ones aren't present.  Not strictly ANSI C standard conforming.
+ */
+#include <ac/stddef.h>
+
+
+/* Solaris bug 1250837: include wchar.h before widec.h */
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
 
 /*
  * Silicon Graphics
@@ -39,10 +50,6 @@
 
 #ifdef HAVE_WCTYPE_H
 #include <wctype.h>
-#endif
-
-#ifdef HAVE_WCHAR_H
-#include <wchar.h>
 #endif
 
 #ifndef HAVE_WINT_T

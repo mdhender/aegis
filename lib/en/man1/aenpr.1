@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ option for more information.
 You may specify the project version in two ways:
 .TP 3n
 1.
-The verion number may be implicit in the project name,
+The version number may be implicit in the project name,
 in which case the version numbers will be stripped off.
 For example, ``aenpr example.1.2''
 will create a project called ``example''
@@ -119,10 +119,18 @@ as in ``-version ""''
 If no version number is given,
 either explicitly or implicitly,
 version 1.0 is used.
+.SS Project Directory Location
+.so z_filelocn.so
 .SH OPTIONS
 The following options are understood:
 .so o_dir.so
+.so o_edit.so
+.so o_file.so
 .so o_help.so
+.TP 8n
+.B -Keep
+This option may be used to re-attach a project detached using \fIaermpr
+\&\-keep\fP and possibly moved by the system administrator.
 .so o_lib.so
 .so o_list.so
 .\" These options are now obsolete

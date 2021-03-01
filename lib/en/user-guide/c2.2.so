@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 .nh 2 "The Reviewer"
 .LP
 The role of a reviewer is to check another user's work.
-You are helped in this by aegis,
+You are helped in this by Aegis,
 because changes can never reach the
 .I "being reviewed"
 state without several preconditions:
@@ -50,23 +50,23 @@ has a corresponding "comma D" file.
 .nh 3 "The First Change"
 .LP
 Robyn finds out what changes are available for review
-by asking aegis:
+by asking Aegis:
 .E(
-robyn% \f(CBaerpass -l -p example\fP
+robyn% \f(CBaerpass -l -p example.1.0\fP
 
-Project "example"
+Project "example.1.0"
 List of Changes
 
 Change  State           Description
 ------- -------         -------------
-   1    being_reviewed  Place under aegis
+  10    being_reviewed  Place under Aegis
 robyn%
 .E)
 Any of the above changes could be reviewed,
 Robyn chooses the first.
 .E(
-robyn% \f(CBaecd -p example -c 1\fP
-aegis: project "example": change 1: /u/pat/example.001
+robyn% \f(CBaecd -p example.1.0 -c 10\fP
+aegis: project "example": change 1: /u/pat/example.1.0.C010
 robyn% \f(CBaedmore\fP
 \fI\&.\&.\&.examines each file.\&.\&.\fP
 robyn%
@@ -85,9 +85,9 @@ command.
 Once the change has been reviewed and found acceptable,
 it is passed:
 .E(
-robyn% \f(CBaerpass example 1\fP
-aegis: sh /usr/local/lib/aegis/rp.sh example 1 pat robyn
-aegis: project "example": change 1: passed review
+robyn% \f(CBaerpass example.1.0 10\fP
+aegis: sh /usr/local/lib/aegis/rp.sh example.1.0 10 pat robyn
+aegis: project "example.1.0": change 10: passed review
 robyn%
 .E)
 Some time soon Isa will notice the email
@@ -96,36 +96,36 @@ notification and commence integration of the change.
 .LP
 Most reviews have the same pattern as the first.
 .E(
-robyn% \f(CBaerpass -l -p example\fP
+robyn% \f(CBaerpass -l -p example.1.0\fP
 
-Project "example"
+Project "example.1.0"
 List of Changes
 
 Change  State           Description
 ------- -------         -------------
-   2    being_reviewed  file names on command line
+  11    being_reviewed  file names on command line
 robyn%
 .E)
 .LP
 Always change directory to the change's development directory,
 otherwise you will not be able to review the files.
 .E(
-robyn% \f(CBaecd -p example -c 2\fP
-aegis: project "example": change 2: /u/jan/example.002
+robyn% \f(CBaecd -p example.1.0 -c 11\fP
+aegis: project "example.1.0": change 11: /u/jan/example.1.0.C011
 robyn%
 .E)
 .LP
 Another useful way of finding out about a change
 is the "list change details" command, viz:
 .E(
-robyn% \f(CBael cd -p example -c 2\fP
+robyn% \f(CBael cd -p example.1.0 -c 11\fP
  
-Project "example", Change 2
+Project "example.1.0", Change 11
 Change Details
 .E)
 .E(
 NAME
-        Project "example", Change 2.
+        Project "example.1.0", Change 11.
 .E)
 .E(
 SUMMARY
@@ -175,9 +175,9 @@ robyn%
 Once the change is found to be acceptable,
 it is passed:
 .E(
-robyn% \f(CBaerpass example 2\fP
-aegis: sh /usr/local/lib/aegis/rp.sh example 2 jan robyn
-aegis: project "example": change 2: passed review
+robyn% \f(CBaerpass example.1.0 11\fP
+aegis: sh /usr/local/lib/aegis/rp.sh example.1.0 11 jan robyn
+aegis: project "example.1.0": change 11: passed review
 robyn%
 .E)
 .LP
@@ -193,9 +193,9 @@ see the
 manual entry.
 .nh 3 "Reviewer Command Summary"
 .LP
-Only a few of the aegis commands available to reviewers have
+Only a few of the Aegis commands available to reviewers have
 been used in this example.
-The following table (very tersely) describes the aegis commands
+The following table (very tersely) describes the Aegis commands
 most useful to reviewers.
 .sp
 .TS
@@ -211,14 +211,14 @@ ael;List Stuff
 .TE
 .LP
 You will want to read the manual entries for all of these commands.
-Note that all aegis commands have a
+Note that all Aegis commands have a
 .I \-Help
 option,
 which will give a result very similar to the
 corresponding
 .I man (1)
 output.
-Most aegis commands also have a
+Most Aegis commands also have a
 .I \-List
 option,
 which usually lists interesting context sensitive information.

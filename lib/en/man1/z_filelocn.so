@@ -1,0 +1,43 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998, 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing file location limitations
+.\"
+\fBPlease Note:\fP Aegis also consults the underlying file system, to
+determine its notion of maximum file size.  Where the file system's
+maximum file size is less than \fImaximum_filename_length\fP, the
+filesystem wins.  This can happen, for example, when you are using the
+Linux UMSDOS file system, or when you have an NFS mounted an ancient
+V7 filesystem.  Setting \fImaximum_filename_length\fP to 255 in these
+cases does not alter the fact that the underlying file systems limits
+are far smaller (12 and 14, respectively).
+.PP
+If your development directories (or your whole project) is on filesystems
+with filename limitations, or a portion of the heterogeneous builds take
+place in such an environment, it helps to tell Aegis what they are (using
+the project \fIconfig\fP file's fields) so that you don't run into the
+situation where the project builds on the more permissive environments,
+but fails with mysterious errors in the more limited environments.
+.PP
+If your development directories are routinely on a Linux
+UMSDOS filesystem, you would probably be better off setting
+\fIdos_filename_required = true\fP,
+and also changing the \fIdevelopment_directory_template\fI field.
+Heterogenous development with various Windows environments may
+also require this.

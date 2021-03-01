@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1995, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -126,6 +126,14 @@ Specific entries will be defined in the relevant manual section.
 The following lists contains those substitutions which are always understood:
 .\" -------------------- A --------------------
 .TP 8n
+Add_Path_Suffix
+.br
+This substitution may be used to add a suffix to each element of a
+colon-separated path list.  The first argument is the suffix to use, the
+second and subsequent arguments are the colon-separated paths to work on.
+The result is a single colon separated path.  Often used in combination
+with the ${search_path} substitution, below.
+.TP 8n
 Administrator_List
 .br
 Space separated list of the project's administrators.
@@ -157,6 +165,13 @@ The value of the substitution will be the last element of the pathname.
 This is similar to the
 .IR basename (1)
 command.
+.TP 8n
+BINary_DIRectory
+.br
+The absolute path of Aegis' architecture-specific binary (executables)
+directory.  This correspondes to the ``\fI./configure -bindir\fP''
+option when Aegis was built.  This is where most of the Aegis executable
+programs are installed.
 .\" -------------------- C --------------------
 .TP 8n
 Change
@@ -170,6 +185,7 @@ Another form of comment is ``$#'' which extends to the end of the current line.
 .TP 8n
 Copyright_Years
 .br
+.RS
 Inserts a comma separated list of copyright years from the project attributes.
 This list of years is maintained by
 .I aegis
@@ -179,7 +195,18 @@ in the'\fIbeing integrated\fP' state.
 Do not use this substitution in new file templates,
 it is not guaranteed to be up-to-date in the '\fIbeing developed\fP' state;
 use the ${date %Y} substitution in new file templates.
+.PP
+This list contains spaces, so if you use it to build commands, you will
+probably need to quote, it as well.
+.RE
 .\" -------------------- D --------------------
+.TP 8n
+DATa_DIRectory
+.br
+The absolute path of Aegis' architecture-neutral library directory.
+This correspondes to the ``\fI./configure -datadir\fP'' option
+when Aegis was built.
+This is where most of the scripts included with Aegis are installed.
 .TP 8n
 DAte
 .br
@@ -301,7 +328,16 @@ the string to be measured.
 .TP 8n
 LIBrary
 .br
-The absolute path of aegis' library directory.
+The absolute path of Aegis' library directory.
+This correspondes to the ``\fI./configure -datadir\fP'' option
+when Aegis was built.
+This substitution is deprecated \- please use ${datadir} instead.
+.TP 8n
+LIBrary_DIRectory
+.br
+The absolute path of Aegis' architecture-specific library directory.
+This correspondes to the ``\fI./configure -libdir\fP'' option
+when Aegis was built.
 .\" -------------------- M --------------------
 .\" -------------------- N --------------------
 .TP 8n
@@ -324,8 +360,25 @@ otherwise the thrid argument is the result (or empty if not given).
 This is mostly used to pluralize sentences in error messages.
 .TP 8n
 Project
-.br
-The name of the project.
+.RS
+This substitution provides various information about the project, based
+on the argument it is given.
+.TP 8n
+name
+This returns the name of the project.
+(This is the default if no argument is given.)
+.TP 8n
+description
+This returns the description of the project (the one which appears in
+the project listing).
+.TP 8n
+trunk_name
+This returns the name of the trunk of the project (i.e. no branch
+numbers included).
+.TP 8n
+trunk_description
+This returns the description of the trunk of the project.
+.RE
 .\" -------------------- Q --------------------
 .TP 8n
 QUote
@@ -417,10 +470,23 @@ The value of the substitution will be the argument with
 any lower case letters mapped to upper case.
 .TP 8n
 USer
-.br
-This substitution takes zero arguments.
-The value of the substitution will be the login name of
-the user who executed the command.
+.RS
+This substitution provides various information about the user who executed
+the command, based on the argument it is given.
+.TP 8n
+login
+The login name of the user.
+(This is the default if no argument is given.)
+.TP 8n
+name
+The full name of the user.
+.TP 8n
+email
+The email address of the user.
+.TP 8n
+home
+The home directory of the user.
+.RE
 .\" -------------------- V --------------------
 .TP 8n
 Version

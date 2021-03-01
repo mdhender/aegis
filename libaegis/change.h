@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -117,6 +117,7 @@ void change_run_history_create_command _((change_ty *cp, string_ty *file_name));
 void change_run_history_put_command _((change_ty *cp, string_ty *file_name));
 string_ty *change_run_history_query_command _((change_ty *cp,
 	string_ty *file_name));
+void change_history_trashed_fingerprints _((change_ty *, struct string_list_ty *));
 void change_run_diff_command _((change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *input, string_ty *output));
 void change_run_diff3_command _((change_ty *cp, struct user_ty *up,
@@ -174,5 +175,6 @@ void change_check_architectures _((change_ty *));
 string_ty *change_new_test_filename_get _((change_ty *, long, int));
 string_ty *change_development_directory_template _((change_ty *,
 	struct user_ty *));
+string_ty *change_metrics_filename_pattern_get _((change_ty *));
 
 #endif /* LIBAEGIS_CHANGE_H */

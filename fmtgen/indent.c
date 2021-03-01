@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
  * MANIFEST: functions to automatically indent output
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdarg.h>
-#include <errno.h>
+#include <ac/errno.h>
 
 #include <error.h>
 #include <indent.h>

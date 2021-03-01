@@ -55,7 +55,7 @@ print("");
 print("<html><head><title>");
 print("Project Change Cause Histogram");
 print("</title><head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',<br>");
+print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 print("Change Cause Histogram<br>");
 print(strftime("%B %Y", t));
 print("</center></h1>");

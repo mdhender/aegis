@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -48,10 +48,16 @@ Works includes requiring that change sets build successfully, and
 It also ensures that code reviews have been performed.
 .br
 <li>
-Aegis supports long transactions, also known as branches.  This allows
-appropriately created changes to be treated as if they were projects,
-and thus to have changes made to them.  This allows a hierarchy of changes
-within changes, to any desired depth.
+Aegis has strong support for geographically distributed development.
+It supports both push and pull models, and many distribution topologies.
+Aegis' normal development process is used to validate received change
+sets before committing them.
+.br
+<li>
+Aegis supports long transactions, also known as branches or lines of
+development.  This allows appropriately created changes to be treated as
+if they were projects, and thus to have changes made to them.  This allows
+a hierarchy of changes within changes, to any desired depth.
 .br
 <li>
 The error messages of Aegis have been internationalized.  This means
@@ -64,7 +70,7 @@ to be generated from the Aegis database.  There are also many report
 scripts distributed with Aegis.
 .br
 <li>
-There is an intranet Web interface, which is installed automaticly when
+There is an intranet Web interface, which is installed automatically when
 the install script discovers a web server.  This interface allows browsing
 of much of the Aegis meta-data, of all publicly accessible projects.
 </ul>
@@ -96,7 +102,7 @@ times and dates.  (This assumes that your vendor has supplied a compliant
 <tt>strftime</tt>.)  This means that displaying dates does not assume
 fixed field widths, nor will it display the year 2000 as ``100''.
 <li>
-When a user enters dates, they may specify years with an explict century.
+When a user enters dates, they may specify years with an explicit century.
 If a user enters a year with an implicit century, the closest is assumed.
 </ul>
 .br
@@ -134,12 +140,22 @@ RedHat package manager
 (<a href="http://www.rpm.org/">RPM</a>)
 specification file, from the tar distribution.
 </td></tr>
+.br
 <tr>
 <td valign=top>
 <a href="aegis-\*(v).tar.gz"><tt>aegis-\*(v).tar.gz</tt></a>
 </td>
 <td valign=top>
 The complete source.
+</td>
+</tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).ae"><tt>aegis-\*(v).ae</tt></a>
+</td>
+<td valign=top>
+The complete source, in <i>aedist</i> format.
+This is used by Aegis developers and maintainers.
 </td>
 </tr>
 <tr>
@@ -176,9 +192,92 @@ in the
 <tt>devel/vc</tt></a>
 directory.
 .br
+<p>
+There are some other packages you should get if and install you haven't
+already...
+<center><table width="80%">
+.br
+<tr><td>
+<a href="ftp://ftp.gnu.org/gnu/gettext/">gettext</a>
+</td><td>
+GNU Gettext internationalization library.
+(If you have GNU Libc 2.0 or later, you don't need this.)
+</td></tr>
+.br
+<tr><td>
+<a href="ftp://ftp.gnu.org/gnu/rx/">rx</a>
+</td><td>
+GNU Regular eXpression library, if your system does not already have 
+the <tt>regcomp</tt> and <tt>regexec</tt> library calls.
+</td></tr>
+.br
+<tr><td>
+<a href="http://www.cdrom.com/pub/infozip/zlib/">zlib</a>
+</td><td>
+The zlib compression library (implements the GNU Zip compression
+algorithm).  Used to compress change sets for distributiuon, and to
+optionally compress Aegis' database.
+</td></tr>
+.br
+</table></center>
+.br
+<hr><h2 align=center>
+Template Projects
+</h2>
+So that you can begin to use Aegis rapidly,
+there are some example projects available.
+<center><table width=80%>
+<tr><th>Filename</th><th>Description</th></tr>
+.br
+<tr><td valign=top>
+<a href="example-make-rcs.html"><tt>example-make-rcs</tt></a>
+</td><td valign=top>
+This template project uses GNU Make for its build tool,
+and RCS as its history tool.
+</td></tr>
+.br
+<tr><td valign=top>
+<a href="example-cook-fhist.html"><tt>example-cook-fhist</tt></a>
+</td><td valign=top>
+This template project uses <a href="../cook.html">Cook</a> for its
+build tool, and <a href="../fhist.html">FHist</a> as its history tool.
+It scales better than the Make-RCS example.
+</td></tr>
+.br
+</table></center>
+These template projects provided a simple but flexible skeleton around
+which you can build many different projects.  Each project links you to
+a page of instructions for how to download the change set and apply it.
+.br
+<hr><h2 align=center>
+Aegis and Windows NT
+</h2>
+Aegis depends on the underlying security provided by the operating
+system (rather than re-invent yet another security mechanism).
+However, in order to do this, Aegis uses the POSIX <i>seteuid</i> system
+call, which has no direct equivalent on Windows NT.  This makes
+porting difficult.  Single-user ports are possible (<i>e.g.</i> using
+<a href="http://sourceware.cygnus.com/cygwin/">
+Cygwin</a>), but are not
+usually what folks want.
+<p>
+Compounding this is the fact that many sites want to develop their
+software for both Unix and Windows NT simultaneously.  This means that
+the security of the repository needs to be guaranteed to be handled
+in the same way by both operating systems, otherwise one can act as a
+``back door'' into the repository.  Many sites do not have the same
+users and permissions (sourced from the same network register of users)
+on both Unix and Windows NT, making the mapping almost impossible even
+if the security models did actually correspond.
+<p>
+Most sites using Aegis and Windows NT together do so by running 
+Aegis on the Unix systems, but building and testing on the NT
+systems.  The work areas and repository are accessed via Samba or
+NFS.
+.br
 <hr>
 <a href="README.html">
-<img src="pmiller.gif" align=right>
+<img src="../pmiller.gif" align=right>
 </a>
 Aegis is written and owned by 
 <a href="mailto:millerp@canb.auug.org.au">
@@ -188,7 +287,7 @@ and is freely distributable under the terms and conditions of the
 <a href="ftp://prep.ai.mit.edu/pub/gnu/GPL">GNU GPL</a>.
 .br
 <p>
-There is more <a href="README.html">Software by Peter Miller</a>
+There is more <a href="../README.html">Software by Peter Miller</a>
 at his home page.
 .br
 <hr>

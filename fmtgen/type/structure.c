@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -138,7 +138,7 @@ gen_include(type)
 	{
 		indent_printf
 		(
-			"void %s_write _((%s));\n",
+			"void %s_write _((struct output_ty *, %s));\n",
 			this->name->str_text,
 			this->name->str_text
 		);
@@ -147,7 +147,7 @@ gen_include(type)
 	{
 		indent_printf
 		(
-			"void %s_write _((char *, %s));\n",
+			"void %s_write _((struct output_ty *, char *, %s));\n",
 			this->name->str_text,
 			this->name->str_text
 		);
@@ -189,10 +189,11 @@ gen_code(type)
 	indent_putchar('\n');
 	indent_printf("void\n");
 	if (this->toplevel)
-		indent_printf("%s_write(this)\n", this->name->str_text);
+		indent_printf("%s_write(fp, this)\n", this->name->str_text);
 	else
-		indent_printf("%s_write(name, this)\n", this->name->str_text);
+		indent_printf("%s_write(fp, name, this)\n", this->name->str_text);
 	indent_more();
+	indent_printf("%s\1*fp;\n", "output_ty");
 	if (!this->toplevel)
 		indent_printf("%s\1*name;\n", "char");
 	indent_printf("%s\1this;\n", this->name->str_text);
@@ -223,9 +224,9 @@ gen_code(type)
 	{
 		indent_printf("if (name)\n");
 		indent_more();
-		indent_printf("indent_printf(\"%%s =\\n\", name);\n");
+		indent_printf("output_fprintf(fp, \"%%s =\\n\", name);\n");
 		indent_less();
-		indent_printf("indent_printf(\"{\\n\"/*}*/);\n");
+		indent_printf("output_fprintf(fp, \"{\\n\"/*}*/);\n");
 	}
 	for (j = 0; j < this->nelements; ++j)
 	{
@@ -236,10 +237,10 @@ gen_code(type)
 	}
 	if (!this->toplevel)
 	{
-		indent_printf("indent_printf(/*{*/\"}\");\n");
+		indent_printf("output_fprintf(fp, /*{*/\"}\");\n");
 		indent_printf("if (name)\n");
 		indent_more();
-		indent_printf("indent_printf(\";\\n\");\n");
+		indent_printf("output_fprintf(fp, \";\\n\");\n");
 		indent_less();
 	}
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
@@ -496,7 +497,7 @@ gen_code_declarator(type, name, is_a_list)
 	string_ty	*name;
 	int		is_a_list;
 {
-	indent_printf("%s_write("/*)*/, type->name->str_text);
+	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
 	if (is_a_list)
 		indent_printf("(char *)0");
 	else
@@ -513,12 +514,24 @@ gen_free_declarator(type, name, is_a_list)
 	string_ty	*name;
 	int		is_a_list;
 {
-	indent_printf
-	(
-		"%s_free(this->%s);\n",
-		type->name->str_text,
-		name->str_text
-	);
+	if (type->included_flag)
+	{
+		indent_printf
+		(
+			"%s_type.free(this->%s);\n",
+			type->name->str_text,
+			name->str_text
+		);
+	}
+	else
+	{
+		indent_printf
+		(
+			"%s_free(this->%s);\n",
+			type->name->str_text,
+			name->str_text
+		);
+	}
 }
 
 
@@ -548,6 +561,25 @@ member_add(type, member_name, member_type)
 }
 
 
+static void in_include_file _((type_ty *));
+
+static void
+in_include_file(type)
+	type_ty		*type;
+{
+	type_struct_ty	*this;
+	element_ty	*ep;
+	size_t		j;
+
+	this = (type_struct_ty *)type;
+	for (j = 0; j < this->nelements; ++j)
+	{
+		ep = &this->element[j];
+		type_in_include_file(ep->type);
+	}
+}
+
+
 type_method_ty type_structure =
 {
 	sizeof(type_struct_ty),
@@ -561,6 +593,7 @@ type_method_ty type_structure =
 	gen_code_declarator,
 	gen_free_declarator,
 	member_add,
+	in_include_file,
 };
 
 

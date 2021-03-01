@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998 Peter Miller;
+#	Copyright (C) 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,16 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 datadir=@datadir@
+
+# architecture neutral... e.g. AEGIS_PATH
+if test -r $datadir/aegis.cgi.conf; then
+. $datadir/aegis.cgi.conf
+fi
+
+# architecture specific... e.g. PATH
+if test -r $libdir/aegis.cgi.conf; then
+. $libdir/aegis.cgi.conf
+fi
 
 extra=
 lang=en
@@ -56,6 +66,39 @@ test ! -z "$change" && change="--change=$change"
 if test "$file" = "rect"
 then
 	exec $bindir/aerect $extra
+fi
+
+if test "$file" = "aedist"
+then
+	test -z "$project" && exit 1
+	test -z "$change" && change="--baseline"
+	$bindir/aedist --send $project $change -ndh -naa \
+		-o /tmp/aegis.$$.ae > /tmp/aegis.$$ 2>&1
+	status=$?
+	if test $status -ne 0
+	then
+		echo 'Content-Type: text/html'
+		echo ''
+		echo '<html><head><title>Error</title></head><body><h1>'
+		echo 'Error</h1>The command'
+		echo '<blockquote><tt>'
+		echo $bindir/aedist --send $project $change
+		echo '</tt></blockquote>'
+		echo "terminated with exit status $status."
+		echo 'The following text was produced <blockquote><pre>'
+		sed 's|<|\&lt;|g' < /tmp/aegis.$$
+		echo '</pre></blockquote>'
+		echo '<hr>'
+		echo 'This page was generated'
+		date
+		echo '</body></html>'
+		rm /tmp/aegis.$$*
+		exit 1
+	fi
+
+	cat /tmp/aegis.$$.ae
+	rm /tmp/aegis.$$*
+	exit 0
 fi
 
 if test "$file" = "pre"

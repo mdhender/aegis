@@ -1,0 +1,55 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1999 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: metrics.cook
+ */
+
+#if 0
+all += metrics.targets ;
+source_file_order += etc/metrics.so ;
+#endif
+
+/*
+ * These are the files to construct to that Aegis can read them at
+ * integration pass time.
+ */
+metrics.targets =
+	[addsuffix ",S" [match_mask "%0%.c" [source_files]]]
+	;
+metrics.targets: [metrics.targets];
+
+etc/metrics.so: [metrics.targets] etc/statistics.awk
+{
+	ALL_FILES\=[count [stringset [source_files] - [source_files_build]]]
+	[awk] -f [resolve etc/statistics.awk]
+		[resolve [metrics.targets]]
+		> [target]
+		;
+}
+
+%1/%0%2.c,S: %1/%0%2.c
+{
+	sw_measure
+		[stringset
+			-I/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/include
+			[prepost "-I" "/%1" [search_list]]
+			[cc_include_flags]
+		]
+		[resolve %1/%0%2.c] [target];
+}

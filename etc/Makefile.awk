@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993 Peter Miller.
+#	Copyright (C) 1992, 1993, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -23,20 +23,38 @@ length <= 72
 length > 72 {
 	if (substr($0, 1, 1) == "\t")
 	{
-		printf "\t"
+		printf("\t")
 		pos = 8
 	}
 	else	
 		pos = 0
 	for (j = 1; j <= NF; ++j)
 	{
-		if (pos + 1 + length($j) > 72)
+		len = length($j)
+		if (j == 1)
+			;
+		else if (pos + 1 + len > 72)
 		{
-			printf "\\\n\t\t"
-			pos = 16
+			printf(" \\\n")
+			pos = 0
+			if (pos + len < 70)
+			{
+				printf("\t")
+				pos += 8
+			}
+			if (pos + len < 70)
+			{
+				printf("\t")
+				pos += 8
+			}
 		}
-		printf "%s ", $j
-		pos += length($j) + 1
+		else
+		{
+			printf(" ")
+			++pos
+		}
+		printf("%s", $j)
+		pos += len
 	}
-	printf "\n"
+	printf("\n")
 }

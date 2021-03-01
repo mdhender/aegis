@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1998 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, Appendix A: New Project Quick Reference
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "Appendix A: New Project Quick Reference"
 .LP
 For those of you too impatient to read a whole great big document
@@ -379,4 +379,4 @@ with no inter-developer interference;
 and the baseline always works, it is never in an "in-between" state.
 In each case,
 not doing this "extra work" is a false economy.
-.1C
+.if t .1C

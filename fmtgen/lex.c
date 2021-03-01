@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
  * MANIFEST: lexical analyzer
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdarg.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
-#include <errno.h>
+#include <ac/errno.h>
 
 #include <error.h>
 #include <lex.h>
@@ -84,11 +84,12 @@ lex_initialize()
 
 	static keyword_ty table[] =
 	{
-		{ "type", TYPE, },
-		{ "time", TIME, },
-		{ "string", STRING, },
-		{ "integer", INTEGER, },
 		{ "include", INCLUDE, },
+		{ "integer", INTEGER, },
+		{ "real", REAL, },
+		{ "string", STRING, },
+		{ "time", TIME, },
+		{ "type", TYPE, },
 	};
 	keyword_ty	*kp;
 

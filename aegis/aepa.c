@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to list and modify project attributes
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 
 #include <aepa.h>
@@ -34,6 +34,9 @@
 #include <progname.h>
 #include <pattr.h>
 #include <project.h>
+#include <project/pattr/edit.h>
+#include <project/pattr/get.h>
+#include <project/pattr/set.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -63,108 +66,6 @@ static void
 project_attributes_help()
 {
 	help("aepa", project_attributes_usage);
-}
-
-
-static void pattr_copy _((pattr, project_ty *));
-
-static void
-pattr_copy(a, pp)
-	pattr		a;
-	project_ty	*pp;
-{
-	string_ty	*s;
-
-	if (!a->description)
-	{
-		s = project_description_get(pp);
-		if (s)
-			a->description = str_copy(s);
-	}
-
-	if (!a->default_development_directory)
-	{
-		s = project_default_development_directory_get(pp);
-		if (s)
-			a->default_development_directory = str_copy(s);
-	}
-
-	if (!(a->mask & pattr_developer_may_review_mask))
-		a->developer_may_review = project_developer_may_review_get(pp);
-	if (!(a->mask & pattr_developer_may_integrate_mask))
-		a->developer_may_integrate =
-			project_developer_may_integrate_get(pp);
-	if (!(a->mask & pattr_reviewer_may_integrate_mask))
-		a->reviewer_may_integrate =
-			project_reviewer_may_integrate_get(pp);
-	if (!(a->mask & pattr_developers_may_create_changes_mask))
-		a->developers_may_create_changes =
-			project_developers_may_create_changes_get(pp);
-	if (!(a->mask & pattr_umask_mask))
-		a->umask = project_umask_get(pp);
-	if (!(a->mask & pattr_default_test_exemption_mask))
-		a->default_test_exemption =
-			project_default_test_exemption_get(pp);
-	
-	if (!a->forced_develop_begin_notify_command)
-	{
-		s = project_forced_develop_begin_notify_command_get(pp);
-		if (s)
-			a->forced_develop_begin_notify_command = str_copy(s);
-	}
-
-	if (!a->develop_end_notify_command)
-	{
-		s = project_develop_end_notify_command_get(pp);
-		if (s)
-			a->develop_end_notify_command = str_copy(s);
-	}
-
-	if (!a->develop_end_undo_notify_command)
-	{
-		s = project_develop_end_undo_notify_command_get(pp);
-		if (s)
-			a->develop_end_undo_notify_command = str_copy(s);
-	}
-
-	if (!a->review_pass_notify_command)
-	{
-		s = project_review_pass_notify_command_get(pp);
-		if (s)
-			a->review_pass_notify_command = str_copy(s);
-	}
-
-	if (!a->review_pass_undo_notify_command)
-	{
-		s = project_review_pass_undo_notify_command_get(pp);
-		if (s)
-			a->review_pass_undo_notify_command = str_copy(s);
-	}
-
-	if (!a->review_fail_notify_command)
-	{
-		s = project_review_fail_notify_command_get(pp);
-		if (s)
-			a->review_fail_notify_command = str_copy(s);
-	}
-
-	if (!a->integrate_pass_notify_command)
-	{
-		s = project_integrate_pass_notify_command_get(pp);
-		if (s)
-			a->integrate_pass_notify_command = str_copy(s);
-	}
-
-	if (!a->integrate_fail_notify_command)
-	{
-		s = project_integrate_fail_notify_command_get(pp);
-		if (s)
-			a->integrate_fail_notify_command = str_copy(s);
-	}
-
-	if (!a->minimum_change_number)
-		a->minimum_change_number =
-			project_minimum_change_number_get(pp);
 }
 
 
@@ -212,59 +113,11 @@ project_attributes_list()
 	project_bind_existing(pp);
 
 	pattr_data = (pattr)pattr_type.alloc();
-	pattr_copy(pattr_data, pp);
-	pattr_write_file((char *)0, pattr_data);
+	project_pattr_get(pp, pattr_data);
+	pattr_write_file((char *)0, pattr_data, 0);
 	pattr_type.free(pattr_data);
 	project_free(pp);
 	trace((/*{*/"}\n"));
-}
-
-
-static void pattr_edit _((pattr *, edit_ty));
-
-static void
-pattr_edit(dp, et)
-	pattr		*dp;
-	edit_ty		et;
-{
-	sub_context_ty	*scp;
-	pattr		d;
-	string_ty	*filename;
-	string_ty	*msg;
-	
-	/*
-	 * write attributes to temporary file
-	 */
-	d = *dp;
-	assert(d);
-	filename = os_edit_filename(1);
-	os_become_orig();
-	pattr_write_file(filename->str_text, d);
-	pattr_type.free(d);
-
-	/*
-	 * error message to issue if anything goes wrong
-	 */
-	scp = sub_context_new();
-	sub_var_set(scp, "File_Name", "%S", filename);
-	msg = subst_intl(scp, i18n("attributes in $filename"));
-	sub_context_delete(scp);
-	undo_message(msg);
-	str_free(msg);
-
-	/*
-	 * edit the file
-	 */
-	os_edit(filename, et);
-
-	/*
-	 * read it in again
-	 */
-	d = pattr_read_file(filename->str_text);
-	commit_unlink_errok(filename);
-	os_become_undo();
-	str_free(filename);
-	*dp = d;
 }
 
 
@@ -292,7 +145,6 @@ project_attributes_main()
 	pattr		pattr_data = 0;
 	string_ty	*project_name;
 	project_ty	*pp;
-	string_ty	*s;
 	edit_ty		edit;
 	user_ty		*up;
 
@@ -422,7 +274,7 @@ project_attributes_main()
 		/*
 		 * copy things from project
 		 */
-		pattr_copy(pattr_data, pp);
+		project_pattr_get(pp, pattr_data);
 
 		/*
 		 * edit them
@@ -431,7 +283,7 @@ project_attributes_main()
 		sub_var_set(scp, "Name", "%S", project_name_get(pp));
 		io_comment_append(scp, "Project $name");
 		sub_context_delete(scp);
-		pattr_edit(&pattr_data, edit);
+		project_pattr_edit(&pattr_data, edit);
 	}
 
 	/*
@@ -449,148 +301,7 @@ project_attributes_main()
 	/*
 	 * copy the attributes across
 	 */
-	if (pattr_data->description)
-		project_description_set(pp, pattr_data->description);
-
-
-	if (pattr_data->mask & pattr_developer_may_review_mask)
-	{
-		project_developer_may_review_set
-		(
-			pp,
-			pattr_data->developer_may_review
-		);
-	}
-	if (pattr_data->mask & pattr_developer_may_integrate_mask)
-	{
-		project_developer_may_integrate_set
-		(
-			pp,
-			pattr_data->developer_may_integrate
-		);
-	}
-	if (pattr_data->mask & pattr_reviewer_may_integrate_mask)
-	{
-		project_reviewer_may_integrate_set
-		(
-			pp,
-			pattr_data->reviewer_may_integrate
-		);
-	}
-	if (pattr_data->mask & pattr_developers_may_create_changes_mask)
-	{
-		project_developers_may_create_changes_set
-		(
-			pp,
-			pattr_data->developers_may_create_changes
-		);
-	}
-
-	if (pattr_data->mask & pattr_umask_mask)
-		project_umask_set(pp, pattr_data->umask);
-	
-	if (pattr_data->mask & pattr_default_test_exemption_mask)
-	{
-		project_default_test_exemption_set
-		(
-			pp,
-			pattr_data->default_test_exemption
-		);
-	}
-
-	if (pattr_data->forced_develop_begin_notify_command)
-	{
-		project_forced_develop_begin_notify_command_set
-		(
-			pp,
-			pattr_data->forced_develop_begin_notify_command
-		);
-	}
-
-	if (pattr_data->develop_end_notify_command)
-	{
-		project_develop_end_notify_command_set
-		(
-			pp,
-			pattr_data->develop_end_notify_command
-		);
-	}
-
-	if (pattr_data->develop_end_undo_notify_command)
-	{
-		project_develop_end_undo_notify_command_set
-		(
-			pp,
-			pattr_data->develop_end_undo_notify_command
-		);
-	}
-
-	if (pattr_data->review_pass_notify_command)
-	{
-		project_review_pass_notify_command_set
-		(
-			pp,
-			pattr_data->review_pass_notify_command
-		);
-	}
-
-	if (pattr_data->review_pass_undo_notify_command)
-	{
-		project_review_pass_undo_notify_command_set
-		(
-			pp,
-			pattr_data->review_pass_undo_notify_command
-		);
-	}
-
-	if (pattr_data->review_fail_notify_command)
-	{
-		project_review_fail_notify_command_set
-		(
-			pp,
-			pattr_data->review_fail_notify_command
-		);
-	}
-
-	if (pattr_data->integrate_pass_notify_command)
-	{
-		project_integrate_pass_notify_command_set
-		(
-			pp,
-			pattr_data->integrate_pass_notify_command
-		);
-	}
-
-	if (pattr_data->integrate_fail_notify_command)
-	{
-		project_integrate_fail_notify_command_set
-		(
-			pp,
-			pattr_data->integrate_fail_notify_command
-		);
-	}
-
-	if (pattr_data->default_development_directory)
-	{
-		s = pattr_data->default_development_directory;
-		if (!s->str_length)
-			s = 0;
-		else
-		{
-			if (s->str_text[0] != '/')
-				fatal_intl(0, i18n("bad pa, rel def dev dir"));
-			project_default_development_directory_set(pp, s);
-		}
-	}
-
-	if (pattr_data->mask & pattr_minimum_change_number_mask)
-	{
-		project_minimum_change_number_set
-		(
-			pp,
-			pattr_data->minimum_change_number
-		);
-	}
+	project_pattr_set(pp, pattr_data);
 
 	pattr_type.free(pattr_data);
 	project_pstate_write(pp);

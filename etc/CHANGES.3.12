@@ -1,0 +1,889 @@
+
+
+
+Project "aegis.3.12"						 Page 1
+List of Changes				       Sun May	2 21:34:25 1999
+
+Change	State		Description
+------- -------		-------------
+  10	completed	prepare for release
+  11	completed	fhist cfg example
+  12	completed	allow developers aencu
+  15	completed	add_path_suffix substitution
+  16	completed	mntent
+  17	completed	aedist -rec -delta
+  18	completed	spelling
+  19	completed	linux libc6
+  20	completed	super-project doco
+  21	completed	aenpr -keep
+  22	completed	datadir substitution
+  23	completed	more exe suffix
+  25	completed	aenpr -e/-f
+  26	completed	linux libc6, again
+
+
+
+Project "aegis.3.12", Change 10					 Page 1
+Change Details				       Sun May	2 21:34:26 1999
+
+NAME
+	Project "aegis.3.12", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares Aegis for its next public release.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	create	    1	      etc/CHANGES.3.11
+	source	modify	    2 -> 3    lib/en/readme/new.3.11.so
+	source	create	    1	      lib/en/readme/new.3.12.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Mar 26	pmiller
+			07:44:39 1999
+	develop_begin	Fri Mar 26	pmiller	 Elapsed time: 0.223
+			07:44:50 1999		 days.
+	develop_end	Fri Mar 26	pmiller
+			09:25:06 1999
+	review_pass	Fri Mar 26	pmiller
+			09:25:42 1999
+	integrate_begin Fri Mar 26	pmiller	 Elapsed time: 0.119
+			09:25:48 1999		 days.
+	integrate_pass	Fri Mar 26	pmiller
+			10:19:22 1999
+
+
+
+Project "aegis.3.12", Change 11					 Page 1
+Change Details				       Sun May	2 21:34:27 1999
+
+NAME
+	Project "aegis.3.12", Delta 2, Change 11.
+
+SUMMARY
+	fhist cfg example
+
+DESCRIPTION
+	This change corrects a problem with eh fhist config example.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    3 -> 4    lib/config.example/fhist
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Mar 26	pmiller
+			16:49:33 1999
+	develop_begin	Fri Mar 26	pmiller	 Elapsed time: 0.028
+			16:49:41 1999		 days.
+	develop_end	Fri Mar 26	pmiller
+			17:02:24 1999
+	review_pass	Fri Mar 26	pmiller
+			17:06:08 1999
+	integrate_begin Fri Mar 26	pmiller	 Elapsed time: 0.609
+			17:06:15 1999		 days.
+	integrate_pass	Fri Mar 26	pmiller
+			21:40:23 1999
+
+
+
+Project "aegis.3.12", Change 12					 Page 1
+Change Details				       Sun May	2 21:34:27 1999
+
+NAME
+	Project "aegis.3.12", Delta 3, Change 12.
+
+SUMMARY
+	allow developers aencu
+
+DESCRIPTION
+	This change allows developers to say aencu if they are allowed
+	to say aenc.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    4 -> 5    aegis/aencu.c
+	source	modify	    3 -> 4    lib/en/man1/aencu.1
+	source	modify	    1 -> 2    lib/en/readme/new.3.12.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Mar 26	pmiller
+			16:53:13 1999
+	develop_begin	Fri Mar 26	pmiller	 Elapsed time: 0.077
+			16:53:32 1999		 days.
+	develop_end	Fri Mar 26	pmiller
+			17:28:17 1999
+	review_pass	Fri Mar 26	pmiller	 Elapsed time: 0.574
+			17:28:28 1999		 days.
+	integrate_begin Fri Mar 26	pmiller	 Elapsed time: 0.134
+			21:46:46 1999		 days.
+	integrate_pass	Fri Mar 26	pmiller
+			22:46:53 1999
+
+
+
+Project "aegis.3.12", Change 15					 Page 1
+Change Details				       Sun May	2 21:34:27 1999
+
+NAME
+	Project "aegis.3.12", Delta 5, Change 15.
+
+SUMMARY
+	add_path_suffix substitution
+
+DESCRIPTION
+	This change adds the add_path_suffix substitution, useful for
+	running tests and build commands.
+
+	My thanks to Jerry Pendergraft
+	<jerry.pendergraft@endocardial.com> for this suggestion.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    8 -> 9    lib/en/man5/aesub.5
+	source	modify	    2 -> 3    lib/en/readme/new.3.12.so
+	source	modify	    2 -> 3    libaegis/os/path_cat.c
+	source	modify	   16 -> 17   libaegis/sub.c
+	source	create	    1	      libaegis/sub/addpathsuffi.c
+	source	create	    1	      libaegis/sub/addpathsuffi.h
+	test	create	    1	      test/01/t0100a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Mon Mar 29	pmiller
+			06:47:05 1999
+	develop_begin	Mon Mar 29	pmiller	 Elapsed time: 2.000
+			06:47:15 1999		 days.
+	develop_end	Tue Mar 30	pmiller
+			22:17:56 1999
+	review_pass	Tue Mar 30	pmiller
+			22:18:06 1999
+	integrate_begin Tue Mar 30	pmiller	 Elapsed time: 0.276
+			22:18:13 1999		 days.
+	integrate_pass	Wed Mar 31	pmiller
+			00:22:25 1999
+
+
+
+Project "aegis.3.12", Change 16					 Page 1
+Change Details				       Sun May	2 21:34:28 1999
+
+NAME
+	Project "aegis.3.12", Delta 8, Change 16.
+
+SUMMARY
+	mntent
+
+DESCRIPTION
+	This *mntent functions use a variable which *looks* like a
+	FILE*, but isn't, on Cygnus.  You get GPFs it you try this.
+	Sigh.
+
+	My thanks to Anoop Kulkarni <anoop@sasi.com> for reporting this
+	problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    3 -> 4    libaegis/os/pathname.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Thu Apr	 8	pmiller
+			12:39:37 1999
+	develop_begin	Thu Apr	 8	pmiller	 Elapsed time: 7.000
+			12:39:55 1999		 days.
+	develop_end	Sat Apr 17	pmiller
+			00:26:07 1999
+	review_pass	Sat Apr 17	pmiller
+			00:26:52 1999
+	integrate_begin Sat Apr 17	pmiller	 Elapsed time: 1.870
+			00:27:02 1999		 days.
+	integrate_pass	Mon Apr 19	pmiller
+			06:58:44 1999
+
+
+
+Project "aegis.3.12", Change 17					 Page 1
+Change Details				       Sun May	2 21:34:28 1999
+
+NAME
+	Project "aegis.3.12", Delta 4, Change 17.
+
+SUMMARY
+	aedist -rec -delta
+
+DESCRIPTION
+	This change adds a -delta option to the aedist -rec command,
+	so that you may nominate a relative point.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	   13 -> 14   aedist/receive.c
+	source	modify	    8 -> 9    lib/en/man1/aedist.1
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Mon Mar 29	pmiller
+			06:48:46 1999
+	develop_begin	Mon Mar 29	pmiller	 Elapsed time: 0.107
+			06:48:55 1999		 days.
+	develop_end	Mon Mar 29	pmiller
+			07:36:55 1999
+	review_pass	Mon Mar 29	pmiller
+			07:37:11 1999
+	integrate_begin Mon Mar 29	pmiller	 Elapsed time: 1.000
+			07:37:17 1999		 days.
+	integrate_pass	Mon Mar 29	pmiller
+			22:45:09 1999
+
+
+
+Project "aegis.3.12", Change 18					 Page 1
+Change Details				       Sun May	2 21:34:28 1999
+
+NAME
+	Project "aegis.3.12", Delta 7, Change 18.
+
+SUMMARY
+	spelling
+
+DESCRIPTION
+	This chare corrects a number of speling errors in the example
+	configs.
+
+	My thanks to Tim Potter for reporting these problems.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    1 -> 2    lib/config.example/cake
+	source	modify	    4 -> 5    lib/config.example/fhist
+	source	modify	    1 -> 2    lib/config.example/make
+	source	modify	    3 -> 4    lib/config.example/rcs
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Apr 14	pmiller
+			16:41:32 1999
+	develop_begin	Wed Apr 14	pmiller	 Elapsed time: 2.677
+			16:41:41 1999		 days.
+	develop_end	Fri Apr 16	pmiller
+			21:46:20 1999
+	review_pass	Fri Apr 16	pmiller
+			21:50:45 1999
+	integrate_begin Fri Apr 16	pmiller	 Elapsed time: 0.166
+			21:50:53 1999		 days.
+	integrate_pass	Fri Apr 16	pmiller
+			23:05:39 1999
+
+
+
+Project "aegis.3.12", Change 19					 Page 1
+Change Details				       Sun May	2 21:34:29 1999
+
+NAME
+	Project "aegis.3.12", Delta 6, Change 19.
+
+SUMMARY
+	linux libc6
+
+DESCRIPTION
+	This change copes with Linux libc5 vs libc6 differences.
+
+	This change is exempt from testing against the baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    2 -> 3    aefind/descend.c
+	source	modify	    2 -> 3    aefind/function/stat.c
+	source	modify	    2 -> 3    aefp/main.c
+	source	modify	    8 -> 9    aegis/aeb.c
+	source	modify	    4 -> 5    aegis/aeca.c
+	source	modify	    2 -> 3    aegis/aecd.c
+	source	modify	    4 -> 5    aegis/aechown.c
+	source	modify	    3 -> 4    aegis/aeclean.c
+	source	modify	    6 -> 7    aegis/aecp.c
+	source	modify	    8 -> 9    aegis/aecpu.c
+	source	modify	    8 -> 9    aegis/aed.c
+	source	modify	    4 -> 5    aegis/aedb.c
+	source	modify	    4 -> 5    aegis/aedeu.c
+	source	modify	    3 -> 4    aegis/aedn.c
+	source	modify	    7 -> 8    aegis/aeib.c
+	source	modify	    4 -> 5    aegis/aeibu.c
+	source	modify	    4 -> 5    aegis/aeif.c
+	source	modify	    6 -> 7    aegis/ael.c
+	source	modify	    3 -> 4    aegis/aemv.c
+	source	modify	    3 -> 4    aegis/aena.c
+	source	modify	    8 -> 9    aegis/aenc.c
+	source	modify	    3 -> 4    aegis/aend.c
+	source	modify	    4 -> 5    aegis/aenfu.c
+	source	modify	    3 -> 4    aegis/aeni.c
+	source	modify	    3 -> 4    aegis/aenrv.c
+	source	modify	    4 -> 5    aegis/aentu.c
+	source	modify	    2 -> 3    aegis/aer.c
+	source	modify	    3 -> 4    aegis/aera.c
+	source	modify	    3 -> 4    aegis/aerd.c
+	source	modify	    4 -> 5    aegis/aerf.c
+	source	modify	    3 -> 4    aegis/aeri.c
+	source	modify	    5 -> 6    aegis/aerm.c
+	source	modify	    5 -> 6    aegis/aermu.c
+	source	modify	    4 -> 5    aegis/aerp.c
+	source	modify	    3 -> 4    aegis/aerpu.c
+
+
+
+Project "aegis.3.12", Change 19					 Page 2
+Change Details				       Sun May	2 21:34:29 1999
+
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    3 -> 4    aegis/aerrv.c
+	source	modify	    8 -> 9    aegis/aet.c
+	source	modify	    2 -> 3    aegis/aev.c
+	source	modify	    4 -> 5    aegis/main.c
+	source	create	    1	      common/ac/errno.h
+	source	create	    1	      common/ac/math.h
+	source	modify	    2 -> 3    common/ac/stdio.h
+	source	modify	    2 -> 3    common/config.messy.h
+	source	modify	    5 -> 6    common/error.c
+	source	modify	    3 -> 4    common/fp.c
+	source	modify	    2 -> 3    common/fp/crc32.c
+	source	modify	    2 -> 3    common/fp/ident.c
+	source	modify	    2 -> 3    common/fp/len.c
+	source	modify	    2 -> 3    common/fp/md5.c
+	source	modify	    2 -> 3    common/fp/snefru.c
+	source	modify	    3 -> 4    common/mem.c
+	source	modify	    3 -> 4    common/mprintf.c
+	source	modify	    5 -> 6    common/str.c
+	source	modify	    3 -> 4    common/str_list.c
+	source	modify	    3 -> 4    common/trace.c
+	source	modify	    5 -> 6    common/wstr.c
+	source	modify	   19 -> 20   etc/Howto.cook
+	source	modify	    5 -> 6    etc/archive.cook
+	source	modify	    1 -> 2    etc/metrics.cook
+	source	modify	    2 -> 3    find_sizes/main.c
+	source	modify	    2 -> 3    fmtgen/indent.c
+	source	modify	    3 -> 4    fmtgen/lex.c
+	source	modify	    2 -> 3    fmtgen/main.c
+	source	modify	    6 -> 7    fmtgen/parse.y
+	source	modify	    2 -> 3    libaegis/aer/expr/power.c
+	source	modify	    2 -> 3    libaegis/aer/func/sprintf.c
+	source	modify	    3 -> 4    libaegis/aer/lex.c
+	source	modify	    2 -> 3    libaegis/aer/list.c
+	source	modify	    2 -> 3    libaegis/dir.c
+	source	modify	    5 -> 6    libaegis/file.c
+	source	modify	    3 -> 4    libaegis/fopen_nfs.c
+	source	modify	    5 -> 6    libaegis/glue.c
+	source	modify	    3 -> 4    libaegis/glue.h
+	source	modify	    5 -> 6    libaegis/gonzo.c
+	source	modify	    9 -> 10   libaegis/lex.c
+	source	modify	    6 -> 7    libaegis/lock.c
+	source	modify	   11 -> 12   libaegis/os.c
+	source	modify	    2 -> 3    libaegis/os/pathname.c
+	source	modify	    3 -> 4    libaegis/output/file.c
+	source	modify	    2 -> 3    libaegis/pager.h
+	source	modify	   10 -> 11   libaegis/project.c
+	source	modify	   17 -> 18   libaegis/sub.c
+	test	modify	    4 -> 5    test/00/t0022a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Apr	 9	pmiller
+			16:48:43 1999
+	develop_begin	Fri Apr	 9	pmiller	 Elapsed time: 5.000
+
+
+
+Project "aegis.3.12", Change 19					 Page 3
+Change Details				       Sun May	2 21:34:29 1999
+
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+			16:48:48 1999		 days.
+	develop_end	Fri Apr 16	pmiller
+			11:03:59 1999
+	review_pass	Fri Apr 16	pmiller
+			11:04:00 1999
+	integrate_begin Fri Apr 16	pmiller	 Elapsed time: 0.190
+			11:04:30 1999		 days.
+	integrate_	Fri Apr 16	pmiller
+	begin_undo	12:29:48 1999
+	integrate_begin Fri Apr 16	pmiller	 Elapsed time: 0.158
+			12:30:03 1999		 days.
+	integrate_fail	Fri Apr 16	pmiller	 aefind/function/stat.c
+			13:41:14 1999		 needs work
+						 Elapsed time: 0.282
+						 days.
+	develop_end	Fri Apr 16	pmiller
+			15:48:17 1999
+	review_pass	Fri Apr 16	pmiller
+			15:48:18 1999
+	integrate_begin Fri Apr 16	pmiller	 Elapsed time: 0.767
+			15:48:32 1999		 days.
+	integrate_pass	Fri Apr 16	pmiller
+			21:33:50 1999
+
+
+
+Project "aegis.3.12", Change 20					 Page 1
+Change Details				       Sun May	2 21:34:29 1999
+
+NAME
+	Project "aegis.3.12", Delta 9, Change 20.
+
+SUMMARY
+	super-project doco
+
+DESCRIPTION
+	This change updates the documentation to say how to form a
+	heirarchy of projects using Aegis' branching facilities.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    3 -> 4    lib/en/readme/new.3.12.so
+	source	modify	    3 -> 4    lib/en/user-guide/c10.0.so
+	source	modify	    3 -> 4    lib/en/user-guide/c10.1.so
+	source	modify	    2 -> 3    lib/en/user-guide/c10.2.so
+	source	modify	    4 -> 5    lib/en/user-guide/c7.4.so
+	source	modify	    5 -> 6    lib/en/user-guide/c9.0.so
+	source	create	    1	      lib/en/user-guide/c9.1.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Apr 23	pmiller
+			10:58:19 1999
+	develop_begin	Fri Apr 23	pmiller	 Elapsed time: 4.000
+			10:58:29 1999		 days.
+	develop_end	Wed Apr 28	pmiller	 Elapsed time: 0.052
+			21:29:30 1999		 days.
+	develop_end_	Wed Apr 28	pmiller	 Elapsed time: 0.084
+	undo		21:52:43 1999		 days.
+	develop_end	Wed Apr 28	pmiller
+			22:30:25 1999
+	review_pass	Wed Apr 28	pmiller
+			22:32:14 1999
+	integrate_begin Wed Apr 28	pmiller	 Elapsed time: 0.154
+			22:32:48 1999		 days.
+	integrate_pass	Wed Apr 28	pmiller
+			23:42:10 1999
+
+
+
+Project "aegis.3.12", Change 21					 Page 1
+Change Details				       Sun May	2 21:34:29 1999
+
+NAME
+	Project "aegis.3.12", Delta 10, Change 21.
+
+SUMMARY
+	aenpr -keep
+
+DESCRIPTION
+	This change adds the aenpr -keep option, so that you can re-
+	attach a project that you detached with aermpr -keep and moved
+	around, maybe to another machine.
+
+	My thanks to Jerry Pendergraft
+	<jerry.pendergraft@encocardial.com> for this suggestion.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    6 -> 7    aegis/aenpr.c
+	source	modify	   14 -> 15   lib/en/LC_MESSAGES/aegis.po
+	source	modify	    5 -> 6    lib/en/man1/aenpr.1
+	source	modify	    4 -> 5    lib/en/readme/new.3.12.so
+	test	create	    1	      test/01/t0101a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Apr 28	pmiller
+			17:35:19 1999
+	develop_begin	Wed Apr 28	pmiller	 Elapsed time: 1.000
+			17:35:39 1999		 days.
+	develop_end	Thu Apr 29	pmiller	 Elapsed time: 0.031
+			09:19:56 1999		 days.
+	review_pass	Thu Apr 29	pmiller
+			09:33:44 1999
+	integrate_begin Thu Apr 29	pmiller	 Elapsed time: 0.258
+			09:33:57 1999		 days.
+	integrate_pass	Thu Apr 29	pmiller
+			11:30:11 1999
+
+
+
+Project "aegis.3.12", Change 22					 Page 1
+Change Details				       Sun May	2 21:34:30 1999
+
+NAME
+	Project "aegis.3.12", Delta 11, Change 22.
+
+SUMMARY
+	datadir substitution
+
+DESCRIPTION
+	This change adds the datadir substitution, to match the libdir
+	substitution.
+
+	My thanks to Jerry.Pendergraft@endocardial.com for this
+	suggestion.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    2 -> 3    lib/db_forced.sh
+	source	modify	    2 -> 3    lib/de.inews.sh
+	source	modify	    2 -> 3    lib/de.sh
+	source	modify	    2 -> 3    lib/deu.inews.sh
+	source	modify	    2 -> 3    lib/deu.sh
+	source	modify	    6 -> 7    lib/en/man1/aedb.1
+	source	modify	    9 -> 10   lib/en/man5/aesub.5
+	source	modify	    5 -> 6    lib/en/readme/new.3.12.so
+	source	modify	    3 -> 4    lib/en/user-guide/c5.0.so
+	source	modify	    2 -> 3    lib/if.inews.sh
+	source	modify	    2 -> 3    lib/if.sh
+	source	modify	    2 -> 3    lib/ip.inews.sh
+	source	modify	    3 -> 4    lib/ip.sh
+	source	modify	    2 -> 3    lib/rf.inews.sh
+	source	modify	    2 -> 3    lib/rf.sh
+	source	modify	    2 -> 3    lib/rp.inews.sh
+	source	modify	    2 -> 3    lib/rp.sh
+	source	modify	    2 -> 3    lib/rpu.inews.sh
+	source	modify	    2 -> 3    lib/rpu.sh
+	source	modify	   18 -> 19   libaegis/sub.c
+	source	create	    1	      libaegis/sub/binary_direc.c
+	source	create	    1	      libaegis/sub/binary_direc.h
+	source	create	    1	      libaegis/sub/data_directo.c
+	source	create	    1	      libaegis/sub/data_directo.h
+	source	create	    1	      libaegis/sub/librar_direc.c
+	source	create	    1	      libaegis/sub/librar_direc.h
+	source	modify	    2 -> 3    script/xaegis.tcl
+
+
+
+Project "aegis.3.12", Change 22					 Page 2
+Change Details				       Sun May	2 21:34:30 1999
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Thu Apr 29	pmiller
+			06:42:45 1999
+	develop_begin	Thu Apr 29	pmiller	 Elapsed time: 1.000
+			06:43:25 1999		 days.
+	develop_end	Thu Apr 29	pmiller	 Elapsed time: 0.045
+			23:32:31 1999		 days.
+	review_pass	Thu Apr 29	pmiller
+			23:52:41 1999
+	integrate_begin Thu Apr 29	pmiller	 Elapsed time: 1.000
+			23:52:49 1999		 days.
+	integrate_pass	Fri Apr 30	pmiller
+			09:31:18 1999
+
+
+
+Project "aegis.3.12", Change 23					 Page 1
+Change Details				       Sun May	2 21:34:31 1999
+
+NAME
+	Project "aegis.3.12", Delta 12, Change 23.
+
+SUMMARY
+	more exe suffix
+
+DESCRIPTION
+	This change adds more executable suffix handling.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	create	    1	      common/exeext.c
+	source	create	    1	      common/exeext.h
+	source	modify	    3 -> 4    common/libdir.c.in
+	source	modify	    2 -> 3    common/libdir.h
+	source	modify	    2 -> 3    common/progname.c
+	source	modify	   20 -> 21   etc/Howto.cook
+	source	modify	    8 -> 9    etc/Makefile.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Thu Apr 29	pmiller
+			17:19:37 1999
+	develop_begin	Thu Apr 29	pmiller	 Elapsed time: 1.000
+			17:20:09 1999		 days.
+	develop_end	Fri Apr 30	pmiller
+			08:35:22 1999
+	review_pass	Fri Apr 30	pmiller	 Elapsed time: 0.249
+			08:35:30 1999		 days.
+	integrate_begin Fri Apr 30	pmiller	 Elapsed time: 0.592
+			10:27:42 1999		 days.
+	integrate_pass	Fri Apr 30	pmiller
+			14:54:14 1999
+
+
+
+Project "aegis.3.12", Change 25					 Page 1
+Change Details				       Sun May	2 21:34:31 1999
+
+NAME
+	Project "aegis.3.12", Delta 13, Change 25.
+
+SUMMARY
+	aenpr -e/-f
+
+DESCRIPTION
+	This change adds --edit and --file to the aenpr command.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    7 -> 8    aegis/aenpr.c
+	source	modify	    6 -> 7    aegis/aepa.c
+	source	modify	   15 -> 16   lib/en/LC_MESSAGES/aegis.po
+	source	modify	   14 -> 15   lib/en/LC_MESSAGES/libaegis.po
+	source	create	    1	      libaegis/project/pattr/edit.c
+	source	create	    1	      libaegis/project/pattr/edit.h
+	source	create	    1	      libaegis/project/pattr/get.c
+	source	create	    1	      libaegis/project/pattr/get.h
+	source	create	    1	      libaegis/project/pattr/set.c
+	source	create	    1	      libaegis/project/pattr/set.h
+	test	create	    1	      test/01/t0102a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Apr 30	pmiller
+			17:07:45 1999
+	develop_begin	Fri Apr 30	pmiller	 Elapsed time: 1.326
+			17:07:58 1999		 days.
+	develop_end	Sat May	 1	pmiller	 Elapsed time: 0.141
+			19:34:46 1999		 days.
+	review_pass	Sat May	 1	pmiller
+			20:38:07 1999
+	integrate_begin Sat May	 1	pmiller	 Elapsed time: 0.175
+			20:39:05 1999		 days.
+	integrate_pass	Sat May	 1	pmiller
+			21:57:43 1999
+
+
+
+Project "aegis.3.12", Change 26					 Page 1
+Change Details				       Sun May	2 21:34:32 1999
+
+NAME
+	Project "aegis.3.12", Delta 14, Change 26.
+
+SUMMARY
+	linux libc6, again
+
+DESCRIPTION
+	This change covers several more linux libc6 issues revealed
+	when the branch as (not) integrated.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    3 -> 4    aefind/cmdline.y
+	source	modify	    2 -> 3    aefind/tree/arithmetic.c
+	source	modify	    5 -> 6    common/gettime.y
+	source	modify	   21 -> 22   etc/Howto.cook
+	source	modify	   17	      etc/configure.in
+	source	modify	    2 -> 3    libaegis/aer/expr/mul.c
+	source	modify	    2 -> 3    libaegis/aer/func/round.c
+	source	modify	    3 -> 4    libaegis/aer/report.y
+	source	modify	    2 -> 3    libaegis/aer/value/integer.c
+	source	modify	    3 -> 4    libaegis/aer/value/string.c
+	source	modify	    3 -> 4    libaegis/gram.y
+	source	modify	    2 -> 3    libaegis/sub/expr_gram.y
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Sat May	 1	pmiller
+			22:36:15 1999
+	develop_begin	Sat May	 1	pmiller	 Elapsed time: 1.000
+			22:36:32 1999		 days.
+	develop_end	Sun May	 2	pmiller
+			10:02:03 1999
+	review_pass	Sun May	 2	pmiller
+			10:02:11 1999
+	integrate_begin Sun May	 2	pmiller	 Elapsed time: 0.635
+			10:02:36 1999		 days.
+	integrate_pass	Sun May	 2	pmiller
+			14:48:14 1999

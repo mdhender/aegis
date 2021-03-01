@@ -20,6 +20,7 @@
  * MANIFEST: implement missing functions from <stdlib.h>
  */
 
+#include <ac/ctype.h>
 #include <ac/stdlib.h>
 
 
@@ -68,3 +69,69 @@ wctomb(s, wc)
 }
 
 #endif /* !HAVE_MBLEN */
+
+#ifndef HAVE_STRTOUL
+
+unsigned long
+strtoul(nptr, endptr, base)
+	const char	*nptr;
+	char		**endptr;
+	int		base;
+{
+	const char	*s;
+	int		neg;
+	unsigned long	n;
+	int		ndigits;
+	int		c;
+
+	/*
+	 * This is not an ANSI C conforming implementation.
+	 * Don't use it if you have a choice.
+	 */
+	neg = 0;
+	s = nptr;
+	for (;;)
+	{
+		c = (unsigned char)*s++;
+		if (!isspace(c))
+			break;
+	}
+	if (c == '-')
+	{
+		neg = 1;
+		c = (unsigned char)*s++;
+	}
+	else if (c == '+')
+		c = (unsigned char)*s++;
+	if ((base == 0 || base == 16) && c == '0' && (*s == 'x' || *s == 'X'))
+	{
+		++s;
+		c = (unsigned char)*s++;
+		base = 16;
+	}
+	if (base == 0)
+		base = (c == '0' ? 8 : 10);
+	n = 0;
+	ndigits = 0;
+	for (;;)
+	{
+		if (isdigit(c))
+                        c -= '0';
+		else if (isupper(c))
+			c -= 'A' - 10;
+                else if (islower(c))
+                        c += 'a' - 10;
+                else
+                        break;
+                if (c >= base)
+                        break;
+		n = n * base + c;
+		++ndigits;
+		c = (unsigned char)*s++;
+        }
+        if (endptr)
+                *endptr = (char *)(ndigits ? s - 1 : nptr);
+        return (neg ? -n : n);
+}
+
+#endif /* !HAVE_STRTOUL */

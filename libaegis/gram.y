@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,18 +36,21 @@
 
 %}
 
-%token NAME
 %token INTEGER
+%token NAME
+%token REAL
 %token STRING
 
 %union
 {
 	string_ty	*lv_string;
 	long		lv_integer;
+	double		lv_real;
 }
 
 %type <lv_string> NAME STRING
 %type <lv_integer> INTEGER integer
+%type <lv_real> REAL real
 
 %%
 
@@ -88,6 +91,10 @@ value
 		{
 			sem_integer($1);
 		}
+	| real
+		{
+			sem_real($1);
+		}
 	| STRING
 		{
 			sem_string($1);
@@ -101,6 +108,13 @@ integer
 	: INTEGER
 		{ $$ = $1; }
 	| '-' INTEGER
+		{ $$ = -$2; }
+	;
+
+real
+	: REAL
+		{ $$ = $1; }
+	| '-' REAL
 		{ $$ = -$2; }
 	;
 

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, The Project Attributes
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "The Project Attributes"
 .LP
 The project attributes are manipulated using the
@@ -164,25 +164,25 @@ substitution.
 The entries in the project attribute file look like this:
 .E(
 develop_end_notify_command =
-  "sh $lib/de.sh $project $change \e
+  "sh $datadir/de.sh $project $change \e
   $developer";
 develop_end_undo_notify_command =
-  "sh $lib/deu.sh $project $change \e
+  "sh $datadir/deu.sh $project $change \e
   $developer";
 review_pass_notify_command =
-  "sh $lib/rp.sh $project $change \e
+  "sh $datadir/rp.sh $project $change \e
   $developer $reviewer";
 review_pass_undo_notify_command =
-  "sh $lib/rpu.sh $project $change \e
+  "sh $datadir/rpu.sh $project $change \e
   $developer $reviewer";
 review_fail_notify_command =
-  "sh $lib/rf.sh $project $change \e
+  "sh $datadir/rf.sh $project $change \e
   $developer $reviewer";
 integrate_pass_notify_command =
-  "sh $lib/ip.sh $project $change \e
+  "sh $datadir/ip.sh $project $change \e
   $developer $reviewer $integrator";
 integrate_fail_notify_command =
-  "sh $lib/if.sh $project $change \e
+  "sh $datadir/if.sh $project $change \e
   $developer $reviewer $integrator";
 .E)
 .nh 3 "Notification by USENET"
@@ -198,19 +198,19 @@ substitution.
 The entries in the project attribute file look like this:
 .E(
 develop_end_notify_command =
-  "sh $lib/de.inews.sh $p $c alt.$p";
+  "sh $datadir/de.inews.sh $p $c alt.$p";
 develop_end_undo_notify_command =
-  "sh $lib/deu.inews.sh $p $c alt.$p";
+  "sh $datadir/deu.inews.sh $p $c alt.$p";
 review_pass_notify_command =
-  "sh $lib/rp.inews.sh $p $c alt.$p";
+  "sh $datadir/rp.inews.sh $p $c alt.$p";
 review_pass_undo_notify_command =
-  "sh $lib/rpu.inews.sh $p $c alt.$p";
+  "sh $datadir/rpu.inews.sh $p $c alt.$p";
 review_fail_notify_command =
-  "sh $lib/rf.inews.sh $p $c alt.$p";
+  "sh $datadir/rf.inews.sh $p $c alt.$p";
 integrate_pass_notify_command =
-  "sh $lib/ip.inews.sh $p $c alt.$p";
+  "sh $datadir/ip.inews.sh $p $c alt.$p";
 integrate_fail_notify_command =
-  "sh $lib/if.inews.sh $p $c alt.$p";
+  "sh $datadir/if.inews.sh $p $c alt.$p";
 .E)
 .LP
 The last argument to each command is the newsgroup to post the article in,

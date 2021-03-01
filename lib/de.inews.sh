@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MANIFEST: command used to notify by usenet that a change is ready for review
 #
 # Suggested projet attribute:
-# develop_end_notify_command = "$lib/de.inews.sh $p $c a.local.newsgroup";
+# develop_end_notify_command = "$datadir/de.inews.sh $p $c a.local.newsgroup";
 #
 aegis=aegis
 case $# in

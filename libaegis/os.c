@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <ac/stdlib.h>
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/stdio.h>
 #include <ac/string.h>
 #include <ac/limits.h>
@@ -541,337 +541,6 @@ os_unlink_errok(path)
 
 /*
  * NAME
- *	os_curdir_sub - get current directory
- *
- * SYNOPSIS
- *	string_ty *os_curdir_sub(void);
- *
- * DESCRIPTION
- *	The os_curdir_sub function is used to determine the system's idea
- *	of the current directory.
- *
- * RETURNS
- *	A pointer to a string in dynamic memory is returned.
- *	A null pointer is returned on error.
- *
- * CAVEAT
- *	DO NOT use str_free() on the value returned.
- */
-
-static string_ty *os_curdir_sub _((void));
-
-static string_ty *
-os_curdir_sub()
-{
-	static string_ty	*s;
-
-	os_become_must_be_active();
-	if (!s)
-	{
-		char	buffer[2000];
-
-		if (!glue_getcwd(buffer, sizeof(buffer)))
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_errno_set(scp);
-			fatal_intl(scp, i18n("getcwd: $errno"));
-			/* NOTREACHED */
-		}
-		assert(buffer[0] == '/');
-		s = str_from_c(buffer);
-	}
-	return s;
-}
-
-
-/*
- * NAME
- *	os_curdir - full current directory path
- *
- * SYNOPSIS
- *	string_ty *os_curdir(void);
- *
- * DESCRIPTION
- *	Os_curdir is used to determine the pathname
- *	of the current directory.  Automounter vaguaries will be elided.
- *
- * RETURNS
- *	A pointer to a string in dynamic memory is returned.
- *	A null pointer is returned on error.
- *
- * CAVEAT
- *	Use str_free() when you are done with the value returned.
- */
-
-string_ty *
-os_curdir()
-{
-	static string_ty	*result;
-
-	os_become_must_be_active();
-	if (!result)
-	{
-		string_ty	*dot;
-		
-		dot = str_from_c(".");
-		result = os_pathname(dot, 1);
-		str_free(dot);
-	}
-	return str_copy(result);
-}
-
-
-/*
- * NAME
- *	os_pathname - determine full file name
- *
- * SYNOPSIS
- *	string_ty *os_pathname(string_ty *path, int resolve);
- *
- * DESCRIPTION
- *	Os_pathname is used to determine the full path name
- *	of a partial path given.
- *
- * ARGUMENTS
- *	path	- path to canonicalize
- *	resolve	- non-zero if should resolve symlinks, 0 if not
- *
- * RETURNS
- *	pointer to dynamically allocated string.
- *
- * CAVEAT
- *	Use str_free() when you are done with the value returned.
- */
-
-string_ty *
-os_pathname(path, resolve)
-	string_ty	*path;
-	int		resolve;
-{
-	static char	*tmp;
-	static size_t	tmplen;
-	static size_t	ipos;
-	static size_t	opos;
-	int		c;
-	int		found;
-#ifdef S_IFLNK
-	int		loop;
-#endif
-
-	/*
-	 * Change relative pathnames to absolute
-	 */
-	trace(("os_pathname(path = %08lX)\n{\n"/*}*/, path));
-	if (!path)
-		path = os_curdir();
-	if (resolve)
-		os_become_must_be_active();
-	trace_string(path->str_text);
-	if (path->str_text[0] != '/')
-		path = str_format("%S/%S", os_curdir_sub(), path);
-	else
-		path = str_copy(path);
-	if (!tmp)
-	{
-		tmplen = 200;
-		tmp = mem_alloc(tmplen);
-	}
-
-	/*
-	 * Take kinks out of the pathname
-	 */
-	ipos = 0;
-	opos = 0;
-	found = 0;
-#ifdef S_IFLNK
-	loop = 0;
-#endif
-	while (!found)
-	{
-		/*
-		 * get the next character
-		 */
-		c = path->str_text[ipos];
-		if (c)
-			ipos++;
-		else
-		{
-			found = 1;
-			c = '/';
-		}
-
-		/*
-		 * remember the normal characters
-		 * until get to slash
-		 */
-		if (c != '/')
-			goto remember;
-
-		/*
-		 * leave root alone
-		 */
-		if (!opos)
-			goto remember;
-
-		/*
-		 * "/.." -> "/"
-		 */
-		if (opos == 3 && tmp[1] == '.' && tmp[2] == '.')
-		{
-			opos = 1;
-			continue;
-		}
-
-		/*
-		 * "a//" -> "a/"
-		 */
-		if (tmp[opos - 1] == '/')
-			continue;
-
-		/*
-		 * "a/./" -> "a/"
-		 */
-		if (opos >= 2 && tmp[opos - 1] == '.' && tmp[opos - 2] == '/')
-		{
-			opos--;
-			continue;
-		}
-
-		/*
-		 * "a/b/../" -> "a/"
-		 */
-		if
-		(
-			opos > 3
-		&&
-			tmp[opos - 1] == '.'
-		&&
-			tmp[opos - 2] == '.'
-		&&
-			tmp[opos - 3] == '/'
-		)
-		{
-			opos -= 4;
-			assert(opos > 0);
-			while (tmp[opos - 1] != '/')
-				opos--;
-			continue;
-		}
-
-		/*
-		 * see if the path so far is a symbolic link
-		 */
-#ifdef S_IFLNK
-		if (resolve)
-		{
-			char		pointer[2000];
-			int		nbytes;
-			string_ty	*s;
-
-			s = str_n_from_c(tmp, opos);
-			nbytes = glue_readlink(s->str_text, pointer, sizeof(pointer) - 1);
-			if (nbytes < 0)
-			{
-				/*
-				 * probably not a symbolic link
-				 */
-				if
-				(
-					errno != ENXIO
-				&&
-					errno != EINVAL
-				&& 
-					errno != ENOENT
-				&& 
-					errno != ENOTDIR
-				)
-				{
-					sub_context_ty	*scp;
-
-					scp = sub_context_new();
-					sub_errno_set(scp);
-					sub_var_set(scp, "File_Name", "%S", s);
-					fatal_intl(scp, i18n("readlink $filename: $errno"));
-					/* NOTREACHED */
-				}
-				str_free(s);
-			}
-			else
-			{
-				string_ty	*newpath;
-	
-				if (nbytes == 0)
-				{
-					pointer[0] = '.';
-					nbytes = 1;
-				}
-				if (++loop > 1000)
-				{
-					sub_context_ty	*scp;
-
-					scp = sub_context_new();
-					sub_errno_setx(scp, ELOOP);
-					sub_var_set(scp, "File_Name", "%S", s);
-					fatal_intl(scp, i18n("readlink $filename: $errno"));
-					/* NOTREACHED */
-				}
-				pointer[nbytes] = 0;
-	
-				str_free(s);
-				if (pointer[0] == '/')
-					tmp[1] = 0;
-				else
-				{
-					while (tmp[opos - 1] != '/')
-						opos--;
-					tmp[opos] = 0;
-				}
-				newpath =
-					str_format
-					(
-						"%s/%s/%s",
-						tmp,
-						pointer,
-						path->str_text + ipos
-					);
-				str_free(path);
-				path = newpath;
-				ipos = 0;
-				opos = 0;
-				found = 0;
-				continue;
-			}
-		}
-#endif
-	
-		/*
-		 * keep the slash
-		 */
-		remember:
-		if (opos >= tmplen)
-		{
-			tmplen += 100;
-			tmp = mem_change_size(tmp, tmplen);
-		}
-		tmp[opos++] = c;
-	}
-	str_free(path);
-	assert(opos >= 1);
-	assert(tmp[0] == '/');
-	assert(tmp[opos - 1] == '/');
-	if (opos >= 2)
-		opos--;
-	path = str_n_from_c(tmp, opos);
-	trace_string(path->str_text);
-	trace((/*{*/"}\n"));
-	return path;
-}
-
-
-/*
- * NAME
  *	os_entryname - take path apart
  *
  * SYNOPSIS
@@ -1286,6 +955,39 @@ os_mtime_range(path, oldest_p, newest_p)
 	*newest_p = (st.st_ctime > st.st_mtime ? st.st_ctime : st.st_mtime);
 	*oldest_p = (st.st_ctime < st.st_mtime ? st.st_ctime : st.st_mtime);
 	trace((/*{*/"}\n"));
+}
+
+
+time_t
+os_mtime_actual(path)
+	string_ty	*path;
+{
+	struct stat	st;
+	int		oret;
+
+	trace(("os_mtime_actual(path = %08lX)\n{\n"/*}*/, path));
+	os_become_must_be_active();
+	trace_string(path->str_text);
+
+#ifdef S_IFLNK
+	oret = glue_lstat(path->str_text, &st);
+#else
+	oret = glue_stat(path->str_text, &st);
+#endif
+	if (oret)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_errno_set(scp);
+		sub_var_set(scp, "File_Name", "%S", path);
+		fatal_intl(scp, i18n("stat $filename: $errno"));
+		/* NOTREACHED */
+	}
+
+	trace(("return %ld;\n", (long)st.st_mtime));
+	trace((/*{*/"}\n"));
+	return st.st_mtime;
 }
 
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MANIFEST: command used to notify by usenet that a change has passed integration
 #
 # Suggested project attribute:
-# integrate_pass_notify_command = "$lib/ip.inews.sh $p $c a.local.newsgroup";
+# integrate_pass_notify_command = "$datadir/ip.inews.sh $p $c a.local.newsgroup";
 #
 aegis=aegis
 case $# in

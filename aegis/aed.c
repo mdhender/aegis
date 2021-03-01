@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: difference a change
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/time.h>
 #include <ac/unistd.h>
@@ -153,7 +153,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 	char		*branch;
 	long		cn2;
 	log_style_ty	log_style;
-	string_list_ty		*wl;
+	string_list_ty	*wl;
 {
 	string_ty	*dd1;
 	string_ty	*dd2;
@@ -414,11 +414,9 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 			output = change_file_path(cp, s1);
 			assert(output);
 			input = str_format("%S,B", output);
-			change_become(cp);
+			user_become(up);
 			os_rename(output, input);
-			undo_unlink_errok(output);
-			undo_rename(input, output);
-			change_become_undo();
+			user_become_undo();
 		}
 		else
 		{
@@ -1233,8 +1231,6 @@ difference_main()
 				trace_string(curfile->str_text);
 				user_become(diff_user_p);
 				os_rename(outname, curfile);
-				undo_unlink_errok(outname);
-				undo_rename(curfile, outname);
 				user_become_undo();
 			}
 			else
@@ -1482,7 +1478,12 @@ difference_main()
 			 * changed.
 			 */
 			if (src1_data->action != file_action_remove && !integrating)
+			{
 				change_file_fingerprint_check(cp, src1_data);
+				assert(src1_data->file_fp);
+				assert(src1_data->file_fp->youngest > 0);
+				assert(src1_data->file_fp->oldest > 0);
+			}
 
 			/*
 			 * All change files have a difference file,
@@ -1491,9 +1492,9 @@ difference_main()
 			 */
 			user_become(diff_user_p);
 			if (integrating)
-				ignore = change_fingerprint_same(src1_data->idiff_file_fp, path_d);
+				ignore = change_fingerprint_same(src1_data->idiff_file_fp, path_d, 0);
 			else
-				ignore = change_fingerprint_same(src1_data->diff_file_fp, path_d);
+				ignore = change_fingerprint_same(src1_data->diff_file_fp, path_d, 0);
 			user_become_undo();
 			if (ignore)
 			{
@@ -1594,7 +1595,7 @@ difference_main()
 						src1_data->idiff_file_fp =
 						       fingerprint_type.alloc();
 					src1_data->idiff_file_fp->youngest = 0;
-					change_fingerprint_same(src1_data->idiff_file_fp, path_d);
+					change_fingerprint_same(src1_data->idiff_file_fp, path_d, 0);
 				}
 				else
 				{
@@ -1602,7 +1603,7 @@ difference_main()
 						src1_data->diff_file_fp =
 						       fingerprint_type.alloc();
 					src1_data->diff_file_fp->youngest = 0;
-					change_fingerprint_same(src1_data->diff_file_fp, path_d);
+					change_fingerprint_same(src1_data->diff_file_fp, path_d, 0);
 				}
 				user_become_undo();
 				break;

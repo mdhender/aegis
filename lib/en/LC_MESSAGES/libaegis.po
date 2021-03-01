@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,16 @@
 #
 msgid	"$$$name must be positive"
 msgstr	"the $name environment variable must be a positive decimal number"
+
+#
+# This error message is issued when a change file is modified by the
+# history tool (history_put_command or history_create_command)
+# during aeipass.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename modified by history tool"
+msgstr	"the history tool modified the \"$filename\" source file"
 
 #
 # This error message is issued when a file named on the command
@@ -273,6 +283,16 @@ msgstr	"$filename: owner is $number1, should be $number2"
 #
 msgid	"$filename: too many errors"
 msgstr	"$filename: too many fatal errors, aborted"
+
+#
+# This error message is issued when a generic error in a function is required.
+#
+#	$Function	The name of the function being performed.
+#	$Number		The line number on which the error occurred.
+#	$Message	The error message, formed previously.
+#
+msgid	"$function: argument $number: $message"
+msgstr	"$function: argument $number: $message"
 
 #
 # This error message is issued when the user requests to print a value
@@ -608,6 +628,14 @@ msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"arithmetic type required for increment (was given $name)"
 
 #
+# This error message is issued when aepa is given a default development
+# directory which is not an absolute path.
+#
+msgid	"bad pa, rel def dev dir"
+msgstr	"default development directory must be specified as an absolute "
+	"path"
+
+#
 # This error message is issued when an illegal filename pattern is specified.
 #
 #	$File_Name	The offending file name pattern.
@@ -733,7 +761,7 @@ msgstr	"chmod(\"$filename\", $arg): $errno"
 
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -1047,6 +1075,17 @@ msgstr	"file \"$filename\" path element \"$part\" not suitable for DOS, "
 	"suggest \"$suggest\" instead"
 
 #
+# This error message is issued when a component of a change file name
+# is not suitable for Windows.  Must be modifiable by (***) above.
+#
+#	$File_Name	The name of the offending file.
+#	$PArt		The directory part in question.
+#
+msgid	"file \"$filename\" part \"$part\" not suitable for Windows"
+msgstr	"file \"$filename\" path element \"$part\" not suitable for "
+	"Windows"
+
+#
 # This error message is issued when a directory component of a change file
 # name is too long.  Must be modifiable by (***) above.
 #
@@ -1112,6 +1151,30 @@ msgstr	"file name \"$filename\" contains shell special characters"
 msgid	"file name \"$filename\" not suitable for DOS"
 msgstr	"file name \"$filename\" not suitable for DOS, suggest "
 	"\"$suggest\" instead"
+
+#
+# This error message is issued when a change file name
+# is not suitable for Windows.  Must be modifiable by (***) above.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"file name \"$filename\" not suitable for Windows"
+msgstr	"file name \"$filename\" not suitable for Windows "
+
+#
+# This error message is a summary issued when one or more change
+# files are modified by the history tool (history_put_command or
+# history_create_commands) during aeipass.
+#
+#	$Number		The number of files modified.
+#			(Optional)
+#
+msgid	"files modified by history tool"
+msgstr	"The history tool modified $number ${plural $number files file}.  "
+	"The source ${plural $number files file} in the repository now no "
+	"longer ${plural $number match matches} the object ${plural "
+	"$number files file} in the repository. The history tool has "
+	"compromised the referential integrity of the repository."
 
 #
 # This error message is issued when a file fingerprint fails
@@ -1196,6 +1259,28 @@ msgstr	"global state lock not available"
 #
 msgid	"group \"$name\" unknown"
 msgstr	"group \"$name\" unknown"
+
+#
+# This fatal error message is issued when something goes wrong decompressing
+# a file using zlib.
+#
+#	$File_Name	The name of the output file
+#	$ERRNO		Overridden to contain the error string from zlib
+#			(but sometimes not, because the real errno has it)
+#
+msgid	"gunzip $filename: $errno"
+msgstr	"while decompressing input from the \"$filename\" file: $errno"
+
+#
+# This fatal error message is issued when something goes wrong compressing
+# a file using zlib.
+#
+#	$File_Name	The name of the output file
+#	$ERRNO		Overridden to contain the error string from zlib
+#			(but sometimes not, because the real errno has it)
+#
+msgid	"gzip $filename: $errno"
+msgstr	"while compressing output for the \"$filename\" file: $errno"
 
 #
 # This fatal error message is issued when a lock is not available.
@@ -1821,6 +1906,26 @@ msgid	"open $filename: $errno"
 msgstr	"open \"$filename\": $errno"
 
 #
+# This error message is issued by aede when attempting to end the
+# development of a branch and there is still an outstanding change on
+# the branch.  This message will be issued for each outstanding change.
+#
+msgid	"outstanding change"
+msgstr	"this change is in the '$state' state"
+
+#
+# This error message is issued by aede/aenbru/aermpr when attempting to
+# end the development of a branch (kill off a branch) and there is one
+# or more outstanding changes on the branch.
+#
+#	$Number		Number of changes outstanding.  (Optional)
+#
+msgid	"outstanding changes"
+msgstr	"there ${plural $number are is} $number outstanding ${plural "
+	"$number changes change}; you may not use this command if there "
+	"are any outstanding changes"
+
+#
 # This error message is issued when the argument to -Page_Length is absurd.
 #
 #	$Number		The offending page length.
@@ -2046,6 +2151,20 @@ msgid	"source file unknown"
 msgstr	"source file unknown"
 
 #
+# This is the name of the program's standard input.  The place input
+# from getchar (et al) comes from.
+#
+msgid	"standard input"
+msgstr	"the standard input"
+
+#
+# This is the name of the program's standard output.  The place output
+# from putchar (et al) goes.
+#
+msgid	"standard output"
+msgstr	"the standard output"
+
+#
 # This error message is issued when a file stat fails
 #
 #	$File_Name	The name of the offending file.
@@ -2255,6 +2374,13 @@ msgid	"unknown substitution name"
 msgstr	"unknown substitution name"
 
 #
+# This error message is issued when an unknown substitution variant
+# is referenced.  See (+++) below.
+#
+msgid	"unknown substitution variant"
+msgstr	"unknown substitution variant"
+
+#
 # This error message is issued when an unlink fails.
 #
 #	$File_Name	The name of the file to be unlinked.
@@ -2371,6 +2497,16 @@ msgid	"waiting for lock"
 msgstr	"waiting for lock"
 
 #
+# This warning message is issued when a change file is modified by the
+# history tool (history_put_command or history_create_command)
+# during aeipass.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"warning: $filename modified by history tool"
+msgstr	"warning: the history tool modified the \"$filename\" source file"
+
+#
 # This warning message is issued when the AEGIS environment is observed.
 # This has been obsoleted, and users are encouraged to use the
 # AEGIS_PATH environment variable instead.
@@ -2412,6 +2548,22 @@ msgstr	"warning: chmod(\"$filename\", $arg): $errno"
 #
 msgid	"warning: command \"$command\" exit status $number"
 msgstr	"warning: command \"$command\" exit status $number"
+
+#
+# This warning message is a summary issued when one or more change
+# files are modified by the history tool (history_put_command or
+# history_create_commands) during aeipass.
+#
+#	$Number		The number of files modified.
+#			(Optional)
+#
+msgid	"warning: files modified by history tool"
+msgstr	"warning: The history tool modified $number source ${plural "
+	"$number files file}.  The source ${plural $number files file} in "
+	"the repository now no longer ${plural $number match matches} the "
+	"object ${plural $number files file} in the repository.  The "
+	"history tool has compromised the referential integrity of the "
+	"repository, unless the changes occur exclusively in comments."
 
 #
 # This warning message is issued when a rmdir fails, but Aegis will continue.

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,8 @@ struct string_ty
 };
 
 void str_initialize _((void));
-string_ty *str_from_c _((char *));
-string_ty *str_n_from_c _((char *, size_t));
+string_ty *str_from_c _((const char *));
+string_ty *str_n_from_c _((const char *, size_t));
 string_ty *str_copy _((string_ty *));
 void str_free _((string_ty *));
 string_ty *str_catenate _((string_ty *, string_ty *));
@@ -52,9 +52,16 @@ string_ty *str_downcase _((string_ty *));
 void str_dump _((void));
 string_ty *str_field _((string_ty *str, int sep, int fldnum));
 void slow_to_fast _((char **, string_ty **, size_t));
-string_ty *str_format _((char *, ...));
-string_ty *str_vformat _((char *, va_list));
+string_ty *str_format _((const char *, ...));
+string_ty *str_vformat _((const char *, va_list));
 
 #define str_equal(s1, s2) ((s1) == (s2))
+
+int str_re_match _((string_ty *, string_ty *,
+	void(*)(const char *)));
+string_ty *str_re_substitute _((string_ty *, string_ty *, string_ty *,
+	void(*)(const char *), int));
+
+string_ty *str_quote_shell _((string_ty *));
 
 #endif /* STR_H */

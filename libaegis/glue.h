@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994 Peter Miller.
+ *	Copyright (C) 1993, 1994, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,13 +17,13 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: interface definition for aegis/glue.c
+ * MANIFEST: interface definition for libaegis/glue.c
  */
 
 #ifndef AEGIS_GLUE_H
 #define AEGIS_GLUE_H
 
-#include <stdio.h>
+#include <ac/stdio.h>
 
 #include <main.h>
 #include <config.h>
@@ -76,6 +76,7 @@ int glue_ungetc _((int, FILE *));
 int glue_unlink _((char *path));
 int glue_utime _((char *path, struct utimbuf *));
 int glue_write _((int fd, char *data, long len));
+int glue_fwrite _((char *, long, long, FILE *));
 
 
 #ifndef CONF_NO_seteuid
@@ -121,6 +122,7 @@ int glue_write _((int fd, char *data, long len));
 #define	glue_unlink	unlink
 #define	glue_utime	utime
 #define	glue_write	write
+#define	glue_fwrite	fwrite
 
 #endif /* aegis_glue_disable */
 #endif /* CONF_NO_seteuid */

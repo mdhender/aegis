@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@
 #include <aer/stmt/try.h>
 #include <aer/stmt/while.h>
 #include <aer/value/error.h>
-#include <aer/value/nul.h>
+#include <aer/value/null.h>
 #include <error.h>
 #include <str.h>
 #include <sub.h>

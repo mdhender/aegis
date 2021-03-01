@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <ac/ctype.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/string.h>
 
 #include <sys/types.h>
@@ -720,6 +720,16 @@ new_release_main()
 		pp[1],
 		project_minimum_change_number_get(pp[0])
 	);
+	project_reuse_change_numbers_set
+	(
+		pp[1],
+		project_reuse_change_numbers_get(pp[0])
+	);
+	project_minimum_branch_number_set
+	(
+		pp[1],
+		project_minimum_branch_number_get(pp[0])
+	);
 
 	/*
 	 * add a row to the project table
@@ -896,7 +906,7 @@ new_release_main()
 		if (!src_data->file_fp)
 			src_data->file_fp = fingerprint_type.alloc();
 		project_become(ppp);
-		change_fingerprint_same(src_data->file_fp, path);
+		change_fingerprint_same(src_data->file_fp, path, 1);
 		project_become_undo();
 
 		/*
@@ -930,7 +940,7 @@ new_release_main()
 		if (!src_data->diff_file_fp)
 			src_data->diff_file_fp = fingerprint_type.alloc();
 		user_become(pup1);
-		change_fingerprint_same(src_data->diff_file_fp, path_d);
+		change_fingerprint_same(src_data->diff_file_fp, path_d, 1);
 		user_become_undo();
 
 		str_free(path);

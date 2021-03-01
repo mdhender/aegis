@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <ac/ctype.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/string.h>
 #include <ac/stdlib.h>
 
@@ -40,6 +40,7 @@
 #include <project.h>
 #include <project_hist.h>
 #include <pstate.h>
+#include <skip_unlucky.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -383,6 +384,11 @@ convert_to_new_format(pp)
 		pp->pcp->cstate_data->version_previous = pstate_data->version_previous;
 		pstate_data->version_previous = 0;
 	}
+
+	/*
+	 * By default we reuse change numbers.
+	 */
+	change_branch_reuse_change_numbers_set(pp->pcp, 1);
 
 	/*
 	 * Phew!  Who would ever have guessed there was so much to do
@@ -1173,6 +1179,7 @@ project_pstate_write(pp)
 	string_ty	*filename_new;
 	string_ty	*filename_old;
 	static int	count;
+	int		compress;
 
 	trace(("project_pstate_write(pp)\n{\n"/*}*/, pp));
 
@@ -1185,6 +1192,7 @@ project_pstate_write(pp)
 	/*
 	 * write it out
 	 */
+	compress = project_compress_database_get(pp);
 	if (pp->pstate_data)
 	{
 		filename = project_pstate_path_get(pp);
@@ -1198,13 +1206,13 @@ project_pstate_write(pp)
 		if (pp->is_a_new_file)
 		{
 			undo_unlink_errok(filename_new);
-			pstate_write_file(filename_new->str_text, pp->pstate_data);
+			pstate_write_file(filename_new->str_text, pp->pstate_data, compress);
 			commit_rename(filename_new, filename);
 		}
 		else
 		{
 			undo_unlink_errok(filename_new);
-			pstate_write_file(filename_new->str_text, pp->pstate_data);
+			pstate_write_file(filename_new->str_text, pp->pstate_data, compress);
 			commit_rename(filename, filename_old);
 			commit_rename(filename_new, filename);
 			commit_unlink_errok(filename_old);
@@ -1876,12 +1884,17 @@ project_next_test_number_get(pp)
 {
 	pstate		pstate_data;
 	long		result;
+	int		skip;
 
 	trace(("project_next_test_number_get(pp = %08lX)\n{\n"/*}*/, pp));
+	skip = project_skip_unlucky_get(pp);
 	while (pp->parent)
 		pp = pp->parent;
 	pstate_data = project_pstate_get(pp);
-	result = pstate_data->next_test_number++;
+	result = pstate_data->next_test_number;
+	if (skip)
+		result = skip_unlucky(result);
+	pstate_data->next_test_number = result + 1;
 	trace(("return %ld;\n", result));
 	trace((/*{*/"}\n"));
 	return result;
@@ -1908,6 +1921,98 @@ project_minimum_change_number_set(pp, n)
 
 	cp = project_change_get(pp);
 	change_branch_minimum_change_number_set(cp, n);
+}
+
+
+int
+project_reuse_change_numbers_get(pp)
+	project_ty	*pp;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	return change_branch_reuse_change_numbers_get(cp);
+}
+
+
+void
+project_reuse_change_numbers_set(pp, n)
+	project_ty	*pp;
+	int		n;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	change_branch_reuse_change_numbers_set(cp, n);
+}
+
+
+long
+project_minimum_branch_number_get(pp)
+	project_ty	*pp;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	return change_branch_minimum_branch_number_get(cp);
+}
+
+
+void
+project_minimum_branch_number_set(pp, n)
+	project_ty	*pp;
+	long		n;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	change_branch_minimum_branch_number_set(cp, n);
+}
+
+
+int
+project_skip_unlucky_get(pp)
+	project_ty	*pp;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	return change_branch_skip_unlucky_get(cp);
+}
+
+
+void
+project_skip_unlucky_set(pp, n)
+	project_ty	*pp;
+	int		n;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	change_branch_skip_unlucky_set(cp, n);
+}
+
+
+int
+project_compress_database_get(pp)
+	project_ty	*pp;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	return change_branch_compress_database_get(cp);
+}
+
+
+void
+project_compress_database_set(pp, n)
+	project_ty	*pp;
+	int		n;
+{
+	change_ty	*cp;
+
+	cp = project_change_get(pp);
+	change_branch_compress_database_set(cp, n);
 }
 
 

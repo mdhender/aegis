@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ gen_include(type)
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write _((char *, %s));\n",
+		"void %s_write _((struct output_ty *, char *, %s));\n",
 		this->name->str_text,
 		this->name->str_text
 	);
@@ -119,8 +119,9 @@ gen_code(type)
 	this = (type_list_ty *)type;
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s_write(name, this)\n", this->name->str_text);
+	indent_printf("%s_write(fp, name, this)\n", this->name->str_text);
 	indent_more();
+	indent_printf("%s\1*fp;\n", "output_ty");
 	indent_printf("%s\1*name;\n", "char");
 	indent_printf("%s\1this;\n", this->name->str_text);
 	indent_less();
@@ -139,20 +140,20 @@ gen_code(type)
 	);
 	indent_printf("if (name)\n");
 	indent_more();
-	indent_printf("indent_printf(\"%%s =\\n\", name);\n");
+	indent_printf("output_fprintf(fp, \"%%s =\\n\", name);\n");
 	indent_less();
-	indent_printf("indent_printf(\"[\\n\"/*]*/);\n");
+	indent_printf("output_fprintf(fp, \"[\\n\"/*]*/);\n");
 	indent_printf("for (j = 0; j < this->length; ++j)\n");
 	indent_printf("{\n"/*}*/);
 	s = str_from_c("list[j]");
 	type_gen_code_declarator(this->subtype, s, 1);
 	str_free(s);
-	indent_printf("indent_printf(\",\\n\");\n");
+	indent_printf("output_fprintf(fp, \",\\n\");\n");
 	indent_printf(/*{*/"}\n");
-	indent_printf("indent_printf(/*[*/\"]\");\n");
+	indent_printf("output_fprintf(fp, /*[*/\"]\");\n");
 	indent_printf("if (name)\n");
 	indent_more();
-	indent_printf("indent_printf(\";\\n\");\n");
+	indent_printf("output_fprintf(fp, \";\\n\");\n");
 	indent_less();
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf(/*{*/"}\n");
@@ -336,7 +337,7 @@ gen_code_declarator(type, variable_name, is_a_list)
 	string_ty	*variable_name;
 	int		is_a_list;
 {
-	indent_printf("%s_write("/*)*/, type->name->str_text);
+	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
 	if (is_a_list)
 		indent_printf("\"\"");
 	else
@@ -353,12 +354,24 @@ gen_free_declarator(type, variable_name, is_a_list)
 	string_ty	*variable_name;
 	int		is_a_list;
 {
-	indent_printf
-	(
-		"%s_free(this->%s);\n",
-		type->name->str_text,
-		variable_name->str_text
-	);
+	if (type->included_flag)
+	{
+		indent_printf
+		(
+			"%s_type.free(this->%s);\n",
+			type->name->str_text,
+			variable_name->str_text
+		);
+	}
+	else
+	{
+		indent_printf
+		(
+			"%s_free(this->%s);\n",
+			type->name->str_text,
+			variable_name->str_text
+		);
+	}
 }
 
 
@@ -377,6 +390,19 @@ member_add(type, member_name, member_type)
 }
 
 
+static void in_include_file _((type_ty *));
+
+static void
+in_include_file(type)
+	type_ty		*type;
+{
+	type_list_ty	*this;
+
+	this = (type_list_ty *)type;
+	type_in_include_file(this->subtype);
+}
+
+
 type_method_ty type_list =
 {
 	sizeof(type_list_ty),
@@ -390,4 +416,5 @@ type_method_ty type_list =
 	gen_code_declarator,
 	gen_free_declarator,
 	member_add,
+	in_include_file,
 };

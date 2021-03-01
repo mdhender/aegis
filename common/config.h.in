@@ -136,6 +136,9 @@
 /* Define if you have the pathconf function.  */
 #undef HAVE_PATHCONF
 
+/* Define if you have the regcomp function.  */
+#undef HAVE_REGCOMP
+
 /* Define if you have the seteuid function.  */
 #undef HAVE_SETEUID
 
@@ -160,6 +163,9 @@
 /* Define if you have the strsignal function.  */
 #undef HAVE_STRSIGNAL
 
+/* Define if you have the strtoul function.  */
+#undef HAVE_STRTOUL
+
 /* Define if you have the tcgetpgrp function.  */
 #undef HAVE_TCGETPGRP
 
@@ -175,6 +181,9 @@
 /* Define if you have the <iso646.h> header file.  */
 #undef HAVE_ISO646_H
 
+/* Define if you have the <libgettext.h> header file.  */
+#undef HAVE_LIBGETTEXT_H
+
 /* Define if you have the <libintl.h> header file.  */
 #undef HAVE_LIBINTL_H
 
@@ -187,8 +196,17 @@
 /* Define if you have the <memory.h> header file.  */
 #undef HAVE_MEMORY_H
 
+/* Define if you have the <mntent.h> header file.  */
+#undef HAVE_MNTENT_H
+
 /* Define if you have the <ndir.h> header file.  */
 #undef HAVE_NDIR_H
+
+/* Define if you have the <regex.h> header file.  */
+#undef HAVE_REGEX_H
+
+/* Define if you have the <rxposix.h> header file.  */
+#undef HAVE_RXPOSIX_H
 
 /* Define if you have the <stddef.h> header file.  */
 #undef HAVE_STDDEF_H
@@ -217,17 +235,26 @@
 /* Define if you have the <widec.h> header file.  */
 #undef HAVE_WIDEC_H
 
+/* Define if you have the <zlib.h> header file.  */
+#undef HAVE_ZLIB_H
+
 /* Define if you have the intl library (-lintl).  */
 #undef HAVE_LIBINTL
 
 /* Define if you have the m library (-lm).  */
 #undef HAVE_LIBM
 
+/* Define if you have the rx library (-lrx).  */
+#undef HAVE_LIBRX
+
 /* Define if you have the socket library (-lsocket).  */
 #undef HAVE_LIBSOCKET
 
 /* Define if you have the w library (-lw).  */
 #undef HAVE_LIBW
+
+/* Define if you have the z library (-lz).  */
+#undef HAVE_LIBZ
 
 /*
  * This defines the file creation mask.  See umask(2) for more information.

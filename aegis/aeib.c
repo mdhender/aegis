@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions for implementing integrate begin
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/time.h>
@@ -39,6 +39,7 @@
 #include <dir.h>
 #include <error.h>
 #include <file.h>
+#include <gmatch.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
@@ -130,6 +131,30 @@ remove_comma_d_if_present(s)
 	if (cp[0] == ',' && cp[1] == 'D')
 		return str_n_from_c(s->str_text, s->str_length - 2);
 	return str_copy(s);
+}
+
+
+static int isa_suppressed_filename _((change_ty *, string_ty *));
+
+static int
+isa_suppressed_filename(cp, fn)
+	change_ty	*cp;
+	string_ty	*fn;
+{
+	pconf		pconf_data;
+	pconf_integrate_begin_exceptions_list p;
+	size_t		j;
+
+	pconf_data = change_pconf_get(cp, 1);
+	p = pconf_data->integrate_begin_exceptions;
+	if (!p)
+		return 0;
+	for (j = 0; j < p->length; ++j)
+	{
+		if (gmatch(p->list[j]->str_text, fn->str_text))
+			return 1;
+	}
+	return 0;
 }
 
 
@@ -226,6 +251,21 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * the file is in the change.
 		 */
 		if (change_file_find(cp, s1short))
+		{
+			str_free(s1short);
+			break;
+		}
+
+		/*
+		 * Don't link a suppressed file.
+		 * BUT keep primary source files and their diff files.
+		 */
+		if
+		(
+			!project_file_find(cp->pp, s1short)
+		&&
+			isa_suppressed_filename(cp, s1short)
+		)
 		{
 			str_free(s1short);
 			break;
@@ -327,6 +367,21 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 */
 		s1short = remove_comma_d_if_present(s1);
 		if (change_file_find(cp, s1short))
+		{
+			str_free(s1short);
+			break;
+		}
+
+		/*
+		 * Don't link a suppressed file.
+		 * BUT keep primary source files and their diff files.
+		 */
+		if
+		(
+			!project_file_find(cp->pp, s1short)
+		&&
+			isa_suppressed_filename(cp, s1short)
+		)
 		{
 			str_free(s1short);
 			break;
@@ -485,6 +540,21 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 			str_free(s1short);
 			break;
 		}
+
+		/*
+		 * Don't copy a suppressed file.
+		 * BUT keep primary source files and their diff files.
+		 */
+		if
+		(
+			!project_file_find(cp->pp, s1short)
+		&&
+			isa_suppressed_filename(cp, s1short)
+		)
+		{
+			str_free(s1short);
+			break;
+		}
 		str_free(s1short);
 
 		/*
@@ -591,6 +661,21 @@ copy_tree_callback(arg, message, path, st)
 		 * the file is in the change.
 		 */
 		if (change_file_find(cp, s1short))
+		{
+			str_free(s1short);
+			break;
+		}
+
+		/*
+		 * Don't copy a suppressed file.
+		 * BUT keep primary source files and their diff files.
+		 */
+		if
+		(
+			!project_file_find(cp->pp, s1short)
+		&&
+			isa_suppressed_filename(cp, s1short)
+		)
 		{
 			str_free(s1short);
 			break;
@@ -900,7 +985,7 @@ integrate_begin_main()
 			continue;
 
 		s1 = change_file_path(cp, src_data->file_name);
-		if (!change_fingerprint_same(src_data->file_fp, s1))
+		if (!change_fingerprint_same(src_data->file_fp, s1, 0))
 		{
 			sub_context_ty	*scp;
 
@@ -910,9 +995,11 @@ integrate_begin_main()
 			sub_context_delete(scp);
 			errs++;
 		}
+		assert(src_data->file_fp->youngest > 0);
+		assert(src_data->file_fp->oldest > 0);
 
 		s2 = str_format("%S,D", s1);
-		if (!change_fingerprint_same(src_data->diff_file_fp, s2))
+		if (!change_fingerprint_same(src_data->diff_file_fp, s2, 0))
 		{
 			sub_context_ty	*scp;
 
@@ -922,6 +1009,8 @@ integrate_begin_main()
 			sub_context_delete(scp);
 			errs++;
 		}
+		assert(src_data->diff_file_fp->youngest > 0);
+		assert(src_data->diff_file_fp->oldest > 0);
 		str_free(s1);
 		str_free(s2);
 	}

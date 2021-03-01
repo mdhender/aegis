@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 1995 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,8 +43,8 @@
  *	documentation and/or software.
  */
 
-#include <stdio.h>
-#include <string.h>
+#include <ac/stdio.h>
+#include <ac/string.h>
 
 #include <fp/md5.h>
 #include <find_sizes.h>
@@ -342,12 +342,12 @@ md5_addn(p, input, inputLen)
 {
 	md5_ty		*context;
 	unsigned int	i;
-	unsigned int	index;
+	unsigned int	idx;
 	unsigned int	partLen;
 
 	context = (md5_ty *)p;
 	/* Compute number of bytes mod 64 */
-	index = (unsigned int)((context->count[0] >> 3) & 0x3F);
+	idx = (unsigned int)((context->count[0] >> 3) & 0x3F);
 	/* Update number of bits */
 	if
 	(
@@ -357,23 +357,23 @@ md5_addn(p, input, inputLen)
 	)
 		context->count[1]++;
 	context->count[1] += ((unsigned long)inputLen >> 29);
-	partLen = 64 - index;
+	partLen = 64 - idx;
 
 	/*
 	 * Transform as many times as possible.
 	 */
 	if (inputLen >= partLen)
 	{
-		memcpy(&context->buffer[index], input, partLen);
+		memcpy(&context->buffer[idx], input, partLen);
 		MD5Transform(context->state, context->buffer);
 		for (i = partLen; i + 63 < inputLen; i += 64)
 			MD5Transform(context->state, &input[i]);
-		index = 0;
+		idx = 0;
 	}
 	else
 		i = 0;
 	/* Buffer remaining input */
-	memcpy(&context->buffer[index], &input[i], inputLen - i);
+	memcpy(&context->buffer[idx], &input[i], inputLen - i);
 }
 
 
@@ -393,7 +393,7 @@ md5_hash(p, digest)
 {
 	md5_ty		*context;
 	unsigned char	bits[8];
-	unsigned int	index;
+	unsigned int	idx;
 	unsigned int	padLen;
 
 	/*
@@ -405,8 +405,8 @@ md5_hash(p, digest)
 	/*
 	 * Pad out to 56 mod 64.
 	 */
-	index = (unsigned int)((context->count[0] >> 3) & 0x3f);
-	padLen = (index < 56) ? (56 - index) : (120 - index);
+	idx = (unsigned int)((context->count[0] >> 3) & 0x3f);
+	padLen = (idx < 56) ? (56 - idx) : (120 - idx);
 	md5_addn(p, PADDING, padLen);
 
 	/*

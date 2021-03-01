@@ -6,6 +6,31 @@ BUILDING	Instructions how to build, test and install aegis
 LICENSE	GNU General Public License
 MANIFEST	This file
 Makefile.in	Instructions to make(1) how to build and test aegis
+aedist/arglex3.c	 functions to manipulate arglex3s
+aedist/arglex3.h	 interface definition for aedist/arglex3.c
+aedist/header.c	 functions to manipulate headers
+aedist/header.h	 interface definition for aedist/header.c
+aedist/input/822wrap.c	 functions to perfom rfc822 line wrapping
+aedist/input/822wrap.h	 interface definition for aedist/input/822wrap.c
+aedist/input/cpio.c	 functions to manipulate cpios
+aedist/input/cpio.h	 interface definition for aedist/input/cpio.c
+aedist/input/cpio_child.c	 functions to manipulate cpio_childs
+aedist/input/cpio_child.h	 interface definition for aedist/input/cpio_child.c
+aedist/list.c	 functions to manipulate lists
+aedist/list.h	 interface definition for aedist/list.c
+aedist/main.c	 functions to manipulate mains
+aedist/open.c	 functions to manipulate opens
+aedist/open.h	 interface definition for aedist/open.c
+aedist/output/cpio.c	 functions to output to cpio archivess
+aedist/output/cpio.h	 interface definition for aedist/output/cpio.c
+aedist/output/cpio_child.c	 functions to manipulate cpio_childs
+aedist/output/cpio_child.h	 interface definition for aedist/output/cpio_child.c
+aedist/output/cpio_child2.c	 functions to manipulate cpio_child2s
+aedist/output/cpio_child2.h	 interface definition for aedist/output/cpio_child2.c
+aedist/receive.c	 functions to manipulate receives
+aedist/receive.h	 interface definition for aedist/receive.c
+aedist/send.c	 functions to manipulate sends
+aedist/send.h	 interface definition for aedist/send.c
 aefind/cmdline.h	 interface definition for aefind/cmdline.y
 aefind/cmdline.y	 functions to parse the command line
 aefind/descend.c	 functions to walk parallel directory trees
@@ -163,13 +188,18 @@ common/abbreviate.c	 functions to manipulate abbreviates
 common/abbreviate.h	 interface definition for common/abbreviate.c
 common/ac/ctype.h	 insulate against <ctype.h> vagueries
 common/ac/dirent.h	 insulate against <dirent.h> vs <ndir.h> differences
+common/ac/errno.h	 insulate against <errno.h> differences
 common/ac/fcntl.h	 insulate against <fcntl.h> vs <sys/file.h> differences
 common/ac/grp.h	 insulate against <grp.h> vagueries
 common/ac/libintl.c	 implement missing functions from <libintl.h>
 common/ac/libintl.h	 insulate against <libintl.h> presence or absence
 common/ac/limits.h	 insulate against <limits.h> presence or absence
 common/ac/locale.h	 insulate against <locale.h> presence or absence
+common/ac/math.h	 inclulate against <math.h> vagueries
+common/ac/mntent.c	 functions to implement mntent stubs
+common/ac/mntent.h	 interface definition for common/ac/mntent.c
 common/ac/pwd.h	 insulate against <pwd.h> vagueries
+common/ac/regex.h	 interface definition for common/ac/regex.c
 common/ac/stdarg.h	 insulate against <varargs.h> vs <stdarg.h> differences
 common/ac/stddef.h	 insulate against <stddef.h> presence or absence
 common/ac/stdio.h	 insulate against <stdio.h> vagueries
@@ -186,6 +216,8 @@ common/ac/wchar.c	 impliment missing functions from <wchar.h>
 common/ac/wchar.h	 insulate against <wchar.h> presence or absence
 common/ac/wctype.c	 impliment missing frinction from <wctype.h>
 common/ac/wctype.h	 insulate against <wctype.h> presence or absence
+common/ac/zlib.c	 functions to manipulate zlibs
+common/ac/zlib.h	 interface definition for common/ac/zlib.c
 common/arglex.c	 lexical analysis of command line arguments
 common/arglex.h	 interface definition for common/arglex.c
 common/column_width.c	 functions to calculate column widths
@@ -196,6 +228,8 @@ common/env.c	 functions to manipulate environment variables
 common/env.h	 interface definition for common/env.c
 common/error.c	 functions to report errors
 common/error.h	 interface definition for common/error.c
+common/exeext.c	 functions to manipulate exeexts
+common/exeext.h	 interface definition for common/exeext.c
 common/fp.c	 functions to manipulate fingerprints
 common/fp.h	 interface definition for common/fp.c
 common/fp/cksum.c	 functions to manipulate POSIX cksum fingerprints
@@ -230,15 +264,23 @@ common/mem.c	 functions to manipulate dynamic memory
 common/mem.h	 interface definition for common/mem.c
 common/mprintf.c	 functions to printf into memory
 common/mprintf.h	 interface definition for common/mprintf.c
+common/noreturn.h	 careful definition of ``noreturn'' function attribute
 common/patchlevel.h	The patch level of this distribution.
 common/progname.c	 functions to manipulate the program name
 common/progname.h	 interface definition for common/progname.c
 common/r250.c	 good fast random number generator
 common/r250.h	 interface definition for common/r250.c
+common/skip_unlucky.c	 functions to skip unlucky numbers
+common/skip_unlucky.h	 interface definition for common/skip_unlucky.c
 common/str.c	 string manipulation functions
 common/str.h	 interface definition for common/str.c
+common/str/quote.c	 functions to manipulate quotes
+common/str/re.c	 functions to manipulate strings with regular expressions
 common/str_list.c	 functions to manipulate lists of strings
 common/str_list.h	 interface definition for common/str_list.c
+common/str_list/quote.c	 functions to manipulate quotes
+common/stracc.c	 functions to accumulate strings
+common/stracc.h	 interface definition for common/stracc.c
 common/symtab.c	 functions to manipulate symbol tables
 common/symtab.h	 interface definition for common/symtab.c
 common/trace.c	 functions for execution trace
@@ -247,6 +289,7 @@ common/version_stmp.c	 functions to query the version stamp
 common/version_stmp.h	 interface definition for common/version_stmp.c
 common/wstr.c	 wide string manipulation functions
 common/wstr.h	 interface definition for common/wstr.c
+common/wstr/quote.c	 functions to manipulate quotes
 common/wstr_list.c	 functions to manipulate lists of wide strings
 common/wstr_list.h	 interface definition for common/wstr_list.c
 config	 instructions to aegis, per-project configuration
@@ -262,6 +305,10 @@ etc/CHANGES.2.2	Change history of aegis
 etc/CHANGES.2.3	Change history of aegis
 etc/CHANGES.3.0	Change history of aegis
 etc/CHANGES.3.1	Change history of aegis
+etc/CHANGES.3.10	Change history of aegis
+etc/CHANGES.3.11	Change history of aegis
+etc/CHANGES.3.12	Change history of aegis
+etc/CHANGES.3.15	Change history of aegis
 etc/CHANGES.3.2	Change history of aegis
 etc/CHANGES.3.3	Change history of aegis
 etc/CHANGES.3.4	Change history of aegis
@@ -269,6 +316,7 @@ etc/CHANGES.3.5	Change history of aegis
 etc/CHANGES.3.6	Change history of aegis
 etc/CHANGES.3.7	Change history of aegis
 etc/CHANGES.3.8	Change history of aegis
+etc/CHANGES.3.9	Change history of aegis
 etc/CHANGES.sh	Change history of aegis
 etc/Howto.conf.in	 instructions to cook, architecture specific
 etc/Howto.cook	 instructions to cook(1), how to build project
@@ -287,6 +335,7 @@ etc/configure.in	 how to configure aegis, input to the GNU autoconf program
 etc/faq.toc.awk	 awk script to extract the table of contents from the faq
 etc/i18n.cook	 instructions to cook(1), how to build internationalization files
 etc/libdir.so.in	 template for the etc/libdir.so file
+etc/metrics.cook	 metrics.cook
 etc/patch.fil.sh	 shell script to generate the patch for a file
 etc/patches.sh	 shell script to generate the patch file
 etc/ptx.ignore	 ptx.ignore
@@ -297,6 +346,7 @@ etc/rpm-build.sh	 shell script to rpm-build
 etc/so.sh	 shell script to generate include lists
 etc/spec.sh	 shell script to generate RedHat spec file
 etc/ssp.awk	 awk script to supress multiple blank lines
+etc/statistics.awk	 script to generate source statistics summary
 etc/template/c	New file template
 etc/template/generic	New file template
 etc/template/h	New file template
@@ -325,6 +375,8 @@ fmtgen/type/integer.c	 functions to manipulate integer type
 fmtgen/type/integer.h	 interface definition for fmtgen/type/integer.c
 fmtgen/type/list.c	 functions to manipulate list types
 fmtgen/type/list.h	 interface definition for fmtgen/type/list.c
+fmtgen/type/real.c	 functions to manipulate real type
+fmtgen/type/real.h	 interface definition for fmtgen/type/real.c
 fmtgen/type/string.c	 functions to manipulate string type
 fmtgen/type/string.h	 interface definition for fmtgen/type/string.c
 fmtgen/type/structure.c	 functions to manipluate structure types
@@ -349,6 +401,7 @@ lib/de.inews.sh	 command used to notify by usenet that a change is ready for rev
 lib/de.sh	 command used to notify by email that a change is ready for review
 lib/deu.inews.sh	 command used to notify by usenet that a change has been withdrawn from review
 lib/deu.sh	 command used to notify by email that a change has been withdrawn from review
+lib/en/LC_MESSAGES/aedist.po	 aedist.po
 lib/en/LC_MESSAGES/aefind.po	 aefind.po
 lib/en/LC_MESSAGES/aegis.po	 English localization
 lib/en/LC_MESSAGES/aerect.po	 error messges for the aerect command
@@ -445,6 +498,7 @@ lib/en/man1/aedb.1	 manual entry for 'aegis -Develop_Begin' command
 lib/en/man1/aedbu.1	 manual entry for 'aegis -Develop_Begin_Undo' command
 lib/en/man1/aede.1	 manual entry for 'aegis -Develop_End' command
 lib/en/man1/aedeu.1	 manual entry for 'aegis -Develop_End_Undo' command
+lib/en/man1/aedist.1	 manual page describing the aedist command.
 lib/en/man1/aedn.1	 manual page describing the aedn command.
 lib/en/man1/aefind.1	 manual page describing the aefind command.
 lib/en/man1/aefp.1	 manual entry for the aefp command
@@ -519,11 +573,14 @@ lib/en/man1/o_unforma.so	 document describing -UNFormatted option
 lib/en/man1/o_user.so	 document describing o_user.so
 lib/en/man1/o_verbose.so	 description of -Verbose command line option
 lib/en/man1/o_wait.so	 document describing the wait options
+lib/en/man1/tkaegis.1	 manual page describing the lib/en/man1/tkaegis command.
 lib/en/man1/z_bl_lock.so	 document describing z_bl_lock.so
 lib/en/man1/z_cr.so	 copyright and author parts of section 1 manual entries
 lib/en/man1/z_exit.so	 exit status part of section 1 manual entries
+lib/en/man1/z_filelocn.so	 document describing file location limitations
 lib/en/man1/z_filesize.so	 document describing z_filesize.so
 lib/en/man1/z_intuit.so	 description of how file names are interpreted on command line
+lib/en/man1/z_metrics.so	 document describing metrics
 lib/en/man1/z_name.so	 common setup for section 1 manual entries
 lib/en/man1/z_test_corr.so	 document describing z_test_corr.so
 lib/en/man1/z_test_rtnl.so	 document describing z_test_rtnl.so
@@ -534,6 +591,8 @@ lib/en/man5/aedir.5	 description of aegis project directory structure
 lib/en/man5/aefstate.5	 description of aegis change state file format
 lib/en/man5/aegis.5	 description of aegis file format general structure
 lib/en/man5/aegstate.5	 description of aegis global state file format
+lib/en/man5/aemetrics.5	 manual page describing the lib/en/man5/aemetrics command.
+lib/en/man5/aemetrics.so	 document describing lib/en/man5/aemetricss
 lib/en/man5/aepattr.5	 description of aegis project attribute file format
 lib/en/man5/aepconf.5	 description of aegis project config file format
 lib/en/man5/aepstate.5	 description of aegis project state file format
@@ -552,6 +611,10 @@ lib/en/readme/new.2.2.so	 document describing features new to version 2.2
 lib/en/readme/new.2.3.so	 document describing version 2.3 features
 lib/en/readme/new.3.0.so	 document describing new 3.0 features
 lib/en/readme/new.3.1.so	 document describing new.3.1.so
+lib/en/readme/new.3.10.so	 document describing new 3.10 features
+lib/en/readme/new.3.11.so	 document describing new 3.11 features
+lib/en/readme/new.3.12.so	 document describing new 3.12 features
+lib/en/readme/new.3.15.so	 document describing new 3.15 features
 lib/en/readme/new.3.2.so	 document describing new 3.2 features
 lib/en/readme/new.3.3.so	 document describing new.3.3.so
 lib/en/readme/new.3.4.so	 document describing new 3.4 features
@@ -559,7 +622,9 @@ lib/en/readme/new.3.5.so	 document describing new 3.5 features
 lib/en/readme/new.3.6.so	 document describing new 3.6 features
 lib/en/readme/new.3.7.so	 document describing new 3.7 features
 lib/en/readme/new.3.8.so	 document describing new 3.8 features
+lib/en/readme/new.3.9.so	 document describing new 3.9 features
 lib/en/readme/new.so	
+lib/en/readme/windows.so	 document describing lib/en/readme/windowss
 lib/en/refman/index.so	
 lib/en/refman/main.man	 Reference Manual
 lib/en/refman/parts.so	
@@ -570,12 +635,18 @@ lib/en/user-guide/c1.2.so	 User Guide, Introduction, Why use aegis?
 lib/en/user-guide/c1.3.so	 User Guide, How Aegis Works, When (not) to use Aegis
 lib/en/user-guide/c1.4.so	 User Guide, Introduction, How to use this manual
 lib/en/user-guide/c1.5.so	 document describing Y2K status
+lib/en/user-guide/c10.0.so	 User Guide, Geographically Distributed Development
+lib/en/user-guide/c10.1.so	 User Guide, Geographically Distributed Development, Manual Operation
+lib/en/user-guide/c10.2.so	 User Guide, Geographically Distributed Development, Automatic Operation
+lib/en/user-guide/c10.3.so	 User Guide, Geographically Distributed Development, World Wide Web
+lib/en/user-guide/c10.4.so	 User Guide, Geographically Distributed Development, Security
 lib/en/user-guide/c2.0.so	 User Guide, The Change Development Cycle
 lib/en/user-guide/c2.1.so	 User Guide, The Change Development Cycle, The Developer
 lib/en/user-guide/c2.2.so	 User Guide, The Change Development Cycle, The Reviewer
 lib/en/user-guide/c2.3.so	 User Guide, The Change Development Cycle, The Integrator
 lib/en/user-guide/c2.4.so	 User Guide, The Change Development Cycle, The Administrator
 lib/en/user-guide/c2.5.so	 User Guide, The Change Development Cycle, What to do Next
+lib/en/user-guide/c2.6.so	 User Guide, The Change Development Cycle, Common Questions
 lib/en/user-guide/c3.0.so	 User Guide, The History Tool
 lib/en/user-guide/c3.1.so	 User Guide, The History Tool, Using SCCS
 lib/en/user-guide/c3.2.so	 User Guide, The History Tool, Using RCS
@@ -600,6 +671,7 @@ lib/en/user-guide/c8.1.so	 User Guide, The Difference Tools, Interfacing
 lib/en/user-guide/c8.2.so	 User Guide, The Difference Tools, Using diff and merge
 lib/en/user-guide/c8.3.so	 User Guide, The Difference Tools, Using fhist
 lib/en/user-guide/c9.0.so	 User Guide, Branching
+lib/en/user-guide/c9.1.so	 document describing lib/en/user-guide/c9.1s
 lib/en/user-guide/cA.0.so	 User Guide, Appendix A: New Project Quick Reference
 lib/en/user-guide/cB.0.so	 User Guide, Appendix B: Glossary
 lib/en/user-guide/cD.0.so	 User Guide, Appendix D, Why is Aegis Set-Uid-Root?
@@ -640,6 +712,11 @@ lib/rp.inews.sh	 command used to notify by usenet that a change has passed revie
 lib/rp.sh	 command used to notify by email that a change has passed review
 lib/rpu.inews.sh	 command used to notify by usenet that a change review passed is rescinded
 lib/rpu.sh	 command used to notify by email that a change review passed is rescinded
+libaegis/ael/change/files.c	 functions to manipulate filess
+libaegis/ael/change/files.h	 interface definition for libaegis/ael/change/files.c
+libaegis/ael/column_width.h	 interface definition for libaegis/ael/column_width.c
+libaegis/ael/formeditnum.c	 functions to manipulate formeditnums
+libaegis/ael/formeditnum.h	 interface definition for libaegis/ael/formeditnum.c
 libaegis/aer/expr.c	 functions to manipulate expressions
 libaegis/aer/expr.h	 interface definition for aegis/aer/expr.c
 libaegis/aer/expr/assign.c	 functions to manipulate assign expressions
@@ -708,6 +785,8 @@ libaegis/aer/func/print.c	 functions to implement the builtin print function
 libaegis/aer/func/print.h	 interface definition for aegis/aer/func/print.c
 libaegis/aer/func/project.c	 functions to impliment the builtin project function
 libaegis/aer/func/project.h	 interface definition for aegis/aer/func/project.c
+libaegis/aer/func/quote.c	 functions to manipulate quotes
+libaegis/aer/func/quote.h	 interface definition for libaegis/aer/func/quote.c
 libaegis/aer/func/round.c	 functions to manipulate rounds
 libaegis/aer/func/round.h	 interface definition for aegis/aer/func/round.c
 libaegis/aer/func/sort.c	 functions to implement the builtin sort function
@@ -718,6 +797,8 @@ libaegis/aer/func/sprintf.c	 functions to implement the builtin sprintf function
 libaegis/aer/func/sprintf.h	 interface definition for aegis/aer/func/sprintf.c
 libaegis/aer/func/strftime.c	 functions to manipulate strftime
 libaegis/aer/func/strftime.h	 interface definition for aegis/aer/func/strftime.c
+libaegis/aer/func/substitute.c	 functions to implement the subst builtin function
+libaegis/aer/func/substitute.h	 interface definition for libaegis/aer/func/substitute.c
 libaegis/aer/func/substr.c	 functions to implement the substr builtin function
 libaegis/aer/func/substr.h	 interface definition for aegis/aer/func/substr.c
 libaegis/aer/func/terse.c	 functions to impliment the builtin terse function
@@ -780,8 +861,8 @@ libaegis/aer/value/integer.c	 functions to manipulate integer values
 libaegis/aer/value/integer.h	 interface definition for aegis/aer/value/integer.c
 libaegis/aer/value/list.c	 functions to manipulate list values
 libaegis/aer/value/list.h	 interface definition for aegis/aer/value/list.c
-libaegis/aer/value/nul.c	 functions to manipulate nul values
-libaegis/aer/value/nul.h	 interface definition for aegis/aer/value/nul.c
+libaegis/aer/value/null.c	 functions to manipulate nul values
+libaegis/aer/value/null.h	 interface definition for aegis/aer/value/null.c
 libaegis/aer/value/passwd.c	 functions to manipulate passwd values
 libaegis/aer/value/passwd.h	 interface definition for aegis/aer/value/passwd.c
 libaegis/aer/value/pstate.c	 functions to manipulate pstate values
@@ -801,8 +882,90 @@ libaegis/aer/value/void.h	 interface definition for aegis/aer/value/void.c
 libaegis/arglex2.c	 functions to manipulate command line arguments
 libaegis/arglex2.h	 definitions of command line tokens
 libaegis/cattr.def	 change state file contents definition
-libaegis/change.c	 functions to manipulate change state data
 libaegis/change.h	 interface definition for libaegis/change.c
+libaegis/change/alloc.c	 functions to manipulate allocs
+libaegis/change/architecture/add.c	 functions to manipulate adds
+libaegis/change/architecture/check.c	 functions to manipulate checks
+libaegis/change/architecture/clear.c	 functions to manipulate clears
+libaegis/change/architecture/find_variant.c	 functions to manipulate find_variants
+libaegis/change/architecture/find_variant.h	 interface definition for libaegis/change/architecture/find_variant.c
+libaegis/change/architecture/from_pconf.c	 functions to manipulate from_pconfs
+libaegis/change/architecture/name.c	 functions to manipulate names
+libaegis/change/architecture/times_find.c	 functions to manipulate times_finds
+libaegis/change/become.c	 functions to manipulate becomes
+libaegis/change/bind/existing.c	 functions to manipulate existings
+libaegis/change/bind/new.c	 functions to manipulate news
+libaegis/change/build/run_dev_com.c	 functions to manipulate run_dev_coms
+libaegis/change/build/run_int_com.c	 functions to manipulate run_int_coms
+libaegis/change/build/symlinks.c	 functions to manipulate symlinkss
+libaegis/change/build/time_set.c	 functions to manipulate time_sets
+libaegis/change/build/times_clear.c	 functions to manipulate times_clears
+libaegis/change/copy.c	 functions to manipulate copys
+libaegis/change/cstate/filename_get.c	 functions to manipulate filename_gets
+libaegis/change/cstate/get.c	 functions to manipulate gets
+libaegis/change/cstate/improve.c	 functions to manipulate improves
+libaegis/change/cstate/improve.h	 interface definition for libaegis/change/cstate/improve.c
+libaegis/change/cstate/lock_prepare.c	 functions to manipulate lock_prepares
+libaegis/change/cstate/write.c	 functions to manipulate writes
+libaegis/change/develop_direct/clear.c	 functions to manipulate clears
+libaegis/change/develop_direct/get.c	 functions to manipulate gets
+libaegis/change/develop_direct/set.c	 functions to manipulate sets
+libaegis/change/develop_direct/template.c	 functions to manipulate templates
+libaegis/change/develop_name.c	 functions to manipulate develop_names
+libaegis/change/diff/has_merge.c	 functions to manipulate has_merges
+libaegis/change/diff/run_diff.c	 functions to manipulate run_diffs
+libaegis/change/diff/run_diff3.c	 functions to manipulate run_diff3s
+libaegis/change/diff/run_merge.c	 functions to manipulate run_merges
+libaegis/change/env_set.c	 functions to manipulate env_sets
+libaegis/change/env_set.h	 interface definition for libaegis/change/env_set.c
+libaegis/change/error.c	 functions to manipulate errors
+libaegis/change/fatal.c	 functions to manipulate fatals
+libaegis/change/file/name_check.c	 functions to manipulate name_checks
+libaegis/change/file/template.c	 functions to manipulate templates
+libaegis/change/free.c	 functions to manipulate frees
+libaegis/change/fstate/filename_get.c	 functions to manipulate filename_gets
+libaegis/change/history/create_comma.c	 functions to manipulate create_commas
+libaegis/change/history/get_command.c	 functions to manipulate get_commands
+libaegis/change/history/new.c	 functions to manipulate news
+libaegis/change/history/put_command.c	 functions to manipulate put_commands
+libaegis/change/history/query_comman.c	 functions to manipulate query_commans
+libaegis/change/history/trash.c	 functions to manipulate trashs
+libaegis/change/integra_direct/clear.c	 functions to manipulate clears
+libaegis/change/integra_direct/get.c	 functions to manipulate gets
+libaegis/change/integra_direct/set.c	 functions to manipulate sets
+libaegis/change/integra_name.c	 functions to manipulate integra_names
+libaegis/change/lock_sync.c	 functions to manipulate lock_syncs
+libaegis/change/lock_sync.h	 interface definition for libaegis/change/lock_sync.c
+libaegis/change/logfile/basename.c	 functions to manipulate basenames
+libaegis/change/logfile/get.c	 functions to manipulate gets
+libaegis/change/metrics/file_pat_get.c	 functions to manipulate file_pat_gets
+libaegis/change/outstanding.c	 functions to manipulate outstandings
+libaegis/change/pathconf.c	 functions to manipulate pathconfs
+libaegis/change/pconf/get.c	 functions to manipulate gets
+libaegis/change/pconf/path_get.c	 functions to manipulate path_gets
+libaegis/change/reviewe_name.c	 functions to manipulate reviewe_names
+libaegis/change/run/change_file.c	 functions to manipulate change_files
+libaegis/change/run/develendundo.c	 functions to manipulate develendundos
+libaegis/change/run/develo_begin.c	 functions to manipulate develo_begins
+libaegis/change/run/develop_end.c	 functions to manipulate develop_ends
+libaegis/change/run/forcdevebegi.c	 functions to manipulate forcdevebegis
+libaegis/change/run/integr_begin.c	 functions to manipulate integr_begins
+libaegis/change/run/integra_fail.c	 functions to manipulate integra_fails
+libaegis/change/run/integra_pass.c	 functions to manipulate integra_passs
+libaegis/change/run/project_file.c	 functions to manipulate project_files
+libaegis/change/run/projfileneed.c	 functions to manipulate projfileneeds
+libaegis/change/run/review_fail.c	 functions to manipulate review_fails
+libaegis/change/run/review_pass.c	 functions to manipulate review_passs
+libaegis/change/run/revipassundo.c	 functions to manipulate revipassundos
+libaegis/change/test/bas_time_set.c	 functions to manipulate bas_time_sets
+libaegis/change/test/new_file_get.c	 functions to manipulate new_file_gets
+libaegis/change/test/reg_time_set.c	 functions to manipulate reg_time_sets
+libaegis/change/test/rescin_exemp.c	 functions to manipulate rescin_exemps
+libaegis/change/test/run_command.c	 functions to manipulate run_commands
+libaegis/change/test/time_set.c	 functions to manipulate time_sets
+libaegis/change/test/times_clear.c	 functions to manipulate times_clears
+libaegis/change/umask.c	 functions to manipulate umasks
+libaegis/change/verbose.c	 functions to manipulate verboses
 libaegis/change_bran.c	 functions to manipulate change_brans
 libaegis/change_bran.h	 interface definition for aegis/change_bran.c
 libaegis/change_file.c	 functions to manipulate change file state data
@@ -817,6 +980,8 @@ libaegis/dir.c	 functions to walk directory trees
 libaegis/dir.h	 interface definition for aegis/dir.c
 libaegis/file.c	 functions for pushing files around
 libaegis/file.h	 interface definition for aegis/file.c
+libaegis/file/cat_string.c	 functions to manipulate cat_strings
+libaegis/file/from_string.c	 functions to manipulate from_strings
 libaegis/fopen_nfs.c	 functions to insulate fopen from stale NFS file handles
 libaegis/fopen_nfs.h	 interface definition for libaegis/fopen_nfs.c
 libaegis/fstate.def	 file state file contents definition
@@ -834,7 +999,7 @@ libaegis/gif/private.c	 functions to manipulate the bowels of GIF files
 libaegis/gif/rect.c	 functions to draw GIF rects
 libaegis/gif/text.c	 functions to draw text in GIF files
 libaegis/glue.c	 functions to perform systems calls in subprocesses
-libaegis/glue.h	 interface definition for aegis/glue.c
+libaegis/glue.h	 interface definition for libaegis/glue.c
 libaegis/gonzo.c	 functions for manipulating global state data
 libaegis/gonzo.h	 interface definition for aegis/gonzo.c
 libaegis/gram.h	 interface definition for aegis/gram.y
@@ -842,27 +1007,62 @@ libaegis/gram.y	 grammar and functions to parse aegis' data files
 libaegis/gstate.def	 global state file contents definition
 libaegis/help.c	 functions to provide consistent treatment of -Help options
 libaegis/help.h	 interface definition for aegis/help.c
-libaegis/indent.c	 functions to automatically indent output
-libaegis/indent.h	 interface definition for aegis/indent.c
+libaegis/input.c	 functions for reading input
+libaegis/input.h	 interface definition for libaegis/input.c
+libaegis/input/base64.c	 functions to manipulate base64s
+libaegis/input/base64.h	 interface definition for libaegis/input/base64.c
+libaegis/input/crlf.c	 functions for reading input and filtering out CR LF sequences
+libaegis/input/crlf.h	 interface definition for libaegis/input/crlf.c
+libaegis/input/env.c	 functions for reading input from environment variables
+libaegis/input/env.h	 interface definition for libaegis/input/env.c
+libaegis/input/file.c	 functions for reading input from files
+libaegis/input/file.h	 interface definition for libaegis/input/file.c
+libaegis/input/file_text.c	 functions to read input from text files
+libaegis/input/file_text.h	 interface definition for libaegis/input/file_text.c
+libaegis/input/format_error.c	 functions to report input format errors
+libaegis/input/gunzip.c	 functions to manipulate gunzips
+libaegis/input/gunzip.h	 interface definition for libaegis/input/gunzip.c
+libaegis/input/one_line.c	 functions to manipulate one_lines
+libaegis/input/private.c	 functions for manipulating input streams
+libaegis/input/private.h	 class internal definitions for input streams
+libaegis/input/pushba_trans.c	 functions to manipulate pushba_transs
+libaegis/input/stdin.c	 functions to manipulate stdins
+libaegis/input/stdin.h	 interface definition for libaegis/input/stdin.c
+libaegis/input/to_output.c	 functions to copy inputs to outputs
 libaegis/interval.c	 functions to manipulate intervals
 libaegis/interval.h	 interface definition for aegis/interval.c
 libaegis/io.c	 functions to parse and write fundamental data types
 libaegis/io.h	 interface definition for aegis/io.c
 libaegis/lex.c	 functions to perform lexical analysis on aegis' data files
-libaegis/lex.h	 interface definition for aegis/lex.c
-libaegis/lex/env.c	 functions to get lex input from environment variable
-libaegis/lex/env.h	 interface definition for aegis/lex/env.c
-libaegis/lex/file.c	 functions to get lex input from files
-libaegis/lex/file.h	 interface definition for aegis/lex/file.c
+libaegis/lex.h	 interface definition for libaegis/lex.c
 libaegis/lock.c	 functions to lock aegis' data
 libaegis/lock.h	 interface definition for aegis/lock.c
 libaegis/log.c	 functions to open and close log files
 libaegis/log.h	 interface definition for aegis/log.c
+libaegis/metrics.def	 metrics.def
 libaegis/option.c	 functions to manipulate command line options
 libaegis/option.h	 interface definition for common/option.c
 libaegis/os.c	 wrappers around operating system functions
 libaegis/os.h	 interface definition for aegis/os.c
 libaegis/os/path_cat.c	 functions to join path elements
+libaegis/os/pathname.c	 wrappers around operating system functions
+libaegis/os/size.c	 functions to manipulate sizes
+libaegis/output.c	 functions to manipulate outputs through a common API
+libaegis/output.h	 interface definition for libaegis/output.c
+libaegis/output/base64.c	 functions to encode output as MIME base 64
+libaegis/output/base64.h	 interface definition for libaegis/output/base64.c
+libaegis/output/file.c	 functions to deliver output to files
+libaegis/output/file.h	 interface definition for libaegis/output/file.c
+libaegis/output/gzip.c	 functions to gzip output streams
+libaegis/output/gzip.h	 interface definition for libaegis/output/gzip.c
+libaegis/output/indent.c	 functions to filter output to be indented
+libaegis/output/indent.h	 interface definition for libaegis/output/indent.c
+libaegis/output/memory.c	 functions to manipulate memorys
+libaegis/output/memory.h	 interface definition for libaegis/output/memory.c
+libaegis/output/private.c	 functions to perform common output functions
+libaegis/output/private.h	 interface definition for libaegis/output/private.c
+libaegis/output/stdout.c	 functions to deliver output to stdout
+libaegis/output/stdout.h	 interface definition for libaegis/output/stdout.c
 libaegis/pager.c	 functions to pipe output through paginator
 libaegis/pager.h	 interface definition for aegis/pager.c
 libaegis/parse.c	 functions to parse aegis' data files
@@ -871,6 +1071,16 @@ libaegis/pattr.def	 project attributes file contents definition
 libaegis/pconf.def	 project config file contents definition
 libaegis/project.c	 functions to manipulate project state data
 libaegis/project.h	 interface definition for aegis/project.c
+libaegis/project/active.c	 functions to manipulate actives
+libaegis/project/active.h	 interface definition for libaegis/project/active.c
+libaegis/project/file/trojan.c	 functions to check filenames for trojan suspectedness
+libaegis/project/file/trojan.h	 interface definition for libaegis/project/file/trojan.c
+libaegis/project/pattr/edit.c	 functions to manipulate edits
+libaegis/project/pattr/edit.h	 interface definition for libaegis/project/pattr/edit.c
+libaegis/project/pattr/get.c	 functions to get a pattr from a project
+libaegis/project/pattr/get.h	 interface definition for libaegis/project/pattr/get.c
+libaegis/project/pattr/set.c	 functions to manipulate sets
+libaegis/project/pattr/set.h	 interface definition for libaegis/project/pattr/set.c
 libaegis/project_file.c	 functions to manipulate project_files
 libaegis/project_file.h	 interface definition for aegis/project_file.c
 libaegis/project_hist.c	 functions to manipulate project history
@@ -879,10 +1089,16 @@ libaegis/pstate.def	 project state file contents definition
 libaegis/rptidx.def	 report index file format definition
 libaegis/sub.c	 functions to perform command substitutions
 libaegis/sub.h	 interface definition for aegis/sub.c
+libaegis/sub/addpathsuffi.c	 functions to implement the add_path_suffix substitution
+libaegis/sub/addpathsuffi.h	 interface definition for libaegis/sub/addpathsuffi.c
 libaegis/sub/basename.c	 functions to impliment the basename substitution
 libaegis/sub/basename.h	 interface definition for aegis/sub/basename.c
+libaegis/sub/binary_direc.c	 functions to manipulate binary_direcs
+libaegis/sub/binary_direc.h	 interface definition for libaegis/sub/binary_direc.c
 libaegis/sub/comment.c	 functions to impliment comment substitutions
 libaegis/sub/comment.h	 interface definition for aegis/sub/comment.c
+libaegis/sub/data_directo.c	 functions to manipulate data_directos
+libaegis/sub/data_directo.h	 interface definition for libaegis/sub/data_directo.c
 libaegis/sub/dollar.c	 functions to manipulate dollars
 libaegis/sub/dollar.h	 interface definition for aegis/sub/dollar.c
 libaegis/sub/expr.c	 functions to manipulate exprs
@@ -895,8 +1111,12 @@ libaegis/sub/left.c	 functions to manipulate lefts
 libaegis/sub/left.h	 interface definition for aegis/sub/left.c
 libaegis/sub/length.c	 functions to manipulate lengths
 libaegis/sub/length.h	 interface definition for aegis/sub/length.c
+libaegis/sub/librar_direc.c	 functions to manipulate librar_direcs
+libaegis/sub/librar_direc.h	 interface definition for libaegis/sub/librar_direc.c
 libaegis/sub/namemax.c	 functions to manipulate namemaxs
 libaegis/sub/namemax.h	 interface definition for aegis/sub/namemax.c
+libaegis/sub/project.c	 functions to manipulate projects
+libaegis/sub/project.h	 interface definition for libaegis/sub/project.c
 libaegis/sub/quote.c	 functions to implement the quote substitution
 libaegis/sub/quote.h	 interface definition for libaegis/sub/quote.c
 libaegis/sub/right.c	 functions to manipulate rights
@@ -905,6 +1125,8 @@ libaegis/sub/trim_directo.c	 functions to manipulate trim_directos
 libaegis/sub/trim_directo.h	 interface definition for libaegis/sub/trim_directo.c
 libaegis/sub/trim_extensi.c	 functions to manipulate trim_extensis
 libaegis/sub/trim_extensi.h	 interface definition for libaegis/sub/trim_extensi.c
+libaegis/sub/user.c	 functions to manipulate users
+libaegis/sub/user.h	 interface definition for libaegis/sub/user.c
 libaegis/sub/zero_pad.c	 functions to manipulate zero_pads
 libaegis/sub/zero_pad.h	 interface definition for aegis/sub/zero_pad.c
 libaegis/type.c	 functions to manipulate types in aegis' data files
@@ -920,6 +1142,7 @@ libaegis/ustate.def	 user state file contents definition
 libaegis/zero.c	 functions to manipulate zeros
 libaegis/zero.h	 interface definition for aegis/zero.c
 script/aegis.synpic	 synpic program to generate aegis icon
+script/tkaegis.in	 tkaegis.wish
 script/xaegis.tcl	 wish script to give aegis a GUI interface
 test/00/t0001a.sh	 test -Help for each function
 test/00/t0002a.sh	 Test core functionality.
@@ -996,5 +1219,32 @@ test/00/t0073a.sh	 Test the quote subst functionality
 test/00/t0074a.sh	 Test aeclean example.
 test/00/t0075a.sh	 Test the report wrap_html() functionality
 test/00/t0076a.sh	 Test the trim_directory subst functionality
+test/00/t0077a.sh	 Test the report quote_html() functionality
+test/00/t0078a.sh	 Test the report quote_url() functionality
+test/00/t0079a.sh	 Test the report unquote_url() functionality
+test/00/t0080a.sh	 Test metrics functionality
+test/00/t0081a.sh	 Test the subst functionality
+test/00/t0082a.sh	 Test the aenc functionality
+test/00/t0083a.sh	 Test integrate pass functionality
+test/00/t0084a.sh	 Test integrate pass functionality
+test/00/t0085a.sh	 Test new change -o functionality
+test/00/t0086a.sh	 Test the skip_unlucky functionality
+test/00/t0087a.sh	 Test the base64 ofilter functionality
+test/00/t0088a.sh	 Test the o-zlib functionality
+test/00/t0089a.sh	 Test aedist functionality
+test/00/t0090a.sh	 Test the zlib decode functionality
+test/00/t0091a.sh	 Test the zlib decode functionality
+test/00/t0092a.sh	 Test the base64 input functionality
+test/00/t0093a.sh	 Test aedist functionality
+test/00/t0095a.sh	 Test aedist -send -entire-source functionality
+test/00/t0096a.sh	 Test the aermpr functionality
+test/00/t0097a.sh	 Test the aenbru functionality
+test/00/t0098a.sh	 Test aedist -send -baseline functionality
+test/00/t0099a.sh	 Test aedist -send -baseline functionality
+test/01/t0100a.sh	 Test the add_path_suffix subst functionality
+test/01/t0101a.sh	 Test the aenpr -keep functionality
+test/01/t0102a.sh	 Test the aenpr -file functionality
 test/activity.awk	 Renumber activity lines in tests
 test/activity.sh	 shell script to manipulate activitys
+test_base64/main.c	 functions to manipulate mains
+test_zlib/main.c	 functions to manipulate mains

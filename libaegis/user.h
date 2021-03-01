@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,7 @@ void user_free _((user_ty *));
 user_ty *user_copy _((user_ty *));
 
 string_ty *user_name _((user_ty *));
+string_ty *user_name2 _((user_ty *));
 int user_id _((user_ty *));
 int user_gid _((user_ty *));
 int user_umask _((user_ty *));
@@ -69,6 +70,7 @@ void user_ustate_lock_prepare _((user_ty *));
 string_ty *user_group _((user_ty *));
 
 string_ty *user_home _((user_ty *));
+string_ty *user_email_address _((user_ty *));
 
 char *user_full_name _((string_ty *));
 

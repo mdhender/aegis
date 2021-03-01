@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 .\" MANIFEST: User Guide, The Change Development Cycle
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "The Change Development Cycle"
 .LP
-As a change to a project is developed using aegis,
+As a change to a project is developed using Aegis,
 it passes through several states.
-Each state is characterised by different quality requirements,
-different sets of applicable aegis commands, and
+Each state is characterized by different quality requirements,
+different sets of applicable Aegis commands, and
 different responsibilities for the people involved.
 .LP
 These people may be divided into four categories:
@@ -59,11 +59,12 @@ Many features important to a quality product are missing,
 checking for divide-by-zero for example.
 These have been omitted for brevity.
 .bp
-.1C
+.if t .1C
 .so c2.1.so
 .so c2.2.so
 .so c2.3.so
 .so c2.4.so
 .bp
-.2C
+.if t .2C
 .so c2.5.so
+.so c2.6.so

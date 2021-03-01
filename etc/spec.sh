@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997 Peter Miller;
+#	Copyright (C) 1997, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ echo 'Group: Development/Version Control'
 echo "Source: http://www.canb.auug.org.au/~millerp/aegis-${version}.tar.gz"
 echo 'URL: http://www.canb.auug.org.au/~millerp/aegis.html'
 echo 'BuildRoot: /tmp/aegis-build-root'
+echo 'Icon: aegis.gif'
 
 prefix=/usr
 #
@@ -111,7 +112,7 @@ do
 	case $file in
 
 	aefp/* | etc/* | common/* | find_sizes/* | fmtgen/* | \
-	fstrcmp/* | libaegis/* | test/*)
+	fstrcmp/* | libaegis/* | test/* | test_*)
 		;;
 
 	*/main.c)
@@ -178,48 +179,53 @@ done
 
 echo ''
 echo '%files'
-echo "%attr(0755,3,3) %dir $prefix/com/aegis"
-echo "%attr(0755,3,3) %dir $prefix/lib/aegis"
-echo "%attr(0755,3,3) %dir $prefix/share/aegis"
+echo "%attr(0755,root,bin) %dir $prefix/com/aegis"
+echo "%attr(0755,root,bin) %dir $prefix/lib/aegis"
+echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
 for file in $files_rx
 do
 	case $file in
 	*/bin/aegis)
-		echo "%attr(4755,0,0) $file"
+		echo "%attr(4755,root,bin) $file"
 		;;
 	*/bin/*)
-		echo "%attr(0755,0,0) $file"
+		echo "%attr(0755,root,bin) $file"
 		;;
 	*)
-		echo "%attr(0755,3,3) $file"
+		echo "%attr(0755,root,bin) $file"
 		;;
 	esac
 done
 for file in $files_ro
 do
-	echo "%attr(0644,3,3) $file"
+	echo "%attr(0644,root,bin) $file"
 done
 
 echo ''
 echo '%files txtdocs'
 for file in $txtdocs
 do
-	echo "%attr(0644,0,0) $file"
+	echo "%attr(0644,root,bin) $file"
 done
 
 echo ''
 echo '%files psdocs'
 for file in $psdocs
 do
-	echo "%attr(0644,0,0) $file"
+	echo "%attr(0644,root,bin) $file"
 done
 
 echo ''
 echo '%files dvidocs'
 for file in $dvidocs
 do
-	echo "%attr(0644,0,0) $file"
+	echo "%attr(0644,root,bin) $file"
 done
+
+echo ''
+echo '%post'
+echo "chown -R 3 $prefix/com/aegis $prefix/lib/aegis $prefix/share/aegis"
+echo "chgrp -R 3 $prefix/com/aegis $prefix/lib/aegis $prefix/share/aegis"
 
 echo ''
 echo '%clean'

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1995, 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -189,6 +189,36 @@ The minimum change number for
 if no change number is specified.
 This allows the low-numbered change numbers to be
 used for branches later in the project.
+.TP 8n
+reuse_change_numbers = boolean; 
+This controls whether the automatically selected
+.IR aenc (1)
+change numbers ``fill in'' any gaps.
+Defaults to true if not set.
+.TP 8n
+minimum_branch_number = integer;
+The minimum branch number for
+.IR aenbr(1),
+if no branch number is specified.
+Defaults to 1 if not set.
+.TP 8n
+skip_unlucky = boolean;
+This field may be set to true if you want to skip various unlucky
+numbers for changes, branches and tests.  Various traditions are
+avoided, both Eastern and Western.  Defaults to false if not set.
+.TP 8n
+compress_database = boolean;
+.RS
+This field may be set to true if you want to compress the database on
+writing.  (It is always uncompressed on reading if necessary.)  Defaults to
+false if not set.
+.PP
+Unless you have an exceptionally large project, coupled with fast CPUs
+and high network latency, there is probably very little benefit in
+using this feature.  (The database is usually less than 5% of the size
+of the repository.)  On slow networks, however, this can improve the
+preformance of file-related commands.
+.RE
 .SH SEE ALSO
 .TP 8n
 .IR aepa (1)

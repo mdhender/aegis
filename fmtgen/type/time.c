@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994 Peter Miller.
+ *	Copyright (C) 1993, 1994, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ gen_code_declarator(type, name, is_a_list)
 	string_ty	*name;
 	int		is_a_list;
 {
-	indent_printf("time_write("/*)*/);
+	indent_printf("time_write(fp, "/*)*/);
 	if (is_a_list)
 		indent_printf("(char *)0");
 	else
@@ -83,4 +83,5 @@ type_method_ty type_time =
 	gen_code_declarator,
 	gen_free_declarator,
 	0, /* member_add */
+	0, /* in_include_file */
 };

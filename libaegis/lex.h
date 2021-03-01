@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: interface definition for aegis/lex.c
+ * MANIFEST: interface definition for libaegis/lex.c
  */
 
 #ifndef LEX_H
@@ -26,29 +26,14 @@
 #include <main.h>
 
 struct sub_context_ty; /* existence */
+struct input_ty; /* existence */
 
-typedef struct lex_input_ty lex_input_ty;
-
-typedef struct lex_input_method_ty lex_input_method_ty;
-struct lex_input_method_ty
-{
-	void (*destruct)_((lex_input_ty *));
-	int (*get)_((lex_input_ty *));
-	void (*unget)_((lex_input_ty *, int));
-	char *(*name)_((lex_input_ty *));
-};
-
-struct lex_input_ty
-{
-	lex_input_method_ty method;
-	/* ...instance variables here... */
-};
-
-void lex_open _((char *));
-void lex_open_env _((char *name));
+void lex_open _((const char *));
+void lex_open_env _((const char *name));
+void lex_open_input _((struct input_ty *));
 void lex_close _((void));
-void lex_error _((struct sub_context_ty *, char *));
-void gram_error _((char *));
+void lex_error _((struct sub_context_ty *, const char *));
+void gram_error _((const char *));
 int gram_lex _((void));
 
 #endif /* LEX_H */

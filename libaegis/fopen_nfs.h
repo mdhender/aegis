@@ -27,6 +27,6 @@
 
 #include <main.h>
 
-FILE *fopen_with_stale_nfs_retry _((char *, char *));
+FILE *fopen_with_stale_nfs_retry _((const char *, const char *));
 
 #endif /* LIBAEGIS_FOPEN_NFS_H */

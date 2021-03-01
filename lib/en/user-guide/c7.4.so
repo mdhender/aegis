@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992, 1993, 1994, 1998 Peter Miller;
+.\"	Copyright (C) 1992, 1993, 1994, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,34 +22,11 @@
 .bp
 .nh 2 "Further Work"
 .LP
-The aegis program is far from finished.
+The Aegis program is far from finished.
 A number of features are known to be lacking.
 .PP
 At the date of this writing,
-aegis is being actively supported and improved.
-.nh 3 "Hierarchy of Projects"
-.LP
-It would be nice if there was some way to use 
-one projects as a sort of "super change" to a "super project",
-so that large teams (say 1000 people)
-could work as lots of small teams (say 100 people).
-As a small team gets their chunk ready,
-using the facilities provided to-date by aegis,
-the small team's baseline is treated as a change to be made to the
-large team baseline.
-.LP
-This idea can be extended quite naturally to any depth of layering.
-.LP
-The desired semantics,
-let alone the implementation details,
-can not begin without  more experience to show (and fix) the warts
-on the existing functionality.
-.LP
-After reading
-.I "Transaction Oriented Configuration Management: A Case Study"
-Peter Fieler, Grace Downey, CMU/SEI-90-TR-23,
-this is not a new idea.
-It also provides some ideas for how to do branching sensably.
+Aegis is being actively supported and improved.
 .nh 3 "Code Coverage Tool"
 .LP
 It would be very helpful if a code coverage tool could be used
@@ -63,37 +40,23 @@ and those regression tests which exercise those files.
 While there is freeware C code coverage tool available,
 based on GNU C,
 the interfacing and semantics still need more thought.
-.nh 3 "Branching"
 .LP
-The aegis program does not provide support for branching
-in the history files.
-The semantics of the baseline,
-the source files and their closure,
-would appear to imply that a baseline is required for every leaf
-in the history tree.
-.LP
-Branching is provided in this way with the
-.I "new release"
-functionality.
-An entire new project is derived from an existing project,
-including another baseline.
-The history,
-however,
-is severed from the original project,
-precluding automatic merging by aegis at a later date.
-It also precludes having a single change to be applied
-to more than one branch.
-.LP
-Should better semantics become available,
-or a better algorithmic approach,
-this is certainly one area of aegis which could be improved.
+\fBNote:\fP A fairly good approximation is already available using the
+\fI--suggest\fP option of the \fIaet\fP(1) command.  It works on the
+correlation of sources file versus tests in the various change sets.
+See \fIaet\fP(1) for more information.
 .nh 3 "Virtual File System"
 .LP
-There is almost sufficient information in the aegis data base to create a virtual file system,
-overlaying the development directory atop the baseline\**.
+There is almost sufficient information in the Aegis data base to create
+a virtual file system, overlaying the development directory atop the
+baseline\**.
 .FS
 Reminiscent of Sun's TFS,
 but not the same.
+Similar to AT&T's 3D-FS.
+Similar to TeamNet.
+Similar to ClearCase, but I wasn't thinking of the time-travel
+aspects which they implement.
 .FE
 This could be implemented similarly to automounters,
 intercepting file system operations by pretending to be an NFS server.
@@ -129,7 +92,7 @@ to an already large program.
 Also,
 implementation is limited to NFS capable systems,
 or would have to be rewritten for a variety of other systems.
-The semantics of interactions between the daemon and other aegis
+The semantics of interactions between the daemon and other Aegis
 commands, while clearly specifiable, are challenging to implement.
 Performance could also be a significant factor.
 .LP

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions for implementing integrate pass
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
@@ -39,12 +39,14 @@
 #include <help.h>
 #include <lock.h>
 #include <log.h>
+#include <metrics.h>
 #include <mem.h>
 #include <progname.h>
 #include <os.h>
 #include <project.h>
 #include <project_file.h>
 #include <project_hist.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -280,11 +282,58 @@ time_map_set(p, message, path, st)
 }
 
 
+static metric metric_copy _((metric));
+
+static metric
+metric_copy(mp)
+	metric		mp;
+{
+	metric		result;
+
+	result = metric_type.alloc();
+	if (mp->name)
+		result->name = str_copy(mp->name);
+	if (mp->mask & metric_value_mask)
+	{
+		result->value = mp->value;
+		result->mask = metric_value_mask;
+	}
+	return result;
+}
+
+
+static metric_list metric_list_copy _((metric_list));
+
+static metric_list
+metric_list_copy(mlp)
+	metric_list	mlp;
+{
+	metric_list	result;
+	size_t		j;
+
+	if (!mlp)
+		return 0;
+	result = metric_list_type.alloc();
+	for (j = 0; j < mlp->length; ++j)
+	{
+		metric		mp;
+		metric		*mpp;
+		type_ty		*bogus;
+
+		mp = mlp->list[j];
+		mpp = metric_list_type.list_parse(result, &bogus);
+		*mpp = metric_copy(mp);
+	}
+	return result;
+}
+
+
 static void integrate_pass_main _((void));
 
 static void
 integrate_pass_main()
 {
+	time_t		mtime;
 	time_t		youngest;
 	string_ty	*hp;
 	string_ty	*id;
@@ -313,6 +362,7 @@ integrate_pass_main()
 	cstate		p_cstate_data;
 	time_map_list_ty tml;
 	time_t		time_final;
+	string_list_ty	trashed;
 
 	trace(("integrate_pass_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -461,6 +511,8 @@ integrate_pass_main()
 	}
 	assert(tml.time_aeib);
 
+	id = change_integration_directory_get(cp, 1);
+
 	/*
 	 * Walk the change files, making sure
 	 *	1. the change has been diffed (except for the lowest b.l.)
@@ -527,6 +579,48 @@ integrate_pass_main()
 		p_src_data = project_file_find(pp, c_src_data->file_name);
 		if (!p_src_data)
 			this_is_a_bug();
+
+		/*
+		 * remove the file metrics, if any
+		 */
+		if (c_src_data->metrics)
+		{
+			metric_list_type.free(c_src_data->metrics);
+			c_src_data->metrics = 0;
+		}
+		if (p_src_data->metrics)
+		{
+			metric_list_type.free(p_src_data->metrics);
+			p_src_data->metrics = 0;
+		}
+
+		/*
+		 * Grab the file metrics,
+		 * if they were produced by the build.
+		 *
+		 * Only do this for primary source files, and only for
+		 * creates and modifies.
+		 */
+		if
+		(
+			c_src_data->usage != file_usage_build
+		&&
+			(
+				c_src_data->action == file_action_create
+			||
+				c_src_data->action == file_action_modify
+			)
+		)
+		{
+			metric_list	mlp;
+
+			mlp = change_file_metrics_get(cp, c_src_data->file_name);
+			if (mlp)
+			{
+				c_src_data->metrics = mlp;
+				p_src_data->metrics = metric_list_copy(mlp);
+			}
+		}
 
 		/*
 		 * don't do any of the transfers
@@ -629,10 +723,11 @@ integrate_pass_main()
 			/*
 			 * Transfer the file fingerprint.
 			 *
-			 * Note: the fp->youngest will be wrong, because the
-			 * file was copied into the integration directory.  This
-			 * will be fixed next time some operation is done on this
-			 * file, because the crypto will be correct.
+			 * Note: the fp->youngest will be wrong, because
+			 * the file was copied into the integration
+			 * directory.  This will be fixed next time some
+			 * operation is done on this file, because the
+			 * crypto will be correct.
 			 */
 			assert(c_src_data->file_fp);
 			if (!p_src_data->file_fp)
@@ -945,7 +1040,6 @@ integrate_pass_main()
 	os_become_undo();
 	if (os_below_dir(change_development_directory_get(cp, 1), cwd))
 		change_fatal(cp, 0, i18n("leave dev dir"));
-	id = change_integration_directory_get(cp, 1);
 	if (os_below_dir(id, cwd))
 		change_fatal(cp, 0, i18n("leave int dir"));
 	if (os_below_dir(project_baseline_path_get(pp, 1), cwd))
@@ -1006,10 +1100,12 @@ integrate_pass_main()
 	log_open(change_logfile_get(cp), pup, log_style);
 	ncmds = 0;
 	hp = project_history_path_get(pp);
+	string_list_constructor(&trashed);
 	for (j = 0; ; ++j)
 	{
 		fstate_src	c_src_data;
 		fstate_src	p_src_data;
+		string_ty	*absfn;
 
 		c_src_data = change_file_nth(cp, j);
 		if (!c_src_data)
@@ -1080,6 +1176,17 @@ integrate_pass_main()
 			p_src_data->about_to_be_created_by = 0;
 
 			/*
+			 * Remember the last-modified-time, so we can
+			 * restore it if the history tool messes with it.
+			 */
+			absfn = change_file_path(cp, c_src_data->file_name);
+			if (!absfn)
+				absfn = str_format("%S/%S", id, c_src_data->file_name);
+			project_become(pp);
+			mtime = os_mtime_actual(absfn);
+			project_become_undo();
+
+			/*
 			 * create the history
 			 */
 			change_run_history_create_command
@@ -1104,6 +1211,53 @@ integrate_pass_main()
 			if (!p_src_data->edit_number_origin)
 				p_src_data->edit_number_origin =
 					str_copy(p_src_data->edit_number);
+			
+			/*
+			 * Set the last-modified-time, just in case the
+			 * history tool changed it, even if it didn't
+			 * change the file content.  This reduces the
+			 * build burden imposed by an integration.
+			 *
+			 * We do this before we check the fingerprint.
+			 * This has the side-effect of forcing the
+			 * fingerprint, but it also gets the fingerprint
+			 * right in the project file's attributes.
+			 */
+			project_become(pp);
+			os_mtime_set_errok(absfn, mtime);
+
+			/*
+			 * Many history tools (e.g. RCS) can modify the
+			 * contents of the file when it is committed.
+			 * While there are usually options to turn this
+			 * off, they are seldom used.  The problem is:
+			 * if the commit changes the file, the source
+			 * in the repository now no longer matches the
+			 * object file in the repository - i.e. the
+			 * history tool has compromised the referential
+			 * integrity of the repository.
+			 *
+			 * Keep track of them, we will generate an
+			 * error message after all of the commands have
+			 * been run.
+			 */
+			if (p_src_data->file_fp)
+			{
+				assert(p_src_data->file_fp->youngest >= 0);
+				assert(p_src_data->file_fp->oldest >= 0);
+				if (!change_fingerprint_same(p_src_data->file_fp, absfn, 1))
+				{
+					string_list_append
+					(
+						&trashed,
+						c_src_data->file_name
+					);
+				}
+				assert(p_src_data->file_fp->youngest > 0);
+				assert(p_src_data->file_fp->oldest > 0);
+			}
+			str_free(absfn);
+			project_become_undo();
 
 			/*
 			 * In the completed state, edit_number
@@ -1138,6 +1292,17 @@ integrate_pass_main()
 			}
 
 			/*
+			 * Remember the last-modified-time, so we can
+			 * restore it if the history tool messes with it.
+			 */
+			absfn = change_file_path(cp, c_src_data->file_name);
+			if (!absfn)
+				absfn = str_format("%S/%S", id, c_src_data->file_name);
+			project_become(pp);
+			mtime = os_mtime_actual(absfn);
+			project_become_undo();
+
+			/*
 			 * update the history
 			 */
 			change_run_history_put_command
@@ -1156,6 +1321,51 @@ integrate_pass_main()
 					cp,
 					c_src_data->file_name
 				);
+
+			/*
+			 * Set the last-modified-time, just in case the
+			 * history tool changed it, even if it didn't
+			 * change the file content.  This reduces the
+			 * build burden imposed by an integration.
+			 *
+			 * We do this before we check the fingerprint.
+			 * This has the side-effect of forcing the
+			 * fingerprint, but it also gets the fingerprint
+			 * right in the project file's attributes.
+			 */
+			project_become(pp);
+			os_mtime_set_errok(absfn, mtime);
+
+			/*
+			 * Many history tools (e.g. RCS) can modify the
+			 * contents of the file when it is committed.
+			 * While there are usually options to turn this
+			 * off, they are seldom used.  The problem is:
+			 * if the commit changes the file, the source
+			 * in the repository now no longer matches the
+			 * object file in the repository - i.e. the
+			 * history tool has compromised the referential
+			 * integrity of the repository.
+			 *
+			 * Keep track of them, we will generate an
+			 * error message after all of the commands have
+			 * been run.
+			 */
+			if (p_src_data->file_fp)
+			{
+				if (!change_fingerprint_same(p_src_data->file_fp, absfn, 1))
+				{
+					string_list_append
+					(
+						&trashed,
+						c_src_data->file_name
+					);
+				}
+				assert(p_src_data->file_fp->youngest > 0);
+				assert(p_src_data->file_fp->oldest > 0);
+			}
+			str_free(absfn);
+			project_become_undo();
 
 			/*
 			 * In the completed state, edit_number
@@ -1246,6 +1456,23 @@ integrate_pass_main()
 			}
 		}
 	}
+
+	/*
+	 * Many history tools (e.g. RCS) can modify the contents of the
+	 * file when it is committed.  While there are usually options to
+	 * turn this off, they are seldom used.  The problem is: if the
+	 * commit changes the file, the source in the repository now no
+	 * longer matches the object file in the repository - i.e. the
+	 * history tool has compromised the referential integrity of
+	 * the repository.
+	 *
+	 * Check here if this is the case, and emit an error message if
+	 * so.	(It could be a fatal error, just a warning, or completely
+	 * ignored, depending on the history_put_trashes_file field of
+	 * the project config file.
+	 */
+	change_history_trashed_fingerprints(cp, &trashed);
+	string_list_destructor(&trashed);
 
 	/*
 	 * Advance the change to the 'completed' state.

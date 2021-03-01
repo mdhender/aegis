@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -336,6 +336,15 @@ msgstr	"adjusting file modification times"
 msgid	"aedbu, has files"
 msgstr	"this change has files associated with it, you may only use this "
 	"command on changes with no associated files"
+
+#
+# This error message is issued when the aegis -new-project command is
+# given the -keep option without the -directory option.  It doesn't know
+# what to keep.
+#
+msgid	"aenpr -keep needs -dir"
+msgstr	"the aegis -New-PRoject `-Keep' option requires the `-DIRectory' "
+	"option as well"
 
 #
 # This error messages is issued when a user attempts to create a new
@@ -765,14 +774,6 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 msgid	"bad ntu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to undo new tests"
-
-#
-# This error message is issued when aepa is given a default development
-# directory which is not an absolute path.
-#
-msgid	"bad pa, rel def dev dir"
-msgstr	"default development directory must be specified as an absolute "
-	"path"
 
 #
 # This error message is issued when a project name is given to aenpr
@@ -1430,6 +1431,12 @@ msgid	"new branch complete"
 msgstr	"created"
 
 #
+# This progress message is issued when aenbru completes successfully.
+#
+msgid	"new branch undo complete"
+msgstr	"removed"
+
+#
 # This progress message is issued when aenbr completes successfully.
 #
 msgid	"new change complete"
@@ -1832,26 +1839,6 @@ msgstr	"user \"$user\" is not the integrator, only user \"$integrator\" "
 	"may work on this change"
 
 #
-# This error message is issued by aede when attempting to end the
-# development of a branch and there is still an outstanding change on
-# the branch.  This message will be issued for each outstanding change.
-#
-msgid	"outstanding change"
-msgstr	"this change is in the '$state' state"
-
-#
-# This error message is issued by aede when attempting to end the
-# development of a branch and there is one or more outstanding changes
-# on the branch.
-#
-#	$Number		Number of changes outstanding.  (Optional)
-#
-msgid	"outstanding changes"
-msgstr	"there ${plural $number are is} $number outstanding ${plural "
-	"$number changes change}; development of a branch may not end if "
-	"there are any outstanding changes"
-
-#
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
@@ -2065,13 +2052,6 @@ msgstr	"exactly one source file may be specified when the -Output option "
 	"is used (you gave $number)"
 
 #
-# This error message is issued when a request is issued to remove a
-# project, and there are still active changes.
-#
-msgid	"still active"
-msgstr	"this change is still active"
-
-#
 # This error message is issued when something checked before a lock was
 # obtained, has changed by the time the lock was obtained.  This is only
 # seen rarely.
@@ -2192,6 +2172,20 @@ msgstr	"too many project names specified"
 #
 msgid	"too many user $name"
 msgstr	"user \"$name\" named more than once"
+
+#
+# This fatal error message is issued when aedbu command is applied to
+# a simple change.
+#
+msgid	"use aedbu instead"
+msgstr	"use the `aegis -dbu' command instead"
+
+#
+# This fatal error message is issued when the aedbu or aermpr commands
+# are applied to a branch.
+#
+msgid	"use aenbru instead"
+msgstr	"use the `aegis -nbru' command instead"
 
 #
 # This error message is issued when a request is made to remove a

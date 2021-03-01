@@ -19,7 +19,7 @@
 .\"
 .\" MANIFEST: AUUGN Feb'98 Article
 .\"
-.1C
+.if t .1C
 .hy 0
 .if o \{
 \&.

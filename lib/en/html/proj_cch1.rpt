@@ -47,7 +47,7 @@ print("");
 print("<html><head><title>");
 print("Project Change Cause Histogram");
 print("</title><head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',<br>");
+print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 print("Change Cause Histogram");
 print("</center></h1>");
 
@@ -90,7 +90,7 @@ for (year = earliest_year; year <= latest_year; ++year)
 	if (n > 0)
 	{
 		href = script_name ## "?file@proj_cch2";
-		href ##= "+project@" ## project_name();
+		href ##= "+project@" ## quote_url(project_name());
 		href ##=  "+" ## year;
 		print("<a href=\"" ## href ## "\">");
 	}

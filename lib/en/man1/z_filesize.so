@@ -48,6 +48,11 @@ Defaults to
 .I false
 if not set.
 .TP 8n
+windows_filename_required = boolean;
+This field may be used to limit filenames so that they conform to the
+Windows98 and WindowsNT filename limits and character set.  Defaults to
+\fIfalse\fP if not set.
+.TP 8n
 shell_safe_filenames = boolean;
 This field may be used to limit filenames so that they do not contain
 shell special characters.  Defaults to
@@ -67,3 +72,5 @@ Defaults to "*" if not set.
 filename_pattern_reject = [ string ];
 .br
 This field is used to specify a list of patterns of unacceptable filenames.
+.PP
+.so z_filelocn.so

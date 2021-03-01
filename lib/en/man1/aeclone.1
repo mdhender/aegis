@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,8 @@ those changes
 .I "will not"
 automagicly be tracked.  It is best if changes are cloned at a stable
 time, such as one of the states after develop end, or even after integrate pass.
+.SS Development Directory Location
+.so z_filelocn.so
 .SH OPTIONS
 The following options are understood:
 .so o_branch.so
@@ -75,6 +77,10 @@ The following options are understood:
 .so o_dir.so
 .so o_help.so
 .so o_list.so
+.TP 8n
+\fB\-Output\fP \fIfilename\fP
+This option may be used to specify a filename which is to be written with
+the automatically determined change number.  Useful for writing scripts.
 .so o_project.so
 .so o_trunk.so
 .so o_wait.so

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1995, 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -104,6 +104,31 @@ There is no Aegis port to NT, OS/2, MS-DOS or VMS.
 The author has no expertise is these operating systems.
 If you do have such expertise, you are welcome to donate a port of Aegis,
 and I will try to include your work in the next release.
+.H 3 "Cygwin"
+There is a very capable UNIX emulation layer known as Cygwin available
+from Cygnus.  Please see http://sourceware.cygnus.com/cygwin/ for more
+information.  But before you get too excited, see the next item.
+.H 3 "Windows NT"
+Aegis depends on the underlying security provided by the operating
+system (rather than re-invent yet another security mechanism).
+However, in order to do this, Aegis uses the POSIX \fIseteuid\fP system
+call, which has no direct equivalent on Windows NT.  This makes porting
+difficult.  Single-user ports are possible (\fIe.g.\fP using Cygwin),
+but are not usually what folks want.
+.sp
+Compounding this is the fact that many sites want to develop their
+software for both Unix and Windows NT simultaneously.  This means that
+the security of the repository needs to be guaranteed to be handled
+in the same way by both operating systems, otherwise one can act as a
+\&``back door'' into the repository.  Many sites do not have the same
+users and permissions (sourced from the same network register of users)
+on both Unix and Windows NT, making the mapping almost impossible even
+if the security models did actually correspond.
+.sp
+Most sites using Aegis and Windows NT together do so by running 
+Aegis on the Unix systems, but building and testing on the NT
+systems.  The work areas and repository are accessed via Samba or
+NFS.
 .H 2 "Where can I get Aegis?"
 Aegis is available by WWW from
 .in +4m
@@ -131,7 +156,7 @@ l l s
 l l s
 l l l.
 Host:;sunsite.unc.edu
-Dir:;/pub/Linux/devel/ver_cont
+Dir:;/pub/Linux/devel/vc
 File:;aegis.\*(v).README;# the README file from the tar set
 File:;aegis.\*(v).faq;# Frequently Asked Questions
 File:;aegis.\*(v).lsm;# description in LSM format
@@ -669,7 +694,7 @@ because you never say aede to the trunk.
 The branch baseline is the development directory for the ``big change''
 represented by the branch.  Just as a developers development directory
 only contains the things being worked on, and their implications, so
-does thr branch baseline.
+does the branch baseline.
 .sp
 This means that wherever you specify a search path (-I, VPATH, \fIetc\fP)
 to look first in your development directory and then in the baseline,
@@ -679,7 +704,7 @@ search; this is usually used in the ``build_command'' field of
 the project \fIconfig\fP file.
 .sp
 The ``aefind'' command may also be used to perform actions similar to
-use usual Unix find(1), but ocross the Aegis search path.
+use usual Unix find(1), but across the Aegis search path.
 .\"
 .\" This is the end of the digest.
 .\" All contents must be before this point.

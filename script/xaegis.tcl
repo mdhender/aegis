@@ -1,7 +1,7 @@
 #! /usr/local/bin/wish -f
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993 Peter Miller.
+#	Copyright (C) 1993, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 # This script is based on tcl 7.0 and tk 3.3.
 #
 
-set lib /usr/local/lib/aegis
+set datadir /usr/local/lib/aegis
 
 #
 # set window manager properties for the top-level window
@@ -33,8 +33,8 @@ wm title . Aegis
 wm maxsize . 32767 32767
 wm minsize . 200 100
 wm iconname . Aegis
-wm iconbitmap . @$lib/aegis.icon
-wm iconmask . @$lib/aegis.mask
+wm iconbitmap . @$datadir/aegis.icon
+wm iconmask . @$datadir/aegis.mask
 
 #
 # create the menu bar
@@ -219,7 +219,7 @@ proc icon_screen { } \
 	catch { destroy .screen }
 	frame .screen -width 200 -height 100
 	pack .screen -side bottom
-	label .screen.icon -bitmap @$lib/aegis.icon
+	label .screen.icon -bitmap @$datadir/aegis.icon
 	pack .screen.icon -anchor center
 }
 

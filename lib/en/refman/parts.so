@@ -14,6 +14,7 @@
 .so ../man1/aedbu.1
 .so ../man1/aede.1
 .so ../man1/aedeu.1
+.so ../man1/aedist.1
 .so ../man1/aedn.1
 .so ../man1/aefind.1
 .so ../man1/aefp.1
@@ -53,12 +54,14 @@
 .so ../man1/aerrv.1
 .so ../man1/aet.1
 .so ../man1/aev.1
+.so ../man1/tkaegis.1
 .so ../man5/aecattr.5
 .so ../man5/aecstate.5
 .so ../man5/aedir.5
 .so ../man5/aefstate.5
 .so ../man5/aegis.5
 .so ../man5/aegstate.5
+.so ../man5/aemetrics.5
 .so ../man5/aepattr.5
 .so ../man5/aepconf.5
 .so ../man5/aepstate.5

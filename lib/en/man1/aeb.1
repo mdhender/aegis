@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -81,7 +81,7 @@ because building the project logically invalidates them.
 If the project
 .I config
 file was deleted,
-any diff registration will also be cancelled.
+any diff registration will also be canceled.
 .SH PARTIAL BUILD
 If files are named on the command line,
 these files are appended to the build command.
@@ -103,6 +103,7 @@ only a baseline read lock.
 .so z_intuit.so
 .so o_symlnk.so
 .so z_bl_lock.so
+.so z_metrics.so
 .SH OPTIONS
 The following options are understood:
 .TP 8n
@@ -181,6 +182,9 @@ integrate pass takes a baseline write lock (exclusive)
 .TP 8n
 .IR aet (1)
 run tests
+.TP 8n
+.IR aemetrics (5)
+metrics values file format
 .TP 8n
 .IR aepconf (5)
 project configuration file format

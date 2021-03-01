@@ -1,0 +1,197 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Change Development Cycle, Common Questions
+.\"
+.nh 2 "Common Questions"
+.LP
+There are a number of questions which are frequently asked by people
+evaluating Aegis.  This section attempts to address some of them.
+.nh 3 "Insulation"
+.LP
+The repository model used by Aegis is of the ``push'' type - that is,
+changes to the baseline are ``pushed'' onto the developer as soon as
+they are integrated.  Many configuration management systems have a
+``pull'' model, where the developer elects when to cope with changes in
+the repository.
+At first glance, Aegis does not appear to have a ``pull'' equivalent.
+.LP
+It is possible to insulate your change from the baseline as much or as
+little as required.  The \fIaecp\fP(1) command, used to copy files into a
+change, has a \f[CW]--read-only\fP option.  The files copied in this way
+are marked as insulation (\fIi.e.\fP you don't intend to change them).
+If you have not un-copied them a develop end time, the \fIaede\fP(1)
+command will produce a suitable error message, reminding you to un-copy
+the insulation and verify that your change still builds and tests
+successfully with the (probably) now-different baseline.
+.nh 4 "Copy Read-Only"
+.LP
+It is possible to select the degree of insulation.  By using ``\f[CW]aecp
+\&.\fP'' at the top of a development directory, the complete project
+source tree will be copied, thus completely insulating you.  Mind you,
+it comes at the cost of a complete build.
+.LP
+If you are working on a library, and only want the rest of the library to
+remain fixed, simply copy the whole library (\f[CW]aecp library/fred\fP),
+and allow the rest to track the baseline.  This comes at a smaller cost,
+because more of the baseline's object files can be taken advantage of.
+.nh 4 "Branches"
+.LP
+It is also possible to create a sub-branch (see the \fIBranching\fP
+chapter).  This does not itself automatically insulate, however the
+first change of a branch intended to insulate would copy and integrate
+\fIbut not modify\fP the files to be insulated.  You need to remember
+to perform a \fIcross-branch merge\fP with the parent branch before
+integrating the branch back into the parent branch.
+.nh 4 "Builds"
+.LP
+You can also insulate yourself from baseline change by being selective
+about what you choose to build.  You can do this by giving specific
+build targets on the \fIaeb\fP(1) command line, or you could copy the
+build tool's configuration file and butcher it.  Remember to change it
+back before you \fIaede\fP(1) your change!
+.nh 4 "Mix-and-Match"
+.LP
+Some or all of the above techniques may be combined to provide an
+insulation technique best suited to your project and development policy.
+\fIE.g.\fP changing the build configuration file for a branch dedicated
+to working on a small portion of a large project; towards the ed of
+the development, change the build configuration file back and perform
+integration testing.
+.nh 4 "Disadvantages"
+.LP
+There is actually a down-side to insulating your changes from the
+evolution of the baseline.  By noticing and adapting to the baseline,
+you have much less merging to do at the end of your change set.  Each
+integration will typically be be modest, but the cumulative effect could
+be substantial, and add a huge unexpected (and un-budgeted for) time penalty.
+.LP
+However, it also means that if there are integration problems between
+your work and the changes which were integrated before yours, or if
+your work shows up a bug in their work, the project find this out late, rather
+than early.  The literature, based on industrial experience, indicates
+that the earlier problems are found the cheaper they are to fix.
+.LP
+Insulated development directories also use more disk space.  While disk
+space is relatively cheap these days, it can still add up to a substantial
+hit for a large development team.  Un-insulated development directories
+can take advantage of the pre-compiled objects and libraries in the
+baseline.
+.nh 3 "Partial Check-In"
+.LP
+In the course of developing new functionality, it is very common to come
+across a pre-existing bug which the new functionality exposes.  It is
+common for such bugs to be fixed by the developer in the same development
+directory, in order to get the new functionality to a testable state.
+.LP
+There are two common courses of action at this point: simply include the
+bug fix with the rest of the change, or integrate the bug fix earlier than
+the rest of the change.  Combining the bug fix with the rest of the change
+can have nasty effects on statistics: it can hide the true bug level
+from your metrics program, and it also denies Aegis the opportunity of
+having accurate test correlations (see \fIaet\fP(1) for more information.)
+It also denies the rest of the development team the use of the bug fix,
+or worse, it allows the possibility that more than one team member will
+fix the bug, wasting development effort and time.
+.LP
+Many configuration management systems allow you to perform a partial
+check-in of a work area.  This means that you can check-in just the bug
+fix, but continue to work on the unfinished portions of the functionality
+you are implementing.
+.LP
+Because Aegis insists on atomic change sets which are known to build
+and test successfully, such a partial check-in is not allowed - because
+Aegis can't know for certain.
+.LP
+Instead, you are able to \fIclone\fP a change (see \fIaeclone\fP(1) for
+more information).  This gives you a new change, and a second development
+directory, with exactly the same files.  You then remove from this second
+change all of the files not related to the bug fix (using \fIaecpu\fP(1),
+\fIaenfu\fP(11), \fIetc\fP).  You then create a test, build, difference,
+run the test, develop end, all as usual.
+.LP
+The original change will then need to be merged with the baseline, because
+the bug fix change will have been integrated before it.  Usually this
+is straight-forward, as you already have the changes (some merge tools
+make this harder than others).  Often, all that is required is to merge,
+and then say ``\f[CW]aecpu -unch\fP'' to un-copy all files which are
+(now) unchanged when compared to the current baseline.
+.nh 3 "Multiple Active Branches"
+.LP
+Some companies have multiple branches active at the same time,
+for different customers or distributions, \fIetc\fP.
+.LP
+They often need to make the same change to more than one branch.
+Some configuration management systems allow you to check-in the same file
+multiple times, once to each active branch.  Aegis does not let you do
+this, because you need to convince Aegis that the change set will build
+and test cleanly on each branch.  It is quite common for the change to
+require non-trivial edits to work on each branch.
+.nh 4 "Cloning"
+.LP
+Aegis instead provides two mechanisms to handle this.  The first,
+and simplest to understand, is to clone the change onto each relevant branch
+(rather than onto the same branch, as mentioned above for bug fixes).
+Then build and test as normal.
+.nh 4 "Ancestral"
+.LP
+The second technique is more subtle.  Perform the fix as a change to the
+common ancestor of both branches.  This assumes that neither branch is
+insulated against the relevant area of code, and that earlier changes
+to the branch do not mask it in some way (otherwise a cross-branch merge
+with the common ancestor will be needed to propagate the fix).
+.nh 3 "Collaboration"
+.LP
+It is often the case that difficult problems are tackled by small groups
+of 2 or 3 staff working together.  In order to do this, they often work
+in a shared work area with group-writable or global-write permissions.
+However, this tends to give security auditor heart attacks.
+.LP
+Aegis has several different ways to achieve the same ends, and still
+not give the auditors indigestion.
+.nh 4 "Change Owner"
+.LP
+The simplest method available is to change the ownership of a change
+from one developer to the next.  A new development directory is created
+for the new developer, and the source files are copied across\**.
+.FS
+For the technically minded: the \fIchown\fP(2) system call has semantics
+which vary too widely between
+.UX
+variants and file-systems to be useful.
+.FE
+This allows a kind of serial collaboration between developers.
+.nh 4 "Branch"
+.LP
+The other possibility is to create a branch to perform the work in,
+rather than a simple change.  (A branch in Aegis is literally just
+a big change, which has lots of sub-changes.)  This allows parallel
+collaboration between developers.
+.nh 4 "View Path Hacking"
+.LP
+Aegis usually provides a ``view path'' to the build tool.  This specifies
+where to look for source files and derived files, in order to union
+together the development directory, and the baseline, and the branch's
+ancestors' baselines.  If you run the build by hand, rather than through
+Aegis, you can add another developer's development directory to the view
+path, after your own development directory, but before the baseline.
+.LP
+This has many of the advantages of the branch method, but none of
+the safeguards.  In particular, if the other developer edits a file,
+and it no longer compiles, your development directory will not, either.

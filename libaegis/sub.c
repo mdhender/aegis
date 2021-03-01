@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <ac/ctype.h>
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/stdio.h>
 #include <ac/stddef.h>
 #include <ac/stdlib.h>
@@ -43,7 +43,6 @@
 #include <file.h>
 #include <gonzo.h>
 #include <language.h>
-#include <libdir.h>
 #include <mem.h>
 #include <option.h>
 #include <os.h>
@@ -53,20 +52,25 @@
 #include <project_hist.h>
 #include <str_list.h>
 #include <sub.h>
+#include <sub/addpathsuffi.h>
 #include <sub/basename.h>
+#include <sub/binary_direc.h>
 #include <sub/comment.h>
+#include <sub/data_directo.h>
 #include <sub/dollar.h>
 #include <sub/expr.h>
 #include <sub/left.h>
 #include <sub/length.h>
+#include <sub/librar_direc.h>
 #include <sub/namemax.h>
+#include <sub/project.h>
 #include <sub/quote.h>
 #include <sub/right.h>
 #include <sub/trim_directo.h>
 #include <sub/trim_extensi.h>
+#include <sub/user.h>
 #include <sub/zero_pad.h>
 #include <trace.h>
-#include <user.h>
 #include <wstr_list.h>
 
 
@@ -91,9 +95,9 @@ struct sub_context_ty
 	size_t		sub_var_pos;
 	struct change_ty *cp;
 	struct project_ty *pp;
-	char		*suberr;
+	const char	*suberr;
 	int		errno_sequester;
-	char		*file_name;
+	const char	*file_name;
 	int		line_number;
 };
 
@@ -103,7 +107,7 @@ typedef wstring_ty *(*fp)_((sub_context_ty *, wstring_list_ty *));
 typedef struct sub_table_ty sub_table_ty;
 struct sub_table_ty
 {
-	char		*name;
+	const char	*name;
 	fp		func;
 	int		resubstitute;
 	wstring_ty	*value;
@@ -159,7 +163,7 @@ collect_destructor(cp)
 
 sub_context_ty *
 sub_context_New(file_name, line_number)
-	char		*file_name;
+	const char	*file_name;
 	int		line_number;
 {
 	sub_context_ty	*p;
@@ -199,9 +203,17 @@ sub_context_delete(p)
 void
 sub_context_error_set(scp, s)
 	sub_context_ty	*scp;
-	char		*s;
+	const char	*s;
 {
 	scp->suberr = s;
+}
+
+
+project_ty *
+sub_context_project_get(scp)
+	sub_context_ty	*scp;
+{
+	return scp->pp;
 }
 
 
@@ -1228,49 +1240,6 @@ sub_integrator_list(scp, arg)
 }
 
 
-/*
- * NAME
- *	sub_library - the library substitution
- *
- * SYNOPSIS
- *	string_ty *sub_library(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_library function implements the library substitution.
- *	The library substitution is replaced by the absolute path of
- *	aegis' library directory.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_library _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_library(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_library()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else
-		result = wstr_from_c(configured_datadir());
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
 static wstring_ty *sub_plural _((sub_context_ty *, wstring_list_ty *));
 
 static wstring_ty *
@@ -1304,53 +1273,6 @@ sub_plural(scp, arg)
 			result = wstr_copy(arg->item[3]);
 		break;
 	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_project - the project substitution
- *
- * SYNOPSIS
- *	string_ty *sub_project(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_project function implements the project substitution.
- *	The project substitution is replaced by the project name.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_project _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_project(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_project()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->pp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-		result = str_to_wstr(project_name_get(scp->pp));
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
 	return result;
@@ -1935,54 +1857,6 @@ sub_upcase(scp, arg)
 
 /*
  * NAME
- *	sub_user - the user substitution
- *
- * SYNOPSIS
- *	string_ty *sub_user(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_user function implements the user substitution.
- *	The user substitution is replaced by the login name of the user
- *	who executed the current command.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_user _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_user(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	user_ty		*up;
-
-	trace(("sub_user()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else
-	{
-		up = user_executing((project_ty *)0);
-		result = str_to_wstr(user_name(up));
-		user_free(up);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
  *	sub_version - the version substitution
  *
  * SYNOPSIS
@@ -2045,13 +1919,16 @@ static sub_table_ty table[] =
 {
 	{ "$",				sub_dollar,			},
 	{ "#",				sub_comment,			},
+	{ "Add_Path_Suffix",		sub_add_path_suffix,		},
 	{ "Administrator_List",		sub_administrator_list,		},
 	{ "ARCHitecture",		sub_architecture,		},
 	{ "BaseLine",			sub_baseline,			},
 	{ "Basename",			sub_basename,			},
+	{ "BINary_DIRectory",		sub_binary_directory,		},
 	{ "Change",			sub_change,			},
 	{ "Copyright_Years",		sub_copyright_years,		},
 	{ "COMment",			sub_comment,			},
+	{ "DATa_DIRectory",		sub_data_directory,		},
 	{ "DAte",			sub_date,			},
 	{ "DELta",			sub_delta,			},
 	{ "DEVeloper",			sub_developer,			},
@@ -2076,7 +1953,8 @@ static sub_table_ty table[] =
 	{ "INTegrator_List",		sub_integrator_list,		},
 	{ "LEFt",			sub_left,			},
 	{ "LENgth",			sub_length,			},
-	{ "LIBrary",			sub_library,			},
+	{ "LIBrary",			sub_data_directory,		},
+	{ "LIBrary_DIRectory",		sub_library_directory,		},
 	/* MAgic							*/
 	/* MeSsaGe							*/
 	/* Most_Recent							*/
@@ -2230,6 +2108,8 @@ execute(scp, arg)
 		tp = &scp->sub_var_list[j];
 		if (arglex_compare(tp->name, cmd->str_text))
 		{
+			if (tp->override)
+				goto override;
 			if (nhits < SIZEOF(hit))
 				hit[nhits++] = tp;
 		}
@@ -2317,7 +2197,7 @@ execute(scp, arg)
 		wstring_ty	*s2;
 		string_ty	*s3;
 		sub_context_ty	*inner;
-		char		*the_error;
+		const char	*the_error;
 
 		assert(scp->suberr);
 		s2 = wstring_list_to_wstring(arg, 0, arg->nitems, (char *)0);
@@ -3182,12 +3062,12 @@ in substitution \"$message\" found unused variables")
 }
 
 
-static wstring_ty *subst_intl_wide _((sub_context_ty *, char *));
+static wstring_ty *subst_intl_wide _((sub_context_ty *, const char *));
 
 static wstring_ty *
 subst_intl_wide(scp, msg)
 	sub_context_ty	*scp;
-	char		*msg;
+	const char	*msg;
 {
 	char		*tmp;
 	wstring_ty	*s;
@@ -3197,7 +3077,7 @@ subst_intl_wide(scp, msg)
 	language_human();
 	tmp = gettext(msg);
 	language_C();
-#ifdef DEBUG
+#if 0
 #ifdef HAVE_GETTEXT
 	if (tmp == msg)
 	{
@@ -3223,7 +3103,7 @@ subst_intl_wide(scp, msg)
 string_ty *
 subst_intl(scp, s)
 	sub_context_ty	*scp;
-	char		*s;
+	const char	*s;
 {
 	wstring_ty	*result_wide;
 	string_ty	*result;
@@ -3352,8 +3232,8 @@ sub_var_clear(scp)
 void
 sub_var_set(scp, name, fmt sva_last)
 	sub_context_ty	*scp;
-	char		*name;
-	char		*fmt;
+	const char	*name;
+	const char	*fmt;
 	sva_last_decl
 {
 	va_list		ap;
@@ -3386,7 +3266,7 @@ sub_var_set(scp, name, fmt sva_last)
 void
 sub_var_resubstitute(scp, name)
 	sub_context_ty	*scp;
-	char	*name;
+	const char	*name;
 {
 	sub_table_ty	*the_end;
 	sub_table_ty	*svp;
@@ -3405,7 +3285,7 @@ sub_var_resubstitute(scp, name)
 void
 sub_var_override(scp, name)
 	sub_context_ty	*scp;
-	char		*name;
+	const char	*name;
 {
 	sub_table_ty	*the_end;
 	sub_table_ty	*svp;
@@ -3424,7 +3304,7 @@ sub_var_override(scp, name)
 void
 sub_var_optional(scp, name)
 	sub_context_ty	*scp;
-	char		*name;
+	const char	*name;
 {
 	sub_table_ty	*the_end;
 	sub_table_ty	*svp;
@@ -3443,7 +3323,7 @@ sub_var_optional(scp, name)
 void
 sub_var_append_if_unused(scp, name)
 	sub_context_ty	*scp;
-	char		*name;
+	const char	*name;
 {
 	sub_table_ty	*the_end;
 	sub_table_ty	*svp;
@@ -3766,7 +3646,7 @@ wrap(s)
 void
 error_intl(scp, s)
 	sub_context_ty	*scp;
-	char		*s;
+	const char	*s;
 {
 	wstring_ty	*message;
 	int		need_to_delete;
@@ -3791,10 +3671,10 @@ error_intl(scp, s)
 void
 fatal_intl(scp, s)
 	sub_context_ty	*scp;
-	char		*s;
+	const char	*s;
 {
 	wstring_ty	*message;
-	static	char	*double_jeopardy;
+	static const char *double_jeopardy;
 	int		need_to_delete;
 
 	if (!scp)
@@ -3840,7 +3720,7 @@ This is a probably bug.",
 void
 verbose_intl(scp, s)
 	sub_context_ty	*scp;
-	char		*s;
+	const char	*s;
 {
 	wstring_ty	*message;
 	int		need_to_delete;

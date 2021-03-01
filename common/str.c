@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -76,11 +76,11 @@ static	int		changed;
  *	It is important that str_hash_ty be unsigned (int or long).
  */
 
-static str_hash_ty hash_generate _((char *, size_t));
+static str_hash_ty hash_generate _((const char *, size_t));
 
 static str_hash_ty
 hash_generate(s, n)
-	char		*s;
+	const char	*s;
 	size_t		n;
 {
 	str_hash_ty	retval;
@@ -160,7 +160,7 @@ split()
 {
 	string_ty	*p;
 	string_ty	*p2;
-	str_hash_ty	index;
+	str_hash_ty	idx;
 
 	/*
 	 * get the list to be split across buckets
@@ -192,11 +192,11 @@ split()
 		p2 = p;
 		p = p->str_next;
 
-		index = p2->str_hash & hash_cutover_mask;
-		if (index < hash_split)
-			index = p2->str_hash & hash_cutover_split_mask;
-		p2->str_next = hash_table[index];
-		hash_table[index] = p2;
+		idx = p2->str_hash & hash_cutover_mask;
+		if (idx < hash_split)
+			idx = p2->str_hash & hash_cutover_split_mask;
+		p2->str_next = hash_table[idx];
+		hash_table[idx] = p2;
 	}
 }
 
@@ -222,7 +222,7 @@ split()
 
 string_ty *
 str_from_c(s)
-	char		*s;
+	const char	*s;
 {
 	return str_n_from_c(s, strlen(s));
 }
@@ -249,11 +249,11 @@ str_from_c(s)
 
 string_ty *
 str_n_from_c(s, length)
-	char		*s;
+	const char	*s;
 	size_t		length;
 {
 	str_hash_ty	hash;
-	str_hash_ty	index;
+	str_hash_ty	idx;
 	string_ty	*p;
 
 	hash = hash_generate(s, length);
@@ -262,11 +262,11 @@ str_n_from_c(s, length)
 	if (!hash_table)
 		fatal_raw("you have not called str_initialize from main");
 #endif
-	index = hash & hash_cutover_mask;
-	if (index < hash_split)
-		index = hash & hash_cutover_split_mask;
+	idx = hash & hash_cutover_mask;
+	if (idx < hash_split)
+		idx = hash & hash_cutover_split_mask;
 
-	for (p = hash_table[index]; p; p = p->str_next)
+	for (p = hash_table[idx]; p; p = p->str_next)
 	{
 		if
 		(
@@ -286,8 +286,8 @@ str_n_from_c(s, length)
 	p->str_hash = hash;
 	p->str_length = length;
 	p->str_references = 1;
-	p->str_next = hash_table[index];
-	hash_table[index] = p;
+	p->str_next = hash_table[idx];
+	hash_table[idx] = p;
 	memcpy(p->str_text, s, length);
 	p->str_text[length] = 0;
 
@@ -348,7 +348,7 @@ void
 str_free(s)
 	string_ty	*s;
 {
-	str_hash_ty	index;
+	str_hash_ty	idx;
 	string_ty	**spp;
 
 	if (!s)
@@ -364,10 +364,10 @@ str_free(s)
 	 * find the hash bucket it was in,
 	 * and remove it
 	 */
-	index = s->str_hash & hash_cutover_mask;
-	if (index < hash_split)
-		index = s->str_hash & hash_cutover_split_mask;
-	for (spp = &hash_table[index]; *spp; spp = &(*spp)->str_next)
+	idx = s->str_hash & hash_cutover_mask;
+	if (idx < hash_split)
+		idx = s->str_hash & hash_cutover_split_mask;
+	for (spp = &hash_table[idx]; *spp; spp = &(*spp)->str_next)
 	{
 		if (*spp == s)
 		{
@@ -736,7 +736,7 @@ slow_to_fast(in, out, length)
 
 string_ty *
 str_format(fmt sva_last)
-	char		*fmt;
+	const char	*fmt;
 	sva_last_decl
 {
 	va_list		ap;
@@ -751,7 +751,7 @@ str_format(fmt sva_last)
 
 string_ty *
 str_vformat(fmt, ap)
-	char		*fmt;
+	const char	*fmt;
 	va_list		ap;
 {
 	return vmprintf_str(fmt, ap);

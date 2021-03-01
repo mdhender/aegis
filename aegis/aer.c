@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement the 'aegis -RePorT' command
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 
 #include <aer.h>
 #include <aer/list.h>

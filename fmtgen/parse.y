@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 %{
 
 #include <ac/ctype.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
@@ -38,6 +38,7 @@
 #include <type/enumeration.h>
 #include <type/integer.h>
 #include <type/list.h>
+#include <type/real.h>
 #include <type/string.h>
 #include <type/structure.h>
 #include <type/time.h>
@@ -51,14 +52,15 @@ extern int yydebug;
 
 %}
 
-%token	TYPE
-%token	TIME
-%token	NAME
-%token	STRING
-%token	STRING_CONSTANT
+%token	INCLUDE
 %token	INTEGER
 %token	INTEGER_CONSTANT
-%token	INCLUDE
+%token	NAME
+%token	REAL
+%token	STRING
+%token	STRING_CONSTANT
+%token	TIME
+%token	TYPE
 
 %union
 {
@@ -162,7 +164,6 @@ define_type(type)
 		emit_list = mem_change_size(emit_list, nbytes);
 	}
 	emit_list[emit_length++] = type;
-	type->included_flag = lex_in_include_file();
 	trace((/*{*/"}\n"));
 }
 
@@ -220,12 +221,14 @@ generate_include_file(include_file)
 	indent_printf("#include <type.h>\n");
 	indent_printf("#include <str.h>\n");
 	indent_printf("#include <parse.h>\n");
+	indent_putchar('\n');
+	indent_printf("struct output_ty; /* existence */\n");
 	for (j = 0; j < emit_length; ++j)
 		type_gen_include(emit_list[j]);
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write_file _((char *filename, %s value));\n",
+		"void %s_write_file _((char *filename, %s value, int comp));\n",
 		s->str_text,
 		s->str_text
 	);
@@ -265,11 +268,13 @@ generate_code_file(code_file, include_file)
 	indent_open(code_file);
 	indent_putchar('\n');
 	indent_printf("#include <ac/stddef.h>\n");
-	indent_printf("#include <stdio.h>\n");
+	indent_printf("#include <ac/stdio.h>\n");
 	indent_putchar('\n');
 	indent_printf("#include <%s>\n", cp1);
 	indent_printf("#include <error.h>\n");
-	indent_printf("#include <indent.h>\n");
+	indent_printf("#include <output/indent.h>\n");
+	indent_printf("#include <output/file.h>\n");
+	indent_printf("#include <output/gzip.h>\n");
 	indent_printf("#include <io.h>\n");
 	indent_printf("#include <mem.h>\n");
 	indent_printf("#include <os.h>\n");
@@ -281,7 +286,7 @@ generate_code_file(code_file, include_file)
 		type_ty		*tp;
 
 		tp = emit_list[j];
-		if (tp->included_flag && tp->is_a_typedef)
+		if (tp->included_flag)
 			continue;
 		type_gen_code(tp);
 	}
@@ -310,12 +315,14 @@ generate_code_file(code_file, include_file)
 	indent_printf(/*{*/"}\n");
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s_write_file(filename, value)\n", s->str_text);
+	indent_printf("%s_write_file(filename, value, compress)\n", s->str_text);
 	indent_more();
 	indent_printf("%s\1*filename;\n", "char");
 	indent_printf("%s\1value;\n", s->str_text);
+	indent_printf("%s\1compress;\n", "int");
 	indent_less();
 	indent_printf("{\n"/*}*/);
+	indent_printf("output_ty *fp;\n\n");
 	indent_printf
 	(
 		"trace((\"%s_write_file(filename = \\\"%%s\\\", value = \
@@ -326,11 +333,17 @@ generate_code_file(code_file, include_file)
 	indent_more();
 	indent_printf("os_become_must_be_active();\n");
 	indent_less();
-	indent_printf("indent_open(filename);\n");
-	indent_printf("io_comment_emit();\n");
-	indent_printf("%s_write(value);\n", s->str_text);
+	indent_printf("if (compress)\n{");
+	indent_printf("fp = output_file_binary_open(filename);\n");
+	indent_printf("fp = output_gzip(fp);\n");
+	indent_printf("}\nelse\n{\n");
+	indent_printf("fp = output_file_text_open(filename);\n");
+	indent_printf("}\n");
+	indent_printf("fp = output_indent(fp);\n");
+	indent_printf("io_comment_emit(fp);\n");
+	indent_printf("%s_write(fp, value);\n", s->str_text);
 	indent_printf("type_enum_option_clear();\n");
-	indent_printf("indent_close();\n");
+	indent_printf("output_delete(fp);\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf(/*{*/"}\n");
 
@@ -421,6 +434,8 @@ typedef
 			$4->is_a_typedef = 1;
 			symtab_assign(typedef_symtab, current->name_long, $4);
 			pop_name();
+			if (lex_in_include_file())
+				type_in_include_file($4);
 		}
 	| '#' INCLUDE STRING_CONSTANT
 		{
@@ -470,6 +485,10 @@ type
 	| INTEGER
 		{
 			$$ = type_new(&type_integer, (string_ty *)0);
+		}
+	| REAL
+		{
+			$$ = type_new(&type_real, (string_ty *)0);
 		}
 	| TIME
 		{

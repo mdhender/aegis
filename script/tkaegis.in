@@ -1,0 +1,2305 @@
+#!@WISH@ -f
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1995, 1999 Graham Wheeler
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: tkaegis.wish
+#
+#	@configure_input@
+#
+# written by Graham Wheeler <gram@cdsec.com> Citadel Data Security
+#
+# v1.0 3/6/95-4/6/95
+#
+# v1.1 5/6/95 Added view_diffs
+#		Added cresidue and presidue for unsupported project/change
+#			attribute preservation
+#		Avoids showing difference files if no change has been made
+#		Changed change description to be one line
+#		Other minor improvements and bug fixes
+#
+# v1.2 January 1999
+#               Added a scrolled text area for feedback and debugging
+#		Menus are no longer tearoff
+#		Added support for branches
+#               tkaegis now works with aegis 3.8
+#
+# Send comments to gram@cdsec.com
+#
+# TODO:
+#   Make sure we behave sanely when we do silly stuff - or grey out
+#      menu items to prevent this
+#   Improve the layout of the change attributes dialog box
+#   Add umask support to project attribute edit
+#   Add architecture support to change attribute edit
+#   Complete new project release
+#   Add options to set editor, dependency tools, etc
+#   Then implement template file generation on first change
+#   Online Help (ha ha ha!)
+#
+# There is currently no documentation for tkaegis, other than these
+# comments. However, its use should be self-evident to anyone familiar
+# with aegis. There are some areas where tkaegis is still missing
+# functionality; these are primarily related to project and change
+# attributes that are not yet included in the dialogs, and also issues
+# such as configuring the change and history tools, the architectures,
+# and so on.
+#
+# The following is a bried description of how tkaegis works.
+#
+# First, you will need Tcl/Tk installed, and will need to modify the
+# path in the first line of tkaegis to reflect the path of your Tk
+# wish interpreter. Next, you may need to modify some important
+# variables that occur immediately below these comments, to specify
+# the architecture, project base directory, and the editor you are
+# using (if you leave that blank, tkaegis will try to determine the
+# editor to use from the EDITOR environment variable; if that fails,
+# it will fall back to emacs or vi). 
+#
+# When you run tkaegis, a window will appear with a menu at the top.
+# The window is used to display the output of aegis commands and some 
+# other feedback. The menu will initially have only two items, Project
+# and Help. At this stage the Help menu only has an About dialog box.
+#
+# The Project menu will allow you to create new projects, select from
+# your existing projects, clear the contents of the feedback window,
+# or exit the program. If you create a new project, a dialog box will
+# appear allowing you to enter the project name, directory, and initial
+# branch number. When you press OK the project will be created and should
+# then appear in the Project menu. 
+#
+# If you select an existing project, a new option will be added to the
+# Project menu, allowing you to delete the project. A Branch menu will
+# also appear. This is similar to the Project menu, but allows you to
+# create, delete, or select project branches. 
+#
+# If you select a branch in the branch menu, a Role menu will appear.
+# This will allow you to choose the role that you will be playing,
+# namely one of administrator, developer, reviewer, or integrator.
+# tkaegis uses your UNIX login name and the names of the roleplayers
+# associated with the project and branch, to determine which of the
+# roles it will allow you to choose. If you create a new project, only
+# the administrator role will appear. 
+#
+# Selecting a role will put you in a `mode', which will determine what
+# other menus appear and what you can do next. Each mode will now be
+# described in turn, by giving a brief description of the role-specific
+# menu hierarchy. Following the name of each menu item is the corresponding
+# aegis command, where applicable.
+#
+# ADMINISTRATOR MODE
+#
+# In this mode, you can modify the staff and roles associated with the
+# branch, and create, remove, and change the attributes of change requests,
+# and view all the change requests.
+#
+#
+# Menu                                Description
+# ----------------------------        --------------------------------------
+# Admin:                              Overall branch admin functions
+#    Edit Branch Attributes (aepa)    Change the attributes for the branch
+#
+# Staff                               View or change the branch staff
+#    Administrators                   View or change the branch admin staff
+#       Add (aena)                    Add an administrator for the branch
+#       View (ael a)                  View the administrators for the branch
+#       Remove (aera)                 Remove an administrator for the branch
+#
+#    Developers                       View/change the branch developer staff
+#       Add (aend)                    Add a developer for the branch
+#       View (ael d)                  View the developers for the branch
+#       Remove (aerd)                 Remove a developer for the branch
+#
+#    Reviewers                        View or change the branch review staff
+#       Add (aenrv)                   Add a reviewer for the branch
+#       View (ael r)                  View the reviewers for the branch
+#       Remove (aerrv)                Remove a reviewer for the branch
+#
+#    Integrators                      View or change the branch integrator staff
+#       Add (aeni)                    Add an integrator for the branch
+#       View (ael i)                  View the integrators for the branch
+#       Remove (aeri)                 Remove an integrator for the branch 
+#
+#    Change                           Add, remove, view branch changes
+#       Add New Change (aenc)         Add a new change request
+#       New Change Undo (aencu)       Undo the addition of a change request
+#       Edit Change Attributes (aeca) Modify the attributes of a change request
+#       View Changes (ael c)          View the set of changes
+#
+# DEVELOPER MODE
+#
+# This mode is used by developers. When entering this mode, the Develop
+# menu will appear, but no others. A change must be selected after which
+# the other menus will appear. If there is only one change awaiting
+# development, this will be auto-selected.
+#
+#
+# Menu                                Description
+# ----------------------------        --------------------------------------
+# Develop
+#    View Changes (ael c)             View all the change requests
+#    Begin Change (aedb)              Start work on a new change
+#    Continue Change                  Continue work on a change in development
+#    View Differences (aediff)        Show all the diffs for this change
+#    Abort Change (aedbu)             Abort working on the change
+#    End Change (aede)                (Attempt to) end working on the change
+#    Resume Change (aedeu)            Resume work on a change awaiting review
+#
+# File
+#    Edit Files                       Allow files to be loaded into an editor
+#    Add New File (aenf)              Add a new file to the project
+#    Discard New File (aenfu)         Discard a newly added file
+#    Remove Existing File (aerm)      Discard a previously existing file
+#    Restore Existing File (aermu)    Undo discard of a previously existing file
+#    Change Existing File (aecp)      Allow an existing file to be edited
+#    Undo Changes to Existing File (aecpu)   Lose changes to an existing file
+#
+# Build
+#    Build Project (aeb)              Attempt to build the project
+#
+# Test
+#    Add New Test Script (aent)       Add a new test script to the project
+#    Discard New Test Script (aentu)  Remove a new test script
+#    Run New Tests (aet)              Run the new tests
+#    Run Regression Tests (aet -reg)  Run the old tests
+#    Run Baseline Test (aet -bl)      Run the baseline test
+#
+#
+# REVIEWER MODE
+#
+# Menu                                Description
+# ----------------------------        --------------------------------------
+# Review
+#    View Changes (ael c)             View all the changes
+#    Begin Review (aerb)              Start reviewing a change
+#    Abort Review (aerbu)             Abort reviewing a change
+#    Pass (aerpass)                   Pass a change review
+#    Fail (aerfail)                   Fail a change review
+#    Undo Pass (aerpu)                Undo a previously passed review
+#
+# INTEGRATOR MODE
+#
+# Menu                                Description
+# ----------------------------        --------------------------------------
+# Integrate
+#    View Changes (ael c)             View all the changes
+#    Start Integration (aeib)         Start integrating a change
+#    Resume Integration               Resume an integration in progress
+#    Cancel Integration (aeibu)       Cancel an integration
+#    View Differences (aediff)        Show the file differences for the change
+#    Build (aeb)                      Build the project
+#    New Tests (aet)                  Run the new tests
+#    Baseline Test (aet -bl)          Run the baseline test
+#    Regression Test (aet -reg)       Run the regression tests
+#    Pass (aeipass)                   Pass the integration
+#    Fail (aeifail)                   Fail the integration
+#
+#
+######################################################################
+
+# These may need to be set according to local preferences:
+
+set bindir @bindir@
+set libdir @libdir@
+set datadir @datadir@
+
+#
+# set window manager properties for the top-level window
+#
+wm title . Aegis
+wm maxsize . 32767 32767
+wm minsize . 200 100
+wm iconname . Aegis
+wm iconbitmap . @$datadir/aegis.icon
+wm iconmask . @$datadir/aegis.mask
+
+set arch "unspecified"
+set projbasedir ""
+set editor "nedit"
+
+######################################################################
+
+proc AddStatusLine {ln} {
+    global .work.status
+    .work.status insert end "$ln\n"
+    .work.status see end
+}
+
+proc ClearStatus {} {
+    global .work.status
+    .work.status delete 1.0 end
+}
+
+######################################################################
+# Wrappers around aegis; try to localise all aegis dependencies here...
+
+# aegis_is_branch returns true if the project name has a trailing
+# numerical extension
+
+proc aegis_is_branch {nm} {
+    return [regexp {.*\.[0-9]+} $nm]
+}
+
+proc aegis_do_command {args { rv junk } } {
+    upvar $rv rtncode
+    set ecmd "exec aegis $args"
+    set rtncode [catch $ecmd rtn ]
+    AddStatusLine "$ecmd => $rtn"
+    return $rtn
+}
+
+proc aegis_get_info_command {cmd} {
+    set rtn [aegis_do_command $cmd code]
+    if {$code == 0} {
+	return $rtn
+    } else {
+	show_message "Error" $rtn
+	return ""
+    }
+}
+
+proc aegis_do_action_command {cmd} {
+    set msg [aegis_do_command $cmd code]
+    if {$code == 0} {
+	return 1
+    } else {
+	show_message "Error" $msg
+	return 0
+    }
+}
+
+# Get the list of projects, including the branches
+
+proc aegis_get_all_projects {} {
+    return [aegis_get_info_command "-l p -terse"]
+}
+
+# Get the list of projects (but not the branches!)
+
+proc aegis_get_core_projects {} {
+    set rtn ""
+    set pall [aegis_get_all_projects]
+    if {$pall != ""} {
+        foreach p $pall {
+	    if { ! [aegis_is_branch $p] } {
+		lappend rtn $p
+	    }
+        }
+    }
+    return $rtn
+}
+
+# Get the open branches for a project. We assume they are listed by aegis
+# from shortest to longest name, and we invert this order.
+
+proc aegis_get_branches {root} {
+    set rtn ""
+    set pall [aegis_get_all_projects]
+    if {$pall != ""} {
+        foreach p $pall {
+	    if [string match "${root}*" $p] {
+		set rtn [linsert $rtn 0 $p]
+	    }
+        }
+    }
+    return $rtn
+}
+
+# Create a new project or a new branch
+
+proc aegis_new_project {proj vers directory} {
+    global projbasedir
+    if {$vers == ""} {set vers "1.0"}
+    if {$directory == ""} {
+	set directory "$projbasedir/$proj"
+    }
+    AddStatusLine "Creating project $proj branch $vers directory $directory"
+    return [aegis_do_action_command "-npr $proj -version $vers -directory $directory"]
+}
+
+proc aegis_new_branch {branch directory} {
+    set rtn ""
+    set pos [string last "." $branch]
+    if {$pos >= 0} {
+        set p [string range $branch 0 [expr $pos-1]]
+	set b [string range $branch [expr $pos+1] end]
+        AddStatusLine "Creating branch $branch"
+        if {$directory != ""} {
+	    return [aegis_do_action_command "-nbr -p $p -dir $directory $b"]
+        } else {
+	    return [aegis_do_action_command "-nbr -p $p $b"]
+        }
+    }
+    return 1
+}
+
+# Delete a project and all its branches. Use with care!
+#
+# We have to find all the subbranches that are open, and
+# do `develop begin undo' and `new change undo' on them  before
+# we can delete the project
+# We return 0 if nothing was deleted, 1 if all branches were 
+# deleted, or -1 if some were deleted.
+
+proc aegis_delete_branches {branches} {
+    set rtn 0
+    if {$branches == ""} { return 1 }
+    foreach b $branches {
+        if {[get_confirm "Delete branch $b?"]} {
+            AddStatusLine "Deleting branch $b"
+	    set pos [string last "." $b]
+	    if {$pos >= 0} {
+	        set p [string range $b 0 [expr $pos-1]]
+	        set c [string range $b [expr $pos+1] end]
+                if [aegis_do_action_command "-dbu $p $c"] {
+                    if [aegis_do_action_command "-ncu $p $c"] {
+		    } else {
+			return -1
+		    }
+		} else {
+		    return -1
+		}
+	    }
+	    set rtn 1
+	} else {
+	    return -1
+	}
+    }
+    return $rtn
+}
+
+proc aegis_delete_branch {branch} {
+    return [aegis_delete_branches [aegis_get_branches $branch]]
+}
+
+proc aegis_delete_project {proj} {
+    if {[aegis_delete_branches [aegis_get_branches $proj]] == 1} {
+	AddStatusLine "Deleting project $proj"
+        return [aegis_do_action_command "-rmpr $proj"]
+    }
+    return 0
+}
+
+proc aegis_get_project_attributes {proj} {
+    return [aegis_get_info_command "-pa -list -p $proj"]
+}
+
+proc aegis_set_project_attributes {proj attr_file} {
+    aegis_do_action_command "-pa -p $proj -file $attr_file"
+}
+
+proc aegis_has_role {role user proj} {
+    if {$proj != ""} {
+        set rv [aegis_do_command "-l $role -p $proj -terse | fgrep $user" code]
+        if {$code == 0 && $rv==$user} { return 1 }
+    }
+    return 0
+}
+
+proc aegis_get_roleplayers {proj typcode} {
+    return [aegis_get_info_command "-l $typcode -p $proj -terse | sort"]
+}
+
+proc aegis_get_possible_roleplayers {} {
+    set code [catch {exec cut -f1 -d: /etc/passwd | sort} users]
+    if {$code == 0} { return $users} else {return ""}
+}
+
+proc aegis_get_changelog {branch} {
+    return [aegis_get_info_command "-l c -p $branch -verbose"]
+}
+
+proc aegis_create_new_change {branch attrfile} {
+    return [aegis_do_action_command "-nc -p $branch -file $attrfile"]
+}
+
+proc aegis_new_change_undo {branch change} {
+    return [aegis_do_action_command "-ncu -p $branch -c $change"]
+}
+
+proc aegis_get_change_attributes {branch change} {
+    return [aegis_get_info_command "-ca -list -p $branch -c $change"]
+}
+
+proc aegis_set_change_attributes {branch change fname} {
+    return [aegis_do_action_command "-ca -p $branch -c $change -file $fname"]
+}
+
+proc aegis_get_change_details {branch change} {
+    return [aegis_get_info_command "-l cd -p $branch -c $change -verbose"]
+}
+
+proc aegis_choose_change {act cmd} {
+    global branch change
+    set oldchange $change
+    set cnt 0
+    toplevel .ccpanel
+    if {$act == ""} {
+	set title "Choose change"
+    } else {
+	set title "Choose change to $act"
+    }
+    wm title .ccpanel $title
+    frame .ccpanel.but
+    listbox .ccpanel.entries -relief raised -borderwidth 2 \
+	    -yscrollcommand ".ccpanel.yscroll set" \
+	    -xscrollcommand ".ccpanel.xscroll set"
+    scrollbar .ccpanel.yscroll -command ".ccpanel.entries yview"
+    scrollbar .ccpanel.xscroll -orient horizontal \
+	    -command ".ccpanel.entries xview"
+    button .ccpanel.but.ok -text OK -command {
+	global change
+	set change [selection get]
+	destroy .ccpanel
+    }
+    button .ccpanel.but.view -text "View Details" -command {
+	global branch 
+	set chg ""
+	scan [selection get] "%d" chg
+	set details [aegis_get_change_details $branch $chg]
+	if {$details != ""} {
+	    show_output "Change $chg" $details
+	}
+    }
+    button .ccpanel.but.cancel -text Cancel -command {
+	global change
+	set change ""
+	destroy .ccpanel 
+    }
+
+    if {$cmd == "lc"} {
+	set changes [aegis_get_info_command "-l c -p $branch -unf"]
+    } else {
+	set changes [aegis_get_info_command "-$cmd -list -p $branch -unf"]
+    }
+    if {$changes == ""} {
+	destroy .ccpanel
+	return 0
+    }
+    scan $changes "%d" firstchange 
+    set changes [split $changes "\n"]
+    foreach c $changes {
+	.ccpanel.entries insert end [lreplace $c 1 1 ":"]
+	incr cnt
+    }
+    pack .ccpanel.but .ccpanel.xscroll -side bottom -fill x
+    pack .ccpanel.entries -side left -fill x -expand true
+    pack .ccpanel.yscroll -side right -fill y
+    pack .ccpanel.but.ok .ccpanel.but.view .ccpanel.but.cancel -side left -fill x
+
+    if {$cnt == 0} {
+	destroy .ccpanel
+	show_message "Info" "No changes"
+	return 0
+    } elseif {$cnt == 1} {
+        destroy .ccpanel
+	set change $firstchange
+	if {$act != "" } {
+	    show_message "Info" "Change $change autoselected for $act"
+	}
+	return 1	
+    } else {
+	grab set .ccpanel
+	tkwait window .ccpanel
+	if {$change == ""} {
+	    set change $oldchange
+	    return 0
+	} else {
+	    scan $change "%d" change
+	    return 1
+	}
+    }
+}
+
+proc aegis_develop_begin {branch change} {
+    return [aegis_do_action_command "-db -p $branch -c $change"]
+}
+
+proc aegis_set_directory {branch change} {
+    cd [exec aegis -cd -p $branch -c $change -terse]
+}
+
+proc aegis_gen_diffs {branch change} {
+    return [aegis_do_action_command "-diff -p $branch -c $change"]
+}
+
+proc aegis_get_new_files {branch change} {
+    return [aegis_get_info_command "-nfu -list -p $branch -c $change -terse"]
+}
+
+proc aegis_get_old_files {branch change} {
+    return [aegis_get_info_command "-l pf -p $branch -c $change -terse"]
+}
+
+proc aegis_get_files {branch change} {
+    set files [aegis_get_new_files $branch $change]
+    append files " " [aegis_get_old_files $branch $change]
+    return $files
+}
+
+proc aegis_new_file {branch change fname} {
+    return [aegis_do_action_command "-nf $fname -p $branch -c $change"]
+}
+
+proc aegis_new_file_undo {branch change fname} {
+    return [aegis_do_action_command "-nfu $fname -p $branch -c $change"]
+}
+
+proc aegis_develop_end {branch change} {
+    return [aegis_do_action_command "-de -p $branch -c $change"]
+}
+
+proc aegis_develop_begin_undo {branch change} {
+    return [aegis_do_action_command "-dbu -p $branch -c $change"]
+}
+
+proc aegis_develop_end_undo {branch change} {
+    return [aegis_do_action_command "-deu -p $branch -c $change"]
+}
+
+proc aegis_get_removable_files {branch change} {
+    return [aegis_get_info_command "-rm -list -p $branch -c $change -terse"]
+}
+
+proc aegis_get_removable_undo_files {branch change} {
+    return [aegis_get_info_command "-rmu -list -p $branch -c $change -terse"]
+}
+
+proc aegis_remove_file {branch change fname} {
+    return [aegis_do_action_command "-rm $fname -p $branch -c $change"]
+}
+
+proc aegis_remove_file_undo {branch change fname} {
+    return [aegis_do_action_command "-rmu $fname -p $branch -c $change"]
+}
+
+proc aegis_get_copyable_files {branch change} {
+    return [aegis_get_info_command "-cp -list -p $branch -c $change -terse"]
+}
+
+proc aegis_get_copyable_undo_files {branch change} {
+    return [aegis_get_info_command "-cpu -list -p $branch -c $change -terse"]
+}
+
+proc aegis_copy_file {branch change fname} {
+    return [aegis_do_action_command "-cp $fname -p $branch -c $change"]
+}
+
+proc aegis_copy_file_undo {branch change fname} {
+    return [aegis_do_action_command "-cpu $fname -p $branch -c $change"]
+}
+
+proc aegis_build {branch change} {
+    return [aegis_do_action_command "-b -p $branch -c $change"]
+}
+
+proc aegis_new_test {branch change testfile} {
+    upvar $testfile rtn
+    set output [aegis_do_command "-nt -p $branch -c $change" code]
+    if {$code == 0} {
+        if [regexp {test/[0-9][0-9]/t[0-9]+[am]\.sh} $output rtn] {
+	    set f [open $testfile w]
+	    puts $f "#!/bin/sh"
+	    puts $f "echo \"Test $testfile\""
+	    puts $f {tmp=/tmp/$$}
+	    puts $f "here=`pwd`"
+	    puts $f {if [ $? -ne 0 ]; then exit 1; fi}
+	    puts $f ""
+	    puts $f "fail()"
+	    puts $f "{"
+	    puts $f "    echo FAILED 1>&2"
+	    puts $f {    cd $here}
+	    puts $f {    rm -rf $tmp}
+	    puts $f "    exit 1"
+	    puts $f "}"
+	    puts $f ""
+	    puts $f "pass()"
+	    puts $f "{"
+	    puts $f "    echo \"$testfile PASSED\""
+	    puts $f {    cd $here}
+	    puts $f {    rm -rf $tmp}
+	    puts $f "    exit 0"
+	    puts $f "}"
+	    puts $f ""
+	    puts $f "trap \"fail\" 1 2 3 15"
+	    puts $f ""
+	    puts $f {mkdir $tmp}
+	    puts $f {if [ $? -ne 0 ]; then exit 1; fi}
+	    puts $f {cd $tmp}
+	    puts $f {if [ $? -ne 0 ]; then exit 1; fi}
+	    puts $f ""
+	    puts $f "# What we expect:"
+	    puts $f "cat > test.ok << 'foo'"
+	    puts $f "PUT YOUR COMMAND OUTPUT HERE"
+	    puts $f "foo"
+	    puts $f {if [ $? -ne 0 ]; then fail; fi}
+	    puts $f ""
+	    puts $f {$here/PUT_YOUR_COMMAND_HERE  > test.out  2>&1}
+	    puts $f "diff test.out test.ok"
+	    puts $f {if [ $? -ne 0 ]; then fail; fi}
+	    puts $f ""
+	    puts $f "pass"
+	    close $f
+	    return 1
+	} else {
+	    show_message "Warning" $output
+	}
+    } else {
+	show_message "Error" $output
+    }
+    return 0
+}
+
+proc aegis_get_new_test_files {branch change} {
+    return [aegis_get_info_command "-ntu -l -p $branch -c $change -terse | fgrep test"]
+}
+
+proc aegis_new_test_undo {branch change fname} {
+    return [aegis_do_action_command "-ntu $fname -p $branch -c $change"]
+}
+
+proc aegis_run_tests {branch change} {
+    return [aegis_do_action_command "-t -p $branch -c $change"]
+}
+
+proc aegis_run_regression_tests {branch change} {
+    return [aegis_do_action_command "-t -reg -p $branch -c $change"]
+}
+
+proc aegis_run_baseline_test {branch change} {
+    return [aegis_do_action_command "-t -bl -p $branch -c $change"]
+}
+
+proc aegis_review_pass {branch change} {
+    return [aegis_do_action_command "-rpass -p $branch -c $change"]
+}
+
+proc aegis_review_pass_undo {branch change} {
+    return [aegis_do_action_command "-rpu -p $branch -c $change"]
+}
+
+proc aegis_review_fail {branch change} {
+    return [aegis_do_action_command "-rfail -p $branch -c $change"]
+}
+
+proc aegis_integrate_begin {branch change} {
+    return [aegis_do_action_command "-ib -p $branch -c $change"]
+}
+
+proc aegis_integrate_begin_undo {branch change} {
+    return [aegis_do_action_command "-ibu -p $branch -c $change"]
+}
+
+proc aegis_integrate_pass {branch change} {
+    return [aegis_do_action_command "-ipass -p $branch -c $change"]
+}
+
+proc aegis_integrate_fail {branch change} {
+    return [aegis_do_action_command "-ifail -p $branch -c $change"]
+}
+
+proc aegis_show_diffs {branch change} {
+    global spawnwin
+    aegis_set_directory $branch $change
+    exec find . -name "*,D" -exec rm \{\} \;
+    if [aegis_gen_diffs $branch $change] {
+	foreach f [exec find . -name "*,D" -print | sort] {
+	    set wn [join [split $f "./~,"] "_"]
+	    set spawnwin($wn) .$wn
+	    set txt  [exec head -3 $f | tail -1]
+	    if { $txt != "" && [string match "*TOTALS: 0 inserted  0 deleted*" $txt] == 0} {
+	        show_text .$wn $f [exec cat $f]
+	    }
+	}
+    }
+}
+
+proc aegis_trash_diffs {} {
+    global spawnwin
+    if [info exists spawnwin] {
+        foreach w [array names spawnwin] {
+	    catch {destroy $spawnwin($w)}
+        }
+        unset spawnwin
+    }
+}
+
+######################################################################
+# Some simple useful utilities
+
+# Run an editor. First determine what editor to use. May need to wrap
+# vi in an xterm???
+
+if {$editor == ""} {
+    set editor $env(EDITOR)
+    if {$editor == ""} {
+        if [file exists /usr/local/bin/emacs"] {
+	    set editor emacs
+        } else {
+	    set editor vi
+        }
+    } else {
+    }
+}
+
+if {$editor == "vi"} {
+    set editor "xterm -fn 10x20 -e vi"
+}
+
+proc run_editor {files} {
+    global editor
+    eval exec $editor $files &
+}
+
+# Show some text in a text window
+
+proc show_text {w title msg} {
+    toplevel $w
+    wm title $w $title
+    wm iconname $w "Aegis"
+
+    text $w.text -relief raised -bd 2 -yscrollcommand "$w.scroll set"
+    scrollbar $w.scroll -command "$w.text yview"
+    button $w.button -text "OK" -command "destroy $w"
+    pack $w.button -side bottom -padx 10 -pady 10
+    pack $w.scroll -side right -fill y
+    pack $w.text -side left
+    bind $w.button <Return> "destroy $w"
+    $w.text insert end $msg
+}
+
+# Show some text and wait for the text widget to be closed
+
+proc show_output {title msg} {
+    catch { destroy .info }
+    show_text .info $title $msg
+    focus .info.button
+    grab set .info
+    tkwait window .info
+}
+
+# Similar to above but using a message widget
+
+proc show_message {title msg} {
+    catch { destroy .info }
+    toplevel .info
+    wm title .info $title
+    wm iconname .info "Aegis"
+
+    message .info.msg -text $msg -just center -aspect 300
+    pack .info.msg -side top -padx 10 -pady 10
+
+    button .info.button -text "OK" -command "destroy .info"
+    pack .info.button -side bottom -padx 10 -pady 10
+    bind .info.button <Return> "destroy .info"
+    focus .info.button
+    grab set .info
+    tkwait window .info
+}
+
+# Convert numeric boolean values to symbolic and vice-versa
+
+proc booltonum {var} {
+    if {$var == "true" } {
+	return 1
+    } elseif {$var == "false" } {
+	return 0
+    } else {
+	return $var
+    }
+}
+
+proc numtobool {var} {
+    if {$var == 1 } {
+	return "true"
+    } elseif {$var == 0 } {
+	return "false"
+    } else {
+	return $var
+    }
+}
+
+# Show a message for functionality not yet implemented
+
+proc not_implemented {} {
+    show_message "No way Jose" \
+	"Work in progress\nFunction not yet implemented"
+}
+
+# Message for Help-About
+
+proc about_tkaegis {} {
+    show_message "About tkaegis" \
+	"tkaegis v1.2\nby Graham Wheeler\ngram@cdsec.com\n(c) 1999, All Rights Reserved"
+}
+
+# Get confirmation for an action
+
+proc get_confirm {msg} {
+    global cnf
+    toplevel .panel
+    wm title .panel "Confirm Action"
+    frame .panel.top
+    frame .panel.bottom
+    label .panel.top.label -text $msg
+    button .panel.bottom.ok -text OK -command { destroy .panel; set cnf 1 }
+    button .panel.bottom.cancel -text Cancel -command { destroy .panel; set cnf 0 }
+    pack .panel.top -side top 
+    pack .panel.bottom -side bottom 
+    pack .panel.top.label -side left -fill x 
+    pack .panel.bottom.cancel -side right -fill y
+    pack .panel.bottom.ok -side left -fill y
+    grab set .panel
+    focus .panel.bottom.ok
+    bind .panel.bottom.ok <Return> {
+	destroy .panel
+	set cnf 1
+    }
+    tkwait window .panel
+    if {$cnf == 1} { return 1} else { return 0}
+}
+
+proc choose_files {title files} {
+    global change scratch
+    set cnt 0
+    set scratch ""
+    toplevel .cfpanel
+    wm title .cfpanel $title
+    frame .cfpanel.but
+    label .cfpanel.chosen -text ""
+    listbox .cfpanel.entries -relief raised -borderwidth 2 \
+		-yscrollcommand ".cfpanel.scroll set"
+    scrollbar .cfpanel.scroll -command ".cfpanel.entries yview"
+    button .cfpanel.but.clear -text Clear -command {
+	global scratch
+	set scratch ""
+	.cfpanel.chosen config -text $scratch
+    }
+    button .cfpanel.but.add -text Include -command {
+	global scratch
+	append scratch [selection get] " "
+	.cfpanel.chosen config -text $scratch
+    }
+    button .cfpanel.but.ok -text Done -command {
+	destroy .cfpanel
+    }
+    button .cfpanel.but.cancel -text Cancel -command {
+	global scratch
+	set scratch ""
+	destroy .cfpanel 
+    }
+    foreach f $files {
+	.cfpanel.entries insert end $f
+	incr cnt
+    }
+    pack .cfpanel.chosen .cfpanel.but -side bottom -fill x
+    pack .cfpanel.entries -side left -fill x -expand true
+    pack .cfpanel.scroll -side right -fill y
+    pack .cfpanel.but.clear .cfpanel.but.add .cfpanel.but.ok \
+	.cfpanel.but.cancel -side left -fill x
+    if {$cnt == 0} {
+	destroy .cfpanel
+	show_message "Info" "No files"
+	return ""
+    } else {
+	grab set .cfpanel
+	tkwait window .cfpanel
+	return $scratch
+    }
+}
+
+proc select_change {cmd {act ""} } {
+    global branch change
+
+    # If the change is already set, make sure that we can apply the
+    # current action to it. If not, give an error.
+
+    if {$change != ""} {
+	set ok 0
+	set changes [aegis_get_info_command "-$cmd -list -p $branch -unf"]
+        set changes [split $changes "\n"]
+        foreach c $changes {
+	    scan $c "%d" cnum
+	    if {$cnum == $change} {
+		set ok 1
+		break
+	    }
+        }
+	if {$ok == 0} {
+	   show_message "Error" "Action not applicable to current selected change $change"
+	   if [get_confirm "Select a different change?"] {
+	       set change ""
+	   } else {
+	       return 0
+	   }
+	}
+    }
+
+    if {$change == ""} {
+	aegis_choose_change $act $cmd
+    } elseif {$act != ""} {
+
+	if {[get_confirm "Change $change: do you want to $act?"] == 0} {
+	    set change ""
+	}
+    }
+    if {$change == ""} {
+	show_message "Info" "No selected or applicable change"
+	return 0
+    } else {
+        return 1
+    }
+}
+
+######################################################################
+# Main variables
+
+set mode "none"
+set proj ""
+set branch ""
+set directory ""
+set change ""
+set user [exec whoami]
+
+# If projbasedir isn't set explicitly, use the $HOME directory:
+
+if {$projbasedir == ""} {
+    set projbasedir $env(HOME)
+}
+
+trace variable proj w change_project
+trace variable branch w change_branch
+
+set scratch ""
+set cnf 0
+
+# Project attributes
+
+set pdescription ""
+set powner ""
+set pgroup ""
+set pumask ""
+set devmayrev ""
+set devmayint ""
+set revmayint ""
+set devmaychg ""
+set deftestexempt ""
+set presidue ""
+
+# Change attributes
+
+set ctitle ""
+set cdescription ""
+set ccause ""
+set ctestexempt ""
+set cblexempt ""
+set cregexempt ""
+set cresidue ""
+
+########################################################################
+# Create the main menu
+
+frame .mbar -relief raised -bd 2
+frame .work -height 5c -width 10c
+text .work.status -yscrollcommand { .work.scroll set}
+scrollbar .work.scroll -command {.work.status yview}
+
+menubutton .mbar.help -text Help -underline 0 -menu .mbar.help.menu
+
+pack .mbar.help -side right
+pack .work.scroll -side right -fill y
+pack .work.status -side left -fill both -expand true
+pack .mbar .work -side top -fill x
+
+########################################################################
+# Create the `Help' drop-down menu. This is always present; all other menus
+# are created and destroyed dynamically.
+#
+# TODO: Actually add some help here!
+
+menu .mbar.help.menu -tearoff 0
+.mbar.help.menu add command -label "About" -command about_tkaegis
+
+# Some utilities for building the menus
+
+proc AddMainMenuItem {nm lbl} {
+    menubutton ".mbar.$nm" -text $lbl -underline 0 -menu ".mbar.${nm}.menu"
+    pack ".mbar.$nm" -side left
+    menu ".mbar.${nm}.menu" -tearoff 0
+}
+
+proc DestroyMainMenuItem {nm} {
+    if [winfo exists .mbar.$nm] { destroy .mbar.$nm }
+}
+
+proc AddDropDownMenuCommand {nm lbl act} {
+    ".mbar.${nm}.menu" add command -label $lbl -command $act
+}
+
+proc AddDropDownMenuRadioButton {nm lbl var val} {
+    global $var
+    ".mbar.${nm}.menu" add radiobutton -label $lbl -variable $var -value $val
+}
+
+proc AddDropDownMenuCascade {nm lbl sub} {
+    ".mbar.${nm}.menu" add cascade -label $lbl -menu ".mbar.${nm}.menu.$sub"
+    menu ".mbar.${nm}.menu.$sub" -tearoff 0
+}
+
+proc AddCascadeCommand {nm sub lbl cmd} {
+    ".mbar.${nm}.menu.$sub" add command -label $lbl -command $cmd
+}
+
+proc AddDropDownMenuSeparator {nm} {
+    ".mbar.${nm}.menu" add separator
+}
+
+########################################################################
+# The Project Menu. Handles project creation. selection and deletion
+# Does not handle branches. Projects can be deleted by selecting them,
+# after which a Delete Project option will appear if the user has the
+# authority to delete the project.
+
+proc add_project_menu {} {
+    global proj user
+
+    AddMainMenuItem project Project
+    AddDropDownMenuCommand project "New Project" new_project
+
+    AddStatusLine "Getting active project list"
+    set projects [aegis_get_core_projects]
+    if {$projects != ""} {
+	AddDropDownMenuSeparator project
+        foreach p $projects {
+	    AddDropDownMenuRadioButton project $p proj $p
+        }
+    }
+
+    if {$proj != "" && [aegis_has_role a $user $proj]} {
+	AddDropDownMenuSeparator project
+	AddDropDownMenuCommand project "Delete Project" delete_project
+    }
+
+    AddDropDownMenuSeparator project
+    AddDropDownMenuCommand project "Clear Status" ClearStatus
+    AddDropDownMenuSeparator project
+    AddDropDownMenuCommand project Quit exit
+}
+
+proc update_project {} {
+    global proj branch
+    AddStatusLine "Selecting project $proj"
+    remove_role_menu
+    remove_branch_menu
+    remove_project_menu
+    add_project_menu
+    if {$proj != ""} {
+        add_branch_menu
+	if {$branch != ""} {
+	    add_role_menu
+	}
+    }
+}
+
+proc change_project {name element op} {
+    update_project
+}
+
+set initvers ""
+
+proc new_project {} {
+    global proj branch directory initvers
+    trace vdelete proj w change_project
+    trace vdelete branch w change_branch
+
+    set old_name $proj
+    set old_branch $branch
+    set old_directory $directory
+    set proj ""
+    set branch ""
+    set directory ""
+
+    toplevel .panel
+    wm title .panel "New Project"
+
+    frame .panel.name
+    label .panel.name.namelabel -text "Name:"
+    entry .panel.name.nameentry -width 20 -relief sunken -bd 2 \
+	-textvariable proj
+    bind .panel.name.nameentry <Return> {
+	focus .panel.vers.versentry
+    }
+
+    frame .panel.vers
+    label .panel.vers.verslabel -text "Initial Version:"
+    entry .panel.vers.versentry -width 20 -relief sunken -bd 2 \
+	-textvariable initvers
+    bind .panel.vers.versentry <Return> {
+	focus .panel.dir.direntry
+    }
+
+    frame .panel.dir
+    label .panel.dir.dirlabel -text "Directory:"
+    entry .panel.dir.direntry -width 20 -relief sunken -bd 2 \
+	-textvariable directory
+    bind .panel.dir.direntry <Return> {
+	focus .panel.buts.ok
+    }
+
+    frame .panel.buts
+    button .panel.buts.ok -text OK -command {
+	destroy .panel
+    }
+    bind .panel.buts.ok <Return> {
+	destroy .panel
+    }
+    button .panel.buts.cancel -text Cancel -command {
+	set proj ""
+	destroy .panel
+    }
+    bind .panel.buts.cancel <Return> {
+	set proj ""
+	destroy .panel
+    }
+
+    pack .panel.name .panel.vers .panel.dir  -side top 
+    pack .panel.buts -side bottom 
+    pack .panel.name.namelabel .panel.name.nameentry -side left \
+	-padx 1m -pady 2m -fill x 
+    pack .panel.vers.verslabel .panel.vers.versentry -side left \
+	-padx 1m -pady 2m -fill x 
+    pack .panel.dir.dirlabel .panel.dir.direntry -side left \
+	-padx 1m -pady 2m -fill x 
+    pack .panel.buts.cancel -side right -fill y
+    pack .panel.buts.ok -side left -fill y
+
+    focus .panel.name.nameentry
+    grab set .panel
+    tkwait window .panel
+
+    if {$proj != ""} {
+	set msg ""
+	if [aegis_new_project $proj $initvers $directory] {
+	    update_project
+        } else {
+	    set proj $old_name
+	    set branch $old_branch
+	    set directory $old_directory
+        }
+    } else {
+	set proj $old_name
+	set branch $old_branch
+	set directory $old_directory
+    }
+    trace variable proj w change_project
+    trace variable branch w change_branch
+}
+
+proc delete_project {} {
+    global proj branch directory
+    if [aegis_delete_project $proj] {
+        set proj ""
+        set branch ""
+        set directory ""
+    } else {
+	AddStatusLine "Deletion of project $proj incomplete"
+    }
+}
+
+proc remove_project_menu {} {
+    DestroyMainMenuItem project
+}
+
+########################################################################
+# The Branch Menu
+#
+# Show the open branches associated with the active project, and allow
+# the user to select which one they want, delete a selected branch,
+# or create a new branch.
+
+proc add_branch_menu {} {
+    global proj user branch
+
+    AddMainMenuItem vers Branch
+    AddDropDownMenuCommand vers "New Branch" new_branch
+
+    set branches [aegis_get_branches $proj]
+    if {$branches != ""} {
+	AddDropDownMenuSeparator vers
+        foreach b $branches {
+	    AddDropDownMenuRadioButton vers $b branch $b
+        }
+    }
+
+    if {$branch != "" && [aegis_has_role a $user $proj]} {
+	AddDropDownMenuSeparator vers
+        AddDropDownMenuCommand vers "Delete Branch" delete_branch
+    }
+}
+
+proc update_branch {} {
+    global proj branch
+    AddStatusLine "Selecting project $proj branch $branch"
+    remove_role_menu
+    remove_branch_menu
+    if {$proj != ""} {
+        add_branch_menu
+        if {$branch != ""} {
+            add_role_menu
+        }
+    }
+}
+
+proc change_branch {name element op} {
+    update_branch
+}
+
+proc new_branch {} {
+    global proj branch directory initvers
+    trace vdelete branch w change_branch
+
+    set old_branch $branch
+    set old_directory $directory
+    set branch ""
+    set directory ""
+    set initvers ""
+
+    toplevel .panel
+    wm title .panel "New Branch"
+
+    frame .panel.name
+    label .panel.name.namelabel -text "Branch Number:"
+    entry .panel.name.nameentry -width 20 -relief sunken -bd 2 \
+	-textvariable initvers
+    bind .panel.name.nameentry <Return> {
+	focus .panel.dir.direntry
+    }
+
+    frame .panel.dir
+    label .panel.dir.dirlabel -text "Directory:"
+    entry .panel.dir.direntry -width 20 -relief sunken -bd 2 \
+	-textvariable directory
+    bind .panel.dir.direntry <Return> {
+	focus .panel.buts.ok
+    }
+
+    frame .panel.buts
+    button .panel.buts.ok -text OK -command {
+	destroy .panel
+    }
+    bind .panel.buts.ok <Return> {
+	destroy .panel
+    }
+    button .panel.buts.cancel -text Cancel -command {
+	set proj ""
+	destroy .panel
+    }
+    bind .panel.buts.cancel <Return> {
+	set proj ""
+	destroy .panel
+    }
+
+    pack .panel.name .panel.dir -side top 
+    pack .panel.buts -side bottom 
+    pack .panel.name.namelabel .panel.name.nameentry -side left \
+	-padx 1m -pady 2m -fill x 
+    pack .panel.dir.dirlabel .panel.dir.direntry -side left \
+	-padx 1m -pady 2m -fill x 
+    pack .panel.buts.cancel -side right -fill y
+    pack .panel.buts.ok -side left -fill y
+
+    focus .panel.name.nameentry
+    grab set .panel
+    tkwait window .panel
+
+    if {$initvers != ""} {
+	AddStatusLine "Creating branch $proj.$initvers"
+	set msg ""
+	if [aegis_new_branch "$proj.$initvers" $directory] {
+	    update_branch
+        } else {
+	    set branch $old_branch
+	    set directory $old_directory
+        }
+    } else {
+	set branch $old_branch
+	set directory $old_directory
+    }
+    trace variable branch w change_branch
+}
+
+proc delete_branch {} {
+    global proj branch directory
+    if [aegis_delete_branch $branch] {
+        set branch ""
+    } else {
+	AddStatusLine "Deletion of branch $branch incomplete"
+    }
+}
+
+proc remove_branch_menu {} {
+    DestroyMainMenuItem vers
+}
+
+########################################################################
+# The Role Menu
+
+proc add_role_to_menu {proj user role mnu tag cmd} {
+    if [aegis_has_role $role $user $proj] {
+	AddDropDownMenuCommand $mnu $tag $cmd
+    }
+}
+
+proc add_role_menu {} {
+    global user branch
+    AddMainMenuItem role Role
+    add_role_to_menu $branch $user a role Administrate enter_administrate_mode
+    add_role_to_menu $branch $user d role Develop enter_develop_mode
+    add_role_to_menu $branch $user r role Review enter_review_mode
+    add_role_to_menu $branch $user i role Integrate enter_integrate_mode
+}
+
+proc update_roles {} {
+    remove_role_menu
+    add_role_menu
+}
+
+proc remove_role_menu {} {
+    leave_mode
+    DestroyMainMenuItem role
+}
+
+#######################
+# ADMINISTRATION MODE #
+#######################
+
+proc enter_administrate_mode {} {
+    global mode user proj branch
+
+    leave_mode
+    set mode "administrate"
+
+    AddMainMenuItem admin Admin
+#     AddDropDownMenuCommand admin "New Project Release" command_not_implemented
+      AddDropDownMenuCommand admin "Edit Branch Attributes" \
+		edit_branch_attributes
+
+    AddMainMenuItem staff Staff
+      AddDropDownMenuCascade staff "Administrators" administrators
+        AddCascadeCommand staff administrators "Add" add_administrators
+        AddCascadeCommand staff administrators "View" view_administrators
+        AddCascadeCommand staff administrators "Remove" remove_administrators
+      AddDropDownMenuCascade staff "Developers" developers
+        AddCascadeCommand staff developers "Add" add_developers
+        AddCascadeCommand staff developers "View" view_developers
+        AddCascadeCommand staff developers "Remove" remove_developers
+      AddDropDownMenuCascade staff "Reviewers" reviewers
+        AddCascadeCommand staff reviewers "Add" add_reviewers
+        AddCascadeCommand staff reviewers "View" view_reviewers
+        AddCascadeCommand staff reviewers "Remove" remove_reviewers
+      AddDropDownMenuCascade staff "Integrators" integrators
+        AddCascadeCommand staff integrators "Add" add_integrators
+        AddCascadeCommand staff integrators "View" view_integrators
+        AddCascadeCommand staff integrators "Remove" remove_integrators
+
+    AddMainMenuItem change Change
+      AddDropDownMenuCommand change "Add New Change" add_new_change
+      AddDropDownMenuCommand change "New Change Undo" new_change_undo
+      AddDropDownMenuCommand change "Edit Change Attributes" \
+				modify_change_attributes
+      AddDropDownMenuCommand change "View Changes" view_changes
+}
+
+proc fetch_branch_attributes {} {
+    global branch pdescription powner pgroup pumask presidue
+    global devmayrev devmayint revmayint devmaychg deftestexempt
+    set presidue "" 
+    set lines [aegis_get_project_attributes $branch]
+    if {$lines != ""} {
+	set lines [split $lines "\n"]
+	foreach l $lines {
+	    set flds [split $l "="]
+	    set opt [string trim [lindex $flds 0] " \t\"{};"]
+	    set val [string trim [lindex $flds 1] " \t\"{};"]
+	    set val [booltonum $val]
+	    if {$opt == "description"} {
+		set pdescription $val
+	    } elseif {$opt == "owner_name"} {
+		set powner $val
+	    } elseif {$opt == "group_name"} {
+		set pgroup $val
+	    } elseif {$opt == "developer_may_review"} {
+		set devmayrev $val
+	    } elseif {$opt == "developer_may_integrate"} {
+		set devmayint $val
+	    } elseif {$opt == "reviewer_may_integrate"} {
+		set revmayint $val
+	    } elseif {$opt == "developers_may_create_changes"} {
+		set devmaychg $val
+	    } elseif {$opt == "umask"} {
+		set pumask $val
+	    } elseif {$opt == "default_test_exemption"} {
+		set deftestexempt $val
+	    } else {
+		append presidue $l "\n"
+	    }
+	}
+    } else {
+	show_message "Error" $lines
+    }
+}
+
+proc edit_branch_attributes {} {
+    global branch pdescription pumask presidue
+    global devmayrev devmayint revmayint devmaychg deftestexempt
+    fetch_branch_attributes
+    toplevel .panel
+    wm title .panel "Edit Branch Attributes"
+    frame .panel.desc
+    frame .panel.options1
+    frame .panel.options2
+    frame .panel.options3
+    frame .panel.options4
+    frame .panel.options5
+    frame .panel.bottom
+
+    label .panel.desc.label -text "Description:"
+    entry .panel.desc.entry -width 20 -relief sunken -bd 2 \
+	-textvariable pdescription
+    checkbutton .panel.options1.devmayrev -text "Developer may review" \
+	-variable devmayrev 
+    checkbutton .panel.options2.devmayint -text "Developer may integrate" \
+	-variable devmayint 
+    checkbutton .panel.options3.revmayint -text "Reviewer may integrate" \
+	-variable revmayint 
+    checkbutton .panel.options4.devmaychg -text "Developer may create changes" \
+	-variable devmaychg
+    checkbutton .panel.options5.deftestexempt -text "Default test exempt" \
+	-variable deftestexempt 
+    button .panel.bottom.ok -text OK -command { destroy .panel }
+    button .panel.bottom.cancel -text Cancel -command {
+	set pdescription "X";destroy .panel
+    }
+
+    pack .panel.desc .panel.options1 .panel.options2 \
+	.panel.options3 .panel.options4 .panel.options5 .panel.bottom \
+	 -side top -fill x
+    pack .panel.desc.label .panel.desc.entry -side left -pady 2m -fill x
+    pack .panel.options1.devmayrev -side left
+    pack .panel.options2.devmayint -side left
+    pack .panel.options3.revmayint -side left
+    pack .panel.options4.devmaychg -side left
+    pack .panel.options5.deftestexempt -side left
+    pack .panel.bottom.cancel -side right -fill y
+    pack .panel.bottom.ok -side left -fill y
+    grab set .panel
+    tkwait window .panel
+    if {$pdescription != "X"} {
+	set devmayrev [numtobool $devmayrev]
+	set devmayint [numtobool $devmayint]
+	set revmayint [numtobool $revmayint]
+	set devmayrev [numtobool $devmayrev]
+	set devmaychg [numtobool $devmaychg]
+	set deftestexempt [numtobool $deftestexempt]
+	set fname "/tmp/$branch.pattr"
+	set f [open $fname w]
+	puts $f "description = \"$pdescription\";"
+	puts $f "developer_may_review = $devmayrev;"
+	puts $f "developer_may_integrate = $devmayint;"
+	puts $f "reviewer_may_integrate = $revmayint;"
+	puts $f "developers_may_create_changes = $devmaychg;"
+	puts $f "umask = $pumask;"
+	puts $f "default_test_exemption = $deftestexempt;"
+	puts $f $presidue
+	close $f
+	aegis_set_project_attributes $branch $fname
+	exec rm $fname
+    }
+}
+
+# Useful common code for applying aegis commands to user names selected from
+# a list.
+
+set list_action ""
+
+proc apply_list_action {} {
+    global list_action mode user branch
+    if {$list_action != ""} {
+        exec aegis $list_action [selection get] -p $branch
+        foreach el [selection get] {
+	    if {$user == $el} {
+	        set tmp $mode
+		leave_mode
+	        update_roles
+	        enter_mode $tmp
+		destroy .panel
+	        break;
+	    }
+        }
+    }
+}
+
+proc do_list {list cmd title} {
+    global branch list_action
+    set list_action $cmd
+    toplevel .panel
+    wm title .panel $title
+    frame .panel.but
+    pack .panel.but -side bottom
+    listbox .panel.entries -relief raised -borderwidth 2 \
+		-yscrollcommand ".panel.scroll set"
+    pack .panel.entries -side left
+    scrollbar .panel.scroll -command ".panel.entries yview"
+    pack .panel.scroll -side right -fill y
+    if {$list_action != ""} {
+        button .panel.but.ok -text OK -command apply_list_action
+        bind .panel.but.ok <Return> {
+	    apply_list_action
+        }
+        button .panel.but.cancel -text Cancel -command { destroy .panel }
+    } else {
+        button .panel.but.cancel -text Done -command { destroy .panel }
+    }
+    focus .panel.but.cancel
+    bind .panel.but.cancel <Return> {
+	destroy .panel
+    }
+
+    if {$list_action != ""} {
+        pack .panel.but.ok .panel.but.cancel -side left -fill x
+    } else {
+        pack .panel.but.cancel -side left -fill x
+    }
+    foreach f $list {
+	.panel.entries insert end $f
+    }
+    grab set .panel
+    tkwait window .panel
+}
+
+proc view_roleplayers {who typcode} {
+    global branch
+    set roleplayers [aegis_get_roleplayers $branch $typcode]
+    if {$roleplayers != ""} {do_list $roleplayers "" "View $who"}
+}
+
+proc add_roleplayers {who typcode} {
+    set users [aegis_get_possible_roleplayers]
+    if {$users != ""} {
+        do_list $users "-n$typcode" "Add $who"
+    }
+}
+
+proc remove_roleplayers {who typcode} {
+    global branch
+    set roleplayers [aegis_get_roleplayers $branch $typcode]
+    if {$roleplayers != ""} {do_list $roleplayers "-r$typcode" "Remove $who"}
+}
+
+proc view_administrators {} {
+    view_roleplayers Administrators a
+}
+
+proc view_developers {} {
+    view_roleplayers Developers d
+}
+
+proc view_reviewers {} {
+    view_roleplayers Reviewers rev
+}
+
+proc view_integrators {} {
+    view_roleplayers Integrators i
+}
+
+proc add_administrators {} {
+    add_roleplayers Administrators a
+}
+
+proc add_developers {} {
+    add_roleplayers Developers d
+}
+
+proc add_reviewers {} {
+    add_roleplayers Reviewers rev
+}
+
+proc add_integrators {} {
+    add_roleplayers Integrators i
+}
+
+proc remove_administrators {} {
+    remove_roleplayers Administrators a
+}
+
+proc remove_developers {} {
+    remove_roleplayers Developers d
+}
+
+proc remove_reviewers {} {
+    remove_roleplayers Reviewers rev
+}
+
+proc remove_integrators {} {
+    remove_roleplayers Integrators i
+}
+
+proc fetch_change_attributes {} {
+    global branch change cresidue
+    global ctitle cdescription ccause ctestexempt cblexempt cregexempt
+    set cresidue ""
+    set lines [aegis_get_change_attributes $branch $change]
+    if {$lines != ""} {
+	set lines [split $lines "\n"]
+	foreach l $lines {
+	    set flds [split $l "="]
+	    set opt [string trim [lindex $flds 0] " \t\"{};"]
+	    set val [string trim [lindex $flds 1] " \t\"{};"]
+	    set val [booltonum $val]
+	    if {$opt == "brief_description"} {
+		set ctitle $val
+	    } elseif {$opt == "description"} {
+		set cdescription $val
+	    } elseif {$opt == "cause"} {
+		set ccause $val
+	    } elseif {$opt == "test_exempt"} {
+		set ctestexempt $val
+	    } elseif {$opt == "test_baseline_exempt"} {
+		set cblexempt $val
+	    } elseif {$opt == "regression_test_exempt"} {
+		set cregexempt $val
+	    } else {
+		append cresidue $l "\n"
+	    }
+	}
+    } else {
+	show_message "Error" $lines
+    }
+}
+
+proc edit_change_attributes {title fname} {
+    global change cresidue
+    global ctitle cdescription ccause ctestexempt cblexempt cregexempt
+    toplevel .panel
+    wm title .panel $title
+    frame .panel.title
+    frame .panel.desc
+    frame .panel.cause1
+    frame .panel.cause2
+    frame .panel.opts
+    frame .panel.bottom
+    pack .panel.bottom -side bottom -fill x
+    pack .panel.title .panel.desc .panel.cause1 .panel.cause2 .panel.opts \
+		-side top -fill x
+    label .panel.title.lbl -text "Title:"
+    entry .panel.title.desc -width 20 -relief sunken -bd 2 -textvariable ctitle
+    pack .panel.title.lbl .panel.title.desc -side left -fill x -expand true
+
+    label .panel.desc.lbl -text "Description"
+    entry .panel.desc.text -width 20 -relief sunken -bd 2 \
+	-textvariable cdescription
+    pack .panel.desc.lbl .panel.desc.text -side left -fill x -expand true
+
+    radiobutton .panel.cause1.ie -text "Enhancement (internal)" \
+	    -variable ccause -value "internal_enhancement"
+    radiobutton .panel.cause1.ii -text "Improvement (internal)" \
+	    -variable ccause -value "internal_improvement"
+    radiobutton .panel.cause1.ib -text "Bug Repair (internal)" \
+	    -variable ccause -value "internal_bug"
+    radiobutton .panel.cause2.ee -text "Enhancement (external)" \
+	    -variable ccause -value "external_enhancement"
+    radiobutton .panel.cause2.ei -text "Improvement (external)" \
+	    -variable ccause -value "external_improvement"
+    radiobutton .panel.cause2.eb -text "Bug Repair (external)" \
+	    -variable ccause -value "external_bug"
+    pack .panel.cause1.ie .panel.cause1.ii .panel.cause1.ib -side left -fill x
+    pack .panel.cause2.ee .panel.cause2.ei .panel.cause2.eb -side left -fill x
+
+    checkbutton .panel.opts.tx -text "New Test Exempt"\
+	    -variable ctestexempt 
+    checkbutton .panel.opts.bx -text "Baseline Test Exempt"\
+	    -variable cblexempt 
+    checkbutton .panel.opts.rx -text "Regression Test Exempt"\
+	    -variable cregexempt 
+    pack .panel.opts.tx .panel.opts.bx .panel.opts.rx -side left -fill x
+
+    button .panel.bottom.ok -text OK -command {
+	destroy .panel 
+    }
+    button .panel.bottom.cancel -text Cancel -command {
+	global ctitle; set ctitle ""; destroy .panel }
+    pack .panel.bottom.cancel -side right -fill y
+    pack .panel.bottom.ok -side left -fill y
+
+    grab set .panel
+    tkwait window .panel
+    if {$ctitle != ""} {
+	set ctestexempt [numtobool $ctestexempt]
+	set cblexempt [numtobool $cblexempt]
+	set cregexempt [numtobool $cregexempt]
+	set f [open $fname w]
+	puts $f "brief_description = \"$ctitle\";"
+	puts $f "description = \"$cdescription\";"
+	puts $f "cause = $ccause;"
+	puts $f "test_exempt = $ctestexempt;"
+	puts $f "test_baseline_exempt = $cblexempt;"
+	puts $f "regression_test_exempt = $cregexempt;"
+	puts $f $cresidue
+	close $f
+	return 1
+    }
+    return 0
+}
+
+proc add_new_change {} {
+    global branch cresidue arch
+    global ctitle cdescription ccause ctestexempt cblexempt cregexempt
+
+    set ctitle "Untitled"
+    set cdescription "Undescribed"
+    set ccause internal_enhancement
+    set ctestexempt 0
+    set cblexempt 0
+    set cregexempt 1
+    set cresidue "architecture =\n\[\n\t\"$arch\",\n\];\n"
+    set fname "/tmp/$branch.cattr"
+
+    if [edit_change_attributes "New Change" $fname] {
+	aegis_create_new_change $branch $fname
+	exec rm $fname
+    }
+}
+
+proc new_change_undo {} {
+    global branch change
+    if [select_change "ncu" "cancel"] {
+	aegis_new_change_undo $branch $change
+	set change ""
+    }
+}
+
+proc view_changes {} {
+    global branch
+    set changelog [aegis_get_changelog $branch]
+    if {$changelog != ""} {
+	show_output "Change History" $changelog
+    } else {
+	show_message "Change History" "No changes"
+    }
+}
+
+proc modify_change_attributes {} {
+    global branch change
+    if [select_change "lc"] {
+	fetch_change_attributes
+	set fname "/tmp/$branch.cattr"
+	if [edit_change_attributes "Edit Attributes" $fname] {
+	    aegis_set_change_attributes $branch $change $fname
+	    exec rm $fname
+	}
+    }
+}
+
+proc leave_administrate_mode {} {
+    DestroyMainMenuItem change
+    DestroyMainMenuItem staff
+    DestroyMainMenuItem admin
+}
+
+################
+# DEVELOP MODE #
+################
+
+set has_develop_menus 0
+
+proc enter_develop_mode {} {
+    global mode user branch
+    if {[aegis_has_role d $user $branch]} {
+        leave_mode
+        set mode "develop"
+
+        AddMainMenuItem develop Develop
+          AddDropDownMenuCommand develop "View Changes" view_changes
+          AddDropDownMenuCommand develop "Begin Change" develop_begin
+          AddDropDownMenuCommand develop "Continue Change" develop_continue
+          AddDropDownMenuCommand develop "View Differences" view_diffs
+          AddDropDownMenuCommand develop "Abort Change" develop_begin_undo
+          AddDropDownMenuCommand develop "End Change" develop_end
+          AddDropDownMenuCommand develop "Resume Change" develop_end_undo
+    }
+}
+
+proc add_develop_menus {} {
+    global has_develop_menus
+    if {$has_develop_menus == 0} {
+	set has_develop_menus 1
+        AddMainMenuItem file File
+          AddDropDownMenuCommand file "Edit Files" edit_files
+          AddDropDownMenuCommand file "Add New File" new_file
+          AddDropDownMenuCommand file "Discard New File" new_file_undo
+          AddDropDownMenuCommand file "Remove Existing File" remove_file
+          AddDropDownMenuCommand file "Restore Existing File" remove_file_undo
+          AddDropDownMenuCommand file "Change Existing File" copy_file
+          AddDropDownMenuCommand file "Undo Changes to Existing File" copy_file_undo
+    
+        AddMainMenuItem build Build
+          AddDropDownMenuCommand build "Build Project" build_project
+    
+        AddMainMenuItem test Test
+          AddDropDownMenuCommand test "Add New Test Script" new_test
+          AddDropDownMenuCommand test "Discard New Test Script" new_test_undo
+          AddDropDownMenuSeparator test
+          AddDropDownMenuCommand test "Run New Tests" run_tests
+          AddDropDownMenuCommand test "Run Regression Tests" run_regression_tests
+          AddDropDownMenuCommand test "Run Baseline Test" run_baseline_test
+    }
+}
+
+proc develop_begin {} {
+    global branch change
+    if [select_change "db" "develop" ] {
+	if [aegis_develop_begin $branch $change] {
+	    AddStatusLine "Developing change $change of project $branch"
+	    aegis_set_directory $branch $change
+	    if {! [file exists config] } {
+		make_templates
+	    }
+        }
+	add_develop_menus
+    }
+}
+
+proc develop_continue {} {
+    global branch change
+    if [select_change "de" "continue developing"] {
+	aegis_set_directory $branch $change
+	add_develop_menus
+    }
+}
+
+proc view_diffs {} {
+    global branch change
+    if [select_change "de" "view diffs" ] {
+	aegis_show_diffs $branch $change
+    }
+}
+
+proc edit_files {} {
+    global branch change
+    set files [aegis_get_files $branch $change]
+    if {$files != ""} {
+        set files [choose_files "Select files to edit" $files]
+        if {$files != ""} {
+            run_editor $files
+        }
+    }
+}
+
+proc develop_end {} {
+    global branch change
+    if [aegis_develop_end $branch $change] {
+	remove_develop_menus
+    }
+}
+
+proc develop_begin_undo {} {
+    global branch change
+    if [select_change "dbu" "undo develop begin"] {
+        if [get_confirm "Cancel development (all changes will be lost)?"] {
+            if [aegis_develop_begin_undo $branch $change] {
+	        remove_develop_menus
+	    }
+	}
+    }
+}
+
+proc develop_end_undo {} {
+    global branch change
+    if [select_change "deu" "undo develop end"] {
+        if [aegis_develop_end_undo $branch $change] {
+	    AddStatusLine "Developing change $change of project $branch"
+        }
+    }
+}
+
+proc new_file {} {
+    global branch change scratch
+    toplevel .panel
+    set scratch ""
+    wm title .panel "New File"
+    frame .panel.top
+    frame .panel.bottom
+    label .panel.top.label -text "File name:"
+    entry .panel.top.entry -width 20 -relief sunken -bd 2 -textvariable scratch
+    button .panel.bottom.ok -text OK -command { destroy .panel }
+    button .panel.bottom.cancel -text Cancel -command { set scratch "";destroy .panel }
+    pack .panel.top -side top 
+    pack .panel.bottom -side bottom 
+    pack .panel.top.label .panel.top.entry -side left -padx 1m -pady 2m \
+	-fill x 
+    pack .panel.bottom.cancel -side right -fill y
+    pack .panel.bottom.ok -side left -fill y
+    focus .panel.top.entry
+    grab set .panel
+    tkwait window .panel
+    if {$scratch != ""} {
+	aegis_new_file $branch $change $scratch
+    }
+}
+
+proc new_file_undo {} {
+    global branch change
+    set files [aegis_get_new_files $branch $change]
+    if {$files != ""} {
+	set f [choose_files "Files to Remove" $files]
+	if {$f != "" } {
+	    if [get_confirm "Remove file $f from project?"] {
+		aegis_new_file_undo $branch $change $f
+	    }
+	}
+    }
+}
+
+proc remove_file {} {
+    global branch change
+    set files [aegis_get_removable_files $branch $change]
+    if {$files != ""} {
+	set f [choose_files "Files to Remove" $files]
+	if {$f != "" } {
+	    if [get_confirm "Remove file $f from project?"] {
+		aegis_remove_file $branch $change $f
+	    }
+	}
+    }
+}
+
+proc remove_file_undo {} {
+    global branch change
+    set files [aegis_get_removable_undo_files $branch $change]
+    if {$files != ""} {
+	set f [choose_files "Files to Undo Remove" $files]
+	if {$f != "" } {
+	    if [get_confirm "Restore file $f to project?"] {
+		aegis_remove_file_undo $branch $change $f
+	    }
+	}
+    }
+}
+
+proc copy_file {} {
+    global branch change
+    set files [aegis_get_copyable_files $branch $change]
+    if {$files != ""} {
+	set f [choose_files "Files to Change" $files]
+	if {$f != "" } {
+	    aegis_copy_file $branch $change $f
+	}
+    }
+}
+
+proc copy_file_undo {} {
+    global branch change
+    set files [aegis_get_copyable_undo_files $branch $change]
+    if {$files != ""} {
+	set f [choose_files "Files to Undo Changes" $files]
+	if {$f != "" } {
+	    if [get_confirm "Undo changes to $f?"] {
+	        aegis_copy_file_undo $branch $change $f
+	    }
+	}
+    }
+}
+
+# make_templates is intended to make makefile/cookfile and config
+# file templates upon first change
+
+proc make_templates {} {
+    show_message "Sorry!" "Templates not implemented yet!"
+}
+
+proc build_project {} {
+    global branch change
+    if [winfo exists .build] { destroy .build }
+    if [aegis_build $branch $change] {
+	show_message "Info" "Build successful!"
+    } else {
+	show_text .build "Build Failed" [exec cat aegis.log]
+    }
+}
+    
+proc new_test {} {
+    global branch change
+    if [aegis_new_test $branch $change testfile] {
+	run_editor $testfile
+    }
+}
+    
+proc new_test_undo {} {
+    global branch change
+    set files [aegis_get_new_test_files $branch $change]
+    if {$files != ""} {
+	set f [choose_files "Tests to Remove" $files ]
+	if {$f != "" } {
+	    aegis_new_test_undo $branch $change $f
+	}
+    }
+}
+    
+proc run_tests {} {
+    global branch change
+    if [winfo exists .test] { destroy .test }
+    if [aegis_run_tests $branch $change] {
+	show_message "Info" "Change passed tests"
+     } else {
+	show_text .test "Error" [exec cat aegis.log]
+    }
+}
+    
+proc run_regression_tests {} {
+    global branch change
+    if [winfo exists .regtest] { destroy .regtest }
+    if [aegis_run_regression_tests $branch $change] {
+	show_message "Info" "Change passed regression tests"
+    } else {
+	show_text .regtest "Error" [exec cat aegis.log]
+    }
+}
+    
+proc run_baseline_test {} {
+    global branch change
+    if [winfo exists .bltest] { destroy .bltest }
+    if [aegis_run_baseline_test $branch $change] {
+	show_message "Info" "Change passed baseline test"
+    } else {
+	show_text .bl_test "Error" [exec cat aegis.log]
+    }
+}
+    
+proc remove_develop_menus {} {
+    global has_develop_menus
+    if {$has_develop_menus} {
+	set has_develop_menus 0
+    	DestroyMainMenuItem test
+    	DestroyMainMenuItem build
+    	DestroyMainMenuItem file
+    }
+}
+
+proc leave_develop_mode {} {
+    remove_develop_menus
+    DestroyMainMenuItem develop
+}
+
+###############
+# REVIEW MODE #
+###############
+
+proc enter_review_mode {} {
+    global mode user branch
+    if {[aegis_has_role r $user $branch] == 1} {
+        leave_mode
+        set mode "review"
+
+        AddMainMenuItem review Review
+          AddDropDownMenuCommand review "View Changes" view_changes
+          AddDropDownMenuSeparator review
+          AddDropDownMenuCommand review "Begin Review" review_change
+          AddDropDownMenuCommand review "Abort Review" review_abort
+          AddDropDownMenuSeparator review
+          AddDropDownMenuCommand review "Pass" review_pass
+          AddDropDownMenuCommand review "Fail" review_fail
+          AddDropDownMenuCommand review "Undo Pass" review_pass_undo
+    }
+}
+
+proc review_change {} {
+    global branch change
+    if [select_change "rpass" "review" ] {
+	aegis_show_diffs $branch $change
+    }
+}
+
+proc review_abort {} {
+    global change
+    aegis_trash_diffs
+    set change ""
+}
+
+proc review_pass {} {
+    global branch change
+    if [select_change "rpass" "pass review"] {
+	aegis_review_pass $branch $change
+        aegis_trash_diffs
+    }
+}
+
+proc review_fail {} {
+    global branch change
+    if [select_change "rfail" "fail review"] {
+	aegis_review_fail $branch $change
+        aegis_trash_diffs
+    }
+}
+
+proc review_pass_undo {} {
+    global branch change
+    if [select_change "rpu" "undo review"] {
+	aegis_review_pass_undo $branch $change
+        aegis_trash_diffs
+    }
+}
+
+proc leave_review_mode {} {
+    DestroyMainMenuItem review
+}
+
+##################
+# INTEGRATE MODE #
+##################
+
+proc enter_integrate_mode {} {
+    global mode user branch
+    if {[aegis_has_role i $user $branch] == 1} {
+        leave_mode
+        set mode "integrate"
+
+        AddMainMenuItem integrate Integrate
+          AddDropDownMenuCommand review "View Changes" view_changes
+          AddDropDownMenuSeparator integrate
+          AddDropDownMenuCommand integrate "Start Integration" integrate_begin
+          AddDropDownMenuCommand integrate "Resume Integration" integrate_resume
+          AddDropDownMenuCommand integrate "Cancel Integration" \
+			integrate_begin_undo
+          AddDropDownMenuSeparator integrate
+          AddDropDownMenuCommand integrate "View Differences" integrate_review
+          AddDropDownMenuSeparator integrate
+          AddDropDownMenuCommand integrate "Build" integrate_build
+          AddDropDownMenuSeparator integrate
+          AddDropDownMenuCommand integrate "New Tests" integrate_new_tests
+          AddDropDownMenuCommand integrate "Baseline Test" integrate_baseline_test
+          AddDropDownMenuCommand integrate "Regression Test" \
+			integrate_regression_tests
+          AddDropDownMenuSeparator integrate
+          AddDropDownMenuCommand integrate "Pass" integrate_pass
+          AddDropDownMenuCommand integrate "Fail" integrate_fail
+    }
+}
+
+proc integrate_begin {} {
+    global branch change 
+    if [select_change "ib" "begin integration"] {
+	aegis_integrate_begin $branch $change
+    }
+}
+
+proc integrate_resume {} {
+    select_change "ibu" "resume integration"
+}
+
+proc integrate_begin_undo {} {
+    global branch change
+    if [select_change "ibu" "undo integration"] {
+	if [aegis_integrate_begin_undo $branch $change] {
+	    show_message "Info" "Cancelled integration"
+        }
+   }
+}
+
+proc integrate_review {} {
+    global branch change
+    if [select_change "ibu" "integration review" ] {
+	aegis_show_diffs $branch $change
+    }
+}
+
+proc integrate_build {} {
+    if [select_change "ibu" "integration build"] {
+	build_project
+    }
+}
+
+proc integrate_new_tests {} {
+    if [select_change "ibu" "integration new tests"] {
+	run_tests
+    }
+}
+
+proc integrate_regression_tests {} {
+    if [select_change "ibu" "integration regression tests"] {
+	run_regression_tests
+    }
+}
+
+proc integrate_baseline_test {} {
+    if [select_change "ibu" "integration baseline test"] {
+	run_baseline_test
+    }
+}
+
+proc integrate_pass {} {
+    global branch change
+    if [select_change "ibu" "pass integration"] {
+	aegis_trash_diffs
+        cd ..
+	aegis_integrate_pass $branch $change
+    }
+}
+
+proc integrate_fail {} {
+    global branch change
+    if [select_change "ibu" "fail integration"] {
+	aegis_trash_diffs
+	aegis_integrate_fail $branch $change
+    }
+}
+
+proc leave_integrate_mode {} {
+    aegis_trash_diffs
+    DestroyMainMenuItem integrate
+}
+
+################################################################
+# Switch in/out of modes
+
+proc leave_mode {} {
+    global mode
+    if {$mode == "administrate"} {
+	leave_administrate_mode
+    } elseif {$mode == "develop"} {
+	leave_develop_mode
+    } elseif {$mode == "review"} {
+	leave_review_mode
+    } elseif {$mode == "integrate"} {
+	leave_integrate_mode
+    }
+    set mode "none"
+}
+
+proc enter_mode {mode} {
+    if {$mode == "administrate"} {
+	enter_administrate_mode
+    } elseif {$mode == "develop"} {
+	enter_develop_mode
+    } elseif {$mode == "integrate"} {
+	enter_integrate_mode
+    } elseif {$mode == "review"} {
+	enter_review_mode
+    }
+}
+
+add_project_menu
+focus .mbar

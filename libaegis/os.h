@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,9 @@ void os_setgid _((int));
 void os_execute _((string_ty *cmd, int flags, string_ty *dir));
 int os_execute_retcode _((string_ty *cmd, int flags, string_ty *dir));
 string_ty *os_execute_slurp _((string_ty *cmd, int flags, string_ty *dir));
+long os_file_size _((string_ty *));
 void os_mtime_range _((string_ty *, time_t *, time_t *));
+time_t os_mtime_actual _((string_ty *));
 void os_mtime_set _((string_ty *, time_t));
 void os_mtime_set_errok _((string_ty *, time_t));
 void os_chown_check _((string_ty *path, int mode, int uid, int gid));

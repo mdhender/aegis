@@ -23,9 +23,10 @@
 #include <aer/expr/name.h>
 #include <aer/value/enum.h>
 #include <aer/value/integer.h>
+#include <aer/value/real.h>
 #include <aer/value/string.h>
-#include <aer/value/time.h>
 #include <aer/value/struct.h>
+#include <aer/value/time.h>
 #include <error.h>
 #include <fstrcmp.h>
 #include <trace.h>
@@ -98,6 +99,40 @@ type_ty	time_type =
 	0, /* fuzzy */
 	time_convert,
 	time_is_set,
+};
+
+
+static rpt_value_ty *real_convert _((void *));
+
+static rpt_value_ty *
+real_convert(this)
+	void		*this;
+{
+	return rpt_value_real(*(double *)this);
+}
+
+
+static int real_is_set _((void *));
+
+static int
+real_is_set(this)
+	void		*this;
+{
+	return (*(double *)this != 0);
+}
+
+
+type_ty	real_type =
+{
+	"real",
+	0, /* alloc */
+	0, /* free */
+	0, /* enum_parse */
+	0, /* list_parse */
+	0, /* struct_parse */
+	0, /* fuzzy */
+	real_convert,
+	real_is_set,
 };
 
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -117,6 +117,14 @@ void change_branch_default_test_exemption_set _((change_ty *, int));
 int change_branch_default_test_exemption_get _((change_ty *));
 long change_branch_minimum_change_number_get _((change_ty *));
 void change_branch_minimum_change_number_set _((change_ty *, long));
+int change_branch_reuse_change_numbers_get _((change_ty *));
+long change_branch_minimum_branch_number_get _((change_ty *));
+void change_branch_minimum_branch_number_set _((change_ty *, long));
+void change_branch_reuse_change_numbers_set _((change_ty *, int));
+int change_branch_skip_unlucky_get _((change_ty *));
+void change_branch_skip_unlucky_set _((change_ty *, int));
+int change_branch_compress_database_get _((change_ty *));
+void change_branch_compress_database_set _((change_ty *, int));
 string_ty *change_version_get _((change_ty *));
 
 #endif /* AEGIS_CHANGE_BRAN_H */

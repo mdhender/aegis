@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,10 +51,6 @@
 #include <gettime.h>
 #include <str.h>
 #include <trace.h>
-
-#ifdef HAVE_FTIME
-#include <sys/timeb.h>
-#endif
 
 #define daysec (24L * 60L * 60L)
 
@@ -495,12 +491,7 @@ time_t
 date_scan(p)
 	char		*p;
 {
-#ifdef HAVE_FTIME
-	struct timeb	*now;
-	struct timeb	ftz;
-#else
 	time_t		now;
-#endif
 	struct tm	*lt;
 	time_t		result;
 	time_t		tod;
@@ -513,14 +504,8 @@ date_scan(p)
 	/*
 	 * initialize things
 	 */
-#ifdef HAVE_FTIME
-	now = &ftz;
-	ftime(&ftz);
-	lt = localtime(&now->time);
-#else
 	time(&now);
         lt = localtime(&now);
-#endif
 	year = lt->tm_year;
 	month = lt->tm_mon + 1;
 	day = lt->tm_mday;
@@ -531,11 +516,7 @@ date_scan(p)
 	dateflag = 0;
 	dayflag = 0;
 	relflag = 0;
-#ifdef HAVE_FTIME
-	ourzone = now->timezone;
-#else
 	ourzone = 0;
-#endif
 	day_light_flag = MAYBE;
 	hh = 0;
 	mm = 0;
@@ -584,11 +565,7 @@ date_scan(p)
 	}
 	else
 	{
-#ifdef HAVE_FTIME
-		result = now->time;
-#else
 		result = now;
-#endif
 		if (!relflag)
 		{
 			result -=

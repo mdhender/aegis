@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, The History Tool
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "The History Tool"
 .LP
 The aegis program is decoupled from the history mechanism.

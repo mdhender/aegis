@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement review pass
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 
 #include <sys/types.h>
@@ -280,7 +280,7 @@ review_pass_main()
 		if (file_required)
 		{
 			user_become(up);
-			same = change_fingerprint_same(src_data->file_fp, path);
+			same = change_fingerprint_same(src_data->file_fp, path, 0);
 			user_become_undo();
 			if (!same)
 			{
@@ -298,7 +298,7 @@ review_pass_main()
 		if (diff_file_required)
 		{
 			user_become(up);
-			same = change_fingerprint_same(src_data->diff_file_fp, path_d);
+			same = change_fingerprint_same(src_data->diff_file_fp, path_d, 0);
 			user_become_undo();
 			if (!same)
 			{

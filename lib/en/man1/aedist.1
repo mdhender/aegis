@@ -1,0 +1,301 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aedist command.
+.\"
+.so z_name.so
+.ds n) aedist
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aedist \- remotely distribute a change
+.XX "aedist(1)" "remotely distribute a change"
+.SH SYNOPSIS
+.B \*(n)
+.B -Send
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Receive
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -List
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to send and receive change sets to facilitate geographically
+distributed development.  The expected transport mechanism is e-mail,
+however other mechanisms are equally possible.
+.PP
+The basic function is to reproduce a change, so a command like
+.RS
+\f(CWaedist -send | aedist -receive\fP
+.RE
+may be used to clone a change, though less efficiently than \fIaeclone\fP(1).
+The file format used is designed to withstand mail servers,
+so activities such as
+.RS
+\f(CWaedist -send | \fIe-mail\f(CW | aedist -receive\fR
+.RE
+(where \fIe-mail\fP represents sending, transporting and receiving your e-mail)
+will reproduce the change on a remote system.
+With suitable tools (such as PGP) is it possible to
+.RS
+\f(CWaedist -send | encrypt | \fIe-mail\f(CW | decrypt | aedist -receive\fR
+.RE
+The mechanism is also designed to allow web-based distribution such as
+.RS
+\f(CWaedist -send | \fIweb-server \(-> web-browser\f(CW | aedist -receive\fR
+.RE
+by the use of appropriate CGI scripts and mailcap entries.
+.PP
+It is possible to support both a ``push'' model and a ``pull'' model
+using this command.  For suggestions and ideas for various ways to do
+this, see the Aegis Users Guide.
+.SH SEND
+The send variant takes a specified change, or baseline, and constructs
+a distribution package containing all of the change attributes and source
+file attributes and source file contents.  The result is compressed,
+and encoded into a text format which can be sent as e-mail without being
+corrupted by the mail transfer agents along the way.
+.SS Options
+The following options are understood by the send variant:
+.TP 8n
+\fB\-Ascii_Armor
+This option may be used to specify that MIME base 64 encoding is to be
+used on the output.  This is the default.
+.TP 8n
+\fB\-No_Ascii_Armor
+This option may be used to specify that no encoding is to be
+uses on the output.  The output will be a binary file.
+.TP 8n
+\fB\-BaseLine\fP
+This option may be used to specify the source of a project,
+rather than a change.
+Implies the \fI\-Entire_Source\fP option, unless over-ridden.
+.so o_change.so
+.TP 8n
+\fB\-COmpress
+This option may be used to specify that the output is to be compressed.
+This is the default.
+.TP 8n
+\fB\-No_COmpress
+This option may be used to specify that the output is not to be compressed.
+.TP 8n
+\fB\-Description_Header\fP
+This option may be used to add an RFC 822 style header to the change
+description being sent, with a From and Date line.
+This is the default.
+.TP 8n
+\fB\-No_Description_Header\fP
+This option suppresses the description header.
+.TP 8n
+\fB\-Entire_Source\fP
+This option may be used to send the entire source of the project,
+as well as the change source files.
+.TP 8n
+\fB\-Not_Entire_Source\fP
+This option may be used to send only source files of a change.
+This is the default, except for the \fI\-BaseLine\fP option.
+.TP 8n
+\fB\-Output\fP \fIfilename\fP
+This option may be used to direct the output into the specified file.
+Output is sent to the standard output by default.
+.TP 8n
+\fB\-Trojan\fP
+This option may be used to treat the change set as if it had a Trojan
+horse attack in it.
+.TP 8n
+\fB\-No_Trojan\fP
+This option may be used to treat the change set as if it definitely does
+not have a Trojan horse attack in it.  \fIUse with extreme care.\fP  You
+need to have authenticated the message with something like PGP first
+\fBand\fP know the the author well.
+.so o_project.so
+.SH RECEIVE
+The receive variant takes a change package created by the send variant
+and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
+within.  Files are added to the change (see \fIaenf\fP(1), \fIaecp\fP(1),
+\fIaerm\fP(1), \fIaent\fP(1)) and then the file contents are unpackaged
+into the development directory.
+.PP
+The change is then built (see \fIaeb\fP(1)), differenced (see
+\fIaed\fP(1)), and tested (see \fIaet\fP(1)).  If all of this is
+successful, development of the change is ended (see \fIaed\fP(1)).
+The automatic process stops at this point, so that a local reviewer can
+confirm that the change is desired.
+.SS Options
+The following options are understood by the receive variant:
+.TP 8n
+\fB\-Change\fP \fInumber\fP
+This option may be used to choose the change number to be used,
+otherwise one will be chosen automatically.
+.TP 8n
+\fB\-DELta\fP \fInumber\fP
+.br
+This option may be used to specify a particular
+delta in the project's history to copy the file from,
+just as for the \fIaecp\fP(1) command.
+You may also use a delta name instead of a delta number.
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+Read the change set from the specified file.
+The default is to read it from the standard input.
+.TP 8n
+\fB\-Project\fP \fIname\fP
+This option may be used to set the project name.
+If not specified, the project name in the input package will be used,
+rather than the usual project name defaulting mechanism.
+.SS Security
+Receiving changes by e-mail, and automatically committing them to the
+baseline without checking them, would be a recipe for disaster.
+A number of safeguards are provided:
+.TP 2n
+\(bu
+The format of the package is confirmed to be correct, and the package
+verified for internal consistency, before it is unpacked and acted
+upon.
+.TP 2n
+\(bu
+The automatic portion of the process stops when development ends.  This
+ensures that a local reviewer validates the change before it is committed,
+preventing accidental or malicious damage.
+.TP 2n
+\(bu
+If the change seeks to update the project \fIconfig\fP file, the
+automatic process terminates before the build or difference occurs.
+This is because this file could contain trojans for these operations,
+so a human must examine the file before the change proceeds any further.
+.TP 2n
+\(bu
+There is a \fIpotential_trojan_horse = [ string ];\fP
+field in the project\fIconfig\fP file.
+Nominate build config files, shell scripts, code generators, \fIetc\fP
+here to specify files in addition to the config file which should
+cause the automatic processing to halt.
+.TP 2n
+\(bu
+The use of e-mail authentication and encryption systems, such as PGP and
+GPG, are encouraged.  However, it is expected that this processing will
+occur after \&\fIaedist --send\fP has constructed the package and before
+\&\fIaedist --receive\fP examines and acts on the package.
+Verification of the sender is the surest defense against trojan horses.
+.TP 2n
+\(bu
+Automatic sending and receiving of packages is supported, but not
+implemented within the \*(n) command.  It is expected that the \*(n)
+command will be used within shell scripts customized for your site and
+its unique security requirements.
+See the Aegis User Guide for several different ways to do this.
+.TP 2n
+\(bu
+The more you use Aegis' test management facilities (see \&\fIaent\fP(1)
+and \&\fIaet\fP(1)) the harder it is for an inadequate change to get into
+the baseline.
+.SS "Duplicate Storms"
+In a distributed development environment, it is common for 
+change sets to eventually be propagated back to the originator.
+There are situations (particularly in some star topologies)
+where several copies of the package will return to the originator.
+.PP
+If these change sets are not detected at the review stage, and are
+propagated out yet again, there is the possibility of an exponential
+explosion of redundant packages being distributed again and again.
+.PP
+To combat this, changes are checked after the files are unpacked, but
+before and build or difference or test is performed.  The ``\fIaecpu
+--unchanged\fP'' command is used to exclude all files that the local
+repository already has in the desired form.  If no change files remain
+after this, the change is dropped entirely (see \&\fIaedbu\fP(1) and
+\&\fIaencu\fP(1)).
+.SH LIST
+The list variant can be used to list the contents of a package without
+actually unpacking it first.
+The output is reminiscent of the \fIaegis -list change-details\fP output.
+.SS Options
+The following options are understood by the list variant:
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+Read the change set from the specified file.
+The default is to read it from the standard input.
+.TP 8n
+\fB\-Output\fP \fIfilename\fP
+Write the listing to the specified file.
+Defaults to the standard output if not specified.
+.SH OPTIONS
+The following options to this command haven't been mentioned yet:
+.so o_help.so
+.so o__rules.so
+.SH FILE FORMAT
+The file format re-uses existing formats, rather than introduce anything
+new.  This means it is possible to extract the contents of a package
+even when \*(n) is unavailable.
+.TP 2n
+\(bu
+The source files and other information is stored as a \fIcpio\fP(1) archive.
+.TP 2n
+\(bu
+The archive is compressed using the GNU gzip format.  Typically primary
+source files are ASCII text, resulting in significant compression.
+.TP 2n
+\(bu
+The compressed result is encoded using the MIME base64 encoding.
+This makes the result approximately 33% larger than the compressed binary
+would be, but still smaller than the primary sources.
+.PP
+The \fIcpio\fP archive is used to store
+.TP 8n
+\f(CWetc/project-name\fP
+This contains the project name to apply the package to,
+unless over-ridden by the --project command line option.
+.TP 8n
+\f(CWetc/change-set\fP
+This contains the change attributes and the list of source files and
+usages, in \fIaecstate\fP(5) format.
+.TP 8n
+\f(CWsrc/\fP\fIfilename\fP
+Each source file in the package (named in \fIetc/change-set\fP)
+appears under the \fIsrc/\fP directory.
+.PP
+Extra files, or files out of order, are a fatal error.
+.so z_exit.so
+.so z_cr.so
+.SH CREDITS
+This program evolved through discussion with a number of people.
+If I have forgotten anyone, it wasn't intentional.
+.TS
+tab(;);
+l l l.
+Ralf Fassel;<ralf@akutech.de>;Catching trojan horses.
+Florian Xhumari;<Florian.Xhumari@inria.fr>;On the need for pull interfaces.
+Graham Wheeler;<gram@cdsec.com>;HTTP pull interfacing.
+.TE

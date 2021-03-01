@@ -61,11 +61,11 @@ print("");
 print("<html><head><title>");
 print("Change Density by File");
 print("</title></head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',");
+print("Project ``" ## quote_html(project_name()) ## "'',");
 print("<br>Change Density by File");
 
 if (prefix != "")
-	print("<br>Directory ``" ## prefix ## "'',");
+	print("<br>Directory ``" ## quote_html(prefix) ## "'',");
 
 print("</center></h1>");
 
@@ -158,12 +158,13 @@ for (filename in sort(keys(remember)))
 		href = "densi";
 	else
 		href = "menu";
-	href = script_name ## "?file@file_" ## href ## "+" ## prefix ##
-		filename ## "+project@" ## project_name();
+	href = script_name ## "?file@file_" ## href ## "+" ##
+		quote_url(prefix ## filename) ## "+project@" ##
+		quote_url(project_name());
 
 	print("<tr><td valign=top>");
 	print("<a href=\"" ## href ## "\">");
-	print("<tt>" ## filename ## "</tt></a>" ##
+	print("<tt>" ## quote_html(filename) ## "</tt></a>" ##
 		(cf.is_a_directory ? "/" : ""));
 	print("</td><td valign=top align=right>");
 	print(cf.total);

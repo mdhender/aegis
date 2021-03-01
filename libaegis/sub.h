@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1995, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,26 +24,27 @@
 #define SUB_H
 
 #include <str.h>
+#include <noreturn.h>
 
 struct change_ty; /* existence */
 struct project_ty; /* existence */
 typedef struct sub_context_ty sub_context_ty;
 
-sub_context_ty *sub_context_New _((char *, int));
+sub_context_ty *sub_context_New _((const char *, int));
 #define sub_context_new() sub_context_New(__FILE__, __LINE__)
 
 void sub_context_delete _((sub_context_ty *));
 
 void sub_var_clear _((sub_context_ty *));
-void sub_var_set _((sub_context_ty *, char *name, char *fmt, ...));
-void sub_var_optional _((sub_context_ty *, char *));
-void sub_var_append_if_unused _((sub_context_ty *, char *));
-void sub_var_override _((sub_context_ty *, char *));
-void sub_var_resubstitute _((sub_context_ty *, char *));
+void sub_var_set _((sub_context_ty *, const char *name, const char *fmt, ...));
+void sub_var_optional _((sub_context_ty *, const char *));
+void sub_var_append_if_unused _((sub_context_ty *, const char *));
+void sub_var_override _((sub_context_ty *, const char *));
+void sub_var_resubstitute _((sub_context_ty *, const char *));
 void sub_errno_set _((sub_context_ty *));
 void sub_errno_setx _((sub_context_ty *, int));
 string_ty *substitute _((sub_context_ty *, struct change_ty *cp, string_ty *the_command));
-struct string_ty *subst_intl _((sub_context_ty *, char *));
+struct string_ty *subst_intl _((sub_context_ty *, const char *));
 void subst_intl_project _((sub_context_ty *, struct project_ty *));
 void subst_intl_change _((sub_context_ty *, struct change_ty *));
 
@@ -51,9 +52,9 @@ void subst_intl_change _((sub_context_ty *, struct change_ty *));
  * internationalized error messages
  * (also the keywords necessary to pull out the msgid strings)
  */
-void error_intl _((sub_context_ty *, char *));
-void fatal_intl _((sub_context_ty *, char *));
-void verbose_intl _((sub_context_ty *, char *));
+void error_intl _((sub_context_ty *, const char *));
+void fatal_intl _((sub_context_ty *, const char *)) NORETURN;
+void verbose_intl _((sub_context_ty *, const char *));
 
 /*
  * This macro does nothing by itself, but it serves as a keyword for the
@@ -65,6 +66,7 @@ void verbose_intl _((sub_context_ty *, char *));
  * This function is only for use by functions within aegis/sub/ .c
  * files, when setting the error message.
  */
-void sub_context_error_set _((sub_context_ty *, char *));
+void sub_context_error_set _((sub_context_ty *, const char *));
+struct project_ty *sub_context_project_get _((sub_context_ty *));
 
 #endif /* SUB_H */

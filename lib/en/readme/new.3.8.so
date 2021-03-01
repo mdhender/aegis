@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,9 +19,82 @@
 .\"
 .\" MANIFEST: document describing new 3.8 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
+.PP
+.if n *
+.if t \(bu
+A bug in the merge command has been fixed.  It no longer deletes all of
+your change source files if one of the merge commands fails.
+.PP
+.if n *
+.if t \(bu
+There is a new \fItkaegis\fP command, using Tk/Tcl to give Aegis a GUI.
+Contributed by Graham Wheeler <gram@cdsec.com>.
+Please report \fItkaegis\fP bugs and suggestions to Graham.
+.PP
+.if n *
+.if t \(bu
+The integrate pass command has been enhanced to cope with RCS and SCCS
+expanding keywords in source files (modifying the repository) on check-in.
+This can be ignored, or a warning can be issued, or it can be a fatal
+error (this is the default).  See \fIaeip\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+The worked example in the User Guide has (finally!)
+been updated to use the new branch numbering.
+Numerous spelling errors have been corrected.
+.PP
+.if n *
+.if t \(bu
+The developer section of the worked example chapter now also includes
+discussion of some common questions raised by folks evaluating Aegis.
+It covers insulating development directories from the baseline,
+partial check-in and collaboration.
+.PP
+.if n *
+.if t \(bu
+The \fIaesub\fP(5) man page now brings attention to the fact that the
+${Copyright_\%Years} substitution contains spaces.  You often need to
+quote it.
+.PP
+.if n *
+.if t \(bu
+The man pages which mention filename limitations, now also note that where
+underlying file-system has stricter filename length limitations than the
+\fIfilename_\%maximum_\%length\fP field in the project \fIconfig\fP file,
+the file-system wins.  Mention of this is now also present in
+\fIaedb\fP(1), \fIetc\fP; Linux UMSDOS is highlighted as problematic.
+.PP
+.if n *
+.if t \(bu
+Aegis can now collect code metrics.
+See \fIaeb\fP(1) and \fIaeipass\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+There are three new report functions available: \fIquote_url\fP,
+\fIquote_html\fP and \fIunquote_url\fP.  These are all for use when
+creating Aegis reports for the CGI interface.
+See \fIaer\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+There are several new substitutions available.  These include
+\f(CWsubst\fP, \f(CWtrim_extension\fP, \f(CWtrim_directory,\fP and
+\f(CWtrim_filename\fP.  See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+The integrate_q.sh script now works correctly for branches.
+.PP
+.if n *
+.if t \(bu
+Numerous configure, make and install problems have been fixed
+for a variety of portability targets.
+.PP
+.if n *
+.if t \(bu
+The RPM spec file has been corrected to use appropriate file attributes.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 3.8

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate mains
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stddef.h>
 #include <ac/limits.h>
 

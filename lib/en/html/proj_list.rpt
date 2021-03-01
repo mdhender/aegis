@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ print("</title></head><body><h1><center>");
 print("Project List");
 print("</center></h1><center><table>");
 
-print("<tr><th>Project</th><th>Descripion</th></tr>");
+print("<tr><th>Project</th><th>Description</th></tr>");
 
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
@@ -50,10 +50,10 @@ for (name in sort(keys(project)))
 	auto description, ok;
 	ok = true;
 	try
-		description = p.state.description;
+		description = quote_html(p.state.description);
 	catch (description)
 	{
-		description = "<i>" ## description ## "</i>";
+		description = "<i>" ## quote_html(description) ## "</i>";
 		ok = false;
 	}
 	print("<tr><td valign=top>");
@@ -61,10 +61,11 @@ for (name in sort(keys(project)))
 	{
 		auto href;
 
-		href = script_name ## "?file@proj_menu+project@" ## name;
+		href = script_name ## "?file@proj_menu";
+		href ##= "+project@" ## quote_url(name);
 		print("<a href=\"" ## href ## "\">");
 	}
-	print(name);
+	print(quote_html(name));
 	if (ok)
 		print("</a>");
 	print("</td><td valign=top>");
@@ -73,7 +74,7 @@ for (name in sort(keys(project)))
 		print(part);
 	print("</br><i>");
 	for (part in wrap(p.directory, 15))
-		print(part);
+		print(quote_html(part));
 	print("</i></td></tr>");
 }
 

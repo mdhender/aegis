@@ -1,0 +1,77 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.12 features
+.\"
+.PP
+.if n *
+.if t \(bu
+The ``\fIaedist \-receive\fP'' command now accepts a \fB\-delta\fP option,
+allowing a received change set to be applied to an historical version.
+.PP
+.if n *
+.if t \(bu
+There is now some information about managing super-projects and
+sub-projects in the \fIBranching\fP chapter of the User Guide.
+.PP
+.if n *
+.if t \(bu
+The \fIaenpr\fP(1) command now accepts a \fI\-keep\fP option, so that
+you can re-attach projects moved after using the \fIaermpr \-keep\fP command.
+See \fIaenpr\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+The \fIaenpr\fP(1) command now accepts \fI\-edit\fP and \fI\-file\fP options,
+allowing you to specify project attributes when creating the project.
+See \fIaenpr\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+If the project \fIdevelopers_may_create_changes\fP attribute is true,
+the \fIaencu\fP(1) command now allows developers to destroy changes
+they created.
+.PP
+.if n *
+.if t \(bu
+There is a new \fIadd_path_suffix\fP substitution, for manipulating
+search paths.  See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+There are 3 new substitutions: ${bindir}, ${datadir} and ${libdir}.
+These are replaced by the \fI./configure\fP options of the same name
+(or the values calculated, if none were given to \fI./configure\fP).
+The old ${lib} substitution is deprecated in favour of the new ${datadir}
+substitution.  See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+Some changes have been made which increases portability, particularly
+the Linux libc5 \fIvs\fP libc6 differences.
+.PP
+.if n *
+.if t \(bu
+Some changes have been made which increases portability, particularly
+for Windows NT.  This isn't to say Aegis works under Windows NT yet,
+but it helps the porting efforts.  Don't forget to run the mkpasswd and
+mkgroup utilities included in the Cygwin system.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.12

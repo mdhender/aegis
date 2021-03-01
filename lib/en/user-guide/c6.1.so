@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1995 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1995, 1998 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, Tips and Traps, Heterogeneous Development
 .\"
 .bp
-.2C
+.if t .2C
 .nh 2 "Heterogeneous Development"
 .LP
 The aegis program has support for heterogeneous development.

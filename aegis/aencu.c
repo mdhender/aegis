@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement new change undo
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/time.h>
 
@@ -216,7 +216,18 @@ new_change_undo_main()
 	 */
 	if (cstate_data->state != cstate_state_awaiting_development)
 		change_fatal(cp, 0, i18n("bad ncu state"));
-	if (!project_administrator_query(pp, user_name(up)))
+	if
+	(
+		!project_administrator_query(pp, user_name(up))
+	&&
+		(
+			!project_developers_may_create_changes_get(pp)
+		||
+			!project_developer_query(pp, user_name(up))
+		||
+			!str_equal(change_developer_name(cp), user_name(up))
+		)
+	)
 		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*

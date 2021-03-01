@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ See the LICENSE section, below, for more details.
 (ee.j.iz)
 .I n.,
 a protection,
-a defence.
+a defense.
 .SH DESCRIPTION
 .I Aegis
 is a CASE tool with a difference.
@@ -172,6 +172,11 @@ allows concurrent editing,
 and a resolution mechanism just before the
 change must be integrated,
 meaning fewer delays for J.A.Programmer.
+.PP
+Aegis also has strong support for geographically distributed development.
+It supports both push and pull models, and many distribution topologies.
+Aegis' normal development process is used to validate received change
+sets before committing them.
 .br
 .ne 1i
 .SH ARCHIVE SITE
@@ -187,6 +192,7 @@ URL:;http://www.canb.auug.org.au/~millerp/
 File:;aegis.html;# the Aegis page
 File:;aegis.\*(v).README;# Description, from tar file
 File:;aegis.\*(v).lsm;# Description, in LSM format
+File:;aegis.\*(v).ae;# the complete source, aedist format
 File:;aegis.\*(v).spec;# RedHat package specification
 File:;aegis.\*(v).tar.gz;# the complete source
 File:;aegis.\*(v).faq;# Frequently Asked Questions
@@ -201,11 +207,8 @@ Some are referred to in the
 documentation.
 Please have a look if you are interested.
 .SS Mirrors
-The main FTP site has limited network bandwidth.
-The above directory is also mirrored by \f(CWarchie.au\fP
-in the \f(CW/unix/Aegis\fP directory.
-This site has good bandwidth and connectivity,
-but limits the number of non-Australian users.
+See http://www.canb.auug.org.au/~millerp/
+for a list of mirror sites.
 .br
 .ne 2i
 .PP
@@ -216,10 +219,11 @@ You will be able to find Aegis on any of its mirrors.
 tab(;);
 l l s
 l l l.
-URL:;ftp://sunsite.unc.edu/devel/vc/
+URL:;ftp://sunsite.unc.edu/pub/Linux/devel/vc/
 File:;aegis.\*(v).README;# Description, from tar file
 File:;aegis.\*(v).lsm;# Description, in LSM format
-File:;aegis.\*(v).spec;# RedHat package secification
+File:;aegis.\*(v).spec;# RedHat package specification
+File:;aegis.\*(v).ae;# the complete source, aedist format
 File:;aegis.\*(v).tar.gz;# the complete source
 File:;aegis.\*(v).faq;# Frequently Asked Questions
 File:;aegis.\*(v).rm.ps.gz;# the Reference Manual, in PostScript
@@ -374,6 +378,21 @@ Since then I have found a few more.
 Not only are there now fewer bugs,
 but they never come back,
 because the regression test suite always grows.
+.SS Branching
+In 1997 the full branching support was released (it took nearly 18 months
+to retro-fit.  The underlying data structures for projects and change
+sets need to be merged.  While I noticed back in 1990 that they were
+very similar, it wasn't until branch support design was well underways
+that they should have been the same  data structure from the begining.
+.SS Geographically Distributed Development
+In 1999 a conversation on the \f(CWaegis-users\fP mailing list resulted
+in the creation of \fIaedist\fP, a program which packages and unpackages
+Aegis changes so they can be sent by e-mail, or WWW or whatever.
+With 20:20 hindsight, this could have been done way back in 1991,
+because the basic idea builds on Aegis change process model.
+.br
+.ne 1i
+.so windows.so
 .br
 .ne 1i
 .SH LICENSE
@@ -416,7 +435,6 @@ and also acknowledgments of those who generously sent me feedback,
 please see the
 .I etc/CHANGES.*
 files included in this distribution.
-.PP
 A number of features have been added to
 .I Aegis
 with this release.

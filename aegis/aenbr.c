@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement new branch
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 
 #include <ael.h>
 #include <aenbr.h>
@@ -29,6 +29,7 @@
 #include <change_bran.h>
 #include <commit.h>
 #include <error.h>
+#include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <os.h>
@@ -342,6 +343,21 @@ new_branch_internals(up, ppp, change_number, devdir)
 		cp,
 		project_minimum_change_number_get(ppp)
 	);
+	change_branch_reuse_change_numbers_set
+	(
+		cp,
+		project_reuse_change_numbers_get(ppp)
+	);
+	change_branch_minimum_branch_number_set
+	(
+		cp,
+		project_minimum_branch_number_get(ppp)
+	);
+	change_branch_skip_unlucky_set
+	(
+		cp,
+		project_skip_unlucky_get(ppp)
+	);
 
 	/*
 	 * architecture is inherited from parent
@@ -400,11 +416,13 @@ new_branch_main()
 	long		change_number;
 	user_ty		*up;
 	string_ty	*devdir;
+	char		*output;
 
 	trace(("new_branch_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
 	devdir = 0;
+	output = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -463,8 +481,36 @@ new_branch_main()
 		case arglex_token_wait_not:
 			user_lock_wait_argument(new_branch_usage);
 			break;
+
+		case arglex_token_output:
+			if (output)
+				duplicate_option(new_branch_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_file(arglex_token_output, new_branch_usage);
+				/* NOTREACHED */
+
+			case arglex_token_string:
+				output = arglex_value.alv_string;
+				break;
+
+			case arglex_token_stdio:
+				output = "";
+				break;
+			}
+			break;
 		}
 		arglex();
+	}
+	if (change_number && output)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_change,
+			arglex_token_output,
+			new_branch_usage
+		);
 	}
 
 	/*
@@ -527,11 +573,34 @@ new_branch_main()
 	bp = new_branch_internals(up, pp, change_number, devdir);
 
 	/*
+	 * If there is an output option,
+	 * write the change number to the file.
+	 */
+	if (output)
+	{
+		string_ty	*content;
+
+		content = str_format("%ld", magic_zero_decode(change_number));
+		if (*output)
+		{
+			string_ty	*fn;
+
+			fn = str_from_c(output);
+			user_become(up);
+			file_from_string(fn, content, 0644);
+			user_become_undo();
+			str_free(fn);
+		}
+		else
+			cat_string_to_stdout(content);
+		str_free(content);
+	}
+
+	/*
 	 * Write out the various files
 	 */
 	change_cstate_write(bp->pcp);
 	project_pstate_write(pp);
-	user_ustate_write(up);
 
 	/*
 	 * release the locks

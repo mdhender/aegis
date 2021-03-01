@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement develop begin undo
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/time.h>
@@ -32,6 +32,7 @@
 #include <ael.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change_bran.h>
 #include <change_file.h>
 #include <col.h>
 #include <commit.h>
@@ -248,6 +249,12 @@ develop_begin_undo_main()
 		change_number = user_default_change(up);
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
+
+	/*
+	 * Make sure it is a change we are manipulating, not a branch.
+	 */
+	if (change_is_a_branch(cp))
+		change_fatal(cp, 0, i18n("use aenbru instead"));
 
 	/*
 	 * Take an advisory write lock on the appropriate row of the change

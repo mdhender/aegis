@@ -21,7 +21,7 @@
  *
  * The ${quote ...} construct is used to quote filenames which contain
  * shell special characters.  A minimum of quoting is performed, so if
- * the filenames do not contail shell special characters, no quotes will
+ * the filenames do not contain shell special characters, no quotes will
  * be used.
  */
 
@@ -123,7 +123,7 @@ history_query_command =
 
 /*
  * RCS also provides a merge program, which can be used to provide a three-way
- * merge.  It has an ouput format some sites prefer to the fmerge output.
+ * merge.  It has an output format some sites prefer to the fmerge output.
  *
  * This command is used by aed(1) to produce a difference listing when a file
  * in the development directory is out of date compared to the current version
@@ -150,13 +150,13 @@ history_query_command =
  * usually do).  An exit status which is non-zero means something is wrong.
  *
  * The "merge -L" options are used to specify labels for the baseline and the
- *	development directory, respecticvely, when conflict lines are inserted
+ *	development directory, respectively, when conflict lines are inserted
  *	into the result.
  * The "merge -p" options is used to specify that the results are to be printed
  *	on the standard output.
  */
 
-diff3_command =
+merge_command =
 	"set +e; \
 merge -p -L baseline -L C$c ${quote $mostrecent} ${quote $original} \
 ${quote $input} > ${quote $output}; \

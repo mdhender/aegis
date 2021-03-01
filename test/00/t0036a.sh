@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -151,6 +151,8 @@ branch =
 	reviewer_may_integrate = false;
 	developers_may_create_changes = false;
 	default_test_exemption = false;
+	skip_unlucky = false;
+	compress_database = false;
 	change =
 	[
 		1,
@@ -173,6 +175,8 @@ branch =
 	[
 	];
 	minimum_change_number = 10;
+	reuse_change_numbers = true;
+	minimum_branch_number = 1;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -213,6 +217,8 @@ branch =
 	reviewer_may_integrate = false;
 	developers_may_create_changes = false;
 	default_test_exemption = false;
+	skip_unlucky = false;
+	compress_database = false;
 	change =
 	[
 		ZERO,
@@ -235,6 +241,8 @@ branch =
 	[
 	];
 	minimum_change_number = 10;
+	reuse_change_numbers = true;
+	minimum_branch_number = 1;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -275,6 +283,8 @@ branch =
 	reviewer_may_integrate = false;
 	developers_may_create_changes = false;
 	default_test_exemption = false;
+	skip_unlucky = false;
+	compress_database = false;
 	change =
 	[
 	];
@@ -283,6 +293,8 @@ branch =
 		"USER",
 	];
 	minimum_change_number = 10;
+	reuse_change_numbers = true;
+	minimum_branch_number = 1;
 };
 fubar
 if test $? -ne 0 ; then no_result; fi

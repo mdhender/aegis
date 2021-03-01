@@ -1,6 +1,6 @@
 dnl
 dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997, 1998 Peter Miller;
+dnl	Copyright (C) 1994, 1995, 1997, 1998, 1999 Peter Miller;
 dnl	All rights reserved.
 dnl
 dnl	This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@ dnl	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 dnl
 dnl MANIFEST: how to configure aegis, input to the GNU autoconf program
 dnl
-AC_INIT(common/patchlevel.h)
+AC_INIT(install-sh)
 AC_CONFIG_HEADER(common/config.h)
 AC_PROG_CC
 AC_PROG_CPP
@@ -49,13 +49,19 @@ AC_PROG_RANLIB
 AC_AIX
 AC_MINIX
 AC_ISC_POSIX
+AC_OBJEXT
+AC_EXEEXT
 AC_HAVE_LIBRARY(intl)
 AC_HAVE_LIBRARY(w)
 AC_HAVE_LIBRARY(socket)
 AC_HAVE_LIBRARY(m)
+AC_HAVE_LIBRARY(rx)
+AC_HAVE_LIBRARY(z)
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt)
 AC_CHECK_PROGS(GROFF, groff roff)
 AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
+AC_CHECK_PROGS(AWK, gawk nawk awk, awk)
+AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
 
 dnl
 dnl	Test to see where TIOCGWINSZ is defined.
@@ -100,7 +106,7 @@ AC_MSG_CHECKING([for working stdarg.h])
 AC_TRY_RUN([
 #include <stdarg.h>
 char *foo = "test";
-#if defined(__STDC__) && __STDC__
+#if defined(__GNUC__) || __STDC__
 int test(char*,...);
 #endif
 int test(fmt)char*fmt;{va_list ap;char*a;int x;
@@ -125,16 +131,17 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
-AC_CHECK_HEADERS(fcntl.h iso646.h libintl.h limits.h locale.h memory.h \
-	stddef.h stdlib.h string.h unistd.h wchar.h wctype.h widec.h)
+AC_CHECK_HEADERS(fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
+	memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h string.h \
+	unistd.h wchar.h wctype.h widec.h zlib.h)
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
-AC_CHECK_FUNCS(getpgrp gettext iswctype pathconf seteuid setlocale \
-	setresuid setreuid strcasecmp strerror strftime strsignal \
+AC_CHECK_FUNCS(getpgrp gettext iswctype pathconf  regcomp seteuid setlocale \
+	setresuid setreuid strcasecmp strerror strftime strsignal strtoul \
 	tcgetpgrp wcslen)
 
 dnl
@@ -146,14 +153,15 @@ AC_TRY_COMPILE([
 #ifdef HAVE_STDDEF_H
 #include <stddef.h>
 #endif
+/* Solaris bug 1250837: include wchar.h before widec.h */
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
 #ifdef HAVE_WIDEC_H
 #include <widec.h>
 #endif
 #ifdef HAVE_WCTYPE_H
 #include <wctype.h>
-#endif
-#ifdef HAVE_WCHAR_H
-#include <wchar.h>
 #endif
 ],
 [ wint_t x; ],
@@ -167,6 +175,10 @@ dnl
 AC_MSG_CHECKING([for working iswprint])
 AC_TRY_RUN([
 #include <ctype.h>
+/* Solaris bug 1250837: include wchar.h before widec.h */
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
 #ifdef HAVE_WIDEC_H
 #include <widec.h>
 #endif
@@ -334,7 +346,15 @@ dnl	put the CGI script, and other HTML files.
 dnl
 AC_MSG_CHECKING([for httpd server config])
 web=no
-for ac_dir in /var/httpd /usr/httpd /etc/httpd /usr/local/httpd
+for ac_dir in \
+	/etc/httpd \
+	/opt/apache \
+	/usr/apache \
+	/usr/httpd \
+	/usr/local/apache \
+	/usr/local/httpd \
+	/var/apache \
+	/var/httpd
 do
 	if test -f $ac_dir/conf/httpd.conf
 	then
@@ -348,7 +368,7 @@ then
 	AC_MSG_RESULT([$httpd])
 
 	AC_MSG_CHECKING([for httpd document root])
-	DocumentRoot=`awk '/^DocumentRoot/{print $2}' $httpd/conf/srm.conf`
+	DocumentRoot=`$AWK '/^DocumentRoot/{print $2}' $httpd/conf/srm.conf $httpd/conf/httpd.conf | head -1`
 	if test "x$DocumentRoot" = "x"; then
 		DocumentRoot=no
 		web=no
@@ -356,7 +376,7 @@ then
 	AC_MSG_RESULT([$DocumentRoot])
 
 	AC_MSG_CHECKING([for httpd script root])
-	ScriptRoot=`awk '/^ScriptAlias.*cgi-bin/{dir=$3; sub(/\/*$/, "", dir); print dir}' $httpd/conf/srm.conf`
+	ScriptRoot=`$AWK '/^ScriptAlias.*cgi-bin/{dir=$3; sub(/\/*$/, "", dir); print dir}' $httpd/conf/srm.conf $httpd/conf/httpd.conf | head -1`
 	if test "x$ScriptRoot" = "x"; then
 		ScriptRoot=no
 		web=no
@@ -422,5 +442,17 @@ else
   AC_MSG_RESULT([])
 fi
 AC_SUBST(HAVE_GROFF)
+
+# program prefix is the bit to add to the start of the name
+if test ${PROGRAM_PREFIX-NONE} != NONE -a ${program_prefix-NONE} != NONE; then
+PROGRAM_PREFIX=${program_prefix}
+fi
+AC_SUBST(PROGRAM_PREFIX)
+
+# program suffix is the bit to add to the end of the name (before .exe)
+if test ${PROGRAM_SUFFIX-NONE} != NONE -a ${program_suffix-NONE} != NONE; then
+PROGRAM_SUFFIX=${program_suffix}
+fi
+AC_SUBST(PROGRAM_SUFFIX)
 
 AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so lib/aegis.cgi common/libdir.c etc/compat.2.3)

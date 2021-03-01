@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -87,8 +87,6 @@ void project_pstate_lock_prepare_top _((project_ty *));
 void project_baseline_read_lock_prepare _((project_ty *));
 void project_baseline_write_lock_prepare _((project_ty *));
 void project_history_lock_prepare _((project_ty *));
-pattr project_pattr_get _((project_ty *));
-void project_pattr_set _((project_ty *, pattr));
 void project_error _((project_ty *, struct sub_context_ty *, char *));
 void project_fatal _((project_ty *, struct sub_context_ty *, char *));
 void project_verbose _((project_ty *, struct sub_context_ty *, char *));
@@ -109,6 +107,14 @@ long project_next_test_number_get _((project_ty *));
 int project_is_readable _((project_ty *));
 long project_minimum_change_number_get _((project_ty *));
 void project_minimum_change_number_set _((project_ty *, long));
+int project_reuse_change_numbers_get _((project_ty *));
+void project_reuse_change_numbers_set _((project_ty *, int));
+long project_minimum_branch_number_get _((project_ty *));
+void project_minimum_branch_number_set _((project_ty *, long));
+int project_skip_unlucky_get _((project_ty *));
+void project_skip_unlucky_set _((project_ty *, int));
+int project_compress_database_get _((project_ty *));
+void project_compress_database_set _((project_ty *, int));
 
 int break_up_version_string _((char *, long *, int, int *, int));
 void extract_version_from_project_name _((string_ty **, long *, int, int *));

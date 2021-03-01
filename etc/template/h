@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: interface definition for ${basename $fn .h}.c
+ * MANIFEST: interface definition for ${trim_extension $fn}.c
  */
 
 #ifndef ${upcase ${id $fn}}
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void ${id ${basename $fn .h}} _((void));
+void ${id ${trim_directory ${trim_extension $fn}}} _((void));
 
 #endif /* ${upcase ${id $fn}} */

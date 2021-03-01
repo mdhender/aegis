@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to implement remove project
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 
 #include <ael.h>
 #include <aermpr.h>
@@ -34,6 +34,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <project/active.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -92,11 +93,8 @@ static void
 remove_project_main()
 {
 	long		nerr;
-	int		j;
 	string_ty	*project_name;
 	project_ty	*pp;
-	change_ty	*cp;
-	cstate		cstate_data;
 	user_ty		*up;
 	int		still_exists;
 
@@ -148,6 +146,13 @@ remove_project_main()
 	project_bind_existing(pp);
 
 	/*
+	 * Make sure it is a top-level project we are talking about,
+	 * not merely a branch.
+	 */
+	if (pp->parent)
+		project_fatal(pp, 0, i18n("use aenbru instead"));
+
+	/*
 	 * see if the user already deleted it
 	 */
 	os_become_orig();
@@ -175,33 +180,15 @@ remove_project_main()
 
 	/*
 	 * it is an error if any of the changes are active
+	 * or any changes on any of the branches
+	 * (project_active reports the error itself)
 	 */
-	nerr = 0;
-	for (j = 0; ; ++j)
-	{
-		long	change_number;
-
-		if (!project_change_nth(pp, j, &change_number))
-			break;
-		cp = change_alloc(pp, change_number);
-		change_bind_existing(cp);
-		cstate_data = change_cstate_get(cp);
-		if
-		(
-			cstate_data->state >= cstate_state_being_developed
-		&& 
-			cstate_data->state <= cstate_state_being_integrated
-		)
-		{
-			change_error(cp, 0, i18n("still active"));
-			++nerr;
-		}
-		change_free(cp);
-	}
+	project_active_check(pp, 1);
 
 	/*
 	 * it is an error if the current user is not an administrator
 	 */
+	nerr = 0;
 	if (!project_administrator_query(pp, user_name(up)))
 	{
 		project_error(pp, 0, i18n("not an administrator"));

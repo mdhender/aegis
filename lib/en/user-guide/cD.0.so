@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, Appendix D, Why is Aegis Set-Uid-Root?
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "Appendix D: Why is Aegis Set-Uid-Root?"
 .LP
 The goal for aegis is to have a project that "works".

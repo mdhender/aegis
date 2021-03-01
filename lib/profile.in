@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,15 @@
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Bourne shell user config for aegis
+#
+# @configure_input@
+#
+# Please Note: this file will be over-written by the next installation
+# of Aegis.  If you make local modifications, you will need to remember
+# to make them again after the next upgrade.
+#
+# On Linux, or any system using bash (I think), a symlink to this file
+# from /etc/profile.d/aegis.sh can be very useful.
 #
 if test -d $HOME/lib/aegis/.
 then
@@ -40,8 +49,34 @@ export LANGUAGE
 # which understand the $LANGUAGE environment variable will be able to find
 # manual pages in the user's preferred language.
 #
-MANPATH=${MANPATH-/usr/man}:@mandir@:@datadir@
+if [ "${MANPATH-no}" = "no" ]; then
+	if [ "`uname`" = "Linux" ]; then
+		MANPATH=`man -w`
+	else
+		MANPATH=/usr/man
+	fi
+fi
+MANPATH=${MANPATH}:@mandir@:@datadir@
 export MANPATH
+
+#
+# Set the AEGIS_AUTOMOUNT_POINTS environment variable to the names
+# of the directories which the automounter uses to temporarily mount
+# file systems.  Use with extreme caution as this distorts Aegis' idea
+# of the shape of the filesystem.
+#
+#	/tmp_mnt is typical of Sun automounters
+#	/a is the default for amd, an OpenSource automounter
+#	/.automount is typical of amd on Linux
+#
+# The automounters need to be configured so that the path below the
+# automount point is *identical* to the path without it - because all
+# Aegis tries to do is remove the automount prefix *if* the file
+# stat()s the same with and without it.  This is the default for the
+# Sun automounter, but not typical in the examples in the amd user guide.
+#
+AEGIS_AUTOMOUNT_POINTS="/tmp_mnt:/a:/.automount"
+export AEGIS_AUTOMOUNT_POINTS
 
 #
 # Each of the Aegis commands has its own alias This is essential for

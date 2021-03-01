@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, Tips and Traps
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "Tips and Traps"
 .LP
 This chapter contains hints for how to use the aegis program

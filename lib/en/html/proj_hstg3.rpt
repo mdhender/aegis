@@ -43,7 +43,7 @@ print("");
 print("<html><head><title>");
 print("Project Change Histogram");
 print("</title><head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',<br>");
+print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 print("Change Histogram<br>");
 print(strftime("%B %Y", t));
 print("</center></h1>");

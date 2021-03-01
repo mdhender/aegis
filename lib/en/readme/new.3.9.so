@@ -1,0 +1,76 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.9 features
+.\"
+.PP
+.if n *
+.if t \(bu
+As of this release you must have \fBzlib\fP installed before you can
+build Aegis.
+.PP
+.if n *
+.if t \(bu
+There is a new \fIreuse_\%change_\%numbers\fP project attribute,
+letting you control whether \fIaenc\fP fills in holes in the change
+number sequence.  Defaults to true if not set.  See \fIaepattr\fP(5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+There is a new \fIintegrate_\%begin_\%exceptions\fP field in the project
+\fIconfig\fP file.  This permits the user to specify file to be omitted
+when the integration directory copy/link is performed.
+.PP
+.if n *
+.if t \(bu
+The \fIaet\fP(1) command has been changed so that it does not exit with
+an error if you have a test exemption but no tests.  This is no longer
+an error.
+.PP
+.if n *
+.if t \(bu
+There is a new \fIaedist\fP(1) command, which may be used to send and
+receive Aegis change sets via e-mail and the web.
+.PP
+.if n *
+.if t \(bu
+The \fIaeclone\fP(1), \fIaenbr\fP(1), \fIaenc\fP(1) commands now accept
+a \f(CB\-output\fP option, a file to contain the automatically generated
+change number.  This greatly assists in writing scripts.  See the man
+pages for more information.
+.PP
+.if n *
+.if t \(bu
+The \fIaent\fP(1) command now accepts a \f(CB\-output\fP option, a file
+to contain the automatically generated file name.  See the man pages
+for more information.
+.PP
+.if n *
+.if t \(bu
+There is a new \fIcompres_\%database\fP field in the project attributes,
+allowing the Aegis database to be stored in a compressed form (using
+the GNU Zip algorthm).  Unless you have an exceptionally large project,
+coupled with fast CPUs and high network latency, there is probably very
+little benefit in using this feature.  (The database is usually less
+than 5% of the size of the repository.)  On slow networks, however,
+this can sometimes improve the preformance of file-related commands.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.9

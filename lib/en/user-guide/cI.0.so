@@ -20,7 +20,7 @@
 .\" MANIFEST: document describing cI.0.so
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "Appendix I: Internationalization and Localization
 .LP
 The Aegis source code has been internationalized,

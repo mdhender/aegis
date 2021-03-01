@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1995 Peter Miller.
+ *	Copyright (C) 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate identifier fingerprints
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/string.h>
 
 #include <error.h>

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
  * MANIFEST: functions to manipulate power (exponentiation) expressions
  */
 
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/string.h>
-#include <math.h>
+#include <ac/math.h>
 
 #include <aer/expr/power.h>
 #include <aer/value/error.h>

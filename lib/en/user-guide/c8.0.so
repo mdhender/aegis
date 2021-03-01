@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, The Difference Tools
 .\"
 .bp
-.2C
+.if t .2C
 .nh 1 "The Difference Tools"
 .LP
 This chapter describes the difference commands in the

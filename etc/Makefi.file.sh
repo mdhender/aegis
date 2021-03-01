@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
-#	1998 Peter Miller; All rights reserved.
+#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -20,11 +20,15 @@
 #
 # MANIFEST: shell script to generate Makefile fragment for each source file
 #
+depfile=no-such-file-or-directory
 case $# in
 2)
 	;;
+3)
+	depfile=$3
+	;;
 *)
-	echo "usage: $0 filename resolved-filename" 1>&2
+	echo "usage: $0 filename resolved-filename [ resolved-depfile ]" 1>&2
 	exit 1
 	;;
 esac
@@ -78,22 +82,6 @@ case $file in
 	echo "	sed -e 's/[yY][yY]/${yy}_/g' y.tab.c > ${stem}.gen.c"
 	echo "	sed -e 's/[yY][yY]/${yy}_/g' y.tab.h > ${stem}.gen.h"
 	echo "	rm y.tab.c y.tab.h"
-
-	depfile=`echo $file | sed -e 's/\.y$/.gen.d/'`
-	dep=
-	if [ -r $depfile ]; then
-		dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-	else
-		depfile=`echo $rfn | sed -e 's/\.y$/.gen.d/'`
-		if [ -r $depfile ]; then
-			dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-		fi
-	fi
-
-	echo ""
-	echo "${stem}.gen.o: ${stem}.gen.c" $dep
-	echo "	\$(CC) \$(CFLAGS) -I$dir -Ilibaegis -Icommon -c ${stem}.gen.c"
-	echo "	mv ${root}.gen.o ${stem}.gen.o"
 	;;
 
 */*.c)
@@ -101,23 +89,17 @@ case $file in
 	stem=`echo $file | sed -e 's/\.c$//'`
 	dir=`echo $file | sed -e 's|/.*||'`
 
-	depfile=`echo $file | sed -e 's/\.c$/.d/'`
 	dep=
 	if [ -r $depfile ]; then
-		dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-	else
-		depfile=`echo $rfn | sed -e 's/\.c$/.d/'`
-		if [ -r $depfile ]; then
-			dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-		fi
+		dep=`sed -e 's_.arch]/__' $depfile`
 	fi
 
 	extra=
 
 	echo ""
-	echo "${stem}.o: $file" $dep
+	echo "${stem}.\$(OBJEXT): $file" $dep
 	echo "	\$(CC) \$(CFLAGS)" $extra "-I$dir -Ilibaegis -Icommon -c $file"
-	echo "	mv ${root}.o ${stem}.o"
+	echo "	mv ${root}.\$(OBJEXT) \$@"
 	;;
 
 lib/*.cgi)
@@ -185,15 +167,9 @@ lib/*/man[[1-9]/*.[1-9])
 	part=`echo $file | sed 's|^lib/.*/\(man[1-9]/.*\)|\1|'`
 	ugly=`echo $file | sed 's|^lib/.*/\(man[1-9]\)/.*|\1|'`
 
-	depfile=`echo $file | sed -e 's/\.[1-9]$/.d/'`
 	dep=
 	if [ -r $depfile ]; then
-		dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-	else
-		depfile=`echo $rfn | sed -e 's/\.[1-9]$/.d/'`
-		if [ -r $depfile ]; then
-			dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-		fi
+		dep=`sed -e 's_.arch]/__' $depfile`
 	fi
 
 	echo ""
@@ -226,14 +202,8 @@ lib/*/*/main.*)
 	dirdir=`dirname $dir`
 
 	dep=
-	depfile=`echo $file | sed "s|\.$macros\$|.d|"`
 	if [ -r $depfile ]; then
-		dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-	else
-		depfile=`echo $rfn | sed "s|\.$macros\$|.d|"`
-		if [ -r $depfile ]; then
-			dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-		fi
+		dep=`sed -e 's_.arch]/__' $depfile`
 	fi
 
 	case $macros in
@@ -287,35 +257,13 @@ lib/*)
 	dir=`echo $file | sed -e 's|/.*||'`
 
 	dep=
-	depfile=`echo $file | sed -e 's/\.def$/.dd/'`
 	if [ -r $depfile ]; then
-		dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-	else
-		depfile=`echo $rfn | sed -e 's/\.def$/.dd/'`
-		if [ -r $depfile ]; then
-			dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-		fi
+		dep=`sed -e 's_.arch]/__' $depfile`
 	fi
 
 	echo ""
-	echo "$stem.c $stem.h: $file bin/fmtgen" $dep
-	echo "	bin/fmtgen -I$dir $file $stem.c $stem.h"
-
-	dep=
-	depfile=`echo $file | sed -e 's/\.def$/.d/'`
-	if [ -r $depfile ]; then
-		dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-	else
-		depfile=`echo $rfn | sed -e 's/\.def$/.d/'`
-		if [ -r $depfile ]; then
-			dep=`sed -e '1d' -e '$d' -e 's_.arch]/__' $depfile`
-		fi
-	fi
-
-	echo ""
-	echo "${stem}.o: ${stem}.c" $dep
-	echo "	\$(CC) \$(CFLAGS) -I$dir -Ilibaegis -Icommon -c ${stem}.c"
-	echo "	mv ${root}.o ${stem}.o"
+	echo "$stem.c $stem.h: $file bin/fmtgen\$(EXEEXT)" $dep
+	echo "	bin/fmtgen\$(EXEEXT) -I$dir $file $stem.c $stem.h"
 	;;
 
 test/*/*.sh)

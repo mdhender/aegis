@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -73,11 +73,11 @@ static	int		changed;
  *	It is important that wstr_hash_ty be unsigned (int or long).
  */
 
-static wstr_hash_ty hash_generate _((wchar_t *, size_t));
+static wstr_hash_ty hash_generate _((const wchar_t *, size_t));
 
 static wstr_hash_ty
 hash_generate(s, n)
-	wchar_t		*s;
+	const wchar_t	*s;
 	size_t		n;
 {
 	wstr_hash_ty	retval;
@@ -161,7 +161,7 @@ split()
 {
 	wstring_ty	*p;
 	wstring_ty	*p2;
-	wstr_hash_ty	index;
+	wstr_hash_ty	idx;
 
 	/*
 	 * get the list to be split across buckets
@@ -193,11 +193,11 @@ split()
 		p2 = p;
 		p = p->wstr_next;
 
-		index = p2->wstr_hash & hash_cutover_mask;
-		if (index < hash_split)
-			index = p2->wstr_hash & hash_cutover_split_mask;
-		p2->wstr_next = hash_table[index];
-		hash_table[index] = p2;
+		idx = p2->wstr_hash & hash_cutover_mask;
+		if (idx < hash_split)
+			idx = p2->wstr_hash & hash_cutover_split_mask;
+		p2->wstr_next = hash_table[idx];
+		hash_table[idx] = p2;
 	}
 }
 
@@ -224,7 +224,7 @@ split()
 
 wstring_ty *
 wstr_from_c(s)
-	char		*s;
+	const char	*s;
 {
 	return wstr_n_from_c(s, strlen(s));
 }
@@ -251,7 +251,7 @@ wstr_from_c(s)
 
 wstring_ty *
 wstr_from_wc(ws)
-	wchar_t		*ws;
+	const wchar_t	*ws;
 {
 	return wstr_n_from_wc(ws, wcslen(ws));
 }
@@ -280,7 +280,7 @@ wstr_from_wc(ws)
 
 wstring_ty *
 wstr_n_from_c(s, length)
-	char		*s;
+	const char	*s;
 	size_t		length;
 {
 #if __STDC__ >= 1
@@ -291,7 +291,7 @@ wstr_n_from_c(s, length)
 	static wchar_t	*buf;
 	static size_t	bufmax;
 	size_t		remainder;
-	char		*ip;
+	const char	*ip;
 	wchar_t		*op;
 
 	/*
@@ -404,14 +404,14 @@ wstr_n_from_c(s, length)
 
 void
 wstr_to_mbs(s, result_p, result_length_p)
-	wstring_ty	*s;
+	const wstring_ty *s;
 	char		**result_p;
 	size_t		*result_length_p;
 {
 	static char	*buf;
 	static size_t	bufmax;
 	int		n;
-	wchar_t		*ip;
+	const wchar_t	*ip;
 	size_t		remainder;
 	char		*op;
 	size_t		buflen;
@@ -526,22 +526,22 @@ wstr_to_mbs(s, result_p, result_length_p)
 
 wstring_ty *
 wstr_n_from_wc(s, length)
-	wchar_t		*s;
+	const wchar_t	*s;
 	size_t		length;
 {
 	wstr_hash_ty	hash;
-	wstr_hash_ty	index;
+	wstr_hash_ty	idx;
 	wstring_ty	*p;
 
 	if (!hash_modulus)
 		wstr_initialize();
 	hash = hash_generate(s, length);
 
-	index = hash & hash_cutover_mask;
-	if (index < hash_split)
-		index = hash & hash_cutover_split_mask;
+	idx = hash & hash_cutover_mask;
+	if (idx < hash_split)
+		idx = hash & hash_cutover_split_mask;
 
-	for (p = hash_table[index]; p; p = p->wstr_next)
+	for (p = hash_table[idx]; p; p = p->wstr_next)
 	{
 		if
 		(
@@ -561,8 +561,8 @@ wstr_n_from_wc(s, length)
 	p->wstr_hash = hash;
 	p->wstr_length = length;
 	p->wstr_references = 1;
-	p->wstr_next = hash_table[index];
-	hash_table[index] = p;
+	p->wstr_next = hash_table[idx];
+	hash_table[idx] = p;
 	memcpy(p->wstr_text, s, length * sizeof(wchar_t));
 	p->wstr_text[length] = 0;
 
@@ -623,7 +623,7 @@ void
 wstr_free(s)
 	wstring_ty	*s;
 {
-	wstr_hash_ty	index;
+	wstr_hash_ty	idx;
 	wstring_ty	**spp;
 
 	if (!s)
@@ -639,10 +639,10 @@ wstr_free(s)
 	 * find the hash bucket it was in,
 	 * and remove it
 	 */
-	index = s->wstr_hash & hash_cutover_mask;
-	if (index < hash_split)
-		index = s->wstr_hash & hash_cutover_split_mask;
-	for (spp = &hash_table[index]; *spp; spp = &(*spp)->wstr_next)
+	idx = s->wstr_hash & hash_cutover_mask;
+	if (idx < hash_split)
+		idx = s->wstr_hash & hash_cutover_split_mask;
+	for (spp = &hash_table[idx]; *spp; spp = &(*spp)->wstr_next)
 	{
 		if (*spp == s)
 		{
@@ -681,8 +681,8 @@ wstr_free(s)
 
 wstring_ty *
 wstr_catenate(s1, s2)
-	wstring_ty	*s1;
-	wstring_ty	*s2;
+	const wstring_ty *s1;
+	const wstring_ty *s2;
 {
 	static wchar_t	*tmp;
 	static size_t	tmplen;
@@ -723,9 +723,9 @@ wstr_catenate(s1, s2)
 
 wstring_ty *
 wstr_cat_three(s1, s2, s3)
-	wstring_ty	*s1;
-	wstring_ty	*s2;
-	wstring_ty	*s3;
+	const wstring_ty *s1;
+	const wstring_ty *s2;
+	const wstring_ty *s3;
 {
 	static wchar_t	*tmp;
 	static size_t	tmplen;
@@ -866,8 +866,8 @@ wstr_to_ident(ws)
 
 int
 wstr_equal(s1, s2)
-	wstring_ty	*s1;
-	wstring_ty	*s2;
+	const wstring_ty *s1;
+	const wstring_ty *s2;
 {
 	return (s1 == s2);
 }
@@ -877,7 +877,7 @@ wstr_equal(s1, s2)
 
 wstring_ty *
 str_to_wstr(s)
-	string_ty	*s;
+	const string_ty	*s;
 {
 	return wstr_n_from_c(s->str_text, s->str_length);
 }
@@ -885,7 +885,7 @@ str_to_wstr(s)
 
 string_ty *
 wstr_to_str(ws)
-	wstring_ty	*ws;
+	const wstring_ty *ws;
 {
 	char		*text;
 	size_t		length;

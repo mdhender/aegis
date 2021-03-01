@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,8 @@ langs =
 		]
 	];
 
+i18n_commands = [filter_out test_% [commands]];
+
 
 /*
  * Translate the locatization files into their binary form.  This will
@@ -73,7 +75,7 @@ i18n-tmp/libaegis.ok: i18n-tmp/libaegis.extra etc/zer-len-msg.sh
 
 msgcomm = msgcomm;
 
-i18n-tmp/libaegis.extra: [prepost "i18n-tmp/" ",I" [commands]]
+i18n-tmp/libaegis.extra: [prepost "i18n-tmp/" ",I" [i18n_commands]]
 {
 	[msgcomm]
 		--force-po
@@ -132,7 +134,7 @@ xgettext = xgettext;
  * omissions.
  */
 
-i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [commands]]
+i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [i18n_commands]]
 {
 	/*
 	 * The author only speaks English, so the master translation is
@@ -145,7 +147,7 @@ i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [commands]]
 		--add-location
 		-o [target]
 		[prepost "--dir=" "" [search_list]]
-		[prepost "--exclude-file=lib/en/LC_MESSAGES/" ".po" [commands]]
+		[prepost "--exclude-file=lib/en/LC_MESSAGES/" ".po" [i18n_commands]]
 		--language\=PO
 		/* no need to resolve, --dir will do it */
 		[all,I];
@@ -172,6 +174,7 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 }
 
 %0%.c,I: %0%.c
+	set no-cascade
 {
 	[xgettext]
 		--sort-output
@@ -190,9 +193,4 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 		--keyword\=subst_intl
 		[prepost "--dir=" "" [search_list]]
 		%0%.c;
-}
-
-LICENSE: lib/en/cat1/aelic.1
-{
-	cp [need] [target];
 }

@@ -122,6 +122,12 @@ and
 .B -Only_Merge
 options, below,
 for exact control of when merging is performed.
+.SH INTEGRATION
+During integration, it is also necessary to difference a change.
+This provides the difference between the branch and its parent, for
+when development on a branch is completed and it is to be reviewed.
+The baseline of a branch is the development directory of the composite
+change it represents.
 .SH OPTIONS
 The following options are understood:
 .so o_anticip.so
@@ -194,7 +200,9 @@ sh$	aem(){\*(n) -diff -only_merge $* -v}
 It is an error if
 the change is not in the
 .I "being developed"
-state.
+or
+.I "being integrated"
+states.
 .br
 .so z_exit.so
 .br

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to insulate fopen from stale NFS file handles
  */
 
-#include <errno.h>
+#include <ac/errno.h>
 #include <ac/unistd.h>
 
 #include <fopen_nfs.h>
@@ -29,8 +29,8 @@
 
 FILE *
 fopen_with_stale_nfs_retry(path, mode)
-	char		*path;
-	char		*mode;
+	const char	*path;
+	const char	*mode;
 {
 	FILE		*fp;
 #ifdef ESTALE

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions for execution trace
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/string.h>
 #include <ac/stddef.h>
 #include <ac/stdarg.h>
@@ -50,14 +50,14 @@ static	known_ty	*known;
 static	int		depth;
 
 
-static string_ty *base_name _((char *));
+static string_ty *base_name _((const char *));
 
 static string_ty *
 base_name(file)
-	char		*file;
+	const char	*file;
 {
-	char		*cp1;
-	char		*cp2;
+	const char	*cp1;
+	const char	*cp2;
 
 	cp1 = strrchr(file, '/');
 	if (cp1)
@@ -75,7 +75,7 @@ base_name(file)
 
 int
 trace_pretest(file, result)
-	char		*file;
+	const char	*file;
 	int		*result;
 {
 	string_ty	*s;
@@ -106,7 +106,7 @@ trace_pretest(file, result)
 
 void
 trace_where(file, line)
-	char		*file;
+	const char	*file;
 	int		line;
 {
 	string_ty	*s;
@@ -227,7 +227,7 @@ trace_putchar(c)
 
 void
 trace_printf(s sva_last)
-	char		*s;
+	const char	*s;
 	sva_last_decl
 {
 	va_list		ap;
@@ -243,7 +243,7 @@ trace_printf(s sva_last)
 
 void
 trace_enable(file)
-	char		*file;
+	const char	*file;
 {
 	string_ty	*s;
 	known_ty	*kp;
@@ -280,8 +280,8 @@ trace_enable(file)
 
 void
 trace_char_real(name, vp)
-	char		*name;
-	char		*vp;
+	const char	*name;
+	const char	*vp;
 {
 	trace_printf("%s = '", name);
 	if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
@@ -309,8 +309,8 @@ trace_char_real(name, vp)
 
 void
 trace_char_unsigned_real(name, vp)
-	char		*name;
-	unsigned char	*vp;
+	const char	*name;
+	const unsigned char *vp;
 {
 	trace_printf("%s = '", name);
 	if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
@@ -338,8 +338,8 @@ trace_char_unsigned_real(name, vp)
 
 void
 trace_int_real(name, vp)
-	char		*name;
-	int		*vp;
+	const char	*name;
+	const int	*vp;
 {
 	trace_printf("%s = %d;\n", name, *vp);
 }
@@ -347,8 +347,8 @@ trace_int_real(name, vp)
 
 void
 trace_int_unsigned_real(name, vp)
-	char		*name;
-	unsigned int	*vp;
+	const char	*name;
+	const unsigned int *vp;
 {
 	trace_printf("%s = %u;\n", name, *vp);
 }
@@ -356,8 +356,8 @@ trace_int_unsigned_real(name, vp)
 
 void
 trace_long_real(name, vp)
-	char		*name;
-	long		*vp;
+	const char	*name;
+	const long	*vp;
 {
 	trace_printf("%s = %ld;\n", name, *vp);
 }
@@ -365,8 +365,8 @@ trace_long_real(name, vp)
 
 void
 trace_long_unsigned_real(name, vp)
-	char		*name;
-	unsigned long	*vp;
+	const char	*name;
+	const unsigned long *vp;
 {
 	trace_printf("%s = %lu;\n", name, *vp);
 }
@@ -374,11 +374,11 @@ trace_long_unsigned_real(name, vp)
 
 void
 trace_pointer_real(name, vptrptr)
-	char		*name;
-	void		*vptrptr;
+	const char	*name;
+	const void	*vptrptr;
 {
-	void		**ptr_ptr = vptrptr;
-	void		*ptr;
+	const void	*const *ptr_ptr = vptrptr;
+	const void	*ptr;
 
 	ptr = *ptr_ptr;
 	if (!ptr)
@@ -390,8 +390,8 @@ trace_pointer_real(name, vptrptr)
 
 void
 trace_short_real(name, vp)
-	char		*name;
-	short		*vp;
+	const char	*name;
+	const short	*vp;
 {
 	trace_printf("%s = %hd;\n", name, *vp);
 }
@@ -399,8 +399,8 @@ trace_short_real(name, vp)
 
 void
 trace_short_unsigned_real(name, vp)
-	char		*name;
-	unsigned short	*vp;
+	const char	*name;
+	const unsigned short *vp;
 {
 	trace_printf("%s = %hu;\n", name, *vp);
 }
@@ -408,10 +408,10 @@ trace_short_unsigned_real(name, vp)
 
 void
 trace_string_real(name, vp)
-	char		*name;
-	char		*vp;
+	const char	*name;
+	const char	*vp;
 {
-	char		*s;
+	const char	*s;
 	long		count;
 
 	trace_printf("%s = ", name);

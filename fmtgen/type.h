@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,7 @@ struct type_method_ty
 	void (*gen_code_declarator)_((type_ty *, string_ty *, int));
 	void (*gen_free_declarator)_((type_ty *, string_ty *, int));
 	void (*member_add)_((type_ty *, string_ty *, type_ty *));
+	void (*in_include_file)_((type_ty *));
 };
 
 void type_gen_include _((type_ty *));
@@ -61,6 +62,7 @@ void type_gen_code _((type_ty *));
 void type_gen_code_declarator _((type_ty *, string_ty *, int));
 void type_gen_free_declarator _((type_ty *, string_ty *, int));
 void type_member_add _((type_ty *, string_ty *, type_ty *));
+void type_in_include_file _((type_ty *));
 
 type_ty *type_new _((type_method_ty *, string_ty *));
 void type_delete _((type_ty *));

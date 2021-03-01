@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,12 +33,12 @@ print("File Activity");
 print("</title></head><body><h1><center>");
 if (change_number_set())
 {
-	print("Project ``" ## project_name() ##
+	print("Project ``" ## quote_html(project_name()) ##
 		"'', Change " ## change_number() ## ",<br>");
 }
 else
 {
-	print("Project ``" ## project_name() ## "'',<br>");
+	print("Project ``" ## quote_html(project_name()) ## "'',<br>");
 }
 print("File Activity");
 print("</center></h1>");
@@ -145,10 +145,10 @@ for (fn in sort(keys(active)))
 
 	print("<p><dt>");
 	auto href;
-	href = script_name ## "?file@file_menu+" ## fn;
-	href ##= "+project@" ## project_name();
+	href = script_name ## "?file@file_menu+" ## quote_url(fn);
+	href ##= "+project@" ## quote_url(project_name());
 	print("<a href=\"" ## href ## "\">");
-	print("<tt>" ## fn ## "</tt></a>");
+	print("<tt>" ## quote_html(fn) ## "</tt></a>");
 	print("<dd>");
 
 	print("<table>");
@@ -171,7 +171,7 @@ for (fn in sort(keys(active)))
 		print(file.edit);
 		print("</td><td valign=top align=right>");
 		href = script_name ## "?file@chan_menu";
-		href ##= "+project@" ## project_name();
+		href ##= "+project@" ## quote_url(project_name());
 		href ##= "+change@" ## file.change;
 		print("<a href=\"" ## href ## "\">");
 		print(file.change ## "</a>");
@@ -180,10 +180,10 @@ for (fn in sort(keys(active)))
 		if (file.who != "")
 		{
 			print("<br><a href=\"mailto:" ## file.who ## "\"><i>");
-			print(passwd[file.who].pw_comment ## "</i></a>");
+			print(quote_html(passwd[file.who].pw_comment) ## "</i></a>");
 		}
 		print("</td><td valign=top>");
-		print(file.description);
+		print(quote_html(file.description));
 		print("</td></tr>");
 		actions = file.action;
 		usages = file.usage;
@@ -199,7 +199,8 @@ else
 	print("There are no active files in this project.");
 print("<hr>");
 print("A similar report may be obtained from the command line, with");
-print("<blockquote><tt>aer file_activ -p " ## project_name() ## "</tt></blockquote>");
+print("<blockquote><tt>aer file_activ -p " ## quote_html(project_name()) ##
+	"</tt></blockquote>");
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

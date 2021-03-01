@@ -3,7 +3,7 @@ Build(Aegis)					     Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,
-	1998 Peter Miller; All rights reserved.
+	1998, 1999 Peter Miller; All rights reserved.
 
 	The aegis program is distributed under the terms of the
 	GNU General Public License.  See the LICENSE section,
@@ -30,19 +30,40 @@ SITE CONFIGURATION
 
    Before You Start
 	Before you start configuring, it is worth reading the
-	OTHER USEFUL SOFTWARE section, below.  The configure
-	script checks for the internationalization library and
-	functions.  If your system does	not have them, it is
-	worth fetching and installing GNU Gettext before you run
-	the configure script.  Make sure that the msgfmt command
-	from GNU Gettext appears earlier in your command search
-	PATH than the existing system ones, if any (this is very
-	important for SunOS and	Solaris).  You must do the GNU
-	gettext	install	before running the configure script, or
-	the error messages, even for English speakers, will be
-	terse and uninformative.  Remember to use the GNU gettext
-	configure --with-gnu-gettext option if your system has
-	native gettext tools.
+	OTHER USEFUL SOFTWARE section, below.
+
+	The configure script checks for	the internationalization
+	library	and functions.	If your	system does not	have
+	them, it is worth fetching and installing GNU Gettext
+	before you run the configure script.  Make sure	that the
+	msgfmt command from GNU	Gettext	appears	earlier	in your
+	command	search PATH than the existing system ones, if any
+	(this is very important	for SunOS and Solaris).	 You must
+	do the GNU gettext install before running the configure
+	script,	or the error messages, even for	English	speakers,
+	will be	terse and uninformative.  Remember to use the GNU
+	gettext	configure --with-gnu-gettext option if your
+	system has native gettext tools.
+
+	The configure script checks for	the compression	library
+	and functions.	If your	system does not	have them, it is
+	worth fetching and installing GNU zlib compression
+	library	before you run the configure script.  (See
+	http://www.cdrom.com/pub/infozip/zlib/ for download.)
+	This is	essential, becaise Aegis will not build.  without
+	it.  (Note: this is not	the same thing as zlibc	which
+	does something completely different.)
+
+Reference Manual	      Aegis				1
+
+Build(Aegis)					     Build(Aegis)
+
+	The configure script checks for	the regular expression
+	library	and functions.	If your	system does not	have
+	them, it is worth fetching and installing GNU rx
+	compression library before you run the configure script.
+	(Note: test 81 will fail if the	POSIX regular expression
+	functions are not available.)
 
    Running Configure
 	Normally, you just cd to the directory containing aegis'
@@ -54,11 +75,6 @@ SITE CONFIGURATION
 	might need to type
 		% sh configure
 		...lots	of output...
-
-Reference Manual	      Aegis				1
-
-Build(Aegis)					     Build(Aegis)
-
 		%
 	instead	to prevent csh from trying to execute configure
 	itself.
@@ -95,6 +111,10 @@ Build(Aegis)					     Build(Aegis)
 		independent files.  Defaults to	${prefix} unless
 		otherwise specified.
 
+Reference Manual	      Aegis				2
+
+Build(Aegis)					     Build(Aegis)
+
 	--bindir=PATH
 		This directory contains	executable programs.  On
 		a network, this	directory may be shared	between
@@ -111,10 +131,6 @@ Build(Aegis)					     Build(Aegis)
 		${prefix}/share/aegis unless otherwise specified.
 		An ``aegis'' directory will be appended	if there
 		is none	in the specified path.
-
-Reference Manual	      Aegis				2
-
-Build(Aegis)					     Build(Aegis)
 
 	--libdir=PATH
 		This directory contains	installed data,	such as
@@ -153,6 +169,11 @@ Build(Aegis)					     Build(Aegis)
 	like this:
 		$ CC='gcc -traditional'	LIBS=-lposix ./configure
 		...lots	of output...
+
+Reference Manual	      Aegis				3
+
+Build(Aegis)					     Build(Aegis)
+
 		$
 	Here are the make variables that you might want	to
 	override with environment variables when running
@@ -170,15 +191,26 @@ Build(Aegis)					     Build(Aegis)
 		The configure script will append to this, rather
 		than replace it.
 
-Reference Manual	      Aegis				3
-
-Build(Aegis)					     Build(Aegis)
-
 	If you need to do unusual things to compile the	package,
 	the author encourages you to figure out	how configure
 	could check whether to do them,	and mail diffs or
 	instructions to	the author so that they	can be included
 	in the next release.
+
+   Common Problem
+	It is very common that other packages, such as gettext,
+	rx and zlib are	installed using	/usr/local as the prefix.
+	However, the configure script can't work this out, even
+	when it, too, is using /usr/local as the prefix.
+
+	To cope	with this, you need to say
+		$ CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure
+		...lots	of output...
+		$
+	when running configure.	 Substitute the	appropriate
+	prefix if you are using	something other	than /usr/local.
+	Watch the output... it should now find your installed
+	packages correctly.
 
    PRIVILEGES
 	There are a number of items in the generated Makefile and
@@ -196,6 +228,11 @@ Build(Aegis)					     Build(Aegis)
 		This specifies the minimum unprivileged	GID on
 		your system.  GIDs less	than this may not own
 		projects, or play any other role in an aegis
+
+Reference Manual	      Aegis				4
+
+Build(Aegis)					     Build(Aegis)
+
 		project.  The default value is 10.
 
 	AEGIS_USER_UID
@@ -228,11 +265,6 @@ Build(Aegis)					     Build(Aegis)
 		defined	project	umask.	This is	a project
 		attribute, and may be altered using the	aepa(1)
 		command.  The DEFAULT_UMASK is the umask
-
-Reference Manual	      Aegis				4
-
-Build(Aegis)					     Build(Aegis)
-
 		initially given	to all new projects created by
 		the aenpr(1) command.  The default value of
 		DEFAULT_UMASK is 026.  See the comments	in the
@@ -250,6 +282,10 @@ Build(Aegis)					     Build(Aegis)
 	set-uid-root.  Appendix	D of the Aegis User Guide
 	explains why aegis must	run set-uid-root; please read it
 	if you have concerns.
+
+Reference Manual	      Aegis				5
+
+Build(Aegis)					     Build(Aegis)
 
 BUILDING AEGIS
 	All you	should need to do is use the
@@ -287,11 +323,6 @@ BUILDING AEGIS
 		%
 	command.  To remove all	of the above files, and	also
 	remove the Makefile and	common/config.h	and config.status
-
-Reference Manual	      Aegis				5
-
-Build(Aegis)					     Build(Aegis)
-
 	files, use the
 		% make distclean
 		...lots	of output...
@@ -310,6 +341,11 @@ OTHER USEFUL SOFTWARE
 
 	cook	This is	a dependency maintenance tool (DMT).  An
 		example	of a well-known	DMT is make(1),	however
+
+Reference Manual	      Aegis				6
+
+Build(Aegis)					     Build(Aegis)
+
 		this old faithful is mostly not	sufficiently
 		capable	to meet	the demands placed on it by the
 		aegis program, but cook	certainly is.  The cook
@@ -346,22 +382,30 @@ OTHER USEFUL SOFTWARE
 		system does not	have this function, you	should
 		fetch and install GNU Gettext before running the
 		configure script.  If you do not, Aegis	will
-
-Reference Manual	      Aegis				6
-
-Build(Aegis)					     Build(Aegis)
-
 		still work, but	the error messages will	be rather
 		terse, even for	English	speakers.  (You	will be
 		able to	tell if	your system has	the
 		internationalization library and functions,
 		because	the configure script will report finding
-		-lintl and gettext in its running commentary.)
-		Please note that the GNU Gettext implementation
-		is likely to be	superior to the	one supplied with
-		your system, if	any.  Remember to use the GNU
-		gettext	configure --with-gnu-gettext option if
-		your system has	native gettext tools.
+		-lintl and (CWlibintl.h	and msgfmt in its running
+		commentary.)  Please note that the GNU Gettext
+		implementation is likely to be superior	to the
+		one supplied with your system, if any.	Remember
+		to use the GNU gettext configure --with-gnu-
+		gettext	option if your system has native gettext
+		tools.
+
+		Please note: if	you install GNU	gettext	package
+		into /usr/local	(for example) you must ensure
+		that the Aegis ./configure script is told to also
+		look in	/usr/local/include for include files
+		(CFLAGS), and /usr/local/lib for library files
+
+Reference Manual	      Aegis				7
+
+Build(Aegis)					     Build(Aegis)
+
+		(LDFLAGS).  Otherwise the not been installed.
 
 	GNU Groff
 		This GNU software replaces the documentation
@@ -394,6 +438,19 @@ Build(Aegis)					     Build(Aegis)
 		the same author	as aegis, and may be found at the
 		same archive site, in the same directory.
 
+	rx	This library provides POSIX regular expressions,
+		for systems which don't	have them.  (Note: test
+		81 will	fail if	the POSIX regular expression
+		functions are not available.)
+
+	zlib	This library provides access to	the GNU	Zip
+		(de)compression	algorithm(s).  It is essential to
+		have this installed before you build Aegis.  The
+		home page may be found at
+		http://www.cdrom.com/pub/infozip/zlib/ if you
+		need to	download it.  Note: this is not	the same
+		as zlibc which is Linux	specific.
+
 	The tests also depend on the presence of a number of
 	common UNIX programs, including	but not	limited	to: cc,
 	cmp, diff, ed, find, make, the RCS package, etc.
@@ -403,7 +460,7 @@ Build(Aegis)					     Build(Aegis)
 	programs are correctly installed before	you run	the
 	tests.
 
-Reference Manual	      Aegis				7
+Reference Manual	      Aegis				8
 
 Build(Aegis)					     Build(Aegis)
 
@@ -454,6 +511,15 @@ TESTING	AEGIS
 	error message will also	occur if you run the tests as
 	root: the tests	must be	run as a mortal	each time.
 
+	If the POSIX regular expression	functions are not
+	available, test	81 will	fail.  The GNU rx library
+	provides these.	 Installing it and re-configuring and re-
+	building Aegis will solve the problem.
+
+Reference Manual	      Aegis				9
+
+Build(Aegis)					     Build(Aegis)
+
 TESTING	SET-UID-ROOT
 	If the Aegis program is	not set-uid-root then it runs in
 	"test" mode which gives	you some confidence that Aegis is
@@ -461,10 +527,6 @@ TESTING	SET-UID-ROOT
 	root.  Two pass	testing	like this means	that you need not
 	trust your system to a set-uid-root program which is not
 	known to work.
-
-Reference Manual	      Aegis				8
-
-Build(Aegis)					     Build(Aegis)
 
 	You will need to do a little of	the install, to	create
 	the directory which will contain Aegis'	lock file.
@@ -512,6 +574,11 @@ INSTALLING AEGIS
 
 	All that is required to	install	the Aegis package is to
 	use the
+
+Reference Manual	      Aegis			       10
+
+Build(Aegis)					     Build(Aegis)
+
 		% make install
 		...lots	of output...
 		%
@@ -520,11 +587,6 @@ INSTALLING AEGIS
 	bypass the configure script.
 
 	The above procedure assumes that the soelim(1) command is
-
-Reference Manual	      Aegis				9
-
-Build(Aegis)					     Build(Aegis)
-
 	somewhere in the command search	PATH.  The soelim(1)
 	command	is available as	part of	the GNU	Groff package,
 	mentioned below	in the PRINTED MANUALS section.	 If you
@@ -542,7 +604,8 @@ USER CONFIGURATION
 	relevant directory to their PATH.  Users should	add
 		source /usr/local/lib/aegis/cshrc
 	to the end of their .cshrc file	for the	recommended
-	aliases.
+	aliases.  (This	may be in a different place, if	you
+	specified a --prefix option.)
 
 	There is also a	profile	for users of the Bourne	shell (it
 	assumes	you have a version of the Bourne shell which has
@@ -555,16 +618,30 @@ USER CONFIGURATION
 	The /usr/local/lib/aegis/state file contains pointers to
 	"system" projects.  Users may add their	own project
 	pointers (to their own projects) by putting a search path
-	into the AEGIS environment variable.  The system part is
-	always automatically appended by Aegis.	 The default,
-	already	set by the /usr/local/lib/aegis/cshrc file, is
-	$HOME/lib/aegis.  Do not create	this directory,	Aegis is
-	finicky	and wants to do	this itself.
+	into the AEGIS_PATH environment	variable.  The system
+	part is	always automatically appended by Aegis.	 The
+	default, already set by	the /usr/local/lib/aegis/cshrc
+	file, is $HOME/lib/aegis.  Do not create this directory,
+	Aegis is finicky and wants to do this itself.
 
 	Where projects reside is completely flexible, be they
 	system projects	or user	projects.  They	are not	kept
 	under the /usr/local/lib/aegis directory, this directory
 	only contains pointers.
+
+	If you have a Web server, and the aegis.cgi was
+	installed, you can set its AEGIS_PATH environment
+	variable, if you want it to be able to see more	projects
+	than just the global projects.	You do this by creating	a
+
+Reference Manual	      Aegis			       11
+
+Build(Aegis)					     Build(Aegis)
+
+	/usr/local/lib/aegis.cgi.conf file (there isn't	one, by
+	default) and setting the AEGIS_PATH environment	variable
+	in it.	This is	a fragment of Bourne shell script, not
+	just the name.
 
 PRINTED	MANUALS
 	This distribution contains the sources to all of the
@@ -579,11 +656,6 @@ PRINTED	MANUALS
 	long.
 
 	The User Guide contains	information about how to use
-
-Reference Manual	      Aegis			       10
-
-Build(Aegis)					     Build(Aegis)
-
 	Aegis, including a fully worked	example.  The User Guide
 	is about 100 pages long.
 
@@ -606,7 +678,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version 3.8.D001
+		aegis version 3.15
 		...
 		%
 	command.  Please run this command to get the exact
@@ -620,6 +692,11 @@ GETTING	HELP
 	-TRAce command line option.
 
 	When the -TRAce	command	line option is followed	by one or
+
+Reference Manual	      Aegis			       12
+
+Build(Aegis)					     Build(Aegis)
+
 	more file names, it turns on execution traces in those
 	source files.  It is usually best to place this	on the
 	end of the command line	so that	names of the files to be
@@ -636,10 +713,6 @@ GETTING	HELP
 		UNIX but something else.  The output of	"uname
 		-sr" is	usually	sufficient (but	not all	systems
 		have it).
-
-Reference Manual	      Aegis			       11
-
-Build(Aegis)					     Build(Aegis)
 
 	2. The Version Number
 		In any information you send, please include the
@@ -678,6 +751,11 @@ Build(Aegis)					     Build(Aegis)
 		was set-uid-root?  You could have had problems
 		running	them, or some of them could have failed.
 		If some	tests fail but not others, please let me
+
+Reference Manual	      Aegis			       13
+
+Build(Aegis)					     Build(Aegis)
+
 		know which ones	failed,	and include the	fact that
 		Aegis was set-uid-root at the time.
 
@@ -693,10 +771,6 @@ Build(Aegis)					     Build(Aegis)
 	at the archive site.  It is a known flaw that the User
 	Guide is incomplete, it	is something the author	is
 	working	on "at this moment".
-
-Reference Manual	      Aegis			       12
-
-Build(Aegis)					     Build(Aegis)
 
 	9. The Example Project
 		After reading the User Guide, it is often useful
@@ -736,6 +810,11 @@ LICENSE
 	The aegis program is distributed in the	hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the
 	implied	warranty of MERCHANTABILITY or FITNESS FOR A
+
+Reference Manual	      Aegis			       14
+
+Build(Aegis)					     Build(Aegis)
+
 	PARTICULAR PURPOSE.  See the GNU General Public	License
 	for more details.
 
@@ -746,4 +825,4 @@ AUTHOR
 	Peter Miller   E-Mail:	 millerp@canb.auug.org.au
 	/\/\*		  WWW:	 http://www.canb.auug.org.au/~millerp/
 
-Reference Manual	      Aegis			       13
+Reference Manual	      Aegis			       15

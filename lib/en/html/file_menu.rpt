@@ -37,17 +37,17 @@ print("");
 print("<html><head><title>");
 print("File Menu");
 print("</title></head><body><h1><center>");
-print("Project ``" ## project_name() ## "'',");
+print("Project ``" ## quote_html(project_name()) ## "'',");
 if (change_number_set())
 	print("Change " ## change_number() ## ",");
-print("<br>File ``" ## fn ## "''");
+print("<br>File ``" ## quote_html(fn) ## "''");
 print("</center></h1>");
 print("<dl>");
 
 print("<dt>");
 auto href;
-href = script_name ## "?file@file_activ+" ## fn;
-href ##= "+project@" ## project_name();
+href = script_name ## "?file@file_activ+" ## quote_url(fn);
+href ##= "+project@" ## quote_url(project_name());
 print("<a href=\"" ## href ## "\">File Activity</a>");
 print("<dd>");
 print("This item will provide you with a listing of changes which are");
@@ -57,16 +57,16 @@ print("file is common to more than one change, all changes are listed");
 print("against the file.");
 
 print("<dt>");
-href = script_name ## "?file@file_cflct+" ## fn;
-href ##= "+project@" ## project_name();
+href = script_name ## "?file@file_cflct+" ## quote_url(fn);
+href ##= "+project@" ## quote_url(project_name());
 print("<a href=\"" ## href ## "\">File Conflict</a>");
 print("<dd>");
 print("This item will provide you with a listing of changes which are");
 print("actively modifying this file <b>if</b> more than <i>one</i>");
 print("change is modifying the file.");
 
-href = script_name ## "?file@file_hstry+" ## fn;
-href ##= "+project@" ## project_name();
+href = script_name ## "?file@file_hstry+" ## quote_url(fn);
+href ##= "+project@" ## quote_url(project_name());
 print("<dt><a href=\"" ## href ## "\">");
 print("File History");
 print("</a><dd>");
@@ -75,8 +75,8 @@ print("changes which affected this file in the past.  This report");
 print("can take a long time to generate.");
 
 print("<dt>");
-href = script_name ## "?file@pre+" ## fn;
-href ##= "+project@" ## project_name();
+href = script_name ## "?file@pre+" ## quote_url(fn);
+href ##= "+project@" ## quote_url(project_name());
 print("<a href=\"" ## href ## "\">Baseline</a>");
 print("<dd>");
 print("This item will show you the contents of the file in the project");
@@ -85,8 +85,8 @@ print("baseline, the current master version.");
 if (change_number_set())
 {
 	print("<dt>");
-	href = script_name ## "?file@pre+" ## fn;
-	href ##= "+project@" ## project_name();
+	href = script_name ## "?file@pre+" ## quote_url(fn);
+	href ##= "+project@" ## quote_url(project_name());
 	href ##= "+change@" ## change_number();
 	print("<a href=\"" ## href ## "\">Change " ##
 		change_number() ## "</a>");

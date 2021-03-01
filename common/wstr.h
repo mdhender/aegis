@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #ifndef COMMON_WSTR_H
 #define COMMON_WSTR_H
 
+#include <ac/stddef.h>
 #include <ac/stdlib.h>
 #include <main.h>
 
@@ -38,26 +39,29 @@ struct wstring_ty
 	wchar_t		wstr_text[1];
 };
 
-wstring_ty *wstr_from_c _((char *));
-wstring_ty *wstr_from_wc _((wchar_t *));
-wstring_ty *wstr_n_from_c _((char *, size_t));
-wstring_ty *wstr_n_from_wc _((wchar_t *, size_t));
+wstring_ty *wstr_from_c _((const char *));
+wstring_ty *wstr_from_wc _((const wchar_t *));
+wstring_ty *wstr_n_from_c _((const char *, size_t));
+wstring_ty *wstr_n_from_wc _((const wchar_t *, size_t));
 wstring_ty *wstr_copy _((wstring_ty *));
 void wstr_free _((wstring_ty *));
-wstring_ty *wstr_catenate _((wstring_ty *, wstring_ty *));
-wstring_ty *wstr_cat_three _((wstring_ty *, wstring_ty *, wstring_ty *));
+wstring_ty *wstr_catenate _((const wstring_ty *, const wstring_ty *));
+wstring_ty *wstr_cat_three _((const wstring_ty *, const wstring_ty *,
+	const wstring_ty *));
 wstring_ty *wstr_to_upper _((const wstring_ty *));
 wstring_ty *wstr_to_lower _((const wstring_ty *));
 wstring_ty *wstr_to_ident _((const wstring_ty *));
-void wstr_to_mbs _((wstring_ty *, char **, size_t *));
-int wstr_equal _((wstring_ty *, wstring_ty *));
+void wstr_to_mbs _((const wstring_ty *, char **, size_t *));
+int wstr_equal _((const wstring_ty *, const wstring_ty *));
 
 #ifndef DEBUG
 #define wstr_equal(s1, s2) ((s1) == (s2))
 #endif
 
 struct string_ty;
-struct string_ty *wstr_to_str _((wstring_ty *));
-wstring_ty *str_to_wstr _((struct string_ty *));
+struct string_ty *wstr_to_str _((const wstring_ty *));
+wstring_ty *str_to_wstr _((const struct string_ty *));
+
+wstring_ty *wstr_quote_shell _((wstring_ty *));
 
 #endif /* COMMON_WSTR_H */

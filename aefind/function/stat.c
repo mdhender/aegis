@@ -20,6 +20,7 @@
  * MANIFEST: functions to implement stat-based functions
  */
 
+#include <config.h> /* sets features, so stat.h tells us everything */
 #include <sys/types.h>
 #include <sys/stat.h>
 

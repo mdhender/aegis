@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 #include <col.h>
 #include <commit.h>
 #include <error.h>
-#include <glue.h>
+#include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
@@ -158,6 +158,7 @@ new_test_main()
 	int		nerrs;
 	string_ty	*config_name;
 	log_style_ty	log_style;
+	char		*output;
 
 	trace(("new_test_main()\n{\n"/*}*/));
 	manual_flag = 0;
@@ -166,6 +167,7 @@ new_test_main()
 	change_number = 0;
 	log_style = log_style_append_default;
 	string_list_constructor(&wl);
+	output = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -243,8 +245,36 @@ new_test_main()
 		case arglex_token_current_relative:
 			user_relative_filename_preference_argument(new_test_usage);
 			break;
+
+		case arglex_token_output:
+			if (output)
+				duplicate_option(new_test_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_file(arglex_token_output, new_test_usage);
+				/* NOTREACHED */
+
+			case arglex_token_string:
+				output = arglex_value.alv_string;
+				break;
+
+			case arglex_token_stdio:
+				output = "";
+				break;
+			}
+			break;
 		}
 		arglex();
+	}
+	if (change_number && output)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_change,
+			arglex_token_output,
+			new_test_usage
+		);
 	}
 	if (automatic_flag && manual_flag)
 	{
@@ -534,51 +564,13 @@ new_test_main()
 		s2 = str_format("%S/%S", dd, s1);
 		if (!os_exists(s2))
 		{
-			int		fd;
 			string_ty	*template;
 	
 			user_become_undo();
 			template = change_file_template(cp, s1);
 			user_become(up);
-			fd = glue_creat(s2->str_text, mode);
-			if (fd < 0)
-			{
-				sub_context_ty	*scp;
-
-				scp = sub_context_new();
-				sub_errno_set(scp);
-				sub_var_set(scp, "File_Name", "%S", s2);
-				fatal_intl(scp, i18n("create $filename: $errno"));
-				/* NOTREACHED */
-				sub_context_delete(scp);
-			}
 			undo_unlink_errok(s2);
-			if (template)
-			{
-				glue_write
-				(
-					fd,
-					template->str_text,
-					template->str_length
-				);
-				if
-				(
-					template->str_length
-				&&
-					(
-						template->str_text
-						[
-							template->str_length - 1
-						]
-					!=
-						'\n'
-					)
-				)
-					glue_write(fd, "\n", 1);
-				str_free(template);
-			}
-			glue_close(fd);
-			os_chmod(s2, mode);
+			file_from_string(s2, template, mode);
 		}
 		str_free(s2);
 	}
@@ -624,6 +616,30 @@ new_test_main()
 	 */
 	change_run_change_file_command(cp, &wl, up);
 	change_run_project_file_command(cp, up);
+
+	/*
+	 * If there is an output option,
+	 * write the change number to the file.
+	 */
+	if (output)
+	{
+		string_ty	*content;
+
+		content = wl2str(&wl, 0, wl.nstrings, "\n");
+		if (*output)
+		{
+			string_ty	*fn;
+
+			fn = str_from_c(output);
+			user_become(up);
+			file_from_string(fn, content, 0644);
+			user_become_undo();
+			str_free(fn);
+		}
+		else
+			cat_string_to_stdout(content);
+		str_free(content);
+	}
 
 	/*
 	 * update the state files

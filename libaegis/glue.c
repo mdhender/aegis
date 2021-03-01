@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1995, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,11 +36,10 @@
  * which is broken.  These systems will also need to use this glue.
  */
 
-#include <errno.h>
-#include <signal.h>
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
+#include <ac/errno.h>
 #include <signal.h>
 
 #include <sys/types.h>
@@ -1808,9 +1807,6 @@ glue_fputc(c, fp)
 	/*
 	 * locate the appropriate proxy
 	 */
-#if 0
-	trace(("glue_fputc()\n{\n"/*}*/));
-#endif
 	result = EOF;
 	gfp = (glue_file_ty *)fp;
 	assert(gfp->guard1 == GUARD1);
@@ -1877,10 +1873,108 @@ glue_fputc(c, fp)
 	 * here for all exits
 	 */
 	done:
-#if 0
-	trace(("return %d; /* errno = %d */\n", result, errno));
-	trace((/*{*/"}\n"));
-#endif
+	return result;
+}
+
+
+int
+glue_fwrite(buf, len1, len2, fp)
+	char		*buf;
+	long		len1;
+	long		len2;
+	FILE		*fp;
+{
+	proxy_ty	*pp;
+	glue_file_ty	*gfp;
+	int		result;
+	long		len;
+
+	/*
+	 * Leave the standard file streams alone.
+	 * There is a chance these will be seen here.
+	 */
+	if (fp == stdout || fp == stdin || fp == stderr)
+		return fwrite(buf, len1, len2, fp);
+
+	/*
+	 * locate the appropriate proxy
+	 */
+	result = EOF;
+	gfp = (glue_file_ty *)fp;
+	assert(gfp->guard1 == GUARD1);
+	assert(gfp->guard2 == GUARD2);
+	pp = gfp->pp;
+
+	/*
+	 * if the stream is in an error state,
+	 * or we were asked to do something stupid,
+	 * return the error
+	 */
+	if (gfp->errno_sequester)
+	{
+		errno = gfp->errno_sequester;
+		goto done;
+	}
+	if (gfp->fmode == O_RDONLY)
+	{
+		gfp->errno_sequester = EINVAL;
+		errno = EINVAL;
+		goto done;
+	}
+
+	/*
+	 * push the bytes into the buffer
+	 */
+	len = len1 * len2;
+	while (len > 0)
+	{
+		int c = (unsigned char)*buf++;
+		--len;
+
+		/*
+		 * if there is no room in the buffer,
+		 * flush it to the proxy
+		 */
+		assert(gfp->buffer_pos);
+		if (gfp->buffer_pos >= gfp->buffer_end)
+		{
+			long	nbytes;
+			long	nbytes2;
+	
+			fputc(command_write, pp->command);
+			put_int(pp->command, gfp->fd);
+			nbytes = gfp->buffer_pos - gfp->buffer;
+			put_long(pp->command, nbytes);
+			put_binary(pp->command, gfp->buffer, nbytes);
+			end_of_command(pp);
+			nbytes2 = get_long(pp->reply);
+			if (nbytes2 < 0)
+			{
+				gfp->errno_sequester = get_int(pp->reply);
+				errno = gfp->errno_sequester;
+				goto done;
+			}
+			if (nbytes2 != nbytes)
+			{
+				gfp->errno_sequester = EIO;
+				errno = EIO;
+				goto done;
+			}
+			gfp->buffer_pos = gfp->buffer;
+			gfp->buffer_end = gfp->buffer + sizeof(gfp->buffer);
+		}
+	
+		/*
+		 * stash the character
+		 */
+		*gfp->buffer_pos++ = c;
+	}
+	result = len1;
+
+	/*
+	 * here for all exits
+	 */
+	done:
 	return result;
 }
 

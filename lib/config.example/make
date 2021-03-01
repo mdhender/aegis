@@ -6,8 +6,8 @@
  *
  * The make(1) program exists in many forms, usually one is available with each
  * UNIX version.  The one used in the writing of this section is GNU Make 3.70,
- * avaiable by anonymous FTP from your nearest GNU archive site.  GNU Make was
- * chosen because it was the most powerful, it is widely avaiable (usually for
+ * available by anonymous FTP from your nearest GNU archive site.  GNU Make was
+ * chosen because it was the most powerful, it is widely available (usually for
  * little or no cost) and discussion of the alternatives (SunOS make, BSD 4.3
  * make, etc), would not be universally applicable.  "Plain vanilla" make
  * (with no transitive closure, no pattern rules, no functions) is not
@@ -23,7 +23,7 @@
  * desired, and can't be used for the search path functionality required by
  * aegis.  Because of this, the create_symlinks_before_build field of the
  * project config file is set to true so that aegis will arrange for the
- * development directory to be fiull of symbolic links, making it appear that
+ * development directory to be full of symbolic links, making it appear that
  * the entire project is in each change's development directory.
  */
 
@@ -39,7 +39,7 @@ build_command =
 
 /*
  * The rules used in the User Guide all remove their targets before
- * constructing them, which qualifies them for the follwoing entry in the
+ * constructing them, which qualifies them for the following entry in the
  * config file.  The files must be removed first, otherwise the baseline would
  * cease to be self-consistent.
  */
@@ -47,7 +47,7 @@ link_integration_directory = true;
 
 /*
  * Another field to be set in this file is one which tells aegis to maintain
- * symbolic links between the development directory and the basline.  This also
+ * symbolic links between the development directory and the baseline.  This also
  * requires that rules remove their targets before constructing them, to ensure
  * that development builds do not attempt to write their results onto the
  * read-only versions in the baseline.

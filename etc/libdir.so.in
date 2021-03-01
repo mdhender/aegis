@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996 Peter Miller;
+.\"	Copyright (C) 1996, 1999 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,8 @@
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
 .\" MANIFEST: template for the etc/libdir.so file
+.\"
+.\" @configure_input@
 .\"
 .ds L) @libdir@
 .ds D) @datadir@

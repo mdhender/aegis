@@ -1,7 +1,7 @@
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
-#	1998 Peter Miller; All rights reserved.
+#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -180,6 +180,33 @@ MANLANG = en
 HAVE_WEB = @web@
 DocumentRoot = @DocumentRoot@
 ScriptRoot = @ScriptRoot@
+
+#
+# Mess with the names of installed executables.
+#
+# The prefix is added to the front, the suffix is added to the back.
+# Both are usually empty.  (The suffix does not include the executable
+# file extension.)
+#
+PROGRAM_PREFIX = @PROGRAM_PREFIX@
+PROGRAM_SUFFIX = @PROGRAM_SUFFIX@
+
+#
+# This is the file extension of executable files.
+# It is empty for UNIX, and .EXE for the unmentionable one.
+#
+EXEEXT = @EXEEXT@
+
+#
+# This is the file extension of object files.
+# It is .o for UNIX, and .O or .OBJ for the unmentionable one.
+#
+OBJEXT = @OBJEXT@
+
+#
+# This is the file extension of library files.  NO DOT.
+#
+LIBEXT = a
 
 #
 # You should not need to alter anything below this point.

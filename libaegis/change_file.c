@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <change_file.h>
 #include <error.h>
 #include <fstrcmp.h>
+#include <metrics.h>
 #include <os.h>
 #include <project_file.h>
 #include <str_list.h>
@@ -163,15 +164,18 @@ change_file_path(cp, file_name)
 	assert(cp->fstate_stp);
 	result = 0;
 	src_data = symtab_query(cp->fstate_stp, file_name);
-	if (src_data->about_to_be_copied_by)
-		src_data = 0;
 	if (!src_data)
 	{
 		trace(("return NULL;\n"));
 		trace((/*{*/"}\n"));
 		return 0;
 	}
-	assert(src_data);
+	if (src_data->about_to_be_copied_by)
+	{
+		trace(("return NULL;\n"));
+		trace((/*{*/"}\n"));
+		return 0;
+	}
 
 	/*
 	 * Files which are built could be any where in the change search
@@ -405,6 +409,18 @@ change_file_nth(cp, n)
 	if (n >= fstate_data->src->length)
 		return 0;
 	return fstate_data->src->list[n];
+}
+
+
+size_t
+change_file_count(cp)
+	change_ty	*cp;
+{
+	fstate		fstate_data;
+
+	fstate_data = change_fstate_get(cp);
+	assert(fstate_data->src);
+	return fstate_data->src->length;
 }
 
 
@@ -908,9 +924,10 @@ change_file_test_baseline_time_get(cp, src_data)
  */
 
 int
-change_fingerprint_same(fp, path)
+change_fingerprint_same(fp, path, check_always)
 	fingerprint	fp;
 	string_ty	*path;
+	int		check_always;
 {
 	time_t		oldest;
 	time_t		newest;
@@ -927,6 +944,8 @@ change_fingerprint_same(fp, path)
 		trace((/*{*/"}\n"));
 		return 0;
 	}
+	assert(fp->youngest >= 0);
+	assert(fp->oldest >= 0);
 
 	/*
 	 * If the file does not exist, clear the fingerprint and say
@@ -954,7 +973,20 @@ change_fingerprint_same(fp, path)
 	 * ctime, too, just in case the user is trying to fake us out.)
 	 */
 	os_mtime_range(path, &oldest, &newest);
-	if (fp->crypto && fp->oldest && fp->youngest && fp->youngest == newest)
+	assert(oldest > 0);
+	assert(newest > 0);
+	if
+	(
+		!check_always
+	&&
+		fp->crypto
+	&&
+		fp->oldest
+	&&
+		fp->youngest
+	&&
+		fp->youngest == newest
+	)
 	{
 		trace(("file times match\n"));
 		if (oldest < fp->oldest)
@@ -969,7 +1001,16 @@ change_fingerprint_same(fp, path)
 	 * extend the valid time range, and say the file is the same.
 	 */
 	crypto = os_fingerprint(path);
-	if (fp->crypto && fp->oldest && fp->youngest && str_equal(crypto, fp->crypto))
+	if
+	(
+		fp->crypto
+	&&
+		fp->oldest
+	&&
+		fp->youngest
+	&&
+		str_equal(crypto, fp->crypto)
+	)
 	{
 		trace(("file fingerprints match\n"));
 		str_free(crypto);
@@ -1012,11 +1053,16 @@ change_file_fingerprint_check(cp, src_data)
 	 * states
 	 */
 	path = change_file_path(cp, src_data->file_name);
+	assert(path);
 	if (!src_data->file_fp)
 		src_data->file_fp = fingerprint_type.alloc();
+	assert(src_data->file_fp->youngest >= 0);
+	assert(src_data->file_fp->oldest >= 0);
 	change_become(cp);
-	same = change_fingerprint_same(src_data->file_fp, path);
+	same = change_fingerprint_same(src_data->file_fp, path, 0);
 	change_become_undo();
+	assert(src_data->file_fp->youngest > 0);
+	assert(src_data->file_fp->oldest > 0);
 
 	/*
 	 * if the file is unchanged, do nothing more
@@ -1137,4 +1183,177 @@ change_file_up_to_date(pp, c_src_data)
 	trace(("return %d;\n", result));
 	trace((/*{*/"}\n"));
 	return result;
+}
+
+
+static void metric_check _((metric, string_ty *, change_ty *));
+
+static void
+metric_check(mp, fn, cp)
+	metric		mp;
+	string_ty	*fn;
+	change_ty	*cp;
+{
+	sub_context_ty	*scp;
+
+	if (!mp->name)
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", fn);
+		sub_var_set(scp, "FieLD_Name", "name");
+		change_fatal
+		(
+			cp,
+			scp,
+			i18n("$filename: corrupted \"$field_name\" field")
+		);
+	}
+	if (!(mp->mask & metric_value_mask))
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", fn);
+		sub_var_set(scp, "FieLD_Name", "value");
+		change_fatal
+		(
+			cp,
+			scp,
+			i18n("$filename: corrupted \"$field_name\" field")
+		);
+	}
+}
+
+
+static void metric_list_check _((metric_list, string_ty *, change_ty *));
+
+static void
+metric_list_check(mlp, fn, cp)
+	metric_list	mlp;
+	string_ty	*fn;
+	change_ty	*cp;
+{
+	size_t		j;
+
+	for (j = 0; j < mlp->length; ++j)
+		metric_check(mlp->list[j], fn, cp);
+}
+
+
+static string_ty * change_file_metrics_filename _((change_ty *, string_ty *));
+
+static string_ty *
+change_file_metrics_filename(cp, filename)
+	change_ty	*cp;
+	string_ty	*filename;
+{
+	string_ty	*metrics_filename_pattern;
+	sub_context_ty	*scp;
+	string_ty	*absolute_filename;
+	string_ty	*metrics_filename;
+
+	metrics_filename_pattern = change_metrics_filename_pattern_get(cp);
+	scp = sub_context_new();
+	absolute_filename = change_file_path(cp, filename);
+	sub_var_set(scp, "File_Name", "%S", absolute_filename);
+	str_free(absolute_filename);
+	metrics_filename = subst_intl(scp, metrics_filename_pattern->str_text);
+	sub_context_delete(scp);
+	return metrics_filename;
+}
+
+
+metric_list
+change_file_metrics_get(cp, filename)
+	change_ty	*cp;
+	string_ty	*filename;
+{
+	string_ty	*metrics_filename;
+	metrics		mp;
+	metric_list	mlp;
+
+	/*
+	 * Get the name of the file to read.
+	 */
+	metrics_filename = change_file_metrics_filename(cp, filename);
+
+	/*
+	 * Read the metrics file if it is there.
+	 */
+	change_become(cp);
+	if (os_exists(metrics_filename))
+	{
+		mp = metrics_read_file(metrics_filename->str_text);
+	}
+	else
+		mp = 0;
+	change_become_undo();
+
+	/*
+	 * Extract the metrics list from the file data,
+	 * if present.
+	 */
+	mlp = 0;
+	if (mp && mp->metrics && mp->metrics->length)
+	{
+		mlp = mp->metrics;
+		mp->metrics = 0;
+	}
+	metrics_type.free(mp);
+
+	/*
+	 * If we have a metrics list, check each of the list elements.
+	 */
+	if (mlp)
+		metric_list_check(mlp, metrics_filename, cp);
+	str_free(metrics_filename);
+
+	/*
+	 * Return the list of metrics.
+	 */
+	return mlp;
+}
+
+
+void
+change_file_list_metrics_check(cp)
+	change_ty	*cp;
+{
+	size_t		j;
+	fstate_src	src_data;
+
+	for (j = 0; ; ++j)
+	{
+		metric_list	mlp;
+
+		src_data = change_file_nth(cp, j);
+		if (!src_data)
+			break;
+
+		/*
+		 * Only verify the metrics for primary source files,
+		 * and only for creates and modifies.
+		 */
+		if
+		(
+			src_data->usage == file_usage_build
+		||
+			(
+				src_data->action != file_action_create
+			&&
+				src_data->action != file_action_modify
+			)
+		)
+			continue;
+
+		/*
+		 * Read the file.
+		 * The contents will be checked.
+		 */
+		mlp = change_file_metrics_get(cp, src_data->file_name);
+
+		/*
+		 * Throw the data away,
+		 * we only wanted the checking side-effect.
+		 */
+		metric_list_type.free(mlp);
+	}
 }

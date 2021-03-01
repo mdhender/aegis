@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -155,7 +155,7 @@ project_file_find_fuzzy(pp, file_name)
 		}
 	}
 
-	trace(("return %8.8lX;\n", (long)src_data));
+	trace(("return %8.8lX;\n", (long)best_src));
 	trace((/*{*/"}\n"));
 	return best_src;
 }

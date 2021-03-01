@@ -70,12 +70,13 @@
 .so c5.0.so
 .so c9.0.so
 .so c6.0.so
+.so c10.0.so
 .so cA.0.so
 .so cB.0.so
 .so cD.0.so
 .so cI.0.so
 .br
-.1C
+.if t .1C
 .if o .bp
 .\" At this point we are at the top of the page.  The .TC macro will not
 .\" throw a new page, and so it will have the wrong page number for the

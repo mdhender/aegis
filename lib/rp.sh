@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MANIFEST: command used to notify by email that a change has passed review
 #
 # Suggested project attribute:
-# review_pass_notify_command = "$lib/rp.sh $p $c $developer $reviewer";
+# review_pass_notify_command = "$datadir/rp.sh $p $c $developer $reviewer";
 #
 aegis=aegis
 case $# in
