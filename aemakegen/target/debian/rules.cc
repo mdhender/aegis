@@ -114,8 +114,32 @@ target_debian::gen_rules(void)
         print_rule(lhs, rhs, body);
     }
 
+    //
+    // Refer to Debian Policy Manual section 4.9 (Main building script:
+    // debian/rules) for details.
+    //
+    // According to Lintian, the following form is recommended:
+    //
+    //     build: build-arch build-indep
+    //     build-arch: build-stamp
+    //     build-indep: build-stamp
+    //     build-stamp:
+    //         blah blah
+    //
+    {
+        nstring_list lhs;
+        lhs.push_back("build");
+        nstring_list rhs;
+        rhs.push_back("build-arch");
+        rhs.push_back("build-indep");
+        nstring_list body;
+        location_comment(__FILE__, __LINE__);
+        print_rule(lhs, rhs, body);
+    }
     location_comment(__FILE__, __LINE__);
-    print_rule("build", "build-stamp");
+    print_rule("build-arch", "build-stamp");
+    location_comment(__FILE__, __LINE__);
+    print_rule("build-indep", "build-stamp");
 
     print_comment("Build and test the tarball.");
     {
@@ -212,17 +236,6 @@ target_debian::gen_rules(void)
         print_rule(lhs, rhs, body);
     }
 
-    {
-        nstring_list lhs;
-        lhs.push_back("build-indep");
-        nstring_list rhs;
-        rhs.push_back("build");
-        rhs.push_back("install");
-        nstring_list body;
-        location_comment(__FILE__, __LINE__);
-        print_rule(lhs, rhs, body);
-    }
-
     //
     // The dpkg-buildpackage command calls
     // 5. debian/rules build
@@ -282,17 +295,19 @@ target_debian::gen_rules(void)
         nstring_list lhs;
         lhs.push_back(".PHONY");
         nstring_list rhs;
-        rhs.push_back("build");
-        rhs.push_back("clean");
-        rhs.push_back("binary-indep");
-        rhs.push_back("binary-arch");
         rhs.push_back("binary");
+        rhs.push_back("binary-arch");
+        rhs.push_back("binary-indep");
+        rhs.push_back("build");
+        rhs.push_back("build-arch");
+        rhs.push_back("build-indep");
+        rhs.push_back("clean");
         rhs.push_back("install");
         nstring_list body;
         location_comment(__FILE__, __LINE__);
         print_rule(lhs, rhs, body);
     }
-    print_comment("vim: set ts=8 sw=8 noet :");
+    print_comment("vi" "m: set ts=8 sw=8 noet :");
     op.reset();
 
     // make sure it is executable

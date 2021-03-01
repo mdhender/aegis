@@ -497,7 +497,11 @@ config.status: configure
 {TAB}sh configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc \
 {TAB}{TAB}CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
 
-build: build-stamp
+build: build-arch build-indep
+
+build-arch: build-stamp
+
+build-indep: build-stamp
 
 # Build and test the tarball.
 build-stamp: config.status
@@ -525,8 +529,6 @@ install: build
 {TAB}mkdir -p $(CURDIR)/debian/tmp/usr/share
 {TAB}$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 
-build-indep: build install
-
 # Build the binary package files here.
 binary binary-arch binary-indep: install
 {TAB}dh_testdir
@@ -543,7 +545,8 @@ binary binary-arch binary-indep: install
 {TAB}dh_md5sums
 {TAB}dh_builddeb
 
-.PHONY: binary binary-arch binary-indep build clean install
+.PHONY: binary binary-arch binary-indep build build-arch build-indep clean \
+{TAB}{TAB}install
 
 # vim: set ts=8 sw=8 noet :
 fubar
